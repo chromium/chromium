@@ -970,10 +970,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.CommitDeviation" units="microseconds"
-    expires_after="2021-08-09">
+    expires_after="2021-06-01">
   <obsolete>
     Removed in Mar 2021. Now reported as
-    Arc.Runtime.Performance.CommitDeviationNew
+    Arc.Runtime.Performance.CommitDeviation2.
   </obsolete>
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
@@ -995,10 +995,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.FPS" units="fps"
-    expires_after="2021-07-18">
+    expires_after="2021-06-01">
   <obsolete>
-    Removed in Mar 2021. Now reported as
-    Arc.Runtime.Performance.CommitDeviationNew
+    Removed in Mar 2021. Now reported as Arc.Runtime.Performance.FPS2.
   </obsolete>
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
@@ -1051,10 +1050,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Arc.Runtime.Performance.RenderQuality" units="%"
-    expires_after="2021-07-18">
+    expires_after="2021-06-01">
   <obsolete>
-    Removed in Mar 2021. Now reported as
-    Arc.Runtime.Performance.CommitDeviationNew
+    Removed in Mar 2021. Now reported as Arc.Runtime.Performance.RenderQuality2.
   </obsolete>
 <!-- Name completed by histogram_suffixes name="ArcPerformanceAppCategories" -->
 
