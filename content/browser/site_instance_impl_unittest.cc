@@ -242,22 +242,51 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   auto site_info_4 = CreateSimpleSiteInfo(GURL(), false /* is_origin_keyed */);
   auto site_info_4ok = CreateSimpleSiteInfo(GURL(), true /* is_origin_keyed */);
 
+  // Test IsSamePrincipalWith.
+  EXPECT_TRUE(site_info_1.IsSamePrincipalWith(site_info_1));
+  EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1ok));
+  EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_2));
+  EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_3));
+  EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_4));
+  EXPECT_TRUE(site_info_2.IsSamePrincipalWith(site_info_2));
+  EXPECT_FALSE(site_info_2.IsSamePrincipalWith(site_info_2ok));
+  EXPECT_FALSE(site_info_2.IsSamePrincipalWith(site_info_3));
+  EXPECT_FALSE(site_info_2.IsSamePrincipalWith(site_info_4));
+  EXPECT_TRUE(site_info_3.IsSamePrincipalWith(site_info_3));
+  EXPECT_FALSE(site_info_3.IsSamePrincipalWith(site_info_3ok));
+  EXPECT_FALSE(site_info_3.IsSamePrincipalWith(site_info_4));
+  EXPECT_TRUE(site_info_4.IsSamePrincipalWith(site_info_4));
+  EXPECT_FALSE(site_info_4.IsSamePrincipalWith(site_info_4ok));
+
   // Test SiteInfoOperators.
-  // Use EXPECT_TRUE and == below to avoid need to define SiteInfo::operator<<.
-  EXPECT_TRUE(site_info_1 == site_info_1);
-  EXPECT_FALSE(site_info_1 == site_info_2);
-  EXPECT_FALSE(site_info_1 == site_info_3);
-  EXPECT_FALSE(site_info_1 == site_info_4);
-  EXPECT_TRUE(site_info_2 == site_info_2);
-  EXPECT_FALSE(site_info_2 == site_info_3);
-  EXPECT_FALSE(site_info_2 == site_info_4);
-  EXPECT_TRUE(site_info_3 == site_info_3);
-  EXPECT_FALSE(site_info_3 == site_info_4);
-  EXPECT_TRUE(site_info_4 == site_info_4);
+  EXPECT_EQ(site_info_1, site_info_1);
+  EXPECT_NE(site_info_1, site_info_2);
+  EXPECT_NE(site_info_1, site_info_3);
+  EXPECT_NE(site_info_1, site_info_4);
+  EXPECT_EQ(site_info_2, site_info_2);
+  EXPECT_NE(site_info_2, site_info_3);
+  EXPECT_NE(site_info_2, site_info_4);
+  EXPECT_EQ(site_info_3, site_info_3);
+  EXPECT_NE(site_info_3, site_info_4);
+  EXPECT_EQ(site_info_4, site_info_4);
 
   EXPECT_TRUE(site_info_1 < site_info_3);  // 'f' before 's'/
   EXPECT_TRUE(site_info_3 < site_info_2);  // 's' before 'w'/
   EXPECT_TRUE(site_info_4 < site_info_1);  // Empty string first.
+
+  // Check that SiteInfos with differing values of
+  // `does_site_request_dedicated_process_for_coop_` are still considered
+  // same-principal.
+  auto site_info_1_with_isolation_request =
+      SiteInfo(GURL("https://www.foo.com") /* site_url */,
+               GURL("https://foo.com") /* process_lock_url */,
+               false /* is_origin_keyed */,
+               CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated(),
+               false /* is_guest */,
+               true /* does_site_request_dedicated_process_for_coop */);
+  EXPECT_TRUE(
+      site_info_1.IsSamePrincipalWith(site_info_1_with_isolation_request));
+  EXPECT_EQ(site_info_1, site_info_1_with_isolation_request);
 
   {
     std::map<SiteInfo, int> test_map;
@@ -283,6 +312,14 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
     auto it4 = test_map.find(site_info_4);
     EXPECT_NE(it4, test_map.end());
     EXPECT_EQ(4, it4->second);
+
+    // Check that `site_info_1` and `site_info_1_with_isolation_request`
+    // collapse into the same key.
+    test_map[site_info_1_with_isolation_request] = 5;
+    EXPECT_EQ(3u, test_map.size());
+    it1 = test_map.find(site_info_1);
+    EXPECT_NE(it1, test_map.end());
+    EXPECT_EQ(5, it1->second);
   }
 
   {
@@ -337,11 +374,9 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
     EXPECT_EQ(test_set.end(), itS3);
     EXPECT_NE(test_set.end(), itS4);
 
-    // Use EXPECT_TRUE and == below to avoid need to define
-    // SiteInfo::operator<<.
-    EXPECT_TRUE(site_info_1 == *itS1);
-    EXPECT_TRUE(site_info_2 == *itS2);
-    EXPECT_TRUE(site_info_4 == *itS4);
+    EXPECT_EQ(site_info_1, *itS1);
+    EXPECT_EQ(site_info_2, *itS2);
+    EXPECT_EQ(site_info_4, *itS4);
   }
   {
     std::set<SiteInfo> test_set;
@@ -366,11 +401,9 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
     EXPECT_EQ(test_set.end(), itS3);
     EXPECT_NE(test_set.end(), itS4);
 
-    // Use EXPECT_TRUE and == below to avoid need to define
-    // SiteInfo::operator<<.
-    EXPECT_TRUE(site_info_1ok == *itS1);
-    EXPECT_TRUE(site_info_2ok == *itS2);
-    EXPECT_TRUE(site_info_4ok == *itS4);
+    EXPECT_EQ(site_info_1ok, *itS1);
+    EXPECT_EQ(site_info_2ok, *itS2);
+    EXPECT_EQ(site_info_4ok, *itS4);
   }
 }
 

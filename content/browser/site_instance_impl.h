@@ -282,10 +282,20 @@ class CONTENT_EXPORT SiteInfo {
 
   SiteInfo& operator=(const SiteInfo& rhs);
 
+  // Determine whether one SiteInfo represents the same security principal as
+  // another SiteInfo.  Note that this does not necessarily translate to an
+  // equality comparison of all the fields in SiteInfo (see comments in the
+  // implementation).
+  bool IsSamePrincipalWith(const SiteInfo& other) const;
+
+  // Note: equality operators are defined in terms of IsSamePrincipalWith().
   bool operator==(const SiteInfo& other) const;
   bool operator!=(const SiteInfo& other) const;
 
   // Defined to allow this object to act as a key for std::map and std::set.
+  // Note that the key is determined based on what distinguishes one security
+  // principal from another (see IsSamePrincipalWith) and does not necessarily
+  // include all the fields in SiteInfo.
   bool operator<(const SiteInfo& other) const;
 
   // Returns a string representation of this SiteInfo principal.
@@ -330,7 +340,12 @@ class CONTENT_EXPORT SiteInfo {
   void WriteIntoTracedValue(perfetto::TracedValue context) const;
 
  private:
-  static auto MakeTie(const SiteInfo& site_info);
+  // Helper that returns a tuple of all the fields that are relevant for
+  // comparing one SiteInfo to another, to tell whether they represent the same
+  // underlying security principal.   This determines the SiteInfo's key for
+  // containers; two SiteInfos that return the same value here will map to the
+  // same entry in std::map, etc.
+  static auto MakeSecurityPrincipalKey(const SiteInfo& site_info);
 
   // Helper method containing common logic used by the public
   // Create() and CreateOnIOThread() methods. Most of the parameters simply

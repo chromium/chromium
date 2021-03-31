@@ -215,7 +215,7 @@ SiteInfo::SiteInfo(
           does_site_request_dedicated_process_for_coop) {}
 
 // static
-auto SiteInfo::MakeTie(const SiteInfo& site_info) {
+auto SiteInfo::MakeSecurityPrincipalKey(const SiteInfo& site_info) {
   // Note: `does_site_request_dedicated_process_for_coop_` is intentionally
   // excluded here, as a difference solely in that field should not cause a
   // different SiteInstance to be created.  A document that has been
@@ -231,16 +231,20 @@ auto SiteInfo::MakeTie(const SiteInfo& site_info) {
 
 SiteInfo& SiteInfo::operator=(const SiteInfo& rhs) = default;
 
+bool SiteInfo::IsSamePrincipalWith(const SiteInfo& other) const {
+  return MakeSecurityPrincipalKey(*this) == MakeSecurityPrincipalKey(other);
+}
+
 bool SiteInfo::operator==(const SiteInfo& other) const {
-  return MakeTie(*this) == MakeTie(other);
+  return IsSamePrincipalWith(other);
 }
 
 bool SiteInfo::operator!=(const SiteInfo& other) const {
-  return MakeTie(*this) != MakeTie(other);
+  return !IsSamePrincipalWith(other);
 }
 
 bool SiteInfo::operator<(const SiteInfo& other) const {
-  return MakeTie(*this) < MakeTie(other);
+  return MakeSecurityPrincipalKey(*this) < MakeSecurityPrincipalKey(other);
 }
 
 std::string SiteInfo::GetDebugString() const {
