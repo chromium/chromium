@@ -1267,19 +1267,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_EQ(temp_dir_.GetPath(), dialog_params.default_path);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Nulled) {
-  SelectFileDialogParams dialog_params;
-  ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params));
-  ASSERT_TRUE(
-      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
-  auto result = EvalJs(shell(), "self.showOpenFilePicker({ startIn: null })");
-  // Specifying |null| should not throw an exception.
-  EXPECT_TRUE(result.error.find("aborted") != std::string::npos)
-      << result.error;
-  EXPECT_EQ(ui::SelectFileDialog::SELECT_OPEN_FILE, dialog_params.type);
-}
-
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
   const base::FilePath test_file = CreateTestFile("");
   SelectFileDialogParams dialog_params;
