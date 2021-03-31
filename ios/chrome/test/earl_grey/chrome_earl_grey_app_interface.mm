@@ -28,6 +28,7 @@
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
@@ -185,6 +186,12 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
 
 + (void)dismissSettings {
   [chrome_test_util::HandlerForActiveBrowser() closeSettingsUI];
+}
+
++ (void)disableDefaultBrowserPromo {
+  chrome_test_util::GetMainController().appState.shouldShowDefaultBrowserPromo =
+      NO;
+  LogUserInteractionWithFullscreenPromo();
 }
 
 #pragma mark - Tab Utilities (EG2)
@@ -390,6 +397,10 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
   }
 
   if (@available(iOS 13, *)) {
+    // Always disable default browser promo in new window, to avoid
+    // messages to be closed too early.
+    [self disableDefaultBrowserPromo];
+
     NSUserActivity* activity =
         [[NSUserActivity alloc] initWithActivityType:@"EG2NewWindow"];
     UISceneActivationRequestOptions* options =
