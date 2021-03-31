@@ -13,7 +13,12 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
-void AddStringResources(content::WebUIDataSource* source) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/arc/arc_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+void AddStringResources(content::WebUIDataSource* source,
+                        const Profile* profile) {
   static constexpr webui::LocalizedString kStrings[] = {
     {"additionalInfo", IDS_FEEDBACK_ADDITIONAL_INFO_LABEL},
     {"anonymousUser", IDS_FEEDBACK_ANONYMOUS_EMAIL_OPTION},
@@ -37,11 +42,6 @@ void AddStringResources(content::WebUIDataSource* source) {
     {"screenshot", IDS_FEEDBACK_SCREENSHOT_LABEL},
     {"screenshotA11y", IDS_FEEDBACK_SCREENSHOT_A11Y_TEXT},
     {"sendReport", IDS_FEEDBACK_SEND_REPORT},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"sysInfo", IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_AND_METRICS_CHKBOX},
-#else
-    {"sysInfo", IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_CHKBOX},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     {"sysinfoPageCollapseAllBtn", IDS_ABOUT_SYS_COLLAPSE_ALL},
     {"sysinfoPageCollapseBtn", IDS_ABOUT_SYS_COLLAPSE},
     {"sysinfoPageDescription", IDS_ABOUT_SYS_DESC},
@@ -54,9 +54,19 @@ void AddStringResources(content::WebUIDataSource* source) {
   };
 
   source->AddLocalizedStrings(kStrings);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  source->AddLocalizedString(
+      "sysInfo",
+      arc::IsArcPlayStoreEnabledForProfile(profile)
+          ? IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_AND_METRICS_CHKBOX_ARC
+          : IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_AND_METRICS_CHKBOX);
+#else
+  source->AddLocalizedString("sysInfo",
+                             IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_CHKBOX);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-content::WebUIDataSource* CreateFeedbackHTMLSource() {
+content::WebUIDataSource* CreateFeedbackHTMLSource(const Profile* profile) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIFeedbackHost);
   source->AddResourcePaths(
@@ -64,14 +74,14 @@ content::WebUIDataSource* CreateFeedbackHTMLSource() {
   source->AddResourcePath("", IDR_FEEDBACK_DEFAULT_HTML);
   source->UseStringsJs();
 
-  AddStringResources(source);
+  AddStringResources(source, profile);
 
   return source;
 }
 
 FeedbackUI::FeedbackUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  content::WebUIDataSource::Add(profile, CreateFeedbackHTMLSource());
+  content::WebUIDataSource::Add(profile, CreateFeedbackHTMLSource(profile));
 }
 
 FeedbackUI::~FeedbackUI() = default;
