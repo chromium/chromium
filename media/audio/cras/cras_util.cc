@@ -232,9 +232,11 @@ int CrasGetAecSupported() {
   if (!client)
     return 0;
 
-  int rc = cras_client_get_aec_supported(client->client_);
+  int supported;
+  libcras_client_get_aec_supported(client, &supported);
   CrasDisconnect(&client);
-  return rc;
+
+  return supported;
 }
 
 int CrasGetAecGroupId() {
@@ -242,10 +244,11 @@ int CrasGetAecGroupId() {
   if (!client)
     return -1;
 
-  int rc = cras_client_get_aec_group_id(client->client_);
+  int id;
+  int rc = libcras_client_get_aec_group_id(client, &id);
   CrasDisconnect(&client);
 
-  return rc;
+  return rc < 0 ? rc : id;
 }
 
 int CrasGetDefaultOutputBufferSize() {
@@ -253,10 +256,11 @@ int CrasGetDefaultOutputBufferSize() {
   if (!client)
     return -1;
 
-  int rc = cras_client_get_default_output_buffer_size(client->client_);
+  int size;
+  int rc = libcras_client_get_default_output_buffer_size(client, &size);
   CrasDisconnect(&client);
 
-  return rc;
+  return rc < 0 ? rc : size;
 }
 
 }  // namespace media

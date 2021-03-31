@@ -96,9 +96,8 @@ bool CrasInputStream::Open() {
       return false;
     }
 
-    pin_device_ = cras_client_get_first_dev_type_idx(
-        client_->client_, CRAS_NODE_TYPE_POST_MIX_PRE_DSP, CRAS_STREAM_INPUT);
-    if (pin_device_ < 0) {
+    int rc = libcras_client_get_loopback_dev_idx(client_, &pin_device_);
+    if (rc < 0) {
       DLOG(WARNING) << "Couldn't find CRAS loopback device.";
       libcras_client_destroy(client_);
       client_ = NULL;
@@ -222,8 +221,11 @@ void CrasInputStream::Start(AudioInputCallback* callback) {
   }
 
   // Mute system audio if requested.
-  if (mute_system_audio_ && !cras_client_get_system_muted(client_->client_)) {
-    cras_client_set_system_mute(client_->client_, 1);
+  if (mute_system_audio_) {
+    int muted;
+    libcras_client_get_system_muted(client_, &muted);
+    if (!muted)
+      libcras_client_set_system_mute(client_, 1);
     mute_done_ = true;
   }
 
@@ -241,7 +243,7 @@ void CrasInputStream::Stop() {
     return;
 
   if (mute_system_audio_ && mute_done_) {
-    cras_client_set_system_mute(client_->client_, 0);
+    libcras_client_set_system_mute(client_, 0);
     mute_done_ = false;
   }
 
