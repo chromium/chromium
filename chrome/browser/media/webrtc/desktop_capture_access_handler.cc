@@ -248,6 +248,14 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
       const bool display_notification =
           display_notification_ && ShouldDisplayNotification(extension);
 
+      if (!content::WebContents::FromRenderFrameHost(
+              content::RenderFrameHost::FromID(request.render_process_id,
+                                               request.render_frame_id))) {
+        std::move(callback).Run(
+            devices, blink::mojom::MediaStreamRequestResult::INVALID_STATE,
+            std::move(ui));
+        return;
+      }
       ui = GetDevicesForDesktopCapture(
           web_contents, &devices, screen_id,
           blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
