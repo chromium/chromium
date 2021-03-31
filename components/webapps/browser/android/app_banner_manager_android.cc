@@ -38,6 +38,7 @@
 #include "content/public/browser/manifest_icon_downloader.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 using base::android::ConvertJavaStringToUTF16;
@@ -443,7 +444,8 @@ void AppBannerManagerAndroid::OnNativeAppIconFetched(const SkBitmap& bitmap) {
     return;
   }
 
-  primary_icon_ = bitmap;
+  if (!skia::SkBitmapToN32OpaqueOrPremul(bitmap, &primary_icon_))
+    return;
 
   // If we triggered the installability check on page load, then it's possible
   // we don't have enough engagement yet. If that's the case, return here but
