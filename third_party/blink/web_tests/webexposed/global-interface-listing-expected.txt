@@ -13903,6 +13903,7 @@ namespace CSS
     method getComputedAccessibleNode
     method getComputedStyle
     method getDigitalGoodsService
+    method getLockScreenData
     method getScreens
     method getScreensDeprecated
     method getSelection

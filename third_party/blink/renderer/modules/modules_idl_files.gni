@@ -91,6 +91,7 @@ _idl_imports = [
   "//third_party/blink/renderer/modules/keyboard/idls.gni",
   "//third_party/blink/renderer/modules/launch/idls.gni",
   "//third_party/blink/renderer/modules/locks/idls.gni",
+  "//third_party/blink/renderer/modules/lock_screen/idls.gni",
   "//third_party/blink/renderer/modules/manifest/idls.gni",
   "//third_party/blink/renderer/modules/media_capabilities/idls.gni",
   "//third_party/blink/renderer/modules/mediacapturefromelement/idls.gni",

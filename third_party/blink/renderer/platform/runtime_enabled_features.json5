@@ -2150,6 +2150,10 @@
       origin_trial_feature_name: "WebAppLinkCapturing",
     },
     {
+      name:"WebAppsLockScreen",
+      status:"experimental",
+    },
+    {
       name: "WebAppWindowControlsOverlay",
     },
     {

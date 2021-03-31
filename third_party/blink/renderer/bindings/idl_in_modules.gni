@@ -350,6 +350,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/locks/lock_options.idl",
           "//third_party/blink/renderer/modules/locks/navigator_locks.idl",
           "//third_party/blink/renderer/modules/locks/worker_navigator_locks.idl",
+          "//third_party/blink/renderer/modules/lock_screen/dom_window_lock_screen.idl",
+          "//third_party/blink/renderer/modules/lock_screen/lock_screen_data.idl",
           "//third_party/blink/renderer/modules/manifest/image_resource.idl",
           "//third_party/blink/renderer/modules/media_capabilities/audio_configuration.idl",
           "//third_party/blink/renderer/modules/media_capabilities/key_system_track_configuration.idl",
