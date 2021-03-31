@@ -757,7 +757,6 @@ Shell::~Shell() {
   // Alphabetical. TODO(oshima): sort.
   autoclick_controller_.reset();
   magnification_controller_.reset();
-  marker_controller_.reset();
   tooltip_controller_.reset();
   event_client_.reset();
   toplevel_window_event_handler_.reset();
@@ -779,7 +778,6 @@ Shell::~Shell() {
   modality_filter_.reset();
 
   touch_transformer_controller_.reset();
-  laser_pointer_controller_.reset();
   partial_magnification_controller_.reset();
   highlighter_controller_.reset();
   key_accessibility_enabler_.reset();
@@ -847,7 +845,12 @@ Shell::~Shell() {
 
   display_color_manager_.reset();
   projecting_observer_.reset();
+
+  // Depends on MarkerController and LaserPointerController.
   projector_controller_.reset();
+
+  marker_controller_.reset();
+  laser_pointer_controller_.reset();
 
   if (display_change_observer_)
     display_manager_->configurator()->RemoveObserver(

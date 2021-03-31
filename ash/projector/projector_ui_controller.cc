@@ -56,6 +56,14 @@ void EnableMarker(bool enabled) {
 ProjectorUiController::ProjectorUiController(
     ProjectorControllerImpl* projector_controller)
     : projector_controller_(projector_controller) {
+  auto* laser_pointer_controller = Shell::Get()->laser_pointer_controller();
+  DCHECK(laser_pointer_controller);
+  laser_pointer_controller_observation_.Observe(laser_pointer_controller);
+
+  auto* marker_controller = MarkerController::Get();
+  DCHECK(marker_controller);
+  marker_controller_observation_.Observe(marker_controller);
+
   projector_session_observation_.Observe(
       projector_controller->projector_session());
 }
@@ -66,6 +74,8 @@ void ProjectorUiController::ShowToolbar() {
   if (!projector_bar_widget_) {
     // Create the toolbar.
     projector_bar_widget_ = ProjectorBarView::Create(projector_controller_);
+    projector_bar_view_ = static_cast<ProjectorBarView*>(
+        projector_bar_widget_->GetContentsView());
     AddExcludedWindowToFastInkController(
         projector_bar_widget_->GetNativeWindow());
   }
@@ -81,6 +91,7 @@ void ProjectorUiController::CloseToolbar() {
   ResetTools();
 
   projector_bar_widget_->Close();
+  projector_bar_view_ = nullptr;
   model_.SetBarEnabled(false);
 }
 
@@ -104,6 +115,10 @@ void ProjectorUiController::OnMarkerPressed() {
 void ProjectorUiController::OnTranscription(const std::string& transcription,
                                             bool is_final) {}
 
+bool ProjectorUiController::IsToolbarVisible() const {
+  return model_.bar_enabled();
+}
+
 // TODO(llin): Refactor this logic into ProjectorTool and ProjectorToolManager.
 void ProjectorUiController::ResetTools() {
   // Reset laser pointer.
@@ -112,13 +127,27 @@ void ProjectorUiController::ResetTools() {
   EnableMarker(false);
 }
 
+void ProjectorUiController::OnLaserPointerStateChanged(bool enabled) {
+  // Disable marker if laser pointer is enabled;
+  if (enabled)
+    MarkerController::Get()->SetEnabled(false);
+
+  if (projector_bar_view_)
+    projector_bar_view_->OnLaserPointerStateChanged(enabled);
+}
+
+void ProjectorUiController::OnMarkerStateChanged(bool enabled) {
+  // Disable laser pointer since marker if enabled;
+  if (enabled)
+    Shell::Get()->laser_pointer_controller()->SetEnabled(false);
+
+  if (projector_bar_view_)
+    projector_bar_view_->OnMarkerStateChanged(enabled);
+}
+
 void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
   if (!active)
     MarkerController::Get()->Clear();
-}
-
-bool ProjectorUiController::IsToolbarVisible() const {
-  return model_.bar_enabled();
 }
 
 }  // namespace ash
