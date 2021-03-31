@@ -316,8 +316,10 @@ const NSInteger kMaxNumMostVisitedTiles = 4;
 
 - (void)hideRecentTabTile {
   DCHECK(IsStartSurfaceEnabled());
-  self.showMostRecentTabStartSurfaceTile = NO;
-  [self.dataSink clearSection:self.returnToRecentTabSectionInfo];
+  if (self.showMostRecentTabStartSurfaceTile) {
+    self.showMostRecentTabStartSurfaceTile = NO;
+    [self.dataSink clearSection:self.returnToRecentTabSectionInfo];
+  }
 }
 
 #pragma mark - StartSurfaceRecentTabObserving
