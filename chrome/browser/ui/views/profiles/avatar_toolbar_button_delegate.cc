@@ -18,6 +18,7 @@
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "components/signin/public/identity_manager/consent_level.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -95,28 +96,25 @@ bool IsGuest(Profile* profile) {
 
 }  // namespace
 
-AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate() = default;
-
-AvatarToolbarButtonDelegate::~AvatarToolbarButtonDelegate() {
-  BrowserList::RemoveObserver(this);
-}
-
-void AvatarToolbarButtonDelegate::Init(AvatarToolbarButton* button,
-                                       Profile* profile) {
-  avatar_toolbar_button_ = button;
-  profile_ = profile;
-  error_controller_ =
-      std::make_unique<AvatarButtonErrorController>(this, profile_);
+AvatarToolbarButtonDelegate::AvatarToolbarButtonDelegate(
+    AvatarToolbarButton* button,
+    Profile* profile)
+    : avatar_toolbar_button_(button),
+      profile_(profile),
+      last_avatar_error_(sync_ui_util::GetAvatarSyncErrorType(profile)) {
   profile_observation_.Observe(&GetProfileAttributesStorage());
+
+  if (auto* sync_service = ProfileSyncServiceFactory::GetForProfile(profile_))
+    sync_service_observation_.Observe(sync_service);
+
   AvatarToolbarButton::State state = GetState();
   if (state == AvatarToolbarButton::State::kIncognitoProfile ||
       state == AvatarToolbarButton::State::kGuestSession) {
     BrowserList::AddObserver(this);
-  } else if (state != AvatarToolbarButton::State::kGuestSession) {
+  } else {
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile_);
     identity_manager_observation_.Observe(identity_manager);
-
     if (identity_manager->AreRefreshTokensLoaded())
       OnRefreshTokensLoaded();
   }
@@ -130,6 +128,10 @@ void AvatarToolbarButtonDelegate::Init(AvatarToolbarButton* button,
         state == AvatarToolbarButton::State::kIncognitoProfile);
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
+AvatarToolbarButtonDelegate::~AvatarToolbarButtonDelegate() {
+  BrowserList::RemoveObserver(this);
 }
 
 std::u16string AvatarToolbarButtonDelegate::GetProfileName() const {
@@ -196,27 +198,25 @@ AvatarToolbarButton::State AvatarToolbarButtonDelegate::GetState() const {
     return AvatarToolbarButton::State::kAnimatedUserIdentity;
   }
 
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
-      ProfileSyncServiceFactory::IsSyncAllowed(profile_) &&
-      error_controller_->HasAvatarError()) {
-    const sync_ui_util::AvatarSyncErrorType error =
-        sync_ui_util::GetAvatarSyncErrorType(profile_);
-
-    // When DICE is enabled and the error is an auth error, the sync-paused
-    // icon is shown.
-    if (AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_) &&
-        error == sync_ui_util::AUTH_ERROR) {
-      return AvatarToolbarButton::State::kSyncPaused;
-    }
-
-    if (error == sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR) {
-      return AvatarToolbarButton::State::kPasswordsOnlySyncError;
-    }
-
-    return AvatarToolbarButton::State::kSyncError;
+  if (!ProfileSyncServiceFactory::IsSyncAllowed(profile_) ||
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    return AvatarToolbarButton::State::kNormal;
   }
 
-  return AvatarToolbarButton::State::kNormal;
+  // Show any existing sync errors.
+  const sync_ui_util::AvatarSyncErrorType error =
+      sync_ui_util::GetAvatarSyncErrorType(profile_);
+  if (error == sync_ui_util::AUTH_ERROR &&
+      AccountConsistencyModeManager::IsDiceEnabledForProfile(profile_)) {
+    return AvatarToolbarButton::State::kSyncPaused;
+  }
+
+  if (error == sync_ui_util::TRUSTED_VAULT_KEY_MISSING_FOR_PASSWORDS_ERROR)
+    return AvatarToolbarButton::State::kPasswordsOnlySyncError;
+
+  return error == sync_ui_util::NO_SYNC_ERROR
+             ? AvatarToolbarButton::State::kNormal
+             : AvatarToolbarButton::State::kSyncError;
 }
 
 void AvatarToolbarButtonDelegate::ShowHighlightAnimation() {
@@ -372,7 +372,13 @@ void AvatarToolbarButtonDelegate::OnExtendedAccountInfoRemoved(
   avatar_toolbar_button_->UpdateIcon();
 }
 
-void AvatarToolbarButtonDelegate::OnAvatarErrorChanged() {
+void AvatarToolbarButtonDelegate::OnStateChanged(syncer::SyncService*) {
+  sync_ui_util::AvatarSyncErrorType error =
+      sync_ui_util::GetAvatarSyncErrorType(profile_);
+  if (last_avatar_error_ == error)
+    return;
+
+  last_avatar_error_ = error;
   avatar_toolbar_button_->UpdateIcon();
   avatar_toolbar_button_->UpdateText();
 }

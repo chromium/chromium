@@ -12,27 +12,25 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/ui/avatar_button_error_controller.h"
-#include "chrome/browser/ui/avatar_button_error_controller_delegate.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_service_observer.h"
 #include "ui/gfx/image/image.h"
 
 class Profile;
 
-// Handles the business logic for AvatarToolbarButton. This includes managing
-// the highlight animation and the identity animation.
+// Handles the business logic for AvatarToolbarButton. This includes
+// managing the highlight animation and the identity animation.
 class AvatarToolbarButtonDelegate : public BrowserListObserver,
                                     public ProfileAttributesStorage::Observer,
-                                    public AvatarButtonErrorControllerDelegate,
-                                    public signin::IdentityManager::Observer {
+                                    public signin::IdentityManager::Observer,
+                                    public syncer::SyncServiceObserver {
  public:
-  AvatarToolbarButtonDelegate();
+  AvatarToolbarButtonDelegate(AvatarToolbarButton* button, Profile* profile);
   ~AvatarToolbarButtonDelegate() override;
-
-  // Must be called before the object can be used.
-  void Init(AvatarToolbarButton* button, Profile* profile);
 
   // Called by the AvatarToolbarButton to get information about the profile.
   std::u16string GetProfileName() const;
@@ -90,8 +88,8 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
-  // AvatarButtonErrorControllerDelegate:
-  void OnAvatarErrorChanged() override;
+  // SyncServiceObserver:
+  void OnStateChanged(syncer::SyncService*) override;
 
   // Initiates showing the identity.
   void OnUserIdentityChanged();
@@ -104,20 +102,26 @@ class AvatarToolbarButtonDelegate : public BrowserListObserver,
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
-  AvatarToolbarButton* avatar_toolbar_button_ = nullptr;
-  Profile* profile_ = nullptr;
+
+  AvatarToolbarButton* const avatar_toolbar_button_;
+  Profile* const profile_;
   IdentityAnimationState identity_animation_state_ =
       IdentityAnimationState::kNotShowing;
   bool refresh_tokens_loaded_ = false;
-  std::unique_ptr<AvatarButtonErrorController> error_controller_;
 
   // Whether the avatar highlight animation is visible. The animation is shown
   // when an Autofill datatype is saved. When this is true the avatar button
   // sync paused/error state will be disabled.
   bool highlight_animation_visible_ = false;
+
+  // Caches the value of the last error so the class can detect when it changes
+  // and notify |avatar_toolbar_button_|.
+  sync_ui_util::AvatarSyncErrorType last_avatar_error_;
 
   base::WeakPtrFactory<AvatarToolbarButtonDelegate> weak_ptr_factory_{this};
 

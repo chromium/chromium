@@ -49,10 +49,10 @@ AvatarToolbarButton::AvatarToolbarButton(Browser* browser)
 AvatarToolbarButton::AvatarToolbarButton(Browser* browser,
                                          ToolbarIconContainerView* parent)
     : ToolbarButton(PressedCallback()),
-      delegate_(std::make_unique<AvatarToolbarButtonDelegate>()),
       browser_(browser),
       parent_(parent) {
-  delegate_->Init(this, browser_->profile());
+  delegate_ =
+      std::make_unique<AvatarToolbarButtonDelegate>(this, browser_->profile());
 
   // Activate on press for left-mouse-button only to mimic other MenuButtons
   // without drag-drop actions (specifically the adjacent browser menu).
