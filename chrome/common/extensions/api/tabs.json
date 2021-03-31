@@ -582,7 +582,7 @@
               "url": {
                 "type": "string",
                 "optional": true,
-                "description": "A URL to navigate the tab to. JavaScript URLs are not supported; use $(ref:tabs.executeScript) instead."
+                "description": "A URL to navigate the tab to. JavaScript URLs are not supported; use $(ref:scripting.executeScript) instead."
               },
               "active": {
                 "type": "boolean",
@@ -842,6 +842,7 @@
       },
       {
         "name": "executeScript",
+        "deprecated": "Replaced by $(ref:scripting.executeScript) in Manifest V3.",
         "type": "function",
         "description": "Injects JavaScript code into a page. For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
@@ -869,8 +870,9 @@
       },
       {
         "name": "insertCSS",
+        "deprecated": "Replaced by $(ref:scripting.insertCSS) in Manifest V3.",
         "type": "function",
-        "description": "Injects CSS into a page. For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
+        "description": "Injects CSS into a page. Styles inserted with this method can be removed with $(ref:scripting.removeCSS). For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
           {"type": "integer", "name": "tabId", "minimum": 0, "optional": true, "description": "The ID of the tab in which to insert the CSS; defaults to the active tab of the current window."},
           {
@@ -888,8 +890,9 @@
       },
       {
         "name": "removeCSS",
+        "deprecated": "Replaced by $(ref:scripting.removeCSS) in Manifest V3.",
         "type": "function",
-        "description": "Removes from a page CSS that was previously injected by a call to $(ref:tabs.insertCSS).",
+        "description": "Removes from a page CSS that was previously injected by a call to $(ref:scripting.insertCSS).",
         "parameters": [
           {
             "type": "integer",
