@@ -25,7 +25,13 @@ be enabled via chrome://memory-internals or about://flags.
    * If this is a local build, run the command `./third_party/catapult/tracing/bin/symbolize_trace --is-local-build <path_to_trace>`
    * If this is an official Chrome build,  run `./third_party/catapult/tracing/bin/symbolize_trace <path_to_trace>`. This will request authentication with google cloud storage to obtain symbol files [googlers only].
    * If this is an official macOS or Linux Chrome build, add the flag `--use-breakpad-symbols`.
-   * If the trace is from a different device, add the flag `--only-symbolize-chrome-symbols`.
+   * If the trace is from a different device on the same operating system, add the flag
+     `--only-symbolize-chrome-symbols`.
+   * If you run into the error "Nothing to symbolize" then backtraces are not
+     working properly. There are two mechanisms that Chrome attempts to use:
+     frame pointers if they're present, and backtrace lib. The former can be
+     forced on with enable_frame_pointers gn arg. This should work on all architectures except for 
+     arm 32.The latter depends on unwind tables.
  5. Load the (now symbolized) trace in chrome://tracing.
 
 ## How to obtain a heap dump (M66+, Android)
