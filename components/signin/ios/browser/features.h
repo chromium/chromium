@@ -38,6 +38,12 @@ extern const base::Feature kDisableSSOEditing;
 // Returns true if SSO editing is enabled.
 bool IsSSOEditingEnabled();
 
+// This feature enable account creation in a Chrome tab.
+extern const base::Feature kSSOAccountCreationInChromeTab;
+
+// Returns true if the account creation should be done in a Chrome tab.
+bool IsSSOAccountCreationInChromeTabEnabled();
+
 }  // namespace signin
 
 #endif  // COMPONENTS_SIGNIN_IOS_BROWSER_FEATURES_H_

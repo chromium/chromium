@@ -25,6 +25,9 @@ typedef enum {
 typedef void (^SigninCompletionCallback)(ChromeIdentity* identity,
                                          NSError* error);
 
+// Callback to open URL. Related to |openAccountCreationURLCallback|.
+typedef void (^OpenURLCallback)(NSURL* URL);
+
 // ChromeIdentityInteractionManager abstracts the interaction to add identities
 // on iOS.
 @interface ChromeIdentityInteractionManager : NSObject
@@ -32,6 +35,12 @@ typedef void (^SigninCompletionCallback)(ChromeIdentity* identity,
 // Delegate used to present and dismiss the view controllers.
 @property(nonatomic, weak) id<ChromeIdentityInteractionManagerDelegate>
     delegate;
+
+// This callback is in charge to open the URL. This callback is used when
+// GCRSSOService is initialized with GCRSSOAccountCreationWithURL.
+// If this callback is missing with GCRSSOAccountCreationWithURL, the default
+// browser is used to open the URL.
+@property(nonatomic, copy) OpenURLCallback openAccountCreationURLCallback;
 
 // Starts the add account operation for a user. Presents user with the screen to
 // enter credentials.
