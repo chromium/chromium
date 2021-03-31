@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/debug/stack_trace.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -97,6 +98,7 @@ class CustomManagePasswordsUIController : public ManagePasswordsUIController {
   void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<password_manager::PasswordForm> unsynced_credentials)
       override;
+  void OnBubbleHidden() override;
 
   // Should not be used for manual fallback events.
   bool IsTargetStateObserved(
@@ -251,6 +253,11 @@ void CustomManagePasswordsUIController::NotifyUnsyncedCredentialsWillBeDeleted(
   was_prompt_automatically_shown_ = true;
   ProcessStateExpectations(
       password_manager::ui::WILL_DELETE_UNSYNCED_ACCOUNT_PASSWORDS_STATE);
+}
+
+void CustomManagePasswordsUIController::OnBubbleHidden() {
+  ManagePasswordsUIController::OnBubbleHidden();
+  base::debug::StackTrace().Print();
 }
 
 bool CustomManagePasswordsUIController::IsTargetStateObserved(
