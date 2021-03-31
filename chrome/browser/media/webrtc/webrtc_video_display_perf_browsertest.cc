@@ -88,9 +88,11 @@ void PrintMeanAndMax(const std::string& var_name,
   CalculateMeanAndMax(vars, &mean, &std_dev, &max);
   perf_test::PrintResultMeanAndError(
       kTestResultString, name_modifier, var_name + " Mean",
-      base::StringPrintf("%.0lf,%.0lf", mean, std_dev), "μs", true);
+      base::StringPrintf("%.0lf,%.0lf", mean, std_dev), "μs_smallerIsBetter",
+      true);
   perf_test::PrintResult(kTestResultString, name_modifier, var_name + " Max",
-                         base::StringPrintf("%.0lf", max), "μs", true);
+                         base::StringPrintf("%.0lf", max), "μs_smallerIsBetter",
+                         true);
 }
 
 void FindEvents(trace_analyzer::TraceAnalyzer* analyzer,
@@ -413,8 +415,8 @@ class WebRtcVideoDisplayPerfBrowserTest
         test_config_.fps, smoothness_indicator.c_str());
     perf_test::PrintResult(
         kTestResultString, name_modifier, "Skipped frames",
-        base::StringPrintf("%.2lf", skipped_frame_percentage_), "percent",
-        true);
+        base::StringPrintf("%.2lf", skipped_frame_percentage_),
+        "percent_smallerIsBetter", true);
     // We identify intervals in a way that can help us easily bisect the source
     // of added latency in case of a regression. From these intervals, "Render
     // Algorithm" can take random amount of times based on the vsync cycle it is
