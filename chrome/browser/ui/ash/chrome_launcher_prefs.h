@@ -25,10 +25,6 @@ extern const char kPinnedAppsPrefAppIDKey[];
 
 extern const char kPinnedAppsPrefPinnedByPolicy[];
 
-// To enable finch experiment with number of default apps on the shelf.
-// See |kEnableExtendedShelfLayoutParam| in .cc file.
-extern const base::Feature kEnableExtendedShelfLayout;
-
 // Value used as a placeholder in the list of pinned applications.
 // This is NOT a valid extension identifier so pre-M31 versions ignore it.
 extern const char kPinnedAppsPlaceholder[];

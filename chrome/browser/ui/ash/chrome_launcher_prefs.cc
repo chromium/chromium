@@ -64,56 +64,11 @@ const char* kDefaultPinnedApps[] = {
     arc::kPlayStoreAppId,
 };
 
-const char* kDefaultPinnedApps7Apps[] = {
-    extension_misc::kFilesManagerAppId,
-
-    extension_misc::kGmailAppId,
-    web_app::kGmailAppId,
-
-    extension_misc::kGoogleDocAppId,
-    web_app::kGoogleDocsAppId,
-
-    extension_misc::kGooglePhotosAppId,
-
-    extension_misc::kYoutubeAppId,
-    web_app::kYoutubeAppId,
-
-    arc::kPlayStoreAppId,
-};
-
-const char* kDefaultPinnedApps10Apps[] = {
-    extension_misc::kFilesManagerAppId,
-
-    extension_misc::kGmailAppId,
-    web_app::kGmailAppId,
-
-    extension_misc::kCalendarAppId,
-    web_app::kGoogleCalendarAppId,
-
-    extension_misc::kGoogleDocAppId,
-    web_app::kGoogleDocsAppId,
-
-    extension_misc::kGoogleSheetsAppId,
-    web_app::kGoogleSheetsAppId,
-
-    extension_misc::kGoogleSlidesAppId,
-    web_app::kGoogleSlidesAppId,
-
-    extension_misc::kCameraAppId,
-    web_app::kCameraAppId,
-
-    extension_misc::kGooglePhotosAppId,
-
-    arc::kPlayStoreAppId,
-};
-
 const char* kTabletFormFactorDefaultPinnedApps[] = {
     extension_misc::kFilesManagerAppId, arc::kGmailAppId,
     extension_misc::kGoogleDocAppId, arc::kYoutubeAppId, arc::kPlayStoreAppId};
 
 const char kDefaultPinnedAppsKey[] = "default";
-const char kDefaultPinnedApps7AppsKey[] = "7apps";
-const char kDefaultPinnedApps10AppsKey[] = "10apps";
 
 bool skip_pinned_apps_from_sync_for_test = false;
 
@@ -264,43 +219,9 @@ bool IsSafeToApplyDefaultPinLayout(Profile* profile) {
   return true;
 }
 
-// Returns true in case |pins_from_sync_raw| is empty or represents default app
-// set |kDefaultPinnedApps| plus Chrome app.
-bool IsCurrentDefaultOrEmpty(const std::set<std::string>& pins_from_sync_raw) {
-  if (pins_from_sync_raw.empty())
-    return true;
-
-  // Chrome is explicitly pinned regardless of configuration.
-  if (pins_from_sync_raw.size() != base::size(kDefaultPinnedApps) + 1)
-    return false;
-
-  if (!pins_from_sync_raw.count(extension_misc::kChromeAppId))
-    return false;
-
-  for (const char* default_app_id : kDefaultPinnedApps) {
-    if (!pins_from_sync_raw.count(default_app_id))
-      return false;
-  }
-
-  return true;
-}
-
 }  // namespace
 
 const char kPinnedAppsPrefAppIDKey[] = "id";
-
-const base::Feature kEnableExtendedShelfLayout{
-    "EnableExtendedShelfLayout", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Parameter for the finch experiment with number of default apps on the shelf.
-// Possible values:
-// 7 - activates |kDefaultPinnedApps7Apps|, see cc file.
-// 10 - activates |kDefaultPinnedApps10Apps|, see cc file.
-// 0 - by default.
-constexpr base::FeatureParam<int> kEnableExtendedShelfLayoutParam(
-    &kEnableExtendedShelfLayout,
-    "app_count",
-    0);
 
 void RegisterChromeLauncherUserPrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -587,54 +508,14 @@ std::vector<ash::ShelfID> GetPinnedAppsFromSync(
   std::string shelf_layout = IsAnyDefaultPinLayoutRolled(helper->profile())
                                  ? std::string()
                                  : kDefaultPinnedAppsKey;
-  // Set to true in case default configuration has to be reset in order to let
-  // new layout takes effect.
-  bool reset_default_configuration = false;
-  if (base::FeatureList::IsEnabled(kEnableExtendedShelfLayout) &&
-      IsCurrentDefaultOrEmpty(pins_from_sync_raw)) {
-    const int forced_shelf_layout_app_count =
-        kEnableExtendedShelfLayoutParam.Get();
-    switch (forced_shelf_layout_app_count) {
-      case 0:
-        shelf_layout = kDefaultPinnedAppsKey;
-        break;
-      case 7:
-        reset_default_configuration = true;
-        shelf_layout = kDefaultPinnedApps7AppsKey;
-        break;
-      case 10:
-        reset_default_configuration = true;
-        shelf_layout = kDefaultPinnedApps10AppsKey;
-        break;
-      default:
-        LOG(ERROR) << "Wrong default shelf pin layout "
-                   << forced_shelf_layout_app_count;
-    }
-  }
 
   if (!prefs->HasPrefPath(prefs::kPolicyPinnedLauncherApps) &&
       IsSafeToApplyDefaultPinLayout(helper->profile()) &&
       !shelf_layout.empty() &&
       !IsDefaultPinLayoutRolled(helper->profile(), shelf_layout)) {
     VLOG(1) << "Roll default shelf pin layout " << shelf_layout;
-    if (reset_default_configuration) {
-      VLOG(1) << "Reset previous default configuration";
-      pin_infos.clear();
-      pin_infos.emplace_back(
-          PinInfo(extension_misc::kChromeAppId, chrome_position));
-      for (const char* default_app_id : kDefaultPinnedApps) {
-        syncable_service->SetPinPosition(default_app_id,
-                                         syncer::StringOrdinal());
-      }
-    }
     std::vector<std::string> default_app_ids;
-    if (shelf_layout == kDefaultPinnedApps7AppsKey) {
-      for (const char* default_app_id : kDefaultPinnedApps7Apps)
-        default_app_ids.push_back(default_app_id);
-    } else if (shelf_layout == kDefaultPinnedApps10AppsKey) {
-      for (const char* default_app_id : kDefaultPinnedApps10Apps)
-        default_app_ids.push_back(default_app_id);
-    } else if (chromeos::switches::IsTabletFormFactor()) {
+    if (chromeos::switches::IsTabletFormFactor()) {
       for (const char* default_app_id : kTabletFormFactorDefaultPinnedApps)
         default_app_ids.push_back(default_app_id);
     } else {
