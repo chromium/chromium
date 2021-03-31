@@ -355,6 +355,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
 #endif
     {"readerMode", IDS_SETTINGS_READER_MODE},
     {"readerModeDescription", IDS_SETTINGS_READER_MODE_DESCRIPTION},
+    {"themeManagedDialogTitle", IDS_NTP_THEME_MANAGED_DIALOG_TITLE},
+    {"themeManagedDialogBody", IDS_NTP_THEME_MANAGED_DIALOG_BODY},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

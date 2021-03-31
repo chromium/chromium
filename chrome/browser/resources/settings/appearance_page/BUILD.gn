@@ -47,6 +47,7 @@ js_library("appearance_page") {
     "..:route",
     "..:router",
     "../controls:settings_dropdown_menu",
+    "../prefs:prefs_behavior",
     "../settings_page:settings_animated_pages",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",

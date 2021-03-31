@@ -172,3 +172,9 @@
         </settings-subpage>
       </template>
     </settings-animated-pages>
+    <template is="dom-if" if="[[showManagedThemeDialog_]]" restamp>
+      <managed-dialog on-close="onManagedDialogClosed_"
+          title="$i18n{themeManagedDialogTitle}"
+          body="$i18n{themeManagedDialogBody}">
+      </managed-dialog>
+    </template>
