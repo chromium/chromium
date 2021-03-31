@@ -60,8 +60,13 @@ Color LayoutThemeWin::SystemColor(
       return LayoutThemeDefault::SystemColor(css_value_id, color_scheme);
   }
 
+  // Fall back to the default system colors if the color scheme is dark and
+  // forced colors is not enabled.
   if (!WebTestSupport::IsRunningWebTest() && Platform::Current() &&
-      Platform::Current()->ThemeEngine()) {
+      Platform::Current()->ThemeEngine() &&
+      (color_scheme != mojom::blink::ColorScheme::kDark ||
+       Platform::Current()->ThemeEngine()->GetForcedColors() !=
+           ForcedColors::kNone)) {
     const base::Optional<SkColor> system_color =
         Platform::Current()->ThemeEngine()->GetSystemColor(theme_color);
     if (system_color)
