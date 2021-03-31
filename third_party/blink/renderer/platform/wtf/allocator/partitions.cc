@@ -205,58 +205,65 @@ size_t Partitions::TotalActiveBytes() {
 }
 
 static NOINLINE void PartitionsOutOfMemoryUsing2G(size_t size) {
+  NO_CODE_FOLDING();
   size_t signature = 2UL * 1024 * 1024 * 1024;
   base::debug::Alias(&signature);
   OOM_CRASH(size);
 }
 
 static NOINLINE void PartitionsOutOfMemoryUsing1G(size_t size) {
+  NO_CODE_FOLDING();
   size_t signature = 1UL * 1024 * 1024 * 1024;
   base::debug::Alias(&signature);
   OOM_CRASH(size);
 }
 
 static NOINLINE void PartitionsOutOfMemoryUsing512M(size_t size) {
+  NO_CODE_FOLDING();
   size_t signature = 512 * 1024 * 1024;
   base::debug::Alias(&signature);
   OOM_CRASH(size);
 }
 
 static NOINLINE void PartitionsOutOfMemoryUsing256M(size_t size) {
+  NO_CODE_FOLDING();
   size_t signature = 256 * 1024 * 1024;
   base::debug::Alias(&signature);
   OOM_CRASH(size);
 }
 
 static NOINLINE void PartitionsOutOfMemoryUsing128M(size_t size) {
+  NO_CODE_FOLDING();
   size_t signature = 128 * 1024 * 1024;
   base::debug::Alias(&signature);
   OOM_CRASH(size);
 }
 
 static NOINLINE void PartitionsOutOfMemoryUsing64M(size_t size) {
+  NO_CODE_FOLDING();
   size_t signature = 64 * 1024 * 1024;
   base::debug::Alias(&signature);
   OOM_CRASH(size);
 }
 
 static NOINLINE void PartitionsOutOfMemoryUsing32M(size_t size) {
+  NO_CODE_FOLDING();
   size_t signature = 32 * 1024 * 1024;
   base::debug::Alias(&signature);
   OOM_CRASH(size);
 }
 
 static NOINLINE void PartitionsOutOfMemoryUsing16M(size_t size) {
+  NO_CODE_FOLDING();
   size_t signature = 16 * 1024 * 1024;
   base::debug::Alias(&signature);
   OOM_CRASH(size);
 }
 
 static NOINLINE void PartitionsOutOfMemoryUsingLessThan16M(size_t size) {
+  NO_CODE_FOLDING();
   size_t signature = 16 * 1024 * 1024 - 1;
   base::debug::Alias(&signature);
-  DLOG(FATAL) << "PartitionAlloc: out of memory with < 16M usage (error:"
-              << base::GetAllocPageErrorCode() << ")";
   OOM_CRASH(size);
 }
 
