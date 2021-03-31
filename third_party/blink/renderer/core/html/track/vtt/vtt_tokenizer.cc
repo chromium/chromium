@@ -40,21 +40,19 @@ namespace blink {
 #define WEBVTT_BEGIN_STATE(state_name) \
   case state_name:                     \
   state_name:
-#define WEBVTT_ADVANCE_TO(state_name)                     \
-  do {                                                    \
-    state = state_name;                                   \
-    DCHECK(!input_.IsEmpty());                            \
-    input_stream_preprocessor_.Advance(input_);           \
-    cc = input_stream_preprocessor_.NextInputCharacter(); \
-    goto state_name;                                      \
+#define WEBVTT_ADVANCE_TO(state_name)               \
+  do {                                              \
+    state = state_name;                             \
+    DCHECK(!input_.IsEmpty());                      \
+    input_stream_preprocessor_.Advance(input_, cc); \
+    goto state_name;                                \
   } while (false)
-#define WEBVTT_SWITCH_TO(state_name)                      \
-  do {                                                    \
-    state = state_name;                                   \
-    DCHECK(!input_.IsEmpty());                            \
-    input_stream_preprocessor_.Peek(input_);              \
-    cc = input_stream_preprocessor_.NextInputCharacter(); \
-    goto state_name;                                      \
+#define WEBVTT_SWITCH_TO(state_name)             \
+  do {                                           \
+    state = state_name;                          \
+    DCHECK(!input_.IsEmpty());                   \
+    input_stream_preprocessor_.Peek(input_, cc); \
+    goto state_name;                             \
   } while (false)
 
 static void AddNewClass(StringBuilder& classes,
@@ -104,12 +102,12 @@ VTTTokenizer::VTTTokenizer(const String& input)
 }
 
 bool VTTTokenizer::NextToken(VTTToken& token) {
-  if (input_.IsEmpty() || !input_stream_preprocessor_.Peek(input_))
+  UChar cc;
+  if (input_.IsEmpty() || !input_stream_preprocessor_.Peek(input_, cc))
     return false;
 
-  UChar cc = input_stream_preprocessor_.NextInputCharacter();
   if (cc == kEndOfFileMarker) {
-    input_stream_preprocessor_.Advance(input_);
+    input_stream_preprocessor_.Advance(input_, cc);
     return false;
   }
 

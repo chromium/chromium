@@ -113,15 +113,14 @@ bool HTMLTokenizer::FlushBufferedEndTag(SegmentedString& source) {
   return false;
 }
 
-#define FLUSH_AND_ADVANCE_TO(stateName)                               \
-  do {                                                                \
-    state_ = HTMLTokenizer::stateName;                                \
-    if (FlushBufferedEndTag(source))                                  \
-      return true;                                                    \
-    if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source)) \
-      return HaveBufferedCharacterToken();                            \
-    cc = input_stream_preprocessor_.NextInputCharacter();             \
-    goto stateName;                                                   \
+#define FLUSH_AND_ADVANCE_TO(stateName)                                   \
+  do {                                                                    \
+    state_ = HTMLTokenizer::stateName;                                    \
+    if (FlushBufferedEndTag(source))                                      \
+      return true;                                                        \
+    if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source, cc)) \
+      return HaveBufferedCharacterToken();                                \
+    goto stateName;                                                       \
   } while (false)
 
 bool HTMLTokenizer::FlushEmitAndResumeIn(SegmentedString& source,
@@ -151,9 +150,9 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     }
   }
 
-  if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source))
+  UChar cc;
+  if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source, cc))
     return HaveBufferedCharacterToken();
-  UChar cc = input_stream_preprocessor_.NextInputCharacter();
 
   // Source: http://www.whatwg.org/specs/web-apps/current-work/#tokenisation0
   switch (state_) {
