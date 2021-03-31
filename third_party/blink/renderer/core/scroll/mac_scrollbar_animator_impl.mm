@@ -7,6 +7,7 @@
 #import <AppKit/AppKit.h>
 
 #include "base/mac/scoped_nsobject.h"
+#include "base/record_replay.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/scroll/ns_scroller_imp_details.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator.h"
@@ -584,6 +585,7 @@ class BlinkScrollbarPartAnimationTimer {
 }
 
 - (void)invalidate {
+  recordreplay::AutoPassThroughEvents pt;
   _scrollbar = 0;
   BEGIN_BLOCK_OBJC_EXCEPTIONS;
   [_knobAlphaAnimation invalidate];

@@ -17,6 +17,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/task/scoped_set_task_priority_for_current_thread.h"
@@ -428,16 +429,22 @@ bool ThreadPoolImpl::PostTaskWithSequenceNow(Task task,
 
 bool ThreadPoolImpl::PostTaskWithSequence(Task task,
                                           scoped_refptr<Sequence> sequence) {
+  recordreplay::Assert("ThreadPoolImpl::PostTaskWithSequence Start");
+
   // Use CHECK instead of DCHECK to crash earlier. See http://crbug.com/711167
   // for details.
   CHECK(task.task);
   DCHECK(sequence);
 
-  if (!task_tracker_->WillPostTask(&task, sequence->shutdown_behavior()))
+  if (!task_tracker_->WillPostTask(&task, sequence->shutdown_behavior())) {
+    recordreplay::Assert("ThreadPoolImpl::PostTaskWithSequence #1");
     return false;
+  }
 
   if (task.delayed_run_time.is_null()) {
-    return PostTaskWithSequenceNow(std::move(task), std::move(sequence));
+    bool rv = PostTaskWithSequenceNow(std::move(task), std::move(sequence));
+    recordreplay::Assert("ThreadPoolImpl::PostTaskWithSequence #2 %d", rv);
+    return rv;
   } else {
     // It's safe to take a ref on this pointer since the caller must have a ref
     // to the TaskRunner in order to post.
@@ -454,6 +461,7 @@ bool ThreadPoolImpl::PostTaskWithSequence(Task task,
         std::move(task_runner));
   }
 
+  recordreplay::Assert("ThreadPoolImpl::PostTaskWithSequence Done");
   return true;
 }
 

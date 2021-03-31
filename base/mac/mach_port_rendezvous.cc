@@ -17,6 +17,7 @@
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
 #include "base/notreached.h"
+#include "base/record_replay.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {
@@ -298,6 +299,12 @@ std::string MachPortRendezvousClient::GetBootstrapName() {
   return StringPrintf(kBootstrapNameFormat, mac::BaseBundleID(), getppid());
 }
 
+static __attribute__((noinline)) void BusyWait() {
+  fprintf(stderr, "Busy-waiting ... (pid %d)\n", getpid());
+  volatile int x = 1;
+  while (x) {}
+}
+
 bool MachPortRendezvousClient::AcquirePorts() {
   AutoLock lock(lock_);
 
@@ -309,6 +316,13 @@ bool MachPortRendezvousClient::AcquirePorts() {
   if (kr != KERN_SUCCESS) {
     BOOTSTRAP_LOG(ERROR, kr) << "bootstrap_look_up " << bootstrap_name;
     return false;
+  }
+
+  // If we wait for a debugger to attach at process startup, the rendezvous
+  // above will fail. This environment variable can be used to attach and watch
+  // for crashes later in the process.
+  if (recordreplay::IsRecordingOrReplaying() && getenv("CHROMIUM_WAIT_AT_START")) {
+    BusyWait();
   }
 
   return SendRequest(std::move(server_port));
