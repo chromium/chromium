@@ -107,7 +107,7 @@ a {
 
 .single-suggestion {
   list-style-type: none;
-  padding-left: 0;
+  padding-inline-start: 0;
 }
 
 #short-suggestion {
@@ -169,7 +169,7 @@ a {
 }
 
 #error-information-popup-close {
-  margin-bottom: 0px;
+  margin-bottom: 0;
   margin-inline-end: 35px;
   margin-top: 15px;
   text-align: end;
@@ -209,7 +209,7 @@ a {
   flex-grow: 1;
   font-size: 1em;
   height: 26px;
-  margin-right: 0;
+  margin-inline-end: 0;
   padding: 1px 9px;
 }
 
@@ -264,8 +264,8 @@ a {
 
 .snackbar-show {
   -webkit-animation:
-    show-snackbar .25s cubic-bezier(0.0, 0.0, 0.2, 1) forwards,
-    hide-snackbar .25s cubic-bezier(0.4, 0.0, 1, 1) forwards 5s;
+    show-snackbar 250ms cubic-bezier(0, 0, 0.2, 1) forwards,
+    hide-snackbar 250ms cubic-bezier(0.4, 0, 1, 1) forwards 5s;
 }
 
 @-webkit-keyframes show-snackbar {
@@ -325,7 +325,8 @@ a {
   }
 }
 
-#download-link, #download-link-clicked {
+#download-link,
+#download-link-clicked {
   margin-bottom: 30px;
   margin-top: 30px;
 }
@@ -334,16 +335,17 @@ a {
   color: #BBB;
 }
 
-#download-link:before, #download-link-clicked:before {
+#download-link::before,
+#download-link-clicked::before {
   content: url(images/download-blue.svg);
   display: inline-block;
   margin-inline-end: 4px;
   vertical-align: -webkit-baseline-middle;
 }
 
-#download-link-clicked:before {
-  width: 0px;
+#download-link-clicked::before {
   opacity: 0;
+  width: 0;
 }
 
 #offline-content-list-visibility-card {
@@ -367,7 +369,8 @@ a {
   color: var(--google-gray-700);
 }
 
-#offline-content-list-show-text, #offline-content-list-hide-text {
+#offline-content-list-show-text,
+#offline-content-list-hide-text {
   color: rgb(66, 133, 244);
 }
 
@@ -389,8 +392,8 @@ a {
    * when the actual height is smaller then the animation is not as smooth.
    */
   max-height: 27em;
-  transition: max-height 0.2s ease-in, visibility 0s 0.2s,
-              opacity 0.2s 0.2s linear;
+  transition: max-height 200ms ease-in, visibility 0s 200ms,
+              opacity 200ms 200ms linear;
 }
 
 /* Controls the animation of the offline content list when it is
@@ -398,10 +401,10 @@ a {
  */
 #offline-content-list.list-hidden #offline-content-suggestions {
   max-height: 0;
-  visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s linear, visibility 0s 0.2s,
-              max-height 0.2s 0.2s ease-out;
+  transition: opacity 200ms linear, visibility 0s 200ms,
+              max-height 200ms 200ms ease-out;
+  visibility: hidden;
 }
 
 #offline-content-list {
@@ -548,7 +551,7 @@ div.offline-content-suggestion {
 }
 
 .suggestion-with-icon .offline-content-suggestion-texts {
-  padding-inline-start: 0px;
+  padding-inline-start: 0;
 }
 
 .offline-content-suggestion-attribution-freshness {
@@ -564,8 +567,8 @@ div.offline-content-suggestion {
   display: -webkit-box;
   flex-shrink: 1;
   margin-inline-end: 0.3em;
-  overflow-wrap: break-word;
   overflow: hidden;
+  overflow-wrap: break-word;
   text-overflow: ellipsis;
   word-break: break-all;
 }
@@ -574,7 +577,7 @@ div.offline-content-suggestion {
   display: none;
 }
 
-.offline-content-suggestion-freshness:before {
+.offline-content-suggestion-freshness::before {
   content: '-';
   display: inline-block;
   flex-shrink: 0;
@@ -582,7 +585,7 @@ div.offline-content-suggestion {
   margin-inline-start: .1em;
 }
 
-.no-attribution .offline-content-suggestion-freshness:before {
+.no-attribution .offline-content-suggestion-freshness::before {
   display: none;
 }
 
@@ -591,8 +594,8 @@ div.offline-content-suggestion {
 }
 
 .suggestion-with-image .offline-content-suggestion-pin-spacer {
-  flex-shrink: 1;
   flex-grow: 100;
+  flex-shrink: 1;
 }
 
 .suggestion-with-image .offline-content-suggestion-pin {
@@ -608,16 +611,16 @@ div.offline-content-suggestion {
  */
 #offline-content-list-action {
   text-align: center;
-  transition: visibility 0s 0.2s, opacity 0.2s 0.2s linear;
+  transition: visibility 0s 200ms, opacity 200ms 200ms linear;
 }
 
 /* Controls the animation of the launch-downloads-home action button when the
  * offline content list is collapsed/hidden.
  */
 #offline-content-list.list-hidden #offline-content-list-action {
-  visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s linear, visibility 0s 0.2s;
+  transition: opacity 200ms linear, visibility 0s 200ms;
+  visibility: hidden;
 }
 
 #cancel-save-page-button {
@@ -635,7 +638,7 @@ div.offline-content-suggestion {
   text-align: start;
 }
 
-html[dir="rtl"] #cancel-save-page-button {
+html[dir='rtl'] #cancel-save-page-button {
   background-position: left 27px center;
 }
 
@@ -644,7 +647,7 @@ html[dir="rtl"] #cancel-save-page-button {
   justify-content: start;
 }
 
-#save-page-for-later-button a:before {
+#save-page-for-later-button a::before {
   content: url(images/download-blue.svg);
   display: inline-block;
   margin-inline-end: 4px;
@@ -662,16 +665,16 @@ html[subframe] body {
 
 #sub-frame-error {
   -webkit-align-items: center;
+  -webkit-flex-flow: column;
+  -webkit-justify-content: center;
   background-color: #DDD;
   display: -webkit-flex;
-  -webkit-flex-flow: column;
   height: 100%;
-  -webkit-justify-content: center;
   left: 0;
   position: absolute;
   text-align: center;
   top: 0;
-  transition: background-color .2s ease-in-out;
+  transition: background-color 200ms ease-in-out;
   width: 100%;
 }
 
@@ -730,7 +733,7 @@ html[subframe] body {
 }
 
 .suggested-left .secondary-button {
-  margin-inline-end: 0px;
+  margin-inline-end: 0;
   margin-inline-start: 16px;
 }
 
@@ -745,18 +748,18 @@ html[subframe] body {
   position: relative;
 }
 
-#download-button:before {
+#download-button::before {
   background: -webkit-image-set(
       url(../../resources/default_100_percent/neterror/download.png) 1x,
       url(../../resources/default_200_percent/neterror/download.png) 2x)
     no-repeat;
   content: '';
   display: inline-block;
-  width: 24px;
   height: 24px;
   margin-inline-end: 4px;
   margin-inline-start: -4px;
   vertical-align: middle;
+  width: 24px;
 }
 
 #download-button:disabled {
@@ -768,8 +771,8 @@ html[subframe] body {
 TODO(https://crbug.com/852872): UI for offline suggested content is incomplete.
 */
 .suggested-thumbnail {
-  width: 25vw;
   height: 25vw;
+  width: 25vw;
 }
 
 /* Alternate dino page button styles */
@@ -788,6 +791,11 @@ TODO(https://crbug.com/852872): UI for offline suggested content is incomplete.
 }
 
 /* Offline page */
+html[dir='rtl'] .runner-container,
+html[dir='rtl'].offline .icon-offline {
+  transform: scaleX(-1);
+}
+
 .offline {
   transition: filter 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
               background-color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
@@ -885,10 +893,10 @@ whereas Blink does not. */
   }
 
   .snackbar {
-    left: 0;
-    bottom: 0;
-    width: 100%;
     border-radius: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
   }
 }
 
@@ -950,8 +958,8 @@ whereas Blink does not. */
 
 @media (max-width: 240px) {
   button {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-inline-end: 12px;
+    padding-inline-start: 12px;
   }
 
   .interstitial-wrapper {
@@ -991,7 +999,7 @@ whereas Blink does not. */
   margin: auto;
   right: 0;
   transform-origin: top center;
-  transition: transform 250ms cubic-bezier(0.4, 0.0, 1, 1) .4s;
+  transition: transform 250ms cubic-bezier(0.4, 0, 1, 1) 400ms;
   z-index: 2;
 }
 

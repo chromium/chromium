@@ -118,6 +118,9 @@ const IS_IOS = /CriOS/.test(window.navigator.userAgent);
 const IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
 
 /** @const */
+const IS_RTL = document.querySelector('html').dir == 'rtl';
+
+/** @const */
 const ARCADE_MODE_URL = 'chrome://dino/';
 
 /** @const */
@@ -634,7 +637,7 @@ Runner.prototype = {
     let deltaTime = now - (this.time || now);
 
     // Flashing when switching game modes.
-    if (this.altGameModeFlashTimer < 0) {
+    if (this.altGameModeFlashTimer < 0 || this.altGameModeFlashTimer === 0) {
       this.altGameModeFlashTimer = null;
       this.tRex.setFlashing(false);
       this.enableAltGameMode();
@@ -880,7 +883,8 @@ Runner.prototype = {
             e.target == this.canvas;
 
         if (Runner.keycodes.JUMP[e.keyCode] ||
-            e.type === Runner.events.TOUCHSTART || isMobileMouseInput) {
+            e.type === Runner.events.TOUCHSTART || isMobileMouseInput ||
+            (Runner.keycodes.DUCK[e.keyCode] && this.altGameModeActive)) {
           e.preventDefault();
           // Starting the game for the first time.
           if (!this.playing) {
@@ -1251,7 +1255,10 @@ Runner.prototype = {
    * @return {boolean}
    */
   isArcadeMode() {
-    return document.title === ARCADE_MODE_URL;
+    // In RTL languages the title is wrapped with the left to right mark
+    // control characters &#x202A; and &#x202C but are invisible.
+    return IS_RTL ? document.title.indexOf(ARCADE_MODE_URL) == 1 :
+                    document.title === ARCADE_MODE_URL;
   },
 
   /**
@@ -1277,8 +1284,10 @@ Runner.prototype = {
         Runner.config.ARCADE_MODE_INITIAL_TOP_POSITION) *
         Runner.config.ARCADE_MODE_TOP_POSITION_PERCENT)) *
         window.devicePixelRatio;
-    this.containerEl.style.transform = 'scale(' + scale + ') translateY(' +
-        translateY + 'px)';
+
+    const cssScale = IS_RTL ? -scale + ',' + scale : scale;
+    this.containerEl.style.transform =
+        'scale(' + cssScale + ') translateY(' + translateY + 'px)';
   },
 
   /**
@@ -1698,11 +1707,20 @@ GameOverPanel.prototype = {
     const spriteSource =
         opt_useAltText ? Runner.altCommonImageSprite : Runner.origImageSprite;
 
+    this.canvasCtx.save();
+
+    if (IS_RTL) {
+      this.canvasCtx.translate(this.canvas.width / 2, 0);
+      this.canvasCtx.scale(-1, 1);
+    }
+
     // Game over text from sprite.
     this.canvasCtx.drawImage(
         spriteSource, textSourceX, textSourceY, textSourceWidth,
         textSourceHeight, textTargetX, textTargetY, textTargetWidth,
         textTargetHeight);
+
+    this.canvasCtx.restore();
   },
 
   /**
@@ -1750,6 +1768,12 @@ GameOverPanel.prototype = {
     }
 
     this.canvasCtx.save();
+
+    if (IS_RTL) {
+      this.canvasCtx.translate(this.canvas.width / 2, 0);
+      this.canvasCtx.scale(-1, 1);
+    }
+
     this.canvasCtx.drawImage(
         Runner.origImageSprite, this.restartImgPos.x + framePosX,
         this.restartImgPos.y, restartSourceWidth, restartSourceHeight,
@@ -1801,6 +1825,11 @@ GameOverPanel.prototype = {
         this.currentFrame++;
         this.drawRestartButton();
       }
+    } else if (
+        !this.altGameModeActive &&
+        this.currentFrame == GameOverPanel.animConfig.frames.length) {
+      this.reset();
+      return;
     }
 
     // Game over text
@@ -1817,8 +1846,9 @@ GameOverPanel.prototype = {
         } else {
           this.drawGameOverText(altTextConfig, true);
         }
-      } else if (this.flashCounter > GameOverPanel.FLASH_ITERATIONS) {
+      } else if (this.flashCounter >= GameOverPanel.FLASH_ITERATIONS) {
         this.reset();
+        return;
       }
     }
 
@@ -1844,6 +1874,7 @@ GameOverPanel.prototype = {
   reset() {
     if (this.gameOverRafId) {
       cancelAnimationFrame(this.gameOverRafId);
+      this.gameOverRafId = null;
     }
     this.animTimer = 0;
     this.frameTimeStamp = 0;
@@ -2369,6 +2400,7 @@ Trex.prototype = {
         [spriteDefinition.RUNNING_1.x, spriteDefinition.RUNNING_2.x];
 
     // Update Trex config
+    Trex.config.GRAVITY = spriteDefinition.GRAVITY || Trex.config.GRAVITY;
     Trex.config.HEIGHT = spriteDefinition.RUNNING_1.h,
     Trex.config.INITIAL_JUMP_VELOCITY = spriteDefinition.INITIAL_JUMP_VELOCITY;
     Trex.config.MAX_JUMP_HEIGHT = spriteDefinition.MAX_JUMP_HEIGHT;
@@ -2803,13 +2835,25 @@ DistanceMeter.prototype = {
 
     this.canvasCtx.save();
 
-    if (opt_highScore) {
-      // Left of the current score.
-      const highScoreX = this.x - (this.maxScoreUnits * 2) *
-          DistanceMeter.dimensions.WIDTH;
-      this.canvasCtx.translate(highScoreX, this.y);
+    if (IS_RTL) {
+      if (opt_highScore) {
+        this.canvasCtx.translate(
+            (this.canvas.width / 2) -
+                (DistanceMeter.dimensions.WIDTH * (this.maxScoreUnits + 3)),
+            this.y);
+      } else {
+        this.canvasCtx.translate(
+            this.canvas.width / 2 - DistanceMeter.dimensions.WIDTH, this.y);
+      }
+      this.canvasCtx.scale(-1, 1);
     } else {
-      this.canvasCtx.translate(this.x, this.y);
+      const highScoreX =
+          this.x - (this.maxScoreUnits * 2) * DistanceMeter.dimensions.WIDTH;
+      if (opt_highScore) {
+        this.canvasCtx.translate(highScoreX, this.y);
+      } else {
+        this.canvasCtx.translate(this.x, this.y);
+      }
     }
 
     this.canvasCtx.drawImage(this.image, sourceX, sourceY,
@@ -2874,8 +2918,7 @@ DistanceMeter.prototype = {
 
         if (this.flashTimer < this.config.FLASH_DURATION) {
           paint = false;
-        } else if (this.flashTimer >
-            this.config.FLASH_DURATION * 2) {
+        } else if (this.flashTimer > this.config.FLASH_DURATION * 2) {
           this.flashTimer = 0;
           this.flashIterations++;
         }

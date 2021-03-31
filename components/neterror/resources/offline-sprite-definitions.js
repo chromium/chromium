@@ -555,16 +555,17 @@ Runner.spriteDefinitionByType = {
     BOTTOM_PAD: 43,
     HAS_CLOUDS: 0,
     TREX: {
+      GRAVITY: 0.38,
       MAX_JUMP_HEIGHT: 25,
-      MIN_JUMP_HEIGHT: 20,
-      INITIAL_JUMP_VELOCITY: -8,
+      MIN_JUMP_HEIGHT: 18,
+      INITIAL_JUMP_VELOCITY: -16,
       INVERT_JUMP: 1,
       RUNNING_1: {x: 0, w: 65, h: 30, xOffset: 0},
       RUNNING_2: {x: 67, w: 65, h: 30, xOffset: 0},
       CRASHED: {x: 196, w: 65, h: 30, xOffset: 0},
       JUMPING: {x: 133.5, w: 65, h: 30, xOffset: 0},
       COLLISION_BOXES: [
-        new CollisionBox(14, 4, 49, 9), new CollisionBox(20, 17, 23, 4),
+        new CollisionBox(17, 4, 49, 9), new CollisionBox(20, 17, 23, 4),
         new CollisionBox(19, 20, 10, 7), new CollisionBox(17, 13, 42, 4)
       ]
     },
@@ -575,9 +576,9 @@ Runner.spriteDefinitionByType = {
         height: 11,
         yPos: 80,
         multipleSpeed: 4,
-        minGap: 90,
+        minGap: 120,
         minSpeed: 0,
-        collisionBoxes: [new CollisionBox(0, 2, 27, 10)]
+        collisionBoxes: [new CollisionBox(0, 2, 27, 8)]
       },
       {
         type: 'OBSTACLE_2',
@@ -585,9 +586,9 @@ Runner.spriteDefinitionByType = {
         height: 11,
         yPos: 80,
         multipleSpeed: 4,
-        minGap: 110,
+        minGap: 140,
         minSpeed: 7,
-        collisionBoxes: [new CollisionBox(0, 2, 52, 10)]
+        collisionBoxes: [new CollisionBox(0, 2, 52, 8)]
       },
       {
         type: 'OBSTACLE_3',
@@ -595,9 +596,9 @@ Runner.spriteDefinitionByType = {
         height: 16,
         yPos: 76,
         multipleSpeed: 4,
-        minGap: 140,
+        minGap: 170,
         minSpeed: 3,
-        collisionBoxes: [new CollisionBox(0, 2, 40, 16)]
+        collisionBoxes: [new CollisionBox(0, 2, 40, 14)]
       }
     ],
     BACKGROUND_EL_CONFIG: {
