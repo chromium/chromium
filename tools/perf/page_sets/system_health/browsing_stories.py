@@ -714,7 +714,7 @@ class AutoCADDesktopStory2021(_MediaBrowsingStory):
   TODO: add a description here.
   """
   NAME = 'browse:tools:autocad:2021'
-  URL = 'https://web.autocad.com'
+  URL = 'https://web.autocad.com/?user=wasm-benchmark'
   SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
   TAGS = [
       story_tags.YEAR_2021, story_tags.WEBASSEMBLY, story_tags.WEBGL,
@@ -732,9 +732,6 @@ class AutoCADDesktopStory2021(_MediaBrowsingStory):
     action_runner.WaitForElement(text="Sign in")
     action_runner.ClickElement(text="Sign in")
     # Now we are done with the login.
-    action_runner.WaitForElement(text="OK")
-    action_runner.ClickElement(text="OK")
-
     action_runner.WaitForElement(text="Samples")
     action_runner.ClickElement(text="Samples")
 
