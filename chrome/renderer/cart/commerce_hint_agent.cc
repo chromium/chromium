@@ -181,11 +181,10 @@ const re2::RE2& GetVisitCartPattern(const GURL& url) {
         const base::StringPiece json_resource(
             ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
                 IDR_CART_DOMAIN_CART_URL_REGEX_JSON));
-        const base::NoDestructor<base::Value> json(
-            base::JSONReader::Read(json_resource).value());
-        DCHECK(json->is_dict());
+        const base::Value json(base::JSONReader::Read(json_resource).value());
+        DCHECK(json.is_dict());
         std::map<std::string, std::string> map;
-        for (const auto& item : json->DictItems()) {
+        for (const auto& item : json.DictItems()) {
           map.insert(
               {std::move(item.first), std::move(item.second.GetString())});
         }
