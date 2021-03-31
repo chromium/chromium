@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.accounts.Account;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -38,13 +37,10 @@ public class SyncConsentFirstRunFragment
         super.onAttach(context);
         final List<Account> accounts =
                 AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts();
-        final Bundle freProperties = getPageDelegate().getProperties();
         final @ChildAccountStatus.Status int childAccountStatus =
-                freProperties.getInt(CHILD_ACCOUNT_STATUS);
-        setArguments(ChildAccountStatus.isChild(childAccountStatus)
-                        ? createArgumentsForForcedSigninFlow(SigninAccessPoint.START_PAGE,
-                                accounts.get(0).name, childAccountStatus)
-                        : createArguments(SigninAccessPoint.START_PAGE, null));
+                getPageDelegate().getProperties().getInt(CHILD_ACCOUNT_STATUS);
+        setArguments(createArguments(SigninAccessPoint.START_PAGE,
+                accounts.isEmpty() ? null : accounts.get(0).name, childAccountStatus));
         // Records if there are {0, 1, 2+} accounts on device for default/non-default flows.
         RecordHistogram.recordCountHistogram(
                 "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE", Math.min(accounts.size(), 2));
@@ -53,8 +49,8 @@ public class SyncConsentFirstRunFragment
 
     @Override
     protected void onSigninRefused() {
-        if (isForcedSignin()) {
-            // Somehow the forced account disappeared while we were in the FRE.
+        if (ChildAccountStatus.isChild(mChildAccountStatus)) {
+            // Somehow the child account disappeared while we were in the FRE.
             // The user would have to go through the FRE again.
             getPageDelegate().abortFirstRunExperience();
         } else {

@@ -94,19 +94,16 @@ public abstract class SyncConsentFragmentBase
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
     private static final int ACCOUNT_PICKER_DIALOG_REQUEST_CODE = 2;
 
-    @IntDef({SigninFlowType.DEFAULT, SigninFlowType.FORCED, SigninFlowType.CHOOSE_ACCOUNT,
-            SigninFlowType.ADD_ACCOUNT})
+    @IntDef({SigninFlowType.DEFAULT, SigninFlowType.CHOOSE_ACCOUNT, SigninFlowType.ADD_ACCOUNT})
     @Retention(RetentionPolicy.SOURCE)
     @interface SigninFlowType {
         int DEFAULT = 0;
-        int FORCED = 1;
-        int CHOOSE_ACCOUNT = 2;
-        int ADD_ACCOUNT = 3;
+        int CHOOSE_ACCOUNT = 1;
+        int ADD_ACCOUNT = 2;
     }
 
     private final AccountManagerFacade mAccountManagerFacade;
-    private @SigninFlowType int mSigninFlowType;
-    private @ChildAccountStatus.Status int mChildAccountStatus;
+    protected @ChildAccountStatus.Status int mChildAccountStatus;
 
     private SigninView mView;
     private ConsentTextTracker mConsentTextTracker;
@@ -132,8 +129,8 @@ public abstract class SyncConsentFragmentBase
     private ConfirmSyncDataStateMachine mConfirmSyncDataStateMachine;
 
     /**
-     * Creates an argument bundle for the default SigninFragmentBase flow (account selection is
-     * enabled, etc.).
+     * Creates an argument bundle for the default {@link SyncConsentFragment} flow.
+     * (account selection is enabled, etc.).
      * @param accessPoint The access point for starting sign-in flow.
      * @param accountName The account to preselect or null to preselect the default account.
      */
@@ -143,6 +140,20 @@ public abstract class SyncConsentFragmentBase
         result.putInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
         result.putInt(ARGUMENT_ACCESS_POINT, accessPoint);
         result.putString(ARGUMENT_ACCOUNT_NAME, accountName);
+        return result;
+    }
+
+    /**
+     * Creates an argument bundle for the default {@link SyncConsentFragment} flow with
+     * {@link ChildAccountStatus}.
+     * @param accessPoint The access point for starting sign-in flow.
+     * @param accountName The account to preselect.
+     * @param childAccountStatus Whether the selected account is a child one.
+     */
+    protected static Bundle createArguments(@SigninAccessPoint int accessPoint, String accountName,
+            @ChildAccountStatus.Status int childAccountStatus) {
+        Bundle result = createArguments(accessPoint, accountName);
+        result.putInt(ARGUMENT_CHILD_ACCOUNT_STATUS, childAccountStatus);
         return result;
     }
 
@@ -171,21 +182,6 @@ public abstract class SyncConsentFragmentBase
         return result;
     }
 
-    /**
-     * Creates an argument bundle for a custom SigninFragmentBase flow.
-     * @param accountName The account to preselect.
-     * @param childAccountStatus Whether the selected account is a child one.
-     */
-    protected static Bundle createArgumentsForForcedSigninFlow(@SigninAccessPoint int accessPoint,
-            String accountName, @ChildAccountStatus.Status int childAccountStatus) {
-        Bundle result = new Bundle();
-        result.putInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.FORCED);
-        result.putInt(ARGUMENT_ACCESS_POINT, accessPoint);
-        result.putString(ARGUMENT_ACCOUNT_NAME, accountName);
-        result.putInt(ARGUMENT_CHILD_ACCOUNT_STATUS, childAccountStatus);
-        return result;
-    }
-
     protected SyncConsentFragmentBase() {
         mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountsChangedObserver = this::triggerUpdateAccounts;
@@ -205,11 +201,6 @@ public abstract class SyncConsentFragmentBase
     protected abstract void onSigninAccepted(String accountName, boolean isDefaultAccount,
             boolean settingsClicked, Runnable callback);
 
-    /** Returns whether this fragment is in "force sign-in" mode. */
-    protected boolean isForcedSignin() {
-        return mSigninFlowType == SigninFlowType.FORCED;
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -220,7 +211,8 @@ public abstract class SyncConsentFragmentBase
         mRequestedAccountName = arguments.getString(ARGUMENT_ACCOUNT_NAME, null);
         mChildAccountStatus =
                 arguments.getInt(ARGUMENT_CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
-        mSigninFlowType = arguments.getInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
+        @SigninFlowType
+        int signinFlowType = arguments.getInt(ARGUMENT_SIGNIN_FLOW_TYPE, SigninFlowType.DEFAULT);
 
         // Don't have a selected account now, onResume will trigger the selection.
         mAccountSelectionPending = true;
@@ -228,9 +220,9 @@ public abstract class SyncConsentFragmentBase
         if (savedInstanceState == null) {
             // If this fragment is being recreated from a saved state there's no need to show
             // account picked or starting AddAccount flow.
-            if (mSigninFlowType == SigninFlowType.CHOOSE_ACCOUNT) {
+            if (signinFlowType == SigninFlowType.CHOOSE_ACCOUNT) {
                 showAccountPicker();
-            } else if (mSigninFlowType == SigninFlowType.ADD_ACCOUNT) {
+            } else if (signinFlowType == SigninFlowType.ADD_ACCOUNT) {
                 addAccount();
             }
         }
@@ -285,7 +277,7 @@ public abstract class SyncConsentFragmentBase
         mView.getDetailsDescriptionView().setMovementMethod(LinkMovementMethod.getInstance());
 
         final Drawable endImageViewDrawable;
-        if (mSigninFlowType == SigninFlowType.FORCED) {
+        if (ChildAccountStatus.isChild(mChildAccountStatus)) {
             endImageViewDrawable = SigninView.getCheckmarkDrawable(getContext());
             mView.getRefuseButton().setVisibility(View.GONE);
             mView.getAcceptButtonEndPadding().setVisibility(View.INVISIBLE);
@@ -384,7 +376,7 @@ public abstract class SyncConsentFragmentBase
     }
 
     private void onAccountPickerClicked() {
-        if (isForcedSignin() || !areControlsEnabled()) return;
+        if (ChildAccountStatus.isChild(mChildAccountStatus) || !areControlsEnabled()) return;
         showAccountPicker();
     }
 
@@ -625,7 +617,7 @@ public abstract class SyncConsentFragmentBase
         }
 
         // Account for forced sign-in flow disappeared before the sign-in was completed.
-        if (isForcedSignin()) {
+        if (ChildAccountStatus.isChild(mChildAccountStatus)) {
             onSigninRefused();
             return;
         }
