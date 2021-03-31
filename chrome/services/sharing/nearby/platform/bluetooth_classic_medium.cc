@@ -226,6 +226,8 @@ void BluetoothClassicMedium::DeviceAdded(
   if (!device->name)
     return;
 
+  VLOG(1) << "Discovered Bluetooth device: " << device->name_for_display;
+
   const std::string& address = device->address;
   if (base::Contains(discovered_bluetooth_devices_map_, address)) {
     auto& bluetooth_device = discovered_bluetooth_devices_map_.at(address);
