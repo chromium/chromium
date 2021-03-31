@@ -285,8 +285,7 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             BrowserImpl browserImpl = (BrowserImpl) browser;
             browserImpl.getViewController().addContentCaptureConsumerForTesting(
-                    new TestContentCaptureConsumer(browserImpl.getActiveTab().getWebContents(),
-                            unwrappedOnNewEvents, unwrappedEventsObserved));
+                    new TestContentCaptureConsumer(unwrappedOnNewEvents, unwrappedEventsObserved));
         });
     }
 }

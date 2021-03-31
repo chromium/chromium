@@ -26,20 +26,20 @@ android_library("java") {
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/content_capture/ContentCaptureConsumer.java",
-    "java/src/org/chromium/components/content_capture/ContentCaptureConsumerImpl.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureData.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureDataBase.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFeatures.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFrame.java",
-    "java/src/org/chromium/components/content_capture/ContentCaptureReceiverManager.java",
     "java/src/org/chromium/components/content_capture/ContentCapturedTask.java",
     "java/src/org/chromium/components/content_capture/ContentRemovedTask.java",
     "java/src/org/chromium/components/content_capture/ContentUpdateTask.java",
     "java/src/org/chromium/components/content_capture/ExperimentContentCaptureConsumer.java",
     "java/src/org/chromium/components/content_capture/FrameSession.java",
     "java/src/org/chromium/components/content_capture/NotificationTask.java",
+    "java/src/org/chromium/components/content_capture/OnscreenContentProvider.java",
     "java/src/org/chromium/components/content_capture/PlatformAPIWrapper.java",
     "java/src/org/chromium/components/content_capture/PlatformAPIWrapperImpl.java",
+    "java/src/org/chromium/components/content_capture/PlatformContentCaptureConsumer.java",
     "java/src/org/chromium/components/content_capture/PlatformContentCaptureController.java",
     "java/src/org/chromium/components/content_capture/PlatformSession.java",
     "java/src/org/chromium/components/content_capture/ProcessContentCaptureDataTask.java",
@@ -54,6 +54,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/content_capture/ContentCaptureData.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFeatures.java",
     "java/src/org/chromium/components/content_capture/ContentCaptureFrame.java",
-    "java/src/org/chromium/components/content_capture/ContentCaptureReceiverManager.java",
+    "java/src/org/chromium/components/content_capture/OnscreenContentProvider.java",
   ]
 }

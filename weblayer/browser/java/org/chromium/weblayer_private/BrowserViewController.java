@@ -6,7 +6,6 @@ package org.chromium.weblayer_private;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.RemoteException;
 import android.util.AndroidRuntimeException;
 import android.view.View;
@@ -23,8 +22,7 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.content_capture.ContentCaptureConsumer;
-import org.chromium.components.content_capture.ContentCaptureConsumerImpl;
-import org.chromium.components.content_capture.ExperimentContentCaptureConsumer;
+import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -34,8 +32,6 @@ import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.weblayer_private.interfaces.BrowserEmbeddabilityMode;
-
-import java.util.ArrayList;
 
 /**
  * BrowserViewController controls the set of Views needed to show the WebContents.
@@ -88,15 +84,7 @@ public final class BrowserViewController
      */
     private boolean mCachedDoBrowserControlsShrinkRendererSize;
 
-    /**
-     * ContentCaptureConsumer could be null in some cases, e.g. when the platform decided to not
-     * capture data for different apps. Therefore checking if |mContentCaptureConsumers| is empty is
-     * not enough to determine if this is the first time we are trying to create
-     * ContentCaptureConsumer. Having the flag below is to create ContentCaptureConsumers only once.
-     */
-    private boolean mShouldCreateContentCaptureConsumer = true;
-    // TODO: (crbug.com/1119663) Move consumers out of this class while support multiple consumers.
-    private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers = new ArrayList<>();
+    private OnscreenContentProvider mOnscreenContentProvider;
 
     public BrowserViewController(FragmentWindowAndroid windowAndroid,
             View.OnAttachStateChangeListener listener, @Nullable State savedState,
@@ -151,7 +139,7 @@ public final class BrowserViewController
     public void destroy() {
         mWindowAndroid.setModalDialogManager(null);
         setActiveTab(null);
-        mContentCaptureConsumers.clear();
+        if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();
         mContentViewRenderView.removeOnAttachStateChangeListener(mOnAttachedStateChangeListener);
         mTopControlsContainerView.destroy();
         mBottomControlsContainerView.destroy();
@@ -227,22 +215,11 @@ public final class BrowserViewController
             mContentView.requestFocus();
         }
 
-        if (mShouldCreateContentCaptureConsumer) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                ContentCaptureConsumer consumer = ContentCaptureConsumerImpl.create(
-                        mWindowAndroid.getContext().get(), mContentViewRenderView, webContents);
-                if (consumer != null) mContentCaptureConsumers.add(consumer);
-            }
-            // ExperimentContentCaptureConsumer is used to verify the content capture integration
-            // manually. We also use it for experiment later. It is not depending on the system API
-            // and it is controlled by its own flag in the ContentCapture component.
-            ContentCaptureConsumer consumer = ExperimentContentCaptureConsumer.create(webContents);
-            if (consumer != null) mContentCaptureConsumers.add(consumer);
-            mShouldCreateContentCaptureConsumer = false;
+        if (mOnscreenContentProvider == null) {
+            mOnscreenContentProvider = new OnscreenContentProvider(
+                    mWindowAndroid.getContext().get(), mContentViewRenderView, webContents);
         } else {
-            for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
-                consumer.onWebContentsChanged(webContents);
-            }
+            mOnscreenContentProvider.onWebContentsChanged(webContents);
         }
     }
 
@@ -269,9 +246,7 @@ public final class BrowserViewController
     }
 
     public void addContentCaptureConsumerForTesting(ContentCaptureConsumer consumer) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return;
-        mShouldCreateContentCaptureConsumer = false;
-        mContentCaptureConsumers.add(consumer);
+        mOnscreenContentProvider.addConsumer(consumer);
     }
 
     public void setTopControlsAnimationsEnabled(boolean animationsEnabled) {

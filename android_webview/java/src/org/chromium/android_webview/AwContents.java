@@ -76,7 +76,7 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.components.autofill.AutofillActionModeCallback;
 import org.chromium.components.autofill.AutofillProvider;
-import org.chromium.components.content_capture.ContentCaptureConsumer;
+import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.components.navigation_interception.InterceptNavigationDelegate;
 import org.chromium.components.navigation_interception.NavigationParams;
@@ -479,7 +479,7 @@ public class AwContents implements SmartClipProvider {
 
     private JavascriptInjector mJavascriptInjector;
 
-    private ContentCaptureConsumer mContentCaptureConsumer;
+    private OnscreenContentProvider mOnscreenContentProvider;
 
     private AwDisplayCutoutController mDisplayCutoutController;
     private final AwDisplayModeController mDisplayModeController;
@@ -1347,8 +1347,8 @@ public class AwContents implements SmartClipProvider {
             setNewAwContentsPreO(newAwContentsPtr);
             if (textClassifier != null) setTextClassifier(textClassifier);
         }
-        if (mContentCaptureConsumer != null) {
-            mContentCaptureConsumer.onWebContentsChanged(mWebContents);
+        if (mOnscreenContentProvider != null) {
+            mOnscreenContentProvider.onWebContentsChanged(mWebContents);
         }
     }
 
@@ -1540,9 +1540,9 @@ public class AwContents implements SmartClipProvider {
         if (TRACE) Log.i(TAG, "%s destroy", this);
         if (isDestroyed(NO_WARN)) return;
 
-        if (mContentCaptureConsumer != null) {
-            mContentCaptureConsumer.onWebContentsChanged(null);
-            mContentCaptureConsumer = null;
+        if (mOnscreenContentProvider != null) {
+            mOnscreenContentProvider.destroy();
+            mOnscreenContentProvider = null;
         }
 
         // Remove pending messages
@@ -1688,8 +1688,8 @@ public class AwContents implements SmartClipProvider {
         return sLocalGlobalVisibleRect;
     }
 
-    public void setContentCaptureConsumer(ContentCaptureConsumer consumer) {
-        mContentCaptureConsumer = consumer;
+    public void setOnscreenContentProvider(OnscreenContentProvider onscreenContentProvider) {
+        mOnscreenContentProvider = onscreenContentProvider;
     }
 
     //--------------------------------------------------------------------------------------------

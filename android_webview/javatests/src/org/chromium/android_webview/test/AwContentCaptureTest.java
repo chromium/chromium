@@ -28,16 +28,16 @@ import org.chromium.components.content_capture.ContentCaptureConsumer;
 import org.chromium.components.content_capture.ContentCaptureData;
 import org.chromium.components.content_capture.ContentCaptureDataBase;
 import org.chromium.components.content_capture.ContentCaptureFrame;
-import org.chromium.components.content_capture.ExperimentContentCaptureConsumer;
 import org.chromium.components.content_capture.FrameSession;
+import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.content_capture.UrlAllowlist;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 @RunWith(AwJUnit4ClassRunner.class)
 @CommandLineFlags.Add({"enable-features=ContentCapture"})
 public class AwContentCaptureTest {
-    private static class TestAwContentCaptureConsumer extends ContentCaptureConsumer {
+    private static class TestAwContentCaptureConsumer implements ContentCaptureConsumer {
         private static final long DEFAULT_TIMEOUT_IN_SECONDS = 30;
 
         public static final int CONTENT_CAPTURED = 1;
@@ -58,8 +58,7 @@ public class AwContentCaptureTest {
         public static final int SESSION_REMOVED = 4;
         public static final int TITLE_UPDATED = 5;
 
-        public TestAwContentCaptureConsumer(WebContents webContents) {
-            super(webContents);
+        public TestAwContentCaptureConsumer() {
             mCapturedContentIds = new HashSet<Long>();
         }
 
@@ -213,6 +212,7 @@ public class AwContentCaptureTest {
     private AwTestContainerView mContainerView;
     private TestAwContentCaptureConsumer mConsumer;
     private TestAwContentCaptureConsumer mSecondConsumer;
+    private OnscreenContentProvider mOnscreenContentProvider;
 
     private void loadUrlSync(String url) {
         try {
@@ -236,8 +236,12 @@ public class AwContentCaptureTest {
         mAwContents = mContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mConsumer = new TestAwContentCaptureConsumer(mAwContents.getWebContents());
-            mAwContents.setContentCaptureConsumer(mConsumer);
+            mConsumer = new TestAwContentCaptureConsumer();
+            mOnscreenContentProvider = new OnscreenContentProvider(
+                    mRule.getActivity(), mContainerView, mAwContents.getWebContents());
+            mOnscreenContentProvider.addConsumer(mConsumer);
+            mOnscreenContentProvider.removePlatformConsumerForTesting();
+            mAwContents.setOnscreenContentProvider(mOnscreenContentProvider);
         });
     }
 
@@ -679,9 +683,8 @@ public class AwContentCaptureTest {
     @FlakyTest(message = "https://crbug.com/1126950")
     @Feature({"AndroidWebView"})
     public void testMultipleConsumers() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSecondConsumer = new TestAwContentCaptureConsumer(mAwContents.getWebContents());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mSecondConsumer = new TestAwContentCaptureConsumer(); });
         final String response = "<html><head></head><body>"
                 + "<div id='place_holder'>"
                 + "<p style=\"height: 100vh\">Hello</p>"
@@ -701,9 +704,8 @@ public class AwContentCaptureTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"enable-features=ContentCaptureTriggeringForExperiment"})
     public void testHostNotAllowed() throws Throwable {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mSecondConsumer = new TestAwContentCaptureConsumer(mAwContents.getWebContents());
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mSecondConsumer = new TestAwContentCaptureConsumer(); });
         final String response = "<html><head></head><body>"
                 + "<div id='place_holder'>"
                 + "<p style=\"height: 100vh\">Hello</p>"
@@ -752,7 +754,9 @@ public class AwContentCaptureTest {
     @Feature({"AndroidWebView"})
     @CommandLineFlags.Add({"disable-features=ContentCaptureTriggeringForExperiment"})
     public void testCantCreateExperimentConsumer() throws Throwable {
-        Assert.assertNull(ExperimentContentCaptureConsumer.create(mAwContents.getWebContents()));
+        List<ContentCaptureConsumer> consumers = mOnscreenContentProvider.getConsumersForTesting();
+        Assert.assertEquals(1, consumers.size());
+        Assert.assertTrue(consumers.get(0) instanceof TestAwContentCaptureConsumer);
     }
 
     @Test

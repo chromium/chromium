@@ -68,8 +68,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.components.autofill.AutofillProvider;
-import org.chromium.components.content_capture.ContentCaptureConsumerImpl;
 import org.chromium.components.content_capture.ContentCaptureFeatures;
+import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.application.ClassLoaderContextWrapperFactory;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.SmartClipProvider;
@@ -1832,7 +1832,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
             Log.i("ContentCapture", "onProvideContentCaptureStructure");
         }
-        mAwContents.setContentCaptureConsumer(ContentCaptureConsumerImpl.create(
+        mAwContents.setOnscreenContentProvider(new OnscreenContentProvider(
                 ClassLoaderContextWrapperFactory.get(mWebView.getContext()), mWebView, structure,
                 mAwContents.getWebContents()));
     }

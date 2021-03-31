@@ -67,9 +67,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
-import org.chromium.components.content_capture.ContentCaptureConsumer;
-import org.chromium.components.content_capture.ContentCaptureConsumerImpl;
-import org.chromium.components.content_capture.ExperimentContentCaptureConsumer;
+import org.chromium.components.content_capture.OnscreenContentProvider;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
@@ -215,11 +213,7 @@ public class CompositorViewHolder extends FrameLayout
      */
     private boolean mHasKeyboardGeometryChangeFired;
 
-    // Indicates if ContentCaptureConsumer should be created, we only try to create it once.
-    private boolean mShouldCreateContentCaptureConsumer = true;
-    // TODO: (crbug.com/1119663) Move consumers out of this class while support multiple consumers.
-    private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers =
-            new ArrayList<ContentCaptureConsumer>();
+    private OnscreenContentProvider mOnscreenContentProvider;
 
     private Set<Runnable> mOnCompositorLayoutCallbacks = new HashSet<>();
     private Set<Runnable> mDidSwapFrameCallbacks = new HashSet<>();
@@ -572,10 +566,7 @@ public class CompositorViewHolder extends FrameLayout
             mInsetObserverView.removeObserver(this);
             mInsetObserverView = null;
         }
-        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
-            consumer.onWebContentsChanged(null);
-        }
-        mContentCaptureConsumers.clear();
+        if (mOnscreenContentProvider != null) mOnscreenContentProvider.destroy();
         if (mContentView != null) {
             mContentView.removeOnHierarchyChangeListener(this);
         }
@@ -1433,20 +1424,11 @@ public class CompositorViewHolder extends FrameLayout
 
         if (mTabVisible != null) initializeTab(mTabVisible);
 
-        if (mShouldCreateContentCaptureConsumer) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                ContentCaptureConsumer consumer =
-                        ContentCaptureConsumerImpl.create(getContext(), this, getWebContents());
-                if (consumer != null) mContentCaptureConsumers.add(consumer);
-            }
-            ContentCaptureConsumer consumer =
-                    ExperimentContentCaptureConsumer.create(getWebContents());
-            if (consumer != null) mContentCaptureConsumers.add(consumer);
-            mShouldCreateContentCaptureConsumer = false;
+        if (mOnscreenContentProvider == null) {
+            mOnscreenContentProvider =
+                    new OnscreenContentProvider(getContext(), this, getWebContents());
         } else {
-            for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
-                consumer.onWebContentsChanged(getWebContents());
-            }
+            mOnscreenContentProvider.onWebContentsChanged(getWebContents());
         }
     }
 

@@ -15,14 +15,13 @@ namespace content_capture {
 
 // The Android's implementation of ContentCaptureReceiverManager, it forwards
 // the received message to Java.
-class ContentCaptureReceiverManagerAndroid
-    : public ContentCaptureReceiverManager,
-      public ContentCaptureConsumer {
+class ContentCaptureReceiverManagerAndroid : public ContentCaptureConsumer {
  public:
-  ~ContentCaptureReceiverManagerAndroid() override;
-  static ContentCaptureReceiverManagerAndroid* Create(
+  ContentCaptureReceiverManagerAndroid(
       JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jobject,
       content::WebContents* web_contents);
+  ~ContentCaptureReceiverManagerAndroid() override;
 
   // ContentCaptureConsumer
   void DidCaptureContent(const ContentCaptureSession& parent_session,
@@ -37,9 +36,18 @@ class ContentCaptureReceiverManagerAndroid
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
+  void OnWebContentsChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jweb_contents);
+  void Destroy(JNIEnv* env);
+
  private:
-  ContentCaptureReceiverManagerAndroid(JNIEnv* env,
-                                       content::WebContents* web_contents);
+  void AttachToWebContents(content::WebContents* web_contennts);
+  void DetachFromWebContents();
+  content::WebContents* GetWebContents();
+
+  base::WeakPtr<ContentCaptureReceiverManager>
+      content_capture_receiver_manager_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };

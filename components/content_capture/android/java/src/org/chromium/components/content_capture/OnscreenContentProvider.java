@@ -4,36 +4,98 @@
 
 package org.chromium.components.content_capture;
 
+import android.content.Context;
+import android.os.Build;
+import android.view.View;
+import android.view.ViewStructure;
+
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.WebContents;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class receives captured content from native and forwards to ContetnCaptureConsumer.
  */
-public class ContentCaptureReceiverManager {
+@JNINamespace("content_capture")
+public class OnscreenContentProvider {
     private static final String TAG = "ContentCapture";
     private static Boolean sDump;
+
+    private long mNativeContentCaptureReceiverManagerAndroid;
 
     private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers =
             new ArrayList<ContentCaptureConsumer>();
 
-    public static ContentCaptureReceiverManager createOrGet(WebContents webContents) {
-        return ContentCaptureReceiverManagerJni.get().createOrGet(webContents);
-    }
+    private WeakReference<WebContents> mWebContents;
 
-    @CalledByNative
-    private ContentCaptureReceiverManager() {
+    public OnscreenContentProvider(
+            Context context, View view, ViewStructure structure, WebContents webContents) {
+        mWebContents = new WeakReference<WebContents>(webContents);
         if (sDump == null) sDump = ContentCaptureFeatures.isDumpForTestingEnabled();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContentCaptureConsumer consumer =
+                    PlatformContentCaptureConsumer.create(context, view, structure, webContents);
+            if (consumer != null) {
+                mContentCaptureConsumers.add(consumer);
+            }
+        }
+        if (ContentCaptureFeatures.shouldTriggerContentCaptureForExperiment()) {
+            mContentCaptureConsumers.add(new ExperimentContentCaptureConsumer());
+        }
+        if (!mContentCaptureConsumers.isEmpty()) {
+            createNativeObject();
+        }
     }
 
-    public void addContentCaptureConsumer(ContentCaptureConsumer consumer) {
+    public OnscreenContentProvider(Context context, View view, WebContents webContents) {
+        this(context, view, null, webContents);
+    }
+
+    public void destroy() {
+        destroyNativeObject();
+    }
+
+    private void destroyNativeObject() {
+        if (mNativeContentCaptureReceiverManagerAndroid == 0) return;
+        OnscreenContentProviderJni.get().destroy(mNativeContentCaptureReceiverManagerAndroid);
+        mNativeContentCaptureReceiverManagerAndroid = 0;
+    }
+
+    private void createNativeObject() {
+        WebContents webContents = mWebContents.get();
+        if (webContents != null) {
+            mNativeContentCaptureReceiverManagerAndroid =
+                    OnscreenContentProviderJni.get().init(this, webContents);
+        }
+    }
+
+    public void addConsumer(ContentCaptureConsumer consumer) {
         mContentCaptureConsumers.add(consumer);
+        if (mNativeContentCaptureReceiverManagerAndroid == 0) createNativeObject();
+    }
+
+    public void removeConsumer(ContentCaptureConsumer consumer) {
+        mContentCaptureConsumers.remove(consumer);
+        if (mContentCaptureConsumers.isEmpty()) destroyNativeObject();
+    }
+
+    public void onWebContentsChanged(WebContents current) {
+        mWebContents = new WeakReference<WebContents>(current);
+        if (mNativeContentCaptureReceiverManagerAndroid != 0) {
+            OnscreenContentProviderJni.get().onWebContentsChanged(
+                    mNativeContentCaptureReceiverManagerAndroid, current);
+        }
     }
 
     @CalledByNative
@@ -130,8 +192,26 @@ public class ContentCaptureReceiverManager {
         return result;
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public List<ContentCaptureConsumer> getConsumersForTesting() {
+        return mContentCaptureConsumers;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public void removePlatformConsumerForTesting() {
+        for (ContentCaptureConsumer consumer : mContentCaptureConsumers) {
+            if (consumer instanceof PlatformContentCaptureConsumer) {
+                mContentCaptureConsumers.remove(consumer);
+                return;
+            }
+        }
+    }
+
     @NativeMethods
     interface Natives {
-        ContentCaptureReceiverManager createOrGet(WebContents webContents);
+        long init(OnscreenContentProvider caller, WebContents webContents);
+        void onWebContentsChanged(
+                long nativeContentCaptureReceiverManagerAndroid, WebContents webContents);
+        void destroy(long nativeContentCaptureReceiverManagerAndroid);
     }
 }

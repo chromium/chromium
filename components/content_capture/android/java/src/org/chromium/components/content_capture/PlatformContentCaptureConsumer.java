@@ -20,7 +20,7 @@ import org.chromium.content_public.browser.WebContents;
  */
 @VerifiesOnQ
 @TargetApi(Build.VERSION_CODES.Q)
-public class ContentCaptureConsumerImpl extends ContentCaptureConsumer {
+public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     private PlatformSession mPlatformSession;
     private final View mView;
 
@@ -37,21 +37,11 @@ public class ContentCaptureConsumerImpl extends ContentCaptureConsumer {
         }
 
         if (!PlatformContentCaptureController.getInstance().shouldStartCapture()) return null;
-        return new ContentCaptureConsumerImpl(view, structure, webContents);
+        return new PlatformContentCaptureConsumer(view, structure, webContents);
     }
 
-    /**
-     * This method is used when ViewStructure isn't available and needs to be
-     * created.
-     */
-    public static ContentCaptureConsumer create(
-            Context context, View view, WebContents webContents) {
-        return create(context, view, null, webContents);
-    }
-
-    private ContentCaptureConsumerImpl(
+    private PlatformContentCaptureConsumer(
             View view, ViewStructure viewStructure, WebContents webContents) {
-        super(webContents);
         mView = view;
         if (viewStructure != null) {
             mPlatformSession = new PlatformSession(
@@ -100,7 +90,7 @@ public class ContentCaptureConsumerImpl extends ContentCaptureConsumer {
     }
 
     @Override
-    protected boolean shouldCapture(String[] urls) {
+    public boolean shouldCapture(String[] urls) {
         return PlatformContentCaptureController.getInstance().shouldCapture(urls);
     }
 }

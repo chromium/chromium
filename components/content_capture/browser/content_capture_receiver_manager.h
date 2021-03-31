@@ -84,10 +84,9 @@ class ContentCaptureReceiverManager : public content::WebContentsObserver,
   }
 #endif
 
- protected:
+ private:
   explicit ContentCaptureReceiverManager(content::WebContents* web_contents);
 
- private:
   ContentCaptureReceiver* ContentCaptureReceiverForFrame(
       content::RenderFrameHost* render_frame_host) const;
 
