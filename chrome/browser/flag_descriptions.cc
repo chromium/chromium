@@ -261,6 +261,12 @@ const char kAutofillEnableOfferNotificationDescription[] =
     "When enabled, a notification will be displayed on page navigation if the "
     "domain has an eligible credit card linked offer or reward.";
 
+const char kAutofillEnableOfferNotificationCrossTabTrackingName[] =
+    "Enable cross tab status tracking for Autofill offer notification";
+const char kAutofillEnableOfferNotificationCrossTabTrackingDescription[] =
+    "When enabled, the offer notification showing will be tracked cross-tab, "
+    "and on one merchant, the notification will only be shown once.";
+
 const char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 const char kAutofillEnableOffersInClankKeyboardAccessoryDescription[] =
@@ -284,6 +290,12 @@ const char kAutofillEnableVirtualCardName[] =
 const char kAutofillEnableVirtualCardDescription[] =
     "When enabled, if all requirements are met, Autofill will offer to use "
     "virtual credit cards in form filling.";
+
+const char kAutofillFixOfferInIncognitoName[] =
+    "Enable the fix for Autofill offer in Incognito mode";
+const char kAutofillFixOfferInIncognitoDescription[] =
+    "When enabled, the fix will be enabled and offers should work correctly in "
+    "Incognito mode.";
 
 const char kAutofillParseMerchantPromoCodeFieldsName[] =
     "Parse promo code fields in forms";

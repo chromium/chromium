@@ -44185,6 +44185,8 @@ from previous Chrome versions.
   <int value="-1789139269" label="SmbFs:disabled"/>
   <int value="-1784831690" label="Bento:disabled"/>
   <int value="-1784788154" label="NewRemotePlaybackPipeline:disabled"/>
+  <int value="-1783790234"
+      label="AutofillEnableOfferNotificationCrossTabTracking:enabled"/>
   <int value="-1780306716"
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:enabled"/>
   <int value="-1779753607" label="VizDisplayCompositor:disabled"/>
@@ -46422,6 +46424,7 @@ from previous Chrome versions.
   <int value="218890378" label="ManualSaving:disabled"/>
   <int value="219117936" label="AllowReaderForAccessibility:enabled"/>
   <int value="221212638" label="StartSurfaceAndroid:enabled"/>
+  <int value="221707633" label="AutofillFixOfferInIncognito:disabled"/>
   <int value="222184258"
       label="AutofillEnforceMinRequiredFieldsForHeuristics:disabled"/>
   <int value="223591010" label="CastMediaRouteProvider:enabled"/>
@@ -47496,6 +47499,7 @@ from previous Chrome versions.
   <int value="1193385506" label="OmniboxLooseMaxLimitOnDedicatedRows:enabled"/>
   <int value="1194496204" label="NewWallpaperPicker:enabled"/>
   <int value="1194896796" label="PdfHonorJsContentSettings:disabled"/>
+  <int value="1194964049" label="AutofillFixOfferInIncognito:enabled"/>
   <int value="1195087468" label="ProminentDarkModeActiveTabTitle:enabled"/>
   <int value="1196644408" label="performance-monitor-gathering"/>
   <int value="1196834473" label="disable-smart-virtual-keyboard"/>
@@ -48142,6 +48146,8 @@ from previous Chrome versions.
   <int value="1783293530" label="disallow-autofill-sync-credential"/>
   <int value="1783837132" label="enable-threaded-gpu-rasterization"/>
   <int value="1785093465" label="enable-document-passive-event-listeners"/>
+  <int value="1785274337"
+      label="AutofillEnableOfferNotificationCrossTabTracking:disabled"/>
   <int value="1786182939" label="ExoPointerLock:enabled"/>
   <int value="1786229999" label="disable-md-downloads"/>
   <int value="1786386775" label="TranslateCompactUI:disabled"/>

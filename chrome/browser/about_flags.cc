@@ -7196,6 +7196,19 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseMerchantPromoCodeFields)},
 
+    {"autofill-enable-offer-notification-cross-tab-tracking",
+     flag_descriptions::kAutofillEnableOfferNotificationCrossTabTrackingName,
+     flag_descriptions::
+         kAutofillEnableOfferNotificationCrossTabTrackingDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableOfferNotificationCrossTabTracking)},
+
+    {"autofill-fix-offer-in-incognito",
+     flag_descriptions::kAutofillFixOfferInIncognitoName,
+     flag_descriptions::kAutofillFixOfferInIncognitoDescription, kOsAll,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillFixOfferInIncognito)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

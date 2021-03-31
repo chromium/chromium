@@ -318,6 +318,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "autofill-enable-offer-notification-cross-tab-tracking",
+    "owners": [ "siyua" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
     "owners": [ "siyua", "siashah@google.com" ],
     "expiry_milestone": 95
@@ -351,6 +356,11 @@
     "name": "autofill-enforce-min-required-fields-for-upload",
     "owners": [ "rogerm" ],
     "expiry_milestone": 73
+  },
+  {
+    "name": "autofill-fix-offer-in-incognito",
+    "owners": [ "siyua" ],
+    "expiry_milestone": 97
   },
   {
     "name": "autofill-ios-delay-between-fields",

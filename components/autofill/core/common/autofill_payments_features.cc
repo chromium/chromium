@@ -65,6 +65,12 @@ const base::Feature kAutofillEnableGoogleIssuedCard{
 const base::Feature kAutofillEnableOfferNotification{
     "AutofillEnableOfferNotification", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to track the cross-tab-status of the offer notification
+// bubble.
+const base::Feature kAutofillEnableOfferNotificationCrossTabTracking{
+    "AutofillEnableOfferNotificationCrossTabTracking",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, offers will be displayed in the Clank keyboard accessory during
 // downstream.
 const base::Feature kAutofillEnableOffersInClankKeyboardAccessory{
@@ -91,6 +97,10 @@ const base::Feature kAutofillEnableToolbarStatusChip{
 // when all requirements are met.
 const base::Feature kAutofillEnableVirtualCard{
     "AutofillEnableVirtualCard", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether to enable the fix for the offer feature in Incognito mode.
+const base::Feature kAutofillFixOfferInIncognito{
+    "AutofillFixOfferInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // When enabled, Autofill will attempt to find merchant promo/coupon/gift code
 // fields when parsing forms.
