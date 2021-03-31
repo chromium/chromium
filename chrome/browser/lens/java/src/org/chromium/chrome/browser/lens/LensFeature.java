@@ -31,7 +31,7 @@ public class LensFeature {
     public static final StringCachedFieldTrialParameter
             MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH = new StringCachedFieldTrialParameter(
                     ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
-                    MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH_PARAM_NAME, "12.7");
+                    MIN_AGSA_VERSION_LENS_CAMERA_ASSISTED_SEARCH_PARAM_NAME, "12.13");
 
     private static final String SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH_PARAM_NAME =
             "searchBoxStartVariantForLensCameraAssistedSearch";
