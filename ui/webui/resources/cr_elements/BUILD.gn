@@ -22,17 +22,25 @@ generate_grd("build_grdp") {
   manifest_files = [
     "$target_gen_dir/$preprocess_gen_manifest",
     "$target_gen_dir/$preprocess_src_manifest",
-    "$target_gen_dir/$preprocess_polymer2_manifest",
   ]
+
+  # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
+  if (is_chromeos_ash) {
+    manifest_files += [ "$target_gen_dir/$preprocess_polymer2_manifest" ]
+  }
   resource_path_prefix = "cr_elements"
 }
 
 group("preprocess") {
   public_deps = [
     ":preprocess_generated",
-    ":preprocess_polymer2",
     ":preprocess_src",
   ]
+
+  # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
+  if (is_chromeos_ash) {
+    public_deps += [ ":preprocess_polymer2" ]
+  }
 }
 
 preprocess_if_expr("preprocess_src") {

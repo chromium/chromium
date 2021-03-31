@@ -63,7 +63,8 @@ preprocess_if_expr("preprocess_src") {
     in_files += [ "i18n_template_process.js" ]
   }
 
-  if (include_polymer) {
+  # TODO(crbug.com/1184053): Fully remove once no longer used by CrOS.
+  if (is_chromeos_ash) {
     in_files += [
       "i18n_behavior.js",
       "list_property_update_behavior.js",

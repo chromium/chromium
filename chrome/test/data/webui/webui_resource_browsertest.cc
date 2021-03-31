@@ -195,6 +195,8 @@ IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, PromiseResolverTest) {
   LoadTestUrl("promise_resolver_test.html");
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(WebUIResourceBrowserTest, I18nBehaviorTest) {
   LoadTestUrl("i18n_behavior_test.html");
 }
+#endif
