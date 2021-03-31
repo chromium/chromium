@@ -449,21 +449,20 @@ Polymer({
     }
 
     if (this.networkState.type === mojom.NetworkType.kCellular) {
+      if (this.networkState.typeState.cellular.simLocked &&
+          !this.isUpdatedCellularUiEnabled_) {
+        return this.i18n('networkListItemSimCardLocked');
+      }
+      if (this.networkState.typeState.cellular.simLocked &&
+          this.isUpdatedCellularUiEnabled_) {
+        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
+      }
+
       if (this.shouldShowNotAvailableText_()) {
         return this.i18n('networkListItemNotAvailable');
       }
       if (this.isCellularNetworkScanning_()) {
         return this.i18n('networkListItemScanning');
-      }
-
-      if (this.networkState.typeState.cellular.simLocked &&
-          !this.isUpdatedCellularUiEnabled_) {
-        return this.i18n('networkListItemSimCardLocked');
-      }
-
-      if (this.networkState.typeState.cellular.simLocked &&
-          this.isUpdatedCellularUiEnabled_) {
-        return this.i18n('networkListItemUpdatedCellularSimCardLocked');
       }
     }
 

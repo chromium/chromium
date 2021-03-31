@@ -336,4 +336,42 @@ suite('NetworkListItemTest', function() {
         await flushAsync();
         assertFalse(eventTriggered);
       });
+
+  test('Show locked sublabel when cellular network is locked', async () => {
+    const iccid = '11111111111111111111';
+    const eid = '1';
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
+    const networkStateLockedText =
+        listItem.i18n('networkListItemUpdatedCellularSimCardLocked');
+
+    listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ true);
+
+    await flushAsync();
+    const networkStateText = listItem.$$('#networkStateText');
+    assertTrue(!!networkStateText);
+    assertEquals(networkStateLockedText, networkStateText.textContent.trim());
+  });
+
+  test(
+      'Show locked sublabel when cellular network is locked and scanning',
+      async () => {
+        const iccid = '11111111111111111111';
+        const eid = '1';
+        eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
+        const networkStateLockedText =
+            listItem.i18n('networkListItemUpdatedCellularSimCardLocked');
+        const networkStateScanningText =
+            listItem.i18n('networkListItemScanning');
+
+        listItem.item = initCellularNetwork(iccid, eid, /*simlocked=*/ true);
+        listItem.deviceState = {scanning: true};
+
+        await flushAsync();
+        const networkStateText = listItem.$$('#networkStateText');
+        assertTrue(!!networkStateText);
+        assertEquals(
+            networkStateLockedText, networkStateText.textContent.trim());
+        assertNotEquals(
+            networkStateScanningText, networkStateText.textContent.trim());
+      });
 });
