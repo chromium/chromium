@@ -35,6 +35,9 @@ class AutofillSaveAddressProfileDelegateIOS : public ConfirmInfoBarDelegate {
   std::u16string GetMessageDescriptionText() const;
   std::u16string GetMessageActionText() const;
   const autofill::AutofillProfile* GetProfile() const;
+  void set_modal_is_shown_to_true() { modal_is_shown_ = true; }
+
+  void set_modal_is_dismissed_to_true() { modal_is_dismissed_ = true; }
 
   // ConfirmInfoBarDelegate
   int GetIconId() const override;
@@ -58,6 +61,12 @@ class AutofillSaveAddressProfileDelegateIOS : public ConfirmInfoBarDelegate {
   // The callback to run once the user makes a decision.
   AutofillClient::AddressProfileSavePromptCallback
       address_profile_save_prompt_callback_;
+
+  // True if the AddressProfile modal dialog is shown.
+  bool modal_is_shown_ = false;
+
+  // True if the modal dialog was presented and then dismissed by the user.
+  bool modal_is_dismissed_ = false;
 };
 
 }  // namespace autofill

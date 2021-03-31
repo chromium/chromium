@@ -1,0 +1,34 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_SAVE_ADDRESS_PROFILE_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_REQUEST_CALLBACK_INSTALLER_H_
+#define IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_SAVE_ADDRESS_PROFILE_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_REQUEST_CALLBACK_INSTALLER_H_
+
+#import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_modal_overlay_request_callback_installer.h"
+
+#include "base/memory/weak_ptr.h"
+
+class SaveAddressProfileInfobarModalInteractionHandler;
+
+// Callback installer for SaveAddressProfile infobar modal interaction events.
+class SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller
+    : public InfobarModalOverlayRequestCallbackInstaller {
+ public:
+  // Constructor for an instance that installs callbacks that forward
+  // interaction events to |interaction_handler|.
+  explicit SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller(
+      SaveAddressProfileInfobarModalInteractionHandler* interaction_handler);
+  ~SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller() override;
+
+ private:
+  // The handler for received responses.
+  SaveAddressProfileInfobarModalInteractionHandler* interaction_handler_ =
+      nullptr;
+
+  base::WeakPtrFactory<
+      SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller>
+      weak_factory_{this};
+};
+
+#endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_SAVE_ADDRESS_PROFILE_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_OVERLAY_REQUEST_CALLBACK_INSTALLER_H_

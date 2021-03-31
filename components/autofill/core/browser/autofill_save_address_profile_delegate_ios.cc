@@ -59,6 +59,12 @@ bool AutofillSaveAddressProfileDelegateIOS::Accept() {
 }
 
 void AutofillSaveAddressProfileDelegateIOS::InfoBarDismissed() {
+  // If the address profile modal dialog is presented, the user will be asked to
+  // save or cancel the address profile. In case the user cancels, then
+  // InfoBarDismissed() will be called.
+  if (modal_is_shown_ && !modal_is_dismissed_)
+    return;
+
   RunSaveAddressProfilePromptCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined);
 }
@@ -114,6 +120,10 @@ std::u16string AutofillSaveAddressProfileDelegateIOS::GetButtonLabel(
 void AutofillSaveAddressProfileDelegateIOS::RunSaveAddressProfilePromptCallback(
     AutofillClient::SaveAddressProfileOfferUserDecision decision) {
   std::move(address_profile_save_prompt_callback_).Run(decision, profile_);
+
+  // Reset the modal dialog flags.
+  modal_is_shown_ = false;
+  modal_is_dismissed_ = false;
 }
 
 }  // namespace autofill

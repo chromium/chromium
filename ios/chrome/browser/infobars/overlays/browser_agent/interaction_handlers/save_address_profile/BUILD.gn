@@ -9,6 +9,10 @@ source_set("save_address_profile") {
     "save_address_profile_infobar_banner_interaction_handler.mm",
     "save_address_profile_infobar_interaction_handler.h",
     "save_address_profile_infobar_interaction_handler.mm",
+    "save_address_profile_infobar_modal_interaction_handler.h",
+    "save_address_profile_infobar_modal_interaction_handler.mm",
+    "save_address_profile_infobar_modal_overlay_request_callback_installer.h",
+    "save_address_profile_infobar_modal_overlay_request_callback_installer.mm",
   ]
   deps = [
     "//base",
@@ -30,8 +34,10 @@ source_set("save_address_profile") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources =
-      [ "save_address_profile_infobar_banner_interaction_handler_unittest.mm" ]
+  sources = [
+    "save_address_profile_infobar_banner_interaction_handler_unittest.mm",
+    "save_address_profile_infobar_modal_interaction_handler_unittest.mm",
+  ]
   deps = [
     ":save_address_profile",
     "//base/test:test_support",

@@ -41,6 +41,23 @@ void SaveAddressProfileInfobarBannerInteractionHandler::BannerVisibilityChanged(
     GetInfobarDelegate(infobar)->InfoBarDismissed();
 }
 
+void SaveAddressProfileInfobarBannerInteractionHandler::ShowModalButtonTapped(
+    InfoBarIOS* infobar,
+    web::WebState* web_state) {
+  // Inform delegate that the modal is shown.
+  GetInfobarDelegate(infobar)->set_modal_is_shown_to_true();
+
+  InsertParams params(infobar);
+  params.infobar = infobar;
+  params.overlay_type = InfobarOverlayType::kModal;
+  params.insertion_index = OverlayRequestQueue::FromWebState(
+                               web_state, OverlayModality::kInfobarModal)
+                               ->size();
+  params.source = InfobarOverlayInsertionSource::kBanner;
+  InfobarOverlayRequestInserter::FromWebState(web_state)->InsertOverlayRequest(
+      params);
+}
+
 #pragma mark - Private
 
 autofill::AutofillSaveAddressProfileDelegateIOS*
