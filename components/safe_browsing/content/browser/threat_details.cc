@@ -889,7 +889,7 @@ void ThreatDetails::AllDone() {
                                 base::Unretained(web_contents())));
 }
 
-void ThreatDetails::FrameDeleted(RenderFrameHost* render_frame_host) {
+void ThreatDetails::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
   base::Erase(pending_render_frame_hosts_, render_frame_host);
 }
 
