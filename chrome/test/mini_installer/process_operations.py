@@ -7,6 +7,9 @@ import psutil
 import chrome_helper
 
 
+LOGGER = logging.getLogger('installer_test')
+
+
 def VerifyProcessExpectation(expectation_name, expectation, variable_expander):
     """Verifies that a file is present or absent, throwing an AssertionError if
     the expectation is not met.
@@ -63,8 +66,8 @@ def CleanProcess(expectation_name, expectation, variable_expander):
         pid = proc.pid
         try:
             proc.kill()
-            logging.info('CleanProcess killed process %s of pid %s' %
-                         (process_path, pid))
+            LOGGER.info('CleanProcess killed process %s of pid %s' %
+                        (process_path, pid))
         except psutil.NoSuchProcess:
-            logging.info('CleanProcess tried to kill process %s of pid %s, ' %
-                         (process_path, pid) + 'yet it was already gone')
+            LOGGER.info('CleanProcess tried to kill process %s of pid %s, ' %
+                        (process_path, pid) + 'yet it was already gone')

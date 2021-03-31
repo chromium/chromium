@@ -8,6 +8,8 @@ import logging
 import winerror
 import _winreg
 
+LOGGER = logging.getLogger('installer_test')
+
 _REGISTRY_VIEW_MAPPING = {
     'KEY_WOW64_32KEY': _winreg.KEY_WOW64_32KEY,
     'KEY_WOW64_64KEY': _winreg.KEY_WOW64_64KEY,
@@ -197,7 +199,7 @@ def CleanRegistryEntry(expectation_name, expectation, variable_expander):
              | _winreg.KEY_QUERY_VALUE | _winreg.KEY_SET_VALUE
              | registry_view))
         win32api.RegDeleteTree(root_handle, sub_key)
-        logging.info('CleanRegistryEntry deleted key %s' % key)
+        LOGGER.info('CleanRegistryEntry deleted key %s' % key)
         return
 
     assert 'values' in expectation and expectation['values'], (
@@ -210,8 +212,8 @@ def CleanRegistryEntry(expectation_name, expectation, variable_expander):
             '%s\\%s must not specify a \'type\'' % (key, value))
         try:
             _winreg.DeleteValue(key_handle, value)
-            logging.info('CleanRegistryEntry deleted value %s\\%s' %
-                         (key, value))
+            LOGGER.info('CleanRegistryEntry deleted value %s\\%s' %
+                        (key, value))
         except WindowsError as e:
             if e.winerror == winerror.ERROR_FILE_NOT_FOUND:
                 continue

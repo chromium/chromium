@@ -33,6 +33,9 @@ SRC_DIR = os.path.join(THIS_DIR, '..', '..', '..')
 RUNNING_LOCALLY = (os.getenv('SWARMING_HEADLESS') != '1'
                    and os.getenv('CHROME_HEADLESS') != '1')
 
+# The logger configured in this module and used by its dependents.
+LOGGER = logging.getLogger('installer_test')
+
 
 def GetArgumentParser(doc=__doc__):
     """Gets a parser object with this module's args.
@@ -184,9 +187,9 @@ class InstallerTest(unittest.TestCase):
         # Starting at index 1, we loop through pairs of (action, state).
         for i in range(1, len(self._test), 2):
             action = self._test[i]
-            logging.info('Beginning action %s' % action)
+            LOGGER.info('Beginning action %s' % action)
             RunCommand(self._config.actions[action], self._variable_expander)
-            logging.info('Finished action %s' % action)
+            LOGGER.info('Finished action %s' % action)
 
             state = self._test[i + 1]
             self._VerifyState(state)
@@ -208,10 +211,10 @@ class InstallerTest(unittest.TestCase):
                 target = os.path.join(self._output_dir,
                                       os.path.basename(self._log_path))
                 shutil.copyfile(self._log_path, target)
-                logging.error('Saved installer log to %s', target)
+                LOGGER.error('Saved installer log to %s', target)
             else:
                 with open(self._log_path) as fh:
-                    logging.error(fh.read())
+                    LOGGER.error(fh.read())
 
     def shortDescription(self):
         """Overridden from unittest.TestCase.
@@ -229,7 +232,7 @@ class InstallerTest(unittest.TestCase):
         Args:
             state: A state name.
         """
-        logging.info('Verifying state %s' % state)
+        LOGGER.info('Verifying state %s' % state)
         try:
             property_walker.Verify(self._config.states[state],
                                    self._variable_expander)
@@ -271,9 +274,9 @@ def RunCommand(command, variable_expander):
         returncode = proc.returncode
 
     if stdout:
-        logging.info('stdout:\n%s', stdout.replace('\r', '').rstrip('\n'))
+        LOGGER.info('stdout:\n%s', stdout.replace('\r', '').rstrip('\n'))
     if stderr:
-        logging.error('stdout:\n%s', stderr.replace('\r', '').rstrip('\n'))
+        LOGGER.error('stdout:\n%s', stderr.replace('\r', '').rstrip('\n'))
     if returncode != 0:
         raise Exception('Command %s returned non-zero exit status %s' %
                         (expanded_command, returncode))
@@ -314,7 +317,7 @@ def RunCleanCommand(force_clean, clean_state, variable_expander):
         except:  # pylint: disable=bare-except
             message = traceback.format_exception(*sys.exc_info())
             message.insert(0, 'Error cleaning up an old install with:\n')
-            logging.info(''.join(message))
+            LOGGER.info(''.join(message))
 
     # Once everything is uninstalled, make a pass to delete any stray tidbits on
     # the machine.
@@ -525,7 +528,7 @@ def GetAbsoluteConfigPath(path):
         path = os.path.join(THIS_DIR, 'config', path)
 
     assert os.path.exists(path), 'Config can\'t be found: %s' % path
-    logging.info('Config found at %s', path)
+    LOGGER.info('Config found at %s', path)
     return os.path.abspath(path)
 
 
@@ -541,15 +544,15 @@ def DoMain():
         with open(args.test_list) as f:
             tests_to_run = [test.strip() for test in f.readlines()]
 
-    # Due to what looks like a bug the root handlers need to be cleared out
-    # so the right handler will be created.
-    logging.Logger.root.handlers = []
     log_level = (logging.ERROR if args.quiet else
                  logging.DEBUG if args.verbose else logging.INFO)
-    logging.basicConfig(
-        format='[%(asctime)s:%(filename)s(%(lineno)d)] %(message)s',
-        datefmt='%m%d/%H%M%S',
-        level=log_level)
+    LOGGER.setLevel(log_level)
+    handler = logging.StreamHandler()
+    handler.setFormatter(
+        logging.Formatter(
+            fmt='[%(asctime)s:%(filename)s(%(lineno)d)] %(message)s',
+            datefmt='%m%d/%H%M%S'))
+    LOGGER.addHandler(handler)
 
     # TODO(mmeade): Fully switch to paths
     # Use absolute paths.
@@ -563,7 +566,7 @@ def DoMain():
 
     # Set --force-clean when not running locally
     if not RUNNING_LOCALLY:
-        logging.info('Setting --force-clean')
+        LOGGER.info('Setting --force-clean')
         args.force_clean = True
 
     suite = unittest.TestSuite()

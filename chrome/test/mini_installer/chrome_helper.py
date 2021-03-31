@@ -11,6 +11,9 @@ import win32gui
 import win32process
 
 
+LOGGER = logging.getLogger('installer_test')
+
+
 def get_process_name(p):
     """A wrapper to return a psutil.Process name."""
     # Process.name was a property prior to version 2.0.
@@ -81,8 +84,8 @@ def WaitForChromeExit(chrome_path):
             try:
                 if get_process_exe(process) == chrome_path:
                     chrome_processes[process.pid] = process
-                    logging.info('Found chrome process %s' %
-                                 get_process_exe(process))
+                    LOGGER.info('Found chrome process %s' %
+                                get_process_exe(process))
                 elif get_process_name(process) == os.path.basename(
                         chrome_path):
                     raise Exception('Found other chrome process %s' %
@@ -112,9 +115,9 @@ def WaitForChromeExit(chrome_path):
             # Pick any process to wait on if no top-level parent was found.
             process = next(chrome_processes.itervalues())
         if process.is_running():
-            logging.info('Waiting on %s for %s %s processes to exit' %
-                         (str(process), len(chrome_processes),
-                          get_process_exe(process)))
+            LOGGER.info('Waiting on %s for %s %s processes to exit' %
+                        (str(process), len(chrome_processes),
+                         get_process_exe(process)))
             process.wait()
         # Check for stragglers and keep waiting until all are gone.
         chrome_processes = GetChromeProcesses(chrome_path)

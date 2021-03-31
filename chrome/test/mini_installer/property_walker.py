@@ -10,6 +10,9 @@ import process_operations
 import registry_operations
 
 
+LOGGER = logging.getLogger('installer_test')
+
+
 def Verify(property_dict, variable_expander):
     """Verifies the expectations in a property dict.
 
@@ -69,8 +72,8 @@ def _Walk(operations, continue_on_error, property_dict, variable_expander):
             except:  # pylint: disable=bare-except
                 if not continue_on_error:
                     raise
-                logging.error('Error while processing expectation %s: %s' %
-                              (expectation_name, sys.exc_info()[1]))
+                LOGGER.error('Error while processing expectation %s: %s' %
+                             (expectation_name, sys.exc_info()[1]))
 
 
 def _EvaluateCondition(condition):

@@ -9,6 +9,9 @@ import stat
 import winerror
 
 
+LOGGER = logging.getLogger('installer_test')
+
+
 def VerifyFileExpectation(expectation_name, expectation, variable_expander):
     """Verifies that a file is present or absent, throwing an AssertionError if
     the expectation is not met.
@@ -73,10 +76,10 @@ def CleanFile(expectation_name, expectation, variable_expander):
     try:
         if stat.S_ISDIR(os.lstat(file_path).st_mode):
             shutil.rmtree(file_path)
-            logging.info('CleanFile deleted directory %s' % file_path)
+            LOGGER.info('CleanFile deleted directory %s' % file_path)
         else:
             os.remove(file_path)
-            logging.info('CleanFile deleted file %s' % file_path)
+            LOGGER.info('CleanFile deleted file %s' % file_path)
     except WindowsError as e:
         if (e.winerror != winerror.ERROR_FILE_NOT_FOUND
                 and e.winerror != winerror.ERROR_PATH_NOT_FOUND):
