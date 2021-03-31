@@ -14,6 +14,8 @@ extern "C" {
 using GskRenderNode = struct _GskRenderNode;
 enum GskRenderNodeType : int;
 GskRenderNodeType gsk_render_node_get_node_type(GskRenderNode* node);
+#else
+using GtkWidgetPath = struct _GtkWidgetPath;
 #endif
 }
 

@@ -31,11 +31,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/linux_ui/linux_ui.h"
 
-#if BUILDFLAG(GTK_VERSION) < 4
-WEAK_GTK_FN(gtk_widget_path_iter_set_object_name);
-WEAK_GTK_FN(gtk_widget_path_iter_set_state);
-#endif
-
 namespace gtk {
 
 namespace {
@@ -72,81 +67,77 @@ GtkCssContext AppendCssNodeToStyleContextImpl(
     const std::vector<std::string>& classes,
     GtkStateFlags state,
     float scale) {
-#if BUILDFLAG(GTK_VERSION) >= 4
-  // GTK_TYPE_BOX is used instead of GTK_TYPE_WIDGET because:
-  // 1. Widgets are abstract and cannot be created directly.
-  // 2. The widget must be a container type so that it unrefs child widgets
-  //    on destruction.
-  auto* widget_object = object_name.empty()
-                            ? g_object_new(GTK_TYPE_BOX, nullptr)
-                            : g_object_new(GTK_TYPE_BOX, "css-name",
-                                           object_name.c_str(), nullptr);
-  auto widget = TakeGObject(GTK_WIDGET(widget_object));
+  if (GtkCheckVersion(4)) {
+    // GTK_TYPE_BOX is used instead of GTK_TYPE_WIDGET because:
+    // 1. Widgets are abstract and cannot be created directly.
+    // 2. The widget must be a container type so that it unrefs child widgets
+    //    on destruction.
+    auto* widget_object = object_name.empty()
+                              ? g_object_new(GTK_TYPE_BOX, nullptr)
+                              : g_object_new(GTK_TYPE_BOX, "css-name",
+                                             object_name.c_str(), nullptr);
+    auto widget = TakeGObject(GTK_WIDGET(widget_object));
 
-  if (!name.empty())
-    gtk_widget_set_name(widget, name.c_str());
+    if (!name.empty())
+      gtk_widget_set_name(widget, name.c_str());
 
-  std::vector<const char*> css_classes;
-  css_classes.reserve(classes.size() + 1);
-  for (const auto& css_class : classes)
-    css_classes.push_back(css_class.c_str());
-  css_classes.push_back(nullptr);
-  gtk_widget_set_css_classes(widget, css_classes.data());
+    std::vector<const char*> css_classes;
+    css_classes.reserve(classes.size() + 1);
+    for (const auto& css_class : classes)
+      css_classes.push_back(css_class.c_str());
+    css_classes.push_back(nullptr);
+    gtk_widget_set_css_classes(widget, css_classes.data());
 
-  gtk_widget_set_state_flags(widget, state, false);
+    gtk_widget_set_state_flags(widget, state, false);
 
-  if (context)
-    gtk_widget_set_parent(widget, context);
+    if (context)
+      gtk_widget_set_parent(widget, context.widget());
 
-  gtk_style_context_set_scale(gtk_widget_get_style_context(widget), scale);
+    gtk_style_context_set_scale(gtk_widget_get_style_context(widget), scale);
 
-  return GtkCssContext(widget, context ? context.root() : widget);
-#else
-  GtkWidgetPath* path =
-      context ? gtk_widget_path_copy(gtk_style_context_get_path(context))
-              : gtk_widget_path_new();
-  gtk_widget_path_append_type(path, gtype);
-
-  if (!object_name.empty()) {
-    if (GtkCheckVersion(3, 20)) {
-      DCHECK(gtk_widget_path_iter_set_object_name);
-      gtk_widget_path_iter_set_object_name(path, -1, object_name.c_str());
-    } else {
-      gtk_widget_path_iter_add_class(path, -1, object_name.c_str());
-    }
-  }
-
-  if (!name.empty())
-    gtk_widget_path_iter_set_name(path, -1, name.c_str());
-
-  for (const auto& css_class : classes)
-    gtk_widget_path_iter_add_class(path, -1, css_class.c_str());
-
-  if (GtkCheckVersion(3, 14)) {
-    DCHECK(gtk_widget_path_iter_set_state);
-    gtk_widget_path_iter_set_state(path, -1, state);
-  }
-
-  GtkCssContext child_context(TakeGObject(gtk_style_context_new()));
-  gtk_style_context_set_path(child_context, path);
-  if (GtkCheckVersion(3, 14)) {
-    gtk_style_context_set_state(child_context, state);
+    return GtkCssContext(widget, context ? context.root() : widget);
   } else {
-    GtkStateFlags child_state = state;
-    if (context) {
-      child_state = static_cast<GtkStateFlags>(
-          child_state | gtk_style_context_get_state(context));
+    GtkWidgetPath* path =
+        context ? gtk_widget_path_copy(gtk_style_context_get_path(context))
+                : gtk_widget_path_new();
+    gtk_widget_path_append_type(path, gtype);
+
+    if (!object_name.empty()) {
+      if (GtkCheckVersion(3, 20))
+        gtk_widget_path_iter_set_object_name(path, -1, object_name.c_str());
+      else
+        gtk_widget_path_iter_add_class(path, -1, object_name.c_str());
     }
-    gtk_style_context_set_state(child_context, child_state);
+
+    if (!name.empty())
+      gtk_widget_path_iter_set_name(path, -1, name.c_str());
+
+    for (const auto& css_class : classes)
+      gtk_widget_path_iter_add_class(path, -1, css_class.c_str());
+
+    if (GtkCheckVersion(3, 14))
+      gtk_widget_path_iter_set_state(path, -1, state);
+
+    GtkCssContext child_context(TakeGObject(gtk_style_context_new()));
+    gtk_style_context_set_path(child_context, path);
+    if (GtkCheckVersion(3, 14)) {
+      gtk_style_context_set_state(child_context, state);
+    } else {
+      GtkStateFlags child_state = state;
+      if (context) {
+        child_state = static_cast<GtkStateFlags>(
+            child_state | gtk_style_context_get_state(context));
+      }
+      gtk_style_context_set_state(child_context, child_state);
+    }
+
+    gtk_style_context_set_scale(child_context, scale);
+
+    gtk_style_context_set_parent(child_context, context);
+
+    gtk_widget_path_unref(path);
+    return GtkCssContext(child_context);
   }
-
-  gtk_style_context_set_scale(child_context, scale);
-
-  gtk_style_context_set_parent(child_context, context);
-
-  gtk_widget_path_unref(path);
-  return GtkCssContext(child_context);
-#endif
 }
 
 GtkWidget* CreateDummyWindow() {
@@ -268,19 +259,44 @@ SkColor CairoSurface::GetAveragePixelValue(bool frame) {
                         g * 255 / a, b * 255 / a);
 }
 
-#if BUILDFLAG(GTK_VERSION) >= 4
 GtkCssContext::GtkCssContext(GtkWidget* widget, GtkWidget* root)
-    : widget_(widget), root_(WrapGObject(root)) {}
-#else
+    : widget_(widget), root_(WrapGObject(root)) {
+  DCHECK(GtkCheckVersion(4));
+}
+
 GtkCssContext::GtkCssContext(GtkStyleContext* context)
-    : context_(WrapGObject(context)) {}
-#endif
+    : context_(WrapGObject(context)) {
+  DCHECK(!GtkCheckVersion(4));
+}
+
 GtkCssContext::GtkCssContext() = default;
 GtkCssContext::GtkCssContext(const GtkCssContext&) = default;
 GtkCssContext::GtkCssContext(GtkCssContext&&) = default;
 GtkCssContext& GtkCssContext::operator=(const GtkCssContext&) = default;
 GtkCssContext& GtkCssContext::operator=(GtkCssContext&&) = default;
 GtkCssContext::~GtkCssContext() = default;
+
+GtkCssContext::operator GtkStyleContext*() {
+  return GtkCheckVersion(4) ? gtk_widget_get_style_context(widget_) : context_;
+}
+
+GtkCssContext GtkCssContext::GetParent() {
+  if (GtkCheckVersion(4)) {
+    return GtkCssContext(WrapGObject(gtk_widget_get_parent(widget_)),
+                         root_ == widget_ ? nullptr : root_);
+  }
+  return GtkCssContext(WrapGObject(gtk_style_context_get_parent(context_)));
+}
+
+GtkWidget* GtkCssContext::widget() {
+  DCHECK(GtkCheckVersion(4));
+  return widget_;
+}
+
+GtkWidget* GtkCssContext::root() {
+  DCHECK(GtkCheckVersion(4));
+  return root_;
+}
 
 GtkStateFlags StateToStateFlags(ui::NativeTheme::State state) {
   switch (state) {

@@ -5,10 +5,17 @@
 #ifndef UI_GTK_GTK_COMPAT_H_
 #define UI_GTK_GTK_COMPAT_H_
 
+#include <gdk/gdk.h>
+#include <gtk/gtk.h>
+
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
+#include "ui/gtk/gtk_types.h"
+extern "C" {
+#include "ui/gtk/gtk.sigs"
+}
 
 namespace gtk {
 

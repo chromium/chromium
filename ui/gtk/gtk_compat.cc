@@ -5,7 +5,6 @@
 #include "ui/gtk/gtk_compat.h"
 
 #include <dlfcn.h>
-#include <gtk/gtk.h>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"

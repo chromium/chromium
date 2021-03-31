@@ -188,21 +188,22 @@ gfx::Size GetMinimumWidgetSize(gfx::Size content_size,
   // On GTK4, the CSS properties are hidden, so compute the min size indirectly,
   // which will include the border, margin, and padding.  We can't take this
   // codepath on GTK3 since we only have a widget available in GTK4.
-#if BUILDFLAG(GTK_VERSION) >= 4
-  gtk_widget_measure(widget_context, GTK_ORIENTATION_HORIZONTAL, -1, &min_width,
-                     nullptr, nullptr, nullptr);
-  gtk_widget_measure(widget_context, GTK_ORIENTATION_VERTICAL, -1, &min_height,
-                     nullptr, nullptr, nullptr);
+  if (GtkCheckVersion(4)) {
+    gtk_widget_measure(widget_context.widget(), GTK_ORIENTATION_HORIZONTAL, -1,
+                       &min_width, nullptr, nullptr, nullptr);
+    gtk_widget_measure(widget_context.widget(), GTK_ORIENTATION_VERTICAL, -1,
+                       &min_height, nullptr, nullptr, nullptr);
 
-  // The returned "minimum size" is the drawn size of the widget, which doesn't
-  // include the margin.  However, GTK includes this size in its calculation. So
-  // remove the margin, recompute the min size, then add it back.
-  auto margin = MarginFromStyleContext(widget_context, state);
-  widget_rect.Inset(-margin);
-  widget_rect.set_width(std::max(widget_rect.width(), min_width));
-  widget_rect.set_height(std::max(widget_rect.height(), min_height));
-  widget_rect.Inset(margin);
-#endif
+    // The returned "minimum size" is the drawn size of the widget, which
+    // doesn't include the margin.  However, GTK includes this size in its
+    // calculation. So remove the margin, recompute the min size, then add it
+    // back.
+    auto margin = MarginFromStyleContext(widget_context, state);
+    widget_rect.Inset(-margin);
+    widget_rect.set_width(std::max(widget_rect.width(), min_width));
+    widget_rect.set_height(std::max(widget_rect.height(), min_height));
+    widget_rect.Inset(margin);
+  }
 
   return widget_rect.size();
 }

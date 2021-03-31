@@ -18,10 +18,6 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/window/frame_buttons.h"
 
-// Function availability can be tested by checking if the address of gtk_* is
-// not nullptr.
-#define WEAK_GTK_FN(x) extern "C" __attribute__((weak)) decltype(x) x
-
 namespace aura {
 class Window;
 }
@@ -91,41 +87,32 @@ class GtkCssContext {
   GtkCssContext& operator=(GtkCssContext&&);
   ~GtkCssContext();
 
-#if BUILDFLAG(GTK_VERSION) >= 4
+  // GTK3 constructor.
+  explicit GtkCssContext(GtkStyleContext* context);
+
+  // GTK4 constructor.
   GtkCssContext(GtkWidget* widget, GtkWidget* root);
 
-  operator bool() { return widget_; }
+  // As a convenience, allow using a GtkCssContext as a gtk_style_context()
+  // to avoid repeated use of an explicit getter.
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator GtkStyleContext*();
 
-  operator GtkStyleContext*() { return gtk_widget_get_style_context(widget_); }
+  GtkCssContext GetParent();
 
-  operator GtkWidget*() { return widget_; }
-
-  GtkWidget* root() { return root_; }
-
-  GtkCssContext GetParent() {
-    return GtkCssContext(WrapGObject(gtk_widget_get_parent(widget_)),
-                         root_ == widget_ ? nullptr : root_);
-  }
+  // Only available on GTK4.
+  GtkWidget* widget();
+  GtkWidget* root();
 
  private:
+  // GTK3 state.
+  ScopedGObject<GtkStyleContext> context_;
+
+  // GTK4 state.
   // GTK widgets own their children, so instead of keeping a reference to the
   // widget directly, keep a reference to the root widget.
   GtkWidget* widget_ = nullptr;
   ScopedGObject<GtkWidget> root_;
-#else
-  explicit GtkCssContext(GtkStyleContext* context);
-
-  operator bool() { return context_; }
-
-  operator GtkStyleContext*() { return context_; }
-
-  GtkCssContext GetParent() {
-    return GtkCssContext(WrapGObject(gtk_style_context_get_parent(context_)));
-  }
-
- private:
-  ScopedGObject<GtkStyleContext> context_;
-#endif
 };
 
 using ScopedCssProvider = ScopedGObject<GtkCssProvider>;

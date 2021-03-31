@@ -1,1 +1,16 @@
 GtkSettings* gtk_settings_get_default(void);
+void gtk_widget_path_iter_set_object_name(GtkWidgetPath* path, gint pos, const gchar* name);
+void gtk_widget_path_iter_add_class(GtkWidgetPath* path, gint pos, const gchar* name);
+GtkWidgetPath* gtk_widget_path_copy(const GtkWidgetPath* path);
+GtkWidgetPath* gtk_widget_path_new(void);
+const GtkWidgetPath* gtk_style_context_get_path(GtkStyleContext* context);
+gint gtk_widget_path_append_type(GtkWidgetPath* path, GType type);
+void gtk_widget_path_iter_set_name(GtkWidgetPath* path, gint pos, const gchar* name);
+void gtk_widget_path_iter_set_state(GtkWidgetPath* path, gint pos, GtkStateFlags state);
+GtkStyleContext* gtk_style_context_new(void);
+void gtk_style_context_set_path(GtkStyleContext* context, GtkWidgetPath* path);
+void gtk_style_context_set_parent(GtkStyleContext* context, GtkStyleContext* parent);
+void gtk_widget_path_unref(GtkWidgetPath* path);
+GtkStyleContext* gtk_style_context_get_parent(GtkStyleContext* context);
+void gtk_widget_set_css_classes(GtkWidget* widget, const char** classes);
+void gtk_widget_measure(GtkWidget* widget, GtkOrientation orientation, int for_size, int* minimum, int* natural, int* minimum_baseline, int* natural_baseline);
