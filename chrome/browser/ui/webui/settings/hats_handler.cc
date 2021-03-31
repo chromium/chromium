@@ -9,6 +9,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -34,6 +35,16 @@ void HatsHandler::RegisterMessages() {
 }
 
 void HatsHandler::HandleTryShowHatsSurvey(const base::ListValue* args) {
+  // If the privacy settings survey is explicitly targeting users who have not
+  // viewed the Privacy Sandbox page, and this user has viewed the page, do
+  // not attempt to show the privacy settings survey.
+  if (features::kHappinessTrackingSurveysForDesktopSettingsPrivacyNoSandbox
+          .Get() &&
+      Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
+          prefs::kPrivacySandboxPageViewed)) {
+    return;
+  }
+
   HatsService* hats_service = HatsServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui()), /* create_if_necessary = */ true);
   if (hats_service) {

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -52,6 +53,9 @@ class HatsHandlerTest : public ChromeRenderViewHostTestHarness {
   HatsHandler* handler() { return handler_.get(); }
   MockHatsService* mock_hats_service_;
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<HatsHandler> handler_;
@@ -62,6 +66,25 @@ TEST_F(HatsHandlerTest, HandleTryShowHatsSurvey) {
                                        kHatsSurveyTriggerSettingsPrivacy,
                                        web_contents(), 20000, testing::_));
   base::ListValue args;
+  handler()->HandleTryShowHatsSurvey(&args);
+  task_environment()->RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
+
+  // Enable targeting for users who have not seen the Privacy Sandbox page and
+  // ensure the handler does not attempt to launch the survey.
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchDelayedSurveyForWebContents(testing::_, testing::_,
+                                                testing::_, testing::_))
+      .Times(0);
+
+  base::test::ScopedFeatureList::FeatureAndParams feature_and_params{
+      features::kHappinessTrackingSurveysForDesktopSettingsPrivacy,
+      {{"no-sandbox", "true"}}};
+  scoped_feature_list_.InitWithFeaturesAndParameters({feature_and_params}, {});
+
+  profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
+
   handler()->HandleTryShowHatsSurvey(&args);
   task_environment()->RunUntilIdle();
 }
