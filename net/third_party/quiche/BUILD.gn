@@ -45,7 +45,6 @@ source_set("quiche") {
       "src/common/platform/api/quiche_flag_utils.h",
       "src/common/platform/api/quiche_flags.h",
       "src/common/platform/api/quiche_logging.h",
-      "src/common/platform/api/quiche_string_view.h",
       "src/common/platform/api/quiche_text_utils.h",
       "src/common/platform/api/quiche_time_utils.h",
       "src/common/quiche_data_reader.cc",
