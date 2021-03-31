@@ -791,63 +791,68 @@ int UDPSocketPosix::InternalRecvFromConnectedSocket(IOBuffer* buf,
                                                     IPEndPoint* address) {
   DCHECK(is_connected_);
   DCHECK(remote_address_);
-  int bytes_transferred;
-  bytes_transferred = HANDLE_EINTR(read(socket_, buf->data(), buf_len));
   int result;
-
+  int bytes_transferred = HANDLE_EINTR(read(socket_, buf->data(), buf_len));
   if (bytes_transferred < 0) {
     result = MapSystemError(errno);
+    if (result == ERR_IO_PENDING) {
+      return result;
+    }
   } else if (bytes_transferred == buf_len) {
+    // NB: recv(..., MSG_TRUNC) would be a more reliable way to do this on
+    // Linux, but isn't supported by POSIX.
     result = ERR_MSG_TOO_BIG;
   } else {
     result = bytes_transferred;
-    if (address)
+    if (address) {
       *address = *remote_address_.get();
+    }
   }
 
-  if (result != ERR_IO_PENDING) {
-    SockaddrStorage sock_addr;
-    bool success =
+  SockaddrStorage sock_addr;
+  bool success =
         remote_address_->ToSockAddr(sock_addr.addr, &sock_addr.addr_len);
     DCHECK(success);
     LogRead(result, buf->data(), sock_addr.addr_len, sock_addr.addr);
-  }
   return result;
 }
 
 int UDPSocketPosix::InternalRecvFromNonConnectedSocket(IOBuffer* buf,
                                                        int buf_len,
                                                        IPEndPoint* address) {
-  int bytes_transferred;
-
-  struct iovec iov = {};
-  iov.iov_base = buf->data();
-  iov.iov_len = buf_len;
-
-  struct msghdr msg = {};
-  msg.msg_iov = &iov;
-  msg.msg_iovlen = 1;
-
   SockaddrStorage storage;
-  msg.msg_name = storage.addr;
-  msg.msg_namelen = storage.addr_len;
-
-  bytes_transferred = HANDLE_EINTR(recvmsg(socket_, &msg, 0));
-  storage.addr_len = msg.msg_namelen;
+  struct iovec iov = {
+      .iov_base = buf->data(),
+      .iov_len = buf_len,
+  };
+  struct msghdr msg = {
+      .msg_name = storage.addr,
+      .msg_namelen = storage.addr_len,
+      .msg_iov = &iov,
+      .msg_iovlen = 1,
+  };
   int result;
-  if (bytes_transferred >= 0) {
-    if (msg.msg_flags & MSG_TRUNC) {
-      result = ERR_MSG_TOO_BIG;
-    } else {
-      result = bytes_transferred;
-      if (address && !address->FromSockAddr(storage.addr, storage.addr_len))
-        result = ERR_ADDRESS_INVALID;
+  int bytes_transferred = HANDLE_EINTR(recvmsg(socket_, &msg, 0));
+  if (bytes_transferred < 0) {
+    result = MapSystemError(errno);
+    if (result == ERR_IO_PENDING) {
+      return result;
     }
   } else {
-    result = MapSystemError(errno);
+    storage.addr_len = msg.msg_namelen;
+    if (msg.msg_flags & MSG_TRUNC) {
+      // NB: recvfrom(..., MSG_TRUNC, ...) would be a simpler way to do this on
+      // Linux, but isn't supported by POSIX.
+      result = ERR_MSG_TOO_BIG;
+    } else if (address &&
+               !address->FromSockAddr(storage.addr, storage.addr_len)) {
+      result = ERR_ADDRESS_INVALID;
+    } else {
+      result = bytes_transferred;
+    }
   }
-  if (result != ERR_IO_PENDING)
-    LogRead(result, buf->data(), storage.addr_len, storage.addr);
+
+  LogRead(result, buf->data(), storage.addr_len, storage.addr);
   return result;
 }
 
