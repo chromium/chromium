@@ -258,17 +258,13 @@ bool IsShadowContentRelevantForAccessibility(const Node* node) {
     return true;
 
   // All non-slot user agent shadow nodes are relevant.
-  if (!IsA<HTMLSlotElement>(node))
+  const HTMLSlotElement* slot_element = DynamicTo<HTMLSlotElement>(node);
+  if (!slot_element)
     return true;
 
-  // A PDF plugin (when it has content) exposes a slot as its first child.
-  // This child is only relevant if it has contents. Marking others irrelevant
-  // keeps PDF plugin AX hierarchies as expected, otherwise there is an extra
-  // ignored Role::kGenericContainer sibling before the Role::kPdfRoot.
-  // TODO(accessibility) This should either be a more general rule about slots,
-  // or fixed in the PDF tests.
-  if (IsA<HTMLPlugInElement>(LayoutTreeBuilderTraversal::Parent(*node)))
-    return To<HTMLSlotElement>(node)->AssignedNodes().size();
+  // All empty slots are irrelevant.
+  if (!LayoutTreeBuilderTraversal::FirstChild(*slot_element))
+    return false;
 
   // If the UseAXMenuList flag is on, we use a specialized class AXMenuList
   // for handling the user-agent shadow DOM exposed by a <select> element.
