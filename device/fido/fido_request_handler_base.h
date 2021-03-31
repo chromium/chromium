@@ -33,6 +33,7 @@ class BleAdapterManager;
 class FidoAuthenticator;
 class FidoDiscoveryFactory;
 class PublicKeyCredentialUserEntity;
+struct TransportAvailabilityCallbackReadiness;
 
 // Base class that handles authenticator discovery/removal. Its lifetime is
 // equivalent to that of a single WebAuthn request. For each authenticator, the
@@ -224,13 +225,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
   base::WeakPtr<FidoRequestHandlerBase> GetWeakPtr();
 
-  void set_observer(Observer* observer) {
-    DCHECK(!observer_) << "Only one observer is supported.";
-    observer_ = observer;
-
-    DCHECK(notify_observer_callback_);
-    notify_observer_callback_.Run();
-  }
+  void set_observer(Observer* observer);
 
   // Returns whether FidoAuthenticator with id equal to |authenticator_id|
   // exists. Fake FidoRequestHandler objects used in testing overrides this
@@ -296,7 +291,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
  private:
   friend class FidoRequestHandlerTest;
 
-  void NotifyObserverTransportAvailability();
+  void MaybeSignalTransportsEnumerated();
 
   // Invokes FidoAuthenticator::InitializeAuthenticator(), followed by
   // DispatchRequest(). InitializeAuthenticator() sends a GetInfo command
@@ -311,8 +306,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries_;
   Observer* observer_ = nullptr;
   TransportAvailabilityInfo transport_availability_info_;
-  base::RepeatingClosure notify_observer_callback_;
   std::unique_ptr<BleAdapterManager> bluetooth_adapter_manager_;
+
+  // transport_availability_callback_readiness_ keeps track of state which
+  // determines whether this object is ready to call
+  // |OnTransportAvailabilityEnumerated| on |observer_|.
+  std::unique_ptr<TransportAvailabilityCallbackReadiness>
+      transport_availability_callback_readiness_;
 
   base::WeakPtrFactory<FidoRequestHandlerBase> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(FidoRequestHandlerBase);

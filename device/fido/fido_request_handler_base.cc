@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -26,6 +25,35 @@
 #endif
 
 namespace device {
+
+// TransportAvailabilityCallbackReadiness stores state that tracks whether
+// |FidoRequestHandlerBase| is ready to call
+// |OnTransportAvailabilityEnumerated|.
+struct TransportAvailabilityCallbackReadiness {
+  // callback_made is true if the |OnTransportAvailabilityEnumerated| callback
+  // has been made.
+  bool callback_made = false;
+
+  // ble_information_pending is true if the |OnTransportAvailabilityEnumerated|
+  // callback is pending BLE status information.
+  bool ble_information_pending = false;
+
+  // platform_credential_check_pending is true if the
+  // |OnTransportAvailabilityEnumerated| callback is pending
+  // |OnHasRecognizedPlatformCredentialFilled| being called after the platform
+  // authenticator has decided if it has credentials that are responsive to the
+  // request.
+  bool platform_credential_check_pending = false;
+
+  // num_discoveries_pending is the number of discoveries that are still yet to
+  // signal that they have started.
+  unsigned num_discoveries_pending = 0;
+
+  bool CanMakeCallback() const {
+    return !callback_made && !ble_information_pending &&
+           !platform_credential_check_pending && num_discoveries_pending == 0;
+  }
+};
 
 // FidoRequestHandlerBase::TransportAvailabilityInfo --------------------------
 
@@ -48,11 +76,14 @@ FidoRequestHandlerBase::Observer::~Observer() = default;
 
 // FidoRequestHandlerBase -----------------------------------------------------
 
-FidoRequestHandlerBase::FidoRequestHandlerBase() = default;
+FidoRequestHandlerBase::FidoRequestHandlerBase()
+    : transport_availability_callback_readiness_(
+          new TransportAvailabilityCallbackReadiness) {}
 
 FidoRequestHandlerBase::FidoRequestHandlerBase(
     FidoDiscoveryFactory* fido_discovery_factory,
-    const base::flat_set<FidoTransportProtocol>& available_transports) {
+    const base::flat_set<FidoTransportProtocol>& available_transports)
+    : FidoRequestHandlerBase() {
   InitDiscoveries(fido_discovery_factory, available_transports);
 }
 
@@ -109,44 +140,25 @@ void FidoRequestHandlerBase::InitDiscoveries(
     }
   }
 
+  transport_availability_callback_readiness_->num_discoveries_pending =
+      discoveries_.size();
+
   // Check if the platform supports BLE before trying to get a power manager.
   // CaBLE might be in |available_transports| without actual BLE support under
   // the virtual environment.
   // TODO(nsatragno): Move the BLE power manager logic to CableDiscoveryFactory
   // so we don't need this additional check.
-  bool has_ble = false;
   if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
       base::Contains(transport_availability_info_.available_transports,
                      FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy)) {
-    has_ble = true;
+    transport_availability_callback_readiness_->ble_information_pending = true;
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(&FidoRequestHandlerBase::ConstructBleAdapterPowerManager,
                        weak_factory_.GetWeakPtr()));
   }
 
-  bool has_platform =
-      base::Contains(transport_availability_info_.available_transports,
-                     FidoTransportProtocol::kInternal);
-
-  // Initialize |notify_observer_callback_| with the number of times it has to
-  // be invoked before Observer::OnTransportAvailabilityEnumerated is
-  // dispatched.
-  // Essentially this is used to wait until the parts
-  // |transport_availability_info_| are filled out; the
-  // |notify_observer_callback_| is invoked once for each discovery once it is
-  // ready, and additionally:
-  //
-  // 1) [If BLE or caBLE are enabled] once BLE adapters have been enumerated
-  // 2) [If platform transport requested] When
-  //    OnHasRecognizedPlatformCredentialFilled() runs.
-  // 3) When |observer_| is set, so that OnTransportAvailabilityEnumerated is
-  //    never called before it is set.
-  notify_observer_callback_ = base::BarrierClosure(
-      discoveries_.size() + has_ble + has_platform + 1,
-      base::BindOnce(
-          &FidoRequestHandlerBase::NotifyObserverTransportAvailability,
-          weak_factory_.GetWeakPtr()));
+  MaybeSignalTransportsEnumerated();
 }
 
 FidoRequestHandlerBase::~FidoRequestHandlerBase() {
@@ -187,9 +199,10 @@ void FidoRequestHandlerBase::OnBluetoothAdapterEnumerated(
         FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy);
   }
 
+  transport_availability_callback_readiness_->ble_information_pending = false;
   transport_availability_info_.is_ble_powered = is_powered_on;
   transport_availability_info_.can_power_on_ble_adapter = can_power_on;
-  notify_observer_callback_.Run();
+  MaybeSignalTransportsEnumerated();
 }
 
 void FidoRequestHandlerBase::OnBluetoothAdapterPowerChanged(
@@ -209,6 +222,14 @@ void FidoRequestHandlerBase::PowerOnBluetoothAdapter() {
 
 base::WeakPtr<FidoRequestHandlerBase> FidoRequestHandlerBase::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void FidoRequestHandlerBase::set_observer(
+    FidoRequestHandlerBase::Observer* observer) {
+  DCHECK(!observer_) << "Only one observer is supported.";
+  observer_ = observer;
+
+  MaybeSignalTransportsEnumerated();
 }
 
 void FidoRequestHandlerBase::Start() {
@@ -242,6 +263,8 @@ void FidoRequestHandlerBase::DiscoveryStarted(
     FidoDiscoveryBase* discovery,
     bool success,
     std::vector<FidoAuthenticator*> authenticators) {
+  transport_availability_callback_readiness_->num_discoveries_pending--;
+
   if (!success) {
     transport_availability_info_.available_transports.erase(
         discovery->transport());
@@ -249,23 +272,20 @@ void FidoRequestHandlerBase::DiscoveryStarted(
     for (auto* authenticator : authenticators) {
       AuthenticatorAdded(discovery, authenticator);
     }
-  }
 
-  // Allow GetAssertionRequestHandler to asynchronously check for known platform
-  // credentials and defer |notify_observer_callback_| until that check is done.
-  // (But don't bother if platform discovery failed to start.)
-  if (discovery->transport() == FidoTransportProtocol::kInternal) {
-    if (success) {
+    // Allow GetAssertionRequestHandler to asynchronously check for known
+    // platform credentials and defer |OnTransportAvailabilityEnumerated| until
+    // that check is done.
+    if (discovery->transport() == FidoTransportProtocol::kInternal) {
+      transport_availability_callback_readiness_
+          ->platform_credential_check_pending = true;
       FillHasRecognizedPlatformCredential(base::BindOnce(
           &FidoRequestHandlerBase::OnHasRecognizedPlatformCredentialFilled,
           GetWeakPtr()));
-    } else {
-      FidoRequestHandlerBase::OnHasRecognizedPlatformCredentialFilled();
     }
   }
 
-  DCHECK(notify_observer_callback_);
-  notify_observer_callback_.Run();
+  MaybeSignalTransportsEnumerated();
 }
 
 void FidoRequestHandlerBase::AuthenticatorAdded(
@@ -330,8 +350,13 @@ void FidoRequestHandlerBase::FillHasRecognizedPlatformCredential(
   std::move(done_callback).Run();
 }
 
-void FidoRequestHandlerBase::NotifyObserverTransportAvailability() {
-  DCHECK(observer_);
+void FidoRequestHandlerBase::MaybeSignalTransportsEnumerated() {
+  if (!observer_ ||
+      !transport_availability_callback_readiness_->CanMakeCallback()) {
+    return;
+  }
+
+  transport_availability_callback_readiness_->callback_made = true;
   observer_->OnTransportAvailabilityEnumerated(transport_availability_info_);
 }
 
@@ -352,7 +377,9 @@ void FidoRequestHandlerBase::ConstructBleAdapterPowerManager() {
 }
 
 void FidoRequestHandlerBase::OnHasRecognizedPlatformCredentialFilled() {
-  notify_observer_callback_.Run();
+  transport_availability_callback_readiness_
+      ->platform_credential_check_pending = false;
+  MaybeSignalTransportsEnumerated();
 }
 
 void FidoRequestHandlerBase::StopDiscoveries() {
