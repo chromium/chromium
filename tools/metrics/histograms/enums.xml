@@ -80539,15 +80539,29 @@ others/histograms.xml -->
 </enum>
 
 <enum name="WallpaperType">
-  <int value="0" label="Daily"/>
-  <int value="1" label="Customized"/>
+  <int value="0" label="Daily">
+    Surprise wallpaper from the user selected collection.
+  </int>
+  <int value="1" label="Customized">
+    Selected by user from their local disk.
+  </int>
   <int value="2" label="Default"/>
   <int value="3" label="Unknown (unused)"/>
-  <int value="4" label="Online"/>
-  <int value="5" label="Policy"/>
-  <int value="6" label="Third party"/>
-  <int value="7" label="Device policy"/>
-  <int value="8" label="One-shot"/>
+  <int value="4" label="Online">
+    Wallpaper chosen by the user from the list of IMAX wallpapers.
+  </int>
+  <int value="5" label="Policy">
+    Controlled by domain policy. Cannot be changed by user.
+  </int>
+  <int value="6" label="Third party">Set by third party app or extension.</int>
+  <int value="7" label="Device policy">
+    Device controlled wallpaper shown on the login screen if the device is
+    enterprise managed.
+  </int>
+  <int value="8" label="One-shot">
+    Wallpaper shown one-time only. It does not belong to a particular user and
+    is not saved. This is used to show a white background during OOBE.
+  </int>
 </enum>
 
 <enum name="WarmupStateOnLaunch">
