@@ -37,7 +37,6 @@ class AwRenderViewHostExtClient {
 class AwRenderViewHostExt : public content::WebContentsObserver,
                             mojom::FrameHost {
  public:
-
   // To send receive messages to a RenderView we take the WebContents instance,
   // as it internally handles RenderViewHost instances changing underneath us.
   AwRenderViewHostExt(
@@ -79,6 +78,8 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
  private:
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
@@ -97,6 +98,8 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
       ShouldOverrideUrlLoadingCallback callback) override;
 
   bool IsRenderViewReady() const;
+
+  void ResetLocalMainFrameRemote(content::RenderFrameHost* frame_host);
 
   AwRenderViewHostExtClient* client_;
 
