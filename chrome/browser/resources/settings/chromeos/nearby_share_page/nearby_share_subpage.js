@@ -169,6 +169,7 @@ Polymer({
    */
   onReceiveDialogClose_(event) {
     this.showReceiveDialog_ = false;
+    this.inHighVisibility_ = false;
   },
 
   /**
@@ -209,14 +210,14 @@ Polymer({
    * Mojo callback when the Nearby utility process stops.
    */
   onNearbyProcessStopped() {
-    // Note: Intentionally left empty.
+    this.inHighVisibility_ = false;
   },
 
   /**
    * Mojo callback when advertising fails to start.
    */
   onStartAdvertisingFailure() {
-    // Note: Intentionally left empty.
+    this.inHighVisibility_ = false;
   },
 
   /** @private */

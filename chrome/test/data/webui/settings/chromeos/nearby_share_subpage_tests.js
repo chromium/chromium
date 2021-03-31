@@ -254,16 +254,54 @@ suite('NearbyShare', function() {
     assertFalse(fakeReceiveManager.getInHighVisibilityForTest());
   });
 
-  test('high visibility UI updates from high visibility changes', function() {
-    const highVisibilityToggle = subpage.$$('#highVisibilityToggle');
-    assertFalse(highVisibilityToggle.checked);
+  test(
+      'high visibility UI updates from high visibility changes',
+      async function() {
+        const highVisibilityToggle = subpage.$$('#highVisibilityToggle');
+        assertFalse(highVisibilityToggle.checked);
 
-    fakeReceiveManager.setInHighVisibilityForTest(true);
-    assertTrue(highVisibilityToggle.checked);
+        fakeReceiveManager.setInHighVisibilityForTest(true);
+        assertTrue(highVisibilityToggle.checked);
 
-    fakeReceiveManager.setInHighVisibilityForTest(false);
-    assertFalse(highVisibilityToggle.checked);
-  });
+        fakeReceiveManager.setInHighVisibilityForTest(false);
+        assertFalse(highVisibilityToggle.checked);
+
+        // Process stopped unchecks the toggle.
+        fakeReceiveManager.setInHighVisibilityForTest(true);
+        assertTrue(highVisibilityToggle.checked);
+        subpage.onNearbyProcessStopped();
+        Polymer.dom.flush();
+        assertFalse(highVisibilityToggle.checked);
+
+        // Failure to start advertising unchecks the toggle.
+        fakeReceiveManager.setInHighVisibilityForTest(false);
+        fakeReceiveManager.setInHighVisibilityForTest(true);
+        assertTrue(highVisibilityToggle.checked);
+        subpage.onStartAdvertisingFailure();
+        Polymer.dom.flush();
+        assertFalse(highVisibilityToggle.checked);
+
+        // Toggle still gets unchecked even if advertising was not attempted.
+        // E.g. if Bluetooth is off when high visibility is toggled.
+        fakeReceiveManager.setInHighVisibilityForTest(false);
+        subpage.inHighVisibility_ = true;
+        subpage.showHighVisibilityPage_();
+        const dialog = subpage.$$('nearby-share-receive-dialog');
+        assertTrue(!!dialog);
+        await test_util.waitAfterNextRender(dialog);
+        const highVisibilityDialog =
+            dialog.$$('nearby-share-high-visibility-page');
+        await test_util.waitAfterNextRender(dialog);
+        assertTrue(test_util.isVisible(highVisibilityDialog));
+        highVisibilityDialog.registerResult =
+            nearbyShare.mojom.RegisterReceiveSurfaceResult.kNoConnectionMedium;
+        await test_util.waitAfterNextRender(highVisibilityDialog);
+        highVisibilityDialog.$$('nearby-page-template')
+            .$$('#closeButton')
+            .click();
+        Polymer.dom.flush();
+        assertFalse(highVisibilityToggle.checked);
+      });
 
   test('GAIA email, account manager enabled', async () => {
     await accountManagerBrowserProxy.whenCalled('getAccounts');
