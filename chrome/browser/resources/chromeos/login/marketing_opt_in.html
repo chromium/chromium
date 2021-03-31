@@ -17,24 +17,86 @@
 <dom-module id="marketing-opt-in-element">
   <template>
     <style include="oobe-dialog-host">
-      #bottom-unsubscribe-disclaimer {
-        margin-bottom: 15px;
-      }
       #legalFooter {
-        margin-top: 40px;
-      }
-      :host-context([orientation=horizontal]) #marketing-opt-in-toggle {
-        margin-top: calc(var(--oobe-adaptive-dialog-title-top-padding) +
-                          var(--oobe-adaptive-dialog-icon-size) +
-                          var(--oobe-adaptive-dialog-header-top-padding) - (
-                          (var(--marketing-opt-in-row-height) -
-                          var(--marketing-opt-in-line-height))/ 2));
+        margin-top: 20px;
       }
       :host-context([orientation=vertical ]) #contentArea {
         justify-content: center;
       }
+
+      :host {
+        --marketing-opt-in-dialog-list-item-border: 1px solid var(--google-grey-200);
+        --oobe-a11y-dialog-list-item-border: 1px solid var(--google-grey-200);
+        --marketing-opt-in-row-height: 50px;
+        --marketing-opt-in-line-height: 20px;
+      }
+
+      .marketing-animation-container {
+        display: flex;
+        height: 100%;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+      }
+
+      .marketing-animation {
+        height: 90.4%;
+        margin-top: 4%;
+        position: absolute;
+        width: 100%;
+      }
+
+      .new-marketing-animation-content {
+        height: 95%;
+        width: 100%;
+      }
+
+      .legal-info {
+        color: var(--google-grey-700);
+      }
+
+      #toggleRow {
+        border-bottom: var(--marketing-opt-in-dialog-list-item-border);
+        border-top: var(--marketing-opt-in-dialog-list-item-border);
+        color: var(--google-grey-900);
+        margin-top: 20px;
+      }
+
+      /* Keep the text in the toggle row aligned to the left/right in
+         LTR/RTL languages. */
+      #chromebookUpdatesOptionLabel {
+        text-align: initial;
+      }
+
+      #toggleRowIcon,
+      #chromebookUpdatesOptionLabel,
+      #chromebookUpdatesOption {
+        align-self: flex-start;
+        margin-bottom: 10px;
+        margin-top: 10px;
+      }
+
+      #toggleRowIcon {
+        --iron-icon-height: 20px;
+        --iron-icon-width: 20px;
+        --iron-icon-fill-color: var(--google-blue-600);
+        padding-inline-end: 16px;
+      }
+
+      #googleUrl {
+        color: var(--google-blue-600);
+      }
+
+      #finalAccessibilityPage oobe-a11y-option {
+        border-top: var(--oobe-a11y-dialog-list-item-border);
+        min-height: 64px;
+      }
+
+      #finalAccessibilityPage oobe-a11y-option:last-of-type {
+        border-bottom: var(--oobe-a11y-dialog-list-item-border);
+      }
     </style>
-    <link rel="stylesheet" href="marketing_opt_in.css">
     <oobe-adaptive-dialog id="marketingOptInOverviewDialog" role="dialog"
         hidden="[[isAccessibilitySettingsShown_]]"
         aria-label$="[[i18nDynamic(locale, 'marketingOptInScreenTitle')]]"
@@ -48,49 +110,49 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'marketingOptInScreenTitle')]]
       </h1>
-      <!-- No marketing opt in -->
-      <div slot="subtitle" hidden="[[marketingOptInVisible_]]">
-        [[i18nDynamic(locale, 'marketingOptInScreenSubtitleWithDeviceName')]]
-      </div>
-      <!-- Marketing opt in -->
-      <div slot="subtitle" hidden="[[!marketingOptInVisible_]]">
-        [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
-        <!-- Without legal footer: short unsubscribe sentence -->
-        <span hidden="[[hasLegalFooter_]]">
-          [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeShort')]]
-        </span>
-      </div>
-      <!-- Long unsubscribe disclaimer: shown here only in old layouts -->
-      <div slot="subtitle" hidden="[[!hasTopLongDisclaimer_]]">
-        [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeLong')]]
-      </div>
-      <!-- Animation -->
-      <div slot="subtitle" hidden="[[!newLayoutEnabled_]]">
-        <div hidden="[[hasAnimationInContent_]]">
-          <cr-lottie class="new-marketing-animation-subtitle"
-              id="newAnimationInSubtitle"
-              animation-url="all_set_new_noloop.json" singleLoop="true">
-          </cr-lottie>
+      <div slot="subtitle">
+        <!-- No marketing opt in -->
+        <div hidden="[[marketingOptInVisible_]]">
+          [[i18nDynamic(locale, 'marketingOptInScreenSubtitleWithDeviceName')]]
         </div>
-      </div>
-      <div id="contentArea" slot="content" class="layout flex vertical">
+        <!-- Marketing opt in -->
+        <div hidden="[[!marketingOptInVisible_]]">
+          [[i18nDynamic(locale, 'marketingOptInScreenSubtitle')]]
+        </div>
+
         <!-- Toggle row -->
-        <div class="marketing-option layout horizontal center"
+        <div class="layout horizontal center"
             hidden="[[!marketingOptInVisible_]]"
-            id="marketing-opt-in-toggle">
-          <iron-icon icon="oobe-32:chromebook"></iron-icon>
-          <div id="chromebookUpdatesOptionLabel" class="flex" aria-hidden="true">
-            [[i18nDynamic(locale, 'marketingOptInGetChromebookUpdates')]]
+            id="toggleRow">
+          <iron-icon id="toggleRowIcon" icon="oobe-32:chromebook"></iron-icon>
+          <div id="chromebookUpdatesOptionLabel" class="flex layout vertical"
+              aria-hidden="true">
+            <div>
+              [[i18nDynamic(locale, 'marketingOptInGetChromebookUpdates')]]
+            </div>
+            <div class="legal-info">
+              [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeLong')]]
+            </div>
           </div>
           <cr-toggle id="chromebookUpdatesOption" checked
               aria-labelledby="chromebookUpdatesOptionLabel">
           </cr-toggle>
         </div>
 
-        <!-- Animation in the content area when there is no toggle -->
-        <div hidden="[[!hasAnimationInContent_]]"
-          class="new-marketing-animation-content">
-          <cr-lottie id="newAnimationInContentArea"
+        <!-- Legal footer. Shown for both layouts. -->
+        <div id="legalFooter" hidden="[[!hasLegalFooter_]]" class="legal-info">
+          <div>
+            Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
+          </div>
+          <div id="googleUrl">www.google.com</div>
+        </div>
+      </div>
+
+      <div id="contentArea" slot="content" class="layout flex vertical">
+        <!-- Animation -->
+        <div class="new-marketing-animation-content"
+            hidden="[[!newLayoutEnabled_]]">
+          <cr-lottie id="newAnimation"
               animation-url="all_set_new_noloop.json" singleLoop="true">
           </cr-lottie>
         </div>
@@ -101,18 +163,6 @@
           <cr-lottie id="oldAnimation"
               class="marketing-animation" animation-url="all_set.json">
           </cr-lottie>
-        </div>
-
-        <!-- Legal footer. Shown for both layouts. -->
-        <div id="legalFooter" hidden="[[!hasLegalFooter_]]" class="legal-info">
-          <div id="bottom-unsubscribe-disclaimer"
-              hidden="[[!newLayoutEnabled_]]">
-            [[i18nDynamic(locale, 'marketingOptInScreenUnsubscribeLong')]]
-          </div>
-          <div>
-            Google LLC, 1600 Amphitheatre Parkway, Mountain View, CA 94043, USA
-          </div>
-          <div id="googleUrl">www.google.com</div>
         </div>
       </div>
       <oobe-welcome-secondary-button slot="bottom-buttons"

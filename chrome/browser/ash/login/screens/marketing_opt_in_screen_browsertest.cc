@@ -51,7 +51,7 @@ namespace {
 const test::UIPath kChromebookEmailToggle = {"marketing-opt-in",
                                              "chromebookUpdatesOption"};
 const test::UIPath kChromebookEmailToggleDiv = {"marketing-opt-in",
-                                                "marketing-opt-in-toggle"};
+                                                "toggleRow"};
 const test::UIPath kChromebookEmailLegalFooterDiv = {"marketing-opt-in",
                                                      "legalFooter"};
 const test::UIPath kChromebookEmailAnimation = {"marketing-opt-in",

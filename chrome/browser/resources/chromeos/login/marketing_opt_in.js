@@ -52,23 +52,6 @@ Polymer({
     },
 
     /**
-     * Whether the long version of the unsubscribe disclaimer should be shown on
-     * top.
-     */
-    hasTopLongDisclaimer_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Whether the animation should be shown in the content area.
-     */
-    hasAnimationInContent_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
      * Whether a verbose footer will be shown to the user containing some legal
      *  information such as the Google address. Currently shown for Canada only.
      */
@@ -95,15 +78,10 @@ Polymer({
 
   /** Shortcut method to control animation */
   setAnimationPlay_(played) {
-    if (!this.newLayoutEnabled_) {
-      this.$.oldAnimation.setPlay(played);
-      return;
-    }
-
-    if (this.hasAnimationInContent_) {
-      this.$.newAnimationInContentArea.setPlay(played);
+    if (this.newLayoutEnabled_) {
+      this.$.newAnimation.setPlay(played);
     } else {
-      this.$.newAnimationInSubtitle.setPlay(played);
+      this.$.oldAnimation.setPlay(played);
     }
   },
 
@@ -115,10 +93,6 @@ Polymer({
         'optInDefaultState' in data && data.optInDefaultState;
     this.hasLegalFooter_ =
         'legalFooterVisibility' in data && data.legalFooterVisibility;
-    this.hasTopLongDisclaimer_ =
-        !this.newLayoutEnabled_ && this.hasLegalFooter_;
-    this.hasAnimationInContent_ =
-        this.newLayoutEnabled_ && !this.marketingOptInVisible_;
     this.hasNewLayoutOrLegalFooter =
         this.newLayoutEnabled_ || this.hasLegalFooter_;
     this.isAccessibilitySettingsShown_ = false;
