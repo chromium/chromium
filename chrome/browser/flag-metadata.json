@@ -4274,7 +4274,7 @@
   },
   {
     "name": "promo-browser-commands",
-    "owners": ["mahmadi", "chrome-desktop-ntp" ],
+    "owners": ["mahmadi", "chrome-desktop-ntp@google.com" ],
     "expiry_milestone": 90
   },
   {
