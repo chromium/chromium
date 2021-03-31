@@ -529,7 +529,7 @@ const base::Feature kIncompatibleApplicationsWarning{
 #if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX) || \
     defined(OS_CHROMEOS)
 // When enabled, removes any theme or background customization done by the user
-// and also overrides any dark/light mode treatment on the Incognito UI.
+// on the Incognito UI.
 const base::Feature kIncognitoBrandConsistencyForDesktop{
     "IncognitoBrandConsistencyForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif

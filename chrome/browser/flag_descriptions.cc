@@ -2068,8 +2068,7 @@ const char kIncognitoBrandConsistencyForDesktopName[] =
     "Enable Incognito brand consistency in desktop.";
 const char kIncognitoBrandConsistencyForDesktopDescription[] =
     "When enabled, removes any theme or background customization done by the "
-    "user and also overrides any dark/light mode treatment on the Incognito "
-    "UI.";
+    "user on the Incognito UI.";
 
 const char kPrinterStatusDialogName[] =
     "Show printer status on destination dialog";

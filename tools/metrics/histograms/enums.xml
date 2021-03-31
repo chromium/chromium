@@ -45296,6 +45296,7 @@ from previous Chrome versions.
   <int value="-834661509" label="ModalPermissionPrompts:disabled"/>
   <int value="-832780530" label="SecurePaymentConfirmationDebug:enabled"/>
   <int value="-832561975" label="enable-picture-in-picture"/>
+  <int value="-831066457" label="IncognitoBrandConsistencyForDesktop:disabled"/>
   <int value="-825942229" label="tab-management-experiment-type-elderberry"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
   <int value="-823394398" label="TargetEmbeddingLookalikes:enabled"/>
@@ -47830,6 +47831,7 @@ from previous Chrome versions.
   <int value="1488193175" label="ChromeOSAssistant:enabled"/>
   <int value="1488700164" label="password-import:disabled"/>
   <int value="1488998575" label="FillOnAccountSelectHttp:enabled"/>
+  <int value="1489282376" label="IncognitoBrandConsistencyForDesktop:enabled"/>
   <int value="1489915799" label="disable-permissions-blacklist"/>
   <int value="1490043732" label="enable-fill-on-account-select"/>
   <int value="1490255042" label="enable-overlay-scrollbar"/>
