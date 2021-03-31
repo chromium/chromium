@@ -16,7 +16,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -54,7 +54,7 @@ class DemoModeResourcesRemoverTest : public testing::Test {
     install_attributes_ = std::make_unique<ScopedStubInstallAttributes>(
         CreateInstallAttributes());
 
-    CryptohomeClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
 
     demo_mode_test_helper_ = std::make_unique<DemoModeTestHelper>();
     demo_resources_path_ =
@@ -68,7 +68,7 @@ class DemoModeResourcesRemoverTest : public testing::Test {
 
   void TearDown() override {
     demo_mode_test_helper_.reset();
-    CryptohomeClient::Shutdown();
+    UserDataAuthClient::Shutdown();
   }
 
  protected:
@@ -242,7 +242,7 @@ TEST_F(DemoModeResourcesRemoverTest, LowDiskSpace) {
   ASSERT_TRUE(remover.get());
   EXPECT_EQ(DemoModeResourcesRemover::Get(), remover.get());
 
-  FakeCryptohomeClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
+  FakeUserDataAuthClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(DemoModeResourcesExist());
 }
@@ -256,7 +256,7 @@ TEST_F(DemoModeResourcesRemoverTest, LowDiskSpaceInDemoSession) {
   EXPECT_FALSE(remover.get());
   EXPECT_FALSE(DemoModeResourcesRemover::Get());
 
-  FakeCryptohomeClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
+  FakeUserDataAuthClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(DemoModeResourcesExist());
 }
@@ -269,7 +269,7 @@ TEST_F(DemoModeResourcesRemoverTest, NotCreatedAfterResourcesRemoved) {
   ASSERT_TRUE(remover.get());
   EXPECT_EQ(DemoModeResourcesRemover::Get(), remover.get());
 
-  FakeCryptohomeClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
+  FakeUserDataAuthClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(DemoModeResourcesExist());
 
@@ -844,7 +844,7 @@ TEST_F(ManagedDemoModeResourcesRemoverTest, RemoveOnLowDiskInGuest) {
   ASSERT_TRUE(remover.get());
 
   AddAndLogInUser(TestUserType::kGuest, remover.get());
-  FakeCryptohomeClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
+  FakeUserDataAuthClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(DemoModeResourcesExist());
@@ -894,7 +894,7 @@ TEST_F(DemoModeResourcesRemoverInLegacyDemoRetailModeTest,
   ASSERT_TRUE(remover.get());
 
   AddAndLogInUser(TestUserType::kPublicAccount, remover.get());
-  FakeCryptohomeClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
+  FakeUserDataAuthClient::Get()->NotifyLowDiskSpace(1024 * 1024 * 1024);
   task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(DemoModeResourcesExist());

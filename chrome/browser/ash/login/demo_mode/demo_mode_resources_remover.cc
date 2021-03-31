@@ -29,6 +29,7 @@
 #include "chrome/browser/chromeos/idle_detector.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
@@ -141,7 +142,8 @@ DemoModeResourcesRemover::~DemoModeResourcesRemover() {
   ChromeUserManager::Get()->RemoveSessionStateObserver(this);
 }
 
-void DemoModeResourcesRemover::LowDiskSpace(uint64_t free_disk_space) {
+void DemoModeResourcesRemover::LowDiskSpace(
+    const ::user_data_auth::LowDiskSpace& status) {
   AttemptRemoval(RemovalReason::kLowDiskSpace, RemovalCallback());
 }
 
@@ -253,7 +255,7 @@ DemoModeResourcesRemover::DemoModeResourcesRemover(PrefService* local_state)
   CHECK(!g_instance);
   g_instance = this;
 
-  cryptohome_observer_.Add(CryptohomeClient::Get());
+  userdataauth_observer_.Observe(UserDataAuthClient::Get());
   ChromeUserManager::Get()->AddSessionStateObserver(this);
 }
 
@@ -294,7 +296,7 @@ void DemoModeResourcesRemover::OnRemovalDone(RemovalReason reason,
     local_state_->SetBoolean(kDemoModeResourcesRemoved, true);
     local_state_->ClearPref(kAccumulatedUsagePref);
 
-    cryptohome_observer_.RemoveAll();
+    userdataauth_observer_.Reset();
     ChromeUserManager::Get()->RemoveSessionStateObserver(this);
 
     user_activity_observer_.RemoveAll();
