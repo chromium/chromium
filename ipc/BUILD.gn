@@ -187,10 +187,7 @@ mojom_component("mojom") {
   output_prefix = "ipc_mojom"
   macro_prefix = "IPC_MOJOM"
   sources = [ "ipc.mojom" ]
-  public_deps = [
-    "//mojo/public/interfaces/bindings",
-    "//mojo/public/mojom/base",
-  ]
+  public_deps = [ "//mojo/public/interfaces/bindings" ]
 
   cpp_typemaps = [
     {
@@ -207,10 +204,7 @@ mojom_component("mojom") {
         "//ipc/message_view.cc",
         "//ipc/message_view.h",
       ]
-      traits_public_deps = [
-        "//ipc:message_support",
-        "//mojo/public/cpp/base:shared_typemap_traits",
-      ]
+      traits_public_deps = [ "//ipc:message_support" ]
     },
   ]
 

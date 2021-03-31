@@ -7,10 +7,10 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/optional.h"
 #include "ipc/ipc.mojom-shared.h"
 #include "ipc/message_view.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/interfaces/bindings/native_struct.mojom.h"
 
@@ -19,7 +19,7 @@ namespace mojo {
 template <>
 class StructTraits<IPC::mojom::MessageDataView, IPC::MessageView> {
  public:
-  static mojo_base::BigBufferView buffer(IPC::MessageView& view);
+  static base::span<const uint8_t> bytes(IPC::MessageView& view);
   static base::Optional<std::vector<mojo::native::SerializedHandlePtr>> handles(
       IPC::MessageView& view);
 
