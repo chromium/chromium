@@ -427,8 +427,11 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
     // DCHECK_GE(GetDocument().Lifecycle().GetState(),
     //           DocumentLifecycle::kPrePaintClean);
     bool has_direct_compositing_reasons = false;
-    if (const auto* paint_properties =
-            layout_object->FirstFragment().PaintProperties()) {
+    if (layout_object->FirstFragment().NextFragment()) {
+      // Composited animation on multiple fragments is not supported.
+      reasons |= kTargetHasInvalidCompositingState;
+    } else if (const auto* paint_properties =
+                   layout_object->FirstFragment().PaintProperties()) {
       const auto* transform = paint_properties->Transform();
       const auto* effect = paint_properties->Effect();
       has_direct_compositing_reasons =
