@@ -208,6 +208,15 @@
       },
     },
   },
+  'blink_unittests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 30,
+        },
+      },
+    },
+  },
   'blink_web_tests': {
     'remove_from': [
       'Mac10.11 Tests',
@@ -1784,6 +1793,15 @@
     'remove_from': [
       'Fuchsia x64' # https://crbug.com/1058255
     ],
+  },
+  'media_blink_unittests': {
+    'modifications': {
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 2,
+        },
+      },
+    },
   },
   'media_unittests': {
     'modifications': {
