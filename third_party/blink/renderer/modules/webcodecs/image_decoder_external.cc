@@ -450,6 +450,9 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
       request->exception = CreateDecodeFailure(request->frame_index);
       continue;
     }
+    if (!decoder_->IsSizeAvailable())
+      continue;
+
     if (!data_complete_) {
       // We can't fulfill this promise at this time.
       if (tracks_->IsEmpty() ||
