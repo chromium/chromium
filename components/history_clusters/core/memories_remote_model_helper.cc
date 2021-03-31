@@ -25,7 +25,7 @@ const size_t kMaxExpectedResponseSize = 1024 * 1024;
 base::Value VisitToValue(const memories::MemoriesVisit& visit) {
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetKey("visitId", base::Value(0));
-  dict.SetKey("url", base::Value(visit.url.spec()));
+  dict.SetKey("url", base::Value(visit.url_row.url().spec()));
   dict.SetKey("origin", base::Value(""));
   dict.SetKey("foreground_time_secs", base::Value(0));
   dict.SetKey("navigation_time_ms", base::Value(0));

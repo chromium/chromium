@@ -70,6 +70,7 @@
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -2364,12 +2365,13 @@ void OmniboxViewViews::OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {
   if (IsSelectAll()) {
     UMA_HISTOGRAM_COUNTS_1M(OmniboxEditModel::kCutOrCopyAllTextHistogram, 1);
 
-    if (location_bar_view_) {
+    if (clipboard_buffer != ui::ClipboardBuffer::kSelection &&
+        location_bar_view_) {
       auto* web_contents = location_bar_view_->GetWebContents();
       if (web_contents) {
         if (auto* clusters_helper =
                 HistoryClustersTabHelper::FromWebContents(web_contents)) {
-          clusters_helper->LogUrlCopied();
+          clusters_helper->OnOmniboxUrlCopied();
         }
       }
     }

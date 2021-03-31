@@ -180,8 +180,8 @@ void HistoryTabHelper::DidFinishNavigation(
 
   if (HistoryClustersTabHelper* clusters_tab_helper =
           HistoryClustersTabHelper::FromWebContents(web_contents())) {
-    clusters_tab_helper->DidUpdateHistoryForNavigation(navigation_handle,
-                                                       add_page_args);
+    clusters_tab_helper->OnUpdatedHistoryForNavigation(
+        navigation_handle->GetNavigationId(), add_page_args.url);
   }
 }
 
