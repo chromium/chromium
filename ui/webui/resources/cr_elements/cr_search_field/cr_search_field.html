@@ -3,6 +3,7 @@
         display: flex;
         user-select: none;
         --cr-search-field-clear-icon-fill: var(--google-grey-refresh-700);
+        --cr-search-field-clear-icon-margin-end : -4px;
         --cr-search-field-input-border-bottom: 1px solid var(--cr-secondary-text-color);
       }
 
@@ -42,7 +43,8 @@
       }
 
       :host([has-search-text]) #searchInput {
-        --cr-input-padding-end: 20px;
+        --cr-input-padding-end: calc(24px +
+          var(--cr-search-field-clear-icon-margin-end));
       }
 
       #clearSearch {
@@ -50,7 +52,7 @@
         /* A 16px icon that fits on the input line. */
         --cr-icon-button-icon-size: var(--cr-search-field-clear-icon-size, 16px);
         --cr-icon-button-size: 24px;
-        margin-inline-end: var(--cr-search-field-clear-icon-margin-end, -4px);
+        margin-inline-end: var(--cr-search-field-clear-icon-margin-end);
         margin-inline-start: 4px;
         position: absolute;
         right: 0;
