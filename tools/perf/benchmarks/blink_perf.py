@@ -615,6 +615,18 @@ class BlinkPerfPaint(_BlinkPerfBenchmark):
     return 'blink_perf.paint'
 
 
+@benchmark.Info(emails=['yoavweiss@chromium.org'],
+                component='Blink>PerformanceAPIs',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfPerformanceAPIs(_BlinkPerfBenchmark):
+  SUBDIR = 'performance_apis'
+  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.performance_apis'
+
+
 @benchmark.Info(component='Blink>Bindings',
                 emails=['jbroman@chromium.org',
                          'yukishiino@chromium.org',
