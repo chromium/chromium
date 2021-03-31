@@ -90,20 +90,20 @@ class SSLHostStateDelegate;
 // thread.
 class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
  public:
-  static DownloadManager* GetDownloadManager(BrowserContext* browser_context);
+  static DownloadManager* GetDownloadManager(BrowserContext* self);
 
   // Returns BrowserContext specific external mount points. It may return
   // nullptr if the context doesn't have any BrowserContext specific external
-  // mount points. Currenty, non-nullptr value is returned only on ChromeOS.
-  static storage::ExternalMountPoints* GetMountPoints(BrowserContext* context);
+  // mount points. Currently, non-nullptr value is returned only on ChromeOS.
+  static storage::ExternalMountPoints* GetMountPoints(BrowserContext* self);
 
   // Returns a BrowsingDataRemover that can schedule data deletion tasks
   // for this |context|.
-  static BrowsingDataRemover* GetBrowsingDataRemover(BrowserContext* context);
+  static BrowsingDataRemover* GetBrowsingDataRemover(BrowserContext* self);
 
   // Returns the PermissionController associated with this context. There's
   // always a PermissionController instance for each BrowserContext.
-  static PermissionController* GetPermissionController(BrowserContext* context);
+  static PermissionController* GetPermissionController(BrowserContext* self);
 
   // Returns a StoragePartition for the given SiteInstance. By default this will
   // create a new StoragePartition if it doesn't exist, unless |can_create| is
@@ -116,7 +116,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // default this will create a new StoragePartition if it doesn't exist,
   // unless |can_create| is false.
   static StoragePartition* GetStoragePartition(
-      BrowserContext* browser_context,
+      BrowserContext* self,
       const StoragePartitionConfig& storage_partition_config,
       bool can_create = true);
 
@@ -132,20 +132,20 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
 
   using StoragePartitionCallback =
       base::RepeatingCallback<void(StoragePartition*)>;
-  static void ForEachStoragePartition(BrowserContext* browser_context,
+  static void ForEachStoragePartition(BrowserContext* self,
                                       StoragePartitionCallback callback);
   // Returns the number of StoragePartitions that exist for the given
   // |browser_context|.
-  static size_t GetStoragePartitionCount(BrowserContext* browser_context);
+  static size_t GetStoragePartitionCount(BrowserContext* self);
   static void AsyncObliterateStoragePartition(
-      BrowserContext* browser_context,
+      BrowserContext* self,
       const std::string& partition_domain,
       base::OnceClosure on_gc_required);
 
   // This function clears the contents of |active_paths| but does not take
   // ownership of the pointer.
   static void GarbageCollectStoragePartitions(
-      BrowserContext* browser_context,
+      BrowserContext* self,
       std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
       base::OnceClosure done);
 
@@ -200,7 +200,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       blink::mojom::PushSubscriptionPtr old_subscription,
       base::OnceCallback<void(blink::mojom::PushEventStatus)> callback);
 
-  static void NotifyWillBeDestroyed(BrowserContext* browser_context);
+  static void NotifyWillBeDestroyed(BrowserContext* self);
 
   // Ensures that the corresponding ResourceContext is initialized. Normally the
   // BrowserContext initializs the corresponding getters when its objects are
@@ -214,11 +214,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   static void SaveSessionState(BrowserContext* browser_context);
 
   static void SetDownloadManagerForTesting(
-      BrowserContext* browser_context,
+      BrowserContext* self,
       std::unique_ptr<DownloadManager> download_manager);
 
   static void SetPermissionControllerForTesting(
-      BrowserContext* browser_context,
+      BrowserContext* self,
       std::unique_ptr<PermissionController> permission_controller);
 
   // The list of CORS exemptions.  This list needs to be 1) replicated when
@@ -227,7 +227,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // consulted by CORS-aware factories (e.g. passed when constructing
   // FileURLLoaderFactory).
   static SharedCorsOriginAccessList* GetSharedCorsOriginAccessList(
-      BrowserContext* context);
+      BrowserContext* self);
 
   BrowserContext();
 
@@ -243,7 +243,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns true if shutdown has been initiated via a
   // NotifyWillBeDestroyed() call. This is a signal that the object will be
   // destroyed soon and no new references to this object should be created.
-  bool ShutdownStarted() { return was_notify_will_be_destroyed_called_; }
+  bool ShutdownStarted();
 
 #if !defined(OS_ANDROID)
   // Creates a delegate to initialize a HostZoomMap and persist its information.
@@ -319,7 +319,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   virtual const std::string& UniqueId();
 
   // Returns a random salt string that is used for creating media device IDs.
-  // Returns a random string by default.
+  // Default implementation uses the BrowserContext's UniqueId.
   virtual std::string GetMediaDeviceIDSalt();
 
   // Utility function useful for embedders. Only needs to be called if
@@ -372,8 +372,20 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   void WriteIntoTracedValue(perfetto::TracedValue context);
 
  private:
-  const std::string unique_id_;
-  bool was_notify_will_be_destroyed_called_ = false;
+  // Please don't add more fields to BrowserContext.
+  //
+  // Ideally, BrowserContext would be a pure interface (only pure-virtual
+  // methods and no fields), but currently BrowserContext and BrowserContextImpl
+  // and BrowserContextDelegate are kind of mixed together in a single class.
+  //
+  // TODO(https://crbug.com/1179776): Evolve the Impl class into a
+  // BrowserContextImpl in //content/browser/browser_context_impl.h / .cc
+  // (Removing afterwards the Impl fwd-declaration, `impl_` field, `friend`
+  // declaration and `impl` accessor below).
+  class Impl;
+  std::unique_ptr<Impl> impl_;
+  friend class BackgroundSyncScheduler;
+  Impl* impl() { return impl_.get(); }
 };
 
 }  // namespace content

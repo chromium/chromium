@@ -519,6 +519,8 @@ source_set("browser") {
     "browser_child_process_host_impl.h",
     "browser_child_process_host_impl_receiver_bindings.cc",
     "browser_context.cc",
+    "browser_context_impl.cc",
+    "browser_context_impl.h",
     "browser_interface_binders.cc",
     "browser_interface_binders.h",
     "browser_interface_broker_impl.h",

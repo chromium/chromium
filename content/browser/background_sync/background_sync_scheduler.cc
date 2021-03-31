@@ -7,15 +7,13 @@
 #include <algorithm>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/supports_user_data.h"
+#include "content/browser/browser_context_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/background_sync_controller.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
-
-const char kBackgroundSyncSchedulerKey[] = "background-sync-scheduler";
 
 using DelayedProcessingInfoMap =
     std::map<StoragePartitionImpl*, std::unique_ptr<base::OneShotTimer>>;
@@ -26,17 +24,7 @@ BackgroundSyncScheduler* BackgroundSyncScheduler::GetFor(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(browser_context);
 
-  if (!browser_context->GetUserData(kBackgroundSyncSchedulerKey)) {
-    scoped_refptr<BackgroundSyncScheduler> scheduler =
-        base::MakeRefCounted<BackgroundSyncScheduler>();
-    browser_context->SetUserData(
-        kBackgroundSyncSchedulerKey,
-        std::make_unique<base::UserDataAdapter<BackgroundSyncScheduler>>(
-            scheduler.get()));
-  }
-
-  return base::UserDataAdapter<BackgroundSyncScheduler>::Get(
-      browser_context, kBackgroundSyncSchedulerKey);
+  return browser_context->impl()->background_sync_scheduler();
 }
 
 BackgroundSyncScheduler::BackgroundSyncScheduler() = default;
