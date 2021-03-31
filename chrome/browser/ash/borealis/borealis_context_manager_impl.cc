@@ -116,7 +116,7 @@ void BorealisContextManagerImpl::ShutDownBorealisIfChromeCrashed() {
       base::BindOnce(
           [](base::WeakPtr<BorealisContextManagerImpl> weak_this,
              base::Optional<vm_tools::concierge::GetVmInfoResponse> reply) {
-            if (reply.has_value() && reply->success()) {
+            if (reply.has_value() && reply->success() && weak_this) {
               weak_this->SendShutdownRequest(base::DoNothing(),
                                              kBorealisVmName);
             }
