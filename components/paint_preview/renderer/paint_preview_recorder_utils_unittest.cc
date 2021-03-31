@@ -11,9 +11,11 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/discardable_memory_allocator.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/optional.h"
+#include "base/test/test_discardable_memory_allocator.h"
 #include "base/unguessable_token.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
@@ -210,10 +212,23 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
 
  protected:
   void SetUp() override {
+    base::DiscardableMemoryAllocator::SetInstance(&test_allocator_);
+
     canvas = recorder.beginRecording(dimensions.width(), dimensions.width());
     cc::PaintFlags flags;
     canvas->drawRect(SkRect::MakeWH(dimensions.width(), dimensions.height()),
                      flags);
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(dimensions.width(), dimensions.height());
+    {
+      SkCanvas sk_canvas(bitmap);
+      sk_canvas.drawColor(SK_ColorRED);
+    }
+    canvas->drawImage(cc::PaintImage::CreateFromBitmap(bitmap), 0, 0);
+  }
+
+  void TearDown() override {
+    base::DiscardableMemoryAllocator::SetInstance(nullptr);
   }
 
   base::Optional<SerializedRecording> SerializeAsSkPicture(
@@ -263,6 +278,9 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
 
   // Valid after SetUp() until SerializeAsSkPicture() is called.
   cc::PaintCanvas* canvas{};
+
+ private:
+  base::TestDiscardableMemoryAllocator test_allocator_;
 };
 
 TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest, Roundtrip) {
@@ -290,6 +308,12 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest, Roundtrip) {
     result->ctx.erase(content_id);
   }
   EXPECT_TRUE(result->ctx.empty());
+
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(dimensions.width(), dimensions.height());
+  SkCanvas sk_canvas(bitmap);
+  sk_canvas.drawPicture(result->skp);
+  EXPECT_EQ(bitmap.getColor(10, 10), SK_ColorRED);
 }
 
 TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest, FailIfExceedMaxSize) {
