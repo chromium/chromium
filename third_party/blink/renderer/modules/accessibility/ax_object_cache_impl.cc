@@ -2944,17 +2944,23 @@ void AXObjectCacheImpl::HandleEditableTextContentChanged(Node* node) {
 
   SCOPED_DISALLOW_LIFECYCLE_TRANSITION(node->GetDocument());
 
+  DeferTreeUpdate(
+      &AXObjectCacheImpl::HandleEditableTextContentChangedWithCleanLayout,
+      node);
+}
+
+void AXObjectCacheImpl::HandleEditableTextContentChangedWithCleanLayout(
+    Node* node) {
   AXObject* obj = nullptr;
-  // We shouldn't create a new AX object here because we might be in the middle
-  // of a layout.
   do {
-    obj = Get(node);
+    obj = GetOrCreate(node);
   } while (!obj && (node = node->parentNode()));
   if (!obj)
     return;
 
   while (obj && !obj->IsTextField())
     obj = obj->ParentObject();
+
   PostNotification(obj, ax::mojom::Event::kValueChanged);
 }
 
