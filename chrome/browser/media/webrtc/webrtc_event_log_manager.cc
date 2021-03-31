@@ -231,19 +231,19 @@ void WebRtcEventLogManager::DisableForBrowserContext(
 }
 
 void WebRtcEventLogManager::OnPeerConnectionAdded(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid) {
   OnPeerConnectionAdded(frame_id, lid, base::NullCallback());
 }
 
 void WebRtcEventLogManager::OnPeerConnectionRemoved(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid) {
   OnPeerConnectionRemoved(frame_id, lid, base::NullCallback());
 }
 
 void WebRtcEventLogManager::OnPeerConnectionUpdated(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid,
     const std::string& type,
     const std::string& value) {
@@ -254,7 +254,7 @@ void WebRtcEventLogManager::OnPeerConnectionUpdated(
 }
 
 void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid,
     const std::string& session_id) {
   OnPeerConnectionSessionIdSet(frame_id, lid, session_id, base::NullCallback());
@@ -270,7 +270,7 @@ void WebRtcEventLogManager::DisableLocalLogging() {
 }
 
 void WebRtcEventLogManager::OnWebRtcEventLogWrite(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid,
     const std::string& message) {
   OnWebRtcEventLogWrite(frame_id, lid, message, base::NullCallback());
@@ -471,7 +471,7 @@ void WebRtcEventLogManager::RenderProcessHostExitedDestroyed(
 }
 
 void WebRtcEventLogManager::OnPeerConnectionAdded(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -508,7 +508,7 @@ void WebRtcEventLogManager::OnPeerConnectionAdded(
 }
 
 void WebRtcEventLogManager::OnPeerConnectionRemoved(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -534,7 +534,7 @@ void WebRtcEventLogManager::OnPeerConnectionRemoved(
 }
 
 void WebRtcEventLogManager::OnPeerConnectionStopped(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid,
     base::OnceCallback<void(bool)> reply) {
   // From the logger's perspective, we treat stopping a peer connection the
@@ -544,7 +544,7 @@ void WebRtcEventLogManager::OnPeerConnectionStopped(
 }
 
 void WebRtcEventLogManager::OnPeerConnectionSessionIdSet(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid,
     const std::string& session_id,
     base::OnceCallback<void(bool)> reply) {
@@ -605,7 +605,7 @@ void WebRtcEventLogManager::DisableLocalLogging(
 }
 
 void WebRtcEventLogManager::OnWebRtcEventLogWrite(
-    const content::GlobalFrameRoutingId& frame_id,
+    content::GlobalFrameRoutingId frame_id,
     int lid,
     const std::string& message,
     base::OnceCallback<void(std::pair<bool, bool>)> reply) {

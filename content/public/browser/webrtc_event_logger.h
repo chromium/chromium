@@ -30,16 +30,16 @@ class CONTENT_EXPORT WebRtcEventLogger {
   virtual ~WebRtcEventLogger();
 
   // Call this to let the logger know when a PeerConnection was created.
-  virtual void OnPeerConnectionAdded(const GlobalFrameRoutingId& frame_id,
+  virtual void OnPeerConnectionAdded(GlobalFrameRoutingId frame_id,
                                      int lid) = 0;
 
   // Call this to let the logger know when a PeerConnection was closed.
-  virtual void OnPeerConnectionRemoved(const GlobalFrameRoutingId& frame_id,
+  virtual void OnPeerConnectionRemoved(GlobalFrameRoutingId frame_id,
                                        int lid) = 0;
 
   // Call this to let the logger know when a PeerConnection was updated. |type|
   // is the update type, |value| is the detail of the update.
-  virtual void OnPeerConnectionUpdated(const GlobalFrameRoutingId& frame_id,
+  virtual void OnPeerConnectionUpdated(GlobalFrameRoutingId frame_id,
                                        int lid,
                                        const std::string& type,
                                        const std::string& value) = 0;
@@ -47,10 +47,9 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // Call this to let the logger know of a peer connection's session
   // description ID. By referring to this ID, remote-bound event logging
   // may later be initiated for the peer connection.
-  virtual void OnPeerConnectionSessionIdSet(
-      const GlobalFrameRoutingId& frame_id,
-      int lid,
-      const std::string& session_id) = 0;
+  virtual void OnPeerConnectionSessionIdSet(GlobalFrameRoutingId frame_id,
+                                            int lid,
+                                            const std::string& session_id) = 0;
 
   // Enable local logging of WebRTC events.
   // Local logging is distinguished from remote logging, in that local logs are
@@ -75,7 +74,7 @@ class CONTENT_EXPORT WebRtcEventLogger {
   // Called when a new log fragment is sent from the renderer. This will
   // potentially be written to a local WebRTC event log, a remote-bound log
   // intended for upload, or both.
-  virtual void OnWebRtcEventLogWrite(const GlobalFrameRoutingId& frame_id,
+  virtual void OnWebRtcEventLogWrite(GlobalFrameRoutingId frame_id,
                                      int lid,
                                      const std::string& message) = 0;
 

@@ -99,21 +99,20 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
                                 base::OnceClosure reply);
 
   // content::WebRtcEventLogger implementation.
-  void OnPeerConnectionAdded(const content::GlobalFrameRoutingId& frame_id,
+  void OnPeerConnectionAdded(content::GlobalFrameRoutingId frame_id,
                              int lid) override;
-  void OnPeerConnectionRemoved(const content::GlobalFrameRoutingId& frame_id,
+  void OnPeerConnectionRemoved(content::GlobalFrameRoutingId frame_id,
                                int lid) override;
-  void OnPeerConnectionUpdated(const content::GlobalFrameRoutingId& frame_id,
+  void OnPeerConnectionUpdated(content::GlobalFrameRoutingId frame_id,
                                int lid,
                                const std::string& type,
                                const std::string& value) override;
-  void OnPeerConnectionSessionIdSet(
-      const content::GlobalFrameRoutingId& frame_id,
-      int lid,
-      const std::string& session_id) override;
+  void OnPeerConnectionSessionIdSet(content::GlobalFrameRoutingId frame_id,
+                                    int lid,
+                                    const std::string& session_id) override;
   void EnableLocalLogging(const base::FilePath& base_path) override;
   void DisableLocalLogging() override;
-  void OnWebRtcEventLogWrite(const content::GlobalFrameRoutingId& frame_id,
+  void OnWebRtcEventLogWrite(content::GlobalFrameRoutingId frame_id,
                              int lid,
                              const std::string& message) override;
 
@@ -219,7 +218,7 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
   // operation was successful. A failure can happen if a peer connection with
   // this exact key was previously added, but not removed. Another failure mode
   // is if the RPH of the frame was destroyed.
-  void OnPeerConnectionAdded(const content::GlobalFrameRoutingId& frame_id,
+  void OnPeerConnectionAdded(content::GlobalFrameRoutingId frame_id,
                              int lid,
                              base::OnceCallback<void(bool)> reply);
 
@@ -227,23 +226,22 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
   // the operation was successful. A failure can happen is a peer connection
   // with this key was not previously added or if it has since already been
   // removed. Another failure mode is if the RPH of the frame was destroyed.
-  void OnPeerConnectionRemoved(const content::GlobalFrameRoutingId& frame_id,
+  void OnPeerConnectionRemoved(content::GlobalFrameRoutingId frame_id,
                                int lid,
                                base::OnceCallback<void(bool)> reply);
 
   // Handles a "stop" peer connection update. Replies true if and only if the
   // operation was successful. Same failure mode as OnPeerConnectionRemoved().
-  void OnPeerConnectionStopped(const content::GlobalFrameRoutingId& frame_id,
+  void OnPeerConnectionStopped(content::GlobalFrameRoutingId frame_id,
                                int lid,
                                base::OnceCallback<void(bool)> reply);
 
   // An overload of OnPeerConnectionSessionIdSet() that replies true if and only
   // if the operation was successful.
-  void OnPeerConnectionSessionIdSet(
-      const content::GlobalFrameRoutingId& frame_id,
-      int lid,
-      const std::string& session_id,
-      base::OnceCallback<void(bool)> reply);
+  void OnPeerConnectionSessionIdSet(content::GlobalFrameRoutingId frame_id,
+                                    int lid,
+                                    const std::string& session_id,
+                                    base::OnceCallback<void(bool)> reply);
 
   // An overload of EnableLocalLogging() replies true if the logging was
   // actually enabled. i.e. The logging was not already enabled before the call.
@@ -266,7 +264,7 @@ class WebRtcEventLogManager final : public content::RenderProcessHostObserver,
   // and only if the message was written in its entirety into a
   // local/remote-bound log file.
   void OnWebRtcEventLogWrite(
-      const content::GlobalFrameRoutingId& frame_id,
+      content::GlobalFrameRoutingId frame_id,
       int lid,
       const std::string& message,
       base::OnceCallback<void(std::pair<bool, bool>)> reply);
