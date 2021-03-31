@@ -98,6 +98,21 @@ void FidoHidDiscovery::DeviceRemoved(
   }
 }
 
+void FidoHidDiscovery::DeviceChanged(
+    device::mojom::HidDeviceInfoPtr device_info) {
+  // The changed |device_info| may affect how the device should be filtered.
+  // For instance, it may have been updated from a device with no FIDO U2F
+  // capabilities to a device with FIDO U2F capabilities.
+  //
+  // Try adding it again. If the device is already present in |authenticators_|
+  // then the updated device will be detected as a duplicate and will not be
+  // added.
+  //
+  // The FidoHidDevice object will retain the old device info. This is fine
+  // since it does not rely on any HidDeviceInfo members that could change.
+  DeviceAdded(std::move(device_info));
+}
+
 void FidoHidDiscovery::OnGetDevices(
     std::vector<device::mojom::HidDeviceInfoPtr> device_infos) {
   for (auto& device_info : device_infos)

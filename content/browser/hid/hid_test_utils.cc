@@ -44,6 +44,12 @@ void MockHidDelegate::OnDeviceRemoved(
     observer.OnDeviceRemoved(device);
 }
 
+void MockHidDelegate::OnDeviceChanged(
+    const device::mojom::HidDeviceInfo& device) {
+  for (auto& observer : observer_list_)
+    observer.OnDeviceChanged(device);
+}
+
 void MockHidDelegate::OnPermissionRevoked(const url::Origin& origin) {
   for (auto& observer : observer_list_)
     observer.OnPermissionRevoked(origin);

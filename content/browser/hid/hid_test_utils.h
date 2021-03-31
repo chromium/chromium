@@ -42,6 +42,7 @@ class MockHidDelegate : public HidDelegate {
   // these methods to broadcast device connections to all delegate observers.
   void OnDeviceAdded(const device::mojom::HidDeviceInfo& device);
   void OnDeviceRemoved(const device::mojom::HidDeviceInfo& device);
+  void OnDeviceChanged(const device::mojom::HidDeviceInfo& device);
   void OnPermissionRevoked(const url::Origin& origin);
 
   MOCK_METHOD0(RunChooserInternal,

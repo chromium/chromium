@@ -114,6 +114,12 @@ void ChromeHidDelegate::OnDeviceRemoved(
     observer.OnDeviceRemoved(device_info);
 }
 
+void ChromeHidDelegate::OnDeviceChanged(
+    const device::mojom::HidDeviceInfo& device_info) {
+  for (auto& observer : observer_list_)
+    observer.OnDeviceChanged(device_info);
+}
+
 void ChromeHidDelegate::OnHidManagerConnectionError() {
   device_observer_.RemoveAll();
   permission_observer_.RemoveAll();

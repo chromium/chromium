@@ -213,20 +213,29 @@ mojom::HidDeviceInfoPtr FakeHidManager::CreateAndAddDeviceWithTopLevelUsage(
 
 void FakeHidManager::AddDevice(mojom::HidDeviceInfoPtr device) {
   std::string guid = device->guid;
+  DCHECK(!base::Contains(devices_, guid));
   devices_[guid] = std::move(device);
 
-  mojom::HidDeviceInfo* device_info = devices_[guid].get();
+  const mojom::HidDeviceInfoPtr& device_info = devices_[guid];
   for (auto& client : clients_)
     client->DeviceAdded(device_info->Clone());
 }
 
 void FakeHidManager::RemoveDevice(const std::string& guid) {
   if (base::Contains(devices_, guid)) {
-    mojom::HidDeviceInfo* device_info = devices_[guid].get();
+    const mojom::HidDeviceInfoPtr& device_info = devices_[guid];
     for (auto& client : clients_)
       client->DeviceRemoved(device_info->Clone());
     devices_.erase(guid);
   }
+}
+
+void FakeHidManager::ChangeDevice(mojom::HidDeviceInfoPtr device) {
+  DCHECK(base::Contains(devices_, device->guid));
+  mojom::HidDeviceInfoPtr& device_info = devices_[device->guid];
+  device_info = std::move(device);
+  for (auto& client : clients_)
+    client->DeviceChanged(device_info->Clone());
 }
 
 void FakeHidManager::SimulateConnectionError() {

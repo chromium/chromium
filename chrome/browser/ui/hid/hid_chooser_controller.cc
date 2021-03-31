@@ -8,6 +8,9 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/ranges/algorithm.h"
+#include "base/stl_util.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/web_hid_histograms.h"
@@ -187,6 +190,25 @@ void HidChooserController::OnDeviceRemoved(
     view()->OnOptionRemoved(index);
 }
 
+void HidChooserController::OnDeviceChanged(
+    const device::mojom::HidDeviceInfo& device) {
+  bool has_chooser_item =
+      base::Contains(items_, PhysicalDeviceIdFromDeviceInfo(device));
+  if (!DisplayDevice(device)) {
+    if (has_chooser_item)
+      OnDeviceRemoved(device);
+    return;
+  }
+
+  if (!has_chooser_item) {
+    OnDeviceAdded(device);
+    return;
+  }
+
+  // Update the item to replace the old device info with |device|.
+  UpdateDeviceInfo(device);
+}
+
 void HidChooserController::OnHidManagerConnectionError() {
   observer_.RemoveAll();
 }
@@ -317,4 +339,18 @@ bool HidChooserController::RemoveDeviceInfo(
   device_map_.erase(find_it);
   base::Erase(items_, id);
   return true;
+}
+
+void HidChooserController::UpdateDeviceInfo(
+    const device::mojom::HidDeviceInfo& device) {
+  auto id = PhysicalDeviceIdFromDeviceInfo(device);
+  auto physical_device_it = device_map_.find(id);
+  DCHECK(physical_device_it != device_map_.end());
+  auto& device_infos = physical_device_it->second;
+  auto device_it = base::ranges::find_if(
+      device_infos, [&device](const device::mojom::HidDeviceInfoPtr& d) {
+        return d->guid == device.guid;
+      });
+  DCHECK(device_it != device_infos.end());
+  *device_it = device.Clone();
 }

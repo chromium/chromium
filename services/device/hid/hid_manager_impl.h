@@ -66,6 +66,7 @@ class HidManagerImpl : public mojom::HidManager, public HidService::Observer {
   // HidService::Observer:
   void OnDeviceAdded(mojom::HidDeviceInfoPtr device_info) override;
   void OnDeviceRemoved(mojom::HidDeviceInfoPtr device_info) override;
+  void OnDeviceChanged(mojom::HidDeviceInfoPtr device_info) override;
 
   std::unique_ptr<HidService> hid_service_;
   mojo::ReceiverSet<mojom::HidManager> receivers_;

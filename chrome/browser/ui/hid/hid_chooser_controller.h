@@ -59,6 +59,8 @@ class HidChooserController : public ChooserController,
   void OnDeviceAdded(const device::mojom::HidDeviceInfo& device_info) override;
   void OnDeviceRemoved(
       const device::mojom::HidDeviceInfo& device_info) override;
+  void OnDeviceChanged(
+      const device::mojom::HidDeviceInfo& device_info) override;
   void OnHidManagerConnectionError() override;
   void OnHidChooserContextShutdown() override;
 
@@ -77,6 +79,10 @@ class HidChooserController : public ChooserController,
   // item to be empty, the chooser item is removed. Does nothing if the device
   // is not in the chooser item. Returns true if an item was removed.
   bool RemoveDeviceInfo(const device::mojom::HidDeviceInfo& device_info);
+
+  // Update the information for the device described by |device_info| in the
+  // |device_map_|.
+  void UpdateDeviceInfo(const device::mojom::HidDeviceInfo& device_info);
 
   std::vector<blink::mojom::HidDeviceFilterPtr> filters_;
   content::HidChooser::Callback callback_;

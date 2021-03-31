@@ -292,11 +292,27 @@ class HidDevicePermissionsPrompt : public DevicePermissionsPrompt::Prompt,
     }
   }
 
+  void DeviceChanged(device::mojom::HidDeviceInfoPtr device) override {
+    for (const auto& device_info : devices_) {
+      auto* hid_device_info =
+          reinterpret_cast<HidDeviceInfo*>(device_info.get());
+      if (hid_device_info->device()->guid == device->guid) {
+        // The device is already present in |devices_|. Update its device
+        // information.
+        hid_device_info->device() = std::move(device);
+        return;
+      }
+    }
+
+    // The device was not previously added to |devices_|, possibly due to
+    // filters or protected collections. Try adding it again.
+    MaybeAddDevice(std::move(device), /*initial_enumeration=*/false);
+  }
+
   void OnDevicesEnumerated(
       std::vector<device::mojom::HidDeviceInfoPtr> devices) {
     for (auto& device : devices)
       MaybeAddDevice(std::move(device), /*initial_enumeration=*/true);
-    ;
   }
 
   bool HasUnprotectedCollections(const device::mojom::HidDeviceInfo& device) {

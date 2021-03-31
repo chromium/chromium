@@ -87,8 +87,16 @@ class HidChooserContextTest : public testing::Test {
         device::mojom::HidBusType::kHIDBusTypeUSB);
   }
 
+  void ConnectDevice(const device::mojom::HidDeviceInfo& device) {
+    hid_manager_.AddDevice(device.Clone());
+  }
+
   void DisconnectDevice(const device::mojom::HidDeviceInfo& device) {
     hid_manager_.RemoveDevice(device.guid);
+  }
+
+  void UpdateDevice(const device::mojom::HidDeviceInfo& device) {
+    hid_manager_.ChangeDevice(device.Clone());
   }
 
   void SimulateHidManagerConnectionError() {
@@ -398,4 +406,81 @@ TEST_F(HidChooserContextTest, ConnectionErrorWithPersistentPermission) {
   connection_error_loop.Run();
 
   EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
+}
+
+namespace {
+
+device::mojom::HidDeviceInfoPtr CreateDeviceWithOneCollection(
+    const std::string& guid) {
+  auto device_info = device::mojom::HidDeviceInfo::New();
+  device_info->guid = guid;
+  auto collection = device::mojom::HidCollectionInfo::New();
+  collection->usage = device::mojom::HidUsageAndPage::New(1, 1);
+  collection->input_reports.push_back(
+      device::mojom::HidReportDescription::New());
+  device_info->collections.push_back(std::move(collection));
+  return device_info;
+}
+
+device::mojom::HidDeviceInfoPtr CreateDeviceWithTwoCollections(
+    const std::string& guid) {
+  auto device_info = CreateDeviceWithOneCollection(guid);
+  auto collection = device::mojom::HidCollectionInfo::New();
+  collection->usage = device::mojom::HidUsageAndPage::New(2, 2);
+  collection->output_reports.push_back(
+      device::mojom::HidReportDescription::New());
+  device_info->collections.push_back(std::move(collection));
+  return device_info;
+}
+
+}  // namespace
+
+TEST_F(HidChooserContextTest, AddChangeRemoveDevice) {
+  const char kTestGuid[] = "guid";
+
+  HidChooserContext* context = GetContext();
+
+  EXPECT_FALSE(context->GetDeviceInfo(kTestGuid));
+
+  // Connect a partially-initialized device.
+  base::RunLoop device_added_loop;
+  EXPECT_CALL(device_observer(), OnDeviceAdded).WillOnce([&](const auto& d) {
+    EXPECT_EQ(d.guid, kTestGuid);
+    EXPECT_EQ(d.collections.size(), 1u);
+    device_added_loop.Quit();
+  });
+  auto partial_device = CreateDeviceWithOneCollection(kTestGuid);
+  ConnectDevice(*partial_device);
+  device_added_loop.Run();
+
+  auto* device_info = context->GetDeviceInfo(kTestGuid);
+  ASSERT_TRUE(device_info);
+  EXPECT_EQ(device_info->collections.size(), 1u);
+
+  // Update the device to add another collection.
+  base::RunLoop device_changed_loop;
+  EXPECT_CALL(device_observer(), OnDeviceChanged).WillOnce([&](const auto& d) {
+    EXPECT_EQ(d.guid, kTestGuid);
+    EXPECT_EQ(d.collections.size(), 2u);
+    device_changed_loop.Quit();
+  });
+  auto complete_device = CreateDeviceWithTwoCollections(kTestGuid);
+  UpdateDevice(*complete_device);
+  device_changed_loop.Run();
+
+  device_info = context->GetDeviceInfo(kTestGuid);
+  ASSERT_TRUE(device_info);
+  EXPECT_EQ(device_info->collections.size(), 2u);
+
+  // Disconnect the device.
+  base::RunLoop device_removed_loop;
+  EXPECT_CALL(device_observer(), OnDeviceRemoved).WillOnce([&](const auto& d) {
+    EXPECT_EQ(d.guid, kTestGuid);
+    EXPECT_EQ(d.collections.size(), 2u);
+    device_removed_loop.Quit();
+  });
+  DisconnectDevice(*complete_device);
+  device_removed_loop.Run();
+
+  ASSERT_FALSE(context->GetDeviceInfo(kTestGuid));
 }

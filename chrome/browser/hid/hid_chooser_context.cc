@@ -53,6 +53,9 @@ void HidChooserContext::DeviceObserver::OnDeviceAdded(
 void HidChooserContext::DeviceObserver::OnDeviceRemoved(
     const device::mojom::HidDeviceInfo& device) {}
 
+void HidChooserContext::DeviceObserver::OnDeviceChanged(
+    const device::mojom::HidDeviceInfo& device) {}
+
 void HidChooserContext::DeviceObserver::OnHidManagerConnectionError() {}
 
 HidChooserContext::HidChooserContext(Profile* profile)
@@ -276,7 +279,18 @@ void HidChooserContext::SetHidManagerForTesting(
       &HidChooserContext::OnHidManagerConnectionError, base::Unretained(this)));
 
   hid_manager_->GetDevicesAndSetClient(
-      client_receiver_.BindNewEndpointAndPassRemote(), std::move(callback));
+      client_receiver_.BindNewEndpointAndPassRemote(),
+      base::BindOnce(&HidChooserContext::OnHidManagerInitializedForTesting,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void HidChooserContext::OnHidManagerInitializedForTesting(
+    device::mojom::HidManager::GetDevicesCallback callback,
+    std::vector<device::mojom::HidDeviceInfoPtr> devices) {
+  DCHECK(devices.empty());
+  DCHECK(pending_get_devices_requests_.empty());
+  is_initialized_ = true;
+  std::move(callback).Run({});
 }
 
 base::WeakPtr<HidChooserContext> HidChooserContext::AsWeakPtr() {
@@ -327,6 +341,18 @@ void HidChooserContext::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
       observer.OnPermissionRevoked(origin);
     }
   }
+}
+
+void HidChooserContext::DeviceChanged(device::mojom::HidDeviceInfoPtr device) {
+  DCHECK(device);
+  DCHECK(base::Contains(devices_, device->guid));
+
+  // Update the device list.
+  devices_[device->guid] = device->Clone();
+
+  // Notify all observers.
+  for (auto& observer : device_observer_list_)
+    observer.OnDeviceChanged(*device);
 }
 
 void HidChooserContext::EnsureHidManagerConnection() {

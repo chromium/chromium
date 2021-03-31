@@ -39,6 +39,7 @@ class HidChooserContext : public permissions::ChooserContextBase,
    public:
     virtual void OnDeviceAdded(const device::mojom::HidDeviceInfo&);
     virtual void OnDeviceRemoved(const device::mojom::HidDeviceInfo&);
+    virtual void OnDeviceChanged(const device::mojom::HidDeviceInfo&);
     virtual void OnHidManagerConnectionError();
 
     // Called when the HidChooserContext is shutting down. Observers must remove
@@ -103,11 +104,15 @@ class HidChooserContext : public permissions::ChooserContextBase,
   // device::mojom::HidManagerClient implementation:
   void DeviceAdded(device::mojom::HidDeviceInfoPtr device_info) override;
   void DeviceRemoved(device::mojom::HidDeviceInfoPtr device_info) override;
+  void DeviceChanged(device::mojom::HidDeviceInfoPtr device_info) override;
 
   void EnsureHidManagerConnection();
   void SetUpHidManagerConnection(
       mojo::PendingRemote<device::mojom::HidManager> manager);
   void InitDeviceList(std::vector<device::mojom::HidDeviceInfoPtr> devices);
+  void OnHidManagerInitializedForTesting(
+      device::mojom::HidManager::GetDevicesCallback callback,
+      std::vector<device::mojom::HidDeviceInfoPtr> devices);
   void OnHidManagerConnectionError();
 
   const bool is_incognito_;

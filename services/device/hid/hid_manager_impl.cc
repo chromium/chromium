@@ -113,4 +113,9 @@ void HidManagerImpl::OnDeviceRemoved(mojom::HidDeviceInfoPtr device) {
     client->DeviceRemoved(device->Clone());
 }
 
+void HidManagerImpl::OnDeviceChanged(mojom::HidDeviceInfoPtr device) {
+  for (auto& client : clients_)
+    client->DeviceChanged(device->Clone());
+}
+
 }  // namespace device

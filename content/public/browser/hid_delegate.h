@@ -32,6 +32,7 @@ class CONTENT_EXPORT HidDelegate {
     // Events forwarded from HidChooserContext::DeviceObserver:
     virtual void OnDeviceAdded(const device::mojom::HidDeviceInfo&) = 0;
     virtual void OnDeviceRemoved(const device::mojom::HidDeviceInfo&) = 0;
+    virtual void OnDeviceChanged(const device::mojom::HidDeviceInfo&) = 0;
     virtual void OnHidManagerConnectionError() = 0;
 
     // Event forwarded from permissions::ChooserContextBase::PermissionObserver:

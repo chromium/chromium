@@ -85,6 +85,7 @@ class DEVICE_GAMEPAD_EXPORT NintendoDataFetcher : public GamepadDataFetcher,
   // mojom::HidManagerClient implementation.
   void DeviceAdded(mojom::HidDeviceInfoPtr device_info) override;
   void DeviceRemoved(mojom::HidDeviceInfoPtr device_info) override;
+  void DeviceChanged(mojom::HidDeviceInfoPtr device_info) override;
 
   // mojom::HidManagerClient::GetDevicesAndSetClient callback.
   void OnGetDevices(std::vector<mojom::HidDeviceInfoPtr> device_infos);

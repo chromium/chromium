@@ -39,6 +39,8 @@ class FakeHidConnection : public HidConnection {
  public:
   explicit FakeHidConnection(scoped_refptr<HidDeviceInfo> device)
       : HidConnection(device, /*allow_protected_reports=*/false) {}
+  FakeHidConnection(const FakeHidConnection&) = delete;
+  FakeHidConnection& operator=(const FakeHidConnection&) = delete;
 
   // HidConnection implementation.
   void PlatformClose() override {}
@@ -61,8 +63,6 @@ class FakeHidConnection : public HidConnection {
 
  private:
   ~FakeHidConnection() override = default;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHidConnection);
 };
 
 // A test implementation of HidConnectionClient that signals once an input
@@ -70,6 +70,8 @@ class FakeHidConnection : public HidConnection {
 class TestHidConnectionClient : public mojom::HidConnectionClient {
  public:
   TestHidConnectionClient() = default;
+  TestHidConnectionClient(const TestHidConnectionClient&) = delete;
+  TestHidConnectionClient& operator=(const TestHidConnectionClient&) = delete;
   ~TestHidConnectionClient() override = default;
 
   void Bind(mojo::PendingReceiver<mojom::HidConnectionClient> receiver) {
@@ -94,8 +96,6 @@ class TestHidConnectionClient : public mojom::HidConnectionClient {
   mojo::Receiver<mojom::HidConnectionClient> receiver_{this};
   uint8_t report_id_ = 0;
   std::vector<uint8_t> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHidConnectionClient);
 };
 
 // A utility for capturing the state returned by mojom::HidConnection I/O
@@ -175,18 +175,15 @@ class HidConnectionImplTest : public DeviceServiceTestBase {
   }
 
   scoped_refptr<HidDeviceInfo> CreateTestDevice() {
-    HidDeviceInfo::PlatformDeviceIdMap platform_device_id_map;
-    platform_device_id_map.emplace_back(base::flat_set<uint8_t>{0},
-                                        kTestDeviceId);
-    std::vector<mojom::HidCollectionInfoPtr> collections;
-    auto hid_collection_info = mojom::HidCollectionInfo::New();
-    hid_collection_info->usage = mojom::HidUsageAndPage::New(0, 0);
-    hid_collection_info->report_ids.push_back(kTestReportId);
-    collections.push_back(std::move(hid_collection_info));
+    auto collection = mojom::HidCollectionInfo::New();
+    collection->usage = mojom::HidUsageAndPage::New(0, 0);
+    collection->report_ids.push_back(kTestReportId);
     return base::MakeRefCounted<HidDeviceInfo>(
-        std::move(platform_device_id_map), "1", 0x1234, 0xabcd, "product name",
+        kTestDeviceId, /*physical_device_id=*/"1", "interface id",
+        /*vendor_id=*/0x1234, /*product_id=*/0xabcd, "product name",
         "serial number", mojom::HidBusType::kHIDBusTypeUSB,
-        std::move(collections), kMaxReportSizeBytes, kMaxReportSizeBytes, 0);
+        std::move(collection), kMaxReportSizeBytes, kMaxReportSizeBytes,
+        /*max_feature_report_size=*/0);
   }
 
   std::vector<uint8_t> CreateTestReportBuffer(uint8_t report_id, size_t size) {

@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
@@ -46,7 +46,9 @@ void BindHidManager(mojom::DeviceService* service,
 // Main test fixture
 class NintendoDataFetcherTest : public DeviceServiceTestBase {
  public:
-  NintendoDataFetcherTest() {}
+  NintendoDataFetcherTest() = default;
+  NintendoDataFetcherTest(const NintendoDataFetcherTest&) = delete;
+  NintendoDataFetcherTest& operator=(const NintendoDataFetcherTest&) = delete;
 
   void SetUp() override {
     // Set up the fake HID service.
@@ -91,23 +93,18 @@ class NintendoDataFetcherTest : public DeviceServiceTestBase {
   std::unique_ptr<GamepadProvider> provider_;
   NintendoDataFetcher* fetcher_;
   base::Thread* polling_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(NintendoDataFetcherTest);
 };
 
 TEST_F(NintendoDataFetcherTest, UnsupportedDeviceIsIgnored) {
   // Simulate an unsupported, non-Nintendo HID device.
-  HidDeviceInfo::PlatformDeviceIdMap platform_device_id_map;
-  platform_device_id_map.emplace_back(base::flat_set<uint8_t>{0},
-                                      kTestDeviceId);
-  std::vector<mojom::HidCollectionInfoPtr> collections;
   auto collection = mojom::HidCollectionInfo::New();
   collection->usage = mojom::HidUsageAndPage::New(0, 0);
-  collections.push_back(std::move(collection));
-  scoped_refptr<HidDeviceInfo> device_info(new HidDeviceInfo(
-      std::move(platform_device_id_map), kPhysicalDeviceId, 0x1234, 0xabcd,
-      "Invalipad", "", mojom::HidBusType::kHIDBusTypeUSB,
-      std::move(collections), 0, 0, 0));
+  auto device_info = base::MakeRefCounted<HidDeviceInfo>(
+      kTestDeviceId, kPhysicalDeviceId, "interface id", /*vendor_id=*/0x1234,
+      /*product_id=*/0xabcd, "Invalipad", /*serial_number=*/"",
+      mojom::HidBusType::kHIDBusTypeUSB, std::move(collection),
+      /*max_input_report_size=*/0, /*max_output_report_size=*/0,
+      /*max_feature_report_size=*/0);
 
   // Add the device to the mock HID service. The HID service should notify the
   // data fetcher.
@@ -124,17 +121,14 @@ TEST_F(NintendoDataFetcherTest, UnsupportedDeviceIsIgnored) {
 
 TEST_F(NintendoDataFetcherTest, AddAndRemoveSwitchPro) {
   // Simulate a Switch Pro over USB.
-  HidDeviceInfo::PlatformDeviceIdMap platform_device_id_map;
-  platform_device_id_map.emplace_back(base::flat_set<uint8_t>{0},
-                                      kTestDeviceId);
-  std::vector<mojom::HidCollectionInfoPtr> collections;
   auto collection = mojom::HidCollectionInfo::New();
   collection->usage = mojom::HidUsageAndPage::New(0, 0);
-  collections.push_back(std::move(collection));
-  scoped_refptr<HidDeviceInfo> device_info(new HidDeviceInfo(
-      std::move(platform_device_id_map), kPhysicalDeviceId, 0x057e, 0x2009,
-      "Switch Pro Controller", "", mojom::HidBusType::kHIDBusTypeUSB,
-      std::move(collections), 0, 63, 0));
+  auto device_info = base::MakeRefCounted<HidDeviceInfo>(
+      kTestDeviceId, kPhysicalDeviceId, "interface id", /*vendor_id=*/0x057e,
+      /*product_id=*/0x2009, "Switch Pro Controller", /*serial_number=*/"",
+      mojom::HidBusType::kHIDBusTypeUSB, std::move(collection),
+      /*max_input_report_size=*/0, /*max_output_report_size=*/63,
+      /*max_feature_report_size=*/0);
 
   // Add the device to the mock HID service. The HID service should notify the
   // data fetcher.

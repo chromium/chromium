@@ -359,6 +359,13 @@ interface HidManagerClient {
   // Notifies the client that a device is being removed; called before
   // removing the device from HidService.
   DeviceRemoved@1(HidDeviceInfo device_info);
+
+  // Notifies the client that the device info has been changed.
+  // * New collections may be added.
+  // * The maximum report sizes may be increased.
+  // * The protected report ID lists may have additional report IDs added.
+  // Other device information is not modified.
+  [MinVersion=2] DeviceChanged@2(HidDeviceInfo device_info);
 };
 
 // Provides an interface for enumerating available HID devices, registering for

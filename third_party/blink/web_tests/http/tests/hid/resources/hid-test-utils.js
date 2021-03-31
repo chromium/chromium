@@ -161,7 +161,6 @@ class FakeHidService {
     this.devices_ = new Map();
     this.fakeConnections_ = new Map();
     this.selectedDevices_ = [];
-    this.client_ = null;
   }
 
   // Creates and returns a HidDeviceInfo with the specified device IDs.
@@ -206,6 +205,26 @@ class FakeHidService {
         this.client_.deviceRemoved(deviceInfo);
       });
     }
+  }
+
+  // Simulates updating the device information for a connected device.
+  changeDevice(deviceInfo) {
+    let key = deviceInfo.physicalDeviceId;
+    if (key.length === 0)
+      key = deviceInfo.guid;
+    let devices = this.devices_.get(key);
+    if (devices === undefined)
+      devices = [];
+    let i = devices.length;
+    while (i--) {
+      if (devices[i].guid == deviceInfo.guid)
+        devices.splice(i, 1);
+    }
+    devices.push(deviceInfo);
+    this.devices_.set(key, devices);
+    if (this.client_)
+      this.client_.deviceChanged(deviceInfo);
+    return key;
   }
 
   // Sets the key of the device that will be returned as the selected item the

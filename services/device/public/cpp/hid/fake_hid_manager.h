@@ -87,6 +87,7 @@ class FakeHidManager : public mojom::HidManager {
       uint16_t usage);
   void AddDevice(mojom::HidDeviceInfoPtr device);
   void RemoveDevice(const std::string& guid);
+  void ChangeDevice(mojom::HidDeviceInfoPtr device);
   void SimulateConnectionError();
 
  private:

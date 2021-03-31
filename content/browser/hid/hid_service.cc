@@ -220,6 +220,40 @@ void HidService::OnDeviceRemoved(
     client->DeviceRemoved(filtered_device_info->Clone());
 }
 
+void HidService::OnDeviceChanged(
+    const device::mojom::HidDeviceInfo& device_info) {
+  const bool has_device_permission =
+      GetContentClient()->browser()->GetHidDelegate()->HasDevicePermission(
+          WebContents::FromRenderFrameHost(render_frame_host()), device_info);
+
+  device::mojom::HidDeviceInfoPtr filtered_device_info;
+  if (has_device_permission) {
+    filtered_device_info = device_info.Clone();
+    RemoveProtectedReports(*filtered_device_info);
+  }
+
+  if (!has_device_permission || filtered_device_info->collections.empty()) {
+    // Changing the device information has caused permissions to be revoked.
+    size_t watchers_removed =
+        base::EraseIf(watcher_ids_, [&](const auto& watcher_entry) {
+          if (watcher_entry.first != device_info.guid)
+            return false;
+
+          watchers_.Remove(watcher_entry.second);
+          return true;
+        });
+
+    // If needed, decrement the active frame count.
+    if (watchers_removed > 0)
+      OnWatcherRemoved(/*cleanup_watcher_ids=*/false);
+
+    return;
+  }
+
+  for (auto& client : clients_)
+    client->DeviceChanged(filtered_device_info->Clone());
+}
+
 void HidService::OnHidManagerConnectionError() {
   // Close the connection with Blink.
   clients_.Clear();
@@ -250,7 +284,7 @@ void HidService::OnPermissionRevoked(const url::Origin& origin) {
       });
 
   // If needed decrement the active frame count.
-  if (watchers_removed)
+  if (watchers_removed > 0)
     OnWatcherRemoved(/*cleanup_watcher_ids=*/false);
 }
 

@@ -51,6 +51,8 @@ class HidService : public content::FrameServiceBase<blink::mojom::HidService>,
   void OnDeviceAdded(const device::mojom::HidDeviceInfo& device_info) override;
   void OnDeviceRemoved(
       const device::mojom::HidDeviceInfo& device_info) override;
+  void OnDeviceChanged(
+      const device::mojom::HidDeviceInfo& device_info) override;
   void OnHidManagerConnectionError() override;
   void OnPermissionRevoked(const url::Origin& origin) override;
 

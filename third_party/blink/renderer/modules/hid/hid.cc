@@ -136,8 +136,6 @@ void HID::AddedEventListener(const AtomicString& event_type,
   }
 
   EnsureServiceConnection();
-  if (!receiver_.is_bound())
-    service_->RegisterClient(receiver_.BindNewEndpointAndPassRemote());
 }
 
 void HID::DeviceAdded(device::mojom::blink::HidDeviceInfoPtr device_info) {
@@ -152,6 +150,18 @@ void HID::DeviceRemoved(device::mojom::blink::HidDeviceInfoPtr device_info) {
 
   DispatchEvent(*MakeGarbageCollected<HIDConnectionEvent>(
       event_type_names::kDisconnect, device));
+}
+
+void HID::DeviceChanged(device::mojom::blink::HidDeviceInfoPtr device_info) {
+  auto* device = device_cache_.at(device_info->guid);
+  if (!device) {
+    // If the GUID is not in the |device_cache_| then this is the first time we
+    // have been notified for this device.
+    DeviceAdded(std::move(device_info));
+    return;
+  }
+
+  device->UpdateDeviceInfo(std::move(device_info));
 }
 
 ScriptPromise HID::getDevices(ScriptState* script_state,
@@ -282,10 +292,13 @@ void HID::EnsureServiceConnection() {
       service_.BindNewPipeAndPassReceiver(task_runner));
   service_.set_disconnect_handler(
       WTF::Bind(&HID::OnServiceConnectionError, WrapWeakPersistent(this)));
+  DCHECK(!receiver_.is_bound());
+  service_->RegisterClient(receiver_.BindNewEndpointAndPassRemote());
 }
 
 void HID::OnServiceConnectionError() {
   service_.reset();
+  receiver_.reset();
 
   // Script may execute during a call to Resolve(). Swap these sets to prevent
   // concurrent modification.

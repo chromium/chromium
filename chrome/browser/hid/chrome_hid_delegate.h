@@ -47,6 +47,7 @@ class ChromeHidDelegate
   // HidChooserContext::DeviceObserver:
   void OnDeviceAdded(const device::mojom::HidDeviceInfo&) override;
   void OnDeviceRemoved(const device::mojom::HidDeviceInfo&) override;
+  void OnDeviceChanged(const device::mojom::HidDeviceInfo&) override;
   void OnHidManagerConnectionError() override;
   void OnHidChooserContextShutdown() override;
 

@@ -51,6 +51,9 @@ void HidService::Observer::OnDeviceAdded(mojom::HidDeviceInfoPtr device_info) {}
 void HidService::Observer::OnDeviceRemoved(
     mojom::HidDeviceInfoPtr device_info) {}
 
+void HidService::Observer::OnDeviceChanged(
+    mojom::HidDeviceInfoPtr device_info) {}
+
 // static
 constexpr base::TaskTraits HidService::kBlockingTaskTraits;
 
@@ -95,29 +98,48 @@ HidService::~HidService() {
 
 void HidService::AddDevice(scoped_refptr<HidDeviceInfo> device_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::Optional<std::string> found_guid = base::nullopt;
-  for (const auto& entry : device_info->platform_device_id_map()) {
-    if ((found_guid = FindDeviceGuidInDeviceMap(entry.platform_device_id)))
-      break;
+  // A HidDeviceInfo object may represent multiple platform devices. For
+  // instance, on Windows each HID interface is split into separate platform
+  // devices for each top-level collection. When adding devices to HidService,
+  // callers should add each platform device as a separate HidDeviceInfo and
+  // allow HidService to merge them together.
+  DCHECK_EQ(device_info->platform_device_id_map().size(), 1u);
+  if (FindDeviceGuidInDeviceMap(
+          device_info->platform_device_id_map().front().platform_device_id)) {
+    return;
   }
-  if (!found_guid) {
-    devices_[device_info->device_guid()] = device_info;
 
-    HID_LOG(USER) << "HID device "
-                  << (enumeration_ready_ ? "added" : "detected")
-                  << ": vendorId=" << device_info->vendor_id()
-                  << ", productId=" << device_info->product_id() << ", name='"
-                  << device_info->product_name() << "', serial='"
-                  << device_info->serial_number() << "', deviceIds=["
-                  << PlatformDeviceIdsToString(
-                         device_info->platform_device_id_map())
-                  << "]";
-
-    if (enumeration_ready_) {
-      for (auto& observer : observer_list_)
-        observer.OnDeviceAdded(device_info->device()->Clone());
+  // If |device_info| has an interface ID then it represents a single top-level
+  // collection within a HID interface that may contain other top-level
+  // collections. Check if a sibling device has already been added and, if so,
+  // merge |device_info| into the sibling device.
+  if (device_info->interface_id()) {
+    auto sibling_device = FindSiblingDevice(*device_info);
+    if (sibling_device) {
+      // Merge |device_info| into |sibling_device|.
+      sibling_device->AppendDeviceInfo(std::move(device_info));
+      if (enumeration_ready_) {
+        for (auto& observer : observer_list_)
+          observer.OnDeviceChanged(sibling_device->device()->Clone());
+      }
+      return;
     }
+  }
+
+  devices_[device_info->device_guid()] = device_info;
+
+  HID_LOG(USER) << "HID device " << (enumeration_ready_ ? "added" : "detected")
+                << ": vendorId=" << device_info->vendor_id()
+                << ", productId=" << device_info->product_id() << ", name='"
+                << device_info->product_name() << "', serial='"
+                << device_info->serial_number() << "', deviceIds=["
+                << PlatformDeviceIdsToString(
+                       device_info->platform_device_id_map())
+                << "]";
+
+  if (enumeration_ready_) {
+    for (auto& observer : observer_list_)
+      observer.OnDeviceAdded(device_info->device()->Clone());
   }
 }
 
@@ -173,6 +195,18 @@ base::Optional<std::string> HidService::FindDeviceGuidInDeviceMap(
     }
   }
   return base::nullopt;
+}
+
+scoped_refptr<HidDeviceInfo> HidService::FindSiblingDevice(
+    const HidDeviceInfo& device_info) const {
+  if (!device_info.interface_id())
+    return nullptr;
+
+  for (const auto& device_entry : devices_) {
+    if (device_entry.second->interface_id() == device_info.interface_id())
+      return device_entry.second;
+  }
+  return nullptr;
 }
 
 }  // namespace device

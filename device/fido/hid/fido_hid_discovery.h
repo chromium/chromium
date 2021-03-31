@@ -52,6 +52,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDiscovery
   // device::mojom::HidManagerClient implementation:
   void DeviceAdded(device::mojom::HidDeviceInfoPtr device_info) override;
   void DeviceRemoved(device::mojom::HidDeviceInfoPtr device_info) override;
+  void DeviceChanged(device::mojom::HidDeviceInfoPtr device_info) override;
 
   void OnGetDevices(std::vector<device::mojom::HidDeviceInfoPtr> devices);
 

@@ -124,6 +124,7 @@ class FakeFidoHidManager : public device::mojom::HidManager {
       device::mojom::HidDeviceInfoPtr device,
       mojo::PendingRemote<device::mojom::HidConnection> connection);
   void RemoveDevice(const std::string device_guid);
+  void ChangeDevice(device::mojom::HidDeviceInfoPtr device);
 
  private:
   std::map<std::string, device::mojom::HidDeviceInfoPtr> devices_;

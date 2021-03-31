@@ -96,6 +96,12 @@ void NintendoDataFetcher::DeviceRemoved(mojom::HidDeviceInfoPtr device_info) {
   }
 }
 
+void NintendoDataFetcher::DeviceChanged(mojom::HidDeviceInfoPtr device_info) {
+  // Ignore updated device info. NintendoController will retain the old
+  // HidDeviceInfo. This is fine since it does not rely on any HidDeviceInfo
+  // members that could change.
+}
+
 bool NintendoDataFetcher::AddDevice(mojom::HidDeviceInfoPtr device_info) {
   DCHECK(hid_manager_);
   GamepadId gamepad_id = GamepadIdList::Get().GetGamepadId(

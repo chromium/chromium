@@ -108,6 +108,7 @@ class HidDeviceManager : public BrowserContextKeyedAPI,
   // device::mojom::HidManagerClient implementation:
   void DeviceAdded(device::mojom::HidDeviceInfoPtr device) override;
   void DeviceRemoved(device::mojom::HidDeviceInfoPtr device) override;
+  void DeviceChanged(device::mojom::HidDeviceInfoPtr device) override;
 
   // Builds a list of device info objects representing the currently enumerated
   // devices, taking into account the permissions held by the given extension

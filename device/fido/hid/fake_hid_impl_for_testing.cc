@@ -218,6 +218,7 @@ void FakeFidoHidManager::Connect(
 }
 
 void FakeFidoHidManager::AddDevice(device::mojom::HidDeviceInfoPtr device) {
+  DCHECK(!base::Contains(devices_, device->guid));
   device::mojom::HidDeviceInfo* device_info = device.get();
   for (auto& client : clients_)
     client->DeviceAdded(device_info->Clone());
@@ -241,6 +242,15 @@ void FakeFidoHidManager::RemoveDevice(const std::string device_guid) {
   for (auto& client : clients_)
     client->DeviceRemoved(device_info->Clone());
   devices_.erase(it);
+}
+
+void FakeFidoHidManager::ChangeDevice(device::mojom::HidDeviceInfoPtr device) {
+  DCHECK(base::Contains(devices_, device->guid));
+  device::mojom::HidDeviceInfo* device_info = device.get();
+  for (auto& client : clients_)
+    client->DeviceChanged(device_info->Clone());
+
+  devices_[device->guid] = std::move(device);
 }
 
 ScopedFakeFidoHidManager::ScopedFakeFidoHidManager() {

@@ -76,6 +76,8 @@ class MODULES_EXPORT HIDDevice
   // ActiveScriptWrappable:
   bool HasPendingActivity() const override;
 
+  void UpdateDeviceInfo(device::mojom::blink::HidDeviceInfoPtr info);
+
   static HIDReportItem* ToHIDReportItem(
       const device::mojom::blink::HidReportItem& report_item);
 

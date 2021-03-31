@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
@@ -279,6 +280,18 @@ void HidDeviceManager::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
   DCHECK(permissions_manager);
   permissions_manager->RemoveEntryByDeviceGUID(DevicePermissionEntry::Type::HID,
                                                device->guid);
+}
+
+void HidDeviceManager::DeviceChanged(device::mojom::HidDeviceInfoPtr device) {
+  // Find |device| in |devices_|.
+  DCHECK(thread_checker_.CalledOnValidThread());
+  const auto& resource_entry = resource_ids_.find(device->guid);
+  DCHECK(resource_entry != resource_ids_.end());
+  int resource_id = resource_entry->second;
+  DCHECK(base::Contains(devices_, resource_id));
+
+  // Update the device information.
+  devices_[resource_id] = std::move(device);
 }
 
 void HidDeviceManager::LazyInitialize() {
