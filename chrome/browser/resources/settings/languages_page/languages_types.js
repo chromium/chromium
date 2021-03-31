@@ -72,6 +72,7 @@ let InputMethodsModel;
  *   prospectiveUILanguage: (string|undefined),
  *   inputMethods: (!InputMethodsModel|undefined),
  *   alwaysTranslate: !Array<!chrome.languageSettingsPrivate.Language>,
+ *   neverTranslate: !Array<!chrome.languageSettingsPrivate.Language>,
  *   spellCheckOnLanguages: !Array<!SpellCheckLanguageState>,
  *   spellCheckOffLanguages: !Array<!SpellCheckLanguageState>,
  * }}

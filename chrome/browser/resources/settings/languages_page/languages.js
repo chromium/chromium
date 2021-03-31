@@ -58,6 +58,7 @@ const preferredLanguagesPrefName = isChromeOS ?
  *   supportedLanguages: !Array<!chrome.languageSettingsPrivate.Language>,
  *   translateTarget: string,
  *   alwaysTranslateCodes: !Array<string>,
+ *   neverTranslateCodes: !Array<string>,
  *   startingUILanguage: string,
  *   supportedInputMethods:
  * (!Array<!chrome.languageSettingsPrivate.InputMethod>|undefined),
@@ -248,6 +249,7 @@ Polymer({
       supportedLanguages: [],
       translateTarget: '',
       alwaysTranslateCodes: [],
+      neverTranslateCodes: [],
       startingUILanguage: '',
 
       // Only used by ChromeOS
@@ -290,6 +292,12 @@ Polymer({
                     this.languageSettingsPrivate_.getAlwaysTranslateLanguages(
                         resolve);
                   }).then(result => args.alwaysTranslateCodes = result));
+
+    // Get the list of language-codes to never translate.
+    promises.push(new Promise(resolve => {
+                    this.languageSettingsPrivate_.getNeverTranslateLanguages(
+                        resolve);
+                  }).then(result => args.neverTranslateCodes = result));
 
     if (isWindows || isChromeOS) {
       // Fetch the starting UI language, which affects which actions should be
@@ -594,11 +602,15 @@ Polymer({
     const alwaysTranslateLanguages =
         args.alwaysTranslateCodes.map(code => this.getLanguage(code));
 
+    const neverTranslateLangauges =
+        args.neverTranslateCodes.map(code => this.getLanguage(code));
+
     const model = /** @type {!LanguagesModel} */ ({
       supported: args.supportedLanguages,
       enabled: enabledLanguageStates,
       translateTarget: args.translateTarget,
       alwaysTranslate: alwaysTranslateLanguages,
+      neverTranslate: neverTranslateLangauges,
       spellCheckOnLanguages,
       spellCheckOffLanguages,
     });

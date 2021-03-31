@@ -116,6 +116,12 @@ chrome.languageSettingsPrivate.getAlwaysTranslateLanguages = function(callback) 
 chrome.languageSettingsPrivate.setLanguageAlwaysTranslateState = function(languageCode, alwaysTranslate) {};
 
 /**
+ * Gets languages that should never be offered to translate.
+ * @param {function(!Array<string>): void} callback
+ */
+chrome.languageSettingsPrivate.getNeverTranslateLanguages = function(callback) {};
+
+/**
  * Gets the current status of the chosen spell check dictionaries.
  * @param {function(!Array<!chrome.languageSettingsPrivate.SpellcheckDictionaryStatus>): void}
  *     callback

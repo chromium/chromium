@@ -164,6 +164,28 @@ class LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction
       LanguageSettingsPrivateSetLanguageAlwaysTranslateStateFunction);
 };
 
+// Implements the languageSettingsPrivate.getNeverTranslateLanguages method.
+class LanguageSettingsPrivateGetNeverTranslateLanguagesFunction
+    : public ExtensionFunction {
+ public:
+  LanguageSettingsPrivateGetNeverTranslateLanguagesFunction();
+  DECLARE_EXTENSION_FUNCTION(
+      "languageSettingsPrivate.getNeverTranslateLanguages",
+      LANGUAGESETTINGSPRIVATE_GETNEVERTRANSLATELANGUAGES)
+
+ protected:
+  ~LanguageSettingsPrivateGetNeverTranslateLanguagesFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  ChromeExtensionFunctionDetails chrome_details_;
+
+  DISALLOW_COPY_AND_ASSIGN(
+      LanguageSettingsPrivateGetNeverTranslateLanguagesFunction);
+};
+
 // Implements the languageSettingsPrivate.getSpellcheckDictionaryStatuses
 // method.
 class LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction

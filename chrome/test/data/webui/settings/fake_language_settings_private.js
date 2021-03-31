@@ -136,6 +136,9 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
     /** @type {!Array<string>} */
     this.alwaysTranslateList = ['de, es, nl'];
 
+    /** @type {!Array<string>} */
+    this.neverTranslateList = ['en, fr'];
+
     /** @type {!Array<!chrome.languageSettingsPrivate.InputMethod>} */
     this.componentExtensionImes = [
       {
@@ -233,6 +236,15 @@ export class FakeLanguageSettingsPrivate extends TestBrowserProxy {
       }
       this.alwaysTranslateList.splice(index, 1);
     }
+  }
+
+  /**
+   * Gets languages that should never be offered to translate.
+   * @param {function(!Array<!string>)}
+   *     callback
+   */
+  getNeverTranslateLanguages(callback) {
+    setTimeout(callback.bind(null, this.neverTranslateList));
   }
 
   /**
