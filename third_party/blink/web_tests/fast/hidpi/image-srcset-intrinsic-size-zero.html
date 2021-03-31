@@ -11,7 +11,7 @@
         var expected = 33554432; // blink::intMaxForLayoutUnit
         if (sessionStorage.useZoomForDsfEnabled === 'true')
           expected = Math.round(expected / window.devicePixelRatio);
-        shouldBe('imgWidth', '' + expected);
+        shouldBe('imgWidth', '' + expected, /* quiet */ true);
     }, false);
 </script>
 <div>
