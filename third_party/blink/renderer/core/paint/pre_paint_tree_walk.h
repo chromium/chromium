@@ -20,9 +20,7 @@ class NGFragmentChildIterator;
 // LocalFrameView, across frame boundaries. Helper classes are called for each
 // tree node to perform actual actions.  It expects to be invoked in InPrePaint
 // phase.
-class CORE_EXPORT PrePaintTreeWalk {
-  DISALLOW_NEW();
-
+class CORE_EXPORT PrePaintTreeWalk : public GarbageCollected<PrePaintTreeWalk> {
  public:
   PrePaintTreeWalk() = default;
   void WalkTree(LocalFrameView& root_frame);
@@ -30,14 +28,22 @@ class CORE_EXPORT PrePaintTreeWalk {
   static bool ObjectRequiresPrePaint(const LayoutObject&);
   static bool ObjectRequiresTreeBuilderContext(const LayoutObject&);
 
- private:
-  friend PaintInvalidatorContext::ParentContextAccessor;
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(context_storage_);
+    visitor->Trace(paint_invalidator_);
+  }
 
   // PrePaintTreewalkContext is large and can lead to stack overflows
   // when recursion is deep so these context objects are allocated on the heap.
   // See: https://crbug.com/698653.
   struct PrePaintTreeWalkContext {
-    PrePaintTreeWalkContext() { tree_builder_context.emplace(); }
+    DISALLOW_NEW();
+
+   public:
+    PrePaintTreeWalkContext() {
+      tree_builder_context =
+          MakeGarbageCollected<PaintPropertyTreeBuilderContext>();
+    }
     PrePaintTreeWalkContext(
         const PrePaintTreeWalkContext& parent_context,
         const PaintInvalidatorContext::ParentContextAccessor&
@@ -62,7 +68,9 @@ class CORE_EXPORT PrePaintTreeWalk {
                   .paint_invalidation_container_for_stacked_contents) {
       if (needs_tree_builder_context || DCHECK_IS_ON()) {
         DCHECK(parent_context.tree_builder_context);
-        tree_builder_context.emplace(*parent_context.tree_builder_context);
+        tree_builder_context =
+            MakeGarbageCollected<PaintPropertyTreeBuilderContext>(
+                *parent_context.tree_builder_context);
       }
 #if DCHECK_IS_ON()
       if (needs_tree_builder_context)
@@ -71,7 +79,15 @@ class CORE_EXPORT PrePaintTreeWalk {
 #endif
     }
 
-    base::Optional<PaintPropertyTreeBuilderContext> tree_builder_context;
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(tree_builder_context);
+      visitor->Trace(paint_invalidator_context);
+      visitor->Trace(ancestor_scroll_container_paint_layer);
+      visitor->Trace(paint_invalidation_container);
+      visitor->Trace(paint_invalidation_container_for_stacked_contents);
+    }
+
+    Member<PaintPropertyTreeBuilderContext> tree_builder_context;
     PaintInvalidatorContext paint_invalidator_context;
 
     bool NeedsTreeBuilderContext() const {
@@ -79,13 +95,13 @@ class CORE_EXPORT PrePaintTreeWalk {
       DCHECK(tree_builder_context);
       return tree_builder_context->is_actually_needed;
 #else
-      return tree_builder_context.has_value();
+      return tree_builder_context;
 #endif
     }
 
     // The ancestor in the PaintLayer tree which is a scroll container. Note
     // that it is tree ancestor, not containing block or stacking ancestor.
-    PaintLayer* ancestor_scroll_container_paint_layer = nullptr;
+    Member<PaintLayer> ancestor_scroll_container_paint_layer = nullptr;
 
     // Whether there is a blocking touch event handler on any ancestor.
     bool inside_blocking_touch_event_handler = false;
@@ -107,9 +123,9 @@ class CORE_EXPORT PrePaintTreeWalk {
     // enabled.
     bool clip_changed = false;
 
-    const LayoutBoxModelObject* paint_invalidation_container = nullptr;
-    const LayoutBoxModelObject*
-        paint_invalidation_container_for_stacked_contents = nullptr;
+    Member<const LayoutBoxModelObject> paint_invalidation_container;
+    Member<const LayoutBoxModelObject>
+        paint_invalidation_container_for_stacked_contents;
   };
 
   static bool ContextRequiresChildPrePaint(const PrePaintTreeWalkContext&);
@@ -166,7 +182,7 @@ class CORE_EXPORT PrePaintTreeWalk {
                                         bool is_ng_painting);
 
   PaintInvalidator paint_invalidator_;
-  Vector<PrePaintTreeWalkContext> context_storage_;
+  HeapVector<PrePaintTreeWalkContext> context_storage_;
 
   // TODO(https://crbug.com/841364): Remove is_wheel_event_regions_enabled
   // argument once kWheelEventRegions feature flag is removed.
@@ -178,5 +194,8 @@ class CORE_EXPORT PrePaintTreeWalk {
 };
 
 }  // namespace blink
+
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::PrePaintTreeWalk::PrePaintTreeWalkContext)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PRE_PAINT_TREE_WALK_H_

@@ -45,8 +45,9 @@ class GraphicsLayerUpdater {
     kForceUpdate,
   };
 
-  void Update(PaintLayer&,
-              Vector<PaintLayer*>& layers_needing_paint_invalidation);
+  void Update(
+      PaintLayer&,
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
   bool NeedsRebuildTree() const { return needs_rebuild_tree_; }
 
@@ -55,6 +56,8 @@ class GraphicsLayerUpdater {
 #endif
 
   class UpdateContext {
+    STACK_ALLOCATED();
+
    public:
     UpdateContext();
     UpdateContext(const UpdateContext& other, const PaintLayer& layer);
@@ -75,10 +78,11 @@ class GraphicsLayerUpdater {
   };
 
  private:
-  void UpdateRecursive(PaintLayer&,
-                       UpdateType,
-                       UpdateContext&,
-                       Vector<PaintLayer*>& layers_needing_paint_invalidation);
+  void UpdateRecursive(
+      PaintLayer&,
+      UpdateType,
+      UpdateContext&,
+      HeapVector<Member<PaintLayer>>& layers_needing_paint_invalidation);
 
   bool needs_rebuild_tree_;
 };

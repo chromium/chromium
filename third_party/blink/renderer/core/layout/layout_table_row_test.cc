@@ -41,7 +41,7 @@ class LayoutTableRowDeathTest : public RenderingTest {
 
   void TearDown() override { row_->Destroy(); }
 
-  LayoutTableRow* row_;
+  Persistent<LayoutTableRow> row_;
 };
 
 TEST_F(LayoutTableRowDeathTest, CanSetRow) {

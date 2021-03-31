@@ -169,7 +169,7 @@ class CORE_EXPORT InspectorTraceEvents
 namespace inspector_layout_event {
 void BeginData(perfetto::TracedValue context, LocalFrameView*);
 void EndData(perfetto::TracedValue context,
-             const Vector<LayoutObjectWithDepth>&);
+             const HeapVector<LayoutObjectWithDepth>&);
 }  // namespace inspector_layout_event
 
 namespace inspector_schedule_style_invalidation_tracking_event {

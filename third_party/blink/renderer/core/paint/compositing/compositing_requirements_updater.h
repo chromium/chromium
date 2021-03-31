@@ -29,6 +29,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
+#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -65,7 +66,7 @@ class CompositingRequirementsUpdater {
                        OverlapMap&,
                        RecursionData&,
                        bool& descendant_has3d_transform,
-                       Vector<PaintLayer*>& unclipped_descendants,
+                       HeapVector<Member<PaintLayer>>& unclipped_descendants,
                        IntRect& absolute_descendant_bounding_box,
                        CompositingReasonsStats&);
 

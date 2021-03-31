@@ -70,12 +70,12 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
   }
 }
 
-scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
+const NGLayoutResult* NGGridLayoutAlgorithm::Layout() {
   PaintLayerScrollableArea::DelayScrollOffsetClampScope delay_clamp_scope;
 
   // Measure items.
   GridItems grid_items;
-  Vector<GridItemData> out_of_flow_items;
+  HeapVector<GridItemData> out_of_flow_items;
   ConstructAndAppendGridItems(&grid_items, &out_of_flow_items);
 
   const auto& container_style = Style();
@@ -538,6 +538,10 @@ NGGridLayoutAlgorithm::GridItemData::SetIndices(
   return set_indices;
 }
 
+void NGGridLayoutAlgorithm::GridItemData::Trace(Visitor* visitor) const {
+  visitor->Trace(node);
+}
+
 NGGridLayoutAlgorithm::GridItems::Iterator
 NGGridLayoutAlgorithm::GridItems::begin() {
   return Iterator(&item_data, reordered_item_indices.begin());
@@ -734,7 +738,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
   //  - We'll need to respect the aspect-ratio when appropriate.
   auto BlockContributionSize = [&]() -> LayoutUnit {
     DCHECK(!is_parallel_with_track_direction);
-    scoped_refptr<const NGLayoutResult> result = node.Layout(space);
+    const NGLayoutResult* result = node.Layout(space);
     NGBoxFragment fragment(
         item_style.GetWritingDirection(),
         To<NGPhysicalBoxFragment>(result->PhysicalFragment()));
@@ -880,7 +884,7 @@ LayoutUnit NGGridLayoutAlgorithm::ContributionSizeForGridItem(
 
 void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
     GridItems* grid_items,
-    Vector<GridItemData>* out_of_flow_items) const {
+    HeapVector<GridItemData>* out_of_flow_items) const {
   DCHECK(grid_items);
   NGGridChildIterator iterator(Node());
   for (NGBlockNode child = iterator.NextChild(); child;
@@ -1359,7 +1363,7 @@ void NGGridLayoutAlgorithm::CalculateAlignmentBaselines(
     LogicalRect unused;
     const NGConstraintSpace space = CreateConstraintSpace(
         grid_geometry, grid_item, NGCacheSlot::kMeasure, &unused);
-    scoped_refptr<const NGLayoutResult> result = grid_item.node.Layout(space);
+    const NGLayoutResult* result = grid_item.node.Layout(space);
 
     NGBoxFragment fragment(
         grid_item.node.Style().GetWritingDirection(),
@@ -2714,7 +2718,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
     const NGConstraintSpace space = CreateConstraintSpace(
         grid_geometry, grid_item, NGCacheSlot::kLayout, &containing_grid_area);
 
-    scoped_refptr<const NGLayoutResult> result = grid_item.node.Layout(space);
+    const NGLayoutResult* result = grid_item.node.Layout(space);
     const auto& physical_fragment =
         To<NGPhysicalBoxFragment>(result->PhysicalFragment());
     NGBoxFragment logical_fragment(grid_item.node.Style().GetWritingDirection(),
@@ -2808,7 +2812,7 @@ void NGGridLayoutAlgorithm::PlaceGridItems(const GridItems& grid_items,
 }
 
 void NGGridLayoutAlgorithm::PlaceOutOfFlowItems(
-    const Vector<GridItemData>& out_of_flow_items,
+    const HeapVector<GridItemData>& out_of_flow_items,
     const GridGeometry& grid_geometry,
     LayoutUnit block_size) {
   for (const GridItemData& out_of_flow_item : out_of_flow_items) {
@@ -2840,7 +2844,7 @@ void NGGridLayoutAlgorithm::PlaceOutOfFlowDescendants(
   // At this point, we'll have a list of OOF candidates from any inflow children
   // of the grid (which have been propagated up). These might have an assigned
   // 'grid-area', so we need to assign their correct 'containing block rect'.
-  Vector<NGLogicalOutOfFlowPositionedNode>* out_of_flow_descendants =
+  HeapVector<NGLogicalOutOfFlowPositionedNode>* out_of_flow_descendants =
       container_builder_.MutableOutOfFlowPositionedCandidates();
   DCHECK(out_of_flow_descendants);
 

@@ -87,7 +87,7 @@ TEST_F(HTMLFormControlElementTest, customValidationMessageTextDirection) {
   EXPECT_EQ(TextDirection::kRtl, message_dir);
   EXPECT_EQ(TextDirection::kLtr, sub_message_dir);
 
-  scoped_refptr<ComputedStyle> rtl_style =
+  ComputedStyle* rtl_style =
       ComputedStyle::Clone(input->GetLayoutObject()->StyleRef());
   rtl_style->SetDirection(TextDirection::kRtl);
   input->GetLayoutObject()->SetStyle(std::move(rtl_style));

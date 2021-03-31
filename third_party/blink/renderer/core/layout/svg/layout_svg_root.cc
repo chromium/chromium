@@ -67,6 +67,11 @@ LayoutSVGRoot::LayoutSVGRoot(SVGElement* node)
 
 LayoutSVGRoot::~LayoutSVGRoot() = default;
 
+void LayoutSVGRoot::Trace(Visitor* visitor) const {
+  visitor->Trace(content_);
+  LayoutReplaced::Trace(visitor);
+}
+
 void LayoutSVGRoot::UnscaledIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();

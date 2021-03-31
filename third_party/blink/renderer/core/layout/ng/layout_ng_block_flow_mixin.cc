@@ -53,23 +53,23 @@ void LayoutNGBlockFlowMixin<Base>::StyleDidChange(
 
 template <typename Base>
 NGInlineNodeData* LayoutNGBlockFlowMixin<Base>::TakeNGInlineNodeData() {
-  return ng_inline_node_data_.release();
+  return ng_inline_node_data_.Release();
 }
 
 template <typename Base>
 NGInlineNodeData* LayoutNGBlockFlowMixin<Base>::GetNGInlineNodeData() const {
   DCHECK(ng_inline_node_data_);
-  return ng_inline_node_data_.get();
+  return ng_inline_node_data_;
 }
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::ResetNGInlineNodeData() {
-  ng_inline_node_data_ = std::make_unique<NGInlineNodeData>();
+  ng_inline_node_data_ = MakeGarbageCollected<NGInlineNodeData>();
 }
 
 template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::ClearNGInlineNodeData() {
-  ng_inline_node_data_.reset();
+  ng_inline_node_data_ = nullptr;
 }
 
 template <typename Base>
@@ -284,6 +284,12 @@ void LayoutNGBlockFlowMixin<Base>::UpdateMargins() {
   ResolveInlineMargins(style, cb_style, available_logical_width,
                        Base::LogicalWidth(), &margins);
   Base::SetMargin(margins.ConvertToPhysical(writing_direction));
+}
+
+template <typename Base>
+void LayoutNGBlockFlowMixin<Base>::Trace(Visitor* visitor) const {
+  visitor->Trace(ng_inline_node_data_);
+  LayoutNGMixin<Base>::Trace(visitor);
 }
 
 template class CORE_TEMPLATE_EXPORT LayoutNGBlockFlowMixin<LayoutBlockFlow>;

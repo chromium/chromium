@@ -50,9 +50,9 @@ void CSSAnimationUpdate::Clear() {
 
 void CSSAnimationUpdate::StartTransition(
     const PropertyHandle& property,
-    scoped_refptr<const ComputedStyle> from,
-    scoped_refptr<const ComputedStyle> to,
-    scoped_refptr<const ComputedStyle> reversing_adjusted_start_value,
+    const ComputedStyle* from,
+    const ComputedStyle* to,
+    const ComputedStyle* reversing_adjusted_start_value,
     double reversing_shortening_factor,
     const InertEffect& effect) {
   NewTransition* new_transition = MakeGarbageCollected<NewTransition>();
@@ -72,5 +72,12 @@ void CSSAnimationUpdate::UnstartTransition(const PropertyHandle& property) {
 
 CSSAnimationUpdate::NewTransition::NewTransition() = default;
 CSSAnimationUpdate::NewTransition::~NewTransition() = default;
+
+void CSSAnimationUpdate::NewTransition::Trace(Visitor* visitor) const {
+  visitor->Trace(from);
+  visitor->Trace(to);
+  visitor->Trace(reversing_adjusted_start_value);
+  visitor->Trace(effect);
+}
 
 }  // namespace blink

@@ -63,7 +63,7 @@ void HTMLBRElement::CollectStyleForPresentationAttribute(
 LayoutObject* HTMLBRElement::CreateLayoutObject(const ComputedStyle& style,
                                                 LegacyLayout legacy) {
   if (style.ContentBehavesAsNormal())
-    return new LayoutBR(this);
+    return MakeGarbageCollected<LayoutBR>(this);
   return LayoutObject::CreateObject(this, style, legacy);
 }
 

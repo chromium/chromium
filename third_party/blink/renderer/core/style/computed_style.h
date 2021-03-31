@@ -91,7 +91,7 @@ class StyleResolver;
 class StyleSelfAlignmentData;
 class TransformationMatrix;
 
-typedef Vector<scoped_refptr<const ComputedStyle>, 4> PseudoElementStyleCache;
+typedef HeapVector<Member<const ComputedStyle>, 4> PseudoElementStyleCache;
 
 namespace css_longhand {
 
@@ -148,7 +148,7 @@ class WebkitTextStrokeColor;
 // Blink. It acts as a container where the computed value of every CSS property
 // can be stored and retrieved:
 //
-//   auto style = ComputedStyle::CreateInitialStyleSingleton();
+//   auto* style = ComputedStyle::CreateInitialStyleSingleton();
 //   style->SetDisplay(EDisplay::kNone); //'display' keyword property
 //   style->Display();
 //
@@ -197,8 +197,8 @@ class WebkitTextStrokeColor;
 //
 // Since this class is huge, do not mark all of it CORE_EXPORT.  Instead,
 // export only the methods you need below.
-class ComputedStyle : public ComputedStyleBase,
-                      public RefCounted<ComputedStyle> {
+class ComputedStyle final : public GarbageCollected<ComputedStyle>,
+                            public ComputedStyleBase {
   // Needed to allow access to private/protected getters of fields to allow diff
   // generation
   friend class ComputedStyleBase;
@@ -292,8 +292,7 @@ class ComputedStyle : public ComputedStyleBase,
   //    <script>
   //      getComputedStyle(div, "::before").color // still green.
   //    </script>
-  mutable std::unique_ptr<PseudoElementStyleCache>
-      cached_pseudo_element_styles_;
+  mutable Member<PseudoElementStyleCache> cached_pseudo_element_styles_;
 
  private:
   // TODO(sashab): Move these private members to the bottom of ComputedStyle.
@@ -305,13 +304,14 @@ class ComputedStyle : public ComputedStyleBase,
 
   ALWAYS_INLINE ComputedStyle(PassKey, const ComputedStyle&);
   ALWAYS_INLINE explicit ComputedStyle(PassKey);
+  CORE_EXPORT void Trace(Visitor*) const;
 
   // Create the per-document/context singleton that is used for shallow-copying
   // into new instances.
-  CORE_EXPORT static scoped_refptr<ComputedStyle> CreateInitialStyleSingleton();
+  CORE_EXPORT static ComputedStyle* CreateInitialStyleSingleton();
 
   // Shallow copy into a new instance sharing DataPtrs.
-  CORE_EXPORT static scoped_refptr<ComputedStyle> Clone(const ComputedStyle&);
+  CORE_EXPORT static ComputedStyle* Clone(const ComputedStyle&);
 
   // Find out how two ComputedStyles differ. Used for figuring out if style
   // recalc needs to propagate style changes down the tree. The constants are
@@ -392,8 +392,7 @@ class ComputedStyle : public ComputedStyleBase,
   void SetStyleType(PseudoId style_type) { SetStyleTypeInternal(style_type); }
 
   CORE_EXPORT const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
-  const ComputedStyle* AddCachedPseudoElementStyle(
-      scoped_refptr<const ComputedStyle>) const;
+  const ComputedStyle* AddCachedPseudoElementStyle(const ComputedStyle*) const;
   void ClearCachedPseudoElementStyles() const {
     if (cached_pseudo_element_styles_)
       cached_pseudo_element_styles_->clear();

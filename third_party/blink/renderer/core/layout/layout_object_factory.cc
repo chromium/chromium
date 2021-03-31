@@ -92,9 +92,9 @@ inline BaseType* CreateObject(Node& node,
     force_legacy = legacy == LegacyLayout::kForce;
 
     if (!force_legacy)
-      return new NGType(element);
+      return MakeGarbageCollected<NGType>(element);
   }
-  BaseType* new_object = new LegacyType(element);
+  BaseType* new_object = MakeGarbageCollected<LegacyType>(element);
   if (force_legacy)
     new_object->SetForceLegacyLayout();
   return new_object;
@@ -302,9 +302,9 @@ LayoutText* LayoutObjectFactory::CreateText(Node* node,
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     force_legacy = legacy == LegacyLayout::kForce;
     if (!force_legacy)
-      return new LayoutNGText(node, str);
+      return MakeGarbageCollected<LayoutNGText>(node, str);
   }
-  LayoutText* layout_text = new LayoutText(node, str);
+  LayoutText* layout_text = MakeGarbageCollected<LayoutText>(node, str);
   if (force_legacy)
     layout_text->SetForceLegacyLayout();
   return layout_text;
@@ -319,11 +319,13 @@ LayoutTextFragment* LayoutObjectFactory::CreateTextFragment(
   bool force_legacy = false;
   if (RuntimeEnabledFeatures::LayoutNGEnabled()) {
     force_legacy = legacy == LegacyLayout::kForce;
-    if (!force_legacy)
-      return new LayoutNGTextFragment(node, str, start_offset, length);
+    if (!force_legacy) {
+      return MakeGarbageCollected<LayoutNGTextFragment>(node, str, start_offset,
+                                                        length);
+    }
   }
   LayoutTextFragment* layout_text_fragment =
-      new LayoutTextFragment(node, str, start_offset, length);
+      MakeGarbageCollected<LayoutTextFragment>(node, str, start_offset, length);
   if (force_legacy)
     layout_text_fragment->SetForceLegacyLayout();
   return layout_text_fragment;
@@ -360,7 +362,7 @@ LayoutObject* LayoutObjectFactory::CreateSVGText(Node& node,
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(
     const LayoutObject& parent,
     bool child_forces_legacy) {
-  scoped_refptr<ComputedStyle> new_style =
+  ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(),
           parent.IsLayoutInline() ? EDisplay::kInlineTable : EDisplay::kTable);
@@ -377,7 +379,7 @@ LayoutBox* LayoutObjectFactory::CreateAnonymousTableWithParent(
 
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableSectionWithParent(
     const LayoutObject& parent) {
-  scoped_refptr<ComputedStyle> new_style =
+  ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableRowGroup);
   LegacyLayout legacy =
@@ -392,7 +394,7 @@ LayoutBox* LayoutObjectFactory::CreateAnonymousTableSectionWithParent(
 
 LayoutBox* LayoutObjectFactory::CreateAnonymousTableRowWithParent(
     const LayoutObject& parent) {
-  scoped_refptr<ComputedStyle> new_style =
+  ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableRow);
   LegacyLayout legacy =
@@ -405,7 +407,7 @@ LayoutBox* LayoutObjectFactory::CreateAnonymousTableRowWithParent(
 
 LayoutBlockFlow* LayoutObjectFactory::CreateAnonymousTableCellWithParent(
     const LayoutObject& parent) {
-  scoped_refptr<ComputedStyle> new_style =
+  ComputedStyle* new_style =
       parent.GetDocument().GetStyleResolver().CreateAnonymousStyleWithDisplay(
           parent.StyleRef(), EDisplay::kTableCell);
   LegacyLayout legacy =

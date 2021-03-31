@@ -148,7 +148,7 @@ bool HTMLVideoElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
 
 LayoutObject* HTMLVideoElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return new LayoutVideo(this);
+  return MakeGarbageCollected<LayoutVideo>(this);
 }
 
 void HTMLVideoElement::AttachLayoutTree(AttachContext& context) {

@@ -22,14 +22,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_CHARACTER_RUN_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_BIDI_CHARACTER_RUN_H_
 
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/text/bidi_context.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 
 namespace blink {
 
-struct BidiCharacterRun {
-  USING_FAST_MALLOC(BidiCharacterRun);
-
+struct BidiCharacterRun : public GarbageCollected<BidiCharacterRun> {
  public:
   BidiCharacterRun(bool override,
                    unsigned char level,
@@ -86,6 +85,8 @@ struct BidiCharacterRun {
   BidiCharacterRun* Next() const { return next_; }
   void SetNext(BidiCharacterRun* next) { next_ = next; }
 
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(next_); }
+
   // Do not add anything apart from bitfields until after m_next. See
   // https://bugs.webkit.org/show_bug.cgi?id=100173
   bool override_ : 1;
@@ -93,7 +94,7 @@ struct BidiCharacterRun {
   // save 8 bytes per object on 64-bit.
   bool has_hyphen_ : 1;
   unsigned char level_;
-  BidiCharacterRun* next_;
+  Member<BidiCharacterRun> next_;
   int start_;
   int stop_;
 };

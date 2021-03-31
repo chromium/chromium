@@ -81,11 +81,13 @@ PaintLayer* FindFirstStickyBetween(LayoutObject* from, LayoutObject* to) {
 // The HashMap for storing continuation pointers.
 // The continuation chain is a singly linked list. As such, the HashMap's value
 // is the next pointer associated with the key.
-typedef HashMap<const LayoutBoxModelObject*, LayoutBoxModelObject*>
+typedef HeapHashMap<WeakMember<const LayoutBoxModelObject>,
+                    Member<LayoutBoxModelObject>>
     ContinuationMap;
 static ContinuationMap& GetContinuationMap() {
-  DEFINE_STATIC_LOCAL(ContinuationMap, map, ());
-  return map;
+  DEFINE_STATIC_LOCAL(Persistent<ContinuationMap>, map,
+                      (MakeGarbageCollected<ContinuationMap>()));
+  return *map;
 }
 
 void LayoutBoxModelObject::ContentChanged(ContentChangeType change_type) {
@@ -213,11 +215,7 @@ LayoutBoxModelObject::ComputeBackgroundPaintLocationIfComposited() const {
   return paint_location;
 }
 
-LayoutBoxModelObject::~LayoutBoxModelObject() {
-  // Our layer should have been destroyed and cleared by now
-  DCHECK(!HasLayer());
-  DCHECK(!Layer());
-}
+LayoutBoxModelObject::~LayoutBoxModelObject() = default;
 
 void LayoutBoxModelObject::WillBeDestroyed() {
   NOT_DESTROYED();
@@ -244,6 +242,10 @@ void LayoutBoxModelObject::WillBeDestroyed() {
 
   if (HasLayer())
     DestroyLayer();
+
+  // Our layer should have been destroyed and cleared by now
+  DCHECK(!HasLayer());
+  DCHECK(!Layer());
 }
 
 void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
@@ -537,7 +539,7 @@ void LayoutBoxModelObject::CreateLayerAfterStyleChange() {
   NOT_DESTROYED();
   DCHECK(!HasLayer() && !Layer());
   GetMutableForPainting().FirstFragment().SetLayer(
-      std::make_unique<PaintLayer>(*this));
+      MakeGarbageCollected<PaintLayer>(this));
   SetHasLayer(true);
   Layer()->InsertOnlyThisLayerAfterStyleChange();
   // Creating a layer may affect existence of the LocalBorderBoxProperties, so
@@ -968,7 +970,8 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
 
   const PhysicalSize constraining_size = ComputeStickyConstrainingRect().size;
 
-  StickyPositionScrollingConstraints constraints;
+  StickyPositionScrollingConstraints* constraints =
+      MakeGarbageCollected<StickyPositionScrollingConstraints>();
   PhysicalOffset skipped_containers_offset;
   LayoutBlock* sticky_container = StickyContainer();
   // The location container for boxes is not always the containing block.
@@ -1043,7 +1046,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
                             max_container_width) +
           MinimumValueForLength(StyleRef().MarginLeft(), max_width));
 
-  constraints.scroll_container_relative_containing_block_rect =
+  constraints->scroll_container_relative_containing_block_rect =
       scroll_container_relative_containing_block_rect;
 
   PhysicalRect sticky_box_rect;
@@ -1064,7 +1067,7 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   PhysicalOffset container_border_offset(sticky_container->BorderLeft(),
                                          sticky_container->BorderTop());
   sticky_location -= container_border_offset;
-  constraints.scroll_container_relative_sticky_box_rect = PhysicalRect(
+  constraints->scroll_container_relative_sticky_box_rect = PhysicalRect(
       scroll_container_relative_padding_box_rect.offset + sticky_location,
       sticky_box_rect.size);
 
@@ -1074,11 +1077,11 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   //
   // The respective search ranges are [container, containingBlock) and
   // [containingBlock, scrollAncestor).
-  constraints.nearest_sticky_layer_shifting_sticky_box =
+  constraints->nearest_sticky_layer_shifting_sticky_box =
       FindFirstStickyBetween(location_container, sticky_container);
   // We cannot use |scrollAncestor| here as it disregards the root
   // ancestorOverflowLayer(), which we should include.
-  constraints.nearest_sticky_layer_shifting_containing_block =
+  constraints->nearest_sticky_layer_shifting_containing_block =
       FindFirstStickyBetween(
           sticky_container,
           &Layer()->AncestorScrollContainerLayer()->GetLayoutObject());
@@ -1099,15 +1102,15 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   }
 
   if (!StyleRef().Left().IsAuto() && !skip_left) {
-    constraints.left_offset =
+    constraints->left_offset =
         MinimumValueForLength(StyleRef().Left(), constraining_size.width);
-    constraints.is_anchored_left = true;
+    constraints->is_anchored_left = true;
   }
 
   if (!StyleRef().Right().IsAuto() && !skip_right) {
-    constraints.right_offset =
+    constraints->right_offset =
         MinimumValueForLength(StyleRef().Right(), constraining_size.width);
-    constraints.is_anchored_right = true;
+    constraints->is_anchored_right = true;
   }
 
   bool skip_bottom = false;
@@ -1125,15 +1128,15 @@ void LayoutBoxModelObject::UpdateStickyPositionConstraints() const {
   }
 
   if (!StyleRef().Top().IsAuto()) {
-    constraints.top_offset =
+    constraints->top_offset =
         MinimumValueForLength(StyleRef().Top(), constraining_size.height);
-    constraints.is_anchored_top = true;
+    constraints->is_anchored_top = true;
   }
 
   if (!StyleRef().Bottom().IsAuto() && !skip_bottom) {
-    constraints.bottom_offset =
+    constraints->bottom_offset =
         MinimumValueForLength(StyleRef().Bottom(), constraining_size.height);
-    constraints.is_anchored_bottom = true;
+    constraints->is_anchored_bottom = true;
   }
   PaintLayerScrollableArea* scrollable_area =
       Layer()->AncestorScrollContainerLayer()->GetScrollableArea();

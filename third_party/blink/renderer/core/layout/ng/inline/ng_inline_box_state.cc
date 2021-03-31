@@ -611,8 +611,7 @@ void NGInlineLayoutStateStack::CreateBoxFragments(
     DCHECK_GT(end, start);
     NGLogicalLineItem* child = &(*line_box)[start];
     DCHECK(box_data.item->ShouldCreateBoxFragment());
-    scoped_refptr<const NGLayoutResult> box_fragment =
-        box_data.CreateBoxFragment(line_box);
+    const NGLayoutResult* box_fragment = box_data.CreateBoxFragment(line_box);
     if (child->IsPlaceholder()) {
       child->layout_result = std::move(box_fragment);
       child->rect = box_data.rect;
@@ -630,8 +629,7 @@ void NGInlineLayoutStateStack::CreateBoxFragments(
   box_data_list_.clear();
 }
 
-scoped_refptr<const NGLayoutResult>
-NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
+const NGLayoutResult* NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
     NGLogicalLineItems* line_box) {
   DCHECK(item);
   DCHECK(item->Style());
@@ -666,7 +664,8 @@ NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
 
     if (child.out_of_flow_positioned_box) {
       DCHECK(item->GetLayoutObject()->IsLayoutInline());
-      NGBlockNode oof_box(To<LayoutBox>(child.out_of_flow_positioned_box));
+      NGBlockNode oof_box(
+          To<LayoutBox>(child.out_of_flow_positioned_box.Get()));
 
       // child.offset is the static position wrt. the linebox. As we are adding
       // this as a child of an inline level fragment, we adjust the static

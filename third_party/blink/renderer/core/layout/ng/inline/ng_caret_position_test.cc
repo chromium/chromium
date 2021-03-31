@@ -55,7 +55,7 @@ class NGCaretPositionTest : public NGLayoutTest {
   }
 
   Persistent<Element> container_;
-  const LayoutBlockFlow* context_;
+  Persistent<const LayoutBlockFlow> context_;
 };
 
 #define TEST_CARET(caret, fragment_, type_, offset_)                         \
