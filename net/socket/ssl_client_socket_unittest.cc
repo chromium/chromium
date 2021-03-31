@@ -126,6 +126,15 @@ const uint8_t kGoodHashValueVectorInput = 0;
 // TestSPKI pin.
 const uint8_t kBadHashValueVectorInput = 3;
 
+// TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+constexpr uint16_t kModernTLS12Cipher = 0xc02f;
+// TLS_RSA_WITH_AES_128_GCM_SHA256
+constexpr uint16_t kRSACipher = 0x009c;
+// TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA
+constexpr uint16_t kCBCCipher = 0xc013;
+// TLS_RSA_WITH_3DES_EDE_CBC_SHA
+constexpr uint16_t k3DESCipher = 0x000a;
+
 // Simulates synchronously receiving an error during Read() or Write()
 class SynchronousErrorStreamSocket : public WrappedStreamSocket {
  public:
@@ -1166,7 +1175,7 @@ class SSLClientSocketFalseStartTest : public SSLClientSocketTest {
       TestCompletionCallback* callback,
       FakeBlockingStreamSocket** out_raw_transport,
       std::unique_ptr<SSLClientSocket>* out_sock) {
-    CHECK(spawned_test_server());
+    CHECK(embedded_test_server());
 
     std::unique_ptr<StreamSocket> real_transport(
         new TCPClientSocket(addr(), nullptr, nullptr, nullptr, NetLogSource()));
@@ -1177,8 +1186,7 @@ class SSLClientSocketFalseStartTest : public SSLClientSocketTest {
 
     FakeBlockingStreamSocket* raw_transport = transport.get();
     std::unique_ptr<SSLClientSocket> sock = CreateSSLClientSocket(
-        std::move(transport), spawned_test_server()->host_port_pair(),
-        client_config);
+        std::move(transport), host_port_pair(), client_config);
 
     // Connect. Stop before the client processes the first server leg
     // (ServerHello, etc.)
@@ -1204,10 +1212,11 @@ class SSLClientSocketFalseStartTest : public SSLClientSocketTest {
     *out_sock = std::move(sock);
   }
 
-  void TestFalseStart(const SpawnedTestServer::SSLOptions& server_options,
+  void TestFalseStart(const SSLServerConfig& server_config,
                       const SSLConfig& client_config,
                       bool expect_false_start) {
-    ASSERT_TRUE(StartTestServer(server_options));
+    ASSERT_TRUE(
+        StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
     TestCompletionCallback callback;
     FakeBlockingStreamSocket* raw_transport = nullptr;
@@ -2470,17 +2479,14 @@ TEST_F(SSLClientSocketTest, PrematureApplicationData) {
 }
 
 TEST_F(SSLClientSocketTest, CipherSuiteDisables) {
-  // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-  static const uint16_t kTestCipher = 0xc02f;
-
   SSLServerConfig server_config;
   server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
-  server_config.cipher_suite_for_testing = kTestCipher;
+  server_config.cipher_suite_for_testing = kModernTLS12Cipher;
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLContextConfig ssl_context_config;
-  ssl_context_config.disabled_cipher_suites.push_back(kTestCipher);
+  ssl_context_config.disabled_cipher_suites.push_back(kModernTLS12Cipher);
   ssl_config_service_->UpdateSSLConfigAndNotify(ssl_context_config);
 
   int rv;
@@ -3169,11 +3175,12 @@ TEST_F(SSLClientSocketTest, SessionResumption_RSA) {
   for (bool use_rsa : {false, true}) {
     SCOPED_TRACE(use_rsa);
 
-    SpawnedTestServer::SSLOptions ssl_options;
-    ssl_options.key_exchanges =
-        use_rsa ? SpawnedTestServer::SSLOptions::KEY_EXCHANGE_RSA
-                : SpawnedTestServer::SSLOptions::KEY_EXCHANGE_ECDHE_RSA;
-    ASSERT_TRUE(StartTestServer(ssl_options));
+    SSLServerConfig server_config;
+    server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+    server_config.cipher_suite_for_testing =
+        use_rsa ? kRSACipher : kModernTLS12Cipher;
+    ASSERT_TRUE(
+        StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
     SSLConfig ssl_config;
     ssl_client_session_cache_->Flush();
 
@@ -3221,17 +3228,11 @@ TEST_F(SSLClientSocketTest, SessionResumption_RSA) {
 }
 
 // Tests that ALPN works with session resumption.
-// Failed on Android, see https://crbug.com/1014556.
-#if defined(OS_ANDROID)
-#define MAYBE_SessionResumptionAlpn DISABLED_SessionResumptionAlpn
-#else
-#define MAYBE_SessionResumptionAlpn SessionResumptionAlpn
-#endif
-TEST_F(SSLClientSocketTest, MAYBE_SessionResumptionAlpn) {
-  SpawnedTestServer::SSLOptions ssl_options;
-  ssl_options.alpn_protocols.push_back("h2");
-  ssl_options.alpn_protocols.push_back("http/1.1");
-  ASSERT_TRUE(StartTestServer(ssl_options));
+TEST_F(SSLClientSocketTest, SessionResumptionAlpn) {
+  SSLServerConfig server_config;
+  server_config.alpn_protos = {NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   // First, perform a full handshake.
   SSLConfig ssl_config;
@@ -3433,8 +3434,7 @@ TEST_F(SSLClientSocketTest, RequireECDHE) {
   // Run test server without ECDHE.
   SSLServerConfig server_config;
   server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
-  // TLS_RSA_WITH_AES_128_GCM_SHA256
-  server_config.cipher_suite_for_testing = 0x009c;
+  server_config.cipher_suite_for_testing = kRSACipher;
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
@@ -3448,8 +3448,7 @@ TEST_F(SSLClientSocketTest, RequireECDHE) {
 TEST_F(SSLClientSocketTest, 3DES) {
   SSLServerConfig server_config;
   server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
-  // TLS_RSA_WITH_3DES_EDE_CBC_SHA
-  server_config.cipher_suite_for_testing = 0x000a;
+  server_config.cipher_suite_for_testing = k3DESCipher;
   ASSERT_TRUE(
       StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
@@ -3485,72 +3484,59 @@ TEST_F(SSLClientSocketTest, SHA1) {
 
 TEST_F(SSLClientSocketFalseStartTest, FalseStartEnabled) {
   // False Start requires ALPN, ECDHE, and an AEAD.
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.key_exchanges =
-      SpawnedTestServer::SSLOptions::KEY_EXCHANGE_ECDHE_RSA;
-  server_options.bulk_ciphers =
-      SpawnedTestServer::SSLOptions::BULK_CIPHER_AES128GCM;
-  server_options.alpn_protocols.push_back("http/1.1");
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.cipher_suite_for_testing = kModernTLS12Cipher;
+  server_config.alpn_protos = {NextProto::kProtoHTTP11};
   SSLConfig client_config;
   client_config.alpn_protos.push_back(kProtoHTTP11);
-  ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_options, client_config, true));
+  ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_config, client_config, true));
 }
 
 // Test that False Start is disabled without ALPN.
 TEST_F(SSLClientSocketFalseStartTest, NoAlpn) {
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.key_exchanges =
-      SpawnedTestServer::SSLOptions::KEY_EXCHANGE_ECDHE_RSA;
-  server_options.bulk_ciphers =
-      SpawnedTestServer::SSLOptions::BULK_CIPHER_AES128GCM;
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.cipher_suite_for_testing = kModernTLS12Cipher;
   SSLConfig client_config;
   client_config.alpn_protos.clear();
-  ASSERT_NO_FATAL_FAILURE(
-      TestFalseStart(server_options, client_config, false));
+  ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_config, client_config, false));
 }
 
 // Test that False Start is disabled with plain RSA ciphers.
 TEST_F(SSLClientSocketFalseStartTest, RSA) {
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.key_exchanges =
-      SpawnedTestServer::SSLOptions::KEY_EXCHANGE_RSA;
-  server_options.bulk_ciphers =
-      SpawnedTestServer::SSLOptions::BULK_CIPHER_AES128GCM;
-  server_options.alpn_protocols.push_back("http/1.1");
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.cipher_suite_for_testing = kRSACipher;
+  server_config.alpn_protos = {NextProto::kProtoHTTP11};
   SSLConfig client_config;
   client_config.alpn_protos.push_back(kProtoHTTP11);
-  ASSERT_NO_FATAL_FAILURE(
-      TestFalseStart(server_options, client_config, false));
+  ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_config, client_config, false));
 }
 
 // Test that False Start is disabled without an AEAD.
 TEST_F(SSLClientSocketFalseStartTest, NoAEAD) {
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.key_exchanges =
-      SpawnedTestServer::SSLOptions::KEY_EXCHANGE_ECDHE_RSA;
-  server_options.bulk_ciphers =
-      SpawnedTestServer::SSLOptions::BULK_CIPHER_AES128;
-  server_options.alpn_protocols.push_back("http/1.1");
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.cipher_suite_for_testing = kCBCCipher;
+  server_config.alpn_protos = {NextProto::kProtoHTTP11};
   SSLConfig client_config;
   client_config.alpn_protos.push_back(kProtoHTTP11);
-  ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_options, client_config, false));
+  ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_config, client_config, false));
 }
 
 // Test that sessions are resumable after receiving the server Finished message.
 TEST_F(SSLClientSocketFalseStartTest, SessionResumption) {
   // Start a server.
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.key_exchanges =
-      SpawnedTestServer::SSLOptions::KEY_EXCHANGE_ECDHE_RSA;
-  server_options.bulk_ciphers =
-      SpawnedTestServer::SSLOptions::BULK_CIPHER_AES128GCM;
-  server_options.alpn_protocols.push_back("http/1.1");
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.cipher_suite_for_testing = kModernTLS12Cipher;
+  server_config.alpn_protos = {NextProto::kProtoHTTP11};
   SSLConfig client_config;
   client_config.alpn_protos.push_back(kProtoHTTP11);
 
   // Let a full handshake complete with False Start.
-  ASSERT_NO_FATAL_FAILURE(
-      TestFalseStart(server_options, client_config, true));
+  ASSERT_NO_FATAL_FAILURE(TestFalseStart(server_config, client_config, true));
 
   // Make a second connection.
   int rv;
@@ -3569,13 +3555,12 @@ TEST_F(SSLClientSocketFalseStartTest, SessionResumption) {
 // client's HTTP/1.1 POST fit in transport windows.
 TEST_F(SSLClientSocketFalseStartTest, CompleteHandshakeWithoutRequest) {
   // Start a server.
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.key_exchanges =
-      SpawnedTestServer::SSLOptions::KEY_EXCHANGE_ECDHE_RSA;
-  server_options.bulk_ciphers =
-      SpawnedTestServer::SSLOptions::BULK_CIPHER_AES128GCM;
-  server_options.alpn_protocols.push_back("http/1.1");
-  ASSERT_TRUE(StartTestServer(server_options));
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.cipher_suite_for_testing = kModernTLS12Cipher;
+  server_config.alpn_protos = {NextProto::kProtoHTTP11};
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
   client_config.alpn_protos.push_back(kProtoHTTP11);
@@ -3617,13 +3602,12 @@ TEST_F(SSLClientSocketFalseStartTest, CompleteHandshakeWithoutRequest) {
 // server Finished message.
 TEST_F(SSLClientSocketFalseStartTest, NoSessionResumptionBeforeFinished) {
   // Start a server.
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.key_exchanges =
-      SpawnedTestServer::SSLOptions::KEY_EXCHANGE_ECDHE_RSA;
-  server_options.bulk_ciphers =
-      SpawnedTestServer::SSLOptions::BULK_CIPHER_AES128GCM;
-  server_options.alpn_protocols.push_back("http/1.1");
-  ASSERT_TRUE(StartTestServer(server_options));
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.cipher_suite_for_testing = kModernTLS12Cipher;
+  server_config.alpn_protos = {NextProto::kProtoHTTP11};
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
   client_config.alpn_protos.push_back(kProtoHTTP11);
@@ -3671,13 +3655,12 @@ TEST_F(SSLClientSocketFalseStartTest, NoSessionResumptionBeforeFinished) {
 // message was bad.
 TEST_F(SSLClientSocketFalseStartTest, NoSessionResumptionBadFinished) {
   // Start a server.
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.key_exchanges =
-      SpawnedTestServer::SSLOptions::KEY_EXCHANGE_ECDHE_RSA;
-  server_options.bulk_ciphers =
-      SpawnedTestServer::SSLOptions::BULK_CIPHER_AES128GCM;
-  server_options.alpn_protocols.push_back("http/1.1");
-  ASSERT_TRUE(StartTestServer(server_options));
+  SSLServerConfig server_config;
+  server_config.version_max = SSL_PROTOCOL_VERSION_TLS1_2;
+  server_config.cipher_suite_for_testing = kModernTLS12Cipher;
+  server_config.alpn_protos = {NextProto::kProtoHTTP11};
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
   client_config.alpn_protos.push_back(kProtoHTTP11);
@@ -3732,10 +3715,10 @@ TEST_F(SSLClientSocketFalseStartTest, NoSessionResumptionBadFinished) {
 
 // Server preference should win in ALPN.
 TEST_F(SSLClientSocketTest, Alpn) {
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.alpn_protocols.push_back("h2");
-  server_options.alpn_protocols.push_back("http/1.1");
-  ASSERT_TRUE(StartTestServer(server_options));
+  SSLServerConfig server_config;
+  server_config.alpn_protos = {NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
   client_config.alpn_protos.push_back(kProtoHTTP11);
@@ -3750,9 +3733,10 @@ TEST_F(SSLClientSocketTest, Alpn) {
 
 // If the server supports ALPN but the client does not, then ALPN is not used.
 TEST_F(SSLClientSocketTest, AlpnClientDisabled) {
-  SpawnedTestServer::SSLOptions server_options;
-  server_options.alpn_protocols.push_back("foo");
-  ASSERT_TRUE(StartTestServer(server_options));
+  SSLServerConfig server_config;
+  server_config.alpn_protos = {NextProto::kProtoHTTP2};
+  ASSERT_TRUE(
+      StartEmbeddedTestServer(EmbeddedTestServer::CERT_OK, server_config));
 
   SSLConfig client_config;
 
@@ -3985,10 +3969,10 @@ TEST_P(SSLClientSocketVersionTest, PKPEnforced) {
 namespace {
 // TLS_RSA_WITH_AES_128_GCM_SHA256's key exchange involves encrypting to the
 // server long-term key.
-const uint16_t kEncryptingCipher = 0x009c;
+const uint16_t kEncryptingCipher = kRSACipher;
 // TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256's key exchange involves a signature by
 // the server long-term key.
-const uint16_t kSigningCipher = 0xc02f;
+const uint16_t kSigningCipher = kModernTLS12Cipher;
 }  // namespace
 
 struct KeyUsageTest {
