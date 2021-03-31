@@ -213,43 +213,36 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
   pref_change_registrar_.Init(prefs_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &PolicyProvider::OnPreferenceChanged, base::Unretained(this));
-  pref_change_registrar_.Add(
-      prefs::kManagedAutoSelectCertificateForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedCookiesAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedCookiesBlockedForUrls, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedCookiesSessionOnlyForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedImagesAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedImagesBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedInsecureContentAllowedForUrls,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedInsecureContentBlockedForUrls,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedJavaScriptAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedJavaScriptBlockedForUrls, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedNotificationsAllowedForUrls, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedNotificationsBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedPopupsAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedPopupsBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedWebUsbAskForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedWebUsbBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedFileSystemReadAskForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedFileSystemReadBlockedForUrls,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedFileSystemWriteAskForUrls,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedFileSystemWriteBlockedForUrls,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedLegacyCookieAccessAllowedForDomains,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedSerialAskForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedSerialBlockedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedSensorsAllowedForUrls, callback);
-  pref_change_registrar_.Add(prefs::kManagedSensorsBlockedForUrls, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedInsecurePrivateNetworkAllowedForUrls, callback);
+  static constexpr const char* kManagedPrefs[] = {
+      prefs::kManagedAutoSelectCertificateForUrls,
+      prefs::kManagedCookiesAllowedForUrls,
+      prefs::kManagedCookiesBlockedForUrls,
+      prefs::kManagedCookiesSessionOnlyForUrls,
+      prefs::kManagedFileSystemReadAskForUrls,
+      prefs::kManagedFileSystemReadBlockedForUrls,
+      prefs::kManagedFileSystemWriteAskForUrls,
+      prefs::kManagedFileSystemWriteBlockedForUrls,
+      prefs::kManagedImagesAllowedForUrls,
+      prefs::kManagedImagesBlockedForUrls,
+      prefs::kManagedInsecureContentAllowedForUrls,
+      prefs::kManagedInsecureContentBlockedForUrls,
+      prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
+      prefs::kManagedJavaScriptAllowedForUrls,
+      prefs::kManagedJavaScriptBlockedForUrls,
+      prefs::kManagedLegacyCookieAccessAllowedForDomains,
+      prefs::kManagedNotificationsAllowedForUrls,
+      prefs::kManagedNotificationsBlockedForUrls,
+      prefs::kManagedPopupsAllowedForUrls,
+      prefs::kManagedPopupsBlockedForUrls,
+      prefs::kManagedSensorsAllowedForUrls,
+      prefs::kManagedSensorsBlockedForUrls,
+      prefs::kManagedSerialAskForUrls,
+      prefs::kManagedSerialBlockedForUrls,
+      prefs::kManagedWebUsbAskForUrls,
+      prefs::kManagedWebUsbBlockedForUrls,
+  };
+  for (const char* pref : kManagedPrefs)
+    pref_change_registrar_.Add(pref, callback);
 
   // The following preferences are only used to indicate if a default content
   // setting is managed and to hold the managed default setting value. If the
@@ -258,34 +251,27 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
   // the preference default content settings. If a default content settings type
   // is managed any user defined exceptions (patterns) for this type are
   // ignored.
-  pref_change_registrar_.Add(prefs::kManagedDefaultAdsSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultCookiesSetting, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedDefaultGeolocationSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultImagesSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultInsecureContentSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultJavaScriptSetting, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedDefaultNotificationsSetting, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedDefaultMediaStreamSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultPopupsSetting, callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultWebBluetoothGuardSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultWebUsbGuardSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultFileSystemReadGuardSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultFileSystemWriteGuardSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultLegacyCookieAccessSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultSerialGuardSetting,
-                             callback);
-  pref_change_registrar_.Add(prefs::kManagedDefaultSensorsSetting, callback);
-  pref_change_registrar_.Add(
-      prefs::kManagedDefaultInsecurePrivateNetworkSetting, callback);
+  static constexpr const char* kManagedDefaultPrefs[] = {
+      prefs::kManagedDefaultAdsSetting,
+      prefs::kManagedDefaultCookiesSetting,
+      prefs::kManagedDefaultFileSystemReadGuardSetting,
+      prefs::kManagedDefaultFileSystemWriteGuardSetting,
+      prefs::kManagedDefaultGeolocationSetting,
+      prefs::kManagedDefaultImagesSetting,
+      prefs::kManagedDefaultInsecureContentSetting,
+      prefs::kManagedDefaultInsecurePrivateNetworkSetting,
+      prefs::kManagedDefaultJavaScriptSetting,
+      prefs::kManagedDefaultLegacyCookieAccessSetting,
+      prefs::kManagedDefaultMediaStreamSetting,
+      prefs::kManagedDefaultNotificationsSetting,
+      prefs::kManagedDefaultPopupsSetting,
+      prefs::kManagedDefaultSensorsSetting,
+      prefs::kManagedDefaultSerialGuardSetting,
+      prefs::kManagedDefaultWebBluetoothGuardSetting,
+      prefs::kManagedDefaultWebUsbGuardSetting,
+  };
+  for (const char* pref : kManagedDefaultPrefs)
+    pref_change_registrar_.Add(pref, callback);
 }
 
 PolicyProvider::~PolicyProvider() {
