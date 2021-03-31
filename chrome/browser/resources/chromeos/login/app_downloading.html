@@ -23,10 +23,10 @@
         width: 278px;
       }
 
-      #video-container cr-lottie {
-        margin-bottom: auto;
-        margin-top: auto;
-        width: 100%;
+      :host-context(html[new-layout]) #video-container {
+        height: 80%;
+        min-width: 344px;
+        width: 80%;
       }
 
       :host-context(html[new-layout]) #video {
