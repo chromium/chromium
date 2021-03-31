@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_migration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 
 namespace web_app {
@@ -112,6 +113,11 @@ void TestWebAppProvider::SetOsIntegrationManager(
     std::unique_ptr<OsIntegrationManager> os_integration_manager) {
   CheckNotStarted();
   os_integration_manager_ = std::move(os_integration_manager);
+}
+
+void TestWebAppProvider::DisableMigrationManager() {
+  CheckNotStarted();
+  migration_manager_ = nullptr;
 }
 
 void TestWebAppProvider::CheckNotStarted() const {

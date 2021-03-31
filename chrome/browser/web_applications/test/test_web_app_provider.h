@@ -65,6 +65,7 @@ class TestWebAppProvider : public WebAppProvider {
       std::unique_ptr<SystemWebAppManager> system_web_app_manager);
   void SetWebAppPolicyManager(
       std::unique_ptr<WebAppPolicyManager> web_app_policy_manager);
+  void DisableMigrationManager();
 
  private:
   void CheckNotStarted() const;
