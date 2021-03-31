@@ -35,8 +35,8 @@ TEST(ExtensionAPIPermissionTest, CheckEnums) {
   base::FilePath permission_histogram_value =
       src_root.AppendASCII("extensions")
           .AppendASCII("common")
-          .AppendASCII("permissions")
-          .AppendASCII("api_permission.h");
+          .AppendASCII("mojom")
+          .AppendASCII("api_permission_id.mojom");
   ASSERT_TRUE(base::PathExists(permission_histogram_value));
 
   std::string file_contents;
@@ -44,7 +44,7 @@ TEST(ExtensionAPIPermissionTest, CheckEnums) {
       base::ReadFileToString(permission_histogram_value, &file_contents));
 
   for (const auto& entry : *enums) {
-    // Check that the C++ file has a definition equal to the histogram file.
+    // Check that the Mojo file has a definition equal to the histogram file.
     // For now, we do this in a simple, but reasonably effective, manner:
     // expecting to find the string "ENTRY = <value>" somewhere in the file.
     std::string expected_string =

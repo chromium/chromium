@@ -21,8 +21,8 @@ def _CreateAPIPermissionIDChecker(input_api, output_api):
     sys.path = original_sys_path
 
   return StrictEnumValueChecker(input_api, output_api,
-      start_marker='  enum ID {', end_marker='    // Last entry:',
-      path='extensions/common/permissions/api_permission.h')
+      start_marker='enum APIPermissionID {', end_marker='};',
+      path='extensions/common/mojom/api_permission_id.mojom')
 
 def CheckChangeOnUpload(input_api, output_api):
   return _CreateAPIPermissionIDChecker(input_api, output_api).Run()

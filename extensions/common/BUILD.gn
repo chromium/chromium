@@ -547,7 +547,7 @@ if (enable_extensions) {
     }
 
     data = [
-      "//extensions/common/permissions/api_permission.h",
+      "//extensions/common/mojom/api_permission_id.mojom",
       "//tools/metrics/histograms/enums.xml",
     ]
   }

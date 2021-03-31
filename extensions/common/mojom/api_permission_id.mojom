@@ -258,7 +258,4 @@ enum APIPermissionID {
   // Add new entries at the end of the enum and be sure to update the
   // "ExtensionPermission3" enum in tools/metrics/histograms/enums.xml
   // (by running update_extension_permission.py).
-  // TODO(crbug.com/1191916): Need to update update_extension_permission.py
-  // after completing replacing the APIPermission::ID enum with
-  // mojom::APIPermissionID
 };

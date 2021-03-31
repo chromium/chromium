@@ -27294,7 +27294,7 @@ Called by update_extension_histograms.py.-->
 </enum>
 
 <enum name="ExtensionPermission3">
-<!-- Generated from extensions/common/permissions/api_permission.h.
+<!-- Generated from extensions/common/mojom/api_permission_id.mojom.
 Called by update_extension_permission.py.-->
 
   <int value="0" label="kInvalid"/>
