@@ -147,7 +147,7 @@ jboolean NavigationControllerAndroid::CanGoToOffset(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jint offset) {
-  return navigation_controller_->CanGoToOffset(offset);
+  return navigation_controller_->CanGoToOffsetWithSkipping(offset);
 }
 
 void NavigationControllerAndroid::GoBack(JNIEnv* env,
@@ -163,7 +163,7 @@ void NavigationControllerAndroid::GoForward(JNIEnv* env,
 void NavigationControllerAndroid::GoToOffset(JNIEnv* env,
                                              const JavaParamRef<jobject>& obj,
                                              jint offset) {
-  navigation_controller_->GoToOffset(offset);
+  navigation_controller_->GoToOffsetWithSkipping(offset);
 }
 
 jboolean NavigationControllerAndroid::IsInitialNavigation(

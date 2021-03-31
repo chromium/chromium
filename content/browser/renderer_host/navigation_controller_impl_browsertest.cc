@@ -12908,6 +12908,63 @@ class NavigationControllerDisableHistoryIntervention
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if defined(OS_ANDROID)
+// Test GoToOffset with the intervention disabled.
+IN_PROC_BROWSER_TEST_P(NavigationControllerDisableHistoryIntervention,
+                       GoToOffsetWithSkippingDisableHistoryIntervention) {
+  base::HistogramTester histograms;
+  GURL non_skippable_url(
+      embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
+
+  GURL skippable_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), skippable_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL redirected_url(embedded_test_server()->GetURL("/title2.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
+
+  GURL skippable_url2(embedded_test_server()->GetURL("/title3.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), skippable_url2));
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL redirected_url2(embedded_test_server()->GetURL("/title4.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url2));
+
+  // The results of CanGoToOffset and CanGoToOffsetWithSkipping should be the
+  // same when the intervention is disabled.
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_TRUE(controller.CanGoToOffset(-3));
+  EXPECT_TRUE(controller.CanGoToOffset(-4));
+  EXPECT_TRUE(controller.CanGoToOffsetWithSkipping(-3));
+  EXPECT_TRUE(controller.CanGoToOffsetWithSkipping(-4));
+
+  // Ignores the history manipulation intervention and visits skippable entries.
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  controller.GoToOffsetWithSkipping(-4);
+  nav_observer.Wait();
+  EXPECT_EQ(0, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
+}
+#endif  // OS_ANDROID
+
 // Test to verify that after loading a post-commit error page, back is treated
 // as navigating to the entry prior to the page that was active when the
 // post-commit error page was triggered.
@@ -13719,6 +13776,239 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
   histograms.ExpectTotalCount("Navigation.BackForward.BackTargetSkipped", 0);
   EXPECT_EQ(skippable_url, controller.GetLastCommittedEntry()->GetURL());
   EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+}
+
+#if defined(OS_ANDROID)
+// Test GoToOffset with enable history intervention.
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       GoToOffsetWithSkippingEnableHistoryIntervention) {
+  base::HistogramTester histograms;
+  GURL non_skippable_url(
+      embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
+
+  GURL skippable_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), skippable_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL redirected_url(embedded_test_server()->GetURL("/title2.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
+
+  GURL skippable_url2(embedded_test_server()->GetURL("/title3.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), skippable_url2));
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL redirected_url2(embedded_test_server()->GetURL("/title4.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url2));
+
+  // CanGoToOffset should visit the skippable entries while
+  // CanGoToOffsetWithSKipping will skip the skippable entries.
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_TRUE(controller.CanGoToOffset(-3));
+  EXPECT_TRUE(controller.CanGoToOffset(-4));
+  EXPECT_FALSE(controller.CanGoToOffsetWithSkipping(-3));
+
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  controller.GoToOffset(-4);
+  nav_observer.Wait();
+  EXPECT_EQ(0, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
+}
+#endif  // OS_ANDROID
+
+// Tests that the navigation entry that is marked as skippable on back/forward
+// button does not get skipped for GoToOffset calls.
+// This covers actions in the following scenario:
+// [non_skippable_url, skippable_url, redirected_url, skippable_url2,
+// redirected_url2]
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       SetSkipOnBackForwardDoNotSkipForGoToOffset) {
+  base::HistogramTester histograms;
+  GURL non_skippable_url(
+      embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
+
+  GURL skippable_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), skippable_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL redirected_url(embedded_test_server()->GetURL("/title2.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
+
+  GURL skippable_url2(embedded_test_server()->GetURL("/title3.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), skippable_url2));
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL redirected_url2(embedded_test_server()->GetURL("/title4.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url2));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_EQ(4, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(4, controller.GetLastCommittedEntryIndex());
+
+  EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
+  EXPECT_TRUE(controller.GetEntryAtIndex(3)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(controller.GetEntryAtIndex(4)->should_skip_on_back_forward_ui());
+  histograms.ExpectBucketCount(
+      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 2);
+
+  EXPECT_TRUE(controller.CanGoToOffset(-3));
+
+  // GoToOffset should visit the skippable entries.
+  TestNavigationObserver nav_observer1(shell()->web_contents());
+  controller.GoToOffset(-1);
+  nav_observer1.Wait();
+  EXPECT_EQ(3, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(3, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(skippable_url2, controller.GetLastCommittedEntry()->GetURL());
+
+  TestNavigationObserver nav_observer2(shell()->web_contents());
+  controller.GoToOffset(1);
+  nav_observer2.Wait();
+  EXPECT_EQ(4, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(4, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(redirected_url2, controller.GetLastCommittedEntry()->GetURL());
+
+  TestNavigationObserver nav_observer3(shell()->web_contents());
+  controller.GoToOffset(-4);
+  nav_observer3.Wait();
+  EXPECT_EQ(0, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
+
+  EXPECT_TRUE(controller.CanGoToOffset(4));
+
+  TestNavigationObserver nav_observer4(shell()->web_contents());
+  controller.GoToOffset(4);
+  nav_observer4.Wait();
+  EXPECT_EQ(4, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(4, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(redirected_url2, controller.GetLastCommittedEntry()->GetURL());
+}
+
+// Tests that the navigation entry that is marked as skippable on back/forward
+// button is skipped for GoToOffset calls.
+// This covers actions in the following scenario:
+// [non_skippable_url, skippable_url, redirected_url, skippable_url2,
+// redirected_url2]
+IN_PROC_BROWSER_TEST_P(NavigationControllerHistoryInterventionBrowserTest,
+                       SetSkipOnBackForwardDoSkipForGoToOffsetWithSkipping) {
+#if defined(OS_ANDROID)
+  base::HistogramTester histograms;
+  GURL non_skippable_url(
+      embedded_test_server()->GetURL("/frame_tree/top.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), non_skippable_url));
+
+  GURL skippable_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), skippable_url));
+
+  // It is safe to obtain the root frame tree node here, as it doesn't change.
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL redirected_url(embedded_test_server()->GetURL("/title2.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url));
+
+  GURL skippable_url2(embedded_test_server()->GetURL("/title3.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), skippable_url2));
+
+  EXPECT_FALSE(root->HasStickyUserActivation());
+  EXPECT_FALSE(root->HasTransientUserActivation());
+
+  // Navigate to a new same-site document from the renderer without a user
+  // gesture.
+  GURL redirected_url2(embedded_test_server()->GetURL("/title4.html"));
+  EXPECT_TRUE(
+      NavigateToURLFromRendererWithoutUserGesture(shell(), redirected_url2));
+
+  NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
+      shell()->web_contents()->GetController());
+  EXPECT_EQ(4, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(4, controller.GetLastCommittedEntryIndex());
+
+  EXPECT_TRUE(controller.GetEntryAtIndex(1)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(controller.GetEntryAtIndex(2)->should_skip_on_back_forward_ui());
+  EXPECT_TRUE(controller.GetEntryAtIndex(3)->should_skip_on_back_forward_ui());
+  EXPECT_FALSE(controller.GetEntryAtIndex(4)->should_skip_on_back_forward_ui());
+  histograms.ExpectBucketCount(
+      "Navigation.BackForward.SetShouldSkipOnBackForwardUI", true, 2);
+
+  EXPECT_FALSE(controller.CanGoToOffsetWithSkipping(-3));
+  EXPECT_TRUE(controller.CanGoToOffsetWithSkipping(-2));
+
+  // GoToOffset should skip the skippable entries.
+  TestNavigationObserver nav_observer1(shell()->web_contents());
+  controller.GoToOffsetWithSkipping(-1);
+  nav_observer1.Wait();
+  EXPECT_EQ(2, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(redirected_url, controller.GetLastCommittedEntry()->GetURL());
+
+  TestNavigationObserver nav_observer2(shell()->web_contents());
+  controller.GoToOffsetWithSkipping(1);
+  nav_observer2.Wait();
+  EXPECT_EQ(4, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(4, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(redirected_url2, controller.GetLastCommittedEntry()->GetURL());
+
+  TestNavigationObserver nav_observer3(shell()->web_contents());
+  controller.GoToOffsetWithSkipping(-2);
+  nav_observer3.Wait();
+  EXPECT_EQ(0, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(non_skippable_url, controller.GetLastCommittedEntry()->GetURL());
+
+  EXPECT_FALSE(controller.CanGoToOffsetWithSkipping(3));
+  EXPECT_TRUE(controller.CanGoToOffsetWithSkipping(2));
+
+  TestNavigationObserver nav_observer4(shell()->web_contents());
+  controller.GoToOffsetWithSkipping(2);
+  nav_observer4.Wait();
+  EXPECT_EQ(4, controller.GetCurrentEntryIndex());
+  EXPECT_EQ(4, controller.GetLastCommittedEntryIndex());
+  EXPECT_EQ(redirected_url2, controller.GetLastCommittedEntry()->GetURL());
+#endif  // OS_ANDROID
 }
 
 // Tests that the navigation entry that is marked as skippable on back/forward

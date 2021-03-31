@@ -152,6 +152,13 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // affect frames within the subtree of |sandbox_frame_tree_node_id|, which
   // initiated the navigation.
   void GoToOffsetInSandboxedFrame(int offset, int sandbox_frame_tree_node_id);
+#if defined(OS_ANDROID)
+  // The difference with (Can)GoToOffset/(Can)GoToOffsetInSandboxedFrame is that
+  // this respect the history manipulation intervention and will excludes the
+  // skippable entries.
+  bool CanGoToOffsetWithSkipping(int offset);
+  void GoToOffsetWithSkipping(int offset);
+#endif
 
   // Called when a document requests a navigation through a
   // RenderFrameProxyHost.
@@ -366,6 +373,14 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       NavigationControllerBrowserTest,
       PostThenBrowserInitiatedFragmentNavigationThenReload);
   FRIEND_TEST_ALL_PREFIXES(NavigationControllerBrowserTest, PostSubframe);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerDisableHistoryIntervention,
+                           GoToOffsetWithSkippingDisableHistoryIntervention);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           GoToOffsetWithSkippingEnableHistoryIntervention);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           SetSkipOnBackForwardDoSkipForGoToOffsetWithSkipping);
+  FRIEND_TEST_ALL_PREFIXES(NavigationControllerHistoryInterventionBrowserTest,
+                           SetSkipOnBackForwardDoNotSkipForGoToOffset);
 
   // Defines possible actions that are returned by
   // DetermineActionForHistoryNavigation().
@@ -588,6 +603,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Returns the navigation index that differs from the current entry by the
   // specified |offset|.  The index returned is not guaranteed to be valid.
+  // This does not account for skippable entries or the history manipulation
+  // intervention.
   int GetIndexForOffset(int offset);
 
   // History Manipulation intervention:

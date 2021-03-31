@@ -41,12 +41,12 @@ public interface NavigationController {
     void goToNavigationIndex(int index);
 
     /**
-     * Goes to the navigation entry before the current one.
+     * Goes to the first non-skippable navigation entry before the current.
      */
     void goBack();
 
     /**
-     * Goes to the navigation entry following the current one.
+     * Goes to the first non-skippable navigation entry following the current.
      */
     void goForward();
 

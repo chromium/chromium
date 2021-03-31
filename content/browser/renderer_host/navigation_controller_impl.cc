@@ -876,13 +876,41 @@ bool NavigationControllerImpl::CanGoBack() {
 }
 
 bool NavigationControllerImpl::CanGoForward() {
-  return CanGoToOffset(1);
+  if (!base::FeatureList::IsEnabled(features::kHistoryManipulationIntervention))
+    return CanGoToOffset(1);
+
+  for (int index = GetIndexForOffset(1); index < GetEntryCount(); index++) {
+    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui())
+      return true;
+  }
+  return false;
 }
 
 bool NavigationControllerImpl::CanGoToOffset(int offset) {
   int index = GetIndexForOffset(offset);
   return index >= 0 && index < GetEntryCount();
 }
+
+#if defined(OS_ANDROID)
+bool NavigationControllerImpl::CanGoToOffsetWithSkipping(int offset) {
+  if (!base::FeatureList::IsEnabled(features::kHistoryManipulationIntervention))
+    return CanGoToOffset(offset);
+
+  if (offset == 0)
+    return true;
+  int increment = offset > 0 ? 1 : -1;
+  int non_skippable_entries = 0;
+  for (int index = GetIndexForOffset(increment);
+       index >= 0 && index < GetEntryCount(); index += increment) {
+    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui())
+      non_skippable_entries++;
+
+    if (non_skippable_entries == std::abs(offset))
+      return true;
+  }
+  return false;
+}
+#endif
 
 void NavigationControllerImpl::GoBack() {
   int target_index = GetIndexForOffset(-1);
@@ -979,6 +1007,37 @@ void NavigationControllerImpl::GoToOffset(int offset) {
 
   GoToIndex(GetIndexForOffset(offset));
 }
+
+#if defined(OS_ANDROID)
+void NavigationControllerImpl::GoToOffsetWithSkipping(int offset) {
+  // Note: This is actually reached in unit tests.
+  if (!CanGoToOffsetWithSkipping(offset))
+    return;
+
+  bool history_intervention_enabled =
+      base::FeatureList::IsEnabled(features::kHistoryManipulationIntervention);
+  if (offset == 0 || !history_intervention_enabled) {
+    GoToIndex(GetIndexForOffset(offset));
+    return;
+  }
+  int increment = offset > 0 ? 1 : -1;
+  // Find the offset without counting skippable entries.
+  int target_index = GetIndexForOffset(increment);
+  int non_skippable_entries = 0;
+  for (int index = target_index; index >= 0 && index < GetEntryCount();
+       index += increment) {
+    if (!GetEntryAtIndex(index)->should_skip_on_back_forward_ui())
+      non_skippable_entries++;
+
+    if (non_skippable_entries == std::abs(offset)) {
+      target_index = index;
+      break;
+    }
+  }
+
+  GoToIndex(target_index);
+}
+#endif
 
 bool NavigationControllerImpl::RemoveEntryAtIndex(int index) {
   if (index == last_committed_entry_index_ || index == pending_entry_index_)
