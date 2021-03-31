@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/shared_memory_tracker.h"
@@ -142,7 +144,7 @@ TEST(ProcessMemoryDumpTest, Clear) {
   ASSERT_EQ(shared_mad2, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid2));
   ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad2->flags());
 
-  traced_value.reset(new TracedValue);
+  traced_value = std::make_unique<TracedValue>();
   pmd1->SerializeAllocatorDumpsInto(traced_value.get());
 
   pmd1.reset();
@@ -206,7 +208,7 @@ TEST(ProcessMemoryDumpTest, TakeAllDumpsFrom) {
   ASSERT_TRUE(MemoryAllocatorDump::Flags::WEAK & shared_mad2->flags());
 
   // Check that calling serialization routines doesn't cause a crash.
-  traced_value.reset(new TracedValue);
+  traced_value = std::make_unique<TracedValue>();
   pmd1->SerializeAllocatorDumpsInto(traced_value.get());
 
   pmd1.reset();

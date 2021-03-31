@@ -135,7 +135,7 @@ TEST_F(TraceCategoryTest, MAYBE_ThreadRaces) {
   const int kNumThreads = 32;
   std::unique_ptr<Thread> threads[kNumThreads];
   for (int i = 0; i < kNumThreads; i++) {
-    threads[i].reset(new Thread("test thread"));
+    threads[i] = std::make_unique<Thread>("test thread");
     threads[i]->Start();
   }
   WaitableEvent sync_event(WaitableEvent::ResetPolicy::MANUAL,

@@ -173,8 +173,8 @@ class TraceBufferVector : public TraceBuffer {
     chunks_.push_back(nullptr);
     ++in_flight_chunk_count_;
     // + 1 because zero chunk_seq is not allowed.
-    return std::unique_ptr<TraceBufferChunk>(
-        new TraceBufferChunk(static_cast<uint32_t>(*index) + 1));
+    return std::make_unique<TraceBufferChunk>(static_cast<uint32_t>(*index) +
+                                              1);
   }
 
   void ReturnChunk(size_t index,
@@ -266,7 +266,7 @@ TraceEvent* TraceBufferChunk::AddTraceEvent(size_t* event_index) {
 void TraceBufferChunk::EstimateTraceMemoryOverhead(
     TraceEventMemoryOverhead* overhead) {
   if (!cached_overhead_estimate_) {
-    cached_overhead_estimate_.reset(new TraceEventMemoryOverhead);
+    cached_overhead_estimate_ = std::make_unique<TraceEventMemoryOverhead>();
 
     // When estimating the size of TraceBufferChunk, exclude the array of trace
     // events, as they are computed individually below.

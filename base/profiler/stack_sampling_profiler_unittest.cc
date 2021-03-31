@@ -803,9 +803,9 @@ PROFILER_TEST_F(StackSamplingProfilerTest, DestroyProfilerWhileProfiling) {
         BindLambdaForTesting([&profile](Profile result_profile) {
           profile = std::move(result_profile);
         }));
-    profiler.reset(new StackSamplingProfiler(
+    profiler = std::make_unique<StackSamplingProfiler>(
         target_thread_token, params, std::move(profile_builder),
-        CreateCoreUnwindersFactoryForTesting(module_cache())));
+        CreateCoreUnwindersFactoryForTesting(module_cache()));
     profiler->Start();
     profiler.reset();
 

@@ -411,7 +411,7 @@ void TestSuite::PreInitialize() {
   // On Android, AtExitManager is created in
   // testing/android/native_test_wrapper.cc before main() is called.
 #if !defined(OS_ANDROID)
-  at_exit_manager_.reset(new AtExitManager);
+  at_exit_manager_ = std::make_unique<AtExitManager>();
 #endif
 
   // Don't add additional code to this function.  Instead add it to

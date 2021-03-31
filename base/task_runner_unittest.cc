@@ -4,6 +4,7 @@
 
 #include "base/task_runner_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -37,7 +38,7 @@ struct Foo {
 };
 
 std::unique_ptr<Foo> CreateFoo() {
-  return std::unique_ptr<Foo>(new Foo);
+  return std::make_unique<Foo>();
 }
 
 void ExpectFoo(std::unique_ptr<Foo> foo) {

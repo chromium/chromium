@@ -218,8 +218,8 @@ class ThreadPoolTaskTrackerTest
   // Calls tracker_->FlushForTesting() on a new thread.
   void CallFlushFromAnotherThread() {
     ASSERT_FALSE(thread_calling_flush_);
-    thread_calling_flush_.reset(new CallbackThread(
-        BindOnce(&TaskTracker::FlushForTesting, Unretained(&tracker_))));
+    thread_calling_flush_ = std::make_unique<CallbackThread>(
+        BindOnce(&TaskTracker::FlushForTesting, Unretained(&tracker_)));
     thread_calling_flush_->Start();
   }
 

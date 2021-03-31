@@ -4,6 +4,7 @@
 
 #include "base/threading/thread.h"
 
+#include <memory>
 #include <type_traits>
 
 #include "base/bind.h"
@@ -352,8 +353,8 @@ void Thread::ThreadMain() {
   // Allow threads running a MessageLoopForIO to use FileDescriptorWatcher API.
   std::unique_ptr<FileDescriptorWatcher> file_descriptor_watcher;
   if (CurrentIOThread::IsSet()) {
-    file_descriptor_watcher.reset(
-        new FileDescriptorWatcher(delegate_->GetDefaultTaskRunner()));
+    file_descriptor_watcher = std::make_unique<FileDescriptorWatcher>(
+        delegate_->GetDefaultTaskRunner());
   }
 #endif
 

@@ -110,7 +110,7 @@ TEST(SequenceCheckerTest, CallsDisallowedOnSameThreadDifferentSequenceToken) {
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
-    sequence_checker.reset(new SequenceCheckerImpl);
+    sequence_checker = std::make_unique<SequenceCheckerImpl>();
   }
 
   {
@@ -130,7 +130,7 @@ TEST(SequenceCheckerTest, DetachFromSequence) {
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
-    sequence_checker.reset(new SequenceCheckerImpl);
+    sequence_checker = std::make_unique<SequenceCheckerImpl>();
   }
 
   sequence_checker->DetachFromSequence();

@@ -5,6 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/format_macros.h"
@@ -109,7 +111,7 @@ class ScheduleWorkTest : public testing::Test {
     } else
 #endif
     {
-      target_.reset(new Thread("test"));
+      target_ = std::make_unique<Thread>("test");
 
       Thread::Options options(target_type, 0u);
       options.message_pump_type = target_type;
@@ -124,10 +126,14 @@ class ScheduleWorkTest : public testing::Test {
     }
 
     std::vector<std::unique_ptr<Thread>> scheduling_threads;
-    scheduling_times_.reset(new base::TimeDelta[num_scheduling_threads]);
-    scheduling_thread_times_.reset(new base::TimeDelta[num_scheduling_threads]);
-    min_batch_times_.reset(new base::TimeDelta[num_scheduling_threads]);
-    max_batch_times_.reset(new base::TimeDelta[num_scheduling_threads]);
+    scheduling_times_ =
+        std::make_unique<base::TimeDelta[]>(num_scheduling_threads);
+    scheduling_thread_times_ =
+        std::make_unique<base::TimeDelta[]>(num_scheduling_threads);
+    min_batch_times_ =
+        std::make_unique<base::TimeDelta[]>(num_scheduling_threads);
+    max_batch_times_ =
+        std::make_unique<base::TimeDelta[]>(num_scheduling_threads);
 
     for (int i = 0; i < num_scheduling_threads; ++i) {
       scheduling_threads.push_back(std::make_unique<Thread>("posting thread"));

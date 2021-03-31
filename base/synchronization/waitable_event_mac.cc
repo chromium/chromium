@@ -8,6 +8,8 @@
 #include <mach/mach.h>
 #include <sys/event.h>
 
+#include <memory>
+
 #include "base/debug/activity_tracker.h"
 #include "base/files/scoped_file.h"
 #include "base/mac/dispatch_source_mach.h"
@@ -68,7 +70,7 @@ void WaitableEvent::Signal() NO_THREAD_SAFETY_ANALYSIS {
     slow_watch_list->lock.Acquire();
 
     if (!slow_watch_list->list.empty()) {
-      watch_list.reset(new std::list<OnceClosure>());
+      watch_list = std::make_unique<std::list<OnceClosure>>();
       std::swap(*watch_list, slow_watch_list->list);
     }
   }

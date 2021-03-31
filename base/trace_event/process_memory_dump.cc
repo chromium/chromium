@@ -6,6 +6,7 @@
 
 #include <errno.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/logging.h"
@@ -516,8 +517,8 @@ MemoryAllocatorDump* ProcessMemoryDump::GetBlackHoleMad() {
   DCHECK(is_black_hole_non_fatal_for_testing_);
   if (!black_hole_mad_) {
     std::string name = "discarded";
-    black_hole_mad_.reset(new MemoryAllocatorDump(
-        name, dump_args_.level_of_detail, GetDumpId(name)));
+    black_hole_mad_ = std::make_unique<MemoryAllocatorDump>(
+        name, dump_args_.level_of_detail, GetDumpId(name));
   }
   return black_hole_mad_.get();
 }

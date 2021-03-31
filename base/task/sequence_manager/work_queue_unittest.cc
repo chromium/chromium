@@ -52,16 +52,16 @@ class RealTimeDomainFake : public RealTimeDomain {
 class WorkQueueTest : public testing::Test {
  public:
   void SetUp() override {
-    time_domain_.reset(new RealTimeDomainFake());
+    time_domain_ = std::make_unique<RealTimeDomainFake>();
     task_queue_ = std::make_unique<TaskQueueImpl>(/*sequence_manager=*/nullptr,
                                                   time_domain_.get(),
                                                   TaskQueue::Spec("test"));
 
-    work_queue_.reset(new WorkQueue(task_queue_.get(), "test",
-                                    WorkQueue::QueueType::kImmediate));
-    mock_observer_.reset(new MockObserver);
-    work_queue_sets_.reset(new WorkQueueSets("test", mock_observer_.get(),
-                                             SequenceManager::Settings()));
+    work_queue_ = std::make_unique<WorkQueue>(task_queue_.get(), "test",
+                                              WorkQueue::QueueType::kImmediate);
+    mock_observer_ = std::make_unique<MockObserver>();
+    work_queue_sets_ = std::make_unique<WorkQueueSets>(
+        "test", mock_observer_.get(), SequenceManager::Settings());
     work_queue_sets_->AddQueue(work_queue_.get(), 0);
   }
 

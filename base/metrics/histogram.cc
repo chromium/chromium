@@ -13,6 +13,7 @@
 #include <limits.h>
 #include <math.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -602,8 +603,10 @@ Histogram::Histogram(const char* name,
                      const BucketRanges* ranges)
     : HistogramBase(name) {
   DCHECK(ranges) << name << ": " << minimum << "-" << maximum;
-  unlogged_samples_.reset(new SampleVector(HashMetricName(name), ranges));
-  logged_samples_.reset(new SampleVector(unlogged_samples_->id(), ranges));
+  unlogged_samples_ =
+      std::make_unique<SampleVector>(HashMetricName(name), ranges);
+  logged_samples_ =
+      std::make_unique<SampleVector>(unlogged_samples_->id(), ranges);
 }
 
 Histogram::Histogram(const char* name,
@@ -616,10 +619,10 @@ Histogram::Histogram(const char* name,
                      HistogramSamples::Metadata* logged_meta)
     : HistogramBase(name) {
   DCHECK(ranges) << name << ": " << minimum << "-" << maximum;
-  unlogged_samples_.reset(
-      new PersistentSampleVector(HashMetricName(name), ranges, meta, counts));
-  logged_samples_.reset(new PersistentSampleVector(
-      unlogged_samples_->id(), ranges, logged_meta, logged_counts));
+  unlogged_samples_ = std::make_unique<PersistentSampleVector>(
+      HashMetricName(name), ranges, meta, counts);
+  logged_samples_ = std::make_unique<PersistentSampleVector>(
+      unlogged_samples_->id(), ranges, logged_meta, logged_counts);
 }
 
 Histogram::~Histogram() = default;

@@ -306,9 +306,9 @@ void MemoryDumpManager::CreateProcessDump(const MemoryDumpRequestArgs& args,
   {
     AutoLock lock(lock_);
 
-    pmd_async_state.reset(new ProcessMemoryDumpAsyncState(
+    pmd_async_state = std::make_unique<ProcessMemoryDumpAsyncState>(
         args, dump_providers_, std::move(callback),
-        GetOrCreateBgTaskRunnerLocked()));
+        GetOrCreateBgTaskRunnerLocked());
   }
 
   // Start the process dump. This involves task runner hops as specified by the

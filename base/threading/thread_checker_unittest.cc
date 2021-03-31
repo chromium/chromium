@@ -89,7 +89,7 @@ TEST(ThreadCheckerTest,
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(sequence_token);
-    thread_checker.reset(new ThreadCheckerImpl);
+    thread_checker = std::make_unique<ThreadCheckerImpl>();
   }
 
   {
@@ -114,7 +114,7 @@ TEST(ThreadCheckerTest,
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
-    thread_checker.reset(new ThreadCheckerImpl);
+    thread_checker = std::make_unique<ThreadCheckerImpl>();
   }
 
   {
@@ -154,7 +154,7 @@ TEST(ThreadCheckerTest, DisallowedSameThreadDifferentSequence) {
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
-    thread_checker.reset(new ThreadCheckerImpl);
+    thread_checker = std::make_unique<ThreadCheckerImpl>();
   }
 
   {

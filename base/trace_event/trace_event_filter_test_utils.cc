@@ -4,6 +4,8 @@
 
 #include "base/trace_event/trace_event_filter_test_utils.h"
 
+#include <memory>
+
 #include "base/check.h"
 
 namespace base {
@@ -22,7 +24,7 @@ std::unique_ptr<TraceEventFilter> TestEventFilter::Factory(
     const std::string& predicate_name) {
   std::unique_ptr<TraceEventFilter> res;
   if (predicate_name == kName)
-    res.reset(new TestEventFilter());
+    res = std::make_unique<TestEventFilter>();
   return res;
 }
 

@@ -126,7 +126,7 @@ class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
   }
 
   void WaitUntilDone() override {
-    run_loop_.reset(new RunLoop());
+    run_loop_ = std::make_unique<RunLoop>();
     run_loop_->Run();
   }
 

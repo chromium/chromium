@@ -8,6 +8,7 @@
 #include <windows.h>
 #endif
 
+#include <memory>
 #include <string>
 
 #include "base/debug/alias.h"
@@ -243,7 +244,7 @@ int LoadIcuData(PlatformFile data_fd,
     return 1;  // To debug http://crbug.com/445616.
   }
 
-  out_mapped_data_file->reset(new MemoryMappedFile());
+  *out_mapped_data_file = std::make_unique<MemoryMappedFile>();
   if (!(*out_mapped_data_file)->Initialize(File(data_fd), data_region)) {
     LOG(ERROR) << "Couldn't mmap icu data file";
     return 2;  // To debug http://crbug.com/445616.
