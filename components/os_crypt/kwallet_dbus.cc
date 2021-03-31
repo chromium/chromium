@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <components/os_crypt/kwallet_dbus.h>
+#include "components/os_crypt/kwallet_dbus.h"
 
 #include <algorithm>
 #include <memory>
