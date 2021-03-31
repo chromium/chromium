@@ -1145,7 +1145,6 @@ external/wpt/css/css-transforms/transform-list-separation/svg-transform-list-sep
 external/wpt/css/css-transforms/transform-list-separation/svg-transform-list-separations-009.html [ Skip ]
 external/wpt/css/css-transforms/transform-list-separation/svg-transform-list-separations-010.html [ Skip ]
 external/wpt/css/css-transforms/transform-list-separation/svg-transform-list-separations-011.html [ Skip ]
-external/wpt/css/css-transforms/transform-origin-01.html [ Skip ]
 external/wpt/css/css-transforms/transform-origin/svg-origin-length-001.html [ Skip ]
 external/wpt/css/css-transforms/transform-origin/svg-origin-length-002.html [ Skip ]
 external/wpt/css/css-transforms/transform-origin/svg-origin-length-003.html [ Skip ]
