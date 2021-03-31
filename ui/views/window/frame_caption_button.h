@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/views_export.h"
+#include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/caption_button_types.h"
 
 namespace gfx {
@@ -21,6 +21,9 @@ struct VectorIcon;
 }  // namespace gfx
 
 namespace views {
+
+class InkDrop;
+class InkDropRipple;
 
 // Base class for the window caption buttons (minimize, maximize, restore,
 // close).
@@ -60,8 +63,8 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
+  std::unique_ptr<InkDrop> CreateInkDrop() override;
+  std::unique_ptr<InkDropRipple> CreateInkDropRipple() const override;
 
   void SetBackgroundColor(SkColor background_color);
   SkColor GetBackgroundColor() const;
@@ -102,16 +105,16 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
   CaptionButtonIcon icon_;
 
   // The current background color.
-  SkColor background_color_;
+  SkColor background_color_ = gfx::kPlaceholderColor;
 
   // Whether the button should be painted as active.
-  bool paint_as_active_;
+  bool paint_as_active_ = false;
 
   // Current alpha to use for painting.
-  int alpha_;
+  int alpha_ = 255;
 
   // Radius of the ink drop highlight and mask.
-  int ink_drop_corner_radius_;
+  int ink_drop_corner_radius_ = kCaptionButtonInkDropDefaultCornerRadius;
 
   // The image id (kept for the purposes of testing) and image used to paint the
   // button's icon.

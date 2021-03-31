@@ -9,9 +9,7 @@
 
 #include "ui/base/hit_test.h"
 #include "ui/gfx/animation/slide_animation.h"
-#include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -20,10 +18,8 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_ripple.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
-#include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/hit_test_utils.h"
 
 namespace views {
@@ -70,11 +66,7 @@ FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
                                        int hit_test_type)
     : Button(std::move(callback)),
       icon_(icon),
-      background_color_(SK_ColorWHITE),
-      paint_as_active_(false),
-      alpha_(255),
-      ink_drop_corner_radius_(kCaptionButtonInkDropDefaultCornerRadius),
-      swap_images_animation_(new gfx::SlideAnimation(this)) {
+      swap_images_animation_(std::make_unique<gfx::SlideAnimation>(this)) {
   views::SetHitTestComponent(this, hit_test_type);
   // Not focusable by default, only for accessibility.
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);

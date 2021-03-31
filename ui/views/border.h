@@ -111,8 +111,10 @@ VIEWS_EXPORT std::unique_ptr<Border> CreateSolidSidedBorder(int top,
 // equivalent to changing the insets of |border| without changing how or what it
 // paints. Example:
 //
-// view->SetBorder(CreatePaddedBorder(CreateSolidBorder(1, SK_ColorRED),
-//                                    gfx::Insets(2, 0, 0, 0)));
+// view->SetBorder(CreatePaddedBorder(
+//     CreateSolidBorder(1, view->GetNativeTheme()->GetSystemColor(
+//         ui::NativeTheme::kColorId_UnfocusedBorderColor)),
+//     gfx::Insets(2, 0, 0, 0)));
 //
 // yields a single dip red border and an additional 2dip of unpainted padding
 // above the view content (below the border).
