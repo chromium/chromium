@@ -125,13 +125,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
       mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerHost>
           player_receiver);
 
-  // Communicates with the MediaSessionControllerManager to find or create (if
-  // needed) a MediaSessionController identified by |player_id|, in order to
-  // bind its mojo remote for media::mojom::MediaPlayer.
-  void OnMediaPlayerAdded(
-      mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
-      MediaPlayerId player_id);
-
   // Called by the WebContents when a tab has been closed but may still be
   // available for "undo" -- indicates that all media players (even audio only
   // players typically allowed background audio) bound to this WebContents must
@@ -145,8 +138,6 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
 
  private:
   class PlayerInfo;
-  friend class PlayerInfo;
-
   using PlayerInfoMap =
       base::flat_map<MediaPlayerId, std::unique_ptr<PlayerInfo>>;
 
@@ -168,6 +159,8 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
     // media::mojom::MediaPlayerHost implementation.
     void OnMediaPlayerAdded(
         mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> media_player,
+        mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
+            media_player_observer,
         int32_t player_id) override;
 
    private:
@@ -186,8 +179,9 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
     ~MediaPlayerObserverHostImpl() override;
 
     // Used to bind the receiver via the BrowserInterfaceBroker.
-    mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>
-    BindMediaPlayerObserverReceiverAndPassRemote();
+    void BindMediaPlayerObserverReceiver(
+        mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
+            media_player_observer);
 
     // media::mojom::MediaPlayerObserver implementation.
     void OnMediaPlaying() override;
@@ -224,6 +218,15 @@ class CONTENT_EXPORT MediaWebContentsObserver : public WebContentsObserver {
   using MediaPlayerRemotesMap =
       base::flat_map<MediaPlayerId,
                      mojo::AssociatedRemote<media::mojom::MediaPlayer>>;
+
+  // Communicates with the MediaSessionControllerManager to find or create (if
+  // needed) a MediaSessionController identified by |player_id|, in order to
+  // bind its mojo remote for media::mojom::MediaPlayer.
+  void OnMediaPlayerAdded(
+      mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
+      mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
+          media_player_observer,
+      MediaPlayerId player_id);
 
   // Returns the PlayerInfo associated with |id|, or nullptr if no such
   // PlayerInfo exists.

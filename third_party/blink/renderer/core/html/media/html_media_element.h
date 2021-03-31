@@ -357,10 +357,9 @@ class CORE_EXPORT HTMLMediaElement
 
   void SetCcLayerForTesting(cc::Layer* layer) { SetCcLayer(layer); }
 
-  // Required by tests set mock receivers to check that messages are delivered.
-  void AddMediaPlayerObserverForTesting(
-      mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
-          observer);
+  // This should be called directly after creation.
+  void SetMediaPlayerHostForTesting(
+      mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayerHost> host);
 
   bool IsShowPosterFlagSet() const { return show_poster_flag_; }
 
@@ -506,9 +505,6 @@ class CORE_EXPORT HTMLMediaElement
   media::mojom::blink::MediaPlayerHost& GetMediaPlayerHostRemote();
 
   // media::mojom::MediaPlayer  implementation.
-  void AddMediaPlayerObserver(
-      mojo::PendingAssociatedRemote<media::mojom::blink::MediaPlayerObserver>
-          observer) override;
   void RequestPlay() override;
   void RequestPause(bool triggered_by_user) override;
   void RequestSeekForward(base::TimeDelta seek_time) override;
@@ -637,6 +633,12 @@ class CORE_EXPORT HTMLMediaElement
 
   Features GetFeatures() override;
 
+  // Adds a new MediaPlayerObserver remote that will be notified about media
+  // player events and returns a receiver that an observer implementation can
+  // bind to.
+  mojo::PendingAssociatedReceiver<media::mojom::blink::MediaPlayerObserver>
+  AddMediaPlayerObserverAndPassReceiver();
+
   HeapTaskRunnerTimer<HTMLMediaElement> load_timer_;
   HeapTaskRunnerTimer<HTMLMediaElement> progress_event_timer_;
   HeapTaskRunnerTimer<HTMLMediaElement> playback_progress_timer_;
@@ -654,18 +656,6 @@ class CORE_EXPORT HTMLMediaElement
   KURL current_src_;
   KURL current_src_after_redirects_;
   Member<MediaStreamDescriptor> src_object_;
-
-  // Stores metadata sent from |web_media_player_| so that new observers can
-  // receive it.
-  struct MediaMetadata {
-    MediaMetadata(bool audio, bool video, media::MediaContentType mct)
-        : has_audio(audio), has_video(video), media_content_type(mct) {}
-
-    bool has_audio;
-    bool has_video;
-    media::MediaContentType media_content_type;
-  };
-  base::Optional<MediaMetadata> media_metadata_;
 
   // To prevent potential regression when extended by the MSE API, do not set
   // |error_| outside of constructor and SetError().

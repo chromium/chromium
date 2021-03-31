@@ -118,9 +118,6 @@ class PictureInPictureMediaPlayerReceiver : public media::mojom::MediaPlayer {
   }
 
   // media::mojom::MediaPlayer implementation.
-  void AddMediaPlayerObserver(
-      mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>)
-      override {}
   void RequestPlay() override {}
   void RequestPause(bool triggered_by_user) override {}
   void RequestSeekForward(base::TimeDelta seek_time) override {}

@@ -382,6 +382,19 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
   WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
 }
 
+IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
+                       CanvasCaptureControlledByMediaSession) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL test_page_url = embedded_test_server()->GetURL(
+      "example.com", "/media/picture_in_picture/canvas-in-pip.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_page_url));
+  ASSERT_EQ(true, EvalJs(shell(), "start();"));
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPlaying);
+
+  window_controller()->TogglePlayPause();
+  WaitForPlaybackState(OverlayWindow::PlaybackState::kPaused);
+}
+
 class AutoPictureInPictureContentBrowserTest
     : public PictureInPictureContentBrowserTest {
  public:

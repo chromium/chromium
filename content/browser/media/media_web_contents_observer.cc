@@ -292,9 +292,12 @@ void MediaWebContentsObserver::MediaPlayerHostImpl::BindMediaPlayerHostReceiver(
 
 void MediaWebContentsObserver::MediaPlayerHostImpl::OnMediaPlayerAdded(
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> media_player,
+    mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
+        media_player_observer,
     int32_t player_id) {
   media_web_contents_observer_->OnMediaPlayerAdded(
-      std::move(media_player), MediaPlayerId(frame_routing_id_, player_id));
+      std::move(media_player), std::move(media_player_observer),
+      MediaPlayerId(frame_routing_id_, player_id));
 }
 
 MediaWebContentsObserver::MediaPlayerObserverHostImpl::
@@ -307,21 +310,17 @@ MediaWebContentsObserver::MediaPlayerObserverHostImpl::
 MediaWebContentsObserver::MediaPlayerObserverHostImpl::
     ~MediaPlayerObserverHostImpl() = default;
 
-mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>
-MediaWebContentsObserver::MediaPlayerObserverHostImpl::
-    BindMediaPlayerObserverReceiverAndPassRemote() {
-  media_player_observer_receiver_.reset();
-  mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>
-      pending_remote =
-          media_player_observer_receiver_.BindNewEndpointAndPassRemote();
+void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
+    BindMediaPlayerObserverReceiver(
+        mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
+            media_player_observer) {
+  media_player_observer_receiver_.Bind(std::move(media_player_observer));
 
   // |media_web_contents_observer_| outlives MediaPlayerHostImpl, so it's safe
   // to use base::Unretained().
   media_player_observer_receiver_.set_disconnect_handler(base::BindOnce(
       &MediaWebContentsObserver::OnMediaPlayerObserverDisconnected,
       base::Unretained(media_web_contents_observer_), media_player_id_));
-
-  return pending_remote;
 }
 
 void MediaWebContentsObserver::MediaPlayerObserverHostImpl::
@@ -570,6 +569,8 @@ void MediaWebContentsObserver::BindMediaPlayerHost(
 
 void MediaWebContentsObserver::OnMediaPlayerAdded(
     mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
+    mojo::PendingAssociatedReceiver<media::mojom::MediaPlayerObserver>
+        media_player_observer,
     MediaPlayerId player_id) {
   auto* const rfh = RenderFrameHost::FromID(player_id.frame_routing_id);
   DCHECK(rfh);
@@ -602,9 +603,8 @@ void MediaWebContentsObserver::OnMediaPlayerAdded(
     media_player_observer_hosts_[player_id] =
         std::make_unique<MediaPlayerObserverHostImpl>(player_id, this);
   }
-  media_player_remotes_[player_id]->AddMediaPlayerObserver(
-      media_player_observer_hosts_[player_id]
-          ->BindMediaPlayerObserverReceiverAndPassRemote());
+  media_player_observer_hosts_[player_id]->BindMediaPlayerObserverReceiver(
+      std::move(media_player_observer));
 }
 
 void MediaWebContentsObserver::SuspendAllMediaPlayers() {

@@ -15,6 +15,7 @@
 #include "media/audio/audio_device_description.h"
 #include "media/mojo/mojom/media_player.mojom.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -56,7 +57,7 @@ class FakeAudioFocusDelegate : public content::AudioFocusDelegate {
 // MediaSessionController instance owned by the test with a valid mojo remote,
 // that will be bound to the mojo receiver provided by this class instead of the
 // real one used in production which would be owned by HTMLMediaElement instead.
-class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
+class TestMediaPlayer : public media::mojom::MediaPlayer {
  public:
   enum class PauseRequestType {
     kNone,
@@ -64,13 +65,26 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
     kNotTriggeredByUser,
   };
 
-  explicit MockMediaPlayerReceiverForTesting(
-      MediaWebContentsObserver* media_web_contents_observer,
-      const MediaPlayerId& player_id) {
+  TestMediaPlayer(MediaWebContentsObserver* media_web_contents_observer,
+                  const MediaPlayerId& player_id) {
     // Bind the remote to the receiver, so that we can intercept incoming
-    // messages sent via the different methods that use the remote.
-    media_web_contents_observer->OnMediaPlayerAdded(
-        receiver_.BindNewEndpointAndPassDedicatedRemote(), player_id);
+    // MediaPlayer messages sent via the different methods that use the remote.
+    // MediaPlayerObserver messages will not be used.
+    mojo::AssociatedRemote<media::mojom::MediaPlayerHost> player_host;
+    media_web_contents_observer->BindMediaPlayerHost(
+        player_id.frame_routing_id,
+        player_host.BindNewEndpointAndPassDedicatedReceiver());
+
+    mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player;
+    receiver_.Bind(player.InitWithNewEndpointAndPassReceiver());
+
+    mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>
+        dummy_player_observer;
+    player_host->OnMediaPlayerAdded(
+        std::move(player),
+        dummy_player_observer.InitWithNewEndpointAndPassReceiver(),
+        player_id.delegate_id);
+    player_host.FlushForTesting();
   }
 
   // Needs to be called from tests after invoking a method related playback
@@ -92,10 +106,6 @@ class MockMediaPlayerReceiverForTesting : public media::mojom::MediaPlayer {
   }
 
   // media::mojom::MediaPlayer implementation.
-  void AddMediaPlayerObserver(
-      mojo::PendingAssociatedRemote<media::mojom::MediaPlayerObserver>)
-      override {}
-
   void RequestPlay() override {
     received_play_ = true;
     run_loop_->Quit();
@@ -183,7 +193,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
     id_ =
         MediaPlayerId(contents()->GetMainFrame()->GetGlobalFrameRoutingId(), 0);
     controller_ = CreateController();
-    media_player_receiver_ = CreateMediaPlayerReceiver(controller_.get());
+    media_player_ = CreateMediaPlayer(controller_.get());
 
     auto delegate = std::make_unique<FakeAudioFocusDelegate>();
     audio_focus_delegate_ = delegate.get();
@@ -194,7 +204,7 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
     // Destruct the controller prior to any other teardown to avoid out of order
     // destruction relative to the MediaSession instance.
     controller_.reset();
-    media_player_receiver_.reset();
+    media_player_.reset();
 
     RenderViewHostImplTestHarness::TearDown();
   }
@@ -204,13 +214,12 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
     return std::make_unique<MediaSessionController>(id_, contents());
   }
 
-  std::unique_ptr<MockMediaPlayerReceiverForTesting> CreateMediaPlayerReceiver(
+  std::unique_ptr<TestMediaPlayer> CreateMediaPlayer(
       MediaSessionController* controller) {
     MediaWebContentsObserver* media_web_contents_observer =
         contents()->media_web_contents_observer();
     DCHECK(media_web_contents_observer);
-    return std::make_unique<MockMediaPlayerReceiverForTesting>(
-        media_web_contents_observer, id_);
+    return std::make_unique<TestMediaPlayer>(media_web_contents_observer, id_);
   }
 
   MediaSessionImpl* media_session() {
@@ -223,72 +232,68 @@ class MediaSessionControllerTest : public RenderViewHostImplTestHarness {
 
   void Suspend() {
     controller_->OnSuspend(controller_->get_player_id_for_testing());
-    media_player_receiver_->WaitUntilReceivedMessage();
+    media_player_->WaitUntilReceivedMessage();
   }
 
   void Resume() {
     controller_->OnResume(controller_->get_player_id_for_testing());
-    media_player_receiver_->WaitUntilReceivedMessage();
+    media_player_->WaitUntilReceivedMessage();
   }
 
   void SeekForward(base::TimeDelta seek_time) {
     controller_->OnSeekForward(controller_->get_player_id_for_testing(),
                                seek_time);
-    media_player_receiver_->WaitUntilReceivedMessage();
+    media_player_->WaitUntilReceivedMessage();
   }
 
   void SeekBackward(base::TimeDelta seek_time) {
     controller_->OnSeekBackward(controller_->get_player_id_for_testing(),
                                 seek_time);
-    media_player_receiver_->WaitUntilReceivedMessage();
+    media_player_->WaitUntilReceivedMessage();
   }
 
   void SeekTo(base::TimeDelta seek_time) {
     controller_->OnSeekTo(controller_->get_player_id_for_testing(), seek_time);
-    media_player_receiver_->WaitUntilReceivedMessage();
+    media_player_->WaitUntilReceivedMessage();
   }
 
   void SetVolumeMultiplier(double multiplier) {
     controller_->OnSetVolumeMultiplier(controller_->get_player_id_for_testing(),
                                        multiplier);
-    media_player_receiver_->WaitUntilVolumeChanged();
+    media_player_->WaitUntilVolumeChanged();
   }
 
   // Helpers to check the results of using the basic controls.
-  bool ReceivedMessagePlay() { return media_player_receiver_->received_play(); }
+  bool ReceivedMessagePlay() { return media_player_->received_play(); }
 
   bool ReceivedMessagePause(bool triggered_by_user) {
-    MockMediaPlayerReceiverForTesting::PauseRequestType expected_pause_request =
-        triggered_by_user ? MockMediaPlayerReceiverForTesting::
-                                PauseRequestType::kTriggeredByUser
-                          : MockMediaPlayerReceiverForTesting::
-                                PauseRequestType::kNotTriggeredByUser;
-    return media_player_receiver_->received_pause() == expected_pause_request;
+    TestMediaPlayer::PauseRequestType expected_pause_request =
+        triggered_by_user
+            ? TestMediaPlayer::PauseRequestType::kTriggeredByUser
+            : TestMediaPlayer::PauseRequestType::kNotTriggeredByUser;
+    return media_player_->received_pause() == expected_pause_request;
   }
 
   bool ReceivedMessageSeekForward(base::TimeDelta expected_seek_time) {
-    return expected_seek_time ==
-           media_player_receiver_->received_seek_forward_time();
+    return expected_seek_time == media_player_->received_seek_forward_time();
   }
 
   bool ReceivedMessageSeekBackward(base::TimeDelta expected_seek_time) {
-    return expected_seek_time ==
-           media_player_receiver_->received_seek_backward_time();
+    return expected_seek_time == media_player_->received_seek_backward_time();
   }
 
   bool ReceivedMessageSeekTo(base::TimeDelta expected_seek_time) {
-    return expected_seek_time ==
-           media_player_receiver_->received_seek_to_time();
+    return expected_seek_time == media_player_->received_seek_to_time();
   }
 
   bool ReceivedMessageVolume(double expected_volume_multiplier) {
     return expected_volume_multiplier ==
-           media_player_receiver_->received_volume_multiplier();
+           media_player_->received_volume_multiplier();
   }
 
   MediaPlayerId id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
   std::unique_ptr<MediaSessionController> controller_;
-  std::unique_ptr<MockMediaPlayerReceiverForTesting> media_player_receiver_;
+  std::unique_ptr<TestMediaPlayer> media_player_;
   FakeAudioFocusDelegate* audio_focus_delegate_ = nullptr;
 };
 
@@ -344,7 +349,7 @@ TEST_F(MediaSessionControllerTest, VolumeMultiplier) {
   EXPECT_TRUE(media_session()->IsControllable());
 
   // Upon creation of the MediaSession the default multiplier will be sent.
-  media_player_receiver_->WaitUntilVolumeChanged();
+  media_player_->WaitUntilVolumeChanged();
   EXPECT_TRUE(ReceivedMessageVolume(1.0));
 
   // Verify a different volume multiplier is sent.

@@ -11,12 +11,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Implemented by HTMLMediaElement in the renderer process.
 interface MediaPlayer {
-  // Sends |observer| to the renderer process so that it can be established a
-  // communication channel with the implementor of MediaPlayerObserver, and
-  // allows multiple observers for more observers like PictureInPictureService.
-  AddMediaPlayerObserver(
-      pending_associated_remote<MediaPlayerObserver> observer);
-
   // Requests the media player to start or resume media playback.
   RequestPlay();
 
@@ -113,6 +107,9 @@ interface MediaPlayerHost {
   // document owning the HTMLMediaElement that a new MediaPlayer is available,
   // passing a pending remote (i.e. |player_remote|) that will be used in the
   // browser process to establish a channel with the HTMLMediaElement.
+  // |observer| starts observing the MediaPlayer as soon as the player is
+  // created.
   OnMediaPlayerAdded(pending_associated_remote<MediaPlayer> player_remote,
+                     pending_associated_receiver<MediaPlayerObserver> observer,
                      int32 player_id);
 };
