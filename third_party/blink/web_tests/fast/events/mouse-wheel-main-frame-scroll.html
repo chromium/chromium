@@ -4,15 +4,23 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/gesture-util.js"></script>
+<script src="../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 </head>
 <script>
-promise_test (async () => {
-	await mouseMoveTo(50, 50);
-	await smoothScroll(100, 50, 50, GestureSourceType.MOUSE_INPUT, 'down', SPEED_INSTANT);
-	await waitFor( () => {
-		return window.scrollY == 100;
-	});
-},"Mouse wheel scrolls properly on main frame.");
+promise_test(async () => {
+  await mouseMoveTo(50, 50);
+  const SCROLL_DOWN = isPercentBasedScrollingEnabled() ? pixelsPerTick() : 100;
+  await smoothScroll(
+    SCROLL_DOWN, 50, 50, GestureSourceType.MOUSE_INPUT, 'down', SPEED_INSTANT
+  );
+  await waitForAnimationEndTimeBased(() => {
+    return window.scrollY;
+  });
+
+  const EXPECTED_SCROLL_Y = isPercentBasedScrollingEnabled() ?
+    calculateExpectedScroll(window, 0, SCROLL_DOWN, isWindow=true).y : 100;
+  assert_approx_equals(window.scrollY, EXPECTED_SCROLL_Y, 1);
+}, "Mouse wheel scrolls properly on main frame.");
 </script>
 <body>
 <div style="height:1000px;">

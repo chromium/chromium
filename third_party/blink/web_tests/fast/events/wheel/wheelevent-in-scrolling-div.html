@@ -2,6 +2,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
   <div id="overflow" style="border:2px solid black;overflow:auto;height:200px;width:200px;">
     <div style="background-color:red;height:200px;width:400px;"></div>
     <div style="background-color:green;height:200px;width:400px;"></div>
@@ -9,11 +10,25 @@
   </div>
   <div id="console"></div>
 <script>
-  // scroll diagonally for 1 tick.
-  var expectedScroll = pixelsPerTick();
-
-  var overflowElement = document.getElementById("overflow");
+  const overflowElement = document.getElementById("overflow");
   overflowElement.addEventListener("mousewheel", mousewheelHandler, false);
+
+  // scroll diagonally for 1 tick.
+  const SCROLL_AMOUNT = pixelsPerTick();
+  const EXPECTED_DELTA = isPercentBasedScrollingEnabled() ?
+    WHEEL_DELTA : SCROLL_AMOUNT;
+
+  let expectedScrollTop, expectedScrollLeft;
+  if (isPercentBasedScrollingEnabled()) {
+    ({
+      x: expectedScrollLeft,
+      y: expectedScrollTop
+    } = calculateExpectedScroll(overflowElement, SCROLL_AMOUNT, SCROLL_AMOUNT));
+  } else {
+    expectedScrollLeft = SCROLL_AMOUNT;
+    expectedScrollTop = SCROLL_AMOUNT;
+  }
+
   var eventHandlerResolve;
   eventHandlerPromise = new Promise(function(resolve) {
       eventHandlerResolve = resolve;
@@ -23,12 +38,17 @@
     var x = overflowElement.offsetLeft + 5;
     var y = overflowElement.offsetTop + 5
     await mouseMoveTo(x, y);
-    await smoothScroll(pixelsPerTick(), x, y, GestureSourceType.MOUSE_INPUT,
-        "downright", SPEED_INSTANT);
-    await waitFor( () => {
-      return overflowElement.scrollTop == expectedScroll &&
-          overflowElement.scrollLeft == expectedScroll;
+    await smoothScroll(SCROLL_AMOUNT, x, y, GestureSourceType.MOUSE_INPUT,
+      "downright", SPEED_INSTANT);
+    await waitForAnimationEndTimeBased(() => {
+      return overflowElement.scrollTop;
     });
+    await waitForAnimationEndTimeBased(() => {
+      return overflowElement.scrollLeft;
+    });
+
+    assert_approx_equals(overflowElement.scrollTop, expectedScrollTop, 0.001);
+    assert_approx_equals(overflowElement.scrollLeft, expectedScrollLeft, 0.001);
     // The test will timeout if the event handler doesn't resolve this promise.
     await eventHandlerPromise;
   });
@@ -36,8 +56,11 @@
   function mousewheelHandler(e) {
     // e.wheelDeltaX/Y is equal to number of ticks * 120. See kTickMultiplier
     // in src/third_party/blink/renderer/core/events/wheel_event.h
-    if (e.deltaY == expectedScroll && e.deltaX == expectedScroll &&
-        e.wheelDeltaY == -120 && e.wheelDeltaX == -120 && e.wheelDelta == -120) {
+    if (e.deltaY == EXPECTED_DELTA && e.deltaX == EXPECTED_DELTA
+        && e.wheelDeltaY == -LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER
+        && e.wheelDeltaX == -LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER
+        && e.wheelDelta == -LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER
+    ) {
       eventHandlerResolve();
     }
   }

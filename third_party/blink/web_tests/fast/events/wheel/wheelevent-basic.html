@@ -5,6 +5,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 </head>
 <body>
 <span id="parent">
@@ -41,11 +42,34 @@ promise_test(async () => {
   var x = testDiv.offsetLeft + 5;
   var y = testDiv.offsetTop + 5;
   await mouseMoveTo(x, y);
-  await smoothScroll(40, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT);
-  await waitFor( () => {
-    return deltaX > 0 && deltaY > 0 && deltaX == testDiv.scrollLeft &&
-        deltaY == testDiv.scrollTop;
-  });
+  const SCROLL_VALUE = isPercentBasedScrollingEnabled() ?
+    pixelsPerTick() / 2 : 60;
+  await smoothScroll(
+    SCROLL_VALUE, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT
+  );
+
+  if (isPercentBasedScrollingEnabled()) {
+    await waitForAnimationEndTimeBased(() => {
+      return testDiv.scrollTop;
+    });
+    await waitForAnimationEndTimeBased(() => {
+      return testDiv.scrollLeft;
+    });
+
+    const {
+      x: expectedScrollLeft,
+      y: expectedScrollTop,
+    } = calculateExpectedScroll(testDiv, SCROLL_VALUE, SCROLL_VALUE);
+
+    // Windows and Linux values appear to be slightly different
+    assert_approx_equals(testDiv.scrollTop, expectedScrollTop, 0.05);
+    assert_approx_equals(testDiv.scrollLeft, expectedScrollLeft, 0.1);
+  } else {
+    await waitFor( () => {
+      return deltaX > 0 && deltaY > 0 && deltaX == testDiv.scrollLeft &&
+          deltaY == testDiv.scrollTop;
+    });
+  }
 }, "Tests the basic functionality of the standard wheel event");
 
 var testEvent;

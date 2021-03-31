@@ -2,6 +2,45 @@
   Methods for percent-based scrolling webtests
 */
 
+// The scroll percentage per mousewheel tick. Used to determine scroll delta
+// if percent based scrolling is enabled. See kScrollPercentPerLineOrChar.
+const SCROLL_PERCENT_PER_LINE_OR_CHAR = 0.05;
+
+// Returns true if the feature flag is on and the platform is supported
+function isPercentBasedScrollingEnabled() {
+  return (
+    internals.runtimeFlags.percentBasedScrollingEnabled
+    && (
+      navigator.userAgent.includes("Linux")
+      || navigator.userAgent.includes("Windows")
+    )
+  );
+}
+
+// Calculates expected scrollX/scrollY for a given container or window and
+// amount pixels to scroll via x/y axes when the percent-based scrolling
+// feature is enabled
+function calculateExpectedScroll(
+  container, pixelsToScrollX, pixelsToScrollY, isWindow = false
+) {
+  let expectedScrollX = (
+    pixelsToScrollX * SCROLL_PERCENT_PER_LINE_OR_CHAR / pixelsPerTick()
+  );
+  let expectedScrollY = (
+    pixelsToScrollY * SCROLL_PERCENT_PER_LINE_OR_CHAR / pixelsPerTick()
+  );
+
+  if (isWindow) {
+    expectedScrollX *= window.innerWidth;
+    expectedScrollY *= window.innerHeight;
+  } else {
+    expectedScrollX *= Math.min(container.clientWidth, window.innerWidth);
+    expectedScrollY *= Math.min(container.clientHeight, window.innerHeight);
+  }
+
+  return {x: expectedScrollX, y: expectedScrollY};
+}
+
 // Scrollbar Arrows Tests
 
 // Tests if scrolling the |scroller| element through its scrollbar arrows
