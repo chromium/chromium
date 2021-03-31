@@ -10,9 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/app_list/model/app_list_model_export.h"
 #include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/model/search/search_result.h"
-#include "ash/ash_export.h"
 #include "base/callback.h"
 #include "ui/base/models/list_model.h"
 
@@ -23,7 +23,7 @@ class SearchBoxModel;
 // A model of app list that holds two search related sub models:
 // - SearchBoxModel: the model for SearchBoxView.
 // - SearchResults: owning a list of SearchResult.
-class ASH_EXPORT SearchModel {
+class APP_LIST_MODEL_EXPORT SearchModel {
  public:
   using SearchResults = ui::ListModel<SearchResult>;
 

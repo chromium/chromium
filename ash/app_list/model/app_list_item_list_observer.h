@@ -7,14 +7,15 @@
 
 #include <stddef.h>
 
-#include "ash/ash_export.h"
+#include "ash/app_list/model/app_list_model_export.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
 
 class AppListItem;
 
-class ASH_EXPORT AppListItemListObserver : public base::CheckedObserver {
+class APP_LIST_MODEL_EXPORT AppListItemListObserver
+    : public base::CheckedObserver {
  public:
   // Triggered after |item| has been added to the list at |index|.
   virtual void OnListItemAdded(size_t index, AppListItem* item) {}

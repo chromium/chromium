@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "ash/ash_export.h"
+#include "ash/app_list/model/app_list_model_export.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
@@ -15,7 +15,8 @@ namespace ash {
 class AppListItem;
 enum class AppListState;
 
-class ASH_EXPORT AppListModelObserver : public base::CheckedObserver {
+class APP_LIST_MODEL_EXPORT AppListModelObserver
+    : public base::CheckedObserver {
  public:
   // Triggered after AppListModel's status has changed.
   virtual void OnAppListModelStatusChanged() {}

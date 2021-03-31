@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "ash/ash_export.h"
+#include "ash/app_list/model/app_list_model_export.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "ui/gfx/image/image_skia.h"
@@ -20,7 +20,7 @@ class SearchBoxModelObserver;
 
 // SearchBoxModel provides the user entered text, and the system state that
 // influences the search box behavior.
-class ASH_EXPORT SearchBoxModel {
+class APP_LIST_MODEL_EXPORT SearchBoxModel {
  public:
   SearchBoxModel();
   ~SearchBoxModel();

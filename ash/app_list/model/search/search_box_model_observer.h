@@ -5,12 +5,13 @@
 #ifndef ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_OBSERVER_H_
 #define ASH_APP_LIST_MODEL_SEARCH_SEARCH_BOX_MODEL_OBSERVER_H_
 
-#include "ash/ash_export.h"
+#include "ash/app_list/model/app_list_model_export.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
 
-class ASH_EXPORT SearchBoxModelObserver : public base::CheckedObserver {
+class APP_LIST_MODEL_EXPORT SearchBoxModelObserver
+    : public base::CheckedObserver {
  public:
   // Invoked when text or voice search flag is changed.
   virtual void Update() = 0;

@@ -15,8 +15,8 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_item_observer.h"
+#include "ash/app_list/model/app_list_model_export.h"
 #include "ash/app_list/model/folder_image.h"
-#include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
@@ -32,9 +32,10 @@ class AppListConfig;
 class AppListItemList;
 
 // AppListFolderItem implements the model/controller for folders.
-class ASH_EXPORT AppListFolderItem : public AppListItem,
-                                     public FolderImageObserver,
-                                     public AppListConfigProvider::Observer {
+class APP_LIST_MODEL_EXPORT AppListFolderItem
+    : public AppListItem,
+      public FolderImageObserver,
+      public AppListConfigProvider::Observer {
  public:
   // The folder type affects folder behavior.
   enum FolderType {

@@ -5,12 +5,13 @@
 #ifndef ASH_APP_LIST_MODEL_SEARCH_SEARCH_RESULT_OBSERVER_H_
 #define ASH_APP_LIST_MODEL_SEARCH_SEARCH_RESULT_OBSERVER_H_
 
-#include "ash/ash_export.h"
+#include "ash/app_list/model/app_list_model_export.h"
 #include "base/observer_list_types.h"
 
 namespace ash {
 
-class ASH_EXPORT SearchResultObserver : public base::CheckedObserver {
+class APP_LIST_MODEL_EXPORT SearchResultObserver
+    : public base::CheckedObserver {
  public:
   // Invoked when the SearchResult's metadata has changed.
   virtual void OnMetadataChanged() {}
