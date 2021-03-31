@@ -154,6 +154,9 @@ class OmniboxPedal {
                                 const AutocompleteProviderClient& client) const;
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+  // Returns the default vector icon to use for Pedals that do not specify one.
+  static const gfx::VectorIcon& GetDefaultVectorIcon();
+
   // Returns the vector icon to represent this Pedal's action in suggestion.
   virtual const gfx::VectorIcon& GetVectorIcon() const;
 #endif

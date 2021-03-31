@@ -43,7 +43,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                              OmniboxPopupContentsView* popup_contents_view,
                              OmniboxPopupModel::Selection selection)
       : MdTextButton(std::move(callback), text, CONTEXT_OMNIBOX_PRIMARY),
-        icon_(icon),
+        icon_(&icon),
         popup_contents_view_(popup_contents_view),
         selection_(selection) {
     views::InstallPillHighlightPathGenerator(this);
@@ -95,9 +95,10 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     SkColor icon_color =
         GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_ICON,
                         OmniboxPartState::NORMAL);
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(
-                 icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE), icon_color));
+    SetImage(
+        views::Button::STATE_NORMAL,
+        gfx::CreateVectorIcon(*icon_, GetLayoutConstant(LOCATION_BAR_ICON_SIZE),
+                              icon_color));
     SetEnabledTextColors(GetOmniboxColor(GetThemeProvider(),
                                          OmniboxPart::RESULTS_TEXT_DEFAULT,
                                          OmniboxPartState::NORMAL));
@@ -122,8 +123,15 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     node_data->role = ax::mojom::Role::kListBoxOption;
   }
 
+  void SetIcon(const gfx::VectorIcon& icon) {
+    if (icon_ != &icon) {
+      icon_ = &icon;
+      OnThemeChanged();
+    }
+  }
+
  private:
-  const gfx::VectorIcon& icon_;
+  const gfx::VectorIcon* icon_;
   OmniboxPopupContentsView* popup_contents_view_;
   OmniboxPopupModel::Selection selection_;
   base::Optional<SkColor> omnibox_bg_color_;
@@ -176,7 +184,8 @@ OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
       base::BindRepeating(&OmniboxSuggestionButtonRowView::ButtonPressed,
                           base::Unretained(this),
                           OmniboxPopupModel::FOCUSED_BUTTON_PEDAL),
-      std::u16string(), omnibox::kProductIcon, popup_contents_view_,
+      std::u16string(), OmniboxPedal::GetDefaultVectorIcon(),
+      popup_contents_view_,
       OmniboxPopupModel::Selection(model_index_,
                                    OmniboxPopupModel::FOCUSED_BUTTON_PEDAL)));
 }
@@ -209,6 +218,7 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
     pedal_button_->SetText(pedal_strings.hint);
     pedal_button_->SetTooltipText(pedal_strings.suggestion_contents);
     pedal_button_->SetAccessibleName(pedal_strings.accessibility_hint);
+    pedal_button_->SetIcon(match().pedal->GetVectorIcon());
   }
 
   bool is_any_button_visible = keyword_button_->GetVisible() ||

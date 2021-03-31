@@ -81,6 +81,7 @@ extern const base::Feature kOmniboxSearchReadyIncognito;
 extern const base::Feature kOmniboxSuggestionButtonRow;
 extern const base::Feature kOmniboxPedalSuggestions;
 extern const base::Feature kOmniboxPedalsBatch2;
+extern const base::Feature kOmniboxPedalsDefaultIconColored;
 extern const base::Feature kOmniboxKeywordSearchButton;
 extern const base::Feature kOmniboxRefinedFocusState;
 extern const base::Feature kWebUIOmniboxPopup;

@@ -14,7 +14,14 @@
 #include "components/omnibox/browser/omnibox_pedal.h"
 #include "components/strings/grit/components_strings.h"
 
+// This carefully simplifies preprocessor condition usage below.
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#define SUPPORTS_DESKTOP_ICONS 1
+#else
+#define SUPPORTS_DESKTOP_ICONS 0
+#endif
+
+#if SUPPORTS_DESKTOP_ICONS
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif
 
@@ -236,6 +243,11 @@ class OmniboxPedalCreateGoogleDoc : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalCreateGoogleDoc()
       : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_DOC) {}
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kDriveDocsIcon;
+  }
+#endif
 };
 
 // =============================================================================
@@ -244,6 +256,11 @@ class OmniboxPedalCreateGoogleSheet : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalCreateGoogleSheet()
       : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_SHEET) {}
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kDriveSheetsIcon;
+  }
+#endif
 };
 
 // =============================================================================
@@ -252,6 +269,11 @@ class OmniboxPedalCreateGoogleSlide : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalCreateGoogleSlide()
       : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_SLIDE) {}
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kDriveSlidesIcon;
+  }
+#endif
 };
 
 // =============================================================================
@@ -261,6 +283,11 @@ class OmniboxPedalCreateGoogleCalendarEvent : public OmniboxPedalAuthRequired {
   OmniboxPedalCreateGoogleCalendarEvent()
       : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_CALENDAR_EVENT) {
   }
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kGoogleCalendarIcon;
+  }
+#endif
 };
 
 // =============================================================================
@@ -269,6 +296,11 @@ class OmniboxPedalCreateGoogleSite : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalCreateGoogleSite()
       : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_SITE) {}
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kGoogleSitesIcon;
+  }
+#endif
 };
 
 // =============================================================================
@@ -277,6 +309,11 @@ class OmniboxPedalCreateGoogleKeepNote : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalCreateGoogleKeepNote()
       : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_KEEP_NOTE) {}
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kGoogleKeepNoteIcon;
+  }
+#endif
 };
 
 // =============================================================================
@@ -285,6 +322,11 @@ class OmniboxPedalCreateGoogleForm : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalCreateGoogleForm()
       : OmniboxPedalAuthRequired(OmniboxPedalId::CREATE_GOOGLE_FORM) {}
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kDriveFormsIcon;
+  }
+#endif
 };
 
 // =============================================================================
@@ -303,6 +345,11 @@ class OmniboxPedalManageGoogleAccount : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalManageGoogleAccount()
       : OmniboxPedalAuthRequired(OmniboxPedalId::MANAGE_GOOGLE_ACCOUNT) {}
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kGoogleSuperGIcon;
+  }
+#endif
 };
 
 // =============================================================================
@@ -311,6 +358,11 @@ class OmniboxPedalChangeGooglePassword : public OmniboxPedalAuthRequired {
  public:
   OmniboxPedalChangeGooglePassword()
       : OmniboxPedalAuthRequired(OmniboxPedalId::CHANGE_GOOGLE_PASSWORD) {}
+#if SUPPORTS_DESKTOP_ICONS
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kGoogleSuperGIcon;
+  }
+#endif
 };
 
 // =============================================================================

@@ -165,8 +165,17 @@ bool OmniboxPedal::IsReadyToTrigger(
 }
 
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+// static
+const gfx::VectorIcon& OmniboxPedal::GetDefaultVectorIcon() {
+  if (OmniboxFieldTrial::IsPedalsDefaultIconColored()) {
+    return omnibox::kPedalIcon;
+  } else {
+    return omnibox::kProductIcon;
+  }
+}
+
 const gfx::VectorIcon& OmniboxPedal::GetVectorIcon() const {
-  return omnibox::kPedalIcon;
+  return GetDefaultVectorIcon();
 }
 #endif
 
