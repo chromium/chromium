@@ -429,12 +429,10 @@ void HoldingSpaceItemViewDelegate::ShowContextMenuForViewImpl(
   context_menu_runner_ =
       std::make_unique<views::MenuRunner>(BuildMenuModel(), run_types);
 
-  gfx::Rect bounds = source->GetBoundsInScreen();
-  bounds.Inset(gfx::Insets(-kHoldingSpaceContextMenuMargin, 0));
-
   context_menu_runner_->RunMenuAt(
-      source->GetWidget(), nullptr /*button_controller*/, bounds,
-      views::MenuAnchorPosition::kTopLeft, source_type);
+      source->GetWidget(), nullptr /*button_controller*/,
+      source->GetBoundsInScreen(), views::MenuAnchorPosition::kBubbleBelow,
+      source_type);
 }
 
 bool HoldingSpaceItemViewDelegate::CanStartDragForView(

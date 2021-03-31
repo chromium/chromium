@@ -582,12 +582,23 @@ void HoldingSpaceTray::ShowContextMenuForViewImpl(
   context_menu_runner_ =
       std::make_unique<views::MenuRunner>(context_menu_model_.get(), run_types);
 
-  gfx::Rect anchor = source->GetBoundsInScreen();
-  anchor.Inset(gfx::Insets(-kHoldingSpaceContextMenuMargin, 0));
+  views::MenuAnchorPosition anchor;
+  switch (shelf()->alignment()) {
+    case ShelfAlignment::kBottom:
+    case ShelfAlignment::kBottomLocked:
+      anchor = views::MenuAnchorPosition::kBubbleAbove;
+      break;
+    case ShelfAlignment::kLeft:
+      anchor = views::MenuAnchorPosition::kBubbleRight;
+      break;
+    case ShelfAlignment::kRight:
+      anchor = views::MenuAnchorPosition::kBubbleLeft;
+      break;
+  }
 
   context_menu_runner_->RunMenuAt(
-      source->GetWidget(), /*button_controller=*/nullptr, anchor,
-      views::MenuAnchorPosition::kTopLeft, source_type);
+      source->GetWidget(), /*button_controller=*/nullptr,
+      source->GetBoundsInScreen(), anchor, source_type);
 }
 
 void HoldingSpaceTray::OnWidgetDragWillStart(views::Widget* widget) {

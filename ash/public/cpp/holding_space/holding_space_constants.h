@@ -17,7 +17,6 @@ constexpr int kHoldingSpaceBubbleWidth = 360;
 constexpr gfx::Insets kHoldingSpaceChildBubblePadding(16);
 constexpr int kHoldingSpaceChildBubbleChildSpacing = 16;
 constexpr int kHoldingSpaceChipIconSize = 24;
-constexpr int kHoldingSpaceContextMenuMargin = 8;
 constexpr int kHoldingSpaceCornerRadius = 8;
 constexpr int kHoldingSpaceDownloadsChevronIconSize = 20;
 constexpr int kHoldingSpaceDownloadsHeaderSpacing = 16;
