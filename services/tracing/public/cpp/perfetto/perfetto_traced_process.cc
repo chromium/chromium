@@ -5,6 +5,7 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
@@ -22,11 +23,6 @@
 #include "services/tracing/public/cpp/tracing_features.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/command_line.h"
-#include "chromeos/dbus/constants/dbus_switches.h"
-#endif
 
 #if defined(OS_POSIX)
 // As per 'gn help check':
@@ -261,28 +257,12 @@ void PerfettoTracedProcess::SetupClientLibrary() {
   init_args.platform = platform_.get();
   init_args.custom_backend = tracing_backend_.get();
   init_args.backends |= perfetto::kCustomBackend;
-// System tracing backend is currently only supported on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Enable the system backend for access as system consumer
-  // in the browser process.
-  bool is_browser = base::CommandLine::ForCurrentProcess()
-                        ->GetSwitchValueASCII("type")
-                        .empty();
-
-  // We currently only use the system backend for consumer connections, and
-  // those should only be allowed when the CrOS device is in dev mode.
-  // TODO(eseckler): Augment this check with content's
-  // TracingDelegate::IsSystemWideTracingEnabled().
-  // TODO(eseckler): Move the check for the system wide tracing policy into the
-  // consumer backend connection, it probably shouldn't affect the producer
-  // connection.
-  bool is_system_wide_tracing_enabled =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kSystemDevMode);
-
-  if (is_browser && is_system_wide_tracing_enabled &&
-      tracing::ShouldSetupSystemTracing()) {
+// TODO(eseckler): Not yet supported on Android to avoid binary size regression
+// of the consumer IPC messages. We'll need a way to exclude them.
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  if (ShouldSetupSystemTracing()) {
     init_args.backends |= perfetto::kSystemBackend;
+    init_args.tracing_policy = this;
   }
 #endif
   perfetto::Tracing::Initialize(init_args);
@@ -301,6 +281,64 @@ void PerfettoTracedProcess::OnThreadPoolAvailable() {
     system_producer_->OnThreadPoolAvailable();
   if (!platform_->did_start_task_runner())
     platform_->StartTaskRunner(GetTaskRunner()->GetOrCreateTaskRunner());
+}
+
+void PerfettoTracedProcess::SetAllowSystemTracingConsumerCallback(
+    base::RepeatingCallback<bool()> callback) {
+  base::AutoLock lock(allow_system_consumer_lock_);
+  DCHECK(!allow_system_consumer_callback_ || !callback);
+  allow_system_consumer_callback_ = std::move(callback);
+  allow_system_consumer_callback_runner_ =
+      base::SequencedTaskRunnerHandle::Get();
+}
+
+void PerfettoTracedProcess::SetAllowSystemTracingConsumerForTesting(
+    bool enabled) {
+  base::AutoLock lock(allow_system_consumer_lock_);
+  system_consumer_enabled_for_testing_ = enabled;
+}
+
+void PerfettoTracedProcess::ShouldAllowConsumerSession(
+    const perfetto::TracingPolicy::ShouldAllowConsumerSessionArgs& args) {
+  // Consumer connections should only be attempted in the browser process.
+  CHECK(base::CommandLine::ForCurrentProcess()
+            ->GetSwitchValueASCII("type")
+            .empty());
+
+  // Integrated tracing backends are always allowed.
+  if (args.backend_type != perfetto::BackendType::kSystemBackend) {
+    args.result_callback(true);
+    return;
+  }
+
+  // System backend is only allowed in tests or if the embedder provided a
+  // callback that allows it.
+  ShouldAllowSystemConsumerSession(args.result_callback);
+}
+
+void PerfettoTracedProcess::ShouldAllowSystemConsumerSession(
+    std::function<void(bool)> result_callback) {
+  base::AutoLock lock(allow_system_consumer_lock_);
+
+  if (system_consumer_enabled_for_testing_) {
+    result_callback(true);
+    return;
+  }
+  if (!allow_system_consumer_callback_) {
+    result_callback(false);
+    return;
+  }
+
+  if (!allow_system_consumer_callback_runner_->RunsTasksInCurrentSequence()) {
+    allow_system_consumer_callback_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PerfettoTracedProcess::ShouldAllowSystemConsumerSession,
+                       base::Unretained(this), result_callback));
+    return;
+  }
+
+  bool result = allow_system_consumer_callback_.Run();
+  result_callback(result);
 }
 
 void PerfettoTracedProcess::SetupSystemTracing(

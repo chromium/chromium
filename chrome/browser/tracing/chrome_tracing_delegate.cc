@@ -43,6 +43,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
 namespace {
@@ -273,6 +274,12 @@ bool ChromeTracingDelegate::IsProfileLoaded() {
 
 bool ChromeTracingDelegate::IsSystemWideTracingEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Always allow system tracing in dev mode images.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kSystemDevMode)) {
+    return true;
+  }
+  // In non-dev images, honor the pref for system-wide tracing.
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
   return local_state->GetBoolean(

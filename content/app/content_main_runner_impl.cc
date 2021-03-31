@@ -71,6 +71,7 @@
 #include "content/gpu/in_process_gpu_thread.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/tracing_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_descriptor_keys.h"
@@ -99,7 +100,9 @@
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "services/network/public/cpp/features.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
@@ -455,6 +458,19 @@ void InstallConsoleControlHandler(bool is_browser_process) {
   }
 }
 #endif  // defined(OS_WIN)
+
+bool ShouldAllowSystemTracingConsumer() {
+// System tracing consumer support is currently only supported on ChromeOS.
+// TODO(crbug.com/1173395): Also enable for Lacros-Chrome.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // The consumer should only be enabled when the delegate allows it.
+  TracingDelegate* delegate =
+      GetContentClient()->browser()->GetTracingDelegate();
+  return delegate && delegate->IsSystemWideTracingEnabled();
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
 
 }  // namespace
 
@@ -1000,6 +1016,9 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
 
     BrowserTaskExecutor::PostFeatureListSetup();
 
+    tracing::PerfettoTracedProcess::Get()
+        ->SetAllowSystemTracingConsumerCallback(
+            base::BindRepeating(&ShouldAllowSystemTracingConsumer));
     tracing::InitTracingPostThreadPoolStartAndFeatureList();
 
     // PowerMonitor is needed in reduced mode. BrowserMainLoop will safely skip

@@ -72,11 +72,9 @@
 #include "ui/snapshot/snapshot.h"
 
 #if defined(OS_POSIX)
+#include "base/deferred_sequenced_task_runner.h"
+#include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/perfetto/system_test_utils.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/constants/dbus_switches.h"
 #endif
 
 #define EXPECT_SIZE_EQ(expected, actual)               \
@@ -187,60 +185,6 @@ class SitePerProcessDevToolsProtocolTest : public DevToolsProtocolTest {
     DevToolsProtocolTest::SetUpCommandLine(command_line);
     IsolateAllSitesForTesting(command_line);
   }
-};
-
-class SystemBackendDevToolsProtocolTest : public DevToolsProtocolTest {
- public:
-  SystemBackendDevToolsProtocolTest() {
-    feature_list_.InitAndEnableFeature(features::kEnablePerfettoSystemTracing);
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DevToolsProtocolTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  void SetUp() override {
-    DevToolsProtocolTest::SetUp();
-    saved_consumer_sock_name_ = GetConsumerSockEnvName();
-  }
-
-  void TearDown() override {
-    if (!saved_consumer_sock_name_.empty()) {
-      SetConsumerSockEnvName(saved_consumer_sock_name_);
-    } else {
-      UnsetConsumerSockEnvName();
-    }
-    saved_consumer_sock_name_ = "";
-    DevToolsProtocolTest::TearDown();
-  }
-
-  std::string GetConsumerSockEnvName() {
-    const char* value = NULL;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    value = getenv("PERFETTO_CONSUMER_SOCK_NAME");
-#endif
-    return value ? value : "";
-  }
-
-  void SetConsumerSockEnvName(const std::string& value) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ASSERT_EQ(0, setenv("PERFETTO_CONSUMER_SOCK_NAME", value.c_str(),
-                        /*overwrite=*/true));
-#endif
-  }
-
-  void UnsetConsumerSockEnvName() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    ASSERT_EQ(0, unsetenv("PERFETTO_CONSUMER_SOCK_NAME"));
-#endif
-  }
-
- private:
-  std::string saved_consumer_sock_name_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class SyntheticKeyEventTest : public DevToolsProtocolTest {
@@ -2826,71 +2770,143 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
   WaitForNotification("Tracing.tracingComplete", true);
 }
 
-IN_PROC_BROWSER_TEST_F(SystemBackendDevToolsProtocolTest,
-                       StartTracingWithSystemBackendRequestFailed) {
-  perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
-      base::trace_event::TraceConfig(),
-      /*privacy_filtering_enabled=*/false,
-      /*convert_to_legacy_json=*/false,
-      perfetto::protos::gen::ChromeConfig::USER_INITIATED);
+class SystemTracingDevToolsProtocolTest : public DevToolsProtocolTest {
+ protected:
+  base::DictionaryValue* StartSystemTrace() {
+    perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
+        base::trace_event::TraceConfig(),
+        /*privacy_filtering_enabled=*/false,
+        /*convert_to_legacy_json=*/false,
+        perfetto::protos::gen::ChromeConfig::USER_INITIATED);
 
-  std::string perfetto_config_encoded;
-  base::Base64Encode(perfetto_config.SerializeAsString(),
-                     &perfetto_config_encoded);
+    std::string perfetto_config_encoded;
+    base::Base64Encode(perfetto_config.SerializeAsString(),
+                       &perfetto_config_encoded);
 
-  auto params = std::make_unique<base::DictionaryValue>();
-  params->SetKey("perfettoConfig", base::Value(perfetto_config_encoded));
-  params->SetString("transferMode", "ReturnAsStream");
-  params->SetString("tracingBackend", "system");
+    auto params = std::make_unique<base::DictionaryValue>();
+    params->SetKey("perfettoConfig", base::Value(perfetto_config_encoded));
+    params->SetString("transferMode", "ReturnAsStream");
+    params->SetString("tracingBackend", "system");
 
-  SetConsumerSockEnvName("non_existent");
+    NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+    Attach();
 
-  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
-  Attach();
+    return SendCommand("Tracing.start", std::move(params), true);
+  }
+};
 
-  base::DictionaryValue* command_result =
-      SendCommand("Tracing.start", std::move(params), true);
+IN_PROC_BROWSER_TEST_F(SystemTracingDevToolsProtocolTest,
+                       StartSystemTracingFailsWhenSystemConsumerDisabled) {
+  base::DictionaryValue* command_result = StartSystemTrace();
   ASSERT_EQ(command_result, nullptr);
 }
 
 #if defined(OS_POSIX)
-// System tracing backend recording is currently only supported on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_TracingWithSystemBackend TracingWithSystemBackend
+class PosixSystemTracingDevToolsProtocolTest
+    : public SystemTracingDevToolsProtocolTest {
+ public:
+  PosixSystemTracingDevToolsProtocolTest() {
+    feature_list_.InitAndEnableFeature(features::kEnablePerfettoSystemTracing);
+    tracing::PerfettoTracedProcess::Get()
+        ->SetAllowSystemTracingConsumerForTesting(true);
+    const char* producer_sock = getenv("PERFETTO_PRODUCER_SOCK_NAME");
+    saved_producer_sock_name_ = producer_sock ? producer_sock : std::string();
+    const char* consumer_sock = getenv("PERFETTO_CONSUMER_SOCK_NAME");
+    saved_consumer_sock_name_ = consumer_sock ? consumer_sock : std::string();
+  }
+
+  ~PosixSystemTracingDevToolsProtocolTest() override {
+    if (!saved_producer_sock_name_.empty()) {
+      SetProducerSockEnvName(saved_producer_sock_name_);
+    } else {
+      EXPECT_EQ(0, unsetenv("PERFETTO_PRODUCER_SOCK_NAME"));
+    }
+    if (!saved_consumer_sock_name_.empty()) {
+      SetConsumerSockEnvName(saved_consumer_sock_name_);
+    } else {
+      EXPECT_EQ(0, unsetenv("PERFETTO_CONSUMER_SOCK_NAME"));
+    }
+  }
+
+ protected:
+  void SetProducerSockEnvName(const std::string& value) {
+    ASSERT_EQ(0, setenv("PERFETTO_PRODUCER_SOCK_NAME", value.c_str(),
+                        /*overwrite=*/true));
+  }
+  void SetConsumerSockEnvName(const std::string& value) {
+    ASSERT_EQ(0, setenv("PERFETTO_CONSUMER_SOCK_NAME", value.c_str(),
+                        /*overwrite=*/true));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::string saved_producer_sock_name_;
+  std::string saved_consumer_sock_name_;
+};
+
+class InvalidSystemTracingDevToolsProtocolTest
+    : public PosixSystemTracingDevToolsProtocolTest {
+ public:
+  void SetUp() override {
+    // Use a non-existing backend.
+    SetProducerSockEnvName("non_existing");
+    SetConsumerSockEnvName("non_existing");
+
+    PosixSystemTracingDevToolsProtocolTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(InvalidSystemTracingDevToolsProtocolTest,
+                       StartTracingFailsWithInvalidSockets) {
+  base::DictionaryValue* command_result = StartSystemTrace();
+  ASSERT_EQ(command_result, nullptr);
+}
+
+class FakeSystemTracingDevToolsProtocolTest
+    : public PosixSystemTracingDevToolsProtocolTest {
+ public:
+  FakeSystemTracingDevToolsProtocolTest()
+      : deferred_task_runner_(new base::DeferredSequencedTaskRunner()) {}
+
+  void SetUp() override {
+    SetupService();
+    PosixSystemTracingDevToolsProtocolTest::SetUp();
+  }
+
+  void PreRunTestOnMainThread() override {
+    deferred_task_runner_->StartWithTaskRunner(
+        base::SequencedTaskRunnerHandle::Get());
+
+    PosixSystemTracingDevToolsProtocolTest::PreRunTestOnMainThread();
+  }
+
+ private:
+  void SetupService() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    system_service_ = std::make_unique<tracing::MockSystemService>(
+        temp_dir_, std::make_unique<base::tracing::PerfettoTaskRunner>(
+                       deferred_task_runner_));
+
+    SetProducerSockEnvName(system_service_->producer());
+    SetConsumerSockEnvName(system_service_->consumer());
+  }
+
+  base::ScopedTempDir temp_dir_;
+  scoped_refptr<base::DeferredSequencedTaskRunner> deferred_task_runner_;
+  std::unique_ptr<tracing::MockSystemService> system_service_;
+};
+
+// No system consumer support on Android to reduce Chrome binary size.
+#if defined(OS_ANDROID)
+#define MAYBE_TracingWithFakeSystemBackend DISABLED_TracingWithFakeSystemBackend
 #else
-#define MAYBE_TracingWithSystemBackend DISABLED_TracingWithSystemBackend
+#define MAYBE_TracingWithFakeSystemBackend TracingWithFakeSystemBackend
 #endif
-IN_PROC_BROWSER_TEST_F(SystemBackendDevToolsProtocolTest,
-                       MAYBE_TracingWithSystemBackend) {
-  perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
-      base::trace_event::TraceConfig(),
-      /*privacy_filtering_enabled=*/false,
-      /*convert_to_legacy_json=*/false,
-      perfetto::protos::gen::ChromeConfig::USER_INITIATED);
-
-  std::string perfetto_config_encoded;
-  base::Base64Encode(perfetto_config.SerializeAsString(),
-                     &perfetto_config_encoded);
-
-  auto params = std::make_unique<base::DictionaryValue>();
-  params->SetKey("perfettoConfig", base::Value(perfetto_config_encoded));
-  params->SetString("transferMode", "ReturnAsStream");
-  params->SetString("tracingBackend", "system");
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  auto system_service = std::make_unique<tracing::MockSystemService>(temp_dir);
-  SetConsumerSockEnvName(system_service->consumer());
-
-  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
-  Attach();
-
-  EXPECT_TRUE(tracing::ShouldSetupSystemTracing());
-
-  base::DictionaryValue* command_result =
-      SendCommand("Tracing.start", std::move(params), true);
+IN_PROC_BROWSER_TEST_F(FakeSystemTracingDevToolsProtocolTest,
+                       MAYBE_TracingWithFakeSystemBackend) {
+  base::DictionaryValue* command_result = StartSystemTrace();
   ASSERT_NE(command_result, nullptr);
 
   command_result = SendCommand("Tracing.end", nullptr, true);
@@ -2898,6 +2914,28 @@ IN_PROC_BROWSER_TEST_F(SystemBackendDevToolsProtocolTest,
 
   WaitForNotification("Tracing.tracingComplete", true);
 }
+
+class FakeSystemTracingForbiddenDevToolsProtocolTest
+    : public PosixSystemTracingDevToolsProtocolTest {
+ public:
+  void SetUp() override {
+    tracing::PerfettoTracedProcess::Get()
+        ->SetAllowSystemTracingConsumerForTesting(false);
+    PosixSystemTracingDevToolsProtocolTest::SetUp();
+  }
+};
+
+// No system consumer support on Android to reduce Chrome binary size.
+#if defined(OS_ANDROID)
+#define MAYBE_SystemConsumerForbidden DISABLED_SystemConsumerForbidden
+#else
+#define MAYBE_SystemConsumerForbidden SystemConsumerForbidden
 #endif
+IN_PROC_BROWSER_TEST_F(FakeSystemTracingForbiddenDevToolsProtocolTest,
+                       MAYBE_SystemConsumerForbidden) {
+  base::DictionaryValue* command_result = StartSystemTrace();
+  ASSERT_EQ(command_result, nullptr);
+}
+#endif  // defined(OS_POSIX)
 
 }  // namespace content

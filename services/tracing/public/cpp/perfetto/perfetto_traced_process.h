@@ -10,9 +10,12 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing_policy.h"
 
 namespace base {
 namespace trace_event {
@@ -42,7 +45,8 @@ class SystemProducer;
 // * Construct the new implementation when requested to
 //   in PerfettoProducer::StartDataSource.
 class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
-    : public PerfettoTracingBackend::Delegate {
+    : public PerfettoTracingBackend::Delegate,
+      public perfetto::TracingPolicy {
  public:
   // If not noted otherwise, a DataSourceBase's methods are only called on
   // PerfettoTracedProcess::GetTaskRunner()'s sequence.
@@ -140,6 +144,15 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Called on the process's main thread once the thread pool is ready.
   void OnThreadPoolAvailable();
 
+  // Set a callback that returns whether a system tracing session is allowed.
+  // The callback will be executed on the sequence that set it. Only a single
+  // callback is supported. If no callback is set, all system consumer
+  // connections are denied.
+  void SetAllowSystemTracingConsumerCallback(base::RepeatingCallback<bool()>);
+
+  // Overrides SetAllowSystemTracingConsumerCallback() for testing.
+  void SetAllowSystemTracingConsumerForTesting(bool allow);
+
   // Called to initialize system tracing, i.e., connecting to a system Perfetto
   // daemon as a producer. If |system_socket| isn't provided, Perfetto's default
   // socket name is used.
@@ -197,6 +210,22 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   // Initialize the Perfetto client library (i.e., perfetto::Tracing) for this
   // process.
   void SetupClientLibrary();
+
+  // perfetto::TracingPolicy implementation:
+  void ShouldAllowConsumerSession(
+      const perfetto::TracingPolicy::ShouldAllowConsumerSessionArgs&) override;
+
+  void ShouldAllowSystemConsumerSession(
+      std::function<void(bool)> result_callback);
+
+  base::Lock allow_system_consumer_lock_;
+  base::RepeatingCallback<bool()> allow_system_consumer_callback_
+      GUARDED_BY(allow_system_consumer_lock_);
+  scoped_refptr<base::SequencedTaskRunner>
+      allow_system_consumer_callback_runner_
+          GUARDED_BY(allow_system_consumer_lock_);
+  bool system_consumer_enabled_for_testing_
+      GUARDED_BY(allow_system_consumer_lock_) = false;
 
   base::Lock data_sources_lock_;
   // The canonical set of DataSourceBases alive in this process. These will be
