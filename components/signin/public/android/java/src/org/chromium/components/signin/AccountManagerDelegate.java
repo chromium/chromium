@@ -77,11 +77,10 @@ public interface AccountManagerDelegate {
     AuthenticatorDescription[] getAuthenticatorTypes();
 
     /**
-     * Check whether the {@code account} has all the features listed in {@code features}.
-     * This method shouldn't be called on the UI thread.
+     * Check whether the given account has a specific feature.
      */
     @WorkerThread
-    boolean hasFeatures(Account account, String[] features);
+    boolean hasFeature(Account account, String feature);
 
     /**
      * Creates an intent that will ask the user to add a new account to the device. See

@@ -86,8 +86,8 @@ public class AccountHolder {
         }
     }
 
-    public Set<String> getFeatures() {
-        return mFeatures;
+    boolean hasFeature(String feature) {
+        return mFeatures.contains(feature);
     }
 
     @Override
