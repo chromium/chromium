@@ -1081,6 +1081,7 @@
       'mac_chromium_dbg_ng': 'gpu_tests_debug_bot',
       'mac_optional_gpu_tests_rel': 'gpu_fyi_tests_release_trybot',
       'mac_upload_clang': 'release_bot',
+      'mac_upload_clang_arm': 'release_bot',
       'mac-inverse-fieldtrials-fyi-rel': 'gpu_tests_release_trybot_deterministic_mac_invert_fieldtrials',
       'mac-rel': 'gpu_tests_release_trybot_deterministic_mac',
       'mac-arm64-rel': 'mac_arm64_release_trybot',

@@ -1493,6 +1493,14 @@ try_.chromium_mac_builder(
     goma_backend = None,  # Does not use Goma.
 )
 
+try_.chromium_mac_builder(
+    name = "mac_upload_clang_arm",
+    builderless = False,
+    executable = "recipe:chromium_upload_clang",
+    execution_timeout = 6 * time.hour,
+    goma_backend = None,  # Does not use Goma.
+)
+
 try_.chromium_mac_ios_builder(
     name = "ios-device",
 )
