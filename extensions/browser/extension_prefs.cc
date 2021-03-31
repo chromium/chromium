@@ -25,7 +25,6 @@
 #include "components/crx_file/id_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/blocklist_state.h"
@@ -79,12 +78,6 @@ constexpr const char kPrefManifestVersion[] = "manifest.version";
 
 // Indicates whether an extension is blocklisted.
 constexpr const char kPrefBlocklist[] = "blacklist";
-
-// Indicates whether an extension is included in the Safe Browsing allowlist.
-constexpr const char kPrefAllowlist[] = "allowlist";
-
-// Indicates the enforcement state for the Safe Browsing allowlist.
-constexpr const char kPrefAllowlistAcknowledge[] = "allowlist_acknowledge";
 
 // If extension is greylisted.
 constexpr const char kPrefBlocklistState[] = "blacklist_state";
@@ -1081,54 +1074,6 @@ std::set<std::string> ExtensionPrefs::GetBlocklistedExtensions() const {
 bool ExtensionPrefs::IsExtensionBlocklisted(const std::string& id) const {
   const base::DictionaryValue* ext_prefs = GetExtensionPref(id);
   return ext_prefs && IsBlocklistBitSet(ext_prefs);
-}
-
-AllowlistState ExtensionPrefs::GetExtensionAllowlistState(
-    const std::string& extension_id) const {
-  int value = 0;
-  if (!ReadPrefAsInteger(extension_id, kPrefAllowlist, &value))
-    return ALLOWLIST_UNDEFINED;
-
-  if (value < 0 || value >= ALLOWLIST_LAST) {
-    LOG(ERROR) << "Bad pref 'allowlist' for extension '" << extension_id << "'";
-    return ALLOWLIST_UNDEFINED;
-  }
-
-  return static_cast<AllowlistState>(value);
-}
-
-void ExtensionPrefs::SetExtensionAllowlistState(const std::string& extension_id,
-                                                AllowlistState state) {
-  DCHECK_NE(state, ALLOWLIST_UNDEFINED);
-
-  if (state != GetExtensionAllowlistState(extension_id)) {
-    UpdateExtensionPref(extension_id, kPrefAllowlist,
-                        std::make_unique<base::Value>(state));
-  }
-}
-
-AllowlistAcknowledgeState ExtensionPrefs::GetExtensionAllowlistAcknowledgeState(
-    const std::string& extension_id) const {
-  int value = 0;
-  if (!ReadPrefAsInteger(extension_id, kPrefAllowlistAcknowledge, &value))
-    return ALLOWLIST_ACKNOWLEDGE_NONE;
-
-  if (value < 0 || value >= ALLOWLIST_ACKNOWLEDGE_LAST) {
-    LOG(ERROR) << "Bad pref 'allowlist_acknowledge' for extension '"
-               << extension_id << "'";
-    return ALLOWLIST_ACKNOWLEDGE_NONE;
-  }
-
-  return static_cast<AllowlistAcknowledgeState>(value);
-}
-
-void ExtensionPrefs::SetExtensionAllowlistAcknowledgeState(
-    const std::string& extension_id,
-    AllowlistAcknowledgeState state) {
-  if (state != GetExtensionAllowlistAcknowledgeState(extension_id)) {
-    UpdateExtensionPref(extension_id, kPrefAllowlistAcknowledge,
-                        std::make_unique<base::Value>(state));
-  }
 }
 
 namespace {

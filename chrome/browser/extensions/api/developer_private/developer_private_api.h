@@ -15,6 +15,7 @@
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/api/developer_private/entry_picker.h"
 #include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/extension_allowlist.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
@@ -67,6 +68,7 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                                     public AppWindowRegistry::Observer,
                                     public CommandService::Observer,
                                     public ExtensionPrefsObserver,
+                                    public ExtensionAllowlist::Observer,
                                     public ExtensionManagement::Observer,
                                     public WarningService::Observer,
                                     public content::NotificationObserver {
@@ -122,6 +124,10 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
   void OnExtensionRuntimePermissionsChanged(
       const std::string& extension_id) override;
 
+  // ExtensionAllowlist::Observer
+  void OnExtensionAllowlistWarningStateChanged(const std::string& extension_id,
+                                               bool show_warning) override;
+
   // ExtensionManagement::Observer:
   void OnExtensionManagementSettingsChanged() override;
 
@@ -134,7 +140,7 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
-  // Handles a profile preferance change.
+  // Handles a profile preference change.
   void OnProfilePrefChanged();
 
   // Broadcasts an event to all listeners.
@@ -162,6 +168,8 @@ class DeveloperPrivateEventRouter : public ExtensionRegistryObserver,
       extension_management_observation_{this};
   base::ScopedObservation<CommandService, CommandService::Observer>
       command_service_observation_{this};
+  base::ScopedObservation<ExtensionAllowlist, ExtensionAllowlist::Observer>
+      extension_allowlist_observer_{this};
 
   Profile* profile_;
 

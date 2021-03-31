@@ -14,6 +14,18 @@
 
 namespace extensions {
 
+namespace {
+
+// Indicates whether an extension is included in the Safe Browsing allowlist.
+constexpr PrefMap kPrefAllowlist = {"allowlist", PrefType::kInteger,
+                                    PrefScope::kExtensionSpecific};
+
+// Indicates the enforcement acknowledge state for the Safe Browsing allowlist.
+constexpr PrefMap kPrefAllowlistAcknowledge = {
+    "allowlist_acknowledge", PrefType::kInteger, PrefScope::kExtensionSpecific};
+
+}  // namespace
+
 ExtensionAllowlist::ExtensionAllowlist(Profile* profile,
                                        ExtensionPrefs* extension_prefs,
                                        ExtensionService* extension_service)
@@ -21,13 +33,11 @@ ExtensionAllowlist::ExtensionAllowlist(Profile* profile,
       extension_prefs_(extension_prefs),
       extension_service_(extension_service),
       registry_(ExtensionRegistry::Get(profile)) {
-  extension_prefs_observation_.Observe(extension_prefs);
-}
-
-ExtensionAllowlist::~ExtensionAllowlist() = default;
-
-void ExtensionAllowlist::Init() {
   SetAllowlistEnforcedField();
+
+  // Relies on ExtensionSystem dependency on ExtensionPrefs to ensure
+  // extension_prefs outlives this object.
+  extension_prefs_observation_.Observe(extension_prefs);
 
   // Register to Enhanced Safe Browsing setting changes for allowlist
   // enforcements.
@@ -36,11 +46,82 @@ void ExtensionAllowlist::Init() {
       prefs::kSafeBrowsingEnhanced,
       base::BindRepeating(&ExtensionAllowlist::OnSafeBrowsingEnhancedChanged,
                           base::Unretained(this)));
+}
 
+ExtensionAllowlist::~ExtensionAllowlist() = default;
+
+void ExtensionAllowlist::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ExtensionAllowlist::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void ExtensionAllowlist::Init() {
   if (is_allowlist_enforced_) {
     ActivateAllowlistEnforcement();
   } else {
     DeactivateAllowlistEnforcement();
+  }
+
+  init_done_ = true;
+}
+
+AllowlistState ExtensionAllowlist::GetExtensionAllowlistState(
+    const std::string& extension_id) const {
+  int value = 0;
+  if (!extension_prefs_->ReadPrefAsInteger(extension_id, kPrefAllowlist,
+                                           &value)) {
+    return ALLOWLIST_UNDEFINED;
+  }
+
+  if (value < 0 || value > ALLOWLIST_LAST) {
+    LOG(ERROR) << "Bad pref 'allowlist' for extension '" << extension_id << "'";
+    return ALLOWLIST_UNDEFINED;
+  }
+
+  return static_cast<AllowlistState>(value);
+}
+
+void ExtensionAllowlist::SetExtensionAllowlistState(
+    const std::string& extension_id,
+    AllowlistState state) {
+  DCHECK_NE(state, ALLOWLIST_UNDEFINED);
+
+  if (state != GetExtensionAllowlistState(extension_id))
+    extension_prefs_->SetIntegerPref(extension_id, kPrefAllowlist, state);
+
+  if (is_allowlist_enforced_) {
+    NotifyExtensionAllowlistWarningStateChanged(
+        extension_id, /*show_warning=*/state == ALLOWLIST_NOT_ALLOWLISTED);
+  }
+}
+
+AllowlistAcknowledgeState
+ExtensionAllowlist::GetExtensionAllowlistAcknowledgeState(
+    const std::string& extension_id) const {
+  int value = 0;
+  if (!extension_prefs_->ReadPrefAsInteger(extension_id,
+                                           kPrefAllowlistAcknowledge, &value)) {
+    return ALLOWLIST_ACKNOWLEDGE_NONE;
+  }
+
+  if (value < 0 || value > ALLOWLIST_ACKNOWLEDGE_LAST) {
+    LOG(ERROR) << "Bad pref 'allowlist_acknowledge' for extension '"
+               << extension_id << "'";
+    return ALLOWLIST_ACKNOWLEDGE_NONE;
+  }
+
+  return static_cast<AllowlistAcknowledgeState>(value);
+}
+
+void ExtensionAllowlist::SetExtensionAllowlistAcknowledgeState(
+    const std::string& extension_id,
+    AllowlistAcknowledgeState state) {
+  if (state != GetExtensionAllowlistAcknowledgeState(extension_id)) {
+    extension_prefs_->SetIntegerPref(extension_id, kPrefAllowlistAcknowledge,
+                                     state);
   }
 }
 
@@ -63,18 +144,14 @@ void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
                                        ? ALLOWLIST_ALLOWLISTED
                                        : ALLOWLIST_NOT_ALLOWLISTED;
 
-  if (allowlist_state ==
-      extension_prefs_->GetExtensionAllowlistState(extension_id)) {
+  if (allowlist_state == GetExtensionAllowlistState(extension_id)) {
     // Do nothing if the state didn't change.
     return;
   }
 
-  // TODO(jeffcyr): Add an observer when allowlist state change, otherwise the
-  // 'chrome://extensions' warning may not be refreshed.
-
   // Set the allowlist state even if there is no enforcement. This will allow
   // immediate enforcement when it is activated.
-  extension_prefs_->SetExtensionAllowlistState(extension_id, allowlist_state);
+  SetExtensionAllowlistState(extension_id, allowlist_state);
 
   if (allowlist_state == ALLOWLIST_ALLOWLISTED) {
     // The extension is now allowlisted, remove the disable reason if present
@@ -93,8 +170,8 @@ void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
 
     if (registry_->enabled_extensions().Contains(extension_id)) {
       // Inform the user if the extension is now enabled.
-      extension_prefs_->SetExtensionAllowlistAcknowledgeState(
-          extension_id, ALLOWLIST_ACKNOWLEDGE_NEEDED);
+      SetExtensionAllowlistAcknowledgeState(extension_id,
+                                            ALLOWLIST_ACKNOWLEDGE_NEEDED);
     }
   } else if (is_allowlist_enforced_) {
     // The extension is no longer allowlisted, try to apply enforcement.
@@ -105,8 +182,18 @@ void ExtensionAllowlist::PerformActionBasedOnOmahaAttributes(
 bool ExtensionAllowlist::ShouldDisplayWarning(
     const std::string& extension_id) const {
   return is_allowlist_enforced_ &&
-         extension_prefs_->GetExtensionAllowlistState(extension_id) ==
-             ALLOWLIST_NOT_ALLOWLISTED;
+         GetExtensionAllowlistState(extension_id) == ALLOWLIST_NOT_ALLOWLISTED;
+}
+
+void ExtensionAllowlist::OnExtensionInstalled(const std::string& extension_id,
+                                              int install_flags) {
+  // Check if a user clicked through the install friction and set the
+  // acknowledge state accordingly.
+  if (install_flags & kInstallFlagBypassedSafeBrowsingFriction) {
+    SetExtensionAllowlistAcknowledgeState(
+        extension_id, ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER);
+    SetExtensionAllowlistState(extension_id, ALLOWLIST_NOT_ALLOWLISTED);
+  }
 }
 
 void ExtensionAllowlist::SetAllowlistEnforcedField() {
@@ -121,7 +208,7 @@ void ExtensionAllowlist::SetAllowlistEnforcedField() {
 // extensions).
 void ExtensionAllowlist::ApplyEnforcement(const std::string& extension_id) {
   DCHECK(is_allowlist_enforced_);
-  DCHECK_EQ(extension_prefs_->GetExtensionAllowlistState(extension_id),
+  DCHECK_EQ(GetExtensionAllowlistState(extension_id),
             ALLOWLIST_NOT_ALLOWLISTED);
 
   // Early exit if the enforcement is already done.
@@ -131,7 +218,7 @@ void ExtensionAllowlist::ApplyEnforcement(const std::string& extension_id) {
   }
 
   // Do not re-enforce if the extension was explicitly enabled by the user.
-  if (extension_prefs_->GetExtensionAllowlistAcknowledgeState(extension_id) ==
+  if (GetExtensionAllowlistAcknowledgeState(extension_id) ==
       ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER) {
     return;
   }
@@ -146,11 +233,11 @@ void ExtensionAllowlist::ApplyEnforcement(const std::string& extension_id) {
   if (was_enabled &&
       extension_prefs_->HasDisableReason(
           extension_id, disable_reason::DISABLE_NOT_ALLOWLISTED)) {
-    extension_prefs_->SetExtensionAllowlistAcknowledgeState(
-        extension_id, ALLOWLIST_ACKNOWLEDGE_NEEDED);
+    SetExtensionAllowlistAcknowledgeState(extension_id,
+                                          ALLOWLIST_ACKNOWLEDGE_NEEDED);
   } else {
-    extension_prefs_->SetExtensionAllowlistAcknowledgeState(
-        extension_id, ALLOWLIST_ACKNOWLEDGE_NONE);
+    SetExtensionAllowlistAcknowledgeState(extension_id,
+                                          ALLOWLIST_ACKNOWLEDGE_NONE);
   }
 }
 
@@ -160,7 +247,7 @@ void ExtensionAllowlist::ActivateAllowlistEnforcement() {
   std::unique_ptr<ExtensionSet> all_extensions =
       registry_->GenerateInstalledExtensionsSet();
   for (const auto& extension : *all_extensions) {
-    if (extension_prefs_->GetExtensionAllowlistState(extension->id()) ==
+    if (GetExtensionAllowlistState(extension->id()) ==
         ALLOWLIST_NOT_ALLOWLISTED) {
       ApplyEnforcement(extension->id());
     }
@@ -180,8 +267,8 @@ void ExtensionAllowlist::DeactivateAllowlistEnforcement() {
             extension->id(), disable_reason::DISABLE_NOT_ALLOWLISTED)) {
       extension_service_->RemoveDisableReasonAndMaybeEnable(
           extension->id(), disable_reason::DISABLE_NOT_ALLOWLISTED);
-      extension_prefs_->SetExtensionAllowlistAcknowledgeState(
-          extension->id(), ALLOWLIST_ACKNOWLEDGE_NONE);
+      SetExtensionAllowlistAcknowledgeState(extension->id(),
+                                            ALLOWLIST_ACKNOWLEDGE_NONE);
     }
   }
 }
@@ -201,25 +288,52 @@ void ExtensionAllowlist::OnSafeBrowsingEnhancedChanged() {
   } else {
     DeactivateAllowlistEnforcement();
   }
+
+  std::unique_ptr<ExtensionSet> all_extensions =
+      registry_->GenerateInstalledExtensionsSet();
+
+  for (const auto& extension : *all_extensions) {
+    if (GetExtensionAllowlistState(extension->id()) ==
+        ALLOWLIST_NOT_ALLOWLISTED) {
+      NotifyExtensionAllowlistWarningStateChanged(
+          extension->id(), /*show_warning=*/is_allowlist_enforced_);
+    }
+  }
 }
 
 // ExtensionPrefsObserver::OnExtensionStateChanged override
 void ExtensionAllowlist::OnExtensionStateChanged(
     const std::string& extension_id,
     bool is_now_enabled) {
+  // TODO(crbug.com/1192225): Can be removed when the bug is resolved. This
+  // check is needed because `OnExtensionStateChanged` is called for all loaded
+  // extensions during startup. So on the first startup with the enforcement
+  // enabled, all not allowlisted extensions would be
+  // `ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER` instead of disabled.
+  if (!init_done_)
+    return;
+
   if (!is_now_enabled)
     return;  // We only care if the extension is now enabled.
 
   if (!is_allowlist_enforced_)
     return;  // We only care if allowlist if being enforced.
 
-  if (extension_prefs_->GetExtensionAllowlistState(extension_id) ==
-      ALLOWLIST_NOT_ALLOWLISTED) {
+  if (GetExtensionAllowlistState(extension_id) == ALLOWLIST_NOT_ALLOWLISTED) {
     // The extension was enabled even though it's not on the allowlist. Consider
     // this an acknowledgement from the user, and ensure we don't disable the
     // extension again.
-    extension_prefs_->SetExtensionAllowlistAcknowledgeState(
+    SetExtensionAllowlistAcknowledgeState(
         extension_id, ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER);
+  }
+}
+
+void ExtensionAllowlist::NotifyExtensionAllowlistWarningStateChanged(
+    const std::string& extension_id,
+    bool show_warning) {
+  for (auto& observer : observers_) {
+    observer.OnExtensionAllowlistWarningStateChanged(extension_id,
+                                                     show_warning);
   }
 }
 

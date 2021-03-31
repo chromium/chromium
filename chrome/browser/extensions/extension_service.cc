@@ -78,7 +78,6 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_router.h"
@@ -1667,12 +1666,6 @@ void ExtensionService::OnExtensionInstalled(
                               extension->location());
   }
 
-  if (install_flags & kInstallFlagBypassedSafeBrowsingFriction) {
-    extension_prefs_->SetExtensionAllowlistAcknowledgeState(
-        id, ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER);
-    extension_prefs_->SetExtensionAllowlistState(id, ALLOWLIST_NOT_ALLOWLISTED);
-  }
-
   if (!registry_->GetInstalledExtension(extension->id())) {
     UMA_HISTOGRAM_ENUMERATION("Extensions.InstallType", extension->GetType(),
                               100);
@@ -1692,6 +1685,8 @@ void ExtensionService::OnExtensionInstalled(
     extension_prefs_->SetExtensionEnabled(id);
   else
     extension_prefs_->SetExtensionDisabled(id, disable_reasons);
+
+  allowlist()->OnExtensionInstalled(id, install_flags);
 
   ExtensionPrefs::DelayReason delay_reason;
   InstallGate::Action action = ShouldDelayExtensionInstall(

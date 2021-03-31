@@ -669,12 +669,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
   ASSERT_TRUE(
       RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
 
-  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs->GetExtensionAllowlistState(kExtensionId));
+            extension_service()->allowlist()->GetExtensionAllowlistState(
+                kExtensionId));
   EXPECT_EQ(
       ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
-      extension_prefs->GetExtensionAllowlistAcknowledgeState(kExtensionId));
+      extension_service()->allowlist()->GetExtensionAllowlistAcknowledgeState(
+          kExtensionId));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
@@ -683,9 +684,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
                                       safe_browsing::ENHANCED_PROTECTION);
   ASSERT_TRUE(RunInstallTest("safebrowsing_allowlisted.html", "extension.crx"));
 
-  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
-            extension_prefs->GetExtensionAllowlistState(kExtensionId));
+            extension_service()->allowlist()->GetExtensionAllowlistState(
+                kExtensionId));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
@@ -695,9 +696,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebstorePrivateApiAllowlistEnforcementTest,
   ASSERT_TRUE(
       RunInstallTest("safebrowsing_not_allowlisted.html", "extension.crx"));
 
-  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(browser()->profile());
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
-            extension_prefs->GetExtensionAllowlistState(kExtensionId));
+            extension_service()->allowlist()->GetExtensionAllowlistState(
+                kExtensionId));
 }
 
 }  // namespace extensions

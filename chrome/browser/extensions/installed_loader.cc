@@ -597,8 +597,8 @@ void InstalledLoader::RecordExtensionsMetrics() {
       }
     }
 
-    if (extension_prefs_->GetExtensionAllowlistState(extension->id()) ==
-        ALLOWLIST_NOT_ALLOWLISTED) {
+    if (extension_service_->allowlist()->GetExtensionAllowlistState(
+            extension->id()) == ALLOWLIST_NOT_ALLOWLISTED) {
       // Record the number of not allowlisted enabled extensions.
       ++enabled_not_allowlisted_count;
     }
@@ -627,8 +627,8 @@ void InstalledLoader::RecordExtensionsMetrics() {
       }
     }
 
-    if (extension_prefs_->GetExtensionAllowlistState((*ex)->id()) ==
-        ALLOWLIST_NOT_ALLOWLISTED) {
+    if (extension_service_->allowlist()->GetExtensionAllowlistState(
+            (*ex)->id()) == ALLOWLIST_NOT_ALLOWLISTED) {
       // Record the number of not allowlisted disabled extensions.
       ++disabled_not_allowlisted_count;
     }

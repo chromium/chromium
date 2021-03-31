@@ -32,6 +32,7 @@
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/install_verifier.h"
@@ -330,6 +331,7 @@ void BrowserContextKeyedAPIFactory<
   DependsOn(ExtensionManagementFactory::GetInstance());
   DependsOn(CommandService::GetFactoryInstance());
   DependsOn(EventRouterFactory::GetInstance());
+  DependsOn(ExtensionSystemFactory::GetInstance());
 }
 
 // static
@@ -354,6 +356,8 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
   extension_management_observation_.Observe(
       ExtensionManagementFactory::GetForBrowserContext(profile));
   command_service_observation_.Observe(CommandService::Get(profile));
+  extension_allowlist_observer_.Observe(
+      ExtensionSystem::Get(profile)->extension_service()->allowlist());
   pref_change_registrar_.Init(profile->GetPrefs());
   // The unretained is safe, since the PrefChangeRegistrar unregisters the
   // callback on destruction.
@@ -491,6 +495,12 @@ void DeveloperPrivateEventRouter::OnExtensionRuntimePermissionsChanged(
     const std::string& extension_id) {
   BroadcastItemStateChanged(developer::EVENT_TYPE_PERMISSIONS_CHANGED,
                             extension_id);
+}
+
+void DeveloperPrivateEventRouter::OnExtensionAllowlistWarningStateChanged(
+    const std::string& extension_id,
+    bool show_warning) {
+  BroadcastItemStateChanged(developer::EVENT_TYPE_PREFS_CHANGED, extension_id);
 }
 
 void DeveloperPrivateEventRouter::OnExtensionManagementSettingsChanged() {

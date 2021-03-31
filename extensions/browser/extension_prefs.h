@@ -19,7 +19,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sync/model/string_ordinal.h"
-#include "extensions/browser/allowlist_state.h"
 #include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
@@ -383,22 +382,6 @@ class ExtensionPrefs : public KeyedService {
   // sources of blocklist information, such as safebrowsing. You probably want
   // to use Blocklist::GetBlocklistedIDs rather than this method.
   bool IsExtensionBlocklisted(const std::string& id) const;
-
-  // Gets the Safe Browsing allowlist state.
-  AllowlistState GetExtensionAllowlistState(
-      const std::string& extension_id) const;
-
-  // Sets the Safe Browsing allowlist state.
-  void SetExtensionAllowlistState(const std::string& extension_id,
-                                  AllowlistState state);
-
-  // Gets the Safe Browsing allowlist acknowledge state.
-  AllowlistAcknowledgeState GetExtensionAllowlistAcknowledgeState(
-      const std::string& extension_id) const;
-
-  // Sets the Safe Browsing allowlist acknowledge state.
-  void SetExtensionAllowlistAcknowledgeState(const std::string& extension_id,
-                                             AllowlistAcknowledgeState state);
 
   // Increment the count of how many times we prompted the user to acknowledge
   // the given extension, and return the new count.

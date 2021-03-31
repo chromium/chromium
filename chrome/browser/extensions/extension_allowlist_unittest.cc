@@ -66,6 +66,8 @@ class ExtensionAllowlistUnitTestBase : public ExtensionServiceTestBase {
     return registry()->blocklisted_extensions().Contains(extension_id);
   }
 
+  ExtensionAllowlist* allowlist() { return service()->allowlist(); }
+
   ExtensionPrefs* extension_prefs() { return extension_prefs_; }
 
  private:
@@ -90,7 +92,7 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
   // On the first startup, the allowlist state for existing extensions will be
   // undefined.
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NONE,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsEnabled(kExtensionId1));
@@ -101,7 +103,7 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
                                       /*is_malware=*/false,
                                       /*is_allowlisted=*/false);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsDisabled(kExtensionId1));
@@ -112,7 +114,7 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
                                       /*is_malware=*/false,
                                       /*is_allowlisted=*/true);
   EXPECT_EQ(ALLOWLIST_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NONE,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsEnabled(kExtensionId1));
@@ -123,7 +125,7 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
                                       /*is_malware=*/true,
                                       /*is_allowlisted=*/false);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(BLOCKLISTED_MALWARE,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE |
@@ -137,7 +139,7 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
                                       /*is_malware=*/true,
                                       /*is_allowlisted=*/true);
   EXPECT_EQ(ALLOWLIST_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(BLOCKLISTED_MALWARE,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE,
@@ -150,7 +152,7 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
                                       /*is_malware=*/false,
                                       /*is_allowlisted=*/false);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(NOT_BLOCKLISTED,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
@@ -173,7 +175,7 @@ TEST_F(ExtensionAllowlistUnitTest, DisabledItemStaysDisabledWhenAllowlisted) {
                                       /*is_malware=*/false,
                                       /*is_allowlisted=*/false);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_USER_ACTION |
                 disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
@@ -184,7 +186,7 @@ TEST_F(ExtensionAllowlistUnitTest, DisabledItemStaysDisabledWhenAllowlisted) {
                                       /*is_malware=*/false,
                                       /*is_allowlisted=*/true);
   EXPECT_EQ(ALLOWLIST_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(NOT_BLOCKLISTED,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_USER_ACTION,
@@ -199,14 +201,14 @@ TEST_F(ExtensionAllowlistUnitTest, EnforcementOnInit) {
   // Start an extension not allowlisted and in an unenforced state, this can
   // happen if the 'EnforceSafeBrowsingExtensionAllowlist' feature was
   // previously disabled for this profile.
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId1,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId1,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
 
   // During initialization, the allowlist will be enforced for extensions not
   // allowlisted.
   service()->Init();
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsDisabled(kExtensionId1));
@@ -214,7 +216,7 @@ TEST_F(ExtensionAllowlistUnitTest, EnforcementOnInit) {
   // The enforcement isn't done for extensions having an undefined allowlist
   // state.
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
   EXPECT_TRUE(IsEnabled(kExtensionId2));
 }
 
@@ -222,18 +224,18 @@ TEST_F(ExtensionAllowlistUnitTest, EnhancedProtectionSettingChange) {
   // Created with 3 installed extensions.
   CreateExtensionService(/*enhanced_protection_enabled=*/false);
   // Start with ESB off and one extension not allowlisted.
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId1,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId1,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
 
   // Since ESB is off, no enforcement will be done for extensions not
   // allowlisted.
   service()->Init();
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_TRUE(IsEnabled(kExtensionId1));
 
   EXPECT_EQ(ALLOWLIST_UNDEFINED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
 
   // Even if the enforcement is off, the allowlist state is still tracked when
   // receiving update check results.
@@ -241,7 +243,7 @@ TEST_F(ExtensionAllowlistUnitTest, EnhancedProtectionSettingChange) {
                                       /*is_malware=*/false,
                                       /*is_allowlisted=*/false);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
   EXPECT_TRUE(IsEnabled(kExtensionId2));
 
   // When ESB is enabled, the extension service will enforce all extensions with
@@ -249,13 +251,13 @@ TEST_F(ExtensionAllowlistUnitTest, EnhancedProtectionSettingChange) {
   safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
                                       safe_browsing::ENHANCED_PROTECTION);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsDisabled(kExtensionId1));
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId2));
   EXPECT_TRUE(IsDisabled(kExtensionId2));
@@ -264,11 +266,11 @@ TEST_F(ExtensionAllowlistUnitTest, EnhancedProtectionSettingChange) {
   safe_browsing::SetSafeBrowsingState(profile()->GetPrefs(),
                                       safe_browsing::STANDARD_PROTECTION);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_TRUE(IsEnabled(kExtensionId1));
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
   EXPECT_TRUE(IsEnabled(kExtensionId2));
 }
 
@@ -280,17 +282,17 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsNotAllowlistedThenBlocklisted) {
 
   // Start with two not allowlisted extensions, the enforcement will be done
   // during `Init`.
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId1,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId2,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId1,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId2,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
   service()->Init();
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_TRUE(IsDisabled(kExtensionId1));
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
   EXPECT_TRUE(IsDisabled(kExtensionId2));
 
   // Then blocklist and greylist the two extensions respectively.
@@ -299,7 +301,7 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsNotAllowlistedThenBlocklisted) {
                                    BLOCKLISTED_POTENTIALLY_UNWANTED, true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(BLOCKLISTED_MALWARE,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
@@ -307,7 +309,7 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsNotAllowlistedThenBlocklisted) {
   EXPECT_TRUE(IsBlocklisted(kExtensionId1));
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
   EXPECT_EQ(BLOCKLISTED_POTENTIALLY_UNWANTED,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId2));
   EXPECT_EQ(disable_reason::DISABLE_GREYLIST |
@@ -322,7 +324,7 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsNotAllowlistedThenBlocklisted) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(NOT_BLOCKLISTED,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
@@ -330,7 +332,7 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsNotAllowlistedThenBlocklisted) {
   EXPECT_TRUE(IsDisabled(kExtensionId1));
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
   EXPECT_EQ(NOT_BLOCKLISTED,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId2));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
@@ -358,7 +360,7 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsBlocklistedThenNotAllowlisted) {
                                       /*is_malware=*/false,
                                       /*is_allowlisted=*/false);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(BLOCKLISTED_MALWARE,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
   // The disable reason is added even if the extension is already blocklisted.
@@ -372,7 +374,7 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsBlocklistedThenNotAllowlisted) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_EQ(NOT_BLOCKLISTED,
             extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
@@ -385,10 +387,9 @@ TEST_F(ExtensionAllowlistUnitTest, MissingAttributeAreIgnored) {
   CreateExtensionService(/*enhanced_protection_enabled=*/true);
 
   // Start with one extension allowlisted and another not allowlisted.
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId1,
-                                                ALLOWLIST_ALLOWLISTED);
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId2,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId1, ALLOWLIST_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId2,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
 
   // During initialization, the allowlist will be enforced for extensions not
   // allowlisted.
@@ -405,11 +406,11 @@ TEST_F(ExtensionAllowlistUnitTest, MissingAttributeAreIgnored) {
   // The undefined allowlist attributes should be ignored and the state should
   // remain unchanged.
   EXPECT_EQ(ALLOWLIST_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
   EXPECT_TRUE(IsEnabled(kExtensionId1));
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId2));
 }
@@ -419,9 +420,8 @@ TEST_F(ExtensionAllowlistUnitTest, AcknowledgeNeededOnEnforcement) {
 
   service()->Init();
   EXPECT_TRUE(IsEnabled(kExtensionId1));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NONE,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NONE,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 
   // Make the extension not allowlisted.
   PerformActionBasedOnOmahaAttributes(kExtensionId1,
@@ -430,9 +430,8 @@ TEST_F(ExtensionAllowlistUnitTest, AcknowledgeNeededOnEnforcement) {
 
   // Expect the acknowledge state to change appropriately.
   EXPECT_TRUE(IsDisabled(kExtensionId1));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NEEDED,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NEEDED,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 }
 
 TEST_F(ExtensionAllowlistUnitTest, AcknowledgeNotNeededIfAlreadyDisabled) {
@@ -442,9 +441,8 @@ TEST_F(ExtensionAllowlistUnitTest, AcknowledgeNotNeededIfAlreadyDisabled) {
   service()->DisableExtension(kExtensionId1,
                               disable_reason::DISABLE_USER_ACTION);
   EXPECT_TRUE(IsDisabled(kExtensionId1));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NONE,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NONE,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 
   // Make the extension not allowlisted.
   PerformActionBasedOnOmahaAttributes(kExtensionId1,
@@ -456,56 +454,51 @@ TEST_F(ExtensionAllowlistUnitTest, AcknowledgeNotNeededIfAlreadyDisabled) {
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED |
                 disable_reason::DISABLE_USER_ACTION,
             extension_prefs()->GetDisableReasons(kExtensionId1));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NONE,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NONE,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 }
 
 TEST_F(ExtensionAllowlistUnitTest,
        AcknowledgeStateIsSetWhenExtensionIsReenabled) {
   CreateExtensionService(/*enhanced_protection_enabled=*/true);
 
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NONE,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NONE,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 
   // Start with a not allowlisted extension.
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId1,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId1,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
 
   // The enforcement on init should disable the extension.
   service()->Init();
   EXPECT_TRUE(IsDisabled(kExtensionId1));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NEEDED,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NEEDED,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 
   // Re-enable the extension.
   service()->EnableExtension(kExtensionId1);
 
   // The extensions should now be marked with
   // `ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER'.
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
   EXPECT_TRUE(IsEnabled(kExtensionId1));
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId1));
+            allowlist()->GetExtensionAllowlistState(kExtensionId1));
 }
 
 TEST_F(ExtensionAllowlistUnitTest, ReenabledExtensionsAreNotReenforced) {
   CreateExtensionService(/*enhanced_protection_enabled=*/true);
 
   // Start with a not allowlisted extension that was re-enabled by user.
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId1,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
-  extension_prefs()->SetExtensionAllowlistAcknowledgeState(
+  allowlist()->SetExtensionAllowlistState(kExtensionId1,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistAcknowledgeState(
       kExtensionId1, ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER);
 
   // And an extension that became allowlisted after it was re-enabled by user.
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId2,
-                                                ALLOWLIST_ALLOWLISTED);
-  extension_prefs()->SetExtensionAllowlistAcknowledgeState(
+  allowlist()->SetExtensionAllowlistState(kExtensionId2, ALLOWLIST_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistAcknowledgeState(
       kExtensionId2, ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER);
 
   service()->Init();
@@ -522,47 +515,43 @@ TEST_F(ExtensionAllowlistUnitTest, ReenabledExtensionsAreNotReenforced) {
                                       /*is_malware=*/false,
                                       /*is_allowlisted=*/false);
   EXPECT_TRUE(IsEnabled(kExtensionId2));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId2));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId2));
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kExtensionId2));
+            allowlist()->GetExtensionAllowlistState(kExtensionId2));
 }
 
 TEST_F(ExtensionAllowlistUnitTest, TurnOffEnhancedProtection) {
   CreateExtensionService(/*enhanced_protection_enabled=*/true);
 
   // Start with 3 not allowlisted extensions.
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId1,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId2,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId3,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
-  extension_prefs()->SetExtensionAllowlistAcknowledgeState(
+  allowlist()->SetExtensionAllowlistState(kExtensionId1,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId2,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId3,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistAcknowledgeState(
       kExtensionId3, ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER);
 
   // They should get disabled by allowlist enforcement and have their
   // acknowledge state set (except the extension re-enabled by user).
   service()->Init();
   EXPECT_TRUE(IsDisabled(kExtensionId1));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NEEDED,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NEEDED,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 
   EXPECT_TRUE(IsDisabled(kExtensionId2));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NEEDED,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId2));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NEEDED,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId2));
 
   EXPECT_TRUE(IsEnabled(kExtensionId3));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId3));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId3));
 
   // Leave `kExtensionId1` with acknowledge needed and acknowledge
   // `kExtensionId2`.
-  extension_prefs()->SetExtensionAllowlistAcknowledgeState(
+  allowlist()->SetExtensionAllowlistAcknowledgeState(
       kExtensionId2, ALLOWLIST_ACKNOWLEDGE_DONE);
 
   // When turning off enhanced protection.
@@ -572,21 +561,18 @@ TEST_F(ExtensionAllowlistUnitTest, TurnOffEnhancedProtection) {
   // 'kExtensionId1' and 'kExtensionId2' should be re-enabled and have their
   // acknowledge state reset.
   EXPECT_TRUE(IsEnabled(kExtensionId1));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NONE,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NONE,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId1));
 
   EXPECT_TRUE(IsEnabled(kExtensionId2));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_NONE,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId2));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_NONE,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId2));
 
   // 'kExtensionId3' should remain enabled because it was already re-enabled by
   // user.
   EXPECT_TRUE(IsEnabled(kExtensionId3));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kExtensionId3));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kExtensionId3));
 }
 
 TEST_F(ExtensionAllowlistUnitTest, BypassFrictionSetAckowledgeEnabledByUser) {
@@ -610,10 +596,9 @@ TEST_F(ExtensionAllowlistUnitTest, BypassFrictionSetAckowledgeEnabledByUser) {
 
   EXPECT_TRUE(registry()->enabled_extensions().GetByID(kInstalledCrx));
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
-            extension_prefs()->GetExtensionAllowlistState(kInstalledCrx));
-  EXPECT_EQ(
-      ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
-      extension_prefs()->GetExtensionAllowlistAcknowledgeState(kInstalledCrx));
+            allowlist()->GetExtensionAllowlistState(kInstalledCrx));
+  EXPECT_EQ(ALLOWLIST_ACKNOWLEDGE_ENABLED_BY_USER,
+            allowlist()->GetExtensionAllowlistAcknowledgeState(kInstalledCrx));
 }
 
 class ExtensionAllowlistWithFeatureDisabledUnitTest
@@ -630,8 +615,8 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
   // Created with 3 installed extensions.
   CreateExtensionService(/*enhanced_protection_enabled=*/true);
 
-  extension_prefs()->SetExtensionAllowlistState(kExtensionId1,
-                                                ALLOWLIST_NOT_ALLOWLISTED);
+  allowlist()->SetExtensionAllowlistState(kExtensionId1,
+                                          ALLOWLIST_NOT_ALLOWLISTED);
   service()->Init();
   EXPECT_TRUE(IsEnabled(kExtensionId1));
 
@@ -640,5 +625,7 @@ TEST_F(ExtensionAllowlistWithFeatureDisabledUnitTest,
                                       /*is_allowlisted=*/false);
   EXPECT_TRUE(IsEnabled(kExtensionId1));
 }
+
+// TODO(crbug.com/1194051): Add more ExtensionAllowlist::Observer coverage
 
 }  // namespace extensions
