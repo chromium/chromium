@@ -67,6 +67,11 @@ class UnitTest(fake_filesystem_unittest.TestCase):
               'request': {
                 'task_id': 'f0',
               },
+              'task_result': {
+                'resultdb_info': {
+                    'invocation': 'task-f0',
+                },
+              },
             }],
           }))
 
@@ -85,7 +90,8 @@ class UnitTest(fake_filesystem_unittest.TestCase):
         u'tasks': {
           u'f0:0:1': {
             u'shard_index': 0,
-            u'task_id': u'f0'
+            u'task_id': u'f0',
+            u'invocation': u'task-f0',
           }
         }
       })
