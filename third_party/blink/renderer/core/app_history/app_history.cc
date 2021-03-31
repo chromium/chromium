@@ -28,10 +28,8 @@ AppHistory* AppHistory::appHistory(LocalDOMWindow& window) {
 AppHistory::AppHistory(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {}
 
-void AppHistory::UpdateForCommit(WebFrameLoadType type, HistoryItem* item) {
-  if (!current_ || type != WebFrameLoadType::kReplaceCurrentItem)
-    current_ = MakeGarbageCollected<AppHistoryEntry>(GetSupplementable());
-  current_->SetItem(item);
+void AppHistory::UpdateForCommit(HistoryItem* item) {
+  current_ = MakeGarbageCollected<AppHistoryEntry>(GetSupplementable(), item);
 }
 
 AppHistoryEntry* AppHistory::current() const {

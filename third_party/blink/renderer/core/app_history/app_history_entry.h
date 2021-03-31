@@ -21,10 +21,8 @@ class CORE_EXPORT AppHistoryEntry final : public EventTargetWithInlineData,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AppHistoryEntry(ExecutionContext*);
+  AppHistoryEntry(ExecutionContext*, HistoryItem*);
   ~AppHistoryEntry() final = default;
-
-  void SetItem(HistoryItem* item) { item_ = item; }
 
   KURL url();
   bool sameDocument() const;

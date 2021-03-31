@@ -761,7 +761,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   }
 
   if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
-    app_history->UpdateForCommit(type, history_item_);
+    app_history->UpdateForCommit(history_item_);
 
   WebHistoryCommitType commit_type = LoadTypeToCommitType(type);
   frame_->GetFrameScheduler()->DidCommitProvisionalLoad(
@@ -2019,7 +2019,7 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
 
   if (commit_reason_ != CommitReason::kInitialization) {
     if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
-      app_history->UpdateForCommit(load_type_, history_item_);
+      app_history->UpdateForCommit(history_item_);
   }
 }
 

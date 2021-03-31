@@ -9,8 +9,8 @@
 
 namespace blink {
 
-AppHistoryEntry::AppHistoryEntry(ExecutionContext* context)
-    : ExecutionContextClient(context) {}
+AppHistoryEntry::AppHistoryEntry(ExecutionContext* context, HistoryItem* item)
+    : ExecutionContextClient(context), item_(item) {}
 
 KURL AppHistoryEntry::url() {
   return DomWindow() ? item_->Url() : NullURL();

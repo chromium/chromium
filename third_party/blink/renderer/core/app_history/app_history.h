@@ -35,7 +35,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   explicit AppHistory(LocalDOMWindow&);
   ~AppHistory() final = default;
 
-  void UpdateForCommit(WebFrameLoadType, HistoryItem*);
+  void UpdateForCommit(HistoryItem*);
 
   // Web-exposed:
   AppHistoryEntry* current() const;

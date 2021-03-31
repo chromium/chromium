@@ -3,20 +3,51 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 test(() => {
-  assert_not_equals(appHistory.current, null);
-  assert_equals(appHistory.current.url, location.href);
-  assert_true(appHistory.current.sameDocument);
-
   let first_entry = appHistory.current;
-  history.replaceState(1, "", "#1");
-  assert_equals(appHistory.current, first_entry);
-  assert_equals(appHistory.current.url, location.href);
-  assert_true(appHistory.current.sameDocument);
+  assert_not_equals(first_entry, null);
+  assert_equals(first_entry.url, location.href);
+  assert_true(first_entry.sameDocument);
 
+  history.replaceState(2, "", "#2");
+  let second_entry = appHistory.current;
+  assert_not_equals(second_entry, first_entry);
+  assert_equals(second_entry.url, location.href);
+  assert_true(second_entry.sameDocument);
 
-  history.pushState(2, "", "#2");
-  assert_not_equals(appHistory.current, first_entry);
-  assert_equals(appHistory.current.url, location.href);
-  assert_true(appHistory.current.sameDocument);
+  history.pushState(3, "", "#3");
+  let third_entry = appHistory.current;
+  assert_not_equals(third_entry, first_entry);
+  assert_equals(third_entry.url, location.href);
+  assert_true(third_entry.sameDocument);
+
+  history.pushState(4, "");
+  let fourth_entry = appHistory.current;
+  assert_not_equals(fourth_entry, third_entry);
+  assert_equals(fourth_entry.url, third_entry.url);
+  assert_true(fourth_entry.sameDocument);
+
+  history.replaceState(5, "");
+  let fifth_entry = appHistory.current;
+  assert_not_equals(fifth_entry, fourth_entry);
+  assert_equals(fifth_entry.url, fourth_entry.url);
+  assert_true(fifth_entry.sameDocument);
+
+  history.pushState(5, "");
+  let fifth_entry_after_push = appHistory.current;
+  assert_not_equals(fifth_entry_after_push, fifth_entry);
+  assert_equals(fifth_entry_after_push.url, fifth_entry.url);
+  assert_true(fifth_entry_after_push.sameDocument);
+
+  history.replaceState(5, "");
+  let fifth_entry_after_replace = appHistory.current;
+  assert_not_equals(fifth_entry_after_replace, fifth_entry_after_push);
+  assert_equals(fifth_entry_after_replace.url, fifth_entry_after_push.url);
+  assert_true(fifth_entry_after_replace.sameDocument);
+
+  location.hash = "6";
+  let sixth_entry = appHistory.current;
+  assert_not_equals(sixth_entry, fifth_entry_after_replace);
+  assert_not_equals(sixth_entry.url, fifth_entry_after_replace.url);
+  assert_true(sixth_entry.sameDocument);
 }, "Basic tests for appHistory.current");
 </script>
