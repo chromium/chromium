@@ -50,6 +50,7 @@ class PresentationRequestNotificationItem final
   void SetView(media_message_center::MediaNotificationView* view) final;
   void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) final;
+  void SeekTo(base::TimeDelta time) final {}
   media_message_center::SourceType SourceType() override;
 
   const std::string id_;

@@ -51,6 +51,7 @@ class CastMediaNotificationItem
   void SetView(media_message_center::MediaNotificationView* view) override;
   void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) override;
+  void SeekTo(base::TimeDelta time) override {}
   void Dismiss() override;
   media_message_center::SourceType SourceType() override;
 

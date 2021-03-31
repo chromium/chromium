@@ -109,6 +109,17 @@ void MediaSessionNotificationItem::MediaSessionActionsChanged(
   }
 }
 
+void MediaSessionNotificationItem::MediaSessionPositionChanged(
+    const base::Optional<media_session::MediaPosition>& position) {
+  session_position_ = position;
+  if (!position.has_value())
+    return;
+
+  if (view_ && !frozen_) {
+    view_->UpdateWithMediaPosition(*position);
+  }
+}
+
 void MediaSessionNotificationItem::MediaControllerImageChanged(
     media_session::mojom::MediaSessionImageType type,
     const SkBitmap& bitmap) {
@@ -141,6 +152,8 @@ void MediaSessionNotificationItem::SetView(MediaNotificationView* view) {
     view_->UpdateWithMediaMetadata(session_metadata_);
     view_->UpdateWithMediaActions(session_actions_);
 
+    if (session_position_.has_value())
+      view_->UpdateWithMediaPosition(*session_position_);
     if (session_artwork_.has_value())
       view_->UpdateWithMediaArtwork(*session_artwork_);
     if (session_favicon_.has_value())
@@ -157,6 +170,11 @@ void MediaSessionNotificationItem::OnMediaSessionActionButtonPressed(
 
   controller_->LogMediaSessionActionButtonPressed(request_id_, action);
   media_session::PerformMediaSessionAction(action, media_controller_remote_);
+}
+
+void MediaSessionNotificationItem::SeekTo(base::TimeDelta time) {
+  if (!frozen_)
+    media_controller_remote_->SeekTo(time);
 }
 
 void MediaSessionNotificationItem::Dismiss() {
@@ -284,6 +302,8 @@ void MediaSessionNotificationItem::Unfreeze() {
     view_->UpdateWithMediaMetadata(session_metadata_);
     view_->UpdateWithMediaActions(session_actions_);
 
+    if (session_position_.has_value())
+      view_->UpdateWithMediaPosition(*session_position_);
     if (session_artwork_.has_value())
       view_->UpdateWithMediaArtwork(*session_artwork_);
     if (session_favicon_.has_value())

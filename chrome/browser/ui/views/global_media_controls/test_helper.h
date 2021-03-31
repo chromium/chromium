@@ -20,6 +20,7 @@ class MockMediaNotificationItem
   MOCK_METHOD(void,
               OnMediaSessionActionButtonPressed,
               (media_session::mojom::MediaSessionAction));
+  MOCK_METHOD(void, SeekTo, (base::TimeDelta));
   MOCK_METHOD(void, Dismiss, ());
   MOCK_METHOD(media_message_center::SourceType, SourceType, ());
 

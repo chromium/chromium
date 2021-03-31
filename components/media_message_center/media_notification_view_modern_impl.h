@@ -28,6 +28,7 @@ namespace {
 class MediaArtworkView;
 }  // anonymous namespace
 
+class MediaControlsProgressView;
 class MediaNotificationBackground;
 class MediaNotificationContainer;
 class MediaNotificationItem;
@@ -82,6 +83,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   void UpdateWithMediaActions(
       const base::flat_set<media_session::mojom::MediaSessionAction>& actions)
       override;
+  void UpdateWithMediaPosition(
+      const media_session::MediaPosition& position) override;
   void UpdateWithMediaArtwork(const gfx::ImageSkia& image) override;
   void UpdateWithFavicon(const gfx::ImageSkia& icon) override;
   void UpdateWithVectorIcon(const gfx::VectorIcon& vector_icon) override {}
@@ -121,6 +124,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
 
   void ButtonPressed(views::Button* button);
 
+  void SeekTo(double seek_progress);
+
   // Container that receives events.
   MediaNotificationContainer* const container_;
 
@@ -139,6 +144,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
 
   MediaNotificationBackground* background_;
 
+  media_session::MediaPosition position_;
+
   // Container views directly attached to this view.
   views::View* artwork_container_ = nullptr;
   MediaArtworkView* artwork_ = nullptr;
@@ -148,6 +155,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   views::View* notification_controls_spacer_ = nullptr;
   views::View* media_controls_container_ = nullptr;
   views::ToggleImageButton* play_pause_button_ = nullptr;
+  MediaControlsProgressView* progress_ = nullptr;
 };
 
 }  // namespace media_message_center

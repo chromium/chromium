@@ -65,6 +65,9 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationItem {
   virtual void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) = 0;
 
+  // Called by MediaNotificationViewImpl when progress bar is clicked to seek.
+  virtual void SeekTo(base::TimeDelta time) = 0;
+
   // Hides the media notification.
   virtual void Dismiss() = 0;
 

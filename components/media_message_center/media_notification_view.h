@@ -39,6 +39,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationView
   virtual void UpdateWithMediaActions(
       const base::flat_set<media_session::mojom::MediaSessionAction>&
           actions) = 0;
+  virtual void UpdateWithMediaPosition(
+      const media_session::MediaPosition& position) = 0;
   virtual void UpdateWithMediaArtwork(const gfx::ImageSkia& image) = 0;
   // Updates the background color to match that of the favicon.
   virtual void UpdateWithFavicon(const gfx::ImageSkia& icon) = 0;

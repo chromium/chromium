@@ -6,6 +6,8 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/stl_util.h"
+#include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_background_impl.h"
 #include "components/media_message_center/media_notification_constants.h"
 #include "components/media_message_center/media_notification_container.h"
@@ -309,6 +311,12 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
     AddChildView(std::move(info_container));
   }
 
+  auto progress_view =
+      std::make_unique<MediaControlsProgressView>(base::BindRepeating(
+          &MediaNotificationViewModernImpl::SeekTo, base::Unretained(this)));
+  progress_ = AddChildView(std::move(progress_view));
+  progress_->SetVisible(true);
+
   {
     // The media controls container contains buttons for media playback. This
     // includes play/pause, fast-forward/rewind, and skip controls.
@@ -473,6 +481,12 @@ void MediaNotificationViewModernImpl::UpdateWithMediaActions(
   SchedulePaint();
 }
 
+void MediaNotificationViewModernImpl::UpdateWithMediaPosition(
+    const media_session::MediaPosition& position) {
+  position_ = position;
+  progress_->UpdateProgress(position);
+}
+
 void MediaNotificationViewModernImpl::UpdateWithMediaArtwork(
     const gfx::ImageSkia& image) {
   GetMediaNotificationBackground()->UpdateArtwork(image);
@@ -614,6 +628,10 @@ void MediaNotificationViewModernImpl::UpdateForegroundColor() {
 void MediaNotificationViewModernImpl::ButtonPressed(views::Button* button) {
   if (item_)
     item_->OnMediaSessionActionButtonPressed(GetActionFromButtonTag(*button));
+}
+
+void MediaNotificationViewModernImpl::SeekTo(double seek_progress) {
+  item_->SeekTo(seek_progress * position_.duration());
 }
 
 BEGIN_METADATA(MediaNotificationViewModernImpl, views::View)

@@ -16,6 +16,7 @@
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "components/media_message_center/media_controls_progress_view.h"
 #include "components/media_message_center/media_notification_background_impl.h"
 #include "components/media_message_center/media_notification_constants.h"
 #include "components/media_message_center/media_notification_container.h"
@@ -229,6 +230,8 @@ class MediaNotificationViewModernImplTest : public views::ViewsTestBase {
   views::Button* picture_in_picture_button() const {
     return view()->picture_in_picture_button_;
   }
+
+  MediaControlsProgressView* progress_view() const { return view()->progress_; }
 
   views::Button* GetButtonForAction(MediaSessionAction action) const {
     auto buttons = media_control_buttons();
@@ -687,6 +690,13 @@ TEST_F(MAYBE_MediaNotificationViewModernImplTest, UpdateArtworkFromItem) {
   // affected.
   EXPECT_TRUE(GetArtworkImage().isNull());
   EXPECT_EQ(size, view()->size());
+}
+
+TEST_F(MAYBE_MediaNotificationViewModernImplTest, UpdateProgressBar) {
+  media_session::MediaPosition media_position(
+      1.0, base::TimeDelta::FromSeconds(600), base::TimeDelta::FromSeconds(0));
+  GetItem()->MediaSessionPositionChanged(media_position);
+  EXPECT_EQ(progress_view()->duration_for_testing(), u"10:00");
 }
 
 TEST_F(MAYBE_MediaNotificationViewModernImplTest, AccessibleNodeData) {

@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
   void MediaSessionChanged(
       const base::Optional<base::UnguessableToken>& request_id) override {}
   void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override {}
+      const base::Optional<media_session::MediaPosition>& position) override;
 
   // media_session::mojom::MediaControllerImageObserver:
   void MediaControllerImageChanged(
@@ -65,6 +65,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
   void SetView(MediaNotificationView* view) override;
   void OnMediaSessionActionButtonPressed(
       media_session::mojom::MediaSessionAction action) override;
+  void SeekTo(base::TimeDelta time) override;
   // This will stop the media session associated with this item. The item will
   // then call |MediaNotificationController::RemoveItem()| to ensure removal.
   void Dismiss() override;
@@ -129,6 +130,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaSessionNotificationItem
   media_session::MediaMetadata session_metadata_;
 
   base::flat_set<media_session::mojom::MediaSessionAction> session_actions_;
+
+  base::Optional<media_session::MediaPosition> session_position_;
 
   base::Optional<gfx::ImageSkia> session_artwork_;
 
