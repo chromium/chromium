@@ -34,6 +34,7 @@ class AutofillSaveAddressProfileDelegateIOS : public ConfirmInfoBarDelegate {
 
   std::u16string GetMessageDescriptionText() const;
   std::u16string GetMessageActionText() const;
+  const autofill::AutofillProfile* GetProfile() const;
 
   // ConfirmInfoBarDelegate
   int GetIconId() const override;

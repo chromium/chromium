@@ -47,6 +47,11 @@ std::u16string AutofillSaveAddressProfileDelegateIOS::GetMessageActionText()
   return std::u16string(u"Save...");
 }
 
+const autofill::AutofillProfile*
+AutofillSaveAddressProfileDelegateIOS::GetProfile() const {
+  return &profile_;
+}
+
 bool AutofillSaveAddressProfileDelegateIOS::Accept() {
   RunSaveAddressProfilePromptCallback(
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted);
