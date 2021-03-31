@@ -119,8 +119,8 @@ test(t => {
   assert_throws_dom(
       'ConstraintError', () => {constructFrame({
                            timestamp: 1234,
-                           codedWidth: 1 << 32 - 1,
-                           codedHeight: 1 << 32 - 1
+                           codedWidth: Math.pow(2, 32) - 1,
+                           codedHeight: Math.pow(2, 32) - 1,
                          })},
       'invalid coded size');
   assert_throws_dom(
@@ -150,31 +150,31 @@ test(t => {
       () => {constructFrame(
           {timestamp: 1234, codedWidth: 4, codedHeight: 2, cropHeight: 0})},
       'invalid crop height');
-  assert_throws_dom(
-      'ConstraintError', () => {constructFrame({
-                           timestamp: 1234,
-                           codedWidth: 4,
-                           codedHeight: 2,
-                           cropHeight: -1,
-                           cropWidth: -100
-                         })},
+  assert_throws_js(
+      TypeError, () => {constructFrame({
+                   timestamp: 1234,
+                   codedWidth: 4,
+                   codedHeight: 2,
+                   cropHeight: -1,
+                   cropWidth: -100
+                 })},
       'invalid negative crop');
-  assert_throws_dom(
-      'ConstraintError', () => {constructFrame({
-                           timestamp: 1234,
-                           codedWidth: 4,
-                           codedHeight: 2,
-                           displayWidth: 1 << 32 - 1
-                         })},
+  assert_throws_js(
+      TypeError, () => {constructFrame({
+                   timestamp: 1234,
+                   codedWidth: 4,
+                   codedHeight: 2,
+                   displayWidth: Math.pow(2, 32),
+                 })},
       'invalid display width');
-  assert_throws_dom(
-      'ConstraintError', () => {constructFrame({
-                           timestamp: 1234,
-                           codedWidth: 4,
-                           codedHeight: 2,
-                           displayWidth: 1 << 32 - 1,
-                           displayHeight: 1 << 32
-                         })},
+  assert_throws_js(
+      TypeError, () => {constructFrame({
+                   timestamp: 1234,
+                   codedWidth: 4,
+                   codedHeight: 2,
+                   displayWidth: Math.pow(2, 32) - 1,
+                   displayHeight: Math.pow(2, 32)
+                 })},
       'invalid display height');
 }, 'Test invalid planar constructed VideoFrames');
 

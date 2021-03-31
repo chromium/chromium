@@ -18,8 +18,8 @@ dictionary ImageDecoderInit {
 
   // Some image decoders support reduced resolution decoding. The desired size
   // can optionally be provided to trigger this behavior.
-  unsigned long desiredWidth;
-  unsigned long desiredHeight;
+  [EnforceRange] unsigned long desiredWidth;
+  [EnforceRange] unsigned long desiredHeight;
 
   // For multi-track images, indicates that the animation is preferred over any
   // still images that are present. When unspecified the decoder will use hints

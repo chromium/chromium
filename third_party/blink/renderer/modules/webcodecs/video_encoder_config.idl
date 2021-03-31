@@ -12,12 +12,12 @@ dictionary VideoEncoderConfig {
 
   double framerate;
 
-  required unsigned long width;
-  required unsigned long height;
+  [EnforceRange] required unsigned long width;
+  [EnforceRange] required unsigned long height;
 
   // Hint about the pixel aspect ratio of the content.
-  unsigned long displayWidth;
-  unsigned long displayHeight;
+  [EnforceRange] unsigned long displayWidth;
+  [EnforceRange] unsigned long displayHeight;
 
   AvcEncoderConfig avc;
 
