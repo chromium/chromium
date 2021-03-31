@@ -9,9 +9,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "components/arc/mojom/ime.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,8 +23,10 @@
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/composition_text.h"
+#include "ui/base/ime/constants.h"
 #include "ui/base/ime/dummy_input_method.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -81,7 +87,8 @@ class FakeInputMethod : public ui::DummyInputMethod {
         count_cancel_composition_(0),
         count_set_focused_text_input_client_(0),
         count_on_text_input_type_changed_(0),
-        count_on_caret_bounds_changed_(0) {}
+        count_on_caret_bounds_changed_(0),
+        count_dispatch_key_event_(0) {}
 
   void SetFocusedTextInputClient(ui::TextInputClient* client) override {
     count_set_focused_text_input_client_++;
@@ -112,6 +119,11 @@ class FakeInputMethod : public ui::DummyInputMethod {
     count_on_caret_bounds_changed_++;
   }
 
+  ui::EventDispatchDetails DispatchKeyEvent(ui::KeyEvent* event) override {
+    count_dispatch_key_event_++;
+    return ui::EventDispatchDetails();
+  }
+
   int count_show_ime_if_needed() const {
     return count_show_ime_if_needed_;
   }
@@ -132,6 +144,8 @@ class FakeInputMethod : public ui::DummyInputMethod {
     return count_on_caret_bounds_changed_;
   }
 
+  int count_dispatch_key_event() const { return count_dispatch_key_event_; }
+
  private:
   ui::TextInputClient* client_;
   int count_show_ime_if_needed_;
@@ -139,6 +153,7 @@ class FakeInputMethod : public ui::DummyInputMethod {
   int count_set_focused_text_input_client_;
   int count_on_text_input_type_changed_;
   int count_on_caret_bounds_changed_;
+  int count_dispatch_key_event_;
 };
 
 // Helper class for testing the window focus tracking feature of ArcImeService,
@@ -536,6 +551,138 @@ TEST_F(ArcImeServiceTest, SetComposingRegion) {
       gfx::Range(0, 0), false);
   instance_->SetCompositionFromExistingText(gfx::Range(50, 101), {});
   EXPECT_EQ(composing_range, fake_arc_ime_bridge_->composing_range());
+}
+
+TEST_F(ArcImeServiceTest, OnDispatchingKeyEventPostIME) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kArcPreImeKeyEventSupport);
+
+  instance_->OnWindowFocused(arc_win_.get(), nullptr);
+  instance_->OnTextInputTypeChanged(ui::TEXT_INPUT_TYPE_TEXT, true,
+                                    mojom::TEXT_INPUT_FLAG_NONE);
+
+  ui::KeyEvent event{ui::ET_KEY_PRESSED,
+                     ui::VKEY_A,
+                     ui::DomCode::US_A,
+                     0,
+                     ui::DomKey::FromCharacter('A'),
+                     ui::EventTimeForNow()};
+  // A key event from physical device should pass to the next phase.
+  instance_->OnDispatchingKeyEventPostIME(&event);
+  EXPECT_FALSE(event.handled());
+
+  // Mark the event as from VK
+  ui::Event::Properties properties;
+  properties[ui::kPropertyFromVK] =
+      std::vector<uint8_t>(ui::kPropertyFromVKSize);
+  event.SetProperties(properties);
+  // A key event from virtual keyboard should not pass to the next phase.
+  instance_->OnDispatchingKeyEventPostIME(&event);
+  EXPECT_TRUE(event.handled());
+
+  ui::KeyEvent non_character_event{
+      ui::ET_KEY_PRESSED,       ui::VKEY_RETURN,      ui::DomCode::ENTER, 0,
+      ui::DomKey::UNIDENTIFIED, ui::EventTimeForNow()};
+  // A non-character event from physical device should pass to the next phase.
+  instance_->OnDispatchingKeyEventPostIME(&non_character_event);
+  EXPECT_FALSE(non_character_event.handled());
+
+  // Mark the non-character event as from VK.
+  non_character_event.SetProperties(properties);
+  // A non-character event from VK should pass to the next phase.
+  instance_->OnDispatchingKeyEventPostIME(&non_character_event);
+  EXPECT_FALSE(non_character_event.handled());
+
+  // A key event consumed by IME already should not pass to the next phase.
+  ui::KeyEvent fabricated_event{ui::ET_KEY_PRESSED,
+                                ui::VKEY_PROCESSKEY,
+                                ui::DomCode::US_A,
+                                0,
+                                ui::DomKey::FromCharacter('A'),
+                                ui::EventTimeForNow()};
+  instance_->OnDispatchingKeyEventPostIME(&fabricated_event);
+  EXPECT_TRUE(fabricated_event.handled());
+  fabricated_event.SetProperties(properties);
+  instance_->OnDispatchingKeyEventPostIME(&fabricated_event);
+  EXPECT_TRUE(fabricated_event.handled());
+}
+
+TEST_F(ArcImeServiceTest, SendKeyEvent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kArcPreImeKeyEventSupport);
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  instance_->OnWindowFocused(arc_win_.get(), nullptr);
+  instance_->OnTextInputTypeChanged(ui::TEXT_INPUT_TYPE_TEXT, true,
+                                    mojom::TEXT_INPUT_FLAG_NONE);
+
+  ui::KeyEvent event{ui::ET_KEY_PRESSED,
+                     ui::VKEY_A,
+                     ui::DomCode::US_A,
+                     0,
+                     ui::DomKey::FromCharacter('A'),
+                     ui::EventTimeForNow()};
+  {
+    base::Optional<bool> handled;
+    auto copy = std::make_unique<ui::KeyEvent>(event);
+    instance_->SendKeyEvent(
+        std::move(copy),
+        base::BindLambdaForTesting([&handled](bool h) { handled = h; }));
+    EXPECT_FALSE(handled);
+    EXPECT_EQ(1, fake_input_method_->count_dispatch_key_event());
+
+    // A key event from ARC should not pass to the next phase.
+    instance_->OnDispatchingKeyEventPostIME(&event);
+    EXPECT_TRUE(event.handled());
+    EXPECT_TRUE(handled);
+    // And the callback is called with true.
+    EXPECT_TRUE(handled.value());
+  }
+
+  ui::KeyEvent non_character_event{
+      ui::ET_KEY_PRESSED,       ui::VKEY_RETURN,      ui::DomCode::ENTER, 0,
+      ui::DomKey::UNIDENTIFIED, ui::EventTimeForNow()};
+  {
+    base::Optional<bool> handled;
+    auto copy = std::make_unique<ui::KeyEvent>(non_character_event);
+    instance_->SendKeyEvent(
+        std::move(copy),
+        base::BindLambdaForTesting([&handled](bool h) { handled = h; }));
+    EXPECT_FALSE(handled);
+    EXPECT_EQ(2, fake_input_method_->count_dispatch_key_event());
+
+    // A non-character key event from ARC should not pass to the next phase.
+    instance_->OnDispatchingKeyEventPostIME(&non_character_event);
+    EXPECT_TRUE(non_character_event.handled());
+    EXPECT_TRUE(handled);
+    // And the callback is called with false (== IME doesn't consume it).
+    EXPECT_FALSE(handled.value());
+  }
+
+  ui::KeyEvent fabricated_event{ui::ET_KEY_PRESSED,
+                                ui::VKEY_PROCESSKEY,
+                                ui::DomCode::US_A,
+                                0,
+                                ui::DomKey::FromCharacter('A'),
+                                ui::EventTimeForNow()};
+  {
+    base::Optional<bool> handled;
+    auto copy = std::make_unique<ui::KeyEvent>(fabricated_event);
+    instance_->SendKeyEvent(
+        std::move(copy),
+        base::BindLambdaForTesting([&handled](bool h) { handled = h; }));
+    EXPECT_FALSE(handled);
+    EXPECT_EQ(3, fake_input_method_->count_dispatch_key_event());
+
+    // A non-character key event from ARC should not pass to the next phase.
+    instance_->OnDispatchingKeyEventPostIME(&fabricated_event);
+    EXPECT_TRUE(fabricated_event.handled());
+    EXPECT_TRUE(handled);
+    // And the callback is called with true.
+    EXPECT_TRUE(handled.value());
+  }
 }
 
 }  // namespace arc
