@@ -103,7 +103,13 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(AwFeatures.WEBVIEW_DISPLAY_CUTOUT,
                     "Enables display cutout (notch) support in WebView for Android P and above."),
             Flag.baseFeature(AwFeatures.WEBVIEW_CPU_AFFINITY_RESTRICT_TO_LITTLE_CORES,
-                    "Forces WebView to do rendering work in little cores"),
+                    "Forces WebView to do rendering work on LITTLE CPU cores on big.LITTLE "
+                            + "architectures"),
+            Flag.baseFeature(AwFeatures.WEBVIEW_POWER_SCHEDULER_THROTTLE_IDLE,
+                    "Restricts all of WebView's out-of-process renderer threads to use only LITTLE "
+                            + "CPU cores on big.LITTLE architectures when the power mode is idle. "
+                            + "WebViewCpuAffinityRestrictToLittleCores, if set, takes precedence "
+                            + "over this flag."),
             Flag.baseFeature(BlinkFeatures.WEBVIEW_ACCELERATE_SMALL_CANVASES,
                     "Accelerate all canvases in webview."),
             Flag.baseFeature(AwFeatures.WEBVIEW_MIXED_CONTENT_AUTOUPGRADES,

@@ -58,6 +58,11 @@ const base::Feature kWebViewMeasureScreenCoverage{
 const base::Feature kWebViewOriginTrials{"WebViewOriginTrials",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Restricts all of WebView's out-of-process renderer threads to use only LITTLE
+// cores on big.LITTLE architectures when the power mode is idle.
+const base::Feature kWebViewPowerSchedulerThrottleIdle{
+    "WebViewPowerSchedulerThrottleIdle", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // A Feature used for WebView variations tests. Not used in production.
 const base::Feature kWebViewTestFeature{"WebViewTestFeature",
                                         base::FEATURE_DISABLED_BY_DEFAULT};

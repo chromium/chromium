@@ -390,14 +390,21 @@ void AwMainDelegate::PostFieldTrialInitialization() {
   ALLOW_UNUSED_LOCAL(is_canary_dev);
   ALLOW_UNUSED_LOCAL(is_browser_process);
 
-  // Enable LITTLE-cores only mode if the feature is enabled, but only for child
-  // processes, as the browser process is shared with the hosting app.
-  if (!is_browser_process &&
-      base::FeatureList::IsEnabled(
-          android_webview::features::
-              kWebViewCpuAffinityRestrictToLittleCores)) {
-    power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
-        power_scheduler::SchedulingPolicy::kLittleCoresOnly);
+  // Enable LITTLE-cores only mode/idle power mode throttling if the features
+  // are enabled, but only for child processes, as the browser process is shared
+  // with the hosting app.
+  if (!is_browser_process) {
+    if (base::FeatureList::IsEnabled(
+            android_webview::features::
+                kWebViewCpuAffinityRestrictToLittleCores)) {
+      power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
+          power_scheduler::SchedulingPolicy::kLittleCoresOnly);
+    } else if (base::FeatureList::IsEnabled(
+                   android_webview::features::
+                       kWebViewPowerSchedulerThrottleIdle)) {
+      power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
+          power_scheduler::SchedulingPolicy::kThrottleIdle);
+    }
   }
 
 #if BUILDFLAG(ENABLE_GWP_ASAN_MALLOC)

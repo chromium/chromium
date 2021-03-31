@@ -44127,6 +44127,7 @@ from previous Chrome versions.
   <int value="-1844754731" label="Mash:disabled"/>
   <int value="-1843677118" label="TwoPanesStartSurfaceAndroid:disabled"/>
   <int value="-1842511843" label="DiceWebSigninInterception:enabled"/>
+  <int value="-1840821581" label="WebViewPowerSchedulerThrottleIdle:disabled"/>
   <int value="-1840608422" label="AdvancedPpdAttributes:disabled"/>
   <int value="-1839874877" label="WebXROrientationSensorDevice:enabled"/>
   <int value="-1839540507" label="OneGoogleBarModalOverlays:enabled"/>
@@ -44685,6 +44686,7 @@ from previous Chrome versions.
   <int value="-1357008397" label="ContextualSuggestionsCarousel:disabled"/>
   <int value="-1356379431" label="GlobalMediaControlsOverlayControls:enabled"/>
   <int value="-1355886577" label="ReleaseNotesNotificationAllChannels:enabled"/>
+  <int value="-1355717940" label="WebViewPowerSchedulerThrottleIdle:enabled"/>
   <int value="-1353865639" label="InteractiveWindowCycleList:disabled"/>
   <int value="-1353714232" label="FilesTransferDetails:enabled"/>
   <int value="-1353195918" label="UseSkiaRenderer:enabled"/>
