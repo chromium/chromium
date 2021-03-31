@@ -54,61 +54,6 @@ namespace {
 // Opacity for drag widget windows.
 constexpr float kDragWidgetOpacity = .75f;
 
-X11Window::WindowOpacity GetXWindowOpacity(PlatformWindowOpacity opacity) {
-  using WindowOpacity = X11Window::WindowOpacity;
-  switch (opacity) {
-    case PlatformWindowOpacity::kInferOpacity:
-      return WindowOpacity::kInferOpacity;
-    case PlatformWindowOpacity::kOpaqueWindow:
-      return WindowOpacity::kOpaqueWindow;
-    case PlatformWindowOpacity::kTranslucentWindow:
-      return WindowOpacity::kTranslucentWindow;
-  }
-  NOTREACHED() << "Uknown window opacity.";
-  return WindowOpacity::kInferOpacity;
-}
-
-X11Window::WindowType GetXWindowType(PlatformWindowType window_type) {
-  using WindowType = X11Window::WindowType;
-  switch (window_type) {
-    case PlatformWindowType::kWindow:
-      return WindowType::kWindow;
-    case PlatformWindowType::kMenu:
-      return WindowType::kMenu;
-    case PlatformWindowType::kTooltip:
-      return WindowType::kTooltip;
-    case PlatformWindowType::kPopup:
-      return WindowType::kPopup;
-    case PlatformWindowType::kDrag:
-      return WindowType::kDrag;
-    case PlatformWindowType::kBubble:
-      return WindowType::kBubble;
-  }
-  NOTREACHED() << "Uknown window type.";
-  return WindowType::kWindow;
-}
-
-ui::X11Window::Configuration ConvertInitPropertiesToXWindowConfig(
-    const PlatformWindowInitProperties& properties) {
-  ui::X11Window::Configuration config;
-  config.type = GetXWindowType(properties.type);
-  config.opacity = GetXWindowOpacity(properties.opacity);
-  config.bounds = properties.bounds;
-  config.icon = properties.icon;
-  config.force_show_in_taskbar = properties.force_show_in_taskbar;
-  config.keep_on_top = properties.keep_on_top;
-  config.visible_on_all_workspaces = properties.visible_on_all_workspaces;
-  config.remove_standard_frame = properties.remove_standard_frame;
-  config.workspace = properties.workspace;
-  config.wm_class_name = properties.wm_class_name;
-  config.wm_class_class = properties.wm_class_class;
-  config.wm_role_name = properties.wm_role_name;
-  config.activatable = properties.activatable;
-  config.prefer_dark_theme = properties.prefer_dark_theme;
-  config.background_color = properties.background_color;
-  return config;
-}
-
 // Coalesce touch/mouse events if needed
 bool CoalesceEventsIfNeeded(const x11::Event& xev,
                             EventType type,
@@ -233,12 +178,6 @@ std::vector<x11::Window> GetParentsList(x11::Connection* connection,
 
 }  // namespace
 
-X11Window::Configuration::Configuration() = default;
-
-X11Window::Configuration::Configuration(const Configuration&) = default;
-
-X11Window::Configuration::~Configuration() = default;
-
 X11Window::X11Window(PlatformWindowDelegate* platform_window_delegate)
     : platform_window_delegate_(platform_window_delegate),
       connection_(x11::Connection::Get()),
@@ -262,28 +201,201 @@ X11Window::~X11Window() {
 }
 
 void X11Window::Initialize(PlatformWindowInitProperties properties) {
-  X11Window::Configuration config =
-      ConvertInitPropertiesToXWindowConfig(properties);
+  PlatformWindowOpacity opacity = properties.opacity;
+  CreateXWindow(properties, opacity);
 
-  gfx::Size adjusted_size_in_pixels =
-      AdjustSizeForDisplay(config.bounds.size());
-  config.bounds.set_size(adjusted_size_in_pixels);
-  config.override_redirect =
-      properties.x11_extension_delegate &&
-      properties.x11_extension_delegate->IsOverrideRedirect(IsWmTiling());
-  if (config.type == WindowType::kDrag) {
-    config.opacity = ui::IsCompositingManagerPresent()
-                         ? WindowOpacity::kTranslucentWindow
-                         : WindowOpacity::kOpaqueWindow;
+  // It can be a status icon window.  If it fails to initialize, don't provide
+  // it with a native window handle, close ourselves and let the client destroy
+  // ourselves.
+  if (properties.wm_role_name == kStatusIconWmRoleName &&
+      !InitializeAsStatusIcon()) {
+    CloseXWindow();
+    return;
   }
 
-  workspace_extension_delegate_ = properties.workspace_extension_delegate;
-  x11_extension_delegate_ = properties.x11_extension_delegate;
+  // At this point, the X window is created.  Register it and notify the
+  // platform window delegate.
+  X11WindowManager::GetInstance()->AddWindow(this);
 
-  Init(config);
+  connection_->AddEventObserver(this);
+  DCHECK(X11EventSource::HasInstance());
+  X11EventSource::GetInstance()->AddPlatformEventDispatcher(this);
 
-  if (config.type == WindowType::kDrag &&
-      config.opacity == WindowOpacity::kTranslucentWindow) {
+  x11_window_move_client_ =
+      std::make_unique<ui::X11DesktopWindowMoveClient>(this);
+
+  // Mark the window as eligible for the move loop, which allows tab dragging.
+  SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
+
+  platform_window_delegate_->OnAcceleratedWidgetAvailable(GetWidget());
+
+  // TODO(erg): Maybe need to set a ViewProp here like in RWHL::RWHL().
+
+  auto event_mask =
+      x11::EventMask::ButtonPress | x11::EventMask::ButtonRelease |
+      x11::EventMask::FocusChange | x11::EventMask::KeyPress |
+      x11::EventMask::KeyRelease | x11::EventMask::EnterWindow |
+      x11::EventMask::LeaveWindow | x11::EventMask::Exposure |
+      x11::EventMask::VisibilityChange | x11::EventMask::StructureNotify |
+      x11::EventMask::PropertyChange | x11::EventMask::PointerMotion;
+  xwindow_events_ =
+      std::make_unique<x11::XScopedEventSelector>(xwindow_, event_mask);
+  connection_->Flush();
+
+  if (IsXInput2Available())
+    TouchFactory::GetInstance()->SetupXI2ForXWindow(xwindow_);
+
+  // Request the _NET_WM_SYNC_REQUEST protocol which is used for synchronizing
+  // between chrome and desktop compositor (or WM) during resizing.
+  // The resizing behavior with _NET_WM_SYNC_REQUEST is:
+  // 1. Desktop compositor (or WM) sends client message _NET_WM_SYNC_REQUEST
+  //    with a 64 bits counter to notify about an incoming resize.
+  // 2. Desktop compositor resizes chrome browser window.
+  // 3. Desktop compositor waits on an alert on value change of XSyncCounter on
+  //    chrome window.
+  // 4. Chrome handles the ConfigureNotify event, and renders a new frame with
+  //    the new size.
+  // 5. Chrome increases the XSyncCounter on chrome window
+  // 6. Desktop compositor gets the alert of counter change, and draws a new
+  //    frame with new content from chrome.
+  // 7. Desktop compositor responses user mouse move events, and starts a new
+  //    resize process, go to step 1.
+  std::vector<x11::Atom> protocols = {
+      x11::GetAtom("WM_DELETE_WINDOW"),
+      x11::GetAtom("_NET_WM_PING"),
+      x11::GetAtom("_NET_WM_SYNC_REQUEST"),
+  };
+  SetArrayProperty(xwindow_, x11::GetAtom("WM_PROTOCOLS"), x11::Atom::ATOM,
+                   protocols);
+
+  // We need a WM_CLIENT_MACHINE value so we integrate with the desktop
+  // environment.
+  SetStringProperty(xwindow_, x11::Atom::WM_CLIENT_MACHINE, x11::Atom::STRING,
+                    net::GetHostName());
+
+  // Likewise, the X server needs to know this window's pid so it knows which
+  // program to kill if the window hangs.
+  // XChangeProperty() expects "pid" to be long.
+  static_assert(sizeof(uint32_t) >= sizeof(pid_t),
+                "pid_t should not be larger than uint32_t");
+  uint32_t pid = getpid();
+  x11::SetProperty(xwindow_, x11::GetAtom("_NET_WM_PID"), x11::Atom::CARDINAL,
+                   pid);
+
+  x11::Atom window_type;
+  switch (properties.type) {
+    case PlatformWindowType::kMenu:
+      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_MENU");
+      break;
+    case PlatformWindowType::kTooltip:
+      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_TOOLTIP");
+      break;
+    case PlatformWindowType::kPopup:
+      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_NOTIFICATION");
+      break;
+    case PlatformWindowType::kDrag:
+      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_DND");
+      break;
+    default:
+      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_NORMAL");
+      break;
+  }
+  x11::SetProperty(xwindow_, x11::GetAtom("_NET_WM_WINDOW_TYPE"),
+                   x11::Atom::ATOM, window_type);
+
+  // The changes to |window_properties_| here will be sent to the X server just
+  // before the window is mapped.
+
+  // Remove popup windows from taskbar unless overridden.
+  if ((properties.type == PlatformWindowType::kPopup ||
+       properties.type == PlatformWindowType::kBubble) &&
+      !properties.force_show_in_taskbar) {
+    window_properties_.insert(x11::GetAtom("_NET_WM_STATE_SKIP_TASKBAR"));
+  }
+
+  // If the window should stay on top of other windows, add the
+  // _NET_WM_STATE_ABOVE property.
+  is_always_on_top_ = properties.keep_on_top;
+  if (is_always_on_top_)
+    window_properties_.insert(x11::GetAtom("_NET_WM_STATE_ABOVE"));
+
+  workspace_ = base::nullopt;
+  if (properties.visible_on_all_workspaces) {
+    window_properties_.insert(x11::GetAtom("_NET_WM_STATE_STICKY"));
+    x11::SetProperty(xwindow_, x11::GetAtom("_NET_WM_DESKTOP"),
+                     x11::Atom::CARDINAL, kAllWorkspaces);
+  } else if (!properties.workspace.empty()) {
+    int32_t workspace;
+    if (base::StringToInt(properties.workspace, &workspace))
+      x11::SetProperty(xwindow_, x11::GetAtom("_NET_WM_DESKTOP"),
+                       x11::Atom::CARDINAL, workspace);
+  }
+
+  if (!properties.wm_class_name.empty() || !properties.wm_class_class.empty()) {
+    SetWindowClassHint(connection_, xwindow_, properties.wm_class_name,
+                       properties.wm_class_class);
+  }
+
+  const char* wm_role_name = nullptr;
+  // If the widget isn't overriding the role, provide a default value for popup
+  // and bubble types.
+  if (!properties.wm_role_name.empty()) {
+    wm_role_name = properties.wm_role_name.c_str();
+  } else {
+    switch (properties.type) {
+      case PlatformWindowType::kPopup:
+        wm_role_name = kX11WindowRolePopup;
+        break;
+      case PlatformWindowType::kBubble:
+        wm_role_name = kX11WindowRoleBubble;
+        break;
+      default:
+        break;
+    }
+  }
+  if (wm_role_name)
+    SetWindowRole(xwindow_, std::string(wm_role_name));
+
+  if (properties.remove_standard_frame) {
+    // Setting _GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED tells gnome-shell to not force
+    // fullscreen on the window when it matches the desktop size.
+    SetHideTitlebarWhenMaximizedProperty(xwindow_,
+                                         HIDE_TITLEBAR_WHEN_MAXIMIZED);
+  }
+
+  if (properties.prefer_dark_theme) {
+    SetStringProperty(xwindow_, x11::GetAtom("_GTK_THEME_VARIANT"),
+                      x11::GetAtom("UTF8_STRING"), kDarkGtkThemeVariant);
+  }
+
+  if (IsSyncExtensionAvailable()) {
+    x11::Sync::Int64 value{};
+    update_counter_ = connection_->GenerateId<x11::Sync::Counter>();
+    connection_->sync().CreateCounter({update_counter_, value});
+    extended_update_counter_ = connection_->GenerateId<x11::Sync::Counter>();
+    connection_->sync().CreateCounter({extended_update_counter_, value});
+
+    std::vector<x11::Sync::Counter> counters{update_counter_,
+                                             extended_update_counter_};
+
+    // Set XSyncCounter as window property _NET_WM_SYNC_REQUEST_COUNTER. the
+    // compositor will listen on them during resizing.
+    SetArrayProperty(xwindow_, x11::GetAtom("_NET_WM_SYNC_REQUEST_COUNTER"),
+                     x11::Atom::CARDINAL, counters);
+  }
+
+  // Always composite Chromium windows if a compositing WM is used.  Sometimes,
+  // WMs will not composite fullscreen windows as an optimization, but this can
+  // lead to tearing of fullscreen videos.
+  x11::SetProperty<uint32_t>(xwindow_,
+                             x11::GetAtom("_NET_WM_BYPASS_COMPOSITOR"),
+                             x11::Atom::CARDINAL, 2);
+
+  if (properties.icon)
+    SetWindowIcons(gfx::ImageSkia(), *properties.icon);
+
+  if (properties.type == PlatformWindowType::kDrag &&
+      opacity == PlatformWindowOpacity::kTranslucentWindow) {
     SetOpacity(kDragWidgetOpacity);
   }
 
@@ -1401,43 +1513,53 @@ void X11Window::ConvertEventLocationToTargetLocation(
                                              located_event);
 }
 
-void X11Window::Init(const Configuration& config) {
+void X11Window::CreateXWindow(const PlatformWindowInitProperties& properties,
+                              PlatformWindowOpacity& opacity) {
+  auto bounds = properties.bounds;
+  gfx::Size adjusted_size_in_pixels = AdjustSizeForDisplay(bounds.size());
+  bounds.set_size(adjusted_size_in_pixels);
+  const auto override_redirect =
+      properties.x11_extension_delegate &&
+      properties.x11_extension_delegate->IsOverrideRedirect(IsWmTiling());
+  if (properties.type == PlatformWindowType::kDrag) {
+    opacity = ui::IsCompositingManagerPresent()
+                  ? PlatformWindowOpacity::kTranslucentWindow
+                  : PlatformWindowOpacity::kOpaqueWindow;
+  }
+
+  workspace_extension_delegate_ = properties.workspace_extension_delegate;
+  x11_extension_delegate_ = properties.x11_extension_delegate;
+
   // Ensure that the X11MenuRegistrar exists. The X11MenuRegistrar is
   // necessary to properly track menu windows.
   X11MenuRegistrar::Get();
 
-  activatable_ = config.activatable;
+  activatable_ = properties.activatable;
 
   x11::CreateWindowRequest req;
   req.bit_gravity = x11::Gravity::NorthWest;
-  req.background_pixel = config.background_color.has_value()
-                             ? config.background_color.value()
+  req.background_pixel = properties.background_color.has_value()
+                             ? properties.background_color.value()
                              : connection_->default_screen().white_pixel;
 
-  x11::Atom window_type;
-  switch (config.type) {
-    case WindowType::kMenu:
+  switch (properties.type) {
+    case PlatformWindowType::kMenu:
       req.override_redirect = x11::Bool32(true);
-      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_MENU");
       break;
-    case WindowType::kTooltip:
+    case PlatformWindowType::kTooltip:
       req.override_redirect = x11::Bool32(true);
-      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_TOOLTIP");
       break;
-    case WindowType::kPopup:
+    case PlatformWindowType::kPopup:
       req.override_redirect = x11::Bool32(true);
-      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_NOTIFICATION");
       break;
-    case WindowType::kDrag:
+    case PlatformWindowType::kDrag:
       req.override_redirect = x11::Bool32(true);
-      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_DND");
       break;
     default:
-      window_type = x11::GetAtom("_NET_WM_WINDOW_TYPE_NORMAL");
       break;
   }
   // An in-activatable window should not interact with the system wm.
-  if (!activatable_ || config.override_redirect)
+  if (!activatable_ || override_redirect)
     req.override_redirect = x11::Bool32(true);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1447,18 +1569,18 @@ void X11Window::Init(const Configuration& config) {
   override_redirect_ = req.override_redirect.has_value();
 
   bool enable_transparent_visuals;
-  switch (config.opacity) {
-    case WindowOpacity::kOpaqueWindow:
+  switch (opacity) {
+    case PlatformWindowOpacity::kOpaqueWindow:
       enable_transparent_visuals = false;
       break;
-    case WindowOpacity::kTranslucentWindow:
+    case PlatformWindowOpacity::kTranslucentWindow:
       enable_transparent_visuals = true;
       break;
-    case WindowOpacity::kInferOpacity:
-      enable_transparent_visuals = config.type == WindowType::kDrag;
+    case PlatformWindowOpacity::kInferOpacity:
+      enable_transparent_visuals = properties.type == PlatformWindowType::kDrag;
   }
 
-  if (config.wm_role_name == kStatusIconWmRoleName) {
+  if (properties.wm_role_name == kStatusIconWmRoleName) {
     std::string atom_name =
         "_NET_SYSTEM_TRAY_S" +
         base::NumberToString(connection_->DefaultScreenId());
@@ -1485,7 +1607,7 @@ void X11Window::Init(const Configuration& config) {
   // same as the parent depth.
   req.border_pixel = 0;
 
-  bounds_in_pixels_ = SanitizeBounds(config.bounds);
+  bounds_in_pixels_ = SanitizeBounds(bounds);
   req.parent = x_root_window_;
   req.x = bounds_in_pixels_.x();
   req.y = bounds_in_pixels_.y();
@@ -1498,178 +1620,6 @@ void X11Window::Init(const Configuration& config) {
   xwindow_ = connection_->GenerateId<x11::Window>();
   req.wid = xwindow_;
   connection_->CreateWindow(req);
-
-  // It can be a status icon window. If it fails to initialize, don't provide
-  // him with a native window handle, close self and let the client destroy
-  // ourselves.
-  if (config.wm_role_name == kStatusIconWmRoleName &&
-      !InitializeAsStatusIcon()) {
-    CloseXWindow();
-    return;
-  }
-
-  // At this point, the X window is created.  Register it and notify the
-  // platform window delegate.
-  X11WindowManager::GetInstance()->AddWindow(this);
-
-  connection_->AddEventObserver(this);
-  DCHECK(X11EventSource::HasInstance());
-  X11EventSource::GetInstance()->AddPlatformEventDispatcher(this);
-
-  x11_window_move_client_ =
-      std::make_unique<ui::X11DesktopWindowMoveClient>(this);
-
-  // Mark the window as eligible for the move loop, which allows tab dragging.
-  SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
-
-  platform_window_delegate_->OnAcceleratedWidgetAvailable(GetWidget());
-
-  // TODO(erg): Maybe need to set a ViewProp here like in RWHL::RWHL().
-
-  auto event_mask =
-      x11::EventMask::ButtonPress | x11::EventMask::ButtonRelease |
-      x11::EventMask::FocusChange | x11::EventMask::KeyPress |
-      x11::EventMask::KeyRelease | x11::EventMask::EnterWindow |
-      x11::EventMask::LeaveWindow | x11::EventMask::Exposure |
-      x11::EventMask::VisibilityChange | x11::EventMask::StructureNotify |
-      x11::EventMask::PropertyChange | x11::EventMask::PointerMotion;
-  xwindow_events_ =
-      std::make_unique<x11::XScopedEventSelector>(xwindow_, event_mask);
-  connection_->Flush();
-
-  if (IsXInput2Available())
-    TouchFactory::GetInstance()->SetupXI2ForXWindow(xwindow_);
-
-  // Request the _NET_WM_SYNC_REQUEST protocol which is used for synchronizing
-  // between chrome and desktop compositor (or WM) during resizing.
-  // The resizing behavior with _NET_WM_SYNC_REQUEST is:
-  // 1. Desktop compositor (or WM) sends client message _NET_WM_SYNC_REQUEST
-  //    with a 64 bits counter to notify about an incoming resize.
-  // 2. Desktop compositor resizes chrome browser window.
-  // 3. Desktop compositor waits on an alert on value change of XSyncCounter on
-  //    chrome window.
-  // 4. Chrome handles the ConfigureNotify event, and renders a new frame with
-  //    the new size.
-  // 5. Chrome increases the XSyncCounter on chrome window
-  // 6. Desktop compositor gets the alert of counter change, and draws a new
-  //    frame with new content from chrome.
-  // 7. Desktop compositor responses user mouse move events, and starts a new
-  //    resize process, go to step 1.
-  std::vector<x11::Atom> protocols = {
-      x11::GetAtom("WM_DELETE_WINDOW"),
-      x11::GetAtom("_NET_WM_PING"),
-      x11::GetAtom("_NET_WM_SYNC_REQUEST"),
-  };
-  SetArrayProperty(xwindow_, x11::GetAtom("WM_PROTOCOLS"), x11::Atom::ATOM,
-                   protocols);
-
-  // We need a WM_CLIENT_MACHINE value so we integrate with the desktop
-  // environment.
-  SetStringProperty(xwindow_, x11::Atom::WM_CLIENT_MACHINE, x11::Atom::STRING,
-                    net::GetHostName());
-
-  // Likewise, the X server needs to know this window's pid so it knows which
-  // program to kill if the window hangs.
-  // XChangeProperty() expects "pid" to be long.
-  static_assert(sizeof(uint32_t) >= sizeof(pid_t),
-                "pid_t should not be larger than uint32_t");
-  uint32_t pid = getpid();
-  x11::SetProperty(xwindow_, x11::GetAtom("_NET_WM_PID"), x11::Atom::CARDINAL,
-                   pid);
-
-  x11::SetProperty(xwindow_, x11::GetAtom("_NET_WM_WINDOW_TYPE"),
-                   x11::Atom::ATOM, window_type);
-
-  // The changes to |window_properties_| here will be sent to the X server just
-  // before the window is mapped.
-
-  // Remove popup windows from taskbar unless overridden.
-  if ((config.type == WindowType::kPopup ||
-       config.type == WindowType::kBubble) &&
-      !config.force_show_in_taskbar) {
-    window_properties_.insert(x11::GetAtom("_NET_WM_STATE_SKIP_TASKBAR"));
-  }
-
-  // If the window should stay on top of other windows, add the
-  // _NET_WM_STATE_ABOVE property.
-  is_always_on_top_ = config.keep_on_top;
-  if (is_always_on_top_)
-    window_properties_.insert(x11::GetAtom("_NET_WM_STATE_ABOVE"));
-
-  workspace_ = base::nullopt;
-  if (config.visible_on_all_workspaces) {
-    window_properties_.insert(x11::GetAtom("_NET_WM_STATE_STICKY"));
-    x11::SetProperty(xwindow_, x11::GetAtom("_NET_WM_DESKTOP"),
-                     x11::Atom::CARDINAL, kAllWorkspaces);
-  } else if (!config.workspace.empty()) {
-    int32_t workspace;
-    if (base::StringToInt(config.workspace, &workspace))
-      x11::SetProperty(xwindow_, x11::GetAtom("_NET_WM_DESKTOP"),
-                       x11::Atom::CARDINAL, workspace);
-  }
-
-  if (!config.wm_class_name.empty() || !config.wm_class_class.empty()) {
-    SetWindowClassHint(connection_, xwindow_, config.wm_class_name,
-                       config.wm_class_class);
-  }
-
-  const char* wm_role_name = nullptr;
-  // If the widget isn't overriding the role, provide a default value for popup
-  // and bubble types.
-  if (!config.wm_role_name.empty()) {
-    wm_role_name = config.wm_role_name.c_str();
-  } else {
-    switch (config.type) {
-      case WindowType::kPopup:
-        wm_role_name = kX11WindowRolePopup;
-        break;
-      case WindowType::kBubble:
-        wm_role_name = kX11WindowRoleBubble;
-        break;
-      default:
-        break;
-    }
-  }
-  if (wm_role_name)
-    SetWindowRole(xwindow_, std::string(wm_role_name));
-
-  if (config.remove_standard_frame) {
-    // Setting _GTK_HIDE_TITLEBAR_WHEN_MAXIMIZED tells gnome-shell to not force
-    // fullscreen on the window when it matches the desktop size.
-    SetHideTitlebarWhenMaximizedProperty(xwindow_,
-                                         HIDE_TITLEBAR_WHEN_MAXIMIZED);
-  }
-
-  if (config.prefer_dark_theme) {
-    SetStringProperty(xwindow_, x11::GetAtom("_GTK_THEME_VARIANT"),
-                      x11::GetAtom("UTF8_STRING"), kDarkGtkThemeVariant);
-  }
-
-  if (IsSyncExtensionAvailable()) {
-    x11::Sync::Int64 value{};
-    update_counter_ = connection_->GenerateId<x11::Sync::Counter>();
-    connection_->sync().CreateCounter({update_counter_, value});
-    extended_update_counter_ = connection_->GenerateId<x11::Sync::Counter>();
-    connection_->sync().CreateCounter({extended_update_counter_, value});
-
-    std::vector<x11::Sync::Counter> counters{update_counter_,
-                                             extended_update_counter_};
-
-    // Set XSyncCounter as window property _NET_WM_SYNC_REQUEST_COUNTER. the
-    // compositor will listen on them during resizing.
-    SetArrayProperty(xwindow_, x11::GetAtom("_NET_WM_SYNC_REQUEST_COUNTER"),
-                     x11::Atom::CARDINAL, counters);
-  }
-
-  // Always composite Chromium windows if a compositing WM is used.  Sometimes,
-  // WMs will not composite fullscreen windows as an optimization, but this can
-  // lead to tearing of fullscreen videos.
-  x11::SetProperty<uint32_t>(xwindow_,
-                             x11::GetAtom("_NET_WM_BYPASS_COMPOSITOR"),
-                             x11::Atom::CARDINAL, 2);
-
-  if (config.icon)
-    SetWindowIcons(gfx::ImageSkia(), *config.icon);
 }
 
 void X11Window::CloseXWindow() {

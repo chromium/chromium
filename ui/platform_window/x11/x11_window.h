@@ -54,44 +54,6 @@ class X11_WINDOW_EXPORT X11Window
       public WmMoveLoopHandler,
       public X11DesktopWindowMoveClient::Delegate {
  public:
-  enum class WindowType {
-    kWindow,
-    kPopup,
-    kMenu,
-    kTooltip,
-    kDrag,
-    kBubble,
-  };
-
-  enum class WindowOpacity {
-    kInferOpacity,
-    kOpaqueWindow,
-    kTranslucentWindow,
-  };
-
-  struct Configuration final {
-    Configuration();
-    Configuration(const Configuration& config);
-    ~Configuration();
-
-    WindowType type = WindowType::kWindow;
-    WindowOpacity opacity = WindowOpacity::kInferOpacity;
-    gfx::Rect bounds;
-    gfx::ImageSkia* icon = nullptr;
-    base::Optional<int> background_color;
-    bool activatable = true;
-    bool force_show_in_taskbar = false;
-    bool keep_on_top = false;
-    bool visible_on_all_workspaces = false;
-    bool remove_standard_frame = true;
-    bool prefer_dark_theme = false;
-    bool override_redirect = false;
-    std::string workspace;
-    std::string wm_class_name;
-    std::string wm_class_class;
-    std::string wm_role_name;
-  };
-
   explicit X11Window(PlatformWindowDelegate* platform_window_delegate);
   ~X11Window() override;
 
@@ -254,7 +216,12 @@ class X11_WINDOW_EXPORT X11Window
       const gfx::Rect& current_window_bounds,
       ui::LocatedEvent* located_event);
 
-  void Init(const Configuration& config);
+  // Creates the X window with the given properties.
+  // Depending on presence of the compositing manager and window type, may
+  // change the opacity, in which case returns the final opacity type through
+  // |opacity|.
+  void CreateXWindow(const PlatformWindowInitProperties& properties,
+                     PlatformWindowOpacity& opacity);
   void CloseXWindow();
   void Map(bool inactive = false);
   void SetFullscreen(bool fullscreen);
