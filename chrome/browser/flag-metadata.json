@@ -2383,7 +2383,7 @@
   },
   {
     "name": "enable-storage-pressure-event",
-    "owners": [ "astavrakos@google.com", "jarrydg" ],
+    "owners": [ "jarrydg", "chrome-owp-storage@google.com" ],
     "expiry_milestone": 89
   },
   {
