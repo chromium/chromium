@@ -6797,7 +6797,6 @@ PositionWithAffinity LayoutBox::PositionForPointInFragments(
   // When |this| is block fragmented, find the closest fragment.
   const NGPhysicalBoxFragment* closest_fragment = nullptr;
   PhysicalOffset closest_fragment_offset;
-  NGLink closest_link;
   LayoutUnit shortest_square_distance = LayoutUnit::Max();
   for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
     // If |fragment| contains |target|, call its |PositionForPoint|.

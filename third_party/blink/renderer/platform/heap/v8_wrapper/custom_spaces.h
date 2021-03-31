@@ -42,6 +42,12 @@ class PLATFORM_EXPORT CSSValueSpace : public cppgc::CustomSpace<CSSValueSpace> {
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 3;
 };
 
+class PLATFORM_EXPORT LayoutObjectSpace
+    : public cppgc::CustomSpace<LayoutObjectSpace> {
+ public:
+  static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 4;
+};
+
 struct CustomSpaces {
   static std::vector<std::unique_ptr<cppgc::CustomSpaceBase>>
   CreateCustomSpaces() {
@@ -50,6 +56,7 @@ struct CustomSpaces {
     spaces.emplace_back(std::make_unique<HeapHashTableBackingSpace>());
     spaces.emplace_back(std::make_unique<NodeSpace>());
     spaces.emplace_back(std::make_unique<CSSValueSpace>());
+    spaces.emplace_back(std::make_unique<LayoutObjectSpace>());
     return spaces;
   }
 };

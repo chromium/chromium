@@ -13,7 +13,6 @@ namespace blink {
 
 class LocalDOMWindow;
 class ScriptState;
-class Visitor;
 
 class LockScreenData final : public ScriptWrappable,
                              public Supplement<LocalDOMWindow> {

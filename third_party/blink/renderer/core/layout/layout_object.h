@@ -293,6 +293,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   friend class VisualRectMappingTest;
 
  public:
+#if !BUILDFLAG(USE_V8_OILPAN)
   // Use a type specific arena for LayoutObject
   template <typename T>
   static void* AllocateObject(size_t size) {
@@ -303,6 +304,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
         state, size, BlinkGC::kLayoutObjectArenaIndex,
         GCInfoTrait<GCInfoFoldedType<LayoutObject>>::Index(), type_name);
   }
+#endif  // !BUILDFLAG(USE_V8_OILPAN)
 
   // Anonymous objects should pass the document as their node, and they will
   // then automatically be marked as anonymous in the constructor.
@@ -4530,5 +4532,17 @@ CORE_EXPORT void showLayoutTree(const blink::LayoutObject* object1,
                                 const blink::LayoutObject* object2);
 
 #endif
+
+#if BUILDFLAG(USE_V8_OILPAN)
+namespace cppgc {
+// Assign LayoutObject to be allocated on custom LayoutObjectSpace.
+template <typename T>
+struct SpaceTrait<
+    T,
+    std::enable_if_t<std::is_base_of<blink::LayoutObject, T>::value>> {
+  using Space = blink::LayoutObjectSpace;
+};
+}  // namespace cppgc
+#endif  // USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_OBJECT_H_

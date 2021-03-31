@@ -661,7 +661,7 @@ void TableLayoutAlgorithmAuto::InsertSpanCell(LayoutTableCell* cell) {
   if (!size || span_cells_[size - 1] != 0) {
     span_cells_.Grow(size + 10);
     for (unsigned i = 0; i < 10; i++)
-      span_cells_[size + i] = 0;
+      span_cells_[size + i] = nullptr;
     size += 10;
   }
 
