@@ -12,8 +12,13 @@
 namespace chromeos {
 namespace quick_answers {
 
+extern const char kCategoryPath[];
+extern const char kConversionRateAPath[];
+extern const char kResultValueTemplate[];
+extern const char kNamePath[];
+extern const char kUnitsPath[];
+
 // Utility class for unit conversion.
-// TODO(b/182389513): Add unittests.
 class UnitConverter {
  public:
   explicit UnitConverter(const base::Value& rule_set);

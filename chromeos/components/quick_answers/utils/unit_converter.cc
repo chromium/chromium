@@ -16,17 +16,17 @@ namespace {
 
 using base::Value;
 
-constexpr char kCategoryPath[] = "category";
-constexpr char kConversionRateAPath[] = "conversionToSiA";
-constexpr char kResultValueTemplate[] = "%.3f";
-constexpr char kNamePath[] = "name";
-constexpr char kUnitsPath[] = "units";
-
 bool IsLinearFormula(const base::Optional<double> rate_a) {
   return rate_a.has_value() && rate_a.value() != 0;
 }
 
 }  // namespace
+
+const char kCategoryPath[] = "category";
+const char kConversionRateAPath[] = "conversionToSiA";
+const char kResultValueTemplate[] = "%.3f";
+const char kNamePath[] = "name";
+const char kUnitsPath[] = "units";
 
 UnitConverter::UnitConverter(const Value& rule_set) : rule_set_(rule_set) {}
 
@@ -65,6 +65,8 @@ const Value* UnitConverter::FindProperDestinationUnit(
     return nullptr;
 
   const auto* units = GetPossibleUnitsForCategory(*src_category);
+  if (!units)
+    return nullptr;
 
   // Find the unit with closest conversion rate within the preferred range. If
   // no proper unit found, return nullptr.
