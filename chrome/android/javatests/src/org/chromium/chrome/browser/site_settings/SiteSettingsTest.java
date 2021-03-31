@@ -1360,9 +1360,7 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
-    //@DisableIf.Build(message = "EME not working before M", sdk_is_less_than =
-    // Build.VERSION_CODES.M)
-    @DisabledTest(message = "Flaky test.  https://crbug.com/1167452")
+    @DisableIf.Build(message = "EME not working before M", sdk_is_less_than = Build.VERSION_CODES.M)
     public void testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(true /* expectGranted */);
         mPermissionRule.runNoPromptTest(mPermissionUpdateWaiter,
