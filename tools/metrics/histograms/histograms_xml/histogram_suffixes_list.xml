@@ -14175,7 +14175,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="PerformanceMonitor.AverageCPU2"/>
   <affected-histogram name="PerformanceMonitor.AverageDisk"/>
   <affected-histogram name="PerformanceMonitor.EnergyImpact"/>
-  <affected-histogram name="PerformanceMonitor.HighCPU"/>
+  <affected-histogram name="PerformanceMonitor.HighCPU">
+    <obsolete>
+      Removed 04/2021.
+    </obsolete>
+  </affected-histogram>
   <affected-histogram name="PerformanceMonitor.IdleWakeups"/>
   <affected-histogram name="PerformanceMonitor.PackageExitIdleWakeups"/>
 </histogram_suffixes>

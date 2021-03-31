@@ -11147,6 +11147,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PerformanceMonitor.HighCPU" enum="BooleanHit"
     expires_after="M85">
+  <obsolete>
+    Removed 04/2021. PerformanceMonitor.AverageCPU2 has the same data with more
+    granularity.
+  </obsolete>
   <owner>oysteine@chromium.org</owner>
   <summary>
     The number of times a process has continuously stayed above a certain

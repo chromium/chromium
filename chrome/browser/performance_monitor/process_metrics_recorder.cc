@@ -11,10 +11,6 @@ namespace performance_monitor {
 
 namespace {
 
-// If a process is consistently above this CPU utilization percentage over time,
-// we consider it as high and may take action.
-const float kHighCPUUtilizationThreshold = 90.0f;
-
 // CPU usage metrics are provided to this class as a double in the
 // [0.0, number of cores * 100.0] range. The CPU usage is usually below 1%, so
 // the histograms are reported with a 1/10000 granularity to make analyzing the
@@ -55,12 +51,6 @@ void ProcessMetricsRecorder::OnMetricsSampled(
           "PerformanceMonitor.AverageCPU2.BrowserProcess",
           metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
           kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-      // If CPU usage has consistently been above our threshold,
-      // we *may* have an issue.
-      if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
-        base::UmaHistogramBoolean("PerformanceMonitor.HighCPU.BrowserProcess",
-                                  true);
-      }
 #if defined(OS_WIN)
       base::UmaHistogramCustomCounts(
           "PerformanceMonitor.AverageDisk.BrowserProcess", metrics.disk_usage,
@@ -88,10 +78,6 @@ void ProcessMetricsRecorder::OnMetricsSampled(
           "PerformanceMonitor.AverageCPU2.RendererProcess2",
           metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
           kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-      if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
-        base::UmaHistogramBoolean("PerformanceMonitor.HighCPU.RendererProcess",
-                                  true);
-      }
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_AIX)
       base::UmaHistogramCounts10000(
@@ -114,9 +100,6 @@ void ProcessMetricsRecorder::OnMetricsSampled(
           "PerformanceMonitor.AverageCPU2.GPUProcess",
           metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
           kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-      if (metrics.cpu_usage > kHighCPUUtilizationThreshold)
-        base::UmaHistogramBoolean("PerformanceMonitor.HighCPU.GPUProcess",
-                                  true);
 #if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
     defined(OS_AIX)
       base::UmaHistogramCounts10000("PerformanceMonitor.IdleWakeups.GPUProcess",
@@ -137,9 +120,6 @@ void ProcessMetricsRecorder::OnMetricsSampled(
           "PerformanceMonitor.AverageCPU2.PPAPIProcess",
           metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
           kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-      if (metrics.cpu_usage > kHighCPUUtilizationThreshold)
-        base::UmaHistogramBoolean("PerformanceMonitor.HighCPU.PPAPIProcess",
-                                  true);
       break;
     case content::PROCESS_TYPE_UTILITY:
       base::UmaHistogramCustomCounts(
@@ -162,21 +142,12 @@ void ProcessMetricsRecorder::OnMetricsSampled(
           "PerformanceMonitor.AverageCPU2.RendererExtensionPersistentProcess",
           metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
           kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-      if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
-        base::UmaHistogramBoolean(
-            "PerformanceMonitor.HighCPU.RendererExtensionPersistentProcess",
-            true);
-      }
       break;
     case kProcessSubtypeExtensionEvent:
       base::UmaHistogramCustomCounts(
           "PerformanceMonitor.AverageCPU2.RendererExtensionEventProcess",
           metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
           kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-      if (metrics.cpu_usage > kHighCPUUtilizationThreshold) {
-        base::UmaHistogramBoolean(
-            "PerformanceMonitor.HighCPU.RendererExtensionEventProcess", true);
-      }
       break;
     case kProcessSubtypeNetworkProcess:
       base::UmaHistogramCustomCounts(
