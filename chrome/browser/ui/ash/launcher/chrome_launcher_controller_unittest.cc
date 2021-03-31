@@ -836,8 +836,12 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
             result += "App8";
           } else if (app == web_app::kGmailAppId) {
             result += "Gmail";
+          } else if (app == web_app::kGoogleCalendarAppId) {
+            result += "Calendar";
           } else if (app == web_app::kGoogleDocsAppId) {
             result += "Doc";
+          } else if (app == web_app::kMessagesAppId) {
+            result += "Messages";
           } else if (app == web_app::kYoutubeAppId) {
             result += "Youtube";
           } else if (app == extension_files_app_->id()) {
@@ -1010,9 +1014,13 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     if (web_app_id == web_app::kGmailAppId) {
       web_app_info->start_url =
           GURL("https://mail.google.com/?usp=installed_webapp");
+    } else if (web_app_id == web_app::kGoogleCalendarAppId) {
+      web_app_info->start_url = GURL("https://calendar.google.com/calendar/r");
     } else if (web_app_id == web_app::kGoogleDocsAppId) {
       web_app_info->start_url =
           GURL("https://docs.google.com/document/?usp=installed_webapp");
+    } else if (web_app_id == web_app::kMessagesAppId) {
+      web_app_info->start_url = GURL("https://messages.google.com/web/");
     } else if (web_app_id == web_app::kYoutubeAppId) {
       web_app_info->start_url = GURL("https://www.youtube.com/?feature=ytca");
     } else {
@@ -1388,12 +1396,19 @@ TEST_F(ChromeLauncherControllerTest, DefaultApps) {
   StartPrefSyncService(syncer::SyncDataList());
   EXPECT_EQ("Chrome, Youtube, App1", GetPinnedAppStatus());
 
-  AddWebApp(web_app::kGoogleDocsAppId);
-  EXPECT_EQ("Chrome, Doc, Youtube, App1", GetPinnedAppStatus());
-  AddWebApp(web_app::kGmailAppId);
-  EXPECT_EQ("Chrome, Gmail, Doc, Youtube, App1", GetPinnedAppStatus());
+  AddWebApp(web_app::kMessagesAppId);
+  EXPECT_EQ("Chrome, Messages, Youtube, App1", GetPinnedAppStatus());
+
   AddExtension(extension_files_app_.get());
-  EXPECT_EQ("Chrome, Files, Gmail, Doc, Youtube, App1", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, Files, Messages, Youtube, App1", GetPinnedAppStatus());
+
+  AddWebApp(web_app::kGoogleCalendarAppId);
+  EXPECT_EQ("Chrome, Calendar, Files, Messages, Youtube, App1",
+            GetPinnedAppStatus());
+
+  AddWebApp(web_app::kGmailAppId);
+  EXPECT_EQ("Chrome, Gmail, Calendar, Files, Messages, Youtube, App1",
+            GetPinnedAppStatus());
 }
 
 TEST_F(ChromeLauncherControllerSplitSettingsSyncTest, DefaultApps) {
@@ -1408,11 +1423,11 @@ TEST_F(ChromeLauncherControllerSplitSettingsSyncTest, DefaultApps) {
   // Simulate the default app loader installing some apps. Don't start the
   // pref sync service, because this user opted out of sync.
   AddWebApp(web_app::kYoutubeAppId);
-  AddWebApp(web_app::kGoogleDocsAppId);
+  AddWebApp(web_app::kMessagesAppId);
   AddWebApp(web_app::kGmailAppId);
 
   // Default apps are pinned.
-  EXPECT_EQ("Chrome, Gmail, Doc, Youtube", GetPinnedAppStatus());
+  EXPECT_EQ("Chrome, Gmail, Messages, Youtube", GetPinnedAppStatus());
 }
 
 TEST_F(ChromeLauncherControllerLacrosTest, LacrosPinnedByDefault) {
@@ -3034,18 +3049,18 @@ TEST_F(ChromeLauncherControllerTest, Policy) {
 
 TEST_F(ChromeLauncherControllerTest, UnpinWithUninstall) {
   AddWebApp(web_app::kGmailAppId);
-  AddWebApp(web_app::kGoogleDocsAppId);
+  AddWebApp(web_app::kYoutubeAppId);
 
   InitLauncherController();
   StartPrefSyncService(syncer::SyncDataList());
 
   EXPECT_TRUE(launcher_controller_->IsAppPinned(web_app::kGmailAppId));
-  EXPECT_TRUE(launcher_controller_->IsAppPinned(web_app::kGoogleDocsAppId));
+  EXPECT_TRUE(launcher_controller_->IsAppPinned(web_app::kYoutubeAppId));
 
   RemoveWebApp(web_app::kGmailAppId);
 
   EXPECT_FALSE(launcher_controller_->IsAppPinned(web_app::kGmailAppId));
-  EXPECT_TRUE(launcher_controller_->IsAppPinned(web_app::kGoogleDocsAppId));
+  EXPECT_TRUE(launcher_controller_->IsAppPinned(web_app::kYoutubeAppId));
 }
 
 TEST_F(ChromeLauncherControllerTest, SyncUpdates) {

@@ -67,6 +67,10 @@ constexpr char kHelpAppId[] = "nbljnnecbjbmifnoehiemkgefbnpoeak";
 constexpr char kMediaAppId[] = "jhdjimmaggjajfjphpljagpgkidjilnj";
 
 // Generated as: web_app::GenerateAppIdFromURL(GURL(
+//     "https://messages.google.com/web/"))
+constexpr char kMessagesAppId[] = "hpfldicfbfomlpcikngkocigghgafkph";
+
+// Generated as: web_app::GenerateAppIdFromURL(GURL(
 //     "chrome://test-system-app/pwa.html"))
 constexpr char kMockSystemAppId[] = "maphiehpiinjgiaepbljmopkodkadcbh";
 

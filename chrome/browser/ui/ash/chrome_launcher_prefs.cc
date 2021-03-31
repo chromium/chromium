@@ -50,23 +50,34 @@ namespace {
 
 // Chrome is pinned explicitly.
 const char* kDefaultPinnedApps[] = {
-    extension_misc::kFilesManagerAppId,
-
     extension_misc::kGmailAppId,
     web_app::kGmailAppId,
 
-    extension_misc::kGoogleDocAppId,
-    web_app::kGoogleDocsAppId,
+    web_app::kGoogleCalendarAppId,
+
+    extension_misc::kFilesManagerAppId,
+
+    web_app::kMessagesAppId,
+
+    arc::kPlayStoreAppId,
 
     extension_misc::kYoutubeAppId,
     web_app::kYoutubeAppId,
 
-    arc::kPlayStoreAppId,
+    arc::kGooglePhotosAppId,
 };
 
 const char* kTabletFormFactorDefaultPinnedApps[] = {
-    extension_misc::kFilesManagerAppId, arc::kGmailAppId,
-    extension_misc::kGoogleDocAppId, arc::kYoutubeAppId, arc::kPlayStoreAppId};
+    arc::kGmailAppId,
+
+    arc::kGoogleCalendarAppId,
+
+    arc::kPlayStoreAppId,
+
+    arc::kYoutubeAppId,
+
+    arc::kGooglePhotosAppId,
+};
 
 const char kDefaultPinnedAppsKey[] = "default";
 
