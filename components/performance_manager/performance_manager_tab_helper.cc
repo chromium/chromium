@@ -458,24 +458,8 @@ void PerformanceManagerTabHelper::DidUpdateFaviconURL(
 void PerformanceManagerTabHelper::BindDocumentCoordinationUnit(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<mojom::DocumentCoordinationUnit> receiver) {
-  // TODO(https://crbug.com/987445): Why else than due to speculative render
-  //     frame hosts would this happen? Is there a race between the RFH creation
-  //     notification and the mojo interface request?
   auto it = frames_.find(render_frame_host);
-  if (it == frames_.end()) {
-    if (render_frame_host->IsRenderFrameCreated()) {
-      // This must be a speculative render frame host, generate a creation event
-      // for it a this point
-      RenderFrameCreated(render_frame_host);
-
-      it = frames_.find(render_frame_host);
-      DCHECK(it != frames_.end());
-    } else {
-      // It would be nice to know what's up here, maybe there's a race between
-      // in-progress interface requests and the frame deletion?
-      return;
-    }
-  }
+  DCHECK(it != frames_.end());
 
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE,
