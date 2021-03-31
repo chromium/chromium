@@ -171,6 +171,7 @@ void ArCompositorFrameSink::RequestBeginFrame(base::TimeDelta interval,
 
 void ArCompositorFrameSink::SubmitFrame(WebXrFrame* xr_frame,
                                         FrameType frame_type) {
+  DVLOG(3) << __func__;
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
   DCHECK(xr_frame);
@@ -181,6 +182,7 @@ void ArCompositorFrameSink::SubmitFrame(WebXrFrame* xr_frame,
 }
 
 void ArCompositorFrameSink::DidNotProduceFrame(WebXrFrame* xr_frame) {
+  DVLOG(3) << __func__;
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
   DCHECK(xr_frame);
@@ -261,6 +263,7 @@ void ArCompositorFrameSink::OnBeginFrame(
 }
 
 void ArCompositorFrameSink::OnFrameSubmitAck(const viz::BeginFrameAck& ack) {
+  DVLOG(3) << __func__;
   can_issue_new_begin_frame_ = true;
   on_can_issue_new_frame_.Run();
 }
@@ -286,12 +289,13 @@ void ArCompositorFrameSink::OnBindingsDisconnect() {
 
 viz::CompositorFrame ArCompositorFrameSink::CreateFrame(WebXrFrame* xr_frame,
                                                         FrameType frame_type) {
-  DVLOG(3) << __func__;
   DCHECK(IsOnGlThread());
   DCHECK(is_initialized_);
   DCHECK(xr_frame);
   DCHECK(xr_frame->begin_frame_args)
       << "Never received a BeginFrame for this frame";
+  DVLOG(3) << __func__ << " frame_id=" << xr_frame->index
+           << " frame_type=" << frame_type;
 
   viz::CompositorFrame frame;
   frame.metadata.begin_frame_ack =

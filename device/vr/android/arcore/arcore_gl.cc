@@ -46,6 +46,14 @@
 #include "ui/gl/init/gl_factory.h"
 
 namespace {
+// TODO(https://crbug.com/1192867): Some pages can hang if we try to wait for
+// the compositor to acknowledge receipt of a frame before moving it to the
+// "rendering" state of the state machine. However, not doing so could increase
+// the latency of frames under heavy load as we aren't listening to back
+// pressure from the compositor. Ideally, this value would be set to false and
+// then removed. Investigate why it needs to be true.
+const bool kTransitionToRenderingImmediately = true;
+
 const char kInputSourceProfileName[] = "generic-touchscreen";
 
 const gfx::Size kDefaultFrameSize = {1, 1};
@@ -240,9 +248,13 @@ void ArCoreGl::InitializeArCompositor(gpu::SurfaceHandle surface_handle,
   // we will only submit the frame if it's processing, and there's no other
   // work to do, we can just directly call to transition it.
   ArCompositorFrameSink::CompositorReceivedFrameCallback
-      compositor_received_frame_callback =
-          base::BindRepeating(&ArCoreGl::TransitionProcessingFrameToRendering,
-                              weak_ptr_factory_.GetWeakPtr());
+      compositor_received_frame_callback = base::DoNothing();
+
+  if (!kTransitionToRenderingImmediately) {
+    compositor_received_frame_callback =
+        base::BindRepeating(&ArCoreGl::TransitionProcessingFrameToRendering,
+                            weak_ptr_factory_.GetWeakPtr());
+  }
 
   ArCompositorFrameSink::RenderingFinishedCallback rendering_finished_callback =
       base::BindRepeating(&ArCoreGl::FinishRenderingFrame,
@@ -1253,12 +1265,16 @@ void ArCoreGl::SubmitVizFrame(int16_t frame_index,
   DCHECK(webxr_->HaveProcessingFrame());
   DCHECK(ar_compositor_);
 
-  DVLOG(3) << __func__ << " Submitting Frame to compositor";
+  DVLOG(3) << __func__ << " Submitting Frame to compositor: " << frame_index;
   auto* frame = webxr_->GetProcessingFrame();
   ar_compositor_->SubmitFrame(frame, frame_type);
 
   if (have_camera_image_) {
     have_camera_image_ = false;
+  }
+
+  if (kTransitionToRenderingImmediately) {
+    TransitionProcessingFrameToRendering();
   }
 
   if (submit_client_ &&
