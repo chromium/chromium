@@ -48,6 +48,10 @@ const int kMinimumScreenshotSizeInPx = 320;
 // Maximum dimension size in pixels for screenshots.
 const int kMaximumScreenshotSizeInPx = 3840;
 
+// Maximum dimension can't be more than 2.3 times as long as the minimum
+// dimension for screenshots.
+const double kMaximumScreenshotRatio = 2.3;
+
 // Maximum dimension size in pixels for icons.
 const int kMaximumIconSizeInPx = std::numeric_limits<int>::max();
 
@@ -912,9 +916,8 @@ void InstallableManager::OnScreenshotFetched(const GURL screenshot_url,
         continue;
       }
 
-      // Max dimension can't be twice larger than min dimension.
       auto dimensions = std::minmax(screenshot.width(), screenshot.height());
-      if (dimensions.second > dimensions.first * 2)
+      if (dimensions.second > dimensions.first * kMaximumScreenshotRatio)
         continue;
 
       screenshots_.push_back(screenshot);
