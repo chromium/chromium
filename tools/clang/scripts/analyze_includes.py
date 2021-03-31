@@ -244,8 +244,8 @@ def analyze(target, revision, build_log_file, json_file):
   # Map from file to files that include it.
   print('Building reverse include map...')
   included_by = {k: set() for k in includes}
-  for k, v in includes.values():
-    for i in v:
+  for k in includes:
+    for i in includes[k]:
       included_by[i].add(k)
 
   build_size = sum([trans_sizes[n] for n in roots])
