@@ -605,7 +605,7 @@ ResultCode SetJobMemoryLimit(const base::CommandLine& cmd_line,
       memory_limit = 32 * GB;
     } else if (physical_memory > 16 * GB) {
       memory_limit = 16 * GB;
-    } else if (physical_memory > 8 * GB) {
+    } else {
       memory_limit = 8 * GB;
     }
   }

@@ -445,7 +445,7 @@ rlim_t GetProcessDataSizeLimit(SandboxType sandbox_type) {
       return 32 * GB;
     } else if (physical_memory > 16 * GB) {
       return 16 * GB;
-    } else if (physical_memory > 8 * GB) {
+    } else {
       return 8 * GB;
     }
   }
