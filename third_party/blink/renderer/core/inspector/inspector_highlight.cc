@@ -1165,6 +1165,10 @@ std::unique_ptr<protocol::DictionaryValue> BuildFlexItemInfo(
   if (base_size.IsSpecified()) {
     flex_info->setDouble("baseSize", base_size.Pixels() * scale);
     flex_info->setBoolean("isHorizontalFlow", is_horizontal);
+    auto box_sizing = layout_object->StyleRef().BoxSizing();
+    flex_info->setString("boxSizing", box_sizing == EBoxSizing::kBorderBox
+                                          ? "border"
+                                          : "content");
 
     flex_info->setValue(
         "flexItemHighlightConfig",
