@@ -5,10 +5,8 @@
 package org.chromium.chrome.browser.signin;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
-import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -257,9 +255,14 @@ public class AccountPickerBottomSheetRenderTest {
         })
                 .when(mAccountPickerDelegateMock)
                 .updateCredentials(eq(PROFILE_DATA1.getAccountEmail()), any());
-        onView(withText(R.string.auth_error_card_button)).perform(click());
-        CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
-                R.id.account_picker_selected_account)::isShown);
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            bottomSheetView.findViewById(R.id.account_picker_continue_as_button).performClick();
+        });
+
+        CriteriaHelper.pollUiThread(
+                bottomSheetView.findViewById(R.id.account_picker_selected_account)::isShown);
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "collapsed_sheet_with_account");
     }
