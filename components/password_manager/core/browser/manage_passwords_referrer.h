@@ -20,7 +20,6 @@ enum class ManagePasswordsReferrer {
   // Corresponds to Chrome's settings page.
   kChromeSettings = 0,
   // Corresponds to the manage passwords bubble when clicking the key icon.
-  // Only used on desktop.
   kManagePasswordsBubble = 1,
   // Corresponds to the context menu following a right click into a password
   // field.
@@ -37,7 +36,6 @@ enum class ManagePasswordsReferrer {
   kProfileChooser = 5,
   // Corresponds to the passwords accessory sheet on Android, triggered by
   // tapping on the key icon above in the keyboard accessory bar.
-  // Only used on Android.
   kPasswordsAccessorySheet = 6,
   // Corresponds to the touch to fill bottom sheet that replaces the dropdown.
   // Only used on Android.
@@ -45,7 +43,10 @@ enum class ManagePasswordsReferrer {
   // The bubble notifying the user that the last compromised password was
   // updated.
   kSafeStateBubble = 8,
-  kMaxValue = kSafeStateBubble,
+  // The dialog notifying a user about compromised credentials on sign in. Only
+  // used on iOS.
+  kPasswordBreachDialog = 9,
+  kMaxValue = kPasswordBreachDialog,
 };
 
 }  // namespace password_manager

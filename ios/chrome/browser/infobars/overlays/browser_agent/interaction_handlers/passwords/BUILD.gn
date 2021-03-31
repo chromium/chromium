@@ -18,6 +18,7 @@ source_set("passwords") {
   ]
   deps = [
     "//base",
+    "//components/password_manager/core/browser",
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars/overlays",

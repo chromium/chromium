@@ -8,12 +8,14 @@
 
 #include "base/feature_list.h"
 #import "base/mac/foundation_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
@@ -1139,6 +1141,9 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     case SettingsItemTypePasswords:
       base::RecordAction(
           base::UserMetricsAction("Options_ShowPasswordManager"));
+      UMA_HISTOGRAM_ENUMERATION(
+          "PasswordManager.ManagePasswordsReferrer",
+          password_manager::ManagePasswordsReferrer::kChromeSettings);
       [self showPasswords];
       break;
     case SettingsItemTypeAutofillCreditCard:

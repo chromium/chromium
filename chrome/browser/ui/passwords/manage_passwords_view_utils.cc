@@ -202,6 +202,7 @@ GURL GetGooglePasswordManagerURL(ManagePasswordsReferrer referrer) {
         return "safe_state";
       case ManagePasswordsReferrer::kPasswordsAccessorySheet:
       case ManagePasswordsReferrer::kTouchToFill:
+      case ManagePasswordsReferrer::kPasswordBreachDialog:
         NOTREACHED();
     }
 

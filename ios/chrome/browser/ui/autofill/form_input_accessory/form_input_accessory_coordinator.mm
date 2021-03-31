@@ -8,11 +8,13 @@
 
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
@@ -271,6 +273,9 @@
 - (void)openPasswordSettings {
   [self reset];
   [self.navigator openPasswordSettings];
+  UMA_HISTOGRAM_ENUMERATION(
+      "PasswordManager.ManagePasswordsReferrer",
+      password_manager::ManagePasswordsReferrer::kPasswordsAccessorySheet);
 }
 
 - (void)openAllPasswordsPicker {
