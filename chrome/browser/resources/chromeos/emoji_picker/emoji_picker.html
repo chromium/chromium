@@ -34,7 +34,7 @@
       --emoji-divider-color: var(--google-grey-900);
     }
   }
-  
+
   #searchContainer,
   #listContainer {
     display: flex;
@@ -139,16 +139,20 @@
       </template>
       <!--Fake group button to increase maximum scrolling, need an icon to
         render as invisible-->
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]"
+        tabindex="-1">
       </emoji-group-button>
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]"
+        tabindex="-1">
       </emoji-group-button>
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]"
+        tabindex="-1">
       </emoji-group-button>
-      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]">
+      <emoji-group-button id="fake" icon="[[emojiGroupTabs[0].icon]]"
+        tabindex="-1">
       </emoji-group-button>
       <emoji-group-button id="RightChevronScrollTarget"
-        icon="[[emojiGroupTabs[0].icon]]">
+        icon="[[emojiGroupTabs[0].icon]]" tabindex="-1">
       </emoji-group-button>
       <cr-icon-button id="rightChevron" class="chevron"
         on-click="onRightChevronClick"
