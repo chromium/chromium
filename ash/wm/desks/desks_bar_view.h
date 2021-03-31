@@ -202,6 +202,12 @@ class ASH_EXPORT DesksBarView : public views::View,
   // |location_in_screen|.
   int DetermineMoveIndex(int location_in_screen) const;
 
+  // If drag a desk over a scroll button (i.e., the desk intersects the button),
+  // scroll the desk bar. If the desk is dropped or leaves the button, end
+  // scroll. Return true if the scroll is triggered. Return false if the scroll
+  // is ended.
+  bool MaybeScrollByDraggedDesk();
+
   // Returns the mini_view associated with |desk| or nullptr if no mini_view
   // has been created for it yet.
   DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;

@@ -166,6 +166,14 @@ void ClickOnView(const views::View* view,
   event_generator->ClickLeftButton();
 }
 
+void WaitForMilliseconds(int milliseconds) {
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(),
+      base::TimeDelta::FromMilliseconds(milliseconds));
+  run_loop.Run();
+}
+
 void LongGestureTap(const gfx::Point& screen_location,
                     ui::test::EventGenerator* event_generator,
                     bool release_touch = true) {
@@ -180,10 +188,7 @@ void LongGestureTap(const gfx::Point& screen_location,
 
   event_generator->set_current_screen_location(screen_location);
   event_generator->PressTouch();
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromMilliseconds(2));
-  run_loop.Run();
+  WaitForMilliseconds(2);
 
   gesture_config->set_long_press_time_in_ms(old_long_press_time_in_ms);
   gesture_config->set_show_press_delay_in_ms(old_show_press_delay_in_ms);
@@ -2874,13 +2879,9 @@ TEST_F(DesksTest, AutohiddenShelfAnimatesAfterDeskSwitch) {
   EXPECT_EQ(shelf_widget->GetWindowBoundsInScreen(), shown_shelf_bounds);
 
   // Let's wait until the shelf animates to a fully shown state.
-  while (shelf_widget->GetLayer()->transform() != gfx::Transform()) {
-    base::RunLoop run_loop;
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(),
-        base::TimeDelta::FromMilliseconds(200));
-    run_loop.Run();
-  }
+  while (shelf_widget->GetLayer()->transform() != gfx::Transform())
+    WaitForMilliseconds(200);
+
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 
@@ -4239,6 +4240,74 @@ TEST_F(DesksBentoTest, ScrollButtons) {
   EXPECT_FALSE(desks_bar->GetRightScrollButtonForTesting()->GetVisible());
 }
 
+// Tests the behavior when long press on the scroll buttons.
+TEST_F(DesksBentoTest, ContinueScrollBar) {
+  // Make a flat long window to generate multiple pages on desks bar.
+  UpdateDisplay("800x150");
+  const size_t max_desks_size = desks_util::GetMaxNumberOfDesks();
+  for (size_t i = 1; i < max_desks_size; i++)
+    NewDesk();
+
+  auto* desks_controller = DesksController::Get();
+  EXPECT_EQ(desks_controller->desks().size(), max_desks_size);
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  auto* desks_bar =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+
+  // Cache scroll view, initial offset, max_offset, page size and scroll
+  // buttons.
+  views::ScrollView* scroll_view = desks_bar->GetScrollViewForTesting();
+  const int init_offset = scroll_view->GetVisibleRect().x();
+  const int page_size = scroll_view->width();
+  const int max_offset =
+      scroll_view->contents()->width() - page_size + init_offset;
+  ScrollArrowButton* left_button = desks_bar->GetLeftScrollButtonForTesting();
+  ScrollArrowButton* right_button = desks_bar->GetRightScrollButtonForTesting();
+
+  // At first, left scroll button is hidden and right scroll button is visible.
+  EXPECT_FALSE(left_button->GetVisible());
+  EXPECT_TRUE(right_button->GetVisible());
+
+  // Press on the right scroll button by mouse should scroll to the next page.
+  auto* event_generator = GetEventGenerator();
+
+  event_generator->MoveMouseTo(right_button->GetBoundsInScreen().CenterPoint());
+  event_generator->PressLeftButton();
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), init_offset + page_size);
+
+  // Both scroll buttons should be visible.
+  EXPECT_TRUE(left_button->GetVisible());
+  EXPECT_TRUE(right_button->GetVisible());
+
+  // Wait for 1s, there will be another scroll.
+  WaitForMilliseconds(1000);
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), init_offset + 2 * page_size);
+
+  // Wait for 1s, it will scroll to the maximum offset. Scroll ends.
+  WaitForMilliseconds(1000);
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), max_offset);
+
+  // Left scroll button should be visible and right scroll button should be
+  // hidden.
+  EXPECT_TRUE(left_button->GetVisible());
+  EXPECT_FALSE(right_button->GetVisible());
+
+  event_generator->ReleaseLeftButton();
+
+  // Press on left scroll button by gesture should scroll to the previous page.
+  event_generator->MoveTouch(left_button->GetBoundsInScreen().CenterPoint());
+  event_generator->PressTouch();
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), max_offset - page_size);
+
+  // Wait for 1s, there is another scroll.
+  WaitForMilliseconds(1000);
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), max_offset - 2 * page_size);
+
+  event_generator->ReleaseTouch();
+}
+
 // Tests that change the focused mini view should scroll the desks bar and put
 // the focused mini view inside the visible bounds.
 TEST_F(DesksBentoTest, FocusedMiniViewIsVisible) {
@@ -4941,7 +5010,8 @@ TEST_F(DesksBentoTest, ReorderDesksByKeyboard) {
 // Test reordering desks in RTL mode.
 TEST_F(DesksBentoTest, ReorderDesksInRTLMode) {
   // Turn on RTL mode.
-  base::i18n::SetICUDefaultLocale("ar");
+  const bool default_rtl = base::i18n::IsRTL();
+  base::i18n::SetRTLForTesting(true);
   EXPECT_TRUE(base::i18n::IsRTL());
 
   auto* desks_controller = DesksController::Get();
@@ -5023,6 +5093,97 @@ TEST_F(DesksBentoTest, ReorderDesksInRTLMode) {
   EXPECT_EQ(1, desks_controller->GetDeskIndex(desk_2));
   EXPECT_EQ(2, desks_controller->GetDeskIndex(desk_0));
   VerifyDesksRestoreData(prefs, std::vector<std::string>{"1", "2", "0"});
+
+  // Recover to default RTL mode.
+  base::i18n::SetRTLForTesting(default_rtl);
+}
+
+// Tests the behavior when drag a desk on the scroll button.
+TEST_F(DesksBentoTest, ScrollBarByDraggedDesk) {
+  // Make a flat long window to generate multiple pages on desks bar.
+  UpdateDisplay("800x150");
+  const size_t max_desks_size = desks_util::GetMaxNumberOfDesks();
+  for (size_t i = 1; i < max_desks_size; i++)
+    NewDesk();
+
+  auto* desks_controller = DesksController::Get();
+  EXPECT_EQ(desks_controller->desks().size(), max_desks_size);
+  auto* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  auto* desks_bar =
+      GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())->desks_bar_view();
+
+  // Cache scroll view, initial offset, max_offset, page size and scroll
+  // buttons.
+  views::ScrollView* scroll_view = desks_bar->GetScrollViewForTesting();
+  const int init_offset = scroll_view->GetVisibleRect().x();
+  const int page_size = scroll_view->width();
+  const int max_offset =
+      scroll_view->contents()->width() - page_size + init_offset;
+  ScrollArrowButton* left_button = desks_bar->GetLeftScrollButtonForTesting();
+  ScrollArrowButton* right_button = desks_bar->GetRightScrollButtonForTesting();
+
+  // At first, left scroll button is hidden and right scroll button is visible.
+  EXPECT_FALSE(left_button->GetVisible());
+  EXPECT_TRUE(right_button->GetVisible());
+
+  // Dragging a desk on the right scroll button should scroll to the next page.
+  auto* event_generator = GetEventGenerator();
+  DeskMiniView* mini_view_0 = desks_bar->mini_views()[0];
+  Desk* desk_0 = mini_view_0->desk();
+
+  StartDragDeskPreview(mini_view_0, event_generator);
+  EXPECT_TRUE(desks_bar->IsDraggingDesk());
+  event_generator->MoveMouseTo(right_button->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), init_offset + page_size);
+
+  // Both scroll buttons should be visible.
+  EXPECT_TRUE(left_button->GetVisible());
+  EXPECT_TRUE(right_button->GetVisible());
+
+  // Wait for 1s, there will be another scroll.
+  WaitForMilliseconds(1000);
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), init_offset + 2 * page_size);
+
+  // While scrolling, the desk cannot be reordered.
+  EXPECT_EQ(0, desks_controller->GetDeskIndex(desk_0));
+
+  // Wait for 1s, it will scroll to the maximum offset. Scroll ends.
+  WaitForMilliseconds(1000);
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), max_offset);
+
+  // Left scroll button should be visible and right scroll button should be
+  // hidden.
+  EXPECT_TRUE(left_button->GetVisible());
+  EXPECT_FALSE(right_button->GetVisible());
+
+  // Move the dragged desk to the center of the last desk.
+  event_generator->MoveMouseTo(desks_bar->mini_views()[max_desks_size - 1]
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
+  // The dragged desk is reordered to the end.
+  const int max_index = static_cast<int>(max_desks_size) - 1;
+  // Now the desk is reordered to the last position.
+  EXPECT_EQ(max_index, desks_controller->GetDeskIndex(desk_0));
+
+  // Dragging the desk to left scroll button should scroll to the previous page.
+  event_generator->MoveMouseTo(left_button->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), max_offset - page_size);
+
+  // Wait for 1s, there is another scroll.
+  WaitForMilliseconds(1000);
+  EXPECT_EQ(scroll_view->GetVisibleRect().x(), max_offset - 2 * page_size);
+
+  // The desk is still not reordered while scrolling backward.
+  EXPECT_EQ(max_index, desks_controller->GetDeskIndex(desk_0));
+
+  // Drop the desk. Desks bar will scroll to show the desk's target position.
+  event_generator->ReleaseLeftButton();
+  gfx::Rect bounds_0 = mini_view_0->bounds();
+  gfx::Rect bounds_visible = scroll_view->GetVisibleRect();
+  EXPECT_LE(bounds_visible.x(), bounds_0.x());
+  EXPECT_GE(bounds_visible.right(), bounds_0.right());
 }
 
 // Tests that while reordering desks by drag & drop, when a desk is snapping

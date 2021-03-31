@@ -78,6 +78,10 @@ constexpr int kScrollButtonWidth = 36;
 
 constexpr int kGradientZoneLength = 40;
 
+// The duration of scrolling one page.
+constexpr base::TimeDelta kBarScrollDuration =
+    base::TimeDelta::FromMilliseconds(250);
+
 gfx::Rect GetGestureEventScreenRect(const ui::Event& event) {
   DCHECK(event.IsGestureEvent());
   return event.AsGestureEvent()->details().bounding_box();
@@ -91,6 +95,13 @@ OverviewHighlightController* GetHighlightController() {
 
 int GetSpaceBetweenMiniViews(DeskMiniView* mini_view) {
   return kMiniViewsSpacing - mini_view->GetPreviewBorderInsets().width();
+}
+
+// Initialize a scoped layer animation settings for scroll view contents.
+void InitScrollContentsAnimationSettings(
+    ui::ScopedLayerAnimationSettings& settings) {
+  settings.SetTransitionDuration(kBarScrollDuration);
+  settings.SetTweenType(gfx::Tween::ACCEL_20_DECEL_60);
 }
 
 }  // namespace
@@ -406,6 +417,8 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
 
     scroll_view_contents_ =
         scroll_view_->SetContents(std::make_unique<views::View>());
+    // Make the scroll content view animable by painting to a layer.
+    scroll_view_contents_->SetPaintToLayer();
     expanded_state_new_desk_button_ = scroll_view_contents_->AddChildView(
         std::make_unique<ExpandedStateNewDeskButton>(this));
     zero_state_default_desk_button_ = scroll_view_contents_->AddChildView(
@@ -650,16 +663,22 @@ void DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
 
   drag_proxy_->DragToX(location_in_screen.x());
 
+  // Check if the desk is on the scroll arrow buttons. Do not determine move
+  // index while scrolling, since the positions of the desks on bar keep varying
+  // during this process.
+  if (MaybeScrollByDraggedDesk())
+    return;
+
   const auto drag_view_iter =
       std::find(mini_views_.cbegin(), mini_views_.cend(), drag_view_);
   DCHECK(drag_view_iter != mini_views_.cend());
 
-  int old_index = drag_view_iter - mini_views_.cbegin();
+  const int old_index = drag_view_iter - mini_views_.cbegin();
 
-  gfx::Point drag_pos_in_screen = drag_proxy_->GetPositionInScreen();
+  const int drag_pos_screen_x = drag_proxy_->GetBoundsInScreen().origin().x();
 
   // Determine the target location for the desk to be reordered.
-  int new_index = DetermineMoveIndex(drag_pos_in_screen.x());
+  const int new_index = DetermineMoveIndex(drag_pos_screen_x);
 
   if (old_index != new_index)
     Shell::Get()->desks_controller()->ReorderDesk(old_index, new_index);
@@ -674,12 +693,20 @@ void DesksBarView::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   Shell::Get()->desks_controller()->UpdateDesksDefaultNames();
   Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kPointer);
 
+  // Stop scroll even if the desk is on the scroll arrow buttons.
+  left_scroll_button_->OnDeskHoverEnd();
+  right_scroll_button_->OnDeskHoverEnd();
+
   // If the reordering is ended by the user (release the drag), perform the
-  // snapping back animation. Otherwise, directly finalize the drag.
-  if (end_by_user)
+  // snapping back animation and scroll the bar to target position. If current
+  // drag is ended due to the start of a new drag or the end of the overview,
+  // directly finalize current drag.
+  if (end_by_user) {
+    ScrollToShowMiniViewIfNecessary(drag_view_);
     drag_proxy_->SnapBackToDragView();
-  else
+  } else {
     FinalizeDragDesk();
+  }
 }
 
 void DesksBarView::FinalizeDragDesk() {
@@ -948,6 +975,25 @@ int DesksBarView::DetermineMoveIndex(int location_screen_x) const {
   return end_index - iter_step;
 }
 
+bool DesksBarView::MaybeScrollByDraggedDesk() {
+  DCHECK(drag_proxy_);
+
+  const gfx::Rect proxy_bounds = drag_proxy_->GetBoundsInScreen();
+
+  // If the desk proxy overlaps a scroll button, scroll the bar in the
+  // corresponding direction.
+  for (auto* scroll_button : {left_scroll_button_, right_scroll_button_}) {
+    if (scroll_button->GetVisible() &&
+        proxy_bounds.Intersects(scroll_button->GetBoundsInScreen())) {
+      scroll_button->OnDeskHoverStart();
+      return true;
+    }
+    scroll_button->OnDeskHoverEnd();
+  }
+
+  return false;
+}
+
 DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
   for (auto* mini_view : mini_views_) {
     if (mini_view->desk() == desk)
@@ -1053,12 +1099,18 @@ void DesksBarView::UpdateGradientZone() {
 }
 
 void DesksBarView::ScrollToPreviousPage() {
+  ui::ScopedLayerAnimationSettings settings(
+      scroll_view_contents_->layer()->GetAnimator());
+  InitScrollContentsAnimationSettings(settings);
   scroll_view_->ScrollToPosition(
       scroll_view_->horizontal_scroll_bar(),
       scroll_view_->GetVisibleRect().x() - scroll_view_->width());
 }
 
 void DesksBarView::ScrollToNextPage() {
+  ui::ScopedLayerAnimationSettings settings(
+      scroll_view_contents_->layer()->GetAnimator());
+  InitScrollContentsAnimationSettings(settings);
   scroll_view_->ScrollToPosition(
       scroll_view_->horizontal_scroll_bar(),
       scroll_view_->GetVisibleRect().x() + scroll_view_->width());

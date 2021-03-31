@@ -46,7 +46,7 @@ class DeskDragProxy : public ui::ImplicitAnimationObserver {
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override;
 
-  gfx::Point GetPositionInScreen() const;
+  gfx::Rect GetBoundsInScreen() const;
 
   // Drag is started. Create a drag proxy widget, scale it up and move its
   // x-coordinate according to |location_screen_x|.
