@@ -174,17 +174,21 @@ void TargetAutoAttacher::UpdateFrames() {
 
   Hosts new_hosts;
   if (render_frame_host_) {
-    FrameTreeNode* root = render_frame_host_->frame_tree_node();
     base::queue<FrameTreeNode*> queue;
-    queue.push(root);
+    for (size_t i = 0; i < render_frame_host_->child_count(); ++i) {
+      queue.push(render_frame_host_->child_at(i));
+    }
     while (!queue.empty()) {
       FrameTreeNode* node = queue.front();
       queue.pop();
       bool should_create = node->current_frame_host()->is_local_root_subframe();
-      if (node != root && should_create) {
+      if (should_create) {
         scoped_refptr<DevToolsAgentHost> new_host =
             RenderFrameDevToolsAgentHost::GetOrCreateFor(node);
         new_hosts.insert(new_host);
+        // Note: We don't add children of a local root to |queue|, as they
+        // will be looked at by a separate TargetAutoAttacher created for the
+        // local root.
       } else {
         for (size_t i = 0; i < node->child_count(); ++i)
           queue.push(node->child_at(i));
