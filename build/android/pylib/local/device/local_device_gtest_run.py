@@ -695,8 +695,9 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     else:
       desc = hash(tuple(test))
 
-    stream_name = 'logcat_%s_%s_%s' % (
-        desc, time.strftime('%Y%m%dT%H%M%S-UTC', time.gmtime()), device.serial)
+    stream_name = 'logcat_%s_shard%s_%s_%s' % (
+        desc, self._test_instance.external_shard_index,
+        time.strftime('%Y%m%dT%H%M%S-UTC', time.gmtime()), device.serial)
 
     logcat_file = None
     logmon = None

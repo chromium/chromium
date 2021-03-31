@@ -932,10 +932,9 @@ class LocalDeviceInstrumentationTestRun(
 
   @contextlib.contextmanager
   def _ArchiveLogcat(self, device, test_name):
-    stream_name = 'logcat_%s_%s_%s' % (
-        test_name.replace('#', '.'),
-        time.strftime('%Y%m%dT%H%M%S-UTC', time.gmtime()),
-        device.serial)
+    stream_name = 'logcat_%s_shard%s_%s_%s' % (
+        test_name.replace('#', '.'), self._test_instance.external_shard_index,
+        time.strftime('%Y%m%dT%H%M%S-UTC', time.gmtime()), device.serial)
 
     logcat_file = None
     logmon = None
