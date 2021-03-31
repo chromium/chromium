@@ -1045,6 +1045,11 @@ void TabStripModel::AddToExistingGroup(const std::vector<int>& indices,
                                        const tab_groups::TabGroupId& group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
+  // Ensure that the indices are sorted and unique.
+  DCHECK(std::adjacent_find(indices.begin(), indices.end()) == indices.end());
+  DCHECK(ContainsIndex(*(indices.begin())));
+  DCHECK(ContainsIndex(*(indices.rbegin())));
+
   AddToExistingGroupImpl(indices, group);
 }
 
@@ -1405,12 +1410,17 @@ void TabStripModel::ExecuteAddToExistingGroupCommand(
     const tab_groups::TabGroupId& group) {
   base::RecordAction(UserMetricsAction("TabContextMenu_AddToExistingGroup"));
 
+  if (!ContainsIndex(context_index))
+    return;
   AddToExistingGroup(GetIndicesForCommand(context_index), group);
 }
 
 void TabStripModel::ExecuteAddToExistingWindowCommand(int context_index,
                                                       int browser_index) {
   base::RecordAction(UserMetricsAction("TabContextMenu_AddToExistingWindow"));
+
+  if (!ContainsIndex(context_index))
+    return;
   delegate()->MoveToExistingWindow(GetIndicesForCommand(context_index),
                                    browser_index);
 }

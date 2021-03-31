@@ -13,6 +13,10 @@
 
 class TabStripModel;
 
+namespace content {
+class WebContents;
+}
+
 // Base class for creating submenus for the tab context menu. This enforces the
 // format of the submenu as follows:
 // - guaranteed unique IDs for different submenus
@@ -85,12 +89,12 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     return parent_delegate_;
   }
   TabStripModel* model() { return model_; }
-  int context_index() const { return context_index_; }
+  int GetContextIndex() const;
 
  private:
   ui::SimpleMenuModel::Delegate* parent_delegate_;
   TabStripModel* model_;
-  int context_index_;
+  content::WebContents* context_contents_;
   int min_command_id_;
   DISALLOW_COPY_AND_ASSIGN(ExistingBaseSubMenuModel);
 };
