@@ -105,6 +105,13 @@ public final class ChromePreferenceKeys {
     public static final String CLIPBOARD_SHARED_URI = "Chrome.Clipboard.SharedUri";
 
     /**
+     * Save the timestamp of the last time that chrome-managed commerce subscriptions are
+     * initialized.
+     */
+    public static final String COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP =
+            "Chrome.CommerceSubscriptions.ChromeManagedTimestamp";
+
+    /**
      * Saves a counter of how many continuous feature sessions in which a user has dismissed
      * conditional tab strip.
      */
@@ -938,6 +945,7 @@ public final class ChromePreferenceKeys {
                 AUTOFILL_ASSISTANT_PROACTIVE_HELP,
                 APPLICATION_OVERRIDE_LANGUAGE,
                 CLIPBOARD_SHARED_URI,
+                COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP,
                 CONDITIONAL_TAB_STRIP_CONTINUOUS_DISMISS_COUNTER,
                 CONDITIONAL_TAB_STRIP_FEATURE_STATUS,
                 CONDITIONAL_TAB_STRIP_LAST_SHOWN_TIMESTAMP,

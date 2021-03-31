@@ -29,6 +29,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -63,6 +66,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Mock
     TabModelSelector mTabModelSelector;
     @Mock
+    ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock
     SubscriptionsManagerImpl mSubscriptionsManager;
     @Mock
     DeferredStartupHandler mDeferredStartupHandler;
@@ -77,11 +82,14 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     @Captor
     ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
     @Captor
+    ArgumentCaptor<PauseResumeWithNativeObserver> mPauseResumeWithNativeObserverCaptor;
+    @Captor
     ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
 
     private TabImpl mTab1;
     private TabImpl mTab2;
     private ImplicitPriceDropSubscriptionsManager mImplicitSubscriptionsManager;
+    private SharedPreferencesManager mSharedPreferencesManager;
 
     @Before
     public void setUp() {
@@ -102,10 +110,19 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
+        doNothing()
+                .when(mActivityLifecycleDispatcher)
+                .register(mPauseResumeWithNativeObserverCaptor.capture());
         DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
+        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
+        mSharedPreferencesManager.writeLong(
+                ImplicitPriceDropSubscriptionsManager.CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP,
+                System.currentTimeMillis()
+                        - ImplicitPriceDropSubscriptionsManager
+                                  .CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS);
 
-        mImplicitSubscriptionsManager =
-                new ImplicitPriceDropSubscriptionsManager(mTabModelSelector, mSubscriptionsManager);
+        mImplicitSubscriptionsManager = new ImplicitPriceDropSubscriptionsManager(
+                mTabModelSelector, mActivityLifecycleDispatcher, mSubscriptionsManager);
     }
 
     @After
@@ -117,6 +134,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     public void testInitialSetup() {
         verify(mTabModel).addObserver(any(TabModelObserver.class));
         verify(mDeferredStartupHandler).addDeferredTask(any(Runnable.class));
+        verify(mActivityLifecycleDispatcher).register(any(PauseResumeWithNativeObserver.class));
     }
 
     @Test
@@ -185,6 +203,28 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
     }
 
     @Test
+    public void testInitialSubscription_TooFrequentSubscription() {
+        mSharedPreferencesManager.writeLong(
+                ImplicitPriceDropSubscriptionsManager.CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP,
+                System.currentTimeMillis());
+
+        mImplicitSubscriptionsManager.initializeSubscriptions();
+
+        verify(mSubscriptionsManager, times(0)).subscribe(mSubscriptionCaptor.capture());
+    }
+
+    @Test
+    public void testInitialSubscription_OnResume() {
+        mPauseResumeWithNativeObserverCaptor.getValue().onResumeWithNative();
+
+        verify(mSubscriptionsManager, times(2)).subscribe(mSubscriptionCaptor.capture());
+        assertThat(mSubscriptionCaptor.getAllValues().get(0).getTrackingId(),
+                equalTo(String.valueOf(OFFER1_ID)));
+        assertThat(mSubscriptionCaptor.getAllValues().get(1).getTrackingId(),
+                equalTo(String.valueOf(OFFER2_ID)));
+    }
+
+    @Test
     public void testTabClosure() {
         mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
 
@@ -219,6 +259,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         mImplicitSubscriptionsManager.destroy();
 
         verify(mTabModel).removeObserver(any(TabModelObserver.class));
+        verify(mActivityLifecycleDispatcher).unregister(any(PauseResumeWithNativeObserver.class));
     }
 
     private TabImpl prepareTab(int id, String urlString, int position,

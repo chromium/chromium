@@ -7,6 +7,12 @@ package org.chromium.chrome.browser.subscriptions;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
@@ -25,12 +31,27 @@ import java.util.concurrent.TimeUnit;
  * The class that manages Chrome-managed price drop subscriptions.
  */
 public class ImplicitPriceDropSubscriptionsManager {
+    private static final String STALE_TAB_LOWER_BOUND_SECONDS_PARAM =
+            "price_tracking_stale_tab_lower_bound_seconds";
+    public static final IntCachedFieldTrialParameter STALE_TAB_LOWER_BOUND_SECONDS =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+                    STALE_TAB_LOWER_BOUND_SECONDS_PARAM, (int) TimeUnit.DAYS.toSeconds(1));
+    @VisibleForTesting
+    public static final String CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP =
+            ChromePreferenceKeys.COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP;
+    @VisibleForTesting
+    public static final long CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS =
+            TimeUnit.SECONDS.toMillis(STALE_TAB_LOWER_BOUND_SECONDS.getValue());
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
+    private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private final PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
     private final SubscriptionsManagerImpl mSubscriptionManager;
+    private final SharedPreferencesManager mSharedPreferencesManager;
 
-    public ImplicitPriceDropSubscriptionsManager(
-            TabModelSelector tabModelSelector, SubscriptionsManagerImpl subscriptionsManager) {
+    public ImplicitPriceDropSubscriptionsManager(TabModelSelector tabModelSelector,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            SubscriptionsManagerImpl subscriptionsManager) {
         mSubscriptionManager = subscriptionsManager;
         mTabModelSelector = tabModelSelector;
         mTabModelObserver = new TabModelObserver() {
@@ -46,6 +67,18 @@ public class ImplicitPriceDropSubscriptionsManager {
         };
         mTabModelSelector.getModel(false).addObserver(mTabModelObserver);
         DeferredStartupHandler.getInstance().addDeferredTask(this::initializeSubscriptions);
+        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mPauseResumeWithNativeObserver = new PauseResumeWithNativeObserver() {
+            @Override
+            public void onResumeWithNative() {
+                initializeSubscriptions();
+            }
+
+            @Override
+            public void onPauseWithNative() {}
+        };
+        mActivityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
+        mSharedPreferencesManager = SharedPreferencesManager.getInstance();
     }
 
     private boolean isUniqueTab(Tab tab) {
@@ -67,6 +100,7 @@ public class ImplicitPriceDropSubscriptionsManager {
      */
     @VisibleForTesting
     void initializeSubscriptions() {
+        if (!shouldInitializeSubscriptions()) return;
         Map<String, Tab> urlTabMapping = new HashMap<>();
         TabModel normalTabModel = mTabModelSelector.getModel(false);
         for (int index = 0; index < normalTabModel.getCount(); index++) {
@@ -108,7 +142,20 @@ public class ImplicitPriceDropSubscriptionsManager {
                 - CriticalPersistedTabData.from(tab).getTimestampMillis();
         return tabLastOpenTime <= TimeUnit.SECONDS.toMillis(
                        ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS.getValue())
-                && tabLastOpenTime >= TimeUnit.DAYS.toMillis(1);
+                && tabLastOpenTime
+                >= TimeUnit.SECONDS.toMillis(STALE_TAB_LOWER_BOUND_SECONDS.getValue());
+    }
+
+    private boolean shouldInitializeSubscriptions() {
+        if (System.currentTimeMillis()
+                        - mSharedPreferencesManager.readLong(
+                                CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, -1)
+                < CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS) {
+            return false;
+        }
+        mSharedPreferencesManager.writeLong(
+                CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, System.currentTimeMillis());
+        return true;
     }
 
     /**
@@ -116,5 +163,6 @@ public class ImplicitPriceDropSubscriptionsManager {
      */
     public void destroy() {
         mTabModelSelector.getModel(false).removeObserver(mTabModelObserver);
+        mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
     }
 }
