@@ -561,7 +561,8 @@ suite('InternetDetailPage', function() {
           'Disconnect network button should be focused for settingId=17.');
     });
 
-    test('Deep link to sim lock toggle', async () => {
+    // Test is flaky, temporarily disabled (crbug.com/1194243).
+    test.skip('Deep link to sim lock toggle', async () => {
       init();
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setDeviceStateForTest({
