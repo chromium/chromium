@@ -662,6 +662,7 @@ Widget* AttachPopupToNativeParent(NSWindow* native_parent) {
   Widget* child = new Widget;
   Widget::InitParams init_params;
   init_params.parent = anchor_view.get();
+  init_params.child = true;
   init_params.type = Widget::InitParams::TYPE_POPUP;
   child->Init(std::move(init_params));
   return child;
@@ -678,6 +679,7 @@ TEST_F(NativeWidgetMacTest, NonWidgetParent) {
   EXPECT_EQ(1u, children.size());
 
   Widget* child = AttachPopupToNativeParent(native_parent);
+  EXPECT_FALSE(child->is_top_level());
   TestWidgetObserver child_observer(child);
 
   // GetTopLevelNativeWidget() will go up through |native_parent|'s Widget.
