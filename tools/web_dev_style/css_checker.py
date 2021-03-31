@@ -286,10 +286,13 @@ class CSSChecker(object):
       return errors
 
     def one_selector_per_line(contents):
-      any_reg = re.compile(r"""
-          :(?:-webkit-)?any\(.*?\)  # :-webkit-any(a, b, i) selector
-          """,
-          re.DOTALL | re.VERBOSE)
+      any_reg = re.compile(
+          r"""
+          :(?:
+          (?:-webkit-)?any     # :-webkit-any(a, b, i) selector
+          |is                  # :is(...) selector
+          )\(.*?\)
+          """, re.DOTALL | re.VERBOSE)
       multi_sels_reg = re.compile(r"""
           (?:}\s*)?            # ignore 0% { blah: blah; }, from @keyframes
           ([^,]+,(?=[^{}]+?{)  # selector junk {, not in a { rule }

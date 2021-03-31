@@ -307,11 +307,13 @@ div {
     rule: value; rule: value;""")
 
   def testCssOneSelectorPerLine(self):
-    self.VerifyContentsProducesOutput("""
+    self.VerifyContentsProducesOutput(
+        """
 a,
 div,a,
 div,/* Hello! */ span,
-#id.class([dir=rtl):not(.class):any(a, b, d) {
+#id.class([dir=rtl]):not(.class):any(a, b, d),
+div :is(a, #b, .c) {
   rule: value;
 }
 
