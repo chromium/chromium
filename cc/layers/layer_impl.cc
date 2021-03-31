@@ -173,9 +173,7 @@ void LayerImpl::PopulateScaledSharedQuadStateWithContentRects(
     const gfx::Rect& visible_content_rect,
     bool contents_opaque) const {
   gfx::Transform scaled_draw_transform =
-      draw_properties_.target_space_transform;
-  scaled_draw_transform.Scale(SK_Scalar1 / layer_to_content_scale,
-                              SK_Scalar1 / layer_to_content_scale);
+      GetScaledDrawTransform(layer_to_content_scale);
 
   EffectNode* effect_node = GetEffectTree().Node(effect_tree_index_);
   state->SetAll(scaled_draw_transform, content_rect, visible_content_rect,
@@ -462,6 +460,15 @@ void LayerImpl::ValidateQuadResourcesInternal(viz::DrawQuad* quad) const {
   for (viz::ResourceId resource_id : quad->resources)
     resource_provider->ValidateResource(resource_id);
 #endif
+}
+
+gfx::Transform LayerImpl::GetScaledDrawTransform(
+    float layer_to_content_scale) const {
+  gfx::Transform scaled_draw_transform =
+      draw_properties_.target_space_transform;
+  scaled_draw_transform.Scale(SK_Scalar1 / layer_to_content_scale,
+                              SK_Scalar1 / layer_to_content_scale);
+  return scaled_draw_transform;
 }
 
 const char* LayerImpl::LayerTypeAsString() const {
@@ -768,6 +775,33 @@ int LayerImpl::GetSortingContextId() const {
 
 Region LayerImpl::GetInvalidationRegionForDebugging() {
   return Region(update_rect_);
+}
+
+gfx::Rect LayerImpl::GetVisibleDrawableContentBounds() const {
+  float scale = LayerToContentScale();
+  DCHECK_GT(scale, 0.0);
+
+  bool only_draws_visible_content = GetPropertyTrees()
+                                        ->effect_tree.Node(effect_tree_index())
+                                        ->only_draws_visible_content;
+  gfx::Rect drawable_bounds = gfx::Rect(visible_layer_rect());
+  if (!only_draws_visible_content) {
+    drawable_bounds = gfx::Rect(bounds());
+  }
+  gfx::Transform scaled_draw_transform = GetScaledDrawTransform(scale);
+  gfx::Rect scaled_bounds = ScaleToEnclosingRect(drawable_bounds, scale);
+
+  gfx::Rect visible_bounds_in_target_space =
+      MathUtil::MapEnclosingClippedRect(scaled_draw_transform, scaled_bounds);
+
+  if (is_clipped())
+    return IntersectRects(visible_bounds_in_target_space,
+                          draw_properties().clip_rect);
+  return visible_bounds_in_target_space;
+}
+
+float LayerImpl::LayerToContentScale() const {
+  return 1.0f;
 }
 
 gfx::Rect LayerImpl::GetEnclosingRectInTargetSpace() const {

@@ -373,6 +373,16 @@ class CC_EXPORT LayerImpl {
   // for layers that provide it.
   virtual Region GetInvalidationRegionForDebugging();
 
+  // Gets the visible drawable contents bounds that takes the scaling error
+  // into account. This function scales in the same way as
+  // `PopulateScaledSharedQuadState()`. See
+  // `PopulateScaledSharedQuadState()` for more details.
+  virtual gfx::Rect GetVisibleDrawableContentBounds() const;
+
+  // Returns the scale used to compute content bounds from layer size.
+  // This should not return zero or negative value.
+  virtual float LayerToContentScale() const;
+
   // If you override this, and are making use of
   // PopulateScaledSharedQuadState(), make sure you call
   // GetScaledEnclosingRectInTargetSpace(). See comment for
@@ -438,6 +448,7 @@ class CC_EXPORT LayerImpl {
 
  private:
   void ValidateQuadResourcesInternal(viz::DrawQuad* quad) const;
+  gfx::Transform GetScaledDrawTransform(float layer_to_content_scale) const;
 
   virtual const char* LayerTypeAsString() const;
 

@@ -47,6 +47,7 @@ class CC_EXPORT MirrorLayerImpl : public LayerImpl {
                    AppendQuadsData* append_quads_data) override;
   void PushPropertiesTo(LayerImpl* layer) override;
   gfx::Rect GetDamageRect() const override;
+  float LayerToContentScale() const override;
   gfx::Rect GetEnclosingRectInTargetSpace() const override;
 
  protected:

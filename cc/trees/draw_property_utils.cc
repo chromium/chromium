@@ -519,16 +519,6 @@ inline bool LayerShouldBeSkippedForDrawPropertiesComputation(
          !effect_node->is_drawn;
 }
 
-gfx::Rect LayerDrawableContentRect(
-    const LayerImpl* layer,
-    const gfx::Rect& layer_bounds_in_target_space,
-    const gfx::Rect& clip_rect) {
-  if (layer->is_clipped())
-    return IntersectRects(layer_bounds_in_target_space, clip_rect);
-
-  return layer_bounds_in_target_space;
-}
-
 void SetSurfaceIsClipped(const ClipTree& clip_tree,
                          RenderSurfaceImpl* render_surface) {
   bool is_clipped;
@@ -1194,13 +1184,8 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
     if (!only_draws_visible_content) {
       drawable_bounds = gfx::Rect(layer->bounds());
     }
-
-    gfx::Rect visible_bounds_in_target_space =
-        MathUtil::MapEnclosingClippedRect(
-            layer->draw_properties().target_space_transform, drawable_bounds);
     layer->draw_properties().visible_drawable_content_rect =
-        LayerDrawableContentRect(layer, visible_bounds_in_target_space,
-                                 layer->draw_properties().clip_rect);
+        layer->GetVisibleDrawableContentBounds();
   }
 }
 
