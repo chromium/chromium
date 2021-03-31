@@ -2029,7 +2029,9 @@ void AppListControllerImpl::OnAppRegistryCacheWillBeDestroyed(
 }
 
 void AppListControllerImpl::UpdateTrackedAppWindow() {
-  aura::Window* top_window = GetTopVisibleWindow();
+  // Do not want to observe new windows or further update |tracked_app_window_|
+  // once Shutdown() has been called.
+  aura::Window* top_window = !is_shutdown_ ? GetTopVisibleWindow() : nullptr;
   if (tracked_app_window_ == top_window)
     return;
 
