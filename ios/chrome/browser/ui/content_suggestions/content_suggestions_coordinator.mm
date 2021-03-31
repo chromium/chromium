@@ -354,6 +354,13 @@
 - (void)stop {
   [self.ntpMediator shutdown];
   self.ntpMediator = nil;
+  // Reset the observer bridge object before setting
+  // |contentSuggestionsMediator| nil.
+  if (_startSurfaceObserver) {
+    StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
+        ->RemoveObserver(_startSurfaceObserver.get());
+    _startSurfaceObserver.reset();
+  }
   [self.contentSuggestionsMediator disconnect];
   self.contentSuggestionsMediator = nil;
   self.suggestionsViewController = nil;
@@ -366,11 +373,6 @@
         ->RemoveFeedViewController(self.discoverFeedViewController);
   }
   self.contentSuggestionsExpanded = nil;
-  if (_startSurfaceObserver) {
-    StartSurfaceRecentTabBrowserAgent::FromBrowser(self.browser)
-        ->RemoveObserver(_startSurfaceObserver.get());
-    _startSurfaceObserver.reset();
-  }
   _started = NO;
 }
 
