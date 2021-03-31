@@ -326,8 +326,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableWebXRPlaneDetection, features::kWebXrIncubations},
     {wf::EnableWebXRViewportScale, features::kWebXrIncubations},
     {wf::EnableWheelEventRegions, features::kWheelEventRegions},
-    {wf::EnableCompositeRelativeKeyframes,
-     features::kCompositeRelativeKeyframes},
     {wf::EnableKeyboardAccessibleTooltip, features::kKeyboardAccessibleTooltip},
     {wf::EnableRemoveMobileViewportDoubleTap,
      features::kRemoveMobileViewportDoubleTap},

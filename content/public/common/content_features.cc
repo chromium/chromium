@@ -165,9 +165,6 @@ const base::Feature kClickPointerEvent{"ClickPointerEvent",
 const base::Feature kCompositeBGColorAnimation{
     "CompositeBGColorAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kCompositeRelativeKeyframes{
-    "CompositeRelativeKeyframes", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, code cache does not use a browsing_data filter for deletions.
 extern const base::Feature kCodeCacheDeletionWithoutFilter{
     "CodeCacheDeletionWithoutFilter", base::FEATURE_ENABLED_BY_DEFAULT};

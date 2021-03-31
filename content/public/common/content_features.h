@@ -44,7 +44,6 @@ CONTENT_EXPORT extern const base::Feature
     kClearCrossBrowsingContextGroupMainFrameName;
 CONTENT_EXPORT extern const base::Feature kClickPointerEvent;
 CONTENT_EXPORT extern const base::Feature kCompositeBGColorAnimation;
-CONTENT_EXPORT extern const base::Feature kCompositeRelativeKeyframes;
 CONTENT_EXPORT extern const base::Feature kCodeCacheDeletionWithoutFilter;
 CONTENT_EXPORT extern const base::Feature kConsolidatedMovementXY;
 CONTENT_EXPORT extern const base::Feature kConversionMeasurement;
