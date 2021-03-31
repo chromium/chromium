@@ -345,8 +345,12 @@ void MobileFriendlinessChecker::NotifyViewportUpdated(
     const ViewportDescription& viewport) {
   switch (viewport.type) {
     case ViewportDescription::Type::kUserAgentStyleSheet:
-      mobile_friendliness_.viewport_device_width = ViewportStatus::kNo;
-      mobile_friendliness_.allow_user_zoom = ViewportStatus::kYes;
+      if (mobile_friendliness_.viewport_device_width ==
+          ViewportStatus::kUnknown)
+        mobile_friendliness_.viewport_device_width = ViewportStatus::kNo;
+
+      if (mobile_friendliness_.allow_user_zoom == ViewportStatus::kUnknown)
+        mobile_friendliness_.allow_user_zoom = ViewportStatus::kYes;
       break;
     case ViewportDescription::Type::kViewportMeta:
       mobile_friendliness_.viewport_device_width =
