@@ -55,6 +55,7 @@ using ::testing::Return;
 namespace chromeos {
 namespace {
 
+const char kDomainAllowlist[] = "*@example.com";
 const test::UIPath kOfflineLoginBackButton = {"offline-login", "backButton"};
 
 class LoginUserTest : public InProcessBrowserTest {
@@ -120,6 +121,22 @@ class LoginOfflineManagedTest : public LoginManagerTest {
     device_policy_update->policy_payload()
         ->mutable_show_user_names()
         ->set_show_user_names(false);
+  }
+
+  void SetDeviceAllowNewUsersPolicy(bool enabled) {
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_allow_new_users()
+        ->set_allow_new_users(enabled);
+  }
+
+  void AddUserToAllowlist(const std::string& user_id) {
+    std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_user_allowlist()
+        ->add_user_allowlist(user_id);
   }
 
  protected:
@@ -277,6 +294,22 @@ IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, BackButtonTest) {
   test::OobeJS().ClickOnPath(kOfflineLoginBackButton);
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LoginOfflineManagedTest, LoginAllowlistedUser) {
+  std::string domain = gaia::ExtractDomainName(managed_user_id_.GetUserEmail());
+  ConfigurePolicy(domain);
+  SetDeviceAllowNewUsersPolicy(false);
+  AddUserToAllowlist(kDomainAllowlist);
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  offline_login_test_mixin_.GoOffline();
+  offline_login_test_mixin_.InitOfflineLogin(managed_user_id_,
+                                             LoginManagerTest::kPassword);
+
+  offline_login_test_mixin_.SubmitLoginAuthOfflineForm(
+      managed_user_id_.GetUserEmail(), LoginManagerTest::kPassword,
+      true /* wait for sign-in */);
 }
 
 class UserAddingScreenTrayTest : public LoginManagerTest {
