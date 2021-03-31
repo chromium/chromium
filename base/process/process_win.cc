@@ -152,7 +152,6 @@ void Process::Close() {
 bool Process::Terminate(int exit_code, bool wait) const {
   constexpr DWORD kWaitMs = 60 * 1000;
 
-  // exit_code cannot be implemented.
   DCHECK(IsValid());
   bool result = (::TerminateProcess(Handle(), exit_code) != FALSE);
   if (result) {
