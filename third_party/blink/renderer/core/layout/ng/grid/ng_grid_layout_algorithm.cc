@@ -2634,13 +2634,14 @@ void AlignmentOffsetForOutOfFlow(
 
   switch (inline_axis_edge) {
     case AxisEdge::kStart:
+    case AxisEdge::kBaseline:
       *inline_edge = InlineEdge::kInlineStart;
       break;
     case AxisEdge::kCenter:
       *inline_edge = InlineEdge::kInlineCenter;
       offset->inline_offset += container_size.inline_size / 2;
       break;
-    default:
+    case AxisEdge::kEnd:
       *inline_edge = InlineEdge::kInlineEnd;
       offset->inline_offset += container_size.inline_size;
       break;
@@ -2648,13 +2649,14 @@ void AlignmentOffsetForOutOfFlow(
 
   switch (block_axis_edge) {
     case AxisEdge::kStart:
+    case AxisEdge::kBaseline:
       *block_edge = BlockEdge::kBlockStart;
       break;
     case AxisEdge::kCenter:
       *block_edge = BlockEdge::kBlockCenter;
       offset->block_offset += container_size.block_size / 2;
       break;
-    default:
+    case AxisEdge::kEnd:
       *block_edge = BlockEdge::kBlockEnd;
       offset->block_offset += container_size.block_size;
       break;
