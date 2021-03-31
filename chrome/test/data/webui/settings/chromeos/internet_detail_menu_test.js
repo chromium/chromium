@@ -156,4 +156,33 @@ suite('InternetDetailMenu', function() {
     removeBtn.click();
     await Promise.all([removeProfilePromise, test_util.flushTasks()]);
   });
+
+  test('Menu is disabled when inhibited', async function() {
+    addEsimCellularNetwork('100000', '11111111111111111111111111111111');
+    init();
+
+    const params = new URLSearchParams;
+    params.append('guid', 'cellular_guid');
+    settings.Router.getInstance().navigateTo(
+        settings.routes.NETWORK_DETAIL, params);
+
+    await flushAsync();
+    const trippleDot = internetDetailMenu.$$('#moreNetworkDetail');
+    assertTrue(!!trippleDot);
+    assertFalse(trippleDot.disabled);
+
+    internetDetailMenu.deviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kConnectingToProfile,
+    };
+    assertTrue(trippleDot.disabled);
+
+    internetDetailMenu.deviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+      inhibitReason: mojom.InhibitReason.kNotInhibited,
+    };
+    assertFalse(trippleDot.disabled);
+  });
 });

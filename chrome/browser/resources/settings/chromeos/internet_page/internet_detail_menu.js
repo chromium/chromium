@@ -16,11 +16,25 @@ Polymer({
   ],
 
   properties: {
+    /**
+     * Device state for the network type.
+     * @type {!OncMojo.DeviceStateProperties|undefined}
+     */
+    deviceState: Object,
+
     /** @private {?OncMojo.NetworkStateProperties} */
     networkState_: {
       type: Object,
       value: null,
-    }
+    },
+
+    /** @private */
+    isUpdatedCellularUiEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('updatedCellularActivationUi');
+      }
+    },
   },
 
   /**
@@ -31,7 +45,7 @@ Polymer({
    */
   currentRouteChanged(route, oldRoute) {
     if (route !== settings.routes.NETWORK_DETAIL ||
-        !loadTimeData.getBoolean('updatedCellularActivationUi')) {
+        !this.isUpdatedCellularUiEnabled_) {
       return;
     }
     this.networkState_ = null;
@@ -74,6 +88,17 @@ Polymer({
    */
   shouldShowDotsMenuButton_() {
     return !!this.networkState_;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isDotsMenuButtonDisabled_() {
+    if (!this.deviceState || !this.isUpdatedCellularUiEnabled_) {
+      return false;
+    }
+    return OncMojo.deviceIsInhibited(this.deviceState);
   },
 
   /**

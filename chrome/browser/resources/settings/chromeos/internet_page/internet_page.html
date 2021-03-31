@@ -130,7 +130,8 @@
       <template is="dom-if" route-path="/networkDetail" no-search restamp>
         <settings-subpage page-title="$i18n{internetDetailPageTitle}">
           <settings-internet-detail-menu
-              slot="subpage-title-extra">
+              slot="subpage-title-extra"
+              device-state="[[getDeviceState_(subpageType_, deviceStates)]]">
           </settings-internet-detail-menu>
           <settings-internet-detail-page prefs="{{prefs}}"
               default-network="[[defaultNetwork]]"
