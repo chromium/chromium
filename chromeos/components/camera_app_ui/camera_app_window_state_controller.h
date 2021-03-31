@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -60,6 +61,7 @@ class CameraAppWindowStateController
 
   views::Widget* widget_;
   base::flat_set<WindowStateType> window_states_;
+  gfx::Size window_size_;
   mojo::ReceiverSet<chromeos_camera::mojom::WindowStateController> receivers_;
   std::vector<mojo::Remote<WindowStateMonitor>> monitors_;
   std::queue<base::OnceClosure> minimize_callbacks_;

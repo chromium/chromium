@@ -6,6 +6,11 @@ import {assertInstanceof} from './chrome_util.js';
 import {closeWhenUnload} from './mojo/util.js';
 
 /**
+ * @typedef {function(!Array<!chromeosCamera.mojom.WindowStateType>): void}
+ */
+let WindowStateChangedEventListener;  // eslint-disable-line no-unused-vars
+
+/**
  * Controller to get/set/listener for window state.
  */
 export class WindowController {
@@ -24,6 +29,12 @@ export class WindowController {
      * @type {!Array<!chromeosCamera.mojom.WindowStateType>}
      */
     this.windowStates_ = [];
+
+    /**
+     * Set of the listeners for window state changed events.
+     * @type {!Set<!WindowStateChangedEventListener>}
+     */
+    this.listeners_ = new Set();
   }
 
   /**
@@ -39,6 +50,7 @@ export class WindowController {
     closeWhenUnload(windowMonitorCallbackRouter);
     windowMonitorCallbackRouter.onWindowStateChanged.addListener((states) => {
       this.windowStates_ = states;
+      this.listeners_.forEach((listener) => listener(states));
     });
     const {states} = await this.windowStateController_.addMonitor(
         windowMonitorCallbackRouter.$.bindNewPipeAndPassRemote());
@@ -118,6 +130,14 @@ export class WindowController {
                chromeosCamera.mojom.WindowStateType.FULLSCREEN) ||
         this.windowStates_.includes(
             chromeosCamera.mojom.WindowStateType.MAXIMIZED);
+  }
+
+  /**
+   * Adds listener for the window state (including window size) changed events.
+   * @param {!WindowStateChangedEventListener} listener
+   */
+  addListener(listener) {
+    this.listeners_.add(listener);
   }
 }
 

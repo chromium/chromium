@@ -12,6 +12,7 @@ import * as nav from '../../nav.js';
 import * as state from '../../state.js';
 import {Mode} from '../../type.js';
 import * as util from '../../util.js';
+import {windowController} from '../../window_controller.js';
 
 /**
  * Creates a controller for the video preview of Camera view.
@@ -76,7 +77,7 @@ export class Preview {
      */
     this.scanner_ = null;
 
-    window.addEventListener('resize', () => this.onWindowResize_());
+    windowController.addListener(() => this.onWindowResize_());
 
     [state.State.EXPERT, state.State.SHOW_METADATA].forEach((s) => {
       state.addObserver(s, this.updateShowMetadata_.bind(this));

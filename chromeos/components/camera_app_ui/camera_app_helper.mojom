@@ -54,7 +54,8 @@ enum WindowStateType {
 
 // Interface for monitoring window states.
 interface WindowStateMonitor {
-  // Updates when any of the window states are changed.
+  // Updates when any of the window states are changed or the window size is
+  // changed.
   OnWindowStateChanged(array<WindowStateType> states);
 };
 

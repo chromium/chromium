@@ -144,8 +144,10 @@ void CameraAppWindowStateController::OnWindowStateChanged() {
   }
 
   auto prev_states = window_states_;
+  auto prev_size = window_size_;
   window_states_ = GetCurrentWindowStates();
-  if (prev_states != window_states_) {
+  window_size_ = widget_->GetWindowBoundsInScreen().size();
+  if (prev_states != window_states_ || prev_size != window_size_) {
     for (const auto& monitor : monitors_) {
       monitor->OnWindowStateChanged(ToVector(window_states_));
     }
