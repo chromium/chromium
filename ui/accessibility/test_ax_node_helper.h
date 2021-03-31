@@ -39,6 +39,11 @@ class TestAXNodeHelper {
   gfx::RectF GetLocation() const;
   gfx::RectF GetInlineTextRect(const int start_offset,
                                const int end_offset) const;
+  // Helper for determining if the two rects, including empty rects, intersect
+  // each other.
+  bool Intersects(gfx::RectF rect1, gfx::RectF rect2) const;
+
+  // Determine the offscreen status of a particular element given its bounds.
   AXOffscreenResult DetermineOffscreenResult(gfx::RectF bounds) const;
 
   AXTree* tree_;

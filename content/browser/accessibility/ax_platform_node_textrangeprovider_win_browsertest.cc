@@ -7,6 +7,7 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
+#include "base/win/windows_version.h"
 #include "content/browser/accessibility/accessibility_content_browsertest.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_com_win.h"
@@ -2842,6 +2843,189 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
   // The text should be the same as before since the internal endpoints didn't
   // move.
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"\nOne");
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeTextRangeProviderWinBrowserTest,
+                       DegenerateRangeBoundingRect) {
+  // Due to https://crbug.com/1193359, custom fonts do not load consistently in
+  // Windows 7. So not running this test on Windows 7.
+  if (base::win::GetVersion() == base::win::Version::WIN7)
+    return;
+
+  LoadInitialAccessibilityTreeFromHtmlFilePath(
+      "/accessibility/html/fixed-width-text.html");
+
+  BrowserAccessibility* text_node =
+      FindNode(ax::mojom::Role::kStaticText, "Hello,");
+  ASSERT_NE(nullptr, text_node);
+  EXPECT_TRUE(text_node->PlatformIsLeaf());
+  EXPECT_EQ(0u, text_node->PlatformChildCount());
+
+  // |view_offset| is necessary to account for differences in the shell
+  // between platforms (e.g. title bar height) because the results of
+  // |GetBoundingRectangles| are in screen coordinates.
+  gfx::Vector2d view_offset = text_node->manager()
+                                  ->GetViewBoundsInScreenCoordinates()
+                                  .OffsetFromOrigin();
+
+  // The offset from top based on CSS style absolute position (200px) + viewport
+  // offset.
+  const int total_top_offset = 216 + view_offset.y();
+  // The offset from left based on CSS style absolute position (100px) +
+  // viewport offset.
+  const int total_left_offset = 100 + view_offset.x();
+
+  // The bounding box for character width and height with font-size: 11px.
+  const int bounding_box_char_height = 16;
+  const int bounding_box_char_width = 32;
+
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(*text_node, &text_range_provider);
+  ASSERT_NE(nullptr, text_range_provider.Get());
+  EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"Hello,");
+  base::win::ScopedSafearray rectangles;
+  std::vector<double> expected_values = {total_left_offset, total_top_offset,
+                                         6 * bounding_box_char_width,
+                                         bounding_box_char_height};
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+
+  // Range spans character "H".
+  // |-|
+  //  H e l l o ,
+  //  W o r l d
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
+      /*count*/ -5,
+      /*expected_text*/ L"H",
+      /*expected_count*/ -5);
+
+  expected_values = {total_left_offset, total_top_offset,
+                     bounding_box_char_width, bounding_box_char_height};
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+
+  // Range is degenerate and position is before "H".
+  // ||
+  //  H e l l o ,
+  //  W o r l d
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
+      /*count*/ -1,
+      /*expected_text*/ L"",
+      /*expected_count*/ -1);
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  expected_values = {total_left_offset, total_top_offset, 1,
+                     bounding_box_char_height};
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+
+  // Range is degenerate and position is after ",".
+  //             ||
+  //  H e l l o ,
+  //  W o r l d
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
+                  /*count*/ 6,
+                  /*expected_text*/ L"",
+                  /*expected_count*/ 6);
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  expected_values = {total_left_offset + 6 * bounding_box_char_width,
+                     total_top_offset, 1, bounding_box_char_height};
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+
+  // Range spans character ",".
+  //           |-|
+  //  H e l l o ,
+  //  W o r l d
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ -1,
+      /*expected_text*/ L",",
+      /*expected_count*/ -1);
+  expected_values = {total_left_offset + 5 * bounding_box_char_width,
+                     total_top_offset, bounding_box_char_width,
+                     bounding_box_char_height};
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+
+  // Range spans character "\n".
+  //             |-|
+  //  H e l l o ,
+  //  W o r l d
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
+                  /*count*/ 1,
+                  /*expected_text*/ L"\n",
+                  /*expected_count*/ 1);
+  expected_values = {};
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+
+  // Range spans character "W".
+  //  H e l l o ,
+  //  W o r l d
+  // |-|
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
+                  /*count*/ 1,
+                  /*expected_text*/ L"W",
+                  /*expected_count*/ 1);
+  expected_values = {total_left_offset,
+                     total_top_offset + bounding_box_char_height,
+                     bounding_box_char_width, bounding_box_char_height};
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+
+  // Range is degenerate and position is before "W".
+  //  H e l l o ,
+  //  W o r l d
+  // ||
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Character,
+      /*count*/ -1,
+      /*expected_text*/ L"",
+      /*expected_count*/ -1);
+  expected_values = {total_left_offset,
+                     total_top_offset + bounding_box_char_height, 1,
+                     bounding_box_char_height};
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+
+  // Range is degenerate and position is after "d".
+  //  H e l l o ,
+  //  W o r l d
+  //           ||
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Character,
+                  /*count*/ 5,
+                  /*expected_text*/ L"",
+                  /*expected_count*/ 5);
+  expected_values = {total_left_offset + 5 * bounding_box_char_width,
+                     total_top_offset + bounding_box_char_height, 1,
+                     bounding_box_char_height};
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
+
+  // Range spans character "d".
+  //  H e l l o ,
+  //  W o r l d
+  //         |-|
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Character,
+      /*count*/ -1,
+      /*expected_text*/ L"d",
+      /*expected_count*/ -1);
+  expected_values = {total_left_offset + 4 * bounding_box_char_width,
+                     total_top_offset + bounding_box_char_height,
+                     bounding_box_char_width, bounding_box_char_height};
+  EXPECT_HRESULT_SUCCEEDED(
+      text_range_provider->GetBoundingRectangles(rectangles.Receive()));
+  EXPECT_UIA_DOUBLE_SAFEARRAY_EQ(rectangles.Get(), expected_values);
 }
 
 }  // namespace content

@@ -327,6 +327,7 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     ui::AXNodeData static_text2;
     ui::AXNodeData inline_box1;
     ui::AXNodeData inline_box2;
+    ui::AXNodeData inline_box_line_break;
 
     const int ROOT_ID = 1;
     const int BUTTON_ID = 2;
@@ -335,8 +336,9 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     const int STATIC_TEXT1_ID = 5;
     const int INLINE_BOX1_ID = 6;
     const int LINE_BREAK_ID = 7;
-    const int STATIC_TEXT2_ID = 8;
-    const int INLINE_BOX2_ID = 9;
+    const int INLINE_BOX_LINE_BREAK_ID = 8;
+    const int STATIC_TEXT2_ID = 9;
+    const int INLINE_BOX2_ID = 10;
 
     root.id = ROOT_ID;
     button.id = BUTTON_ID;
@@ -345,6 +347,7 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     static_text1.id = STATIC_TEXT1_ID;
     inline_box1.id = INLINE_BOX1_ID;
     line_break.id = LINE_BREAK_ID;
+    inline_box_line_break.id = INLINE_BOX_LINE_BREAK_ID;
     static_text2.id = STATIC_TEXT2_ID;
     inline_box2.id = INLINE_BOX2_ID;
 
@@ -415,8 +418,22 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     line_break.role = ax::mojom::Role::kLineBreak;
     line_break.AddState(ax::mojom::State::kEditable);
     line_break.SetName(LINE_BREAK_TEXT);
+    line_break.relative_bounds.bounds = gfx::RectF(250, 20, 0, 30);
     line_break.AddIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
                                inline_box1.id);
+    line_break.child_ids.push_back(inline_box_line_break.id);
+
+    inline_box_line_break.role = ax::mojom::Role::kInlineTextBox;
+    inline_box_line_break.AddBoolAttribute(
+        ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+    inline_box_line_break.SetName(LINE_BREAK_TEXT);
+    inline_box_line_break.relative_bounds.bounds = gfx::RectF(250, 20, 0, 30);
+    inline_box_line_break.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kCharacterOffsets, {0});
+    inline_box_line_break.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kWordStarts, std::vector<int32_t>{0});
+    inline_box_line_break.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kWordEnds, std::vector<int32_t>{0});
 
     static_text2.role = ax::mojom::Role::kStaticText;
     static_text2.AddState(ax::mojom::State::kEditable);
@@ -445,9 +462,10 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
     AXTreeUpdate update;
     update.has_tree_data = true;
     update.root_id = ROOT_ID;
-    update.nodes = {root,       button,       check_box,
-                    text_field, static_text1, inline_box1,
-                    line_break, static_text2, inline_box2};
+    update.nodes = {
+        root,         button,      check_box,  text_field,
+        static_text1, inline_box1, line_break, inline_box_line_break,
+        static_text2, inline_box2};
     update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();
     return update;
   }
@@ -3116,7 +3134,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Move the text range end back by one line.
   // Expected bounding rects:
   // <button>Button</button><input type="checkbox">Line 1<br>Line 2
-  // |---------------------||---------------------||-----|
+  // |---------------------||---------------------||--------|
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
       TextPatternRangeEndpoint_End, TextUnit_Line, /*count*/ -1, &count));
   ASSERT_EQ(-1, count);
@@ -3133,8 +3151,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // <button>Button</button><input type="checkbox">Line 1<br>Line 2
   // |---------------------||---------------------|
   ASSERT_HRESULT_SUCCEEDED(text_range_provider->MoveEndpointByUnit(
-      TextPatternRangeEndpoint_End, TextUnit_Word, /*count*/ -2, &count));
-  ASSERT_EQ(-2, count);
+      TextPatternRangeEndpoint_End, TextUnit_Word, /*count*/ -3, &count));
+  ASSERT_EQ(-3, count);
   EXPECT_HRESULT_SUCCEEDED(
       text_range_provider->GetBoundingRectangles(rectangles.Receive()));
   expected_values = {20, 20, 200, 30, /* button */
