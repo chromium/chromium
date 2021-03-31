@@ -15,8 +15,8 @@
 #include "content/public/browser/web_ui.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/base/locale_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"

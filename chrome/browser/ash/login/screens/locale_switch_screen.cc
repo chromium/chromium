@@ -5,9 +5,9 @@
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
 
 #include "base/time/time.h"
+#include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/base/locale_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"

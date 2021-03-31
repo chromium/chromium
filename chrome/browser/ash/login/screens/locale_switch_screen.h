@@ -10,7 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/chromeos/base/locale_util.h"
+#include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"

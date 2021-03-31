@@ -10,7 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/chromeos/base/locale_util.h"
+#include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/l10n_util.h"

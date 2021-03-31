@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_BASE_FILE_FLUSHER_H_
-#define CHROME_BROWSER_CHROMEOS_BASE_FILE_FLUSHER_H_
+#ifndef CHROME_BROWSER_ASH_BASE_FILE_FLUSHER_H_
+#define CHROME_BROWSER_ASH_BASE_FILE_FLUSHER_H_
 
 #include <vector>
 
@@ -65,4 +65,4 @@ class FileFlusher {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_BASE_FILE_FLUSHER_H_
+#endif  // CHROME_BROWSER_ASH_BASE_FILE_FLUSHER_H_

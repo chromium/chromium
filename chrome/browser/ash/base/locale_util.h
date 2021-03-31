@@ -4,8 +4,8 @@
 
 // This file contains utility functions for locale change.
 
-#ifndef CHROME_BROWSER_CHROMEOS_BASE_LOCALE_UTIL_H_
-#define CHROME_BROWSER_CHROMEOS_BASE_LOCALE_UTIL_H_
+#ifndef CHROME_BROWSER_ASH_BASE_LOCALE_UTIL_H_
+#define CHROME_BROWSER_ASH_BASE_LOCALE_UTIL_H_
 
 #include <memory>
 #include <string>
@@ -96,4 +96,4 @@ bool AddLocaleToPreferredLanguages(const std::string& locale,
 }  // namespace locale_util
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_BASE_LOCALE_UTIL_H_
+#endif  // CHROME_BROWSER_ASH_BASE_LOCALE_UTIL_H_
