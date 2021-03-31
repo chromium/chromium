@@ -1096,7 +1096,7 @@
           'validate_expectations',
         ],
         'test_suites': {
-          'gtest_tests': 'android_pie_rel_non_skia_renderer_gtests',
+          'gtest_tests': 'chromium_android_gtests',
           # TODO(crbug.com/1111436): Re-enable this if/when additional capacity
           # has been deployed.
           #'isolated_scripts': 'marshmallow_nougat_pie_isolated_scripts_with_proguard',
