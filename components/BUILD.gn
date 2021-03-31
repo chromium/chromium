@@ -251,6 +251,7 @@ test("components_unittests") {
       "//components/content_settings/browser:unit_tests",
       "//components/contextual_search/core:unit_tests",
       "//components/continuous_search/browser:unit_tests",
+      "//components/continuous_search/common:unit_tests",
       "//components/data_use_measurement/core:unit_tests",
       "//components/digital_asset_links:unit_tests",
       "//components/discardable_memory/client:unit_tests",

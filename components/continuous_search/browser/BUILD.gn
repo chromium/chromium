@@ -21,6 +21,7 @@ source_set("browser") {
 
   deps = [
     "//base",
+    "//components/continuous_search/common",
     "//components/continuous_search/common/public/mojom",
     "//components/google/core/common",
     "//content/public/browser",
