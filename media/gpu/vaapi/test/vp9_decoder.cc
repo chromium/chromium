@@ -277,15 +277,23 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
 }
 
 void Vp9Decoder::LastDecodedFrameToPNG(const std::string& path) {
-  last_decoded_surface_->SaveAsPNG(path);
+  last_decoded_surface_->SaveAsPNG(fetch_policy_, path);
 }
 
 std::string Vp9Decoder::LastDecodedFrameMD5Sum() {
-  return last_decoded_surface_->GetMD5Sum();
+  return last_decoded_surface_->GetMD5Sum(fetch_policy_);
 }
 
 bool Vp9Decoder::LastDecodedFrameVisible() {
   return last_decoded_frame_visible_;
+}
+
+SharedVASurface::FetchPolicy Vp9Decoder::fetch_policy() const {
+  return fetch_policy_;
+}
+
+void Vp9Decoder::set_fetch_policy(SharedVASurface::FetchPolicy fetch_policy) {
+  fetch_policy_ = fetch_policy;
 }
 
 }  // namespace vaapi_test

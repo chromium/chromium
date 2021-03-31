@@ -31,8 +31,10 @@ bool DeriveImage(VADisplay display,
                  VAImage* image,
                  uint8_t** image_data) {
   VAStatus res = vaDeriveImage(display, surface_id, image);
-  VLOG_IF(2, (res != VA_STATUS_SUCCESS))
-      << "vaDeriveImage failed, VA error: " << vaErrorStr(res);
+  if (res != VA_STATUS_SUCCESS) {
+    VLOG(2) << "vaDeriveImage failed, VA error: " << vaErrorStr(res);
+    return false;
+  }
 
   const uint32_t fourcc = image->format.fourcc;
   DCHECK_NE(fourcc, 0u);
@@ -41,8 +43,7 @@ bool DeriveImage(VADisplay display,
   if (!IsSupportedFormat(fourcc)) {
     VLOG(2) << "Test decoder binary does not support derived surface format "
             << "with fourcc " << media::FourccToString(fourcc);
-    res = vaDestroyImage(display, image->image_id);
-    VA_LOG_ASSERT(res, "vaDestroyImage");
+    VA_LOG_ASSERT(vaDestroyImage(display, image->image_id), "vaDestroyImage");
     return false;
   }
 
@@ -130,14 +131,27 @@ SharedVASurface::~SharedVASurface() {
   VLOG(1) << "destroyed surface " << id_;
 }
 
-void SharedVASurface::SaveAsPNG(const std::string& path) {
+void SharedVASurface::FetchData(FetchPolicy fetch_policy,
+                                const VAImageFormat& format,
+                                VAImage* image,
+                                uint8_t** image_data) const {
+  if (fetch_policy == FetchPolicy::kDeriveImage ||
+      fetch_policy == FetchPolicy::kAny) {
+    const bool res = DeriveImage(va_device_.display(), id_, image, image_data);
+    if (fetch_policy != FetchPolicy::kAny)
+      LOG_ASSERT(res) << "Failed to vaDeriveImage.";
+    if (res)
+      return;
+  }
+
+  GetSurfaceImage(va_device_.display(), id_, format, size_, image, image_data);
+}
+
+void SharedVASurface::SaveAsPNG(FetchPolicy fetch_policy,
+                                const std::string& path) {
   VAImage image;
   uint8_t* image_data;
-
-  // For saving as PNG and visual comparison, we just try to get the image data
-  // in *some* format, so use the preferred VAImageFormat.
-  GetSurfaceImage(va_device_.display(), id_, GetImageFormat(va_rt_format_),
-                  size_, &image, &image_data);
+  FetchData(fetch_policy, GetImageFormat(va_rt_format_), &image, &image_data);
 
   // Convert the image data to ARGB and write to |path|.
   const size_t argb_stride = image.width * 4;
@@ -206,10 +220,13 @@ void SharedVASurface::SaveAsPNG(const std::string& path) {
   VA_LOG_ASSERT(res, "vaDestroyImage");
 }
 
-std::string SharedVASurface::GetMD5Sum() const {
+std::string SharedVASurface::GetMD5Sum(FetchPolicy fetch_policy) const {
   VAImage image;
   uint8_t* image_data;
-  LOG_ASSERT(DeriveImage(va_device_.display(), id_, &image, &image_data));
+  constexpr VAImageFormat kImageFormatI420{.fourcc = VA_FOURCC_I420,
+                                           .byte_order = VA_LSB_FIRST,
+                                           .bits_per_pixel = 12};
+  FetchData(fetch_policy, kImageFormatI420, &image, &image_data);
 
   // Golden values of MD5 sums are computed from vpxdec with packed I420 as the
   // format, so convert as needed.

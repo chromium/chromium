@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_VIDEO_DECODER_H_
 #define MEDIA_GPU_VAAPI_TEST_VIDEO_DECODER_H_
 
+#include "media/gpu/vaapi/test/shared_va_surface.h"
+
 namespace media {
 namespace vaapi_test {
 
@@ -39,6 +41,10 @@ class VideoDecoder {
 
   // Returns whether the last decoded frame was visible.
   virtual bool LastDecodedFrameVisible() = 0;
+
+  // Handle how to fetch data from decoded VASurfaces.
+  virtual SharedVASurface::FetchPolicy fetch_policy() const = 0;
+  virtual void set_fetch_policy(SharedVASurface::FetchPolicy fetch_policy) = 0;
 };
 
 }  // namespace vaapi_test

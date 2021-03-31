@@ -11,11 +11,13 @@
 #include "base/command_line.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "media/filters/ivf_parser.h"
 #include "media/gpu/vaapi/test/av1_decoder.h"
+#include "media/gpu/vaapi/test/shared_va_surface.h"
 #include "media/gpu/vaapi/test/vaapi_device.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
 #include "media/gpu/vaapi/test/vp9_decoder.h"
@@ -23,6 +25,7 @@
 #include "ui/gfx/geometry/size.h"
 
 using media::vaapi_test::Av1Decoder;
+using media::vaapi_test::SharedVASurface;
 using media::vaapi_test::VaapiDevice;
 using media::vaapi_test::VideoDecoder;
 using media::vaapi_test::Vp9Decoder;
@@ -44,6 +47,7 @@ constexpr char kUsageMsg[] =
     "usage: decode_test\n"
     "           --video=<video path>\n"
     "           [--frames=<number of frames to decode>]\n"
+    "           [--fetch=<derive|get>]\n"
     "           [--out-prefix=<path prefix of decoded frame PNGs>]\n"
     "           [--md5]\n"
     "           [--visible]\n"
@@ -61,6 +65,11 @@ constexpr char kHelpMsg[] =
     "    --frames=<int>\n"
     "        Optional. Number of frames to decode, defaults to all.\n"
     "        Override with a positive integer to decode at most that many.\n"
+    "    --fetch=<derive|get>\n"
+    "        Optional. If omitted, try to fetch VASurface data by any means.\n"
+    "        Specifically, try, in order, vaDeriveImage, then if that fails,\n"
+    "        vaCreateImage + vaGetImage. Otherwise, only attempt the\n"
+    "        specified fetch policy.\n"
     "    --out-prefix=<string>\n"
     "        Optional. Save PNGs of decoded (and visible, if --visible is\n"
     "        specified) frames if and only if a path prefix (which may\n"
@@ -126,6 +135,19 @@ std::unique_ptr<VideoDecoder> CreateDecoder(const VaapiDevice& va_device,
   return nullptr;
 }
 
+base::Optional<SharedVASurface::FetchPolicy> GetFetchPolicy(
+    const std::string& fetch_policy) {
+  if (fetch_policy.empty())
+    return SharedVASurface::FetchPolicy::kAny;
+  if (base::EqualsCaseInsensitiveASCII(fetch_policy, "derive"))
+    return SharedVASurface::FetchPolicy::kDeriveImage;
+  if (base::EqualsCaseInsensitiveASCII(fetch_policy, "get"))
+    return SharedVASurface::FetchPolicy::kGetImage;
+
+  LOG(ERROR) << "Unrecognized fetch policy " << fetch_policy;
+  return base::nullopt;
+}
+
 }  // namespace
 
 int main(int argc, char** argv) {
@@ -161,6 +183,12 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  const auto fetch_policy = GetFetchPolicy(cmd->GetSwitchValueASCII("fetch"));
+  if (!fetch_policy) {
+    std::cout << kUsageMsg;
+    return EXIT_FAILURE;
+  }
+
   // Initialize VA stubs.
   StubPathMap paths;
   const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
@@ -192,6 +220,7 @@ int main(int argc, char** argv) {
       LOG(ERROR) << "Failed to create decoder for file: " << video_path;
       return EXIT_FAILURE;
     }
+    dec->set_fetch_policy(*fetch_policy);
 
     for (int i = 0; i < n_frames || n_frames == 0; i++) {
       LOG(INFO) << "Frame " << i << "...";

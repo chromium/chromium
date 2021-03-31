@@ -902,15 +902,23 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
 }
 
 void Av1Decoder::LastDecodedFrameToPNG(const std::string& path) {
-  last_decoded_surface_->SaveAsPNG(path);
+  last_decoded_surface_->SaveAsPNG(fetch_policy_, path);
 }
 
 std::string Av1Decoder::LastDecodedFrameMD5Sum() {
-  return last_decoded_surface_->GetMD5Sum();
+  return last_decoded_surface_->GetMD5Sum(fetch_policy_);
 }
 
 bool Av1Decoder::LastDecodedFrameVisible() {
   return last_decoded_frame_visible_;
+}
+
+SharedVASurface::FetchPolicy Av1Decoder::fetch_policy() const {
+  return fetch_policy_;
+}
+
+void Av1Decoder::set_fetch_policy(SharedVASurface::FetchPolicy fetch_policy) {
+  fetch_policy_ = fetch_policy;
 }
 
 }  // namespace vaapi_test

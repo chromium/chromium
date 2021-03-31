@@ -30,6 +30,8 @@ class Vp9Decoder : public VideoDecoder {
   void LastDecodedFrameToPNG(const std::string& path) override;
   std::string LastDecodedFrameMD5Sum() override;
   bool LastDecodedFrameVisible() override;
+  SharedVASurface::FetchPolicy fetch_policy() const override;
+  void set_fetch_policy(SharedVASurface::FetchPolicy fetch_policy) override;
 
  private:
   // Reads next frame from IVF stream and its size into |vp9_frame_header| and
@@ -57,6 +59,10 @@ class Vp9Decoder : public VideoDecoder {
 
   // Whether the last decoded frame was visible.
   bool last_decoded_frame_visible_ = false;
+
+  // How to fetch image data from VASurfaces decoded into by this decoder.
+  SharedVASurface::FetchPolicy fetch_policy_ =
+      SharedVASurface::FetchPolicy::kAny;
 };
 
 }  // namespace vaapi_test
