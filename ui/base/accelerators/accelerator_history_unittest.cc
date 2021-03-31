@@ -4,6 +4,7 @@
 
 #include "ui/base/accelerators/accelerator_history.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
 
@@ -50,6 +51,25 @@ TEST(AcceleratorHistoryTest, SimulatePressAndHold) {
   history.StoreCurrentAccelerator(search_release);
   EXPECT_EQ(search_release, history.current_accelerator());
   EXPECT_EQ(alt_release_search_down, history.previous_accelerator());
+}
+
+// Tests that the record of pressed keys is cleared when language changes
+// between key press and release. Detected via a release event that arrives with
+// no corresponding press. See https://crbug.com/1184474.
+TEST(AcceleratorHistoryTest, ReleaseWithNoMatchingPressClearsPressedKeys) {
+  // Press "]" aka ui::VKEY_OEM_6 in the US keyboard.
+  AcceleratorHistory history;
+  ui::Accelerator right_bracket_press(ui::VKEY_OEM_6, ui::EF_NONE,
+                                      ui::Accelerator::KeyState::PRESSED);
+  history.StoreCurrentAccelerator(right_bracket_press);
+
+  // Simulate that a keyboard language change turns the release of "]" to
+  // VKEY_OEM_PLUS in a DE keyboard. So there should be a release event with no
+  // matching press. Test that the set of pressed keys is empty.
+  ui::Accelerator right_bracket_release(ui::VKEY_OEM_PLUS, ui::EF_NONE,
+                                        ui::Accelerator::KeyState::RELEASED);
+  history.StoreCurrentAccelerator(right_bracket_release);
+  EXPECT_TRUE(history.currently_pressed_keys().empty());
 }
 
 }  // namespace ui

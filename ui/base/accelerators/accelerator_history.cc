@@ -4,6 +4,8 @@
 
 #include "ui/base/accelerators/accelerator_history.h"
 
+#include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/events/event.h"
 #include "ui/events/event_target.h"
 
@@ -58,7 +60,19 @@ void AcceleratorHistory::StoreCurrentAccelerator(
     if (!currently_pressed_keys_.emplace(accelerator.key_code()).second)
       return;
   } else {
-    currently_pressed_keys_.erase(accelerator.key_code());
+    if (!currently_pressed_keys_.erase(accelerator.key_code())) {
+      // If the released accelerator doesn't have a corresponding press stored,
+      // likely the language was changed between press and release. Clear
+      // `currently_pressed_keys_` to prevent keys being left pressed.
+      std::string pressed_keys;
+      for (auto key_code : currently_pressed_keys_)
+        pressed_keys.append(base::NumberToString(key_code).append(" "));
+      LOG(WARNING) << "Key Release (" << accelerator.key_code()
+                   << ") delivered with no corresponding Press. "
+                      "Clearing all pressed keys: "
+                   << pressed_keys;
+      currently_pressed_keys_.clear();
+    }
   }
 
   if (accelerator != current_accelerator_) {
