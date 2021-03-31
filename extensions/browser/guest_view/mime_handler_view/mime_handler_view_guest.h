@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/guest_view/browser/guest_view.h"
+#include "content/public/browser/global_routing_id.h"
 #include "extensions/common/api/mime_handler.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

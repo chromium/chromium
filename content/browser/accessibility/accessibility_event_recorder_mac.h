@@ -6,6 +6,8 @@
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_MAC_H_
 
 #include "content/browser/accessibility/accessibility_event_recorder.h"
+
+#include "base/mac/scoped_cftyperef.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
 
 @class BrowserAccessibilityCocoa;

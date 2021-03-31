@@ -36,6 +36,10 @@ namespace permissions {
 class ChooserContextBase;
 }
 
+namespace ui {
+class Event;
+}
+
 class HostContentSettingsMap;
 class PageInfoDelegate;
 class PageInfoUI;

@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace safe_browsing {

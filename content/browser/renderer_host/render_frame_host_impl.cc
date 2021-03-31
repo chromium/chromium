@@ -982,7 +982,7 @@ PendingNavigation::PendingNavigation(
       navigation_client(std::move(navigation_client)) {}
 
 // static
-RenderFrameHost* RenderFrameHost::FromID(GlobalFrameRoutingId id) {
+RenderFrameHost* RenderFrameHost::FromID(const GlobalFrameRoutingId& id) {
   return RenderFrameHostImpl::FromID(id);
 }
 
@@ -1037,7 +1037,7 @@ RenderFrameHostImpl* RenderFrameHostImpl::FromFrameToken(
 }
 
 // static
-RenderFrameHost* RenderFrameHost::FromAXTreeID(ui::AXTreeID ax_tree_id) {
+RenderFrameHost* RenderFrameHost::FromAXTreeID(const ui::AXTreeID& ax_tree_id) {
   return RenderFrameHostImpl::FromAXTreeID(ax_tree_id);
 }
 
@@ -1750,7 +1750,7 @@ void RenderFrameHostImpl::ExecuteMediaPlayerActionAtLocation(
 }
 
 bool RenderFrameHostImpl::CreateNetworkServiceDefaultFactory(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory>&&
         default_factory_receiver) {
   // By providing null |navigation_request| we will always use the last
   // committed Origin and ClientSecurityState (using GetPageUkmSourceId()
@@ -1857,7 +1857,7 @@ void RenderFrameHostImpl::AddMessageToConsole(
 void RenderFrameHostImpl::ExecuteJavaScriptMethod(
     const std::u16string& object_name,
     const std::u16string& method_name,
-    base::Value arguments,
+    base::Value&& arguments,
     JavaScriptResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(arguments.is_list());
@@ -3943,7 +3943,8 @@ void RenderFrameHostImpl::ReportInspectorIssue(
       this, std::move(info));
 }
 
-void RenderFrameHostImpl::WriteIntoTracedValue(perfetto::TracedValue context) {
+void RenderFrameHostImpl::WriteIntoTracedValue(
+    perfetto::TracedValue&& context) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("process", GetProcess());
   dict.Add("routing_id", GetRoutingID());

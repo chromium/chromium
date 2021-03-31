@@ -99,6 +99,7 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
@@ -339,7 +340,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                            const std::string& message) override;
   void ExecuteJavaScriptMethod(const std::u16string& object_name,
                                const std::u16string& method_name,
-                               base::Value arguments,
+                               base::Value&& arguments,
                                JavaScriptResultCallback callback) override;
   void ExecuteJavaScript(const std::u16string& javascript,
                          JavaScriptResultCallback callback) override;
@@ -388,7 +389,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const gfx::Point&,
       const blink::mojom::MediaPlayerAction& action) override;
   bool CreateNetworkServiceDefaultFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>&&
           default_factory_receiver) override;
   void MarkIsolatedWorldsAsRequiringSeparateURLLoaderFactory(
       base::flat_set<url::Origin> isolated_world_origins,
@@ -419,7 +420,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   StoragePartition* GetStoragePartition() override;
   BrowserContext* GetBrowserContext() override;
   void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr info) override;
-  void WriteIntoTracedValue(perfetto::TracedValue context) override;
+  void WriteIntoTracedValue(perfetto::TracedValue&& context) override;
 
   // Determines if a clipboard paste using |data| of type |data_type| is allowed
   // in this renderer frame.  The implementation delegates to

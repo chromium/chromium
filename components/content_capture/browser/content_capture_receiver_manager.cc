@@ -10,6 +10,7 @@
 #include "components/content_capture/browser/content_capture_consumer.h"
 #include "components/content_capture/browser/content_capture_receiver.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"

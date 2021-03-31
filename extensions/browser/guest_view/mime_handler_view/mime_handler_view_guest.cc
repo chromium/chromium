@@ -35,6 +35,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
 
 using content::WebContents;
 using guest_view::GuestViewBase;

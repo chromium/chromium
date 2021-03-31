@@ -21,6 +21,7 @@
 #include "components/security_state/core/security_state.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/common/page_visibility_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"

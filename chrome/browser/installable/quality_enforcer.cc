@@ -13,7 +13,7 @@
 #include "chrome/android/chrome_jni_headers/QualityEnforcer_jni.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;

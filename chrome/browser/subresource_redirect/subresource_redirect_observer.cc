@@ -15,6 +15,7 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
 #include "components/optimization_guide/proto/public_image_metadata.pb.h"
 #include "components/subresource_redirect/common/subresource_redirect_features.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

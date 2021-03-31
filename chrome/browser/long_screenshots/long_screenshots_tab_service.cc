@@ -14,6 +14,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "components/paint_preview/browser/file_manager.h"
+#include "content/public/browser/global_routing_id.h"
 
 #include "chrome/browser/share/android/jni_headers/LongScreenshotsTabService_jni.h"
 

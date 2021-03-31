@@ -12,6 +12,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "url/gurl.h"
 
 namespace on_load_script_injector {
 

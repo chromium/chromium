@@ -10,61 +10,74 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/global_routing_id.h"
 #include "content/public/common/isolated_world_ids.h"
-#include "content/public/common/page_visibility_state.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_sender.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/blink/public/common/permissions_policy/document_policy.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
-#include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_frame.mojom-forward.h"
-#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom.h"
-#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom.h"
-#include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom.h"
-#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
-#include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-forward.h"
-#include "ui/accessibility/ax_tree_id.h"
-#include "ui/gfx/geometry/rect.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-forward.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/frame_owner_element_type.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-forward.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-forward.h"
+#include "third_party/blink/public/mojom/page/page_visibility_state.mojom-forward.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
-namespace blink {
-class AssociatedInterfaceProvider;
-namespace mojom {
-enum class AuthenticatorStatus;
-enum class PermissionsPolicyFeature;
-}  // namespace mojom
-}  // namespace blink
+class GURL;
 
 namespace base {
-namespace trace_event {
-class TracedValue;
-}  // namespace trace_event
+#if defined(OS_ANDROID)
+namespace android {
+template <typename T>
+class JavaRef;
+}  // namespace android
+#endif
 
+template <typename T>
+class Optional;
 class UnguessableToken;
 class Value;
 }  // namespace base
 
-namespace features {
-CONTENT_EXPORT extern const base::Feature kCrashReporting;
-}  // namespace features
+namespace blink {
+class AssociatedInterfaceProvider;
+
+namespace mojom {
+enum class AuthenticatorStatus;
+enum class PermissionsPolicyFeature;
+class MediaPlayerAction;
+}  // namespace mojom
+}  // namespace blink
+
+namespace gfx {
+class Point;
+class Size;
+}  // namespace gfx
+
+namespace mojo {
+template <typename T>
+class PendingReceiver;
+}  // namespace mojo
 
 namespace net {
 class IsolationInfo;
 class NetworkIsolationKey;
+}
+
+namespace network {
+namespace mojom {
+class URLLoaderFactory;
+}
+}  // namespace network
+
+namespace perfetto {
+class TracedValue;
 }
 
 namespace service_manager {
@@ -73,16 +86,22 @@ class InterfaceProvider;
 
 namespace ui {
 struct AXActionData;
+class AXTreeID;
+}  // namespace ui
+
+namespace url {
+class Origin;
 }
 
 namespace content {
 
+class BrowserContext;
+struct GlobalFrameRoutingId;
 class RenderProcessHost;
 class RenderViewHost;
 class RenderWidgetHost;
 class RenderWidgetHostView;
 class SiteInstance;
-class BrowserContext;
 class StoragePartition;
 class WebUI;
 
@@ -98,7 +117,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the RenderFrameHost given its ID and the ID of its render process.
   // Returns nullptr if the IDs do not correspond to a live RenderFrameHost.
-  static RenderFrameHost* FromID(GlobalFrameRoutingId id);
+  static RenderFrameHost* FromID(const GlobalFrameRoutingId& id);
   static RenderFrameHost* FromID(int render_process_id, int render_frame_id);
 
   // Returns the RenderFrameHost given its frame token and its process
@@ -114,7 +133,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   static void AllowInjectingJavaScript();
 
   // Returns a RenderFrameHost given its accessibility tree ID.
-  static RenderFrameHost* FromAXTreeID(ui::AXTreeID ax_tree_id);
+  static RenderFrameHost* FromAXTreeID(const ui::AXTreeID& ax_tree_id);
 
   // Returns the FrameTreeNode ID corresponding to the specified |process_id|
   // and |routing_id|. This routing ID pair may represent a placeholder for
@@ -384,7 +403,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   //   ExecuteJavaScript("obj.foo(1, true)", callback)
   virtual void ExecuteJavaScriptMethod(const std::u16string& object_name,
                                        const std::u16string& method_name,
-                                       base::Value arguments,
+                                       base::Value&& arguments,
                                        JavaScriptResultCallback callback) = 0;
 
   // This is the default API to run JavaScript in this frame. This API can only
@@ -454,7 +473,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Returns the visibility state of the frame. The different visibility states
   // of a frame are defined in Blink.
-  virtual PageVisibilityState GetVisibilityState() = 0;
+  virtual blink::mojom::PageVisibilityState GetVisibilityState() = 0;
 
   // Returns true if WebContentsObserver::RenderFrameCreated notification has
   // been dispatched for this frame, and so a RenderFrameDeleted notification
@@ -531,7 +550,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
 
   // Text surrounding selection.
   virtual void RequestTextSurroundingSelection(
-      blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback callback,
+      base::OnceCallback<void(const std::u16string&, uint32_t, uint32_t)>
+          callback,
       int max_length) = 0;
 
   // Generates an intervention report in this frame.
@@ -596,7 +616,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // If this returns true, any redirect safety checks should be bypassed in
   // downstream loaders.
   virtual bool CreateNetworkServiceDefaultFactory(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory>&&
           default_factory_receiver) = 0;
 
   // Requests that future URLLoaderFactoryBundle(s) sent to the renderer should
@@ -735,7 +755,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual bool DocumentUsedWebOTP() = 0;
 
   // Write a description of this RenderFrameHost into the provided |context|.
-  virtual void WriteIntoTracedValue(perfetto::TracedValue context) = 0;
+  virtual void WriteIntoTracedValue(perfetto::TracedValue&& context) = 0;
 
   // Start/stop event log output from WebRTC on this RFH for the peer connection
   // identified locally within the RFH using the ID `lid`.

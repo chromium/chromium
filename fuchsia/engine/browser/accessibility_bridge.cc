@@ -11,6 +11,7 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/gfx/geometry/rect_conversions.h"

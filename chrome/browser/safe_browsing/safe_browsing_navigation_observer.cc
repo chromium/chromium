@@ -14,6 +14,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"

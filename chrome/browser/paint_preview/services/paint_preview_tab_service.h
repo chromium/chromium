@@ -21,6 +21,7 @@
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/browser/paint_preview_policy.h"
 #include "components/paint_preview/common/proto/paint_preview.pb.h"
+#include "content/public/browser/global_routing_id.h"
 
 #if defined(os_android)
 #include "base/android/jni_android.h"
