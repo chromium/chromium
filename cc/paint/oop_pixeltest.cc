@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <tuple>
 #include <vector>
 
@@ -79,10 +80,10 @@ class OopPixelTest : public testing::Test,
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int gles2_max_texture_size =
         gles2_context_provider_->ContextCapabilities().max_texture_size;
-    gpu_image_cache_.reset(new GpuImageDecodeCache(
+    gpu_image_cache_ = std::make_unique<GpuImageDecodeCache>(
         gles2_context_provider_.get(), false, kRGBA_8888_SkColorType,
         kWorkingSetSize, gles2_max_texture_size,
-        PaintImage::kDefaultGeneratorClientId, nullptr));
+        PaintImage::kDefaultGeneratorClientId, nullptr);
 
     const int raster_max_texture_size =
         raster_context_provider_->ContextCapabilities().max_texture_size;
@@ -106,10 +107,10 @@ class OopPixelTest : public testing::Test,
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
     const int raster_max_texture_size =
         raster_context_provider_->ContextCapabilities().max_texture_size;
-    oop_image_cache_.reset(new GpuImageDecodeCache(
+    oop_image_cache_ = std::make_unique<GpuImageDecodeCache>(
         raster_context_provider_.get(), true, kRGBA_8888_SkColorType,
         kWorkingSetSize, raster_max_texture_size,
-        PaintImage::kDefaultGeneratorClientId, nullptr));
+        PaintImage::kDefaultGeneratorClientId, nullptr);
   }
 
   class RasterOptions {

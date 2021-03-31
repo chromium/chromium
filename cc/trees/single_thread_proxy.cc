@@ -87,12 +87,12 @@ void SingleThreadProxy::Start() {
             CompositorTimingHistory::BROWSER_UMA,
             layer_tree_host_->rendering_stats_instrumentation(),
             host_impl_->compositor_frame_reporting_controller()));
-    scheduler_on_impl_thread_.reset(
-        new Scheduler(this, scheduler_settings, layer_tree_host_->GetId(),
-                      task_runner_provider_->MainThreadTaskRunner(),
-                      std::move(compositor_timing_history),
-                      layer_tree_host_->TakeMainPipeline(),
-                      layer_tree_host_->TakeCompositorPipeline()));
+    scheduler_on_impl_thread_ = std::make_unique<Scheduler>(
+        this, scheduler_settings, layer_tree_host_->GetId(),
+        task_runner_provider_->MainThreadTaskRunner(),
+        std::move(compositor_timing_history),
+        layer_tree_host_->TakeMainPipeline(),
+        layer_tree_host_->TakeCompositorPipeline());
   }
 }
 

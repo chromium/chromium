@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <unordered_map>
 
 #include "base/threading/thread_task_runner_handle.h"
@@ -1019,8 +1020,8 @@ class ScrollbarLayerSolidColorThumbTest : public testing::Test {
  public:
   ScrollbarLayerSolidColorThumbTest() {
     LayerTreeSettings layer_tree_settings;
-    host_impl_.reset(new FakeLayerTreeHostImpl(
-        layer_tree_settings, &task_runner_provider_, &task_graph_runner_));
+    host_impl_ = std::make_unique<FakeLayerTreeHostImpl>(
+        layer_tree_settings, &task_runner_provider_, &task_graph_runner_);
 
     const int kThumbThickness = 3;
     const int kTrackStart = 0;

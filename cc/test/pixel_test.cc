@@ -342,8 +342,8 @@ void PixelTest::EnableExternalStencilTest() {
 }
 
 void PixelTest::SetUpSoftwareRenderer() {
-  output_surface_.reset(new PixelTestOutputSurface(
-      std::make_unique<viz::SoftwareOutputDevice>()));
+  output_surface_ = std::make_unique<PixelTestOutputSurface>(
+      std::make_unique<viz::SoftwareOutputDevice>());
   output_surface_->BindToClient(output_surface_client_.get());
   shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
   auto resource_provider =

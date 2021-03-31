@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -32,7 +33,7 @@ Animation::Animation(int id, std::unique_ptr<KeyframeEffect> keyframe_effect)
     : animation_host_(), animation_timeline_(), animation_delegate_(), id_(id) {
   DCHECK(id_);
   if (!keyframe_effect)
-    keyframe_effect.reset(new KeyframeEffect(this));
+    keyframe_effect = std::make_unique<KeyframeEffect>(this);
 
   keyframe_effect_ = std::move(keyframe_effect);
 }

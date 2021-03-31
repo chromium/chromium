@@ -3229,9 +3229,9 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
           RasterTilePriorityQueue::Type::REQUIRED_FOR_DRAW));
   EXPECT_TRUE(required_queue->IsEmpty());
 
-  required_queue.reset(new TilingSetRasterQueueRequired(
+  required_queue = std::make_unique<TilingSetRasterQueueRequired>(
       pending_layer()->picture_layer_tiling_set(),
-      RasterTilePriorityQueue::Type::REQUIRED_FOR_ACTIVATION));
+      RasterTilePriorityQueue::Type::REQUIRED_FOR_ACTIVATION);
   EXPECT_FALSE(required_queue->IsEmpty());
   int required_for_activation_count = 0;
   while (!required_queue->IsEmpty()) {
@@ -3255,8 +3255,8 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
 
   unique_tiles.clear();
   high_res_tile_count = 0u;
-  queue.reset(new TilingSetRasterQueueAll(
-      pending_layer()->picture_layer_tiling_set(), false, false));
+  queue = std::make_unique<TilingSetRasterQueueAll>(
+      pending_layer()->picture_layer_tiling_set(), false, false);
   while (!queue->IsEmpty()) {
     PrioritizedTile prioritized_tile = queue->Top();
     TilePriority priority = prioritized_tile.priority();
@@ -3291,8 +3291,8 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueue) {
     draw_info.SetSolidColorForTesting(SK_ColorRED);
   }
 
-  queue.reset(new TilingSetRasterQueueAll(
-      pending_layer()->picture_layer_tiling_set(), true, false));
+  queue = std::make_unique<TilingSetRasterQueueAll>(
+      pending_layer()->picture_layer_tiling_set(), true, false);
   EXPECT_TRUE(queue->IsEmpty());
 }
 
@@ -3322,9 +3322,9 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetRasterQueueActiveTree) {
     queue->Pop();
   }
 
-  queue.reset(new TilingSetRasterQueueRequired(
+  queue = std::make_unique<TilingSetRasterQueueRequired>(
       active_layer()->picture_layer_tiling_set(),
-      RasterTilePriorityQueue::Type::REQUIRED_FOR_ACTIVATION));
+      RasterTilePriorityQueue::Type::REQUIRED_FOR_ACTIVATION);
   EXPECT_TRUE(queue->IsEmpty());
 }
 
@@ -3407,9 +3407,9 @@ TEST_F(LegacySWPictureLayerImplTest, TilingSetEvictionQueue) {
   PrioritizedTile last_tile;
   size_t distance_decreasing = 0;
   size_t distance_increasing = 0;
-  queue.reset(new TilingSetEvictionQueue(
+  queue = std::make_unique<TilingSetEvictionQueue>(
       pending_layer()->picture_layer_tiling_set(),
-      pending_layer()->contributes_to_drawn_render_surface()));
+      pending_layer()->contributes_to_drawn_render_surface());
   while (!queue->IsEmpty()) {
     PrioritizedTile prioritized_tile = queue->Top();
     Tile* tile = prioritized_tile.tile();
@@ -4258,8 +4258,8 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   UpdateDrawProperties(host_impl()->pending_tree());
 
   unoccluded_tile_count = 0;
-  queue.reset(new TilingSetRasterQueueAll(
-      pending_layer()->picture_layer_tiling_set(), false, false));
+  queue = std::make_unique<TilingSetRasterQueueAll>(
+      pending_layer()->picture_layer_tiling_set(), false, false);
   while (!queue->IsEmpty()) {
     PrioritizedTile prioritized_tile = queue->Top();
     Tile* tile = prioritized_tile.tile();
@@ -4282,8 +4282,8 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
   UpdateDrawProperties(host_impl()->pending_tree());
 
   unoccluded_tile_count = 0;
-  queue.reset(new TilingSetRasterQueueAll(
-      pending_layer()->picture_layer_tiling_set(), false, false));
+  queue = std::make_unique<TilingSetRasterQueueAll>(
+      pending_layer()->picture_layer_tiling_set(), false, false);
   while (!queue->IsEmpty()) {
     PrioritizedTile prioritized_tile = queue->Top();
     Tile* tile = prioritized_tile.tile();

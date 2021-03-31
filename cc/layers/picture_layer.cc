@@ -94,7 +94,7 @@ void PictureLayer::SetLayerTreeHost(LayerTreeHost* host) {
     return;
 
   if (!recording_source_)
-    recording_source_.reset(new RecordingSource);
+    recording_source_ = std::make_unique<RecordingSource>();
   recording_source_->SetSlowdownRasterScaleFactor(
       host->GetDebugState().slow_down_raster_scale_factor);
 

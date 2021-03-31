@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -26,8 +27,8 @@ SingleThreadTaskGraphRunner::~SingleThreadTaskGraphRunner() = default;
 void SingleThreadTaskGraphRunner::Start(
     const std::string& thread_name,
     const base::SimpleThread::Options& thread_options) {
-  thread_.reset(
-      new base::DelegateSimpleThread(this, thread_name, thread_options));
+  thread_ = std::make_unique<base::DelegateSimpleThread>(this, thread_name,
+                                                         thread_options);
   thread_->StartAsync();
 }
 

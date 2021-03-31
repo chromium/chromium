@@ -1080,7 +1080,7 @@ void LayerTreeTest::DispatchNextCommitWaitsForActivation() {
 void LayerTreeTest::RunTest(CompositorMode mode) {
   mode_ = mode;
   if (mode_ == CompositorMode::THREADED) {
-    impl_thread_.reset(new base::Thread("Compositor"));
+    impl_thread_ = std::make_unique<base::Thread>("Compositor");
     ASSERT_TRUE(impl_thread_->Start());
   }
 
@@ -1089,7 +1089,7 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
 
   gpu_memory_buffer_manager_ =
       std::make_unique<viz::TestGpuMemoryBufferManager>();
-  task_graph_runner_.reset(new TestTaskGraphRunner);
+  task_graph_runner_ = std::make_unique<TestTaskGraphRunner>();
 
   if (mode == CompositorMode::THREADED) {
     settings_.commit_to_active_tree = false;

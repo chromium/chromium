@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -4479,9 +4480,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PageScaleAnimation) {
     did_request_redraw_ = false;
     did_request_next_frame_ = false;
     host_impl_->active_tree()->SetPendingPageScaleAnimation(
-        std::unique_ptr<PendingPageScaleAnimation>(
-            new PendingPageScaleAnimation(gfx::Vector2d(), false, 2,
-                                          duration)));
+        std::make_unique<PendingPageScaleAnimation>(gfx::Vector2d(), false, 2,
+                                                    duration));
     host_impl_->ActivateSyncTree();
     EXPECT_FALSE(did_request_redraw_);
     EXPECT_TRUE(did_request_next_frame_);
@@ -4540,9 +4540,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PageScaleAnimation) {
     did_request_redraw_ = false;
     did_request_next_frame_ = false;
     host_impl_->active_tree()->SetPendingPageScaleAnimation(
-        std::unique_ptr<PendingPageScaleAnimation>(
-            new PendingPageScaleAnimation(gfx::Vector2d(25, 25), true,
-                                          min_page_scale, duration)));
+        std::make_unique<PendingPageScaleAnimation>(gfx::Vector2d(25, 25), true,
+                                                    min_page_scale, duration));
     host_impl_->ActivateSyncTree();
     EXPECT_FALSE(did_request_redraw_);
     EXPECT_TRUE(did_request_next_frame_);
@@ -4606,8 +4605,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PageScaleAnimationNoOp) {
             scroll_layer->element_id(), gfx::ScrollOffset(50, 50));
 
     host_impl_->active_tree()->SetPendingPageScaleAnimation(
-        std::unique_ptr<PendingPageScaleAnimation>(
-            new PendingPageScaleAnimation(gfx::Vector2d(), true, 1, duration)));
+        std::make_unique<PendingPageScaleAnimation>(gfx::Vector2d(), true, 1,
+                                                    duration));
     host_impl_->ActivateSyncTree();
     begin_frame_args.frame_time = start_time;
     begin_frame_args.frame_id.sequence_number++;
@@ -4673,8 +4672,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   // Make sure TakePageScaleAnimation works properly.
 
   host_impl_->sync_tree()->SetPendingPageScaleAnimation(
-      std::unique_ptr<PendingPageScaleAnimation>(new PendingPageScaleAnimation(
-          gfx::Vector2d(), false, target_scale, duration)));
+      std::make_unique<PendingPageScaleAnimation>(gfx::Vector2d(), false,
+                                                  target_scale, duration));
   std::unique_ptr<PendingPageScaleAnimation> psa =
       host_impl_->sync_tree()->TakePendingPageScaleAnimation();
   EXPECT_EQ(target_scale, psa->scale);
@@ -4686,8 +4685,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
   did_request_redraw_ = false;
   did_request_next_frame_ = false;
   host_impl_->sync_tree()->SetPendingPageScaleAnimation(
-      std::unique_ptr<PendingPageScaleAnimation>(new PendingPageScaleAnimation(
-          gfx::Vector2d(), false, target_scale, duration)));
+      std::make_unique<PendingPageScaleAnimation>(gfx::Vector2d(), false,
+                                                  target_scale, duration));
   begin_frame_args.frame_time = halfway_through_animation;
   begin_frame_args.frame_id.sequence_number++;
   host_impl_->WillBeginImplFrame(begin_frame_args);
@@ -4786,8 +4785,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
   did_complete_page_scale_animation_ = false;
   host_impl_->active_tree()->SetPendingPageScaleAnimation(
-      std::unique_ptr<PendingPageScaleAnimation>(
-          new PendingPageScaleAnimation(gfx::Vector2d(), false, 2, duration)));
+      std::make_unique<PendingPageScaleAnimation>(gfx::Vector2d(), false, 2,
+                                                  duration));
   host_impl_->ActivateSyncTree();
   begin_frame_args.frame_time = start_time;
   begin_frame_args.frame_id.sequence_number++;

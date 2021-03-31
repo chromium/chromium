@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "cc/layers/picture_layer.h"
@@ -229,11 +231,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRounded) {
           1.01f * percentage_pixels_small_error;
   // Divide average error by 4 since we blur most of the result.
   float average_error_allowed_in_bad_pixels = small_error_threshold / 4.f;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_or_small_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_limit,
-      small_error_threshold));
+      small_error_threshold);
 
   RunPixelTest(background, use_software_renderer()
                                ? base::FilePath(FILE_PATH_LITERAL(
@@ -615,11 +617,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
   float percentage_pixels_small_error = 0.0f;
   float average_error_allowed_in_bad_pixels = 1.f;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 #endif
 
   RunPixelTest(
@@ -676,11 +678,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterRotated) {
   float average_error_allowed_in_bad_pixels = 2.f;
   int large_error_allowed = 2;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 
   RunPixelTest(background,
                base::FilePath(FILE_PATH_LITERAL("backdrop_filter_rotated_.png"))
@@ -734,10 +736,10 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageRenderSurfaceScaled) {
     average_error_allowed_in_bad_pixels = 1.f;
     large_error_allowed = 1;
   }
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       /*discard_alpha=*/true, percentage_pixels_large_error,
       percentage_pixels_small_error, average_error_allowed_in_bad_pixels,
-      large_error_allowed, small_error_allowed));
+      large_error_allowed, small_error_allowed);
 
   RunPixelTest(
       background,
@@ -862,11 +864,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
 #endif
   float percentage_pixels_small_error = 0.0f;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 #endif
 
   RunPixelTest(background,
@@ -926,11 +928,11 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
 #endif
   float percentage_pixels_small_error = 0.0f;
   int small_error_allowed = 0;
-  pixel_comparator_.reset(new FuzzyPixelComparator(
+  pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
       true,  // discard_alpha
       percentage_pixels_large_error, percentage_pixels_small_error,
       average_error_allowed_in_bad_pixels, large_error_allowed,
-      small_error_allowed));
+      small_error_allowed);
 #else
   if (use_skia_vulkan())
     pixel_comparator_ = std::make_unique<FuzzyPixelOffByOneComparator>(true);
@@ -1222,11 +1224,11 @@ class BackdropFilterInvertTest : public LayerTreeHostFiltersPixelTest {
       int large_error_allowed = 1;
       float percentage_pixels_small_error = 0.0f;
       int small_error_allowed = 0;
-      pixel_comparator_.reset(new FuzzyPixelComparator(
+      pixel_comparator_ = std::make_unique<FuzzyPixelComparator>(
           true,  // discard_alpha
           percentage_pixels_large_error, percentage_pixels_small_error,
           average_error_allowed_in_bad_pixels, large_error_allowed,
-          small_error_allowed));
+          small_error_allowed);
     }
     RunPixelTest(std::move(root), expected_result);
   }

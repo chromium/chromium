@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -149,8 +150,8 @@ class LayerTest : public testing::Test {
     params.task_graph_runner = &task_graph_runner_;
     params.mutator_host = animation_host_.get();
 
-    layer_tree_host_.reset(new StrictMock<MockLayerTreeHost>(
-        &single_thread_client_, std::move(params)));
+    layer_tree_host_ = std::make_unique<StrictMock<MockLayerTreeHost>>(
+        &single_thread_client_, std::move(params));
   }
 
   void TearDown() override {

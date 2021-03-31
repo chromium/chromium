@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -90,11 +91,11 @@ ProxyImpl::ProxyImpl(base::WeakPtr<ProxyMain> proxy_main_weak_ptr,
           CompositorTimingHistory::RENDERER_UMA,
           layer_tree_host->rendering_stats_instrumentation(),
           host_impl_->compositor_frame_reporting_controller()));
-  scheduler_.reset(new Scheduler(this, scheduler_settings, layer_tree_host_id_,
-                                 task_runner_provider_->ImplThreadTaskRunner(),
-                                 std::move(compositor_timing_history),
-                                 layer_tree_host->TakeMainPipeline(),
-                                 layer_tree_host->TakeCompositorPipeline()));
+  scheduler_ = std::make_unique<Scheduler>(
+      this, scheduler_settings, layer_tree_host_id_,
+      task_runner_provider_->ImplThreadTaskRunner(),
+      std::move(compositor_timing_history), layer_tree_host->TakeMainPipeline(),
+      layer_tree_host->TakeCompositorPipeline());
 
   DCHECK_EQ(scheduler_->visible(), host_impl_->visible());
 }

@@ -4,6 +4,7 @@
 
 #include "cc/tiles/image_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -261,8 +262,8 @@ class ImageControllerTest : public testing::Test {
 
   void SetUp() override {
     worker_task_runner_ = base::MakeRefCounted<WorkerTaskRunner>();
-    controller_.reset(
-        new ImageController(task_runner_.get(), worker_task_runner_));
+    controller_ = std::make_unique<ImageController>(task_runner_.get(),
+                                                    worker_task_runner_);
     cache_ = TestableCache();
     controller_->SetImageDecodeCache(&cache_);
   }
