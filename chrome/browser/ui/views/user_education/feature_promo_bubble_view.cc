@@ -69,11 +69,8 @@ constexpr SkColor kBubbleButtonFocusRingColor = SK_ColorWHITE;
 
 // The background color of the button when focused.
 constexpr SkColor kBubbleButtonFocusedBackgroundColor = gfx::kGoogleBlue600;
-}  // namespace
 
-namespace views {
-
-class MdIPHBubbleButton : public MdTextButton {
+class MdIPHBubbleButton : public views::MdTextButton {
  public:
   METADATA_HEADER(MdIPHBubbleButton);
 
@@ -120,8 +117,8 @@ class MdIPHBubbleButton : public MdTextButton {
         has_border_ ? kBubbleButtonBorderColor : kBubbleBackgroundColor;
 
     SetBackground(CreateBackgroundFromPainter(
-        Painter::CreateRoundRectWith1PxBorderPainter(bg_color, stroke_color,
-                                                     GetCornerRadius())));
+        views::Painter::CreateRoundRectWith1PxBorderPainter(
+            bg_color, stroke_color, GetCornerRadius())));
   }
 
  private:
@@ -131,32 +128,28 @@ class MdIPHBubbleButton : public MdTextButton {
 BEGIN_METADATA(MdIPHBubbleButton, MdTextButton)
 END_METADATA
 
-}  // namespace views
+}  // namespace
 
 // Explicitly don't use the default DIALOG_SHADOW as it will show a black
 // outline in dark mode on Mac. Use our own shadow instead. The shadow type is
 // the same for all other platforms.
-FeaturePromoBubbleView::FeaturePromoBubbleView(
-    CreateParams params,
-    base::RepeatingClosure snooze_callback,
-    base::RepeatingClosure dismiss_callback)
+FeaturePromoBubbleView::FeaturePromoBubbleView(CreateParams params)
     : BubbleDialogDelegateView(params.anchor_view,
                                params.arrow,
                                views::BubbleBorder::STANDARD_SHADOW),
       focusable_(params.focusable),
       persist_on_blur_(params.persist_on_blur),
-      snoozable_(params.snoozable),
       preferred_width_(params.preferred_width) {
   DCHECK(params.anchor_view);
-  DCHECK(!params.snoozable || params.focusable)
+  DCHECK(params.buttons.empty() || params.focusable)
       << "A snoozable bubble must be focusable to allow keyboard "
          "accessibility.";
   DCHECK(!params.persist_on_blur || params.focusable)
       << "A bubble that persists on blur must be focusable.";
   UseCompactMargins();
 
-  // Bubble will not auto-dismiss for snoozble IPH.
-  if (!snoozable_) {
+  // Bubble will not auto-dismiss if there's buttons.
+  if (params.buttons.empty()) {
     feature_promo_bubble_timeout_ = std::make_unique<FeaturePromoBubbleTimeout>(
         params.timeout_default ? *params.timeout_default : kDelayDefault,
         params.timeout_short ? *params.timeout_short : kDelayShort);
@@ -219,7 +212,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
   body_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   body_label->SetMultiLine(true);
 
-  if (snoozable_) {
+  if (!params.buttons.empty()) {
     auto* button_container = AddChildView(std::make_unique<views::View>());
     auto* button_layout =
         button_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -230,12 +223,6 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
     button_container->SetProperty(
         views::kMarginsKey, gfx::Insets(button_vertical_spacing, 0, 0, 0));
 
-    const std::u16string snooze_text =
-        l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
-    const std::u16string dismiss_text =
-        l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
-    bool dismiss_is_leading = views::PlatformStyle::kIsOkButtonLeading;
-
     auto close_bubble_and_run_callback = [](FeaturePromoBubbleView* view,
                                             base::RepeatingClosure callback,
                                             const ui::Event& event) {
@@ -243,30 +230,28 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
       callback.Run();
     };
 
-    snooze_button_ = button_container->AddChildView(
-        std::make_unique<views::MdIPHBubbleButton>(
-            base::BindRepeating(close_bubble_and_run_callback,
-                                base::Unretained(this), snooze_callback),
-            snooze_text, false));
-    dismiss_button_ = button_container->AddChildViewAt(
-        std::make_unique<views::MdIPHBubbleButton>(
-            base::BindRepeating(close_bubble_and_run_callback,
-                                base::Unretained(this), dismiss_callback),
-            dismiss_text, true),
-        dismiss_is_leading ? 0 : 1);
+    const int button_spacing = layout_provider->GetDistanceMetric(
+        views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
 
-    auto* leading_button =
-        dismiss_is_leading ? dismiss_button_ : snooze_button_;
-    leading_button->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets(0, layout_provider->GetDistanceMetric(
-                           views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
+    bool is_first_button = true;
+    for (ButtonParams& button_params : params.buttons) {
+      MdIPHBubbleButton* const button =
+          button_container->AddChildView(std::make_unique<MdIPHBubbleButton>(
+              base::BindRepeating(close_bubble_and_run_callback,
+                                  base::Unretained(this),
+                                  std::move(button_params.callback)),
+              std::move(button_params.text), button_params.has_border));
+      buttons_.push_back(button);
 
-    // The text in dismiss button will be shorter than the default min size.
-    // Set min size to 0 so that the custom padding is effective.
-    dismiss_button_->SetMinSize(gfx::Size(0, 0));
-    snooze_button_->SetCustomPadding(kBubbleButtonPadding);
-    dismiss_button_->SetCustomPadding(kBubbleButtonPadding);
+      button->SetMinSize(gfx::Size(0, 0));
+      button->SetCustomPadding(kBubbleButtonPadding);
+
+      if (!is_first_button) {
+        button->SetProperty(views::kMarginsKey,
+                            gfx::Insets(0, button_spacing, 0, 0));
+      }
+      is_first_button = false;
+    }
   }
 
   if (!focusable_)
@@ -292,18 +277,25 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
 
 FeaturePromoBubbleView::~FeaturePromoBubbleView() = default;
 
+FeaturePromoBubbleView::ButtonParams::ButtonParams() = default;
+FeaturePromoBubbleView::ButtonParams::ButtonParams(ButtonParams&&) = default;
+FeaturePromoBubbleView::ButtonParams::~ButtonParams() = default;
+
+FeaturePromoBubbleView::ButtonParams&
+FeaturePromoBubbleView::ButtonParams::operator=(
+    FeaturePromoBubbleView::ButtonParams&&) = default;
+
 FeaturePromoBubbleView::CreateParams::CreateParams() = default;
 FeaturePromoBubbleView::CreateParams::CreateParams(CreateParams&&) = default;
 FeaturePromoBubbleView::CreateParams::~CreateParams() = default;
 
+FeaturePromoBubbleView::CreateParams&
+FeaturePromoBubbleView::CreateParams::operator=(
+    FeaturePromoBubbleView::CreateParams&&) = default;
+
 // static
-FeaturePromoBubbleView* FeaturePromoBubbleView::Create(
-    CreateParams params,
-    base::RepeatingClosure snooze_callback,
-    base::RepeatingClosure dismiss_callback) {
-  return new FeaturePromoBubbleView(std::move(params),
-                                    std::move(snooze_callback),
-                                    std::move(dismiss_callback));
+FeaturePromoBubbleView* FeaturePromoBubbleView::Create(CreateParams params) {
+  return new FeaturePromoBubbleView(std::move(params));
 }
 
 void FeaturePromoBubbleView::CloseBubble() {
@@ -352,12 +344,8 @@ gfx::Size FeaturePromoBubbleView::CalculatePreferredSize() const {
   return layout_manager_preferred_size;
 }
 
-views::Button* FeaturePromoBubbleView::GetDismissButtonForTesting() const {
-  return dismiss_button_;
-}
-
-views::Button* FeaturePromoBubbleView::GetSnoozeButtonForTesting() const {
-  return snooze_button_;
+views::Button* FeaturePromoBubbleView::GetButtonForTesting(int index) const {
+  return buttons_[index];
 }
 
 BEGIN_METADATA(FeaturePromoBubbleView, views::BubbleDialogDelegateView)

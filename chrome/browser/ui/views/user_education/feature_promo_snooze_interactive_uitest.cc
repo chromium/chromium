@@ -26,6 +26,7 @@
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -147,6 +148,16 @@ class FeaturePromoSnoozeInteractiveTest : public InProcessBrowserTest {
     }
   }
 
+  views::Button* GetSnoozeButtonForTesting(FeaturePromoBubbleView* promo) {
+    return promo->GetButtonForTesting(
+        views::PlatformStyle::kIsOkButtonLeading ? 1 : 0);
+  }
+
+  views::Button* GetDismissButtonForTesting(FeaturePromoBubbleView* promo) {
+    return promo->GetButtonForTesting(
+        views::PlatformStyle::kIsOkButtonLeading ? 0 : 1);
+  }
+
   NiceMock<feature_engagement::test::MockTracker>* mock_tracker_;
   FeaturePromoControllerViews* promo_controller_;
   FeaturePromoSnoozeService* snooze_service_;
@@ -180,7 +191,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
   ASSERT_NO_FATAL_FAILURE(AttemptTabGroupsIPH(true));
 
   FeaturePromoBubbleView* promo = promo_controller_->promo_bubble_for_testing();
-  ClickButton(promo->GetDismissButtonForTesting());
+  ClickButton(GetDismissButtonForTesting(promo));
   CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
                    true, 0, base::Time(), base::Time());
 }
@@ -192,7 +203,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest,
   FeaturePromoBubbleView* promo = promo_controller_->promo_bubble_for_testing();
 
   base::Time snooze_time_min = base::Time::Now();
-  ClickButton(promo->GetSnoozeButtonForTesting());
+  ClickButton(GetSnoozeButtonForTesting(promo));
   base::Time snooze_time_max = base::Time::Now();
 
   CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,
@@ -211,7 +222,7 @@ IN_PROC_BROWSER_TEST_F(FeaturePromoSnoozeInteractiveTest, CanReSnooze) {
   FeaturePromoBubbleView* promo = promo_controller_->promo_bubble_for_testing();
 
   base::Time snooze_time_min = base::Time::Now();
-  ClickButton(promo->GetSnoozeButtonForTesting());
+  ClickButton(GetSnoozeButtonForTesting(promo));
   base::Time snooze_time_max = base::Time::Now();
 
   CheckSnoozePrefs(feature_engagement::kIPHDesktopTabGroupsNewGroupFeature,

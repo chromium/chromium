@@ -156,7 +156,7 @@ class FeaturePromoControllerViews : public FeaturePromoController,
 
   ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
 
-  base::WeakPtrFactory<FeaturePromoController> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FeaturePromoControllerViews> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_FEATURE_PROMO_CONTROLLER_VIEWS_H_

@@ -20,9 +20,11 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_params.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_bubble_view.h"
 #include "chrome/browser/ui/views/user_education/feature_promo_registry.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 
 FeaturePromoControllerViews::FeaturePromoControllerViews(
@@ -278,7 +280,6 @@ void FeaturePromoControllerViews::ShowPromoBubbleImpl(
         l10n_util::GetStringUTF16(*params.screenreader_string_specifier);
   }
 
-  create_params.snoozable = params.allow_snooze;
   create_params.focusable = params.allow_focus;
   create_params.persist_on_blur = params.persist_on_blur;
 
@@ -288,18 +289,28 @@ void FeaturePromoControllerViews::ShowPromoBubbleImpl(
   create_params.timeout_default = params.timeout_default;
   create_params.timeout_short = params.timeout_short;
 
-  if (current_iph_feature_) {
-    // For normal promos:
-    promo_bubble_ = FeaturePromoBubbleView::Create(
-        std::move(create_params),
-        base::BindRepeating(&FeaturePromoControllerViews::OnUserSnooze,
-                            base::Unretained(this), *current_iph_feature_),
-        base::BindRepeating(&FeaturePromoControllerViews::OnUserDismiss,
-                            base::Unretained(this), *current_iph_feature_));
-  } else {
-    // For critical promos, since they aren't snoozable:
-    promo_bubble_ = FeaturePromoBubbleView::Create(std::move(create_params));
+  if (params.allow_snooze) {
+    FeaturePromoBubbleView::ButtonParams snooze_button;
+    snooze_button.text = l10n_util::GetStringUTF16(IDS_PROMO_SNOOZE_BUTTON);
+    snooze_button.has_border = false;
+    snooze_button.callback = base::BindRepeating(
+        &FeaturePromoControllerViews::OnUserSnooze,
+        weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
+    create_params.buttons.push_back(std::move(snooze_button));
+
+    FeaturePromoBubbleView::ButtonParams dismiss_button;
+    dismiss_button.text = l10n_util::GetStringUTF16(IDS_PROMO_DISMISS_BUTTON);
+    dismiss_button.has_border = true;
+    dismiss_button.callback = base::BindRepeating(
+        &FeaturePromoControllerViews::OnUserDismiss,
+        weak_ptr_factory_.GetWeakPtr(), *current_iph_feature_);
+    create_params.buttons.push_back(std::move(dismiss_button));
+
+    if (views::PlatformStyle::kIsOkButtonLeading)
+      std::swap(create_params.buttons[0], create_params.buttons[1]);
   }
+
+  promo_bubble_ = FeaturePromoBubbleView::Create(std::move(create_params));
 
   widget_observer_.Add(promo_bubble_->GetWidget());
 }
