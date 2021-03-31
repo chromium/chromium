@@ -48,6 +48,7 @@ Permissions* Permissions::permissions(NavigatorBase& navigator) {
 
 Permissions::Permissions(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       service_(navigator.GetExecutionContext()) {}
 
 ScriptPromise Permissions::query(ScriptState* script_state,
@@ -169,10 +170,16 @@ ScriptPromise Permissions::requestAll(
   return promise;
 }
 
+void Permissions::ContextDestroyed() {
+  base::UmaHistogramCounts1000("Permissions.API.CreatedPermissionStatusObjects",
+                               created_permission_status_objects_);
+}
+
 void Permissions::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   ScriptWrappable::Trace(visitor);
   Supplement<NavigatorBase>::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 PermissionService* Permissions::GetService(
@@ -199,7 +206,7 @@ void Permissions::TaskComplete(ScriptPromiseResolver* resolver,
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
   resolver->Resolve(
-      PermissionStatus::Take(resolver, result, std::move(descriptor)));
+      PermissionStatus::Take(*this, resolver, result, std::move(descriptor)));
 }
 
 void Permissions::BatchTaskComplete(
@@ -218,7 +225,7 @@ void Permissions::BatchTaskComplete(
   result.ReserveInitialCapacity(caller_index_to_internal_index.size());
   for (int internal_index : caller_index_to_internal_index) {
     result.push_back(PermissionStatus::CreateAndListen(
-        resolver->GetExecutionContext(), results[internal_index],
+        *this, resolver->GetExecutionContext(), results[internal_index],
         descriptors[internal_index]->Clone()));
   }
   resolver->Resolve(result);

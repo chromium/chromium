@@ -18,6 +18,7 @@ namespace blink {
 
 class ExecutionContext;
 class ScriptPromiseResolver;
+class Permissions;
 
 // Expose the status of a given permission type for the current
 // ExecutionContext.
@@ -31,15 +32,18 @@ class PermissionStatus final : public EventTargetWithInlineData,
   using MojoPermissionStatus = mojom::blink::PermissionStatus;
 
  public:
-  static PermissionStatus* Take(ScriptPromiseResolver*,
+  static PermissionStatus* Take(Permissions&,
+                                ScriptPromiseResolver*,
                                 MojoPermissionStatus,
                                 MojoPermissionDescriptor);
 
-  static PermissionStatus* CreateAndListen(ExecutionContext*,
+  static PermissionStatus* CreateAndListen(Permissions&,
+                                           ExecutionContext*,
                                            MojoPermissionStatus,
                                            MojoPermissionDescriptor);
 
-  PermissionStatus(ExecutionContext*,
+  PermissionStatus(Permissions&,
+                   ExecutionContext*,
                    MojoPermissionStatus,
                    MojoPermissionDescriptor);
   ~PermissionStatus() override;

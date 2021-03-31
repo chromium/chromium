@@ -23,7 +23,8 @@ class ScriptState;
 class ScriptValue;
 
 class Permissions final : public ScriptWrappable,
-                          public Supplement<NavigatorBase> {
+                          public Supplement<NavigatorBase>,
+                          public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -41,6 +42,11 @@ class Permissions final : public ScriptWrappable,
                            const HeapVector<ScriptValue>&,
                            ExceptionState&);
 
+  // ExecutionContextLifecycleStateObserver:
+  void ContextDestroyed() override;
+
+  void PermissionStatusObjectCreated() { ++created_permission_status_objects_; }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -53,6 +59,8 @@ class Permissions final : public ScriptWrappable,
                          Vector<mojom::blink::PermissionDescriptorPtr>,
                          Vector<int>,
                          const Vector<mojom::blink::PermissionStatus>&);
+
+  int created_permission_status_objects_ = 0;
 
   HeapMojoRemote<mojom::blink::PermissionService> service_;
 };
