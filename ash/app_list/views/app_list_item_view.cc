@@ -139,7 +139,8 @@ class AppListItemView::AppNotificationIndicatorView : public views::View {
     float radius = width() * kNotificationIndicatorWidthRatio / 2.0f;
     float padding = width() * kNotificationIndicatorPaddingRatio;
 
-    float center_x = width() - radius - padding;
+    float center_x =
+        base::i18n::IsRTL() ? padding + radius : width() - radius - padding;
     float center_y = padding + radius;
     gfx::PointF center = gfx::PointF(center_x, center_y);
     center.Scale(dsf);
