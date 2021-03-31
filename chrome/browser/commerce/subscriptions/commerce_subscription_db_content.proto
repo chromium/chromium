@@ -12,18 +12,20 @@ package commerce_subscription_db;
 message CommerceSubscriptionContentProto {
   // The type of subscriptions.
   enum SubscriptionType {
-    SUBSCRIPTION_TYPE_UNSPECIFIED = 0;
+    TYPE_UNSPECIFIED = 0;
     PRICE_TRACK = 1;
   }
 
   // The type of tracking IDs.
   enum TrackingIdType {
-    TRACKING_TYPE_UNSPECIFIED = 0;
+    IDENTIFIER_TYPE_UNSPECIFIED = 0;
     OFFER_ID = 1;
   }
 
   // The type of subscription management.
   enum SubscriptionManagementType {
+    // MANAGE_TYPE_UNSPECIFIED corresponds to
+    // CommerceSubscription.SubscriptionManagementType.TYPE_UNSPECIFIED.
     MANAGE_TYPE_UNSPECIFIED = 0;
     CHROME_MANAGED = 1;
     USER_MANAGED = 2;

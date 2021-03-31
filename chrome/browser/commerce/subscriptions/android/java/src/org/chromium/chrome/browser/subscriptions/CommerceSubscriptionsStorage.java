@@ -130,8 +130,8 @@ public class CommerceSubscriptionsStorage {
     interface Natives {
         void init(CommerceSubscriptionsStorage caller, BrowserContextHandle handle);
         void destroy(long nativeCommerceSubscriptionDB);
-        void save(long nativeCommerceSubscriptionDB, String key, int type, String trackingId,
-                int managementType, int trackingIdType, long timestamp, Runnable onComplete);
+        void save(long nativeCommerceSubscriptionDB, String key, String type, String trackingId,
+                String managementType, String trackingIdType, long timestamp, Runnable onComplete);
         void load(long nativeCommerceSubscriptionDB, String key,
                 Callback<CommerceSubscription> callback);
         void loadWithPrefix(long nativeCommerceSubscriptionDB, String key,

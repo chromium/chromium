@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.subscriptions;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.StringDef;
 
 import org.chromium.base.annotations.CalledByNative;
 
@@ -18,48 +18,51 @@ import java.util.List;
  * Represents the information for one commerce subscription entry.
  */
 public class CommerceSubscription {
-    @IntDef({CommerceSubscriptionType.SUBSCRIPTION_TYPE_UNSPECIFIED,
-            CommerceSubscriptionType.PRICE_TRACK})
+    @StringDef({CommerceSubscriptionType.TYPE_UNSPECIFIED, CommerceSubscriptionType.PRICE_TRACK})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CommerceSubscriptionType {
-        int SUBSCRIPTION_TYPE_UNSPECIFIED = 0;
-        int PRICE_TRACK = 1;
+        String TYPE_UNSPECIFIED = "TYPE_UNSPECIFIED";
+        String PRICE_TRACK = "PRICE_TRACK";
     }
 
-    @IntDef({SubscriptionManagementType.MANAGE_TYPE_UNSPECIFIED,
+    @StringDef({SubscriptionManagementType.TYPE_UNSPECIFIED,
             SubscriptionManagementType.CHROME_MANAGED, SubscriptionManagementType.USER_MANAGED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface SubscriptionManagementType {
-        int MANAGE_TYPE_UNSPECIFIED = 0;
-        int CHROME_MANAGED = 1;
-        int USER_MANAGED = 2;
+        String TYPE_UNSPECIFIED = "TYPE_UNSPECIFIED";
+        String CHROME_MANAGED = "CHROME_MANAGED";
+        String USER_MANAGED = "USER_MANAGED";
     }
 
-    @IntDef({TrackingIdType.TRACKING_TYPE_UNSPECIFIED, TrackingIdType.OFFER_ID})
+    @StringDef({TrackingIdType.IDENTIFIER_TYPE_UNSPECIFIED, TrackingIdType.OFFER_ID})
     @Retention(RetentionPolicy.SOURCE)
     public @interface TrackingIdType {
-        int TRACKING_TYPE_UNSPECIFIED = 0;
-        int OFFER_ID = 1;
+        String IDENTIFIER_TYPE_UNSPECIFIED = "IDENTIFIER_TYPE_UNSPECIFIED";
+        String OFFER_ID = "OFFER_ID";
     }
 
     private static final long UNSAVED_SUBSCRIPTION = -1L;
 
     private final long mTimestamp;
-    private final @CommerceSubscriptionType int mType;
+    @NonNull
+    private final @CommerceSubscriptionType String mType;
     @NonNull
     private final String mTrackingId;
-    private final @SubscriptionManagementType int mManagementType;
-    private final @TrackingIdType int mTrackingIdType;
+    @NonNull
+    private final @SubscriptionManagementType String mManagementType;
+    @NonNull
+    private final @TrackingIdType String mTrackingIdType;
 
-    CommerceSubscription(@CommerceSubscriptionType int type, @NonNull String trackingId,
-            @SubscriptionManagementType int managementType, @TrackingIdType int trackingIdType) {
+    CommerceSubscription(@NonNull @CommerceSubscriptionType String type, @NonNull String trackingId,
+            @NonNull @SubscriptionManagementType String managementType,
+            @NonNull @TrackingIdType String trackingIdType) {
         this(type, trackingId, managementType, trackingIdType, UNSAVED_SUBSCRIPTION);
     }
 
     @CalledByNative
-    CommerceSubscription(@CommerceSubscriptionType int type, @NonNull String trackingId,
-            @SubscriptionManagementType int managementType, @TrackingIdType int trackingIdType,
-            long timestamp) {
+    CommerceSubscription(@NonNull @CommerceSubscriptionType String type, @NonNull String trackingId,
+            @NonNull @SubscriptionManagementType String managementType,
+            @NonNull @TrackingIdType String trackingIdType, long timestamp) {
         mTrackingId = trackingId;
         mType = type;
         mManagementType = managementType;
@@ -72,12 +75,12 @@ public class CommerceSubscription {
     }
 
     @CommerceSubscriptionType
-    int getType() {
+    String getType() {
         return mType;
     }
 
     @TrackingIdType
-    int getTrackingIdType() {
+    String getTrackingIdType() {
         return mTrackingIdType;
     }
 
@@ -86,7 +89,7 @@ public class CommerceSubscription {
     }
 
     @SubscriptionManagementType
-    int getManagementType() {
+    String getManagementType() {
         return mManagementType;
     }
 
@@ -97,9 +100,9 @@ public class CommerceSubscription {
 
     @CalledByNative
     static CommerceSubscription createSubscriptionAndAddToList(List<CommerceSubscription> list,
-            @CommerceSubscriptionType int type, @NonNull String trackingId,
-            @SubscriptionManagementType int managementType, @TrackingIdType int trackingIdType,
-            long timestamp) {
+            @NonNull @CommerceSubscriptionType String type, @NonNull String trackingId,
+            @NonNull @SubscriptionManagementType String managementType,
+            @NonNull @TrackingIdType String trackingIdType, long timestamp) {
         CommerceSubscription subscription = new CommerceSubscription(
                 type, trackingId, managementType, trackingIdType, timestamp);
         list.add(subscription);
@@ -112,10 +115,10 @@ public class CommerceSubscription {
             return false;
         }
         CommerceSubscription otherSubscription = (CommerceSubscription) other;
-        return mManagementType == otherSubscription.getManagementType()
-                && mType == otherSubscription.getType()
+        return mManagementType.equals(otherSubscription.getManagementType())
+                && mType.equals(otherSubscription.getType())
                 && mTrackingId.equals(otherSubscription.getTrackingId())
-                && mTrackingIdType == otherSubscription.getTrackingIdType()
+                && mTrackingIdType.equals(otherSubscription.getTrackingIdType())
                 && mTimestamp == otherSubscription.getTimestamp();
     }
 }

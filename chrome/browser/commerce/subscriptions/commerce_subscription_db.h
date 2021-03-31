@@ -32,30 +32,31 @@ class CommerceSubscriptionDB {
   // Save subscription for key.
   void Save(JNIEnv* env,
             const base::android::JavaParamRef<jstring>& jkey,
-            const jint jtype,
-            const base::android::JavaRef<jstring>& jtracking_id,
-            const jint jmanagement_type,
-            const jint jtracking_id_type,
+            const base::android::JavaParamRef<jstring>& jtype,
+            const base::android::JavaParamRef<jstring>& jtracking_id,
+            const base::android::JavaParamRef<jstring>& jmanagement_type,
+            const base::android::JavaParamRef<jstring>& jtracking_id_type,
             const jlong jtimestamp,
-            const base::android::JavaRef<jobject>& jcallback);
+            const base::android::JavaParamRef<jobject>& jcallback);
 
   // Load subscription corresponding to key.
   void Load(JNIEnv* env,
             const base::android::JavaParamRef<jstring>& jkey,
-            const base::android::JavaRef<jobject>& jcallback);
+            const base::android::JavaParamRef<jobject>& jcallback);
 
   // Load subscriptions whose keys have specific prefix.
   void LoadWithPrefix(JNIEnv* env,
                       const base::android::JavaParamRef<jstring>& jprefix,
-                      const base::android::JavaRef<jobject>& jcallback);
+                      const base::android::JavaParamRef<jobject>& jcallback);
 
   // Delete entry corresponding to key.
   void Delete(JNIEnv* env,
               const base::android::JavaParamRef<jstring>& jkey,
-              const base::android::JavaRef<jobject>& jcallback);
+              const base::android::JavaParamRef<jobject>& jcallback);
 
   // Delete all entries in the database.
-  void DeleteAll(JNIEnv* env, const base::android::JavaRef<jobject>& jcallback);
+  void DeleteAll(JNIEnv* env,
+                 const base::android::JavaParamRef<jobject>& jcallback);
 
   // Destroy CommerceSubscriptionDB object.
   void Destroy(JNIEnv* env);

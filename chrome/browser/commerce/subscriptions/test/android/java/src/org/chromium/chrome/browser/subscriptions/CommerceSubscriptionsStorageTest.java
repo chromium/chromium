@@ -78,9 +78,9 @@ public class CommerceSubscriptionsStorageTest {
     private static final String OFFER_ID_1 = "offer_id_1";
     private static final String OFFER_ID_2 = "offer_id_2";
     private static final String OFFER_ID_3 = "offer_id_3";
-    private static final String KEY_1 = "1_1_offer_id_1";
-    private static final String KEY_2 = "1_1_offer_id_2";
-    private static final String KEY_3 = "1_0_offer_id_3";
+    private static final String KEY_1 = "PRICE_TRACK_OFFER_ID_offer_id_1";
+    private static final String KEY_2 = "PRICE_TRACK_OFFER_ID_offer_id_2";
+    private static final String KEY_3 = "PRICE_TRACK_IDENTIFIER_TYPE_UNSPECIFIED_offer_id_3";
 
     private CommerceSubscriptionsStorage mStorage;
     private CommerceSubscription mSubscription1;
@@ -104,7 +104,7 @@ public class CommerceSubscriptionsStorageTest {
         mSubscription3 =
                 new CommerceSubscription(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK,
                         OFFER_ID_3, CommerceSubscription.SubscriptionManagementType.CHROME_MANAGED,
-                        CommerceSubscription.TrackingIdType.TRACKING_TYPE_UNSPECIFIED);
+                        CommerceSubscription.TrackingIdType.IDENTIFIER_TYPE_UNSPECIFIED);
     }
 
     @After
@@ -152,7 +152,7 @@ public class CommerceSubscriptionsStorageTest {
                         CommerceSubscription.TrackingIdType.OFFER_ID);
         loadPrefixAndCheckResult(
                 prefix1, new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2)));
-        String prefix2 = String.valueOf(CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK);
+        String prefix2 = CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK;
         loadPrefixAndCheckResult(prefix2,
                 new ArrayList<>(Arrays.asList(mSubscription3, mSubscription1, mSubscription2)));
     }
