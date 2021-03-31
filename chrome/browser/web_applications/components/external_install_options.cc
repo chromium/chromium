@@ -74,6 +74,7 @@ bool ExternalInstallOptions::operator==(
         options.additional_search_terms,
         options.only_use_app_info_factory,
         options.app_info_factory,
+        options.system_app_type,
         options.oem_installed
         // clang-format on
     );

@@ -125,6 +125,7 @@ ExternalInstallOptions GetWindowedInstallOptions() {
   options.bypass_service_worker_check = true;
   options.force_reinstall = true;
   options.only_use_app_info_factory = true;
+  options.system_app_type = SystemAppType::SETTINGS;
   options.app_info_factory = GetApp1WebAppInfoFactory();
   return options;
 }
