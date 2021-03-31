@@ -19,6 +19,8 @@
   ],
 
   'fuchsia': [
+    # crbug.com/1190315
+    'gen/content/shell/content_shell/ids.txt',
   ],
 
   'linux': [
