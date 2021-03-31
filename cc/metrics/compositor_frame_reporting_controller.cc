@@ -278,7 +278,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
   if (main_reporter) {
     main_reporter->StartStage(
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame, Now());
-    main_reporter->SetEventsMetrics(
+    main_reporter->AddEventsMetrics(
         std::move(events_metrics.main_event_metrics));
     main_reporter->set_has_missing_content(has_missing_content);
     submitted_compositor_frames_.emplace_back(frame_token,
@@ -289,7 +289,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
     impl_reporter->EnableCompositorOnlyReporting();
     impl_reporter->StartStage(
         StageType::kSubmitCompositorFrameToPresentationCompositorFrame, Now());
-    impl_reporter->SetEventsMetrics(
+    impl_reporter->AddEventsMetrics(
         std::move(events_metrics.impl_event_metrics));
     impl_reporter->set_has_missing_content(has_missing_content);
     submitted_compositor_frames_.emplace_back(frame_token,
@@ -378,6 +378,21 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
                              details.presentation_feedback.timestamp);
 
     if (termination_status == FrameTerminationStatus::kPresentedFrame) {
+      // If there are outstanding metrics from dropped frames older than this
+      // frame, this frame would be the first frame presented after those
+      // dropped frames. So, this frame is the one presenting updates from those
+      // frames to the user and should report metrics for them. Note that since
+      // reporters for submitted but dropped frames are terminated before any
+      // following frame being presented, all events metrics that should
+      // potentially be included in this presented frame are already in
+      // `events_metrics_from_dropped_frames_`.
+      for (auto it = events_metrics_from_dropped_frames_.begin();
+           it != events_metrics_from_dropped_frames_.end() &&
+           !(reporter->frame_id() < it->first);
+           it = events_metrics_from_dropped_frames_.erase(it)) {
+        reporter->AddEventsMetrics(std::move(it->second));
+      }
+
       // For presented frames, if |reporter| was cloned from another reporter,
       // and the original reporter is still alive, then check whether the cloned
       // reporter has a 'partial update decider'. It is still possible for the
@@ -392,6 +407,18 @@ void CompositorFrameReportingController::DidPresentCompositorFrame(
       if (CompositorFrameReporter* orig_reporter =
               reporter->partial_update_decider()) {
         orig_reporter->AdoptReporter(std::move(reporter));
+      }
+    } else {
+      // If the frame didn't end up being presented, keep its metrics around to
+      // be reported with the first following presented frame.
+      auto reporter_events_metrics = reporter->TakeEventsMetrics();
+      if (!reporter_events_metrics.empty()) {
+        auto& frame_events_metrics =
+            events_metrics_from_dropped_frames_[reporter->frame_id()];
+        frame_events_metrics.insert(
+            frame_events_metrics.end(),
+            std::make_move_iterator(reporter_events_metrics.begin()),
+            std::make_move_iterator(reporter_events_metrics.end()));
       }
     }
 

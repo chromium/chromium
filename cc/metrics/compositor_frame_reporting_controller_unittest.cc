@@ -1257,10 +1257,10 @@ TEST_F(CompositorFrameReportingControllerTest,
   }
 }
 
-// Tests that EventLatency histograms are not reported when the frame is dropped
-// and not presented to the user.
+// Tests that EventLatency histograms for events of a dropped frame are reported
+// in the first subsequent presented frame.
 TEST_F(CompositorFrameReportingControllerTest,
-       EventLatencyForDidNotPresentFrameNotReported) {
+       EventLatencyForDidNotPresentFrameReportedOnNextPresent) {
   base::HistogramTester histogram_tester;
 
   std::unique_ptr<EventMetrics> event_metrics_ptrs[] = {
@@ -1272,6 +1272,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   EventMetrics::List events_metrics(
       std::make_move_iterator(std::begin(event_metrics_ptrs)),
       std::make_move_iterator(std::end(event_metrics_ptrs)));
+  std::vector<base::TimeTicks> event_times = GetEventTimestamps(events_metrics);
 
   // Submit a compositor frame and notify CompositorFrameReporter of the events
   // affecting the frame.
@@ -1283,14 +1284,48 @@ TEST_F(CompositorFrameReportingControllerTest,
   IncrementCurrentId();
   SimulateSubmitCompositorFrame(*next_token_, {});
 
-  // Present the second compositor frame to the uesr, dropping the first one.
+  // Present the second compositor frame to the user, dropping the first one.
+  const base::TimeTicks presentation_time = AdvanceNowByMs(10);
   viz::FrameTimingDetails details;
-  details.presentation_feedback.timestamp = AdvanceNowByMs(10);
+  details.presentation_feedback.timestamp = presentation_time;
   reporting_controller_.DidPresentCompositorFrame(*next_token_, details);
 
-  // Verify that no EventLatency histogram is recorded.
-  EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("EventLatency."),
-              IsEmpty());
+  // Verify that EventLatency histograms for the first frame (dropped) are
+  // recorded using the presentation time of the second frame (presented).
+  struct {
+    const char* name;
+    const base::HistogramBase::Count count;
+  } expected_counts[] = {
+      {"EventLatency.TouchPressed.TotalLatency", 1},
+      {"EventLatency.TouchMoved.TotalLatency", 2},
+      {"EventLatency.TotalLatency", 3},
+  };
+  for (const auto& expected_count : expected_counts) {
+    histogram_tester.ExpectTotalCount(expected_count.name,
+                                      expected_count.count);
+  }
+
+  struct {
+    const char* name;
+    const base::HistogramBase::Sample latency_ms;
+  } expected_latencies[] = {
+      {"EventLatency.TouchPressed.TotalLatency",
+       (presentation_time - event_times[0]).InMicroseconds()},
+      {"EventLatency.TouchMoved.TotalLatency",
+       (presentation_time - event_times[1]).InMicroseconds()},
+      {"EventLatency.TouchMoved.TotalLatency",
+       (presentation_time - event_times[2]).InMicroseconds()},
+      {"EventLatency.TotalLatency",
+       (presentation_time - event_times[0]).InMicroseconds()},
+      {"EventLatency.TotalLatency",
+       (presentation_time - event_times[1]).InMicroseconds()},
+      {"EventLatency.TotalLatency",
+       (presentation_time - event_times[2]).InMicroseconds()},
+  };
+  for (const auto& expected_latency : expected_latencies) {
+    histogram_tester.ExpectBucketCount(expected_latency.name,
+                                       expected_latency.latency_ms, 1);
+  }
 }
 
 TEST_F(CompositorFrameReportingControllerTest,

@@ -183,6 +183,12 @@ class CC_EXPORT CompositorFrameReportingController {
   const base::TickClock* tick_clock_ = base::DefaultTickClock::GetInstance();
 
   DroppedFrameCounter* dropped_frame_counter_ = nullptr;
+
+  // When a frame with events metrics fails to be presented, its events metrics
+  // will be added to this map. The first following presented frame will get
+  // these metrics and report them.
+  std::map<viz::BeginFrameId, EventMetrics::List>
+      events_metrics_from_dropped_frames_;
 };
 }  // namespace cc
 

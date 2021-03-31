@@ -678,10 +678,17 @@ void CompositorFrameReporter::SetVizBreakdown(
   viz_breakdown_ = viz_breakdown;
 }
 
-void CompositorFrameReporter::SetEventsMetrics(
+void CompositorFrameReporter::AddEventsMetrics(
     EventMetrics::List events_metrics) {
-  DCHECK_EQ(0u, events_metrics_.size());
-  events_metrics_ = std::move(events_metrics);
+  events_metrics_.insert(events_metrics_.end(),
+                         std::make_move_iterator(events_metrics.begin()),
+                         std::make_move_iterator(events_metrics.end()));
+}
+
+EventMetrics::List CompositorFrameReporter::TakeEventsMetrics() {
+  EventMetrics::List result = std::move(events_metrics_);
+  events_metrics_.clear();
+  return result;
 }
 
 void CompositorFrameReporter::TerminateReporter() {

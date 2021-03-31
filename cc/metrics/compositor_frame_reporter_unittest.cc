@@ -301,7 +301,7 @@ TEST_F(CompositorFrameReporterTest,
       CompositorFrameReporter::StageType::
           kSubmitCompositorFrameToPresentationCompositorFrame,
       Now());
-  pipeline_reporter_->SetEventsMetrics(std::move(events_metrics));
+  pipeline_reporter_->AddEventsMetrics(std::move(events_metrics));
 
   const base::TimeTicks presentation_time = AdvanceNowByMs(3);
   pipeline_reporter_->TerminateFrame(
@@ -383,7 +383,7 @@ TEST_F(CompositorFrameReporterTest,
       CompositorFrameReporter::StageType::
           kSubmitCompositorFrameToPresentationCompositorFrame,
       Now());
-  pipeline_reporter_->SetEventsMetrics(std::move(events_metrics));
+  pipeline_reporter_->AddEventsMetrics(std::move(events_metrics));
 
   AdvanceNowByMs(3);
   viz::FrameTimingDetails viz_breakdown = BuildVizBreakdown();
@@ -469,7 +469,7 @@ TEST_F(CompositorFrameReporterTest,
       CompositorFrameReporter::StageType::
           kSubmitCompositorFrameToPresentationCompositorFrame,
       Now());
-  pipeline_reporter_->SetEventsMetrics(std::move(events_metrics));
+  pipeline_reporter_->AddEventsMetrics(std::move(events_metrics));
 
   AdvanceNowByMs(3);
   pipeline_reporter_->TerminateFrame(
