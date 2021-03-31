@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -83,6 +83,35 @@ constexpr PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_BLOCK},
         {prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
          ContentSettingsType::INSECURE_PRIVATE_NETWORK, CONTENT_SETTING_ALLOW},
+};
+
+constexpr const char* kManagedPrefs[] = {
+    prefs::kManagedAutoSelectCertificateForUrls,
+    prefs::kManagedCookiesAllowedForUrls,
+    prefs::kManagedCookiesBlockedForUrls,
+    prefs::kManagedCookiesSessionOnlyForUrls,
+    prefs::kManagedFileSystemReadAskForUrls,
+    prefs::kManagedFileSystemReadBlockedForUrls,
+    prefs::kManagedFileSystemWriteAskForUrls,
+    prefs::kManagedFileSystemWriteBlockedForUrls,
+    prefs::kManagedImagesAllowedForUrls,
+    prefs::kManagedImagesBlockedForUrls,
+    prefs::kManagedInsecureContentAllowedForUrls,
+    prefs::kManagedInsecureContentBlockedForUrls,
+    prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
+    prefs::kManagedJavaScriptAllowedForUrls,
+    prefs::kManagedJavaScriptBlockedForUrls,
+    prefs::kManagedLegacyCookieAccessAllowedForDomains,
+    prefs::kManagedNotificationsAllowedForUrls,
+    prefs::kManagedNotificationsBlockedForUrls,
+    prefs::kManagedPopupsAllowedForUrls,
+    prefs::kManagedPopupsBlockedForUrls,
+    prefs::kManagedSensorsAllowedForUrls,
+    prefs::kManagedSensorsBlockedForUrls,
+    prefs::kManagedSerialAskForUrls,
+    prefs::kManagedSerialBlockedForUrls,
+    prefs::kManagedWebUsbAskForUrls,
+    prefs::kManagedWebUsbBlockedForUrls,
 };
 
 }  // namespace
@@ -213,34 +242,6 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
   pref_change_registrar_.Init(prefs_);
   PrefChangeRegistrar::NamedChangeCallback callback = base::BindRepeating(
       &PolicyProvider::OnPreferenceChanged, base::Unretained(this));
-  static constexpr const char* kManagedPrefs[] = {
-      prefs::kManagedAutoSelectCertificateForUrls,
-      prefs::kManagedCookiesAllowedForUrls,
-      prefs::kManagedCookiesBlockedForUrls,
-      prefs::kManagedCookiesSessionOnlyForUrls,
-      prefs::kManagedFileSystemReadAskForUrls,
-      prefs::kManagedFileSystemReadBlockedForUrls,
-      prefs::kManagedFileSystemWriteAskForUrls,
-      prefs::kManagedFileSystemWriteBlockedForUrls,
-      prefs::kManagedImagesAllowedForUrls,
-      prefs::kManagedImagesBlockedForUrls,
-      prefs::kManagedInsecureContentAllowedForUrls,
-      prefs::kManagedInsecureContentBlockedForUrls,
-      prefs::kManagedInsecurePrivateNetworkAllowedForUrls,
-      prefs::kManagedJavaScriptAllowedForUrls,
-      prefs::kManagedJavaScriptBlockedForUrls,
-      prefs::kManagedLegacyCookieAccessAllowedForDomains,
-      prefs::kManagedNotificationsAllowedForUrls,
-      prefs::kManagedNotificationsBlockedForUrls,
-      prefs::kManagedPopupsAllowedForUrls,
-      prefs::kManagedPopupsBlockedForUrls,
-      prefs::kManagedSensorsAllowedForUrls,
-      prefs::kManagedSensorsBlockedForUrls,
-      prefs::kManagedSerialAskForUrls,
-      prefs::kManagedSerialBlockedForUrls,
-      prefs::kManagedWebUsbAskForUrls,
-      prefs::kManagedWebUsbBlockedForUrls,
-  };
   for (const char* pref : kManagedPrefs)
     pref_change_registrar_.Add(pref, callback);
 
@@ -514,32 +515,7 @@ void PolicyProvider::OnPreferenceChanged(const std::string& name) {
       UpdateManagedDefaultSetting(entry);
   }
 
-  if (name == prefs::kManagedAutoSelectCertificateForUrls ||
-      name == prefs::kManagedCookiesAllowedForUrls ||
-      name == prefs::kManagedCookiesBlockedForUrls ||
-      name == prefs::kManagedCookiesSessionOnlyForUrls ||
-      name == prefs::kManagedFileSystemReadAskForUrls ||
-      name == prefs::kManagedFileSystemReadBlockedForUrls ||
-      name == prefs::kManagedFileSystemWriteAskForUrls ||
-      name == prefs::kManagedFileSystemWriteBlockedForUrls ||
-      name == prefs::kManagedImagesAllowedForUrls ||
-      name == prefs::kManagedImagesBlockedForUrls ||
-      name == prefs::kManagedInsecureContentAllowedForUrls ||
-      name == prefs::kManagedInsecureContentBlockedForUrls ||
-      name == prefs::kManagedJavaScriptAllowedForUrls ||
-      name == prefs::kManagedJavaScriptBlockedForUrls ||
-      name == prefs::kManagedNotificationsAllowedForUrls ||
-      name == prefs::kManagedNotificationsBlockedForUrls ||
-      name == prefs::kManagedPopupsAllowedForUrls ||
-      name == prefs::kManagedPopupsBlockedForUrls ||
-      name == prefs::kManagedWebUsbAskForUrls ||
-      name == prefs::kManagedWebUsbBlockedForUrls ||
-      name == prefs::kManagedLegacyCookieAccessAllowedForDomains ||
-      name == prefs::kManagedSerialAskForUrls ||
-      name == prefs::kManagedSerialBlockedForUrls ||
-      name == prefs::kManagedSensorsAllowedForUrls ||
-      name == prefs::kManagedSensorsBlockedForUrls ||
-      name == prefs::kManagedInsecurePrivateNetworkAllowedForUrls) {
+  if (base::Contains(kManagedPrefs, name)) {
     ReadManagedContentSettings(true);
     ReadManagedDefaultSettings();
   }
