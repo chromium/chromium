@@ -2368,6 +2368,8 @@ bool RenderFrameHostImpl::CreateRenderFrame(
   NavigationRequest* navigation_request =
       frame_tree_node()->navigation_request();
 
+  // TODO(https://crbug.com/1188676): Update the field and flag name for
+  // clearing window.name on cross-site cross-BrowsingInstance navigations.
   bool should_clear_browsing_instance_name =
       navigation_request &&
       (navigation_request->coop_status().require_browsing_instance_swap() ||
