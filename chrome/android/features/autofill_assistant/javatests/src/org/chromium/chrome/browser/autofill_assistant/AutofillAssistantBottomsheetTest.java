@@ -26,7 +26,6 @@ import static org.hamcrest.Matchers.not;
 import static org.chromium.chrome.browser.autofill_assistant.AssistantTagsForTesting.RECYCLER_VIEW_TAG;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getAbsoluteBoundingRect;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilKeyboardMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewAssertionTrue;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntilViewMatchesCondition;
 import static org.chromium.chrome.browser.autofill_assistant.proto.ConfigureBottomSheetProto.PeekMode.HANDLE;
@@ -77,7 +76,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.ShowDetailsProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto;
-import org.chromium.chrome.browser.autofill_assistant.proto.TextInputProto.InputType;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextInputSectionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.UserFormSectionProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -492,59 +490,6 @@ public class AutofillAssistantBottomsheetTest {
         waitUntilViewMatchesCondition(
                 allOf(withText("Done"), isDescendantOfA(withTagValue(is(RECYCLER_VIEW_TAG)))),
                 isCompletelyDisplayed());
-    }
-
-    /**
-     * When the keyboard is shown, the continue button becomes invisible.
-     */
-    @Test
-    @DisabledTest(message = "Test is flaky, see crbug.com/1054058")
-    @MediumTest
-    public void testOpeningKeyboardMakesContinueChipInvisible() {
-        ArrayList<ActionProto> list = new ArrayList<>();
-        UserFormSectionProto userFormSectionProto =
-                UserFormSectionProto.newBuilder()
-                        .setTitle("User form")
-                        .setTextInputSection(
-                                TextInputSectionProto.newBuilder()
-                                        .addInputFields(TextInputProto.newBuilder()
-                                                                .setHint("Field 1")
-                                                                .setInputType(InputType.INPUT_TEXT)
-                                                                .setClientMemoryKey("field_1"))
-                                        .addInputFields(TextInputProto.newBuilder()
-                                                                .setHint("Field 2")
-                                                                .setInputType(InputType.INPUT_TEXT)
-                                                                .setClientMemoryKey("field_2")))
-                        .build();
-
-        list.add((ActionProto) ActionProto.newBuilder()
-                         .setCollectUserData(
-                                 CollectUserDataProto.newBuilder()
-                                         .setRequestTermsAndConditions(false)
-                                         .addAdditionalPrependedSections(userFormSectionProto))
-                         .build());
-        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
-                (SupportedScriptProto) SupportedScriptProto.newBuilder()
-                        .setPath("form_target_website.html")
-                        .setPresentation(PresentationProto.newBuilder().setAutostart(true).setChip(
-                                ChipProto.newBuilder().setText("Payment")))
-                        .build(),
-                list);
-
-        AutofillAssistantTestService testService =
-                new AutofillAssistantTestService(Collections.singletonList(script));
-        startAutofillAssistant(mTestRule.getActivity(), testService);
-
-        waitUntilViewMatchesCondition(withText("User form"), isDisplayed());
-        onView(withText("User form")).perform(click());
-        waitUntilViewMatchesCondition(withText("Field 1"), isDisplayed());
-        onView(withContentDescription("Continue")).check(matches(isDisplayed()));
-        onView(withText("Field 1")).perform(click());
-        waitUntilKeyboardMatchesCondition(mTestRule, true);
-        onView(withContentDescription("Continue")).check(matches(not(isDisplayed())));
-        onView(allOf(withContentDescription("Close"), isDisplayed())).perform(click());
-        waitUntilKeyboardMatchesCondition(mTestRule, false);
-        onView(withContentDescription("Continue")).check(matches(isDisplayed()));
     }
 
     private ViewAction swipeDownToMinimize() {
