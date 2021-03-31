@@ -407,7 +407,7 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   void ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason reason,
+      GlobalMediaControlsDismissReason reason,
       int count) {
     histogram_tester_.ExpectBucketCount(
         "Media.GlobalMediaControls.DismissReason", reason, count);
@@ -429,7 +429,7 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
     service_->cast_notification_producer_->OnRoutesUpdated(routes, {});
   }
 
-  MediaNotificationService::Session* GetSession(
+  MediaSessionNotificationProducer::Session* GetSession(
       const base::UnguessableToken& id) {
     return service_->media_session_notification_producer_->GetSession(
         id.ToString());
@@ -444,7 +444,8 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
 
   MediaNotificationService* service() { return service_.get(); }
 
-  std::map<std::string, MediaNotificationService::Session>& sessions() const {
+  std::map<std::string, MediaSessionNotificationProducer::Session>& sessions()
+      const {
     return service_->media_session_notification_producer_->sessions_;
   }
 
@@ -692,24 +693,18 @@ TEST_F(MediaNotificationServiceTest, HideAfterTimeoutAndActiveAgainOnPlay) {
 
   // Then, stop playing media so the session is frozen, but not yet hidden.
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kMediaSessionStopped,
-      0);
+      GlobalMediaControlsDismissReason::kMediaSessionStopped, 0);
   SimulateFocusLost(id);
   EXPECT_FALSE(HasActiveNotifications());
   EXPECT_TRUE(HasFrozenNotifications());
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kMediaSessionStopped,
-      0);
+      GlobalMediaControlsDismissReason::kMediaSessionStopped, 0);
 
   // If the time hasn't elapsed yet, the session should still be frozen.
   AdvanceClockMilliseconds(2400);
   EXPECT_TRUE(HasFrozenNotifications());
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kMediaSessionStopped,
-      0);
+      GlobalMediaControlsDismissReason::kMediaSessionStopped, 0);
 
   // Once the time is elapsed, the session should be hidden.
   EXPECT_CALL(observer(), OnNotificationListChanged()).Times(AtLeast(1));
@@ -718,9 +713,7 @@ TEST_F(MediaNotificationServiceTest, HideAfterTimeoutAndActiveAgainOnPlay) {
   EXPECT_FALSE(HasFrozenNotifications());
   testing::Mock::VerifyAndClearExpectations(&observer());
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kMediaSessionStopped,
-      1);
+      GlobalMediaControlsDismissReason::kMediaSessionStopped, 1);
 
   // If media starts playing again, we should show and enable the button.
   EXPECT_CALL(observer(), OnNotificationListChanged()).Times(AtLeast(1));
@@ -794,15 +787,13 @@ TEST_F(MediaNotificationServiceTest,
   // Then, close the tab. The session should immediately be hidden.
   EXPECT_CALL(observer(), OnNotificationListChanged()).Times(AtLeast(1));
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::kTabClosed,
-      0);
+      GlobalMediaControlsDismissReason::kTabClosed, 0);
   SimulateTabClosed(id);
   EXPECT_FALSE(HasActiveNotifications());
   EXPECT_FALSE(HasFrozenNotifications());
   testing::Mock::VerifyAndClearExpectations(&observer());
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::kTabClosed,
-      1);
+      GlobalMediaControlsDismissReason::kTabClosed, 1);
 }
 
 TEST_F(MediaNotificationServiceTest, DismissesMediaSession) {
@@ -818,15 +809,11 @@ TEST_F(MediaNotificationServiceTest, DismissesMediaSession) {
   // Then, click the dismiss button. This should stop and hide the session.
   EXPECT_CALL(dialog_delegate, HideMediaSession(id.ToString()));
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kUserDismissedNotification,
-      0);
+      GlobalMediaControlsDismissReason::kUserDismissedNotification, 0);
   SimulateDismissButtonClicked(id);
   testing::Mock::VerifyAndClearExpectations(&dialog_delegate);
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kUserDismissedNotification,
-      1);
+      GlobalMediaControlsDismissReason::kUserDismissedNotification, 1);
 }
 
 // TODO(https://crbug.com/1034406) Flaky on Mac10.12, Linux and Win10.
@@ -1111,15 +1098,11 @@ TEST_F(MediaNotificationServiceTest, HidesInactiveNotifications) {
 
   // But once it's been inactive for over an hour, it should disappear.
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kInactiveTimeout,
-      0);
+      GlobalMediaControlsDismissReason::kInactiveTimeout, 0);
   AdvanceClockMinutes(2);
   EXPECT_FALSE(HasActiveNotifications());
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kInactiveTimeout,
-      1);
+      GlobalMediaControlsDismissReason::kInactiveTimeout, 1);
 
   // Since the user never interacted with the media before it was paused, we
   // should not have recorded any post-pause interactions.
@@ -1128,14 +1111,12 @@ TEST_F(MediaNotificationServiceTest, HidesInactiveNotifications) {
   // If we now close the tab, then it shouldn't record that as the dismiss
   // reason, since we already recorded a reason.
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::kTabClosed,
-      0);
+      GlobalMediaControlsDismissReason::kTabClosed, 0);
 
   SimulateTabClosed(id);
 
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::kTabClosed,
-      0);
+      GlobalMediaControlsDismissReason::kTabClosed, 0);
 }
 
 TEST_F(MediaNotificationServiceTest, InactiveBecomesActive_PlayPause) {
@@ -1348,9 +1329,7 @@ TEST_F(MediaNotificationServiceTest, HidingNotification_FeatureDisabled) {
   EXPECT_TRUE(HasActiveNotifications());
 
   ExpectHistogramDismissReasonRecorded(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kInactiveTimeout,
-      0);
+      GlobalMediaControlsDismissReason::kInactiveTimeout, 0);
 
   // Since the user never interacted with the media before it was paused, we
   // should not have recorded any post-pause interactions.

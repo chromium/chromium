@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -17,6 +18,7 @@
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/media_session_service.h"
+#include "media/base/media_switches.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
@@ -24,6 +26,10 @@ namespace {
 
 // The maximum number of actions we will record to UKM for a specific source.
 constexpr int kMaxActionsRecordedToUKM = 100;
+
+constexpr int kAutoDismissTimerInMinutesDefault = 60;  // minutes
+
+constexpr const char kAutoDismissTimerInMinutesParamName[] = "timer_in_minutes";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -54,7 +60,251 @@ bool IsWebContentsFocused(content::WebContents* web_contents) {
   return browser->tab_strip_model()->GetActiveWebContents() == web_contents;
 }
 
+// Returns the time value to be used for the auto-dismissing of the
+// notifications after they are inactive.
+// If the feature (auto-dismiss) is disabled, the returned value will be
+// TimeDelta::Max() which is the largest int64 possible.
+base::TimeDelta GetAutoDismissTimerValue() {
+  if (!base::FeatureList::IsEnabled(media::kGlobalMediaControlsAutoDismiss))
+    return base::TimeDelta::Max();
+
+  return base::TimeDelta::FromMinutes(base::GetFieldTrialParamByFeatureAsInt(
+      media::kGlobalMediaControlsAutoDismiss,
+      kAutoDismissTimerInMinutesParamName, kAutoDismissTimerInMinutesDefault));
+}
+
+base::WeakPtr<media_router::WebContentsPresentationManager>
+GetPresentationManager(content::WebContents* web_contents) {
+  if (!web_contents ||
+      !media_router::MediaRouterEnabled(web_contents->GetBrowserContext())) {
+    return nullptr;
+  }
+  return media_router::WebContentsPresentationManager::Get(web_contents);
+}
+
 }  // namespace
+
+MediaSessionNotificationProducer::Session::Session(
+    MediaSessionNotificationProducer* owner,
+    const std::string& id,
+    std::unique_ptr<media_message_center::MediaSessionNotificationItem> item,
+    content::WebContents* web_contents,
+    mojo::Remote<media_session::mojom::MediaController> controller)
+    : content::WebContentsObserver(web_contents),
+      owner_(owner),
+      id_(id),
+      item_(std::move(item)),
+      presentation_manager_(GetPresentationManager(web_contents)) {
+  DCHECK(owner_);
+  DCHECK(item_);
+
+  SetController(std::move(controller));
+  if (presentation_manager_)
+    presentation_manager_->AddObserver(this);
+}
+
+MediaSessionNotificationProducer::Session::~Session() {
+  if (presentation_manager_)
+    presentation_manager_->RemoveObserver(this);
+
+  // If we've been marked inactive, then we've already recorded inactivity as
+  // the dismiss reason.
+  if (is_marked_inactive_)
+    return;
+
+  RecordDismissReason(dismiss_reason_.value_or(
+      GlobalMediaControlsDismissReason::kMediaSessionStopped));
+}
+
+void MediaSessionNotificationProducer::Session::WebContentsDestroyed() {
+  // If the WebContents is destroyed, then we should just remove the item
+  // instead of freezing it.
+  set_dismiss_reason(GlobalMediaControlsDismissReason::kTabClosed);
+  owner_->RemoveItem(id_);
+}
+
+void MediaSessionNotificationProducer::Session::MediaSessionInfoChanged(
+    media_session::mojom::MediaSessionInfoPtr session_info) {
+  is_playing_ =
+      session_info && session_info->playback_state ==
+                          media_session::mojom::MediaPlaybackState::kPlaying;
+
+  // If we've started playing, we don't want the inactive timer to be running.
+  if (is_playing_) {
+    if (inactive_timer_.IsRunning() || is_marked_inactive_) {
+      MarkActiveIfNecessary();
+      RecordInteractionDelayAfterPause();
+      inactive_timer_.Stop();
+    }
+    return;
+  }
+
+  // If we're in an overlay, then we don't want to count the session as
+  // inactive.
+  // TODO(https://crbug.com/1032841): This means we won't record interaction
+  // delays. Consider changing to record them.
+  if (is_in_overlay_)
+    return;
+
+  // If the timer is already running, we don't need to do anything.
+  if (inactive_timer_.IsRunning())
+    return;
+
+  last_interaction_time_ = base::TimeTicks::Now();
+  StartInactiveTimer();
+}
+
+void MediaSessionNotificationProducer::Session::MediaSessionActionsChanged(
+    const std::vector<media_session::mojom::MediaSessionAction>& actions) {
+  bool is_audio_device_switching_supported =
+      base::ranges::find(
+          actions,
+          media_session::mojom::MediaSessionAction::kSwitchAudioDevice) !=
+      actions.end();
+  if (is_audio_device_switching_supported !=
+      is_audio_device_switching_supported_) {
+    is_audio_device_switching_supported_ = is_audio_device_switching_supported;
+    is_audio_device_switching_supported_callback_list_.Notify(
+        is_audio_device_switching_supported_);
+  }
+}
+
+void MediaSessionNotificationProducer::Session::MediaSessionPositionChanged(
+    const base::Optional<media_session::MediaPosition>& position) {
+  OnSessionInteractedWith();
+}
+
+void MediaSessionNotificationProducer::Session::OnMediaRoutesChanged(
+    const std::vector<media_router::MediaRoute>& routes) {
+  // Closes the media dialog after a cast session starts.
+  if (!routes.empty()) {
+    owner_->HideMediaDialog();
+    item_->Dismiss();
+  }
+}
+
+void MediaSessionNotificationProducer::Session::SetController(
+    mojo::Remote<media_session::mojom::MediaController> controller) {
+  if (controller.is_bound()) {
+    observer_receiver_.reset();
+    controller->AddObserver(observer_receiver_.BindNewPipeAndPassRemote());
+    controller_ = std::move(controller);
+  }
+}
+
+void MediaSessionNotificationProducer::Session::set_dismiss_reason(
+    GlobalMediaControlsDismissReason reason) {
+  DCHECK(!dismiss_reason_.has_value());
+  dismiss_reason_ = reason;
+}
+
+void MediaSessionNotificationProducer::Session::OnSessionInteractedWith() {
+  // If we're not currently tracking inactive time, then no action is needed.
+  if (!inactive_timer_.IsRunning() && !is_marked_inactive_)
+    return;
+
+  MarkActiveIfNecessary();
+
+  RecordInteractionDelayAfterPause();
+  last_interaction_time_ = base::TimeTicks::Now();
+
+  // Otherwise, reset the timer.
+  inactive_timer_.Stop();
+  StartInactiveTimer();
+}
+
+void MediaSessionNotificationProducer::Session::OnSessionOverlayStateChanged(
+    bool is_in_overlay) {
+  is_in_overlay_ = is_in_overlay;
+
+  if (is_in_overlay_) {
+    // If we enter an overlay, then we don't want the session to be marked
+    // inactive.
+    if (inactive_timer_.IsRunning()) {
+      RecordInteractionDelayAfterPause();
+      inactive_timer_.Stop();
+    }
+  } else if (!is_playing_ && !inactive_timer_.IsRunning()) {
+    // If we exit an overlay and the session is paused, then the session is
+    // inactive.
+    StartInactiveTimer();
+  }
+}
+
+bool MediaSessionNotificationProducer::Session::IsPlaying() const {
+  return is_playing_;
+}
+
+void MediaSessionNotificationProducer::Session::SetAudioSinkId(
+    const std::string& id) {
+  controller_->SetAudioSinkId(id);
+}
+
+base::CallbackListSubscription MediaSessionNotificationProducer::Session::
+    RegisterIsAudioDeviceSwitchingSupportedCallback(
+        base::RepeatingCallback<void(bool)> callback) {
+  callback.Run(is_audio_device_switching_supported_);
+  return is_audio_device_switching_supported_callback_list_.Add(
+      std::move(callback));
+}
+
+void MediaSessionNotificationProducer::Session::
+    SetPresentationManagerForTesting(
+        base::WeakPtr<media_router::WebContentsPresentationManager>
+            presentation_manager) {
+  presentation_manager_ = presentation_manager;
+  presentation_manager_->AddObserver(this);
+}
+
+// static
+void MediaSessionNotificationProducer::Session::RecordDismissReason(
+    GlobalMediaControlsDismissReason reason) {
+  base::UmaHistogramEnumeration("Media.GlobalMediaControls.DismissReason",
+                                reason);
+}
+
+void MediaSessionNotificationProducer::Session::StartInactiveTimer() {
+  DCHECK(!inactive_timer_.IsRunning());
+
+  // Using |base::Unretained()| here is okay since |this| owns
+  // |inactive_timer_|.
+  // If the feature is disabled, the timer will run forever, in order for the
+  // rest of the code to continue running as expected.
+  inactive_timer_.Start(
+      FROM_HERE, GetAutoDismissTimerValue(),
+      base::BindOnce(
+          &MediaSessionNotificationProducer::Session::OnInactiveTimerFired,
+          base::Unretained(this)));
+}
+
+void MediaSessionNotificationProducer::Session::OnInactiveTimerFired() {
+  // Overlay notifications should never be marked as inactive.
+  DCHECK(!is_in_overlay_);
+
+  // If the session has been paused and inactive for long enough, then mark it
+  // as inactive.
+  is_marked_inactive_ = true;
+  RecordDismissReason(GlobalMediaControlsDismissReason::kInactiveTimeout);
+  owner_->OnSessionBecameInactive(id_);
+}
+
+void MediaSessionNotificationProducer::Session::
+    RecordInteractionDelayAfterPause() {
+  base::TimeDelta time_since_last_interaction =
+      base::TimeTicks::Now() - last_interaction_time_;
+  base::UmaHistogramCustomTimes(
+      "Media.GlobalMediaControls.InteractionDelayAfterPause",
+      time_since_last_interaction, base::TimeDelta::FromMinutes(1),
+      base::TimeDelta::FromDays(1), 100);
+}
+
+void MediaSessionNotificationProducer::Session::MarkActiveIfNecessary() {
+  if (!is_marked_inactive_)
+    return;
+  is_marked_inactive_ = false;
+
+  owner_->OnSessionBecameActive(id_);
+}
 
 MediaSessionNotificationProducer::MediaSessionNotificationProducer(
     MediaNotificationService* service,
@@ -202,14 +452,13 @@ void MediaSessionNotificationProducer::OnContainerDismissed(
     return;
   }
 
-  MediaNotificationService::Session* session = GetSession(id);
+  Session* session = GetSession(id);
   if (!session) {
     return;
   }
 
   session->set_dismiss_reason(
-      MediaNotificationService::GlobalMediaControlsDismissReason::
-          kUserDismissedNotification);
+      GlobalMediaControlsDismissReason::kUserDismissedNotification);
   session->item()->Dismiss();
 }
 
@@ -409,8 +658,8 @@ void MediaSessionNotificationProducer::set_device_provider_for_testing(
   device_provider_ = std::move(device_provider);
 }
 
-MediaNotificationService::Session* MediaSessionNotificationProducer::GetSession(
-    const std::string& id) {
+MediaSessionNotificationProducer::Session*
+MediaSessionNotificationProducer::GetSession(const std::string& id) {
   auto it = sessions_.find(id);
   return it == sessions_.end() ? nullptr : &it->second;
 }
