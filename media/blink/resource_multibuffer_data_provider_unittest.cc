@@ -33,9 +33,9 @@
 using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Invoke;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Truly;
-using ::testing::NiceMock;
 
 using blink::WebString;
 using blink::WebURLError;
@@ -56,11 +56,12 @@ enum NetworkState { NONE, LOADED, LOADING };
 
 static bool want_frfr = false;
 
-// Predicate that checks the Chrome-Proxy and Accept-Encoding request headers.
-static bool CorrectAcceptEncodingAndProxy(const blink::WebURLRequest& request) {
-  std::string chrome_proxy =
-      request.HttpHeaderField(WebString::FromUTF8("chrome-proxy")).Utf8();
-  bool has_frfr = chrome_proxy == "frfr";
+// Predicate that checks the Accept-Encoding request header and FRFR previews
+// state.
+static bool CorrectAcceptEncodingAndPreviewsState(
+    const blink::WebURLRequest& request) {
+  bool has_frfr =
+      request.GetPreviewsState() & blink::PreviewsTypes::kSrcVideoRedirectOn;
   if (has_frfr != want_frfr) {
     return false;
   }
@@ -106,9 +107,7 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
     url_data_->multibuffer()->AddProvider(std::move(loader));
   }
 
-  void Start() {
-    loader_->Start();
-  }
+  void Start() { loader_->Start(); }
 
   void FullResponse(int64_t instance_size, bool ok = true) {
     WebURLResponse response(gurl_);
@@ -213,9 +212,9 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   std::unique_ptr<blink::WebAssociatedURLLoader> CreateUrlLoader(
       const blink::WebAssociatedURLLoaderOptions& options) {
     auto url_loader = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
-    EXPECT_CALL(
-        *url_loader.get(),
-        LoadAsynchronously(Truly(CorrectAcceptEncodingAndProxy), loader_));
+    EXPECT_CALL(*url_loader.get(),
+                LoadAsynchronously(Truly(CorrectAcceptEncodingAndPreviewsState),
+                                   loader_));
     return url_loader;
   }
 
@@ -326,34 +325,34 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestRedirects) {
   StopWhenLoad();
 }
 
-TEST_F(ResourceMultiBufferDataProviderTest, TestChromeProxyHeader) {
+TEST_F(ResourceMultiBufferDataProviderTest, TestSaveDataFRFRPreviewsState) {
   struct TestCase {
     std::string label;
     bool enable_save_data;
     std::string url;
-    bool want_chrome_proxy;
+    bool want_frfr_previews_enabled;
   };
   const TestCase kTestCases[]{
       {
-          "SaveData on, HTTP URL: chrome-proxy should exist.",
+          "SaveData on, HTTP URL: FRFR previews state should exist.",
           true,
           kHttpUrl,
           true,
       },
       {
-          "SaveData off, HTTP URL: chrome-proxy should not exist.",
-          false,
-          kHttpUrl,
-          false,
-      },
-      {
-          "SaveData on, HTTPS URL: chrome-proxy should not exist.",
+          "SaveData on, HTTPS URL: FRFR previews state should exist.",
           true,
           kHttpsUrl,
+          true,
+      },
+      {
+          "SaveData off, HTTP URL: FRFR previews state should not exist.",
+          false,
+          kHttpUrl,
           false,
       },
       {
-          "SaveData off, HTTPS URL: chrome-proxy should not exist.",
+          "SaveData off, HTTPS URL: FRFR previews state should not exist.",
           false,
           kHttpsUrl,
           false,
@@ -365,7 +364,7 @@ TEST_F(ResourceMultiBufferDataProviderTest, TestChromeProxyHeader) {
         test_case.enable_save_data);
 
     Initialize(test_case.url.c_str(), 0);
-    want_frfr = test_case.want_chrome_proxy;
+    want_frfr = test_case.want_frfr_previews_enabled;
 
     Start();
     FullResponse(1024);

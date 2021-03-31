@@ -70,7 +70,15 @@ enum PreviewsTypes {
                 // serve better optimized resources. Set on subresources.
   kSubresourceRedirectOn = SUBRESOURCE_REDIRECT_ON,
 
-  PREVIEWS_STATE_LAST = SUBRESOURCE_REDIRECT_ON,
+  // Indicates this is a src video request. Multiple range requests are
+  // triggered for playing a src video element. This bit is set only for the
+  // first request for the resource (FRFR), subsequent range requests will not
+  // have this bit. Metrics recording and redirecting to its compressed version
+  // is enough to be done for the first range request, and subsequent range
+  // requests need not have this bit.
+  kSrcVideoRedirectOn = 1 << 12,
+
+  PREVIEWS_STATE_LAST = kSrcVideoRedirectOn,
   kPreviewsStateLast = PREVIEWS_STATE_LAST
 };
 

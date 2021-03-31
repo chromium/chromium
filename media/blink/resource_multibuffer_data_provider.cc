@@ -23,6 +23,7 @@
 #include "net/http/http_byte_range.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/platform/web_network_state_notifier.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -96,12 +97,13 @@ void ResourceMultiBufferDataProvider::Start() {
   if (url_data_->length() == kPositionNotSpecified &&
       url_data_->CachedSize() == 0 && url_data_->BytesReadFromCache() == 0 &&
       blink::WebNetworkStateNotifier::SaveDataEnabled() &&
-      url_data_->url().SchemeIs(url::kHttpScheme)) {
-    // This lets the data reduction proxy know that we don't have anything
-    // previously cached data for this resource. We can only send it if this is
-    // the first request for this resource.
-    request.SetHttpHeaderField(WebString::FromUTF8("chrome-proxy"),
-                               WebString::FromUTF8("frfr"));
+      (url_data_->url().SchemeIs(url::kHttpScheme) ||
+       url_data_->url().SchemeIs(url::kHttpsScheme))) {
+    // This lets the data reduction proxy know that we don't have any previously
+    // cached data for this resource. We can only send it if this is the first
+    // request for this resource.
+    request.SetPreviewsState(request.GetPreviewsState() |
+                             blink::PreviewsTypes::kSrcVideoRedirectOn);
   }
 
   // We would like to send an if-match header with the request to
