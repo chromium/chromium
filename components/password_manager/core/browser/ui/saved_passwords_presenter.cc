@@ -67,9 +67,9 @@ void SavedPasswordsPresenter::Init() {
 }
 
 void SavedPasswordsPresenter::RemovePassword(const PasswordForm& form) {
-  std::string current_form_key = CreateSortKey(form, IgnoreStore(true));
+  std::string current_form_key = CreateSortKey(form);
   for (const auto& saved_form : passwords_) {
-    if (CreateSortKey(saved_form, IgnoreStore(true)) == current_form_key) {
+    if (CreateSortKey(saved_form) == current_form_key) {
       PasswordStore& store =
           saved_form.IsUsingAccountStore() ? *account_store_ : *profile_store_;
       store.RemoveLogin(saved_form);
