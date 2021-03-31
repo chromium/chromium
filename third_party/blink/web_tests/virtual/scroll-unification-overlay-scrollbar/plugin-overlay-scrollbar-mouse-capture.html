@@ -1,0 +1,79 @@
+<head>
+    <script src="../../resources/js-test.js"></script>
+    <style>
+        body {
+            /* Hide the horizontal-scrollbar so that clicking right at the
+               bottom of the vertical scrollbar will trigger a scroll */
+            overflow-x: hidden;
+        }
+        #container {
+            /* The plugin is guaranteed not to be in the margin. */
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <pre id="console"></pre>
+</body>
+<script>
+    description('This tests whether scrolling still works correctly when an '
+    + 'overlay scrollbar is over a plugin. Clicking on the overlay scrollbar '
+    + 'should cause it to activate and capture input.');
+
+    window.jsTestIsAsync = true;
+    var startLogging = false;
+    var eventHistory = [];
+
+    function runTest() {
+        internals.setScrollbarVisibilityInScrollableArea(document, true);
+
+        // Mouse down on the scrollbar thumb which is over the plugin.
+        eventSender.mouseMoveTo(window.innerWidth - 1, 50);
+        eventSender.mouseDown();
+        // Drag the thumb down but move off the thumb, the plugin shouldn't
+        // receive any events because there shouldn't be any mouse capture.
+        eventSender.mouseMoveTo(window.innerWidth - 20, window.innerHeight - 10);
+        // A mouse up will be received because when dragging off a
+        // scrollbar and releasing, it dispatches an event to the last
+        // element under the mouse.
+        eventSender.mouseUp();
+
+        // The scrollbar captures the input and the plugin should not receive
+        // events.
+        shouldBe('eventHistory.length', '0');
+        requestAnimationFrame(function() {
+          shouldBeTrue('window.scrollY > 0');
+          finishJSTest();
+        });
+    }
+
+    window.onload = function() {
+        if (!window.eventSender || !window.internals) {
+            finishJSTest();
+            return;
+        }
+
+        var plugin = document.createElement('object');
+        plugin.type = 'application/x-blink-test-plugin';
+        plugin.width = window.innerWidth * 2;
+        plugin.height = window.innerHeight * 2;
+        plugin.addEventListener('mousedown', function(e) {
+            startLogging = true;
+            eventHistory.push('plugin.mousedown');
+        });
+        plugin.addEventListener('mouseup', function(e) {
+            if (startLogging)
+                eventHistory.push('plugin.mouseup');
+        });
+        plugin.addEventListener('mousemove', function(e) {
+            if (startLogging)
+                eventHistory.push('plugin.mousemove');
+        });
+
+        var d = document.getElementById('container');
+        d.appendChild(plugin);
+
+        runTest();
+    }
+</script>

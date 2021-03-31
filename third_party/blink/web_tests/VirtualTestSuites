@@ -800,11 +800,88 @@
   },
   {
     "prefix": "scroll-unification",
-    "bases": ["fast/scrolling/scrollbars",
+    "bases": ["fast/events",
+              "fast/scrolling",
+              "fast/scroll-snap",
               "fast/forms/select-popup",
-              "fast/forms/suggestion-picker"],
+              "fast/forms/suggestion-picker",
+              "http/tests/misc",
+              "plugins",
+              "scrollbars",
+              "external/wpt/dom/events/scrolling",
+              "external/wpt/feature-policy/experimental-features",
+              "external/wpt/permissions-policy/experimental-features",
+              "external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html",
+              "external/wpt/touch-events/multi-touch-interactions.html",
+              "fast/forms/fieldset/overflow-scroll-interaction.html",
+              "fast/scroll-behavior/middleclick-autoscroll-nested-elements.html",
+              "fast/scroll-behavior/middleclick-autoscroll-use-count.html",
+              "http/tests/credentialmanager/credentialscontainer-create-with-virtual-authenticator.html",
+              "ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm"],
     "args": ["--enable-features=ScrollUnification",
              "--enable-threaded-compositing"]
+  },
+  {
+    "prefix": "scroll-unification-hidpi",
+    "bases": ["fast/scrolling/scrollbars/dsf-ready"],
+    "args": ["--enable-features=ScrollUnification",
+             "--enable-threaded-compositing",
+             "--disable-smooth-scrolling",
+             "--force-device-scale-factor=2"]
+  },
+  {
+    "prefix": "scroll-unification-layout_ng_block_frag",
+    "bases": ["fast/forms/fieldset"],
+    "args": ["--enable-features=ScrollUnification",
+             "--enable-threaded-compositing",
+             "--enable-blink-features=LayoutNGBlockFragmentation"]
+  },
+  {
+    "prefix": "scroll-unification-overlay-scrollbar",
+    "bases": [],
+    "args": ["--enable-features=ScrollUnification",
+             "--enable-threaded-compositing",
+             "--enable-features=OverlayScrollbar"]
+  },
+  {
+    "prefix": "scroll-unification-percent-based-scrolling",
+    "bases": ["fast/scrolling/scrollbars"],
+    "args": ["--enable-features=ScrollUnification",
+             "--enable-features=PercentBasedScrolling",
+             "--enable-threaded-compositing",
+             "--enable-prefer-compositing-to-lcd-text",
+             "--disable-features=CompositorThreadedScrollbarScrolling"]
+  },
+  {
+    "prefix": "scroll-unification-prefer_compositing_to_lcd_text",
+    "bases": ["fast/scroll-behavior",
+              "scrollbars"],
+    "args": ["--enable-features=ScrollUnification",
+             "--enable-threaded-compositing",
+             "--enable-prefer-compositing-to-lcd-text"]
+  },
+  {
+    "prefix": "scroll-unification-synchronous_html_parser",
+    "bases": ["external/wpt/dom"],
+    "args": ["--enable-features=ScrollUnification",
+             "--enable-threaded-compositing",
+             "--enable-blink-features=ForceSynchronousHTMLParsing"]
+  },
+  {
+    "prefix": "scroll-unification-unified-autoplay",
+    "bases": ["external/wpt/feature-policy"],
+    "args": ["--enable-features=ScrollUnification",
+             "--enable-threaded-compositing",
+             "--autoplay-policy=document-user-activation-required"]
+  },
+  {
+    "prefix": "scroll-unification-wheel-event-regions",
+    "bases": ["fast/events/platform-wheelevent-paging-xy-in-scrolling-div.html",
+              "fast/events/platform-wheelevent-paging-xy-in-scrolling-page.html",
+              "fast/events/wheel"],
+    "args": ["--enable-features=ScrollUnification",
+             "--enable-threaded-compositing",
+             "--disable-features=WheelEventRegions"]
   },
   {
     "prefix": "disable-frequency-capping-for-overlay-popup-detection",
