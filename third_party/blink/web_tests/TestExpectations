@@ -5807,3 +5807,4 @@ crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-ta
 crbug.com/476553 virtual/scroll-unification/fast/events/pointerevents/multi-pointer-preventdefault.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/scrollbars/hidden-scrollbars-invisible.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/fast/scrolling/overflow-scrollability.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-paragraph-end.html [ Pass Failure Timeout Crash ]
