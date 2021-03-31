@@ -84,7 +84,7 @@ class MODULES_EXPORT ImageDecoderExternal final
 
   void AbortPendingDecodes(DOMException* exception);
 
-  scoped_refptr<media::VideoFrame> MaybeDecodeToYuv();
+  void MaybeDecodeToYuv();
 
   Member<ScriptState> script_state_;
 
@@ -131,6 +131,11 @@ class MODULES_EXPORT ImageDecoderExternal final
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;
   HeapVector<Member<ScriptPromiseResolver>> pending_metadata_decodes_;
+
+  // The YUV decoders don't like to be called more than once, so store the
+  // decoded frame once we have it.
+  bool have_completed_yuv_decode_ = false;
+  scoped_refptr<media::VideoFrame> yuv_frame_;
 
   // When decode() of incomplete frames has been requested, we need to track the
   // generation id for each SkBitmap that we've handed out. So that we can defer

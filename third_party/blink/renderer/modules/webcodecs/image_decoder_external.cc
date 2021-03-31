@@ -317,6 +317,8 @@ void ImageDecoderExternal::UpdateSelectedTrack() {
   // mechanism. For now we can only select between the still and animated images
   // and must destruct the decoder for changes.
   decoder_.reset();
+  yuv_frame_ = nullptr;
+  have_completed_yuv_decode_ = false;
   if (!tracks_->selectedTrack())
     return;
 
@@ -362,6 +364,8 @@ void ImageDecoderExternal::close() {
     consumer_->Cancel();
   consumer_ = nullptr;
   decoder_.reset();
+  yuv_frame_ = nullptr;
+  have_completed_yuv_decode_ = false;
   tracks_->Disconnect();
   mime_type_ = "";
   stream_buffer_ = nullptr;
@@ -489,10 +493,16 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     if (decoder_->CanDecodeToYUV()) {
       DCHECK(!tracks_->selectedTrack().value()->animated());
       DCHECK_EQ(request->frame_index, 0u);
-      frame = MaybeDecodeToYuv();
-      if (decoder_->Failed()) {
-        request->exception = CreateDecodeFailure(request->frame_index);
-        continue;
+      if (!have_completed_yuv_decode_) {
+        MaybeDecodeToYuv();
+        if (decoder_->Failed()) {
+          request->exception = CreateDecodeFailure(request->frame_index);
+          continue;
+        }
+      }
+      if (have_completed_yuv_decode_) {
+        DCHECK(yuv_frame_);
+        frame = yuv_frame_;
       }
     }
 
@@ -694,35 +704,45 @@ void ImageDecoderExternal::AbortPendingDecodes(DOMException* exception) {
   incomplete_frames_.clear();
 }
 
-scoped_refptr<media::VideoFrame> ImageDecoderExternal::MaybeDecodeToYuv() {
+void ImageDecoderExternal::MaybeDecodeToYuv() {
+  DCHECK(!have_completed_yuv_decode_);
+
   const auto format = YUVSubsamplingToMediaPixelFormat(
       decoder_->GetYUVSubsampling(), decoder_->GetYUVBitDepth());
   if (format == media::PIXEL_FORMAT_UNKNOWN)
-    return nullptr;
+    return;
 
-  const auto coded_size = gfx::Size(decoder_->DecodedYUVSize(cc::YUVIndex::kY));
+  // In the event of a partial decode |yuv_frame_| may have been created, but
+  // not populated with image data. To avoid thrashing as bytes come in, only
+  // create the frame once.
+  if (!yuv_frame_) {
+    const auto coded_size =
+        gfx::Size(decoder_->DecodedYUVSize(cc::YUVIndex::kY));
 
-  // Plane sizes are guaranteed to fit in an int32_t by ImageDecoder::SetSize();
-  // since YUV is 1 byte-per-channel, we can just check width * height.
-  DCHECK(coded_size.GetCheckedArea().IsValid());
-  auto layout = media::VideoFrameLayout::CreateWithStrides(
-      format, coded_size,
-      {static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kY)),
-       static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kU)),
-       static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kV))});
-  if (!layout)
-    return nullptr;
+    // Plane sizes are guaranteed to fit in an int32_t by
+    // ImageDecoder::SetSize(); since YUV is 1 byte-per-channel, we can just
+    // check width * height.
+    DCHECK(coded_size.GetCheckedArea().IsValid());
+    auto layout = media::VideoFrameLayout::CreateWithStrides(
+        format, coded_size,
+        {static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kY)),
+         static_cast<int32_t>(decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kU)),
+         static_cast<int32_t>(
+             decoder_->DecodedYUVWidthBytes(cc::YUVIndex::kV))});
+    if (!layout)
+      return;
 
-  auto frame = media::VideoFrame::CreateFrameWithLayout(
-      *layout, gfx::Rect(coded_size), coded_size, base::TimeDelta(),
-      /*zero_initialize_memory=*/false);
-  if (!frame)
-    return nullptr;
+    yuv_frame_ = media::VideoFrame::CreateFrameWithLayout(
+        *layout, gfx::Rect(coded_size), coded_size, base::TimeDelta(),
+        /*zero_initialize_memory=*/false);
+    if (!yuv_frame_)
+      return;
+  }
 
-  void* planes[cc::kNumYUVPlanes] = {frame->data(0), frame->data(1),
-                                     frame->data(2)};
-  size_t row_bytes[cc::kNumYUVPlanes] = {frame->stride(0), frame->stride(1),
-                                         frame->stride(2)};
+  void* planes[cc::kNumYUVPlanes] = {yuv_frame_->data(0), yuv_frame_->data(1),
+                                     yuv_frame_->data(2)};
+  size_t row_bytes[cc::kNumYUVPlanes] = {
+      yuv_frame_->stride(0), yuv_frame_->stride(1), yuv_frame_->stride(2)};
 
   // TODO(crbug.com/1073995): Add support for high bit depth format.
   const auto color_type = kGray_8_SkColorType;
@@ -732,7 +752,9 @@ scoped_refptr<media::VideoFrame> ImageDecoderExternal::MaybeDecodeToYuv() {
   decoder_->SetImagePlanes(std::move(image_planes));
   decoder_->DecodeToYUV();
   if (decoder_->Failed() || !decoder_->HasDisplayableYUVData())
-    return nullptr;
+    return;
+
+  have_completed_yuv_decode_ = true;
 
   gfx::ColorSpace gfx_cs;
   if (auto sk_cs = decoder_->ColorSpaceForSkImages())
@@ -753,9 +775,9 @@ scoped_refptr<media::VideoFrame> ImageDecoderExternal::MaybeDecodeToYuv() {
   }
 
   if (gfx_cs.IsValid()) {
-    frame->set_color_space(YUVColorSpaceToGfxColorSpace(
+    yuv_frame_->set_color_space(YUVColorSpaceToGfxColorSpace(
         skyuv_cs, gfx_cs.GetPrimaryID(), gfx_cs.GetTransferID()));
-    return frame;
+    return;
   }
 
   DCHECK(skyuv_cs == kBT2020_8bit_Full_SkYUVColorSpace ||
@@ -775,9 +797,8 @@ scoped_refptr<media::VideoFrame> ImageDecoderExternal::MaybeDecodeToYuv() {
     transfer_id = gfx::ColorSpace::TransferID::BT2020_12;
   }
 
-  frame->set_color_space(YUVColorSpaceToGfxColorSpace(
+  yuv_frame_->set_color_space(YUVColorSpaceToGfxColorSpace(
       skyuv_cs, gfx::ColorSpace::PrimaryID::BT2020, transfer_id));
-  return frame;
 }
 
 }  // namespace blink
