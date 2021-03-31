@@ -1957,6 +1957,8 @@ static_library("ui") {
       "ash/clipboard_util.h",
       "ash/crosapi_new_window_delegate.cc",
       "ash/crosapi_new_window_delegate.h",
+      "ash/default_pinned_apps.cc",
+      "ash/default_pinned_apps.h",
       "ash/holding_space/holding_space_client_impl.cc",
       "ash/holding_space/holding_space_client_impl.h",
       "ash/holding_space/holding_space_downloads_delegate.cc",

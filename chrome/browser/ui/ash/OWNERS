@@ -5,6 +5,8 @@ sky@chromium.org
 xiyuan@chromium.org
 
 per-file chrome_keyboard_ui*=yhanada@chromium.org
+per-file default_pinned_apps.*=jshikaram@chromium.org
+per-file default_pinned_apps.*=tsergeant@chromium.org
 per-file *login*=file://ash/login/OWNERS
 per-file keyboard_*=yhanada@chromium.org
 per-file *wallpaper*=file://ash/wallpaper/OWNERS

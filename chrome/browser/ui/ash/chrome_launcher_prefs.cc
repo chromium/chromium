@@ -24,11 +24,11 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
+#include "chrome/browser/ui/ash/default_pinned_apps.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/ash/launcher/launcher_controller_helper.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
@@ -47,37 +47,6 @@ using syncer::UserSelectableOsType;
 using syncer::UserSelectableType;
 
 namespace {
-
-// Chrome is pinned explicitly.
-const char* kDefaultPinnedApps[] = {
-    extension_misc::kGmailAppId,
-    web_app::kGmailAppId,
-
-    web_app::kGoogleCalendarAppId,
-
-    extension_misc::kFilesManagerAppId,
-
-    web_app::kMessagesAppId,
-
-    arc::kPlayStoreAppId,
-
-    extension_misc::kYoutubeAppId,
-    web_app::kYoutubeAppId,
-
-    arc::kGooglePhotosAppId,
-};
-
-const char* kTabletFormFactorDefaultPinnedApps[] = {
-    arc::kGmailAppId,
-
-    arc::kGoogleCalendarAppId,
-
-    arc::kPlayStoreAppId,
-
-    arc::kYoutubeAppId,
-
-    arc::kGooglePhotosAppId,
-};
 
 const char kDefaultPinnedAppsKey[] = "default";
 
@@ -527,10 +496,10 @@ std::vector<ash::ShelfID> GetPinnedAppsFromSync(
     VLOG(1) << "Roll default shelf pin layout " << shelf_layout;
     std::vector<std::string> default_app_ids;
     if (chromeos::switches::IsTabletFormFactor()) {
-      for (const char* default_app_id : kTabletFormFactorDefaultPinnedApps)
+      for (const char* default_app_id : GetTabletFormFactorDefaultPinnedApps())
         default_app_ids.push_back(default_app_id);
     } else {
-      for (const char* default_app_id : kDefaultPinnedApps)
+      for (const char* default_app_id : GetDefaultPinnedApps())
         default_app_ids.push_back(default_app_id);
     }
     InsertPinsAfterChromeAndBeforeFirstPinnedApp(helper, syncable_service,
