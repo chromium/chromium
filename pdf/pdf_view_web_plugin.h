@@ -129,6 +129,14 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   void OnViewportChanged(const gfx::Rect& view_rect, float new_device_scale);
 
+  // Invalidates the entire web plugin container and schedules a paint of the
+  // page in it.
+  void InvalidatePluginContainer();
+
+  // Schedules a paint of the page of a given region in the web plugin
+  // container. The coordinates are relative to the top-left of the container.
+  void InvalidateRectInPluginContainer(const gfx::Rect& rect);
+
   blink::WebPluginParams initial_params_;
   blink::WebPluginContainer* container_ = nullptr;
 

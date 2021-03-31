@@ -15,10 +15,7 @@ include_rules = [
   "+ui/base/text/bytes_formatting.h",
   "+ui/base/window_open_disposition.h",
   "+ui/events/keycodes/keyboard_codes.h",
-  "+ui/gfx/geometry",
-  "+ui/gfx/range/range.h",
-  "+ui/gfx/skia_util.h",
-  "+ui/gfx/test/gfx_util.h",
+  "+ui/gfx",
   "+v8/include/v8.h"
 ]
 

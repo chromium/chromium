@@ -311,7 +311,7 @@ std::unique_ptr<Graphics> PdfViewWebPlugin::CreatePaintGraphics(
 }
 
 bool PdfViewWebPlugin::BindPaintGraphics(Graphics& graphics) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  InvalidatePluginContainer();
   return false;
 }
 
@@ -364,6 +364,7 @@ void PdfViewWebPlugin::UpdateSnapshot(sk_sp<SkImage> snapshot) {
           .set_image(std::move(snapshot), cc::PaintImage::GetNextContentId())
           .set_id(cc::PaintImage::GetNextId())
           .TakePaintImage();
+  InvalidateRectInPluginContainer(gfx::Rect(plugin_size()));
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {
@@ -454,6 +455,21 @@ void PdfViewWebPlugin::OnViewportChanged(const gfx::Rect& view_rect,
 
   // TODO(http://crbug.com/1099020): Update scroll position for painting the
   // print preview plugin.
+}
+
+void PdfViewWebPlugin::InvalidatePluginContainer() {
+  DCHECK(container_);
+
+  container_->Invalidate();
+}
+
+void PdfViewWebPlugin::InvalidateRectInPluginContainer(const gfx::Rect& rect) {
+  DCHECK(container_);
+
+  if (plugin_size().IsEmpty())
+    return;
+
+  container_->InvalidateRect(rect);
 }
 
 }  // namespace chrome_pdf

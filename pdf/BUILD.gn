@@ -252,6 +252,7 @@ if (enable_pdf) {
       "//third_party/blink/public:blink",
       "//ui/base",
       "//ui/base/cursor/mojom:cursor_type",
+      "//ui/gfx",
     ]
   }
 

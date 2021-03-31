@@ -52,6 +52,20 @@ SkBitmap GenerateExpectedBitmap(const SkISize& graphics_size,
   return bitmap;
 }
 
+// Creates a nonuniform SkBitmap with given `width` and `height`, such
+// that scrolling will cause a noticeable change to the bitmap. Returns an
+// empty SkBitmap if either `width` or `height` is less than 4.
+SkBitmap CreateNonuniformBitmap(int width, int height) {
+  if (width < 4 || height < 4)
+    return SkBitmap();
+
+  SkBitmap bitmap = CreateN32PremulSkBitmap(SkISize::Make(width, height));
+  bitmap.eraseColor(SK_ColorRED);
+  bitmap.erase(SK_ColorGREEN, {1, 1, width - 1, height - 2});
+  bitmap.erase(SK_ColorBLACK, {2, 3, 1, 2});
+  return bitmap;
+}
+
 }  // namespace
 
 class SkiaGraphicsTest : public testing::Test {
@@ -92,6 +106,43 @@ class SkiaGraphicsTest : public testing::Test {
  private:
   base::test::TaskEnvironment task_environment_;
 };
+
+class SkiaGraphicsScrollTest : public SkiaGraphicsTest {
+ protected:
+  static constexpr gfx::Rect kGraphicsRect = gfx::Rect(4, 5);
+
+  // Initializes `initial_bitmap_` and `graphics_` before scrolling tests.
+  void SetUp() override {
+    graphics_ = SkiaGraphics::Create(&client_, kGraphicsRect.size());
+    ASSERT_TRUE(graphics_);
+
+    // Paint a nonuniform SkBitmap to graphics.
+    initial_bitmap_ =
+        CreateNonuniformBitmap(kGraphicsRect.width(), kGraphicsRect.height());
+    graphics_->PaintImage(Image(initial_bitmap_), kGraphicsRect);
+    graphics_->Flush(base::DoNothing());
+    SkBitmap initial_snapshot;
+    ASSERT_TRUE(client_.snapshot->asLegacyBitmap(&initial_snapshot));
+    ASSERT_TRUE(cc::MatchesBitmap(initial_snapshot, initial_bitmap_,
+                                  cc::ExactPixelComparator(false)));
+  }
+
+  // Resets the canvas with `initial_bitmap_`, then scrolls it by
+  // `scroll_amount`.
+  void ResetAndScroll(const gfx::Vector2d& scroll_amount) {
+    if (!graphics_)
+      return;
+
+    graphics_->PaintImage(Image(initial_bitmap_), kGraphicsRect);
+    graphics_->Scroll(kGraphicsRect, scroll_amount);
+    graphics_->Flush(base::DoNothing());
+  }
+
+  SkBitmap initial_bitmap_;
+};
+
+// static
+constexpr gfx::Rect SkiaGraphicsScrollTest::kGraphicsRect;
 
 TEST_F(SkiaGraphicsTest, Flush) {
   graphics_ = SkiaGraphics::Create(&client_, gfx::Size(20, 20));
@@ -136,6 +187,50 @@ TEST_F(SkiaGraphicsTest, PaintImage) {
   for (const auto& params : kPaintImageTestParams)
     TestPaintImageResult(params.graphics_size, params.src_size,
                          params.paint_rect, params.overlapped_rect);
+}
+
+TEST_F(SkiaGraphicsScrollTest, InvalidScroll) {
+  static constexpr gfx::Vector2d kNoOpScrollAmounts[] = {
+      // Scroll to the edge of the graphics rect.
+      {kGraphicsRect.width(), 0},
+      {-kGraphicsRect.width(), 0},
+      {0, kGraphicsRect.height()},
+      {0, -kGraphicsRect.height()},
+      // Scroll outside the graphics rect.
+      {kGraphicsRect.width() + 1, 0},
+      {-(kGraphicsRect.width() + 2), 0},
+      {0, kGraphicsRect.height() + 3},
+      {0, -(kGraphicsRect.height() + 4)},
+  };
+
+  for (const auto& no_op_amount : kNoOpScrollAmounts) {
+    ResetAndScroll(no_op_amount);
+    SkBitmap snapshot;
+    ASSERT_TRUE(client_.snapshot->asLegacyBitmap(&snapshot));
+    EXPECT_TRUE(cc::MatchesBitmap(snapshot, initial_bitmap_,
+                                  cc::ExactPixelComparator(false)))
+        << "SkBitmap comparison failed for scroll amount of "
+        << no_op_amount.ToString();
+  }
+}
+
+TEST_F(SkiaGraphicsScrollTest, Scroll) {
+  static constexpr gfx::Vector2d kValidScrollAmounts[] = {
+      {1, 0},
+      {-2, 0},
+      {0, 3},
+      {0, -3},
+  };
+
+  for (const auto& valid_amount : kValidScrollAmounts) {
+    ResetAndScroll(valid_amount);
+    SkBitmap snapshot;
+    ASSERT_TRUE(client_.snapshot->asLegacyBitmap(&snapshot));
+    EXPECT_FALSE(cc::MatchesBitmap(snapshot, initial_bitmap_,
+                                   cc::ExactPixelComparator(false)))
+        << "The scroll amount of " << valid_amount.ToString()
+        << " failed to change the snapshot of `graphics_`";
+  }
 }
 
 }  // namespace chrome_pdf

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <cmath>
 #include <utility>
 
 #include "base/callback.h"
@@ -22,6 +23,7 @@
 #include "ppapi/cpp/point.h"
 #include "ppapi/cpp/rect.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "ui/gfx/blit.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -100,7 +102,11 @@ SkiaGraphics::SkiaGraphics(Client* client, const gfx::Size& size)
 SkiaGraphics::~SkiaGraphics() = default;
 
 bool SkiaGraphics::Flush(ResultCallback callback) {
-  client_->UpdateSnapshot(skia_graphics_->makeImageSnapshot());
+  sk_sp<SkImage> snapshot = skia_graphics_->makeImageSnapshot();
+  skia_graphics_->getCanvas()->drawImage(
+      snapshot.get(), /*x=*/0, /*y=*/0, SkSamplingOptions(), /*paint=*/nullptr);
+
+  client_->UpdateSnapshot(std::move(snapshot));
 
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), 0));
@@ -115,7 +121,14 @@ void SkiaGraphics::PaintImage(const Image& image, const gfx::Rect& src_rect) {
 }
 
 void SkiaGraphics::Scroll(const gfx::Rect& clip, const gfx::Vector2d& amount) {
-  NOTIMPLEMENTED_LOG_ONCE();
+  // If we are being asked to scroll by more than the graphics' rect size, just
+  // ignore the scroll command.
+  if (std::abs(amount.x()) >= skia_graphics_->width() ||
+      std::abs(amount.y()) >= skia_graphics_->height()) {
+    return;
+  }
+
+  gfx::ScrollCanvas(skia_graphics_->getCanvas(), clip, amount);
 }
 
 void SkiaGraphics::SetScale(float scale) {
