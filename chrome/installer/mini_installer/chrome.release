@@ -55,6 +55,7 @@ SmallLogo.png: %(VersionDir)s\VisualElements\
 #
 swiftshader\libEGL.dll: %(VersionDir)s\swiftshader\
 swiftshader\libGLESv2.dll: %(VersionDir)s\swiftshader\
+swiftshader\vk_swiftshader.dll: %(VersionDir)s\swiftshader\
 
 #
 # MEI Preload sub dir
