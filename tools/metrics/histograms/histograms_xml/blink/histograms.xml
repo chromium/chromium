@@ -2411,7 +2411,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.DocumentPolicy.Enforced"
-    enum="DocumentPolicyFeature" expires_after="2021-03-31">
+    enum="DocumentPolicyFeature" expires_after="2022-03-31">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -2420,7 +2420,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.DocumentPolicy.Header"
-    enum="DocumentPolicyFeature" expires_after="2021-08-09">
+    enum="DocumentPolicyFeature" expires_after="2022-03-31">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -2430,7 +2430,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.DocumentPolicy.PolicyAttribute"
-    enum="DocumentPolicyFeature" expires_after="2021-03-31">
+    enum="DocumentPolicyFeature" expires_after="2022-03-31">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
@@ -2440,7 +2440,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.UseCounter.DocumentPolicy.ReportOnly"
-    enum="DocumentPolicyFeature" expires_after="2021-03-31">
+    enum="DocumentPolicyFeature" expires_after="2022-03-31">
   <owner>iclelland@chromium.org</owner>
   <owner>feature-control@chromium.org</owner>
   <summary>
