@@ -2492,6 +2492,9 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.strict_powerful_feature_restrictions = command_line.HasSwitch(
       switches::kEnableStrictPowerfulFeatureRestrictions);
 
+  prefs.fake_no_alloc_direct_call_for_testing_enabled =
+      command_line.HasSwitch(switches::kEnableFakeNoAllocDirectCallForTesting);
+
   const std::string blockable_mixed_content_group =
       base::FieldTrialList::FindFullName("BlockableMixedContent");
   prefs.strictly_block_blockable_mixed_content =

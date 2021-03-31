@@ -334,6 +334,16 @@ const char kEnableExperimentalWebAssemblyFeatures[] =
 const char kEnableExperimentalWebPlatformFeatures[] =
     "enable-experimental-web-platform-features";
 
+// Forces the V8/blink bindings to call all API entry points that use the
+// [NoAllocDirectCall] extended IDL attribute as if V8 were using the fast call
+// code path.  Using this flag will not make API calls use the true fast path,
+// it will probably even make things a bit slower.  Its purpose is to guarantee
+// test coverage for the blink side of V8 Fast API calls, independently of
+// whether or not V8 actually activates the fast path, which depends on
+// heuristics.
+const char kEnableFakeNoAllocDirectCallForTesting[] =
+    "enable-fake-no-alloc-direct-call-for-testing";
+
 // Enables blink runtime enabled features with status:"test" or
 // status:"experimental", which are enabled when running web tests.
 const char kEnableBlinkTestFeatures[] = "enable-blink-test-features";

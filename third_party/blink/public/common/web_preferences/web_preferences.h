@@ -157,6 +157,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool smart_insert_delete_enabled;
   bool spatial_navigation_enabled;
   bool navigate_on_drag_drop;
+  bool fake_no_alloc_direct_call_for_testing_enabled;
   blink::mojom::V8CacheOptions v8_cache_options;
   bool record_whole_document;
 

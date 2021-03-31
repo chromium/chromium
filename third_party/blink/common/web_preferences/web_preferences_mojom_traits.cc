@@ -150,6 +150,8 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
   out->smart_insert_delete_enabled = data.smart_insert_delete_enabled();
   out->spatial_navigation_enabled = data.spatial_navigation_enabled();
   out->navigate_on_drag_drop = data.navigate_on_drag_drop();
+  out->fake_no_alloc_direct_call_for_testing_enabled =
+      data.fake_no_alloc_direct_call_for_testing_enabled();
   out->v8_cache_options = data.v8_cache_options();
   out->record_whole_document = data.record_whole_document();
   out->cookie_enabled = data.cookie_enabled();

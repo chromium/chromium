@@ -1522,6 +1522,9 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
 
   settings->SetSelectionIncludesAltImageText(true);
 
+  RuntimeEnabledFeatures::SetFakeNoAllocDirectCallForTestingEnabled(
+      prefs.fake_no_alloc_direct_call_for_testing_enabled);
+
   settings->SetV8CacheOptions(prefs.v8_cache_options);
 
   settings->SetImageAnimationPolicy(prefs.animation_policy);

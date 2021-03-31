@@ -904,6 +904,10 @@
       status: "experimental",
     },
     {
+      name: "FakeNoAllocDirectCallForTesting",
+      status: "test",
+    },
+    {
       name: "FeaturePolicyForClientHints",
       status: "stable",
     },

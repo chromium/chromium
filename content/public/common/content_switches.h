@@ -106,6 +106,7 @@ CONTENT_EXPORT extern const char kEnableDisplayList2dCanvas[];
 CONTENT_EXPORT extern const char kEnableExperimentalCookieFeatures[];
 CONTENT_EXPORT extern const char kEnableExperimentalWebAssemblyFeatures[];
 CONTENT_EXPORT extern const char kEnableExperimentalWebPlatformFeatures[];
+CONTENT_EXPORT extern const char kEnableFakeNoAllocDirectCallForTesting[];
 CONTENT_EXPORT extern const char kEnableBlinkTestFeatures[];
 CONTENT_EXPORT extern const char kEnableFtp[];
 CONTENT_EXPORT extern const char kEnableGpuMemoryBufferVideoFrames[];
