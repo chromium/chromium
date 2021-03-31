@@ -139,6 +139,7 @@ export class VideoEncoderOptions {
   updateBitrateRange_() {
     if (!this.enable_ || this.selectedProfile_ === null) {
       this.disableBitrateSlider_();
+      this.onChange_(null);
       return;
     }
     const fps = assertNumber(this.fps_);
@@ -153,6 +154,7 @@ export class VideoEncoderOptions {
           `resolution=${resolution}, ` +
           `fps=${fps}`);
       this.disableBitrateSlider_();
+      this.onChange_(null);
       return;
     }
     const maxBitrate = h264.getMaxBitrate(profile, maxLevel);
