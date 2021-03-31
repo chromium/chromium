@@ -286,6 +286,10 @@ void NativeTheme::RemoveObserver(NativeThemeObserver* observer) {
 }
 
 void NativeTheme::NotifyObservers() {
+  // This specific method is prone to being mistakenly called on the wrong
+  // sequence, because it is often invoked from a platform-specific event
+  // listener, and those events may be delivered on unexpected sequences.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (NativeThemeObserver& observer : native_theme_observers_)
     observer.OnNativeThemeUpdated(this);
 }
