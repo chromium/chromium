@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_pref_names.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_factory.h"
 #include "chrome/browser/chromeos/file_system_provider/service_factory.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/component_updater/fake_cros_component_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"

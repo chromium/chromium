@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/borealis/borealis_service.h"
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_stability_monitor.h"
+#include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 
 namespace borealis {
 

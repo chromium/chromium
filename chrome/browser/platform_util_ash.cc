@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/chromeos/file_manager/open_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

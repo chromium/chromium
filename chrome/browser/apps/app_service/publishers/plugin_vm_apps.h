@@ -10,9 +10,9 @@
 
 #include "base/scoped_observer.h"
 #include "chrome/browser/apps/app_service/icon_key_util.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/services/app_service/public/cpp/publisher_base.h"
 #include "components/services/app_service/public/mojom/app_service.mojom.h"

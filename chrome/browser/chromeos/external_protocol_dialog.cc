@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/intent_helper/arc_external_protocol_dialog.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_external_protocol_handler.h"
+#include "chrome/browser/ash/guest_os/guest_os_external_protocol_handler.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"

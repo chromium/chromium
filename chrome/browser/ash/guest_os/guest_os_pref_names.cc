@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 
 #include "components/prefs/pref_registry_simple.h"
 

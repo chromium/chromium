@@ -175,11 +175,11 @@
 #include "extensions/browser/api/runtime/runtime_api.h"
 #include "extensions/browser/extension_prefs.h"
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/chromeos/device_name_store.h"
 #include "chrome/browser/chromeos/extensions/extensions_permissions_tracker.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
 #include "chrome/browser/chromeos/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/chromeos/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/chromeos/policy/system_features_disable_list_policy_handler.h"
@@ -282,6 +282,7 @@
 #endif
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_resources_remover.h"
@@ -309,7 +310,6 @@
 #include "chrome/browser/chromeos/file_system_provider/registry.h"
 #include "chrome/browser/chromeos/first_run/first_run.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/chromeos/net/network_throttling_observer.h"
 #include "chrome/browser/chromeos/policy/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/chromeos/policy/app_install_event_log_manager_wrapper.h"

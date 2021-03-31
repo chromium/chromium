@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
-#define CHROME_BROWSER_CHROMEOS_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
+#ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
+#define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
 
 #include "base/optional.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 
 class Profile;
 
@@ -22,4 +22,4 @@ void Launch(Profile* profile, const GURL& url);
 
 }  // namespace guest_os
 
-#endif  // CHROME_BROWSER_CHROMEOS_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_
+#endif  // CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_EXTERNAL_PROTOCOL_HANDLER_H_

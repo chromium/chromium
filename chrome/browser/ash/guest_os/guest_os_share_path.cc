@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 
 #include "base/atomic_ref_count.h"
 #include "base/bind.h"
@@ -11,14 +11,14 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/chromeos/smb_client/smb_service.h"
 #include "chrome/browser/chromeos/smb_client/smb_service_factory.h"
 #include "chrome/browser/chromeos/smb_client/smbfs_share.h"

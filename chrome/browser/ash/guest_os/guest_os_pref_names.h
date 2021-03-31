@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_GUEST_OS_GUEST_OS_PREF_NAMES_H_
-#define CHROME_BROWSER_CHROMEOS_GUEST_OS_GUEST_OS_PREF_NAMES_H_
+#ifndef CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_PREF_NAMES_H_
+#define CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_PREF_NAMES_H_
 
 class PrefRegistrySimple;
 
@@ -38,4 +38,4 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 }  // namespace prefs
 }  // namespace guest_os
 
-#endif  // CHROME_BROWSER_CHROMEOS_GUEST_OS_GUEST_OS_PREF_NAMES_H_
+#endif  // CHROME_BROWSER_ASH_GUEST_OS_GUEST_OS_PREF_NAMES_H_

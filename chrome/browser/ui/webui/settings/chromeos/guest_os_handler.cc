@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 

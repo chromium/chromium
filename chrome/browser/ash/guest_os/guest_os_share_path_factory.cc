@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 
+#include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/chromeos/crostini/crostini_manager_factory.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_share_path.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 

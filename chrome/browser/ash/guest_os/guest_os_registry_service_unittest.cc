@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/guest_os/guest_os_registry_service.h"
+#include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 
 #include <stddef.h>
 
 #include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
+#include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/fake_plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/chromeos/crostini/crostini_test_helper.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/chromeos/crostini/fake_crostini_features.h"
-#include "chrome/browser/chromeos/guest_os/guest_os_pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
 #include "components/prefs/pref_service.h"
