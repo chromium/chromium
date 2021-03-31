@@ -1,0 +1,29 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("save_address_profile") {
+  sources = [
+    "save_address_profile_infobar_modal_overlay_coordinator.h",
+    "save_address_profile_infobar_modal_overlay_coordinator.mm",
+    "save_address_profile_infobar_modal_overlay_mediator.h",
+    "save_address_profile_infobar_modal_overlay_mediator.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    "//base",
+    "//components/autofill/core/common",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/infobar_modal",
+    "//ios/chrome/browser/ui/infobars/modals",
+    "//ios/chrome/browser/ui/overlays:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:coordinators",
+    "//ios/chrome/browser/ui/overlays/infobar_modal:mediators",
+    "//ios/chrome/browser/ui/util",
+    "//ui/base",
+  ]
+}

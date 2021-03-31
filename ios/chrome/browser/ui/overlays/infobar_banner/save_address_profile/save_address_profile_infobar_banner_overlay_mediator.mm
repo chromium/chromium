@@ -43,10 +43,6 @@ using save_address_profile_infobar_overlays::
   return SaveAddressProfileBannerRequestConfig::RequestSupport();
 }
 
-#pragma mark - InfobarOverlayRequestMediator
-
-// TODO(crbug.com/1167062): Set up modal view with the details.
-
 @end
 
 @implementation SaveAddressProfileInfobarBannerOverlayMediator (ConsumerSupport)
@@ -62,6 +58,7 @@ using save_address_profile_infobar_overlays::
       setTitleText:base::SysUTF16ToNSString(self.config->message_text())];
   [self.consumer setSubtitleText:base::SysUTF16ToNSString(
                                      self.config->message_sub_text())];
+  [self.consumer setPresentsModal:YES];
 }
 
 @end
