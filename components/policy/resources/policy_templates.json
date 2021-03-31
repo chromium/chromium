@@ -1810,8 +1810,8 @@
         'chrome.*:14-',
         'chrome_os:14-',
         'android:30-',
+        'ios:90-',
       ],
-      'future_on': [ 'ios' ],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
