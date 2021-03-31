@@ -47,6 +47,7 @@ public final class WebFeedSnackbarControllerTest {
 
     private static final GURL sTestUrl = new GURL("http://www.example.com");
     private static final String sTitle = "Example Title";
+    private static final byte[] sFollowId = new byte[] {1, 2, 3};
 
     private Context mContext;
     private SnackbarManager mSnackbarManager;
@@ -136,7 +137,7 @@ public final class WebFeedSnackbarControllerTest {
                 ()
                         -> mWebFeedSnackbarController
                                    .showSnackbarForUnfollow(/*successfulUnfollow=*/
-                                           true, "followId", sTestUrl, sTitle));
+                                           true, sFollowId, sTestUrl, sTitle));
 
         Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
         assertTrue("Snackbar should be showing.", mSnackbarManager.isShowing());
@@ -152,12 +153,11 @@ public final class WebFeedSnackbarControllerTest {
     @Test
     @SmallTest
     public void showSnackbarForUnfollow_unsuccessful() {
-        String followId = "followId";
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> mWebFeedSnackbarController
                                    .showSnackbarForUnfollow(/*successfulUnfollow=*/
-                                           false, followId, sTestUrl, sTitle));
+                                           false, sFollowId, sTestUrl, sTitle));
 
         Snackbar snackbar = mSnackbarManager.getCurrentSnackbarForTesting();
         assertTrue("Snackbar should be showing.", mSnackbarManager.isShowing());
@@ -167,6 +167,6 @@ public final class WebFeedSnackbarControllerTest {
         // Click unfollow try again button.
         snackbar.getController().onAction(null);
         verify(mWebFeedBridge, description("Unfollow should be called on unfollow try again."))
-                .unfollow(eq(followId), any());
+                .unfollow(eq(sFollowId), any());
     }
 }

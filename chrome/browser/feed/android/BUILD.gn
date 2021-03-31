@@ -38,6 +38,7 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.feed.webfeed"
 }
 
@@ -55,6 +56,11 @@ android_resources("web_feed_java_resources") {
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",
   ]
+}
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java" ]
 }
 
 android_library("javatests") {

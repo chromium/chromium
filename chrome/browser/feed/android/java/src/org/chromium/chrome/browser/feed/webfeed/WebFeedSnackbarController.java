@@ -58,7 +58,7 @@ class WebFeedSnackbarController {
      * Show appropriate post-unfollow snackbar depending on success/failure.
      */
     void showSnackbarForUnfollow(
-            boolean successfulUnfollow, String followId, GURL url, String title) {
+            boolean successfulUnfollow, byte[] followId, GURL url, String title) {
         if (successfulUnfollow) {
             showUnfollowSuccessSnackbar(url, title);
         } else {
@@ -85,12 +85,12 @@ class WebFeedSnackbarController {
                 R.string.web_feed_unfollow_success_snackbar_action);
     }
 
-    private void showUnfollowFailureSnackbar(GURL url, String followId, String title) {
+    private void showUnfollowFailureSnackbar(GURL url, byte[] followId, String title) {
         SnackbarController snackbarController = new SnackbarController() {
             @Override
             public void onAction(Object actionData) {
                 mWebFeedBridge.unfollow(followId, result -> {
-                    if (result) {
+                    if (result.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS) {
                         showUnfollowSuccessSnackbar(url, title);
                     } else {
                         showUnfollowFailureSnackbar(url, followId, title);

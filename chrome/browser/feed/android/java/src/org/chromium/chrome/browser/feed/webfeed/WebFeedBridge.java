@@ -8,16 +8,21 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 /**
  * Class providing access to functionality provided by the Web Feed native component.
  */
+@JNINamespace("feed")
 public class WebFeedBridge {
     // TODO(crbug/1152592): remove members needed only for returning mock results.
     private static Random sRandom = new Random();
@@ -53,7 +58,7 @@ public class WebFeedBridge {
     /** Container for a Web Feed metadata. */
     public static class WebFeedMetadata {
         /** Unique identifier of this web feed. */
-        public final String id;
+        public final byte[] id;
         /** The title of the Web Feed. */
         public final String title;
         /** The URL that best represents this Web Feed. */
@@ -65,8 +70,10 @@ public class WebFeedBridge {
         /** Whether the web feed is recommended. */
         public final boolean isRecommended;
 
-        WebFeedMetadata(String id, String title, GURL visitUrl,
-                @WebFeedSubscriptionStatus int subscriptionStatus, boolean isActive) {
+        @CalledByNative("WebFeedMetadata")
+        WebFeedMetadata(byte[] id, String title, GURL visitUrl,
+                @WebFeedSubscriptionStatus int subscriptionStatus, boolean isActive,
+                boolean isRecommended) {
             this.id = id;
             this.title = title;
             this.visitUrl = visitUrl;
@@ -78,7 +85,7 @@ public class WebFeedBridge {
         // TODO(crbug/1152592): remove mock implementation.
         private WebFeedMetadata() {
             sCounter += 1;
-            id = "Id" + sCounter;
+            id = ("Id" + sCounter).getBytes();
             title = "Title #" + sCounter;
             visitUrl = new GURL("https://publisher-url-" + sCounter + ".com");
             subscriptionStatus = (sCounter % 2) == 0 ? WebFeedSubscriptionStatus.SUBSCRIBED
@@ -95,8 +102,7 @@ public class WebFeedBridge {
      * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
     public void getWebFeedMetadataForPage(GURL url, Callback<WebFeedMetadata> callback) {
-        // TODO(crbug/1152592): replace mock implementation.
-        getWebFeedMetadata("foo", callback);
+        WebFeedBridgeJni.get().findWebFeedInfoForPage(new WebFeedPageInformation(url), callback);
     }
 
     /**
@@ -105,11 +111,8 @@ public class WebFeedBridge {
      * @param webFeedId The idenfitier of the Web Feed.
      * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
-    public void getWebFeedMetadata(String webFeedId, Callback<WebFeedMetadata> callback) {
-        // TODO(crbug/1152592): replace mock implementation.
-        boolean hasMetadata = sRandom.nextBoolean();
-        WebFeedMetadata metadata = hasMetadata ? new WebFeedMetadata() : null;
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> callback.onResult(metadata));
+    public void getWebFeedMetadata(byte[] webFeedId, Callback<WebFeedMetadata> callback) {
+        WebFeedBridgeJni.get().findWebFeedInfoForWebFeedId(webFeedId, callback);
     }
 
     /**
@@ -117,7 +120,13 @@ public class WebFeedBridge {
      * @param callback The callback to receive the list of followed Web Feeds.
      */
     public void getAllFollowedWebFeeds(Callback<List<WebFeedMetadata>> callback) {
-        // TODO(crbug/1152592): implement this.
+        WebFeedBridgeJni.get().getAllSubscriptions((Object[] webFeeds) -> {
+            ArrayList<WebFeedMetadata> list = new ArrayList<>();
+            for (Object o : webFeeds) {
+                list.add((WebFeedMetadata) o);
+            }
+            callback.onResult(list);
+        });
     }
 
     /** Container for results from a follow request. */
@@ -128,6 +137,7 @@ public class WebFeedBridge {
         /** The metadata from the followed Web Feed. `null` if the operation was not successful. */
         public final @Nullable WebFeedMetadata metadata;
 
+        @CalledByNative("FollowResults")
         FollowResults(
                 @WebFeedSubscriptionRequestStatus int requestStatus, WebFeedMetadata metadata) {
             this.requestStatus = requestStatus;
@@ -142,14 +152,27 @@ public class WebFeedBridge {
         }
     }
 
+    /** Container for results from an Unfollow request. */
+    public static class UnfollowResults {
+        @CalledByNative("UnfollowResults")
+        UnfollowResults(@WebFeedSubscriptionRequestStatus int requestStatus) {
+            this.requestStatus = requestStatus;
+        }
+        // Result of the operation.
+        public final @WebFeedSubscriptionRequestStatus int requestStatus;
+    }
+
     /**
      * Requests to follow of the most relevant Web Feed represented by the provided URL.
      * @param url The URL that indicates the Web Feed to be followed.
      * @param callback The callback to receive the follow results.
      */
     public void followFromUrl(GURL url, Callback<FollowResults> callback) {
-        // TODO(crbug/1152592): replace mock implementation.
-        followFromId(null, callback);
+        WebFeedBridgeJni.get().followWebFeed(new WebFeedPageInformation(url), callback);
+    }
+    public void followFromUrlFake(GURL url, Callback<FollowResults> callback) {
+        // TODO(crbug/1152592): remove mock implementation.
+        followFromIdFake(null, callback);
     }
 
     /**
@@ -157,13 +180,15 @@ public class WebFeedBridge {
      * @param webFeedId The identifier of the Web Feed to be followed.
      * @param callback The callback to receive the follow results.
      */
-    public void followFromId(String webFeedId, Callback<FollowResults> callback) {
-        // TODO(crbug/1152592): replace mock implementation.
+    public void followFromId(byte[] webFeedId, Callback<FollowResults> callback) {
+        WebFeedBridgeJni.get().followWebFeedById(webFeedId, callback);
+    }
+    public void followFromIdFake(byte[] webFeedId, Callback<FollowResults> callback) {
+        // TODO(crbug/1152592): remove mock implementation.
         boolean success = sRandom.nextFloat() > 0.1;
         PostTask.postTask(
                 UiThreadTaskTraits.DEFAULT, () -> callback.onResult(new FollowResults(success)));
     }
-
     /**
      * Requests the unfollowing of the Web Feed subscription from the provided identifier.
      * TODO(crbug/1152592): replace `boolean success` with `UnfollowUrlResponseStatus status`.
@@ -171,12 +196,17 @@ public class WebFeedBridge {
      * @param callback The callback to receive the unfollow success/failure result (`true`/`false`
      *         respectively).
      */
-    public void unfollow(String webFeedId, Callback<Boolean> callback) {
-        // TODO(crbug/1152592): replace mock implementation.
-        boolean success = sRandom.nextBoolean();
-        PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> callback.onResult(success));
+    public void unfollow(byte[] webFeedId, Callback<UnfollowResults> callback) {
+        WebFeedBridgeJni.get().unfollowWebFeed(webFeedId, callback);
     }
-
+    public void unfollowFake(byte[] webFeedId, Callback<UnfollowResults> callback) {
+        // TODO(crbug/1152592): remove mock implementation.
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT,
+                ()
+                        -> callback.onResult(new UnfollowResults(sRandom.nextBoolean()
+                                        ? WebFeedSubscriptionRequestStatus.SUCCESS
+                                        : WebFeedSubscriptionRequestStatus.FAILED_UNKNOWN_ERROR)));
+    }
     /**
      * Returns true if the user has subscribed to a new Web Feed and, since then, new content has
      * been fetched in the background and the user hasn’t seen it yet.
@@ -213,5 +243,28 @@ public class WebFeedBridge {
                     Long.toString(sRandom.nextLong()), Long.toString(sRandom.nextLong()));
         }
         return ids;
+    }
+
+    static class WebFeedPageInformation {
+        final GURL mUrl;
+        WebFeedPageInformation(GURL url) {
+            mUrl = url;
+        }
+
+        @CalledByNative("WebFeedPageInformation")
+        GURL getUrl() {
+            return mUrl;
+        }
+    }
+
+    @NativeMethods
+    interface Natives {
+        void followWebFeed(WebFeedPageInformation pageInfo, Callback<FollowResults> callback);
+        void followWebFeedById(byte[] webFeedId, Callback<FollowResults> callback);
+        void unfollowWebFeed(byte[] webFeedId, Callback<UnfollowResults> callback);
+        void findWebFeedInfoForPage(
+                WebFeedPageInformation pageInfo, Callback<WebFeedMetadata> callback);
+        void findWebFeedInfoForWebFeedId(byte[] webFeedId, Callback<WebFeedMetadata> callback);
+        void getAllSubscriptions(Callback<Object[]> callback);
     }
 }

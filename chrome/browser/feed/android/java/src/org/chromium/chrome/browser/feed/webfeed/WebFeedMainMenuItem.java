@@ -92,7 +92,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
         itemText.setText(mTitle);
         if (mFollowedIds != null) {
-            mWebFeedBridge.getWebFeedMetadata(mFollowedIds.webFeedId, result -> {
+            mWebFeedBridge.getWebFeedMetadata(mFollowedIds.webFeedId.getBytes(), result -> {
                 if (result != null) {
                     mTitle = result.title;
                     itemText.setText(mTitle);
@@ -113,9 +113,10 @@ public class WebFeedMainMenuItem extends FrameLayout {
             chipText = mContext.getText(R.string.menu_following);
             chipIconRes = R.drawable.ic_check_googblue_24dp;
             onClickListener = (view) -> {
-                mWebFeedBridge.unfollow(mFollowedIds.followId, (result) -> {
+                mWebFeedBridge.unfollowFake(mFollowedIds.followId.getBytes(), (result) -> {
                     mWebFeedSnackbarController.showSnackbarForUnfollow(
-                            result, mFollowedIds.followId, mUrl, mTitle);
+                            result.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS,
+                            mFollowedIds.followId.getBytes(), mUrl, mTitle);
                 });
                 mAppMenuHandler.hideAppMenu();
             };
@@ -124,7 +125,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
             chipText = mContext.getText(R.string.menu_follow);
             chipIconRes = R.drawable.ic_add;
             onClickListener = (view) -> {
-                mWebFeedBridge.followFromUrl(mUrl, (result) -> {
+                mWebFeedBridge.followFromUrlFake(mUrl, (result) -> {
                     mWebFeedSnackbarController.showSnackbarForFollow(result, mUrl, mTitle);
                 });
                 mAppMenuHandler.hideAppMenu();

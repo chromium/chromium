@@ -15,7 +15,8 @@ namespace feed {
 class WebFeedSubscriptions {
  public:
   struct FollowWebFeedResult {
-    WebFeedSubscriptionRequestStatus request_status;
+    WebFeedSubscriptionRequestStatus request_status =
+        WebFeedSubscriptionRequestStatus::kUnknown;
     // If followed, the metadata for the followed feed.
     WebFeedMetadata web_feed_metadata;
   };
@@ -32,7 +33,8 @@ class WebFeedSubscriptions {
       base::OnceCallback<void(FollowWebFeedResult)> callback) = 0;
 
   struct UnfollowWebFeedResult {
-    WebFeedSubscriptionRequestStatus request_status;
+    WebFeedSubscriptionRequestStatus request_status =
+        WebFeedSubscriptionRequestStatus::kUnknown;
   };
 
   // Follow a web feed given a URL. Calls `callback` when complete. The callback
