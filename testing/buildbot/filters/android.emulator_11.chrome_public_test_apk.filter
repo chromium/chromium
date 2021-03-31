@@ -1,3 +1,6 @@
+# vr tests do not apply to emulator
+-org.chromium.chrome.browser.hardware_acceleration.ManifestHWATest.testAccelerationDisabled
+
 # crbug.com/1193745
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
