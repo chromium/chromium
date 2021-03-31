@@ -27,6 +27,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -295,8 +296,8 @@ class FakeSocket : public StreamSocket {
 
  private:
   NetLogWithSource net_log_;
-  FakeDataChannel* incoming_;
-  FakeDataChannel* outgoing_;
+  CheckedPtr<FakeDataChannel> incoming_;
+  CheckedPtr<FakeDataChannel> outgoing_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeSocket);
 };

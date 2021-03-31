@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ref_counted.h"
 #include "base/pickle.h"
@@ -93,7 +94,7 @@ class NET_EXPORT IOBuffer : public base::RefCountedThreadSafe<IOBuffer> {
 
   virtual ~IOBuffer();
 
-  char* data_;
+  CheckedPtr<char> data_;
 };
 
 // This version stores the size of the buffer so that the creator of the object

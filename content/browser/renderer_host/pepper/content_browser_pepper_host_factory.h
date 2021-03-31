@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -59,7 +60,7 @@ class ContentBrowserPepperHostFactory : public ppapi::host::HostFactory {
   const ppapi::PpapiPermissions& GetPermissions() const;
 
   // Non-owning pointer.
-  BrowserPpapiHostImpl* host_;
+  CheckedPtr<BrowserPpapiHostImpl> host_;
 
   DISALLOW_COPY_AND_ASSIGN(ContentBrowserPepperHostFactory);
 };

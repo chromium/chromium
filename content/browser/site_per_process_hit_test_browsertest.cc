@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
@@ -117,7 +118,7 @@ class TestInputEventObserver : public RenderWidgetHost::InputEventObserver {
   }
 
  private:
-  RenderWidgetHost* host_;
+  CheckedPtr<RenderWidgetHost> host_;
   std::vector<blink::WebInputEvent::Type> events_received_;
   std::vector<blink::mojom::InputEventResultSource> events_acked_;
   ui::WebScopedInputEvent event_;
@@ -737,8 +738,8 @@ class SetMouseCaptureInterceptor
   std::unique_ptr<base::RunLoop> run_loop_;
   bool msg_received_;
   bool capturing_;
-  RenderWidgetHostImpl* host_;
-  blink::mojom::WidgetInputHandlerHost* impl_;
+  CheckedPtr<RenderWidgetHostImpl> host_;
+  CheckedPtr<blink::mojom::WidgetInputHandlerHost> impl_;
 
   DISALLOW_COPY_AND_ASSIGN(SetMouseCaptureInterceptor);
 };
@@ -4362,7 +4363,7 @@ class SetCursorInterceptor
 
  private:
   base::RunLoop run_loop_;
-  RenderWidgetHostImpl* render_widget_host_;
+  CheckedPtr<RenderWidgetHostImpl> render_widget_host_;
   base::Optional<ui::Cursor> cursor_;
 };
 
@@ -4647,7 +4648,7 @@ class SitePerProcessMouseWheelHitTestBrowserTest
   }
 
  private:
-  RenderWidgetHostViewAura* rwhv_root_;
+  CheckedPtr<RenderWidgetHostViewAura> rwhv_root_;
 };
 
 // Fails on Windows official build, see // https://crbug.com/800822
@@ -4774,7 +4775,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessMouseWheelHitTestBrowserTest,
       child_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
   child_process->Shutdown(0);
   crash_observer.Wait();
-  EXPECT_EQ(nullptr, router->wheel_target_);
+  EXPECT_EQ(nullptr, router->wheel_target_.get());
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -6474,10 +6475,10 @@ class SitePerProcessGestureHitTestBrowserTest
   }
 
  protected:
-  RenderWidgetHostViewBase* rwhv_child_;
-  RenderWidgetHostViewAura* rwhva_root_;
-  RenderWidgetHostImpl* rwhi_child_;
-  RenderWidgetHostImpl* rwhi_root_;
+  CheckedPtr<RenderWidgetHostViewBase> rwhv_child_;
+  CheckedPtr<RenderWidgetHostViewAura> rwhva_root_;
+  CheckedPtr<RenderWidgetHostImpl> rwhi_child_;
+  CheckedPtr<RenderWidgetHostImpl> rwhi_root_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(SitePerProcessGestureHitTestBrowserTest);

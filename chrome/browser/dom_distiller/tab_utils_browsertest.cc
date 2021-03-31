@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "base/command_line.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -491,7 +492,7 @@ class DistilledPageImageLoadWaiter {
     // If they aren't loaded or the size is wrong, stay in the loop until the
     // load completes.
     ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-        contents_,
+        contents_.get(),
         content::JsReplace("var ok = document.getElementById('main-content')"
                            "    .getElementsByTagName('img')[$1];"
                            "var bad = document.getElementById('main-content')"
@@ -505,7 +506,7 @@ class DistilledPageImageLoadWaiter {
       runner_.Quit();
   }
 
-  content::WebContents* contents_;
+  CheckedPtr<content::WebContents> contents_;
   int ok_elem_;
   int ok_width_;
   int bad_elem_;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
@@ -55,7 +56,7 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
   void CreatePrefService();
 #endif
   const content::MainFunctionParams parameters_;  // For running browser tests.
-  HeadlessBrowserImpl* browser_;  // Not owned.
+  CheckedPtr<HeadlessBrowserImpl> browser_;       // Not owned.
 
 #if defined(HEADLESS_USE_POLICY)
   std::unique_ptr<policy::HeadlessBrowserPolicyConnector> policy_connector_;

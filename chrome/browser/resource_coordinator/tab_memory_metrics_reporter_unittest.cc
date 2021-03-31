@@ -4,6 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/task/post_task.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -115,9 +116,9 @@ class TabMemoryMetricsReporterTest : public testing::Test {
   std::unique_ptr<content::TestWebContentsFactory> test_web_contents_factory_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
-  content::WebContents* contents1_;
-  content::WebContents* contents2_;
-  content::WebContents* contents3_;
+  CheckedPtr<content::WebContents> contents1_;
+  CheckedPtr<content::WebContents> contents2_;
+  CheckedPtr<content::WebContents> contents3_;
 };
 
 TEST_F(TabMemoryMetricsReporterTest, StartTrackingWithUnloaded) {

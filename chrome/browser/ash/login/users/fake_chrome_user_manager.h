@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ash/login/user_flow.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/test/base/testing_profile.h"
@@ -219,7 +220,8 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool current_user_ephemeral_ = false;
   bool current_user_child_ = false;
 
-  MultiProfileUserController* multi_profile_user_controller_ = nullptr;
+  CheckedPtr<MultiProfileUserController> multi_profile_user_controller_ =
+      nullptr;
 
   // If set this is the active user. If empty, the first created user is the
   // active user.

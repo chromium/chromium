@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -182,7 +183,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   base::Optional<content::DOMMessageQueue> queue_;
   uint32_t total_page_count_ = 1;
   uint32_t rendered_page_count_ = 0;
-  content::WebContents* preview_dialog_ = nullptr;
+  CheckedPtr<content::WebContents> preview_dialog_ = nullptr;
   base::RunLoop* run_loop_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewObserver);
@@ -256,8 +257,8 @@ class TestPrintRenderFrame
   }
 
  private:
-  content::RenderFrameHost* frame_host_;
-  content::WebContents* web_contents_;
+  CheckedPtr<content::RenderFrameHost> frame_host_;
+  CheckedPtr<content::WebContents> web_contents_;
   const int document_cookie_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::RepeatingClosure msg_callback_;
@@ -310,7 +311,7 @@ class KillPrintRenderFrame
   }
 
  private:
-  content::RenderProcessHost* const rph_;
+  const CheckedPtr<content::RenderProcessHost> rph_;
   mojo::AssociatedReceiver<mojom::PrintRenderFrame> receiver_{this};
 };
 

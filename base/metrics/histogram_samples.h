@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/atomicops.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_base.h"
 
 namespace base {
@@ -231,7 +232,7 @@ class BASE_EXPORT HistogramSamples {
   // Depending on derived class meta values can come from local stoarge or
   // external storage in which case HistogramSamples class cannot take ownership
   // of Metadata*.
-  Metadata* meta_;
+  CheckedPtr<Metadata> meta_;
 };
 
 class BASE_EXPORT SampleCountIterator {

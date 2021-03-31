@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -49,7 +50,7 @@ class TestSlideOutControllerDelegate : public SlideOutControllerDelegate {
   int slide_out_count_ = 0;
 
  private:
-  View* const target_;
+  const CheckedPtr<View> target_;
 };
 
 class SlideOutControllerTest : public ViewsTestBase {

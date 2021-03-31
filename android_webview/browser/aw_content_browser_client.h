@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
@@ -254,7 +255,7 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
   const bool sniff_file_urls_;
 
   // The AwFeatureListCreator is owned by AwMainDelegate.
-  AwFeatureListCreator* const aw_feature_list_creator_;
+  const CheckedPtr<AwFeatureListCreator> aw_feature_list_creator_;
 
   DISALLOW_COPY_AND_ASSIGN(AwContentBrowserClient);
 };

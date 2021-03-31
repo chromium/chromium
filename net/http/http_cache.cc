@@ -16,6 +16,7 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
@@ -169,7 +170,7 @@ struct HttpCache::PendingOp {
            base::trace_event::EstimateMemoryUsage(pending_queue);
   }
 
-  disk_cache::Entry* entry;
+  CheckedPtr<disk_cache::Entry> entry;
   bool entry_opened;  // rather than created.
 
   std::unique_ptr<disk_cache::Backend> backend;
@@ -243,10 +244,10 @@ class HttpCache::WorkItem {
 
  private:
   WorkItemOperation operation_;
-  Transaction* transaction_;
-  ActiveEntry** entry_;
+  CheckedPtr<Transaction> transaction_;
+  CheckedPtr<ActiveEntry*> entry_;
   CompletionOnceCallback callback_;  // User callback.
-  disk_cache::Backend** backend_;
+  CheckedPtr<disk_cache::Backend*> backend_;
 };
 
 //-----------------------------------------------------------------------------

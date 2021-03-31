@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
@@ -314,19 +315,19 @@ class BrowserActionsContainer : public views::View,
   std::vector<std::unique_ptr<ToolbarActionView>> toolbar_action_views_;
 
   // The Browser object the container is associated with.
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
   // The main container we are serving as overflow for, or NULL if this
   // class is the the main container. See class comments for details on
   // the difference between main and overflow.
-  BrowserActionsContainer* main_container_;
+  CheckedPtr<BrowserActionsContainer> main_container_;
 
   // The resize area for the container.
-  views::ResizeArea* resize_area_ = nullptr;
+  CheckedPtr<views::ResizeArea> resize_area_ = nullptr;
 
   // Separator at the end of browser actions to highlight that these actions are
   // different from built-in toolbar actions.
-  views::Separator* separator_ = nullptr;
+  CheckedPtr<views::Separator> separator_ = nullptr;
 
   // The animation that happens when the container snaps to place.
   std::unique_ptr<gfx::SlideAnimation> resize_animation_;
@@ -354,7 +355,7 @@ class BrowserActionsContainer : public views::View,
   const bool interactive_ = true;
 
   // The extension bubble that is actively showing, if any.
-  views::BubbleDialogDelegateView* active_bubble_ = nullptr;
+  CheckedPtr<views::BubbleDialogDelegateView> active_bubble_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_BROWSER_ACTIONS_CONTAINER_H_

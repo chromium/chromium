@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_handshake.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_protocol.h"
@@ -104,7 +105,7 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   bool use_mock_crypter_;
 
   const quic::QuicServerId server_id_;
-  const net::ProofVerifyDetailsChromium* proof_verify_details_;
+  CheckedPtr<const net::ProofVerifyDetailsChromium> proof_verify_details_;
   const quic::QuicConfig config_;
 
   DISALLOW_COPY_AND_ASSIGN(MockCryptoClientStream);

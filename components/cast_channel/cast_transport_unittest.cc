@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_clock.h"
@@ -153,9 +154,9 @@ class CastTransportTest : public testing::Test {
  public:
   CastTransportTest() : logger_(new Logger()) {
     delegate_ = new MockCastTransportDelegate;
-    transport_.reset(new CastTransportImpl(&mock_socket_, kChannelId,
-                                           CreateIPEndPointForTest(), logger_));
-    transport_->SetReadDelegate(base::WrapUnique(delegate_));
+    transport_.reset(new CastTransportImpl(
+        &mock_socket_, kChannelId, CreateIPEndPointForTest(), logger_.get()));
+    transport_->SetReadDelegate(base::WrapUnique(delegate_.get()));
   }
   ~CastTransportTest() override {}
 
@@ -167,9 +168,9 @@ class CastTransportTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  MockCastTransportDelegate* delegate_;
+  CheckedPtr<MockCastTransportDelegate> delegate_;
   MockSocket mock_socket_;
-  Logger* logger_;
+  CheckedPtr<Logger> logger_;
   std::unique_ptr<CastTransport> transport_;
 };
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/socket/udp_socket.h"
@@ -48,7 +49,7 @@ class NetUdpSocket : public openscreen::UdpSocket {
                    const openscreen::IPEndpoint& dest) final;
   void SetDscp(openscreen::UdpSocket::DscpMode state) final;
 
-  Client* const client_;
+  const CheckedPtr<Client> client_;
 
   // The local endpoint can change as a result of Bind() calls.
   openscreen::IPEndpoint local_endpoint_;

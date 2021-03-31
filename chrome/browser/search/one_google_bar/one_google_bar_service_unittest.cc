@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_data.h"
@@ -80,7 +81,7 @@ class OneGoogleBarServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_env_;
 
   // Owned by the service.
-  FakeOneGoogleBarLoader* loader_;
+  CheckedPtr<FakeOneGoogleBarLoader> loader_;
 
   std::unique_ptr<OneGoogleBarService> service_;
 };

@@ -116,7 +116,8 @@ void TextfieldExample::CreateExampleView(View* container) {
       layout, nullptr,
       std::make_unique<LabelButton>(
           base::BindRepeating(&Textfield::SetBackgroundColor,
-                              base::Unretained(password_), gfx::kGoogleRed300),
+                              base::Unretained(password_.get()),
+                              gfx::kGoogleRed300),
           GetStringUTF16(IDS_TEXTFIELD_BACKGROUND_LABEL)));
   clear_all_ = MakeRow<View, LabelButton>(
       layout, nullptr,

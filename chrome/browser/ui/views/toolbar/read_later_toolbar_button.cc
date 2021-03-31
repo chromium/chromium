@@ -74,7 +74,7 @@ void ReadLaterToolbarButton::ButtonPressed() {
         browser_view->side_panel()->AddChildView(std::move(webview));
     SetHighlighted(true);
   } else {
-    browser_view->side_panel()->RemoveChildViewT(side_panel_webview_);
+    browser_view->side_panel()->RemoveChildViewT(side_panel_webview_.get());
     side_panel_webview_ = nullptr;
     // TODO(pbos): Observe read_later_side_panel_bubble_ so we don't need to
     // SetHighlighted(false) here.

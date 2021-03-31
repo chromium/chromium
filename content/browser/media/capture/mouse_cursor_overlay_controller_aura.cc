@@ -4,6 +4,7 @@
 
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
 
+#include "base/memory/checked_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
@@ -112,8 +113,8 @@ class MouseCursorOverlayController::Observer final
     window_ = nullptr;
   }
 
-  MouseCursorOverlayController* const controller_;
-  aura::Window* window_;
+  const CheckedPtr<MouseCursorOverlayController> controller_;
+  CheckedPtr<aura::Window> window_;
 
   DISALLOW_COPY_AND_ASSIGN(Observer);
 };

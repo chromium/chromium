@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/strcat.h"
@@ -338,7 +339,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
 
    private:
     const Priority priority_;
-    MockUploadClient* const client_;
+    const CheckedPtr<MockUploadClient> client_;
   };
 
   // Helper class for setting up mock client expectations on empty queue.
@@ -353,7 +354,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     }
 
    private:
-    MockUploadClient* const client_;
+    const CheckedPtr<MockUploadClient> client_;
   };
 
   // Helper class for setting up mock client expectations for key delivery.
@@ -368,7 +369,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
     }
 
    private:
-    MockUploadClient* const client_;
+    const CheckedPtr<MockUploadClient> client_;
   };
 
  private:
@@ -470,7 +471,7 @@ class MockUploadClient : public ::testing::NiceMock<UploaderInterface> {
   }
 
   base::Optional<int64_t> generation_id_;
-  LastRecordDigestMap* const last_record_digest_map_;
+  const CheckedPtr<LastRecordDigestMap> last_record_digest_map_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
   const scoped_refptr<test::Decryptor> decryptor_;

@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -36,7 +37,7 @@ class HeapSnapshotTaker : public DevToolsEventListener {
  private:
   Status TakeSnapshotInternal();
 
-  DevToolsClient* client_;
+  CheckedPtr<DevToolsClient> client_;
   std::string snapshot_;
 
   DISALLOW_COPY_AND_ASSIGN(HeapSnapshotTaker);

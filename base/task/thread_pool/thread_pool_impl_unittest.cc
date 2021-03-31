@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/cfi_buildflags.h"
 #include "base/debug/stack_trace.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
@@ -354,7 +355,7 @@ class ThreadPoolImplTestBase : public testing::Test {
   }
 
   base::test::ScopedFeatureList feature_list_;
-  WorkerThreadObserver* worker_thread_observer_ = nullptr;
+  CheckedPtr<WorkerThreadObserver> worker_thread_observer_ = nullptr;
   bool did_tear_down_ = false;
   bool should_enable_all_tasks_user_blocking_ = false;
 };
@@ -1303,7 +1304,7 @@ class MustBeDestroyed {
   ~MustBeDestroyed() { *was_destroyed_ = true; }
 
  private:
-  bool* const was_destroyed_;
+  const CheckedPtr<bool> was_destroyed_;
 };
 
 }  // namespace
@@ -1362,7 +1363,7 @@ struct TaskRunnerAndEvents {
 
   // An event that should be signaled before the task following the priority
   // update runs.
-  TestWaitableEvent* expected_previous_event;
+  CheckedPtr<TestWaitableEvent> expected_previous_event;
 };
 
 // Create a series of sample task runners that will post tasks at various
@@ -1457,7 +1458,7 @@ void TestUpdatePrioritySequenceNotScheduled(ThreadPoolImplTest* test,
                     ? nullptr
                     :
 #endif
-                    task_runner_and_events->expected_previous_event),
+                    task_runner_and_events->expected_previous_event.get()),
             Unretained(&task_runner_and_events->task_ran)));
   }
 
@@ -1509,7 +1510,7 @@ void TestUpdatePrioritySequenceScheduled(ThreadPoolImplTest* test,
             &VerifyOrderAndTaskEnvironmentAndSignalEvent,
             TaskTraits{task_runner_and_events->updated_priority, thread_policy},
             test->GetGroupTypes(),
-            Unretained(task_runner_and_events->expected_previous_event),
+            Unretained(task_runner_and_events->expected_previous_event.get()),
             Unretained(&task_runner_and_events->task_ran)));
   }
 

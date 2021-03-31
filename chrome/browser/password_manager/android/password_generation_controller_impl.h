@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -103,11 +104,11 @@ class PasswordGenerationControllerImpl
   void ResetState();
 
   // The tab for which this class is scoped.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   // The PasswordManagerClient associated with the current |web_contents_|.
   // Used to tell the renderer that manual generation was requested.
-  password_manager::PasswordManagerClient* client_ = nullptr;
+  CheckedPtr<password_manager::PasswordManagerClient> client_ = nullptr;
 
   // Data for the generation element used to generate the password.
   std::unique_ptr<GenerationElementData> generation_element_data_;

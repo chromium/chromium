@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 namespace views {
 
@@ -27,7 +28,7 @@ class MenuRunnerTestAPI {
       std::unique_ptr<MenuRunnerHandler> menu_runner_handler);
 
  private:
-  MenuRunner* menu_runner_;
+  CheckedPtr<MenuRunner> menu_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuRunnerTestAPI);
 };

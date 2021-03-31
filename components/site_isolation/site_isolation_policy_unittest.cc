@@ -5,6 +5,7 @@
 #include "components/site_isolation/site_isolation_policy.h"
 
 #include "base/base_switches.h"
+#include "base/memory/checked_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
@@ -94,7 +95,7 @@ class BaseSiteIsolationTest : public testing::Test {
   };
 
   SiteIsolationContentBrowserClient browser_client_;
-  content::ContentBrowserClient* original_client_ = nullptr;
+  CheckedPtr<content::ContentBrowserClient> original_client_ = nullptr;
 };
 
 class SiteIsolationPolicyTest : public BaseSiteIsolationTest {

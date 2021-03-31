@@ -6,6 +6,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_danger_prompt.h"
 #include "chrome/browser/profiles/profile.h"
@@ -171,7 +172,7 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
   }
 
   download::MockDownloadItem download_;
-  DownloadDangerPrompt* prompt_;
+  CheckedPtr<DownloadDangerPrompt> prompt_;
   DownloadDangerPrompt::Action expected_action_;
   bool did_receive_callback_;
   std::unique_ptr<TestSafeBrowsingServiceFactory> test_safe_browsing_factory_;

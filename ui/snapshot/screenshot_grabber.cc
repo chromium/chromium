@@ -13,6 +13,7 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task/current_thread.h"
@@ -59,7 +60,7 @@ class ScreenshotGrabber::ScopedCursorHider {
 
  private:
   explicit ScopedCursorHider(aura::Window* window) : window_(window) {}
-  aura::Window* window_;
+  CheckedPtr<aura::Window> window_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedCursorHider);
 };

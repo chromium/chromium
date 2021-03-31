@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
@@ -30,7 +31,7 @@ class DISPLAY_EXPORT DisplayListObserverLock {
 
   explicit DisplayListObserverLock(DisplayList* display_list);
 
-  DisplayList* display_list_;
+  CheckedPtr<DisplayList> display_list_;
 
   DISALLOW_COPY_AND_ASSIGN(DisplayListObserverLock);
 };

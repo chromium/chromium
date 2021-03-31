@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -209,7 +210,7 @@ class NavigationOrSwapObserver : public content::WebContentsObserver,
   }
 
  private:
-  TabStripModel* tab_strip_model_;
+  CheckedPtr<TabStripModel> tab_strip_model_;
   bool did_start_loading_;
   int number_of_loads_;
   base::RunLoop loop_;

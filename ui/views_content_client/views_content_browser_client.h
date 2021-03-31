@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/content_browser_client.h"
 
 namespace ui {
@@ -25,7 +26,7 @@ class ViewsContentBrowserClient : public content::ContentBrowserClient {
       const content::MainFunctionParams& parameters) override;
 
  private:
-  ViewsContentClient* views_content_client_;
+  CheckedPtr<ViewsContentClient> views_content_client_;
 
   DISALLOW_COPY_AND_ASSIGN(ViewsContentBrowserClient);
 };

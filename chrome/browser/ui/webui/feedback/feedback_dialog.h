@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "extensions/common/api/feedback_private.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -55,7 +56,7 @@ class FeedbackDialog : public ui::WebDialogDelegate {
   std::unique_ptr<base::DictionaryValue> feedbackInfo_;
   extensions::api::feedback_private::FeedbackFlow feedbackFlow_;
   // Widget for the Feedback WebUI.
-  views::Widget* widget_;
+  CheckedPtr<views::Widget> widget_;
   static FeedbackDialog* current_instance_;
 };
 

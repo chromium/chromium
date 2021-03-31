@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -227,8 +228,8 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   // |cache_| is owned by the |service_| and is invalid once the |service_|
   // is destroyed.
   std::unique_ptr<ResourceCache> owned_cache_;
-  ResourceCache* cache_;
-  MockCloudPolicyClient* client_;
+  CheckedPtr<ResourceCache> cache_;
+  CheckedPtr<MockCloudPolicyClient> client_;
   MockCloudPolicyStore store_;
   CloudPolicyCore core_;
   SchemaRegistry registry_;
