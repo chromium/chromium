@@ -245,7 +245,8 @@ locales_without_pseudolocales = locales
 locales_with_pseudolocales = locales + pseudolocales
 
 declare_args() {
-  enable_pseudolocales = false
+  # We want to give pseudolocales to everyone except end-users (devs & QA).
+  enable_pseudolocales = !is_official_build
 }
 
 if (enable_pseudolocales) {
