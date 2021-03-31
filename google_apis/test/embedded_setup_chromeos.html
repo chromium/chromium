@@ -127,7 +127,7 @@ function goNext() {
       // SAML tests.
       services = [];
     } else {
-      services = "Services are not set for testing.";
+      console.warn("Services are not set for testing.");
     }
 
     request = new XMLHttpRequest();
@@ -141,7 +141,8 @@ function goNext() {
           sendSyncTrustedVaultKeys(JSON.parse(
               request.getResponseHeader("fake-sync-trusted-vault-keys")));
         }
-        gaia.chromeOSLogin.sendUserInfo(services);
+        if (services)
+          gaia.chromeOSLogin.sendUserInfo(services);
         history.pushState({}, "", window.location.pathname + "#close");
       }
     };

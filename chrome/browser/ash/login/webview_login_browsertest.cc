@@ -42,6 +42,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -69,6 +70,7 @@
 #include "chromeos/dbus/tpm_manager/fake_tpm_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "chromeos/tpm/tpm_token_loader.h"
+#include "components/account_id/account_id.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/onc/onc_constants.h"
@@ -1543,6 +1545,107 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithChildSigninDisabled,
   // Click back to reload (unreachable) identifier page.
   test::OobeJS().ClickOnPath(kBackButton);
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
+}
+
+class WebviewChildLoginTest : public WebviewLoginTest {
+ public:
+  WebviewChildLoginTest() = default;
+
+  // WebviewLoginTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    user_policy_mixin_.RequestPolicyUpdate();
+    fake_gaia_.SetupFakeGaiaForChildUser(
+        child_account_id_.GetUserEmail(), child_account_id_.GetGaiaId(),
+        FakeGaiaMixin::kFakeRefreshToken, false /*issue_any_scope_token*/);
+
+    WebviewLoginTest::SetUpInProcessBrowserTestFixture();
+  }
+
+ protected:
+  AccountId child_account_id_{
+      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
+                                     FakeGaiaMixin::kFakeUserGaiaId)};
+  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  UserPolicyMixin user_policy_mixin_{&mixin_host_, child_account_id_,
+                                     &local_policy_mixin_};
+};
+
+// Test verfies case when user info message sent before authentication is
+// finished.
+IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentBeforeAuthFinished) {
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  ExpectIdentifierPage();
+  SigninFrameJS().TypeIntoPath(child_account_id_.GetUserEmail(),
+                               {"identifier"});
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendUserInfo(['uca'])");
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  // Wait for services to be set.
+  test::OobeJS()
+      .CreateWaiter("$('gaia-signin').authenticator_.services_")
+      ->Wait();
+  // Timer should not be set.
+  test::OobeJS().ExpectFalse("$('gaia-signin').authenticator_.userInfoTimer_");
+
+  test::WaitForPrimaryUserSessionStart();
+
+  const user_manager::UserManager* const user_manager =
+      user_manager::UserManager::Get();
+  EXPECT_TRUE(user_manager->GetActiveUser()->IsChild());
+}
+
+// Test verfies that user info message sent after authentication is finished
+// still passes through.
+IN_PROC_BROWSER_TEST_F(WebviewChildLoginTest, UserInfoSentAfterTimerSet) {
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  ExpectIdentifierPage();
+  SigninFrameJS().TypeIntoPath(child_account_id_.GetUserEmail(),
+                               {"identifier"});
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  // Wait for user info timer to be set.
+  test::OobeJS()
+      .CreateWaiter("$('gaia-signin').authenticator_.userInfoTimer_")
+      ->Wait();
+
+  // Send user info after that.
+  SigninFrameJS().ExecuteAsync("gaia.chromeOSLogin.sendUserInfo(['uca'])");
+
+  test::WaitForPrimaryUserSessionStart();
+
+  const user_manager::UserManager* const user_manager =
+      user_manager::UserManager::Get();
+  EXPECT_TRUE(user_manager->GetActiveUser()->IsChild());
+}
+
+// Verifies flow when user info message is never sent.
+IN_PROC_BROWSER_TEST_F(WebviewLoginTest, UserInfoNeverSent) {
+  WaitForGaiaPageLoadAndPropertyUpdate();
+  ExpectIdentifierPage();
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserEmail, {"identifier"});
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+  SigninFrameJS().TypeIntoPath(FakeGaiaMixin::kFakeUserPassword, {"password"});
+  test::OobeJS().ClickOnPath(kPrimaryButton);
+
+  // Wait for user info timer to be set.
+  test::OobeJS()
+      .CreateWaiter("$('gaia-signin').authenticator_.userInfoTimer_")
+      ->Wait();
+
+  // Emulate timeout fire.
+  test::OobeJS().ExecuteAsync(
+      "$('gaia-signin').authenticator_.onUserInfoTimeout_()");
+
+  test::WaitForPrimaryUserSessionStart();
+
+  const user_manager::UserManager* const user_manager =
+      user_manager::UserManager::Get();
+  EXPECT_FALSE(user_manager->GetActiveUser()->IsChild());
 }
 
 }  // namespace chromeos

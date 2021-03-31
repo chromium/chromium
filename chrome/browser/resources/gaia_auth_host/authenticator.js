@@ -207,6 +207,11 @@ cr.define('cr.login', function() {
     'isDeviceOwner',     // True if the user is device owner.
   ];
 
+  // Timeout in ms to wait for the user info message. The message is used to
+  // extract user services and to define whether or not the account is a child
+  // one.
+  const USER_INFO_WAIT_TIMEOUT_MS = 5 * 1000;
+
   /**
    * Extract domain name from an URL.
    * @param {string} url An URL string.
@@ -393,6 +398,7 @@ cr.define('cr.login', function() {
       this.needPassword = true;
       this.enableSyncTrustedVaultKeys_ = false;
       this.services_ = null;
+      this.userInfoTimer_ = null;
       /**
        * Caches the result of |getIsSamlUserPasswordlessCallback| invocation for
        * the current user. Null if no result is obtained yet.
@@ -442,6 +448,7 @@ cr.define('cr.login', function() {
       this.samlHandler_.reset();
       this.videoEnabled = false;
       this.services_ = null;
+      this.userInfoTimer_ = null;
       this.isSamlUserPasswordless_ = null;
       this.syncTrustedVaultKeys_ = null;
     }
@@ -1003,15 +1010,25 @@ cr.define('cr.login', function() {
         this.webview_.src = this.initialFrameUrl_;
         return;
       }
-      // TODO(https://crbug.com/837107): remove this once API is fully
-      // stabilized.
-      // @example.com is used in tests.
-      if (!this.services_ && !this.email_.endsWith('@gmail.com') &&
-          !this.email_.endsWith('@example.com')) {
-        console.warn('Forcing empty services.');
-        this.services_ = [];
+
+      // Could be set either by `userInfo` message or by the
+      // `onUserInfoTimeout_`.
+      const userInfoAvailable = !!this.services_;
+
+      if (userInfoAvailable && this.userInfoTimer_) {
+        window.clearTimeout(this.userInfoTimer_);
+        this.userInfoTimer_ = null;
       }
-      if (!this.services_) {
+
+      if (this.userInfoTimer_) {
+        // Early out if `userInfoTimer_` is running.
+        return;
+      }
+
+      if (!userInfoAvailable) {
+        // Start `userInfoTimer_` if user info is not available.
+        this.userInfoTimer_ = window.setTimeout(
+            this.onUserInfoTimeout_.bind(this), USER_INFO_WAIT_TIMEOUT_MS);
         return;
       }
 
@@ -1361,6 +1378,18 @@ cr.define('cr.login', function() {
       // TODO(dzhioev): remove the message. http://crbug.com/469522
       const webviewWindow = this.webview_.contentWindow;
       return !!webviewWindow && webviewWindow === e.source;
+    }
+
+    /**
+     * Callback for the user info message waiting timeout.
+     * @private
+     */
+    onUserInfoTimeout_() {
+      console.warn('User info timeout: Forcing empty services.');
+      assert(!this.services_);
+      this.services_ = [];
+      this.userInfoTimer_ = null;
+      this.maybeCompleteAuth_();
     }
   }
 
