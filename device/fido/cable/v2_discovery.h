@@ -29,13 +29,14 @@ class FidoTunnelDevice;
 // Discovery creates caBLEv2 devices, either based on |pairings|, or when a BLE
 // advert is seen that matches |qr_generator_key|. It does not actively scan for
 // BLE adverts itself. Rather it depends on |OnBLEAdvertSeen| getting called.
-class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
-    : public FidoDeviceDiscovery,
-      public FidoDeviceDiscovery::BLEObserver {
+class COMPONENT_EXPORT(DEVICE_FIDO) Discovery : public FidoDeviceDiscovery {
  public:
+  using AdvertEventStream = EventStream<base::span<const uint8_t, kAdvertSize>>;
+
   Discovery(
       network::mojom::NetworkContext* network_context,
       base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
+      std::unique_ptr<AdvertEventStream> advert_stream,
       std::vector<std::unique_ptr<Pairing>> pairings,
       const std::vector<CableDiscoveryData>& extension_contents,
       // pairing_callback will be called when a QR-initiated connection
@@ -50,9 +51,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
   // FidoDeviceDiscovery:
   void StartInternal() override;
 
-  // BLEObserver:
-  void OnBLEAdvertSeen(const std::array<uint8_t, kAdvertSize>& advert) override;
-
  private:
   // UnpairedKeys are keys that are conveyed by QR code or that come from the
   // server, i.e. keys that enable interactions with unpaired phones.
@@ -62,6 +60,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
     std::array<uint8_t, kEIDKeySize> eid_key;
   };
 
+  void OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert);
   void AddPairing(std::unique_ptr<Pairing> pairing);
   void PairingIsInvalid(
       std::array<uint8_t, kP256X962Length> peer_public_key_x962);
@@ -73,6 +72,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
   network::mojom::NetworkContext* const network_context_;
   const base::Optional<UnpairedKeys> qr_keys_;
   const base::Optional<UnpairedKeys> extension_keys_;
+  std::unique_ptr<AdvertEventStream> advert_stream_;
   std::vector<std::unique_ptr<Pairing>> pairings_;
   const base::Optional<base::RepeatingCallback<void(PairingEvent)>>
       pairing_callback_;

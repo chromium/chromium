@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/base64url.h"
-#include "base/bind.h"
+#include "base/callback.h"
 #include "base/check.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
@@ -348,8 +348,10 @@ class DummyBLEAdvert
 // messages to the given |VirtualCtap2Device|.
 class TestPlatform : public authenticator::Platform {
  public:
-  TestPlatform(Discovery* discovery, device::VirtualCtap2Device* ctap2_device)
-      : discovery_(discovery), ctap2_device_(ctap2_device) {}
+  TestPlatform(Discovery::AdvertEventStream::Callback ble_advert_callback,
+               device::VirtualCtap2Device* ctap2_device)
+      : ble_advert_callback_(ble_advert_callback),
+        ctap2_device_(ctap2_device) {}
 
   void MakeCredential(std::unique_ptr<MakeCredentialParams> params) override {
     std::vector<device::PublicKeyCredentialParams::CredentialInfo> cred_infos;
@@ -393,15 +395,16 @@ class TestPlatform : public authenticator::Platform {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            [](Discovery* discovery, std::array<uint8_t, kAdvertSize> payload) {
-              discovery->OnBLEAdvertSeen(payload);
-            },
-            base::Unretained(discovery_),
+            &TestPlatform::DoSendBLEAdvert, weak_factory_.GetWeakPtr(),
             device::fido_parsing_utils::Materialize<EXTENT(payload)>(payload)));
     return std::make_unique<DummyBLEAdvert>();
   }
 
  private:
+  void DoSendBLEAdvert(base::span<const uint8_t, kAdvertSize> advert) {
+    ble_advert_callback_.Run(advert);
+  }
+
   std::vector<uint8_t> ToCTAP2Command(
       const std::pair<device::CtapRequestCommand, base::Optional<cbor::Value>>&
           parts) {
@@ -451,7 +454,7 @@ class TestPlatform : public authenticator::Platform {
         *attestation_obj);
   }
 
-  Discovery* const discovery_;
+  Discovery::AdvertEventStream::Callback ble_advert_callback_;
   device::VirtualCtap2Device* const ctap2_device_;
   base::WeakPtrFactory<TestPlatform> weak_factory_{this};
 };
@@ -466,9 +469,9 @@ std::unique_ptr<network::mojom::NetworkContext> NewMockTunnelServer(
 namespace authenticator {
 
 std::unique_ptr<authenticator::Platform> NewMockPlatform(
-    Discovery* discovery,
+    Discovery::AdvertEventStream::Callback ble_advert_callback,
     device::VirtualCtap2Device* ctap2_device) {
-  return std::make_unique<TestPlatform>(discovery, ctap2_device);
+  return std::make_unique<TestPlatform>(ble_advert_callback, ctap2_device);
 }
 
 }  // namespace authenticator

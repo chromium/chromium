@@ -46,6 +46,7 @@ void RecordEvent(CableV2DiscoveryEvent event) {
 Discovery::Discovery(
     network::mojom::NetworkContext* network_context,
     base::Optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
+    std::unique_ptr<AdvertEventStream> advert_stream,
     std::vector<std::unique_ptr<Pairing>> pairings,
     const std::vector<CableDiscoveryData>& extension_contents,
     base::Optional<base::RepeatingCallback<void(PairingEvent)>>
@@ -55,9 +56,12 @@ Discovery::Discovery(
       network_context_(network_context),
       qr_keys_(KeysFromQRGeneratorKey(qr_generator_key)),
       extension_keys_(KeysFromExtension(extension_contents)),
+      advert_stream_(std::move(advert_stream)),
       pairings_(std::move(pairings)),
       pairing_callback_(std::move(pairing_callback)) {
   static_assert(EXTENT(*qr_generator_key) == kQRSecretSize + kQRSeedSize, "");
+  advert_stream_->Connect(
+      base::BindRepeating(&Discovery::OnBLEAdvertSeen, base::Unretained(this)));
 }
 
 Discovery::~Discovery() = default;
@@ -96,23 +100,25 @@ void Discovery::StartInternal() {
   }
 }
 
-void Discovery::OnBLEAdvertSeen(
-    const std::array<uint8_t, kAdvertSize>& advert) {
+void Discovery::OnBLEAdvertSeen(base::span<const uint8_t, kAdvertSize> advert) {
+  const std::array<uint8_t, kAdvertSize> advert_array =
+      fido_parsing_utils::Materialize<kAdvertSize>(advert);
+
   if (!started_) {
-    pending_adverts_.push_back(advert);
+    pending_adverts_.push_back(advert_array);
     return;
   }
 
-  if (base::Contains(observed_adverts_, advert)) {
+  if (base::Contains(observed_adverts_, advert_array)) {
     return;
   }
-  observed_adverts_.insert(advert);
+  observed_adverts_.insert(advert_array);
 
   // Check whether the EID satisfies any pending tunnels.
   for (std::vector<std::unique_ptr<FidoTunnelDevice>>::iterator i =
            tunnels_pending_advert_.begin();
        i != tunnels_pending_advert_.end(); i++) {
-    if (!(*i)->MatchAdvert(advert)) {
+    if (!(*i)->MatchAdvert(advert_array)) {
       continue;
     }
 
@@ -128,7 +134,7 @@ void Discovery::OnBLEAdvertSeen(
   if (qr_keys_) {
     // Check whether the EID matches a QR code.
     base::Optional<CableEidArray> plaintext =
-        eid::Decrypt(advert, qr_keys_->eid_key);
+        eid::Decrypt(advert_array, qr_keys_->eid_key);
     if (plaintext) {
       FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert)
                       << " matches QR code)";
@@ -144,7 +150,7 @@ void Discovery::OnBLEAdvertSeen(
   // Check whether the EID matches the extension.
   if (extension_keys_) {
     base::Optional<CableEidArray> plaintext =
-        eid::Decrypt(advert, extension_keys_->eid_key);
+        eid::Decrypt(advert_array, extension_keys_->eid_key);
     if (plaintext) {
       FIDO_LOG(DEBUG) << "  (" << base::HexEncode(advert)
                       << " matches extension)";

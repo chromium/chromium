@@ -6728,6 +6728,9 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
                  p256.get(), EC_KEY_get0_public_key(peer_identity.get()),
                  POINT_CONVERSION_UNCOMPRESSED, peer_identity_x962_,
                  sizeof(peer_identity_x962_), /*ctx=*/nullptr));
+
+    std::tie(ble_advert_callback_, ble_advert_events_) =
+        device::cablev2::Discovery::AdvertEventStream::New();
   }
 
   base::RepeatingCallback<void(device::cablev2::PairingEvent)>
@@ -6806,15 +6809,18 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
       base::span<const uint8_t, device::cablev2::kClientNonceSize>
           client_nonce)>
       contact_callback_;
+
+  std::unique_ptr<device::cablev2::Discovery::AdvertEventStream>
+      ble_advert_events_;
+  device::cablev2::Discovery::AdvertEventStream::Callback ble_advert_callback_;
 };
 
 TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      network_context_.get(), qr_generator_key_,
+      network_context_.get(), qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
-  auto* const discovery_ptr = discovery.get();
 
   AuthenticatorEnvironmentImpl::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
@@ -6822,8 +6828,8 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
 
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
-          device::cablev2::authenticator::NewMockPlatform(discovery_ptr,
-                                                          &virtual_device_),
+          device::cablev2::authenticator::NewMockPlatform(
+              std::move(ble_advert_callback_), &virtual_device_),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
           /*contact_id=*/base::nullopt);
@@ -6835,11 +6841,10 @@ TEST_F(CableV2AuthenticatorImplTest, QRBasedWithNoPairing) {
 TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   // First do unpaired exchange to get pairing data.
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      network_context_.get(), qr_generator_key_,
+      network_context_.get(), qr_generator_key_, std::move(ble_advert_events_),
       /*pairings=*/std::vector<std::unique_ptr<device::cablev2::Pairing>>(),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
-  auto* discovery_ptr = discovery.get();
 
   AuthenticatorEnvironmentImpl::GetInstance()
       ->ReplaceDefaultDiscoveryFactoryForTesting(
@@ -6847,8 +6852,8 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
 
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
-          device::cablev2::authenticator::NewMockPlatform(discovery_ptr,
-                                                          &virtual_device_),
+          device::cablev2::authenticator::NewMockPlatform(
+              std::move(ble_advert_callback_), &virtual_device_),
           network_context_.get(), root_secret_, "Test Authenticator",
           zero_qr_secret_, peer_identity_x962_,
           /*contact_id=*/std::vector<uint8_t>({1, 2, 3}));
@@ -6857,11 +6862,14 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   EXPECT_EQ(pairings_.size(), 1u);
 
   // Now do a pairing-based exchange.
+  std::tie(ble_advert_callback_, ble_advert_events_) =
+      device::cablev2::Discovery::EventStream<
+          base::span<const uint8_t, device::cablev2::kAdvertSize>>::New();
   discovery = std::make_unique<device::cablev2::Discovery>(
-      network_context_.get(), qr_generator_key_, std::move(pairings_),
+      network_context_.get(), qr_generator_key_, std::move(ble_advert_events_),
+      std::move(pairings_),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
-  discovery_ptr = discovery.get();
 
   const std::array<uint8_t, device::cablev2::kRoutingIdSize> routing_id = {0};
   bool contact_callback_was_called = false;
@@ -6871,16 +6879,15 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   // This simulates the tunnel server sending a cloud message to a phone. Given
   // the information from the connection, a transaction can be created.
   contact_callback_ = base::BindLambdaForTesting(
-      [this, &transaction, discovery_ptr, routing_id,
-       &contact_callback_was_called](
+      [this, &transaction, routing_id, &contact_callback_was_called](
           base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
           base::span<const uint8_t> pairing_id,
           base::span<const uint8_t, device::cablev2::kClientNonceSize>
               client_nonce) -> void {
         contact_callback_was_called = true;
         transaction = device::cablev2::authenticator::TransactFromFCM(
-            device::cablev2::authenticator::NewMockPlatform(discovery_ptr,
-                                                            &virtual_device_),
+            device::cablev2::authenticator::NewMockPlatform(
+                std::move(ble_advert_callback_), &virtual_device_),
             network_context_.get(), root_secret_, routing_id, tunnel_id,
             pairing_id, client_nonce);
       });
@@ -6913,7 +6920,8 @@ TEST_F(CableV2AuthenticatorImplTest, ContactIDDisabled) {
   // rejected.
   auto network_context = device::cablev2::NewMockTunnelServer(base::nullopt);
   auto discovery = std::make_unique<device::cablev2::Discovery>(
-      network_context.get(), qr_generator_key_, std::move(pairings),
+      network_context.get(), qr_generator_key_, std::move(ble_advert_events_),
+      std::move(pairings),
       /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
       GetPairingCallback());
 

@@ -147,12 +147,10 @@ FidoCableDiscovery::ObservedDeviceData::~ObservedDeviceData() = default;
 // FidoCableDiscovery ---------------------------------------------------------
 
 FidoCableDiscovery::FidoCableDiscovery(
-    std::vector<CableDiscoveryData> discovery_data,
-    FidoDeviceDiscovery::BLEObserver* ble_observer)
+    std::vector<CableDiscoveryData> discovery_data)
     : FidoDeviceDiscovery(
           FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy),
-      discovery_data_(std::move(discovery_data)),
-      ble_observer_(ble_observer) {
+      discovery_data_(std::move(discovery_data)) {
 // Windows currently does not support multiple EIDs, thus we ignore any extra
 // discovery data.
 // TODO(https://crbug.com/837088): Add support for multiple EIDs on Windows.
@@ -181,6 +179,16 @@ FidoCableDiscovery::~FidoCableDiscovery() {
 
   if (adapter_)
     adapter_->RemoveObserver(this);
+}
+
+std::unique_ptr<FidoDeviceDiscovery::EventStream<base::span<const uint8_t, 20>>>
+FidoCableDiscovery::GetV2AdvertStream() {
+  DCHECK(!advert_callback_);
+
+  std::unique_ptr<EventStream<base::span<const uint8_t, 20>>> ret;
+  std::tie(advert_callback_, ret) =
+      EventStream<base::span<const uint8_t, 20>>::New();
+  return ret;
 }
 
 std::unique_ptr<FidoCableHandshakeHandler>
@@ -619,7 +627,7 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
   // Try all combinations of 16- and 4-byte UUIDs to form 20-byte advert
   // payloads. (We don't know if something in the BLE stack might add other
   // short UUIDs to a BLE advert message).
-  if (ble_observer_) {
+  if (advert_callback_) {
     std::array<uint8_t, 16 + 4> v2_advert;
     for (const auto& uuid128 : uuid128s) {
       static_assert(EXTENT(uuid128) == 16, "");
@@ -628,7 +636,7 @@ FidoCableDiscovery::GetCableDiscoveryData(const BluetoothDevice* device) {
       for (const auto& uuid32 : uuid32s) {
         static_assert(EXTENT(uuid32) >= 4, "");
         memcpy(v2_advert.data() + 16, uuid32.data(), 4);
-        ble_observer_->OnBLEAdvertSeen(v2_advert);
+        advert_callback_.Run(v2_advert);
       }
     }
   }

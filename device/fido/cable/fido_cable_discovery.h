@@ -35,12 +35,17 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
       public BluetoothAdapter::Observer,
       public FidoCableDevice::Observer {
  public:
-  FidoCableDiscovery(std::vector<CableDiscoveryData> discovery_data,
-                     FidoDeviceDiscovery::BLEObserver* ble_observer);
+  explicit FidoCableDiscovery(std::vector<CableDiscoveryData> discovery_data);
   ~FidoCableDiscovery() override;
 
   // FidoDeviceDiscovery:
   bool MaybeStop() override;
+
+  // GetV2AdvertStream returns a stream of caBLEv2 BLE adverts. Only a single
+  // stream is supported.
+  std::unique_ptr<FidoDeviceDiscovery::EventStream<
+      base::span<const uint8_t, cablev2::kAdvertSize>>>
+  GetV2AdvertStream();
 
   const std::map<CableEidArray, scoped_refptr<BluetoothAdvertisement>>&
   AdvertisementsForTesting() const {
@@ -140,7 +145,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   std::unique_ptr<BluetoothDiscoverySession> discovery_session_;
 
   std::vector<CableDiscoveryData> discovery_data_;
-  FidoDeviceDiscovery::BLEObserver* const ble_observer_;
+  base::RepeatingCallback<void(base::span<const uint8_t, cablev2::kAdvertSize>)>
+      advert_callback_;
 
   // active_authenticator_eids_ contains authenticator EIDs for which a
   // handshake is currently running. Further advertisements for the same EIDs

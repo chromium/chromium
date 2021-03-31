@@ -325,8 +325,7 @@ class FakeFidoCableDiscovery : public FidoCableDiscovery {
  public:
   explicit FakeFidoCableDiscovery(
       std::vector<CableDiscoveryData> discovery_data)
-      : FidoCableDiscovery(std::move(discovery_data),
-                           /*ble_observer=*/nullptr) {}
+      : FidoCableDiscovery(std::move(discovery_data)) {}
   ~FakeFidoCableDiscovery() override = default;
 
  private:
