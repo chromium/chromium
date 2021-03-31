@@ -70,6 +70,7 @@ bool PlatformSharedMemoryRegion::MapAt(off_t offset,
   bool success = MapAtInternal(offset, size, memory, mapped_size);
   if (success) {
     DCHECK(IsAligned(*memory, kMapMinimumAlignment));
+    DCHECK_GE(*mapped_size, size);
   } else {
     SharedMemorySecurityPolicy::ReleaseReservationForMapping(size);
   }

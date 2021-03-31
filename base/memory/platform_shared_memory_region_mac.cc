@@ -150,8 +150,19 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
     return false;
   }
 
+  // NOTE: The mach_vm_map call above will fail if `offset + size` falls outside
+  // the bounds of the memory object, so this is a safe assumption.
   *mapped_size = size;
   return true;
+}
+
+// static
+bool PlatformSharedMemoryRegion::Unmap(void* memory, size_t mapped_size) {
+  kern_return_t kr = mach_vm_deallocate(
+      mach_task_self(), reinterpret_cast<mach_vm_address_t>(memory),
+      mapped_size);
+  MACH_DLOG_IF(ERROR, kr != KERN_SUCCESS, kr) << "mach_vm_deallocate";
+  return kr == KERN_SUCCESS;
 }
 
 // static
