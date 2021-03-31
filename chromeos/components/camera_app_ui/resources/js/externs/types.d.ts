@@ -50,6 +50,17 @@ interface InputDeviceCapabilities {
   readonly pointerMovementScrolls: boolean;
 }
 
+// The new "subtree" option is not published in the latest spec yet.
+// Ref: https://github.com/w3c/csswg-drafts/pull/3902
+
+interface GetAnimationsOptions {
+  subtree: boolean;
+}
+
+interface Animatable {
+  getAnimations(options?: GetAnimationsOptions): Animation[];
+}
+
 // File System Access API: This is currently a Chrome only API, and the spec is
 // still in working draft stage.
 // https://wicg.github.io/file-system-access/
