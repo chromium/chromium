@@ -258,6 +258,7 @@ component("core") {
   public_deps = [
     ":core_generated",
     ":core_hot",
+    "//cc",
     "//skia",
     "//third_party/blink/public/mojom:mobile_metrics_blink",
     "//third_party/blink/public/mojom:mojom_broadcastchannel_bindings_blink",
