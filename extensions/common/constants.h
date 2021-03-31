@@ -261,8 +261,9 @@ extern const char kScreensaverNocturneAppId[];
 // The extension id of the atlas Demo Mode screensaver app.
 extern const char kScreensaverAtlasAppId[];
 
-// The extension id of the kukui Demo Mode screensaver app.
-extern const char kScreensaverKukuiAppId[];
+// The extension id of the krane Demo Mode screensaver app. That app is only
+// run on KRANE-ZDKS devices.
+extern const char kScreensaverKraneZdksAppId[];
 
 // The id of the testing extension allowed in the signin profile.
 extern const char kSigninProfileTestExtensionId[];

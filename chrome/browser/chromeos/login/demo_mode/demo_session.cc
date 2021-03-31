@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
@@ -40,6 +41,7 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -78,6 +80,10 @@ constexpr char kPhotosPath[] = "media/photos";
 // Path relative to the path at which offline demo resources are loaded that
 // contains splash screen images.
 constexpr char kSplashScreensPath[] = "media/splash_screens";
+
+// Prefix for the HWID for KRANE-ZDKS krane devices (based on kukuid board).
+// We only care about that specific variant of krane here.
+constexpr char kHwidKraneZdksPrefix[] = "KRANE-ZDKS";
 
 // Returns the list of apps normally pinned by Demo Mode policy that shouldn't
 // be pinned if the device is offline.
@@ -333,8 +339,13 @@ std::string DemoSession::GetScreensaverAppId() {
     return extension_misc::kScreensaverNocturneAppId;
   if (board == "atlas")
     return extension_misc::kScreensaverAtlasAppId;
-  if (board == "kukui")
-    return extension_misc::kScreensaverKukuiAppId;
+  if (board == "kukui") {
+    std::string hwid;
+    chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+        chromeos::system::kHardwareClassKey, &hwid);
+    if (base::StartsWith(hwid, kHwidKraneZdksPrefix))
+      return extension_misc::kScreensaverKraneZdksAppId;
+  }
   return extension_misc::kScreensaverAppId;
 }
 
