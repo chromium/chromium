@@ -54,7 +54,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill_assistant.carousel.ButtonView;
@@ -449,7 +448,6 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1041870")
     public void testKeyboardIsHiddenOnLostFocus() throws Exception {
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
         mHelper.addDummyCreditCard(profileId);
@@ -495,10 +493,10 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
 
         waitUntilViewMatchesCondition(withText("User form"), isDisplayed());
         onView(withText("User form")).perform(click());
-        waitUntilViewMatchesCondition(withText("Field 1"), isDisplayed());
-        onView(withText("Field 1")).perform(click());
+        waitUntilViewMatchesCondition(withContentDescription("Field 1"), isDisplayed());
+        onView(withContentDescription("Field 1")).perform(click());
         waitUntilKeyboardMatchesCondition(mTestRule, true);
-        onView(withText("Field 2")).perform(scrollTo(), click());
+        onView(withContentDescription("Field 2")).perform(scrollTo(), click());
         waitUntilKeyboardMatchesCondition(mTestRule, true);
         onView(withText("User form")).perform(scrollTo(), click());
         waitUntilKeyboardMatchesCondition(mTestRule, false);
