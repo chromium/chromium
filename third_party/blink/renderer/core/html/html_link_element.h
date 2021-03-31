@@ -119,14 +119,8 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
                       ResourceClient*,
                       RenderBlockingBehavior render_blocking);
   bool IsAlternate() const {
-    // TODO(crbug.com/1087043): Remove this if() condition once the feature has
-    // landed and no compat issues are reported.
-    bool not_explicitly_enabled =
-        !GetLinkStyle()->IsExplicitlyEnabled() ||
-        !RuntimeEnabledFeatures::LinkDisabledNewSpecBehaviorEnabled(
-            GetExecutionContext());
     return GetLinkStyle()->IsUnset() && rel_attribute_.IsAlternate() &&
-           not_explicitly_enabled;
+           !GetLinkStyle()->IsExplicitlyEnabled();
   }
   bool ShouldProcessStyle() {
     return LinkResourceToProcess() && GetLinkStyle();

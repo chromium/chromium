@@ -1191,12 +1191,6 @@
       // Enabled by features::kLegacyWindowsDWriteFontFallback;
     },
     {
-      // TODO(crbug.com/1087043): Remove this once the feature has
-      // landed and no compat issues are reported.
-      name: "LinkDisabledNewSpecBehavior",
-      status: "stable",
-    },
-    {
       name:"ManualSlotting",
       status:"stable",
     },

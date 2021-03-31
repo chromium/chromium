@@ -728,11 +728,6 @@
     "args": [ "--js-flags=--harmony-weak-refs" ]
   },
   {
-    "prefix": "link-disabled-old-behavior",
-    "bases": [ "external/wpt/css/cssom" ],
-    "args": ["--disable-features=LinkDisabledNewSpecBehavior"]
-  },
-  {
     "prefix": "document-domain-disabled-by-default",
     "bases": [
       "external/wpt/document-policy/experimental-features/document-domain"

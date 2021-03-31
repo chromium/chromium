@@ -232,19 +232,11 @@ void LinkStyle::SetDisabledState(bool disabled) {
   }
 
   if (sheet_) {
-    // TODO(crbug.com/1087043): Remove this if() condition once the feature has
-    // landed and no compat issues are reported.
-    if (RuntimeEnabledFeatures::LinkDisabledNewSpecBehaviorEnabled(
-            GetExecutionContext())) {
-      DCHECK(disabled)
-          << "If link is being enabled, sheet_ shouldn't exist yet";
-      ClearSheet();
-      GetDocument().GetStyleEngine().SetNeedsActiveStyleUpdate(
-          owner_->GetTreeScope());
-      return;
-    } else {
-      sheet_->setDisabled(disabled);
-    }
+    DCHECK(disabled) << "If link is being enabled, sheet_ shouldn't exist yet";
+    ClearSheet();
+    GetDocument().GetStyleEngine().SetNeedsActiveStyleUpdate(
+        owner_->GetTreeScope());
+    return;
   }
 
   if (disabled_state_ == kEnabledViaScript && owner_->ShouldProcessStyle())

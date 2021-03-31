@@ -174,8 +174,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kWebviewAccelerateSmallCanvases;
 
 BLINK_COMMON_EXPORT extern const base::Feature kDiscardCodeCacheAfterFirstUse;
 
-BLINK_COMMON_EXPORT extern const base::Feature kLinkDisabledNewSpecBehavior;
-
 BLINK_COMMON_EXPORT extern const base::Feature kFontPreloadingDelaysRendering;
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kFontPreloadingDelaysRenderingParam;

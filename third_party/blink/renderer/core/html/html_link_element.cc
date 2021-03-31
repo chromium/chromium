@@ -170,20 +170,12 @@ void HTMLLinkElement::ParseAttribute(
     UseCounter::Count(GetDocument(), WebFeature::kHTMLLinkElementDisabled);
     if (params.reason == AttributeModificationReason::kByParser)
       UseCounter::Count(GetDocument(), WebFeature::kHTMLLinkElementDisabledByParser);
-    // TODO(crbug.com/1087043): Remove this if() condition once the feature has
-    // landed and no compat issues are reported.
-    if (RuntimeEnabledFeatures::LinkDisabledNewSpecBehaviorEnabled(
-            GetExecutionContext())) {
-      LinkStyle* link = GetLinkStyle();
-      if (!link) {
-        link = MakeGarbageCollected<LinkStyle>(this);
-        link_ = link;
-      }
-      link->SetDisabledState(!value.IsNull());
-    } else {
-      if (LinkStyle* link = GetLinkStyle())
-        link->SetDisabledState(!value.IsNull());
+    LinkStyle* link = GetLinkStyle();
+    if (!link) {
+      link = MakeGarbageCollected<LinkStyle>(this);
+      link_ = link;
     }
+    link->SetDisabledState(!value.IsNull());
   } else {
     if (name == html_names::kTitleAttr) {
       if (LinkStyle* link = GetLinkStyle())
