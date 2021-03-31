@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 #include "chrome/browser/history_clusters/memories_service_factory.h"
@@ -29,11 +28,8 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/memories_service.h"
-#include "components/keyed_service/core/service_access_type.h"
 #include "components/ntp_tiles/custom_links_store.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -1987,16 +1983,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsExistingBookmark) {
 TEST_F(UkmPageLoadMetricsObserverTest, IsNewBookmark) {
   GURL url(kTestUrl1);
 
-  ASSERT_TRUE(profile()->CreateHistoryService());
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile(),
-                                           ServiceAccessType::IMPLICIT_ACCESS);
-  ASSERT_TRUE(history_service);
-  history_service->AddPage(url, base::Time::Now(),
-                           history::VisitSource::SOURCE_BROWSED);
-
   NavigateAndCommit(url);
-  history::BlockUntilHistoryProcessesPendingRequests(history_service);
 
   bookmarks::BookmarkModel* model =
       BookmarkModelFactory::GetForBrowserContext(browser_context());
@@ -2023,16 +2010,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, IsNewBookmark) {
 TEST_F(UkmPageLoadMetricsObserverTest, IsNTPCustomLink) {
   GURL url(kTestUrl1);
 
-  ASSERT_TRUE(profile()->CreateHistoryService());
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile(),
-                                           ServiceAccessType::IMPLICIT_ACCESS);
-  ASSERT_TRUE(history_service);
-  history_service->AddPage(url, base::Time::Now(),
-                           history::VisitSource::SOURCE_BROWSED);
-
   NavigateAndCommit(url);
-  history::BlockUntilHistoryProcessesPendingRequests(history_service);
 
   ntp_tiles::CustomLinksStore custom_link_store(profile()->GetPrefs());
   custom_link_store.StoreLinks({
@@ -2058,19 +2036,26 @@ TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
   // On the other hand this serves as a good integration test with UKM.
   GURL url(kTestUrl1);
 
-  ASSERT_TRUE(profile()->CreateHistoryService());
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile(),
-                                           ServiceAccessType::IMPLICIT_ACCESS);
-  ASSERT_TRUE(history_service);
-  // Fake that we visited this site 45 days ago.
-  history_service->AddPage(url,
-                           base::Time::Now() - base::TimeDelta::FromDays(45),
-                           history::VisitSource::SOURCE_BROWSED);
   NavigateAndCommit(url);
-  history::BlockUntilHistoryProcessesPendingRequests(history_service);
 
-  // Simulate closing the tab.
+  // Fake that we visited this site 45 days ago.
+  HistoryClustersTabHelper* helper =
+      HistoryClustersTabHelper::FromWebContents(web_contents());
+  ASSERT_EQ(1u, helper->visits_.size());
+  const memories::MemoriesVisit& visit = helper->visits_[0];
+  base::TimeDelta timestamp = visit.visit_time.ToDeltaSinceWindowsEpoch();
+
+  base::Time fake_last_visit_time = base::Time::FromDeltaSinceWindowsEpoch(
+      timestamp - base::TimeDelta::FromDays(45));
+  const int64_t expected_duration_since_last_visit =
+      base::TimeDelta::FromDays(30).InSeconds();
+
+  // Fake a HistoryService response.
+  helper->PreviousVisitToUrlCallback(visit.navigation_id,
+                                     {true, fake_last_visit_time});
+  EXPECT_EQ(expected_duration_since_last_visit,
+            visit.context_signals.duration_since_last_visit_seconds);
+
   DeleteContents();
 
   // Verify UKM records that we visited the page clamped to 30 days ago to
@@ -2082,7 +2067,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, DurationSinceLastVisitSeconds) {
   const ukm::mojom::UkmEntry* entry = merged_entries.begin()->second.get();
   tester()->test_ukm_recorder().ExpectEntryMetric(
       entry, PageLoad::kDurationSinceLastVisitSecondsName,
-      base::TimeDelta::FromDays(30).InSeconds());
+      expected_duration_since_last_visit);
 }
 
 TEST_F(UkmPageLoadMetricsObserverTest,

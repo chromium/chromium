@@ -102,7 +102,7 @@ TEST_F(HistoryTabHelperTest, ShouldLimitTitleUpdatesPerPage) {
 
   ASSERT_EQ("title10", QueryPageTitleFromHistory(page_url_));
 
-  // Further updates should be ignored.
+  // Furhter updates should be ignored.
   web_contents()->UpdateTitleForEntry(entry, u"title11");
   EXPECT_EQ("title10", QueryPageTitleFromHistory(page_url_));
 }

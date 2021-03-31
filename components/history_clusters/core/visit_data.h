@@ -6,8 +6,8 @@
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_VISIT_DATA_H_
 
 #include "base/macros.h"
-#include "components/history/core/browser/history_types.h"
-#include "components/history/core/browser/url_row.h"
+#include "base/time/time.h"
+#include "url/gurl.h"
 
 namespace memories {
 
@@ -60,30 +60,25 @@ struct VisitContextSignals {
   int page_end_reason = 0;
 };
 
-// Tracks which fields have been or are pending recording. This helps 1) avoid
-// re-recording fields and 2) determine whether a visit is compete (i.e. has all
-// expected fields recorded).
-struct RecordingStatus {
-  // Whether |url_row| and |visit_row| have been set.
-  bool history_rows = false;
-  // Whether a navigation has ended; i.e. another navigation has began in the
-  // same tab or the navigation's tab has been closed.
-  bool navigation_ended = false;
-  // Whether the |context_signals| associated with navigation end have been set.
-  // Should only be true if both |history_rows| and |navigation_ended| are true.
-  bool navigation_end_signals = false;
-  // Whether the UKM |page_end_reason| |context_signal| is expected to be set.
-  bool expect_ukm_page_end_signals = false;
-  // Whether the UKM |page_end_reason| |context_signal| has been set. Should
-  // only be true if |expect_ukm_page_end_signals| is true.
-  bool ukm_page_end_signals = false;
-};
-
 struct MemoriesVisit {
-  history::URLRow url_row;
-  history::VisitRow visit_row;
+  MemoriesVisit(int64_t navigation_id, GURL url)
+      : navigation_id(navigation_id), url(url) {}
+
+  // This field is used to uniquely identify visits during initial logging, but
+  // should NOT be persisted.
+  int64_t navigation_id;
+
+  // This is used to track if the page-end metrics for this visit have been
+  // recorded already. This should also NOT be persisted.
+  bool page_end_metrics_recorded = false;
+
+  // The GURL of the visited page.
+  GURL url;
+
+  // The visit time.
+  base::Time visit_time;
+
   VisitContextSignals context_signals;
-  RecordingStatus status;
 };
 
 }  // namespace memories
