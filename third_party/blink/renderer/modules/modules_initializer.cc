@@ -164,7 +164,7 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
         &DocumentMetadataServer::BindMojoReceiver, WrapWeakPersistent(&frame)));
   }
   frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
-      &WebLaunchServiceImpl::Create, WrapWeakPersistent(&frame)));
+      &WebLaunchServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
   frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
       &FileHandlingExpiryImpl::BindReceiver, WrapWeakPersistent(&frame)));
 
