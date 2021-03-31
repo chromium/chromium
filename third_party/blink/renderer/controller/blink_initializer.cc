@@ -204,7 +204,7 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
 
 #if defined(OS_ANDROID)
   binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&OomInterventionImpl::Create)),
+                  CrossThreadBindRepeating(&OomInterventionImpl::Bind)),
               main_thread->GetTaskRunner());
 
   binders.Add(ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(

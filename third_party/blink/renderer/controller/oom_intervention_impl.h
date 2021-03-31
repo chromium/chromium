@@ -9,6 +9,7 @@
 
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/oom_intervention/oom_intervention_types.h"
 #include "third_party/blink/public/mojom/oom_intervention/oom_intervention.mojom-blink.h"
@@ -27,11 +28,13 @@ class CONTROLLER_EXPORT OomInterventionImpl
     : public mojom::blink::OomIntervention,
       public MemoryUsageMonitor::Observer {
  public:
-  static void Create(
+  static void Bind(
       mojo::PendingReceiver<mojom::blink::OomIntervention> receiver);
 
   OomInterventionImpl();
   ~OomInterventionImpl() override;
+
+  void Reset();
 
   // mojom::blink::OomIntervention:
   void StartDetection(
@@ -72,6 +75,7 @@ class CONTROLLER_EXPORT OomInterventionImpl
   OomInterventionMetrics metrics_at_intervention_;
   int number_of_report_needed_ = 0;
   TaskRunnerTimer<OomInterventionImpl> delayed_report_timer_;
+  mojo::Receiver<mojom::blink::OomIntervention> receiver_{this};
 };
 
 }  // namespace blink
