@@ -87,6 +87,7 @@ Polymer({
     'change-page': 'onChangePage_',
     'onboarding-complete': 'onOnboardingComplete_',
     'reject': 'onReject_',
+    'close': 'close_',
   },
 
   observers: [
@@ -113,9 +114,6 @@ Polymer({
 
   /** @private {?nearbyShare.mojom.ReceiveObserverReceiver} */
   observerReceiver_: null,
-
-  /** @private {number} */
-  closeTimeoutId_: 0,
 
   /**
    * Timestamp in milliseconds since unix epoch of when high visibility will
@@ -152,17 +150,11 @@ Polymer({
     const now = performance.now();
 
     if (inHighVisibility === false &&
-        now < this.highVisibilityShutoffTimestamp_) {
-      // TODO(crbug/1134745): Exiting high visibility can happen for multiple
-      // reasons (timeout, user cancel, etc). During a receive transfer, it
-      // happens before we start connecting (because we need to stop
-      // advertising) so we need to wait a bit to see if we see an
-      // onTransferUpdate event within a reasonable timeout. This is the normal
-      // case and it should happen quickly when it is a real connection. In the
-      // timeout case, we are just exiting high visibility normally and can
-      // close for now, and the small timeout won't impact UX. Ideally we should
-      // refactor to not require the use of a timeout.
-      this.closeTimeoutId_ = setTimeout(this.close_.bind(this), 25);
+        now < this.highVisibilityShutoffTimestamp_ &&
+        this.transferStatus_ !==
+            nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation) {
+      this.close_();
+      return;
     }
 
     // If high visibility has been attained, then the process must be up and
@@ -183,7 +175,6 @@ Polymer({
 
     if (metadata.status ===
         nearbyShare.mojom.TransferStatus.kAwaitingLocalConfirmation) {
-      clearTimeout(this.closeTimeoutId_);
       this.shareTarget = shareTarget;
       this.connectionToken =
           (metadata && metadata.token) ? metadata.token : null;

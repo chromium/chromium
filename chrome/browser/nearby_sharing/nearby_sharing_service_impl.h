@@ -369,6 +369,8 @@ class NearbySharingServiceImpl
   void OnStartAdvertisingResult(
       bool used_device_name,
       NearbyConnectionsManager::ConnectionsStatus status);
+  void OnStopAdvertisingResult(
+      NearbyConnectionsManager::ConnectionsStatus status);
   void OnStartDiscoveryResult(
       NearbyConnectionsManager::ConnectionsStatus status);
   void SetInHighVisibility(bool in_high_visibility);
