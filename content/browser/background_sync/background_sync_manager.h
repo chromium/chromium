@@ -18,6 +18,7 @@
 #include "base/cancelable_callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "content/browser/background_sync/background_sync.pb.h"
@@ -54,9 +55,8 @@ class ServiceWorkerContextWrapper;
 // registrations across all registered service workers for a profile.
 // Registrations are stored along with their associated Service Worker
 // registration in ServiceWorkerStorage. If the ServiceWorker is unregistered,
-// the sync registrations are removed. This class must be run on the service
-// worker core thread (ServiceWorkerContext::GetCoreThreadId()). The
-// asynchronous methods are executed sequentially.
+// the sync registrations are removed. This class runs on the UI thread.
+// The asynchronous methods are executed sequentially.
 class CONTENT_EXPORT BackgroundSyncManager
     : public ServiceWorkerContextCoreObserver {
  public:
@@ -125,12 +125,12 @@ class CONTENT_EXPORT BackgroundSyncManager
   }
 
   void set_clock(base::Clock* clock) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     clock_ = clock;
   }
 
   void set_proxy_for_testing(std::unique_ptr<BackgroundSyncProxy> proxy) {
-    DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     proxy_ = std::move(proxy);
   }
 
@@ -498,6 +498,8 @@ class CONTENT_EXPORT BackgroundSyncManager
   base::Clock* clock_;
 
   std::map<int64_t, int> emulated_offline_sw_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<BackgroundSyncManager> weak_ptr_factory_{this};
 

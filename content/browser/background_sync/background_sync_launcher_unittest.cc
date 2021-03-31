@@ -87,15 +87,8 @@ class BackgroundSyncLauncherTest : public testing::Test {
 
   base::TimeDelta GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType sync_type) {
-    base::TimeDelta to_return;
-    BackgroundSyncLauncher::GetSoonestWakeupDelta(
-        sync_type, &test_browser_context_,
-        base::BindLambdaForTesting(
-            [&to_return](base::TimeDelta soonest_wakeup_delta) {
-              to_return = soonest_wakeup_delta;
-            }));
-    task_environment_.RunUntilIdle();
-    return to_return;
+    return BackgroundSyncLauncher::GetSoonestWakeupDelta(
+        sync_type, &test_browser_context_);
   }
 
 #if defined(OS_ANDROID)
