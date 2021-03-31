@@ -17,7 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task_runner_util.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 
 namespace policy {
 
@@ -34,12 +34,12 @@ const size_t kKeySizeLimit = 16 * 1024;
 }  // namespace
 
 CachedPolicyKeyLoaderChromeOS::CachedPolicyKeyLoaderChromeOS(
-    chromeos::CryptohomeClient* cryptohome_client,
+    chromeos::CryptohomeMiscClient* cryptohome_misc_client,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const AccountId& account_id,
     const base::FilePath& user_policy_key_dir)
     : task_runner_(task_runner),
-      cryptohome_client_(cryptohome_client),
+      cryptohome_misc_client_(cryptohome_misc_client),
       account_id_(account_id),
       user_policy_key_dir_(user_policy_key_dir) {}
 
@@ -65,8 +65,12 @@ void CachedPolicyKeyLoaderChromeOS::EnsurePolicyKeyLoaded(
 
   // Get the hashed username that's part of the key's path, to determine
   // |cached_policy_key_path_|.
-  cryptohome_client_->GetSanitizedUsername(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
+  user_data_auth::GetSanitizedUsernameRequest request;
+  request.set_username(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id_)
+          .account_id());
+  cryptohome_misc_client_->GetSanitizedUsername(
+      request,
       base::BindOnce(&CachedPolicyKeyLoaderChromeOS::OnGetSanitizedUsername,
                      weak_factory_.GetWeakPtr()));
 }
@@ -74,14 +78,18 @@ void CachedPolicyKeyLoaderChromeOS::EnsurePolicyKeyLoaded(
 bool CachedPolicyKeyLoaderChromeOS::LoadPolicyKeyImmediately() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const std::string sanitized_username =
-      cryptohome_client_->BlockingGetSanitizedUsername(
-          cryptohome::CreateAccountIdentifierFromAccountId(account_id_));
-  if (sanitized_username.empty())
+  user_data_auth::GetSanitizedUsernameRequest request;
+  request.set_username(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id_)
+          .account_id());
+  base::Optional<user_data_auth::GetSanitizedUsernameReply> reply =
+      cryptohome_misc_client_->BlockingGetSanitizedUsername(request);
+  if (!reply.has_value() || reply->sanitized_username().empty()) {
     return false;
+  }
 
   cached_policy_key_path_ = user_policy_key_dir_.Append(
-      base::StringPrintf(kPolicyKeyFile, sanitized_username.c_str()));
+      base::StringPrintf(kPolicyKeyFile, reply->sanitized_username().c_str()));
   cached_policy_key_ = LoadPolicyKey(cached_policy_key_path_);
   key_loaded_ = true;
   return true;
@@ -104,8 +112,12 @@ void CachedPolicyKeyLoaderChromeOS::ReloadPolicyKey(
   if (cached_policy_key_path_.empty()) {
     // Get the hashed username that's part of the key's path, to determine
     // |cached_policy_key_path_|.
-    cryptohome_client_->GetSanitizedUsername(
-        cryptohome::CreateAccountIdentifierFromAccountId(account_id_),
+    user_data_auth::GetSanitizedUsernameRequest request;
+    request.set_username(
+        cryptohome::CreateAccountIdentifierFromAccountId(account_id_)
+            .account_id());
+    cryptohome_misc_client_->GetSanitizedUsername(
+        request,
         base::BindOnce(&CachedPolicyKeyLoaderChromeOS::OnGetSanitizedUsername,
                        weak_factory_.GetWeakPtr()));
   } else {
@@ -164,10 +176,9 @@ void CachedPolicyKeyLoaderChromeOS::OnPolicyKeyLoaded(const std::string& key) {
 }
 
 void CachedPolicyKeyLoaderChromeOS::OnGetSanitizedUsername(
-    base::Optional<std::string> sanitized_username) {
+    base::Optional<user_data_auth::GetSanitizedUsernameReply> reply) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!sanitized_username || sanitized_username->empty()) {
+  if (!reply.has_value() || reply->sanitized_username().empty()) {
     // Don't bother trying to load a key if we don't know where it is - just
     // signal that the load attempt has finished.
     key_load_in_progress_ = false;
@@ -177,7 +188,7 @@ void CachedPolicyKeyLoaderChromeOS::OnGetSanitizedUsername(
   }
 
   cached_policy_key_path_ = user_policy_key_dir_.Append(
-      base::StringPrintf(kPolicyKeyFile, sanitized_username->c_str()));
+      base::StringPrintf(kPolicyKeyFile, reply->sanitized_username().c_str()));
   TriggerLoadPolicyKey();
 }
 

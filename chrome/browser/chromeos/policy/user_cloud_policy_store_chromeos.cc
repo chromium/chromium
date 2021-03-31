@@ -37,7 +37,7 @@ std::string ExtractDomain(const std::string& username) {
 }  // namespace
 
 UserCloudPolicyStoreChromeOS::UserCloudPolicyStoreChromeOS(
-    chromeos::CryptohomeClient* cryptohome_client,
+    chromeos::CryptohomeMiscClient* cryptohome_misc_client,
     chromeos::SessionManagerClient* session_manager_client,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     const AccountId& account_id,
@@ -50,7 +50,7 @@ UserCloudPolicyStoreChromeOS::UserCloudPolicyStoreChromeOS(
       account_id_(account_id),
       is_active_directory_(is_active_directory),
       cached_policy_key_loader_(std::make_unique<CachedPolicyKeyLoaderChromeOS>(
-          cryptohome_client,
+          cryptohome_misc_client,
           background_task_runner,
           account_id,
           user_policy_key_dir)) {}

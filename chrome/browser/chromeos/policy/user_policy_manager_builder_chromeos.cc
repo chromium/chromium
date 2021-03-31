@@ -32,8 +32,8 @@
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/arc/arc_features.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -253,7 +253,7 @@ void CreateConfigurationPolicyProvider(
 
   std::unique_ptr<UserCloudPolicyStoreChromeOS> store =
       std::make_unique<UserCloudPolicyStoreChromeOS>(
-          chromeos::CryptohomeClient::Get(),
+          chromeos::CryptohomeMiscClient::Get(),
           chromeos::SessionManagerClient::Get(), background_task_runner,
           account_id, policy_key_dir, is_active_directory);
 

@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "components/account_id/account_id.h"
 
 namespace base {
@@ -22,7 +23,7 @@ class SequencedTaskRunner;
 }
 
 namespace chromeos {
-class CryptohomeClient;
+class CryptohomeMiscClient;
 }
 
 namespace policy {
@@ -31,7 +32,7 @@ namespace policy {
 class CachedPolicyKeyLoaderChromeOS {
  public:
   CachedPolicyKeyLoaderChromeOS(
-      chromeos::CryptohomeClient* cryptohome_client,
+      chromeos::CryptohomeMiscClient* cryptohome_misc_client,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const AccountId& account_id,
       const base::FilePath& user_policy_key_dir);
@@ -64,14 +65,15 @@ class CachedPolicyKeyLoaderChromeOS {
   void OnPolicyKeyLoaded(const std::string& key);
 
   // Callback for getting the sanitized username from |cryptohome_client_|.
-  void OnGetSanitizedUsername(base::Optional<std::string> sanitized_username);
+  void OnGetSanitizedUsername(
+      base::Optional<user_data_auth::GetSanitizedUsernameReply> reply);
 
   void NotifyAndClearCallbacks();
 
   // Task runner for background file operations.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  chromeos::CryptohomeClient* const cryptohome_client_;
+  chromeos::CryptohomeMiscClient* const cryptohome_misc_client_;
   const AccountId account_id_;
   const base::FilePath user_policy_key_dir_;
   base::FilePath cached_policy_key_path_;

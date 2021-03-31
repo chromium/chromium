@@ -21,8 +21,9 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/network/onc/onc_test_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -59,7 +60,7 @@ base::FilePath GetUserPolicyKeyFile(
     const base::FilePath& user_policy_dir,
     const cryptohome::AccountIdentifier& cryptohome_id) {
   const std::string sanitized_username =
-      chromeos::CryptohomeClient::GetStubSanitizedUsername(cryptohome_id);
+      chromeos::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id);
   return user_policy_dir.AppendASCII(sanitized_username)
       .AppendASCII("policy.pub");
 }
@@ -127,7 +128,7 @@ class UserCloudPolicyStoreChromeOSTest : public testing::Test {
     session_manager_client_ =
         std::make_unique<FakeSessionManagerClient>(user_policy_dir());
     store_.reset(new UserCloudPolicyStoreChromeOS(
-        &cryptohome_client_, session_manager_client_.get(),
+        &cryptohome_misc_client_, session_manager_client_.get(),
         base::ThreadTaskRunnerHandle::Get(), account_id_, user_policy_dir(),
         false /* is_active_directory */));
     store_->AddObserver(&observer_);
@@ -236,7 +237,7 @@ class UserCloudPolicyStoreChromeOSTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
-  chromeos::FakeCryptohomeClient cryptohome_client_;
+  chromeos::FakeCryptohomeMiscClient cryptohome_misc_client_;
   std::unique_ptr<FakeSessionManagerClient> session_manager_client_;
   UserPolicyBuilder policy_;
   MockCloudPolicyStoreObserver observer_;
@@ -389,7 +390,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, StoreValueValidationError) {
 
 TEST_F(UserCloudPolicyStoreChromeOSTest, StoreWithoutPolicyKey) {
   // Make the dbus call to cryptohome fail.
-  cryptohome_client_.SetServiceIsAvailable(false);
+  cryptohome_misc_client_.SetServiceIsAvailable(false);
 
   store_->Store(policy_.policy());
   RunLoopAndExpectError(CloudPolicyStore::STATUS_VALIDATION_ERROR);
@@ -557,7 +558,7 @@ TEST_F(UserCloudPolicyStoreChromeOSTest, LoadImmediatelyDBusFailure) {
   session_manager_client_->set_user_policy(cryptohome_id_, policy_.GetBlob());
 
   // Make the dbus call to cryptohome fail.
-  cryptohome_client_.SetServiceIsAvailable(false);
+  cryptohome_misc_client_.SetServiceIsAvailable(false);
 
   EXPECT_FALSE(store_->policy());
 

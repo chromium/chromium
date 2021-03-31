@@ -23,7 +23,7 @@ class SequencedTaskRunner;
 }
 
 namespace chromeos {
-class CryptohomeClient;
+class CryptohomeMiscClient;
 }
 
 namespace policy {
@@ -43,7 +43,7 @@ class UserCloudPolicyStoreChromeOS : public UserCloudPolicyStoreBase {
   // notably signature validation is disabled.  It is essential that this flag
   // is only set when install attributes are locked into Active Directory mode.
   UserCloudPolicyStoreChromeOS(
-      chromeos::CryptohomeClient* cryptohome_client,
+      chromeos::CryptohomeMiscClient* cryptohome_misc_client,
       chromeos::SessionManagerClient* session_manager_client,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const AccountId& account_id,
