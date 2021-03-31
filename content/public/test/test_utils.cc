@@ -4,6 +4,7 @@
 
 #include "content/public/test/test_utils.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -453,33 +454,31 @@ void InProcessUtilityThreadHelper::BrowserChildProcessHostDisconnected(
 }
 
 RenderFrameDeletedObserver::RenderFrameDeletedObserver(RenderFrameHost* rfh)
-    : WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
-      process_id_(rfh->GetProcess()->GetID()),
-      routing_id_(rfh->GetRoutingID()),
-      deleted_(false) {}
+    : WebContentsObserver(WebContents::FromRenderFrameHost(rfh)), rfh_(rfh) {
+  DCHECK(rfh);
+}
 
-RenderFrameDeletedObserver::~RenderFrameDeletedObserver() {}
+RenderFrameDeletedObserver::~RenderFrameDeletedObserver() = default;
 
 void RenderFrameDeletedObserver::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
-  if (render_frame_host->GetProcess()->GetID() == process_id_ &&
-      render_frame_host->GetRoutingID() == routing_id_) {
-    deleted_ = true;
+  if (render_frame_host == rfh_) {
+    rfh_ = nullptr;
 
     if (runner_.get())
       runner_->Quit();
   }
 }
 
-bool RenderFrameDeletedObserver::deleted() {
-  return deleted_;
+bool RenderFrameDeletedObserver::deleted() const {
+  return !rfh_;
 }
 
 void RenderFrameDeletedObserver::WaitUntilDeleted() {
-  if (deleted_)
+  if (deleted())
     return;
 
-  runner_.reset(new base::RunLoop());
+  runner_ = std::make_unique<base::RunLoop>();
   runner_->Run();
   runner_.reset();
 }

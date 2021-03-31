@@ -338,19 +338,20 @@ class InProcessUtilityThreadHelper : public BrowserChildProcessObserver {
 // not to avoid accessing it and causing use-after-free condition.
 class RenderFrameDeletedObserver : public WebContentsObserver {
  public:
-  RenderFrameDeletedObserver(RenderFrameHost* rfh);
+  explicit RenderFrameDeletedObserver(RenderFrameHost* rfh);
   ~RenderFrameDeletedObserver() override;
 
   // Overridden WebContentsObserver methods.
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
 
+  // Returns the supplied RenderFrameHost or nullptr if already deleted.
+  RenderFrameHost* render_frame_host() const { return rfh_; }
   void WaitUntilDeleted();
-  bool deleted();
+  bool deleted() const;
 
  private:
-  int process_id_;
-  int routing_id_;
-  bool deleted_;
+  // Will be nullptr after deletion.
+  RenderFrameHost* rfh_;
   std::unique_ptr<base::RunLoop> runner_;
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameDeletedObserver);
