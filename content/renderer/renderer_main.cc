@@ -77,8 +77,7 @@ namespace {
 
 // This function provides some ways to test crash and assertion handling
 // behavior of the renderer.
-static void HandleRendererErrorTestParameters(
-    const base::CommandLine& command_line) {
+void HandleRendererErrorTestParameters(const base::CommandLine& command_line) {
   if (command_line.HasSwitch(switches::kWaitForDebugger))
     base::debug::WaitForDebugger(60, true);
 
@@ -119,10 +118,10 @@ int RendererMain(const MainFunctionParams& parameters) {
 #endif  // OS_MAC
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // As Zygote process starts up earlier than browser process gets its own
-  // locale (at login time for Chrome OS), we have to set the ICU default
-  // locale for renderer process here.
-  // ICU locale will be used for fallback font selection etc.
+  // As the Zygote process starts up earlier than the browser process, it gets
+  // its own locale (at login time for Chrome OS). So we have to set the ICU
+  // default locale for the renderer process here.
+  // ICU locale will be used for fallback font selection, etc.
   if (command_line.HasSwitch(switches::kLang)) {
     const std::string locale =
         command_line.GetSwitchValueASCII(switches::kLang);
@@ -133,11 +132,10 @@ int RendererMain(const MainFunctionParams& parameters) {
   // available we want to turn it on.
   chromeos::system::EnableCoreSchedulingIfAvailable();
 
-  using chromeos::memory::userspace_swap::
-      UserspaceSwapRendererInitializationImpl;
-  base::Optional<UserspaceSwapRendererInitializationImpl> swap_init;
-  if (UserspaceSwapRendererInitializationImpl::
-          UserspaceSwapSupportedAndEnabled()) {
+  using UserspaceSwapInit =
+      chromeos::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
+  base::Optional<UserspaceSwapInit> swap_init;
+  if (UserspaceSwapInit::UserspaceSwapSupportedAndEnabled()) {
     swap_init.emplace();
 
     PLOG_IF(ERROR, !swap_init->PreSandboxSetup())
