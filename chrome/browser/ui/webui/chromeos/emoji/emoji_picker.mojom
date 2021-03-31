@@ -22,4 +22,8 @@ interface PageHandler {
   // emoji: The emoji to insert in string form e.g. "😂".
   // is_variant: If the emoji is a variant / base emoji, used for metrics.
   InsertEmoji(string emoji, bool is_variant);
+
+  // Allows the emoji picker to identify if it was initialized in a incognito
+  // text field (so it will disable storing preference etc.)
+  IsIncognitoTextField() => (bool incognito);
 };

@@ -33,9 +33,11 @@ void LogInsertEmoji(bool is_variant) {
 EmojiPageHandler::EmojiPageHandler(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver,
     content::WebUI* web_ui,
-    EmojiUI* webui_controller)
+    EmojiUI* webui_controller,
+    bool incognito_mode)
     : receiver_(this, std::move(receiver)),
-      webui_controller_(webui_controller) {}
+      webui_controller_(webui_controller),
+      incognito_mode_(incognito_mode) {}
 
 EmojiPageHandler::~EmojiPageHandler() {}
 
@@ -47,6 +49,11 @@ void EmojiPageHandler::ShowUI() {
   if (embedder) {
     embedder->ShowUI();
   }
+}
+
+void EmojiPageHandler::IsIncognitoTextField(
+    IsIncognitoTextFieldCallback callback) {
+  std::move(callback).Run(incognito_mode_);
 }
 
 void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,

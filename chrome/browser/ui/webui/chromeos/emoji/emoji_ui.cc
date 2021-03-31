@@ -67,8 +67,9 @@ void EmojiUI::Show(Profile* profile) {
   }
   ui::InputMethod* input_method =
       ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
-  const ui::TextInputClient* input_client =
+  ui::TextInputClient* input_client =
       input_method ? input_method->GetTextInputClient() : nullptr;
+  const bool incognito_mode = !input_client->ShouldDoLearning();
   const gfx::Rect caret_bounds =
       input_client ? input_client->GetCaretBounds() : gfx::Rect();
 
@@ -87,6 +88,7 @@ void EmojiUI::Show(Profile* profile) {
   // ShowUI is called from the JS side.  By reloading, we trigger the JS to
   // eventually call ShowUI().
   contents_wrapper->ReloadWebContents();
+  contents_wrapper->GetWebUIController()->incognito_mode_ = incognito_mode;
 
   auto bubble_view =
       std::make_unique<EmojiiBubbleDialogView>(std::move(contents_wrapper));
@@ -106,8 +108,8 @@ void EmojiUI::BindInterface(
 
 void EmojiUI::CreatePageHandler(
     mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver) {
-  page_handler_ =
-      std::make_unique<EmojiPageHandler>(std::move(receiver), web_ui(), this);
+  page_handler_ = std::make_unique<EmojiPageHandler>(
+      std::move(receiver), web_ui(), this, incognito_mode_);
 }
 
 }  // namespace chromeos

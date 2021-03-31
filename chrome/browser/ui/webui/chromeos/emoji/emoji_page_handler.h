@@ -18,7 +18,8 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   EmojiPageHandler(
       mojo::PendingReceiver<emoji_picker::mojom::PageHandler> receiver,
       content::WebUI* web_ui,
-      EmojiUI* webui_controller);
+      EmojiUI* webui_controller,
+      bool incognito_mode);
   EmojiPageHandler(const EmojiPageHandler&) = delete;
   EmojiPageHandler& operator=(const EmojiPageHandler&) = delete;
   ~EmojiPageHandler() override;
@@ -27,10 +28,13 @@ class EmojiPageHandler : public emoji_picker::mojom::PageHandler {
   void ShowUI() override;
   void InsertEmoji(const std::string& emoji_to_insert,
                    bool is_variant) override;
+  void IsIncognitoTextField(IsIncognitoTextFieldCallback callback) override;
 
  private:
   mojo::Receiver<emoji_picker::mojom::PageHandler> receiver_;
+
   EmojiUI* const webui_controller_;
+  bool incognito_mode_;
 };
 }  // namespace chromeos
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_EMOJI_EMOJI_PAGE_HANDLER_H_

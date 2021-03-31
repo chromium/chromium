@@ -129,12 +129,9 @@ export class EmojiPicker extends PolymerElement {
 
     this.emojiGroupTabs = GROUP_TABS;
     this.emojiData = [];
-    this.history = {
-      'group': 'Recently Used',
-      'emoji': makeRecentlyUsed(this.recentEmojiStore.data.history || []),
-    };
+    this.history = {'group': 'Recently Used', 'emoji': []};
 
-    this.preferenceMapping = this.recentEmojiStore.getPreferenceMapping();
+    this.preferenceMapping = {};
 
     /** @private {?number} */
     this.scrollTimeout = null;
@@ -169,6 +166,20 @@ export class EmojiPicker extends PolymerElement {
             /** @type {!EmojiVariantsShownEvent} */ (ev)));
     this.addEventListener('click', () => this.hideEmojiVariants());
     this.apiProxy_.showUI();
+    this.getHistory();
+  }
+
+  async getHistory() {
+    const incognito = (await this.apiProxy_.isIncognitoTextField()).incognito;
+    if (incognito) {
+      this.set(['history', 'emoji'], makeRecentlyUsed([]));
+    } else {
+      this.set(
+          ['history', 'emoji'],
+          makeRecentlyUsed(this.recentEmojiStore.data.history || []));
+      this.set(
+          ['preferenceMapping'], this.recentEmojiStore.getPreferenceMapping());
+    }
   }
 
   ready() {
@@ -200,14 +211,16 @@ export class EmojiPicker extends PolymerElement {
   /**
    * @param {!string} emoji
    */
-  insertEmoji(emoji, isVariant, baseEmoji) {
+  async insertEmoji(emoji, isVariant, baseEmoji) {
     this.$.message.textContent = emoji + ' inserted.';
-    this.recentEmojiStore.bumpEmoji(emoji);
-    this.recentEmojiStore.savePreferredVariant(baseEmoji, emoji);
-    this.set(
-        ['history', 'emoji'],
-        makeRecentlyUsed(this.recentEmojiStore.data.history));
-
+    const incognito = (await this.apiProxy_.isIncognitoTextField()).incognito;
+    if (!incognito) {
+      this.recentEmojiStore.bumpEmoji(emoji);
+      this.recentEmojiStore.savePreferredVariant(baseEmoji, emoji);
+      this.set(
+          ['history', 'emoji'],
+          makeRecentlyUsed(this.recentEmojiStore.data.history));
+    }
     this.apiProxy_.insertEmoji(emoji, isVariant);
   }
 

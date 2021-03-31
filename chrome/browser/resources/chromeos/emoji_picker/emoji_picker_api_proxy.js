@@ -15,6 +15,11 @@ export class EmojiPickerApiProxy {
    * @param {boolean} isVariant
    */
   insertEmoji(emoji, isVariant) {}
+
+  /**
+   * @returns {Promise<{incognito:boolean}>}
+   */
+  isIncognitoTextField() {}
 }
 /** @implements {EmojiPickerApiProxy} */
 export class EmojiPickerApiProxyImpl {
@@ -33,6 +38,11 @@ export class EmojiPickerApiProxyImpl {
   /** @override */
   insertEmoji(emoji, isVariant) {
     this.handler.insertEmoji(emoji, isVariant);
+  }
+
+  /** @override */
+  isIncognitoTextField() {
+    return this.handler.isIncognitoTextField();
   }
 }
 
