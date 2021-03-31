@@ -8,10 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
+
 namespace gtk {
 
 // Loads libgtk and related libraries and returns true on success.
-bool LoadGtk(int gtk_version);
+COMPONENT_EXPORT(GTK) bool LoadGtk(int gtk_version);
 
 // Returns true iff the runtime version of Gtk used meets
 // |major|.|minor|.|micro|. LoadGtk() must have been called

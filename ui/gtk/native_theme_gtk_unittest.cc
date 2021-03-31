@@ -6,10 +6,13 @@
 
 #include <tuple>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/native_theme/native_theme_color_id.h"
 #include "ui/native_theme/test/color_utils.h"
@@ -23,6 +26,8 @@ class NativeThemeGtkRedirectedEquivalenceTest
           std::tuple<ui::NativeTheme::ColorScheme, ui::NativeTheme::ColorId>> {
  public:
   NativeThemeGtkRedirectedEquivalenceTest() {
+    static bool loaded = LoadGtk(BUILDFLAG(GTK_VERSION));
+    CHECK(loaded);
     GtkInitFromCommandLine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   }
 
