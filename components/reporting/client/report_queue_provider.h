@@ -93,10 +93,8 @@ class ReportQueueProvider {
   // |CreateQueue| will return with error, but next attempt may succeed).
   // Returns with the callback handing ownership to the caller (unless there is
   // an error, and then it gets the error status).
-  static void CreateQueue(
-      std::unique_ptr<ReportQueueConfiguration> config,
-      base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>
-          queue_cb);
+  static void CreateQueue(std::unique_ptr<ReportQueueConfiguration> config,
+                          CreateReportQueueCallback queue_cb);
 
   // Instantiates ReportQueueProvider singleton based on the overall process
   // state and will refer to StorageModuleInterface and optional Uploader
