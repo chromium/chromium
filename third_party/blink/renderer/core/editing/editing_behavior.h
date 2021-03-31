@@ -77,8 +77,8 @@ class CORE_EXPORT EditingBehavior {
     return type_ == mojom::blink::EditingBehavior::kEditingMacBehavior;
   }
 
-  // On Mac, when processing a contextual click, the object being clicked upon
-  // should be selected.
+  // On Mac/ChromeOS, when processing a contextual click, the object being
+  // clicked upon should be selected.
   bool ShouldSelectOnContextualMenuClick() const {
     return type_ == mojom::blink::EditingBehavior::kEditingMacBehavior ||
            type_ == mojom::blink::EditingBehavior::kEditingChromeOSBehavior;

@@ -1236,6 +1236,9 @@ void SelectionController::UpdateSelectionForContextMenuEvent(
   if (!frame_->GetEditor().Behavior().ShouldSelectOnContextualMenuClick())
     return;
 
+  if (mouse_event->GetMenuSourceType() == kMenuSourceLongPress)
+    return;
+
   SelectClosestWordOrLinkFromMouseEvent(mouse_event, hit_test_result);
 }
 
