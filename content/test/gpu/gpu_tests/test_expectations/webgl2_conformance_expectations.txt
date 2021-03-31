@@ -678,6 +678,9 @@ crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp
 crbug.com/1175234 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/fborender/recreate_color_06.html [ RetryOnFailure ]
 crbug.com/1175233 [ android android-pixel-4 no-passthrough ] deqp/functional/gles3/fborender/resize_03.html [ RetryOnFailure ]
 
+crbug.com/1179432 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/texturespecification/basic_teximage2d_2d_01.html [ RetryOnFailure ]
+crbug.com/1179432 [ android android-pixel-4 angle-disabled no-passthrough ] deqp/functional/gles3/transformfeedback/array_interleaved_points.html [ RetryOnFailure ]
+
 crbug.com/1191030 [ android android-pixel-4 ] conformance/textures/misc/video-rotation.html [ Failure ]
 
 # Android ANGLE GLES
