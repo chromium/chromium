@@ -64,9 +64,13 @@ X11WholeScreenMoveLoop::~X11WholeScreenMoveLoop() {
 void X11WholeScreenMoveLoop::DispatchMouseMovement() {
   if (!last_motion_in_screen_)
     return;
+  auto weak_ref = weak_factory_.GetWeakPtr();
   delegate_->OnMouseMovement(last_motion_in_screen_->root_location(),
                              last_motion_in_screen_->flags(),
                              last_motion_in_screen_->time_stamp());
+  // The delegate may delete this during dispatch.
+  if (!weak_ref)
+    return;
   last_motion_in_screen_.reset();
 }
 
