@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/optional.h"
 #include "base/token.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -71,6 +72,10 @@ bool IsLacrosPrimaryBrowser();
 
 // As above, but takes a channel. Exposed for testing.
 bool IsLacrosPrimaryBrowser(version_info::Channel channel);
+
+// Forces IsLacrosPrimaryBrowser() to return true or false for testing.
+// Passing base::nullopt will reset the state.
+void SetLacrosPrimaryBrowserForTest(base::Optional<bool> value);
 
 // Returns true if the lacros can be used as a primary browser
 // for the current session.

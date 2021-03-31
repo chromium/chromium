@@ -55,6 +55,8 @@ namespace {
 
 bool g_lacros_enabled_for_test = false;
 
+base::Optional<bool> g_lacros_primary_browser_for_test;
+
 // Some account types require features that aren't yet supported by lacros.
 // See https://crbug.com/1080693
 bool IsUserTypeAllowed(const User* user) {
@@ -246,6 +248,9 @@ bool IsLacrosPrimaryBrowser() {
 }
 
 bool IsLacrosPrimaryBrowser(Channel channel) {
+  if (g_lacros_primary_browser_for_test.has_value())
+    return g_lacros_primary_browser_for_test.value();
+
   if (!IsLacrosEnabled(channel))
     return false;
 
@@ -254,6 +259,10 @@ bool IsLacrosPrimaryBrowser(Channel channel) {
 
   // TODO(crbug.com/1188070): Support Lacros Primary policy.
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
+}
+
+void SetLacrosPrimaryBrowserForTest(base::Optional<bool> value) {
+  g_lacros_primary_browser_for_test = value;
 }
 
 bool IsLacrosPrimaryBrowserAllowed(Channel channel) {

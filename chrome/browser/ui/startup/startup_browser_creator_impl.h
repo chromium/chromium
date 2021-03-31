@@ -98,6 +98,7 @@ class StartupBrowserCreatorImpl {
                            DetermineBrowserOpenBehavior_NotStartup);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_ExtensionCheckupPage);
+  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest, ShouldLaunch);
 
   enum class WelcomeRunType {
     NONE,                // Do not inject the welcome page for this run.
@@ -183,6 +184,9 @@ class StartupBrowserCreatorImpl {
       bool has_create_browser_default,
       bool has_create_browser_switch,
       bool was_mac_login_or_resume);
+
+  // Returns whether or not a browser window should be created/restored.
+  static bool ShouldLaunch(const base::CommandLine& command_line);
 
   const base::FilePath cur_dir_;
   const base::CommandLine& command_line_;
