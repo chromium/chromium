@@ -545,8 +545,7 @@ crbug.com/352645 [ android android-webview-instrumentation ] conformance/texture
 
 # Also flaky on nexus9 non-webview (bug=834933) but can't specify both.
 crbug.com/352645 [ android ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
+crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
 crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
 crbug.com/352645 [ android android-webview-instrumentation ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
 crbug.com/352645 [ android android-webview-instrumentation angle-disabled ] conformance/textures/misc/texture-npot-video.html [ Skip ]
@@ -555,24 +554,19 @@ crbug.com/352645 [ android android-webview-instrumentation angle-disabled ] conf
 # TODO(crbug.com/1178518): This crbug caused the test to fail consistently. It
 # should be probably back to flaky once the bug is fixed. So uncomment below test once the bug is fixed.
 # crbug.com/834933 [ android android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ RetryOnFailure ]
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/733599 [ android angle-disabled ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/733599 [ android angle-disabled ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/733599 [ android angle-disabled ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/733599 [ android angle-disabled ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
 # TODO(crbug.com/1178518): This crbug caused the test to fail consistently. It
 # should be probably back to flaky once the bug is fixed. So uncomment below test once the bug is fixed.
 # crbug.com/834933 [ android android-chromium ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ RetryOnFailure ]
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/834933 [ android android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/891456 [ android ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
+crbug.com/834933 [ android android-chromium ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/891456 [ android ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
 
 # This crashes in Android WebView on the Nexus 6, preventing the
 # suite from running further. Rather than add multiple
 # suppressions, skip it until it's passing at least in content
 # shell.
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/499555 [ android android-nexus-6 ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
+crbug.com/499555 [ android android-nexus-6 ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
 
 # The test that runs after conformance/state/gl-object-get-calls.html is failing
 # on Nexus 5/6 consistently and other Android bots (eg. Nexus 5X) sometimes.
@@ -593,8 +587,8 @@ crbug.com/611943 [ android android-nexus-5 ] conformance/glsl/misc/struct-equals
 crbug.com/478572 [ android android-nexus-5 ] deqp/data/gles2/shaders/linkage.html [ Failure ]
 crbug.com/678850 [ android android-nexus-5 ] conformance/more/functions/vertexAttribPointerBadArgs.html [ Failure ]
 crbug.com/678850 [ android android-nexus-5 ] conformance/attribs/gl-vertexattribpointer.html [ Failure ]
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/891456 [ android android-nexus-5 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
+
+crbug.com/891456 [ android android-nexus-5 ] conformance/extensions/oes-texture-float-with-video.html [ RetryOnFailure ]
 
 # Nexus 5X
 # Was timing out randomly on android_optional_gpu_tests_rel, but became so
@@ -660,8 +654,7 @@ crbug.com/606096 [ android android-nexus-9 ] conformance/glsl/bugs/multiplicatio
 crbug.com/891456 [ android android-nexus-9 ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
 crbug.com/1025790 [ android android-nexus-9 ] conformance/textures/misc/tex-image-canvas-corruption.html [ Skip ]
 crbug.com/478572 [ android android-nexus-9 ] deqp/data/gles2/shaders/functions.html [ Failure ]
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/891456 [ android android-shield-android-tv ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
+crbug.com/891456 [ android android-shield-android-tv ] conformance/extensions/oes-texture-float-with-video.html [ Failure ]
 crbug.com/891456 [ android android-shield-android-tv ] conformance/extensions/oes-texture-half-float-with-video.html [ Failure ]
 crbug.com/891456 [ android android-shield-android-tv ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
 crbug.com/1025790 [ android android-shield-android-tv ] conformance/textures/misc/tex-image-canvas-corruption.html [ Skip ]
@@ -669,41 +662,8 @@ crbug.com/1153676 [ android android-shield-android-tv ] conformance/extensions/s
 # Texture tests found to generate intermittent GL errors in the GPU process
 crbug.com/1090407 [ android android-nexus-9 ] conformance/textures/* [ RetryOnFailure ]
 crbug.com/1090407 [ android android-shield-android-tv ] conformance/textures/* [ RetryOnFailure ]
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/906724 [ android angle-opengles ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
-# TODO(crbug.com/1175322): uncomment once bug is fixed
-# crbug.com/906724 [ android angle-opengles ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
-
-# These video-related tests are timing out on the Nexus 5 and 6
-crbug.com/1175322 [ android android-nexus-5 ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/misc/texture-upload-size.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-5 ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
-
-crbug.com/1175322 [ android android-nexus-6 ] conformance/extensions/oes-texture-half-float-with-video.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-6 ] conformance/textures/image_bitmap_from_video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-6 ] conformance/textures/image_bitmap_from_video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-6 ] conformance/textures/image_bitmap_from_video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-6 ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-6 ] conformance/textures/image_bitmap_from_video/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-6 ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-6 ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-6 ] conformance/textures/misc/tex-video-using-tex-unit-non-zero.html [ Skip ]
-crbug.com/1175322 [ android android-nexus-6 ] conformance/textures/video/tex-2d-alpha-alpha-unsigned_byte.html [ Skip ]
-
-# These video-related tests (which are timing out on the Nexus 5 & 6) replace existing failures that have been commented out
-crbug.com/1175322 [ android ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android ] conformance/textures/video/tex-2d-rgba-rgba-unsigned_byte.html [ Skip ]
-crbug.com/1175322 [ android ] conformance/textures/image_bitmap_from_video/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ Skip ]
-crbug.com/1175322 [ android ] conformance/extensions/oes-texture-float-with-video.html [ Skip ]
+crbug.com/906724 [ android angle-opengles ] conformance/textures/video/tex-2d-luminance_alpha-luminance_alpha-unsigned_byte.html [ RetryOnFailure ]
+crbug.com/906724 [ android angle-opengles ] conformance/textures/video/tex-2d-luminance-luminance-unsigned_byte.html [ RetryOnFailure ]
 
 # Failing webgl video tests on nexus 5 and nexus 6.
 crbug.com/1178518 [ android android-nexus-5 android-chromium ] conformance/textures/video/tex-2d-rgb-rgb-unsigned_byte.html [ Failure ]
