@@ -125,6 +125,12 @@ Polymer({
       value: '',
     },
 
+    /** @type {string} */
+    learnMoreLinkSection: {
+      type: String,
+      value: '',
+    },
+
     /** @private {!BadgeType} */
     badgeType_: {
       type: String,
@@ -244,9 +250,13 @@ Polymer({
     this.$.collapse.toggle();
   },
 
-  /** @private */
+  /** @protected */
   onLearnMoreClicked_() {
-    window.open('https://support.google.com/chromebook?p=diagnostics_app');
+    const baseSupportUrl =
+        'https://support.google.com/chromebook?p=diagnostics_';
+    assert(this.learnMoreLinkSection);
+
+    window.open(baseSupportUrl + this.learnMoreLinkSection);
   },
 
   /** @protected */
@@ -257,7 +267,7 @@ Polymer({
 
   /** @protected */
   isLearnMoreHidden_() {
-    return this.isPowerRoutine === false || this.isLoggedIn_ === false ||
+    return !this.shouldHideReportList_() || !this.isLoggedIn_ ||
         this.executionStatus_ !== ExecutionProgress.kCompleted;
   },
 
