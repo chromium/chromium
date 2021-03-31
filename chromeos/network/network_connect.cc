@@ -134,10 +134,15 @@ void NetworkConnectImpl::HandleUnconfiguredNetwork(
   }
 
   if (network->type() == shill::kTypeVPN) {
-    // Show the configure dialog for non third-party VPNs (which provide their
-    // own configuration UI).
-    if (network->GetVpnProviderType() != shill::kProviderThirdPartyVpn)
-      delegate_->ShowNetworkConfigure(network_id);
+    // Third-party VPNs provide their own configuration UI.
+    if (network->GetVpnProviderType() == shill::kProviderThirdPartyVpn)
+      return;
+    // Only fully configured policy VPNs are supported in the login screen.
+    // See crbug.com/1167070#c53 for more info.
+    if (!LoginState::Get()->IsUserLoggedIn())
+      return;
+    // Show the configure dialog for partially configured first-party VPNs.
+    delegate_->ShowNetworkConfigure(network_id);
     return;
   }
 
