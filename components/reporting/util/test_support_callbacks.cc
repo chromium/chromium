@@ -13,5 +13,12 @@ TestCallbackWaiter::TestCallbackWaiter()
     : run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {}
 TestCallbackWaiter::~TestCallbackWaiter() = default;
 
+TestCallbackAutoWaiter::TestCallbackAutoWaiter() {
+  Attach();
+}
+TestCallbackAutoWaiter::~TestCallbackAutoWaiter() {
+  Wait();
+}
+
 }  // namespace test
 }  // namespace reporting
