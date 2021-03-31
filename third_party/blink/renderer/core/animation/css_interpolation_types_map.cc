@@ -84,28 +84,22 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
   DEFINE_STATIC_LOCAL(ApplicableTypesMap, all_applicable_types_map, ());
   DEFINE_STATIC_LOCAL(ApplicableTypesMap, composited_applicable_types_map, ());
 
+  // Custom property interpolation types may change over time so don't trust the
+  // applicable_types_map without checking the registry. Also since the static
+  // map is shared between documents, the registered type may be different in
+  // the different documents.
+  if (registry_ && property.IsCSSCustomProperty()) {
+    if (const auto* registration = GetRegistration(registry_, property))
+      return registration->GetInterpolationTypes();
+  }
+
   ApplicableTypesMap& applicable_types_map =
       allow_all_animations_ ? all_applicable_types_map
                             : composited_applicable_types_map;
 
   auto entry = applicable_types_map.find(property);
-  bool found_entry = entry != applicable_types_map.end();
-
-  // Custom property interpolation types may change over time so don't trust the
-  // applicableTypesMap without checking the registry.
-  if (registry_ && property.IsCSSCustomProperty()) {
-    const auto* registration = GetRegistration(registry_, property);
-    if (registration) {
-      if (found_entry) {
-        applicable_types_map.erase(entry);
-      }
-      return registration->GetInterpolationTypes();
-    }
-  }
-
-  if (found_entry) {
+  if (entry != applicable_types_map.end())
     return *entry->value;
-  }
 
   std::unique_ptr<InterpolationTypes> applicable_types =
       std::make_unique<InterpolationTypes>();
