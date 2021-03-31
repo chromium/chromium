@@ -347,6 +347,22 @@ promise_test(async t => {
     assert_equals(decoder.tracks.selectedTrack.frameCount, 2);
     assert_equals(decoder.tracks.selectedTrack.repetitionCount, 5);
 
+    decoder.decode({frameIndex: 2}).then(t.unreached_func());
+    decoder.decode({frameIndex: 1}).then(t.unreached_func());
+    return decoder.decodeMetadata();
+  });
+}, 'Test that decode requests are serialized.');
+
+promise_test(async t => {
+  let source = new InfiniteGifSource();
+  await source.load(5);
+
+  let stream = new ReadableStream(source, {type: 'bytes'});
+  let decoder = new ImageDecoder({data: stream, type: 'image/gif'});
+  return decoder.decodeMetadata().then(_ => {
+    assert_equals(decoder.tracks.selectedTrack.frameCount, 2);
+    assert_equals(decoder.tracks.selectedTrack.repetitionCount, 5);
+
     // Decode frame not yet available then change tracks before it comes in.
     let p = decoder.decode({frameIndex: 5});
     decoder.tracks.selectedTrack.selected = false;

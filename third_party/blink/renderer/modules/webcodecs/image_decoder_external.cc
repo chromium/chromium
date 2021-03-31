@@ -445,20 +445,21 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
   DCHECK(!closed_);
   DCHECK(decoder_);
 
+  if (!decoder_->IsSizeAvailable())
+    return;
+
   for (auto& request : pending_decodes_) {
     if (decoder_->Failed()) {
       request->exception = CreateDecodeFailure(request->frame_index);
       continue;
     }
-    if (!decoder_->IsSizeAvailable())
-      continue;
 
     if (!data_complete_) {
       // We can't fulfill this promise at this time.
       if (tracks_->IsEmpty() ||
           request->frame_index >=
               tracks_->selectedTrack().value()->frameCount()) {
-        continue;
+        break;
       }
     } else if (request->frame_index >=
                tracks_->selectedTrack().value()->frameCount()) {
@@ -505,10 +506,10 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
       // Only satisfy fully complete decode requests.
       is_complete = image->GetStatus() == ImageFrame::kFrameComplete;
       if (!is_complete && request->complete_frames_only)
-        continue;
+        break;
 
       if (!is_complete && image->GetStatus() != ImageFrame::kFramePartial)
-        continue;
+        break;
 
       // Prefer FinalizePixelsAndGetImage() since that will mark the underlying
       // bitmap as immutable, which allows copies to be avoided.
@@ -528,7 +529,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
         } else {
           // Don't fulfill the promise until a new bitmap is seen.
           if (it->value == generation_id)
-            continue;
+            break;
 
           it->value = generation_id;
         }
