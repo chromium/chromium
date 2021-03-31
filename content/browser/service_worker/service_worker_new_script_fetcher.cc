@@ -105,7 +105,7 @@ void ServiceWorkerNewScriptFetcher::StartScriptLoadingWithNewResourceID(
           std::move(version_), std::move(loader_factory_),
           net::MutableNetworkTrafficAnnotationTag(
               kServiceWorkerScriptLoadTrafficAnnotation),
-          resource_id),
+          resource_id, /*is_throttle_needed=*/true),
       url_loader_remote_.BindNewPipeAndPassReceiver());
 }
 

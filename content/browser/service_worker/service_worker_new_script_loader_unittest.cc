@@ -226,7 +226,7 @@ class ServiceWorkerNewScriptLoaderTest : public testing::Test {
         request_id, options, request, (*out_client)->CreateRemote(), version_,
         helper_->url_loader_factory_getter()->GetNetworkFactory(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS),
-        resource_id);
+        resource_id, /*is_throttle_needed=*/false);
   }
 
   // Returns false if the entry for |url| doesn't exist in the storage.

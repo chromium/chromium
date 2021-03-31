@@ -13,16 +13,19 @@
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_consts.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/url_loader_factory_getter.h"
 #include "content/common/service_worker/service_worker_utils.h"
+#include "content/public/browser/url_loader_throttles.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_info.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/loader/throttling_url_loader.h"
 
 namespace content {
 
@@ -52,10 +55,12 @@ ServiceWorkerNewScriptLoader::CreateAndStart(
     scoped_refptr<ServiceWorkerVersion> version,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    int64_t cache_resource_id) {
+    int64_t cache_resource_id,
+    bool is_throttle_needed) {
   return base::WrapUnique(new ServiceWorkerNewScriptLoader(
       request_id, options, original_request, std::move(client), version,
-      loader_factory, traffic_annotation, cache_resource_id));
+      loader_factory, traffic_annotation, cache_resource_id,
+      is_throttle_needed));
 }
 
 // TODO(nhiroki): We're doing multiple things in the ctor. Consider factors out
@@ -68,7 +73,8 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
     scoped_refptr<ServiceWorkerVersion> version,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    int64_t cache_resource_id)
+    int64_t cache_resource_id,
+    bool is_throttle_needed)
     : request_url_(original_request.url),
       resource_destination_(original_request.destination),
       original_options_(options),
@@ -130,10 +136,24 @@ ServiceWorkerNewScriptLoader::ServiceWorkerNewScriptLoader(
   // JavaScript MIME type. Therefore, no sniffing is needed.
   options &= ~network::mojom::kURLLoadOptionSniffMimeType;
 
-  loader_factory_->CreateLoaderAndStart(
-      network_loader_.BindNewPipeAndPassReceiver(), request_id, options,
-      resource_request, network_client_receiver_.BindNewPipeAndPassRemote(),
-      traffic_annotation);
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  if (is_throttle_needed) {
+    // A service worker is independent from WebContents and FrameTreeNode.
+    // Return null or empty values when queried for either.
+    base::RepeatingCallback<WebContents*()> web_contents_getter =
+        base::BindRepeating([]() -> WebContents* { return nullptr; });
+    throttles = CreateContentBrowserURLLoaderThrottles(
+        resource_request, version_->context()->wrapper()->browser_context(),
+        std::move(web_contents_getter),
+        /*navigation_ui_data=*/nullptr, RenderFrameHost::kNoFrameTreeNodeId);
+  }
+
+  network_loader_ = blink::ThrottlingURLLoader::CreateLoaderAndStart(
+      std::move(loader_factory_), std::move(throttles), request_id, options,
+      &resource_request, this,
+      net::NetworkTrafficAnnotationTag(traffic_annotation),
+      base::ThreadTaskRunnerHandle::Get());
+
   DCHECK_EQ(LoaderState::kNotStarted, network_loader_state_);
   network_loader_state_ = LoaderState::kLoadingHeader;
 }
@@ -534,7 +554,6 @@ void ServiceWorkerNewScriptLoader::CommitCompleted(
   client_producer_.reset();
 
   network_loader_.reset();
-  network_client_receiver_.reset();
   network_consumer_.reset();
   network_watcher_.Cancel();
   cache_writer_.reset();
