@@ -106,7 +106,7 @@ function run_test() {
             promise_test(function(test) {
                 var promise = subtle.digest({name: badName}, sourceData[size])
                 .then(function(result) {
-                    assert_unreached("digest() should not have worked for " + alg + ":" + size);
+                    assert_unreached("digest() should not have worked for " + badName + ":" + size);
                 }, function(err) {
                     assert_equals(err.name, "NotSupportedError", "Bad algorithm name should cause NotSupportedError")
                 });

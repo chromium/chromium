@@ -46297,7 +46297,7 @@
       ]
      ],
      "nested-scale-animations.html": [
-      "3ca7bc7ed1f59d17e322dec6a32ae7388ae3b934",
+      "f0ee71ec74504d6b526b2ef08787e9f5c1e82c6d",
       [
        null,
        [
@@ -46351,6 +46351,19 @@
     },
     "css-backgrounds": {
      "animations": {
+      "background-color-animation-fallback-missing-0-percent.html": [
+       "9140b705d435055e9e8d83219d553823d565593f",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/background-color-animation-fallback-missing-0-percent-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "background-color-animation-fallback-missing-100-percent.html": [
        "1c5b63201f64464ef87a8b7a71348047dde10da0",
        [
@@ -46598,13 +46611,39 @@
         {}
        ]
       ],
-      "two-background-color-animation-diff-length.html": [
-       "b484eec9a7edb78c2a54623ac267b009b8a1c2d6",
+      "two-background-color-animation-diff-length1.html": [
+       "b584ed835c7a66764c0fce057d777faf851a558c",
        [
         null,
         [
          [
-          "/css/css-backgrounds/animations/two-background-color-animation-diff-length-ref.html",
+          "/css/css-backgrounds/animations/two-background-color-animation-diff-length1-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "two-background-color-animation-diff-length2.html": [
+       "c6822dec4cbe6f16126f1ef141a7eafc2765a6ff",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/two-background-color-animation-diff-length2-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "two-background-color-animation-diff-length3.html": [
+       "cfb0bf86e9c50817e4da2e0cf989a12738c7f8bc",
+       [
+        null,
+        [
+         [
+          "/css/css-backgrounds/animations/two-background-color-animation-diff-length3-ref.html",
           "=="
          ]
         ],
@@ -55547,12 +55586,12 @@
       ]
      ],
      "hsl-008.html": [
-      "bcef8002ee381ce2bf236ab9d6beab8762de2bd4",
+      "1024a1f83c9696f16f002dabc54d45a413e9caea",
       [
        null,
        [
         [
-         "/css/css-color/greentext-ref.html",
+         "/css/css-color/greensquare-ref.html",
          "=="
         ]
        ],
@@ -104972,6 +105011,19 @@
        [
         [
          "/css/css-pseudo/first-letter-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "first-letter-005.html": [
+      "60e36eab8f9b065067c4a26d7d134511ed00a3ae",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/first-letter-005-ref.html",
          "=="
         ]
        ],
@@ -183111,7 +183163,7 @@
     },
     "digest": {
      "digest.js": [
-      "c557d96ac4bd663b4f880009a01994b8161a05e3",
+      "ea341d36fb6652cfb4618c31f5ddf63a10ab5eb0",
       []
      ]
     },
@@ -183335,7 +183387,7 @@
     },
     "util": {
      "helpers.js": [
-      "c13ce9146e2b283d45294ddc08cf490a770a1200",
+      "fecd8733c0b26a37d6622c2f60405265ebb719cd",
       []
      ],
      "worker-report-crypto-subtle-presence.js": [
@@ -184013,6 +184065,10 @@
     ],
     "idlharness.https.window-expected.txt": [
      "4a3b092593547bdd8b4d14b148faf07a0634e03d",
+     []
+    ],
+    "selectAudioOutput-sans-user-activation.https-expected.txt": [
+     "5f2c09b8c2eb5a002d045d2903aa764467ed7f14",
      []
     ],
     "setSinkId.https-expected.txt": [
@@ -192987,6 +193043,10 @@
       []
      ],
      "animations": {
+      "background-color-animation-fallback-missing-0-percent-ref.html": [
+       "7a0046f27b2bd432944e61aee3bb900300093019",
+       []
+      ],
       "background-color-animation-fallback-missing-100-percent-ref.html": [
        "7a0046f27b2bd432944e61aee3bb900300093019",
        []
@@ -193051,8 +193111,16 @@
        "83a8d423116f5266eafa670261a1d4d564850a08",
        []
       ],
-      "two-background-color-animation-diff-length-ref.html": [
+      "two-background-color-animation-diff-length1-ref.html": [
        "44e416fe8f2e4e4665365e6a32e0197dbed63a79",
+       []
+      ],
+      "two-background-color-animation-diff-length2-ref.html": [
+       "44e416fe8f2e4e4665365e6a32e0197dbed63a79",
+       []
+      ],
+      "two-background-color-animation-diff-length3-ref.html": [
+       "66af34da3df44eb25dcf075a8f352bf215bbf792",
        []
       ]
      },
@@ -211982,6 +212050,10 @@
       "75a0149a8f81d8bf915b5e98ef86cfb4be0e5b48",
       []
      ],
+     "first-letter-005-ref.html": [
+      "4e9b962bced77a7c8c1067015a4bdb6babea797e",
+      []
+     ],
      "first-letter-and-whitespace-ref.html": [
       "d193306fe45064d281bd22e87ed50e6e1988db71",
       []
@@ -225229,7 +225301,7 @@
       []
      ],
      "table-scroll-props-expected.txt": [
-      "0942e682714c36492e3639391ff2d686c3778ffd",
+      "3e80a9f7bb0aa5249523787bde3f873cf053cdfd",
       []
      ]
     },
@@ -237588,7 +237660,7 @@
          []
         ],
         "path-objects.yaml": [
-         "d0e0672292c6fdcdf1c1757b0b4ddad0251baf2c",
+         "b8906eb650174e6a3625003e9cfa85aab71f7f94",
          []
         ],
         "pixel-manipulation.yaml": [
@@ -250251,7 +250323,7 @@
     ]
    },
    "lint.ignore": [
-    "7b96df4f524214e41eead71dd3e4bb358e92c20b",
+    "f382f1382b2106cd87ab03074f3bd9ae8e0fb501",
     []
    ],
    "loading": {
@@ -250359,6 +250431,18 @@
      "47c8ce7890877adbafa6547972dfb7cc75c414a5",
      []
     ]
+   },
+   "managed": {
+    "META.yml": [
+     "2971ec82a9b93c7d5b52ea7b1e98ac8cc0a97036",
+     []
+    ],
+    "resources": {
+     "managed-configuration-helper.js": [
+      "c3213a4dad8b93bb5057c6d8cc70c7eb3db004a9",
+      []
+     ]
+    }
    },
    "mathml": {
     "META.yml": [
@@ -256572,6 +256656,10 @@
       "97d45d453bdda968b2356acf0b129d2eb0347f64",
       []
      ],
+     "mock-managed-config.js": [
+      "c9980e1285b7e14a85cba19f2c870f480e303946",
+      []
+     ],
      "mock-screenenumeration.js": [
       "fc89b11ea106c8bda9f9deec300915e51fd26dd0",
       []
@@ -262683,7 +262771,7 @@
    "urlpattern": {
     "resources": {
      "urlpatterntestdata.json": [
-      "6603db93c002d53ec482478521e15625455f5df2",
+      "135c623aeb83da7a3326fee4e60c7f3bc8c6e787",
       []
      ]
     }
@@ -264026,7 +264114,7 @@
    },
    "webcodecs": {
     "META.yml": [
-     "2c510e2a7cad389be9b70df7f24f59f4928d0d88",
+     "b5b838a4cf9767d555df2b08f057636e1e7b86ee",
      []
     ],
     "README.md": [
@@ -282116,6 +282204,13 @@
       }
      ]
     ],
+    "selectAudioOutput-sans-user-activation.https.html": [
+     "9f014476d2717e08178668c712f8ceffd2f9a0aa",
+     [
+      null,
+      {}
+     ]
+    ],
     "setSinkId.https.html": [
      "b1f703a9350bf557f0d38911a09c09a9d02eaa3a",
      [
@@ -298888,7 +298983,7 @@
        ]
       ],
       "border-radius-computed.html": [
-       "9799be68ec73a36c3e956a9c1f3931e838e684ed",
+       "9406d1b171c7a5918ef6095eadb4c34e3f3faa07",
        [
         null,
         {}
@@ -299846,6 +299941,13 @@
       ]
      ],
      "content-visibility": {
+      "animation-display-lock.html": [
+       "d30cf0df2cd9e1a31d38d54a9bc23b32c6533626",
+       [
+        null,
+        {}
+       ]
+      ],
       "content-visibility-015.html": [
        "6099054ebd04ec742e7db84110b957c592318f43",
        [
@@ -308835,7 +308937,7 @@
        ]
       ],
       "position-sticky-parsing.html": [
-       "f6f587e615f5759f7a706a57defdd8bfaa836aa6",
+       "b147429e6921b40c3a1c51b2e3ace2fff78a92d0",
        [
         null,
         {}
@@ -309092,7 +309194,7 @@
       ]
      ],
      "first-letter-allowed-properties.html": [
-      "df1458888cb63e92185d9cbf1111779bb40cf573",
+      "3adc772d44487e0a48881ac880bb041f7f01e1e6",
       [
        null,
        {}
@@ -312111,6 +312213,13 @@
        {}
       ]
      ],
+     "collapsed-scroll-overflow.html": [
+      "42f8fd0a7d657cf86ea0fdba67062e2927838386",
+      [
+       null,
+       {}
+      ]
+     ],
      "column-track-merging.html": [
       "6dba9e6f6079863a7b810715b2e2fcdc0952c38d",
       [
@@ -312190,6 +312299,13 @@
        ]
       ]
      },
+     "html-display-table.html": [
+      "20d26037f10d490589ccb703b5773a8a7c120217",
+      [
+       null,
+       {}
+      ]
+     ],
      "html-to-css-mapping-1.html": [
       "c29fd1db9db0670d43b50141df1fc413022c7aea",
       [
@@ -316627,6 +316743,13 @@
        ],
        "get-invalid.html": [
         "403c2691f405bdad35cef42fea29eb8951836bfc",
+        [
+         null,
+         {}
+        ]
+       ],
+       "get-position.html": [
+        "20546bfeee7e559b045d4e7ff3d77280d10c4be6",
         [
          null,
          {}
@@ -371803,6 +371926,566 @@
          {}
         ]
        ],
+       "2d.path.roundrect.1.radius.dompoint.html": [
+        "d40389868b217477a5585a7d574d97a098156368",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.1.radius.dompoint.worker.js": [
+        "eec2dfd43908893f943f58a68e2d91a1dc946b22",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.1.radius.double.html": [
+        "bfc15e7a5d9f1398aa4a93e5791efed73fa673f4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.1.radius.double.worker.js": [
+        "573e4c75f7b799351ef550863b964d5d6f5400dc",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.1.radius.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.2.radii.1.dompoint.html": [
+        "ea3028d875428ed28f294e930eb6d9294a22fd26",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.2.radii.1.dompoint.worker.js": [
+        "64d7c4ab3406cef4878e5e75be2c5a07e16c9cc8",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.1.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.2.radii.1.double.html": [
+        "f359b3d8a4284f583e755d1074f754c2b1673d63",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.2.radii.1.double.worker.js": [
+        "ba999f8b63b98b36efe00d010c1a23df4f669683",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.1.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.2.radii.2.dompoint.html": [
+        "2a9175ae407f0ea3e9627d91bbefe85b4162c562",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.2.radii.2.dompoint.worker.js": [
+        "05e91c729e91dcc00ffb2302424a746be686e335",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.2.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.2.radii.2.double.html": [
+        "50cf0c61c3204d08fdabd8e3e4f25a326879c29e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.2.radii.2.double.worker.js": [
+        "d41ac26d79900e1e955ab3a6cd56fa18c025ad51",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.2.radii.2.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.1.dompoint.html": [
+        "0351500ce82b231bfead1b0a411a242818296e37",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.1.dompoint.worker.js": [
+        "a8d4a6c056568b758285ea03cab9c100e2ebb53d",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.1.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.1.double.html": [
+        "324eb8cd0aefec4733719dabd89a6b00a9a1d677",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.1.double.worker.js": [
+        "e6843b75c8e13dbda96f8d72c26f1b11d41ef284",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.1.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.2.dompoint.html": [
+        "0ab615de4fda2f4c16d10da7e2615c704701295f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.2.dompoint.worker.js": [
+        "66d895b3ccc1d91e5d1ba1f205fb2efbd4f9a69c",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.2.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.2.double.html": [
+        "7da57484c0502bb3c90b08aafd9245062e9c2712",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.2.double.worker.js": [
+        "72e2c355bea370cd7eba8a215263d091b123a762",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.2.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.3.dompoint.html": [
+        "75dd8297291b2732c1ea9f91f94610d64994a3db",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.3.dompoint.worker.js": [
+        "1cd6506469d15db47f5536fe82d9825d4406c6cc",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.3.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.3.double.html": [
+        "d2f7a03ba0401ef2d5ed424ba864855d68b4b17c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.3.radii.3.double.worker.js": [
+        "d18a2c0cd1931fe52b28abfcc85e59c1bf20e853",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.3.radii.3.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.1.dompoint.html": [
+        "2d4a651cd8e9b6d195c293eec51b039d4c236e4b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.1.dompoint.worker.js": [
+        "712884dd427c5d35ec01b69af9edb43895f36e86",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.1.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.1.double.html": [
+        "24160a11405e136ab5be8b589354a0cccebb26f1",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.1.double.worker.js": [
+        "061a8c4fcf50ea09e9ecb905959ab6e0dc77667f",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.1.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.2.dompoint.html": [
+        "f69865a962e1eab5aebd209c0e3c3c7f02d005d0",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.2.dompoint.worker.js": [
+        "7c6c36deca53d417774544b57b597fc1a804d158",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.2.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.2.double.html": [
+        "97ecb398fb57a88a1df0fb94c46ca68e0332543e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.2.double.worker.js": [
+        "641acc9f2140e841e8912d664fda64a95d42e08d",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.2.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.3.dompoint.html": [
+        "4441250747680bb9a6e4b52651f55bbb8a8aa0a9",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.3.dompoint.worker.js": [
+        "838246a1f11ac2d29fdfe4c53e6128e8caf24953",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.3.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.3.double.html": [
+        "08554c09e498d4b7e8ca89437fcf6ff2deaf00ee",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.3.double.worker.js": [
+        "67c8c375154413d2a22c63128d58cd8ab8fac87c",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.3.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.4.dompoint.html": [
+        "9f19e990a6fc6cdd486a88afeaed774c68b65fad",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.4.dompoint.worker.js": [
+        "7c867e25e290d6a6f0243fed4f3a9cab8827aaa7",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.4.dompoint.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.4.double.html": [
+        "32959f718eee247b4debb3c794c64d9c851a15ea",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.4.radii.4.double.worker.js": [
+        "78004cbf8e374a418058946ae28bdf1bef4e034c",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.4.radii.4.double.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.closed.html": [
+        "d070e0f4d37aa7f1413f68a9f1494aafc90a5fcd",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.closed.worker.js": [
+        "906eb6e193c430fb4cf73d6e2d1f7d96be0f900b",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.closed.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.end.1.html": [
+        "f79ee17b41ebce84ec2de238ca666e2ec7b3f0c4",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.end.1.worker.js": [
+        "ef50fe5af10028dd728017bd84878bedb68aa678",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.end.1.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.end.2.html": [
+        "6303f24a9a6ffafe8ff5795c16f14309a18c7b58",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.end.2.worker.js": [
+        "e2a51c66b76789af7097ac1a228f9469c282248d",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.end.2.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.end.3.html": [
+        "4216bf151de06b6b985edfd4154ae15883cd7aef",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.end.3.worker.js": [
+        "46c82dca4b33033e64394af0826063597b21e439",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.end.3.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.end.4.html": [
+        "39915312f0fb85bf1d8a820986d01dc5709c634f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.end.4.worker.js": [
+        "05ef9d48fc2f02be6b938dfb1e5e6f638a8f7a27",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.end.4.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.negative.html": [
+        "5558a99be48a01451c252e9fcb297f3d3e771535",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.negative.worker.js": [
+        "96df71a52f7d455cc25a2530032478f1a32bcb25",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.negative.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.newsubpath.html": [
+        "676e0beea8eb782a0e5efaf88b1104bedc8fb757",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.newsubpath.worker.js": [
+        "66e35f9d54bbacd8972b871cb4c1af78b87a58d8",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.newsubpath.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.nonfinite.html": [
+        "de4613a8b7811016e35e7c30d60ad041ad410fad",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.nonfinite.worker.js": [
+        "8abb44398f938cfb34e68e3041d3898391fb1be1",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.nonfinite.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.intersecting.1.html": [
+        "68b16e6b4c93b72e6da6abe8a089e2cdd998491a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.intersecting.1.worker.js": [
+        "c0f4e60c27a4f73b7b00acfb7ccc3caee875a8d5",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.intersecting.1.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.intersecting.2.html": [
+        "e849c56cfb5865796ce72e3a3af9c6da00872e0c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.intersecting.2.worker.js": [
+        "3801c0c00c80f3c35a982665f540ad3f73371e35",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.intersecting.2.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.none.html": [
+        "6defab24e32e0e5ab095ff78c1251454ac1d5085",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.none.worker.js": [
+        "9acbf0d84d9aaede8beedc2a82df18ff8834650f",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.none.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.toomany.html": [
+        "fe75bc2dc2c00f952fa7d286f950f21564c24e42",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.radius.toomany.worker.js": [
+        "294ae6bc3c5271962be162566e9ec07b6afd33ad",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.radius.toomany.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.selfintersect.html": [
+        "c0aad973a96445332ba3fb80f6516d725f0d391e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.selfintersect.worker.js": [
+        "b00d7b40550281a0445f19c9de412f7923edf0ca",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.selfintersect.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.winding.html": [
+        "291c3435a2c2d75046f8abca2ccb3ecc65bb0aef",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.winding.worker.js": [
+        "5a765927b96a318a2afdcec1f1854b2b2df996cd",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.winding.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.1.html": [
+        "250c812ed88f23036483fc1a2680e3fe51894747",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.1.worker.js": [
+        "94c436e72ae3d3e8b968746b8ef7fe55723d6141",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.1.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.2.html": [
+        "e418e4c30ad7aae34557c252fa4408bd633e1874",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.2.worker.js": [
+        "789a6ca8f43cfc9641879074d2ff0db1613e81a0",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.2.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.3.html": [
+        "3b987a8cb81af7f5c4e68c1db2b2621027caa88f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.3.worker.js": [
+        "72b910f9e6dccd9ba187868759d465f415feff45",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.3.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.4.html": [
+        "c37feea5d9a418ed96df3fdb37353ff89b3982f8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.4.worker.js": [
+        "f6b7f929ad13c43f9e24da1b538341146db4b925",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.4.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.5.html": [
+        "eb7d57e4e70e1a7791a5108a3301479c06876025",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.5.worker.js": [
+        "1f0a33fa72ec72022d1a11640e9b2c441e43d383",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.5.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.6.html": [
+        "71f87cd52e36918d15b1edb4b2a2bad61b7af637",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.roundrect.zero.6.worker.js": [
+        "737187207d7df6d1db707fdd3c882e76313e0580",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.roundrect.zero.6.worker.html",
+         {}
+        ]
+       ],
        "2d.path.stroke.empty.html": [
         "af6456f228800ec9ff87557675ae6a5199e44094",
         [
@@ -386655,7 +387338,7 @@
         ]
        ],
        "popup-light-dismiss.tentative.html": [
-        "613b659679d90297f1d43c2aa72431ebe7f8b146",
+        "30e0c90adfbc74e80da6cdf53b77beedc56dc01d",
         [
          null,
          {
@@ -397727,6 +398410,52 @@
         [
          "script",
          "/resources/idlharness.js"
+        ]
+       ]
+      }
+     ]
+    ]
+   },
+   "managed": {
+    "managed-config-error.https.window.js": [
+     "15e6af8bf1bc6ea1ba6787be699fcd3348b1c2fb",
+     [
+      "managed/managed-config-error.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "managed-config-success.https.window.js": [
+     "73d8b3350bf038f86c3a60faa614dad234e0373e",
+     [
+      "managed/managed-config-success.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/resources/testharness.js"
+        ],
+        [
+         "script",
+         "/resources/testharnessreport.js"
+        ],
+        [
+         "script",
+         "/resources/test-only-api.js"
+        ],
+        [
+         "script",
+         "resources/managed-configuration-helper.js"
         ]
        ]
       }
@@ -440333,7 +441062,7 @@
    },
    "urlpattern": {
     "urlpattern.https.any.js": [
-     "f56223bf648e7fdd50ca030db02e6f56b3179071",
+     "d3872afb4d9b1b7d0643a718b2393209cd595386",
      [
       "urlpattern/urlpattern.https.any.html",
       {
@@ -448278,7 +449007,7 @@
      ]
     ],
     "image-decoder.any.js": [
-     "b096c83f76a5104cb44d11c77b928b4d95ad184a",
+     "3e2e495e2e2ebc93a4b79359badd634a009e3705",
      [
       "webcodecs/image-decoder.any.html",
       {
@@ -448426,7 +449155,7 @@
      ]
     ],
     "video-frame.any.js": [
-     "07ab30c03272cca52611b211c42a79b27a02c80f",
+     "b720372fa01c8a16a7141fb4db1f09bb26ffcb28",
      [
       "webcodecs/video-frame.any.html",
       {
