@@ -52,7 +52,7 @@ cr_components_chromeos_auto_imports = [
   "ui/webui/resources/cr_components/chromeos/multidevice_setup/multidevice_setup_delegate.html|MultiDeviceSetupDelegate",
   "ui/webui/resources/cr_components/chromeos/multidevice_setup/ui_page_container_behavior.html|UiPageContainerBehavior",
   "ui/webui/resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.html|CrPolicyNetworkBehaviorMojo",
-  "ui/webui/resources/cr_components/chromeos/network/cellular_utils.html|getSimSlotCount,hasActivePSimNetwork,isConnectedToNonCellularNetwork",
+  "ui/webui/resources/cr_components/chromeos/network/cellular_utils.html|getSimSlotCount,hasActivePSimNetwork,isConnectedToNonCellularNetwork,isActiveSim",
   "ui/webui/resources/cr_components/chromeos/network/onc_mojo.html|OncMojo",
   "ui/webui/resources/cr_components/chromeos/network/network_config_element_behavior.html|NetworkConfigElementBehavior",
   "ui/webui/resources/cr_components/chromeos/network/network_listener_behavior.html|NetworkListenerBehavior",

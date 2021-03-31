@@ -706,6 +706,74 @@ suite('InternetDetailPage', function() {
         assertFalse(!!hiddenToggle);
       });
     });
+
+    test(
+        'Cellular network on active sim slot, show config sections',
+        async () => {
+          loadTimeData.overrideValues({
+            updatedCellularActivationUi: true,
+          });
+          init();
+          const test_iccid = '11111111111111111';
+
+          const mojom = chromeos.networkConfig.mojom;
+          await mojoApi_.setNetworkTypeEnabledState(
+              mojom.NetworkType.kCellular, true);
+          const cellularNetwork = getManagedProperties(
+              mojom.NetworkType.kCellular, 'cellular', mojom.OncSource.kDevice);
+          cellularNetwork.typeProperties.cellular.iccid = test_iccid;
+
+          mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          mojoApi_.setDeviceStateForTest({
+            type: mojom.NetworkType.kCellular,
+            deviceState: mojom.DeviceStateType.kEnabled,
+            simInfos: [{
+              iccid: test_iccid,
+              isPrimary: true,
+            }],
+          });
+          await flushAsync();
+          assertTrue(internetDetailPage.showConfigurableSections_);
+          // Check that an element from first dom-if exists
+          assertTrue(!!internetDetailPage.$$('#connectDisconnect'));
+          // Check that an element from the primary account section exists.
+          assertTrue(!!internetDetailPage.$$('#allowDataRoaming'));
+        });
+
+    test(
+        'Cellular network on non-active sim slot, hide config sections',
+        async () => {
+          loadTimeData.overrideValues({
+            updatedCellularActivationUi: true,
+          });
+          init();
+          const test_iccid = '11111111111111111';
+
+          const mojom = chromeos.networkConfig.mojom;
+          await mojoApi_.setNetworkTypeEnabledState(
+              mojom.NetworkType.kCellular, true);
+          const cellularNetwork = getManagedProperties(
+              mojom.NetworkType.kCellular, 'cellular', mojom.OncSource.kDevice);
+          cellularNetwork.typeProperties.cellular.iccid = '000';
+
+          mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+          internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+          mojoApi_.setDeviceStateForTest({
+            type: mojom.NetworkType.kCellular,
+            deviceState: mojom.DeviceStateType.kEnabled,
+            simInfos: [{
+              iccid: test_iccid,
+              isPrimary: true,
+            }],
+          });
+          await flushAsync();
+          assertFalse(internetDetailPage.showConfigurableSections_);
+          // Check that an element from first dom-if exists
+          assertFalse(!!internetDetailPage.$$('#connectDisconnect'));
+          // Check that an element from the primary account section exists.
+          assertFalse(!!internetDetailPage.$$('#allowDataRoaming'));
+        });
   });
 
   suite('DetailsPageEthernet', function() {

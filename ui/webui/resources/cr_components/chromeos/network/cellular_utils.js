@@ -99,3 +99,25 @@ function networkIsPSim_(network) {
         });
       });
 }
+
+/**
+ * Determines if the current network is on the active sim slot.
+ * TODO(cvandermerwe): Use this function in network-siminfo.
+ * @param {?chromeos.networkConfig.mojom.NetworkStateProperties} networkState
+ * @param {?chromeos.networkConfig.mojom.DeviceStateProperties} deviceState
+ */
+/* #export */ function isActiveSim(networkState, deviceState) {
+  const mojom = chromeos.networkConfig.mojom;
+  if (!networkState || networkState.type !== mojom.NetworkType.kCellular) {
+    return false;
+  }
+
+  const iccid = networkState.typeState.cellular.iccid;
+  if (!iccid || !deviceState || !deviceState.simInfos) {
+    return false;
+  }
+  const isActiveSim = deviceState.simInfos.find(simInfo => {
+    return simInfo.iccid === iccid && simInfo.isPrimary;
+  });
+  return !!isActiveSim;
+}

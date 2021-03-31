@@ -39,6 +39,18 @@ Polymer({
       value: false,
     },
 
+    /**
+     * Whether network configuration properties sections should be shown. The
+     * advanced section is not controlled by this property.
+     * @private
+     */
+    showConfigurableSections_: {
+      type: Boolean,
+      value: true,
+      computed:
+          'computeShowConfigurableSections_(deviceState_, managedProperties_)',
+    },
+
     /** @private Indicates if wi-fi sync is enabled for the active user.  */
     isWifiSyncEnabled_: Boolean,
 
@@ -2348,4 +2360,24 @@ Polymer({
          deviceState.deviceState !==
              chromeos.networkConfig.mojom.DeviceStateType.kEnabled);
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShowConfigurableSections_() {
+    if (!this.isUpdatedCellularUiEnabled_ || !this.managedProperties_ ||
+        !this.deviceState_) {
+      return true;
+    }
+
+    const mojom = chromeos.networkConfig.mojom;
+    const networkState =
+        OncMojo.managedPropertiesToNetworkState(this.managedProperties_);
+    assert(networkState);
+    if (networkState.type !== mojom.NetworkType.kCellular) {
+      return true;
+    }
+    return isActiveSim(networkState, this.deviceState_);
+  }
 });
