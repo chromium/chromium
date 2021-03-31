@@ -19,6 +19,10 @@ source_set("permissions") {
   sources = [
     "chooser_context_base.cc",
     "chooser_context_base.h",
+    "contexts/clipboard_read_write_permission_context.cc",
+    "contexts/clipboard_read_write_permission_context.h",
+    "contexts/clipboard_sanitized_write_permission_context.cc",
+    "contexts/clipboard_sanitized_write_permission_context.h",
     "contexts/font_access_permission_context.cc",
     "contexts/font_access_permission_context.h",
     "contexts/geolocation_permission_context.cc",

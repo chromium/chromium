@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/clipboard/clipboard_sanitized_write_permission_context.h"
+#include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
 
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
+
+namespace permissions {
 
 ClipboardSanitizedWritePermissionContext::
     ClipboardSanitizedWritePermissionContext(
@@ -32,3 +34,5 @@ bool ClipboardSanitizedWritePermissionContext::IsRestrictedToSecureOrigins()
     const {
   return true;
 }
+
+}  // namespace permissions

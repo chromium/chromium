@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CLIPBOARD_CLIPBOARD_SANITIZED_WRITE_PERMISSION_CONTEXT_H_
-#define CHROME_BROWSER_CLIPBOARD_CLIPBOARD_SANITIZED_WRITE_PERMISSION_CONTEXT_H_
+#ifndef COMPONENTS_PERMISSIONS_CONTEXTS_CLIPBOARD_SANITIZED_WRITE_PERMISSION_CONTEXT_H_
+#define COMPONENTS_PERMISSIONS_CONTEXTS_CLIPBOARD_SANITIZED_WRITE_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "components/permissions/permission_context_base.h"
 
+namespace permissions {
+
 // Manages Clipboard API user permissions, for sanitized write only.
-class ClipboardSanitizedWritePermissionContext
-    : public permissions::PermissionContextBase {
+class ClipboardSanitizedWritePermissionContext : public PermissionContextBase {
  public:
   explicit ClipboardSanitizedWritePermissionContext(
       content::BrowserContext* browser_context);
@@ -30,4 +30,6 @@ class ClipboardSanitizedWritePermissionContext
   bool IsRestrictedToSecureOrigins() const override;
 };
 
-#endif  // CHROME_BROWSER_CLIPBOARD_CLIPBOARD_SANITIZED_WRITE_PERMISSION_CONTEXT_H_
+}  // namespace permissions
+
+#endif  // COMPONENTS_PERMISSIONS_CONTEXTS_CLIPBOARD_SANITIZED_WRITE_PERMISSION_CONTEXT_H_

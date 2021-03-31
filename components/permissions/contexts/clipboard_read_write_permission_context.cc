@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/clipboard/clipboard_read_write_permission_context.h"
+#include "components/permissions/contexts/clipboard_read_write_permission_context.h"
 
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+
+namespace permissions {
 
 ClipboardReadWritePermissionContext::ClipboardReadWritePermissionContext(
     content::BrowserContext* browser_context)
@@ -19,7 +21,7 @@ ClipboardReadWritePermissionContext::ClipboardReadWritePermissionContext(
 ClipboardReadWritePermissionContext::~ClipboardReadWritePermissionContext() {}
 
 void ClipboardReadWritePermissionContext::UpdateTabContext(
-    const permissions::PermissionRequestID& id,
+    const PermissionRequestID& id,
     const GURL& requesting_frame,
     bool allowed) {
   content_settings::PageSpecificContentSettings* content_settings =
@@ -40,3 +42,5 @@ void ClipboardReadWritePermissionContext::UpdateTabContext(
 bool ClipboardReadWritePermissionContext::IsRestrictedToSecureOrigins() const {
   return true;
 }
+
+}  // namespace permissions

@@ -9,8 +9,6 @@
 #include "chrome/browser/accessibility/accessibility_permission_context.h"
 #include "chrome/browser/background_fetch/background_fetch_permission_context.h"
 #include "chrome/browser/background_sync/periodic_background_sync_permission_context.h"
-#include "chrome/browser/clipboard/clipboard_read_write_permission_context.h"
-#include "chrome/browser/clipboard/clipboard_sanitized_write_permission_context.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/display_capture/display_capture_permission_context.h"
 #include "chrome/browser/generic_sensor/sensor_permission_context.h"
@@ -34,6 +32,8 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/background_sync/background_sync_permission_context.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/permissions/contexts/clipboard_read_write_permission_context.h"
+#include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
 #include "components/permissions/contexts/font_access_permission_context.h"
 #include "components/permissions/contexts/payment_handler_permission_context.h"
 #include "components/permissions/contexts/webxr_permission_context.h"
@@ -95,9 +95,11 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   permission_contexts[ContentSettingsType::ACCESSIBILITY_EVENTS] =
       std::make_unique<AccessibilityPermissionContext>(profile);
   permission_contexts[ContentSettingsType::CLIPBOARD_READ_WRITE] =
-      std::make_unique<ClipboardReadWritePermissionContext>(profile);
+      std::make_unique<permissions::ClipboardReadWritePermissionContext>(
+          profile);
   permission_contexts[ContentSettingsType::CLIPBOARD_SANITIZED_WRITE] =
-      std::make_unique<ClipboardSanitizedWritePermissionContext>(profile);
+      std::make_unique<permissions::ClipboardSanitizedWritePermissionContext>(
+          profile);
   permission_contexts[ContentSettingsType::PAYMENT_HANDLER] =
       std::make_unique<payments::PaymentHandlerPermissionContext>(profile);
   permission_contexts[ContentSettingsType::BACKGROUND_FETCH] =
