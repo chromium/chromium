@@ -62,23 +62,20 @@ enum UMAEventType {
 // targetted to which components etc.)
 class GESTURE_DETECTION_EXPORT GestureTouchUMAHistogram {
  public:
-  GestureTouchUMAHistogram();
-  ~GestureTouchUMAHistogram();
-
   static void RecordGestureEvent(const ui::GestureEventData& gesture);
   void RecordTouchEvent(const ui::MotionEvent& event);
 
  private:
   static UMAEventType UMAEventTypeFromEvent(const GestureEventData& gesture);
 
-  // The first finger's press time.
-  base::TimeTicks start_time_;
-  // The first finger's press location.
+  // The first touch point's tool type.
+  ui::MotionEvent::ToolType tool_type_ = ui::MotionEvent::ToolType::UNKNOWN;
+  // The first touch point's initial location.
   gfx::Point start_touch_position_;
   // The maximum distance the first touch point travelled from its starting
   // location in pixels.
-  float max_distance_from_start_squared_;
-  bool is_single_finger_;
+  float max_distance_from_start_squared_ = 0.f;
+  bool is_single_finger_ = false;
 };
 
 }  // namespace ui

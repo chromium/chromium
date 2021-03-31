@@ -3063,4 +3063,166 @@ TEST_F(GestureProviderTest, SingleTapRepeatLengthOfOne) {
   EXPECT_EQ(1, GetMostRecentGestureEvent().details.tap_count());
 }
 
+// Test for Event.MaxDragDistance.* histograms with taps.
+TEST_F(GestureProviderTest, MaxDragDistanceHistogramsWithTap) {
+  base::HistogramTester histograms_tester;
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.ERASER", 0);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.FINGER", 0);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.STYLUS", 0);
+
+  // A tap of type FINGER adds appropriate counts.
+  base::TimeTicks event_time = base::TimeTicks::Now();
+  MockMotionEvent event =
+      ObtainMotionEvent(event_time, MotionEvent::Action::DOWN);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::UP);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  histograms_tester.ExpectBucketCount("Event.MaxDragDistance.FINGER", 0, 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.ERASER", 0);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.FINGER", 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.STYLUS", 0);
+
+  // A tap of type STYLUS adds appropriate counts.
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::DOWN);
+  event.SetToolType(0, MotionEvent::ToolType::STYLUS);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::UP);
+  event.SetToolType(0, MotionEvent::ToolType::STYLUS);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  histograms_tester.ExpectBucketCount("Event.MaxDragDistance.STYLUS", 0, 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.ERASER", 0);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.FINGER", 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.STYLUS", 1);
+
+  // A tap of type ERASER adds appropriate counts.
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::DOWN);
+  event.SetToolType(0, MotionEvent::ToolType::ERASER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::UP);
+  event.SetToolType(0, MotionEvent::ToolType::ERASER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  histograms_tester.ExpectBucketCount("Event.MaxDragDistance.ERASER", 0, 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.ERASER", 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.FINGER", 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.STYLUS", 1);
+
+  // A canceled tap is not counted.
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::DOWN);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::CANCEL);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.ERASER", 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.FINGER", 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.STYLUS", 1);
+
+  // A multifinger tap is not counted.
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::DOWN);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::POINTER_DOWN);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::POINTER_UP);
+  event.SetToolType(0, MotionEvent::ToolType::STYLUS);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::UP);
+  event.SetToolType(0, MotionEvent::ToolType::STYLUS);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.ERASER", 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.FINGER", 1);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.STYLUS", 1);
+}
+
+// Test for Event.MaxDragDistance.* histograms with drags.
+TEST_F(GestureProviderTest, MaxDragDistanceHistogramsWithDrag) {
+  base::HistogramTester histograms_tester;
+
+  // A tiny 1px drag is counted in appropriate distance bucket.
+  base::TimeTicks event_time = base::TimeTicks::Now();
+  MockMotionEvent event =
+      ObtainMotionEvent(event_time, MotionEvent::Action::DOWN, 10, 10);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::MOVE, 10, 11);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::UP, 10, 11);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  histograms_tester.ExpectBucketCount("Event.MaxDragDistance.FINGER", 1, 1);
+
+  // A small 10px drag is counted in appropriate distance bucket.
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::DOWN, 10, 10);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::MOVE, 10, 20);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::UP, 10, 20);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  histograms_tester.ExpectBucketCount("Event.MaxDragDistance.FINGER", 10, 1);
+
+  // A long 100px drag is counted in appropriate distance bucket.
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::DOWN, 10, 10);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::MOVE, 10, 110);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  event_time += kOneMicrosecond;
+  event = ObtainMotionEvent(event_time, MotionEvent::Action::UP, 10, 110);
+  event.SetToolType(0, MotionEvent::ToolType::FINGER);
+  EXPECT_TRUE(gesture_provider_->OnTouchEvent(event));
+
+  histograms_tester.ExpectBucketCount("Event.MaxDragDistance.FINGER", 100, 1);
+
+  // We have 3 counts in total
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.ERASER", 0);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.FINGER", 3);
+  histograms_tester.ExpectTotalCount("Event.MaxDragDistance.STYLUS", 0);
+}
+
 }  // namespace ui

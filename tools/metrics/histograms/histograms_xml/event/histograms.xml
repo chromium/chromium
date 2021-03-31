@@ -1492,6 +1492,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Event.MaxDragDistance.{ToolType}" units="dips"
+    expires_after="2022-03-30">
+  <owner>mustaq@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    The maximum Euclidean distance (in DIPs, device independent pixels) a
+    single-pointer gesture travels from its starting position during the period
+    the gesture has been active. The histogram is measured separately for every
+    pointer type that can be used in gesture recognition: finger, and pen in
+    drawing/eraser mode. The type names used here follow the corresponding
+    labels in |MotionEvent.ToolType|.
+  </summary>
+  <token key="ToolType">
+    <variant name="ERASER"/>
+    <variant name="FINGER"/>
+    <variant name="STYLUS"/>
+  </token>
+</histogram>
+
 <histogram name="Event.PassiveListeners" enum="EventResultType"
     expires_after="2021-08-09">
   <owner>dtapuska@chromium.org</owner>
@@ -1569,6 +1588,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.TouchDuration" units="ms" expires_after="M77">
+  <obsolete>
+    Removed 2021.03.30 - no longer in use.
+  </obsolete>
   <owner>kuscher@google.com</owner>
   <owner>flackr@chromium.org</owner>
   <summary>
@@ -1581,6 +1603,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.TouchMaxDistance" units="pixels" expires_after="M77">
+  <obsolete>
+    Removed 2021.03.30 - replaced by Event.MaxDragDistance.*.
+  </obsolete>
   <owner>kuscher@google.com</owner>
   <owner>flackr@chromium.org</owner>
   <summary>

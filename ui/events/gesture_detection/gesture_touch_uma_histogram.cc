@@ -9,44 +9,55 @@
 
 namespace ui {
 
-GestureTouchUMAHistogram::GestureTouchUMAHistogram()
-    : max_distance_from_start_squared_(0), is_single_finger_(true) {
-}
-
-GestureTouchUMAHistogram::~GestureTouchUMAHistogram() {
-}
-
 void GestureTouchUMAHistogram::RecordGestureEvent(
     const GestureEventData& gesture) {
   UMA_HISTOGRAM_ENUMERATION(
       "Event.GestureCreated", UMAEventTypeFromEvent(gesture), UMA_ET_COUNT);
 }
 
-void GestureTouchUMAHistogram::RecordTouchEvent(const MotionEvent& event) {
-  if (event.GetAction() == MotionEvent::Action::DOWN) {
-    start_time_ = event.GetEventTime();
-    start_touch_position_ = gfx::Point(event.GetX(), event.GetY());
-    is_single_finger_ = true;
-    max_distance_from_start_squared_ = 0;
-  } else if (event.GetAction() == MotionEvent::Action::MOVE &&
-             is_single_finger_) {
-    float cur_dist = (start_touch_position_ -
-                      gfx::Point(event.GetX(), event.GetY())).LengthSquared();
-    if (cur_dist > max_distance_from_start_squared_)
-      max_distance_from_start_squared_ = cur_dist;
-  } else {
-    if (event.GetAction() == MotionEvent::Action::UP && is_single_finger_) {
-      UMA_HISTOGRAM_CUSTOM_COUNTS(
-          "Event.TouchMaxDistance",
-          static_cast<int>(sqrt(max_distance_from_start_squared_)),
-          1,
-          1500,
-          50);
+#define RECORD_MAX_DRAG_DISTANCE(HISTOGRAM_NAME, DIST_SQUARED) \
+  UMA_HISTOGRAM_CUSTOM_COUNTS(                                 \
+      HISTOGRAM_NAME, static_cast<int>(sqrt(DIST_SQUARED)), 1, 1500, 50)
 
-      base::TimeDelta duration = event.GetEventTime() - start_time_;
-      UMA_HISTOGRAM_TIMES("Event.TouchDuration", duration);
-    }
-    is_single_finger_ = false;
+void GestureTouchUMAHistogram::RecordTouchEvent(const MotionEvent& event) {
+  switch (event.GetAction()) {
+    case MotionEvent::Action::DOWN:
+      tool_type_ = event.GetToolType();
+      start_touch_position_ = gfx::Point(event.GetX(), event.GetY());
+      is_single_finger_ = true;
+      max_distance_from_start_squared_ = 0;
+      break;
+
+    case MotionEvent::Action::MOVE:
+      if (is_single_finger_) {
+        float cur_dist =
+            (start_touch_position_ - gfx::Point(event.GetX(), event.GetY()))
+                .LengthSquared();
+        if (cur_dist > max_distance_from_start_squared_)
+          max_distance_from_start_squared_ = cur_dist;
+      }
+      break;
+
+    case MotionEvent::Action::UP:
+      if (is_single_finger_) {
+        if (tool_type_ == MotionEvent::ToolType::FINGER) {
+          RECORD_MAX_DRAG_DISTANCE("Event.MaxDragDistance.FINGER",
+                                   max_distance_from_start_squared_);
+        } else if (tool_type_ == MotionEvent::ToolType::STYLUS) {
+          RECORD_MAX_DRAG_DISTANCE("Event.MaxDragDistance.STYLUS",
+                                   max_distance_from_start_squared_);
+        } else if (tool_type_ == MotionEvent::ToolType::ERASER) {
+          RECORD_MAX_DRAG_DISTANCE("Event.MaxDragDistance.ERASER",
+                                   max_distance_from_start_squared_);
+        }
+        is_single_finger_ = false;
+      }
+      break;
+
+    default:
+      // We expect either a POINTER_DOWN (when a secondary pointer became
+      // active) or a CANCEL (when an active pointer becomes invalid).
+      is_single_finger_ = false;
   }
 }
 

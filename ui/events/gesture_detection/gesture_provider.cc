@@ -814,13 +814,18 @@ bool GestureProvider::OnTouchEvent(const MotionEvent& event) {
                GetMotionEventActionName(event.GetAction()));
   DCHECK_NE(0u, event.GetPointerCount());
 
+  // We record the histograms before the |CanHandle()| call below because we
+  // want to check the event stream before gesture processing takes place.  For
+  // example, we want to see |MotionEvent::Action::UP| event even for a panning
+  // gesture where the UP is not dispatched to content.
+  uma_histogram_.RecordTouchEvent(event);
+
   if (!CanHandle(event))
     return false;
 
   OnTouchEventHandlingBegin(event);
   gesture_listener_->OnTouchEvent(event);
   OnTouchEventHandlingEnd(event);
-  uma_histogram_.RecordTouchEvent(event);
   return true;
 }
 
