@@ -66,12 +66,6 @@ ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
     });
   }
 
-  doGesture(gesture, opt_x, opt_y) {
-    return () => {
-      GestureCommandHandler.onAccessibilityGesture_(gesture, opt_x, opt_y);
-    };
-  }
-
   getTutorial() {
     return this.getPanel().tutorial;
   }
@@ -697,16 +691,15 @@ TEST_F('ChromeVoxTutorialTest', 'StartStopInteractiveMode', function() {
 // Tests that gestures can be used in the tutorial to navigate.
 TEST_F('ChromeVoxTutorialTest', 'Gestures', function() {
   const mockFeedback = this.createMockFeedback();
-  const GestureType = chrome.accessibilityPrivate.Gesture;
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
     const tutorial = this.getTutorial();
     mockFeedback.expectSpeech('ChromeVox tutorial')
-        .call(this.doGesture(GestureType.SWIPE_RIGHT1))
+        .call(doGesture(Gesture.SWIPE_RIGHT1))
         .expectSpeech('Quick orientation', 'Link')
-        .call(this.doGesture(GestureType.SWIPE_RIGHT1))
+        .call(doGesture(Gesture.SWIPE_RIGHT1))
         .expectSpeech('Essential keys', 'Link')
-        .call(this.doGesture(GestureType.SWIPE_LEFT1))
+        .call(doGesture(Gesture.SWIPE_LEFT1))
         .expectSpeech('Quick orientation', 'Link')
         .replay();
   });
@@ -716,7 +709,6 @@ TEST_F('ChromeVoxTutorialTest', 'Gestures', function() {
 // not test interactivity of lessons.
 TEST_F('ChromeVoxTutorialTest', 'TouchOrientation', function() {
   const mockFeedback = this.createMockFeedback();
-  const GestureType = chrome.accessibilityPrivate.Gesture;
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
     const tutorial = this.getTutorial();
@@ -729,13 +721,13 @@ TEST_F('ChromeVoxTutorialTest', 'TouchOrientation', function() {
           this.assertActiveScreen('lesson');
         })
         .expectSpeech('ChromeVox touch tutorial')
-        .call(this.doGesture(GestureType.SWIPE_RIGHT1))
+        .call(doGesture(Gesture.SWIPE_RIGHT1))
         .expectSpeech(/Welcome to the ChromeVox tutorial/)
         .call(() => {
           tutorial.showNextLesson();
         })
         .expectSpeech('Activate an item')
-        .call(this.doGesture(GestureType.SWIPE_RIGHT1))
+        .call(doGesture(Gesture.SWIPE_RIGHT1))
         .expectSpeech(/To continue, double-tap now/)
         .call(() => {
           tutorial.showNextLesson();

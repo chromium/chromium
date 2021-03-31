@@ -15,7 +15,7 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
     super();
     window.doKeyDown = this.doKeyDown.bind(this);
     window.doKeyUp = this.doKeyUp.bind(this);
-    window.doGesture = this.doGesture.bind(this);
+    window.doLearnModeGesture = this.doLearnModeGesture.bind(this);
     window.doBrailleKeyEvent = this.doBrailleKeyEvent.bind(this);
   }
 
@@ -76,7 +76,7 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
     };
   }
 
-  doGesture(gesture) {
+  doLearnModeGesture(gesture) {
     return () => {
       this.getLearnModeWindow().KbExplorer.onAccessibilityGesture(gesture);
     };
@@ -135,19 +135,19 @@ TEST_F('ChromeVoxLearnModeTest', 'KeyboardInputRepeat', function() {
 TEST_F('ChromeVoxLearnModeTest', 'Gesture', function() {
   this.runOnLearnModePage((mockFeedback, evt) => {
     this.getLearnModeWindow().KbExplorer.MIN_TOUCH_EXPLORE_OUTPUT_TIME_MS_ = 0;
-    mockFeedback.call(doGesture('swipeRight1'))
+    mockFeedback.call(doLearnModeGesture(Gesture.SWIPE_RIGHT1))
         .expectSpeechWithQueueMode('Swipe one finger right', QueueMode.FLUSH)
         .expectSpeechWithQueueMode('Next Object', QueueMode.QUEUE)
 
-        .call(doGesture('swipeLeft1'))
+        .call(doLearnModeGesture(Gesture.SWIPE_LEFT1))
         .expectSpeechWithQueueMode('Swipe one finger left', QueueMode.FLUSH)
         .expectSpeechWithQueueMode('Previous Object', QueueMode.QUEUE)
 
-        .call(doGesture('touchExplore'))
+        .call(doLearnModeGesture(Gesture.TOUCH_EXPLORE))
         .expectSpeechWithQueueMode('Touch explore', QueueMode.FLUSH)
 
         // Test for inclusion of commandDescriptionMsgId when provided.
-        .call(doGesture('swipeLeft2'))
+        .call(doLearnModeGesture(Gesture.SWIPE_LEFT2))
         .expectSpeechWithQueueMode('Swipe two fingers left', QueueMode.FLUSH)
         .expectSpeechWithQueueMode('Escape', QueueMode.QUEUE)
 

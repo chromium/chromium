@@ -9,11 +9,6 @@ GEN_INCLUDE(['../testing/chromevox_next_e2e_test_base.js']);
  * Test fixture for UserActionMonitor.
  */
 ChromeVoxUserActionMonitorTest = class extends ChromeVoxNextE2ETest {
-  /** @override */
-  setUp() {
-    window.GestureType = chrome.accessibilityPrivate.Gesture;
-  }
-
   /**
    * Returns the start node of the current ChromeVox range.
    * @return {AutomationNode}
@@ -45,7 +40,7 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'UnitTest', function() {
         value: {'keys': {'keyCode': [KeyCode.SPACE]}},
       },
       {type: 'braille', value: 'jumpToTop'},
-      {type: 'gesture', value: 'swipeUp1'}
+      {type: 'gesture', value: Gesture.SWIPE_UP1}
     ];
     const onFinished = () => finished = true;
 
@@ -78,9 +73,9 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'ActionUnitTest', function() {
       value: new KeySequence(TestUtils.createMockKeyEvent(KeyCode.A))
     });
     const gestureActionOne = UserActionMonitor.Action.fromActionInfo(
-        {type: 'gesture', value: 'swipeUp1'});
-    const gestureActionTwo =
-        new UserActionMonitor.Action({type: 'gesture', value: 'swipeUp2'});
+        {type: 'gesture', value: Gesture.SWIPE_UP1});
+    const gestureActionTwo = new UserActionMonitor.Action(
+        {type: 'gesture', value: Gesture.SWIPE_UP2});
 
     assertFalse(keySequenceActionOne.equals(keySequenceActionTwo));
     assertFalse(keySequenceActionOne.equals(gestureActionOne));
@@ -91,8 +86,8 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'ActionUnitTest', function() {
 
     const cloneKeySequenceActionOne = UserActionMonitor.Action.fromActionInfo(
         {type: 'key_sequence', value: {keys: {keyCode: [KeyCode.SPACE]}}});
-    const cloneGestureActionOne =
-        new UserActionMonitor.Action({type: 'gesture', value: 'swipeUp1'});
+    const cloneGestureActionOne = new UserActionMonitor.Action(
+        {type: 'gesture', value: Gesture.SWIPE_UP1});
     assertTrue(keySequenceActionOne.equals(cloneKeySequenceActionOne));
     assertTrue(gestureActionOne.equals(cloneGestureActionOne));
   });
@@ -191,13 +186,13 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'Output', function() {
     const actions = [
       {
         type: 'gesture',
-        value: 'swipeUp1',
+        value: Gesture.SWIPE_UP1,
         beforeActionMsg: 'First instruction',
         afterActionMsg: 'Congratulations!'
       },
       {
         type: 'gesture',
-        value: 'swipeUp1',
+        value: Gesture.SWIPE_UP1,
         beforeActionMsg: 'Second instruction',
         afterActionMsg: 'You did it!'
       }
@@ -454,17 +449,16 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'StopPropagation', function() {
 // Tests that we can match a gesture when it's performed.
 TEST_F('ChromeVoxUserActionMonitorTest', 'Gestures', function() {
   this.runWithLoadedTree(this.simpleDoc, function() {
-    const onGesture = GestureCommandHandler.onAccessibilityGesture_;
     let finished = false;
-    const actions = [{type: 'gesture', value: GestureType.SWIPE_RIGHT1}];
+    const actions = [{type: 'gesture', value: Gesture.SWIPE_RIGHT1}];
     const onFinished = () => finished = true;
 
     ChromeVoxState.instance.createUserActionMonitor(actions, onFinished);
-    onGesture(GestureType.SWIPE_LEFT1);
+    doGesture(Gesture.SWIPE_LEFT1)();
     assertFalse(finished);
-    onGesture(GestureType.SWIPE_LEFT2);
+    doGesture(Gesture.SWIPE_LEFT2)();
     assertFalse(finished);
-    onGesture(GestureType.SWIPE_RIGHT1);
+    doGesture(Gesture.SWIPE_RIGHT1)();
     assertTrue(finished);
   });
 });

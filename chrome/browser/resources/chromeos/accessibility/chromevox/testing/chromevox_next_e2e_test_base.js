@@ -41,6 +41,8 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
     window.RoleType = chrome.automation.RoleType;
     window.TreeChangeType = chrome.automation.TreeChangeType;
     window.doCmd = this.doCmd;
+    window.doGesture = this.doGesture;
+    window.Gesture = chrome.accessibilityPrivate.Gesture;
   }
 
   /** @return {!MockFeedback} */
@@ -84,6 +86,19 @@ ChromeVoxNextE2ETest = class extends ChromeVoxE2ETest {
   doCmd(cmd) {
     return () => {
       CommandHandler.onCommand(cmd);
+    };
+  }
+
+  /**
+   * Create a function which performs the gesture |gesture|.
+   * @param {chrome.accessibilityPrivate.Gesture} gesture
+   * @param {number} opt_x
+   * @param {number} opt_y
+   * @return {function(): void}
+   */
+  doGesture(gesture, opt_x, opt_y) {
+    return () => {
+      GestureCommandHandler.onAccessibilityGesture_(gesture, opt_x, opt_y);
     };
   }
 

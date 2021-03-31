@@ -23,12 +23,6 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     this.forceContextualLastOutput();
   }
 
-  doGesture(gesture, opt_x, opt_y) {
-    return () => {
-      GestureCommandHandler.onAccessibilityGesture_(gesture, opt_x, opt_y);
-    };
-  }
-
   simulateHitTestResult(node) {
     return () => {
       GestureCommandHandler.pointerHandler_.handleHitTestResult(node);
@@ -1782,57 +1776,57 @@ TEST_F('ChromeVoxBackgroundTest', 'GestureGranularity', function() {
     <button>world</button>
   `,
       function(root) {
-        mockFeedback.call(doGesture('swipeLeft3'))
+        mockFeedback.call(doGesture(Gesture.SWIPE_LEFT3))
             .expectSpeech('Word')
-            .call(doGesture('swipeDown1'))
+            .call(doGesture(Gesture.SWIPE_DOWN1))
             .expectSpeech('is')
-            .call(doGesture('swipeDown1'))
+            .call(doGesture(Gesture.SWIPE_DOWN1))
             .expectSpeech('a')
-            .call(doGesture('swipeUp1'))
+            .call(doGesture(Gesture.SWIPE_UP1))
             .expectSpeech('is')
 
-            .call(doGesture('swipeLeft3'))
+            .call(doGesture(Gesture.SWIPE_LEFT3))
             .expectSpeech('Character')
-            .call(doGesture('swipeDown1'))
+            .call(doGesture(Gesture.SWIPE_DOWN1))
             .expectSpeech('s')
-            .call(doGesture('swipeUp1'))
+            .call(doGesture(Gesture.SWIPE_UP1))
             .expectSpeech('i')
 
-            .call(doGesture('swipeLeft3'))
+            .call(doGesture(Gesture.SWIPE_LEFT3))
             .expectSpeech('Form field control')
-            .call(doGesture('swipeDown1'))
+            .call(doGesture(Gesture.SWIPE_DOWN1))
             .expectSpeech('and', 'Button')
-            .call(doGesture('swipeUp1'))
+            .call(doGesture(Gesture.SWIPE_UP1))
             .expectSpeech('world', 'Button')
 
-            .call(doGesture('swipeLeft3'))
+            .call(doGesture(Gesture.SWIPE_LEFT3))
             .expectSpeech('Link')
-            .call(doGesture('swipeDown1'))
+            .call(doGesture(Gesture.SWIPE_DOWN1))
             .expectSpeech('greetings', 'Internal link')
-            .call(doGesture('swipeUp1'))
+            .call(doGesture(Gesture.SWIPE_UP1))
             .expectSpeech('there', 'Internal link')
 
-            .call(doGesture('swipeLeft3'))
+            .call(doGesture(Gesture.SWIPE_LEFT3))
             .expectSpeech('Heading')
-            .call(doGesture('swipeDown1'))
+            .call(doGesture(Gesture.SWIPE_DOWN1))
             .expectSpeech('hello', 'Heading 2')
-            .call(doGesture('swipeUp1'))
+            .call(doGesture(Gesture.SWIPE_UP1))
             .expectSpeech('here', 'Heading 2')
-            .call(doGesture('swipeUp1'))
+            .call(doGesture(Gesture.SWIPE_UP1))
             .expectSpeech('hello', 'Heading 2')
 
-            .call(doGesture('swipeLeft3'))
+            .call(doGesture(Gesture.SWIPE_LEFT3))
             .expectSpeech('Line')
-            .call(doGesture('swipeUp1'))
+            .call(doGesture(Gesture.SWIPE_UP1))
             .expectSpeech('This is a test')
 
-            .call(doGesture('swipeRight3'))
+            .call(doGesture(Gesture.SWIPE_RIGHT3))
             .expectSpeech('Heading')
-            .call(doGesture('swipeRight3'))
+            .call(doGesture(Gesture.SWIPE_RIGHT3))
             .expectSpeech('Internal link')
-            .call(doGesture('swipeRight3'))
+            .call(doGesture(Gesture.SWIPE_RIGHT3))
             .expectSpeech('Form field control')
-            .call(doGesture('swipeRight3'))
+            .call(doGesture(Gesture.SWIPE_RIGHT3))
             .expectSpeech('Character')
 
             .replay();
@@ -2608,7 +2602,8 @@ TEST_F('ChromeVoxBackgroundTest', 'HitTestOnExoSurface', function() {
         // Fake a touch explore gesture event on the fake window which should
         // trigger a mouse move.
         GestureCommandHandler.onAccessibilityGesture_(
-            'touchExplore', fakeWindow.location.left, fakeWindow.location.top);
+            Gesture.TOUCH_EXPLORE, fakeWindow.location.left,
+            fakeWindow.location.top);
       });
 });
 
@@ -2717,13 +2712,13 @@ TEST_F('ChromeVoxBackgroundTest', 'SwipeToScrollByPage', function() {
     <p style="font-size: 200pt">This is a test</p>
   `,
       function(root) {
-        mockFeedback.call(doGesture('swipeUp3'))
+        mockFeedback.call(doGesture(Gesture.SWIPE_UP3))
             .expectSpeech(/Page 2 of/)
-            .call(doGesture('swipeUp3'))
+            .call(doGesture(Gesture.SWIPE_UP3))
             .expectSpeech(/Page 3 of/)
-            .call(doGesture('swipeDown3'))
+            .call(doGesture(Gesture.SWIPE_DOWN3))
             .expectSpeech(/Page 2 of/)
-            .call(doGesture('swipeDown3'))
+            .call(doGesture(Gesture.SWIPE_DOWN3))
             .expectSpeech(/Page 1 of/)
             .replay();
       });
@@ -2752,7 +2747,7 @@ TEST_F('ChromeVoxBackgroundTest', 'PointerOnOffOnRepeatsNode', function() {
 
             // Touch slightly off of the button.
             .call(GestureCommandHandler.onAccessibilityGesture_.bind(
-                null, 'touchExplore', button.location.left,
+                null, Gesture.TOUCH_EXPLORE, button.location.left,
                 button.location.top + 60))
             .expectSpeech('range cleared!')
             .expectEarcon(Earcon.NO_POINTER_ANCHOR)
@@ -2948,18 +2943,18 @@ TEST_F('ChromeVoxBackgroundTest', 'AlertAnnouncement', function() {
 TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight4ByContainers', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(`<p>test</p>`, function(root) {
-    mockFeedback.call(doGesture('swipeRight4'))
+    mockFeedback.call(doGesture(Gesture.SWIPE_RIGHT4))
         .expectSpeech('Launcher', 'Button', 'Shelf', 'Tool bar', ', window')
-        .call(doGesture('swipeRight4'))
+        .call(doGesture(Gesture.SWIPE_RIGHT4))
         .expectSpeech('Shelf', 'Tool bar')
-        .call(doGesture('swipeRight4'))
+        .call(doGesture(Gesture.SWIPE_RIGHT4))
         .expectSpeech(/Status tray*/)
-        .call(doGesture('swipeRight4'))
+        .call(doGesture(Gesture.SWIPE_RIGHT4))
         .expectSpeech(/Address and search bar*/)
 
-        .call(doGesture('swipeLeft4'))
+        .call(doGesture(Gesture.SWIPE_LEFT4))
         .expectSpeech(/Status tray*/)
-        .call(doGesture('swipeLeft4'))
+        .call(doGesture(Gesture.SWIPE_LEFT4))
         .expectSpeech('Shelf', 'Tool bar')
 
         .replay();
@@ -2978,8 +2973,9 @@ TEST_F('ChromeVoxBackgroundTest', 'SwipeLeftRight2', function() {
     </script>
   `,
       function(root) {
-        mockFeedback.call(doGesture('swipeRight2')).expectSpeech('Enter');
-        mockFeedback.call(doGesture('swipeLeft2'))
+        mockFeedback.call(doGesture(Gesture.SWIPE_RIGHT2))
+            .expectSpeech('Enter');
+        mockFeedback.call(doGesture(Gesture.SWIPE_LEFT2))
             .expectSpeech('Escape')
             .replay();
       });
