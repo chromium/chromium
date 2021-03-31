@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -79,7 +80,7 @@ public class ImplicitPriceDropSubscriptionsManager {
             CommerceSubscription subscription =
                     new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
                             ShoppingPersistedTabData.from(tab).getOfferId(),
-                            SubscriptionManagementType.CHROME_MANAGED);
+                            SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
             mSubscriptionManager.subscribe(subscription);
         }
     }
@@ -92,7 +93,7 @@ public class ImplicitPriceDropSubscriptionsManager {
         CommerceSubscription subscription =
                 new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
                         ShoppingPersistedTabData.from(tab).getOfferId(),
-                        SubscriptionManagementType.CHROME_MANAGED);
+                        SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
         mSubscriptionManager.unsubscribe(subscription);
     }
 

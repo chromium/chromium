@@ -120,6 +120,7 @@
 #include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/android/thin_webview/chrome_thin_webview_initializer.h"
+#include "chrome/browser/commerce/subscriptions/commerce_subscription_db_content.pb.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #else
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -265,6 +266,12 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   CaptivePortalServiceFactory::GetInstance();
 #endif
+#if !defined(OS_ANDROID)
+  CartServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  CertDbInitializerFactory::GetInstance();
+#endif
   CertificateReportingServiceFactory::GetInstance();
 #if !defined(OS_ANDROID)
   ChromeBrowsingDataLifetimeManagerFactory::GetInstance();
@@ -362,6 +369,13 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   PrefMetricsService::Factory::GetInstance();
   PrefsTabHelper::GetServiceInstance();
+#if !defined(OS_ANDROID)
+  ProfileProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance();
+#endif
+#if defined(OS_ANDROID)
+  ProfileProtoDBFactory<commerce_subscription_db::
+                            CommerceSubscriptionContentProto>::GetInstance();
+#endif
   policy::UserCloudPolicyInvalidatorFactory::GetInstance();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   policy::UserPolicySigninServiceFactory::GetInstance();
@@ -448,14 +462,6 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   WebDataServiceFactory::GetInstance();
   webrtc_event_logging::WebRtcEventLogManagerKeyedServiceFactory::GetInstance();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CertDbInitializerFactory::GetInstance();
-#endif
-#if !defined(OS_ANDROID)
-  CartServiceFactory::GetInstance();
-  ProfileProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance();
-#endif
 }
 
 void ChromeBrowserMainExtraPartsProfiles::PreProfileInit() {
