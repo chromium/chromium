@@ -6729,6 +6729,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIncognitoBrandConsistencyForDesktopDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIncognitoBrandConsistencyForDesktop)},
+
+    {"incognito-dark-mode-enforced-for-desktop",
+     flag_descriptions::kIncognitoDarkModeEnforcedForDesktopName,
+     flag_descriptions::kIncognitoDarkModeEnforcedForDesktopDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kIncognitoDarkModeEnforcedForDesktop)},
 #endif
 
     {"content-settings-redesign",

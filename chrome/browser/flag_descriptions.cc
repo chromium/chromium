@@ -1354,6 +1354,18 @@ const char kImpulseScrollAnimationsDescription[] =
     "Replaces the default scroll animation with Impulse-style scroll "
     "animations.";
 
+const char kIncognitoBrandConsistencyForDesktopName[] =
+    "Enable Incognito brand consistency in desktop.";
+const char kIncognitoBrandConsistencyForDesktopDescription[] =
+    "When enabled, removes any theme or background customization done by the "
+    "user on the Incognito UI.";
+
+const char kIncognitoDarkModeEnforcedForDesktopName[] =
+    "Enforces dark mode on Incognito UI in desktop.";
+const char kIncognitoDarkModeEnforcedForDesktopDescription[] =
+    "When enabled, enforces dark mode on Incognito UI and ignores any OS light "
+    "mode customization.";
+
 const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
@@ -2063,12 +2075,6 @@ const char kIntensiveWakeUpThrottlingDescription[] =
 const char kPrinterStatusName[] = "Show printer Status";
 const char kPrinterStatusDescription[] =
     "Enables printer status icons and labels for saved and nearby printers";
-
-const char kIncognitoBrandConsistencyForDesktopName[] =
-    "Enable Incognito brand consistency in desktop.";
-const char kIncognitoBrandConsistencyForDesktopDescription[] =
-    "When enabled, removes any theme or background customization done by the "
-    "user on the Incognito UI.";
 
 const char kPrinterStatusDialogName[] =
     "Show printer status on destination dialog";

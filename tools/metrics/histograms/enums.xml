@@ -44406,6 +44406,7 @@ from previous Chrome versions.
   <int value="-1575375861" label="enable-captive-portal-random-url"/>
   <int value="-1575131701" label="AppServiceAsh:disabled"/>
   <int value="-1573468162" label="ClientStorageAccessContextAuditing:enabled"/>
+  <int value="-1572898796" label="IncognitoDarkModeEnforcedForDesktop:enabled"/>
   <int value="-1572010356" label="enable-privet-v3"/>
   <int value="-1571841513" label="enable-devtools-experiments"/>
   <int value="-1571525676" label="FilesSWA:disabled"/>
@@ -46694,6 +46695,7 @@ from previous Chrome versions.
       label="enable-non-validating-reload-on-refresh-content"/>
   <int value="469999350" label="NotificationScheduleService:disabled"/>
   <int value="470011024" label="NonValidatingReloadOnNormalReload:enabled"/>
+  <int value="470708618" label="IncognitoDarkModeEnforcedForDesktop:disabled"/>
   <int value="471224152" label="WinUseHybridSpellChecker:enabled"/>
   <int value="471519375" label="NewOsSettingsSearch:disabled"/>
   <int value="471560693" label="webview-verbose-logging"/>

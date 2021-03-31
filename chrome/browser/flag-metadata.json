@@ -3170,6 +3170,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "incognito-dark-mode-enforced-for-desktop",
+    "owners": [ "roagarwal", "rhalavati", "chrome-incognito@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "incognito-screenshot",
     "owners": [ "rhalavati", "chrome-privacy-core@google.com" ],
     "expiry_milestone": 97
