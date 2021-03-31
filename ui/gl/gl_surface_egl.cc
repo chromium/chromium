@@ -801,12 +801,18 @@ void GetEGLInitDisplays(bool supports_angle_d3d,
     return;
   }
 
+  // If we're already requesting software GL, make sure we don't fallback to the
+  // GPU
+  bool forceSoftwareGL = IsSoftwareGLImplementation(GetGLImplementationParts());
+
   std::string requested_renderer =
-      command_line->GetSwitchValueASCII(switches::kUseANGLE);
+      forceSoftwareGL ? kANGLEImplementationSwiftShaderName
+                      : command_line->GetSwitchValueASCII(switches::kUseANGLE);
 
   bool use_angle_default =
-      !command_line->HasSwitch(switches::kUseANGLE) ||
-      requested_renderer == kANGLEImplementationDefaultName;
+      !forceSoftwareGL &&
+      (!command_line->HasSwitch(switches::kUseANGLE) ||
+       requested_renderer == kANGLEImplementationDefaultName);
 
   if (supports_angle_null &&
       requested_renderer == kANGLEImplementationNullName) {

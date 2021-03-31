@@ -972,10 +972,7 @@ void LayerTreeTest::RealEndTest() {
 }
 
 bool LayerTreeTest::use_swangle() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) &&
-         (command_line->GetSwitchValueASCII(::switches::kUseANGLE) ==
-          gl::kANGLEImplementationSwiftShaderName);
+  return gl::GetGLImplementationParts() == gl::GetSoftwareGLImplementation();
 }
 
 void LayerTreeTest::DispatchAddNoDamageAnimation(

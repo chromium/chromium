@@ -79,8 +79,6 @@ void InitializeOneOffHelper(bool init_extensions) {
       for (auto i : allowed_impls) {
         if (i == kGLImplementationEGLANGLE) {
           impl = gl::GetSoftwareGLImplementation();
-          base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-              switches::kUseANGLE, kANGLEImplementationSwiftShaderName);
           break;
         }
       }
