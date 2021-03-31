@@ -40,6 +40,10 @@ Polymer({
       type: String,
       reflectToAttribute: true,
     },
+
+    subLabelIcon: {
+      type: String,
+    },
   },
 
   listeners: {

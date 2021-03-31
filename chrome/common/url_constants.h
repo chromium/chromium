@@ -386,6 +386,9 @@ extern const char kTabletModeGesturesLearnMoreURL[];
 // The URL for the help center article about Wi-Fi sync.
 extern const char kWifiSyncLearnMoreURL[];
 
+// The URL for the help center article about hidden Wi-Fi networks.
+extern const char kWifiHiddenNetworkURL[];
+
 // The URL for contacts management in Nearby Share feature.
 extern const char kNearbyShareManageContactsURL[];
 

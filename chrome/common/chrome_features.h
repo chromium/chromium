@@ -394,6 +394,8 @@ extern const base::Feature kMacSystemScreenCapturePermissionCheck;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kMeteredShowToggle;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kShowHiddenNetworkToggle;
 #endif
 
 #if defined(OS_ANDROID)

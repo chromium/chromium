@@ -43,6 +43,12 @@
   <div class="flex" id="labelWrapper" hidden$="[[!label]]">
     <div class="label" aria-hidden="true">[[label]]</div>
     <div class="secondary label" id="sub-label">
+      <template is="dom-if" if="[[subLabelIcon]]">
+        <span id="sub-label-icon" aria-hidden="true">
+          <iron-icon slot="icon" icon="[[subLabelIcon]]">
+          </iron-icon>
+        </span>
+      </template>
       <span id="sub-label-text" aria-hidden="true">
         [[subLabel]]
       </span>

@@ -130,6 +130,22 @@ Polymer({
     },
 
     /**
+     * The network hidden state.
+     * @private {!chrome.settingsPrivate.PrefObject|undefined}
+     */
+    hiddenPref_: {
+      type: Object,
+      observer: 'hiddenPrefChanged_',
+      value() {
+        return {
+          key: 'fakeHiddenPref',
+          type: chrome.settingsPrivate.PrefType.BOOLEAN,
+          value: false,
+        };
+      },
+    },
+
+    /**
      * The always-on VPN state as a fake preference object.
      * @private {!chrome.settingsPrivate.PrefObject|undefined}
      */
@@ -199,6 +215,18 @@ Polymer({
       }
     },
 
+    /**
+     * Whether to show the Hidden toggle on configured wifi networks (flag).
+     * @private
+     */
+    showHiddenToggle_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('showHiddenToggle') &&
+            loadTimeData.getBoolean('showHiddenToggle');
+      },
+    },
+
     /** @private */
     isUpdatedCellularUiEnabled_: {
       type: Boolean,
@@ -232,6 +260,7 @@ Polymer({
         chromeos.settings.mojom.Setting.kForgetWifiNetwork,
         chromeos.settings.mojom.Setting.kWifiAutoConfigureIp,
         chromeos.settings.mojom.Setting.kWifiDns,
+        chromeos.settings.mojom.Setting.kWifiHidden,
         chromeos.settings.mojom.Setting.kWifiProxy,
         chromeos.settings.mojom.Setting.kWifiAutoConnectToNetwork,
         chromeos.settings.mojom.Setting.kCellularSimLock,
@@ -256,6 +285,7 @@ Polymer({
     'updateAutoConnectPref_(globalPolicy)',
     'autoConnectPrefChanged_(autoConnectPref_.*)',
     'alwaysOnVpnChanged_(alwaysOnVpn_.*)',
+    'hiddenPrefChanged_(hiddenPref_.*)',
   ],
 
   /** @private {boolean} */
@@ -552,6 +582,7 @@ Polymer({
       return;
     }
     this.updateAutoConnectPref_();
+    this.updateHiddenPref_();
 
     const metered = this.managedProperties_.metered;
     if (metered && metered.activeValue !== this.meteredOverride_) {
@@ -666,6 +697,58 @@ Polymer({
     this.setMojoNetworkProperties_(config);
   },
 
+  /** @private */
+  hiddenPrefChanged_() {
+    if (!this.propertiesReceived_) {
+      return;
+    }
+    const config = this.getDefaultConfigProperties_();
+    config.typeConfig.wifi.hiddenSsid = this.hiddenPref_.value ?
+        chromeos.networkConfig.mojom.HiddenSsidMode.kEnabled :
+        chromeos.networkConfig.mojom.HiddenSsidMode.kDisabled;
+    this.setMojoNetworkProperties_(config);
+  },
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.PolicySource} policySource
+   * @return {!chrome.settingsPrivate.Enforcement|undefined}
+   * @private
+   */
+  getPolicyEnforcement_(policySource) {
+    switch (policySource) {
+      case chromeos.networkConfig.mojom.PolicySource.kUserPolicyEnforced:
+      case chromeos.networkConfig.mojom.PolicySource.kDevicePolicyEnforced:
+        return chrome.settingsPrivate.Enforcement.ENFORCED;
+
+      case chromeos.networkConfig.mojom.PolicySource.kUserPolicyRecommended:
+      case chromeos.networkConfig.mojom.PolicySource.kDevicePolicyRecommended:
+        return chrome.settingsPrivate.Enforcement.RECOMMENDED;
+
+      default:
+        return undefined;
+    }
+  },
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.PolicySource} policySource
+   * @return {!chrome.settingsPrivate.ControlledBy|undefined}
+   * @private
+   */
+  getPolicyController_(policySource) {
+    switch (policySource) {
+      case chromeos.networkConfig.mojom.PolicySource.kDevicePolicyEnforced:
+      case chromeos.networkConfig.mojom.PolicySource.kDevicePolicyRecommended:
+        return chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+
+      case chromeos.networkConfig.mojom.PolicySource.kUserPolicyEnforced:
+      case chromeos.networkConfig.mojom.PolicySource.kUserPolicyRecommended:
+        return chrome.settingsPrivate.ControlledBy.USER_POLICY;
+
+      default:
+        return undefined;
+    }
+  },
+
   /**
    * Updates auto-connect pref value.
    * @private
@@ -679,8 +762,6 @@ Polymer({
       return;
     }
 
-    const PolicySource = chromeos.networkConfig.mojom.PolicySource;
-
     let enforcement;
     let controlledBy;
 
@@ -689,27 +770,8 @@ Polymer({
       enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
       controlledBy = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
     } else {
-      switch (autoConnect.policySource) {
-        case PolicySource.kUserPolicyEnforced:
-        case PolicySource.kDevicePolicyEnforced:
-          enforcement = chrome.settingsPrivate.Enforcement.ENFORCED;
-          break;
-        case PolicySource.kUserPolicyRecommended:
-        case PolicySource.kDevicePolicyRecommended:
-          enforcement = chrome.settingsPrivate.Enforcement.RECOMMENDED;
-          break;
-      }
-
-      switch (autoConnect.policySource) {
-        case PolicySource.kDevicePolicyEnforced:
-        case PolicySource.kDevicePolicyRecommended:
-          controlledBy = chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
-          break;
-        case PolicySource.kUserPolicyEnforced:
-        case PolicySource.kUserPolicyRecommended:
-          controlledBy = chrome.settingsPrivate.ControlledBy.USER_POLICY;
-          break;
-      }
+      enforcement = this.getPolicyEnforcement_(autoConnect.policySource);
+      controlledBy = this.getPolicyController_(autoConnect.policySource);
     }
 
     if (this.autoConnectPref_ &&
@@ -730,6 +792,47 @@ Polymer({
     }
 
     this.autoConnectPref_ = newPrefValue;
+  },
+
+  /**
+   * Updates auto-connect pref value.
+   * @private
+   */
+  updateHiddenPref_() {
+    if (!this.managedProperties_) {
+      return;
+    }
+
+    if (this.managedProperties_.type !==
+        chromeos.networkConfig.mojom.NetworkType.kWiFi) {
+      return;
+    }
+
+
+    const hidden = this.managedProperties_.typeProperties.wifi.hiddenSsid;
+    if (!hidden) {
+      return;
+    }
+
+    const enforcement = this.getPolicyEnforcement_(hidden.policySource);
+    const controlledBy = this.getPolicyController_(hidden.policySource);
+    if (this.hiddenPref_ && this.hiddenPref_.value === hidden.activeValue &&
+        enforcement === this.hiddenPref_.enforcement &&
+        controlledBy === this.hiddenPref_.controlledBy) {
+      return;
+    }
+
+    const newPrefValue = {
+      key: 'fakeHiddenPref',
+      value: hidden.activeValue,
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+    };
+    if (enforcement) {
+      newPrefValue.enforcement = enforcement;
+      newPrefValue.controlledBy = controlledBy;
+    }
+
+    this.hiddenPref_ = newPrefValue;
   },
 
   /**
@@ -1756,6 +1859,39 @@ Polymer({
         !this.isArcVpn_(managedProperties) &&
         !this.isBlockedByPolicy_(
             managedProperties, globalPolicy, managedNetworkAvailable);
+  },
+
+  /**
+   * @param {!chromeos.networkConfig.mojom.ManagedProperties} managedProperties
+   * @param {!chromeos.networkConfig.mojom.GlobalPolicy} globalPolicy
+   * @param {boolean} managedNetworkAvailable
+   * @return {boolean} True if the Hidden checkbox should be shown.
+   * @private
+   */
+  showHiddenNetwork_(managedProperties, globalPolicy, managedNetworkAvailable) {
+    if (!this.showHiddenToggle_) {
+      return false;
+    }
+
+    if (!managedProperties) {
+      return false;
+    }
+
+    if (managedProperties.type !==
+        chromeos.networkConfig.mojom.NetworkType.kWiFi) {
+      return false;
+    }
+
+    if (!this.isRemembered_(managedProperties)) {
+      return false;
+    }
+
+    if (this.isBlockedByPolicy_(
+            managedProperties, globalPolicy, managedNetworkAvailable)) {
+      return false;
+    }
+
+    return true;
   },
 
   /**

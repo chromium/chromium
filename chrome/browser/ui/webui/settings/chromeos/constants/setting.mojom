@@ -38,6 +38,7 @@ enum Setting {
   kCellularAddNetwork = 26,
   kCellularRemoveESimNetwork = 27,
   kCellularRenameESimNetwork = 28,
+  kWifiHidden = 29,
 
   // Bluetooth section.
   kBluetoothOnOff = 100,

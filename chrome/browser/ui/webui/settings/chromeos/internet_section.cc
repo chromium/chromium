@@ -225,6 +225,19 @@ const std::vector<SearchConcept>& GetWifiMeteredSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetWifiHiddenSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_HIDDEN_NETWORK,
+       mojom::kWifiDetailsSubpagePath,
+       mojom::SearchResultIcon::kWifi,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kWifiHidden},
+       {IDS_OS_SETTINGS_TAG_HIDDEN_NETWORK_ALT1, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetCellularSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_CELLULAR,
@@ -465,6 +478,7 @@ const std::vector<mojom::Setting>& GetWifiDetailsSettings() {
       mojom::Setting::kWifiProxy,
       mojom::Setting::kWifiAutoConnectToNetwork,
       mojom::Setting::kWifiMetered,
+      mojom::Setting::kWifiHidden,
   });
   return *settings;
 }
@@ -620,6 +634,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"networkButtonForget", IDS_SETTINGS_INTERNET_BUTTON_FORGET},
       {"networkButtonViewAccount", IDS_SETTINGS_INTERNET_BUTTON_VIEW_ACCOUNT},
       {"networkConnectNotAllowed", IDS_SETTINGS_INTERNET_CONNECT_NOT_ALLOWED},
+      {"networkHidden", IDS_SETTINGS_INTERNET_NETWORK_HIDDEN},
+      {"networkHiddenSublabel", IDS_SETTINGS_INTERNET_NETWORK_HIDDEN_SUBLABEL},
       {"networkIPAddress", IDS_SETTINGS_INTERNET_NETWORK_IP_ADDRESS},
       {"networkIPConfigAuto", IDS_SETTINGS_INTERNET_NETWORK_IP_CONFIG_AUTO},
       {"networkMetered", IDS_SETTINGS_INTERNET_NETWORK_METERED},
@@ -758,9 +774,15 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showMeteredToggle",
       base::FeatureList::IsEnabled(::features::kMeteredShowToggle));
+  html_source->AddBoolean(
+      "showHiddenToggle",
+      base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle));
 
   html_source->AddString("networkGoogleNameserversLearnMoreUrl",
                          chrome::kGoogleNameserversLearnMoreURL);
+
+  html_source->AddString("wifiHiddenNetworkLearnMoreUrl",
+                         chrome::kWifiHiddenNetworkURL);
 
   html_source->AddString(
       "networkNotSynced",
@@ -1022,6 +1044,7 @@ void InternetSection::OnNetworkList(
   updater.RemoveSearchTags(GetEthernetNotConnectedSearchConcepts());
   updater.RemoveSearchTags(GetWifiConnectedSearchConcepts());
   updater.RemoveSearchTags(GetWifiMeteredSearchConcepts());
+  updater.RemoveSearchTags(GetWifiHiddenSearchConcepts());
   updater.RemoveSearchTags(GetCellularSearchConcepts());
   updater.RemoveSearchTags(GetCellularConnectedSearchConcepts());
   updater.RemoveSearchTags(GetCellularSetupAndDetailMenuSearchConcepts());
@@ -1058,6 +1081,8 @@ void InternetSection::OnNetworkList(
         updater.AddSearchTags(GetWifiConnectedSearchConcepts());
         if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle))
           updater.AddSearchTags(GetWifiMeteredSearchConcepts());
+        if (base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle))
+          updater.AddSearchTags(GetWifiHiddenSearchConcepts());
         break;
 
       case NetworkType::kCellular:

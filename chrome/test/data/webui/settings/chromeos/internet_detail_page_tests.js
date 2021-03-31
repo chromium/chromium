@@ -173,6 +173,70 @@ suite('InternetDetailPage', function() {
       });
     });
 
+    test('Hidden toggle enabled', function() {
+      init();
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(mojom.NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = mojom.OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.typeProperties.wifi.hiddenSsid =
+          OncMojo.createManagedBool(true);
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
+      return flushAsync().then(() => {
+        const hiddenToggle = internetDetailPage.$$('#hiddenToggle');
+        assertTrue(!!hiddenToggle);
+        assertTrue(hiddenToggle.checked);
+      });
+    });
+
+    test('Hidden toggle disabled', function() {
+      init();
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(mojom.NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.source = mojom.OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.typeProperties.wifi.hiddenSsid =
+          OncMojo.createManagedBool(false);
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
+      return flushAsync().then(() => {
+        const hiddenToggle = internetDetailPage.$$('#hiddenToggle');
+        assertTrue(!!hiddenToggle);
+        assertFalse(hiddenToggle.checked);
+      });
+    });
+
+    test('Hidden toggle hidden when not configured', function() {
+      init();
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(mojom.NetworkType.kWiFi, 'wifi_user');
+      wifiNetwork.connectable = false;
+      wifiNetwork.typeProperties.wifi.hiddenSsid =
+          OncMojo.createManagedBool(false);
+
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_user_guid', 'WiFi', 'wifi_user');
+      return flushAsync().then(() => {
+        const hiddenToggle = internetDetailPage.$$('#hiddenToggle');
+        assertFalse(!!hiddenToggle);
+      });
+    });
+
     test('Proxy Unshared', function() {
       init();
       const mojom = chromeos.networkConfig.mojom;
@@ -625,6 +689,22 @@ suite('InternetDetailPage', function() {
             assertTrue(cellularSimInfoAdvanced.disabled);
           });
         });
+
+    test('Cellular page hides hidden toggle', function() {
+      init();
+      const mojom = chromeos.networkConfig.mojom;
+      mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
+      const cellularNetwork =
+          getManagedProperties(mojom.NetworkType.kCellular, 'cellular');
+      cellularNetwork.connectable = false;
+      mojoApi_.setManagedPropertiesForTest(cellularNetwork);
+
+      internetDetailPage.init('cellular_guid', 'Cellular', 'cellular');
+      return flushAsync().then(() => {
+        const hiddenToggle = internetDetailPage.$$('#hiddenToggle');
+        assertFalse(!!hiddenToggle);
+      });
+    });
   });
 
   suite('DetailsPageEthernet', function() {

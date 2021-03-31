@@ -57821,6 +57821,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="26" label="Cellular: Add Network"/>
   <int value="27" label="Cellular: Remove Network eSIM Profile"/>
   <int value="28" label="Cellular: Rename Network eSIM Profile"/>
+  <int value="29" label="Wi-Fi: Hidden Network"/>
   <int value="100" label="Bluetooth: On/Off"/>
   <int value="101" label="Bluetooth: Connect To Device"/>
   <int value="102" label="Bluetooth: Disconnect From Device"/>

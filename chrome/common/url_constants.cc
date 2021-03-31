@@ -419,6 +419,9 @@ const char kTabletModeGesturesLearnMoreURL[] =
 const char kWifiSyncLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=wifisync";
 
+const char kWifiHiddenNetworkURL[] =
+    "http://support.google.com/chromebook?p=hidden_networks";
+
 const char kNearbyShareLearnMoreURL[] =
     "https://support.google.com/chromebook?p=nearby_share";
 

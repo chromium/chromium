@@ -146,6 +146,12 @@
   <message name="IDS_OS_SETTINGS_TAG_AUTO_CONNECT_NETWORK_ALT1" desc="Text for search result item which, when clicked, navigates the user to settings to toggle whether the device auto-connects to a network. Alternate phrase for: 'Automatically connect to network'">
     Auto connect to network
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_HIDDEN_NETWORK" desc="Text for search result item which, when clicked, navigates the user to settings to toggle whether the device auto-connects to a network. Alternate phrase for: 'Auto connect to network'">
+    Hidden network
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_HIDDEN_NETWORK_ALT1" desc="Text for search result item which, when clicked, navigates the user to settings to toggle whether the device auto-connects to a network. Alternate phrase for: 'Automatically connect to network'">
+    Hidden SSID
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_CONFIGURE_IP_AUTOMATICALLY" desc="Text for search result item which, when clicked, navigates the user to network settings which allow the user to set whether the device's IP address is configured automatically. Alternate phrase for: 'Auto configure IP address', 'Configure network address'">
     Configure IP address automatically
   </message>
