@@ -39,28 +39,35 @@ using media_session::mojom::MediaSessionAction;
 
 namespace {
 
-constexpr gfx::Size kMediaNotificationViewBaseSize = {350, 175};
+constexpr gfx::Size kMediaNotificationViewBaseSize = {350, 168};
+constexpr gfx::Size kArtworkSize = {72, 72};
 constexpr gfx::Size kInfoContainerSize = {
-    kMediaNotificationViewBaseSize.width(), 100};
-constexpr gfx::Insets kArtworkContainerBorderInsets = {15, 10, 15, 0};
-constexpr gfx::Size kArtworkContainerSize = {100, kInfoContainerSize.height()};
+    kMediaNotificationViewBaseSize.width(), kArtworkSize.height()};
 constexpr int kArtworkVignetteCornerRadius = 5;
 constexpr gfx::Size kLabelsContainerBaseSize = {
-    kMediaNotificationViewBaseSize.width() - kArtworkContainerSize.width(),
+    kMediaNotificationViewBaseSize.width() - kArtworkSize.width(),
     kInfoContainerSize.height()};
-constexpr gfx::Insets kLabelsContainerBorderInsets = {15, 10, 0, 0};
-constexpr gfx::Size kPipSeparatorSize = {1, 14};
-constexpr gfx::Size kPipButtonSize = {20, 20};
-constexpr int kPipButtonIconSize = 18;
-constexpr gfx::Size kNotificationControlsSpacerSize = {100, 1};
-constexpr gfx::Insets kNotificationControlsInsets = {5, 0, 0, 5};
-constexpr gfx::Size kMediaControlsContainerSize = {350, 75};
+constexpr gfx::Size kPipButtonSize = {30, 20};
+constexpr int kPipButtonIconSize = 16;
+constexpr gfx::Insets kNotificationControlsInsets = {8, 0, 0, 8};
+constexpr gfx::Size kButtonsContainerSize = {
+    kMediaNotificationViewBaseSize.width(), 40};
+constexpr gfx::Size kMediaControlsContainerSize = {
+    328 /* base width - dismissbutton size - margin*/, 32};
+constexpr gfx::Insets kMediaControlsContainerInsets = {0, 22, 0, 0};
 constexpr int kMediaControlsButtonSpacing = 16;
-constexpr gfx::Insets kMediaControlsBorderInsets = {0, 0, 10, 0};
+constexpr gfx::Insets kProgressBarInsets = {0, 16, 0, 16};
+constexpr gfx::Insets kInfoContainerInsets = {0, 15, 0, 16};
+constexpr int kInfoContainerSpacing = 12;
+constexpr gfx::Size kUtilButtonsContainerSize = {
+    kMediaNotificationViewBaseSize.width(), 39};
+constexpr gfx::Insets kUtilButtonsContainerInsets = {7, 16, 12, 16};
+constexpr int kUtilButtonsSpacing = 8;
 
 constexpr int kTitleArtistLineHeight = 20;
-constexpr gfx::Size kMediaButtonSize = gfx::Size(36, 36);
-constexpr int kMediaButtonIconSize = 20;
+constexpr gfx::Size kMediaButtonSize = {24, 24};
+constexpr gfx::Size kPlayPauseButtonSize = {32, 32};
+constexpr int kMediaButtonIconSize = 18;
 
 // An image view with a rounded rectangle vignette
 class MediaArtworkView : public views::ImageView {
@@ -178,6 +185,89 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
                      message_center::kNotificationCornerRadius);
 
   {
+    // The button container contains media_controls_container_ and
+    // notification_controls_view.
+    auto buttons_container = std::make_unique<views::View>();
+    buttons_container->SetPreferredSize(kButtonsContainerSize);
+    auto* buttons_container_layout =
+        buttons_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
+    buttons_container_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kStart);
+
+    // The media controls container contains buttons for media playback. This
+    // includes play/pause, fast-forward/rewind, and skip controls.
+    auto media_controls_container = std::make_unique<views::View>();
+    media_controls_container->SetPreferredSize(kMediaControlsContainerSize);
+    auto* media_controls_layout = media_controls_container->SetLayoutManager(
+        std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal,
+            kMediaControlsContainerInsets, kMediaControlsButtonSpacing));
+    media_controls_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    media_controls_layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+
+    // Media controls should always be presented left-to-right,
+    // regardless of the local UI direction.
+    media_controls_container->SetMirrored(false);
+
+    CreateMediaButton(
+        media_controls_container.get(), MediaSessionAction::kPreviousTrack,
+        l10n_util::GetStringUTF16(
+            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK));
+    CreateMediaButton(
+        media_controls_container.get(), MediaSessionAction::kSeekBackward,
+        l10n_util::GetStringUTF16(
+            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_BACKWARD));
+
+    {
+      auto play_pause_button = views::CreateVectorToggleImageButton(
+          views::Button::PressedCallback());
+      play_pause_button->SetCallback(
+          base::BindRepeating(&MediaNotificationViewModernImpl::ButtonPressed,
+                              base::Unretained(this), play_pause_button.get()));
+      play_pause_button->set_tag(static_cast<int>(MediaSessionAction::kPlay));
+      play_pause_button->SetPreferredSize(kPlayPauseButtonSize);
+      play_pause_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+      play_pause_button->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY));
+      play_pause_button->SetToggledTooltipText(l10n_util::GetStringUTF16(
+          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE));
+      play_pause_button->SetFlipCanvasOnPaintForRTLUI(false);
+      play_pause_button_ =
+          media_controls_container->AddChildView(std::move(play_pause_button));
+    }
+
+    CreateMediaButton(
+        media_controls_container.get(), MediaSessionAction::kSeekForward,
+        l10n_util::GetStringUTF16(
+            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_FORWARD));
+    CreateMediaButton(
+        media_controls_container.get(), MediaSessionAction::kNextTrack,
+        l10n_util::GetStringUTF16(
+            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK));
+
+    media_controls_container_ =
+        buttons_container->AddChildView(std::move(media_controls_container));
+    buttons_container_layout->SetFlexForView(media_controls_container_, 1);
+
+    notification_controls_view->SetProperty(views::kMarginsKey,
+                                            kNotificationControlsInsets);
+    buttons_container->AddChildView(std::move(notification_controls_view));
+
+    AddChildView(std::move(buttons_container));
+  }
+
+  auto progress_view = std::make_unique<MediaControlsProgressView>(
+      base::BindRepeating(&MediaNotificationViewModernImpl::SeekTo,
+                          base::Unretained(this)),
+      true /* is_modern_notification */);
+  progress_view->SetProperty(views::kMarginsKey, kProgressBarInsets);
+  progress_ = AddChildView(std::move(progress_view));
+  progress_->SetVisible(true);
+
+  {
     // The info container contains the notification artwork, the labels for the
     // title and artist text, the picture in picture button, and the dismiss
     // button.
@@ -186,15 +276,14 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
 
     auto* info_container_layout =
         info_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
+            views::BoxLayout::Orientation::kHorizontal, kInfoContainerInsets,
+            kInfoContainerSpacing));
     info_container_layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kStart);
+        views::BoxLayout::CrossAxisAlignment::kCenter);
 
     {
       auto artwork_container = std::make_unique<views::View>();
-      artwork_container->SetBorder(
-          views::CreateEmptyBorder(kArtworkContainerBorderInsets));
-      artwork_container->SetPreferredSize(kArtworkContainerSize);
+      artwork_container->SetPreferredSize(kArtworkSize);
 
       // The artwork container will become visible once artwork has been set in
       // UpdateWithMediaArtwork
@@ -223,17 +312,14 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
 
       labels_container->SetPreferredSize(
           {kLabelsContainerBaseSize.width() -
-               (notification_controls_view->GetPreferredSize().width() +
-                kNotificationControlsInsets.width()),
+               kNotificationControlsInsets.width(),
            kLabelsContainerBaseSize.height()});
-      labels_container->SetBorder(
-          views::CreateEmptyBorder(kLabelsContainerBorderInsets));
 
       auto* labels_container_layout_manager =
           labels_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
               views::BoxLayout::Orientation::kVertical, gfx::Insets(), 0));
       labels_container_layout_manager->set_main_axis_alignment(
-          views::BoxLayout::MainAxisAlignment::kStart);
+          views::BoxLayout::MainAxisAlignment::kCenter);
       labels_container_layout_manager->set_cross_axis_alignment(
           views::BoxLayout::CrossAxisAlignment::kStart);
 
@@ -256,125 +342,54 @@ MediaNotificationViewModernImpl::MediaNotificationViewModernImpl(
             labels_container->AddChildView(std::move(subtitle_label));
       }
 
-      {
-        // Put a vertical spacer between the labels and the pip button.
-        auto spacer = std::make_unique<views::View>();
-        spacer->SetPreferredSize(kPipSeparatorSize);
-        labels_container->AddChildView(std::move(spacer));
-      }
-
-      {
-        // The picture-in-picture button appears directly under the media
-        // labels.
-        auto picture_in_picture_button = views::CreateVectorToggleImageButton(
-            views::Button::PressedCallback());
-        picture_in_picture_button->SetCallback(base::BindRepeating(
-            &MediaNotificationViewModernImpl::ButtonPressed,
-            base::Unretained(this), picture_in_picture_button.get()));
-        picture_in_picture_button->set_tag(
-            static_cast<int>(MediaSessionAction::kEnterPictureInPicture));
-        picture_in_picture_button->SetPreferredSize(kPipButtonSize);
-        picture_in_picture_button->SetFocusBehavior(
-            views::View::FocusBehavior::ALWAYS);
-        picture_in_picture_button->SetTooltipText(l10n_util::GetStringUTF16(
-            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP));
-        picture_in_picture_button->SetToggledTooltipText(
-            l10n_util::GetStringUTF16(
-                IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP));
-        picture_in_picture_button->SetFlipCanvasOnPaintForRTLUI(false);
-        views::SetImageFromVectorIconWithColor(
-            picture_in_picture_button.get(),
-            *GetVectorIconForMediaAction(
-                MediaSessionAction::kEnterPictureInPicture),
-            kPipButtonIconSize, SK_ColorBLACK);
-        picture_in_picture_button_ = labels_container->AddChildView(
-            std::move(picture_in_picture_button));
-      }
-
       info_container->AddChildView(std::move(labels_container));
     }
-
-    {
-      // If there is no artwork to display, a vertical spacer should be added
-      // between the labels container and the dismiss button.
-      auto notification_controls_spacer = std::make_unique<views::View>();
-      notification_controls_spacer->SetPreferredSize(
-          kNotificationControlsSpacerSize);
-      notification_controls_spacer_ =
-          info_container->AddChildView(std::move(notification_controls_spacer));
-    }
-
-    notification_controls_view->SetProperty(views::kMarginsKey,
-                                            kNotificationControlsInsets);
-    info_container->AddChildView(std::move(notification_controls_view));
 
     AddChildView(std::move(info_container));
   }
 
-  auto progress_view =
-      std::make_unique<MediaControlsProgressView>(base::BindRepeating(
-          &MediaNotificationViewModernImpl::SeekTo, base::Unretained(this)));
-  progress_ = AddChildView(std::move(progress_view));
-  progress_->SetVisible(true);
-
   {
-    // The media controls container contains buttons for media playback. This
-    // includes play/pause, fast-forward/rewind, and skip controls.
-    auto media_controls_container = std::make_unique<views::View>();
-    media_controls_container->SetPreferredSize(kMediaControlsContainerSize);
-    auto* media_controls_layout = media_controls_container->SetLayoutManager(
+    // This view contains pip button, mute button and cast buttons.
+    auto util_buttons_container = std::make_unique<views::View>();
+    util_buttons_container->SetPreferredSize(kUtilButtonsContainerSize);
+    auto* util_buttons_layout = util_buttons_container->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
-            views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-            kMediaControlsButtonSpacing));
-    media_controls_layout->set_cross_axis_alignment(
+            views::BoxLayout::Orientation::kHorizontal,
+            kUtilButtonsContainerInsets, kUtilButtonsSpacing));
+    util_buttons_layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kStart);
+    util_buttons_layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    media_controls_layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kCenter);
-    media_controls_container->SetBorder(
-        views::CreateEmptyBorder(kMediaControlsBorderInsets));
-
-    // Media controls should always be presented left-to-right,
-    // regardless of the local UI direction.
-    media_controls_container->SetMirrored(false);
-
-    CreateMediaButton(
-        media_controls_container.get(), MediaSessionAction::kPreviousTrack,
-        l10n_util::GetStringUTF16(
-            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK));
-    CreateMediaButton(
-        media_controls_container.get(), MediaSessionAction::kSeekBackward,
-        l10n_util::GetStringUTF16(
-            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_BACKWARD));
 
     {
-      auto play_pause_button = views::CreateVectorToggleImageButton(
+      // The picture-in-picture button appears directly under the media
+      // labels.
+      auto picture_in_picture_button = views::CreateVectorToggleImageButton(
           views::Button::PressedCallback());
-      play_pause_button->SetCallback(
-          base::BindRepeating(&MediaNotificationViewModernImpl::ButtonPressed,
-                              base::Unretained(this), play_pause_button.get()));
-      play_pause_button->set_tag(static_cast<int>(MediaSessionAction::kPlay));
-      play_pause_button->SetPreferredSize(kMediaButtonSize);
-      play_pause_button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-      play_pause_button->SetTooltipText(l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY));
-      play_pause_button->SetToggledTooltipText(l10n_util::GetStringUTF16(
-          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE));
-      play_pause_button->SetFlipCanvasOnPaintForRTLUI(false);
-      play_pause_button_ =
-          media_controls_container->AddChildView(std::move(play_pause_button));
+      picture_in_picture_button->SetCallback(base::BindRepeating(
+          &MediaNotificationViewModernImpl::ButtonPressed,
+          base::Unretained(this), picture_in_picture_button.get()));
+      picture_in_picture_button->set_tag(
+          static_cast<int>(MediaSessionAction::kEnterPictureInPicture));
+      picture_in_picture_button->SetPreferredSize(kPipButtonSize);
+      picture_in_picture_button->SetFocusBehavior(
+          views::View::FocusBehavior::ALWAYS);
+      picture_in_picture_button->SetTooltipText(l10n_util::GetStringUTF16(
+          IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_ENTER_PIP));
+      picture_in_picture_button->SetToggledTooltipText(
+          l10n_util::GetStringUTF16(
+              IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_EXIT_PIP));
+      picture_in_picture_button->SetFlipCanvasOnPaintForRTLUI(false);
+      views::SetImageFromVectorIconWithColor(
+          picture_in_picture_button.get(),
+          *GetVectorIconForMediaAction(
+              MediaSessionAction::kEnterPictureInPicture),
+          kPipButtonIconSize, SK_ColorBLACK);
+      picture_in_picture_button_ = util_buttons_container->AddChildView(
+          std::move(picture_in_picture_button));
     }
 
-    CreateMediaButton(
-        media_controls_container.get(), MediaSessionAction::kSeekForward,
-        l10n_util::GetStringUTF16(
-            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_SEEK_FORWARD));
-    CreateMediaButton(
-        media_controls_container.get(), MediaSessionAction::kNextTrack,
-        l10n_util::GetStringUTF16(
-            IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_NEXT_TRACK));
-
-    media_controls_container_ =
-        AddChildView(std::move(media_controls_container));
+    AddChildView(std::move(util_buttons_container));
   }
 
   if (item_)
@@ -493,14 +508,11 @@ void MediaNotificationViewModernImpl::UpdateWithMediaArtwork(
 
   UMA_HISTOGRAM_BOOLEAN(kArtworkHistogramName, !image.isNull());
 
-  if (!image.isNull()) {
+  if (!image.isNull())
     artwork_container_->SetVisible(true);
-    // When there is artwork to display, this spacer is no logner needed
-    notification_controls_spacer_->SetVisible(false);
-  }
 
   artwork_->SetImage(image);
-  artwork_->SetPreferredSize({70, 70});
+  artwork_->SetPreferredSize(kArtworkSize);
   artwork_->SetVignetteColor(
       GetMediaNotificationBackground()->GetBackgroundColor(*this));
 
@@ -578,6 +590,9 @@ void MediaNotificationViewModernImpl::UpdateForegroundColor() {
       GetMediaNotificationBackground()->GetForegroundColor(*this);
   const SkColor disabled_icon_color =
       SkColorSetA(foreground, gfx::kDisabledControlAlpha);
+
+  progress_->SetForegroundColor(foreground);
+  progress_->SetBackgroundColor(disabled_icon_color);
 
   // Update the colors for the labels
   title_label_->SetEnabledColor(foreground);

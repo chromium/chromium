@@ -22,7 +22,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
  public:
   METADATA_HEADER(MediaControlsProgressView);
   explicit MediaControlsProgressView(
-      base::RepeatingCallback<void(double)> seek_callback);
+      base::RepeatingCallback<void(double)> seek_callback,
+      bool is_modern_notification = false);
   MediaControlsProgressView(const MediaControlsProgressView&) = delete;
   MediaControlsProgressView& operator=(const MediaControlsProgressView&) =
       delete;
@@ -51,6 +52,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaControlsProgressView
   views::ProgressBar* progress_bar_;
   views::Label* progress_time_;
   views::Label* duration_;
+
+  const bool is_modern_notification_;
 
   // Timer to continually update the progress.
   base::RepeatingTimer update_progress_timer_;

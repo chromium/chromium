@@ -44,7 +44,7 @@ constexpr int kWidth = 400;
 constexpr int kModernUIWidth = 350;
 constexpr gfx::Size kNormalSize = gfx::Size(kWidth, 100);
 constexpr gfx::Size kExpandedSize = gfx::Size(kWidth, 150);
-constexpr gfx::Size kModernUISize = gfx::Size(kModernUIWidth, 100);
+constexpr gfx::Size kModernUISize = gfx::Size(kModernUIWidth, 168);
 constexpr gfx::Size kDismissButtonSize = gfx::Size(30, 30);
 constexpr int kDismissButtonIconSize = 20;
 constexpr int kDismissButtonBackgroundRadius = 15;
@@ -56,6 +56,8 @@ constexpr gfx::Size kStopCastButtonStripSize{400, 30};
 constexpr gfx::Insets kStopCastButtonBorderInsets{4, 8};
 constexpr gfx::Size kCrOSDismissButtonSize = gfx::Size(20, 20);
 constexpr int kCrOSDismissButtonIconSize = 12;
+constexpr gfx::Size kModernDismissButtonSize = gfx::Size(14, 14);
+constexpr int kModernDismissButtonIconSize = 10;
 
 // The minimum number of enabled and visible user actions such that we should
 // force the MediaNotificationView to be expanded.
@@ -126,6 +128,8 @@ MediaNotificationContainerImplView::MediaNotificationContainerImplView(
 
   gfx::Size dismiss_button_size =
       is_cros_ ? kCrOSDismissButtonSize : kDismissButtonSize;
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI))
+    dismiss_button_size = kModernDismissButtonSize;
 
   auto dismiss_button_placeholder = std::make_unique<views::View>();
   dismiss_button_placeholder->SetPreferredSize(dismiss_button_size);
@@ -564,10 +568,14 @@ void MediaNotificationContainerImplView::StopCasting(
 }
 
 void MediaNotificationContainerImplView::UpdateDismissButtonIcon() {
-  views::SetImageFromVectorIconWithColor(
-      dismiss_button_, vector_icons::kCloseRoundedIcon,
-      is_cros_ ? kCrOSDismissButtonIconSize : kDismissButtonIconSize,
-      foreground_color_);
+  int icon_size =
+      is_cros_ ? kCrOSDismissButtonIconSize : kDismissButtonIconSize;
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI))
+    icon_size = kModernDismissButtonIconSize;
+
+  views::SetImageFromVectorIconWithColor(dismiss_button_,
+                                         vector_icons::kCloseRoundedIcon,
+                                         icon_size, foreground_color_);
 }
 
 void MediaNotificationContainerImplView::UpdateDismissButtonBackground() {
