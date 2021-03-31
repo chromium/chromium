@@ -65,7 +65,6 @@ android_library("native_test_java") {
     "java/src/org/chromium/native_test/NativeBrowserTestApplication.java",
     "java/src/org/chromium/native_test/NativeTest.java",
     "java/src/org/chromium/native_test/NativeTestApplication.java",
-    "java/src/org/chromium/native_test/NativeTestInstrumentationTestRunner.java",
     "java/src/org/chromium/native_test/NativeUnitTest.java",
     "java/src/org/chromium/native_test/NativeUnitTestActivity.java",
     "java/src/org/chromium/native_test/NativeUnitTestNativeActivity.java",
