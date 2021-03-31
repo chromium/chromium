@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Agora, pode utilizar o Chrome sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="3720541637541300822">Bloquear os separadores de navegação anónima quando fecha o Chrome</translation>
 <translation id="384394811301901750">O Google Chrome não pode utilizar a câmara neste momento</translation>
-<translation id="38949020760388809">Escolha se pretende limpar os seus dados do Chrome deste dispositivo ou mantê-los.</translation>
 <translation id="3980220367029651214">Está a mudar as contas de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Os seus dados do Chrome existentes são geridos por <ph name="DOMAIN" />. Esta ação elimina os seus dados deste dispositivo, embora permaneçam em <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A sua entidade requer que se mantenha sem sessão iniciada no Chrome.</translation>
 <translation id="3988789688219830639">O Google Chrome não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="4099578267706723511">Ajude a melhorar o Chrome ao enviar estatísticas de utilização e relatórios de falhas para a Google.</translation>
-<translation id="415767770115540173">Obter uma melhor experiência no Google Chrome com base na sua localização.</translation>
 <translation id="417201473131094001">Opção não suportada no Chrome Canary.</translation>
 <translation id="424864128008805179">Pretende terminar sessão no Chrome?</translation>
 <translation id="4249068189593983585">Sugestão para o Chrome: para obter mais opções de separadores, toque sem soltar no botão Mostrar separadores na barra de ferramentas, que se encontra na parte superior ou inferior do ecrã.</translation>
@@ -80,7 +78,6 @@
 <translation id="766361182512894255">A sua palavra-passe foi exposta numa violação de dados. O Chrome recomenda a alteração da palavra-passe agora.</translation>
 <translation id="7698568245838009292">O Chrome pretende aceder à câmara</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
-<translation id="8109233255338845204">A sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, pelo que os seus dados do Chrome serão limpos deste dispositivo.</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="840168496893712993">Alguns suplementos provocam falhas no sistema do Chrome. Tente desinstalá-los.</translation>

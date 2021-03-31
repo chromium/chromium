@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Verzija aplikacije</translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1450753235335490080">Nije moguće dijeliti <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Pokušajte pitati "What’s the weather today?" (Kakvo će biti vrijeme danas?)</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog poteškoća s poslužiteljem.</translation>
 <translation id="1492417797159476138">Već ste spremili ovo korisničko ime za ovu web-lokaciju</translation>
 <translation id="1506061864768559482">Tražilica</translation>
@@ -568,6 +569,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="49268022542405662">Vaše će se zaporke izvesti i preuzeti kao tekstne datoteke. Bit će vidljive svim korisnicima i aplikacijama s pristupom odredišnoj mapi.</translation>
 <translation id="4932247056774066048">Budući da se odjavljujete s računa kojim upravlja <ph name="DOMAIN_NAME" />, vaši podaci iz Chromea izbrisat će se s ovog uređaja. Ostat će na vašem Google računu.</translation>
 <translation id="4936039914467572121">Brže otvorite ovu stranicu</translation>
+<translation id="4941179133499732445">Dodirnite mikrofon da biste pretraživali upotrebom glasa</translation>
 <translation id="4943703118917034429">Virtualna stvarnost</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
 <translation id="4961107849584082341">Prevedite ovu stranicu na bilo koji jezik</translation>
@@ -582,6 +584,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5011311129201317034">Web-lokacija <ph name="SITE" /> želi se povezati</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Dopusti</translation>
+<translation id="5061533557687621530">Da biste provjerili vrijeme, dodirnite mikrofon i recite "What’s the weather today?" (Kakvo će biti vrijeme danas?)</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
 <translation id="5091249083535528968">Prošireni podaci o upotrebi</translation>
 <translation id="509429900233858213">Došlo je do pogreške.</translation>
@@ -596,6 +599,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 preuzimanje nije uspjelo.}one{# preuzimanje nije uspjelo.}few{# preuzimanja nisu uspjela.}other{# preuzimanja nije uspjelo.}}</translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5184329579814168207">Otvori u Chromeu</translation>
+<translation id="5188992787241350004">Pretražujte upotrebom glasa</translation>
 <translation id="5191251636205085390">Saznajte o novim tehnologijama čiji je cilj zamijeniti kolačiće treće strane i upravljajte njima</translation>
 <translation id="5193988420012215838">Kopirano u međuspremnik</translation>
 <translation id="5199929503336119739">Radni profil</translation>

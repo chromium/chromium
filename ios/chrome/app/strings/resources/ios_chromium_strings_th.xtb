@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="102360288709523007">ช่วยให้ Chromium ทำงานได้ดีขึ้นโดยส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google</translation>
-<translation id="1043245583918962542">เลือกว่าจะล้างข้อมูล Chromium จากอุปกรณ์นี้หรือเก็บไว้</translation>
 <translation id="1185134272377778587">เกี่ยวกับ Chromium</translation>
 <translation id="1257458525759135959">หากต้องการบันทึกรูปภาพ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chromium เพิ่มไปยังรูปภาพ</translation>
 <translation id="1289216811211435351">เปลี่ยนไปใช้ Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">ล้างข้อมูล Chromium ของคุณออกจากอุปกรณ์นี้ไหม</translation>
 <translation id="8175055321229419309">เคล็ดลับ: <ph name="BEGIN_LINK" />ย้าย Chromium ไปไว้ที่ Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>
-<translation id="8252885722420466166">รับประสบการณ์การใช้งาน Google ที่ดีขึ้นใน Chromium โดยอิงจากตำแหน่งของคุณ</translation>
 <translation id="8586442755830160949">ลิขสิทธิ์ <ph name="YEAR" /> The Chromium Authors สงวนลิขสิทธิ์</translation>
 <translation id="8663480472502753423">อัปเดต Chromium อยู่เสมอ</translation>
 <translation id="8776843108004031667">บัญชีนี้และข้อมูลที่ไม่ได้บันทึกจะถูกนำออกจาก Chromium</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium ล้าสมัย</translation>
 <translation id="921174536258924340">Chromium ตรวจสอบรหัสผ่านได้ไม่ครบทั้งหมด โปรดลองอีกครั้งในวันพรุ่งนี้หรือ<ph name="BEGIN_LINK" />ตรวจสอบรหัสผ่านในบัญชี Google<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">บัญชีของคุณจัดการโดย <ph name="HOSTED_DOMAIN" /> ระบบจึงจะล้างข้อมูล Chromium จากอุปกรณ์นี้</translation>
 </translationbundle>

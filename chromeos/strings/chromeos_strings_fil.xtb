@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Walang kasalukuyang pag-print</translation>
 <translation id="4297501883039923494">Huminto - Hindi kilalang error</translation>
+<translation id="4344214025510306853">Mag-attach ng APN</translation>
 <translation id="4378373042927530923">Hindi Tumakbo</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Aking Drive</translation>
@@ -278,6 +279,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7059230779847288458">Nagcha-charge, <ph name="TIME_VALUE" /> hanggang sa mapuno</translation>
 <translation id="708426984172631313">INIHINTO</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
 <translation id="714876143603641390">Pagkakonekta sa Lan</translation>

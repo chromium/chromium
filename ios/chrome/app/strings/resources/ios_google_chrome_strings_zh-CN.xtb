@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">当您点按消息、文档和其他应用中的链接时，可以使用 Chrome 打开链接啦。</translation>
 <translation id="3720541637541300822">在您关闭 Chrome 时锁定无痕式标签页</translation>
 <translation id="384394811301901750">Google Chrome 目前无法使用您的相机</translation>
-<translation id="38949020760388809">请选择是要从此设备中清除您的 Chrome 数据，还是要保留这些数据。</translation>
 <translation id="3980220367029651214">您正要将同步帐号从 <ph name="USER_EMAIL1" /> 切换到 <ph name="USER_EMAIL2" />。您现有的 Chrome 数据由 <ph name="DOMAIN" /> 管理。切换同步帐号后，您的数据将从这台设备上删除，但仍会保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">贵组织要求您保持已退出 Chrome 的状态。</translation>
 <translation id="3988789688219830639">Google Chrome 无权访问您的照片或视频。请依次点按 iOS 中的“设置”&gt;“隐私”&gt;“照片”，授予其访问权限。</translation>
 <translation id="4099578267706723511">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chrome。</translation>
-<translation id="415767770115540173">要在 Chrome 中获得更好的 Google 使用体验，需要用到您的位置信息。</translation>
 <translation id="417201473131094001">在 Chrome Canary 版中不受支持</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
 <translation id="4249068189593983585">Chrome 提示。要查看更多的标签页选项，请轻触并按住工具栏（位于屏幕底部或顶部）中的“显示标签页”按钮。</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">您的密码遭遇了数据泄露。Chrome 建议您立即更改此密码。</translation>
 <translation id="7698568245838009292">Chrome 想要访问相机</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
-<translation id="8109233255338845204">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chrome 数据将会被清除。</translation>
 <translation id="8160472928944011082">Chrome 无法更新</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
 <translation id="840168496893712993">部分插件导致 Chrome 崩溃，请尝试卸载这些插件。</translation>

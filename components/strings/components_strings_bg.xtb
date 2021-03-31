@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Преглед на подробностите</translation>
 <translation id="1030706264415084469"><ph name="URL" /> иска да съхранява за постоянно голямо количество данни на устройството ви</translation>
 <translation id="1032854598605920125">Завъртане по часовниковата стрелка</translation>
+<translation id="1036224116832931580">Играта с динозавъра – докоснете, за да стартирате играта и да скачате</translation>
 <translation id="1036348656032585052">Изключване</translation>
 <translation id="1038106730571050514">Показване на предложения</translation>
 <translation id="1038842779957582377">неизвестно име</translation>
@@ -277,6 +278,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Няма}=1{1 сайт}other{# сайта}}</translation>
 <translation id="1945968466830820669">Възможно е да загубите достъп до профила си в организацията или самоличността ви да бъде открадната. Chromium препоръчва да промените паролата си сега.</translation>
 <translation id="1947454675006758438">Телбодиране горе вдясно</translation>
+<translation id="1958218078413065209">Най-високият ви резултат е <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Помогнете за всеобщото подобряване на сигурността в мрежата, като изпращате до Google <ph name="BEGIN_WHITEPAPER_LINK" />URL адресите на някои от страниците, които посещавате, ограничена системна информация и част от съдържанието на страниците<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Декларация за поверителност<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Отметки от <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Грешка при сериализирането</translation>
@@ -543,6 +545,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това Enter, за да стартирате проверка на безопасността от настройките на Chrome</translation>
 <translation id="3061707000357573562">Услуга за корекции</translation>
 <translation id="3064966200440839136">Ще напуснете режим „инкогнито“, за да платите във външно приложение. Искате ли да продължите?</translation>
+<translation id="306573536155379004">Играта е стартирана.</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3086579638707268289">Активността ви в мрежата се наблюдава</translation>
 <translation id="3087734570205094154">Най-долу</translation>
@@ -1539,6 +1542,7 @@
 <translation id="6934672428414710184">Това име е от профила ви в Google</translation>
 <translation id="6944692733090228304">Въведохте паролата си на сайт, който не се управлява от <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. За да защитите профила си, не използвайте паролата си повторно в други приложения и сайтове.</translation>
 <translation id="6945221475159498467">Избиране</translation>
+<translation id="6948051842255602737">Край на играта. Резултатът ви е <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">За да видите начините на вземане и изискванията, изберете адрес</translation>
 <translation id="6949872517221025916">Задаване на нова парола</translation>
 <translation id="6950684638814147129">При синтактичния анализ на стойността в JSON възникна грешка: <ph name="ERROR" /></translation>
@@ -1821,6 +1825,7 @@
 <translation id="7956713633345437162">Мобилни отметки</translation>
 <translation id="7961015016161918242">Никога</translation>
 <translation id="7966803981046576691">Тип отчитане на задания</translation>
+<translation id="79682505114836835">Стойността „<ph name="VALUE" />“ е невалиден шестнадесетичен цвят.</translation>
 <translation id="7976214039405368314">Твърде много заявки</translation>
 <translation id="7977538094055660992">Изходно устройство</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1948,6 +1953,7 @@
 <translation id="8446884382197647889">Научете повече</translation>
 <translation id="8457125768502047971">Неограничено</translation>
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
+<translation id="8463101686637053101">Играта с динозавъра – натиснете интервал, за да стартирате играта и да скачате</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна карта}other{# кредитни карти}}</translation>
 <translation id="8473863474539038330">Адреси и др.</translation>
 <translation id="8474910779563686872">Показване на подробностите за програмисти</translation>
@@ -2083,6 +2089,7 @@
 <translation id="8996941253935762404">На хоризонта се задава сайт с опасни програми</translation>
 <translation id="8997023839087525404">Сървърът предостави сертификат, който не е разкрит публично чрез правило в Прозрачност на сертификатите. Това се изисква за някои сертификати с цел защита срещу хакери и за да е сигурно, че може да им се има доверие.</translation>
 <translation id="9001074447101275817">Изискват се потребителско име и парола за прокси сървъра <ph name="DOMAIN" />.</translation>
+<translation id="9001963517402879850">Скок!</translation>
 <translation id="9004367719664099443">Сесията за VR е в ход</translation>
 <translation id="9005998258318286617">Зареждането на PDF документа не бе успешно.</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>

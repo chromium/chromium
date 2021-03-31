@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="3720541637541300822">Blochează filele incognito când închizi Chrome</translation>
 <translation id="384394811301901750">Momentan, Google Chrome nu poate folosi camera foto</translation>
-<translation id="38949020760388809">Alege dacă ștergi datele Chrome de pe dispozitiv sau le păstrezi.</translation>
 <translation id="3980220367029651214">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chrome existente sunt gestionate de <ph name="DOMAIN" />. Astfel, se vor șterge datele de pe acest dispozitiv, dar datele vor rămâne în <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizația îți solicită să nu te conectezi la Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nu are acces la fotografii și videoclipuri. Activează accesul din Setări iOS &gt; Confidențialitate &gt; Fotografii.</translation>
 <translation id="4099578267706723511">Contribuie la îmbunătățirea Chrome trimițând statistici de utilizare și rapoarte de blocare la Google.</translation>
-<translation id="415767770115540173">Beneficiază de o experiență Google mai bună în Chrome pe baza locației.</translation>
 <translation id="417201473131094001">Nu se acceptă pe Chrome Canary</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4249068189593983585">Sfat pentru Chrome: pentru mai multe opțiuni de file, atinge lung butonul Afișează filele din bara de instrumente, care se află în partea de sus sau de jos a ecranului.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Parola a fost expusă în urma încălcării securității datelor. Chrome recomandă să-ți schimbi acum parola.</translation>
 <translation id="7698568245838009292">Chrome vrea să acceseze camera foto</translation>
 <translation id="7855730255114109580">Google Chrome este actualizat</translation>
-<translation id="8109233255338845204">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chrome vor fi șterse de pe acest dispozitiv.</translation>
 <translation id="8160472928944011082">Chrome nu se poate actualiza</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="840168496893712993">Unele suplimente determină blocarea browserului Chrome. Încearcă să le dezinstalezi.</translation>

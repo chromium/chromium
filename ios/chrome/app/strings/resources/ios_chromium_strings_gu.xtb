@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
 <translation id="102360288709523007">ઉપયોગનાં આંકડા અને ક્રૅશ રિપોર્ટ Googleને મોકલીને Chromiumને બહેતર બનાવવામાં મદદ કરો.</translation>
-<translation id="1043245583918962542">પસંદ કરો કે આ ડિવાઇસમાંથી તમારા Chromium ડેટાને સાફ કરવો છે કે તેને રાખવો છે.</translation>
 <translation id="1185134272377778587">Chromium વિશે</translation>
 <translation id="1257458525759135959">છબીઓ સાચવવા માટે, સેટિંગ પર ટૅપ કરો જેથી Chromium તમારા ફોટા ઉમેરી શકે</translation>
 <translation id="1289216811211435351">Chromium પર સ્વિચ કરો</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">ડિવાઇસમાંથી તમારા Chromium ડેટાને સાફ કરીએ?</translation>
 <translation id="8175055321229419309">ટિપ: <ph name="BEGIN_LINK" />Chromium ને તમારા ડૉક પર ખસેડો<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium અપડેટ ચેક કરી શક્યું નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
-<translation id="8252885722420466166">Chromium માં તમારા સ્થાન પર આધારિત બહેતર Google અનુભવ મેળવો.</translation>
 <translation id="8586442755830160949">કોપિરાઇટ <ph name="YEAR" /> The Chromium Authors. સર્વાધિકાર સુરક્ષિત.</translation>
 <translation id="8663480472502753423">Chromium અપ ટૂ ડેટ રાખો</translation>
 <translation id="8776843108004031667">Chromiumમાંથી આ એકાઉન્ટ અને સાચવવામાં ન આવ્યો હોય એવો કોઈપણ ડેટા કાઢી નાખવામાં આવશે.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium જૂનું થઈ ગયું છે</translation>
 <translation id="921174536258924340">Chromium બધા પાસવર્ડ ચેક કરી શક્યું નથી. આવતી કાલે ફરી પ્રયાસ કરજો અથવા <ph name="BEGIN_LINK" />તમારા Google એકાઉન્ટમાં પાસવર્ડ ચેક કરો.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium લેખકો</translation>
-<translation id="994708389219151914">તમારું એકાઉન્ટ <ph name="HOSTED_DOMAIN" /> દ્વારા મેનેજ કરવામાં આવતું હોવાથી, આ ડિવાઇસમાંથી તમારો Chromium ડેટા સાફ કરવામાં આવશે.</translation>
 </translationbundle>

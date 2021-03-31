@@ -6,7 +6,7 @@
 <translation id="1016495303386450659">Item updated</translation>
 <translation id="1044891598689252897">Spletna mesta bodo delovala normalno</translation>
 <translation id="1047726139967079566">Zaznamek za to stran ...</translation>
-<translation id="1049743911850919806">Način brez beleženja zgodovine</translation>
+<translation id="1049743911850919806">Anonimni način</translation>
 <translation id="105093091697134113">Ti računi uporabljajo gesla, ki so bila razkrita v podatkovni kršitvi tretje osebe ali vnesena na zavajajočem spletnem mestu. Zaradi varnosti računov takoj spremenite ta gesla.</translation>
 <translation id="1063454504051558093">Uporaba drugega gesla …</translation>
 <translation id="1066060668811609597">Upravljanje sinhronizacije</translation>
@@ -38,7 +38,7 @@
 <translation id="1283524564873030414">Zadnjih 24 ur</translation>
 <translation id="1285320974508926690">Nikoli ne prevedi tega spletnega mesta</translation>
 <translation id="1321993286294231467">Napaka pri shranjevanju slike.</translation>
-<translation id="1322735045095424339">Vaša organizacija zahteva način brez beleženja dejavnosti.</translation>
+<translation id="1322735045095424339">Vaša organizacija zahteva anonimni način.</translation>
 <translation id="1323735185997015385">Izbriši</translation>
 <translation id="132683371494960526">Double tap to change the parent folder.</translation>
 <translation id="1340643665687018190">Close Menu</translation>
@@ -111,7 +111,7 @@
 <translation id="209018056901015185">Zahtevaj spletno mesto za nam. računalnik</translation>
 <translation id="2103075008456228677">Odpri history.google.com</translation>
 <translation id="2116625576999540962">Št. premaknjenih elementov: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
-<translation id="213900355088104901">Če želite zasebno brskati, odprite zavihek brez beleženja zgodovine</translation>
+<translation id="213900355088104901">Če želite zasebno brskati, odprite anonimni zavihek</translation>
 <translation id="2139867232736819575">Iskanje besedila, ki ste ga kopirali</translation>
 <translation id="2149973817440762519">Uredi zaznamek</translation>
 <translation id="2175927920773552910">Koda QR</translation>
@@ -164,7 +164,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2718352093833049315">Samo v omrežju Wi-Fi</translation>
 <translation id="2747003861858887689">Prejšnje polje</translation>
 <translation id="2764831210418622012">pravkar</translation>
-<translation id="2773292004659987824">Iskanje brez beleženja dejavnosti</translation>
+<translation id="2773292004659987824">Anonimno iskanje</translation>
 <translation id="277771892408211951">Izbira jezika</translation>
 <translation id="2780046210906776326">Ni e-poštnih rač.</translation>
 <translation id="2781331604911854368">Vklopljeno</translation>
@@ -192,7 +192,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="2958718410589002129">Gesla</translation>
 <translation id="2964349545761222050">Blokiranje piškotkov drugih spletnih mest</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
-<translation id="2975121486251958312">Na voljo je samo način brez beleženja dejavnosti</translation>
+<translation id="2975121486251958312">Na voljo je samo anonimni način</translation>
 <translation id="2981323609054805194">d nazaj</translation>
 <translation id="2982481275546140226">Izbriši podatke</translation>
 <translation id="298306318844797842">Dodajanje plačilnega sredstva …</translation>
@@ -251,7 +251,7 @@ Ko uporabljate način brez beleženja dejavnosti, spletna mesta ne smejo uporabl
 <translation id="3523473570015918798">Z odjavo vaši zaznamki, zgodovina, gesla in drugi podatki v Chromu ne bodo več sinhronizirani z računom Google.</translation>
 <translation id="3527085408025491307">Mapa</translation>
 <translation id="3529024052484145543">Ni varno</translation>
-<translation id="3533202363250687977">Zapri vse zavihke brez beleženja zgodovine</translation>
+<translation id="3533202363250687977">Zapri vse anonimne zavihke</translation>
 <translation id="3533436815740441613">Nov zavihek</translation>
 <translation id="3551320343578183772">Zapri zavihek</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
@@ -267,7 +267,7 @@ Upoštevajte spodnja navodila:</translation>
 <translation id="3670030362669914947">Številka</translation>
 <translation id="3691593122358196899">Zaznamek ustvarjen v mapi <ph name="FOLDER_TITLE" /></translation>
 <translation id="3709582977625132201">Označi kot neprebrano</translation>
-<translation id="3740397331642243698">Odpre vnesene URL-je v Google Chromu v načinu brez beleženja dejavnosti.</translation>
+<translation id="3740397331642243698">Odpre vnesene URL-je v Google Chromu v anonimnem načinu.</translation>
 <translation id="3771033907050503522">Incognito Tabs</translation>
 <translation id="3775743491439407556">Sinhronizacija ne deluje</translation>
 <translation id="3779810277399252432">Ni internetne povezave.</translation>
@@ -350,7 +350,7 @@ Podatki so šifrirani z vašim geslom za sinhronizacijo. Vnesite ga, če želite
 <translation id="4689564913179979534">Upravljanje plačilnih sredstev ...</translation>
 <translation id="473775607612524610">Posodobi</translation>
 <translation id="4747097190499141774">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov iz Googla Pay. Vaše šifrirane podatke lahko bere samo oseba z vašim geslom. Geslo ni poslano Googlu in ni shranjeno v Googlu. Če ga pozabite ali želite spremeniti to nastavitev, boste morali sinhronizacijo ponastaviti. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
-<translation id="4751645464639803239">Nov zavihek brez beleženja zgodovine</translation>
+<translation id="4751645464639803239">Nov anonimni zavihek</translation>
 <translation id="4775879719735953715">Privzeti brskalnik</translation>
 <translation id="4778644898150334464">Uporaba drugega gesla</translation>
 <translation id="4802417911091824046">Šifriranje gesla ne vključuje plačilnih sredstev in naslovov iz Googla Pay.
@@ -477,11 +477,11 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6059830886158432458">Nadzirajte članke in dejavnost tukaj</translation>
 <translation id="6066301408025741299">Dotaknite se, da prekinete.</translation>
 <translation id="6108923351542677676">Poteka nastavitev …</translation>
-<translation id="6119050551270742952">Trenutna spletna stran je v načinu brez beleženja dejavnosti</translation>
+<translation id="6119050551270742952">Trenutna spletna stran je v anonimnem načinu</translation>
 <translation id="6122191549521593678">Dosegljiv</translation>
 <translation id="6127379762771434464">Element odstranjen</translation>
 <translation id="6136914049981179737">Pred sek.</translation>
-<translation id="6144589619057374135">Odprite ${url} v načinu brez beleženja dejavnosti</translation>
+<translation id="6144589619057374135">Odprite ${url} v anonimnem načinu</translation>
 <translation id="616831107264507309">Poznejše branje</translation>
 <translation id="6177442314419606057">Iskanje v Chromu</translation>
 <translation id="6184086493125982861">Pokaži zavihke</translation>
@@ -533,7 +533,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 
 Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="651505212789431520">Želite preklicati sinhronizacijo? Sinhronizacijo lahko kadarkoli vklopite v nastavitvah.</translation>
-<translation id="6524918542306337007">Način brez beleženja dejavnosti ni na voljo</translation>
+<translation id="6524918542306337007">Anonimni način ni na voljo</translation>
 <translation id="6561262006871132942">Povečaj</translation>
 <translation id="6585618849026997638">Na stran, ki vam je pomembna, se lahko vrnete tako, da jo dodate med zaznamke.</translation>
 <translation id="6603393121510733479">Vaša organizacija je izklopila zasebno brskanje.
@@ -599,7 +599,7 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="7133798577887235672">Polno ime</translation>
 <translation id="7136892417564438900">Fotoaparat ni na voljo</translation>
 <translation id="7159472599653637159">Zahtevaj spletno mesto za mob. napravo</translation>
-<translation id="7162168282402939716">Odkleni zavihke brez beleženja dejavnosti s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="7162168282402939716">Odkleni anonimne zavihke s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="7172852049901402487">Zavarujte gesla pred varnostnimi težavami</translation>
 <translation id="7173114856073700355">Odpri nastavitve</translation>
 <translation id="7189598951263744875">Deli z drugimi</translation>
@@ -635,12 +635,12 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="7481312909269577407">Naprej</translation>
 <translation id="7483467499335917849">Uporaba trenutne lokacije</translation>
 <translation id="750493650310597496">0 izbranih</translation>
-<translation id="7508728395076009983">Če želite zakleniti zavihke brez beleženja dejavnosti, nastavite funkcijo Touch ID ali Face ID oziroma geslo.</translation>
+<translation id="7508728395076009983">Če želite zakleniti anonimne zavihke, nastavite funkcijo Touch ID ali Face ID oziroma geslo.</translation>
 <translation id="7514365320538308">Prenos</translation>
 <translation id="7537586195939242955">Elementa trenutno ni mogoče namesiti v Passbook.</translation>
 <translation id="7554791636758816595">Nov zavihek</translation>
 <translation id="7561196759112975576">Vedno</translation>
-<translation id="7583004045319035904">Za odklepanje zavihkov brez beleženja dejavnosti uporabite to: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
+<translation id="7583004045319035904">Za odklepanje anonimnih zavihkov uporabite to: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Nikoli ne prevedi iz jezika: <ph name="LANGUAGE" /></translation>
 <translation id="7603852183842204213">Pojavna okna so blokirana (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7607521702806708809">Izbriši geslo</translation>
@@ -651,7 +651,7 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="766891008101699113">Če želite zasebno brskati po spletu, dodajte nov zavihek.</translation>
 <translation id="7671141431838911305">NAMESTI</translation>
 <translation id="7701040980221191251">Nič</translation>
-<translation id="7741325291586284254">Stran z novim zavihkom brez beleženja dejavnosti</translation>
+<translation id="7741325291586284254">Stran z novim anonimnim zavihkom</translation>
 <translation id="7765158879357617694">Premakni</translation>
 <translation id="7771470029643830783">Z odjavo vaši zaznamki, zgodovina, gesla in drugi podatki v Chromu ne bodo več sinhronizirani z računom Google.
 
@@ -682,13 +682,13 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="7982789257301363584">Omrežje</translation>
 <translation id="7993619969781047893">Funkcije na nekaterih spletnih mestih morda ne bodo delovale</translation>
 <translation id="800361585186029508">Odpre vnesene URL-je v Google Chromu.</translation>
-<translation id="8007420562015504427">Iskanje brez beleženja zgodovine</translation>
+<translation id="8007420562015504427">Anonimno iskanje</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
 <translation id="8023878949384262191">Razširi razdelek.</translation>
 <translation id="8027581147000338959">Odpri v novem oknu</translation>
 <translation id="804427445359061970">Tu bodo prikazani zavihki iz drugih naprav</translation>
 <translation id="8059533439631660104">Strni razdelek.</translation>
-<translation id="8065292699993359127">Odprite URL-je v Chromu v načinu brez beleženja dejavnosti</translation>
+<translation id="8065292699993359127">Odprite URL-je v Chromu v anonimnem načinu</translation>
 <translation id="806745655614357130">Podatki naj bodo ločeni</translation>
 <translation id="8073670137947914548">Prenos končan</translation>
 <translation id="8073872304774253879">Izboljšanje iskanja in brskanja</translation>
@@ -721,7 +721,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8490978609246021741">Shrani spremembe</translation>
 <translation id="8495097701594799854">Izklopila organizacija.</translation>
 <translation id="8503813439785031346">Uporabniško ime</translation>
-<translation id="850600235656508448">Odpri v načinu brez beleženja zgodovine</translation>
+<translation id="850600235656508448">Odpri v anonimnem načinu</translation>
 <translation id="8510057420705599706">S tem boste odjavljeni in izklopljena bo sinhronizacija, zaznamki, zgodovina, gesla in drugi podatki v Chromu pa bodo ostali v tej napravi.</translation>
 <translation id="8517375800490286174">Odprtokodne licence</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" /> Tabs <ph name="FIRST_VISIBLE_TAB" /> through <ph name="LAST_VISIBLE_TAB" /> of <ph name="NUMBER_OF_OPEN_TABS" /></translation>
@@ -733,7 +733,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8548878600947630424">Najdi na strani ...</translation>
 <translation id="8574235780160508979">Pogoji storitve za Chrome se bodo spremenili 31. marca. <ph name="BEGIN_LINK" />Preglejte<ph name="END_LINK" /></translation>
 <translation id="8588404856427128947">Izklop</translation>
-<translation id="8591976964826315682">Blokiraj piškotke drugih mest v načinu brez beleženja dejavnosti</translation>
+<translation id="8591976964826315682">Blokiraj piškotke drugih mest v anonimnem načinu</translation>
 <translation id="8605219856220328675">Close tab.</translation>
 <translation id="8620640915598389714">Uredi</translation>
 <translation id="863090005774946393">Vaš brskalnik upravlja organizacija. Nekatere funkcije so morda onemogočene.</translation>

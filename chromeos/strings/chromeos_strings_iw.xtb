@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">תוקף הסיסמה יפוג בעוד <ph name="TIME" /></translation>
 <translation id="4238516577297848345">אין משימות הדפסה שמתבצעות כרגע</translation>
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
+<translation id="4344214025510306853">‏צירוף APN</translation>
 <translation id="4378373042927530923">לא הופעל</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">האחסון שלי</translation>
@@ -278,6 +279,7 @@
 <translation id="7040230719604914234">ספק</translation>
 <translation id="7059230779847288458">בטעינה, <ph name="TIME_VALUE" /> עד לטעינה מלאה</translation>
 <translation id="708426984172631313">הופסקה</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>

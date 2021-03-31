@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
 <translation id="102360288709523007">将使用情况统计信息和崩溃报告发送给 Google，帮助我们完善 Chromium。</translation>
-<translation id="1043245583918962542">请选择是要从此设备中清除您的 Chromium 数据，还是要保留这些数据。</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
 <translation id="1257458525759135959">若要保存图片，请点按“设置”并允许 Chromium 添加照片</translation>
 <translation id="1289216811211435351">改用 Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">从这部设备中清除您的 Chromium 数据？</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />将 Chromium 移到 Dock 中<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium 无法检查是否有更新。请稍后再试。</translation>
-<translation id="8252885722420466166">Chromium 可根据您的位置信息为您提供更好的 Google 产品使用体验。</translation>
 <translation id="8586442755830160949">版权所有<ph name="YEAR" /> The Chromium Authors。保留所有权利。</translation>
 <translation id="8663480472502753423">让 Chromium 保持最新状态</translation>
 <translation id="8776843108004031667">系统会从 Chromium 中移除此帐号以及所有未保存的数据。</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium版本太旧</translation>
 <translation id="921174536258924340">Chromium 无法检查所有密码。请明天再试，或者<ph name="BEGIN_LINK" />检查您的 Google 帐号中的密码<ph name="END_LINK" />。</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，所以您在此设备上存储的 Chromium 数据将会被清除。</translation>
 </translationbundle>

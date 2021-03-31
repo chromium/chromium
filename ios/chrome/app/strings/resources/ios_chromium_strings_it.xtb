@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="102360288709523007">Aiutaci a migliorare Chromium inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
-<translation id="1043245583918962542">Scegli se cancellare i tuoi dati di Chromium da questo dispositivo o se conservarli.</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Eliminare i dati di Chromium dal dispositivo?</translation>
 <translation id="8175055321229419309">Suggerimento. <ph name="BEGIN_LINK" />Sposta Chromium nel dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
-<translation id="8252885722420466166">Fornisci i dati sulla tua posizione per migliorare ancora di più la tua esperienza d'uso di Chromium.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="8663480472502753423">Mantieni Chromium aggiornato</translation>
 <translation id="8776843108004031667">Questo account e gli eventuali dati non salvati verranno rimossi da Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium non è aggiornato</translation>
 <translation id="921174536258924340">Chromium non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, pertanto i tuoi dati di Chromium verranno cancellati da questo dispositivo.</translation>
 </translationbundle>

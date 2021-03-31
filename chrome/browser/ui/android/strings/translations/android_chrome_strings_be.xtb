@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Версія праграмы</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Паспрабуйце спытаць “What’s the weather today?” ("Якое сёння надвор'е?")</translation>
 <translation id="1477626028522505441">Збой спампоўкі файла "<ph name="FILE_NAME" />" з-за праблем на серверы.</translation>
 <translation id="1492417797159476138">Вы ўжо захавалі гэта імя карыстальніка для гэтага сайта</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
@@ -569,6 +570,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="49268022542405662">Паролі будуць экспартаваны і спампаваны як тэкставы файл. Яны будуць бачныя ўсім карыстальнікам і праграмам з доступам да папкі, у якую гэты файл будзе захаваны.</translation>
 <translation id="4932247056774066048">Даныя Chrome будуць выдалены з гэтай прылады, паколькі вы выходзіце з уліковага запісу, якім кіруе <ph name="DOMAIN_NAME" />. Яны застануцца ва Уліковым запісе Google.</translation>
 <translation id="4936039914467572121">Пераходзьце на гэты сайт хутчэй</translation>
+<translation id="4941179133499732445">Каб шукаць з дапамогай голасу, націсніце на значок мікрафона</translation>
 <translation id="4943703118917034429">Віртуальная рэальнасць</translation>
 <translation id="4943872375798546930">Няма вынікаў</translation>
 <translation id="4961107849584082341">Гэту старонку можна перакласці на любую мову</translation>
@@ -583,6 +585,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5011311129201317034"><ph name="SITE" /> хоча падключыцца</translation>
 <translation id="5016205925109358554">З засечкамі</translation>
 <translation id="5039804452771397117">Дазволіць</translation>
+<translation id="5061533557687621530">Каб даведацца пра надвор'е, націсніце значок мікрафона і скажыце “What’s the weather today?” ("Якое сёння надвор'е?")</translation>
 <translation id="5087580092889165836">Дадаць картку</translation>
 <translation id="5091249083535528968">Пашыраныя даныя пра выкарыстанне</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
@@ -597,6 +600,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Збой 1 спампоўкі.}one{Збой # спампоўкі.}few{Збой # спамповак.}many{Збой # спамповак.}other{Збой # спампоўкі.}}</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5184329579814168207">Адкрыць у Chrome</translation>
+<translation id="5188992787241350004">Шукайце з дапамогай голасу</translation>
 <translation id="5191251636205085390">Даведайцеся пра новыя тэхналогіі, якія прыходзяць на змену староннім файлам cookie, а таксама пра спосабы кіравання імі</translation>
 <translation id="5193988420012215838">Скапіравана ў буфер абмену</translation>
 <translation id="5199929503336119739">Працоўны профіль</translation>

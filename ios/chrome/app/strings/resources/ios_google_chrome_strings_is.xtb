@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Núna geturðu notað Chrome hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="3720541637541300822">Læsa huliðsflipum um leið og þú lokar Chrome</translation>
 <translation id="384394811301901750">Google Chrome getur ekki notað myndavélina að svo stöddu</translation>
-<translation id="38949020760388809">Veldu hvort þú vilt hreinsa gögn Chrome úr þessu tæki eða geyma þau.</translation>
 <translation id="3980220367029651214">Þú ert að breyta samstillingarreikningi þínum úr <ph name="USER_EMAIL1" /> í <ph name="USER_EMAIL2" />.Fyrirliggjandi Chrome gögnum þínum er stjórnað af <ph name="DOMAIN" />. Þetta eyðir gögnunum þínum af þessu tæki en þau verða áfram geymd á <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Fyrirtækið þitt krefst þess að þú skráir þig ekki inn í Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome hefur ekki aðgang að myndunum þínum eða myndskeiðum. Veittu aðgang í iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4099578267706723511">Hjálpaðu til við að bæta Google Chrome með því að senda talnagögn um notkun og tilkynningar um hrun til Google.</translation>
-<translation id="415767770115540173">Fáðu betri Google upplifun í Chrome út frá staðsetningu þinni.</translation>
 <translation id="417201473131094001">Ekki stutt í Chrome Canary</translation>
 <translation id="424864128008805179">Viltu skrá þig út úr Chrome?</translation>
 <translation id="4249068189593983585">Ábending um Chrome. Til að sjá fleiri valkosti fyrir flipa skaltu halda hnappinum „Sýna flipa“ inni á tækjastikunni, sem er neðst eða efst á skjánum.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Aðgangsorðið þitt var afhjúpað vegna öryggisbrots. Chrome mælir með því að þú breytir aðgangsorðinu þínu núna.</translation>
 <translation id="7698568245838009292">Chrome biður um aðgang að myndavélinni</translation>
 <translation id="7855730255114109580">Google Chrome er uppfært</translation>
-<translation id="8109233255338845204">Reikningurinn þinn er í umsjón <ph name="HOSTED_DOMAIN" /> og því verður Chrome gögnunum þínum eytt úr þessu tæki.</translation>
 <translation id="8160472928944011082">Ekki er hægt að uppfæra Chrome</translation>
 <translation id="8370517070665726704">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
 <translation id="840168496893712993">Einhverjar viðbætur valda því að Chrome hrynur. Prófaðu að fjarlægja þær.</translation>

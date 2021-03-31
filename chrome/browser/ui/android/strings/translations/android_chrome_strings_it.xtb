@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Versione applicazione</translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1450753235335490080">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Prova "Che tempo fa oggi?"</translation>
 <translation id="1477626028522505441">Download di <ph name="FILE_NAME" /> non riuscito a causa di problemi del server.</translation>
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
 <translation id="1506061864768559482">Motore di ricerca</translation>
@@ -569,6 +570,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="49268022542405662">Le tue password verranno esportate e scaricate in un file di testo. Saranno visibili a qualsiasi persona e app con accesso alla cartella di destinazione.</translation>
 <translation id="4932247056774066048">Poiché stai uscendo da un account gestito da <ph name="DOMAIN_NAME" />, i tuoi dati di Chrome verranno eliminati da questo dispositivo. Rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="4936039914467572121">Accedi a questo sito più rapidamente</translation>
+<translation id="4941179133499732445">Tocca il microfono per cercare tramite comandi vocali</translation>
 <translation id="4943703118917034429">Realtà virtuale</translation>
 <translation id="4943872375798546930">Nessun risultato</translation>
 <translation id="4961107849584082341">Traduci questa pagina in qualsiasi lingua</translation>
@@ -583,6 +585,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5011311129201317034">Il sito <ph name="SITE" /> desidera collegarsi</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Consenti</translation>
+<translation id="5061533557687621530">Per controllare le condizioni meteo, tocca il microfono e di' "Che tempo fa oggi?"</translation>
 <translation id="5087580092889165836">Aggiungi carta</translation>
 <translation id="5091249083535528968">Dati completi sull'utilizzo</translation>
 <translation id="509429900233858213">Si è verificato un errore.</translation>
@@ -597,6 +600,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download non riuscito.}other{# download non riusciti.}}</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5184329579814168207">Apri in Chrome</translation>
+<translation id="5188992787241350004">Esegui ricerca vocale</translation>
 <translation id="5191251636205085390">Scopri e gestisci le nuove tecnologie che mirano a sostituire i cookie di terze parti</translation>
 <translation id="5193988420012215838">Copiata nei tuoi appunti</translation>
 <translation id="5199929503336119739">Profilo di lavoro</translation>

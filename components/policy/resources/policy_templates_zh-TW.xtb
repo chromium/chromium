@@ -844,6 +844,7 @@
 
       如果未設定 <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> 政策，搜尋引擎不會有任何圖示。</translation>
 <translation id="2145735238144543545">必須提供用戶端憑證</translation>
+<translation id="2146103669166779785">系統會根據這個十六進位顏色產生主題，並套用至瀏覽器。</translation>
 <translation id="214901426630414675">限制使用雙面列印模式</translation>
 <translation id="2149330464730004005">啟用彩色列印</translation>
 <translation id="2149592087996467903">禁止 WebRTC 使用過時的 TLS/DTLS 版本</translation>
@@ -1451,6 +1452,7 @@
 <translation id="2905984450136807296">驗證資料快取生命週期</translation>
 <translation id="2906874737073861391">AppPack 擴充功能清單</translation>
 <translation id="2908277604670530363">Proxy 伺服器的並行連線數量上限</translation>
+<translation id="2912366658685903301">設定瀏覽器主題的顏色</translation>
 <translation id="291853569864365550">不在新分頁中顯示內容建議</translation>
 <translation id="2920795918401557243">此設定可讓使用者透過系統追蹤服務收集整個系統的效能追蹤記錄。
 
@@ -3752,6 +3754,11 @@
       如果不設定這項政策，使用者將可變更啟動器中的固定應用程式清單。</translation>
 <translation id="6190022522129724693">預設彈出視視窗設定</translation>
 <translation id="6190367314942602985">回報使用者身分識別資訊</translation>
+<translation id="6191963383731098056">管理員可以透過這項政策設定 <ph name="PRODUCT_NAME" /> 主題的顏色。輸入的字串應為有效的十六進位顏色字串，格式為「#RRGGBB」。
+
+      將政策設為有效的十六進位顏色，可讓系統根據該顏色自動產生主題，並套用至瀏覽器。使用者將無法變更這項政策設定的主題。
+
+      如果不設定這項政策，使用者則可依照個人偏好變更瀏覽器的主題。</translation>
 <translation id="6195802366906945965">決定是否使用內建憑證驗證器來驗證伺服器憑證</translation>
 <translation id="6208896993204286313">回報 <ph name="PRODUCT_NAME" /> 政策資訊</translation>
 <translation id="6210259502936598222">回報作業系統和 <ph name="PRODUCT_NAME" /> 版本資訊</translation>

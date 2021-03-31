@@ -855,6 +855,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 
       Se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> non viene configurato, non è presente alcuna icona per il provider di ricerca.</translation>
 <translation id="2145735238144543545">Certificati client richiesti</translation>
+<translation id="2146103669166779785">Colore esadecimale che verrà utilizzato per generare e applicare un tema al browser.</translation>
 <translation id="214901426630414675">Limita la modalità di stampa fronte/retro</translation>
 <translation id="2149330464730004005">Attiva la stampa a colori</translation>
 <translation id="2149592087996467903">Impedisci a WebRTC di usare versioni obsolete del protocollo TLS/DTLS</translation>
@@ -1468,6 +1469,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2905984450136807296">Durata dei dati di autenticazione nella cache</translation>
 <translation id="2906874737073861391">Elenco di estensioni AppPack</translation>
 <translation id="2908277604670530363">Numero massimo di connessioni simultanee al server proxy</translation>
+<translation id="2912366658685903301">Configura il colore del tema del browser</translation>
 <translation id="291853569864365550">Non mostrare suggerimenti di contenuti nella pagina Nuova scheda</translation>
 <translation id="2920795918401557243">Questa impostazione consente di raccogliere dati di rilevamento del rendimento a livello di sistema usando il servizio di tracciamento del sistema.
 
@@ -3793,6 +3795,11 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
       Se il criterio non è configurato, gli utenti possono modificare l'elenco di app bloccate in Avvio app.</translation>
 <translation id="6190022522129724693">Impostazione popup predefiniti</translation>
 <translation id="6190367314942602985">Segnala informazioni di identificazione degli utenti</translation>
+<translation id="6191963383731098056">Questo criterio consente agli amministratori di configurare il colore del tema di <ph name="PRODUCT_NAME" />. La stringa di input deve essere una stringa di colore esadecimale valido corrispondente al formato "#RRGGBB".
+
+      L'impostazione del criterio su un colore esadecimale valido fa sì che venga automaticamente generato e applicato al browser un tema basato su quel colore. Gli utenti non potranno modificare il tema impostato dal criterio.
+
+      Lasciare il criterio non impostato consente agli utenti di modificare il tema del browser come preferiscono.</translation>
 <translation id="6195802366906945965">Consente di stabilire se verrà utilizzato lo strumento di verifica dei certificati integrato per verificare i certificati dei server</translation>
 <translation id="6208896993204286313">Segnala informazioni sulle norme di <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Segnala informazioni sulla versione del sistema operativo e di <ph name="PRODUCT_NAME" /></translation>

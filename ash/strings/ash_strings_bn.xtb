@@ -92,7 +92,6 @@
 <translation id="1698760176351776263">IPv6 ঠিকানা: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">ডেস্ক: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">নেটওয়ার্ক সেটিংস</translation>
-<translation id="1713296079175516843">নিরাপত্তার কারণে পেরিফেরাল ডিভাইস ব্যবহার করা যাবে না</translation>
 <translation id="1719094688023114093">"লাইভ ক্যাপশন" চালু আছে।</translation>
 <translation id="1720011244392820496">ওয়াই-ফাই সিঙ্ক করার সুবিধা চালু করুন</translation>
 <translation id="1743570585616704562">শনাক্ত করা যায়নি</translation>
@@ -277,6 +276,7 @@
 <translation id="3308453408813785101">তা সত্ত্বেও, <ph name="USER_EMAIL_ADDRESS" /> পরে সাইন-ইন করতে পারবেন।</translation>
 <translation id="3321628682574733415">ভুল অভিভাবকীয় কোড</translation>
 <translation id="332587331255250389">অনুগ্রহ করে ব্যাটারি পাল্টান</translation>
+<translation id="3333741161915951567">মোডেম রিবুট করা হচ্ছে। ৩০ সেকেন্ড পর আবার চেষ্টা করুন।</translation>
 <translation id="3341303451326249809">স্ক্রিনশট ক্যাপচার করা হয়েছে</translation>
 <translation id="334252345105450327">একটি স্ক্রিনশট নিন</translation>
 <translation id="3351879221545518001">আপনি বর্তমানে স্ক্রিন কাস্ট করছেন।</translation>

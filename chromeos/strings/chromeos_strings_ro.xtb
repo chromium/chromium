@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4297501883039923494">Oprită – Eroare necunoscută</translation>
+<translation id="4344214025510306853">Atașează APN</translation>
 <translation id="4378373042927530923">Nu a rulat</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Contul meu Drive</translation>
@@ -278,6 +279,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7059230779847288458">Se încarcă, <ph name="TIME_VALUE" /> până la încărcarea completă</translation>
 <translation id="708426984172631313">OPRIT</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>

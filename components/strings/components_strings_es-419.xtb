@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Ver detalles</translation>
 <translation id="1030706264415084469"><ph name="URL" /> quiere almacenar datos de gran tamaño de forma permanente en tu dispositivo</translation>
 <translation id="1032854598605920125">Girar a la derecha</translation>
+<translation id="1036224116832931580">Juego del dinosaurio, presiona para saltar y jugar</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1038106730571050514">Mostrar sugerencias</translation>
 <translation id="1038842779957582377">nombre desconocido</translation>
@@ -275,6 +276,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="192020519938775529">{COUNT,plural, =0{Ninguno}=1{1 sitio}other{# sitios}}</translation>
 <translation id="1945968466830820669">Es posible que hayas perdido el acceso a la cuenta de tu organización o sufrido un robo de identidad. Chromium te recomienda que cambies la contraseña ahora.</translation>
 <translation id="1947454675006758438">Grapa en la esquina superior derecha</translation>
+<translation id="1958218078413065209">Tu puntuación más alta es <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Si quieres ayudar a mejorar la seguridad de la Web para todos, envía <ph name="BEGIN_WHITEPAPER_LINK" />las URL de algunas páginas que visitas, información limitada sobre el sistema y determinado contenido de páginas<ph name="END_WHITEPAPER_LINK" /> a Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de Privacidad<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Error de serialización</translation>
@@ -541,6 +543,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />: presiona Tab y, luego, Intro para realizar la Verificación de seguridad en la configuración de Chrome</translation>
 <translation id="3061707000357573562">Aplicar parche al servicio</translation>
 <translation id="3064966200440839136">Saldrás del modo de navegación incógnito para pagar mediante una aplicación externa. ¿Deseas continuar?</translation>
+<translation id="306573536155379004">Comenzó el juego.</translation>
 <translation id="3080254622891793721">Gráfico</translation>
 <translation id="3086579638707268289">Se supervisa tu actividad en la Web</translation>
 <translation id="3087734570205094154">Inferior</translation>
@@ -1533,6 +1536,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6934672428414710184">Este nombre es de tu Cuenta de Google</translation>
 <translation id="6944692733090228304">Ingresaste tu contraseña en un sitio que no está administrado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger tu cuenta, no vuelvas a usar la contraseña en otras apps y sitios.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
+<translation id="6948051842255602737">Terminó el juego, tu puntuación es <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Para ver los requisitos y métodos de retiro, selecciona una dirección</translation>
 <translation id="6949872517221025916">Restablecer contraseña</translation>
 <translation id="6950684638814147129">Error al analizar el valor JSON: <ph name="ERROR" /></translation>
@@ -1815,6 +1819,7 @@ Detalles adicionales:
 <translation id="7956713633345437162">Favoritos del celular</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966803981046576691">Tipo de cuenta para el trabajo</translation>
+<translation id="79682505114836835">El valor "<ph name="VALUE" />" es un código hexadecimal de color no válido.</translation>
 <translation id="7976214039405368314">Demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de salida</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1942,6 +1947,7 @@ Detalles adicionales:
 <translation id="8446884382197647889">Más información</translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8461694314515752532">Encriptar los datos sincronizados con tu propia frase de contraseña de sincronización</translation>
+<translation id="8463101686637053101">Juego del dinosaurio, presiona la barra espaciadora para saltar y jugar</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 tarjeta de crédito}other{# tarjetas de crédito}}</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474910779563686872">Mostrar detalles para desarrolladores</translation>
@@ -2078,6 +2084,7 @@ Detalles adicionales:
 <translation id="8996941253935762404">El siguiente sitio contiene programas peligrosos</translation>
 <translation id="8997023839087525404">El servidor presentó un certificado que no se divulgó de forma pública con la política Certificado de transparencia. Este es un requisito para algunos certificados que permite garantizar su confiabilidad y protegerte de atacantes.</translation>
 <translation id="9001074447101275817">El proxy <ph name="DOMAIN" /> requiere un nombre de usuario y una contraseña.</translation>
+<translation id="9001963517402879850">¡Salta!</translation>
 <translation id="9004367719664099443">La sesión de RV está en curso</translation>
 <translation id="9005998258318286617">No se pudo cargar el documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>

@@ -52,6 +52,7 @@
 <translation id="1268366246392928616">沒有上一個數學運算式</translation>
 <translation id="1273314450961659276">文字轉語音設定</translation>
 <translation id="1275718070701477396">已選取</translation>
+<translation id="1284576163386164372">如要瀏覽教學課程，你隨時可以用四指輕觸螢幕來開啟選單，然後在「ChromeVox」部分底下啟用教學課程。</translation>
 <translation id="1291286136605998134">切換按鈕</translation>
 <translation id="1299774449519412690">淺天藍</translation>
 <translation id="1303806948938513162">用四指輕觸即可進入 ChromeVox 選單</translation>
@@ -115,6 +116,7 @@
 <translation id="1690731385917361335">沒有任何項目</translation>
 <translation id="1700517974991662022">曾經造訪過</translation>
 <translation id="1714116687360794776">計量器</translation>
+<translation id="1717267964664691695">觸控教學課程到此結束</translation>
 <translation id="1722567105086139392">連結</translation>
 <translation id="1727806147743597030">頁尾</translation>
 <translation id="1730447754326314349">歡迎體驗 ChromeVox 教學課程。如要結束此教學課程，可隨時按下鍵盤左上角的 Esc 鍵。如要關閉 ChromeVox，請按住 Control 和 Alt 鍵，然後按下 Z 鍵。當你準備好之後，請使用空格鍵前往下一門課。</translation>
@@ -131,6 +133,7 @@
 <translation id="1834891354138622109">欄</translation>
 <translation id="1845944666972354496">輕觸兩下即可啟用</translation>
 <translation id="1846771122725914429">藍牙點字顯示器</translation>
+<translation id="1852018405765032699">用四指輕觸螢幕可以開啟及關閉 ChromeVox 選單。這些選單含有關於指令和快速鍵的實用資訊。開啟選單後，你可以滑動單指來瀏覽各個項目，而且輕觸兩下即可啟用項目。如要繼續，請用四指輕觸螢幕。</translation>
 <translation id="1865601187525349519">文字結束</translation>
 <translation id="1876229593313240038">文件</translation>
 <translation id="1902396333223336119">儲存格</translation>
@@ -181,6 +184,7 @@
 <translation id="2267538686624070261">退出拼字錯誤區塊</translation>
 <translation id="2267945578749931355">下一個字元</translation>
 <translation id="2278490101488436824">以三指向左滑動</translation>
+<translation id="2303873575703885770">啟用項目</translation>
 <translation id="2305942658236913680">沒有下一個標題</translation>
 <translation id="2311237334957139798">移至較低的精細度等級</translation>
 <translation id="2314393392395134769">不是下標</translation>
@@ -219,6 +223,7 @@
 <translation id="2592212930811759050">輕觸兩下即可開始編輯</translation>
 <translation id="2598495320872286378">文法錯誤</translation>
 <translation id="2603828437139726540">移到下一個字元</translation>
+<translation id="2619344480613750862">你也可以在螢幕畫面的各個部分間移動，例如在啟動器、檔案櫃和 Chrome 分頁之間移動。如要移至下一個部分，請用四指由左往右滑動。馬上試試看，接著再繼續吧！</translation>
 <translation id="2624431853467395961">開啟學習模式</translation>
 <translation id="2626530649491650971">可點擊</translation>
 <translation id="2637227747952042642">數學</translation>
@@ -247,6 +252,7 @@
 <translation id="2756452585631602151">輸入自訂標籤</translation>
 <translation id="2766299274563946262">左側沒有儲存格</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
+<translation id="2792200646155001340">如要移至上一個項目，也可以用單指由右往左滑動。現在就試試看吧！</translation>
 <translation id="280499067616661124">ChromeVox 從網頁中尋找</translation>
 <translation id="2811019999044652585">如要跳到畫面上的其他部分 (例如工具列或系統匣)，請按下 Control + Forward 鍵。Chromebook 的 Forward 鍵位於數字 2 鍵的正上方。</translation>
 <translation id="2811204574343810641">列</translation>
@@ -274,6 +280,7 @@
 <translation id="2968634799764242930">海綠</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{Tab 字元}other{# 個 Tab 字元}}</translation>
 <translation id="2972205263822847197">工具提示</translation>
+<translation id="2976476721782829799">你也可以在螢幕上拖曳單指，藉此在各個部分間移動，這種方式稱為輕觸探索。現在就嘗試拖曳單指，閱讀這門課的剩餘內容吧！</translation>
 <translation id="297825089465017871">以雙指向左滑動</translation>
 <translation id="2998131015536248178">上一個字元</translation>
 <translation id="2999559350546931576">降低音調</translation>
@@ -375,6 +382,7 @@
 <translation id="3587482841069643663">全部</translation>
 <translation id="3589661172894441357">詞彙解釋</translation>
 <translation id="3591784666823501596">皇家藍</translation>
+<translation id="3592715211448024517">存取選單</translation>
 <translation id="3594207934078151302">中海綠</translation>
 <translation id="3599054940393788245">非數學內部</translation>
 <translation id="360241989769010433">鳴謝</translation>
@@ -401,6 +409,7 @@
 <translation id="3781428340399460090">亮粉色</translation>
 <translation id="3783725005098956899">顯示記錄</translation>
 <translation id="3801735343383419236">自動即時查詢清單</translation>
+<translation id="3806327402890551732">移至下一個或上一個項目</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3813387282697781382">淺珊瑚紅</translation>
 <translation id="3816633764618089385">下一個媒體元素</translation>
@@ -410,6 +419,7 @@
 <translation id="3870295413168340326">沒有上一個第 3 階標題</translation>
 <translation id="3887399638190992181">重要按鍵</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3893063449310326280">同樣地，用四指由右往左滑動可移至上一個主要元素，現在就試試看吧！</translation>
 <translation id="3897092660631435901">選單</translation>
 <translation id="3907138069015388678">清單格線</translation>
 <translation id="3909320334364316587">上一個第 6 階標題</translation>
@@ -504,6 +514,7 @@
 <translation id="4615592953348396470">忽略下一個按鍵</translation>
 <translation id="4623097797855662355">版權頁標記</translation>
 <translation id="463135993322337640">按下 ChromeVox 的 O 鍵、N 鍵，即可瞭解最新功能</translation>
+<translation id="4649220074413114917">用雙指輕觸螢幕可以停止目前朗讀的任何內容。如果不希望 ChromeVox 繼續朗讀，這種做法就能派上用場。如要繼續，請用雙指輕觸螢幕。</translation>
 <translation id="4660783501463101648">移除 ChromeVox 傳統模式切換功能：現已無法透過鍵盤切換回 ChromeVox 傳統模式。</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">，</translation>
@@ -579,12 +590,14 @@
 <translation id="5140016802771803559">麗貝卡紫</translation>
 <translation id="5142101052131610456">所有課程</translation>
 <translation id="5158275234811857234">封面</translation>
+<translation id="516076699907426116">請透過輕觸探索的方式找到 [下一門課] 按鈕，然後輕觸兩下即可繼續。</translation>
 <translation id="5170206230005240598">點字字幕已啟用</translation>
 <translation id="5183440668879371625">上一行點字</translation>
 <translation id="5189244881767082992">行</translation>
 <translation id="5263034204789987535">玉米絲色</translation>
 <translation id="5263344797180442561">第 2 階</translation>
 <translation id="528468243742722775">結束</translation>
+<translation id="5290220123487191192">首先介紹幾個常用的手勢。如果遇到想要啟用的項目，請用單指輕觸兩下螢幕。馬上輕觸兩下，接著再繼續吧！</translation>
 <translation id="5302089807023311274">參考書目資料</translation>
 <translation id="530391007967514163">請試著在標題之間跳轉，以瀏覽下方文字。</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />，分頁</translation>
@@ -655,10 +668,12 @@
 <translation id="5703716265115423771">調低音量</translation>
 <translation id="5704453877234251104">按下向上鍵或向下鍵即可使用自動完成功能</translation>
 <translation id="5712244464475377681">popbtn</translation>
+<translation id="5712889723513495267">移至下一個或上一個部分</translation>
 <translation id="5725079927589231571">淺鋼青</translation>
 <translation id="5732189279857692565">這是第二個標題。請按下搜尋鍵 + H 鍵或搜尋鍵 + Shift 鍵 + H 鍵，前往下一個標題</translation>
 <translation id="5748623122140342504">上一個第 5 階標題</translation>
 <translation id="5760594853119905566">附錄</translation>
+<translation id="5761219715606611783">非常好！你已成功掌握 ChromeVox 觸控操作的基本概念。現在可以再瀏覽一次教學課程，也可以使用下方按鈕來結束教學課程。</translation>
 <translation id="5805940204952508776">以兩指輕觸</translation>
 <translation id="5819072574982403430">樹狀目錄項目</translation>
 <translation id="5822819874379903994">深綠松石色</translation>
@@ -683,6 +698,7 @@
 <translation id="5906974869830879618">請輸入 PIN 碼</translation>
 <translation id="5921587111466148855">章節</translation>
 <translation id="5923780477617566089">目前日期</translation>
+<translation id="5926889058434275234">如需完整的手勢清單，請前往說明中心。</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{等號}other{# 個等號}}</translation>
 <translation id="5948123859135882163">切換數學運算式的轉譯方式 (選擇結構化轉譯或語意轉譯)</translation>
 <translation id="5955304353782037793">應用程式</translation>
@@ -760,6 +776,7 @@
 <translation id="6561818612645211875">前往目前列的開頭</translation>
 <translation id="6579990219486187401">淺粉紅色</translation>
 <translation id="6583174818554398774">移至較高的精細度等級</translation>
+<translation id="6584162722998608255">接下來將介紹在螢幕畫面上移動的方式。只要用單指由左往右滑動，即可移至下一個項目。馬上試試看，繼續進行下一步吧！</translation>
 <translation id="6609828810966525877">想探索更多手勢，請開啟學習模式或前往 Chromebook 說明中心</translation>
 <translation id="6628427060004938651">分輯</translation>
 <translation id="6637586476836377253">記錄</translation>
@@ -781,6 +798,7 @@
 <translation id="6759710362319508545">資源</translation>
 <translation id="67862343314499040">紫羅蘭色</translation>
 <translation id="6786800275320335305">文章</translation>
+<translation id="6790781785997195160">小試身手後，請找出 [下一門課] 按鈕，然後輕觸兩下即可繼續。</translation>
 <translation id="6793101435925451627">清單方塊</translation>
 <translation id="6815255864998354418">檸檬綢色</translation>
 <translation id="6816066673340002913">灰金菊色</translation>
@@ -806,6 +824,7 @@
 <translation id="6994042831499278539">詞彙解釋參考資料</translation>
 <translation id="6996566555547746822">下一個下拉式方塊</translation>
 <translation id="6997224546856374593">讀出大寫時：</translation>
+<translation id="6999752561504308105">歡迎體驗 ChromeVox 教學課程。如要結束此教學課程，可隨時用雙指由右往左滑動。你也能隨時開啟或關閉 ChromeVox，只要同時按住兩個音量按鈕五秒即可。準備就緒後，請用單指輕觸兩下螢幕，前往下一門課。</translation>
 <translation id="700202842116345659">參考書目</translation>
 <translation id="7005146664810010831">找不到網址</translation>
 <translation id="7026338066939101231">減少</translation>
@@ -819,6 +838,7 @@
 <translation id="7086377898680121060">調高亮度</translation>
 <translation id="7088743565397416204">輕觸兩下即可啟用目前聚焦的項目</translation>
 <translation id="7088960765736518739">開關功能</translation>
+<translation id="7090715360595433170">這種方式也可能會比向左/向右滑動單指更有效率。</translation>
 <translation id="7091296112653361280">那瓦霍白</translation>
 <translation id="7095834689119144465">編輯文字時僅限輸入數字</translation>
 <translation id="7096001299300236431">上一個媒體元素</translation>
@@ -856,6 +876,7 @@
 <translation id="7308519659008003150">沒有上一個表單欄位</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">部分已選取</translation>
+<translation id="7322442671176251901">輕觸探索</translation>
 <translation id="7344012264516629579">其他跳轉指令包含了以連結、按鈕或核取方塊等方式進行跳轉。ChromeVox 選單中包含了跳轉指令的完整清單，按下搜尋鍵 + 句號鍵即可開啟 ChromeVox 選單。</translation>
 <translation id="7356165926712028380">切換至 8 點點字</translation>
 <translation id="7356610683936413584">說明清單詳細資料</translation>
@@ -911,6 +932,7 @@
    如要結束教學課程，請使用 ChromeVox 找到 [關閉] 按鈕，按一下即可結束。</translation>
 <translation id="7724603315864178912">剪下</translation>
 <translation id="7731785449856576010">沒有下一個媒體小工具</translation>
+<translation id="7735498529470878067">透過輕觸探索，你可以快速掌握螢幕畫面上有哪些內容。</translation>
 <translation id="773906353055481349">按下搜尋鍵 + Ctrl 鍵 + Alt 鍵和方向鍵，即可依儲存格進行瀏覽</translation>
 <translation id="7763537600611320912">已開始下載「<ph name="FILE_NAME" />」</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
@@ -1090,6 +1112,7 @@
 <translation id="9153606228985488238">音調為百分之 <ph name="PERCENT" /></translation>
 <translation id="9160096769946561184">前往目前欄的結尾</translation>
 <translation id="9173115498289768110">音量為百分之 <ph name="PERCENT" /></translation>
+<translation id="9185200690645120087">ChromeVox 觸控教學課程</translation>
 <translation id="9192904702577636854">跑馬燈</translation>
 <translation id="9205282956404529648">輸入文字即可自動完成</translation>
 <translation id="9208241857935108694">古董白</translation>

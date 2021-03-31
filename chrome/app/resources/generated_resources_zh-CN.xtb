@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> 建议您更新此 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="1118738876271697201">系统未能确定设备型号或序列号。</translation>
 <translation id="1119447706177454957">内部错误</translation>
+<translation id="111959947408687873">使用 Ctrl+<ph name="SEARCH_KEY_NAME" />+M 可开启/关闭全屏放大镜。使用 Ctrl+Alt+箭头键可在放大后的屏幕上四处移动。</translation>
 <translation id="1122068467107743258">工作</translation>
 <translation id="1122198203221319518">工具(&amp;T)</translation>
 <translation id="1122242684574577509">身份验证失败。请点击此处访问当前所用 Wi-Fi 网络（“<ph name="NETWORK_ID" />”）的登录页面。</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Google 高级保护计划</translation>
 <translation id="1155816283571436363">正在连接到您的手机</translation>
 <translation id="1161575384898972166">请登录“<ph name="TOKEN_NAME" />”，导出客户端证书。</translation>
+<translation id="116173250649946226">您的管理员已设置默认主题，您无法更改。</translation>
 <translation id="1163931534039071049">查看框架的源代码(&amp;V)</translation>
 <translation id="1164891049599601209">在诈骗网站上输入过</translation>
 <translation id="1164899421101904659">输入 PIN 码解锁密钥</translation>
@@ -2550,6 +2552,7 @@
 <translation id="3809272675881623365">兔子</translation>
 <translation id="3809280248639369696">外星人</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> 可查看以下文件夹内的文件</translation>
+<translation id="3810914450553844415">您的管理员不允许添加其他 Google 帐号。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">添加其他指纹</translation>
 <translation id="3812525830114410218">证书有误</translation>
@@ -2671,6 +2674,7 @@
 <translation id="3925573269917483990">摄像头：</translation>
 <translation id="3926002189479431949">Smart Lock 的配对手机已更改</translation>
 <translation id="3927932062596804919">拒绝</translation>
+<translation id="392803502090869922">eSIM 卡设置</translation>
 <translation id="3928570707778085600">将所做更改保存至 <ph name="FILE_OR_FOLDER_NAME" />？</translation>
 <translation id="3928659086758780856">墨水不足</translation>
 <translation id="3929426037718431833">这些扩展程序可以查看和更改此网站上的信息。</translation>
@@ -4240,6 +4244,7 @@
 <translation id="5764797882307050727">请释放部分设备空间。</translation>
 <translation id="5765425701854290211">抱歉，由于某些文件已损坏，系统未能成功完成更新。但请放心，您的已同步文件不会受到影响。</translation>
 <translation id="5765491088802881382">没有可用网络</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 进行扫描？按 Shift+F6 可切换到“下载内容栏”区域。</translation>
 <translation id="5769519078756170258">要排除的主机或域名</translation>
 <translation id="5770125698810550803">显示导航按钮</translation>
 <translation id="5771816112378578655">正在设置...</translation>
@@ -4396,6 +4401,7 @@
 <translation id="5942779427914696408">设备公开范围</translation>
 <translation id="5943127421590245687">验证成功。若要解锁并恢复您的本地数据，请输入您的旧 <ph name="DEVICE_TYPE" />的密码。</translation>
 <translation id="5944869793365969636">扫描二维码</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 安全浏览服务进行扫描？</translation>
 <translation id="5946591249682680882">报告ID：<ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">您可以连接一个键盘或鼠标，也可以继续使用触摸屏进行设置。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
 <translation id="5949544233750246342">无法解析文件</translation>
@@ -4443,6 +4449,7 @@
 <translation id="6002452033851752583">密码已从您的 Google 帐号中删除</translation>
 <translation id="6002458620803359783">首选语音</translation>
 <translation id="6003143259071779217">移除 eSIM 卡移动网络</translation>
+<translation id="6003582434972667631">主题已被贵单位设定</translation>
 <translation id="6006484371116297560">经典</translation>
 <translation id="6007240208646052708">不支持使用您所用的语言执行语音搜索。</translation>
 <translation id="6011074160056912900">以太网</translation>
@@ -4822,6 +4829,7 @@
 <translation id="6429384232893414837">更新错误</translation>
 <translation id="6430814529589430811">Base64 编码 ASCII，单一证书</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" />将为此计算机上的所有用户设置自动更新。</translation>
+<translation id="6434104957329207050">点扫描速度</translation>
 <translation id="6434309073475700221">舍弃</translation>
 <translation id="6434325376267409267">您需要更新设备，才能使用 <ph name="APP_NAME" />。</translation>
 <translation id="6436164536244065364">在 Chrome 网上应用店中查看</translation>
@@ -4864,6 +4872,7 @@
 <translation id="6474498546677193336">无法停止共享，因为有一个应用正在使用此文件夹。系统将会在下次关闭 Linux 时停止共享此文件夹。</translation>
 <translation id="6474884162850599008">取消与 Google 云端硬盘帐号的关联</translation>
 <translation id="6475294023568239942">请在“设置”中释放磁盘空间或调整 Linux 磁盘大小</translation>
+<translation id="6476138569087741884">全屏缩放级别</translation>
 <translation id="6477822444490674459">设有工作资料的手机无法同步通知。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">要保留危险文件吗？</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
@@ -5319,6 +5328,7 @@
 <translation id="6985607387932385770">打印机</translation>
 <translation id="6988094684494323731">正在启动 Linux 容器</translation>
 <translation id="6988403677482707277">此标签页已移至标签栏的开头</translation>
+<translation id="6990209147952697693">传统版 Chrome</translation>
 <translation id="6991665348624301627">选择目标打印机</translation>
 <translation id="6992554835374084304">开启增强的“拼写检查”功能</translation>
 <translation id="6993000214273684335">此标签页已从未命名的组中移除 - 该组包含<ph name="GROUP_CONTENTS" /></translation>
@@ -6306,6 +6316,7 @@
 <translation id="8086015605808120405">正在配置<ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">设置<ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{这个文件已加密。请让它的所有者进行解密。}other{这些文件中的部分文件已加密。请让它们的所有者进行解密。}}</translation>
+<translation id="8087576439476816834">下载，<ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8090234456044969073">读取您最常访问的网站列表</translation>
 <translation id="8093359998839330381">“<ph name="PLUGIN_NAME" />”没有响应</translation>
@@ -6546,6 +6557,8 @@
 <translation id="8368859634510605990">打开所有书签(&amp;O)</translation>
 <translation id="8370294614544004647">合上笔记本电脑后休眠</translation>
 <translation id="8371695176452482769">请开始说话</translation>
+<translation id="8371749822919332187">使用 Ctrl+Alt+“调高亮度”键即可放大。
+使用 Ctrl+Alt+“调低亮度”键即可缩小。</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{将这个网站静音}other{将这些网站静音}}</translation>
 <translation id="8372369524088641025">WEP 密钥错误</translation>
 <translation id="8373652277231415614">Crostini 共享目录</translation>
@@ -6553,7 +6566,6 @@
 <translation id="8378714024927312812">由贵单位管理</translation>
 <translation id="8379878387931047019">此设备不支持该网站要求使用的安全密钥的类型</translation>
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
-<translation id="8380314198565901932">下载虚拟机时出错。请更新您的 <ph name="DEVICE_TYPE" />，然后重试。</translation>
 <translation id="8382913212082956454">复制电子邮件地址(&amp;E)</translation>
 <translation id="8386091599636877289">找不到此政策。</translation>
 <translation id="8386819192691131213">允许 Google 助理根据屏幕上的信息提供快速解答，例如翻译、定义、单位换算等等</translation>
@@ -7216,6 +7228,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />：<ph name="STATUS" /></translation>
 <translation id="9111668656364922873">欢迎使用您的新个人资料</translation>
 <translation id="9112748030372401671">更换您的壁纸</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 进行扫描？</translation>
 <translation id="9112987648460918699">查找...</translation>
 <translation id="9114663181201435112">轻松登录</translation>
 <translation id="9115675100829699941">书签(&amp;B)</translation>

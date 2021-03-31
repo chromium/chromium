@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Дэлгэрэнгүйг харах</translation>
 <translation id="1030706264415084469"><ph name="URL" /> таны төхөөрөмжид том хэмжээний өгөгдлийг бүрмөсөн хадгалах хүсэлтэй байна</translation>
 <translation id="1032854598605920125">Цагийн зүүний дагуу эргүүлэх</translation>
+<translation id="1036224116832931580">Үлэг гүрвэлийн тоглоом. Үсрэх болон тоглохын тулд товшино уу</translation>
 <translation id="1036348656032585052">Унтраа</translation>
 <translation id="1038106730571050514">Зөвлөмжүүдийг харуулах</translation>
 <translation id="1038842779957582377">үл мэдэгдэх нэр</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Байхгүй}=1{1 сайт}other{# сайт}}</translation>
 <translation id="1945968466830820669">Та байгууллагынхаа бүртгэлд хандах эрх эсвэл нууц үгээ бусдад алдаж болзошгүй. Chromium-с таныг нууц үгээ өөрчлөхийг зөвлөж байна.</translation>
 <translation id="1947454675006758438">Баруун дээд буланд үдэх</translation>
+<translation id="1958218078413065209">Таны хамгийн өндөр оноо <ph name="SCORE" /> байна.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Зарим зочилдог хуудасныхаа URL, системийн хязгаарлагдмал мэдээлэл болон зарим хуудасны контент<ph name="END_WHITEPAPER_LINK" />-ыг Google-д илгээж, хүн бүрд вебийн аюулгүй байдлыг сайжруулахад тусална уу. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Нууцлалын бодлого<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Хавчуургууд</translation>
 <translation id="1973335181906896915">Цувралын алдаа</translation>
@@ -547,6 +549,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome-н тохиргоо хэсэгт Аюулгүй байдлын шалгалтыг ажиллуулахын тулд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="3061707000357573562">Patch үйлчилгээ</translation>
 <translation id="3064966200440839136">Гадаад апп-р төлбөр хийхийн тулд нууцлалын горимоос гарах гэж байна. Үргэлжлүүлэх үү?</translation>
+<translation id="306573536155379004">Тоглоом эхэллээ.</translation>
 <translation id="3080254622891793721">График</translation>
 <translation id="3086579638707268289">Веб дээрх таны үйл ажиллагааг хянаж байна</translation>
 <translation id="3087734570205094154">Доод</translation>
@@ -1543,6 +1546,7 @@
 <translation id="6934672428414710184">Энэ нэрийг таны Google Бүртгэлээс гаргасан байна</translation>
 <translation id="6944692733090228304">Та <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-с удирдаагүй сайтад нууц үгээ оруулсан байна. Бүртгэлээ хамгаалахын тулд бусад апп болон сайтад нууц үгээ дахин бүү ашиглана уу.</translation>
 <translation id="6945221475159498467">Сонгох</translation>
+<translation id="6948051842255602737">Тоглоом дууслаа. Та <ph name="SCORE" /> оноо авсан байна.</translation>
 <translation id="6948701128805548767">Авах арга болон шаардлагыг харахын тулд хаяг сонгоно уу</translation>
 <translation id="6949872517221025916">Нууц үг дахин тохируулах</translation>
 <translation id="6950684638814147129">JSON утгыг шинжилж байхад алдаа гарлаа: <ph name="ERROR" /></translation>
@@ -1825,6 +1829,7 @@
 <translation id="7956713633345437162">Гар утасны хавчуурга</translation>
 <translation id="7961015016161918242">Хэзээ ч</translation>
 <translation id="7966803981046576691">Ажилтай холбоотой бүртгэлийн төрөл</translation>
+<translation id="79682505114836835">"<ph name="VALUE" />" утга нь буруу арванзургаатын өнгө байна.</translation>
 <translation id="7976214039405368314">Хэт олон хүсэлт</translation>
 <translation id="7977538094055660992">Гаралтын төхөөрөмж</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1952,6 +1957,7 @@
 <translation id="8446884382197647889">Дэлгэрэнгүй мэдээлэл</translation>
 <translation id="8457125768502047971">Тодорхойгүй</translation>
 <translation id="8461694314515752532">Синк хийсэн өгөгдлийг синкийн нэвтрэх үгээрээ шифрлэх</translation>
+<translation id="8463101686637053101">Үлэг гүрвэлийн тоглоом. Үсрэх болон тоглохын тулд зай авах товчийг дарна уу</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредит карт}other{# кредит карт}}</translation>
 <translation id="8473863474539038330">Хаяг болон бусад</translation>
 <translation id="8474910779563686872">Хөгжүүлэгчийн дэлгэрэнгүй мэдээллийг харуулах</translation>
@@ -2087,6 +2093,7 @@
 <translation id="8996941253935762404">Таны сонгосон сайт гэмтэл учруулж болох программыг агуулж байна</translation>
 <translation id="8997023839087525404">Сертификатын ил тод байдлаар ил тод болгоогүй сертификатыг серверээс санал болгосон. Энэ нь зарим сертификатад итгэх итгэл, халдагчдын эсрэг хамгаалалтыг бий болгох үүднээс шаардлагатай байдаг.</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> прокси нь хэрэглэгчийн нэр, нууц үг шаарддаг.</translation>
+<translation id="9001963517402879850">Үсэр!</translation>
 <translation id="9004367719664099443">Виртуал орчны (VR) харилцан үйлдлийг хийж байна</translation>
 <translation id="9005998258318286617">PDF документыг ачаалж чадсангүй.</translation>
 <translation id="9008201768610948239">Алгас</translation>

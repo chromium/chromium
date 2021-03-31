@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr-Latn">
 <translation id="102360288709523007">Poboljšajte Chromium slanjem statistike korišćenja i izveštaja o otkazivanju Google-u.</translation>
-<translation id="1043245583918962542">Odaberite da li ćete obrisati Chromium podatke sa ovog uređaja ili ih zadržati.</translation>
 <translation id="1185134272377778587">O Chromium-u</translation>
 <translation id="1257458525759135959">Da biste sačuvali slike, dodirnite Podešavanja da biste omogućili Chromium-u da dodaje slike</translation>
 <translation id="1289216811211435351">Pređite na Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Želite li da obrišete Chromium podatke sa ovog uređaja?</translation>
 <translation id="8175055321229419309">Savet: <ph name="BEGIN_LINK" />Premestite Chromium na dok<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ne može da traži ažuriranja. Probajte ponovo kasnije.</translation>
-<translation id="8252885722420466166">Poboljšajte Google doživljaj u Chromium-u na osnovu lokacije.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" />. Autori Chromium-a. Sva prava zadržana.</translation>
 <translation id="8663480472502753423">Redovno ažuriraju Chromium</translation>
 <translation id="8776843108004031667">Ovaj nalog i svi nesačuvani podaci ukloniće se iz Chromium-a.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium je zastareo</translation>
 <translation id="921174536258924340">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra ili <ph name="BEGIN_LINK" />proverite lozinke na Google nalogu.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Nalogom upravlja <ph name="HOSTED_DOMAIN" />, pa će Chromium podaci biti obrisani sa ovog uređaja.</translation>
 </translationbundle>

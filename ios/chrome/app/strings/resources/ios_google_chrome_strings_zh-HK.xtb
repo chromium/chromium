@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chrome。</translation>
 <translation id="3720541637541300822">關閉 Chrome 時鎖定無痕式分頁</translation>
 <translation id="384394811301901750">Google Chrome 目前無法使用您的相機</translation>
-<translation id="38949020760388809">選擇要從此裝置上清除 Chrome 資料，還是要保留資料。</translation>
 <translation id="3980220367029651214">您正在將同步處理帳戶從 <ph name="USER_EMAIL1" /> 切換為 <ph name="USER_EMAIL2" />。您現有的 Chrome 資料由 <ph name="DOMAIN" /> 管理。這會刪除此裝置上的資料，但這些資料仍會保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="3984746313391923992">您的機構要求您保持登出 Chrome。</translation>
 <translation id="3988789688219830639">Google Chrome 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
 <translation id="4099578267706723511">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chrome 更臻完美。</translation>
-<translation id="415767770115540173">讓我們根據您的位置改善 Chrome 服務品質。</translation>
 <translation id="417201473131094001">Chrome Canary 上不支援此功能</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
 <translation id="4249068189593983585">Chrome 提示。如果要多啲標籤選項，請㩒住螢幕底部或者頂部工具列入面中嘅 [顯示分頁] 掣。</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">您的密碼因資料外洩而被洩露。Chrome 建議立即變更密碼。</translation>
 <translation id="7698568245838009292">Chrome 要求存取相機</translation>
 <translation id="7855730255114109580">Google Chrome 已是最新版本</translation>
-<translation id="8109233255338845204">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，因此您的 Chrome 資料將會從此裝置上清除。</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>

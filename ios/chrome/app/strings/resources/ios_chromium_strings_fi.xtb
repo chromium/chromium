@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fi">
 <translation id="102360288709523007">Auta parantamaan Chromiumia lähettämällä käyttötilastoja ja virheraportteja Googlelle.</translation>
-<translation id="1043245583918962542">Valitse, haluatko poistaa Chromium-datasi tältä laitteelta vai säilyttää sen.</translation>
 <translation id="1185134272377778587">Tietoja Chromiumista</translation>
 <translation id="1257458525759135959">Anna Chromiumin lisätä uusia kuvia valitsemalla Asetukset, niin voit tallentaa kuvia.</translation>
 <translation id="1289216811211435351">Vaihda Chromiumiin</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Poistetaanko Chromium-data tältä laitteelta?</translation>
 <translation id="8175055321229419309">Vinkki: <ph name="BEGIN_LINK" />Siirrä Chromium Dockiin<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ei voinut tarkistaa, onko päivityksiä saatavilla. Yritä myöhemmin uudelleen.</translation>
-<translation id="8252885722420466166">Saat sijaintitietojen avulla paremman Googlen käyttökokemuksen Chromiumissa.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Kaikki oikeudet pidätetään.</translation>
 <translation id="8663480472502753423">Pidä Chromium ajan tasalla</translation>
 <translation id="8776843108004031667">Tämä tili ja kaikki tallentamaton data poistetaan Chromiumista.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium on vanhentunut</translation>
 <translation id="921174536258924340">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, joten Chromium-datasi poistetaan tältä laitteelta.</translation>
 </translationbundle>

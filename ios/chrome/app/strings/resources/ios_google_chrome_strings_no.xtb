@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner når du lukker Chrome</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruke kameraet akkurat nå</translation>
-<translation id="38949020760388809">Velg om du vil slette Chrome-dataene dine fra denne enheten eller beholde dem.</translation>
 <translation id="3980220367029651214">Du bytter synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. De eksisterende Chrome-dataene dine administreres av <ph name="DOMAIN" />. Dette sletter dataene dine fra denne enheten, men dataene blir værende i <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisasjonen din krever at du forblir logget av Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke tilgang til bildene eller videoene dine. Slå på tilgangen i iOS-innstillingene &gt; Personvern &gt; Bilder.</translation>
 <translation id="4099578267706723511">Gjør Chrome bedre ved å sende bruksstatistikk og programstopprapporter til Google.</translation>
-<translation id="415767770115540173">Få en bedre Google-opplevelse i Chrome basert på hvor du er.</translation>
 <translation id="417201473131094001">Støttes ikke i Chrome Canary</translation>
 <translation id="424864128008805179">Vil du logge av Chrome?</translation>
 <translation id="4249068189593983585">Chrome-tips. For flere fanealternativer, trykk og hold inne Vis faner-knappen på verktøylinjen, som du finner nederst eller øverst på skjermen.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Passordet ditt har vært avdekket i et databrudd. Chrome anbefaler at du bytter passord nå.</translation>
 <translation id="7698568245838009292">Chrome vil ha tilgang til kameraet</translation>
 <translation id="7855730255114109580">Google Chrome er oppdatert</translation>
-<translation id="8109233255338845204">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chrome-dataene dine blir slettet fra denne enheten.</translation>
 <translation id="8160472928944011082">Kan ikke oppdatere Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med enerett.</translation>
 <translation id="840168496893712993">Noen tillegg fører til at Chrome krasjer. Prøv å avinstallere dem.</translation>

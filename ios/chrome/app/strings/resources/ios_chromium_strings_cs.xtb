@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="102360288709523007">Pomozte Chromium zlepšovat – posílejte Googlu statistiky o využívání a zprávy o selhání.</translation>
-<translation id="1043245583918962542">Zvolte, zda z tohoto zařízení chcete vymazat data prohlížeče Chromium, nebo je ponechat.</translation>
 <translation id="1185134272377778587">O prohlížeči Chromium</translation>
 <translation id="1257458525759135959">Pokud chcete ukládat obrázky, klepněte na Nastavení a povolte prohlížeči Chromium přidávat obrázky do vašich fotek</translation>
 <translation id="1289216811211435351">Přepnout na Chromium</translation>
@@ -79,7 +78,6 @@
 <translation id="8073677936375100957">Vymazat z tohoto zařízení data prohlížeče Chromium?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Přesuňte si prohlížeč Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>
-<translation id="8252885722420466166">Služby Google mohou v prohlížeči Chromium díky údajům o poloze fungovat lépe.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autoři prohlížeče Chromium. Všechna práva vyhrazena.</translation>
 <translation id="8663480472502753423">Udržují prohlížeč Chromium aktuální</translation>
 <translation id="8776843108004031667">Tento účet a všechna neuložená data budou z prohlížeče Chromium odstraněny.</translation>
@@ -88,5 +86,4 @@
 <translation id="9089354809943900324">Prohlížeč Chromium je zastaralý</translation>
 <translation id="921174536258924340">Chromiu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Autoři prohlížeče Chromium</translation>
-<translation id="994708389219151914">Váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, proto budou data prohlížeče Chromium z tohoto zařízení vymazána.</translation>
 </translationbundle>

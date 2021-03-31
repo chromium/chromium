@@ -5149,6 +5149,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Oops, something went wrong.</translation>
 <translation id="6798420440063423019">The security key is locked because the wrong PIN was entered too many times. You'll need to reset the security key.</translation>
+<translation id="679845623837196966">Show reading list</translation>
 <translation id="6798578729981748444">To finish importing, close all Firefox windows.</translation>
 <translation id="6798780071646309401">caps lock on</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
@@ -6572,7 +6573,6 @@ Use Ctrl+Alt+Brightness Down to zoom out.</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8379878387931047019">This device doesn't support the type of security key requested by this website</translation>
 <translation id="8379991678458444070">Get back here fast by bookmarking this tab</translation>
-<translation id="8380314198565901932">Error downloading the virtual machine. Please update your <ph name="DEVICE_TYPE" /> and try again.</translation>
 <translation id="8382913212082956454">Copy &amp;email address</translation>
 <translation id="8386091599636877289">Policy not found.</translation>
 <translation id="8386819192691131213">Allow Assistant to use information on the screen to provide quick answers such as translation, definition, unit conversion and more</translation>
@@ -7282,6 +7282,7 @@ Press an assigned switch to remove assignment.</translation>
       <ph name="LIST_ITEM" />Running Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture in Picture</translation>
+<translation id="9167063903968449027">Show reading list</translation>
 <translation id="9168436347345867845">Do it later</translation>
 <translation id="9169496697824289689">View keyboard shortcuts</translation>
 <translation id="916964310188958970">Why this suggestion?</translation>

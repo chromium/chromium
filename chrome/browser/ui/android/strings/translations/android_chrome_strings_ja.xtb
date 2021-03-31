@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">アプリケーションのバージョン</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> を共有できません</translation>
+<translation id="147113415845704694">「今日の天気は？」と聞いてみましょう</translation>
 <translation id="1477626028522505441">サーバーで問題が発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="1492417797159476138">このユーザー名はこのサイトですでに保存されています</translation>
 <translation id="1506061864768559482">検索エンジン</translation>
@@ -569,6 +570,7 @@
 <translation id="49268022542405662">パスワードはエクスポートされ、テキスト ファイルとしてダウンロードされます。このファイルは、ダウンロード先のフォルダにアクセス可能なすべてのユーザーおよびアプリが閲覧できます。</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> で管理されているアカウントからログアウトするにあたり、Chrome データはこのデバイスから削除されます。Google アカウントからはデータは削除されません。</translation>
 <translation id="4936039914467572121">このサイトにすばやくアクセス</translation>
+<translation id="4941179133499732445">音声で検索するにはマイクをタップします</translation>
 <translation id="4943703118917034429">バーチャル リアリティ</translation>
 <translation id="4943872375798546930">結果はありません</translation>
 <translation id="4961107849584082341">このページを任意の言語に翻訳できます</translation>
@@ -583,6 +585,7 @@
 <translation id="5011311129201317034"><ph name="SITE" /> が接続を要求しています</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">許可</translation>
+<translation id="5061533557687621530">天気を確認するには、マイクをタップして「今日の天気は？」と聞きます</translation>
 <translation id="5087580092889165836">カードを追加</translation>
 <translation id="5091249083535528968">詳細な使用状況データ</translation>
 <translation id="509429900233858213">エラーが発生しました。</translation>
@@ -597,6 +600,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 件のダウンロードが失敗しました。}other{# 件のダウンロードが失敗しました。}}</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
+<translation id="5188992787241350004">音声で検索</translation>
 <translation id="5191251636205085390">サードパーティの Cookie に代わる新しい技術の詳細と管理方法について</translation>
 <translation id="5193988420012215838">クリップボードにコピーされました</translation>
 <translation id="5199929503336119739">仕事用プロファイル</translation>

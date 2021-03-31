@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="102360288709523007">Допоможіть покращити Chromium, надсилаючи в Google статистику використання та звіти про аварійне завершення роботи.</translation>
-<translation id="1043245583918962542">Видалити дані Chromium із цього пристрою чи зберігати їх?</translation>
 <translation id="1185134272377778587">Про Chromium</translation>
 <translation id="1257458525759135959">Щоб зберегти зображення, натисніть "Налаштування" та дозвольте Chromium додавати фотографії</translation>
 <translation id="1289216811211435351">Переходьте на Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Видалити дані Chromium із цього пристрою?</translation>
 <translation id="8175055321229419309">Порада. <ph name="BEGIN_LINK" />Перемістіть значок Chromium на панель Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Веб-переглядачу Chromium не вдалося перевірити наявність оновлень. Повторіть спробу пізніше.</translation>
-<translation id="8252885722420466166">Знаючи ваше місцезнаходження, Google зможе створити для вас зручніші умови роботи в Chromium.</translation>
 <translation id="8586442755830160949">Авторське право <ph name="YEAR" /> Автори Chromium. Усі права захищено.</translation>
 <translation id="8663480472502753423">Користуйтеся найновішою версією Chromium</translation>
 <translation id="8776843108004031667">Цей обліковий запис і всі незбережені дані буде вилучено з Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Версія Chromium застаріла</translation>
 <translation id="921174536258924340">Chromium не вдалося перевірити всі паролі. Повторіть спробу завтра або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Ваш обліковий запис зареєстровано в домені <ph name="HOSTED_DOMAIN" />, тож дані Chromium буде видалено з цього пристрою.</translation>
 </translationbundle>

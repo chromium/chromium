@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Версия на приложението</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1450753235335490080">Споделянето на <ph name="CONTENT_TYPE" /> не е възможно</translation>
+<translation id="147113415845704694">Попитайте „What’s the weather today?“</translation>
 <translation id="1477626028522505441">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради проблеми в сървъра.</translation>
 <translation id="1492417797159476138">Вече запазихте това потребителско име за този сайт</translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
@@ -569,6 +570,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="49268022542405662">Паролите ви ще бъдат експортирани и изтеглени като текстов файл. Те ще бъдат видими за всички хора и приложения, които имат достъп до целевата папка.</translation>
 <translation id="4932247056774066048">Тъй като излизате от профил, управляван от <ph name="DOMAIN_NAME" />, данните ви в Chrome ще бъдат изтрити от това устройство. Те ще останат в профила ви в Google.</translation>
 <translation id="4936039914467572121">Отваряйте този сайт по-бързо</translation>
+<translation id="4941179133499732445">Докоснете иконата на микрофон, за да търсите чрез гласа си</translation>
 <translation id="4943703118917034429">Виртуална реалност</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
 <translation id="4961107849584082341">Превод на тази страница на който и да е език</translation>
@@ -583,6 +585,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5011311129201317034"><ph name="SITE" /> иска да се свърже</translation>
 <translation id="5016205925109358554">Серифен</translation>
 <translation id="5039804452771397117">Разрешаване</translation>
+<translation id="5061533557687621530">За да проверите времето, докоснете иконата на микрофон и кажете „What's the weather today?“</translation>
 <translation id="5087580092889165836">Добавяне на карта</translation>
 <translation id="5091249083535528968">Разширени данни за употребата</translation>
 <translation id="509429900233858213">Възникна грешка.</translation>
@@ -597,6 +600,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно.}other{# изтегляния не бяха успешни.}}</translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5184329579814168207">Отваряне в Chrome</translation>
+<translation id="5188992787241350004">Търсене чрез гласа ви</translation>
 <translation id="5191251636205085390">Научете повече за новите технологии, които имат за цел да заменят „бисквитките“ на трети страни, и как да ги контролирате</translation>
 <translation id="5193988420012215838">Копирано в буферната памет</translation>
 <translation id="5199929503336119739">Служебен потребителски профил</translation>

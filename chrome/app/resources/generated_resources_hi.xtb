@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> का सुझाव है कि आप इस <ph name="DEVICE_TYPE" /> को अपडेट कर दें.</translation>
 <translation id="1118738876271697201">सिस्टम, डिवाइस का मॉडल या सीरियल नंबर तय नहीं कर सका.</translation>
 <translation id="1119447706177454957">आंतरिक गड़बड़ी</translation>
+<translation id="111959947408687873">फ़ुलस्क्रीन मैग्निफ़ायर टॉगल करने के लिए Ctrl+<ph name="SEARCH_KEY_NAME" />+M इस्तेमाल करें. जब ज़ूम इन किया गया हो, तब स्क्रीन पर एक से दूसरी जगह पर जाने के लिए Ctrl+Alt+ऐरो कुंजियां इस्तेमाल करें.</translation>
 <translation id="1122068467107743258">वर्क प्रोफ़ाइल</translation>
 <translation id="1122198203221319518">&amp;टूल</translation>
 <translation id="1122242684574577509">पुष्टि नहीं हो सकी. आप जिस वाई-फ़ाई नेटवर्क (<ph name="NETWORK_ID" />) का उपयोग कर रहे हैं उसके लॉगिन पेज पर जाएं.</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Google बेहतर सुरक्षा कार्यक्रम</translation>
 <translation id="1155816283571436363">आपके फ़ोन से कनेक्ट हो रहा है</translation>
 <translation id="1161575384898972166">क्लाइंट प्रमाणपत्र निर्यात करने के लिए, कृपया <ph name="TOKEN_NAME" /> में साइन इन करें.</translation>
+<translation id="116173250649946226">आपके एडमिन ने डिफ़ॉल्ट थीम सेट की है. इसे बदला नहीं जा सकता.</translation>
 <translation id="1163931534039071049">फ़्रेम का स्रोत &amp;देखें</translation>
 <translation id="1164891049599601209">यह पासवर्ड धोखाधड़ी वाली साइट पर डाला गया था</translation>
 <translation id="1164899421101904659">पिन अनलॉक कुंजी डालें</translation>
@@ -2555,6 +2557,7 @@
 <translation id="3809272675881623365">खरगोश</translation>
 <translation id="3809280248639369696">मूनबीम</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> नीचे दिए गए फ़ोल्डर में मौजूद फ़ाइलों को देख सकती है</translation>
+<translation id="3810914450553844415">आपका एडमिन अतिरिक्त Google खाते जोड़ने की अनुमति नहीं देता है.</translation>
 <translation id="3810973564298564668">प्रबंधित करें</translation>
 <translation id="381202950560906753">दूसरा जोड़ें</translation>
 <translation id="3812525830114410218">गलत प्रमाणपत्र</translation>
@@ -2676,6 +2679,7 @@
 <translation id="3925573269917483990">कैमरा:</translation>
 <translation id="3926002189479431949">Smart Lock फ़ोन बदला गया</translation>
 <translation id="3927932062596804919">अस्वीकार करें</translation>
+<translation id="392803502090869922">ई-सिम सेट अप करें</translation>
 <translation id="3928570707778085600">बदलावों को <ph name="FILE_OR_FOLDER_NAME" /> में सेव करना चाहते हैं?</translation>
 <translation id="3928659086758780856">प्रिंटर में इंक कम है</translation>
 <translation id="3929426037718431833">ये एक्सटेंशन इस साइट पर जानकारी देख और बदल सकते हैं.</translation>
@@ -4245,6 +4249,7 @@
 <translation id="5764797882307050727">कृपया अपने डिवाइस पर कुछ जगह खाली करें.</translation>
 <translation id="5765425701854290211">माफ़ करें, कुछ फ़ाइलों को नुकसान पहुंचा है और अपडेट सफल नहीं रहा. आपकी सिंक की हुई फ़ाइलें सुरक्षित हैं.</translation>
 <translation id="5765491088802881382">कोई नेटवर्क उपलब्ध नहीं हैं</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या इसे स्कैन करने के लिए Google को भेजें? डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="5769519078756170258">अपवाद के लिए होस्ट या डोमेन</translation>
 <translation id="5770125698810550803">नेविगेशन बटन दिखाएं</translation>
 <translation id="5771816112378578655">सेटअप प्रगति में है...</translation>
@@ -4401,6 +4406,7 @@
 <translation id="5942779427914696408">डिवाइस किसे दिख रहा है</translation>
 <translation id="5943127421590245687">पुष्टि हो गई. अपना स्थानीय डेटा अनलॉक करने और उसे वापस लाने के लिए, अपने <ph name="DEVICE_TYPE" /> का पुराना पासवर्ड डालें.</translation>
 <translation id="5944869793365969636">क्यूआर कोड स्कैन करें</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या इसे स्कैन करने के लिए Google Safe Browsing को भेजें?</translation>
 <translation id="5946591249682680882">रिपोर्ट आईडी <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">कोई कीबोर्ड या माउस जोड़ें या अपनी टचस्क्रीन का इस्तेमाल करके, सेट अप करना जारी रखें. अगर आप ब्लूटूथ डिवाइसों का इस्तेमाल कर रहे हैं, तो यह पक्का करें कि वे दूसरे डिवाइसों से जोड़े जाने के लिए तैयार हों.</translation>
 <translation id="5949544233750246342">फ़ाइल को पार्स नहीं किया जा सका</translation>
@@ -4448,6 +4454,7 @@
 <translation id="6002452033851752583">आपके Google खाते से पासवर्ड को मिटा दिया गया है</translation>
 <translation id="6002458620803359783">पसंदीदा आवाज़ें</translation>
 <translation id="6003143259071779217">eSIM मोबाइल नेटवर्क हटाएं</translation>
+<translation id="6003582434972667631">थीम को आपके संगठन ने सेट किया है</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6007240208646052708">आपकी भाषा में बोलकर खोजने की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="6011074160056912900">ईथरनेट नेटवर्क</translation>
@@ -4827,6 +4834,7 @@
 <translation id="6429384232893414837">अपडेट में गड़बड़ी</translation>
 <translation id="6430814529589430811">Base64 में एन्कोड किया गया ASCII, सिर्फ़ एक प्रमाणपत्र</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> इस कंप्यूटर के सभी उपयोगकर्ताओं के लिए स्वचालित अपडेट सेट करेगा.</translation>
+<translation id="6434104957329207050">पॉइंट स्कैनिंग कर्सर की स्पीड</translation>
 <translation id="6434309073475700221">खारिज करें</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> का इस्तेमाल करने से पहले अपने डिवाइस को अपडेट करें.</translation>
 <translation id="6436164536244065364">वेब स्टोर में देखें</translation>
@@ -4869,6 +4877,7 @@
 <translation id="6474498546677193336">शेयर करना बंद नहीं किया जा सका, क्योंकि एक ऐप्लिकेशन इस फ़ोल्डर का इस्तेमाल कर रहा है. जब Linux अगली बार बंद होगा, तब इस फ़ोल्डर को शेयर करना बंद कर दिया जाएगा.</translation>
 <translation id="6474884162850599008">Google डिस्‍क खाता डिस्‍कनेक्‍ट करें</translation>
 <translation id="6475294023568239942">डिस्क में जगह खाली करें या सेटिंग में जाकर, Linux डिस्क का साइज़ बदलें</translation>
+<translation id="6476138569087741884">फ़ुलस्क्रीन ज़ूम लेवल</translation>
 <translation id="6477822444490674459">फ़ोन में वर्क प्रोफ़ाइल होने पर, सूचनाओं को सिंक करने की सुविधा काम नहीं करती है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">खतरनाक फ़ाइल रखें?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> प्रबंधित करता है</translation>
@@ -5140,6 +5149,7 @@
 <translation id="6795884519221689054">पांडा</translation>
 <translation id="6797493596609571643">ओह! कुछ गड़बड़ी हो गई है.</translation>
 <translation id="6798420440063423019">बार-बार गलत बिन डालने की वजह से सुरक्षा कुंजी लॉक हो गई है. आपको सुरक्षा कुंजी को रीसेट करना होगा.</translation>
+<translation id="679845623837196966">रीडिंग लिस्ट दिखाएं</translation>
 <translation id="6798578729981748444">आयात करना पूरा करने के लिए, सभी Firefox विंडो बंद करें.</translation>
 <translation id="6798780071646309401">caps lock चालू है</translation>
 <translation id="6798954102094737107">प्‍लग इन: <ph name="PLUGIN_NAME" /></translation>
@@ -5324,6 +5334,7 @@
 <translation id="6985607387932385770">प्रिंटर</translation>
 <translation id="6988094684494323731">Linux कंटेनर शुरू हो रहा है</translation>
 <translation id="6988403677482707277">टैब को टैबस्ट्रिप (टैब वाली लाइन) में सबसे आगे ले जाया गया</translation>
+<translation id="6990209147952697693">क्लासिक Chrome</translation>
 <translation id="6991665348624301627">गंतव्य को चुनें</translation>
 <translation id="6992554835374084304">'बेहतर वर्तनी जाँच' चालू करें</translation>
 <translation id="6993000214273684335">टैब को बिना नाम वाले ग्रुप से हटाया गया - <ph name="GROUP_CONTENTS" /></translation>
@@ -6310,6 +6321,7 @@
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फ़िगर किया जा रहा है ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेट अप करें</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{यह फ़ाइल सुरक्षित की गई है. इसके मालिक से इसे सबकी पहुंच में लाने के लिए कहें.}one{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}other{इनमें से कुछ फ़ाइलें सुरक्षित की गई हैं. इनके मालिक से इन्हें सबकी पहुंच में लाने के लिए कहें.}}</translation>
+<translation id="8087576439476816834"><ph name="PROFILE_NAME" /> डाउनलोड करें</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
 <translation id="8090234456044969073">अपनी सबसे ज़्यादा देखी गई वेबसाइटों की सूची पढ़ें</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> जवाब नहीं दे रहा है</translation>
@@ -6551,6 +6563,8 @@
 <translation id="8368859634510605990">सभी बुकमार्क &amp;खोलें</translation>
 <translation id="8370294614544004647">लैपटॉप बंद होने पर इसे स्लीप मोड में ले जाएं</translation>
 <translation id="8371695176452482769">अब बोलें</translation>
+<translation id="8371749822919332187">ज़ूम इन करने के लिए, Ctrl+Alt+चमक बढ़ाएं कुंजियां इस्तेमाल करें.
+ज़ूम आउट करने के लिए, Ctrl+Alt+चमक घटाएं कुंजियां इस्तेमाल करें.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{साइट म्यूट करें}one{साइटें म्यूट करें}other{साइटें म्यूट करें}}</translation>
 <translation id="8372369524088641025">ख़राब WEP कुंजी</translation>
 <translation id="8373652277231415614">Crostini से Chromebook के साथ शेयर की गई डायरेक्ट्री</translation>
@@ -6558,7 +6572,6 @@
 <translation id="8378714024927312812">आपके संगठन की ओर से प्रबंधित</translation>
 <translation id="8379878387931047019">इस डिवाइस पर इस तरह की 'सुरक्षा चाबी' काम नहीं करती है जिसका इस वेबसाइट में अनुरोध किया गया है</translation>
 <translation id="8379991678458444070">इस टैब को बुकमार्क करके यहां जल्दी वापस आएं</translation>
-<translation id="8380314198565901932">वर्चुअल मशीन डाउनलोड करते समय कोई गड़बड़ी हुई. कृपया अपने <ph name="DEVICE_TYPE" /> को अपडेट करके, फिर से कोशिश करें.</translation>
 <translation id="8382913212082956454">ईमेल पते की कॉपी बनाएं</translation>
 <translation id="8386091599636877289">नीति नहीं मिली.</translation>
 <translation id="8386819192691131213">अनुवाद, परिभाषा, इकाई बदलने वगैरह से जुड़े सवालों के तुरंत जवाब देने के लिए, Assistant को स्क्रीन पर दी गई जानकारी पढ़ने की अनुमति दें</translation>
@@ -7222,6 +7235,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">नई प्रोफ़ाइल में आपका स्वागत है</translation>
 <translation id="9112748030372401671">अपना वॉलपेपर बदलें</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या इसे स्कैन करने के लिए Google को भेजें?</translation>
 <translation id="9112987648460918699">ढूंढें ...</translation>
 <translation id="9114663181201435112">आसानी से साइन इन करें</translation>
 <translation id="9115675100829699941">&amp;बुकमार्क</translation>
@@ -7268,6 +7282,7 @@
       <ph name="LIST_ITEM" />Chrome कनेक्टिविटी डाइग्नोस्टिक्स टूल चलाएं
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">पिक्चर में पिक्चर</translation>
+<translation id="9167063903968449027">रीडिंग लिस्ट दिखाएं</translation>
 <translation id="9168436347345867845">बाद में करें</translation>
 <translation id="9169496697824289689">कीबोर्ड शॉर्टकट देखें</translation>
 <translation id="916964310188958970">यह सुझाव क्यों दिख रहा है?</translation>

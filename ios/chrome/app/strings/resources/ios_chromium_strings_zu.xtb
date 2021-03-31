@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zu">
 <translation id="102360288709523007">Siza ukwenza i-Chromium ibe ngcono ngokuthumela izibalo zokusetshenziswa nemibiko yokusaphazeka ku-Google.</translation>
-<translation id="1043245583918962542">Khetha ukuthi usule yini idatha yakho ye-Chromium ekule divayisi noma uyigcine.</translation>
 <translation id="1185134272377778587">Mayelana ne-Chromium</translation>
 <translation id="1257458525759135959">Ukuze ulondoloze izithombe, thepha Amasethingi ukuze uvumele i-Chromium ingeze ezithombeni zakho</translation>
 <translation id="1289216811211435351">Shintshela ku-Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Sula idatha yakho ye-Chromium kusuka kule divayisi?</translation>
 <translation id="8175055321229419309">Ithiphu: <ph name="BEGIN_LINK" />Hambisa i-Chromium kudokhu yakho<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">I-Chromium ayikwazanga ukuhlola izibuyekezo. Zama futhi emuva kwesikhathi.</translation>
-<translation id="8252885722420466166">Thola umuzwa we-Google ongcono ku-Chromium kusukela endaweni yakho.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ababhali be-Chromium. Wonke amalungelo agciniwe.</translation>
 <translation id="8663480472502753423">Gcina i-Chromium isesikhathini</translation>
 <translation id="8776843108004031667">Le akhawunti kanye nanoma iyiphi idatha engalondolozwanga izosuswa ku-Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">I-Chromium ayikho kudethi</translation>
 <translation id="921174536258924340">I-Chromium ayikwazanga ukuhlola wonke amaphasiwedi. Zama futhi kusasa noma <ph name="BEGIN_LINK" />hlola amaphasiwedi ku-Akhawunti yakho ye-Google<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Ababhali be-Chromium</translation>
-<translation id="994708389219151914">I-akhawunti yakho iphethwe ngu-<ph name="HOSTED_DOMAIN" />, ngakho idatha yakho ye-Chromium izosulwa kusuka kule divayisi.</translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">لم يتمّ تسجيل أيّ بيانات.</translation>
+<translation id="1838104802459806957">إمالة إلى أعلى</translation>
 <translation id="1851616744363735765">متوقف مؤقتًا</translation>
 <translation id="1862930711583847113">تعذّر تصدير <ph name="FILE" /></translation>
 <translation id="1899697626337024495">درجة دقة الصورة</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> نشطة</translation>
 <translation id="2144806332417375165">مَعلمات الفيديوهات المخصّصة</translation>
 <translation id="229579744168541441">تصدير إلى القرص</translation>
+<translation id="2320741269052147773">عرض شامل لليسار</translation>
 <translation id="2501278716633472235">الرجوع</translation>
 <translation id="2501853267655415902">تم إيقاف التسجيل</translation>
 <translation id="2501953888035679275">يمكنك التقاط الصور وتسجيل الفيديوهات باستخدام الكاميرا.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">سيتم نقل الصور والفيديوهات الملتقَطة بالكاميرا إلى مجلد "المحتوى الذي تم تنزيله". ويمكنك الوصول إليها من خلال "الملفات".
 
         ستتمكن التطبيقات المزوّدة بأذونات مساحة التخزين من الوصول إلى صورك وفيديوهاتك.</translation>
+<translation id="3067436040345934772">عرض شامل لليمين</translation>
 <translation id="3081586908890909590">التبديل لتسجيل فيديو</translation>
 <translation id="313467653172006084">30 لقطة في الثانية</translation>
 <translation id="3183731565330012717">نوع الشبكة</translation>
@@ -90,6 +93,7 @@
 <translation id="8145038249676204903">التبديل لالتقاط صورة</translation>
 <translation id="8239780215768881278">تسجيل لقطة فيديو</translation>
 <translation id="8261506727792406068">حذف</translation>
+<translation id="8425673304802773841">إمالة إلى أسفل</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8687491812650032292">دقة عالية <ph name="HEIGHT" />بكسل (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">معاينة البيانات الوصفية</translation>

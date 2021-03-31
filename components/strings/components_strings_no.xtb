@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Se detaljer</translation>
 <translation id="1030706264415084469"><ph name="URL" /> ber om å lagre store datamengder permanent på enheten din</translation>
 <translation id="1032854598605920125">Rotér med klokken</translation>
+<translation id="1036224116832931580">Dino-spillet – trykk for å hoppe og spille</translation>
 <translation id="1036348656032585052">Slå av</translation>
 <translation id="1038106730571050514">Vis forslag</translation>
 <translation id="1038842779957582377">ukjent navn</translation>
@@ -279,6 +280,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="192020519938775529">{COUNT,plural, =0{Ingen}=1{1 nettsted}other{# nettsteder}}</translation>
 <translation id="1945968466830820669">Du kan miste tilgangen til organisasjonskontoen din eller bli utsatt for identitetstyveri. Chromium anbefaler at du endrer passordet ditt nå.</translation>
 <translation id="1947454675006758438">Stift oppe til høyre</translation>
+<translation id="1958218078413065209">Poengrekorden din er <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Bidra til å gjøre sikkerheten på nettet bedre for alle ved å sende <ph name="BEGIN_WHITEPAPER_LINK" />nettadressene til noen av sidene du besøker, begrenset systeminformasjon og noe sideinnhold<ph name="END_WHITEPAPER_LINK" /> til Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Personvernregler<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />-bokmerker</translation>
 <translation id="1973335181906896915">Serialiseringsfeil</translation>
@@ -547,6 +549,7 @@ brukere av denne nettleseren.</translation>
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å kjøre en sikkerhetssjekk i Chrome-innstillingene</translation>
 <translation id="3061707000357573562">Feilrettingstjeneste</translation>
 <translation id="3064966200440839136">Går ut av inkognitomodus for å betale via en ekstern app. Vil du fortsette?</translation>
+<translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3080254622891793721">Grafikk</translation>
 <translation id="3086579638707268289">Aktiviteten din på nettet overvåkes</translation>
 <translation id="3087734570205094154">Bunn</translation>
@@ -1543,6 +1546,7 @@ brukere av denne nettleseren.</translation>
 <translation id="6934672428414710184">Dette navnet er fra Google-kontoen din</translation>
 <translation id="6944692733090228304">Du har skrevet inn passordet ditt på et nettsted som ikke administreres av <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. For å beskytte kontoen din må du ikke bruke det samme passordet i andre apper eller på andre nettsteder.</translation>
 <translation id="6945221475159498467">Velg</translation>
+<translation id="6948051842255602737">Spillet er over. Poengsummen din er <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">For å se hentemetoder og -krav, velg en adresse</translation>
 <translation id="6949872517221025916">Tilbakestill passordet</translation>
 <translation id="6950684638814147129">Feil under parsering av JSON-verdi: <ph name="ERROR" /></translation>
@@ -1824,6 +1828,7 @@ brukere av denne nettleseren.</translation>
 <translation id="7956713633345437162">Bokmerker for mobil</translation>
 <translation id="7961015016161918242">Aldri</translation>
 <translation id="7966803981046576691">Jobbkontotype</translation>
+<translation id="79682505114836835">Verdien «<ph name="VALUE" />» er en ugyldig heksadesimal fargekode.</translation>
 <translation id="7976214039405368314">For mange forespørsler</translation>
 <translation id="7977538094055660992">Utskriftsenhet</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1951,6 +1956,7 @@ Mer informasjon:
 <translation id="8446884382197647889">Les mer</translation>
 <translation id="8457125768502047971">På ubestemt tid</translation>
 <translation id="8461694314515752532">Kryptér synkroniserte data med din egen passordfrase for synkronisering</translation>
+<translation id="8463101686637053101">Dino-spillet – trykk på mellomrom for å hoppe og spille</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredittkort}other{# kredittkort}}</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
 <translation id="8474910779563686872">Vis utviklerdetaljer</translation>
@@ -2086,6 +2092,7 @@ Mer informasjon:
 <translation id="8996941253935762404">Nettstedet du er i ferd med å åpne, inneholder skadelige programmer</translation>
 <translation id="8997023839087525404">Tjeneren har presentert et sertifikat som ikke er offentlig vist i henhold til regelen om sertifikatåpenhet. Dette er et krav for enkelte sertifikater for å sikre at de er pålitelige, og bidrar til å beskytte mot angrep.</translation>
 <translation id="9001074447101275817">Proxy-tjeneren <ph name="DOMAIN" /> krever brukernavn og passord.</translation>
+<translation id="9001963517402879850">Hopp!</translation>
 <translation id="9004367719664099443">En VR-økt pågår</translation>
 <translation id="9005998258318286617">Kunne ikke laste inn PDF-dokumentet.</translation>
 <translation id="9008201768610948239">Ignorer</translation>

@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="3720541637541300822">Incognitotabbladen vergrendelen als je Chrome sluit</translation>
 <translation id="384394811301901750">Google Chrome kan je camera momenteel niet gebruiken</translation>
-<translation id="38949020760388809">Kies of je je Chrome-gegevens voor dit apparaat wilt verwijderen of behouden.</translation>
 <translation id="3980220367029651214">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chrome-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Je organisatie vereist dat je uitgelogd blijft bij Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome heeft geen toegang tot je foto's of video's. Geef in iOS toegang via Instellingen &gt; Privacy &gt; Foto's.</translation>
 <translation id="4099578267706723511">Verzend automatisch gebruiksstatistieken en crashmeldingen naar Google.</translation>
-<translation id="415767770115540173">Gebruik Google beter in Chrome op basis van je locatie.</translation>
 <translation id="417201473131094001">Niet ondersteund in Chrome Canary</translation>
 <translation id="424864128008805179">Uitloggen bij Chrome?</translation>
 <translation id="4249068189593983585">Chrome-tip. Voor meer tabbladopties tik je in de werkbalk onder- of bovenaan het scherm op de knop Tabbladen tonen en houd je deze vast.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Je wachtwoord is gelekt bij een gegevenslek. Chrome raadt je aan om het wachtwoord nu te wijzigen.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
 <translation id="7855730255114109580">Google Chrome is up-to-date</translation>
-<translation id="8109233255338845204">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chrome-gegevens worden verwijderd van dit apparaat.</translation>
 <translation id="8160472928944011082">Chrome kan niet updaten</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="840168496893712993">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder deze add-ons.</translation>

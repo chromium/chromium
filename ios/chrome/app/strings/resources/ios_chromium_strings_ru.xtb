@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="102360288709523007">Отправлять в Google статистику использования и отчеты о сбоях</translation>
-<translation id="1043245583918962542">Удалить данные Chromium с этого устройства?</translation>
 <translation id="1185134272377778587">О Chromium</translation>
 <translation id="1257458525759135959">Чтобы сохранять изображения, нажмите "Настройки" и предоставьте Chromium доступ к вашим фото.</translation>
 <translation id="1289216811211435351">Переходите на Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Удалить данные Chromium с этого устройства?</translation>
 <translation id="8175055321229419309">Совет. <ph name="BEGIN_LINK" />Добавьте Chromium в Dock<ph name="END_LINK" />.</translation>
 <translation id="8240981428553046115">Браузеру Chromium не удалось проверить наличие обновлений. Повторите попытку позже.</translation>
-<translation id="8252885722420466166">Используйте дополнительные возможности Google в Chrome, сообщив свое местоположение.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" /> . Все права защищены.</translation>
 <translation id="8663480472502753423">Обновляет Chromium до последней версии</translation>
 <translation id="8776843108004031667">Этот аккаунт и все несохраненные данные будут удалены из Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Версия Chromium устарела</translation>
 <translation id="921174536258924340">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра или <ph name="BEGIN_LINK" />проверьте пароли в аккаунте Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Авторы Chromium</translation>
-<translation id="994708389219151914">С этого устройства будут удалены все данные Chromium, так как вашим аккаунтом управляет администратор домена <ph name="HOSTED_DOMAIN" />.</translation>
 </translationbundle>

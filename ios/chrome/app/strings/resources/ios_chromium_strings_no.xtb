@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="no">
 <translation id="102360288709523007">Forbedre Chromium ved å sende bruksstatistikk og programstopprapporter til Google.</translation>
-<translation id="1043245583918962542">Velg om du vil slette Chromium-dataene dine fra denne enheten eller beholde dem.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">For å lagre bilder, trykk på Innstillinger for å la Chromium legge dem til i bildene dine</translation>
 <translation id="1289216811211435351">Bytt til Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Flytt Chromium til dokken<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv igjen senere.</translation>
-<translation id="8252885722420466166">Få en bedre Google-opplevelse i Chromium basert på hvor du er.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – The Chromium Authors. Med enerett.</translation>
 <translation id="8663480472502753423">Hold Chromium oppdatert</translation>
 <translation id="8776843108004031667">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium er utdatert</translation>
 <translation id="921174536258924340">Chromium kunne ikke sjekke alle passordene. Prøv på nytt i morgen, eller <ph name="BEGIN_LINK" />sjekk passordene i Google-kontoen din<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chromium-dataene dine blir slettet fra denne enheten.</translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Keine Aufzeichnung</translation>
+<translation id="1838104802459806957">Nach oben neigen</translation>
 <translation id="1851616744363735765">PAUSIERT</translation>
 <translation id="1862930711583847113">Export von "<ph name="FILE" />" nicht möglich</translation>
 <translation id="1899697626337024495">Fotoauflösung</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktiv</translation>
 <translation id="2144806332417375165">Benutzerdefinierte Videoparameter</translation>
 <translation id="229579744168541441">Auf Festplatte exportieren</translation>
+<translation id="2320741269052147773">Nach links schwenken</translation>
 <translation id="2501278716633472235">Zurück</translation>
 <translation id="2501853267655415902">Aufnahme beendet</translation>
 <translation id="2501953888035679275">Sie können Fotos und Videos mit Ihrer Kamera aufnehmen.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Mit der Kamera aufgenommene Fotos und Videos werden in den Ordner "Downloads" verschoben. Sie können sie in der App "Dateien" ansehen.
 
         Apps mit Speicherberechtigungen haben Zugriff auf Ihre Fotos und Videos.</translation>
+<translation id="3067436040345934772">Nach rechts schwenken</translation>
 <translation id="3081586908890909590">Zu Videomodus wechseln</translation>
 <translation id="313467653172006084">30 fps</translation>
 <translation id="3183731565330012717">Rastertyp</translation>
@@ -89,6 +92,7 @@ Falls sich Ihr Feedback auf die Bild- oder Videoqualität bezieht, hängen Sie b
 <translation id="8145038249676204903">Zu Fotomodus wechseln</translation>
 <translation id="8239780215768881278">Video-Momentaufnahme erstellen</translation>
 <translation id="8261506727792406068">Löschen</translation>
+<translation id="8425673304802773841">Nach unten neigen</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Vorschau der Metadaten anzeigen</translation>

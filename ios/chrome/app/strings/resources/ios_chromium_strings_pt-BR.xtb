@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-BR">
 <translation id="102360288709523007">Ajude a melhorar o Chromium. Envie estatísticas e relatórios de erros ao Google.</translation>
-<translation id="1043245583918962542">Escolha se você quer apagar ou manter os dados do Chromium neste dispositivo.</translation>
 <translation id="1185134272377778587">Sobre o Chromium</translation>
 <translation id="1257458525759135959">Para salvar imagens, toque em "Configurações" e permita que o Chromium adicione às suas fotos</translation>
 <translation id="1289216811211435351">Mudar para o Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Limpar seus dados do Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Dica: <ph name="BEGIN_LINK" />mova o Chromium para a base<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
-<translation id="8252885722420466166">Melhore sua experiência do Google no Chromium de acordo com seu local.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8663480472502753423">Manter o Chromium atualizado</translation>
 <translation id="8776843108004031667">A conta e os dados não salvos serão removidos do Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="921174536258924340">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Autores do Chromium</translation>
-<translation id="994708389219151914">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chromium serão apagados deste dispositivo.</translation>
 </translationbundle>

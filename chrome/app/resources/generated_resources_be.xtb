@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> рэкамендуе вам абнавіць гэту прыладу <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Сістэме не ўдалося вызначыць мадэль прылады або яе серыйны нумар.</translation>
 <translation id="1119447706177454957">Унутраная памылка</translation>
+<translation id="111959947408687873">Для ўключэння або выключэння поўнаэкраннай лупы выкарыстоўвайце спалучэнне клавіш Ctrl + <ph name="SEARCH_KEY_NAME" /> + M. Каб перамяшчацца па экране ў рэжыме павелічэння, націскайце Ctrl + Alt + клавішы са стрэлкамі.</translation>
 <translation id="1122068467107743258">Праца</translation>
 <translation id="1122198203221319518">&amp;Інструменты</translation>
 <translation id="1122242684574577509">Памылка аўтэнтыфікацыі. Націсніце тут, каб перайсці на старонку ўваходу для сеткі Wi-Fi, якой вы карыстаецеся (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Праграма палепшанай абароны Google</translation>
 <translation id="1155816283571436363">Ідзе падключэнне да тэлефона</translation>
 <translation id="1161575384898972166">Увайдзіце ў <ph name="TOKEN_NAME" />, каб экспартаваць кліенцкі сертыфікат.</translation>
+<translation id="116173250649946226">Адміністратар задаў стандартную тэму, якую нельга змяняць.</translation>
 <translation id="1163931534039071049">&amp;Прагляд крыніцы фрэйма</translation>
 <translation id="1164891049599601209">Уведзены на сайце, вядомым падманнымі паводзінамі</translation>
 <translation id="1164899421101904659">Увядзіце PUK-код</translation>
@@ -2557,6 +2559,7 @@
 <translation id="3809272675881623365">Трус</translation>
 <translation id="3809280248639369696">Месячнае святло</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> можа праглядаць файлы ў наступных папках</translation>
+<translation id="3810914450553844415">Адміністратар не дазваляе выкарыстоўваць дадатковыя Уліковыя запісы Google.</translation>
 <translation id="3810973564298564668">Кіраваць</translation>
 <translation id="381202950560906753">Дадаць яшчэ</translation>
 <translation id="3812525830114410218">Недапушчальны сертыфікат</translation>
@@ -2678,6 +2681,7 @@
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3926002189479431949">Тэлефон са Smart Lock зменены</translation>
 <translation id="3927932062596804919">Адмовіць</translation>
+<translation id="392803502090869922">Наладжванне eSIM-карты</translation>
 <translation id="3928570707778085600">Захаваць змяненні ў "<ph name="FILE_OR_FOLDER_NAME" />"?</translation>
 <translation id="3928659086758780856">Мала чарніла</translation>
 <translation id="3929426037718431833">Гэтыя пашырэнні могуць праглядаць і змяняць інфармацыю на гэтым сайце.</translation>
@@ -4248,6 +4252,7 @@
 <translation id="5764797882307050727">Вызваліце месца на прыладзе.</translation>
 <translation id="5765425701854290211">На жаль, некаторыя файлы былі пашкоджаны, і абнаўленне выканаць не ўдалося. Сінхранізаваныя файлы засталіся ў бяспецы.</translation>
 <translation id="5765491088802881382">Няма даступных сетак.</translation>
+<translation id="5766243637773654698">Файл "<ph name="FILE_NAME" />" можа быць небяспечным. Адправіць яго ў Google для праверкі? Каб перамяшчацца па панэлі спамповак, націскайце Shift + F6.</translation>
 <translation id="5769519078756170258">Хост або дамен, які трэба дадаць у выключэнні</translation>
 <translation id="5770125698810550803">Паказваць кнопкі навігацыі</translation>
 <translation id="5771816112378578655">Ідзе наладжванне...</translation>
@@ -4404,6 +4409,7 @@
 <translation id="5942779427914696408">Бачнасць прылады</translation>
 <translation id="5943127421590245687">Уліковы запіс спраўджаны. Каб разблакіраваць і аднавіць лакальныя даныя, увядзіце стары пароль прылады <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Сканіраваць QR-код</translation>
+<translation id="5945002094477276055">Файл "<ph name="FILE_NAME" />" можа быць небяспечным. Адправіць яго ў сэрвіс "Google Бяспечны прагляд" для праверкі?</translation>
 <translation id="5946591249682680882">Ідэнтыфікатар справаздачы <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Падключыце клавіятуру або мыш або працягніце наладжванне з дапамогай сэнсарнага экрана. Калі вы выкарыстоўваеце прылады з Bluetooth, упэўніцеся, што яны гатовыя да спалучэння.</translation>
 <translation id="5949544233750246342">Не атрымалася прааналізаваць файл</translation>
@@ -4451,6 +4457,7 @@
 <translation id="6002452033851752583">Пароль выдалены з Уліковага запісу Google</translation>
 <translation id="6002458620803359783">Пажаданыя галасы</translation>
 <translation id="6003143259071779217">Выдаліць сотавую сетку eSIM-карты</translation>
+<translation id="6003582434972667631">Тэма зададзена вашай арганізацыяй</translation>
 <translation id="6006484371116297560">Класічная</translation>
 <translation id="6007240208646052708">Галасавы пошук на вашай мове недаступны.</translation>
 <translation id="6011074160056912900">Сетка Ethernet</translation>
@@ -4830,6 +4837,7 @@
 <translation id="6429384232893414837">Памылка абнаўлення</translation>
 <translation id="6430814529589430811">ASCII з шыфраваннем Base64, адзін сертыфікат</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> будзе наладжваць аўтаматычныя абнаўленні для ўсіх карыстальнікаў гэтага камп'ютара.</translation>
+<translation id="6434104957329207050">Хуткасць кропкавага сканіравання</translation>
 <translation id="6434309073475700221">Адхіліць</translation>
 <translation id="6434325376267409267">Каб выкарыстоўваць праграму <ph name="APP_NAME" />, прыладу трэба абнавіць.</translation>
 <translation id="6436164536244065364">Прагледзець у Вэб-краме</translation>
@@ -4872,6 +4880,7 @@
 <translation id="6474498546677193336">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага выключэння Linux.</translation>
 <translation id="6474884162850599008">Адключыць уліковы запіс Google Дыска</translation>
 <translation id="6475294023568239942">Вызваліце месца на дыску Linux або змяніце памер дыска ў наладах</translation>
+<translation id="6476138569087741884">Узровень маштабу ў поўнаэкранным рэжыме</translation>
 <translation id="6477822444490674459">Сінхранізацыя апавяшчэнняў не падтрымліваецца, калі на тэлефоне выкарыстоўваецца працоўны профіль. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Захаваць небяспечны файл?</translation>
 <translation id="6480327114083866287">Кіруе <ph name="MANAGER" /></translation>
@@ -5327,6 +5336,7 @@
 <translation id="6985607387932385770">Прынтары</translation>
 <translation id="6988094684494323731">Ідзе запуск кантэйнера Linux</translation>
 <translation id="6988403677482707277">Укладка перамешчана ў пачатак панэлі</translation>
+<translation id="6990209147952697693">Класічны стыль Chrome</translation>
 <translation id="6991665348624301627">Выберыце месца прызначэння</translation>
 <translation id="6992554835374084304">Уключэнне палепшанай праверкі правапісу</translation>
 <translation id="6993000214273684335">Укладка выдалена з групы без назвы – <ph name="GROUP_CONTENTS" /></translation>
@@ -6313,6 +6323,7 @@
 <translation id="8086015605808120405">Ідзе наладжванне прынтара <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Наладзіць прыладу (<ph name="PRINTER_NAME" />)</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Файл зашыфраваны. Папрасіце ўладальніка файла расшыфраваць яго.}one{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}few{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}many{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}other{Некаторыя з гэтых файлаў зашыфраваны. Папрасіце ўладальніка файлаў расшыфраваць іх.}}</translation>
+<translation id="8087576439476816834">Спампаваць, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8090234456044969073">Прагледзець спіс вэб-сайтаў, якія вы наведваеце часцей за ўсё</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> не адказвае</translation>
@@ -6554,6 +6565,8 @@
 <translation id="8368859634510605990">&amp;Адкрыць усе закладкі</translation>
 <translation id="8370294614544004647">Пры закрыцці ноўтбука пераводзіць яго ў рэжым сну</translation>
 <translation id="8371695176452482769">Гаварыце</translation>
+<translation id="8371749822919332187">Каб павялічыць маштаб, націсніце Ctrl + Alt + Павялічыць яркасць.
+Каб паменшыць маштаб, націсніце Ctrl + Alt + Паменшыць яркасць.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Выключыць гук сайта}one{Выключыць гук сайтаў}few{Выключыць гук сайтаў}many{Выключыць гук сайтаў}other{Выключыць гук сайтаў}}</translation>
 <translation id="8372369524088641025">Няправільны ключ WEP</translation>
 <translation id="8373652277231415614">Абагуленыя каталогі Crostini</translation>
@@ -6561,7 +6574,6 @@
 <translation id="8378714024927312812">Пад кіраваннем вашай арганізацыі</translation>
 <translation id="8379878387931047019">Гэта прылада не падтрымлівае ключы бяспекі запытанага гэтым вэб-сайтам тыпу</translation>
 <translation id="8379991678458444070">Дадаўшы гэту ўкладку ў закладкі, вы будзеце мець да яе хуткі доступ</translation>
-<translation id="8380314198565901932">Памылка спампоўвання віртуальнай машыны. Абнавіце прыладу <ph name="DEVICE_TYPE" /> і паўтарыце спробу.</translation>
 <translation id="8382913212082956454">Скапіраваць &amp;адрас электроннай пошты</translation>
 <translation id="8386091599636877289">Палітыка не знойдзена.</translation>
 <translation id="8386819192691131213">Дазвольце Памочніку выкарыстоўваць інфармацыю на экране, каб даваць хуткія адказы (напрыклад, перакладаць, даваць азначэнні, пераводзіць адзінкі вымярэння і не толькі)</translation>
@@ -7227,6 +7239,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Вітаем у вашым новым профілі</translation>
 <translation id="9112748030372401671">Змяняць шпалеры</translation>
+<translation id="9112786533191410418">Файл "<ph name="FILE_NAME" />" можа быць небяспечным. Адправіць яго ў Google для праверкі?</translation>
 <translation id="9112987648460918699">Пошук...</translation>
 <translation id="9114663181201435112">Зручны ўваход</translation>
 <translation id="9115675100829699941">&amp;Закладкі</translation>

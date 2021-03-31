@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">查看詳細資料</translation>
 <translation id="1030706264415084469"><ph name="URL" /> 要求在你的裝置上永久儲存大量資料</translation>
 <translation id="1032854598605920125">順時針旋轉</translation>
+<translation id="1036224116832931580">輕觸即可讓恐龍跳起，輕鬆暢玩恐龍遊戲</translation>
 <translation id="1036348656032585052">關閉</translation>
 <translation id="1038106730571050514">顯示搜尋建議</translation>
 <translation id="1038842779957582377">不明名稱</translation>
@@ -275,6 +276,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{無}=1{1 個網站}other{# 個網站}}</translation>
 <translation id="1945968466830820669">你可能會失去貴機構帳戶的存取權，或身分遭到冒用。Chromium 建議你立即變更密碼。</translation>
 <translation id="1947454675006758438">釘裝 (右上方)</translation>
+<translation id="1958218078413065209">最高得分為 <ph name="SCORE" />。</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />將你造訪的部分網頁網址、特定的系統資訊以及部分網頁內容傳送<ph name="END_WHITEPAPER_LINK" />給 Google，協助我們改善所有使用者的網路安全。<ph name="BEGIN_PRIVACY_PAGE_LINK" />隱私權政策<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 書籤</translation>
 <translation id="1973335181906896915">序列化錯誤</translation>
@@ -541,6 +543,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />，依序按下 Tab 鍵和 Enter 鍵即可在 Chrome 設定中執行安全檢查</translation>
 <translation id="3061707000357573562">修補服務</translation>
 <translation id="3064966200440839136">即將離開無痕模式，改為使用外部應用程式付款，要繼續嗎？</translation>
+<translation id="306573536155379004">已啟動遊戲。</translation>
 <translation id="3080254622891793721">圖片</translation>
 <translation id="3086579638707268289">你的網路活動正遭到監控</translation>
 <translation id="3087734570205094154">置底</translation>
@@ -1532,6 +1535,7 @@
 <translation id="6934672428414710184">這是你在 Google 帳戶中設定的名稱</translation>
 <translation id="6944692733090228304">你在不是由 <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> 管理的網站上輸入了你的密碼。為確保帳戶安全，請勿在其他應用程式和網站上重複使用你的密碼。</translation>
 <translation id="6945221475159498467">選取</translation>
+<translation id="6948051842255602737">遊戲結束，你的得分為 <ph name="SCORE" />。</translation>
 <translation id="6948701128805548767">如要查看取件方式和相關規定，請選取一個地址</translation>
 <translation id="6949872517221025916">重設密碼</translation>
 <translation id="6950684638814147129">剖析 JSON 值時發生錯誤：<ph name="ERROR" /></translation>
@@ -1814,6 +1818,7 @@
 <translation id="7956713633345437162">行動版書籤</translation>
 <translation id="7961015016161918242">一律不要</translation>
 <translation id="7966803981046576691">工作帳戶類型</translation>
+<translation id="79682505114836835">「<ph name="VALUE" />」是無效的十六進位顏色值。</translation>
 <translation id="7976214039405368314">要求數量過多</translation>
 <translation id="7977538094055660992">輸出裝置</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1941,6 +1946,7 @@
 <translation id="8446884382197647889">瞭解詳情</translation>
 <translation id="8457125768502047971">無限期</translation>
 <translation id="8461694314515752532">使用你自己的同步通關密語，加密保護同步資料</translation>
+<translation id="8463101686637053101">按下空白鍵即可讓恐龍跳起，輕鬆暢玩恐龍遊戲</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 張信用卡}other{# 張信用卡}}</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8474910779563686872">顯示開發人員詳細資料</translation>
@@ -2076,6 +2082,7 @@
 <translation id="8996941253935762404">你要瀏覽的網站含有有害程式</translation>
 <translation id="8997023839087525404">該伺服器的憑證並未根據憑證透明化政策對外公開。部分憑證必須符合這項規定，以確保憑證值得信任，不會讓使用者遭到攻擊。</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> Proxy 要求提供使用者名稱和密碼。</translation>
+<translation id="9001963517402879850">跳起來！</translation>
 <translation id="9004367719664099443">正在執行 VR 工作階段</translation>
 <translation id="9005998258318286617">無法載入 PDF 文件。</translation>
 <translation id="9008201768610948239">略過</translation>

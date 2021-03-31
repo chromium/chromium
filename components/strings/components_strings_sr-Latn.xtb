@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Prikaži detalje</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno da skladišti velike količine podataka na uređaju</translation>
 <translation id="1032854598605920125">Okrenite u smeru kazaljke na satu</translation>
+<translation id="1036224116832931580">Igra sa dinosaurusom, dodirnite da biste skakali i igrali</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1038106730571050514">Prikažite predloge</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
@@ -279,6 +280,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="192020519938775529">{COUNT,plural, =0{None}=1{1 sajt}one{# sajt}few{# sajta}other{# sajtova}}</translation>
 <translation id="1945968466830820669">Mogli biste da izgubite pristup nalogu za organizaciju ili bi moglo da dođe do krađe identiteta. Chromium vam preporučuje da odmah promenite lozinku.</translation>
 <translation id="1947454675006758438">Spajanje u gornjem desnom uglu</translation>
+<translation id="1958218078413065209">Vaš najviši rezultat je <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Pomozite da poboljšamo bezbednost na vebu za sve tako što ćete slati <ph name="BEGIN_WHITEPAPER_LINK" />URL-ove nekih stranica koje posećujete, ograničene informacije o sistemu i određeni sadržaj stranica<ph name="END_WHITEPAPER_LINK" /> Google-u <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politika privatnosti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> – obeleživači</translation>
 <translation id="1973335181906896915">Greška pri serijalizaciji</translation>
@@ -547,6 +549,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, pa Enter da biste pokrenuli bezbednosnu proveru u Chrome podešavanjima</translation>
 <translation id="3061707000357573562">Usluga krpljenja</translation>
 <translation id="3064966200440839136">Napustićete režim bez arhiviranja da biste platili u spoljnoj aplikaciji. Želite li da nastavite?</translation>
+<translation id="306573536155379004">Igra je pokrenuta.</translation>
 <translation id="3080254622891793721">Slika</translation>
 <translation id="3086579638707268289">Vaše aktivnosti na vebu se prate</translation>
 <translation id="3087734570205094154">Dno</translation>
@@ -1542,6 +1545,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="6934672428414710184">To je ime sa vašeg Google naloga</translation>
 <translation id="6944692733090228304">Uneli ste lozinku na sajtu kojim ne upravlja <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Da biste zaštitili nalog, ne koristite lozinku ponovo u drugim aplikacijama ni na drugim sajtovima.</translation>
 <translation id="6945221475159498467">Izaberi</translation>
+<translation id="6948051842255602737">Igra je završena, vaš rezultat je <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Da biste videli načine i zahteve za preuzimanje, izaberite adresu</translation>
 <translation id="6949872517221025916">Resetujte lozinku</translation>
 <translation id="6950684638814147129">Greška pri raščlanjivanju JSON vrednosti: <ph name="ERROR" /></translation>
@@ -1824,6 +1828,7 @@ Dodatni detalji:
 <translation id="7956713633345437162">Mobilni obeleživači</translation>
 <translation id="7961015016161918242">Nikad</translation>
 <translation id="7966803981046576691">Tip naloga zadatka</translation>
+<translation id="79682505114836835">Vrednost <ph name="VALUE" /> je nevažeća heksadecimalna boja.</translation>
 <translation id="7976214039405368314">Previše je zahteva</translation>
 <translation id="7977538094055660992">Izlazni uređaj</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1951,6 +1956,7 @@ Dodatni detalji:
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8457125768502047971">Neograničeno</translation>
 <translation id="8461694314515752532">Šifrujte sinhronizovane podatke pomoću sopstvene pristupne fraze za sinhronizaciju</translation>
+<translation id="8463101686637053101">Igra sa dinosaurusom, pritiskajte taster za razmak da biste skakali i igrali</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}few{# kreditne kartice}other{# kreditnih kartica}}</translation>
 <translation id="8473863474539038330">Adrese i drugo</translation>
 <translation id="8474910779563686872">Prikaži detalje o programeru</translation>
@@ -2087,6 +2093,7 @@ Dodatni detalji:
 <translation id="8996941253935762404">Sajt koji ćete posetiti sadrži štetne programe</translation>
 <translation id="8997023839087525404">Server je prikazao sertifikat koji nije javno otkriven pomoću smernica Transparentnost sertifikata. To je obavezno za neke sertifikate da bismo se uverili da su pouzdani i da štite od napadača.</translation>
 <translation id="9001074447101275817">Proksi <ph name="DOMAIN" /> zahteva korisničko ime i lozinku.</translation>
+<translation id="9001963517402879850">Skočite!</translation>
 <translation id="9004367719664099443">VR sesija je u toku</translation>
 <translation id="9005998258318286617">Učitavanje PDF dokumenta nije uspelo.</translation>
 <translation id="9008201768610948239">Ignoriši</translation>

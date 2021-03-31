@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="102360288709523007">Envoyez à Google des statistiques d'utilisation et des rapports d'erreur pour améliorer Chromium.</translation>
-<translation id="1043245583918962542">Indiquez si vous voulez effacer ou conserver les données Chromium de cet appareil.</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer une image, appuyez sur "Paramètres" afin que Chromium puisse l'ajouter à vos photos</translation>
 <translation id="1289216811211435351">Passer à Chromium</translation>
@@ -79,7 +78,6 @@
 <translation id="8073677936375100957">Supprimer vos données Chromium sur cet appareil ?</translation>
 <translation id="8175055321229419309">Conseil : <ph name="BEGIN_LINK" />Placez Chromium dans le dock.<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>
-<translation id="8252885722420466166">Améliorez votre expérience Google dans Chromium grâce à votre position.</translation>
 <translation id="8586442755830160949">Copyright Auteurs de Chromium <ph name="YEAR" />. Tous droits réservés.</translation>
 <translation id="8663480472502753423">Garder Chromium à jour</translation>
 <translation id="8776843108004031667">Ce compte et les données non enregistrées seront supprimés de Chromium.</translation>
@@ -88,5 +86,4 @@
 <translation id="9089354809943900324">Version de Chromium obsolète</translation>
 <translation id="921174536258924340">Chromium n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Auteurs de Chromium</translation>
-<translation id="994708389219151914">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil.</translation>
 </translationbundle>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
 <translation id="102360288709523007">உபயோகப் புள்ளிவிவரங்களையும் சிதைவு அறிக்கைகளையும் Googleளுக்கு அனுப்பி, Chromiumஐ இன்னும் சிறப்பானதாக்க உதவவும்.</translation>
-<translation id="1043245583918962542">இந்தச் சாதனத்தில் உள்ள உங்கள் Chromium தரவை அழிக்க வேண்டுமா வைத்திருக்க வேண்டுமா என்பதைத் தேர்வுசெய்யுங்கள்.</translation>
 <translation id="1185134272377778587">Chromium அறிமுகம்</translation>
 <translation id="1257458525759135959">படங்களைச் சேமிக்க, அமைப்புகள் என்பதைத் தட்டி அவற்றை உங்கள் படங்களில் சேர்க்க Chromiumமை அனுமதிக்கவும்</translation>
 <translation id="1289216811211435351">Chromiumமிற்கு மாறுங்கள்</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">இந்தச் சாதனத்திலிருந்து உங்கள் Chromium தரவை அழிக்கவா?</translation>
 <translation id="8175055321229419309">உதவிக் குறிப்பு: <ph name="BEGIN_LINK" />Chromiumமை உங்கள் டாக்கிற்கு நகர்த்துங்கள்<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium உலாவியால் புதுப்பிப்புகள் உள்ளனவா எனப் பார்க்க முடியவில்லை. பிறகு முயலவும்.</translation>
-<translation id="8252885722420466166">உங்கள் இருப்பிடத்தின் அடிப்படையில், சிறந்த Google அனுபவத்தை Chromium இல் பெறவும்.</translation>
 <translation id="8586442755830160949">பதிப்புரிமை <ph name="YEAR" /> Chromium உருவாக்குநர்கள். அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டவை.</translation>
 <translation id="8663480472502753423">Chromiumமைச் சமீபத்திய பதிப்பில் வைத்திருக்கும்</translation>
 <translation id="8776843108004031667">இந்தக் கணக்கும் சேமிக்கப்படாத தரவு இருந்தால் அதுவும் Chromiumமில் இருந்து அகற்றப்படும்.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium காலாவதியானது</translation>
 <translation id="921174536258924340">Chromium உலாவியால் கடவுச்சொற்கள் அனைத்தையும் சரிபார்க்க முடியவில்லை. நாளை முயலவும் அல்லது <ph name="BEGIN_LINK" />உங்கள் Google கணக்கில் கடவுச்சொற்களைச் சரிபார்க்கவும்.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium அங்கீகரிப்பாளர்கள்</translation>
-<translation id="994708389219151914">உங்கள் கணக்கை <ph name="HOSTED_DOMAIN" /> நிர்வகிப்பதால் இந்தச் சாதனத்தில் உள்ள உங்கள் Chromium தரவு அழிக்கப்படும்.</translation>
 </translationbundle>

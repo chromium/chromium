@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="as">
 <translation id="102360288709523007">Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই Chromium ক অধিক উন্নত কৰাত সহায় কৰক।</translation>
-<translation id="1043245583918962542">এই ডিভাইচটোৰ পৰা আপোনাৰ Chromiumৰ ডেটা মচিবনে ৰাখিব সেয়া বাছনি কৰক।</translation>
 <translation id="1185134272377778587">Chromiumৰ বিষয়ে</translation>
 <translation id="1257458525759135959">প্ৰতিচ্ছবিসমূহ ছেভ কৰিবলৈ Chromiumক আপোনাৰ ফট’সমূহত যোগ দিয়াৰ অনুমতি দিবলৈ ছেটিংসমূহত টিপক</translation>
 <translation id="1289216811211435351">Chromiumলৈ সলনি কৰক</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">এই ডিভাইচটোৰ পৰা Chromium ডেটা মচিবনে?</translation>
 <translation id="8175055321229419309">পৰামৰ্শ: <ph name="BEGIN_LINK" />Chromiumক আপোনাৰ ড’কলৈ নিয়ক<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromiumএ আপডে’টৰ বাবে পৰীক্ষা কৰিব নোৱাৰিলে। পাছত পুনৰ চেষ্টা কৰক।</translation>
-<translation id="8252885722420466166">আপোনাৰ অৱস্থানৰ ভিত্তিত Chromiumত Google ব্যৱহাৰৰ উৎকৃষ্ট অভিজ্ঞতা লাভ কৰক।</translation>
 <translation id="8586442755830160949">স্বত্ত্বাধিকাৰ <ph name="YEAR" /> The Chromium Authors. সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="8663480472502753423">Chromium আপ টু ডে’ট কৰি ৰাখক</translation>
 <translation id="8776843108004031667">এই একাউণ্টটো আৰু যিকোনো ছেভ নকৰা ডেটা Chromiumৰ পৰা আঁতৰোৱা হ’ব।</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromiumটো অতি পুৰণি</translation>
 <translation id="921174536258924340">Chromiumএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক অথবা <ph name="BEGIN_LINK" />আপোনাৰ Google একাউণ্টত পাছৱর্ডসমূহ পৰীক্ষা কৰক।<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">আপোনাৰ একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, গতিকে আপোনাৰ Chromiumৰ ডেটাখিনি এই ডিভাইচটোৰ পৰা মচা হ’ব।</translation>
 </translationbundle>

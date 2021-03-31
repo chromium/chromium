@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hi">
 <translation id="102360288709523007">Google को इस्तेमाल के आंकड़े और खराबी रिपोर्ट भेजकर क्रोमियम को बेहतर बनाने में मदद करें.</translation>
-<translation id="1043245583918962542">चुनें कि आप इस डिवाइस से अपना Chromium डेटा मिटाना चाहते हैं या सेव रखना चाहते हैं.</translation>
 <translation id="1185134272377778587">क्रोमियम के बारे में</translation>
 <translation id="1257458525759135959">इमेज सेव करने के लिए, सेटिंग पर टैप करके क्रोमियम को अनुमति दें कि वह आपके फ़ोटो सेक्शन में इमेज जोड़ सके.</translation>
 <translation id="1289216811211435351">Chromium पर स्विच करें</translation>
@@ -79,7 +78,6 @@
 <translation id="8073677936375100957">इस डिवाइस से अपना क्रोमियम डेटा हटाएं?</translation>
 <translation id="8175055321229419309">सलाह: <ph name="BEGIN_LINK" />क्रोमियम को अपने डॉक में ले जाएं<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">क्रोमियम अपडेट की जांच नहीं कर सका. कुछ देर बाद कोशिश करें.</translation>
-<translation id="8252885722420466166">अपने स्थान के आधार पर क्रोमियम में एक बेहतर Google अनुभव पाएं.</translation>
 <translation id="8586442755830160949">कॉपीराइट <ph name="YEAR" /> The Chromium Authors. सर्वाधिकार सुरक्षित.</translation>
 <translation id="8663480472502753423">Chromium को अप-टू-डेट रखें</translation>
 <translation id="8776843108004031667">यह खाता और वह डेटा जो सेव नहीं है, क्रोमियम से हटा दिए जाएंगे.</translation>
@@ -88,5 +86,4 @@
 <translation id="9089354809943900324">क्रोमियम पुराना हो गया है</translation>
 <translation id="921174536258924340">क्रोमियम सभी पासवर्ड की जांच नहीं कर सका. कल कोशिश करें या <ph name="BEGIN_LINK" />अपने Google खाते में सेव किए गए पासवर्ड की जांच करें.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">क्रोमियम लेखक</translation>
-<translation id="994708389219151914">आपके खाते को <ph name="HOSTED_DOMAIN" /> मैनेज करता है, इसलिए इस डिवाइस से आपका Chromium डेटा मिटा दिया जाएगा.</translation>
 </translationbundle>

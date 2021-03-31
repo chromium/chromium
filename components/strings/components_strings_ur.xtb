@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">تفصیلات دیکھیں</translation>
 <translation id="1030706264415084469"><ph name="URL" /> آپ کے آلے پر مستقل طور پر بڑا ڈیٹا اسٹور کرنا چاہتا ہے</translation>
 <translation id="1032854598605920125">گھڑی کی سمت میں گھمائیں</translation>
+<translation id="1036224116832931580">‏Dino گیم، کودنے اور کھیلنے کے لیے تھپتھپائیں</translation>
 <translation id="1036348656032585052">آف کریں</translation>
 <translation id="1038106730571050514">تجاویز دکھائیں</translation>
 <translation id="1038842779957582377">نامعلوم نام</translation>
@@ -280,6 +281,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{کوئی سائٹ نہیں}=1{1 سائٹ}other{# سائٹس}}</translation>
 <translation id="1945968466830820669">‏آپ اپنی تنظیم کے اکاؤنٹ تک رسائی سے محروم ہو سکتے ہیں یا شناخت کی چوری ہو سکتی ہے۔ Chromium آپ کو ابھی اپنا پاس ورڈ تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="1947454675006758438">اوپر دائیں طرف سٹیپل</translation>
+<translation id="1958218078413065209">آپ کا اعلی ترین اسکور <ph name="SCORE" /> ہے۔</translation>
 <translation id="1959001866257244765">‏<ph name="BEGIN_WHITEPAPER_LINK" />آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد<ph name="END_WHITEPAPER_LINK" /> Google کو بھیج کر ہر کسی کے لیے ویب پر موجود سیکیورٹی کو بہتر کرنے میں ہماری مدد کریں۔ <ph name="BEGIN_PRIVACY_PAGE_LINK" />رازداری کی پالیسی<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> بک مارکس</translation>
 <translation id="1973335181906896915">ترتیب وار سازی کی خرابی</translation>
@@ -549,6 +551,7 @@
 <translation id="3060557858482803256">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، Chrome کی ترتیبات میں موجود سیفٹی چیک چلانے کے لئے ٹیب پھر اینٹر دبائیں</translation>
 <translation id="3061707000357573562">پیچ سروس</translation>
 <translation id="3064966200440839136">کسی خارجی ایپلیکیشن کے ذریعے ادائیگی کرنے کیلئے پوشیدگی وضع کو چھوڑ رہے ہیں۔ جاری رکھیں؟</translation>
+<translation id="306573536155379004">گیم شروع ہو گئی۔</translation>
 <translation id="3080254622891793721">گرافک</translation>
 <translation id="3086579638707268289">ویب پر کی جانے والی آپ کی سرگرمی کو مانیٹر کیا جا رہا ہے</translation>
 <translation id="3087734570205094154">نیچے</translation>
@@ -1547,6 +1550,7 @@
 <translation id="6934672428414710184">‏یہ نام آپ کے Google اکاؤنٹ سے ہے</translation>
 <translation id="6944692733090228304">آپ نے اپنا پاس ورڈ ایک ایسی سائٹ پر درج کیا ہے جو <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> کے زیر انتظام نہیں ہے۔ اپنے اکاؤنٹ کے تحفظ کے لیے، دیگر ایپس اور سائٹس پر اپنا پاس ورڈ دوبارہ استعمال نہ کریں۔</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
+<translation id="6948051842255602737">گیم ختم، آپ کا اسکور <ph name="SCORE" /> ہے۔</translation>
 <translation id="6948701128805548767">پِک اپ کے طریقے اور ضروریات دیکھنے کیلئے، ایک پتہ منتخب کریں</translation>
 <translation id="6949872517221025916">پاس ورڈ دوبارہ ترتیب دیں</translation>
 <translation id="6950684638814147129">‏JSON قدر پارس کرنے میں خرابی: <ph name="ERROR" /></translation>
@@ -1829,6 +1833,7 @@
 <translation id="7956713633345437162">موبائل بُک مارکس</translation>
 <translation id="7961015016161918242">کبھی نہیں</translation>
 <translation id="7966803981046576691">جاب اکاؤنٹ کی قسم</translation>
+<translation id="79682505114836835">قدر "<ph name="VALUE" />" ایک غلط ہیکس رنگ ہے۔</translation>
 <translation id="7976214039405368314">بہت زیادہ درخواستیں</translation>
 <translation id="7977538094055660992">آؤٹ پٹ آلہ</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1956,6 +1961,7 @@
 <translation id="8446884382197647889">مزید جانیں</translation>
 <translation id="8457125768502047971">غیر معین</translation>
 <translation id="8461694314515752532">اپنے ذاتی مطابقت پذیر پاس فریز کے ساتھ مطابقت پذیر کردہ ڈیٹا کی مرموزکاری کریں</translation>
+<translation id="8463101686637053101">‏Dino گیم، کودنے اور کھیلنے کے لئے اسپیس دبائیں</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 کریڈٹ کارڈ}other{# کریڈٹ کارڈز}}</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
 <translation id="8474910779563686872">ڈویلپر کی تفصیلات دکھائیں</translation>
@@ -2091,6 +2097,7 @@
 <translation id="8996941253935762404">آگے کی سائٹ نقصاندہ پروگراموں پر مشتمل ہے</translation>
 <translation id="8997023839087525404">سرور نے ایک ایسا سرٹیفیکیٹ پیش کیا جس کا سرٹیفیکیٹ کی شفافیت کی پالیسی استعمال کر کے انکشاف نہیں کیا گیا۔ یہ یقینی بنانے کیلئے کہ کچھ سرٹیفیکیٹس قابل بھروسہ ہیں اور حملہ آوروں کے خلاف حفاظت کرتی ہیں، یہ ان کیلئے ایک تقاضہ ہے۔</translation>
 <translation id="9001074447101275817">پراکسی <ph name="DOMAIN" /> کیلئے ایک صارف نام اور پاس ورڈ درکار ہے۔</translation>
+<translation id="9001963517402879850">کودیں!</translation>
 <translation id="9004367719664099443">‏VR سیشن پیشرفت میں ہے</translation>
 <translation id="9005998258318286617">‏PDF دستاویز لوڈ نہیں ہو سکی۔</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>

@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Chrome môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="3720541637541300822">Uzamknúť karty inkognito pri zavretí Chromu</translation>
 <translation id="384394811301901750">Google Chrome momentálne nemôže použiť váš fotoaparát</translation>
-<translation id="38949020760388809">Vyberte, či chcete údaje Chromu v tomto zariadení vymazať alebo ponechať.</translation>
 <translation id="3980220367029651214">Účet na synchronizáciu <ph name="USER_EMAIL1" /> prepínate na účet <ph name="USER_EMAIL2" />. Vaše existujúce údaje prehliadača Chrome spravuje doména <ph name="DOMAIN" />. Touto akciou odstránite údaje z príslušného zariadenia, avšak naďalej zostanú v účte <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Vaša organizácia vyžaduje, aby ste sa do Chromu neprihlasovali.</translation>
 <translation id="3988789688219830639">Google Chrome nemá prístup k vašim fotkám ani videám. Prístup povolíte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
 <translation id="4099578267706723511">Odosielať štatistiky používania a prehľady chýb Googlu a pomáhať tak zlepšovať Chrome</translation>
-<translation id="415767770115540173">Služby Google môžu v prehliadači Chrome vďaka údajom o polohe fungovať lepšie.</translation>
 <translation id="417201473131094001">Nepodporované vo verzii Chrome Canary</translation>
 <translation id="424864128008805179">Odhlásiť sa z Chromu?</translation>
 <translation id="4249068189593983585">Tip pre Chrome: ďalšie možnosti karty získate pridržaním tlačidla „Zobraziť karty“ na paneli s nástrojmi, ktorý sa nachádza v dolnej alebo hornej časti obrazovky.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">V rámci porušenia ochrany údajov bolo prezradené vaše heslo. Chrome vám ho odporúča okamžite zmeniť.</translation>
 <translation id="7698568245838009292">Chrome chce použiť fotoaparát</translation>
 <translation id="7855730255114109580">Google Chrome je aktuálny.</translation>
-<translation id="8109233255338845204">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia vymazané.</translation>
 <translation id="8160472928944011082">Chrome sa nedá aktualizovať</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="840168496893712993">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Skúste ich odinštalovať.</translation>

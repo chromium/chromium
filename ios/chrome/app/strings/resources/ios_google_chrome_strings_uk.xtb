@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Тепер ви можете відкривати в Chrome посилання з повідомлень, документів та інших додатків.</translation>
 <translation id="3720541637541300822">Блокувати анонімні вкладки після закриття Chrome</translation>
 <translation id="384394811301901750">Зараз Google Chrome не може використовувати камеру</translation>
-<translation id="38949020760388809">Видалити дані Chrome із цього пристрою чи зберігати їх?</translation>
 <translation id="3980220367029651214">Ви переходите з облікового запису для синхронізації <ph name="USER_EMAIL1" /> у <ph name="USER_EMAIL2" />. Ваші наявні дані Chrome збережені в домені <ph name="DOMAIN" />. Дані буде видалено з цього пристрою, але вони залишаться в обліковому записі <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Адміністратор вашої організації вимагає, щоб ви не входили в обліковий запис у Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome не має доступу до ваших фото чи відео. Надайте доступ у меню iOS "Параметри &gt; Конфіденційність &gt; Фото".</translation>
 <translation id="4099578267706723511">Допоможіть покращити Chrome, надсилаючи статистику та звіти про збої в Google.</translation>
-<translation id="415767770115540173">Знаючи ваше місцезнаходження, Google зможе створити для вас зручніші умови роботи в Chrome.</translation>
 <translation id="417201473131094001">Не підтримується в Chrome Canary</translation>
 <translation id="424864128008805179">Вийти з Chrome?</translation>
 <translation id="4249068189593983585">Порада щодо Chrome. Щоб відкрити більше параметрів, натисніть і утримуйте кнопку "Показати вкладки" на панелі інструментів, розташованій унизу або вгорі екрана.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Ваш пароль розкрито через порушення безпеки даних. Chrome радить негайно змінити його.</translation>
 <translation id="7698568245838009292">Chrome потрібен доступ до камери</translation>
 <translation id="7855730255114109580">У вас остання версія Google Chrome</translation>
-<translation id="8109233255338845204">Ваш обліковий запис зареєстровано в домені <ph name="HOSTED_DOMAIN" />, тож дані Chrome буде видалено з цього пристрою.</translation>
 <translation id="8160472928944011082">Не вдається оновити Chrome</translation>
 <translation id="8370517070665726704">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
 <translation id="840168496893712993">Деякі додатки спричиняють аварійне завершення роботи Chrome. Спробуйте їх видалити.</translation>

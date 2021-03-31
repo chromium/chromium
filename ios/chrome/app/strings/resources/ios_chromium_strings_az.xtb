@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="102360288709523007">İstifadə statistikası və qəza raportlarını Google'a göndərməklə Chromium'un gəlişməsini sağlayın.</translation>
-<translation id="1043245583918962542">Chromium datanızınız bu cihazdan silinməsi və ya saxlanmasını seçin.</translation>
 <translation id="1185134272377778587">Chromium haqqında</translation>
 <translation id="1257458525759135959">Şəkilləri yadda saxlamaq üçün, Ayarlara toxunaraq Chromium'a fotolarınıza əlavə etmək icazəsi verin</translation>
 <translation id="1289216811211435351">Chromium'a keçin</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Chromium datası bu cihazdan silinsin?</translation>
 <translation id="8175055321229419309">İp ucu: <ph name="BEGIN_LINK" />Chromium'u masaüstünüzə köçürün<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>
-<translation id="8252885722420466166">Məkanınıza əsasən Chromium'da daha yaxşı təcrübə əldə edin.</translation>
 <translation id="8586442755830160949">Müəlliflik Hüququ <ph name="YEAR" /> Chromium Müəllifləri. Bütün hüquqlar qorunur.</translation>
 <translation id="8663480472502753423">Chromium'u yeni saxlayın</translation>
 <translation id="8776843108004031667">Bu hesab və bütün saxlanmamış data Chromium'dan silinəcək.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium'un vaxtı keçib</translation>
 <translation id="921174536258924340">Chromium bütün parolları yoxlaya bilmədi. Sabah yenidən cəhd edin və ya <ph name="BEGIN_LINK" />Google Hesabınızda parolları yoxlayın.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium Müəllifləri</translation>
-<translation id="994708389219151914">Hesabınız <ph name="HOSTED_DOMAIN" /> tərəfindən idarə edildiyinə görə Chromium datanız bu cihazdan silinəcək.</translation>
 </translationbundle>

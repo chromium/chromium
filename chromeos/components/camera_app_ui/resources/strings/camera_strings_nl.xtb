@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Niets opgenomen</translation>
+<translation id="1838104802459806957">Naar boven kantelen</translation>
 <translation id="1851616744363735765">ONDERBROKEN</translation>
 <translation id="1862930711583847113">Kan <ph name="FILE" /> niet exporteren</translation>
 <translation id="1899697626337024495">Fotoresolutie</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> actief</translation>
 <translation id="2144806332417375165">Aangepaste videoparameters</translation>
 <translation id="229579744168541441">Exporteren naar schijf</translation>
+<translation id="2320741269052147773">Naar links schuiven</translation>
 <translation id="2501278716633472235">Terug</translation>
 <translation id="2501853267655415902">Opname gestopt</translation>
 <translation id="2501953888035679275">Maak foto's en neem video's op met je camera.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Foto's en video's die zijn gemaakt met de camera worden verplaatst naar de map Downloads. Je kunt ze vinden via Bestanden.
 
         Apps met opslagmachtiging hebben toegang tot je foto's en video's.</translation>
+<translation id="3067436040345934772">Naar rechts schuiven</translation>
 <translation id="3081586908890909590">Naar video opnemen</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">Rastertype</translation>
@@ -89,6 +92,7 @@ Als je feedback over de afbeeldings- of videokwaliteit gaat, voeg dan een voorbe
 <translation id="8145038249676204903">Naar foto maken</translation>
 <translation id="8239780215768881278">Videomomentopname maken</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
+<translation id="8425673304802773841">Naar beneden kantelen</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Voorbeeld van metadata bekijken</translation>

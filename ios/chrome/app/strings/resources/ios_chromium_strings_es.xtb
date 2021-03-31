@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
 <translation id="102360288709523007">Ayudar a mejorar Chromium enviando informes sobre fallos y estadísticas de uso a Google.</translation>
-<translation id="1043245583918962542">Elige si quieres borrar o conservar tus datos de Chromium en este dispositivo.</translation>
 <translation id="1185134272377778587">Información de Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, toca Ajustes y permite que Chromium añada fotos.</translation>
 <translation id="1289216811211435351">Cambiar a Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">¿Quieres borrar tus datos de Chromium en este dispositivo?</translation>
 <translation id="8175055321229419309">Consejo: <ph name="BEGIN_LINK" />Mueve Chromium a tu Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium no ha podido comprobar si hay actualizaciones. Prueba de nuevo más tarde.</translation>
-<translation id="8252885722420466166">Disfruta de una mejor experiencia en Chromium según tu ubicación.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los creadores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8776843108004031667">Se quitarán de Chromium esta cuenta y los datos sin guardar.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium no está actualizado</translation>
 <translation id="921174536258924340">Chromium no ha podido comprobar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />comprueba las contraseñas en tu cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Los creadores de Chromium</translation>
-<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" /> gestiona tu cuenta, así que se borrarán tus datos de Chromium en este dispositivo.</translation>
 </translationbundle>

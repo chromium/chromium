@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="102360288709523007">Google-ന് ഉപയോഗ വിവരക്കണക്കും ക്രാഷ് റിപ്പോർട്ടുകളും അയച്ച് Chromium മികച്ചതാക്കാൻ സഹായിക്കുക.</translation>
-<translation id="1043245583918962542">ഈ ഉപകരണത്തിൽ നിന്ന് നിങ്ങളുടെ Chromium ഡാറ്റ മായ്‌ക്കണോ അതോ നിലനിർത്തണോ എന്ന് തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="1185134272377778587">Chromium-ത്തിനെക്കുറിച്ച്</translation>
 <translation id="1257458525759135959">ചിത്രങ്ങൾ‌ സംരക്ഷിക്കാൻ, ക്രമീകരണത്തിൽ ടാപ്പ് ചെയ്‌ത് അവ നിങ്ങളുടെ ഫോട്ടോകളിലേക്ക് ചേർക്കാൻ Chromium-നെ അനുവദിക്കുക</translation>
 <translation id="1289216811211435351">Chromium-ലേക്ക് മാറുക</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">ഉപകരണത്തില്‍ നിന്ന് Chromium ഡാറ്റ മായ്ക്കണോ?</translation>
 <translation id="8175055321229419309">നുറുങ്ങ്: <ph name="BEGIN_LINK" />Chromium-ത്തെ നിങ്ങളുടെ ഡോക്കിലേക്ക് നീക്കുക<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium-ന് അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കാനായില്ല. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
-<translation id="8252885722420466166">Chromium-ത്തിൽ നിങ്ങളുടെ ലൊക്കേഷൻ അടിസ്ഥാനമാക്കിയുള്ള ഒരു മികച്ച Google അനുഭവം സ്വന്തമാക്കുക.</translation>
 <translation id="8586442755830160949">പകർപ്പവകാശം <ph name="YEAR" /> Chromium രചയിതാക്കൾ. എല്ലാ അവകാശങ്ങളും നിക്ഷിപ്‌തം.</translation>
 <translation id="8663480472502753423">Chromium അപ് ടു ഡേറ്റ് ആയി നിലനിർത്തുക</translation>
 <translation id="8776843108004031667">ഈ അക്കൗണ്ടും സംരക്ഷിക്കാത്ത എല്ലാ ഡാറ്റയും Chromium-ൽ നിന്ന് നീക്കം ചെയ്യും.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium കാലഹരണപ്പെട്ടു</translation>
 <translation id="921174536258924340">എല്ലാ പാസ്‌വേഡുകളും Chromium-ന് പരിശോധിക്കാനായില്ല. നാളെ വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ <ph name="BEGIN_LINK" />നിങ്ങളുടെ Google അക്കൗണ്ടിലെ പാസ്‌വേഡുകൾ പരിശോധിക്കുക.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium രചയിതാക്കൾ</translation>
-<translation id="994708389219151914">നിങ്ങളുടെ അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="HOSTED_DOMAIN" /> ആയതിനാൽ നിങ്ങളുടെ Chromium ഡാറ്റ ഈ ഉപകരണത്തിൽ നിന്ന് മായ്‌ക്കും.</translation>
 </translationbundle>

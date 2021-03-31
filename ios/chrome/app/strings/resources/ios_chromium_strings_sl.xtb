@@ -2,12 +2,11 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
 <translation id="102360288709523007">Pomagajte izboljšati Chromium s pošiljanjem statističnih podatkov o uporabi in poročil o zrušitvah Googlu.</translation>
-<translation id="1043245583918962542">Izberite, ali želite izbrisati podatke v Chromiumu iz te naprave ali jih obdržati.</translation>
 <translation id="1185134272377778587">O Chromiumu</translation>
 <translation id="1257458525759135959">Če želite shraniti slike, se dotaknite aplikacije Settings in dovolite, da Chromium dodaja fotografijam</translation>
 <translation id="1289216811211435351">Preklop na Chromium</translation>
 <translation id="1361748954329991663">Chromium je zastarel. Če v trgovini <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ni na voljo nobene posodobitve, vaša naprava morda ne podpira več novih različic Chromiuma.</translation>
-<translation id="1431818719585918472">Naj Chromium zaklene zavihke brez beleženja dejavnosti.</translation>
+<translation id="1431818719585918472">Naj Chromium zaklene anonimne zavihke.</translation>
 <translation id="1472013873724362412">Vaš račun ne deluje v Chromiumu. Obrnite se na skrbnika domene ali za prijavo uporabite običajen Google Račun.</translation>
 <translation id="1507010443238049608">Pomagajte izboljšati funkcije in delovanje Chromiuma</translation>
 <translation id="1617663976202781617">Podatki iz sinhronizacije za Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Ali želite izbrisati podatke v Chromiumu iz te naprave?</translation>
 <translation id="8175055321229419309">Nasvet: <ph name="BEGIN_LINK" />premaknite Chromium v vrstico z aplikacijami<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ni mogel preveriti, ali so na voljo posodobitve. Poskusite pozneje.</translation>
-<translation id="8252885722420466166">Izboljšajte izkušnjo z Googlom v Chromiumu na podlagi lokacije.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="8663480472502753423">Posodobitev Chromiuma</translation>
 <translation id="8776843108004031667">Ta račun in neshranjeni podatki bodo odstranjeni iz Chromiuma.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium je zastarel</translation>
 <translation id="921174536258924340">Chromiumu ni uspelo preveriti vseh gesel. Poskusite znova jutri ali <ph name="BEGIN_LINK" />preverite gesla v računu Google.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Ustvarjalci Chromiuma</translation>
-<translation id="994708389219151914">Vaš račun upravlja domena <ph name="HOSTED_DOMAIN" />, zato bodo podatki v Chromiumu izbrisani iz te naprave.</translation>
 </translationbundle>

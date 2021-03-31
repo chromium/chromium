@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nieko neįrašyta</translation>
+<translation id="1838104802459806957">Nukreipti aukštyn</translation>
 <translation id="1851616744363735765">PRISTABDYTA</translation>
 <translation id="1862930711583847113">Nepavyko eksportuoti „<ph name="FILE" />“</translation>
 <translation id="1899697626337024495">Nuotraukos skyra</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktyvus</translation>
 <translation id="2144806332417375165">Tinkinti vaizdo įrašų parametrai</translation>
 <translation id="229579744168541441">Eksportuoti į diską</translation>
+<translation id="2320741269052147773">Pastumti kairėn</translation>
 <translation id="2501278716633472235">Grįžti</translation>
 <translation id="2501853267655415902">Įrašas sustabdytas</translation>
 <translation id="2501953888035679275">Fotografuokite ir filmuokite naudodami fotoaparatą.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Nuotraukos ir vaizdo įrašai, sukurti naudojant fotoaparatą, bus perkelti į aplanką „Atsisiuntimai“. Juos galite pasiekti Failų programoje.
 
         Programos su saugyklos leidimais galės pasiekti jūsų nuotraukas ir vaizdo įrašus.</translation>
+<translation id="3067436040345934772">Pastumti dešinėn</translation>
 <translation id="3081586908890909590">Perjungti į filmavimo režimą</translation>
 <translation id="313467653172006084">30 KPS</translation>
 <translation id="3183731565330012717">Tinklelio tipas</translation>
@@ -89,6 +92,7 @@ Jei atsiliepimas susijęs su vaizdo arba vaizdo įrašo kokybe, pridėkite nuotr
 <translation id="8145038249676204903">Perjungti į fotografavimo režimą</translation>
 <translation id="8239780215768881278">Užfiksuoti momentinę vaizdo įrašo nuotrauką</translation>
 <translation id="8261506727792406068">Ištrinti</translation>
+<translation id="8425673304802773841">Nukreipti žemyn</translation>
 <translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Peržiūrėti metaduomenis</translation>

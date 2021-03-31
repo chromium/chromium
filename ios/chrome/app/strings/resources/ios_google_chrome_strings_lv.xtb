@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Tagad varat izmantot Chrome ikreiz, kad pieskaraties saitēm ziņojumos, dokumentos un citās lietotnēs.</translation>
 <translation id="3720541637541300822">Bloķēt inkognito cilnes, aizverot pārlūku Chrome</translation>
 <translation id="384394811301901750">Google Chrome pašlaik nevar izmantot kameru.</translation>
-<translation id="38949020760388809">Izvēlieties, vai notīrīt Chrome datus no šīs ierīces vai tos paturēt.</translation>
 <translation id="3980220367029651214">Jūs pārslēdzat sinhronizējamos kontus no konta <ph name="USER_EMAIL1" /> uz kontu <ph name="USER_EMAIL2" />. Jūsu esošie Chrome dati tiek pārvaldīti domēnā <ph name="DOMAIN" />. Pārslēdzot kontus, jūsu dati tiks dzēsti no šīs ierīces, taču tie paliks kontā <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Saskaņā ar jūsu organizācijas politiku ir atspējota pierakstīšanās pārlūkā Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nevar piekļūt jūsu fotoattēliem vai videoklipiem. Iespējojiet piekļuvi: iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4099578267706723511">Uzlabojiet pārlūku Chrome, uzņēmumam Google sūtot lietojuma statistiku un avāriju pārskatus.</translation>
-<translation id="415767770115540173">Uzlabojiet savu Google pakalpojumu izmantošanas pieredzi pārlūkā Chrome, sūtot informāciju par savu atrašanās vietu.</translation>
 <translation id="417201473131094001">Netiek atbalstīta pārlūkā Chrome Canary.</translation>
 <translation id="424864128008805179">Vai izrakstīties no pārlūka Chrome?</translation>
 <translation id="4249068189593983585">Chrome padoms. Lai iegūtu vairāk ciļņu iespēju, rīkjoslā, kas atrodas ekrāna apakšdaļā vai augšdaļā, pieskarieties pogai Rādīt cilnes un turiet to.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Jūsu parole tika atklāta datu noplūdes dēļ. Chrome iesaka pēc iespējas ātrāk nomainīt paroli.</translation>
 <translation id="7698568245838009292">Chrome pieprasa piekļuvi kamerai</translation>
 <translation id="7855730255114109580">Pārlūks Google Chrome ir atjaunināts.</translation>
-<translation id="8109233255338845204">Jūsu konts tiek pārvaldīts domēnā <ph name="HOSTED_DOMAIN" />, tāpēc jūsu Chrome dati no šīs ierīces tiks dzēsti.</translation>
 <translation id="8160472928944011082">Nevar atjaunināt pārlūku Chrome.</translation>
 <translation id="8370517070665726704">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
 <translation id="840168496893712993">Daži papildinājumi var izraisīt pārlūka Chrome avarēšanu. Lūdzu, atinstalējiet tos.</translation>

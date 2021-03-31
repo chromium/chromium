@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">कुछ भी रिकॉर्ड नहीं हुआ</translation>
+<translation id="1838104802459806957">ऊपर झुकाएं</translation>
 <translation id="1851616744363735765">रिकॉर्डिंग रोकी गई</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> को एक्सपोर्ट नहीं किया जा सका</translation>
 <translation id="1899697626337024495">फ़ोटो रिज़ॉल्यूशन</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> चालू है</translation>
 <translation id="2144806332417375165">कस्टम वीडियो पैरामीटर</translation>
 <translation id="229579744168541441">डिस्क में ले जाएं</translation>
+<translation id="2320741269052147773">बाईं ओर पैन करें</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
 <translation id="2501853267655415902">रिकॉर्डिंग रुक गई है</translation>
 <translation id="2501953888035679275">अपने कैमरे से फ़ोटो खींचें और वीडियो रिकॉर्ड करें.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">कैमरे से ली गई फ़ोटो और वीडियो को 'डाउनलोड' फ़ोल्डर में ले जाया जाएगा. आप उन्हें फ़ाइल में जाकर ऐक्सेस कर सकते हैं.
 
         मेमोरी की अनुमतियों वाले ऐप्लिकेशन आपकी फ़ोटो और वीडियो ऐक्सेस कर पाएंगे.</translation>
+<translation id="3067436040345934772">दाईं ओर पैन करें</translation>
 <translation id="3081586908890909590">वीडियो रिकॉर्डिंग मोड पर जाएं</translation>
 <translation id="313467653172006084">30 FPS (फ़्रेम प्रति सेकंड)</translation>
 <translation id="3183731565330012717">ग्रिड के प्रकार</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">फ़ोटो खींचने वाले मोड पर जाएं</translation>
 <translation id="8239780215768881278">वीडियो के स्नैपशॉट लें</translation>
 <translation id="8261506727792406068">मिटाएं</translation>
+<translation id="8425673304802773841">नीचे झुकाएं</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8687491812650032292">एचडी <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">मेटाडेटा की झलक देखें</translation>

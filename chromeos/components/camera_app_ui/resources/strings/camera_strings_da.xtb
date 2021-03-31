@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">Der er ingen optagelser</translation>
+<translation id="1838104802459806957">Drej opad</translation>
 <translation id="1851616744363735765">SAT PÅ PAUSE</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> kan ikke eksporteres</translation>
 <translation id="1899697626337024495">Billedopløsning</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> er aktiv</translation>
 <translation id="2144806332417375165">Tilpassede videoparametre</translation>
 <translation id="229579744168541441">Eksportér til disk</translation>
+<translation id="2320741269052147773">Panorer til venstre</translation>
 <translation id="2501278716633472235">Gå tilbage</translation>
 <translation id="2501853267655415902">Optagelsen er stoppet</translation>
 <translation id="2501953888035679275">Tag billeder, og optag videoer med dit kamera.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Billeder og videoer, der er taget med kameraet, flyttes til mappen Downloads. Du kan få adgang til dem i Filer.
 
         Apps med lagertilladelser får adgang til dine billeder og videoer.</translation>
+<translation id="3067436040345934772">Panorer mod højre</translation>
 <translation id="3081586908890909590">Skift til videooptagelse</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">Gittertype</translation>
@@ -90,6 +93,7 @@ Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et b
 <translation id="8145038249676204903">Skift for at tage et billede</translation>
 <translation id="8239780215768881278">Tag et videoøjebliksbillede</translation>
 <translation id="8261506727792406068">Slet</translation>
+<translation id="8425673304802773841">Drej nedad</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Se forhåndsvisning af metadata</translation>

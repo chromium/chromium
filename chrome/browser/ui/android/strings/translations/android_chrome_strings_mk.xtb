@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Верзија на апликација</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1450753235335490080">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Пробајте со „What’s the weather today?“ (Какво е времето денес?)</translation>
 <translation id="1477626028522505441">Преземањето на <ph name="FILE_NAME" /> не успеа поради проблеми со серверот.</translation>
 <translation id="1492417797159476138">Веќе го зачувавте ова корисничко име за сајтов</translation>
 <translation id="1506061864768559482">Пребарувач</translation>
@@ -569,6 +570,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="49268022542405662">Вашите лозинки ќе се извезат и преземат како текстуална датотека. Тие ќе бидат видливи за секого и за секоја апликација со пристап до дестинациската папка.</translation>
 <translation id="4932247056774066048">Бидејќи се одјавувате од сметка управувана од <ph name="DOMAIN_NAME" />, вашите податоци на Chrome ќе се избришат од уредов. Тие ќе останат во вашата сметка на Google.</translation>
 <translation id="4936039914467572121">Побрзо пристапувајте до сајтов</translation>
+<translation id="4941179133499732445">Допрете го микрофонот за да пребарувате со гласот</translation>
 <translation id="4943703118917034429">Виртуелна реалност</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
 <translation id="4961107849584082341">Преведете ја страницава на кој било јазик</translation>
@@ -583,6 +585,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5011311129201317034"><ph name="SITE" /> сака да се поврзе</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Дозволи</translation>
+<translation id="5061533557687621530">За да го проверите времето, допрете го микрофонот и кажете „What’s the weather today?“ (Какво е времето денес?)</translation>
 <translation id="5087580092889165836">Додај картичка</translation>
 <translation id="5091249083535528968">Проширени податоци за користењето</translation>
 <translation id="509429900233858213">Настана грешка.</translation>
@@ -597,6 +600,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 неуспешно преземање.}one{# неуспешно преземање.}other{# неуспешни преземања.}}</translation>
 <translation id="5170568018924773124">Прикажи во папка</translation>
 <translation id="5184329579814168207">Отвори во Chrome</translation>
+<translation id="5188992787241350004">Пребарувајте со гласот</translation>
 <translation id="5191251636205085390">Дознајте за новите технологии што имаат за цел да ги заменат колачињата на трети лица и контролирајте ги</translation>
 <translation id="5193988420012215838">Копирано во привремената меморија</translation>
 <translation id="5199929503336119739">Работен профил</translation>

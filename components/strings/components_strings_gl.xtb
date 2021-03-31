@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Ver detalles</translation>
 <translation id="1030706264415084469">O URL <ph name="URL" /> quere almacenar un gran volume de datos de forma permanente no teu dispositivo</translation>
 <translation id="1032854598605920125">Xirar  á dereita</translation>
+<translation id="1036224116832931580">Xogo do dinosauro; para saltar e xogar, toca a pantalla</translation>
 <translation id="1036348656032585052">Desactivar</translation>
 <translation id="1038106730571050514">Mostrar suxestións</translation>
 <translation id="1038842779957582377">nome descoñecido</translation>
@@ -278,6 +279,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="192020519938775529">{COUNT,plural, =0{Ningún}=1{1 sitio}other{# sitios}}</translation>
 <translation id="1945968466830820669">Poderías perder o acceso á conta da túa organización ou alguén podería roubarche a identidade. Chromium recoméndache que cambies de contrasinal agora.</translation>
 <translation id="1947454675006758438">Grampa na parte superior dereita</translation>
+<translation id="1958218078413065209">A túa máxima puntuación é <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Enviar a Google os <ph name="BEGIN_WHITEPAPER_LINK" />URL dalgunhas páxinas que visitas, información limitada do sistema e parte do contido das páxinas<ph name="END_WHITEPAPER_LINK" /> para axudarlle a mellorar a seguranza da Web para todo o mundo. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Política de privacidade<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Marcadores de <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Erro de serialización</translation>
@@ -544,6 +546,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Se queres executar unha comprobación de seguranza na configuración de Chrome, preme Tabulador e, a continuación, Introducir</translation>
 <translation id="3061707000357573562">Servizo de parche</translation>
 <translation id="3064966200440839136">Sairás do modo de incógnito para pagar a través dunha aplicación externa. Queres continuar?</translation>
+<translation id="306573536155379004">Comezou a partida.</translation>
 <translation id="3080254622891793721">Libro gráfico</translation>
 <translation id="3086579638707268289">Estase supervisando a túa actividade na Web</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
@@ -1540,6 +1543,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6934672428414710184">Este nome procede da túa Conta de Google</translation>
 <translation id="6944692733090228304">Introduciches o teu contrasinal nun sitio que non está xestionado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para protexer a túa conta, non reutilices o contrasinal noutros sitios nin aplicacións.</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
+<translation id="6948051842255602737">Fin da partida. A túa puntuación é <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Para consultar os requisitos e métodos de recollida, selecciona un enderezo</translation>
 <translation id="6949872517221025916">Restablecer contrasinal</translation>
 <translation id="6950684638814147129">Produciuse un erro ao analizar o valor JSON: <ph name="ERROR" /></translation>
@@ -1822,6 +1826,7 @@ Detalles adicionais:
 <translation id="7956713633345437162">Marcadores para móbiles</translation>
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7966803981046576691">Tipo de conta para o traballo</translation>
+<translation id="79682505114836835">O valor "<ph name="VALUE" />" é unha cor hexadecimal non válida.</translation>
 <translation id="7976214039405368314">Hai demasiadas solicitudes</translation>
 <translation id="7977538094055660992">Dispositivo de saída</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1949,6 +1954,7 @@ Detalles adicionais:
 <translation id="8446884382197647889">Máis información</translation>
 <translation id="8457125768502047971">Indefinido</translation>
 <translation id="8461694314515752532">Encriptar os datos sincronizados coa túa propia frase de acceso de sincronización</translation>
+<translation id="8463101686637053101">Xogo do dinosauro; para saltar e xogar, preme Espazo</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 tarxeta de crédito}other{# tarxetas de crédito}}</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474910779563686872">Mostrar detalles do programador</translation>
@@ -2084,6 +2090,7 @@ Detalles adicionais:
 <translation id="8996941253935762404">O sitio que se indica a continuación contén programas prexudiciais</translation>
 <translation id="8997023839087525404">O servidor presentou un certificado que non se revelou publicamente utilizando a política de Certificate Transparency. Este requisito é necesario para garantir que certos certificados son fiables e ofrecen protección contra os atacantes.</translation>
 <translation id="9001074447101275817">O proxy <ph name="DOMAIN" /> require un nome de usuario e un contrasinal.</translation>
+<translation id="9001963517402879850">Salta!</translation>
 <translation id="9004367719664099443">Sesión de RV en curso</translation>
 <translation id="9005998258318286617">Produciuse un erro ao cargar o documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>

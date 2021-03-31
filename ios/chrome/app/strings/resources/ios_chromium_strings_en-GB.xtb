@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="102360288709523007">Help make Chromium better by sending usage statistics and crash reports to Google.</translation>
-<translation id="1043245583918962542">Choose whether to clear your Chromium data from this device or keep it.</translation>
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1257458525759135959">To save images, tap on settings to let Chromium add to your photos</translation>
 <translation id="1289216811211435351">Switch to Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Clear your Chromium data from this device?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Move Chromium to your dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium couldn't check for updates. Try again later.</translation>
-<translation id="8252885722420466166">Get a better Google experience in Chromium based on your location.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8663480472502753423">Keep Chromium up to date</translation>
 <translation id="8776843108004031667">This account and any unsaved data will be removed from Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium is out of date</translation>
 <translation id="921174536258924340">Chromium couldn't check all passwords. Try again tomorrow or <ph name="BEGIN_LINK" />check passwords in your Google Account.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device.</translation>
 </translationbundle>

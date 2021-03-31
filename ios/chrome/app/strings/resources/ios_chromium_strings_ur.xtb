@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ur">
 <translation id="102360288709523007">‏Google کو استعمال کے اعداد و شمار اور کریش رپورٹس بھیج کر Chromium کو بہتر بنانے میں مدد کریں۔</translation>
-<translation id="1043245583918962542">‏منتخب کریں کہ آیا اپنے Chromium ڈیٹا کو اس آلے سے صاف کرنا ہے یا اسے رکھنا ہے۔</translation>
 <translation id="1185134272377778587">‏Chromium کے بارے میں</translation>
 <translation id="1257458525759135959">‏تصاویر محفوظ کرنے کے لیے، Chromium کو آپ کی تصاویر میں شامل کرنے دینے کے لیے ترتیبات پر تھپتھپائیں</translation>
 <translation id="1289216811211435351">‏Chromium پر جائیں</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">‏اس آلہ سے آپ کا Chromium ڈیٹا صاف کریں؟</translation>
 <translation id="8175055321229419309">‏تجویز: <ph name="BEGIN_LINK" />Chromium کو اپنے ڈاک میں منتقل کریں<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">‏Chromium اپ ڈیٹس چیک نہیں کر سکا۔ بعد میں دوبارہ کوشش کریں۔</translation>
-<translation id="8252885722420466166">‏اپنے مقام کی بنیاد پر Chromium میں ایک بہتر Google تجربہ حاصل کریں۔</translation>
 <translation id="8586442755830160949">‏کاپی رائٹ ‎<ph name="YEAR" /> The Chromium Authors۔ جملہ حقوق محفوظ۔</translation>
 <translation id="8663480472502753423">‏Chromium کو اپ ٹو ڈیٹ رکھیں</translation>
 <translation id="8776843108004031667">‏اس اکاؤنٹ اور کسی بھی غیر محفوظ ڈیٹا کو Chromium سے ہٹا دیا جائے گا۔</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">‏Chromium پرانا ہے</translation>
 <translation id="921174536258924340">‏Chromium سبھی پاس ورڈز چیک نہیں کر سکا۔ آئندہ کل دوبارہ کوشش کریں یا <ph name="BEGIN_LINK" />اپنے Google اکاؤنٹ میں پاس ورڈز چیک کریں۔<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">‏Chromium مصنّفین</translation>
-<translation id="994708389219151914">‏آپ کا اکاؤنٹ <ph name="HOSTED_DOMAIN" /> کے زیر انتظام ہے اس لئے آپ کا Chromium ڈیٹا اس آلہ سے صاف کر دیا جائے گا۔</translation>
 </translationbundle>

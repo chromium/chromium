@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> raadt aan deze <ph name="DEVICE_TYPE" /> te updaten.</translation>
 <translation id="1118738876271697201">Het systeem kan het model of serienummer van het apparaat niet bepalen.</translation>
 <translation id="1119447706177454957">Interne fout</translation>
+<translation id="111959947408687873">Gebruik Ctrl + <ph name="SEARCH_KEY_NAME" /> + M om het vergrootglas voor het volledige scherm aan en uit te zetten. Gebruik Ctrl + Alt + pijltjestoetsen om over het ingezoomde scherm te bewegen.</translation>
 <translation id="1122068467107743258">Werk</translation>
 <translation id="1122198203221319518">&amp;Extra</translation>
 <translation id="1122242684574577509">Verificatie mislukt. Klik om naar de loginpagina te gaan van het wifi-netwerk dat je gebruikt (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Het Google-programma 'Geavanceerde beveiliging'</translation>
 <translation id="1155816283571436363">Verbinding maken met je telefoon</translation>
 <translation id="1161575384898972166">Log in bij <ph name="TOKEN_NAME" /> om het klantcertificaat te exporteren.</translation>
+<translation id="116173250649946226">Je beheerder heeft een standaardthema ingesteld dat niet kan worden gewijzigd.</translation>
 <translation id="1163931534039071049">&amp;Framebron tonen</translation>
 <translation id="1164891049599601209">Ingevoerd op misleidende site</translation>
 <translation id="1164899421101904659">Pukcode opgeven</translation>
@@ -2554,6 +2556,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3809272675881623365">Konijn</translation>
 <translation id="3809280248639369696">Marsmannetje</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan bestanden bekijken in de volgende mappen</translation>
+<translation id="3810914450553844415">Je beheerder staat geen extra Google-accounts toe.</translation>
 <translation id="3810973564298564668">Beheren</translation>
 <translation id="381202950560906753">Nog een toevoegen</translation>
 <translation id="3812525830114410218">Verkeerd certificaat</translation>
@@ -2675,6 +2678,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3925573269917483990">Camera:</translation>
 <translation id="3926002189479431949">Smart Lock-telefoon gewijzigd</translation>
 <translation id="3927932062596804919">Weigeren</translation>
+<translation id="392803502090869922">E-simkaart instellen</translation>
 <translation id="3928570707778085600">Wijzigingen in <ph name="FILE_OR_FOLDER_NAME" /> opslaan?</translation>
 <translation id="3928659086758780856">Inkt is bijna op</translation>
 <translation id="3929426037718431833">Deze extensies kunnen informatie op deze site bekijken en wijzigen.</translation>
@@ -4245,6 +4249,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5764797882307050727">Maak ruimte vrij op je apparaat.</translation>
 <translation id="5765425701854290211">Sommige bestanden zijn beschadigd en de update is mislukt. Je gesynchroniseerde bestanden zijn veilig.</translation>
 <translation id="5765491088802881382">Er zijn geen netwerken beschikbaar</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> is misschien gevaarlijk. Wil je het bestand naar Google sturen om het te laten scannen? Druk op Shift+F6 om naar het gedeelte met de downloadbalk te gaan.</translation>
 <translation id="5769519078756170258">Host of domein om uit te sluiten</translation>
 <translation id="5770125698810550803">Navigatieknoppen tonen</translation>
 <translation id="5771816112378578655">Instellen wordt uitgevoerd...</translation>
@@ -4401,6 +4406,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5942779427914696408">Zichtbaarheid van apparaat</translation>
 <translation id="5943127421590245687">De verificatie is afgerond. Geef het oude wachtwoord van je <ph name="DEVICE_TYPE" /> op om te ontgrendelen en je lokale gegevens te herstellen.</translation>
 <translation id="5944869793365969636">QR-code scannen</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> is misschien gevaarlijk. Wil je het bestand naar Google Safe Browsing sturen om het te laten scannen?</translation>
 <translation id="5946591249682680882">Rapport-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Sluit een toetsenbord of muis aan of ga door met instellen via het touchscreen. Als je bluetooth-apparaten gebruikt, zorg je dat de apparaten klaar zijn voor koppelen.</translation>
 <translation id="5949544233750246342">Kan bestand niet parseren</translation>
@@ -4448,6 +4454,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6002452033851752583">Wachtwoord verwijderd uit je Google-account</translation>
 <translation id="6002458620803359783">Voorkeursstemmen</translation>
 <translation id="6003143259071779217">Mobiel netwerk voor e-simkaart verwijderen</translation>
+<translation id="6003582434972667631">Het thema is ingesteld door je organisatie</translation>
 <translation id="6006484371116297560">Klassiek</translation>
 <translation id="6007240208646052708">Gesproken zoekopdracht is niet beschikbaar in jouw taal.</translation>
 <translation id="6011074160056912900">Ethernet-netwerk</translation>
@@ -4827,6 +4834,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6429384232893414837">Updatefout</translation>
 <translation id="6430814529589430811">Base64 Encoded ASCII, één certificaat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> stelt automatische updates in voor alle gebruikers van deze computer.</translation>
+<translation id="6434104957329207050">Snelheid van puntscannen</translation>
 <translation id="6434309073475700221">Verwijderen</translation>
 <translation id="6434325376267409267">Je apparaat moet worden geüpdatet voordat je <ph name="APP_NAME" /> kunt gebruiken.</translation>
 <translation id="6436164536244065364">Bekijken in Web Store</translation>
@@ -4869,6 +4877,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6474498546677193336">Kan het delen niet opheffen omdat een app deze map gebruikt. Het delen van de map wordt opgeheven als Linux weer wordt uitgezet.</translation>
 <translation id="6474884162850599008">Google Drive-account ontkoppelen</translation>
 <translation id="6475294023568239942">Maak schijfruimte vrij of pas de grootte van de Linux-schijf aan via Instellingen</translation>
+<translation id="6476138569087741884">Zoomniveau volledig scherm</translation>
 <translation id="6477822444490674459">Synchronisatie van meldingen wordt niet ondersteund voor telefoons in een werkprofiel. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Gevaarlijk bestand behouden?</translation>
 <translation id="6480327114083866287">Beheerd door <ph name="MANAGER" /></translation>
@@ -5140,6 +5149,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Er is een fout opgetreden.</translation>
 <translation id="6798420440063423019">De beveiligingssleutel is vergrendeld omdat je te vaak een onjuiste pincode hebt opgegeven. Reset de beveiligingssleutel.</translation>
+<translation id="679845623837196966">Leeslijst tonen</translation>
 <translation id="6798578729981748444">Sluit alle Firefox-vensters om het importeren te voltooien.</translation>
 <translation id="6798780071646309401">Caps Lock aan</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
@@ -5324,6 +5334,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6985607387932385770">Printers</translation>
 <translation id="6988094684494323731">De Linux-container wordt gestart</translation>
 <translation id="6988403677482707277">Tabblad verplaatst naar begin van tabbladstrook</translation>
+<translation id="6990209147952697693">Klassiek Chrome-uiterlijk</translation>
 <translation id="6991665348624301627">Een bestemming selecteren</translation>
 <translation id="6992554835374084304">Zet verbeterde spellingcontrole aan</translation>
 <translation id="6993000214273684335">Tabblad verwijderd uit naamloze groep - <ph name="GROUP_CONTENTS" /></translation>
@@ -6310,6 +6321,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> configureren...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> instellen</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Dit bestand is versleuteld. Vraag de eigenaar om het te ontsleutelen.}other{Sommige van deze bestanden zijn versleuteld. Vraag de eigenaar om deze te ontsleutelen.}}</translation>
+<translation id="8087576439476816834">Downloaden, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8090234456044969073">Lijst met je meest bezochte websites tonen</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> reageert niet</translation>
@@ -6551,6 +6563,8 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8368859634510605990">Alle bookmarks &amp;openen</translation>
 <translation id="8370294614544004647">Slaapstand als de laptop wordt gesloten</translation>
 <translation id="8371695176452482769">Begin nu te spreken</translation>
+<translation id="8371749822919332187">Gebruik Ctrl + Alt + Helderheid omhoog om in te zoomen.
+Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Geluid van site uitzetten}other{Geluid van sites uitzetten}}</translation>
 <translation id="8372369524088641025">Slechte WEP-sleutel</translation>
 <translation id="8373652277231415614">Gedeelde directory's voor Crostini</translation>
@@ -6558,7 +6572,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8379878387931047019">Dit apparaat biedt geen ondersteuning voor het type beveiligingssleutel dat is vereist voor deze website</translation>
 <translation id="8379991678458444070">Je kunt hier snel terugkeren als je een bookmark voor dit tabblad maakt</translation>
-<translation id="8380314198565901932">Fout bij downloaden van de virtuele machine. Update je <ph name="DEVICE_TYPE" /> en probeer het opnieuw.</translation>
 <translation id="8382913212082956454">&amp;E-mailadres kopiëren</translation>
 <translation id="8386091599636877289">Beleid niet gevonden.</translation>
 <translation id="8386819192691131213">Geef de Assistent toestemming om informatie op het scherm te gebruiken voor snelle antwoorden, zoals een vertaling, definitie of omrekening</translation>
@@ -7222,6 +7235,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Welkom bij je nieuwe profiel</translation>
 <translation id="9112748030372401671">Je achtergrond wijzigen</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> is misschien gevaarlijk. Wil je het bestand naar Google sturen om het te laten scannen?</translation>
 <translation id="9112987648460918699">Zoek...</translation>
 <translation id="9114663181201435112">Gemakkelijk inloggen</translation>
 <translation id="9115675100829699941">&amp;Bladwijzers</translation>
@@ -7268,6 +7282,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen.</translation>
       <ph name="LIST_ITEM" />Voer een Chrome-verbindingsdiagnose uit
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Scherm-in-scherm</translation>
+<translation id="9167063903968449027">Leeslijst tonen</translation>
 <translation id="9168436347345867845">Later doen</translation>
 <translation id="9169496697824289689">Sneltoetsen bekijken</translation>
 <translation id="916964310188958970">Waarom deze suggestie?</translation>

@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Rien n'a été enregistré</translation>
+<translation id="1838104802459806957">Incliner vers le haut</translation>
 <translation id="1851616744363735765">INTERROMPU</translation>
 <translation id="1862930711583847113">Impossible d'exporter <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Résolution des photos</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">Élément de menu <ph name="CAMERA" /> actif</translation>
 <translation id="2144806332417375165">Paramètres vidéo personnalisés</translation>
 <translation id="229579744168541441">Exporter sur le disque</translation>
+<translation id="2320741269052147773">Panoramique vers la gauche</translation>
 <translation id="2501278716633472235">Retour</translation>
 <translation id="2501853267655415902">Enregistrement interrompu</translation>
 <translation id="2501953888035679275">Prenez des photos et enregistrez des vidéos avec votre appareil photo.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Les photos que vous prenez et les vidéos que vous enregistrez avec l'appareil photo seront déplacées dans le dossier des téléchargements. Vous pourrez y accéder dans Fichiers.
 
         Les applications disposant d'autorisations d'accès à l'espace de stockage pourront accéder à vos photos et à vos vidéos.</translation>
+<translation id="3067436040345934772">Panoramique vers la droite</translation>
 <translation id="3081586908890909590">Passer au mode vidéo</translation>
 <translation id="313467653172006084">30 i/s</translation>
 <translation id="3183731565330012717">Type de grille</translation>
@@ -89,6 +92,7 @@ Si vos commentaires portaient sur la qualité de l'image ou de la vidéo, veuill
 <translation id="8145038249676204903">Passer au mode photo</translation>
 <translation id="8239780215768881278">Prendre un instantané vidéo</translation>
 <translation id="8261506727792406068">Supprimer</translation>
+<translation id="8425673304802773841">Incliner vers le bas</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Afficher un aperçu des métadonnées</translation>

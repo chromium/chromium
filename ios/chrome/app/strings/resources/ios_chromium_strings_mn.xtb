@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mn">
 <translation id="102360288709523007">Хэрэглээний статистик мэдээлэл, алдааны тайланг Google-д автоматаар илгээж, Google Chrome-г сайжруулахад тусална уу.</translation>
-<translation id="1043245583918962542">Chromium-н өгөгдлөө энэ төхөөрөмжөөс арилгах эсвэл хадгалах эсэхээ сонгоно уу.</translation>
 <translation id="1185134272377778587">Chromium-ийн тухай</translation>
 <translation id="1257458525759135959">Зургуудыг хадгалахын тулд Тохиргоон дээр товшиж, таны зургуудад нэмэхийг Chromium-д зөвшөөрнө үү</translation>
 <translation id="1289216811211435351">Chromium руу сэлгэх</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Энэ төхөөрөмжөөс Chromium-н өгөгдлөө устгах уу?</translation>
 <translation id="8175055321229419309">Зөвлөгөө: <ph name="BEGIN_LINK" />Chromium-г апп-н мөр рүү зөөнө үү<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium-н шинэчлэлтийг шалгаж чадсангүй. Дараа дахин оролдоно уу.</translation>
-<translation id="8252885722420466166">Өөрийн байршилд тулгуурлан Chromium-г илүү сайн ашиглаж сураарай.</translation>
 <translation id="8586442755830160949">Chromium-ийн зохиогчийн эрх <ph name="YEAR" />. Бүх эрхийг хуулиар хамгаалсан.</translation>
 <translation id="8663480472502753423">Chromium-г хамгийн шинэ байлгаарай</translation>
 <translation id="8776843108004031667">Энэ бүртгэл болон хадгалаагүй аливаа өгөгдлийг Chromium-с хасна.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium хуучирсан байна</translation>
 <translation id="921174536258924340">Chromium бүх нууц үгийг шалгаж чадсангүй. Маргааш дахин оролдох буюу эсхүл <ph name="BEGIN_LINK" />Google Бүртгэлдээ байгаа нууц үгнүүдийг шалгана уу.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium-ыг бүтээгчид</translation>
-<translation id="994708389219151914">Таны бүртгэлийг <ph name="HOSTED_DOMAIN" /> удирддаг тул таны Chromium-н өгөгдлийг энэ төхөөрөмжөөс арилгах болно.</translation>
 </translationbundle>

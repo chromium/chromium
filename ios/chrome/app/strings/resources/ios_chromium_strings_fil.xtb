@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fil">
 <translation id="102360288709523007">Pahusayin ang Chromium, magpadala sa Google ng istatistika ng paggamit at ulat ng crash.</translation>
-<translation id="1043245583918962542">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito.</translation>
 <translation id="1185134272377778587">Tungkol sa Chromium</translation>
 <translation id="1257458525759135959">Para makapag-save ng mga larawan, mag-tap sa Mga Setting para payagan ang Chromium na magdagdag sa iyong mga larawan</translation>
 <translation id="1289216811211435351">Lumipat sa Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">I-clear ang iyong data sa Chromium sa device na ito?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Ilipat ang Chromium sa iyong dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Hindi matingnan ng Chromium kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
-<translation id="8252885722420466166">Magkaroon ng mas mahusay na karanasan sa Google sa Chromium batay sa iyong lokasyon.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="8663480472502753423">Panatilihing up to date ang Chromium</translation>
 <translation id="8776843108004031667">Aalisin sa Chromium ang account na ito at anumang hindi naka-save na data.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
 <translation id="921174536258924340">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas o <ph name="BEGIN_LINK" />suriin ang mga password sa iyong Google Account.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Ang Mga May-akda ng Chromium</translation>
-<translation id="994708389219151914">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chromium sa device na ito.</translation>
 </translationbundle>

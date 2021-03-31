@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="102360288709523007">Hjälp till att förbättra Chrome genom att skicka användningsstatistik och felrapporter till Google.</translation>
-<translation id="1043245583918962542">Välj om din data i Chromium ska raderas från den här enheten eller vara kvar.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Om du vill spara bilder trycker du på Inställningar och låter Chromium lägga till dina foton</translation>
 <translation id="1289216811211435351">Byt till Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Vill du rensa din data i Chromium från den här enheten?</translation>
 <translation id="8175055321229419309">Tips! <ph name="BEGIN_LINK" />Flytta Chromium till Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kunde inte söka efter uppdateringar. Försök igen senare.</translation>
-<translation id="8252885722420466166">Ange din plats och få en bättre upplevelse av Google när du använder Chromium.</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8663480472502753423">Håll Chromium uppdaterad</translation>
 <translation id="8776843108004031667">Det här kontot och data som inte har sparats tas bort från Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>
 <translation id="921174536258924340">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chromium från enheten.</translation>
 </translationbundle>

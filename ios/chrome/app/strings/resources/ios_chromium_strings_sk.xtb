@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="102360288709523007">Odosielanie štatistík používania a správ o zlyhaní pomôže Googlu zlepšiť Chromium.</translation>
-<translation id="1043245583918962542">Vyberte, či chcete údaje prehliadača Chromium v tomto zariadení vymazať alebo ponechať.</translation>
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1257458525759135959">Ak chcete ukladať obrázky, klepnutím na Nastavenia povoľte prehliadaču Chromium pridávať do vašich fotiek</translation>
 <translation id="1289216811211435351">Prejdite na Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Chcete vymazať údaje prehliadača Chromium z tohto zariadenia?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Presuňte Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>
-<translation id="8252885722420466166">Získajte lepšie prostredie Google v prehliadači Chromium na základe svojej polohy.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>
 <translation id="8776843108004031667">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z prehliadača Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Prehliadač Chromium je zastaraný</translation>
 <translation id="921174536258924340">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Autori prehliadača Chromium</translation>
-<translation id="994708389219151914">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia vymazané.</translation>
 </translationbundle>

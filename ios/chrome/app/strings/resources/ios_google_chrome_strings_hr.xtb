@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Sad možete koristiti Chrome svaki put kad dodirnete veze u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="3720541637541300822">Zaključajte anonimne kartice pri zatvaranju Chromea</translation>
 <translation id="384394811301901750">Google Chrome trenutačno ne može upotrebljavati vaš fotoaparat</translation>
-<translation id="38949020760388809">Odaberite želite li podatke iz Chromea izbrisati s ovog uređaja ili ih zadržati.</translation>
 <translation id="3980220367029651214">Prebacujete sinkronizaciju s računa <ph name="USER_EMAIL1" /> na račun <ph name="USER_EMAIL2" />. Vašim postojećim podacima na Chromeu upravlja <ph name="DOMAIN" />. Vaši će se podaci izbrisati s ovog uređaja, no ostat će na računu <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Vaša organizacija zahtijeva da ostanete odjavljeni s Chromea.</translation>
 <translation id="3988789688219830639">Chrome nema pristup fotografijama ni videozapisima. Omogućite pristup u Postavkama iOS-a &gt; Privatnost &gt; Fotografije.</translation>
 <translation id="4099578267706723511">Poboljšajte Chrome šaljući Googleu statistike upotrebe i izvješća o rušenju.</translation>
-<translation id="415767770115540173">Doživite Google na bolji način u Chromeu na temelju svoje lokacije.</translation>
 <translation id="417201473131094001">Nije podržano u Chrome Canaryju</translation>
 <translation id="424864128008805179">Želite li se odjaviti s Chromea?</translation>
 <translation id="4249068189593983585">Savjet za Chrome. Za više opcija za kartice dodirnite i držite gumb Prikaži kartice na alatnoj traci pri dnu ili vrhu zaslona.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Vaša je zaporka ugrožena zbog povrede podataka. Chrome preporučuje da je odmah promijenite.</translation>
 <translation id="7698568245838009292">Chrome želi pristupiti kameri</translation>
 <translation id="7855730255114109580">Google Chrome ažuriran je</translation>
-<translation id="8109233255338845204">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, pa će se vaši podaci iz Chromea izbrisati s ovog uređaja.</translation>
 <translation id="8160472928944011082">Ažuriranje Chromea nije moguće</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava pridržana.</translation>
 <translation id="840168496893712993">Neki programski dodaci uzrokuju rušenje preglednika Chrome. Pokušajte ih deinstalirati.</translation>

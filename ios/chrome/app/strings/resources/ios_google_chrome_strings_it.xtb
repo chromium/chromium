@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Ora puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="3720541637541300822">Blocca le schede di navigazione in incognito quando chiudi Chrome</translation>
 <translation id="384394811301901750">Google Chrome non può utilizzare la videocamera al momento</translation>
-<translation id="38949020760388809">Scegli se cancellare i tuoi dati di Chrome da questo dispositivo o se conservarli.</translation>
 <translation id="3980220367029651214">Stai per cambiare account di sincronizzazione, passando dall'account <ph name="USER_EMAIL1" /> all'account <ph name="USER_EMAIL2" />. I tuoi attuali dati di Chrome vengono gestiti da <ph name="DOMAIN" />. I dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nell'account <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">La tua organizzazione ti richiede di non effettuare l'accesso a Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ha accesso alle tue foto o ai tuoi video. Attiva l'accesso in Impostazioni iOS &gt; Privacy &gt; Foto.</translation>
 <translation id="4099578267706723511">Aiutaci a migliorare Chrome inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
-<translation id="415767770115540173">Migliora la tua esperienza di Chrome tramite l'accesso alla tua posizione.</translation>
 <translation id="417201473131094001">Non supportata su Chrome Canary</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
 <translation id="4249068189593983585">Suggerimento per Chrome. Per vedere più opzioni sulla scheda, tocca e tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">La tua password è stata compromessa a causa di una violazione dei dati. Chrome consiglia di cambiare subito la password.</translation>
 <translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
 <translation id="7855730255114109580">Google Chrome è aggiornato</translation>
-<translation id="8109233255338845204">Il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, pertanto i tuoi dati di Chrome verranno cancellati da questo dispositivo.</translation>
 <translation id="8160472928944011082">Impossibile aggiornare Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="840168496893712993">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Prova a disinstallarli.</translation>

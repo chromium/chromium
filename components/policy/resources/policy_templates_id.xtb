@@ -863,6 +863,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 
       Jika <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> tidak disetel, tidak akan ada ikon untuk penyedia penelusuran.</translation>
 <translation id="2145735238144543545">Sertifikat Klien yang diperlukan</translation>
+<translation id="2146103669166779785">Warna hex yang akan digunakan untuk membuat dan menerapkan tema ke browser.</translation>
 <translation id="214901426630414675">Batasi mode dupleks pencetakan</translation>
 <translation id="2149330464730004005">Aktifkan pencetakan warna</translation>
 <translation id="2149592087996467903">Cegah WebRTC menggunakan versi TLS/DTLS yang usang</translation>
@@ -1476,6 +1477,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2905984450136807296">Masa berlaku cache data autentikasi</translation>
 <translation id="2906874737073861391">Daftar ekstensi AppPack</translation>
 <translation id="2908277604670530363">Jumlah maksimal sambungan serentak ke server proxy</translation>
+<translation id="2912366658685903301">Mengonfigurasi warna tema browser</translation>
 <translation id="291853569864365550">Jangan tampilkan saran konten di halaman Tab Baru</translation>
 <translation id="2920795918401557243">Setelan ini memungkinkan pengumpulan jejak performa di seluruh sistem menggunakan layanan pelacakan sistem.
 
@@ -3841,6 +3843,11 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika tidak ditetapkan, pengguna akan diizinkan mengubah daftar aplikasi yang dipasangi pin di peluncur.</translation>
 <translation id="6190022522129724693">Setelan pop-up default</translation>
 <translation id="6190367314942602985">Laporkan informasi Identifikasi Pengguna</translation>
+<translation id="6191963383731098056">Kebijakan ini memungkinkan admin mengonfigurasi warna tema <ph name="PRODUCT_NAME" />. String input harus berupa string warna hex valid yang sesuai dengan format "#RRGGBB".
+
+      Jika kebijakan disetel ke warna hex yang valid, tema yang didasarkan pada warna tersebut akan otomatis dibuat dan diterapkan ke browser. Pengguna tidak akan dapat mengubah tema yang disetel oleh kebijakan ini.
+
+      Jika kebijakan tidak disetel, pengguna akan dapat mengubah tema browser sesuai keinginan.</translation>
 <translation id="6195802366906945965">Menentukan apakah pemverifikasi sertifikat bawaan akan digunakan untuk memverifikasi sertifikat server</translation>
 <translation id="6208896993204286313">Melaporkan Informasi Kebijakan <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Laporkan OS dan Informasi Versi <ph name="PRODUCT_NAME" /></translation>

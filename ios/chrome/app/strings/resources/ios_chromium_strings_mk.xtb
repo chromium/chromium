@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mk">
 <translation id="102360288709523007">Помогнете да го подобриме Chromium со автоматско испраќање статистика за користење и извештаи за падови во Google.</translation>
-<translation id="1043245583918962542">Дали сакате да ги избришете податоците од Chromium од уредов или да ги задржите?</translation>
 <translation id="1185134272377778587">За Chromium</translation>
 <translation id="1257458525759135959">За да ги зачувате сликите, допрете на „Поставки“ за да овозможите Chromium да додава фотографии</translation>
 <translation id="1289216811211435351">Префрлете на Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Да се избришат податоците на Chromium од уредов?</translation>
 <translation id="8175055321229419309">Совет: <ph name="BEGIN_LINK" />преместете го Chromium во приклучокот<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium не може да провери дали има ажурирања. Обидете се повторно подоцна.</translation>
-<translation id="8252885722420466166">Добијте подобро искуство на Google со Chromium според вашата локација.</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> на Авторите на Chromium. Сите права се задржани.</translation>
 <translation id="8663480472502753423">Одржувајте го Chromium ажурен</translation>
 <translation id="8776843108004031667">Сметкава и сите незачувани податоци ќе се отстранат од Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium е застарен</translation>
 <translation id="921174536258924340">Chromium не може да ги провери сите лозинки. Обидете се пак утре или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Автори на Chromium</translation>
-<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" /> управува со вашата сметка, па податоците од Chromium ќе се избришат од уредов.</translation>
 </translationbundle>

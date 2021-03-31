@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> توصیه می‌کند این <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید.</translation>
 <translation id="1118738876271697201">سیستم نتوانست مدل یا شماره سریال دستگاه را تعیین کند.</translation>
 <translation id="1119447706177454957">خطای داخلی</translation>
+<translation id="111959947408687873">برای تغییر وضعیت ذره‌بین تمام‌صفحه، از کلید «مهار» +<ph name="SEARCH_KEY_NAME" />+«پ» استفاده کنید. برای حرکت در صفحه هنگام بزرگ‌نمایی، از کلید «مهار»‏+«دگرساز»+کلیدهای جهت استفاده کنید.</translation>
 <translation id="1122068467107743258">کار</translation>
 <translation id="1122198203221319518">&amp;ابزارها</translation>
 <translation id="1122242684574577509">‏اصالت‌سنجی انجام نشد. کلیک کنید تا به صفحه ورود به سیستم شبکه Wi-Fi مورد استفاده‌تان بروید (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">‏برنامه محافظت پیشرفته Google</translation>
 <translation id="1155816283571436363">درحال اتصال به تلفن</translation>
 <translation id="1161575384898972166">لطفاً برای صدور مجوز سرویس گیرنده، به <ph name="TOKEN_NAME" /> وارد شوید.</translation>
+<translation id="116173250649946226">سرپرستتان طرح زمینه‌ای پیش‌فرض تنظیم کرده است که نمی‌توان تغییر داد.</translation>
 <translation id="1163931534039071049">&amp;نمای منبع قاب</translation>
 <translation id="1164891049599601209">در سایت فریب‌دهنده وارد شده است</translation>
 <translation id="1164899421101904659">کلید باز کردن قفل پین را وارد کنید</translation>
@@ -2552,6 +2554,7 @@
 <translation id="3809272675881623365">خرگوش</translation>
 <translation id="3809280248639369696">فضایی</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> می‌تواند فایل‌های این پوشه‌ها را ببیند:</translation>
+<translation id="3810914450553844415">‏سرپرستتان «حساب‌های Google» تکمیلی را مجاز نمی‌کند.</translation>
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="381202950560906753">افزودن دستگاه دیگر</translation>
 <translation id="3812525830114410218">گواهی نادرست</translation>
@@ -2673,6 +2676,7 @@
 <translation id="3925573269917483990">دوربین:</translation>
 <translation id="3926002189479431949">‏تلفن مربوط به Smart Lock تغییر کرد</translation>
 <translation id="3927932062596804919">ردکردن</translation>
+<translation id="392803502090869922">راه‌اندازی سیم‌کارت داخلی</translation>
 <translation id="3928570707778085600">تغییرات ایجادشده در <ph name="FILE_OR_FOLDER_NAME" /> ذخیره شود؟</translation>
 <translation id="3928659086758780856">جوهر کم است</translation>
 <translation id="3929426037718431833">این افزونه‌ها می‌توانند اطلاعات موجود در این سایت را ببینند و تغییر دهند.</translation>
@@ -4243,6 +4247,7 @@
 <translation id="5764797882307050727">لطفاً در دستگاهتان کمی فضا آزاد کنید.</translation>
 <translation id="5765425701854290211">متأسفیم، بعضی از فایل‌ها آسیب دیده بودند و به‌روزرسانی موفق نبود. فایل‌های همگام‌سازی شده‌تان امن هستند.</translation>
 <translation id="5765491088802881382">شبکه‌ای در دسترس نیست</translation>
+<translation id="5766243637773654698">‏<ph name="FILE_NAME" /> ممکن است خطرناک باشد. برای اسکن کردن به Google ارسال شود؟ برای رفتن به «نوار بارگیری»، F6+«تبدیل» را فشار دهید.</translation>
 <translation id="5769519078756170258">میزبان یا دامنه برای استثنا</translation>
 <translation id="5770125698810550803">نمایش دکمه‌های پیمایش</translation>
 <translation id="5771816112378578655">راه‌اندازی در حال انجام...</translation>
@@ -4399,6 +4404,7 @@
 <translation id="5942779427914696408">نمایان بودن دستگاه</translation>
 <translation id="5943127421590245687">درستی‌سنجی باموفقیت انجام شد. برای باز کردن قفل و بازیابی داده‌های محلی‌تان، لطفاً گذرواژه <ph name="DEVICE_TYPE" /> قدیمی‌تان را وارد کنید.</translation>
 <translation id="5944869793365969636">اسکن رمزینه پاسخ‌سریع</translation>
+<translation id="5945002094477276055">‏<ph name="FILE_NAME" /> ممکن است خطرناک باشد. برای اسکن کردن به «مرور ایمن Google» ارسال شود؟</translation>
 <translation id="5946591249682680882">شناسه گزارش <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">برای ادامه راه‌اندازی بااستفاده از صفحه لمسی، صفحه‌کلید یا موشواره‌ای را متصل کنید. اگر از دستگاه‌های بلوتوث استفاده می‌کنید، مطمئن شوید دستگاه‌هایتان برای مرتبط‌سازی آماده باشند.</translation>
 <translation id="5949544233750246342">تجزیه فایل امکان‌پذیر نیست</translation>
@@ -4446,6 +4452,7 @@
 <translation id="6002452033851752583">‏گذرواژه از «حساب Google» حذف شده است</translation>
 <translation id="6002458620803359783">صداهای برگزیده</translation>
 <translation id="6003143259071779217">برداشتن شبکه تلفن همراه سیم‌کارت داخلی</translation>
+<translation id="6003582434972667631">سازمانتان طرح‌زمینه را تنظیم کرده است</translation>
 <translation id="6006484371116297560">کلاسيک</translation>
 <translation id="6007240208646052708">جستجوی گفتاری به زبان شما در دسترس نیست.</translation>
 <translation id="6011074160056912900">شبکه اترنت</translation>
@@ -4825,6 +4832,7 @@
 <translation id="6429384232893414837">خطای به‌روزرسانی</translation>
 <translation id="6430814529589430811">‏Base64-ASCII رمزدار، تک گواهی</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> به‌روزرسانی را به‌صورت خودکار برای تمام کاربران این رایانه راه‌اندازی می‌کند.</translation>
+<translation id="6434104957329207050">سرعت اسکن کردن نقطه</translation>
 <translation id="6434309073475700221">صرف‌نظرکردن</translation>
 <translation id="6434325376267409267">قبل از اینکه بتوانید از <ph name="APP_NAME" /> استفاده کنید باید دستگاه را به‌روزرسانی کنید.</translation>
 <translation id="6436164536244065364">نمایش در فروشگاه وب</translation>
@@ -4867,6 +4875,7 @@
 <translation id="6474498546677193336">‏لغو هم‌رسانی امکان‌پذیر نیست زیرا برنامه‌ای از این پوشه استفاده می‌کند. دفعه بعد که Linux را خاموش کنید، پوشه لغو هم‌رسانی می‌شود.</translation>
 <translation id="6474884162850599008">‏قطع ارتباط حساب Google Drive</translation>
 <translation id="6475294023568239942">‏فضای دیسک را آزاد کنید یا حجم دیسک Linux را در «تنظیمات» تغییر دهید</translation>
+<translation id="6476138569087741884">میزان بزرگ‌نمایی تمام‌صفحه</translation>
 <translation id="6477822444490674459">همگام‌سازی اعلان در تلفن‌هایی که در نمایه کاری هستند پشتیبانی نمی‌شود. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">فایل خطرناک حفظ شود؟</translation>
 <translation id="6480327114083866287">تحت مدیریت <ph name="MANAGER" /></translation>
@@ -5322,6 +5331,7 @@
 <translation id="6985607387932385770">چاپگرها</translation>
 <translation id="6988094684494323731">‏درحال شروع محتوی Linux</translation>
 <translation id="6988403677482707277">برگه به ابتدای نوار برگه منتقل شد</translation>
+<translation id="6990209147952697693">‏Chrome قدیمی</translation>
 <translation id="6991665348624301627">انتخاب مقصد</translation>
 <translation id="6992554835374084304">روشن کردن غلط‌گیر املای بهبودیافته</translation>
 <translation id="6993000214273684335">برگه از گروه بی‌نام برداشته شد - <ph name="GROUP_CONTENTS" /></translation>
@@ -6309,6 +6319,7 @@
 <translation id="8086015605808120405">درحال پیکربندی <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">راه‌اندازی <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{این فایل رمزگذاری شده است. از مالک بخواهید آن را رمزگشایی کند.}one{بعضی از این فایل‌ها رمزگذاری شده‌اند. از مالک بخواهید آن را رمزگشایی کند.}other{بعضی از این فایل‌ها رمزگذاری شده‌اند. از مالک بخواهید آن‌ها را رمزگشایی کند.}}</translation>
+<translation id="8087576439476816834">بارگیری، <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8090234456044969073">خواندن فهرستی از وب‌سایت‌های غالباً بازدید شده شما</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> پاسخ نمی‌دهد</translation>
@@ -6550,6 +6561,8 @@
 <translation id="8368859634510605990">&amp;باز کردن همه نشانک‌ها</translation>
 <translation id="8370294614544004647">به‌خواب رفتن هنگام بسته شدن رایانه کیفی</translation>
 <translation id="8371695176452482769">اکنون صحبت کنید</translation>
+<translation id="8371749822919332187">‏برای بزرگ کردن، از Ctrl‏+Alt+افزایش روشنایی استفاده کنید.
+برای کوچک کردن، از Ctrl‏+Alt+کاهش روشنایی استفاده کنید.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{بی‌صدا کردن سایت}one{بی‌صدا کردن سایت‌ها}other{بی‌صدا کردن سایت‌ها}}</translation>
 <translation id="8372369524088641025">‏کلید WEP نادرست</translation>
 <translation id="8373652277231415614">‏فهرست‌های راهنمای هم‌رسانی‌شده Crostini</translation>
@@ -6557,7 +6570,6 @@
 <translation id="8378714024927312812">توسط سازمانتان مدیریت می‌شود</translation>
 <translation id="8379878387931047019">این دستگاه نوع کلید امنیتیِ درخواستی ازجانب این وب‌سایت را پشتیبانی نمی‌کند</translation>
 <translation id="8379991678458444070">با نشانک‌گذاری این برگه، سریع به اینجا برگردید</translation>
-<translation id="8380314198565901932">خطایی در بارگیری دستگاه مجازی وجود دارد. لطفاً <ph name="DEVICE_TYPE" /> را به‌روزرسانی کنید و دوباره امتحان کنید.</translation>
 <translation id="8382913212082956454">کپی آدرس &amp;ایمیل</translation>
 <translation id="8386091599636877289">خط‌مشی یافت نشد.</translation>
 <translation id="8386819192691131213">به «دستیار» اجازه دهید از اطلاعات روی صفحه‌نمایش برای ارائه پاسخ‌های سریع نظیر ترجمه، تعریف، تبدیل واحد، و غیره استفاده کند</translation>
@@ -7221,6 +7233,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">به نمایه جدیدتان خوش آمدید</translation>
 <translation id="9112748030372401671">تغییر کاغذدیواری</translation>
+<translation id="9112786533191410418">‏<ph name="FILE_NAME" /> ممکن است خطرناک باشد. برای اسکن کردن به Google ارسال شود؟</translation>
 <translation id="9112987648460918699">یافتن...</translation>
 <translation id="9114663181201435112">ورود به سیستم آسان</translation>
 <translation id="9115675100829699941">&amp;نشانک ها</translation>

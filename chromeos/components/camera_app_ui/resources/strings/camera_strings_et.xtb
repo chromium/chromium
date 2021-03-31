@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Midagi pole salvestatud</translation>
+<translation id="1838104802459806957">Kalluta üles</translation>
 <translation id="1851616744363735765">PEATATUD</translation>
 <translation id="1862930711583847113">Faili <ph name="FILE" /> ei saa eksportida</translation>
 <translation id="1899697626337024495">Foto eraldusvõime</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> on aktiivne</translation>
 <translation id="2144806332417375165">Video kohandatud parameetrid</translation>
 <translation id="229579744168541441">Ekspordi kettale</translation>
+<translation id="2320741269052147773">Panoraami vasakule</translation>
 <translation id="2501278716633472235">Mine tagasi</translation>
 <translation id="2501853267655415902">Salvestamine on peatatud</translation>
 <translation id="2501953888035679275">Jäädvustage oma kaameraga fotosid ja salvestage videoid.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Kaameraga tehtud fotod ja videod teisaldatakse kausta Allalaadimised. Pääsete neile juurde jaotises Failid.
 
 Salvestusruumi kasutuse lubadega rakendustel on juurdepääs teie fotodele ja videotele.</translation>
+<translation id="3067436040345934772">Panoraami paremale</translation>
 <translation id="3081586908890909590">Vaheta video salvestamise režiimile</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">Võrgustiku tüüp</translation>
@@ -89,6 +92,7 @@ Kui teie tagasiside on seotud pildi- või videokvaliteediga, lisage manusena nä
 <translation id="8145038249676204903">Vaheta foto jäädvustamise režiimile</translation>
 <translation id="8239780215768881278">Jäädvusta video hetktõmmis</translation>
 <translation id="8261506727792406068">Kustuta</translation>
+<translation id="8425673304802773841">Kalluta alla</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" /> : <ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Metaandmete eelvaade</translation>

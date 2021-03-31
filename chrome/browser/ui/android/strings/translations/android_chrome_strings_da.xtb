@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Appversion</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1450753235335490080">Delingen af <ph name="CONTENT_TYPE" /> mislykkedes</translation>
+<translation id="147113415845704694">Prøv at sige "Hvordan er vejret i dag?"</translation>
 <translation id="1477626028522505441">Download af <ph name="FILE_NAME" /> mislykkedes på grund af serverproblemer.</translation>
 <translation id="1492417797159476138">Du har allerede gemt dette brugernavn for dette website</translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
@@ -569,6 +570,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="49268022542405662">Dine adgangskoder eksporteres og downloades som en tekstfil. De vil være synlige for alle brugere og enhver app med adgang til destinationsmappen.</translation>
 <translation id="4932247056774066048">Da du er ved at logge ud af en konto, der administreres af <ph name="DOMAIN_NAME" />, slettes dine Chrome-data fra denne enhed. Dataene vil stadig være at finde på din Google-konto.</translation>
 <translation id="4936039914467572121">Gå til dette website endnu hurtigere</translation>
+<translation id="4941179133499732445">Tryk på mikrofonen for at søge med din stemme</translation>
 <translation id="4943703118917034429">Virtual reality</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
 <translation id="4961107849584082341">Oversæt denne side til et hvilket som helst sprog</translation>
@@ -583,6 +585,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5011311129201317034"><ph name="SITE" /> vil gerne oprette forbindelse</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Tillad</translation>
+<translation id="5061533557687621530">Du kan tjekke vejrudsigten ved at trykke på mikrofonen og sige "Hvordan er vejret i dag?"</translation>
 <translation id="5087580092889165836">Tilføj kort</translation>
 <translation id="5091249083535528968">Udvidede brugsdata</translation>
 <translation id="509429900233858213">Der opstod en fejl.</translation>
@@ -597,6 +600,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download mislykkedes.}one{# download mislykkedes.}other{# downloads mislykkedes.}}</translation>
 <translation id="5170568018924773124">Vis i mappe</translation>
 <translation id="5184329579814168207">Åbn i Chrome</translation>
+<translation id="5188992787241350004">Søg med din stemme</translation>
 <translation id="5191251636205085390">Få indblik i og styr nye teknologier, der har til formål at erstatte tredjepartscookies</translation>
 <translation id="5193988420012215838">Kopieret til din udklipsholder</translation>
 <translation id="5199929503336119739">Arbejdsprofil</translation>

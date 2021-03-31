@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1627744224761163218">‎4 x 4</translation>
 <translation id="1664224225747386870">לא צולם סרטון</translation>
+<translation id="1838104802459806957">הטייה מעלה</translation>
 <translation id="1851616744363735765">מושהית</translation>
 <translation id="1862930711583847113">לא ניתן לייצא את <ph name="FILE" /></translation>
 <translation id="1899697626337024495">רזולוציית תמונה</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> פעילה</translation>
 <translation id="2144806332417375165">התאמה אישית של פרמטרים לסרטונים</translation>
 <translation id="229579744168541441">ייצוא לדיסק</translation>
+<translation id="2320741269052147773">הזזה שמאלה</translation>
 <translation id="2501278716633472235">חזרה</translation>
 <translation id="2501853267655415902">צילום הסרטון הופסק</translation>
 <translation id="2501953888035679275">צילום תמונות וסרטונים באמצעות המצלמה.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">תמונות וסרטונים שצולמו בעזרת המצלמה יועברו אל התיקייה 'הורדות'. אפשר לגשת אליהם דרך 'קבצים'.
 
         אפליקציות עם הרשאות אחסון יוכלו לגשת אל התמונות והסרטונים שלך.</translation>
+<translation id="3067436040345934772">הזזה ימינה</translation>
 <translation id="3081586908890909590">מעבר לצילום וידאו</translation>
 <translation id="313467653172006084">30FPS</translation>
 <translation id="3183731565330012717">סוג רשת</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">מעבר לצילום תמונות</translation>
 <translation id="8239780215768881278">צילום תמונה מהסרטון</translation>
 <translation id="8261506727792406068">מחיקה</translation>
+<translation id="8425673304802773841">הטייה מטה</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="8687491812650032292">‏איכות HD ‏– ‎<ph name="HEIGHT" />p ‏(<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">תצוגה מקדימה של מטא-נתונים</translation>

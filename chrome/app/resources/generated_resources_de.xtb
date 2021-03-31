@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> empfiehlt, dieses Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="1118738876271697201">Das System konnte das Gerätemodell oder die Seriennummer nicht ermitteln.</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
+<translation id="111959947408687873">Drücken Sie Strg + <ph name="SEARCH_KEY_NAME" /> +M, um die Vollbildlupe zu aktivieren. Mit Strg + Alt + Pfeiltasten können Sie sich über den Bildschirm bewegen, während die Vollbildlupe aktiviert ist.</translation>
 <translation id="1122068467107743258">Arbeit</translation>
 <translation id="1122198203221319518">&amp;Tools</translation>
 <translation id="1122242684574577509">Fehler bei der Authentifizierung. Klicken Sie hier, um die Anmeldeseite für das verwendete WLAN aufzurufen (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Erweitertes Sicherheitsprogramm von Google</translation>
 <translation id="1155816283571436363">Verbindung zu Ihrem Smartphone wird hergestellt</translation>
 <translation id="1161575384898972166">Melden Sie sich in <ph name="TOKEN_NAME" /> an, um das Clientzertifikat zu exportieren.</translation>
+<translation id="116173250649946226">Ihr Administrator hat ein Standarddesign festgelegt, das nicht geändert werden kann.</translation>
 <translation id="1163931534039071049">Frame-Quelltext &amp;anzeigen</translation>
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
 <translation id="1164899421101904659">PUK eingeben</translation>
@@ -2550,6 +2552,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3809272675881623365">Kaninchen</translation>
 <translation id="3809280248639369696">Alien</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kann Dateien in den folgenden Ordnern lesen</translation>
+<translation id="3810914450553844415">Ihr Administrator lässt keine zusätzlichen Google-Konten zu.</translation>
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="381202950560906753">Weitere hinzufügen</translation>
 <translation id="3812525830114410218">Ungültiges Zertifikat</translation>
@@ -2671,6 +2674,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3926002189479431949">Telefon für Smart Lock geändert</translation>
 <translation id="3927932062596804919">Ablehnen</translation>
+<translation id="392803502090869922">eSIM-Einrichtung</translation>
 <translation id="3928570707778085600">Änderungen an "<ph name="FILE_OR_FOLDER_NAME" />" speichern?</translation>
 <translation id="3928659086758780856">Tinte fast leer</translation>
 <translation id="3929426037718431833">Diese Erweiterungen können Daten dieser Website abrufen und verändern.</translation>
@@ -4241,6 +4245,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5764797882307050727">Bitte geben Sie Speicherplatz auf Ihrem Gerät frei.</translation>
 <translation id="5765425701854290211">Einige Dateien wurden beschädigt und das Update konnte nicht abgeschlossen werden. Ihre synchronisierten Dateien sind jedoch sicher.</translation>
 <translation id="5765491088802881382">Keine Netzwerke verfügbar</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> könnte schädlich sein. Zum Scannen an Google senden? Drücken Sie Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="5769519078756170258">Auszuschließende Host oder Domain</translation>
 <translation id="5770125698810550803">Navigationsschaltflächen anzeigen</translation>
 <translation id="5771816112378578655">Einrichtung läuft...</translation>
@@ -4397,6 +4402,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5942779427914696408">Gerätesichtbarkeit</translation>
 <translation id="5943127421590245687">Ihre Bestätigung war erfolgreich. Geben Sie Ihr altes <ph name="DEVICE_TYPE" />-Passwort ein, um Ihre lokalen Daten zu entsperren und wiederherzustellen.</translation>
 <translation id="5944869793365969636">QR-Code scannen</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> könnte schädlich sein. Zum Scannen an Google Safe Browsing senden?</translation>
 <translation id="5946591249682680882">Bericht-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Verbinden Sie eine Tastatur oder Maus oder fahren Sie über den Touchscreen mit der Einrichtung fort. Achten Sie bei Verwendung eines Bluetooth-Geräts darauf, ob es bereit zur Kopplung ist.</translation>
 <translation id="5949544233750246342">Datei kann nicht geparst werden</translation>
@@ -4444,6 +4450,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6002452033851752583">Passwort aus Ihrem Google-Konto gelöscht</translation>
 <translation id="6002458620803359783">Bevorzugte Stimmen</translation>
 <translation id="6003143259071779217">eSIM-Mobilfunknetz entfernen</translation>
+<translation id="6003582434972667631">Das Design wurde von Ihrer Organisation festgelegt</translation>
 <translation id="6006484371116297560">Klassisch</translation>
 <translation id="6007240208646052708">Die Sprachsuche ist nicht in Ihrer Sprache verfügbar.</translation>
 <translation id="6011074160056912900">Ethernet-Netzwerk</translation>
@@ -4823,6 +4830,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6429384232893414837">Fehler beim Aktualisieren</translation>
 <translation id="6430814529589430811">Base64-codierter ASCII-Code, Einzelzertifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> richtet automatische Updates für alle Nutzer dieses Computers ein.</translation>
+<translation id="6434104957329207050">Punktscan-Geschwindigkeit</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6434325376267409267">Ihr Gerät muss aktualisiert werden, bevor Sie <ph name="APP_NAME" /> verwenden können.</translation>
 <translation id="6436164536244065364">Im Web Store ansehen</translation>
@@ -4865,6 +4873,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6474498546677193336">Die Aufhebung der Freigabe ist nicht möglich, weil eine Anwendung diesen Ordner verwendet. Die Freigabe des Ordners wird aufgehoben, wenn Linux das nächste Mal heruntergefahren wird.</translation>
 <translation id="6474884162850599008">Verbindung zu Google Drive-Konto aufheben</translation>
 <translation id="6475294023568239942">Geben Sie Speicherplatz frei oder ändern Sie die Größe des Linux-Laufwerks in den Einstellungen</translation>
+<translation id="6476138569087741884">Zoomstufe für Vollbildlupe</translation>
 <translation id="6477822444490674459">Benachrichtigungssynchronisierung wird nicht unterstützt, wenn auf einem Smartphone aktuell ein Arbeitsprofil verwendet wird. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Schädliche Datei beibehalten?</translation>
 <translation id="6480327114083866287">Verwaltet von <ph name="MANAGER" /></translation>
@@ -5320,6 +5329,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6985607387932385770">Drucker</translation>
 <translation id="6988094684494323731">Der Linux-Container wird gestartet</translation>
 <translation id="6988403677482707277">Tab wurde zum Anfang der Tableiste verschoben</translation>
+<translation id="6990209147952697693">Classic Chrome</translation>
 <translation id="6991665348624301627">Ziel auswählen</translation>
 <translation id="6992554835374084304">Erweiterte Rechtschreibprüfung aktivieren</translation>
 <translation id="6993000214273684335">Tab wurde aus unbenannter Gruppe entfernt – <ph name="GROUP_CONTENTS" /></translation>
@@ -6307,6 +6317,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> wird konfiguriert...</translation>
 <translation id="8086442853986205778">"<ph name="PRINTER_NAME" />" einrichten</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Diese Datei ist verschlüsselt. Bitten Sie den Inhaber, sie zu entschlüsseln.}other{Einige dieser Dateien sind verschlüsselt. Bitten Sie den Inhaber, sie zu entschlüsseln.}}</translation>
+<translation id="8087576439476816834">Herunterladen, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Passwort ändern</translation>
 <translation id="8090234456044969073">Liste Ihrer meistbesuchten Websites lesen</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> reagiert nicht</translation>
@@ -6547,6 +6558,8 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8368859634510605990">&amp;Alle Lesezeichen öffnen</translation>
 <translation id="8370294614544004647">Beim Zuklappen des Laptops in den Ruhemodus wechseln</translation>
 <translation id="8371695176452482769">Jetzt sprechen</translation>
+<translation id="8371749822919332187">Drücken Sie Strg + Alt + „Helligkeit erhöhen“ zum Heranzoomen.
+Drücken Sie Strg + Alt + „Helligkeit verringern“ zum Herauszoomen.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Website stummschalten}other{Websites stummschalten}}</translation>
 <translation id="8372369524088641025">Ungültiger WEP-Schlüssel</translation>
 <translation id="8373652277231415614">Freigegebene Crostini-Verzeichnisse</translation>
@@ -6554,7 +6567,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8378714024927312812">Von Ihrer Organisation verwaltet</translation>
 <translation id="8379878387931047019">Das Gerät ist nicht mit dem Sicherheitsschlüssel kompatibel, der von dieser Website angefordert wird</translation>
 <translation id="8379991678458444070">Sie können diesen Tab als Lesezeichen speichern, um schnell wieder hierher zurückzukehren</translation>
-<translation id="8380314198565901932">Beim Herunterladen der virtuellen Maschine ist ein Fehler aufgetreten. Führen Sie ein Update auf Ihrem Gerät (<ph name="DEVICE_TYPE" />) aus und versuchen Sie es noch einmal.</translation>
 <translation id="8382913212082956454">E-Mail-Adr&amp;esse kopieren</translation>
 <translation id="8386091599636877289">Richtlinie nicht gefunden.</translation>
 <translation id="8386819192691131213">Assistant darf Informationen auf dem Bildschirm verwenden, um schnelle Antworten zu geben – beispielsweise Übersetzungen, Definitionen oder Umrechnung von Einheiten.</translation>
@@ -7217,6 +7229,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Willkommen in deinem neuen Profil</translation>
 <translation id="9112748030372401671">Hintergrundbild ändern</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> könnte schädlich sein. Zum Scannen an Google senden?</translation>
 <translation id="9112987648460918699">Suchen...</translation>
 <translation id="9114663181201435112">Einfach anmelden</translation>
 <translation id="9115675100829699941">&amp;Lesezeichen</translation>

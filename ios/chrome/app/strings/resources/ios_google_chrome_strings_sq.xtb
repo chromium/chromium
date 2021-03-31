@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Tani mund të përdorësh Chrome sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="3720541637541300822">Kyçi skedat "e fshehta" kur të mbyllësh Chrome</translation>
 <translation id="384394811301901750">Google Chrome nuk mund të përdorë kamerën tënde për momentin</translation>
-<translation id="38949020760388809">Zgjidh nëse do t'i pastrosh të dhënat e Chrome nga kjo pajisje apo do t'i mbash ato.</translation>
 <translation id="3980220367029651214">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chrome po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizata jote kërkon që të qëndrosh i dalë nga Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nuk ka qasje te fotografitë apo videot e tua. Aktivizo qasjen te Cilësimet e iOS &gt; Privatësia &gt; Fotografitë.</translation>
 <translation id="4099578267706723511">Ndihmo në përmirësimin e Chrome duke dërguar automatikisht te Google statistika përdorimi dhe raporte të ndërprerjeve aksidentale.</translation>
-<translation id="415767770115540173">Përjeto një përvojë më të mirë të Google në Chrome bazuar në vendndodhjen tënde.</translation>
 <translation id="417201473131094001">Nuk mbështetet në Chrome Canary</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4249068189593983585">Këshillë për Chrome. Për më shumë opsione për skedat, shtyp dhe mbaj shtypur butonin "Shfaq skedat" në shiritin e veglave që ndodhet në fund ose në krye të ekranit tënd.</translation>
@@ -80,7 +78,6 @@
 <translation id="766361182512894255">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. Chrome rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="7698568245838009292">Chrome dëshiron të ketë qasje te kamera</translation>
 <translation id="7855730255114109580">Google Chrome është i përditësuar</translation>
-<translation id="8109233255338845204">Llogaria jote menaxhohet nga <ph name="HOSTED_DOMAIN" />, prandaj të dhënat e tua të Chrome do të fshihen nga kjo pajisje.</translation>
 <translation id="8160472928944011082">Chrome nuk mund të përditësohet</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="840168496893712993">Disa shtesa bëjnë që Chrome të ndërpritet aksidentalisht. Provo t'i çinstalosh ato.</translation>

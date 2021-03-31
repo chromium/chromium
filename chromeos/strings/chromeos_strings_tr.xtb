@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Şifrenin süresi <ph name="TIME" /> içinde doluyor</translation>
 <translation id="4238516577297848345">Devam eden bir yazdırma işi yok</translation>
 <translation id="4297501883039923494">Durduruldu - Bilinmeyen hata</translation>
+<translation id="4344214025510306853">APN ekleme</translation>
 <translation id="4378373042927530923">Çalıştırılmadı</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive'ım</translation>
@@ -278,6 +279,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7059230779847288458">Şarj oluyor. Tamamen dolmasına <ph name="TIME_VALUE" /> var</translation>
 <translation id="708426984172631313">DURDURULDU</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
 <translation id="714876143603641390">LAN Bağlantısı</translation>

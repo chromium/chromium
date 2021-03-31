@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4×4</translation>
 <translation id="1664224225747386870">Ništa nije snimljeno</translation>
+<translation id="1838104802459806957">Naginjanje nagore</translation>
 <translation id="1851616744363735765">PAUZIRANO</translation>
 <translation id="1862930711583847113">Izvoz datoteke <ph name="FILE" /> nije uspeo</translation>
 <translation id="1899697626337024495">Rezolucija slike</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> je aktivna</translation>
 <translation id="2144806332417375165">Prilagođeni parametri video snimaka</translation>
 <translation id="229579744168541441">Izvezi na disk</translation>
+<translation id="2320741269052147773">Pomeranje ulevo</translation>
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="2501853267655415902">Snimanje je zaustavljeno</translation>
 <translation id="2501953888035679275">Snimajte slike i video snimke pomoću kamere.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Slike i video snimci koji su snimljeni pomoću kamere će se premestiti u direktorijum Preuzimanja. Možete da im pristupite u Datotekama.
 
         Aplikacije sa dozvolama za pristup memorijskom prostoru će imati pristup slikama i video snimcima.</translation>
+<translation id="3067436040345934772">Pomeranje udesno</translation>
 <translation id="3081586908890909590">Pređi na režim za snimanje videa</translation>
 <translation id="313467653172006084">30 kadr/s</translation>
 <translation id="3183731565330012717">Tip mreže</translation>
@@ -89,6 +92,7 @@ Ako su povratne informacije u vezi sa kvalitetom slike ili videa, priložite uzo
 <translation id="8145038249676204903">Pređi na režim za snimanje slika</translation>
 <translation id="8239780215768881278">Napravite video-snimak</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8425673304802773841">Naginjanje nadole</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> piksela (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Prikaži metapodatke</translation>

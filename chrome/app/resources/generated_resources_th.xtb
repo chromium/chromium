@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> แนะนำให้คุณอัปเดต <ph name="DEVICE_TYPE" /> นี้</translation>
 <translation id="1118738876271697201">ระบบระบุรุ่นหรือหมายเลขซีเรียลของอุปกรณ์ไม่สำเร็จ</translation>
 <translation id="1119447706177454957">ข้อผิดพลาดภายใน</translation>
+<translation id="111959947408687873">ใช้ Ctrl + <ph name="SEARCH_KEY_NAME" /> + M เพื่อเปิด/ปิดใช้แว่นขยายทั้งหน้าจอ ใช้แป้น Ctrl + Alt + ลูกศร เพื่อไปยังส่วนต่างๆ ในหน้าจอเมื่อซูมเข้า</translation>
 <translation id="1122068467107743258">งาน</translation>
 <translation id="1122198203221319518">&amp;เครื่องมือ</translation>
 <translation id="1122242684574577509">การตรวจสอบสิทธิ์ล้มเหลว คลิกเพื่อไปที่หน้าการเข้าสู่ระบบสำหรับเครือข่าย Wi-Fi ที่คุณกำลังใช้อยู่ (<ph name="NETWORK_ID" />)</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">โปรแกรมการปกป้องขั้นสูงของ Google</translation>
 <translation id="1155816283571436363">กำลังเชื่อมต่อกับโทรศัพท์ของคุณ</translation>
 <translation id="1161575384898972166">โปรดลงชื่อเข้าใช้ <ph name="TOKEN_NAME" /> เพื่อส่งออกใบรับรองไคลเอ็นต์</translation>
+<translation id="116173250649946226">ผู้ดูแลระบบได้ตั้งค่าธีมเริ่มต้นไว้ซึ่งเปลี่ยนไม่ได้</translation>
 <translation id="1163931534039071049">&amp;ดูรหัสต้นฉบับของเฟรม</translation>
 <translation id="1164891049599601209">มีการป้อนในเว็บไซต์ที่มีการหลอกลวง</translation>
 <translation id="1164899421101904659">ป้อนคีย์ปลดล็อก PIN</translation>
@@ -2554,6 +2556,7 @@
 <translation id="3809272675881623365">กระต่าย</translation>
 <translation id="3809280248639369696">มูนบีม</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> ดูไฟล์ในโฟลเดอร์ต่อไปนี้ได้</translation>
+<translation id="3810914450553844415">ผู้ดูแลระบบไม่อนุญาตให้มีบัญชี Google เพิ่มเติม</translation>
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="381202950560906753">เพิ่มลายนิ้วมืออีก</translation>
 <translation id="3812525830114410218">ใบรับรองมีปัญหา</translation>
@@ -2675,6 +2678,7 @@
 <translation id="3925573269917483990">กล้อง:</translation>
 <translation id="3926002189479431949">โทรศัพท์ของ Smart Lock มีการเปลี่ยนแปลง</translation>
 <translation id="3927932062596804919">ปฏิเสธ</translation>
+<translation id="392803502090869922">การตั้งค่า eSIM</translation>
 <translation id="3928570707778085600">บันทึกการเปลี่ยนแปลงลงใน <ph name="FILE_OR_FOLDER_NAME" /> ใช่ไหม</translation>
 <translation id="3928659086758780856">หมึกเหลือน้อย</translation>
 <translation id="3929426037718431833">ส่วนขยายเหล่านี้เห็นและเปลี่ยนแปลงข้อมูลในเว็บไซต์นี้ได้</translation>
@@ -4245,6 +4249,7 @@
 <translation id="5764797882307050727">โปรดเพิ่มพื้นที่ว่างบางส่วนในอุปกรณ์</translation>
 <translation id="5765425701854290211">ขออภัย บางไฟล์เสียหายและอัปเดตไม่สำเร็จ ไฟล์ที่ซิงค์แล้วปลอดภัย</translation>
 <translation id="5765491088802881382">ไม่พบเครือข่ายใด</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้ Google สแกนไหม กด Shift + F6 เพื่อวนไปยังบริเวณแถบดาวน์โหลด</translation>
 <translation id="5769519078756170258">โฮสต์หรือโดเมนที่จะยกเว้น</translation>
 <translation id="5770125698810550803">แสดงปุ่มการนำทาง</translation>
 <translation id="5771816112378578655">กำลังดำเนินการตั้งค่า...</translation>
@@ -4401,6 +4406,7 @@
 <translation id="5942779427914696408">ระดับการเข้าถึงอุปกรณ์</translation>
 <translation id="5943127421590245687">ยืนยันสำเร็จ โปรดป้อนรหัสผ่านเก่าของ <ph name="DEVICE_TYPE" /> เพื่อปลดล็อกและกู้คืนข้อมูลในเครื่อง</translation>
 <translation id="5944869793365969636">สแกนคิวอาร์โค้ด</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้ Google Safe Browsing สแกนไหม</translation>
 <translation id="5946591249682680882">รหัสรายงาน <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">เชื่อมต่อแป้นพิมพ์หรือเมาส์ หรือตั้งค่าต่อโดยใช้หน้าจอสัมผัส หากกำลังใช้อุปกรณ์บลูทูธ ให้ตรวจสอบว่าอุปกรณ์พร้อมที่จะจับคู่</translation>
 <translation id="5949544233750246342">ไม่สามารถแยกวิเคราะห์ไฟล์</translation>
@@ -4448,6 +4454,7 @@
 <translation id="6002452033851752583">ลบรหัสผ่านจากบัญชี Google ของคุณแล้ว</translation>
 <translation id="6002458620803359783">เสียงที่ต้องการ</translation>
 <translation id="6003143259071779217">นำเครือข่ายมือถือของ eSIM ออก</translation>
+<translation id="6003582434972667631">องค์กรของคุณเป็นผู้ตั้งค่าธีม</translation>
 <translation id="6006484371116297560">คลาสสิก</translation>
 <translation id="6007240208646052708">ภาษาของคุณไม่มีการค้นหาด้วยเสียง</translation>
 <translation id="6011074160056912900">เครือข่ายอีเธอร์เน็ต</translation>
@@ -4827,6 +4834,7 @@
 <translation id="6429384232893414837">เกิดข้อผิดพลาดในการอัปเดต</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, ใบรับรองเดี่ยว</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> จะติดตั้งการอัปเดตอัตโนมัติสำหรับผู้ใช้ทั้งหมดที่ใช้เครื่องคอมพิวเตอร์นี้</translation>
+<translation id="6434104957329207050">ความเร็วในการสแกนจุด</translation>
 <translation id="6434309073475700221">ทิ้ง</translation>
 <translation id="6434325376267409267">คุณต้องอัปเดตอุปกรณ์ก่อนจึงจะใช้ <ph name="APP_NAME" /> ได้</translation>
 <translation id="6436164536244065364">ดูในเว็บสโตร์</translation>
@@ -4869,6 +4877,7 @@
 <translation id="6474498546677193336">เลิกแชร์ไม่ได้เนื่องจากมีแอปพลิเคชันใช้โฟลเดอร์นี้อยู่ จะเลิกแชร์โฟลเดอร์เมื่อมีการปิด Linux ครั้งต่อไป</translation>
 <translation id="6474884162850599008">ยกเลิกการเชื่อมต่อบัญชี Google ไดรฟ์</translation>
 <translation id="6475294023568239942">เพิ่มพื้นที่ดิสก์หรือปรับขนาดดิสก์ Linux ในการตั้งค่า</translation>
+<translation id="6476138569087741884">ระดับการซูมทั้งหน้าจอ</translation>
 <translation id="6477822444490674459">การซิงค์การแจ้งเตือนใช้ไม่ได้กับโทรศัพท์ที่ใช้โปรไฟล์งาน <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">เก็บไฟล์อันตรายไว้ไหม</translation>
 <translation id="6480327114083866287">จัดการโดย <ph name="MANAGER" /></translation>
@@ -5324,6 +5333,7 @@
 <translation id="6985607387932385770">เครื่องพิมพ์</translation>
 <translation id="6988094684494323731">กำลังเริ่มคอนเทนเนอร์ Linux</translation>
 <translation id="6988403677482707277">แท็บถูกย้ายไปยังจุดเริ่มต้นของแถบแท็บ</translation>
+<translation id="6990209147952697693">Chrome แบบคลาสสิก</translation>
 <translation id="6991665348624301627">เลือกปลายทาง</translation>
 <translation id="6992554835374084304">เปิดฟีเจอร์ตรวจตัวสะกดที่ได้รับการปรับปรุง</translation>
 <translation id="6993000214273684335">แท็บถูกนำออกจากกลุ่มที่ไม่มีชื่อ - <ph name="GROUP_CONTENTS" /></translation>
@@ -6311,6 +6321,7 @@
 <translation id="8086015605808120405">กำลังกำหนดค่า <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">ตั้งค่า <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ไฟล์นี้มีการเข้ารหัส ขอให้เจ้าของไฟล์ถอดรหัส}other{ไฟล์เหล่านี้บางไฟล์มีการเข้ารหัส ขอให้เจ้าของไฟล์ถอดรหัส}}</translation>
+<translation id="8087576439476816834">ดาวน์โหลด <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8090234456044969073">อ่านรายชื่อของเว็บไซต์ที่คุณเข้าชมบ่อยที่สุด</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ไม่ตอบสนอง</translation>
@@ -6552,6 +6563,8 @@
 <translation id="8368859634510605990">&amp;เปิดบุ๊กมาร์กทั้งหมด</translation>
 <translation id="8370294614544004647">เข้าสู่โหมดสลีปเมื่อปิดแล็ปท็อป</translation>
 <translation id="8371695176452482769">เชิญพูดเลย</translation>
+<translation id="8371749822919332187">ใช้ Ctrl + Alt + เพิ่มความสว่าง เพื่อซูมเข้า
+ใช้ Ctrl + Alt + ลดความสว่าง เพื่อซูมออก</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{ซ่อนเว็บไซต์}other{ซ่อนเว็บไซต์}}</translation>
 <translation id="8372369524088641025">คีย์ WEP ไม่ถูกต้อง</translation>
 <translation id="8373652277231415614">ไดเรกทอรีที่แชร์ใน Crostini</translation>
@@ -6559,7 +6572,6 @@
 <translation id="8378714024927312812">จัดการโดยองค์กร</translation>
 <translation id="8379878387931047019">อุปกรณ์นี้ไม่รองรับประเภทคีย์ความปลอดภัยที่เว็บไซต์นี้กำหนดไว้</translation>
 <translation id="8379991678458444070">บุ๊กมาร์กแท็บนี้ไว้เพื่อให้กลับมาได้อย่างรวดเร็ว</translation>
-<translation id="8380314198565901932">เกิดข้อผิดพลาดในการดาวน์โหลดเครื่องเสมือน โปรดอัปเดต <ph name="DEVICE_TYPE" /> แล้วลองอีกครั้ง</translation>
 <translation id="8382913212082956454">คัดลอก&amp;ที่อยู่อีเมล</translation>
 <translation id="8386091599636877289">ไม่พบนโยบาย</translation>
 <translation id="8386819192691131213">อนุญาตให้ Assistant ใช้ข้อมูลบนหน้าจอเพื่อให้คำตอบด่วน เช่น คำแปล ความหมาย การแปลงหน่วย และอื่นๆ</translation>
@@ -7222,6 +7234,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">ยินดีต้อนรับสู่โปรไฟล์ใหม่</translation>
 <translation id="9112748030372401671">เปลี่ยนวอลเปเปอร์ของคุณ</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้ Google สแกนไหม</translation>
 <translation id="9112987648460918699">ค้นหา...</translation>
 <translation id="9114663181201435112">ลงชื่อเข้าใช้ได้อย่างง่ายดาย</translation>
 <translation id="9115675100829699941">&amp;บุ๊กมาร์ก</translation>

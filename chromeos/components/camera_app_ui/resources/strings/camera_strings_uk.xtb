@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Нічого не записано</translation>
+<translation id="1838104802459806957">Нахилити вгору</translation>
 <translation id="1851616744363735765">ПРИЗУПИНЕНО</translation>
 <translation id="1862930711583847113">Не вдається експортувати файл "<ph name="FILE" />"</translation>
 <translation id="1899697626337024495">Роздільна здатність фото</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">Опція "<ph name="CAMERA" />" активна</translation>
 <translation id="2144806332417375165">Спеціальні параметри відео</translation>
 <translation id="229579744168541441">Експортувати на диск</translation>
+<translation id="2320741269052147773">Перемістити вліво</translation>
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501853267655415902">Запис припинено</translation>
 <translation id="2501953888035679275">Фотографуйте й записуйте відео камерою.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Фото й відео з камери перенесуться в папку "Завантаження", і ви зможете відкрити їх у Файлах.
 
         Також до них матимуть доступ додатки, яким дозволено використовувати пам’ять пристрою.</translation>
+<translation id="3067436040345934772">Перемістити вправо</translation>
 <translation id="3081586908890909590">Перейти в режим запису відео</translation>
 <translation id="313467653172006084">30 кадрів/с</translation>
 <translation id="3183731565330012717">Тип сітки</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">Перейти в режим фотозйомки</translation>
 <translation id="8239780215768881278">Зробити знімок відео</translation>
 <translation id="8261506727792406068">Видалити</translation>
+<translation id="8425673304802773841">Нахилити донизу</translation>
 <translation id="8428213095426709021">Налаштування</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Переглянути метадані</translation>

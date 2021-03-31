@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">এতিয়া আপুনি বাৰ্তা, নথি আৰু অন্য এপ্‌সমূহত থকা কোনো লিংকত টিপিলে যিকোনো সময়তে Chrome ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="3720541637541300822">আপুনি Chrome বন্ধ কৰিলে ইনক’গনিট’ টেবসমূহ লক কৰক</translation>
 <translation id="384394811301901750">Google Chromeএ বর্তমান আপোনাৰ কেমেৰা ব্যৱহাৰ কৰিব নোৱাৰে</translation>
-<translation id="38949020760388809">এই ডিভাইচটোৰ পৰা আপোনাৰ Chromeৰ ডেটা মচিবনে ৰাখিব সেয়া বাছনি কৰক।</translation>
 <translation id="3980220367029651214">আপুনি ছিংক কৰা একাউণ্ট <ph name="USER_EMAIL1" />ৰ পৰা <ph name="USER_EMAIL2" />লৈ সলনি কৰিছে। আপোনাৰ বৰ্তমানৰ Chromium ডেটা <ph name="DOMAIN" />এ পৰিচালনা কৰি আছে। এই কাৰ্যই আপোনাৰ ডেটা এই ডিভাইচটোৰপৰা মচি পেলাব কিন্তু আপোনাৰ ডেটাবোৰ <ph name="USER_EMAIL1" />ত থাকিব।</translation>
 <translation id="3984746313391923992">আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি Chromeৰ পৰা ছাইন আউট হৈ থকাৰ আৱশ্যক।</translation>
 <translation id="3988789688219830639">আপোনাৰ ফট’ বা ভিডিঅ’সমূহত Google Chromeৰ এক্সেছ নাই৷ iOS ছেটিং &gt; গোপনীয়তা &gt; ফট’-ত এক্সেছ সক্ষম কৰক।</translation>
 <translation id="4099578267706723511">Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াই Chrome ক অধিক উন্নত কৰাত সহায় কৰক।</translation>
-<translation id="415767770115540173">আপোনাৰ অৱস্থানৰ ভিত্তিত Chromeত Google ব্যৱহাৰৰ উৎকৃষ্ট অভিজ্ঞতা পাওক।</translation>
 <translation id="417201473131094001">Chrome Canaryত সমৰ্থিত নহয়</translation>
 <translation id="424864128008805179">Chromeৰ পৰা ছাইন আউট কৰিবনে?</translation>
 <translation id="4249068189593983585">Chrome ব্যৱহাৰৰ কিটিপ। টেবৰ অধিক বিকল্প পাবলৈ আপোনাৰ স্ক্রীণৰ একেবাৰে ওপৰত অথবা তলত থকা টুলবাৰৰ টেব দেখুৱাওক বুটামটো স্পৰ্শ কৰি ধৰি ৰাখক।</translation>
@@ -80,7 +78,6 @@
 <translation id="766361182512894255">কোনো ডেটা উলংঘনৰ ফলত আপোনাৰ পাছৱৰ্ডটো ফাদিল হৈছে। Chromeএ পাছৱৰ্ডটো এতিয়াই সলনি কৰাটো চুপাৰিছ কৰে।</translation>
 <translation id="7698568245838009292">Chromeএ কেমেৰাটো এক্সেছ কৰিবলৈ বিচাৰে</translation>
 <translation id="7855730255114109580">Google Chrome একেবাৰে শেহতীয়া অৱস্থাত আছে</translation>
-<translation id="8109233255338845204">আপোনাৰ একাউণ্টটো <ph name="HOSTED_DOMAIN" />এ পৰিচালনা কৰে, গতিকে আপোনাৰ Chromeৰ ডেটাখিনি এই ডিভাইচটোৰ পৰা মচা হ’ব।</translation>
 <translation id="8160472928944011082">Chrome আপডে’ট হ’ব নোৱাৰে</translation>
 <translation id="8370517070665726704">স্বত্বাধিকাৰ <ph name="YEAR" /> Google LLC। সর্বস্বত্ব সংৰক্ষিত।</translation>
 <translation id="840168496893712993">কিছুমান এড-অনৰ কাৰণে Chrome ক্ৰেশ্ব হয়। অনুগ্ৰহ কৰি সেইবোৰ আনইনষ্টল কৰি চাওক।</translation>

@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">應用程式版本</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">嘗試說「今日天氣點呀？」</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
 <translation id="1506061864768559482">搜尋引擎</translation>
@@ -569,6 +570,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="49268022542405662">系統會匯出您的密碼並下載為文字檔案。任何能存取目的地資料夾的使用者和應用程式都可看到您的密碼。</translation>
 <translation id="4932247056774066048">您即將登出由 <ph name="DOMAIN_NAME" /> 管理的帳戶，因此您的 Chrome 資料亦會從此裝置上刪除，但仍會保留在您的 Google 帳戶中。</translation>
 <translation id="4936039914467572121">迅速開啟此網站</translation>
+<translation id="4941179133499732445">輕按麥克風圖示即可透過語音進行搜尋</translation>
 <translation id="4943703118917034429">虛擬實境</translation>
 <translation id="4943872375798546930">沒有結果</translation>
 <translation id="4961107849584082341">將此網頁翻譯成任何語言</translation>
@@ -583,6 +585,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5011311129201317034"><ph name="SITE" /> 要求連接至</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">允許</translation>
+<translation id="5061533557687621530">如要查看天氣，請輕按麥克風圖示，然後說「今日天氣點呀？」</translation>
 <translation id="5087580092889165836">加入新卡</translation>
 <translation id="5091249083535528968">延伸使用情況資料</translation>
 <translation id="509429900233858213">發生錯誤。</translation>
@@ -597,6 +600,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 項下載操作失敗。}other{# 項下載操作失敗。}}</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
+<translation id="5188992787241350004">透過語音進行搜尋</translation>
 <translation id="5191251636205085390">瞭解及控制用於取代第三方 Cookie 的全新技術</translation>
 <translation id="5193988420012215838">已複製至剪貼簿</translation>
 <translation id="5199929503336119739">工作設定檔</translation>

@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Versioni i aplikacionit</translation>
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1450753235335490080">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Provo "Si është moti sot?"</translation>
 <translation id="1477626028522505441">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të problemeve të serverit.</translation>
 <translation id="1492417797159476138">E ke ruajtur tashmë këtë emër përdoruesi për këtë sajt</translation>
 <translation id="1506061864768559482">Motori i kërkimit</translation>
@@ -569,6 +570,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="49268022542405662">Fjalëkalimet e tua do të eksportohen dhe shkarkohen si skedar teksti. Ato do të jenë të dukshme për këdo dhe çdo aplikacion me qasje në dosjen e destinacionit.</translation>
 <translation id="4932247056774066048">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="DOMAIN_NAME" />, të dhënat e tua të Chrome do të fshihen nga kjo pajisje. Ato do të mbeten në "Llogarinë tënde të Google".</translation>
 <translation id="4936039914467572121">Shko më shpejt te kjo faqe</translation>
+<translation id="4941179133499732445">Trokit te mikrofoni për të kërkuar me anë të zërit</translation>
 <translation id="4943703118917034429">Realiteti virtual</translation>
 <translation id="4943872375798546930">Asnjë rezultat</translation>
 <translation id="4961107849584082341">Përktheje këtë faqe në çdo gjuhë</translation>
@@ -583,6 +585,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5011311129201317034"><ph name="SITE" /> dëshiron që të lidhet</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Lejo</translation>
+<translation id="5061533557687621530">Për të kontrolluar motin, trokit te mikrofoni dhe thuaj “Si është moti sot?”</translation>
 <translation id="5087580092889165836">Shto kartë</translation>
 <translation id="5091249083535528968">Të dhënat e zgjeruara të përdorimit</translation>
 <translation id="509429900233858213">Ndodhi një gabim.</translation>
@@ -597,6 +600,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 shkarkim pa sukses.}other{# shkarkime pa sukses.}}</translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
+<translation id="5188992787241350004">Kërko me zë</translation>
 <translation id="5191251636205085390">Mëso dhe kontrollo teknologjitë e reja që synojnë të zëvendësojnë kukit e palëve të treta</translation>
 <translation id="5193988420012215838">Kopjuar te kujtesa e fragmenteve</translation>
 <translation id="5199929503336119739">Profili i punës</translation>

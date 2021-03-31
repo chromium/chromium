@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="km">
 <translation id="102360288709523007">ជួយធ្វើឲ្យ Chromium ប្រសើរជាងមុនដោយផ្ញើស្ថិតិប្រើប្រាស់ និងរបាយការណ៍គាំងទៅ Google ។</translation>
-<translation id="1043245583918962542">ជ្រើសរើសថាតើត្រូវ​សម្អាតទិន្នន័យ Chromium របស់អ្នកចេញពីឧបករណ៍នេះ ឬរក្សាទុកវា។</translation>
 <translation id="1185134272377778587">អំពី Chromium</translation>
 <translation id="1257458525759135959">ដើម្បីរក្សាទុក​រូបភាព សូមចុច​លើ "ការកំណត់" ដើម្បីអនុញ្ញាតឱ្យ Chromium បញ្ចូលទៅក្នុង​រូបថតរបស់អ្នក</translation>
 <translation id="1289216811211435351">ប្ដូរទៅ Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">សម្អាត​ទិន្នន័យ​ Chromium ​របស់អ្នកពី​ឧបករណ៍​នេះមែនទេ?</translation>
 <translation id="8175055321229419309">គន្លឹះ៖ <ph name="BEGIN_LINK" />ផ្លាស់ទី Chromium ទៅរបារកម្មវិធីរបស់អ្នក<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium មិនអាចពិនិត្យរក​កំណែថ្មីបានទេ។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</translation>
-<translation id="8252885722420466166">ទទួលយកបទពិសោធ៍ប្រើប្រាស់ Chromium ប្រសើរជាងមុនដោយផ្អែកលើទីតាំងរបស់អ្នក។</translation>
 <translation id="8586442755830160949">រក្សាសិទ្ធិគ្រប់យ៉ាងដោយផលិតករ Chromium។ រក្សាសិទ្ធិ <ph name="YEAR" />។</translation>
 <translation id="8663480472502753423">រក្សាឱ្យ Chromium មានកំណែថ្មីជានិច្ច</translation>
 <translation id="8776843108004031667">គណនីនេះ និងទិន្នន័យ​ដែលមិនបាន​រក្សាទុកទាំងឡាយនឹងត្រូវ​បានលុបចេញពី Chromium។</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium ហួសសម័យហើយ</translation>
 <translation id="921174536258924340">Chromium មិនអាចពិនិត្យពាក្យសម្ងាត់ទាំងអស់បានទេ។ សូមព្យាយាមម្ដងទៀតនៅថ្ងៃស្អែក ឬ<ph name="BEGIN_LINK" />ពិនិត្យពាក្យសម្ងាត់នៅក្នុងគណនី Google របស់អ្នក។<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">ផលិតករ Chromium</translation>
-<translation id="994708389219151914">គណនីរបស់អ្នក​ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="HOSTED_DOMAIN" /> ដូច្នេះទិន្នន័យ Chromium របស់អ្នក​នឹងត្រូវបានសម្អាតពី​ឧបករណ៍នេះ។</translation>
 </translationbundle>

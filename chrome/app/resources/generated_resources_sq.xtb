@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> rekomandon që ta përditësosh këtë pajisje <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Sistemi nuk arriti të përcaktonte modelin e pajisjes ose numrin e serisë.</translation>
 <translation id="1119447706177454957">Gabim i brendshëm</translation>
+<translation id="111959947408687873">Përdor Ctrl+<ph name="SEARCH_KEY_NAME" />+M për të aktivizuar ose çaktivizuar zmadhuesin e ekranit të plotë. Përdor Ctrl+Alt+Tastet e shigjetave për të lëvizur nëpër ekran kur e ke zmadhuar atë.</translation>
 <translation id="1122068467107743258">Puna</translation>
 <translation id="1122198203221319518">&amp;Veglat</translation>
 <translation id="1122242684574577509">Vërtetimi dështoi. Kliko për të vizituar faqen e identifikimit për rrjetin Wi-Fi që po përdor (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Programi i "Mbrojtjes së përparuar" të Google</translation>
 <translation id="1155816283571436363">Po lidhet me telefonin tënd</translation>
 <translation id="1161575384898972166">Identifikohu në <ph name="TOKEN_NAME" /> për të eksportuar certifikatën e klientit.</translation>
+<translation id="116173250649946226">Administratori yt ka caktuar një temë të parazgjedhur e cila nuk mund të modifikohet.</translation>
 <translation id="1163931534039071049">&amp;Shiko burimin e kornizës</translation>
 <translation id="1164891049599601209">Ka hyrë në një sajt mashtrues</translation>
 <translation id="1164899421101904659">Fut "Çelësin e zhbllokimit të kodit PIN"</translation>
@@ -2551,6 +2553,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3809272675881623365">Lepur</translation>
 <translation id="3809280248639369696">Rreze hëne</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> mund t'i shikojnë skedarët në dosjet e mëposhtme</translation>
+<translation id="3810914450553844415">Administratori yt nuk lejon "Llogari shtesë të Google"</translation>
 <translation id="3810973564298564668">Menaxho</translation>
 <translation id="381202950560906753">Shto një tjetër</translation>
 <translation id="3812525830114410218">Certifikatë me probleme</translation>
@@ -2672,6 +2675,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3926002189479431949">Telefoni i Smart Lock u ndryshua</translation>
 <translation id="3927932062596804919">Refuzo</translation>
+<translation id="392803502090869922">Konfigurimi i kartës eSIM</translation>
 <translation id="3928570707778085600">Të ruhen ndryshimet te <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Ka pak bojë</translation>
 <translation id="3929426037718431833">Këto shtesa mund të shikojnë dhe të ndryshojnë informacionet në këtë sajt.</translation>
@@ -4242,6 +4246,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5764797882307050727">Liro pak hapësirë në pajisjen tënde.</translation>
 <translation id="5765425701854290211">Na vjen keq, por disa skedarë janë dëmtuar dhe përditësimi nuk u krye me sukses. Skedarët e tu të sinkronizuar janë të sigurt.</translation>
 <translation id="5765491088802881382">Nuk ofrohen rrjete.</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm. Të dërgohet te Google për skanim? Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="5769519078756170258">Pritësi ose domeni për ta përjashtuar</translation>
 <translation id="5770125698810550803">Shfaq butonat e navigimit</translation>
 <translation id="5771816112378578655">Konfigurimi në vazhdim...</translation>
@@ -4398,6 +4403,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5942779427914696408">Dukshmëria e pajisjes</translation>
 <translation id="5943127421590245687">Verifikimi u krye me sukses. Për të shkyçur dhe rivendosur të dhënat lokale, fut fjalëkalimin e vjetër të <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Skano kodin QR</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm. Të dërgohet te "Shfletimi i sigurt i Google" për skanim?</translation>
 <translation id="5946591249682680882">ID-ja e raportimit <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Lidh një tastierë ose mi, ose vazhdo me konfigurimin duke përdorur ekranin me prekje. Nëse po përdor pajisjet e tua me Bluetooth, sigurohu që pajisjet e tua janë gati për t'u çiftuar.</translation>
 <translation id="5949544233750246342">Skedari nuk mund të analizohej</translation>
@@ -4445,6 +4451,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6002452033851752583">Fjalëkalimi u fshi nga "Llogaria jote e Google"</translation>
 <translation id="6002458620803359783">Zërat e preferuar</translation>
 <translation id="6003143259071779217">Hiq rrjetin celular të eSIM</translation>
+<translation id="6003582434972667631">Tema është caktuar nga organizata jote</translation>
 <translation id="6006484371116297560">Klasike</translation>
 <translation id="6007240208646052708">Kërkimi me zë në gjuhën tënde nuk është i disponueshëm.</translation>
 <translation id="6011074160056912900">Rrjeti i eternetit</translation>
@@ -4824,6 +4831,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6429384232893414837">Gabim në përditësim</translation>
 <translation id="6430814529589430811">ASCII e koduar me Base64, një certifikatë</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> do të caktojë përditësime automatike për të gjithë përdoruesit e këtij kompjuteri.</translation>
+<translation id="6434104957329207050">Shpejtësia e skanimit të pikës</translation>
 <translation id="6434309073475700221">Hidhe</translation>
 <translation id="6434325376267409267">Pajisja jote ka nevojë për përditësim përpara se të mund të përdorësh <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Shikoje në dyqanin e uebit</translation>
@@ -4866,6 +4874,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6474498546677193336">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur Linux të ndalojë punën më pas.</translation>
 <translation id="6474884162850599008">Shkëput llogarinë e "Diskut të Google"</translation>
 <translation id="6475294023568239942">Liro hapësirën e diskut ose ndrysho përmasat e diskut të Linux te "Cilësimet"</translation>
+<translation id="6476138569087741884">Niveli i zmadhimit të ekranit të plotë</translation>
 <translation id="6477822444490674459">Sinkronizimi i njoftimeve nuk mbështetet për telefonat në një profil pune. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Dëshiron ta mbash skedarin e rrezikshëm?</translation>
 <translation id="6480327114083866287">Menaxhuar nga <ph name="MANAGER" /></translation>
@@ -5321,6 +5330,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6985607387932385770">Printerët</translation>
 <translation id="6988094684494323731">Kontejneri i Linux po niset</translation>
 <translation id="6988403677482707277">Skeda u zhvendos në fillim të shiritit të skedave</translation>
+<translation id="6990209147952697693">Versioni klasik i Chrome</translation>
 <translation id="6991665348624301627">Zgjidh një vendmbërritje</translation>
 <translation id="6992554835374084304">Aktivizo kontrolluesin drejtshkrimor të përmirësuar</translation>
 <translation id="6993000214273684335">Skeda u zhvendos nga grupi i paemërtuar - <ph name="GROUP_CONTENTS" /></translation>
@@ -6306,6 +6316,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8086015605808120405">Po konfiguron <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">Konfiguro <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ky skedar është i enkriptuar. Kërkoji zotëruesit ta deshifrojë.}other{Disa prej këtyre skedarëve janë të enkriptuar. Kërkoji zotëruesit të tyre t'i deshifrojë.}}</translation>
+<translation id="8087576439476816834">Shkarko, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Ndrysho fjalëkalimin</translation>
 <translation id="8090234456044969073">Lexo një listë të faqeve të vizituara më shpesh</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> nuk po reagon</translation>
@@ -6547,6 +6558,8 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8368859634510605990">&amp;Hapi të gjithë faqeshënuesit</translation>
 <translation id="8370294614544004647">Në gjumë kur mbyllet laptopi</translation>
 <translation id="8371695176452482769">Fol tani</translation>
+<translation id="8371749822919332187">Përdor Ctrl+Alt+Rrit ndriçimin për ta zmadhuar.
+Përdor Ctrl+Alt+Ul ndriçimin për ta zvogëluar.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Çaktivizo zërin e sajtit}other{Çaktivizo zërin e sajteve}}</translation>
 <translation id="8372369524088641025">Çelës WEP i gabuar</translation>
 <translation id="8373652277231415614">Direktoritë e ndara të Crostini</translation>
@@ -6554,7 +6567,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8378714024927312812">Menaxhohet nga organizata jote</translation>
 <translation id="8379878387931047019">Kjo pajisje nuk e mbështet llojin e çelësit të sigurisë që kërkohet nga ky sajt uebi</translation>
 <translation id="8379991678458444070">Kthehu këtu shpejt duke e shtuar këtë skedë te faqeshënuesit</translation>
-<translation id="8380314198565901932">Gabim gjatë shkarkimit të pajisjes virtuale. Përditëso <ph name="DEVICE_TYPE" /> dhe provo përsëri.</translation>
 <translation id="8382913212082956454">Kopjo &amp;adresën e mail-it</translation>
 <translation id="8386091599636877289">Politika nuk u gjet.</translation>
 <translation id="8386819192691131213">Lejoje "Asistentin" të përdorë informacionet në ekran për të dhënë përgjigje të shpejta, si përkthim, përkufizim, konvertim njësish etj.</translation>
@@ -7217,6 +7229,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Mirë se vjen në profilin tënd të ri</translation>
 <translation id="9112748030372401671">Ndrysho imazhin e sfondit</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm. Të dërgohet te Google për skanim?</translation>
 <translation id="9112987648460918699">Gjej...</translation>
 <translation id="9114663181201435112">Identifikohu me lehtësi</translation>
 <translation id="9115675100829699941">&amp;Faqeshënuesit</translation>

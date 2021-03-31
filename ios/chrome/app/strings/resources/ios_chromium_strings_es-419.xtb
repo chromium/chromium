@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es-419">
 <translation id="102360288709523007">Envía estadísticas de uso e informes de fallos a Google para mejorar Chromium.</translation>
-<translation id="1043245583918962542">Elige si deseas borrar o conservar los datos de Chromium que tienes almacenados en este dispositivo.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Para guardar imágenes, presiona en la Configuración a fin de permitir que Chromium agregue tus fotos</translation>
 <translation id="1289216811211435351">Cambia a Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">¿Quieres borrar tus datos de Chromium de este dispositivo?</translation>
 <translation id="8175055321229419309">Sugerencia: <ph name="BEGIN_LINK" />Lleva Chromium a tu Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
-<translation id="8252885722420466166">Obtén una mejor experiencia de Google en Chromium según tu ubicación.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Los autores de Chromium. Todos los derechos reservados.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8776843108004031667">Esta cuenta y todos los datos sin guardar se quitarán de Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium no actualizado</translation>
 <translation id="921174536258924340">Chromium no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana o <ph name="BEGIN_LINK" />revisa las contraseñas guardadas en tu Cuenta de Google.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Los creadores de Chromium</translation>
-<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" /> administra tu cuenta, por lo que se borrarán los datos de Chromium almacenados en este dispositivo.</translation>
 </translationbundle>

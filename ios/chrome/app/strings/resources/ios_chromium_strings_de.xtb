@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="102360288709523007">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chromium an Google senden.</translation>
-<translation id="1043245583918962542">Möchten Sie Ihre Chromium-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="1185134272377778587">Über Chromium</translation>
 <translation id="1257458525759135959">Um Bilder zu speichern, geben Sie Chromium unter "Einstellungen" die Berechtigung zum Hinzufügen von Fotos</translation>
 <translation id="1289216811211435351">Zu Chromium wechseln</translation>
@@ -79,7 +78,6 @@
 <translation id="8073677936375100957">Ihre Chromium-Daten von diesem Gerät löschen?</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Ziehen Sie Chromium in Ihr Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium konnte nicht nach Updates suchen. Versuchen Sie es später noch einmal.</translation>
-<translation id="8252885722420466166">Geben Sie Ihren Standort an, um Google über Chromium noch besser nutzen zu können.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Die Chromium-Autoren. Alle Rechte vorbehalten.</translation>
 <translation id="8663480472502753423">Chromium auf dem neuesten Stand halten</translation>
 <translation id="8776843108004031667">Dieses Konto und alle nicht gespeicherten Daten werden aus Chromium entfernt.</translation>
@@ -88,5 +86,4 @@
 <translation id="9089354809943900324">Chromium ist veraltet.</translation>
 <translation id="921174536258924340">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es morgen noch einmal oder <ph name="BEGIN_LINK" />prüfen Sie die Passwörter in Ihrem Google-Konto<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Die Chromium-Autoren</translation>
-<translation id="994708389219151914">Ihr Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, Ihre Chromium-Daten werden von diesem Gerät gelöscht.</translation>
 </translationbundle>

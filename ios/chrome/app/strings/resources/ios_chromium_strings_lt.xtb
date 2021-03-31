@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="102360288709523007">Padėkite tobulinti „Chromium“ siųsdami „Google“ naudojimo statistiką ir strigčių ataskaitas.</translation>
-<translation id="1043245583918962542">Pasirinkite, ar norite išvalyti „Chromium“ duomenis iš šio įrenginio ar juos palikti.</translation>
 <translation id="1185134272377778587">Apie „Chromium“</translation>
 <translation id="1257458525759135959">Jei norite išsaugoti vaizdus, palieskite „Nustatymai“ ir leiskite „Chromium“ pridėti jūsų nuotraukas</translation>
 <translation id="1289216811211435351">Perjungimas į „Chromium“</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Išvalyti jūsų „Chromium“ duomenis iš šio įrenginio?</translation>
 <translation id="8175055321229419309">Patarimas: <ph name="BEGIN_LINK" />perkelkite „Chromium“ į doką<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">„Chromium“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
-<translation id="8252885722420466166">Patogiau naudokitės „Google“ paslaugomis naudodami pagal vietovę pritaikytą „Chromium“.</translation>
 <translation id="8586442755830160949">Autorių teisės priklauso „Chromium“ autoriams, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="8663480472502753423">Atnaujinkite „Chromium“</translation>
 <translation id="8776843108004031667">Ši paskyra ir bet kokie neišsaugoti duomenys bus pašalinti iš „Chromium“.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">„Chromium“ versija yra pasenusi</translation>
 <translation id="921174536258924340">„Chromium“ nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">„Chromium“ autoriai</translation>
-<translation id="994708389219151914">Jūsų paskyrą tvarko <ph name="HOSTED_DOMAIN" />, todėl jūsų „Chromium“ duomenys bus išvalyti iš šio įrenginio.</translation>
 </translationbundle>

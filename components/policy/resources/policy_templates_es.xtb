@@ -863,6 +863,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />, el proveedor de búsquedas no tendrá ningún icono.</translation>
 <translation id="2145735238144543545">Certificados de cliente obligatorios</translation>
+<translation id="2146103669166779785">Color hexadecimal que se usará para generar y aplicar un tema al navegador.</translation>
 <translation id="214901426630414675">Restringir impresión por las dos caras</translation>
 <translation id="2149330464730004005">Habilitar impresión en color</translation>
 <translation id="2149592087996467903">Evitar que WebRTC use versiones obsoletas de TLS/DTLS</translation>
@@ -1476,6 +1477,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="2905984450136807296">Duración de la caché de datos de autenticación</translation>
 <translation id="2906874737073861391">Lista de extensiones AppPack</translation>
 <translation id="2908277604670530363">Número máximo de conexiones simultáneas con el servidor proxy</translation>
+<translation id="2912366658685903301">Configurar el color del tema del navegador</translation>
 <translation id="291853569864365550">No mostrar sugerencias de contenido en la página Nueva pestaña</translation>
 <translation id="2920795918401557243">Esta opción permite recoger trazas de rendimiento del sistema usando el servicio de trazado del sistema.
 
@@ -3840,6 +3842,11 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si no se configura esta política, el usuario podrá cambiar la lista de aplicaciones fijadas en el menú de aplicaciones.</translation>
 <translation id="6190022522129724693">Configuración de pop-ups predeterminada</translation>
 <translation id="6190367314942602985">Proporcionar información de identificación de usuarios</translation>
+<translation id="6191963383731098056">Esta política permite a los administradores configurar el color del tema de <ph name="PRODUCT_NAME" />. La cadena de entrada debe ser un color hexadecimal válido que coincida con el formato "#RRGGBB".
+
+      Si se asigna un color hexadecimal válido a esta política, se generará y se aplicará de forma automática un tema basado en ese color al navegador. Los usuarios no podrán cambiar el tema definido por la política.
+
+      Si no se asigna ningún valor a la política, los usuarios podrán cambiar al tema que prefieran en su navegador.</translation>
 <translation id="6195802366906945965">Determina si se utilizará el verificador de certificados integrado para verificar los certificados de los servidores</translation>
 <translation id="6208896993204286313">Proporcionar información de políticas de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Proporcionar información de versiones del SO y de <ph name="PRODUCT_NAME" /></translation>

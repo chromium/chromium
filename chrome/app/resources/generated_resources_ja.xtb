@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> がこの <ph name="DEVICE_TYPE" /> の更新をすすめています。</translation>
 <translation id="1118738876271697201">デバイスの機種またはシリアル番号を特定できませんでした。</translation>
 <translation id="1119447706177454957">内部エラー</translation>
+<translation id="111959947408687873">全画面拡大鏡を切り替えるには、Ctrl+<ph name="SEARCH_KEY_NAME" />+M キーを使用します。拡大した状態で画面上を移動するには、Ctrl+Alt+矢印キーを使用します。</translation>
 <translation id="1122068467107743258">仕事</translation>
 <translation id="1122198203221319518">ツール(&amp;T)</translation>
 <translation id="1122242684574577509">認証できませんでした。クリックして、ご利用の Wi-Fi ネットワーク（<ph name="NETWORK_ID" />）のログインページにアクセスしてください。</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Google の高度な保護機能プログラム</translation>
 <translation id="1155816283571436363">スマートフォンに接続しています</translation>
 <translation id="1161575384898972166">クライアント証明書をエクスポートするには <ph name="TOKEN_NAME" /> にログインしてください。</translation>
+<translation id="116173250649946226">デフォルトのテーマは管理者が設定しており、変更できません。</translation>
 <translation id="1163931534039071049">フレームのソースを表示(&amp;V)</translation>
 <translation id="1164891049599601209">不正なサイトで入力</translation>
 <translation id="1164899421101904659">PIN ロック解除キーを入力</translation>
@@ -2554,6 +2556,7 @@
 <translation id="3809272675881623365">ウサギ</translation>
 <translation id="3809280248639369696">ムーンビーム</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> は次のフォルダのファイルを表示できます</translation>
+<translation id="3810914450553844415">管理者が Google アカウントの追加を許可していません。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="381202950560906753">別の指紋を登録</translation>
 <translation id="3812525830114410218">不適切な証明書</translation>
@@ -2675,6 +2678,7 @@
 <translation id="3925573269917483990">カメラ:</translation>
 <translation id="3926002189479431949">Smart Lock 用のスマートフォンが変更されました</translation>
 <translation id="3927932062596804919">拒否</translation>
+<translation id="392803502090869922">eSIM の設定</translation>
 <translation id="3928570707778085600">「<ph name="FILE_OR_FOLDER_NAME" />」に変更を保存しますか？</translation>
 <translation id="3928659086758780856">インク残量が少なくなっています</translation>
 <translation id="3929426037718431833">これらの拡張機能は、このサイトの情報を表示、変更できます。</translation>
@@ -4245,6 +4249,7 @@
 <translation id="5764797882307050727">デバイスの空き容量を確保してください。</translation>
 <translation id="5765425701854290211">一部のファイルが破損しており、正常にアップデートできませんでした。同期ファイルは安全です。</translation>
 <translation id="5765491088802881382">ネットワークが利用できません</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google に送信してスキャンしますか？ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="5769519078756170258">除外するホストまたはドメイン</translation>
 <translation id="5770125698810550803">ナビゲーション ボタンを表示する</translation>
 <translation id="5771816112378578655">セットアップ中...</translation>
@@ -4401,6 +4406,7 @@
 <translation id="5942779427914696408">デバイスの公開設定</translation>
 <translation id="5943127421590245687">確認が完了しました。ロックを解除してローカルデータを復元するには、<ph name="DEVICE_TYPE" /> の以前のパスワードを入力してください。</translation>
 <translation id="5944869793365969636">QR コードのスキャン</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google セーフ ブラウジングに送信してスキャンしますか？</translation>
 <translation id="5946591249682680882">レポート ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">キーボードまたはマウスを接続するか、タッチスクリーンを使用して、設定を続行してください。Bluetooth デバイスを使用している場合は、ペア設定できる状態であることを確認してください。</translation>
 <translation id="5949544233750246342">ファイルを解析できません</translation>
@@ -4448,6 +4454,7 @@
 <translation id="6002452033851752583">Google アカウントからパスワードを削除しました</translation>
 <translation id="6002458620803359783">使用する音声</translation>
 <translation id="6003143259071779217">eSIM モバイル ネットワークの削除</translation>
+<translation id="6003582434972667631">テーマは組織によって設定されています</translation>
 <translation id="6006484371116297560">クラシック</translation>
 <translation id="6007240208646052708">お使いの言語では音声検索はご利用いただけません。</translation>
 <translation id="6011074160056912900">イーサネット ネットワーク</translation>
@@ -4827,6 +4834,7 @@
 <translation id="6429384232893414837">更新エラー</translation>
 <translation id="6430814529589430811">Base64 エンコード ASCII 形式の単一の証明書</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> は、このコンピュータのすべてのユーザーに対して自動更新を設定します。</translation>
+<translation id="6434104957329207050">ポイントのスキャン速度</translation>
 <translation id="6434309073475700221">破棄</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> を使用するには、先にデバイスを更新する必要があります。</translation>
 <translation id="6436164536244065364">ウェブストアで見る</translation>
@@ -4869,6 +4877,7 @@
 <translation id="6474498546677193336">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 Linux をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="6474884162850599008">Google ドライブ アカウントを切断する</translation>
 <translation id="6475294023568239942">ディスクの空き領域を確保するか、設定で Linux ディスクのサイズを変更してください</translation>
+<translation id="6476138569087741884">全画面のズームレベル</translation>
 <translation id="6477822444490674459">通知の同期は、仕事用プロファイルが設定されているスマートフォンには対応していません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">危険なファイルを保存しますか？</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> によって管理されています</translation>
@@ -5324,6 +5333,7 @@
 <translation id="6985607387932385770">プリンタ</translation>
 <translation id="6988094684494323731">Linux コンテナを起動しています</translation>
 <translation id="6988403677482707277">タブをタブバーの左端に移動しました</translation>
+<translation id="6990209147952697693">クラシック Chrome</translation>
 <translation id="6991665348624301627">送信先の選択</translation>
 <translation id="6992554835374084304">拡張スペルチェックの有効化</translation>
 <translation id="6993000214273684335">タブを名前のないグループから移動しました - <ph name="GROUP_CONTENTS" /></translation>
@@ -6311,6 +6321,7 @@
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> を設定しています...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> をセットアップ</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{このファイルは暗号化されています。所有者に復号するよう依頼してください。}other{一部のファイルは暗号化されています。所有者に復号するよう依頼してください。}}</translation>
+<translation id="8087576439476816834">ダウンロード、<ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8090234456044969073">よくアクセスするウェブサイトのリストの読み取り</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> が応答していません</translation>
@@ -6552,6 +6563,8 @@
 <translation id="8368859634510605990">すべてのブックマークを開く(&amp;O)</translation>
 <translation id="8370294614544004647">ノートパソコンを閉じたときにスリープ状態にする</translation>
 <translation id="8371695176452482769">お話しください</translation>
+<translation id="8371749822919332187">拡大するには、Ctrl+Alt+明るさを上げるキーを使用します。
+縮小するには、Ctrl+Alt+明るさを下げるキーを使用します。</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{サイトをミュート}other{サイトをミュート}}</translation>
 <translation id="8372369524088641025">WEP キーが正しくありません</translation>
 <translation id="8373652277231415614">Crostini の共有ディレクトリ</translation>
@@ -6559,7 +6572,6 @@
 <translation id="8378714024927312812">組織によって管理されています</translation>
 <translation id="8379878387931047019">このデバイスでは、このウェブサイトからリクエストされているセキュリティ キーのタイプはサポートされていません。</translation>
 <translation id="8379991678458444070">このタブをブックマークに追加すると、すばやくこのタブに戻ることができます</translation>
-<translation id="8380314198565901932">仮想マシンのダウンロード中にエラーが発生しました。<ph name="DEVICE_TYPE" /> を更新してから、もう一度お試しください。</translation>
 <translation id="8382913212082956454">メール アドレスをコピー(&amp;E)</translation>
 <translation id="8386091599636877289">ポリシーが見つかりません。</translation>
 <translation id="8386819192691131213">アシスタントに画面上の情報の使用を許可して、翻訳、意味、単位変換などのクイック アンサーを提供できるようにします。</translation>
@@ -7222,6 +7234,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">新しいプロファイルへようこそ</translation>
 <translation id="9112748030372401671">壁紙を変更する</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google に送信してスキャンしますか？</translation>
 <translation id="9112987648460918699">検索...</translation>
 <translation id="9114663181201435112">簡単にログイン</translation>
 <translation id="9115675100829699941">ブックマーク(&amp;B)</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="102360288709523007">Hobetu Chromium Google-ri erabilera-estatistikak eta hutsegite-txostenak bidalita.</translation>
-<translation id="1043245583918962542">Erabaki gailu honetatik Chromium-eko datuak garbitu nahi dituzun ala ez.</translation>
 <translation id="1185134272377778587">Chromium arakatzaileari buruz</translation>
 <translation id="1257458525759135959">Irudiak gordetzeko, sakatu Ezarpenak eta eman argazkiak gehitzeko baimena Chromium-i</translation>
 <translation id="1289216811211435351">Aldatu Chromium-era</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Gailu honetan dituzun Chromium-eko datuak garbitu nahi dituzu?</translation>
 <translation id="8175055321229419309">Aholkua: <ph name="BEGIN_LINK" />ainguratu Chromium dock-ean<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium-ek ezin izan ditu bilatu eguneratzeak. Saiatu berriro geroago.</translation>
-<translation id="8252885722420466166">Atera etekin handiagoa Chromium-i Google-n, kokapena erabilita.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Chromium-en egileak. Eskubide guztiak erreserbatuta.</translation>
 <translation id="8663480472502753423">Mantendu Chromium eguneratuta</translation>
 <translation id="8776843108004031667">Kontu hau eta gorde gabeko datuak kendu egingo dira Chromium-etik.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium zaharkituta dago</translation>
 <translation id="921174536258924340">Chromium-ek ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Chromium egileak</translation>
-<translation id="994708389219151914">Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, Chromium-eko datuak garbitu egingo dira gailu honetatik.</translation>
 </translationbundle>

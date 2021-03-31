@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Không có lệnh in nào đang xử lý</translation>
 <translation id="4297501883039923494">Đã dừng – Lỗi không xác định</translation>
+<translation id="4344214025510306853">Đính kèm APN</translation>
 <translation id="4378373042927530923">Không chạy</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Drive của tôi</translation>
@@ -278,6 +279,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="7040230719604914234">Nhà mạng</translation>
 <translation id="7059230779847288458">Đang sạc, còn <ph name="TIME_VALUE" /> nữa là pin đầy</translation>
 <translation id="708426984172631313">ĐÃ DỪNG</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
 <translation id="7144878232160441200">Thử lại</translation>
 <translation id="714876143603641390">Khả năng kết nối với mạng LAN</translation>

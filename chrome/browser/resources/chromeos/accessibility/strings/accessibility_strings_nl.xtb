@@ -52,6 +52,7 @@
 <translation id="1268366246392928616">Geen vorige wiskundige uitdrukking</translation>
 <translation id="1273314450961659276">Tekst-naar-spraak-instellingen</translation>
 <translation id="1275718070701477396">Geselecteerd</translation>
+<translation id="1284576163386164372">Je kunt de tutorials altijd bekijken door met 4 vingers te tikken om de menu's te openen. Vervolgens activeer je de tutorial in het gedeelte ChromeVox.</translation>
 <translation id="1291286136605998134">Schakelknop</translation>
 <translation id="1299774449519412690">Lichthemelsblauw</translation>
 <translation id="1303806948938513162">Tik met vier vingers om de ChromeVox-menu's te openen</translation>
@@ -115,6 +116,7 @@
 <translation id="1690731385917361335">Geen items</translation>
 <translation id="1700517974991662022">Bezocht</translation>
 <translation id="1714116687360794776">Meter</translation>
+<translation id="1717267964664691695">Je hebt de tutorial over aanraking afgerond</translation>
 <translation id="1722567105086139392">Link</translation>
 <translation id="1727806147743597030">footer</translation>
 <translation id="1730447754326314349">Welkom bij de ChromeVox-tutorial. Als je deze tutorial wilt afsluiten, kun je op elk moment linksboven op het toetsenbord op de Escape-toets drukken. Als je ChromeVox wilt uitzetten, houd je Ctrl en Alt ingedrukt en druk je op Z. Druk als je klaar bent op de spatiebalk om naar de volgende les te gaan.</translation>
@@ -131,6 +133,7 @@
 <translation id="1834891354138622109">Kolom</translation>
 <translation id="1845944666972354496">Dubbeltik om te activeren</translation>
 <translation id="1846771122725914429">Bluetooth-brailleleesregel</translation>
+<translation id="1852018405765032699">Je opent of sluit de ChromeVox-menu's door met 4 vingers op het scherm te tikken. In deze menu's vind je nuttige informatie over opdrachten en sneltoetsen. Als de menu's eenmaal open zijn, kun je met 1 vinger swipen om door items te navigeren. Een item activeer je door erop te dubbeltikken. Tik met 4 vingers op het scherm om verder te gaan.</translation>
 <translation id="1865601187525349519">Einde van tekst</translation>
 <translation id="1876229593313240038">document</translation>
 <translation id="1902396333223336119">Cel</translation>
@@ -181,6 +184,7 @@
 <translation id="2267538686624070261">Spelfout sluiten</translation>
 <translation id="2267945578749931355">Volgend teken</translation>
 <translation id="2278490101488436824">Swipe met drie vingers naar links</translation>
+<translation id="2303873575703885770">Een item activeren</translation>
 <translation id="2305942658236913680">Geen volgende kop</translation>
 <translation id="2311237334957139798">Naar het vorige detailniveau</translation>
 <translation id="2314393392395134769">Geen subscript</translation>
@@ -219,6 +223,7 @@
 <translation id="2592212930811759050">Dubbeltik om te beginnen met bewerken</translation>
 <translation id="2598495320872286378">Grammaticafout</translation>
 <translation id="2603828437139726540">Eén teken vooruit gaan</translation>
+<translation id="2619344480613750862">Je kunt ook bewegen naar andere gedeelten van het scherm. Je kunt bijvoorbeeld heen en weer bewegen tussen de Launcher, de plank en je Chrome-tabbladen. Swipe met 4 vingers van links naar rechts om naar het volgende gedeelte te gaan. Probeer het nu uit.</translation>
 <translation id="2624431853467395961">Leermodus openen</translation>
 <translation id="2626530649491650971">klikbaar</translation>
 <translation id="2637227747952042642">Wiskunde</translation>
@@ -247,6 +252,7 @@
 <translation id="2756452585631602151">Voer een aangepast label in</translation>
 <translation id="2766299274563946262">Geen cel aan de linkerkant beschikbaar</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
+<translation id="2792200646155001340">Je kunt ook met 1 vinger van rechts naar links swipen om naar het vorige item te gaan. Probeer het nu.</translation>
 <translation id="280499067616661124">Zoeken op pagina in ChromeVox</translation>
 <translation id="2811019999044652585">Als je naar andere delen van het scherm (zoals werkbalken of het systeemvak) wilt springen, druk je op Ctrl + Vooruit. De vooruittoets op de Chromebook bevindt zich meteen boven de cijfertoets 2.</translation>
 <translation id="2811204574343810641">Rij</translation>
@@ -274,6 +280,7 @@
 <translation id="2968634799764242930">Zeegroen</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{tab}other{# tabs}}</translation>
 <translation id="2972205263822847197">Knopinfo</translation>
+<translation id="2976476721782829799">Je kunt ook bewegen door 1 vinger over het scherm te slepen. Dit noemen we verkennen via aanraking. Probeer je vinger zo over het scherm te slepen dat je de rest van deze les kunt lezen.</translation>
 <translation id="297825089465017871">Swipe met twee vingers naar links</translation>
 <translation id="2998131015536248178">Vorig teken</translation>
 <translation id="2999559350546931576">Toonhoogte verlagen</translation>
@@ -375,6 +382,7 @@
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3589661172894441357">Woordenlijst</translation>
 <translation id="3591784666823501596">Koningsblauw</translation>
+<translation id="3592715211448024517">Menu's gebruiken</translation>
 <translation id="3594207934078151302">Middenzeegroen</translation>
 <translation id="3599054940393788245">Valt niet onder wiskunde</translation>
 <translation id="360241989769010433">Dankwoord</translation>
@@ -401,6 +409,7 @@
 <translation id="3781428340399460090">Felroze</translation>
 <translation id="3783725005098956899">Logbestand tonen</translation>
 <translation id="3801735343383419236">Automatisch lijst aanvullen</translation>
+<translation id="3806327402890551732">Naar het volgende of vorige item gaan</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Lichtkoraal</translation>
 <translation id="3816633764618089385">Volgende media</translation>
@@ -410,6 +419,7 @@
 <translation id="3870295413168340326">Geen vorige kop van niveau 3</translation>
 <translation id="3887399638190992181">Essentiële toetsen</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3893063449310326280">Op dezelfde manier kun je met 4 vingers van rechts naar links swipen om naar het vorige hoofdelement te gaan. Probeer het nu!</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Vorige kop voor niveau 6</translation>
@@ -504,6 +514,7 @@
 <translation id="4615592953348396470">Volgende toetsaanslag wordt genegeerd</translation>
 <translation id="4623097797855662355">Colofon</translation>
 <translation id="463135993322337640">Druk in ChromeVox op o en dan n voor meer informatie over wat er nieuw is</translation>
+<translation id="4649220074413114917">Door met 2 vingers op het scherm te tikken, kun je de huidige spraak stoppen. Dit is handig als je wilt dat ChromeVox iets niet voorleest. Tik met 2 vingers op het scherm om verder te gaan.</translation>
 <translation id="4660783501463101648">De klassieke versie is verwijderd. Het is niet meer mogelijk om via het toetsenbord terug te schakelen naar de klassieke versie van ChromeVox.</translation>
 <translation id="4661075872484491155">structuur</translation>
 <translation id="4668929960204016307">,</translation>
@@ -579,12 +590,14 @@
 <translation id="5140016802771803559">Rebecca-paars</translation>
 <translation id="5142101052131610456">Alle lessen</translation>
 <translation id="5158275234811857234">Omslag</translation>
+<translation id="516076699907426116">Verken via aanraking om naar de knop 'Volgende les' te gaan. Dubbeltik dan om verder te gaan.</translation>
 <translation id="5170206230005240598">Braille-ondertiteling staat aan</translation>
 <translation id="5183440668879371625">Vorige brailleregel</translation>
 <translation id="5189244881767082992">Regel</translation>
 <translation id="5263034204789987535">Maïsgeel</translation>
 <translation id="5263344797180442561">k2</translation>
 <translation id="528468243742722775">Beëindigen</translation>
+<translation id="5290220123487191192">Laten we beginnen met een paar vaak gebruikte gebaren. Als je bij een item komt dat je wilt activeren, dubbeltik je met 1 vinger op het scherm. Dubbeltik nu om door te gaan.</translation>
 <translation id="5302089807023311274">Bibliografiereferentie</translation>
 <translation id="530391007967514163">Navigeer nu per kop naar de onderstaande tekst.</translation>
 <translation id="5304943142864553931">tabblad <ph name="TITLE" /></translation>
@@ -655,10 +668,12 @@
 <translation id="5703716265115423771">volume omlaag</translation>
 <translation id="5704453877234251104">Druk op de pijl-omhoog of -omlaag voor automatisch aanvullen</translation>
 <translation id="5712244464475377681">popbtn</translation>
+<translation id="5712889723513495267">Naar het volgende of vorige gedeelte gaan</translation>
 <translation id="5725079927589231571">Licht staalblauw</translation>
 <translation id="5732189279857692565">Dit is de tweede kop. Ga door. Druk op Zoeken + H of Zoeken + Shift + H.</translation>
 <translation id="5748623122140342504">Vorige kop voor niveau 5</translation>
 <translation id="5760594853119905566">Bijlage</translation>
+<translation id="5761219715606611783">Goed bezig! Je hebt de basisprincipes van ChromeVox-aanraking geleerd. Via de knoppen hieronder kun je de tutorial nog een keer doornemen of deze afsluiten.</translation>
 <translation id="5805940204952508776">Tik met twee vingers</translation>
 <translation id="5819072574982403430">Item in boomstructuur</translation>
 <translation id="5822819874379903994">Donker turkoois</translation>
@@ -683,6 +698,7 @@
 <translation id="5906974869830879618">Geef een pincode op</translation>
 <translation id="5921587111466148855">Hoofdstuk</translation>
 <translation id="5923780477617566089">Huidige datum</translation>
+<translation id="5926889058434275234">Een volledige lijst met gebaren is te vinden in het Helpcentrum.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{gelijkteken}other{# gelijktekens}}</translation>
 <translation id="5948123859135882163">Interpretatie van wiskundige formules schakelen tussen structureel en semantisch</translation>
 <translation id="5955304353782037793">app</translation>
@@ -760,6 +776,7 @@
 <translation id="6561818612645211875">Naar het begin van de huidige rij gaan</translation>
 <translation id="6579990219486187401">Lichtroze</translation>
 <translation id="6583174818554398774">Naar het volgende detailniveau</translation>
+<translation id="6584162722998608255">Nu leer je hoe je over het scherm beweegt. Je kunt met 1 vinger van links naar rechts swipen om naar het volgende item te gaan. Probeer op deze manier naar de volgende stap te gaan.</translation>
 <translation id="6609828810966525877">Ontdek meer gebaren in de leermodus en het Helpcentrum voor Chromebook</translation>
 <translation id="6628427060004938651">Deel</translation>
 <translation id="6637586476836377253">logboek</translation>
@@ -781,6 +798,7 @@
 <translation id="6759710362319508545">Hulpbronnen</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786800275320335305">Artikel</translation>
+<translation id="6790781785997195160">Oefen eerst en vind dan de knop Volgende les. Dubbeltik dan om verder te gaan.</translation>
 <translation id="6793101435925451627">keuzelijst</translation>
 <translation id="6815255864998354418">Citroencake</translation>
 <translation id="6816066673340002913">Licht guldenroedegeel</translation>
@@ -806,6 +824,7 @@
 <translation id="6994042831499278539">Woordenlijstreferentie</translation>
 <translation id="6996566555547746822">Volgende keuzelijst met invoervak</translation>
 <translation id="6997224546856374593">Bij het voorlezen van hoofdletters:</translation>
+<translation id="6999752561504308105">Welkom bij de ChromeVox-tutorial. Als je deze tutorial wilt afsluiten, swipe je met 2 vingers van rechts naar links. Als je ChromeVox aan of uit wilt zetten, houd je beide volumeknoppen 5 seconden ingedrukt. Dubbeltik als je klaar bent met 1 vinger op het scherm om naar de volgende les te gaan.</translation>
 <translation id="700202842116345659">Bibliografievermelding</translation>
 <translation id="7005146664810010831">Geen URL gevonden</translation>
 <translation id="7026338066939101231">Lager</translation>
@@ -819,6 +838,7 @@
 <translation id="7086377898680121060">helderheid omhoog</translation>
 <translation id="7088743565397416204">Dubbeltik om het item te activeren waarop de focus is geplaatst</translation>
 <translation id="7088960765736518739">Toegang via schakelaar</translation>
+<translation id="7090715360595433170">Dit kan ook efficiënter zijn dan naar links en rechts swipen met 1 vinger.</translation>
 <translation id="7091296112653361280">Navajo-wit</translation>
 <translation id="7095834689119144465">Tekst alleen numeriek bewerken</translation>
 <translation id="7096001299300236431">Vorige media</translation>
@@ -856,6 +876,7 @@
 <translation id="7308519659008003150">Geen vorig formulierveld</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">gedeeltelijk geselecteerd</translation>
+<translation id="7322442671176251901">Verkennen via aanraking</translation>
 <translation id="7344012264516629579">Andere navigatieopdrachten zijn navigeren per link, knop, selectievakje, enzovoort. In de ChromeVox-menu's kun je een volledige lijst met navigatieopdrachten vinden. Open deze door op Zoeken + de punttoets te drukken.</translation>
 <translation id="7356165926712028380">Overschakelen naar achtpuntsbraille</translation>
 <translation id="7356610683936413584">Detail beschrijvingslijst</translation>
@@ -910,6 +931,7 @@
     Als je klaar bent met de tutorial, gebruik je ChromeVox om naar de knop Sluiten te navigeren en klik je erop.</translation>
 <translation id="7724603315864178912">Knip</translation>
 <translation id="7731785449856576010">Geen volgende mediawidget</translation>
+<translation id="7735498529470878067">Verkennen via aanraking kan handig zijn om snel een beeld te krijgen van wat er op het scherm staat.</translation>
 <translation id="773906353055481349">Druk op Zoeken+Ctrl+Alt in combinatie met de pijltoetsen om van cel naar cel te navigeren</translation>
 <translation id="7763537600611320912">Download van <ph name="FILE_NAME" /> is gestart</translation>
 <translation id="7768784765476638775">Selecteer om uitgesproken te worden</translation>
@@ -1089,6 +1111,7 @@
 <translation id="9153606228985488238">Toonhoogte <ph name="PERCENT" /> procent</translation>
 <translation id="9160096769946561184">Naar het einde van de huidige kolom gaan</translation>
 <translation id="9173115498289768110">Volume <ph name="PERCENT" /> procent</translation>
+<translation id="9185200690645120087">Tutorial voor ChromeVox-aanraking</translation>
 <translation id="9192904702577636854">Rollende tekst (marquee)</translation>
 <translation id="9205282956404529648">Begin met typen voor automatisch aanvullen</translation>
 <translation id="9208241857935108694">Antiek wit</translation>

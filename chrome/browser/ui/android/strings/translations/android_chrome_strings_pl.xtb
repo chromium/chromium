@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Wersja aplikacji</translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />: nie udało się udostępnić</translation>
+<translation id="147113415845704694">Powiedz na przykład „Jaka jest prognoza na dzisiaj”?</translation>
 <translation id="1477626028522505441">Nie udało się pobrać pliku <ph name="FILE_NAME" /> z powodu problemów z serwerem.</translation>
 <translation id="1492417797159476138">Ta nazwa użytkownika została już zapisana w tej witrynie</translation>
 <translation id="1506061864768559482">Wyszukiwarka</translation>
@@ -569,6 +570,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="49268022542405662">Twoje hasła zostaną wyeksportowane i pobrane jako plik tekstowy. Twoje hasła będą widoczne dla każdej osoby i aplikacji, która ma dostęp do folderu docelowego.</translation>
 <translation id="4932247056774066048">Wylogowujesz się z konta zarządzanego w domenie <ph name="DOMAIN_NAME" />, więc Twoje dane w Chrome zostaną usunięte z tego urządzenia. Pozostaną one na Twoim koncie Google.</translation>
 <translation id="4936039914467572121">Otwieraj tę stronę szybciej</translation>
+<translation id="4941179133499732445">Kliknij mikrofon, aby wyszukiwać za pomocą głosu</translation>
 <translation id="4943703118917034429">Rzeczywistość wirtualna</translation>
 <translation id="4943872375798546930">Brak wyników</translation>
 <translation id="4961107849584082341">Możesz przetłumaczyć tę stronę na dowolny język</translation>
@@ -583,6 +585,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5011311129201317034"><ph name="SITE" /> chce się połączyć</translation>
 <translation id="5016205925109358554">Szeryfowa</translation>
 <translation id="5039804452771397117">Zezwalaj</translation>
+<translation id="5061533557687621530">Aby sprawdzić prognozę pogody, kliknij mikrofon i powiedz „Jaka jest prognoza na dzisiaj?”</translation>
 <translation id="5087580092889165836">Dodaj kartę</translation>
 <translation id="5091249083535528968">Rozszerzone dane o korzystaniu</translation>
 <translation id="509429900233858213">Wystąpił błąd.</translation>
@@ -597,6 +600,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Nie udało się pobrać 1 pliku.}few{Nie udało się pobrać # plików.}many{Nie udało się pobrać # plików.}other{Nie udało się pobrać # pliku.}}</translation>
 <translation id="5170568018924773124">Pokaż w folderze</translation>
 <translation id="5184329579814168207">Otwórz w Chrome</translation>
+<translation id="5188992787241350004">Szukaj przy użyciu głosu</translation>
 <translation id="5191251636205085390">Poznaj nowe technologie, które będą używane zamiast plików cookie innych firm, i naucz się je kontrolować</translation>
 <translation id="5193988420012215838">Skopiowane do schowka</translation>
 <translation id="5199929503336119739">Profil służbowy</translation>

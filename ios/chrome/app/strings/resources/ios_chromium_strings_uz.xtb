@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="102360288709523007">Google’ga foydalanish statistikasi va ishdan chiqish hisobotlarini yuborish</translation>
-<translation id="1043245583918962542">Chromium maʼlumotlari bu qurilmadan tozalansinmi?</translation>
 <translation id="1185134272377778587">Chromium haqida</translation>
 <translation id="1257458525759135959">Rasmlarni saqlash uchun Sozlamalar ustiga bosib, Chromiumga rasmlarni ochishga ruxsat bering.</translation>
 <translation id="1289216811211435351">Chromiumga almashish</translation>
@@ -80,7 +79,6 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="8073677936375100957">Chromium maʼlumotlari bu qurilmadan tozalansinmi?</translation>
 <translation id="8175055321229419309">Maslahat: <ph name="BEGIN_LINK" />Chromium brauzerini sevimli ilovalar paneliga qadab oling<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
-<translation id="8252885722420466166">O‘z joylashuvingiz haqidagi ma’lumotlarni taqdim etish orqali Chrome brauzerida Google’ning qo‘shimcha imkoniyatlaridan foydalaning.</translation>
 <translation id="8586442755830160949">© The Chromium Authors, <ph name="YEAR" />. Barcha huquqlar himoyalangan.</translation>
 <translation id="8663480472502753423">Chromium brauzerini yangilab boring</translation>
 <translation id="8776843108004031667">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromiumdan olib tashlanadi.</translation>
@@ -89,5 +87,4 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="9089354809943900324">Chromium versiyasi eskirdi</translation>
 <translation id="921174536258924340">Chromium barcha parollarni tekshira olmadi. Ertaga qaytadan urining yoki <ph name="BEGIN_LINK" />Google hisobingizdagi parollarni tekshiring.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium mualliflari</translation>
-<translation id="994708389219151914">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chromium maʼlumotlari tozalanadi.</translation>
 </translationbundle>

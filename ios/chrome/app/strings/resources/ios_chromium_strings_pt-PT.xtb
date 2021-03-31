@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="102360288709523007">Ajude a melhorar o Chromium ao enviar estatísticas de utilização e relatórios de falhas à Google.</translation>
-<translation id="1043245583918962542">Escolha se pretende limpar os seus dados do Chromium deste dispositivo ou mantê-los.</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1257458525759135959">Para guardar imagens, toque em Definições para permitir que o Chromium adicione as suas fotos.</translation>
 <translation id="1289216811211435351">Mude para o Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Pretende limpar os dados do Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Sugestão: <ph name="BEGIN_LINK" />mova o Chromium para a Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">O Chromium não conseguiu verificar se existem atualizações. Tente novamente mais tarde.</translation>
-<translation id="8252885722420466166">Obter uma melhor experiência no Chromium com base na sua localização.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8663480472502753423">Mantenha o Chromium atualizado.</translation>
 <translation id="8776843108004031667">Esta conta e quaisquer dados não guardados serão removidos do Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="921174536258924340">O Chromium não conseguiu verificar todas as palavras-passe. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Os Autores do Chromium</translation>
-<translation id="994708389219151914">A sua conta é gerida pelo domínio <ph name="HOSTED_DOMAIN" />, pelo que os seus dados do Chromium serão limpos deste dispositivo.</translation>
 </translationbundle>

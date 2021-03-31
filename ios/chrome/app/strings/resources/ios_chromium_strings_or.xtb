@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="or">
 <translation id="102360288709523007">Googleକୁ ବ୍ୟବହାରର ପରିସଂଖ୍ୟାନ ଏବଂ କ୍ରାସ୍‌ ରିପୋର୍ଟ ପଠାଇ, Chromiumକୁ ଉନ୍ନତ କରିବାରେ ସାହାଯ୍ୟ କରନ୍ତୁ।</translation>
-<translation id="1043245583918962542">ଏହି ଡିଭାଇସରୁ ଆପଣଙ୍କ Chromium ଡାଟାକୁ ଖାଲି କରିବେ କିମ୍ବା ଏହାକୁ ରଖିବେ ତାହା ବାଛନ୍ତୁ।</translation>
 <translation id="1185134272377778587">Chromium ବିଷୟରେ</translation>
 <translation id="1257458525759135959">ଛବିଗୁଡ଼ିକୁ ସେଭ୍ କରିବା ପାଇଁ, Chromiumକୁ ଆପଣଙ୍କ ଫଟୋଗୁଡ଼ିକରେ ଯୋଗ କରିବାକୁ ଅନୁମତି ଦେବା ପାଇଁ ସେଟିଂସରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1289216811211435351">Chromiumକୁ ସ୍ୱିଚ୍ କରନ୍ତୁ</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">ଏହି ଡିଭାଇସ୍‍ରୁ ଆପଣଙ୍କର Chromium ଡାଟା ଖାଲି କରିବେ କି?</translation>
 <translation id="8175055321229419309">ପରାମର୍ଶ: <ph name="BEGIN_LINK" />ଆପଣଙ୍କର ଡକ୍‍କୁ Chromium ଘୁଞ୍ଚାନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">ଅପଡେଟଗୁଡ଼ିକ ଅଛି କି ନାହିଁ ତାହା Chromium ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
-<translation id="8252885722420466166">ଆପଣଙ୍କର ଲୋକେସନ୍‌କୁ ଆଧାର କରି, Chromiumରେ Googleର ଏକ ଉନ୍ନତ ଅନୁଭୂତି ପାଆନ୍ତୁ।</translation>
 <translation id="8586442755830160949">କପିରାଇଟ୍ <ph name="YEAR" /> Chromium ଲେଖକ। ସମସ୍ତ ଅଧିକାର ସଂରକ୍ଷିତ ଅଛି।</translation>
 <translation id="8663480472502753423">Chromiumକୁ ଅପ୍ ଟୁ ଡେଟ୍ ରଖନ୍ତୁ</translation>
 <translation id="8776843108004031667">ଏହି ଆକାଉଣ୍ଟ ଏବଂ ଯେ କୌଣସି ସେଭ୍ କରାଯାଇନଥିବା ଡାଟା Chromiumରୁ କାଢ଼ି ଦିଆଯିବ।</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromiumର ସମୟସୀମା ଶେଷ ହୋଇଛି</translation>
 <translation id="921174536258924340">Chromium ସମସ୍ତ ପାସୱାର୍ଡକୁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ। ଆସନ୍ତାକାଲି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା <ph name="BEGIN_LINK" />ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ।<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium ଲେଖକ</translation>
-<translation id="994708389219151914">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="HOSTED_DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି, ତେଣୁ ଆପଣଙ୍କ Chromium ଡାଟାକୁ ଏହି ଡିଭାଇସରୁ ଡିଲିଟ୍ କରିଦିଆଯିବ।</translation>
 </translationbundle>

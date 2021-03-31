@@ -103,6 +103,7 @@
 <translation id="1118549423835582252">Администратор (<ph name="MANAGER" />) рекомендует обновить устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Не удалось определить модель или серийный номер устройства.</translation>
 <translation id="1119447706177454957">Внутренняя ошибка</translation>
+<translation id="111959947408687873">Чтобы включить или отключить полноэкранную лупу, нажмите Ctrl + <ph name="SEARCH_KEY_NAME" /> + M. Удерживая Ctrl и Alt, нажимайте клавиши со стрелками, чтобы перемещаться по экрану в режиме увеличения.</translation>
 <translation id="1122068467107743258">Рабочий профиль</translation>
 <translation id="1122198203221319518">&amp;Инструменты</translation>
 <translation id="1122242684574577509">Ошибка аутентификации. Нажмите, чтобы перейти на страницу входа используемой сети Wi-Fi (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Программа Дополнительной защиты от Google</translation>
 <translation id="1155816283571436363">Подключение к телефону…</translation>
 <translation id="1161575384898972166">Чтобы экспортировать сертификат клиента, войдите в <ph name="TOKEN_NAME" />.</translation>
+<translation id="116173250649946226">Администратор установил тему по умолчанию, и ее нельзя изменить.</translation>
 <translation id="1163931534039071049">&amp;Просмотр кода фрейма</translation>
 <translation id="1164891049599601209">Введен на поддельном сайте</translation>
 <translation id="1164899421101904659">Введите PUK-код</translation>
@@ -2555,6 +2557,7 @@
 <translation id="3809272675881623365">Кролик</translation>
 <translation id="3809280248639369696">Пришелец</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> может просматривать файлы в указанных ниже папках.</translation>
+<translation id="3810914450553844415">Администратор запретил добавлять дополнительные аккаунты Google</translation>
 <translation id="3810973564298564668">Настроить</translation>
 <translation id="381202950560906753">Добавить ещё</translation>
 <translation id="3812525830114410218">Недопустимый сертификат</translation>
@@ -2676,6 +2679,7 @@
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3926002189479431949">Smart Lock – телефон заменен</translation>
 <translation id="3927932062596804919">Запретить</translation>
+<translation id="392803502090869922">Настройка eSIM</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" />: сохранить изменения?</translation>
 <translation id="3928659086758780856">Заканчиваются чернила.</translation>
 <translation id="3929426037718431833">Расширения, у которых есть право на просмотр и изменение информации на этом сайте</translation>
@@ -4246,6 +4250,7 @@
 <translation id="5764797882307050727">Освободите место в памяти устройства.</translation>
 <translation id="5765425701854290211">Не удалось выполнить обновление, так как некоторые файлы были повреждены. Все синхронизированные файлы в безопасности.</translation>
 <translation id="5765491088802881382">Нет доступных сетей</translation>
+<translation id="5766243637773654698">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в Google для проверки? Чтобы перейти к панели скачанных файлов, нажмите Shift + F6.</translation>
 <translation id="5769519078756170258">Хост или домен, который вы хотите исключить</translation>
 <translation id="5770125698810550803">Показывать кнопки навигации</translation>
 <translation id="5771816112378578655">Идет настройка...</translation>
@@ -4402,6 +4407,7 @@
 <translation id="5942779427914696408">Кто видит устройство</translation>
 <translation id="5943127421590245687">Ваш аккаунт подтвержден. Чтобы разблокировать и восстановить данные, введите старый пароль устройства <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Сканирование QR-кода</translation>
+<translation id="5945002094477276055">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в сервис "Google Безопасный просмотр" для проверки?</translation>
 <translation id="5946591249682680882">Идентификатор отчета: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Подключите клавиатуру или мышь либо продолжите настройку с помощью сенсорного экрана. Если вы используете Bluetooth-устройства, убедитесь, что они готовы к подключению.</translation>
 <translation id="5949544233750246342">Не удалось проанализировать файл</translation>
@@ -4449,6 +4455,7 @@
 <translation id="6002452033851752583">Пароль удален из аккаунта Google.</translation>
 <translation id="6002458620803359783">Голоса по умолчанию</translation>
 <translation id="6003143259071779217">Удалить мобильную сеть eSIM</translation>
+<translation id="6003582434972667631">Тема задана вашей организацией</translation>
 <translation id="6006484371116297560">Классическая</translation>
 <translation id="6007240208646052708">Голосовой поиск на вашем языке недоступен.</translation>
 <translation id="6011074160056912900">Сеть Ethernet</translation>
@@ -4828,6 +4835,7 @@
 <translation id="6429384232893414837">Ошибка обновления</translation>
 <translation id="6430814529589430811">Единый сертификат ASCII с кодировкой Base64</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> настроит автоматические обновления для всех пользователей на этом компьютере.</translation>
+<translation id="6434104957329207050">Скорость точечного сканирования</translation>
 <translation id="6434309073475700221">Закрыть</translation>
 <translation id="6434325376267409267">Чтобы использовать <ph name="APP_NAME" />, установите на устройство обновление системы.</translation>
 <translation id="6436164536244065364">Просмотреть в Интернет-магазине</translation>
@@ -4870,6 +4878,7 @@
 <translation id="6474498546677193336">Папка используется приложением. Доступ к ней будет закрыт при следующем выключении Linux.</translation>
 <translation id="6474884162850599008">Отключить аккаунт Google Диска</translation>
 <translation id="6475294023568239942">Освободите пространство на диске Linux или увеличьте его размер в настройках.</translation>
+<translation id="6476138569087741884">Масштаб полноэкранной лупы</translation>
 <translation id="6477822444490674459">Синхронизация уведомлений недоступна, если на телефоне используется рабочий профиль. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Сохранить опасный файл?</translation>
 <translation id="6480327114083866287">Под управлением <ph name="MANAGER" /></translation>
@@ -5325,6 +5334,7 @@
 <translation id="6985607387932385770">Принтеры</translation>
 <translation id="6988094684494323731">Запуск контейнера Linux</translation>
 <translation id="6988403677482707277">Вкладка перемещена в начало панели</translation>
+<translation id="6990209147952697693">Классическая тема Chrome</translation>
 <translation id="6991665348624301627">Выбор места назначения</translation>
 <translation id="6992554835374084304">Включите расширенную проверку правописания</translation>
 <translation id="6993000214273684335">Вкладка удалена из группы без названия – <ph name="GROUP_CONTENTS" /></translation>
@@ -6312,6 +6322,7 @@
 <translation id="8086015605808120405">Настройка принтера "<ph name="PRINTER_NAME" />"...</translation>
 <translation id="8086442853986205778">Настроить принтер "<ph name="PRINTER_NAME" />"</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Этот файл зашифрован. Попросите владельца его расшифровать.}one{Некоторые файлы зашифрованы. Попросите владельца их расшифровать.}few{Некоторые файлы зашифрованы. Попросите владельца их расшифровать.}many{Некоторые файлы зашифрованы. Попросите владельца их расшифровать.}other{Некоторые файлы зашифрованы. Попросите владельца их расшифровать.}}</translation>
+<translation id="8087576439476816834">Скачать профиль "<ph name="PROFILE_NAME" />"</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8090234456044969073">Список самых посещаемых сайтов</translation>
 <translation id="8093359998839330381">Плагин <ph name="PLUGIN_NAME" /> не отвечает</translation>
@@ -6552,6 +6563,8 @@
 <translation id="8368859634510605990">&amp;Открыть все закладки</translation>
 <translation id="8370294614544004647">Переход в спящий режим, когда крышка ноутбука закрыта</translation>
 <translation id="8371695176452482769">Говорите</translation>
+<translation id="8371749822919332187">Чтобы увеличить масштаб, нажмите клавиши Ctrl + Alt + Увеличить яркость.
+Чтобы уменьшить масштаб, нажмите клавиши Ctrl + Alt + Уменьшить яркость.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Отключить звук на сайте}one{Отключить звук на сайтах}few{Отключить звук на сайтах}many{Отключить звук на сайтах}other{Отключить звук на сайтах}}</translation>
 <translation id="8372369524088641025">Недопустимый ключ WEP</translation>
 <translation id="8373652277231415614">Общие каталоги Crostini</translation>
@@ -6559,7 +6572,6 @@
 <translation id="8378714024927312812">Управляется вашей организацией</translation>
 <translation id="8379878387931047019">Устройство не поддерживает тип электронного ключа, запрашиваемый этим сайтом.</translation>
 <translation id="8379991678458444070">Чтобы вам было проще вернуться на эту вкладку, добавьте ее в закладки.</translation>
-<translation id="8380314198565901932">При скачивании виртуальной машины произошла ошибка. Обновите <ph name="DEVICE_TYPE" /> и повторите попытку.</translation>
 <translation id="8382913212082956454">Копировать &amp;адрес электронной почты</translation>
 <translation id="8386091599636877289">Политика не найдена.</translation>
 <translation id="8386819192691131213">Разрешите Ассистенту использовать информацию на экране, чтобы предоставлять быстрые ответы, например показывать перевод и определения слов, конвертировать единицы измерения и не только.</translation>
@@ -7225,6 +7237,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Добро пожаловать в новый профиль!</translation>
 <translation id="9112748030372401671">Изменение обоев</translation>
+<translation id="9112786533191410418">Файл "<ph name="FILE_NAME" />" может представлять опасность. Отправить его в Google для проверки?</translation>
 <translation id="9112987648460918699">Найти...</translation>
 <translation id="9114663181201435112">Удобный вход</translation>
 <translation id="9115675100829699941">&amp;Закладки</translation>

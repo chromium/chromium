@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lo">
 <translation id="102360288709523007">ຊ່ວຍເຮັດໃຫ້ Chromium ດີກ່ວາໂດຍການສົ່ງສະຖິຕິການໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງຫາ Google.</translation>
-<translation id="1043245583918962542">ເລືອກວ່າຈະລຶບລ້າງຂໍ້ມູນ Chromium ຂອງທ່ານອອກຈາກອຸປະກອນນີ້ ຫຼື ເກັບມັນໄວ້.</translation>
 <translation id="1185134272377778587">ກ່ຽວ​ກັບ Chromium</translation>
 <translation id="1257458525759135959">ເພື່ອບັນທຶກຮູບພາບ, ກະລຸນາແຕະໃສ່ການຕັ້ງຄ່າເພື່ອອະນຸຍາດໃຫ້ Chromium ເພີ່ມໃສ່ຮູບພາບຂອງທ່ານ</translation>
 <translation id="1289216811211435351">ປ່ຽນເປັນ Chromium</translation>
@@ -79,7 +78,6 @@
 <translation id="8073677936375100957">ລຶບລ້າງຂໍ້ມູນ Chromium ຂອງທ່ານຈາກອຸປະກອນນີ້ອອກບໍ?</translation>
 <translation id="8175055321229419309">ເຄັດລັບ: <ph name="BEGIN_LINK" />ຍ້າຍ Chromium ໄປໃສ່ດັອກຂອງທ່ານ<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫລັງ.</translation>
-<translation id="8252885722420466166">ເອົາ​ປະ​ສົບ​ການ Google ​ທີ່​ດີ​ກ່​ວາ​ຢູ່​ໃນ Chromium ອີງ​ຕາມ​ທີ່​ຕັ້ງ​ຂອງ​ທ່ານ.</translation>
 <translation id="8586442755830160949">ລິຂະສິດ <ph name="YEAR" /> ຜູ້ຂຽນ Chromium. ສະຫງວນສິດທັງໝົດ.</translation>
 <translation id="8663480472502753423">ຮັກສາໃຫ້ Chromium ໃໝ່ຫຼ້າສຸດ</translation>
 <translation id="8776843108004031667">ບັນຊີນີ້ ແລະ ຂໍ້ມູນທີ່ບໍ່ໄດ້ບັນທຶກໄວ້ຕ່າງໆຈະຖືກລຶບອອກຈາກ Chromium.</translation>
@@ -88,5 +86,4 @@
 <translation id="9089354809943900324">Chromium ຫຼ້າສະໄໝແລ້ວ</translation>
 <translation id="921174536258924340">Chromium ບໍ່ສາມາດກວດລະຫັດຜ່ານທັງໝົດໄດ້. ລອງໃໝ່ໃນມື້ອື່ນ ຫຼື <ph name="BEGIN_LINK" />ກວດລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານ.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">ຜູ້ຂຽນ Chromium</translation>
-<translation id="994708389219151914">ບັນຊີຂອງທ່ານຈັດການໂດຍ <ph name="HOSTED_DOMAIN" />, ສະນັ້ນ ຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້.</translation>
 </translationbundle>

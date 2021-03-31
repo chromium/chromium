@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Sien besonderhede</translation>
 <translation id="1030706264415084469"><ph name="URL" /> wil groot data permanent op jou toestel berg</translation>
 <translation id="1032854598605920125">Draai kloksgewys</translation>
+<translation id="1036224116832931580">Dino-speletjie – tik om te spring en speel</translation>
 <translation id="1036348656032585052">Skakel af</translation>
 <translation id="1038106730571050514">Wys voorstelle</translation>
 <translation id="1038842779957582377">onbekende naam</translation>
@@ -279,6 +280,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="192020519938775529">{COUNT,plural, =0{Geen}=1{1 werf}other{# werwe}}</translation>
 <translation id="1945968466830820669">Jy kan toegang tot jou organisasie se rekening verloor of identiteitdiefstal ervaar. Chromium beveel aan dat jy jou wagwoord nou verander.</translation>
 <translation id="1947454675006758438">Kram regs bo</translation>
+<translation id="1958218078413065209">Jou hoogste telling is <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Help om sekuriteit op die web vir almal beter te maak deur <ph name="BEGIN_WHITEPAPER_LINK" />URL'e van sommige bladsye wat jy besoek, beperkte stelselinligting en sommige bladsyinhoud<ph name="END_WHITEPAPER_LINK" /> na Google toe te stuur. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Privaatheidsbeleid<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" />-boekmerke</translation>
 <translation id="1973335181906896915">Reeksfout</translation>
@@ -547,6 +549,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om veiligheidskontrole in Chrome-instellings te doen</translation>
 <translation id="3061707000357573562">Regstellingdiens</translation>
 <translation id="3064966200440839136">Verlaat incognito-modus om via 'n eksterne program te betaal. Gaan voort?</translation>
+<translation id="306573536155379004">Speletjie het begin.</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3086579638707268289">Jou aktiwiteit op die web word gemonitor</translation>
 <translation id="3087734570205094154">Onderkant</translation>
@@ -1543,6 +1546,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6934672428414710184">Hierdie naam is van jou Google-rekening af</translation>
 <translation id="6944692733090228304">Jy het jou wagwoord ingevoer op 'n werf wat nie deur <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> bestuur word nie. Om jou rekening te beskerm, moet jy nie jou wagwoord op ander programme en werwe hergebruik nie.</translation>
 <translation id="6945221475159498467">Kies</translation>
+<translation id="6948051842255602737">Speletjie is verby. Jou telling is <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Kies 'n adres om oplaaimetodes en -vereistes te sien</translation>
 <translation id="6949872517221025916">Stel wagwoord terug</translation>
 <translation id="6950684638814147129">Fout tydens ontleding van JSON-waarde: <ph name="ERROR" /></translation>
@@ -1825,6 +1829,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7956713633345437162">Mobiele boekmerke</translation>
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7966803981046576691">Taakrekeningsoort</translation>
+<translation id="79682505114836835">Waarde "<ph name="VALUE" />" is 'n ongeldige hekskleur.</translation>
 <translation id="7976214039405368314">Te veel versoeke</translation>
 <translation id="7977538094055660992">Uitvoertoestel</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1952,6 +1957,7 @@ Bykomende besonderhede:
 <translation id="8446884382197647889">Kom meer te wete</translation>
 <translation id="8457125768502047971">Onbepaald</translation>
 <translation id="8461694314515752532">Enkripteer gesinkroniseerde data met jou eie sinkroniseringwagfrase</translation>
+<translation id="8463101686637053101">Dino-speletjie – druk spasiebalk om te spring en speel</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredietkaart}other{# kredietkaarte}}</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
 <translation id="8474910779563686872">Wys ontwikkelaarbesonderhede</translation>
@@ -2087,6 +2093,7 @@ Bykomende besonderhede:
 <translation id="8996941253935762404">Die webwerf voor bevat skadelike programme</translation>
 <translation id="8997023839087525404">Die bediener het 'n sertifikaat aangebied wat nie deur die Sertifikaatdeursigtigheidbeleid publiek openbaar gemaak is nie. Dit is 'n vereiste vir sekere sertifikate om te verseker dat hulle betroubaar is en beskerming teen aanvallers bied.</translation>
 <translation id="9001074447101275817">Die instaanbediener <ph name="DOMAIN" /> vereis 'n gebruikernaam en wagwoord.</translation>
+<translation id="9001963517402879850">Spring!</translation>
 <translation id="9004367719664099443">VR-sessie is aan die gang</translation>
 <translation id="9005998258318286617">Kon nie 'n PDF-dokument laai nie.</translation>
 <translation id="9008201768610948239">Ignoreer</translation>

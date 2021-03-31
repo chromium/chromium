@@ -92,7 +92,6 @@
 <translation id="1698760176351776263">የIPv6 አድራሻ፦ <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">ዴስክ፦ <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">የአውታረ መረብ ቅንብሮች</translation>
-<translation id="1713296079175516843">ለደህንነት ሲባል መለዋወጫዎች አይደገፉም</translation>
 <translation id="1719094688023114093">የቀጥታ ስርጭት መግለጫ ጽሑፍ በርቷል።</translation>
 <translation id="1720011244392820496">የWi-Fi ስምረትን ያብሩ</translation>
 <translation id="1743570585616704562">አልታወቀም</translation>
@@ -277,6 +276,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> አሁንም በኋላ በመለያ መግባት ይችላሉ።</translation>
 <translation id="3321628682574733415">ትክክል ያልሆነ የወላጅ ኮድ</translation>
 <translation id="332587331255250389">እባክዎ ባትሪውን ይተኩት</translation>
+<translation id="3333741161915951567">ሞደምን ዳግም ማስነሳት። እንደገና ከመሞከርዎ በፊት 30 ሰከንድ ይጠብቁ።</translation>
 <translation id="3341303451326249809">ቅጽበታዊ ገጽ እይታ ተቀርጿል</translation>
 <translation id="334252345105450327">ቅጽበታዊ ገጽ እይታ ያንሱ</translation>
 <translation id="3351879221545518001">አሁን ላይ ማያ ገጽን cast እያደረጉ ነው።</translation>

@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Verzija aplikacije</translation>
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1450753235335490080">Nije uspelo deljenje: <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Probajte da pitate „Kakvo će biti vreme danas?“</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspelo zbog problema na serveru.</translation>
 <translation id="1492417797159476138">Već ste sačuvali ovo korisničko ime za ovaj sajt</translation>
 <translation id="1506061864768559482">Pretraživač</translation>
@@ -569,6 +570,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="49268022542405662">Lozinke se izvoze i preuzimaju kao tekstualne datoteke. Vidljive su svim korisnicima i aplikacijama sa pristupom odredišnom direktorijumu.</translation>
 <translation id="4932247056774066048">Pošto se odjavljujete sa naloga kojim upravlja <ph name="DOMAIN_NAME" />, Chrome podaci biće izbrisani sa ovog uređaja. Ostaće na vašem Google nalogu.</translation>
 <translation id="4936039914467572121">Brže pristupajte ovom sajtu</translation>
+<translation id="4941179133499732445">Dodirnite mikrofon da biste pretraživali pomoću glasa</translation>
 <translation id="4943703118917034429">Virtuelna realnost</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
 <translation id="4961107849584082341">Prevedite ovu stranicu na bilo koji jezik</translation>
@@ -583,6 +585,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5011311129201317034"><ph name="SITE" /> želi da se poveže</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Dozvoli</translation>
+<translation id="5061533557687621530">Da biste proverili vremensku prognozu, dodirnite mikrofon i kažite „Kakvo će biti vreme danas?“</translation>
 <translation id="5087580092889165836">Dodaj karticu</translation>
 <translation id="5091249083535528968">Detaljni podaci o korišćenju</translation>
 <translation id="509429900233858213">Došlo je do greške.</translation>
@@ -597,6 +600,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />resetujte sinhroniz
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 preuzimanje nije uspelo.}one{# preuzimanje nije uspelo.}few{# preuzimanja nisu uspela.}other{# preuzimanja nije uspelo.}}</translation>
 <translation id="5170568018924773124">Prikaži u direktorijumu</translation>
 <translation id="5184329579814168207">Otvori u Chrome-u</translation>
+<translation id="5188992787241350004">Pretražujte pomoću glasa</translation>
 <translation id="5191251636205085390">Saznajte više o novim tehnologijama čiji je cilj da zamene kolačiće trećih strana i upravljajte njima</translation>
 <translation id="5193988420012215838">Kopirano je u privremenu memoriju</translation>
 <translation id="5199929503336119739">Poslovni profil</translation>

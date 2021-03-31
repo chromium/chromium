@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions</translation>
 <translation id="3720541637541300822">Bloqueja les pestanyes d'incògnit després de tancar Chrome</translation>
 <translation id="384394811301901750">Google Chrome no pot utilitzar la càmera en aquest moment</translation>
-<translation id="38949020760388809">Tria si vols esborrar les dades de Chrome d'aquest dispositiu o si vols conservar-les.</translation>
 <translation id="3980220367029651214">Esteu canviant del compte de sincronització <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> gestiona les vostres dades de Chrome actuals. Amb aquest canvi se suprimiran les vostres dades d'aquest dispositiu, però continuaran a <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">La teva organització requereix que mantinguis la sessió tancada a Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no té accés als vostres vídeos o fotos. Permeteu-li l'accés a iOS, a Configuració &gt; Privadesa &gt; Fotos.</translation>
 <translation id="4099578267706723511">Ajuda a millorar Chrome enviant estadístiques d'ús i informes d'error a Google.</translation>
-<translation id="415767770115540173">Si compartiu la ubicació, millorareu la vostra experiència a Chrome.</translation>
 <translation id="417201473131094001">No s'admeten a Chrome Canary</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4249068189593983585">Consell de Chrome. Per accedir a més opcions de pestanyes, mantén premut el botó Mostra pestanyes a la barra d'eines, que és a la part inferior o superior de la pantalla.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">La teva contrasenya ha quedat exposada en l'àmbit d'una violació de les dades. Chrome et recomana que canviïs la contrasenya ara.</translation>
 <translation id="7698568245838009292">Chrome sol·licita accés a la càmera</translation>
 <translation id="7855730255114109580">Google Chrome està actualitzat</translation>
-<translation id="8109233255338845204">Com que <ph name="HOSTED_DOMAIN" /> gestiona el teu compte, les dades de Chrome s'esborraran d'aquest dispositiu.</translation>
 <translation id="8160472928944011082">Chrome no es pot actualitzar</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="840168496893712993">Alguns complements fan que Chrome es bloquegi. Proveu de desinstal·lar-los.</translation>

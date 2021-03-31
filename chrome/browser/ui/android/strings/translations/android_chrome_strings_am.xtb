@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">የመተግበሪያ ስሪት</translation>
 <translation id="1430915738399379752">አትም</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ን ማጋራት አይቻልም</translation>
+<translation id="147113415845704694">«What’s the weather today?» ብለው ይሞክሩ</translation>
 <translation id="1477626028522505441">በአገልጋይ ችግሮች ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
 <translation id="1492417797159476138">ይህንን የተጠቃሚ ስም ለዚህ ጣቢያ ቀድሞውኑ አስቀምጠዋል</translation>
 <translation id="1506061864768559482">የፍለጋ ፕሮግራም</translation>
@@ -569,6 +570,7 @@
 <translation id="49268022542405662">የይለፍ ቃላትዎ ወደ ውጭ ይላካና እንደ የጽሑፍ ፋይል ይወርዳሉ። የመድረሻ አቃፊ መዳረሻ ላለው ማንኛውም ሰው እና ለማንኛውም መተግበሪያ ይታያሉ።</translation>
 <translation id="4932247056774066048">በ<ph name="DOMAIN_NAME" /> ከሚተዳደር መለያ ዘግተው እየወጡ ስለሆነ የChrome ውሂብዎ ከዚህ መሣሪያ ይሰረዛል። በGoogle መለያዎ ውስጥ እንዳለ ይቆያል።</translation>
 <translation id="4936039914467572121">በፍጥነት ወደዚህ ጣቢያ ይሂዱ</translation>
+<translation id="4941179133499732445">በድምጽዎ ለመፈለግ ማይክሮፎኑን መታ ያድርጉት</translation>
 <translation id="4943703118917034429">ምናባዊ እውነታ</translation>
 <translation id="4943872375798546930">ውጤቶች የሉም</translation>
 <translation id="4961107849584082341">ይህን ገጽ ወደ ማንኛውም ቋንቋ ያስተርጉሙ</translation>
@@ -583,6 +585,7 @@
 <translation id="5011311129201317034"><ph name="SITE" /> መገናኘት ይፈልጋል</translation>
 <translation id="5016205925109358554">ሰሪፍ</translation>
 <translation id="5039804452771397117">ፍቀድ</translation>
+<translation id="5061533557687621530">የአየር ሁኔታን ለመፈተሽ ማይክሮፎኑን መታ ያድርጉ እና «What’s the weather today?» ይበሉ</translation>
 <translation id="5087580092889165836">ካርድ አክል</translation>
 <translation id="5091249083535528968">የተራዘመ የአጠቃቀም ውሂብ</translation>
 <translation id="509429900233858213">ስህተት አጋጥሟል።</translation>
@@ -597,6 +600,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ውርድ አልተሳካም።}one{# ውርዶች አልተሳኩም።}other{# ውርዶች አልተሳኩም።}}</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5184329579814168207">በChrome ውስጥ ክፈት</translation>
+<translation id="5188992787241350004">በድምጽዎ ይፈልጉ</translation>
 <translation id="5191251636205085390">የሶስተኛ ወገን ኩኪዎችን ለመተካት ዓላማ ያላቸውን አዳዲስ ቴክኖሎጂዎችን ይረዱ እና ይቆጣጠሩ</translation>
 <translation id="5193988420012215838">ወደ የእርስዎ ቅንጥብ ሰሌዳ ላይ ተቀድቷል</translation>
 <translation id="5199929503336119739">የሥራ መገለጫ</translation>

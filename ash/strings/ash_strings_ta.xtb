@@ -92,7 +92,6 @@
 <translation id="1698760176351776263">IPv6 முகவரி: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">டெஸ்க்: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">நெட்வொர்க் அமைப்புகள்</translation>
-<translation id="1713296079175516843">பாதுகாப்புக் காரணங்களுக்காகச் சாதனம் ஆதரிக்கப்படவில்லை</translation>
 <translation id="1719094688023114093">'உடனடி வசனம்' இயக்கப்பட்டது.</translation>
 <translation id="1720011244392820496">வைஃபை ஒத்திசைவை இயக்குங்கள்</translation>
 <translation id="1743570585616704562">அடையாளங்காண முடியவில்லை</translation>
@@ -277,6 +276,7 @@
 <translation id="3308453408813785101">அப்போதும் <ph name="USER_EMAIL_ADDRESS" /> பின்னர் உள்நுழையலாம்.</translation>
 <translation id="3321628682574733415">தவறான பெற்றோர் அணுகல் குறியீடு</translation>
 <translation id="332587331255250389">பேட்டரியை மாற்றவும்</translation>
+<translation id="3333741161915951567">மோடம் மறுபடி தொடங்குகிறது. மீண்டும் முயல்வதற்கு முன் 30 வினாடிகள் காத்திருக்கவும்.</translation>
 <translation id="3341303451326249809">ஸ்கிரீன்ஷாட் எடுக்கப்பட்டது</translation>
 <translation id="334252345105450327">ஸ்கிரீன்ஷாட் எடுங்கள்</translation>
 <translation id="3351879221545518001">தற்போது திரையை அலைபரப்புகிறீர்கள்.</translation>

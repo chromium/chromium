@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Agora você pode usar o Chrome sempre que toca em links em mensagens, documentos e outros apps.</translation>
 <translation id="3720541637541300822">Bloquear guias anônimas ao fechar o Chrome</translation>
 <translation id="384394811301901750">O Google Chrome não pode usar a câmera agora</translation>
-<translation id="38949020760388809">Escolha se você quer apagar ou manter os dados do Chrome neste dispositivo.</translation>
 <translation id="3980220367029651214">Você está trocando de contas de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Seus dados já existentes do Chrome são gerenciados por <ph name="DOMAIN" />. Seus dados serão excluídos desse dispositivo, mas permanecerão em <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Sua organização exige que a conta permaneça desconectada do Chrome.</translation>
 <translation id="3988789688219830639">O Google Chrome não têm acesso às suas fotos ou vídeos. Permita o acesso em "Configurações do iOS" &gt; "Privacidade" &gt; "Fotos".</translation>
 <translation id="4099578267706723511">Ajude a melhorar o Chrome. Envie estatísticas de uso e relatórios de falhas ao Google.</translation>
-<translation id="415767770115540173">Melhore sua experiência do Google no Chrome de acordo com seu local.</translation>
 <translation id="417201473131094001">Indisponível no Chrome Canary</translation>
 <translation id="424864128008805179">Sair do Google Chrome?</translation>
 <translation id="4249068189593983585">Dica do Chrome. Para ver mais opções de guia, toque no botão "Mostrar guias" na barra de ferramentas localizada na parte superior ou inferior da tela e mantenha-o pressionado.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Sua senha foi exposta em uma violação de dados. Por recomendação do Chrome, mude a senha imediatamente.</translation>
 <translation id="7698568245838009292">Solicitação do Chrome para acessar a câmera</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
-<translation id="8109233255338845204">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chrome serão apagados deste dispositivo.</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="840168496893712993">Alguns complementos causam a falha do Google Chrome. Tente desinstalá-los.</translation>

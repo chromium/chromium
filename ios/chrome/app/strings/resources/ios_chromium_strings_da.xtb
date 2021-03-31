@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="da">
 <translation id="102360288709523007">Hjælp med at gøre Chromium bedre ved at sende brugsstatistik og nedbrudsrapporter til Google.</translation>
-<translation id="1043245583918962542">Vælg, om du vil rydde dine Chromium-data fra denne enhed eller beholde dem.</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Hvis du vil gemme billeder, skal du trykke på Indstillinger for at give Chromium tilladelse til at føje billeder til din mappe</translation>
 <translation id="1289216811211435351">Skift til Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Vil du rydde dine Chromium-data på denne enhed?</translation>
 <translation id="8175055321229419309">Tip! <ph name="BEGIN_LINK" />Flyt Chromium til din dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
-<translation id="8252885722420466166">Angiv din placering, og få en bedre oplevelse, når du bruger Chromium.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Forfatterne bag Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="8663480472502753423">Sørger for, at Chromium er opdateret</translation>
 <translation id="8776843108004031667">Denne konto og data, som ikke er gemt, fjernes fra Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium er forældet</translation>
 <translation id="921174536258924340">Chromium kunne ikke tjekke alle adgangskoder. Prøv igen i morgen, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Forfatterne til Chromium</translation>
-<translation id="994708389219151914">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chromium-data ryddet fra denne enhed.</translation>
 </translationbundle>

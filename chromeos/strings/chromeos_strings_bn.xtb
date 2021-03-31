@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">পাসওয়ার্ডের মেয়াদ <ph name="TIME" />-এ শেষ হবে</translation>
 <translation id="4238516577297848345">প্রিন্ট করার কোনও কাজ চালু নেই</translation>
 <translation id="4297501883039923494">বন্ধ হয়ে গেছে - অজানা সমস্যা</translation>
+<translation id="4344214025510306853">APN অ্যাটাচ করুন</translation>
 <translation id="4378373042927530923">চালানো যায়নি</translation>
 <translation id="4382484599443659549">পিডিএফ</translation>
 <translation id="4425149324548788773">আমার ড্রাইভ</translation>
@@ -277,6 +278,7 @@
 <translation id="7040230719604914234">অপারেটর</translation>
 <translation id="7059230779847288458">চার্জ করা হচ্ছে, সম্পূর্ণ চার্জ হতে <ph name="TIME_VALUE" /> সময় লাগবে</translation>
 <translation id="708426984172631313">থেমে গেছে</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
 <translation id="714876143603641390">Lan কানেক্টিভিটি</translation>

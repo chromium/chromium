@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Rakenduse versioon</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1450753235335490080">Üksust <ph name="CONTENT_TYPE" /> ei saa jagada</translation>
+<translation id="147113415845704694">Proovige otsingut „Milline ilm täna on?“</translation>
 <translation id="1477626028522505441">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus serveriprobleemide tõttu.</translation>
 <translation id="1492417797159476138">Olete selle kasutajanime selle saidi jaoks juba salvestanud</translation>
 <translation id="1506061864768559482">Otsingumootor</translation>
@@ -569,6 +570,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="49268022542405662">Teie paroolid eksporditakse ja laaditakse alla tekstifailina. Need on nähtavad kõigile ja igale rakendusele, kellel/millel on sihtkaustale juurdepääs.</translation>
 <translation id="4932247056774066048">Kuna logite välja kontolt, mida haldab <ph name="DOMAIN_NAME" />, kustutatakse sellest seadmest teie Chrome'i andmed. Need jäävad alles teie Google'i kontole.</translation>
 <translation id="4936039914467572121">Liikuge sellele saidile kiiremini</translation>
+<translation id="4941179133499732445">Hääle abil otsimiseks puudutage mikrofoni</translation>
 <translation id="4943703118917034429">Virtuaalreaalsus</translation>
 <translation id="4943872375798546930">Tulemusi pole</translation>
 <translation id="4961107849584082341">Tõlkige leht mis tahes keelde</translation>
@@ -583,6 +585,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5011311129201317034"><ph name="SITE" /> soovib ühenduse luua</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Luba</translation>
+<translation id="5061533557687621530">Ilmateate vaatamiseks puudutage mikrofoni ja öelge „Milline ilm täna on?“</translation>
 <translation id="5087580092889165836">Lisa kaart</translation>
 <translation id="5091249083535528968">Laiendatud kasutusandmed</translation>
 <translation id="509429900233858213">Tekkis viga.</translation>
@@ -597,6 +600,7 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 allalaadimine ebaõnnestus.}other{# allalaadimist ebaõnnestus.}}</translation>
 <translation id="5170568018924773124">Kuva kaustas</translation>
 <translation id="5184329579814168207">Ava Chrome'is</translation>
+<translation id="5188992787241350004">Otsige oma häälega</translation>
 <translation id="5191251636205085390">Vaadake lisateavet uute tehnoloogiate kohta, mille eesmärk on kolmandate osapoolte küpsisefailid asendada, ja õppige neid haldama.</translation>
 <translation id="5193988420012215838">Kopeeritud lõikelauale</translation>
 <translation id="5199929503336119739">Tööprofiil</translation>

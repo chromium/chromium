@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Teraz możesz używać Chrome za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="3720541637541300822">Po zamknięciu Chrome blokuj karty incognito</translation>
 <translation id="384394811301901750">Google Chrome nie może teraz użyć aparatu</translation>
-<translation id="38949020760388809">Zdecyduj, czy chcesz usunąć swoje dane z Chrome z tego urządzenia czy je na nim zachować.</translation>
 <translation id="3980220367029651214">Przełączasz synchronizację kont z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Twoje istniejące dane Chrome są zarządzane przez <ph name="DOMAIN" />. Spowoduje to usunięcie danych z tego urządzenia, ale pozostaną one na koncie <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Twoja organizacja nie pozwala Ci zalogować się w Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome nie ma dostępu do Twoich zdjęć ani filmów. Aby włączyć dostęp w iOS, wybierz Ustawienia &gt; Prywatność &gt; Zdjęcia.</translation>
 <translation id="4099578267706723511">Pomóż ulepszyć Chrome, wysyłając do Google statystyki użytkowania i raporty o awariach.</translation>
-<translation id="415767770115540173">Włączenie udostępniania lokalizacji w Chrome pozwala w pełni korzystać z usług Google.</translation>
 <translation id="417201473131094001">Nieobsługiwane w Chrome Canary</translation>
 <translation id="424864128008805179">Wylogować z Chrome?</translation>
 <translation id="4249068189593983585">Wskazówka dla użytkowników Chrome. Aby zobaczyć więcej opcji kart, naciśnij i przytrzymaj przycisk Pokaż karty na pasku narzędzi, który znajduje się na dole lub na górze ekranu.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Chrome zaleca jego natychmiastową zmianę.</translation>
 <translation id="7698568245838009292">Chrome chce mieć dostęp do kamery</translation>
 <translation id="7855730255114109580">Masz aktualną wersję Google Chrome</translation>
-<translation id="8109233255338845204">Twoim kontem zarządza <ph name="HOSTED_DOMAIN" />, węc Twoje dane z Chrome zostaną usunięte z tego urządzenia.</translation>
 <translation id="8160472928944011082">Nie udało się zaktualizować Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="840168496893712993">Niektóre dodatki mogą powodować awarie Chrome. Spróbuj je odinstalować.</translation>

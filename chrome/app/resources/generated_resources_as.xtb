@@ -5129,6 +5129,7 @@
 <translation id="6795884519221689054">পাণ্ডা</translation>
 <translation id="6797493596609571643">দুঃখিত, কিবা ভুল হ'ল।</translation>
 <translation id="6798420440063423019">সুৰক্ষা চাবিটো লক কৰা হ’ল কাৰণ বহুবাৰ ভুল পিন দিয়া হৈছে। আপুনি সুৰক্ষা চাবিটো ৰিছেট কৰিব লাগিব।</translation>
+<translation id="679845623837196966">পঢ়াৰ সূচী দেখুৱাওক</translation>
 <translation id="6798578729981748444">আমদানি সম্পূর্ণ কৰিবলৈ Firefoxৰ সকলো ৱিণ্ড’ বন্ধ কৰক।</translation>
 <translation id="6798780071646309401">কেপছ লক অন আছে</translation>
 <translation id="6798954102094737107">প্লাগ ইন: <ph name="PLUGIN_NAME" /></translation>
@@ -6544,7 +6545,6 @@
 <translation id="8378714024927312812">আপোনাৰ প্ৰতিষ্ঠানৰ দ্বাৰা পৰিচালিত</translation>
 <translation id="8379878387931047019">এই ৱেবছাইটটোৱে অনুৰোধ কৰা সুৰক্ষা সম্পৰ্কীয় চাবি ডিভাইচটোৱে সমৰ্থন নকৰে</translation>
 <translation id="8379991678458444070">এই টেবটো বুকমার্ক কৰি পৰৱর্তী সময়ত ক্ষিপ্ৰভাৱে খোলক</translation>
-<translation id="8380314198565901932">ভাৰ্চুৱেল মেচিন ডাউনল’ড কৰি থাকোঁতে আসোঁৱাহ হৈছে। অনুগ্ৰহ কৰি আপোনাৰ <ph name="DEVICE_TYPE" /> আপডে’ট কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="8382913212082956454">&amp;ইমেইল ঠিকনা প্ৰতিলিপি কৰক</translation>
 <translation id="8386091599636877289">নীতিটো বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="8386819192691131213">অনুবাদ কৰা, সংজ্ঞা প্ৰদান কৰা, একক ৰূপান্তৰ কৰা আদিৰ দৰে বহুতো কামৰ ক্ষেত্ৰত ক্ষিপ্ৰ উত্তৰ দিবলৈ Assistantক স্ক্ৰীনত থকা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়ক</translation>
@@ -7253,6 +7253,7 @@
       <ph name="LIST_ITEM" />Chromeৰ সংযোগৰ সমস্যা নিৰূপণ কৰোঁতা চলাওক
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">চিত্ৰৰ ভিতৰত চিত্ৰ</translation>
+<translation id="9167063903968449027">পঢ়াৰ সূচী দেখুৱাওক</translation>
 <translation id="9168436347345867845">এইটো পিছত কৰিব</translation>
 <translation id="9169496697824289689">কীব’ৰ্ডৰ শ্বৰ্টকাট চাওক</translation>
 <translation id="916964310188958970">এই পৰামৰ্শ কিয় দিয়া হৈছে?</translation>

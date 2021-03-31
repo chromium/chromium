@@ -52,6 +52,7 @@
 <translation id="1268366246392928616">Tiada ungkapan matematik sebelumnya</translation>
 <translation id="1273314450961659276">Tetapan Teks ke Pertuturan</translation>
 <translation id="1275718070701477396">Dipilih</translation>
+<translation id="1284576163386164372">Anda boleh melihat tutorial pada bila-bila masa dengan membuka menu menggunakan ketikan empat jari. Kemudian, aktifkan tutorial di bawah bahagian “ChromeVox”.</translation>
 <translation id="1291286136605998134">Butang Togol</translation>
 <translation id="1299774449519412690">Biru Langit Cerah</translation>
 <translation id="1303806948938513162">Ketik dengan 4 jari untuk memasuki menu ChromeVox</translation>
@@ -115,6 +116,7 @@
 <translation id="1690731385917361335">Tiada item</translation>
 <translation id="1700517974991662022">Dilawati</translation>
 <translation id="1714116687360794776">Meter</translation>
+<translation id="1717267964664691695">Tutorial sentuhan selesai</translation>
 <translation id="1722567105086139392">Pautan</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">Selamat datang ke tutorial ChromeVox. Untuk keluar daripada tutorial ini pada bila-bila masa, tekan kekunci Escape di sudut atas sebelah kiri papan kekunci. Untuk mematikan ChromeVox, tahan Control dan Alt, kemudian tekan Z. Apabila anda sudah bersedia, gunakan bar ruang untuk beralih ke pelajaran seterusnya.</translation>
@@ -131,6 +133,7 @@
 <translation id="1834891354138622109">Lajur</translation>
 <translation id="1845944666972354496">Ketik dua kali untuk mengaktifkan</translation>
 <translation id="1846771122725914429">Paparan Braille Bluetooth</translation>
+<translation id="1852018405765032699">Tindakan mengetik skrin dengan empat jari akan membuka dan menutup menu ChromeVox. Menu ini mengandungi maklumat berguna tentang perintah dan pintasan. Sebaik sahaja menu dibuka, anda boleh meleret dengan satu jari untuk menavigasi item dan ketik dua kali untuk mengaktifkan item. Untuk meneruskan, ketik skrin dengan empat jari.</translation>
 <translation id="1865601187525349519">Penghujung teks</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">Sel</translation>
@@ -181,6 +184,7 @@
 <translation id="2267538686624070261">Meninggalkan kesilapan ejaan</translation>
 <translation id="2267945578749931355">Aksara Seterusnya</translation>
 <translation id="2278490101488436824">Leret tiga jari ke kiri</translation>
+<translation id="2303873575703885770">Aktifkan item</translation>
 <translation id="2305942658236913680">Tiada tajuk seterusnya</translation>
 <translation id="2311237334957139798">Beralih ke item sebelumnya pada kebutiran</translation>
 <translation id="2314393392395134769">Bukan subskrip</translation>
@@ -219,6 +223,7 @@
 <translation id="2592212930811759050">Ketik dua kali untuk mula mengedit</translation>
 <translation id="2598495320872286378">Kesilapan tatabahasa</translation>
 <translation id="2603828437139726540">Beralih satu aksara ke depan</translation>
+<translation id="2619344480613750862">Anda juga boleh beralih antara bahagian skrin. Sebagai contoh, anda boleh beralih antara pelancar, rak dan tab Chrome anda. Untuk beralih ke bahagian seterusnya, leret dari kiri ke kanan dengan empat jari. Cuba sekarang untuk meneruskan.</translation>
 <translation id="2624431853467395961">Buka mod belajar</translation>
 <translation id="2626530649491650971">boleh klik</translation>
 <translation id="2637227747952042642">Matematik</translation>
@@ -247,6 +252,7 @@
 <translation id="2756452585631602151">Masukkan label tersuai</translation>
 <translation id="2766299274563946262">Tiada sel di kiri</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
+<translation id="2792200646155001340">Anda juga boleh leret satu jari dari kanan ke kiri untuk beralih ke item sebelumnya. Cubalah sekarang.</translation>
 <translation id="280499067616661124">Cari dalam halaman Chromevox</translation>
 <translation id="2811019999044652585">Untuk melompat ke bahagian lain dalam skrin itu, misalnya bar alat atau dulang sistem, tekan Control + Forward. Pada Chromebook, kekunci Forward berada betul-betul di atas kekunci nombor 2.</translation>
 <translation id="2811204574343810641">Baris</translation>
@@ -274,6 +280,7 @@
 <translation id="2968634799764242930">Hijau Laut</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{tab}other{# tab}}</translation>
 <translation id="2972205263822847197">Petua alat</translation>
+<translation id="2976476721782829799">Anda juga boleh bergerak ke sana sini dengan menyeret satu jari pada skrin. Ciri ini dipanggil penerokaan melalui sentuhan. Cuba seret jari anda pada skrin untuk membaca bahagian yang selebihnya bagi pelajaran ini.</translation>
 <translation id="297825089465017871">Leret dua jari ke kiri</translation>
 <translation id="2998131015536248178">Aksara Sebelumnya</translation>
 <translation id="2999559350546931576">Kurangkan nada</translation>
@@ -375,6 +382,7 @@
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3589661172894441357">Glosari</translation>
 <translation id="3591784666823501596">Nilakandi</translation>
+<translation id="3592715211448024517">Akses menu</translation>
 <translation id="3594207934078151302">Hijau Laut Sederhana</translation>
 <translation id="3599054940393788245">Bukan dalam matematik</translation>
 <translation id="360241989769010433">Perakuan</translation>
@@ -401,6 +409,7 @@
 <translation id="3781428340399460090">Merah Jambu Hangat</translation>
 <translation id="3783725005098956899">Tunjukkan Log</translation>
 <translation id="3801735343383419236">Senarai autolengkap</translation>
+<translation id="3806327402890551732">Beralih ke item seterusnya atau sebelumnya</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3813387282697781382">Batu Karang Cerah</translation>
 <translation id="3816633764618089385">Media seterusnya</translation>
@@ -410,6 +419,7 @@
 <translation id="3870295413168340326">Tiada tajuk tahap 3 sebelumnya</translation>
 <translation id="3887399638190992181">Kekunci penting</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3893063449310326280">Begitu juga, tindakan meleret dari kanan ke kiri dengan empat jari boleh digunakan untuk beralih ke unsur utama sebelumnya. Cubalah sekarang!</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Tajuk tahap 6 sebelumnya</translation>
@@ -504,6 +514,7 @@
 <translation id="4615592953348396470">Mengabaikan tekanan kekunci seterusnya</translation>
 <translation id="4623097797855662355">Kolofon</translation>
 <translation id="463135993322337640">Tekan o, n ChromeVox untuk mengetahui perkara baharu</translation>
+<translation id="4649220074413114917">Tindakan mengetik skrin dengan dua jari boleh digunakan untuk menghentikan sebarang pertuturan semasa. Gerak isyarat ini berguna jika anda tidak mahu ChromeVox membaca sesuatu. Untuk meneruskan, ketik skrin dengan dua jari.</translation>
 <translation id="4660783501463101648">Klasik dialih keluar. Togol papan kekunci untuk menukar kembali kepada ChromeVox Klasik telah dialih keluar.</translation>
 <translation id="4661075872484491155">pohon</translation>
 <translation id="4668929960204016307">,</translation>
@@ -579,12 +590,14 @@
 <translation id="5140016802771803559">Ungu Rebecca</translation>
 <translation id="5142101052131610456">Semua pelajaran</translation>
 <translation id="5158275234811857234">Muka depan</translation>
+<translation id="516076699907426116">Untuk meneruskan, teroka melalui sentuhan untuk mencari butang Pelajaran seterusnya. Kemudian ketik dua kali untuk meneruskan.</translation>
 <translation id="5170206230005240598">Kapsyen braille didayakan</translation>
 <translation id="5183440668879371625">Baris braille terdahulu</translation>
 <translation id="5189244881767082992">Baris</translation>
 <translation id="5263034204789987535">Bulu Jagung</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">End</translation>
+<translation id="5290220123487191192">Mari mulakan dengan beberapa gerak isyarat yang akan anda gunakan dengan kerap. Jika anda sampai ke item yang ingin diaktifkan, ketik skrin dua kali dengan satu jari. Untuk meneruskan, ketik dua kali sekarang.</translation>
 <translation id="5302089807023311274">Rujukan bibliografi</translation>
 <translation id="530391007967514163">Cuba lompat mengikut tajuk untuk menavigasi teks di bawah.</translation>
 <translation id="5304943142864553931">Tab, <ph name="TITLE" /></translation>
@@ -655,10 +668,12 @@
 <translation id="5703716265115423771">kurangkan kelantangan</translation>
 <translation id="5704453877234251104">Tekan anak panah ke atas atau ke bawah untuk pelengkapan automatik</translation>
 <translation id="5712244464475377681">popbtn</translation>
+<translation id="5712889723513495267">Beralih ke bahagian seterusnya atau sebelumnya</translation>
 <translation id="5725079927589231571">Biru Keluli Cerah</translation>
 <translation id="5732189279857692565">Ini ialah tajuk kedua. Teruskan, tekan Carian+H atau Carian+Shift+H</translation>
 <translation id="5748623122140342504">Tajuk tahap 5 sebelumnya</translation>
 <translation id="5760594853119905566">Lampiran</translation>
+<translation id="5761219715606611783">Syabas! Anda telah mempelajari perkara asas tentang sentuhan ChromeVox. Anda boleh melihat tutorial sekali lagi atau keluar daripada tutorial ini menggunakan butang di bawah.</translation>
 <translation id="5805940204952508776">Ketik dengan dua jari</translation>
 <translation id="5819072574982403430">Item pepohon</translation>
 <translation id="5822819874379903994">Firus Gelap</translation>
@@ -683,6 +698,7 @@
 <translation id="5906974869830879618">Sila masukkan pin</translation>
 <translation id="5921587111466148855">Bab</translation>
 <translation id="5923780477617566089">Tarikh semasa</translation>
+<translation id="5926889058434275234">Untuk mendapatkan senarai penuh gerak isyarat, lawati pusat bantuan.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{sama dengan}other{# tanda sama dengan}}</translation>
 <translation id="5948123859135882163">Togol tafsiran ungkapan matematik antara struktur dan semantik</translation>
 <translation id="5955304353782037793">apl</translation>
@@ -760,6 +776,7 @@
 <translation id="6561818612645211875">Pergi ke permulaan baris semasa</translation>
 <translation id="6579990219486187401">Merah Jambu Cerah</translation>
 <translation id="6583174818554398774">Beralih ke item seterusnya pada kebutiran</translation>
+<translation id="6584162722998608255">Seterusnya, anda akan belajar cara bergerak pada skrin. Anda boleh leret satu jari dari kanan ke kiri untuk beralih ke item seterusnya. Cuba sekarang untuk beralih ke langkah seterusnya.</translation>
 <translation id="6609828810966525877">Terokai lebih banyak gerak isyarat dalam Mod Belajar dan di Pusat Bantuan Chromebook</translation>
 <translation id="6628427060004938651">Bahagian</translation>
 <translation id="6637586476836377253">log</translation>
@@ -781,6 +798,7 @@
 <translation id="6759710362319508545">Sumber</translation>
 <translation id="67862343314499040">Ungu Lembayung</translation>
 <translation id="6786800275320335305">Artikel</translation>
+<translation id="6790781785997195160">Selepas berlatih beberapa kali, cari butang Pelajaran seterusnya. Kemudian ketik dua kali untuk meneruskan.</translation>
 <translation id="6793101435925451627">lstbx</translation>
 <translation id="6815255864998354418">Sifon Lemon</translation>
 <translation id="6816066673340002913">Batang Emas Pucat</translation>
@@ -806,6 +824,7 @@
 <translation id="6994042831499278539">Rujukan glosari</translation>
 <translation id="6996566555547746822">Kotak kombo seterusnya</translation>
 <translation id="6997224546856374593">Apabila membaca huruf besar:</translation>
+<translation id="6999752561504308105">Selamat datang ke tutorial ChromeVox. Untuk keluar daripada tutorial ini pada bila-bila masa, leret dari kanan ke kiri dengan dua jari. Untuk menghidupkan atau mematikan ChromeVox pada bila-bila masa, tekan dan tahan kedua-dua butang Kelantangan selama lima saat. Apabila anda sudah bersedia, ketik skrin dua kali dengan satu jari untuk beralih ke pelajaran seterusnya.</translation>
 <translation id="700202842116345659">Masukan bibliografi</translation>
 <translation id="7005146664810010831">Tiada URL dijumpai</translation>
 <translation id="7026338066939101231">Susutan</translation>
@@ -819,6 +838,7 @@
 <translation id="7086377898680121060">Tambahkan kecerahan</translation>
 <translation id="7088743565397416204">Ketik dua kali untuk mengaktifkan item terfokus</translation>
 <translation id="7088960765736518739">Akses Suis</translation>
+<translation id="7090715360595433170">Ciri ini juga boleh menjadi lebih cekap berbanding meleret ke kiri dan kanan dengan satu jari.</translation>
 <translation id="7091296112653361280">Putih Navajo</translation>
 <translation id="7095834689119144465">Edit teks angka sahaja</translation>
 <translation id="7096001299300236431">Media sebelumnya</translation>
@@ -856,6 +876,7 @@
 <translation id="7308519659008003150">Tiada medan borang sebelumnya</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">tidak dipilih sepenuhnya</translation>
+<translation id="7322442671176251901">Teroka melalui sentuhan</translation>
 <translation id="7344012264516629579">Perintah lompat tambahan antaranya termasuklah melompat mengikut pautan, butang dan kotak pilihan. Senarai penuh perintah lompat boleh didapati dalam menu ChromeVox, yang boleh dibuka dengan menekan Carian + Noktah.</translation>
 <translation id="7356165926712028380">Tukar kepada braille 8 titik</translation>
 <translation id="7356610683936413584">Butiran senarai perihalan</translation>
@@ -911,6 +932,7 @@
     Jika anda sudah selesai menggunakan tutorial, gunakan ChromeVox untuk mendapatkan butang Tutup dan klik butang itu.</translation>
 <translation id="7724603315864178912">Potong</translation>
 <translation id="7731785449856576010">Tiada widget media seterusnya</translation>
+<translation id="7735498529470878067">Penerokaan melalui sentuhan boleh membantu anda mendapatkan gambaran tentang perkara yang dipaparkan pada skrin dengan pantas.</translation>
 <translation id="773906353055481349">Tekan Search+Ctrl+Alt dengan anak panah untuk menavigasi mengikut sel</translation>
 <translation id="7763537600611320912">Muat turun <ph name="FILE_NAME" /> dimulakan</translation>
 <translation id="7768784765476638775">Pilih untuk bercakap</translation>
@@ -1090,6 +1112,7 @@
 <translation id="9153606228985488238">Nada <ph name="PERCENT" /> peratus</translation>
 <translation id="9160096769946561184">Pergi ke penghujung lajur semasa</translation>
 <translation id="9173115498289768110">Kelantangan <ph name="PERCENT" /> peratus</translation>
+<translation id="9185200690645120087">Tutorial sentuhan ChromeVox</translation>
 <translation id="9192904702577636854">Marki</translation>
 <translation id="9205282956404529648">Taip untuk autolengkap</translation>
 <translation id="9208241857935108694">Putih Antik</translation>

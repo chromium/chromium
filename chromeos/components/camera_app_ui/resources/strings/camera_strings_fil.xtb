@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Walang na-record</translation>
+<translation id="1838104802459806957">Mag-tilt pataas</translation>
 <translation id="1851616744363735765">NAKA-PAUSE</translation>
 <translation id="1862930711583847113">Hindi ma-export ang <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolution ng larawan</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">Aktibo ang <ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">Mga custom na parameter ng video</translation>
 <translation id="229579744168541441">I-export sa disk</translation>
+<translation id="2320741269052147773">Mag-pan sa kaliwa</translation>
 <translation id="2501278716633472235">Bumalik</translation>
 <translation id="2501853267655415902">Itinigil ang pag-record</translation>
 <translation id="2501953888035679275">Kumuha ng mga larawan at mag-record ng mga video gamit ang iyong camera.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Ililipat sa folder na Mga Download ang mga larawan at video na kinunan gamit ang camera. Maa-access mo ang mga ito sa Mga File.
 
         Magkakaroon ng access sa iyong mga larawan at video ang mga app na may mga pahintulot sa storage.</translation>
+<translation id="3067436040345934772">Mag-pan sa kanan</translation>
 <translation id="3081586908890909590">Lumipat sa pag-record ng video</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">Uri ng grid</translation>
@@ -89,6 +92,7 @@ Kung tungkol ang iyong feedback sa kalidad ng larawan o video, mag-attach ng hal
 <translation id="8145038249676204903">Lumipat sa pagkuha ng larawan</translation>
 <translation id="8239780215768881278">Kumuha ng video snapshot</translation>
 <translation id="8261506727792406068">I-delete</translation>
+<translation id="8425673304802773841">I-tilt pababa</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">I-preview ang metadata</translation>

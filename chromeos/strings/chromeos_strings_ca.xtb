@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4297501883039923494">S'ha aturat: error desconegut</translation>
+<translation id="4344214025510306853">Adjunta un APN</translation>
 <translation id="4378373042927530923">No s'ha executat</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">La meva unitat</translation>
@@ -278,6 +279,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7059230779847288458">S'està carregant. <ph name="TIME_VALUE" /> per completar la càrrega.</translation>
 <translation id="708426984172631313">ATURAT</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>

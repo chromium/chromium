@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> zaleca aktualizację tego urządzenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">System nie mógł określić modelu lub numeru seryjnego urządzenia.</translation>
 <translation id="1119447706177454957">Błąd wewnętrzny</translation>
+<translation id="111959947408687873">Aby włączyć lupę pełnego ekranu, naciśnij Ctrl+<ph name="SEARCH_KEY_NAME" />+M. Po powiększeniu możesz poruszać się po ekranie, naciskając Ctrl+Alt+klawisze strzałek.</translation>
 <translation id="1122068467107743258">Służbowy</translation>
 <translation id="1122198203221319518">&amp;Narzędzia</translation>
 <translation id="1122242684574577509">Uwierzytelnianie nie powiodło się. Kliknij, by otworzyć stronę logowania do sieci Wi-Fi (<ph name="NETWORK_ID" />), której używasz.</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Program Ochrony zaawansowanej Google</translation>
 <translation id="1155816283571436363">Łączę z Twoim telefonem</translation>
 <translation id="1161575384898972166">Zaloguj się do urządzenia <ph name="TOKEN_NAME" />, aby wyeksportować certyfikat klienta.</translation>
+<translation id="116173250649946226">Administrator ustawił domyślny motyw, którego nie można zmienić.</translation>
 <translation id="1163931534039071049">&amp;Wyświetl źródło ramki</translation>
 <translation id="1164891049599601209">Wpisano na stronie wprowadzającej w błąd</translation>
 <translation id="1164899421101904659">Wpisz klucz odblokowujący kod PIN</translation>
@@ -2552,6 +2554,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3809272675881623365">Królik</translation>
 <translation id="3809280248639369696">Księżycowy promień</translation>
 <translation id="3810593934879994994">Strona <ph name="ORIGIN" /> może przeglądać pliki w tych folderach</translation>
+<translation id="3810914450553844415">Administrator nie zezwala na dodatkowe konta Google.</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
 <translation id="381202950560906753">Dodaj kolejny</translation>
 <translation id="3812525830114410218">Zły certyfikat</translation>
@@ -2673,6 +2676,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3925573269917483990">Aparat:</translation>
 <translation id="3926002189479431949">Telefon z funkcją Smart Lock został zmieniony</translation>
 <translation id="3927932062596804919">Odmawiaj</translation>
+<translation id="392803502090869922">Konfiguracja eSIM</translation>
 <translation id="3928570707778085600">Zapisać zmiany w: <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Niski poziom tuszu</translation>
 <translation id="3929426037718431833">Te rozszerzenia mogą odczytywać i zmieniać informacje na tej stronie.</translation>
@@ -4243,6 +4247,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5764797882307050727">Zwolnij trochę miejsca na urządzeniu.</translation>
 <translation id="5765425701854290211">Niektóre pliki zostały uszkodzone i aktualizacja nie udała się. Synchronizowane pliki są bezpieczne.</translation>
 <translation id="5765491088802881382">Nie są dostępne żadne sieci</translation>
+<translation id="5766243637773654698">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Google? Naciśnij Shift+F6, aby przejść do obszaru paska pobranych plików.</translation>
 <translation id="5769519078756170258">Host lub domena do wykluczenia</translation>
 <translation id="5770125698810550803">Pokaż przyciski nawigacyjne</translation>
 <translation id="5771816112378578655">Trwa konfigurowanie...</translation>
@@ -4399,6 +4404,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5942779427914696408">Widoczność urządzenia</translation>
 <translation id="5943127421590245687">Weryfikacja została ukończona. Aby odblokować i przywrócić dane lokalne, podaj swoje stare hasło do urządzenia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Zeskanuj kod QR</translation>
+<translation id="5945002094477276055">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Bezpieczne przeglądanie Google?</translation>
 <translation id="5946591249682680882">Identyfikator raportu: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Podłącz klawiaturę lub mysz albo kontynuuj konfigurację, używając ekranu dotykowego. Jeśli używasz urządzeń Bluetooth, upewnij się, że są one gotowe do sparowania.</translation>
 <translation id="5949544233750246342">Nie można przeanalizować pliku</translation>
@@ -4446,6 +4452,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6002452033851752583">Hasło zostało usunięte z konta Google</translation>
 <translation id="6002458620803359783">Preferowane głosy</translation>
 <translation id="6003143259071779217">Usuń sieć komórkową eSIM</translation>
+<translation id="6003582434972667631">Motyw jest ustawiony przez Twoją organizację</translation>
 <translation id="6006484371116297560">Klasyczny</translation>
 <translation id="6007240208646052708">Wyszukiwanie głosowe jest niedostępne w Twoim języku.</translation>
 <translation id="6011074160056912900">Sieć Ethernet</translation>
@@ -4825,6 +4832,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6429384232893414837">Błąd aktualizacji</translation>
 <translation id="6430814529589430811">Plik ASCII z kodowaniem Base64, jeden certyfikat</translation>
 <translation id="6431347207794742960">Program <ph name="PRODUCT_NAME" /> skonfiguruje aktualizacje automatyczne dla wszystkich użytkowników tego komputera.</translation>
+<translation id="6434104957329207050">Szybkość skanowania punktów</translation>
 <translation id="6434309073475700221">Odrzuć</translation>
 <translation id="6434325376267409267">Zanim będzie można używać <ph name="APP_NAME" />, musisz zaktualizować urządzenie.</translation>
 <translation id="6436164536244065364">Zobacz w Chrome Web Store</translation>
@@ -4867,6 +4875,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6474498546677193336">Nie udało się cofnąć udostępniania, ponieważ tego folderu używa aplikacja. Folder przestanie być udostępniany po zamknięciu Linuksa.</translation>
 <translation id="6474884162850599008">Odłącz konto na Dysku Google</translation>
 <translation id="6475294023568239942">Zwolnij miejsce lub zmień rozmiar dysku Linuksa w ustawieniach</translation>
+<translation id="6476138569087741884">Poziom powiększenia lupy pełnego ekranu</translation>
 <translation id="6477822444490674459">Telefony używające profilu służbowego nie obsługują synchronizacji powiadomień. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Zachować niebezpieczny plik?</translation>
 <translation id="6480327114083866287">Zarządzane przez <ph name="MANAGER" /></translation>
@@ -5322,6 +5331,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6985607387932385770">Drukarki</translation>
 <translation id="6988094684494323731">Uruchamiam kontener Linuksa</translation>
 <translation id="6988403677482707277">Karta została przeniesiona na początek paska kart</translation>
+<translation id="6990209147952697693">Klasyczny Chrome</translation>
 <translation id="6991665348624301627">Wybierz urządzenie docelowe</translation>
 <translation id="6992554835374084304">Włączanie ulepszonego sprawdzania pisowni</translation>
 <translation id="6993000214273684335">Karta została usunięta z nienazwanej grupy – <ph name="GROUP_CONTENTS" /></translation>
@@ -6309,6 +6319,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8086015605808120405">Konfiguruję: <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Skonfiguruj drukarkę <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ten plik jest zaszyfrowany. Poproś właściciela, by go odszyfrował.}few{Niektóre z tych plików są zaszyfrowane. Poproś właściciela, by je odszyfrował.}many{Niektóre z tych plików są zaszyfrowane. Poproś właściciela, by je odszyfrował.}other{Niektóre z tych plików są zaszyfrowane. Poproś właściciela, by je odszyfrował.}}</translation>
+<translation id="8087576439476816834">Pobierz, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Zmień hasło</translation>
 <translation id="8090234456044969073">Odczyt listy najczęściej odwiedzanych stron</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> nie odpowiada</translation>
@@ -6550,6 +6561,8 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8368859634510605990">&amp;Otwórz wszystkie zakładki</translation>
 <translation id="8370294614544004647">Uśpienie po zamknięciu laptopa</translation>
 <translation id="8371695176452482769">Mów teraz</translation>
+<translation id="8371749822919332187">Naciśnij Ctrl+Alt+zwiększ jasność, aby powiększyć.
+Naciśnij Ctrl+Alt+zmniejsz jasność, aby pomniejszyć.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Wycisz stronę}few{Wycisz strony}many{Wycisz strony}other{Wycisz strony}}</translation>
 <translation id="8372369524088641025">Błędny klucz WEP</translation>
 <translation id="8373652277231415614">Katalogi udostępnione Crostini</translation>
@@ -6557,7 +6570,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8378714024927312812">Zarządzane przez Twoją organizację</translation>
 <translation id="8379878387931047019">To urządzenie nie obsługuje typu klucza bezpieczeństwa, o który prosi ta witryna</translation>
 <translation id="8379991678458444070">Dodaj tę stronę do zakładek, by szybko na nią wrócić</translation>
-<translation id="8380314198565901932">Błąd pobierania maszyny wirtualnej. Zaktualizuj urządzenie <ph name="DEVICE_TYPE" /> i spróbuj ponownie.</translation>
 <translation id="8382913212082956454">Kopiuj adres &amp;e-mail</translation>
 <translation id="8386091599636877289">Nie znaleziono zasady.</translation>
 <translation id="8386819192691131213">Zezwól Asystentowi na korzystanie z informacji na ekranie, aby mógł podawać szybkie odpowiedzi, takie jak tłumaczenia, definicje czy przeliczenia jednostek</translation>
@@ -7222,6 +7234,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Witamy w Twoim nowym profilu</translation>
 <translation id="9112748030372401671">Zmiana tapety</translation>
+<translation id="9112786533191410418">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Google?</translation>
 <translation id="9112987648460918699">Znajdź...</translation>
 <translation id="9114663181201435112">Łatwe logowanie</translation>
 <translation id="9115675100829699941">&amp;Zakładki</translation>

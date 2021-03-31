@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">‏اکنون می‌توانید با ضربه زدن روی پیوندهای موجود در پیام‌ها، اسناد و دیگر برنامه‌ها، از Chrome استفاده کنید.</translation>
 <translation id="3720541637541300822">‏قفل کردن «برگه‌های ناشناس» وقتی Chrome را می‌بندید</translation>
 <translation id="384394811301901750">‏Google Chrome اکنون نمی‌تواند از دوربین استفاده کند</translation>
-<translation id="38949020760388809">‏انتخاب کنید داده‌های Chrome شما از این دستگاه پاک شود یا نگه داشته شود.</translation>
 <translation id="3980220367029651214">‏هم‌اکنون حساب‌های همگام‌سازی را از <ph name="USER_EMAIL1" /> به <ph name="USER_EMAIL2" /> تغییر می‌دهید. داده‌های موجود Chrome شما توسط <ph name="DOMAIN" /> مدیریت می‌شود. با این کار، داده‌هایتان از این دستگاه حذف می‌شود اما همچنان در <ph name="USER_EMAIL1" /> باقی می‌ماند.</translation>
 <translation id="3984746313391923992">‏سازمانتان از شما می‌خواهد خارج از سیستم Chrome باقی بمانید.</translation>
 <translation id="3988789688219830639">‏Google Chrome به عکس‌ها یا ویدیوهای شما دسترسی ندارد. با رفتن به تنظیمات iOS &gt; حریم‌خصوصی &gt; عکس‌ها دسترسی را فعال کنید.</translation>
 <translation id="4099578267706723511">‏‫با ارسال آمار کاربرد و گزارش‌های خرابی به Google، به بهتر شدن Chrome کمک کنید.</translation>
-<translation id="415767770115540173">‏با Chrome تجربه بهتری از Google براساس موقعیت مکانی‌تان داشته باشید.</translation>
 <translation id="417201473131094001">‏در Chrome Canary پشتیبانی نمی‌شود</translation>
 <translation id="424864128008805179">‏از سیستم Chrome خارج می شوید؟</translation>
 <translation id="4249068189593983585">‏نکته Chrome. برای دیدن گزینه‌های بیشتر برگه، دکمه «نمایش برگه‌ها» را در نوارابزار (واقع در پایین یا بالای صفحه) لمس کنید و نگه دارید.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">‏گذرواژه‌تان به‌دلیل نقض داده لو رفته است. Chrome توصیه می‌کند همین‌حالا گذرواژه را تغییر دهید.</translation>
 <translation id="7698568245838009292">‏Chrome می‌خواهد به «دوربین» دسترسی داشته باشد</translation>
 <translation id="7855730255114109580">‏Google Chrome به‌روز است</translation>
-<translation id="8109233255338845204">‏حسابتان را <ph name="HOSTED_DOMAIN" /> مدیریت می‌کند، درنتیجه داده‌های Chrome شما از این دستگاه پاک خواهد شد.</translation>
 <translation id="8160472928944011082">‏Chrome به‌روزرسانی نمی‌شود</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>
 <translation id="840168496893712993">‏برخی از افزونه‌ها باعث می‌شوند Chrome از کار بیفتد. لطفاً آنها را حذف نصب کنید.</translation>

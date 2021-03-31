@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">애플리케이션 버전</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
+<translation id="147113415845704694">"오늘 날씨 어때?"라고 말해 보세요.</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
@@ -569,6 +570,7 @@
 <translation id="49268022542405662">내보낸 비밀번호는 텍스트 파일로 다운로드됩니다. 비밀번호가 저장된 폴더에 대한 액세스 권한이 있는 모든 사용자와 앱에 표시됩니다.</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" />이(가) 관리하는 계정에서 로그아웃하면 Chrome 데이터가 이 기기에서 삭제됩니다. Google 계정에서는 데이터가 삭제되지 않습니다.</translation>
 <translation id="4936039914467572121">신속하게 이 사이트 방문</translation>
+<translation id="4941179133499732445">마이크를 탭하여 음성으로 검색하세요.</translation>
 <translation id="4943703118917034429">가상 현실</translation>
 <translation id="4943872375798546930">검색결과가 없습니다.</translation>
 <translation id="4961107849584082341">이 페이지를 원하는 언어로 번역하세요.</translation>
@@ -583,6 +585,7 @@
 <translation id="5011311129201317034"><ph name="SITE" />에서 연결하려고 함</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">허용</translation>
+<translation id="5061533557687621530">날씨를 확인하려면 마이크를 탭하고 "오늘 날씨 어때?"라고 말하세요.</translation>
 <translation id="5087580092889165836">카드 추가</translation>
 <translation id="5091249083535528968">확장된 사용 데이터</translation>
 <translation id="509429900233858213">오류가 발생했습니다.</translation>
@@ -597,6 +600,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5184329579814168207">Chrome에서 열기</translation>
+<translation id="5188992787241350004">음성으로 검색하세요.</translation>
 <translation id="5191251636205085390">타사 쿠키를 대체하는 것을 목표로 하는 새로운 기술을 알아보고 관리하세요.</translation>
 <translation id="5193988420012215838">클립보드에 복사됨</translation>
 <translation id="5199929503336119739">직장용 프로필</translation>

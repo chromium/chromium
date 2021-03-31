@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Magagamit mo na ngayon ang Chrome sa tuwing magta-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="3720541637541300822">I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chrome</translation>
 <translation id="384394811301901750">Hindi magamit ng Google Chrome ang camera mo ngayon</translation>
-<translation id="38949020760388809">Piliin kung iki-clear ang iyong data sa Chrome sa device na ito o kung papanatilihin ito.</translation>
 <translation id="3980220367029651214">Lumilipat ka mula sa naka-sync na account na <ph name="USER_EMAIL1" /> papunta sa <ph name="USER_EMAIL2" />. Pinamamahalaan ng <ph name="DOMAIN" /> ang kasalukuyan mong data sa Chrome. Ide-delete nito ang data mo sa device na ito, ngunit mananatili ang iyong data sa <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Hinihiling sa iyo ng organisasyon mo na manatiling naka-sign out sa Chrome.</translation>
 <translation id="3988789688219830639">Walang access ang Google Chrome sa larawan o video. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
 <translation id="4099578267706723511">Tulungang mapahusay ang Chrome sa pamamagitan ng pagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash.</translation>
-<translation id="415767770115540173">Magkaroon ng mas mahusay na karanasan sa Google sa Chrome batay sa iyong lokasyon.</translation>
 <translation id="417201473131094001">Hindi sinusuportahan sa Chrome Canary</translation>
 <translation id="424864128008805179">Mag-sign out sa Chrome?</translation>
 <translation id="4249068189593983585">Tip sa Chrome. Para sa higit pang opsyon sa tab, pindutin nang matagal ang button na Ipakita ang Mga Tab sa toolbar, na nasa ibaba o itaas ng iyong screen.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Chromium na palitan ang password ngayon.</translation>
 <translation id="7698568245838009292">Gustong I-access ng Chrome ang Camera</translation>
 <translation id="7855730255114109580">Napapanahon ang Google Chrome</translation>
-<translation id="8109233255338845204">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chrome sa device na ito.</translation>
 <translation id="8160472928944011082">Hindi makapag-update ang Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="840168496893712993">Nagiging dahilan ang ilang add-on ng pag-crash ng Chrome. Pakisubukang i-uninstall ang mga ito.</translation>

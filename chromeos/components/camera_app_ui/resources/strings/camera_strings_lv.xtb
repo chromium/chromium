@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nekas nav ierakstīts</translation>
+<translation id="1838104802459806957">Pavirzīt augšup</translation>
 <translation id="1851616744363735765">APTURĒTA</translation>
 <translation id="1862930711583847113">Nevar eksportēt failu <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Fotoattēlu izšķirtspēja</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktīva</translation>
 <translation id="2144806332417375165">Pielāgoti video parametri</translation>
 <translation id="229579744168541441">Eksportēt diskā</translation>
+<translation id="2320741269052147773">Bīdīt pa kreisi</translation>
 <translation id="2501278716633472235">Doties atpakaļ</translation>
 <translation id="2501853267655415902">Ierakstīšana apturēta</translation>
 <translation id="2501953888035679275">Uzņemiet fotoattēlus un ierakstiet videoklipus, izmantojot savu kameru.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Ar kameru uzņemtie fotoattēli un videoklipi tiks ievietoti mapē Lejupielādes. Varat tiem piekļūt lietotnē Faili.
 
         Lietotnes, kurām ir atļauja piekļūt krātuvei, varēs piekļūt jūsu fotoattēliem un videoklipiem.</translation>
+<translation id="3067436040345934772">Bīdīt pa labi</translation>
 <translation id="3081586908890909590">Ieslēdziet, lai ierakstītu videoklipu</translation>
 <translation id="313467653172006084">30 kadri/s</translation>
 <translation id="3183731565330012717">Režģa veids</translation>
@@ -89,6 +92,7 @@ Ja atsauksme ir par attēlu vai videoklipu kvalitāti, lūdzu, pievienojiet foto
 <translation id="8145038249676204903">Pārslēgt, lai uzņemtu fotoattēlu</translation>
 <translation id="8239780215768881278">Uzņemt video momentuzņēmumu</translation>
 <translation id="8261506727792406068">Dzēst</translation>
+<translation id="8425673304802773841">Pavirzīt lejup</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Priekšskatīt metadatus</translation>

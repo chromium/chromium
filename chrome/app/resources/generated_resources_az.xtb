@@ -5141,6 +5141,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Xəta oldu.</translation>
 <translation id="6798420440063423019">Həddindən çox yanlış PIN daxil edildiyinə görə təhlükəsizlik açarı kilidlənib. Təhlükəsizlik açarını sıfırlamalısınız.</translation>
+<translation id="679845623837196966">Oxu siyahısını göstərin</translation>
 <translation id="6798578729981748444">İmportu tamamlamaq üçün bütün Firefox pəncərələrini bağlayın</translation>
 <translation id="6798780071646309401">böyük hərflər aktivdir</translation>
 <translation id="6798954102094737107">Plagin: <ph name="PLUGIN_NAME" /></translation>
@@ -6562,7 +6563,6 @@ Uzaqlaşdırmaq üçün Ctrl+Alt+Parlaqlığı Azalt düymələrindən istifadə
 <translation id="8378714024927312812">Təşkilatınız tərəfindən idarə olunur</translation>
 <translation id="8379878387931047019">Bu cihazda veb sayt tərəfindən tələb edilən təhlükəsizlik açarının növü dəstəklənmir</translation>
 <translation id="8379991678458444070">Tabı əlfəcinlərə əlavə etməklə asanlıqla geri qayıdın</translation>
-<translation id="8380314198565901932">Virtual maşını endirərkən xəta baş verdi. <ph name="DEVICE_TYPE" /> cihazınızı güncəlləyin və yenidən sınayın.</translation>
 <translation id="8382913212082956454">E-poçt ünvanını kopyalayın</translation>
 <translation id="8386091599636877289">Qayda tapılmadı.</translation>
 <translation id="8386819192691131213">Tərcümə, tərif, vahidin çevrilməsi kimi sürətli cavablar vermək üçün Assistentinizə ekrandakı məlumatı istifadə etməyə icazə verin</translation>
@@ -7270,6 +7270,7 @@ Təyinatı ləğv etmək üçün təyin edilən düyməyə basın.</translation>
       <ph name="LIST_ITEM" />Chrome Bağlantı Diaqnostikasını icra edin
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Şəkil içində Şəkil</translation>
+<translation id="9167063903968449027">Oxu Siyahısını göstərin</translation>
 <translation id="9168436347345867845">Daha sonra edin</translation>
 <translation id="9169496697824289689">Klaviatura qısayollarına baxın</translation>
 <translation id="916964310188958970">Niyə bu təklif?</translation>

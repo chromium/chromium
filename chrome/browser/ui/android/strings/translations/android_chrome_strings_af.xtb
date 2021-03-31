@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Programweergawe</translation>
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1450753235335490080">Kan nie <ph name="CONTENT_TYPE" /> deel nie</translation>
+<translation id="147113415845704694">Probeer: "What's the weather today?" (Hoe lyk die weer vandag?)</translation>
 <translation id="1477626028522505441">Kon <ph name="FILE_NAME" /> weens bedienerkwessies nie aflaai nie.</translation>
 <translation id="1492417797159476138">Jy het hierdie gebruikernaam reeds vir hierdie werf gestoor</translation>
 <translation id="1506061864768559482">Soekenjin</translation>
@@ -569,6 +570,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="49268022542405662">Jou wagwoorde sal as 'n tekslêer uitgevoer en afgelaai word. Hulle sal sigbaar wees vir almal en enige program met toegang tot die bestemminglêer.</translation>
 <translation id="4932247056774066048">Jou Chrome-data sal van hierdie toestel af uitgevee word omdat jy uitteken by 'n rekening wat deur <ph name="DOMAIN_NAME" /> bestuur word. Dit sal in jou Google-rekening bly.</translation>
 <translation id="4936039914467572121">Gaan vinniger na hierdie werf toe</translation>
+<translation id="4941179133499732445">Tik op die mikrofoon om met jou stem te soek</translation>
 <translation id="4943703118917034429">Virtuele realiteit</translation>
 <translation id="4943872375798546930">Geen resultate nie</translation>
 <translation id="4961107849584082341">Vertaal hierdie bladsy in enige taal</translation>
@@ -583,6 +585,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5011311129201317034"><ph name="SITE" /> wil koppel</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Laat toe</translation>
+<translation id="5061533557687621530">Om uit te vind hoe die weer is, kan jy op die mikrofoon tik en sê "What’s the weather today?” (Hoe lyk die weer vandag?)</translation>
 <translation id="5087580092889165836">Voeg kaart by</translation>
 <translation id="5091249083535528968">Uitgebreide datagebruik</translation>
 <translation id="509429900233858213">'n Fout het voorgekom.</translation>
@@ -597,6 +600,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Kon 1 item nie aflaai nie.}other{Kon # items nie aflaai nie.}}</translation>
 <translation id="5170568018924773124">Wys in vouer</translation>
 <translation id="5184329579814168207">Maak in Chrome oop</translation>
+<translation id="5188992787241350004">Soek met jou stem</translation>
 <translation id="5191251636205085390">Vind meer uit oor en beheer nuwe tegnologieë wat beoog om derdepartywebkoekies te vervang</translation>
 <translation id="5193988420012215838">Gekopieer na jou knipbord</translation>
 <translation id="5199929503336119739">Werkprofiel</translation>

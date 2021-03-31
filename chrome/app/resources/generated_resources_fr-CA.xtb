@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> vous recommande de mettre à jour ce <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Le système n'a pas réussi à déterminer le modèle de l'appareil ni son numéro de série.</translation>
 <translation id="1119447706177454957">Erreur interne</translation>
+<translation id="111959947408687873">Appuyez sur Ctrl+<ph name="SEARCH_KEY_NAME" />+M pour basculer la loupe en mode plein écran. Appuyez sur Ctrl+Alt+touches fléchées pour vous déplacer sur l'écran lorsque vous faites un zoom avant.</translation>
 <translation id="1122068467107743258">Professionnel</translation>
 <translation id="1122198203221319518">Ou&amp;tils</translation>
 <translation id="1122242684574577509">L’authentification a échoué. Cliquez pour accéder à la page de connexion au réseau Wi-Fi que vous utilisez (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Programme de protection avancée de Google</translation>
 <translation id="1155816283571436363">Connexion à votre téléphone en cours…</translation>
 <translation id="1161575384898972166">Veuillez vous connecter à <ph name="TOKEN_NAME" /> pour exporter le certificat de client.</translation>
+<translation id="116173250649946226">Votre administrateur a défini un thème par défaut qui ne peut pas être modifié.</translation>
 <translation id="1163931534039071049">&amp;Afficher le code source du cadre</translation>
 <translation id="1164891049599601209">Entré sur un site trompeur</translation>
 <translation id="1164899421101904659">Entrer la clé de déverrouillage du NIP</translation>
@@ -2555,6 +2557,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3809272675881623365">Lapin</translation>
 <translation id="3809280248639369696">Extraterrestre</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> peut afficher les fichiers dans les dossiers suivants</translation>
+<translation id="3810914450553844415">Votre administrateur n'autorise pas de comptes Google supplémentaires.</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="381202950560906753">Ajouter une autre empreinte digitale</translation>
 <translation id="3812525830114410218">Certificat non fiable</translation>
@@ -2676,6 +2679,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3925573269917483990">Appareil-photo</translation>
 <translation id="3926002189479431949">Changement de téléphone Smart Lock</translation>
 <translation id="3927932062596804919">Refuser</translation>
+<translation id="392803502090869922">Configuration de carte eSIM</translation>
 <translation id="3928570707778085600">Enregistrer les changements effectués à <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Niveau d'encre bas</translation>
 <translation id="3929426037718431833">Ces extensions peuvent consulter et modifier l'information sur ce site.</translation>
@@ -4245,6 +4249,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5764797882307050727">Veuillez libérer de l'espace sur votre appareil.</translation>
 <translation id="5765425701854290211">Désolés, certains fichiers ont été endommagés et la mise à jour n'a pas réussi. Vos fichiers synchronisés sont en sécurité.</translation>
 <translation id="5765491088802881382">Aucun réseau n'est accessible</translation>
+<translation id="5766243637773654698">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Vous voulez l'envoyer à Google pour se faire analyser? Appuyez sur Majuscule+F6 pour accéder à la barre des téléchargements.</translation>
 <translation id="5769519078756170258">Hôte ou domaine à exclure</translation>
 <translation id="5770125698810550803">Afficher les boutons de navigation</translation>
 <translation id="5771816112378578655">Configuration en cours...</translation>
@@ -4401,6 +4406,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5942779427914696408">Visibilité de l'appareil</translation>
 <translation id="5943127421590245687">Votre vérification a réussi. Pour déverrouiller et restaurer vos données locales, veuillez entrer votre ancien mot de passe <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Numériser le code QR</translation>
+<translation id="5945002094477276055">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Voulez-vous l'envoyer au service de navigation sécurisée Google pour le faire analyser?</translation>
 <translation id="5946591249682680882">Identifiant de rapport <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Connectez un clavier ou une souris, ou continuez la configuration en utilisant votre écran tactile. Si vous utilisez des appareils Bluetooth, assurez-vous que vos appareils sont prêts à être associés.</translation>
 <translation id="5949544233750246342">Impossible d'analyser le fichier</translation>
@@ -4448,6 +4454,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6002452033851752583">Le mot de passe a été supprimé de votre compte Google</translation>
 <translation id="6002458620803359783">Voix préférées</translation>
 <translation id="6003143259071779217">Retirer le réseau cellulaire de la carte eSIM</translation>
+<translation id="6003582434972667631">Thème défini par votre organisation</translation>
 <translation id="6006484371116297560">Classique</translation>
 <translation id="6007240208646052708">La recherche vocale n'est pas offerte dans votre langue.</translation>
 <translation id="6011074160056912900">Réseau Ethernet</translation>
@@ -4826,6 +4833,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6429384232893414837">Erreur de mise à jour</translation>
 <translation id="6430814529589430811">Certificat unique codé base64 ASCII</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> va configurer les mises à jour automatiques pour tous les utilisateurs de cet ordinateur.</translation>
+<translation id="6434104957329207050">Vitesse de recherche de point</translation>
 <translation id="6434309073475700221">Supprimer</translation>
 <translation id="6434325376267409267">Votre appareil doit être mis à jour avant que vous puissiez utiliser <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Afficher dans la boutique Chrome Web Store</translation>
@@ -4868,6 +4876,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6474498546677193336">Impossible d'annuler le partage parce qu'une application utilise ce dossier. Le partage sera annulé au prochain arrêt de Linux.</translation>
 <translation id="6474884162850599008">Se déconnecter du compte Google Disque</translation>
 <translation id="6475294023568239942">Libérez de l'espace disque ou redimensionnez le disque Linux dans le menu Paramètres</translation>
+<translation id="6476138569087741884">Niveau de zoom en mode plein écran</translation>
 <translation id="6477822444490674459">La synchronisation des notifications n'est pas prise en charge sur les téléphones avec un profil professionnel. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Conserver le fichier dangereux?</translation>
 <translation id="6480327114083866287">Géré par <ph name="MANAGER" /></translation>
@@ -5139,6 +5148,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Une erreur s'est produite.</translation>
 <translation id="6798420440063423019">La clé de sécurité est verrouillée parce qu'un NIP incorrect a été entré trop de fois. Vous devez réinitialiser la clé de sécurité.</translation>
+<translation id="679845623837196966">Afficher la liste de lecture</translation>
 <translation id="6798578729981748444">Pour terminer l'importation, fermez toutes les fenêtres Firefox.</translation>
 <translation id="6798780071646309401">verrouillage des majuscules activé</translation>
 <translation id="6798954102094737107">Plugiciel : <ph name="PLUGIN_NAME" /></translation>
@@ -5323,6 +5333,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6985607387932385770">Imprimantes</translation>
 <translation id="6988094684494323731">Démarrage du conteneur Linux en cours…</translation>
 <translation id="6988403677482707277">Onglet déplacé au début de la barre d'onglets</translation>
+<translation id="6990209147952697693">Version classique de Chrome</translation>
 <translation id="6991665348624301627">Sélectionnez une destination</translation>
 <translation id="6992554835374084304">Activer le correcteur orthographique amélioré</translation>
 <translation id="6993000214273684335">Onglet retiré d'un groupe sans nom : <ph name="GROUP_CONTENTS" /></translation>
@@ -6309,6 +6320,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8086015605808120405">Configuration de <ph name="PRINTER_NAME" /> en cours</translation>
 <translation id="8086442853986205778">Configurer <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}one{Ce fichier est chiffré. Demandez à son propriétaire de le déchiffrer.}other{Certains de ces fichiers sont chiffrés. Demandez à leur propriétaire de les déchiffrer.}}</translation>
+<translation id="8087576439476816834">Téléchargement : <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Changer le mot de passe</translation>
 <translation id="8090234456044969073">Lire une liste des sites Web que vous visitez le plus</translation>
 <translation id="8093359998839330381">Le plugiciel <ph name="PLUGIN_NAME" /> ne répond pas</translation>
@@ -6550,6 +6562,8 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8368859634510605990">&amp;Ouvrir tous les favoris</translation>
 <translation id="8370294614544004647">Mettre en veille à la fermeture du couvercle</translation>
 <translation id="8371695176452482769">Parlez maintenant</translation>
+<translation id="8371749822919332187">Appuyez sur Ctrl+Alt+augmenter la luminosité pour faire un zoom avant.
+Appuyez sur Ctrl+Alt+diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Désactiver le son sur le site}one{Désactiver le son sur le site}other{Désactiver le son sur les sites}}</translation>
 <translation id="8372369524088641025">Clé WEP incorrecte</translation>
 <translation id="8373652277231415614">Répertoires partagés de Crostini</translation>
@@ -6557,7 +6571,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8378714024927312812">Géré par votre organisation</translation>
 <translation id="8379878387931047019">Cet appareil ne prend pas en charge le type de clé de sécurité demandé par ce site Web</translation>
 <translation id="8379991678458444070">Revenez ici rapidement en ajoutant cet onglet aux favoris</translation>
-<translation id="8380314198565901932">Erreur de téléchargement de la machine virtuelle. Veuillez mettre à jour votre <ph name="DEVICE_TYPE" />, puis réessayer.</translation>
 <translation id="8382913212082956454">Copier l'adresse de courri&amp;el</translation>
 <translation id="8386091599636877289">Politique introuvable.</translation>
 <translation id="8386819192691131213">Autorisez l'Assistant à utiliser l'information sur l'écran pour vous présenter des réponses rapides comme des traductions, des définitions, des conversions d'unités et plus encore</translation>
@@ -7220,6 +7233,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" /> : <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Bienvenue dans votre nouveau profil</translation>
 <translation id="9112748030372401671">Changer le fond d'écran</translation>
+<translation id="9112786533191410418">Le fichier <ph name="FILE_NAME" /> pourrait être dangereux. Vous voulez l'envoyer à Google pour se faire analyser?</translation>
 <translation id="9112987648460918699">Rechercher...</translation>
 <translation id="9114663181201435112">Connectez-vous facilement</translation>
 <translation id="9115675100829699941">&amp;Favoris</translation>
@@ -7266,6 +7280,7 @@ Appuyez sur un commutateur attribué pour retirer l'attribution.</translation>
       <ph name="LIST_ITEM" />Exécutez l'utilitaire Chrome Connectivity Diagnostics
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Incrustation d'image</translation>
+<translation id="9167063903968449027">Afficher la liste de lecture</translation>
 <translation id="9168436347345867845">Plus tard</translation>
 <translation id="9169496697824289689">Voir les raccourcis clavier</translation>
 <translation id="916964310188958970">Pourquoi cette suggestion s'affiche-t-elle?</translation>

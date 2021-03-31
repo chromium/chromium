@@ -837,6 +837,7 @@
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> を未設定のままにした場合、検索プロバイダにアイコンは付きません。</translation>
 <translation id="2145735238144543545">必要なクライアント証明書</translation>
+<translation id="2146103669166779785">ブラウザのテーマの生成と適用に使用する 16 進数色コードです。</translation>
 <translation id="214901426630414675">両面印刷モードを制限</translation>
 <translation id="2149330464730004005">カラー印刷を有効にする</translation>
 <translation id="2149592087996467903">WebRTC に TLS / DTLS の廃止されたバージョンの使用を許可しない</translation>
@@ -1428,6 +1429,7 @@
 <translation id="2905984450136807296">認証データのキャッシュ期間</translation>
 <translation id="2906874737073861391">AppPack 拡張機能リスト</translation>
 <translation id="2908277604670530363">プロキシ サーバーへの最大同時接続数</translation>
+<translation id="2912366658685903301">ブラウザのテーマの色を設定します</translation>
 <translation id="291853569864365550">新しいタブページにおすすめのコンテンツを表示しない</translation>
 <translation id="2920795918401557243">このポリシーでは、ユーザーがシステム トレース サービスを使用して、システム全体のパフォーマンス トレースを収集することを許可します。
 
@@ -3693,6 +3695,11 @@
 <translation id="6183327369896253878">このポリシーを設定した場合、<ph name="PRODUCT_OS_NAME" /> でランチャーバーに表示されるアプリケーション ID が固定され、ユーザーが変更できなくなります。Chrome アプリの場合は ID（「pjkljhegncpnkpknbcohdijeoejaedia」など）、Android アプリの場合はパッケージ名（「com.google.android.gm」など）、ウェブアプリの場合は <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> で使用する URL（「https://google.com/maps」など）を指定します。このポリシーが未設定の場合、ユーザーはランチャーの固定アプリのリストを変更できます。</translation>
 <translation id="6190022522129724693">デフォルトのポップアップ設定</translation>
 <translation id="6190367314942602985">ユーザー識別情報に関するレポートを作成</translation>
+<translation id="6191963383731098056">このポリシーにより、管理者は <ph name="PRODUCT_NAME" /> のテーマの色を設定できます。入力する文字列は「#RRGGBB」の形式に沿った有効な 16 進数色コードである必要があります。
+
+      このポリシーで有効な 16 進数色コードを指定した場合、その色に基づいたテーマが自動的に生成され、ブラウザに適用されます。ユーザーは、ポリシーで設定されたテーマを変更できません。
+
+      このポリシーを未設定のままにした場合、ユーザーはブラウザのテーマを自由に変更できます。</translation>
 <translation id="6195802366906945965">サーバー証明書の確認に組み込みの証明書確認機能を使用する</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> のポリシー情報に関するレポートを作成</translation>
 <translation id="6210259502936598222">OS と <ph name="PRODUCT_NAME" /> のバージョン情報に関するレポートを作成</translation>

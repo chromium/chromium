@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">ایپلیکیشن ورژن</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> کا اشتراک نہیں کیا جا سکتا</translation>
+<translation id="147113415845704694">"آج موسم کیسا ہے؟" آزمائیں</translation>
 <translation id="1477626028522505441">سروس کے مسائل کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="1492417797159476138">آپ نے پہلے ہی اس سائٹ کے لئے یہ صارف نام محفوظ کر لیا ہے</translation>
 <translation id="1506061864768559482">تلاش انجن</translation>
@@ -569,6 +570,7 @@
 <translation id="49268022542405662">آپ کے پاس ورڈز کو برآمد اور ٹیکسٹ فائل کے بطور ڈاؤن لوڈ کیا جائے گا۔ وہ منزل والے فولڈر تک رسائی کے ساتھ کسی بھی شخص اور ایپ کے لیے مرئی ہوں گے۔</translation>
 <translation id="4932247056774066048">‏چونکہ آپ <ph name="DOMAIN_NAME" /> کے زیر نظم اکاؤنٹ سے سائن آؤٹ ہو رہے ہیں اسلئے آپ کا Chrome ڈیٹا اس آلہ سے حذف کردیا جائے گا۔ یہ آپ کے Google اکاؤنٹ میں باقی رہے گا۔</translation>
 <translation id="4936039914467572121">اس سائٹ پر تیزی سے جائیں</translation>
+<translation id="4941179133499732445">اپنی آواز کی مدد سے تلاش کرنے کے لیے مائیک پر تھپتھپائیں</translation>
 <translation id="4943703118917034429">ورچوئل رئیلٹی</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
 <translation id="4961107849584082341">اس صفحہ کا کسی بھی زبان میں ترجمہ کریں</translation>
@@ -583,6 +585,7 @@
 <translation id="5011311129201317034"><ph name="SITE" /> منسلک ہونا چاہتی ہے</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">اجازت دیں</translation>
+<translation id="5061533557687621530">موسم چیک کرنے کے لیے، مائیک پر تھپتھپائیں اور کہیں "آج موسم کیسا ہے؟"</translation>
 <translation id="5087580092889165836">کارڈ شامل کریں</translation>
 <translation id="5091249083535528968">توسیع کردہ استعمال کا ڈیٹا</translation>
 <translation id="509429900233858213">ایک خرابی پیش آگئی۔</translation>
@@ -597,6 +600,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ ناکام ہو گیا۔}other{# ڈاؤن لوڈز ناکام ہو گئے۔}}</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
+<translation id="5188992787241350004">اپنی آواز کی مدد سے تلاش کریں</translation>
 <translation id="5191251636205085390">ان نئی ٹیکنالوجیز کے بارے میں جانیں اور کنٹرول کریں جن کا مقصد فریق ثالث کے کوکیز کو تبدیل کرنا ہے</translation>
 <translation id="5193988420012215838">آپ کے کلپ بورڈ پر کاپی کر دیا گیا</translation>
 <translation id="5199929503336119739">دفتری پروفائل</translation>

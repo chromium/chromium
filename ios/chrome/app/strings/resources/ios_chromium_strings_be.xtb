@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="102360288709523007">Дапамажыце палепшыць Chromium, адпраўляючы ў Google статыстыку выкарыстання і справаздачы аб збоях.</translation>
-<translation id="1043245583918962542">Выберыце, выдаліць даныя Chromium з гэтай прылады ці захаваць іх.</translation>
 <translation id="1185134272377778587">Пра Chromium</translation>
 <translation id="1257458525759135959">Каб магчы захоўваць відарысы, націсніце "Налады" і дазвольце Chromium дадаваць вашы фота</translation>
 <translation id="1289216811211435351">Пераходзьце на Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Выдаліць даныя Chromium з гэтай прылады?</translation>
 <translation id="8175055321229419309">Парада. <ph name="BEGIN_LINK" />Перамясціце Chromium на паліцу праграм<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Браўзеру Chromium не ўдалося праверыць наяўнасць абнаўленняў. Паўтарыце спробу пазней.</translation>
-<translation id="8252885722420466166">Дзякуючы даным аб вашым месцазнаходжанні вы зможаце карыстацца палепшанымі функцыямі Google у браўзеры Chromium.</translation>
 <translation id="8586442755830160949">Аўтарскія правы: стваральнікі Chromium, <ph name="YEAR" />. Усе правы абароненыя.</translation>
 <translation id="8663480472502753423">Падтрымка актуальнага стану Chromium</translation>
 <translation id="8776843108004031667">Гэты ўліковы запіс і ўсе незахаваныя даныя будуць выдалены з браўзера Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium састарэў</translation>
 <translation id="921174536258924340">Браўзеру Chromium не ўдалося праверыць усе паролі. Паўтарыце спробу заўтра або <ph name="BEGIN_LINK" />праверце паролі ва Уліковым запісе Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Аўтары Chromium</translation>
-<translation id="994708389219151914">Вашым уліковым запісам кіруе дамен <ph name="HOSTED_DOMAIN" />, таму даныя Chromium будуць выдалены з гэтай прылады.</translation>
 </translationbundle>

@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Versión da aplicación</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1450753235335490080">Non se puido compartir este contido: <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Proba a dicir o seguinte: "Que tempo hai hoxe?"</translation>
 <translation id="1477626028522505441">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a problemas co servidor.</translation>
 <translation id="1492417797159476138">Xa gardaches este nome de usuario para este sitio</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
@@ -569,6 +570,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="49268022542405662">Os teus contrasinais exportaranse e descargaranse como ficheiro de texto. Poderá velos calquera persoa e calquera aplicación con acceso ao cartafol de destino.</translation>
 <translation id="4932247056774066048">Dado que estás pechando sesión nunha conta xestionada por <ph name="DOMAIN_NAME" />, os teus datos de Chrome eliminaranse deste dispositivo. Permanecerá na túa Conta de Google.</translation>
 <translation id="4936039914467572121">Accede a este sitio máis rápido</translation>
+<translation id="4941179133499732445">Toca o micrófono para realizar buscas coa voz</translation>
 <translation id="4943703118917034429">Realidade virtual</translation>
 <translation id="4943872375798546930">Non hai resultados</translation>
 <translation id="4961107849584082341">Traduce esta páxina a calquera idioma</translation>
@@ -583,6 +585,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5011311129201317034"><ph name="SITE" /> quere conectarse</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Permitir</translation>
+<translation id="5061533557687621530">Para consultar o tempo, toca o micrófono e di o seguinte: "Que tempo hai hoxe?"</translation>
 <translation id="5087580092889165836">Engadir tarxeta</translation>
 <translation id="5091249083535528968">Datos de uso ampliados</translation>
 <translation id="509429900233858213">Produciuse un erro.</translation>
@@ -597,6 +600,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Produciuse un erro en 1 descarga.}other{Produciuse un erro en # descargas.}}</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="5184329579814168207">Abrir en Chrome</translation>
+<translation id="5188992787241350004">Realiza buscas coa voz</translation>
 <translation id="5191251636205085390">Obtén información sobre novas tecnoloxías desenvolvidas co obxectivo de substituír as cookies de terceiros e aprende a manexalas</translation>
 <translation id="5193988420012215838">Copiouse no teu portapapeis</translation>
 <translation id="5199929503336119739">Perfil de traballo</translation>

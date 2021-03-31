@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
 <translation id="102360288709523007">Aidake muuta Chromium paremaks, saates Google'ile kasutusstatistikat ja krahhiaruandeid.</translation>
-<translation id="1043245583918962542">Valige, kas soovite oma Chromiumi andmed sellest seadmest kustutada või need säilitada.</translation>
 <translation id="1185134272377778587">Teave Chromiumi kohta</translation>
 <translation id="1257458525759135959">Piltide salvestamiseks puudutage valikut Seaded, et lubada Chromiumil fotode lisamine</translation>
 <translation id="1289216811211435351">Lülituge Chromiumile</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Kas kustutada sellest seadmest Chromiumi andmed?</translation>
 <translation id="8175055321229419309">Nõuanne: <ph name="BEGIN_LINK" />lisage Chromium dokki<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>
-<translation id="8252885722420466166">Täiustage Chromiumis oma Google'i teenuste kasutuskogemust asukohateabe abil.</translation>
 <translation id="8586442755830160949">Autoriõigus <ph name="YEAR" /> The Chromium Authors. Kõik õigused on kaitstud.</translation>
 <translation id="8663480472502753423">Hoidke Chromium ajakohasena</translation>
 <translation id="8776843108004031667">See konto ja kõik salvestamata andmed eemaldatakse Chromiumist.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium on aegunud</translation>
 <translation id="921174536258924340">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Teie kontot haldab <ph name="HOSTED_DOMAIN" />, seega kustutatakse teie Chromiumi andmed sellest seadmest.</translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nuk u regjistrua asgjë</translation>
+<translation id="1838104802459806957">Ano për lart</translation>
 <translation id="1851616744363735765">NË PAUZË</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> nuk mund të eksportohet</translation>
 <translation id="1899697626337024495">Rezolucioni i fotografisë</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktive</translation>
 <translation id="2144806332417375165">Personalizo parametrat e videos</translation>
 <translation id="229579744168541441">Eksporto në disk</translation>
+<translation id="2320741269052147773">Zgjero majtas</translation>
 <translation id="2501278716633472235">Kthehu prapa</translation>
 <translation id="2501853267655415902">Regjistrimi ndaloi</translation>
 <translation id="2501953888035679275">Nxirr fotografi dhe regjistro video me kamerën tënde.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Fotografitë dhe videot e nxjerra me kamerën do të zhvendosen te dosja "Shkarkimet". Mund të qasesh tek ato te "Skedarët".
 
 Aplikacionet që kanë leje për hapësirën ruajtëse do të kenë qasje te fotografitë dhe videot e tua.</translation>
+<translation id="3067436040345934772">Zgjero djathtas</translation>
 <translation id="3081586908890909590">Kalo te regjistrimi i videos</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">Lloji i rrjetës</translation>
@@ -89,6 +92,7 @@ Nëse komentet e tua janë për cilësinë e imazhit ose të videos, bashkëngji
 <translation id="8145038249676204903">Kalo te nxjerrja e fotografive</translation>
 <translation id="8239780215768881278">Shkrep një pamje të çastit të videos</translation>
 <translation id="8261506727792406068">Fshi</translation>
+<translation id="8425673304802773841">Ano për poshtë</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Shiko paraprakisht të dhënat meta</translation>

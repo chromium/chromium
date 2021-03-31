@@ -92,7 +92,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1698760176351776263">IPv6-adresse: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Skrivebord: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Netværksindstillinger</translation>
-<translation id="1713296079175516843">Af sikkerhedshensyn understøttes eksterne enheder ikke</translation>
 <translation id="1719094688023114093">Livetekstning er aktiveret.</translation>
 <translation id="1720011244392820496">Aktivér Wi-Fi-synkronisering</translation>
 <translation id="1743570585616704562">Ikke genkendt</translation>
@@ -277,6 +276,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan stadig logge ind senere.</translation>
 <translation id="3321628682574733415">Forkert forældrekode</translation>
 <translation id="332587331255250389">Udskift batteriet</translation>
+<translation id="3333741161915951567">Modemmet genstartes. Vent 30 sekunder, før du prøver igen.</translation>
 <translation id="3341303451326249809">Der blev taget et screenshot</translation>
 <translation id="334252345105450327">Tag et screenshot</translation>
 <translation id="3351879221545518001">Du caster i øjeblikket skærmen.</translation>

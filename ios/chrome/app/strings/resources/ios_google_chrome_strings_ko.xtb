@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chrome을 사용할 수 있습니다.</translation>
 <translation id="3720541637541300822">Chrome 종료 시 시크릿 탭 잠금</translation>
 <translation id="384394811301901750">지금 Chrome에서 카메라를 사용할 수 없습니다.</translation>
-<translation id="38949020760388809">기기에서 Chrome 데이터를 삭제할지 또는 유지할지 선택하세요</translation>
 <translation id="3980220367029651214">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chrome 데이터는 <ph name="DOMAIN" />에서 관리합니다. 이렇게 하면 데이터가 이 기기에서 삭제되지만 <ph name="USER_EMAIL1" />에는 그대로 유지됩니다.</translation>
 <translation id="3984746313391923992">조직에서 Chrome 로그아웃 상태를 유지할 것을 요청합니다.</translation>
 <translation id="3988789688219830639">Chrome이 사진 또는 동영상에 액세스할 수 없습니다. 'iOS 설정 &gt; 개인정보 보호 &gt; 사진'에서 액세스를 허용하세요.</translation>
 <translation id="4099578267706723511">사용 통계와 비정상 종료 보고서를 Google로 전송하여 Chrome을 개선하는 데 동참하세요.</translation>
-<translation id="415767770115540173">위치 정보를 기반으로 Chrome에서 더 나은 Google 환경을 이용할 수 있습니다.</translation>
 <translation id="417201473131094001">Chrome Canary에서 지원되지 않습니다.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4249068189593983585">Chrome 도움말. 더 많은 탭 옵션을 보려면 화면 하단이나 상단에 있는 툴바에서 탭 표시 버튼을 길게 터치하세요.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">정보 유출로 인해 비밀번호가 노출되었습니다. 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="7698568245838009292">Chrome에서 카메라에 액세스하려고 함</translation>
 <translation id="7855730255114109580">Chrome이 최신 버전입니다.</translation>
-<translation id="8109233255338845204"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chrome 데이터가 삭제됩니다</translation>
 <translation id="8160472928944011082">Chrome을 업데이트할 수 없습니다.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="840168496893712993">일부 부가기능으로 Chrome이 비정상 종료됩니다. 해당 부가기능을 제거하세요.</translation>

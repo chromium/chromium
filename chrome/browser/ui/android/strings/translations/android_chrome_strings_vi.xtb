@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Phiên bản ứng dụng</translation>
 <translation id="1430915738399379752">In</translation>
 <translation id="1450753235335490080">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Hãy thử nói “Thời tiết hôm nay thế nào?”</translation>
 <translation id="1477626028522505441">Tải xuống <ph name="FILE_NAME" /> không thành công do sự cố máy chủ.</translation>
 <translation id="1492417797159476138">Bạn đã lưu tên người dùng này cho trang web này</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
@@ -569,6 +570,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="49268022542405662">Mật khẩu của bạn sẽ được xuất và tải xuống dưới dạng tệp văn bản. Mật khẩu sẽ hiển thị với bất kỳ ai và bất kỳ ứng dụng nào có quyền truy cập vào thư mục đích.</translation>
 <translation id="4932247056774066048">Vì bạn đang đăng xuất khỏi một tài khoản thuộc quản lý của <ph name="DOMAIN_NAME" /> nên dữ liệu của bạn trên Chrome sẽ bị xóa khỏi thiết bị này. Tuy nhiên, dữ liệu đó sẽ vẫn còn trong Tài khoản Google của bạn.</translation>
 <translation id="4936039914467572121">Truy cập trang web này nhanh hơn</translation>
+<translation id="4941179133499732445">Nhấn vào micrô để tìm kiếm bằng giọng nói</translation>
 <translation id="4943703118917034429">Thực tế ảo</translation>
 <translation id="4943872375798546930">Không tìm thấy kết quả nào</translation>
 <translation id="4961107849584082341">Dịch trang này sang ngôn ngữ bất kỳ</translation>
@@ -583,6 +585,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5011311129201317034"><ph name="SITE" /> muốn kết nối</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Cho phép</translation>
+<translation id="5061533557687621530">Để xem thông tin thời tiết, hãy nhấn vào micrô và nói “Thời tiết hôm nay thế nào?”</translation>
 <translation id="5087580092889165836">Thêm thẻ</translation>
 <translation id="5091249083535528968">Dữ liệu sử dụng mở rộng</translation>
 <translation id="509429900233858213">Đã xảy ra lỗi.</translation>
@@ -597,6 +600,7 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Không tải được 1 tệp xuống.}other{Không tải được # tệp xuống.}}</translation>
 <translation id="5170568018924773124">Hiển thị trong thư mục</translation>
 <translation id="5184329579814168207">Mở trong Chrome</translation>
+<translation id="5188992787241350004">Tìm kiếm bằng giọng nói</translation>
 <translation id="5191251636205085390">Tìm hiểu và kiểm soát các công nghệ mới giúp thay thế cookie của bên thứ ba</translation>
 <translation id="5193988420012215838">Đã sao chép vào bảng nhớ tạm</translation>
 <translation id="5199929503336119739">Hồ sơ công việc</translation>

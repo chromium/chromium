@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> সাজেশন দিচ্ছে যে আপনি যেন এই <ph name="DEVICE_TYPE" /> আপডেট করেন।</translation>
 <translation id="1118738876271697201">সিস্টেম ডিভাইসের মডেল বা সিরিয়াল নম্বর নির্ধারণ করতে পারেনি।</translation>
 <translation id="1119447706177454957">অভ্যন্তরীণ ত্রুটি</translation>
+<translation id="111959947408687873">ফুলস্ক্রিন ম্যাগনিফায়ারে টগল করতে 'Ctrl+<ph name="SEARCH_KEY_NAME" />+M' কী প্রেস করুন। বড় করা স্ক্রিনের চারপাশে নেভিগেট করতে 'Ctrl+Alt+Arrow' কী প্রেস করুন।</translation>
 <translation id="1122068467107743258">অফিস</translation>
 <translation id="1122198203221319518">&amp;সরঞ্জামসমূহ</translation>
 <translation id="1122242684574577509">যাচাইকরণ করা যায়নি৷ আপনি যে ওয়াই-ফাই নেটওয়ার্ক ব্যবহার করছেন তার লগ-ইন পেজ দেখতে ক্লিক করুন <ph name="NETWORK_ID" />৷</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Google উন্নত সুরক্ষা প্রোগ্রাম</translation>
 <translation id="1155816283571436363">আপনার ফোনের সাথে কানেক্ট করা হচ্ছে</translation>
 <translation id="1161575384898972166">ক্লায়েন্ট সার্টিফিকেট এক্সপোর্ট করতে অনুগ্রহ করে <ph name="TOKEN_NAME" />-এ সাইন-ইন করুন৷</translation>
+<translation id="116173250649946226">আপনার অ্যাডমিনিস্ট্রেটর একটি ডিফল্ট থিম সেট করেছেন যা আপনি বদলাতে পারবেন না।</translation>
 <translation id="1163931534039071049">ফ্রেম উৎস &amp;দেখুন</translation>
 <translation id="1164891049599601209">প্রতারণামূলক সাইটে পাসওয়ার্ডটি লিখেছেন</translation>
 <translation id="1164899421101904659">পিন আনলক কী লিখুন</translation>
@@ -2554,6 +2556,7 @@
 <translation id="3809272675881623365">খরগোশ</translation>
 <translation id="3809280248639369696">চন্দ্রপ্রভা</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফোল্ডারের ফাইলগুলি দেখতে পাবে</translation>
+<translation id="3810914450553844415">আপনার অ্যাডমিনিস্ট্রেটর আর কোনও Google অ্যাকাউন্ট ব্যবহার করার অনুমতি দেয় না।</translation>
 <translation id="3810973564298564668">পরিচালনা</translation>
 <translation id="381202950560906753">আরেকটি জুড়ুন</translation>
 <translation id="3812525830114410218">খারাপ সার্টিফিকেট</translation>
@@ -2675,6 +2678,7 @@
 <translation id="3925573269917483990">ক্যামেরা:</translation>
 <translation id="3926002189479431949">Smart Lock ফোন পরিবর্তিত হয়েছে</translation>
 <translation id="3927932062596804919">অস্বীকার</translation>
+<translation id="392803502090869922">ই-সিম সেট আপ করুন</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" />-এ পরিবর্তন সেভ করতে চান?</translation>
 <translation id="3928659086758780856">প্রিন্ট করার কালি কমে এসেছে</translation>
 <translation id="3929426037718431833">এইসব এক্সটেনশন এই সাইটের তথ্য দেখতে এবং পরিবর্তন করতে পারে।</translation>
@@ -4245,6 +4249,7 @@
 <translation id="5764797882307050727">অনুগ্রহ করে আপনার ডিভাইসে জায়গা খালি করুন।</translation>
 <translation id="5765425701854290211">কয়েকটি ফাইল ক্ষতিগ্রস্ত ছিল বলে আপডেট করা যায়নি, এর জন্য আমরা দুঃখিত। আপনার সিঙ্ক করা ফাইলগুলি নিরাপদ আছে।</translation>
 <translation id="5765491088802881382">কোন নেটওয়ার্ক উপলব্ধ নয়</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> বিপজ্জনক হতে পারে। স্ক্যান করার জন্য Google-এ পাঠাবেন? 'ডাউনলোড বার' এরিয়াতে যেতে 'Shift+F6' কী প্রেস করুন।</translation>
 <translation id="5769519078756170258">বাদ দিতে হবে এমন হোস্ট বা ডোমেন</translation>
 <translation id="5770125698810550803">নেভিগেশন বোতাম দেখুন</translation>
 <translation id="5771816112378578655">সেটআপ চলছে...</translation>
@@ -4401,6 +4406,7 @@
 <translation id="5942779427914696408">ডিভাইসের দৃশ্যমানতা</translation>
 <translation id="5943127421590245687">আপনার যাচাইকরণ সম্পূর্ণ হয়েছে। আপনার স্থানীয় ডেটা আনলক করে ফিরিয়ে আনতে, আপনার পুরনো <ph name="DEVICE_TYPE" /> পাসওয়ার্ড লিখুন।</translation>
 <translation id="5944869793365969636">QR কোড স্ক্যান করুন</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> বিপজ্জনক হতে পারে। স্ক্যান করতে Google Safe Browsing-এ পাঠাবেন?</translation>
 <translation id="5946591249682680882">আইডি অভিযোগ করুন <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">একটি কীবোর্ড বা মাউস কানেক্ট করুন বা আপনার টাচস্ক্রিন ব্যবহার করে সেটআপ করা চালিয়ে যান। আপনি যদি ব্লুটুথ ডিভাইস ব্যবহার করেন, তাহলে আপনার ডিভাইস পেয়ার করার জন্য তৈরি কিনা ভাল করে দেখে নিন।</translation>
 <translation id="5949544233750246342">ফাইল বিশ্লেষণ করতে বন্ধ</translation>
@@ -4448,6 +4454,7 @@
 <translation id="6002452033851752583">আপনার Google অ্যাকাউন্ট থেকে পসওয়ার্ড মুছে ফেলা হয়েছে</translation>
 <translation id="6002458620803359783">পছন্দসই ভয়েস</translation>
 <translation id="6003143259071779217">ই-সিম মোবাইল নেটওয়ার্ক সরান</translation>
+<translation id="6003582434972667631">থিমটি আপনার সংস্থা সেট করেছে</translation>
 <translation id="6006484371116297560">ক্লাসিক</translation>
 <translation id="6007240208646052708">আপনার ভাষায় ভয়েস সার্চ করা যাবে না।</translation>
 <translation id="6011074160056912900">ইথারনেট নেটওয়ার্ক</translation>
@@ -4827,6 +4834,7 @@
 <translation id="6429384232893414837">আপডেট করতে সমস্যা হয়েছে</translation>
 <translation id="6430814529589430811">Base64-এনকোডেড ASCII, একক সার্টিফিকেট</translation>
 <translation id="6431347207794742960">এই কম্পিউটারে সকল ব্যবহারকারীর জন্য <ph name="PRODUCT_NAME" /> স্বয়ংক্রিয় আপডেটগুলো সেটআপ করবে।</translation>
+<translation id="6434104957329207050">পয়েন্ট স্ক্যান করার গতি</translation>
 <translation id="6434309073475700221">বাতিল</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> ইনস্টল করার আগে আপনার ডিভাইস আপডেট করতে হবে।</translation>
 <translation id="6436164536244065364">ওয়েব স্টোর-এ দেখুন</translation>
@@ -4869,6 +4877,7 @@
 <translation id="6474498546677193336">ফোল্ডারটির শেয়ারিং বন্ধ করা যাচ্ছে না, কারণ এখন একটি অ্যাপ্লিকেশন এটিকে ব্যবহার করছে। পরবর্তী সময়ে Linux-কে যখন বন্ধ করা হবে, তখনই ফোল্ডারটির শেয়ারিং বন্ধ করা যাবে।</translation>
 <translation id="6474884162850599008">Google ড্রাইভ অ্যাকাউন্ট ডিসকানেক্ট করুন</translation>
 <translation id="6475294023568239942">ডিস্কে জায়গা খালি করুন বা 'সেটিংস' থেকে Linux-এর ডিস্ক সাইজ পরিবর্তন করুন</translation>
+<translation id="6476138569087741884">ফুল-স্ক্রিন জুম লেবেল</translation>
 <translation id="6477822444490674459">ফোনের অফিস প্রোফাইলে বিজ্ঞপ্তি সিঙ্ক করা যাবে না। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">বিপজ্জনক ফাইল রাখবেন?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়</translation>
@@ -5324,6 +5333,7 @@
 <translation id="6985607387932385770">প্রিন্টারগুলি</translation>
 <translation id="6988094684494323731">Linux কন্টেনার শুরু করা হচ্ছে</translation>
 <translation id="6988403677482707277">ট্যাবস্ট্রিপের শুরুতে ট্যাব সরানো হয়েছে</translation>
+<translation id="6990209147952697693">ক্লাসিক Chrome</translation>
 <translation id="6991665348624301627">একটি গন্তব্যস্থল বেছে নিন</translation>
 <translation id="6992554835374084304">উন্নত বানান পরীক্ষা চালু করুন</translation>
 <translation id="6993000214273684335">নামবিহীন গ্রুপ থেকে ট্যাব সরানো হয়েছে - <ph name="GROUP_CONTENTS" /></translation>
@@ -6310,6 +6320,7 @@
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> কনফিগার করা হচ্ছে...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> সেট-আপ করুন</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{এই ফাইল এনক্রিপ্ট করা আছে। ফাইলের মালিককে সেটি ডিক্রিপ্ট করতে বলুন।}one{এগুলির মধ্যে কিছু ফাইল এনক্রিপ্ট করা হয়েছে। ফাইলের মালিককে সেগুলি ডিক্রিপ্ট করতে বলুন।}other{এগুলির মধ্যে কিছু ফাইল এনক্রিপ্ট করা হয়েছে। ফাইলের মালিককে সেগুলি ডিক্রিপ্ট করতে বলুন।}}</translation>
+<translation id="8087576439476816834"><ph name="PROFILE_NAME" />, ডাউনলোড করুন</translation>
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="8090234456044969073">আপনার সবচেয়ে ঘন ঘন পরিদর্শিত ওয়েবসাইটের একটি তালিকা পড়ুন</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> এর কোনও প্রতিক্রিয়া নেই</translation>
@@ -6550,6 +6561,8 @@
 <translation id="8368859634510605990">ও সকল বুকমার্ক খুলুন</translation>
 <translation id="8370294614544004647">ল্যাপটপের কভার বন্ধ করলে স্লিপ মোডে চলে যাবে</translation>
 <translation id="8371695176452482769">এখনই বলুন</translation>
+<translation id="8371749822919332187">বড় করতে 'Ctrl+Alt+উজ্জ্বলতা বাড়ান' কী প্রেস করুন।
+ছোট করতে 'Ctrl+Alt+উজ্জলতা কমান' কী প্রেস করুন।</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{সাইট মিউট করুন}one{সাইট মিউট করুন}other{সাইট মিউট করুন}}</translation>
 <translation id="8372369524088641025">খারাপ WEP কী</translation>
 <translation id="8373652277231415614">Crostini-এর শেয়ার করা ডিরেক্টরি</translation>
@@ -6557,7 +6570,6 @@
 <translation id="8378714024927312812">আপনার প্রতিষ্ঠানের দ্বারা ম্যানেজ করা</translation>
 <translation id="8379878387931047019">এই ওয়েবসাইটটি খুলতে যে নিরাপত্তা কী প্রয়োজন সেটি এই ডিভাইসে কাজ করে না</translation>
 <translation id="8379991678458444070">এই ট্যাবটি বুকমার্ক করে রাখুন যাতে আপনি এটি চটপট খুলতে পারেন</translation>
-<translation id="8380314198565901932">ভার্চুয়াল মেশিন ডাউনলোড করার সময় কোনও সমস্যা হয়েছে। আপনার <ph name="DEVICE_TYPE" /> আপডেট করে আবার চেষ্টা করুন।</translation>
 <translation id="8382913212082956454">ও ইমেল অ্যাড্রেস কপি করুন</translation>
 <translation id="8386091599636877289">নীতি খুঁজে পাওয়া যায়নি।</translation>
 <translation id="8386819192691131213">অনুবাদ, সংজ্ঞা, ইউনিট কনভার্সন এবং আরও অনেক কিছু বিষয়ে চটপট উত্তর দেওয়ার জন্য Assistant-কে স্ক্রিনে থাকা তথ্য ব্যবহার করার অনুমতি দিন</translation>
@@ -7221,6 +7233,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">আপনার নতুন প্রোফাইলে স্বাগত</translation>
 <translation id="9112748030372401671">আপনার ওয়ালপেপার পরিবর্তন করুন</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> বিপজ্জনক হতে পারে। স্ক্যান করার জন্য Google-এ পাঠাবেন?</translation>
 <translation id="9112987648460918699">খুঁজুন...</translation>
 <translation id="9114663181201435112">সহজেই সাইন-ইন করুন</translation>
 <translation id="9115675100829699941">&amp;বুকমার্ক</translation>

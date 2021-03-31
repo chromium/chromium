@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr-CA">
 <translation id="102360288709523007">Améliorer Chromium en envoyant des statistiques d'utilisation et des rapports d'erreur.</translation>
-<translation id="1043245583918962542">Voulez-vous effacer vos données Chromium de cet appareil ou les conserver?</translation>
 <translation id="1185134272377778587">À propos de Chromium</translation>
 <translation id="1257458525759135959">Pour enregistrer des images, touchez Paramètres et autorisez Chromium à les ajouter à vos photos</translation>
 <translation id="1289216811211435351">Passer à Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Effacer vos données Chromium de cet appareil?</translation>
 <translation id="8175055321229419309">Conseil : <ph name="BEGIN_LINK" />déplacez Chromium dans le dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium n'a pas pu vérifier s'il y a des mises à jour. Réessayez plus tard.</translation>
-<translation id="8252885722420466166">Profitez d'une meilleure expérience Google dans Chromium en fonction de votre emplacement.</translation>
 <translation id="8586442755830160949">© <ph name="YEAR" /> Les auteurs de Chrome. Tous droits réservés.</translation>
 <translation id="8663480472502753423">Pour garder Chromium à jour</translation>
 <translation id="8776843108004031667">Ce compte et toutes les données non enregistrées seront supprimés de Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium n'est pas à jour</translation>
 <translation id="921174536258924340">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Les auteurs de Chrome</translation>
-<translation id="994708389219151914">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chromium seront effacées de cet appareil.</translation>
 </translationbundle>

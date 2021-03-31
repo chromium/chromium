@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="102360288709523007">Axúdanos a mellorar Chromium enviando estatísticas de uso e informes de fallos a Google.</translation>
-<translation id="1043245583918962542">Escolle se queres borrar os teus datos de Chromium deste dispositivo ou conservalos.</translation>
 <translation id="1185134272377778587">Acerca de Chromium</translation>
 <translation id="1257458525759135959">Se queres gardar imaxes, para que Chromium poida engadir as túas fotos, toca Configuración</translation>
 <translation id="1289216811211435351">Pásate a Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Queres borrar os teus datos de Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Consello: <ph name="BEGIN_LINK" />Engade Chromium á barra de aplicacións<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium non puido buscar actualizacións. Téntao máis tarde.</translation>
-<translation id="8252885722420466166">Obtén unha mellor experiencia de Google en Chromium baseada na túa localización.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" />, os autores de Chromium. Reservados todos os dereitos.</translation>
 <translation id="8663480472502753423">Mantén Chromium actualizado</translation>
 <translation id="8776843108004031667">Esta conta e os datos que estean sen gardar quitaranse de Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium está desactualizado</translation>
 <translation id="921174536258924340">Chromium non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Os autores de Chromium</translation>
-<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chromium deste dispositivo.</translation>
 </translationbundle>

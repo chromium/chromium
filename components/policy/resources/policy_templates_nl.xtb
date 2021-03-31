@@ -849,6 +849,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> niet instelt, is er geen icoon voor de zoekprovider.</translation>
 <translation id="2145735238144543545">Vereiste clientcertificaten</translation>
+<translation id="2146103669166779785">Hexadecimale kleur waarmee een thema voor de browser wordt samengesteld en toegepast.</translation>
 <translation id="214901426630414675">Afdrukken in duplexmodus beperken</translation>
 <translation id="2149330464730004005">Afdrukken in kleur aanzetten</translation>
 <translation id="2149592087996467903">Niet toestaan dat WebRTC verouderde versies van TLS/DTLS gebruikt</translation>
@@ -1454,6 +1455,7 @@ Als je het beleid niet instelt, staat de stroom voor piekuren aanvankelijk uit. 
 <translation id="2905984450136807296">Levensduur van verificatiegegevens in cachegeheugen</translation>
 <translation id="2906874737073861391">Lijst met app-pakketextensies</translation>
 <translation id="2908277604670530363">Maximaal aantal gelijktijdige verbindingen met de proxyserver</translation>
+<translation id="2912366658685903301">Een kleur instellen voor het thema van de browser</translation>
 <translation id="291853569864365550">Geen contentsuggesties tonen op de pagina Nieuw tabblad</translation>
 <translation id="2920795918401557243">Deze instelling staat toe dat een prestatietracering voor het hele systeem wordt verzameld via de service voor systeemtracering.
 
@@ -2706,6 +2708,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
       Als je dit beleid toepast, kunnen sites tegelijkertijd navigeren en nieuwe vensters/tabbladen openen.
       Als dit beleid niet is toegepast of niet is ingesteld, kunnen sites niet tegelijkertijd navigeren en nieuwe vensters/tabbladen openen.</translation>
 <translation id="4680961954980851756">Automatisch invullen aanzetten</translation>
+<translation id="4685721728282448265">CECPQ2 (post-quantum sleutelovereenkomst) staat aan voor TLS</translation>
 <translation id="4693779768620889402">Op extensies gebaseerde bestemmingen</translation>
 <translation id="4699172675775169585">Afbeeldingen en bestanden in cachegeheugen</translation>
 <translation id="4699592681017489215">Met dit beleid wordt een lokale schakelaar ingesteld die kan worden gebruikt om controles voor DNS-onderschepping uit te zetten. Deze controles proberen te achterhalen of er een proxy achter de browser zit die als omleiding naar onbekende hostnamen dient.
@@ -3391,6 +3394,7 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen. <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="5620392548325769024">Welkomstpagina tonen bij eerste opstart van de browser na een upgrade van het besturingssysteem</translation>
+<translation id="5622924058222112599">Standaard CECPQ2-uitrolproces aanzetten</translation>
 <translation id="5630352020869108293">De laatste sessie herstellen</translation>
 <translation id="5633871703004128675">Toegankelijkheidsfunctie voor markering van het caret-teken aanzetten</translation>
 <translation id="5636088574608432506">Dit beleid bepaalt het inloggedrag van de browser. Je kunt instellen of de gebruiker met het eigen account kan inloggen bij <ph name="PRODUCT_NAME" /> en accountgerelateerde services kan gebruiken, zoals <ph name="PRODUCT_NAME" />-synchronisatie.
@@ -3772,6 +3776,11 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
       Als je het beleid niet instelt, kunnen gebruikers de lijst met vastgezette apps in de Launcher wijzigen.</translation>
 <translation id="6190022522129724693">Standaardinstelling voor pop-ups</translation>
 <translation id="6190367314942602985">Gegevens over de identiteit van gebruikers rapporteren</translation>
+<translation id="6191963383731098056">Met dit beleid kunnen beheerders de kleur voor het thema van <ph name="PRODUCT_NAME" /> instellen. Je moet een geldige hexadecimale kleur opgeven in de vorm van een tekenreeks met de indeling #RRGGBB.
+
+      Als je dit beleid instelt op een geldige hexadecimale kleur, wordt op basis van deze kleur automatisch een thema samengesteld en toegepast op de browser. Gebruikers kunnen het in het beleid ingestelde thema niet wijzigen.
+
+      Als je dit beleid niet instelt, kunnen gebruikers het thema voor de browser naar eigen inzicht instellen.</translation>
 <translation id="6195802366906945965">Bepaalt of de ingebouwde certificaatverificatie wordt gebruikt om servercertificaten te verifiëren</translation>
 <translation id="6208896993204286313">Beleidsgegevens van <ph name="PRODUCT_NAME" /> rapporteren</translation>
 <translation id="6210259502936598222">OS- en <ph name="PRODUCT_NAME" />-versiegegevens rapporteren</translation>
@@ -4504,6 +4513,7 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       Als het beleid is ingesteld op True, worden de ventilatorgegevens van het apparaat gerapporteerd.</translation>
 <translation id="710003290625031750">Uitgebreide schemabeschrijving:</translation>
 <translation id="7101550508196914704">De snelkoppeling voor apps niet tonen op de bookmarkbalk</translation>
+<translation id="7109384070286741861">CECPQ2 uitzetten</translation>
 <translation id="7126716959063786004">Beëindiging van processen in Taakbeheer aanzetten</translation>
 <translation id="7126928806195745404">Instellingen voor JavaScript</translation>
 <translation id="7127892035367404455">Doelversie herstellen</translation>
@@ -5328,6 +5338,11 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
       Als je het beleid niet toepast of niet instelt, kunnen gebruikers ervoor kiezen door te gaan naar de gemarkeerde site nadat de waarschuwing wordt weergegeven.
 
       Meer informatie over Safe Browsing ( https://developers.google.com/safe-browsing ).</translation>
+<translation id="8212900161626657849">Als je dit beleid toepast of niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard uitrolproces voor CECPQ2, een algoritme voor post-quantum sleutelovereenkomst in TLS.
+
+      CECPQ2 resulteert in grotere TLS-berichten die in zeer zeldzame gevallen bugs kunnen veroorzaken in bepaalde netwerkhardware. Je kunt dit beleid instellen op False om CECPQ2 uit te zetten terwijl de netwerkproblemen worden opgelost.
+
+      Dit beleid is een tijdelijke maatregel en wordt verwijderd in toekomstige versies van <ph name="PRODUCT_NAME" />.</translation>
 <translation id="8213770777756919897">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Als dit beleid is ingesteld, specificeert het de actie die worden ondernomen door <ph name="PRODUCT_OS_NAME" /> als de gebruiker inactief is gedurende de tijdsduur die is opgegeven door de inactieve vertraging. Dit kan afzonderlijk worden geconfigureerd.

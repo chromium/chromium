@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">යෙදුම් අනුවාදය</translation>
 <translation id="1430915738399379752">මුද්‍රණය කරන්න</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> බෙදා ගත නොහැක</translation>
+<translation id="147113415845704694">“What’s the weather today?” උත්සාහ කරන්න</translation>
 <translation id="1477626028522505441">සේවාදායකයේ දෝෂ නිසා <ph name="FILE_NAME" /> බාගැනීම අසාර්ථක විය.</translation>
 <translation id="1492417797159476138">ඔබ දැනටමත් මෙම පරිශීලක නම මෙම වෙබ් අඩවිය සඳහා සුරැක ඇත</translation>
 <translation id="1506061864768559482">සෙවුම් යන්ත්‍රය</translation>
@@ -569,6 +570,7 @@
 <translation id="49268022542405662">ඔබේ මුරපද පාඨ ගොනුවක් ලෙස නිර්යාත කිරීම සහ බාගැනීම සිදු වේ. ඒවා ගමනාන්ත ෆෝල්ඩරයට ප්‍රවේශය ඇති ඕනෑම කෙනෙකුට සහ ඕනෑම යෙදුමකට දෘශ්‍යමාන වෙයි.</translation>
 <translation id="4932247056774066048">ඔබ <ph name="DOMAIN_NAME" /> විසින් කළමනා කරනු ලබන ගිණුමකින් වැරෙන බැවින්, ඔබේ Chrome දත්ත මෙම උපාංගයෙන් මකනු ලැබේ. එය ඔබේ Google ගිණුම තුළ පවතියි.</translation>
 <translation id="4936039914467572121">මෙම අඩවියට ඉක්මනින් එන්න</translation>
+<translation id="4941179133499732445">ඔබගේ කටහඬ සමඟ සෙවීමට මයික් එක තට්ටු කරන්න</translation>
 <translation id="4943703118917034429">අතථ්‍ය යථාර්ථය</translation>
 <translation id="4943872375798546930">ප්‍රතිඵල නැත</translation>
 <translation id="4961107849584082341">මෙම පිටුව ඕනෑම භාෂාවකට පරිවර්තන කරන්න</translation>
@@ -583,6 +585,7 @@
 <translation id="5011311129201317034"><ph name="SITE" /> හට සම්බන්ධ වීමට අවශ්‍යයි</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">ඉඩදෙන්න</translation>
+<translation id="5061533557687621530">කාලගුණය පරීක්ෂා කිරීමට, මයික් එක තට්ටු කර “What’s the weather today?” යැයි කියන්න</translation>
 <translation id="5087580092889165836">කාඩ්පත එක් කරන්න</translation>
 <translation id="5091249083535528968">දීර්ඝ කළ භාවිත දත්ත</translation>
 <translation id="509429900233858213">දෝශයක් ඇතිවිය.</translation>
@@ -597,6 +600,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{බාගැනීම් 1ක් අසමත් විය.}one{බාගැනීම් #ක් අසමත් විය.}other{බාගැනීම් #ක් අසමත් විය.}}</translation>
 <translation id="5170568018924773124">ෆෝල්ඩරයේ පෙන්වන්න</translation>
 <translation id="5184329579814168207">Chrome තුළ විවෘත කරන්න</translation>
+<translation id="5188992787241350004">ඔබගේ කටහඬ සමඟින් සොයන්න</translation>
 <translation id="5191251636205085390">තෙවන පාර්ශ්ව කුකි ප්‍රතිස්ථාපනය කිරීම අරමුණු කර ගත් නව තාක්ෂණ ගැනදැන ගන්න සහ පාලනය කරන්න</translation>
 <translation id="5193988420012215838">ඔබේ පසුරු පුවරුවට පිටපත් කළා</translation>
 <translation id="5199929503336119739">වැඩ පැතිකඩ</translation>

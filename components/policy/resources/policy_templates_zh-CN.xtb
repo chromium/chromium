@@ -842,6 +842,7 @@
 
       如果您不设置 <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />，搜索服务提供商便不会有任何图标。</translation>
 <translation id="2145735238144543545">必需的客户端证书</translation>
+<translation id="2146103669166779785">将被用于生成主题并向浏览器应用该主题的十六进制颜色。</translation>
 <translation id="214901426630414675">限制双面打印模式</translation>
 <translation id="2149330464730004005">启用彩色打印</translation>
 <translation id="2149592087996467903">阻止 WebRTC 使用已过时的 TLS/DTLS 版本</translation>
@@ -1450,6 +1451,7 @@
 <translation id="2905984450136807296">身份验证数据缓存期限</translation>
 <translation id="2906874737073861391">AppPack 扩展程序列表</translation>
 <translation id="2908277604670530363">可同时连接到代理服务器的连接数上限</translation>
+<translation id="2912366658685903301">配置浏览器主题的颜色</translation>
 <translation id="291853569864365550">不在“新标签页”页面上显示内容建议</translation>
 <translation id="2920795918401557243">此设置旨在允许使用系统跟踪服务来收集系统级性能跟踪记录。
 
@@ -3768,6 +3770,11 @@
       如果您不设置此政策，用户便可以更改启动器中的固定应用列表。</translation>
 <translation id="6190022522129724693">默认弹出式窗口设置</translation>
 <translation id="6190367314942602985">报告用户标识信息</translation>
+<translation id="6191963383731098056">此政策让管理员能够配置 <ph name="PRODUCT_NAME" /> 主题的颜色。输入的字符串应是有效的十六进制颜色字符串（采用“#RRGGBB”格式）。
+
+      如果此政策设为一种有效的十六进制颜色，系统便会根据该颜色自动生成主题并将其应用于浏览器。用户将无法更改此政策中设定的主题。
+
+      如果此政策未设置，用户则可根据自己的偏好更改所用浏览器的主题。</translation>
 <translation id="6195802366906945965">确定是否会使用内置的证书验证程序来验证服务器证书</translation>
 <translation id="6208896993204286313">报告 <ph name="PRODUCT_NAME" /> 政策信息</translation>
 <translation id="6210259502936598222">报告操作系统和 <ph name="PRODUCT_NAME" /> 版本信息</translation>

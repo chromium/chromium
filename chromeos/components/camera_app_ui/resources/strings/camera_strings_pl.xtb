@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Aparat</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nic nie zostało nagrane</translation>
+<translation id="1838104802459806957">Przechyl do góry</translation>
 <translation id="1851616744363735765">WSTRZYMANO</translation>
 <translation id="1862930711583847113">Nie udało się wyeksportować pliku <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Rozdzielczość zdjęcia</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">Aparat <ph name="CAMERA" /> jest aktywny</translation>
 <translation id="2144806332417375165">Niestandardowe parametry wideo</translation>
 <translation id="229579744168541441">Eksportuj na dysk</translation>
+<translation id="2320741269052147773">Przesuń w lewo</translation>
 <translation id="2501278716633472235">Wróć</translation>
 <translation id="2501853267655415902">Nagrywanie zatrzymane</translation>
 <translation id="2501953888035679275">Aparatem możesz robić zdjęcia i nagrywać filmy.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Zdjęcia i filmy pochodzące z aparatu zostaną przeniesione do folderu Pobrane pliki. Dostęp do nich możesz uzyskać w aplikacji Pliki.
 
         Do Twoich zdjęć i filmów będą mieć dostęp aplikacje z uprawnieniami dostępu do pamięci.</translation>
+<translation id="3067436040345934772">Przesuń w prawo</translation>
 <translation id="3081586908890909590">Przełącz, by nagrać film</translation>
 <translation id="313467653172006084">30 kl./s</translation>
 <translation id="3183731565330012717">Typ siatki</translation>
@@ -89,6 +92,7 @@ Jeśli dotyczyła ona jakości zdjęć lub filmów, zamieść tutaj przykładowe
 <translation id="8145038249676204903">Przełącz, by zrobić zdjęcie</translation>
 <translation id="8239780215768881278">Zapisz stopklatkę</translation>
 <translation id="8261506727792406068">Usuń</translation>
+<translation id="8425673304802773841">Pochyl w dół</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Wyświetl podgląd metadanych</translation>

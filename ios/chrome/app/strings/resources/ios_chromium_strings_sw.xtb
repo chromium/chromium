@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
 <translation id="102360288709523007">Saidia kuboresha Chromium kwa kutuma takwimu za matumizi na ripoti za kuacha kufanya kazi kwa Google.</translation>
-<translation id="1043245583918962542">Chagua iwapo ungependa kufuta data yako ya Chromium kwenye kifaa hiki au kuihifadhi.</translation>
 <translation id="1185134272377778587">Kuhusu Chromium</translation>
 <translation id="1257458525759135959">Ili uhifadhi picha, gusa Mipangilio ili uruhusu Chromium iweke kwenye picha zako</translation>
 <translation id="1289216811211435351">Badilisha utumie Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Ungependa kufuta data yako yote ya Chromium kwenye kifaa hiki?</translation>
 <translation id="8175055321229419309">Kidokezo: <ph name="BEGIN_LINK" />Hamishia Chromium kwenye orodha ya vipengee vinavyoibuka upande wa chini wa skrini yako<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium imeshindwa kukagua kama kuna masasisho. Jaribu tena baadaye.</translation>
-<translation id="8252885722420466166">Pata hali bora ya utumiaji wa Google katika Chrome kulingana na eneo lako.</translation>
 <translation id="8586442755830160949">Hakimiliki <ph name="YEAR" /> Wasanidi wa Chromium. Haki zote zimehifadhiwa.</translation>
 <translation id="8663480472502753423">Hakikisha Chromium imesasishwa kila wakati</translation>
 <translation id="8776843108004031667">Akaunti hii na data yoyote ambayo haijahifadhiwa itaondolewa kwenye Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium imepitwa na wakati</translation>
 <translation id="921174536258924340">Chromium imeshindwa kukagua manenosiri yote. Jaribu tena kesho au <ph name="BEGIN_LINK" />ukague manenosiri katika Akaunti yako ya Google.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Waandishi wa Chromium</translation>
-<translation id="994708389219151914">Akaunti yako inadhibitiwa na <ph name="HOSTED_DOMAIN" />, kwa hivyo data yako ya Chromium itafutwa kwenye kifaa hiki.</translation>
 </translationbundle>

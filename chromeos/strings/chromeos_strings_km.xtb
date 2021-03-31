@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">ពាក្យសម្ងាត់ផុតកំណត់​ក្នុងរយៈពេល <ph name="TIME" /></translation>
 <translation id="4238516577297848345">មិនមានកិច្ចការបោះពុម្ពកំពុងដំណើរការទេ</translation>
 <translation id="4297501883039923494">បានឈប់ - មានបញ្ហា​ដែលមិនស្គាល់</translation>
+<translation id="4344214025510306853">ភ្ជាប់ APN</translation>
 <translation id="4378373042927530923">មិនដំណើរការទេ</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">ដ្រាយរបស់ខ្ញុំ</translation>
@@ -277,6 +278,7 @@
 <translation id="7040230719604914234">ប្រតិបត្តិករ</translation>
 <translation id="7059230779847288458">កំពុងសាកថ្ម <ph name="TIME_VALUE" /> ទៀត​ទើបពេញ</translation>
 <translation id="708426984172631313">បានឈប់</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="7144878232160441200">ព្យាយាមម្តងទៀត</translation>
 <translation id="714876143603641390">ការតភ្ជាប់ Lan</translation>

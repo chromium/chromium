@@ -103,6 +103,7 @@
 <translation id="1118549423835582252">ಈ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲು <ph name="MANAGER" /> ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ.</translation>
 <translation id="1118738876271697201">ಸಾಧನದ ಮಾದರಿ ಅಥವಾ ಕ್ರಮಸಂಖ್ಯೆಯನ್ನು ನಿರ್ಧರಿಸಲು ಸಿಸ್ಟಂ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="1119447706177454957">ಆಂತರಿಕ ದೋಷ</translation>
+<translation id="111959947408687873">ಫುಲ್‌ಸ್ಕ್ರೀನ್ ವರ್ಧಕವನ್ನು ಟಾಗಲ್ ಮಾಡಲು, Ctrl+<ph name="SEARCH_KEY_NAME" />+M ಬಳಸಿ. ಝೂಮ್ ಇನ್ ಮಾಡಿರುವಾಗ, ಸ್ಕ್ರೀನ್ ಸುತ್ತಮುತ್ತ ಚಲಿಸಲು Ctrl+Alt+ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="1122068467107743258">ಕಚೇರಿ</translation>
 <translation id="1122198203221319518">&amp;ಸಾಧನಗಳು</translation>
 <translation id="1122242684574577509">ದೃಢೀಕರಣ ವಿಫಲವಾಗಿದೆ. ನೀವು ಬಳಸುತ್ತಿರುವ (<ph name="NETWORK_ID" />) ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್‌ನ ಲಾಗಿನ್ ಪುಟಕ್ಕೆ ಭೇಟಿ ನೀಡಲು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Google ಸುಧಾರಿತ ರಕ್ಷಣೆ ಪ್ರೋಗ್ರಾಂ</translation>
 <translation id="1155816283571436363">ನಿಮ್ಮ ಫೋನ್‌ಗೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1161575384898972166">ಕ್ಲೈಂಟ್ ಪ್ರಮಾಣಪತ್ರವನ್ನು ರಫ್ತು ಮಾಡಲು <ph name="TOKEN_NAME" /> ಗೆ ದಯವಿಟ್ಟು ಸೈನ್ ಇನ್ ಆಗಿರಿ.</translation>
+<translation id="116173250649946226">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಡೀಫಾಲ್ಟ್ ಥೀಮ್ ಅನ್ನು ಹೊಂದಿಸಿರುವುದರಿಂದ, ಅದನ್ನು ಬದಲಾಯಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ.</translation>
 <translation id="1163931534039071049">ಫ್ರೇಮ್ ಮೂಲವನ್ನು &amp;ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1164891049599601209">ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಮೂದಿಸಲಾಗಿದೆ</translation>
 <translation id="1164899421101904659">ಪಿನ್ ಅನ್‌ಲಾಕ್ ಕೀ ನಮೂದಿಸಿ</translation>
@@ -2556,6 +2558,7 @@
 <translation id="3809272675881623365">ಮೊಲ</translation>
 <translation id="3809280248639369696">ಮೂನ್‌ಬೀಮ್</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" />, ಕೆಳಗಿನ ಫೋಲ್ಡರ್‌ಗಳಲ್ಲಿರುವ ಫೈಲ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಬಹುದು</translation>
+<translation id="3810914450553844415">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ಹೆಚ್ಚುವರಿ Google ಖಾತೆಗಳನ್ನು ಅನುಮತಿಸುವುದಿಲ್ಲ.</translation>
 <translation id="3810973564298564668">ನಿರ್ವಹಿಸು</translation>
 <translation id="381202950560906753">ಇನ್ನೊಂದನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="3812525830114410218">ತಪ್ಪು ಪ್ರಮಾಣಪತ್ರ</translation>
@@ -2677,6 +2680,7 @@
 <translation id="3925573269917483990">ಕ್ಯಾಮರಾ:</translation>
 <translation id="3926002189479431949">Smart Lock ಫೋನ್ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="3927932062596804919">ನಿರಾಕರಿಸಿ</translation>
+<translation id="392803502090869922">eSIM ಸೆಟಪ್</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" /> ಗೆ ಮಾಡಿರುವ ಬದಲಾವಣೆಗಳನ್ನು ಉಳಿಸಬೇಕೆ?</translation>
 <translation id="3928659086758780856">ಇಂಕ್ ಪ್ರಮಾಣ ಕಡಿಮೆಯಿದೆ</translation>
 <translation id="3929426037718431833">ಈ ವಿಸ್ತರಣೆಗಳು ಈ ಸೈಟ್‌ನಲ್ಲಿನ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸಬಹುದು ಮತ್ತು ಬದಲಾಯಿಸಬಹುದು.</translation>
@@ -4249,6 +4253,7 @@
 <translation id="5764797882307050727">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ವಲ್ಪ ಸ್ಥಳಾವಕಾಶ ಮಾಡಿ.</translation>
 <translation id="5765425701854290211">ಕ್ಷಮಿಸಿ, ಕೆಲವು ಫೈಲ್‌ಗಳು ಹಾನಿಗೊಳಗಾಗಿದ್ದವು ಮತ್ತು ಅಪ್‌ಡೇಟ್ ಪ್ರಕ್ರಿಯೆ ಯಶಸ್ವಿಯಾಗಿರಲಿಲ್ಲ. ಸಿಂಕ್ ಆಗಿರುವ ನಿಮ್ಮ ಫೈಲ್‌ಗಳು ಸುರಕ್ಷಿತವಾಗಿವೆ.</translation>
 <translation id="5765491088802881382">ಯಾವುದೇ ನೆಟ್‌ವರ್ಕ್‌ಗಳು ಲಭ್ಯವಿಲ್ಲ</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" />, ಅಪಾಯಕಾರಿ ಫೈಲ್ ಆಗಿರಬಹುದು. ಸ್ಕ್ಯಾನ್ ಮಾಡಲು Google ಗೆ ಕಳುಹಿಸುವುದೇ? ಡೌನ್‌ಲೋಡ್‌ಗಳ ಪಟ್ಟಿಯ ಪ್ರದೇಶಕ್ಕೆ ತೆರಳಲು Shift+F6 ಒತ್ತಿ.</translation>
 <translation id="5769519078756170258">ಹೊರಗಿರಿಸಬೇಕಾದ ಹೋಸ್ಟ್ ಅಥವಾ ಡೊಮೇನ್</translation>
 <translation id="5770125698810550803">ನ್ಯಾವಿಗೇಷನ್‌ ಬಟನ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5771816112378578655">ಸೆಟಪ್ ಪ್ರಗತಿಯಲ್ಲಿದೆ...</translation>
@@ -4405,6 +4410,7 @@
 <translation id="5942779427914696408">ಸಾಧನದ ಗೋಚರತೆ</translation>
 <translation id="5943127421590245687">ನಿಮ್ಮ ದೃಢೀಕರಣ ಯಶಸ್ವಿಯಾಗಿದೆ. ನಿಮ್ಮ ಸ್ಥಳೀಯ ಡೇಟಾವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಲು ಮತ್ತು ಮರುಸ್ಥಾಪಿಸಲು, ನಿಮ್ಮ ಹಳೆಯ <ph name="DEVICE_TYPE" /> ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="5944869793365969636">QR ಕೋಡ್ ಸ್ಕ್ಯಾನ್ ಮಾಡಿ</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" />, ಅಪಾಯಕಾರಿ ಫೈಲ್ ಆಗಿರಬಹುದು. ಸ್ಕ್ಯಾನ್ ಮಾಡಲು Google Safe Browsing ಗೆ ಕಳುಹಿಸುವುದೇ?</translation>
 <translation id="5946591249682680882">ವರದಿ ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">ಕೀಬೋರ್ಡ್ ಅಥವಾ ಮೌಸ್ ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಿ ಅಥವಾ ನಿಮ್ಮ ಟಚ್‌ಸ್ಕ್ರೀನ್ ಬಳಸಿ ಸೆಟಪ್ ಮುಂದುವರಿಸಿ. ನೀವು ಬ್ಲೂಟೂತ್ ಸಾಧನಗಳನ್ನು ಬಳಸುತ್ತಿದ್ದರೆ, ನಿಮ್ಮ ಸಾಧನಗಳು ಜೋಡಿಸಲು ಸಿದ್ಧವಾಗಿವೆಯೇ ಎಂದು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="5949544233750246342">ಫೈಲ್ ಅನ್ನು ಪಾರ್ಸ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
@@ -4452,6 +4458,7 @@
 <translation id="6002452033851752583">ನಿಮ್ಮ Google ಖಾತೆಯಿಂದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="6002458620803359783">ಆದ್ಯತೆಯ ಧ್ವನಿಗಳು</translation>
 <translation id="6003143259071779217">eSIM ಸೆಲ್ಯುಲಾರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="6003582434972667631">ನಿಮ್ಮ ಸಂಸ್ಥೆಯಿಂದ ಥೀಮ್ ಅನ್ನು ಹೊಂದಿಸಲಾಗಿದೆ</translation>
 <translation id="6006484371116297560">ಕ್ಲಾಸಿಕ್</translation>
 <translation id="6007240208646052708">ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ಧ್ವನಿ ಹುಡುಕಾಟ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="6011074160056912900">ಈಥರ್‌ನೆಟ್ ನೆಟ್‌ವರ್ಕ್</translation>
@@ -4831,6 +4838,7 @@
 <translation id="6429384232893414837">ಅಪ್‌ಡೇಟ್ ದೋಷ</translation>
 <translation id="6430814529589430811">Base64-ಎನ್‌ಕೋಡ್ ಮಾಡಿದ ASCII, ಏಕ ಪ್ರಮಾಣಪತ್ರ</translation>
 <translation id="6431347207794742960">ಈ ಕಂಪ್ಯೂಟರ್‌ನ ಎಲ್ಲ ಬಳಕೆದಾರರಿಗಾಗಿ <ph name="PRODUCT_NAME" /> ಸ್ವಯಂಚಾಲಿತ ನವೀಕರಣಗಳನ್ನು ಹೊಂದಿಸುತ್ತದೆ.</translation>
+<translation id="6434104957329207050">ಪಾಯಿಂಟ್ ಸ್ಕ್ಯಾನ್ ಮಾಡುವ ವೇಗ</translation>
 <translation id="6434309073475700221">ತಿರಸ್ಕರಿಸಿ</translation>
 <translation id="6434325376267409267">ನೀವು <ph name="APP_NAME" /> ಅನ್ನು ಬಳಸುವ ಮೊದಲು ನಿಮ್ಮ ಸಾಧನವನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ.</translation>
 <translation id="6436164536244065364">ವೆಬ್ ಅಂಗಡಿಯಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
@@ -4873,6 +4881,7 @@
 <translation id="6474498546677193336">ಒಂದು ಅಪ್ಲಿಕೇಶನ್, ಈ ಫೋಲ್ಡರ್ ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಕಾರಣ, ಅದರ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ಮುಂದಿನ ಸಲ Linux ಅನ್ನು ಸ್ಥಗಿತಗೊಳಿಸಿದಾಗ, ಈ ಫೋಲ್ಡರ್ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="6474884162850599008">Google ಡ್ರೈವ್ ಖಾತೆಗೆ ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ</translation>
 <translation id="6475294023568239942">ಡಿಸ್ಕ್ ಸ್ಥಳಾವಕಾಶವನ್ನು ತೆರವುಗೊಳಿಸಿ ಅಥವಾ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Linux ಡಿಸ್ಕ್ ಅನ್ನು ಮರುಗಾತ್ರಗೊಳಿಸಿ</translation>
+<translation id="6476138569087741884">ಫುಲ್‌ಸ್ಕ್ರೀನ್ ಝೂಮ್ ಮಟ್ಟ</translation>
 <translation id="6477822444490674459">ಕೆಲಸದ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿ ಫೋನ್‌ಗಳು ಅಧಿಸೂಚನೆ ಸಿಂಕ್ ಮಾಡುವಿಕೆಯನ್ನು ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">ಅಪಾಯಕಾರಿ ಫೈಲ್ ಇರಿಸುವುದೇ?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
@@ -5328,6 +5337,7 @@
 <translation id="6985607387932385770">ಪ್ರಿಂಟರ್‌ಗಳು</translation>
 <translation id="6988094684494323731">Linux ಕಂಟೇನರ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="6988403677482707277">ಟ್ಯಾಬ್‌ಸ್ಟ್ರಿಪ್‌ನ ಪ್ರಾರಂಭಕ್ಕೆ ಟ್ಯಾಬ್ ಅನ್ನು ಸರಿಸಲಾಗಿದೆ</translation>
+<translation id="6990209147952697693">ಕ್ಲಾಸಿಕ್ Chrome</translation>
 <translation id="6991665348624301627">ಗಮ್ಯಸ್ಥಾನವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="6992554835374084304">ವರ್ಧಿತ ಕಾಗುಣಿತ ಪರೀಕ್ಷೆಯನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="6993000214273684335">ಟ್ಯಾಬ್ ಅನ್ನು <ph name="GROUP_CONTENTS" /> - ಹೆಸರಿಸದ ಗುಂಪಿನಿಂದ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
@@ -6312,6 +6322,7 @@
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> ಅನ್ನು ಸೆಟಪ್ ಮಾಡಿ</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ಈ ಫೈಲ್ ಅನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗಿದೆ. ಅದನ್ನು ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅದರ ಮಾಲೀಕರಿಗೆ ಕೇಳಿ.}one{ಈ ಫೈಲ್‌ಗಳಲ್ಲಿನ ಕೆಲವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಲಾಗಿದೆ. ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅವುಗಳ ಮಾಲೀಕರನ್ನು ಕೇಳಿ}other{ಈ ಫೈಲ್‌ಗಳಲ್ಲಿನ ಕೆಲವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್‌ ಮಾಡಲಾಗಿದೆ. ಡಿಕ್ರಿಪ್ಟ್ ಮಾಡಲು ಅವುಗಳ ಮಾಲೀಕರನ್ನು ಕೇಳಿ}}</translation>
+<translation id="8087576439476816834"><ph name="PROFILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="808894953321890993">ಪಾಸ್‌ವರ್ಡ್ ಬದಲಿಸಿ</translation>
 <translation id="8090234456044969073">ನಿಮ್ಮ ಪದೇ ಪದೇ ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಓದಿ</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ಪ್ರತಿಕ್ರಿಯಿಸುತ್ತಿಲ್ಲ</translation>
@@ -6553,6 +6564,8 @@
 <translation id="8368859634510605990">&amp;ಎಲ್ಲ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8370294614544004647">ಲ್ಯಾಪ್‌ಟಾಪ್ ಮುಚ್ಚಿದಾಗ ನಿದ್ರಾವಸ್ಥೆ ಮೋಡ್‌ಗೆ ಬದಲಿಸಿ</translation>
 <translation id="8371695176452482769">ಈಗ ಮಾತನಾಡಿ</translation>
+<translation id="8371749822919332187">ಝೂಮ್ ಇನ್ ಮಾಡಲು, Ctrl+Alt+ಪ್ರಖರತೆ ಹೆಚ್ಚಿಸುವ ಕೀ ಅನ್ನು ಬಳಸಿ.
+ಝೂಮ್ ಔಟ್ ಮಾಡಲು, Ctrl+Alt+ಪ್ರಖರತೆ ಕಡಿಮೆ ಮಾಡುವ ಕೀ ಅನ್ನು ಬಳಸಿ.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ಗಳನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
 <translation id="8372369524088641025">ಕೆಟ್ಟ WEP ಕೀ</translation>
 <translation id="8373652277231415614">Crostini ಹಂಚಿಕೊಂಡ ಡೈರೆಕ್ಟರಿಗಳು</translation>
@@ -6560,7 +6573,6 @@
 <translation id="8378714024927312812">ನಿಮ್ಮ ಸಂಸ್ಥೆಯ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗಿದೆ</translation>
 <translation id="8379878387931047019">ಈ ವೆಬ್‌ಸೈಟ್ ವಿನಂತಿಸಿದ ಸುರಕ್ಷತಾ ಕೀಯ ಪ್ರಕಾರವನ್ನು ಈ ಸಾಧನ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ</translation>
 <translation id="8379991678458444070">ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಬುಕ್‌ಮಾರ್ಕ್‌ ಮಾಡಿ ಮತ್ತು ನಿಮಗೆ ಅಗತ್ಯವಿರುವಾಗ ತ್ವರಿತವಾಗಿ ಇಲ್ಲಿಗೆ ಹಿಂತಿರುಗಿ</translation>
-<translation id="8380314198565901932">ವರ್ಚುವಲ್ ಯಂತ್ರದ ಡೌನ್‌ಲೋಡ್ ಮಾಡುವಾಗ ದೋಷ ಉಂಟಾಗಿದೆ. ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="8382913212082956454">ಇಮೇಲ್ &amp;ವಿಳಾಸವನ್ನು ನಕಲು ಮಾಡಿ</translation>
 <translation id="8386091599636877289">ಕಾರ್ಯನೀತಿ ಕಂಡುಬಂದಿಲ್ಲ.</translation>
 <translation id="8386819192691131213">ಅನುವಾದ, ವ್ಯಾಖ್ಯಾನ, ಯೂನಿಟ್ ಪರಿವರ್ತನೆ ಮತ್ತು ಇನ್ನಷ್ಟವುಗಳಂತಹ ತ್ವರಿತ ಉತ್ತರಗಳನ್ನು ಒದಗಿಸುವುದಕ್ಕಾಗಿ ಪರದೆಯ ಮೇಲೆ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು Assistant ಅನುಮತಿಸಿ</translation>
@@ -7224,6 +7236,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">ನಿಮ್ಮ ಹೊಸ ಪ್ರೊಫೈಲ್‌ಗೆ ಸುಸ್ವಾಗತ</translation>
 <translation id="9112748030372401671">ನಿಮ್ಮ ವಾಲ್‌ಪೇಪರ್ ಬದಲಿಸಿ</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" />, ಅಪಾಯಕಾರಿ ಫೈಲ್ ಆಗಿರಬಹುದು. ಸ್ಕ್ಯಾನ್ ಮಾಡಲು Google ಗೆ ಕಳುಹಿಸುವುದೇ?</translation>
 <translation id="9112987648460918699">ಹುಡುಕಿ...</translation>
 <translation id="9114663181201435112">ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="9115675100829699941">&amp;ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>

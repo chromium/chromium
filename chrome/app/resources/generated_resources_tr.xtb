@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" />, bu <ph name="DEVICE_TYPE" /> cihazı güncellemenizi öneriyor.</translation>
 <translation id="1118738876271697201">Sistem, cihaz modelini veya seri numarasını belirleyemedi.</translation>
 <translation id="1119447706177454957">Dahili hata</translation>
+<translation id="111959947408687873">Tam ekran büyütecini açmak veya kapatmak için Ctrl+<ph name="SEARCH_KEY_NAME" />+M kısayolunu kullanın. Yakınlaştırılmış ekranda hareket etmek için Ctrl+Alt+Ok tuşlarını kullanın.</translation>
 <translation id="1122068467107743258">İş</translation>
 <translation id="1122198203221319518">&amp;Araçlar</translation>
 <translation id="1122242684574577509">Kimlik doğrulama başarısız oldu. Kullanmakta olduğunuz Kablosuz ağın (<ph name="NETWORK_ID" />) giriş sayfasını ziyaret etmek için tıklayın.</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Google Gelişmiş Koruma Programı</translation>
 <translation id="1155816283571436363">Telefonunuza bağlanılıyor</translation>
 <translation id="1161575384898972166">Lütfen istemci sertifikasını dışa aktarmak için <ph name="TOKEN_NAME" /> cihazında oturum açın.</translation>
+<translation id="116173250649946226">Yöneticiniz, değiştirilemeyen bir varsayılan tema ayarladı.</translation>
 <translation id="1163931534039071049">&amp;Çerçeve kaynağını görüntüle</translation>
 <translation id="1164891049599601209">Yanıltıcı bir sitede girildi</translation>
 <translation id="1164899421101904659">PIN Kilit Açma Anahtarını Girin</translation>
@@ -2554,6 +2556,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3809272675881623365">Tavşan</translation>
 <translation id="3809280248639369696">Uzaylı</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> sitesi şu klasörlerdeki dosyaları görüntüleyebilir:</translation>
+<translation id="3810914450553844415">Yöneticiniz ek Google Hesaplarına izin vermiyor.</translation>
 <translation id="3810973564298564668">Yönet</translation>
 <translation id="381202950560906753">Başka ekle</translation>
 <translation id="3812525830114410218">Bozuk sertifika</translation>
@@ -2675,6 +2678,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3926002189479431949">Smart Lock telefonu değişti</translation>
 <translation id="3927932062596804919">Reddet</translation>
+<translation id="392803502090869922">eSim kurulumu</translation>
 <translation id="3928570707778085600">Değişiklikler <ph name="FILE_OR_FOLDER_NAME" /> içine kaydedilsin mi?</translation>
 <translation id="3928659086758780856">Mürekkep az</translation>
 <translation id="3929426037718431833">Bu uzantılar, bu sitedeki bilgileri görebilir ve değiştirebilir.</translation>
@@ -4246,6 +4250,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5764797882307050727">Lütfen cihazınızda biraz yer açın.</translation>
 <translation id="5765425701854290211">Maalesef bazı dosyalar hasar gördü ve güncelleme başarılı olmadı. Senkronize edilen dosyalarınız güvende.</translation>
 <translation id="5765491088802881382">Ağ kullanılamıyor</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> tehlikeli olabilir. Taranmak üzere Google'a gönderilsin mi? İndirme çubuğu alanına gitmek için Üst Karakter+F6 tuşlarına basın.</translation>
 <translation id="5769519078756170258">Hariç tutulacak ana makine veya alan adı</translation>
 <translation id="5770125698810550803">Gezinme düğmelerini göster</translation>
 <translation id="5771816112378578655">Kurulum devam ediyor...</translation>
@@ -4402,6 +4407,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5942779427914696408">Cihaz görünürlüğü</translation>
 <translation id="5943127421590245687">Doğrulama işleminiz başarıyla tamamlandı. Kilidini açıp yerel verilerinizi geri yüklemek için lütfen eski <ph name="DEVICE_TYPE" /> cihazınızın şifresini girin.</translation>
 <translation id="5944869793365969636">QR kodunu tara</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> tehlikeli olabilir. Taranmak üzere Google Güvenli Tarama'ya gönderilsin mi?</translation>
 <translation id="5946591249682680882">Rapor kimliği <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Klavye veya fare bağlayın ya da kuruluma dokunmatik ekranınızı kullanarak devam edin. Bluetooth cihazları kullanıyorsanız cihazlarınızın eşlemeye hazır olduğundan emin olun.</translation>
 <translation id="5949544233750246342">Dosya ayrıştırılamıyor</translation>
@@ -4449,6 +4455,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6002452033851752583">Şifre Google Hesabınızdan silindi</translation>
 <translation id="6002458620803359783">Tercih Edilen Sesler</translation>
 <translation id="6003143259071779217">eSIM Hücresel ağını kaldır</translation>
+<translation id="6003582434972667631">Tema, Kuruluşunuz tarafından ayarlanmış</translation>
 <translation id="6006484371116297560">Klasik</translation>
 <translation id="6007240208646052708">Sesli arama özelliği dilinizde kullanılamaz.</translation>
 <translation id="6011074160056912900">Ethernet ağı</translation>
@@ -4828,6 +4835,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6429384232893414837">Güncelleme hatası</translation>
 <translation id="6430814529589430811">Base64 kodlu ASCII, tek sertifika</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> bu bilgisayarın tüm kullanıcıları için otomatik güncellemeleri ayarlar.</translation>
+<translation id="6434104957329207050">Nokta tarama hızı</translation>
 <translation id="6434309073475700221">Kapat</translation>
 <translation id="6434325376267409267"><ph name="APP_NAME" /> uygulamasını kullanabilmeniz için önce cihazınızın güncellenmesi gerekir.</translation>
 <translation id="6436164536244065364">Web Mağazasında Görüntüle</translation>
@@ -4870,6 +4878,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6474498546677193336">Bir uygulama bu klasörü kullandığından paylaşım kaldırılamadı. Linux kapatıldığında klasörün paylaşımı kaldırılacak.</translation>
 <translation id="6474884162850599008">Google Drive hesabının bağlantısını kes</translation>
 <translation id="6475294023568239942">Disk alanını boşaltın veya Ayarlar'da Linux diskini yeniden boyutlandırın</translation>
+<translation id="6476138569087741884">Tam ekran yakınlaştırma düzeyi</translation>
 <translation id="6477822444490674459">İş profiline sahip telefonlarda bildirim senkronizasyonu desteklenmiyor. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Tehlikeli dosya tutulsun mu?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> tarafından yönetiliyor</translation>
@@ -5141,6 +5150,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hata. Bir şeyler ters gitti.</translation>
 <translation id="6798420440063423019">Çok sayıda yanlış PIN girildiği için güvenlik anahtarı kilitlendi. Güvenlik anahtarını sıfırlamanız gerekiyor.</translation>
+<translation id="679845623837196966">Okuma listesini göster</translation>
 <translation id="6798578729981748444">İçe aktarma işlemini tamamlamak için tüm Firefox pencerelerini kapatın.</translation>
 <translation id="6798780071646309401">caps lock açık</translation>
 <translation id="6798954102094737107">Eklenti: <ph name="PLUGIN_NAME" /></translation>
@@ -5325,6 +5335,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6985607387932385770">Yazıcılar</translation>
 <translation id="6988094684494323731">Linux kapsayıcısı başlatılıyor</translation>
 <translation id="6988403677482707277">Sekme, sekme şeridinin başına taşındı</translation>
+<translation id="6990209147952697693">Klasik Chrome</translation>
 <translation id="6991665348624301627">Bir hedef seç</translation>
 <translation id="6992554835374084304">Gelişmiş yazım denetimini etkinleştirin</translation>
 <translation id="6993000214273684335">Sekme, adsız - <ph name="GROUP_CONTENTS" /> grubundan kaldırıldı</translation>
@@ -6311,6 +6322,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> yapılandırılıyor...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> yazıcısını kur</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Bu dosya şifrelenmiş. Dosyanın sahibinden şifreyi çözmesini isteyin.}other{Bu dosyaların bazıları şifrelenmiş. Dosyaların sahibinden şifreleri çözmesini isteyin.}}</translation>
+<translation id="8087576439476816834">İndir, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8090234456044969073">En sık ziyaret ettiğiniz web sitelerinin listesini okuma</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> yanıt vermiyor</translation>
@@ -6552,6 +6564,8 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8368859634510605990">&amp;Tüm yer işaretlerini aç</translation>
 <translation id="8370294614544004647">Dizüstü bilgisayar kapalıyken uyu</translation>
 <translation id="8371695176452482769">Şimdi konuşun</translation>
+<translation id="8371749822919332187">Yakınlaştırmak için Ctrl+Alt+Parlaklığı Artır kısayolunu kullanın.
+Uzaklaştırmak için Ctrl+Alt+Parlaklığı Azalt tuşlarını kullanın.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Sitenin Sesini Kapat}other{Sitelerin Sesini Kapat}}</translation>
 <translation id="8372369524088641025">Hatalı WEP anahtarı</translation>
 <translation id="8373652277231415614">Crostini paylaşılan dizinler</translation>
@@ -6559,7 +6573,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8378714024927312812">Kuruluşunuz tarafından yönetiliyor</translation>
 <translation id="8379878387931047019">Bu cihaz, bu web sitesi tarafından istenen türde güvenlik anahtarını desteklemiyor</translation>
 <translation id="8379991678458444070">Bu sekmeye yer işareti koyarak buraya hızlıca geri dönün</translation>
-<translation id="8380314198565901932">Sanal makine indirilirken hata oluştu. Lütfen <ph name="DEVICE_TYPE" /> cihazınızı güncelleyip tekrar deneyin.</translation>
 <translation id="8382913212082956454">E-posta &amp;adresini kopyala</translation>
 <translation id="8386091599636877289">Politika bulunamadı.</translation>
 <translation id="8386819192691131213">Asistan'ın çeviri, tanım, birim dönüştürme ve diğer konularda hızlı yanıt sağlaması için ekrandaki bilgileri kullanmasına izin verin</translation>
@@ -7222,6 +7235,7 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Yeni profilinize hoş geldiniz</translation>
 <translation id="9112748030372401671">Duvar kağıdınızı değiştirme</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> tehlikeli olabilir. Taranmak üzere Google'a gönderilsin mi?</translation>
 <translation id="9112987648460918699">Bul...</translation>
 <translation id="9114663181201435112">Kolayca oturum açın</translation>
 <translation id="9115675100829699941">&amp;Yer İşaretleri</translation>
@@ -7268,6 +7282,7 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
       <ph name="LIST_ITEM" />Chrome Bağlantı Teşhisi'ni çalıştırma
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pencere içinde Pencere</translation>
+<translation id="9167063903968449027">Okuma Listesini Göster</translation>
 <translation id="9168436347345867845">Daha sonra yap</translation>
 <translation id="9169496697824289689">Klavye kısayollarını görüntüle</translation>
 <translation id="916964310188958970">Neden bu öneri gösteriliyor?</translation>

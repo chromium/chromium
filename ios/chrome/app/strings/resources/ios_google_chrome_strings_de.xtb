@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Sie können jetzt Chrome jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="3720541637541300822">Inkognitotabs sperren, wenn Chrome geschlossen wird</translation>
 <translation id="384394811301901750">Google Chrome kann gerade nicht auf die Kamera zugreifen.</translation>
-<translation id="38949020760388809">Möchten Sie Ihre Chrome-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="3980220367029651214">Sie stellen die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Ihre bestehenden Chrome-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden Ihre Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
 <translation id="3984746313391923992">Ihre Organisation verlangt, dass Sie aus Chrome abgemeldet bleiben.</translation>
 <translation id="3988789688219830639">Chrome hat keinen Zugriff auf Ihre Fotos und Videos. Aktivieren Sie den Zugriff unter "iOS-Einstellungen &gt; Datenschutz &gt; Fotos".</translation>
 <translation id="4099578267706723511">Nutzungsstatistiken und Absturzberichte zur Verbesserung von Chrome an Google senden</translation>
-<translation id="415767770115540173">Profitieren Sie von einer verbesserten Google-Nutzererfahrung in Chrome auf der Grundlage Ihres Standorts.</translation>
 <translation id="417201473131094001">Wird von Chrome Canary nicht unterstützt</translation>
 <translation id="424864128008805179">Von Chrome abmelden?</translation>
 <translation id="4249068189593983585">Chrome-Tipp: Wenn Sie weitere Tab-Optionen sehen möchten, berühren und halten Sie die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Sie befindet sich unten oder oben auf dem Bildschirm.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Ihr Passwort wurde durch eine Datenpanne preisgegeben. Chrome empfiehlt, das Passwort jetzt zu ändern.</translation>
 <translation id="7698568245838009292">Chrome möchte auf Ihre Kamera zugreifen</translation>
 <translation id="7855730255114109580">Google Chrome ist auf dem neuesten Stand.</translation>
-<translation id="8109233255338845204">Ihr Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, Ihre Chrome-Daten werden von diesem Gerät gelöscht.</translation>
 <translation id="8160472928944011082">Update nicht möglich</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle Rechte vorbehalten.</translation>
 <translation id="840168496893712993">Einige Add-ons führen zum Ausfall von Chrome. Bitte deinstallieren Sie diese Add-ons.</translation>

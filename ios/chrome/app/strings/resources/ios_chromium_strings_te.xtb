@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="te">
 <translation id="102360288709523007">Googleకు వినియోగ గణాంకాలు, క్రాష్ నివేదికలు పంపి Chromiumను మెరుగుపరచడంలో సహాయపడండి.</translation>
-<translation id="1043245583918962542">ఈ పరికరం నుండి మీ Chromium డేటాను క్లియర్ చేయాలా లేదా ఉంచాలా అనే దాన్ని ఎంచుకోండి.</translation>
 <translation id="1185134272377778587">Chromium గురించి</translation>
 <translation id="1257458525759135959">ఇమేజ్‌లను సేవ్ చేయడానికి, మీ ఫోటోలకు యాడ్ చేయడం కోసం Chromiumను అనుమతించడానికి సెట్టింగ్‌లపై ట్యాప్ చేయండి</translation>
 <translation id="1289216811211435351">Chromiumకు మారండి</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">ఈ పరికరం నుండి మీ Chromium డేటాని తీసివేయాలా?</translation>
 <translation id="8175055321229419309">చిట్కా: <ph name="BEGIN_LINK" />Chromiumను మీ డాక్‌కు తరలించండి<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium అప్‌డేట్‌లు ఏమైనా ఉన్నాయో లేదో చెక్ చేయలేకపోయింది. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
-<translation id="8252885722420466166">మీ స్థానం ఆధారంగా Chromiumలో మెరుగైన Google అనుభవాన్ని పొందండి.</translation>
 <translation id="8586442755830160949">కాపీరైట్ <ph name="YEAR" /> Chromium రచయితలు. అన్ని హ‌క్కులు రిజ‌ర్వ్ చేయ‌బ‌డ్డాయి.</translation>
 <translation id="8663480472502753423">Chromiumను అప్‌డేట్‌గా ఉంచండి</translation>
 <translation id="8776843108004031667">ఈ ఖాతా, ఇంకా ఏదైనా సేవ్ చేయని డేటా Chromium నుండి తీసివేయబడతాయి.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium కాలం చెల్లినది</translation>
 <translation id="921174536258924340">Chromiumకు అన్ని పాస్‌వర్డ్‌లను చెక్ చేయడం సాధ్యపడలేదు. రేపు మళ్లీ ట్రై చేయండి లేదా <ph name="BEGIN_LINK" />మీ Google ఖాతాలో పాస్‌వర్డ్‌లను చెక్ చేయండి.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium రచయితలు</translation>
-<translation id="994708389219151914">మీ ఖాతా <ph name="HOSTED_DOMAIN" /> ద్వారా మేనేజ్ చేయబడుతుంది, కాబట్టి మీ Chromium డేటా ఈ పరికరం నుండి క్లియర్ చేయబడుతుంది.</translation>
 </translationbundle>

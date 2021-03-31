@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Чоо-жайын көрүү</translation>
 <translation id="1030706264415084469"><ph name="URL" /> түзмөгүңүзгө көлөмдүү дайындарды биротоло сактаганы жатат</translation>
 <translation id="1032854598605920125">Сааттын жебеси боюнча айландыруу</translation>
+<translation id="1036224116832931580">Dino оюнунда секирип ойноо үчүн басыңыз</translation>
 <translation id="1036348656032585052">Өчүрүү</translation>
 <translation id="1038106730571050514">Сунуштарды көрсөтүү</translation>
 <translation id="1038842779957582377">белгисиз ат</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Бирөө да жок}=1{1 сайт}other{# сайт}}</translation>
 <translation id="1945968466830820669">Кимдир бирөө сиздин жеке дайындарыңызга же уюмуңуздун аккаунтуна кирип алган окшойт. Chromium сырсөзүңүздү азыр өзгөртүүнү сунуштайт.</translation>
 <translation id="1947454675006758438">Жогорку оң жагын илмек менен бекитүү</translation>
+<translation id="1958218078413065209">Эң көп алган упайыңыз: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />Баш баккан айрым сайттарыңыздын URL'дерин, тутум тууралуу чектелген маалыматты жана барактагы айрым мазмунду<ph name="END_WHITEPAPER_LINK" /> Google'га жөнөтүү менен Интернеттеги коопсуздукту баары үчүн күчөтүүгө жардам бериңиз. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Купуялык саясаты<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Кыстармалар</translation>
 <translation id="1973335181906896915">Сериялоо катасы</translation>
@@ -547,6 +549,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome жөндөөлөрүнөн коопсуздукту текшерүү үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="3061707000357573562">Оңдоо кызматы</translation>
 <translation id="3064966200440839136">Тышкы колдонмо аркылуу төлөө үчүн жашыруун режимден чыкканы жатасыз. Уланта берелиби?</translation>
+<translation id="306573536155379004">Оюн башталды.</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3086579638707268289">Интернеттеги аракеттериңиз көзөмөлдөнүүдө</translation>
 <translation id="3087734570205094154">Аягы</translation>
@@ -1542,6 +1545,7 @@
 <translation id="6934672428414710184">Бул ысым Google аккаунтуңуздан алынды</translation>
 <translation id="6944692733090228304">Сырсөзүңүздү <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> тарабынан башкарылбаган сайтка киргиздиңиз. Аккаунтуңузду коргоо үчүн сырсөзүңүздү башка колдонмолор менен сайттарда колдонбоңуз.</translation>
 <translation id="6945221475159498467">Тандаңыз</translation>
+<translation id="6948051842255602737">Оюн бүттү, упайларыңыз: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Алып кетүү ыкмаларын жана талаптарын көрүү үчүн дарегин тандаңыз</translation>
 <translation id="6949872517221025916">Сырсөздү өзгөртүү</translation>
 <translation id="6950684638814147129">JSON маанисин талдоодо ката кетти: <ph name="ERROR" /></translation>
@@ -1824,6 +1828,7 @@
 <translation id="7956713633345437162">Мобилдик кыстармалар</translation>
 <translation id="7961015016161918242">Эч качан</translation>
 <translation id="7966803981046576691">Тапшырманын түрү</translation>
+<translation id="79682505114836835">"<ph name="VALUE" />" маанисинин он алтылык түсү жараксыз.</translation>
 <translation id="7976214039405368314">Өтүнүчтөр өтө көп жөнөтүлдү</translation>
 <translation id="7977538094055660992">Чыгаруу түзмөгү</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1951,6 +1956,7 @@
 <translation id="8446884382197647889">Көбүрөөк билүү</translation>
 <translation id="8457125768502047971">Белгисиз</translation>
 <translation id="8461694314515752532">Шайкештирилген дайындарды өзүңүздүн шайкештирүүчү купуя сөз айкашыңыз менен шифрлеңиз</translation>
+<translation id="8463101686637053101">Dino оюнунда секирип ойноо үчүн боштук баскычын басыңыз</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 насыя карта}other{# насыя карта}}</translation>
 <translation id="8473863474539038330">Даректер жана башкалар</translation>
 <translation id="8474910779563686872">Иштеп чыгуучунун чоо-жайын көрүү</translation>
@@ -2086,6 +2092,7 @@
 <translation id="8996941253935762404">Алдыдагы сайтта зыянкеч программалар камтылган</translation>
 <translation id="8997023839087525404">Сервер берген тастыктама "Тастыктаманын тунуктук саясаты" аркылуу ачыкка чыгарылган эмес. Бул тастыктамалар ишенимдүү экендигине жана чабуулчулардан коргой алаарына кепилдик берүү үчүн талап кылынат.</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> проксиси колдонуучунун атын жана сырсөзүн талап кылып жатат.</translation>
+<translation id="9001963517402879850">Секириңиз!</translation>
 <translation id="9004367719664099443">VR сеансы жүрүүдө</translation>
 <translation id="9005998258318286617">PDF документи жүктөлбөй калды.</translation>
 <translation id="9008201768610948239">Этибарга албоо</translation>

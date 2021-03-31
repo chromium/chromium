@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="3720541637541300822">Užrakinti inkognito skirtukus uždarius „Chrome“</translation>
 <translation id="384394811301901750">„Google Chrome“ šiuo metu negali naudoti fotoaparato</translation>
-<translation id="38949020760388809">Pasirinkite, ar norite išvalyti „Chrome“ duomenis iš šio įrenginio ar juos palikti.</translation>
 <translation id="3980220367029651214">Perjungiate sinchronizavimo paskyras iš <ph name="USER_EMAIL1" /> į <ph name="USER_EMAIL2" />. Esamus „Chrome“ duomenis valdo <ph name="DOMAIN" />. Duomenys bus ištrinti iš šio įrenginio, bet liks paskyroje <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Jūsų organizacija reikalauja likti atsijungus nuo „Chrome“.</translation>
 <translation id="3988789688219830639">„Google Chrome“ nepasiekia nuotraukų ar vaizdo įr. Įgal. prieigą apsil. „iOS“ nustatymai“ &gt; „Privatumas“ &gt; „Nuotraukos“.</translation>
 <translation id="4099578267706723511">Padėkite tobulinti „Chrome“ siųsdami „Google“ naudojimo statistiką ir strigčių ataskaitas.</translation>
-<translation id="415767770115540173">Patogiau naudokitės „Google“ funkcijomis naudodami pagal vietovę pritaikytą „Chrome“.</translation>
 <translation id="417201473131094001">Nepalaikoma versijoje „Chrome Canary“</translation>
 <translation id="424864128008805179">Atsijungti nuo „Chrome“?</translation>
 <translation id="4249068189593983585">„Chrome“ patarimas. Jei reikia daugiau skirtukų parinkčių, palieskite ir palaikykite mygtuką „Rodyti skirtukus“ įrankių juostoje, kuri yra ekrano apačioje arba viršuje.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Jūsų slaptažodis atskleistas įvykus duomenų saugos pažeidimui. „Chrome“ rekomenduoja dabar pakeisti slaptažodį.</translation>
 <translation id="7698568245838009292">„Chrome“ nori pasiekti fotoaparatą</translation>
 <translation id="7855730255114109580">„Google Chrome“ yra naujausios versijos</translation>
-<translation id="8109233255338845204">Jūsų paskyrą tvarko <ph name="HOSTED_DOMAIN" />, todėl jūsų „Chrome“ duomenys bus išvalyti iš šio įrenginio.</translation>
 <translation id="8160472928944011082">Nepavyko atnaujinti „Chrome“</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>
 <translation id="840168496893712993">Dėl tam tikrų priedų „Chrome“ užstringa. Pabandykite juos pašalinti.</translation>

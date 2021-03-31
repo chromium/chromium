@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="102360288709523007">የአጠቃቀም ስታቲክሶችን እና የብልሽት ሪፖርቶችን ወደ Google በመላክ Chromiumን የተሻለ ለማድረግ ያግዙ።</translation>
-<translation id="1043245583918962542">የChromium ውሂብዎን ከዚህ መሣሪያ ይጸዳ ወይም ይቆይ እንደሆነ ይምረጡ።</translation>
 <translation id="1185134272377778587">ስለChromium</translation>
 <translation id="1257458525759135959">ምስሎችን ለማስቀመጥ፣ Chromium ወደ የእርስዎ ፎቶዎች ማከል እንዲችል ለማድረግ ቅንብሮች ላይ መታ ያድርጉ</translation>
 <translation id="1289216811211435351">ወደ Chromium ይቀየር?</translation>
@@ -79,7 +78,6 @@
 <translation id="8073677936375100957">የChromium ውሂብዎ ከዚህ መሣሪያ ላይ ይጽዳ?</translation>
 <translation id="8175055321229419309">ጠቃሚ ምክር፦ <ph name="BEGIN_LINK" />Chromiumን ወደ የእርስዎ መትከያ ይውሰዱት<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium ዝማኔዎች ካሉ መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
-<translation id="8252885722420466166">በአካባቢዎ ላይ በመመስረት በChromium ውስጥ የተሻለ የGoogle ተሞክሮ ያግኙ።</translation>
 <translation id="8586442755830160949">የቅጂ መብት <ph name="YEAR" /> የChromium ደራሲያን። ሁሉም መብቶች የተጠበቁ ናቸው።</translation>
 <translation id="8663480472502753423">Chromiumን እንደተዘመነ ያቆዩ</translation>
 <translation id="8776843108004031667">ይህ መለያ እና ማንኛውም ያልተቀመጠ ውሂብ ከChromium ይወገዳል።</translation>
@@ -88,5 +86,4 @@
 <translation id="9089354809943900324">Chromium ጊዜው አልፎበታል</translation>
 <translation id="921174536258924340">Chromium ሁሉንም የይለፍ ቃሎች ማረጋገጥ አልቻለም። ነገ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />የGoogle መለያዎን ይለፍ ቃላት ይፈትሹ።<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">የChromium ደራሲዎች</translation>
-<translation id="994708389219151914">የእርስዎ መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ነው፣ ስለሆነም የእርስዎ የChromium ውሂብ ከዚህ መሣሪያ ይጸዳል።</translation>
 </translationbundle>

@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Version de l'application</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1450753235335490080">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Essayez "Quel temps fait-il aujourd'hui ?"</translation>
 <translation id="1477626028522505441">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de problèmes liés au serveur.</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
@@ -569,6 +570,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="49268022542405662">Vos mots de passe seront exportés et téléchargés sous forme de fichier texte. Toute personne ou application ayant accès au dossier de destination pourra les voir.</translation>
 <translation id="4932247056774066048">Vous vous déconnectez d'un compte géré par <ph name="DOMAIN_NAME" />. Vos données Chrome seront donc supprimées de cet appareil, mais elles seront conservées dans votre compte Google.</translation>
 <translation id="4936039914467572121">Accéder à ce site plus rapidement</translation>
+<translation id="4941179133499732445">Appuyez sur le micro pour lancer une recherche vocale</translation>
 <translation id="4943703118917034429">Réalité virtuelle</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
 <translation id="4961107849584082341">Traduire cette page dans n'importe quelle langue</translation>
@@ -583,6 +585,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5011311129201317034"><ph name="SITE" /> tente de se connecter</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Autoriser</translation>
+<translation id="5061533557687621530">Pour connaître la météo, appuyez sur le micro et dites "Quel temps fait-il aujourd'hui ?"</translation>
 <translation id="5087580092889165836">Ajouter une carte</translation>
 <translation id="5091249083535528968">Données d'utilisation avancées</translation>
 <translation id="509429900233858213">Une erreur s'est produite.</translation>
@@ -597,6 +600,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Échec de 1 téléchargement.}one{Échec de # téléchargement.}other{Échec de # téléchargements.}}</translation>
 <translation id="5170568018924773124">Afficher le dossier</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
+<translation id="5188992787241350004">Lancez une recherche vocale</translation>
 <translation id="5191251636205085390">Découvrez et contrôlez les nouvelles technologies qui visent à remplacer les cookies tiers</translation>
 <translation id="5193988420012215838">Copié dans le presse-papiers</translation>
 <translation id="5199929503336119739">Profil professionnel</translation>

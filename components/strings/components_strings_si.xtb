@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">විස්තර බලන්න</translation>
 <translation id="1030706264415084469"><ph name="URL" /> හට ඔබේ උපාංගය මත විශාල දත්ත ස්ථිරව ගබඩා කිරීමට අවශ්‍යයි</translation>
 <translation id="1032854598605920125">දක්ෂිණාවර්තව කරකවන්න</translation>
+<translation id="1036224116832931580">Dino ක්‍රීඩාව, පැනීමට සහ ක්‍රීඩා කිරීමට තට්ටු කරන්න</translation>
 <translation id="1036348656032585052">ක්‍රියා විරහිතය</translation>
 <translation id="1038106730571050514">යෝජනා පෙන්වන්න</translation>
 <translation id="1038842779957582377">නොදන්නා නමක්</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{කිසිවක් නැත}=1{1 අඩවියක්}one{අඩවි #ක්}other{අඩවි #ක්}}</translation>
 <translation id="1945968466830820669">ඔබට ඔබේ සංවිධානයේ ගිණුමට ප්‍රවේශය අහිමි වීමට හෝ අනන්‍යතා සොරකමක් අත්විඳීමට සිදු විය හැකිය. දැන් ඔබේ මුරපදය වෙනස් කිරීම සඳහා Chromium නිර්දේශ කරයි.</translation>
 <translation id="1947454675006758438">ඉහළ දකුණ ස්ටේපල් කරන්න</translation>
+<translation id="1958218078413065209">ඔබගේ ඉහළම ලකුණු <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />ඔබ පිවිසෙන ඇතැම් පිටුවල URL, සීමිත පද්ධති තොරතුරු සහ ඇතැම් පිටුවල අන්තර්ගත<ph name="END_WHITEPAPER_LINK" /> Google වෙත යැවීමෙන් සෑම දෙනාටම වෙබයේ ආරක්ෂාව වැඩි දියුණු කිරීම සඳහා සහාය වන්න. <ph name="BEGIN_PRIVACY_PAGE_LINK" />රහස්‍යතා ප්‍රතිපත්තිය<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> පිටු සලකුණු</translation>
 <translation id="1973335181906896915">ශ්‍රේණිකරණ දෝශය</translation>
@@ -545,6 +547,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome සැකසීම් තුළ ආරක්ෂක පරීක්ෂාව ධාවනය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="3061707000357573562">පැච් සේවාව</translation>
 <translation id="3064966200440839136">බාහිර යෙදුමක් හරහා ගෙවීමට අප්‍රකට ප්‍රකාරය හැර යමින්. දිගටම කරගෙන යන්නද?</translation>
+<translation id="306573536155379004">ක්‍රීඩාව ඇරඹිණි.</translation>
 <translation id="3080254622891793721">චිත්‍රක</translation>
 <translation id="3086579638707268289">වෙබය මත ඔබේ ක්‍රියාකාරකම නිරීක්‍ෂණ කෙරේ</translation>
 <translation id="3087734570205094154">පතුල</translation>
@@ -1538,6 +1541,7 @@
 <translation id="6934672428414710184">මෙම නම ඔබගේ Google ගිණුමෙනි</translation>
 <translation id="6944692733090228304">ඔබ ඔබගේ මුරපදය <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> වෙතින් කළමනාකරණය නොවන අඩවියකට ඇතුළත් කළා. ඔබගේ ගිණුම ආරක්ෂා කිරීමට, ඔබගේ මුරපදය වෙනත් යෙදුම් සහ අඩවිවල නැවත භාවිතා නොකරන්න.</translation>
 <translation id="6945221475159498467">තෝරන්න</translation>
+<translation id="6948051842255602737">ක්‍රීඩාව අවසන්ය, ඔබගේ ලකුණු <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">භාර ගැනීමේ ක්‍රම සහ අවශ්‍යතා බැලීමට, ලිපිනයක් තෝරන්න</translation>
 <translation id="6949872517221025916">මුරපදය යළි පිහිටුවන්න</translation>
 <translation id="6950684638814147129">JSON අගය විග්‍රහය කිරීමේ දී දෝෂයක් විය: <ph name="ERROR" /></translation>
@@ -1820,6 +1824,7 @@
 <translation id="7956713633345437162">ජංගම පොත්සලකුණු</translation>
 <translation id="7961015016161918242">කිසිවිට එපා</translation>
 <translation id="7966803981046576691">වැඩ ගිණුම් වර්ගය</translation>
+<translation id="79682505114836835">"<ph name="VALUE" />" අගය වලංගු නොවන ෂඩ් වර්ණයකි.</translation>
 <translation id="7976214039405368314">ඉල්ලීම් ඉතා වැඩිය</translation>
 <translation id="7977538094055660992">ප්‍රතිදාන උපාංගය</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1947,6 +1952,7 @@
 <translation id="8446884382197647889">තවත් දැනගන්න</translation>
 <translation id="8457125768502047971">අනියත</translation>
 <translation id="8461694314515752532">ඔබගේම සමමුහූර්ත මුර-වැකිකඩ සමඟ සමමුහූර්ත කළ දත්ත සංකේතන කරන්න</translation>
+<translation id="8463101686637053101">Dino ක්‍රීඩාව, පැනීමට සහ ක්‍රීඩා කිරීමට ඉඩ ඔබන්න</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{ණය කාඩ්පත් 1}one{ණය කාඩ්පත් #}other{ණය කාඩ්පත් #}}</translation>
 <translation id="8473863474539038330">ලිපින සහ තව</translation>
 <translation id="8474910779563686872">සංවර්ධක විස්තර පෙන්වන්න</translation>
@@ -2082,6 +2088,7 @@
 <translation id="8996941253935762404">අඩවිය ඉදිරියෙන් හානිකර ක්‍රමලේඛ අඩංගු වේ</translation>
 <translation id="8997023839087525404">සේවාදායකය සහතික පාරදෘශ්‍යතා ප්‍රතිපත්තිය භාවිතයෙන් ප්‍රසිද්ධියේ අනාවරණය නොකරන ලද සහතිකයක් ඉදිරිපත් කළේය. මෙය සමහර සහතිකවලට, ඒවා විශ්වාසදායී බව සහ ප්‍රහාරකයන්ට එරෙහිව ආරක්ෂාව සහතික කිරීමට අවශ්‍යතාවකි.</translation>
 <translation id="9001074447101275817">සේවාදායකය <ph name="DOMAIN" /> ට පරිශීලක නාමයක් සහ මුරපදයක් අවශ්‍යයි.</translation>
+<translation id="9001963517402879850">පනින්න!</translation>
 <translation id="9004367719664099443">VR සැසිය ප්‍රගතියේ පවතියි</translation>
 <translation id="9005998258318286617">PDF ගොනුව පූරණය කිරීමට අසමත් විය.</translation>
 <translation id="9008201768610948239">මඟහරින්න</translation>

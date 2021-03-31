@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">カメラ</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">何も記録されていません</translation>
+<translation id="1838104802459806957">上にティルト</translation>
 <translation id="1851616744363735765">一時停止</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> をエクスポートできません</translation>
 <translation id="1899697626337024495">写真の解像度</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" />（有効）</translation>
 <translation id="2144806332417375165">カスタム動画パラメータ</translation>
 <translation id="229579744168541441">ディスクに書き出し</translation>
+<translation id="2320741269052147773">左にパン</translation>
 <translation id="2501278716633472235">戻る</translation>
 <translation id="2501853267655415902">録画を停止しました</translation>
 <translation id="2501953888035679275">カメラを使って写真や動画を撮影できます。</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">カメラで撮影した写真と動画を [ダウンロード] フォルダに移動します。これらの写真や動画には、[ファイル] からアクセスできます。
 
         また、ストレージへのアクセスが許可されているアプリからも、これらの写真や動画にアクセスできます。</translation>
+<translation id="3067436040345934772">右にパン</translation>
 <translation id="3081586908890909590">動画の撮影に切り替え</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">グリッドの種類</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">写真の撮影に切り替え</translation>
 <translation id="8239780215768881278">動画スナップショットを作成</translation>
 <translation id="8261506727792406068">削除</translation>
+<translation id="8425673304802773841">下にティルト</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p（<ph name="WIDTH" />:<ph name="HEIGHT" />）</translation>
 <translation id="8732462232047530626">メタデータのプレビュー</translation>

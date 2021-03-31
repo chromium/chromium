@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ar">
 <translation id="102360288709523007">‏ساعد في تحسين Chromium بإرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google.</translation>
-<translation id="1043245583918962542">‏يُرجى اختيار ما إذا كنت تريد محو بيانات Chromium المخزَّنة على هذا الجهاز أو الاحتفاظ بها</translation>
 <translation id="1185134272377778587">‏لمحة عن Chromium</translation>
 <translation id="1257458525759135959">‏لحفظ الصور، يُرجى النقر على "الإعدادات" للسماح لمتصفّح Chromium بأن يضيف إلى صورك.</translation>
 <translation id="1289216811211435351">‏التبديل إلى Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">‏هل تريد محو بيانات Chromium من هذا الجهاز؟</translation>
 <translation id="8175055321229419309">‏نصيحة: <ph name="BEGIN_LINK" />انقل Chromium إلى شريط الإرساء<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">‏تعذّر على Chromium البحث عن تحديثات. يُرجى إعادة المحاولة لاحقًا.</translation>
-<translation id="8252885722420466166">‏احصل على تجربة أفضل لاستخدام Google في Chromium استنادًا إلى موقعك.</translation>
 <translation id="8586442755830160949">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لصالح The Chromium Authors. جميع الحقوق محفوظة.</translation>
 <translation id="8663480472502753423">‏تحديث متصفِّح Chromium باستمرار</translation>
 <translation id="8776843108004031667">‏ستتم إزالة هذا الحساب بالإضافة إلى أي بيانات لم يتم حفظها من Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">‏إصدار Chromium قديم</translation>
 <translation id="921174536258924340">‏تعذّر على متصفِّح Chromium التحقُّق من جميع كلمات المرور. يُرجى إعادة المحاولة غدًا أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">‏سيتم محو بيانات Chromium المخزَّنة على هذا الجهاز لأنّ حسابك تتم إدارته من خلال <ph name="HOSTED_DOMAIN" />.</translation>
 </translationbundle>

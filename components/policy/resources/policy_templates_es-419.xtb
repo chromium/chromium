@@ -858,6 +858,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />, no se especificará ningún ícono para el proveedor de búsqueda.</translation>
 <translation id="2145735238144543545">Certificados de cliente obligatorios</translation>
+<translation id="2146103669166779785">El código hexadecimal de color que se usará para generar un esquema y aplicarlo en el navegador.</translation>
 <translation id="214901426630414675">Restringir el modo de impresión doble</translation>
 <translation id="2149330464730004005">Habilitar la impresión a color</translation>
 <translation id="2149592087996467903">No permitir que WebRTC use versiones obsoletas de TLS/DTLS</translation>
@@ -1469,6 +1470,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2905984450136807296">Duración de los datos de autenticación almacenados en caché</translation>
 <translation id="2906874737073861391">Lista de extensiones AppPack</translation>
 <translation id="2908277604670530363">Cantidad máxima de conexiones simultáneas con el servidor proxy</translation>
+<translation id="2912366658685903301">Configurar el color del tema del navegador</translation>
 <translation id="291853569864365550">No mostrar sugerencias de contenido en la página Nueva pestaña</translation>
 <translation id="2920795918401557243">Esta configuración permite registrar el rendimiento de todo el sistema mediante el servicio de registro del sistema.
 
@@ -3824,6 +3826,11 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si no estableces la política, los usuarios podrán cambiar la lista de apps fijas en el Selector.</translation>
 <translation id="6190022522129724693">Configuración predeterminada de ventanas emergentes</translation>
 <translation id="6190367314942602985">Enviar la información de identificación del usuario</translation>
+<translation id="6191963383731098056">Esta política permite a los administradores configurar el color del tema de <ph name="PRODUCT_NAME" />. La string de entrada debe ser una string válida de un código hexadecimal de color que coincida con el formato "#RRGGBB".
+
+      Si estableces la política como válida, un código hexadecimal de color válido hará que se genere automáticamente un tema basado en ese color y que se aplique al navegador. Los usuarios no podrán cambiar el tema establecido por la política.
+
+      Si no la estableces, los usuarios podrán cambiar el tema de su navegador como prefieran.</translation>
 <translation id="6195802366906945965">Determina si se utilizará el verificador de certificados integrado para verificar los certificados de servidores</translation>
 <translation id="6208896993204286313">Enviar la información de la política de <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enviar la información del SO y de la versión de <ph name="PRODUCT_NAME" /></translation>

@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> te recomienda que actualices este dispositivo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">El sistema no ha podido determinar el modelo del dispositivo ni el número de serie.</translation>
 <translation id="1119447706177454957">Error interno</translation>
+<translation id="111959947408687873">Usa Ctrl + <ph name="SEARCH_KEY_NAME" /> + M para activar o desactivar la lupa de pantalla completa. Usa Ctrl + Alt + teclas de flecha para desplazarte por la pantalla cuando esté ampliada.</translation>
 <translation id="1122068467107743258">Trabajo</translation>
 <translation id="1122198203221319518">&amp;Herramientas</translation>
 <translation id="1122242684574577509">Error de autenticación. Haz clic para acceder a la página de inicio de sesión de la red Wi-Fi que estés utilizando (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Programa de Protección Avanzada de Google</translation>
 <translation id="1155816283571436363">Conectando con tu teléfono</translation>
 <translation id="1161575384898972166">Inicia sesión en <ph name="TOKEN_NAME" /> para exportar el certificado de cliente.</translation>
+<translation id="116173250649946226">El administrador ha establecido un tema predeterminado que no se puede cambiar.</translation>
 <translation id="1163931534039071049">&amp;Ver fuente del marco</translation>
 <translation id="1164891049599601209">Introducida en un sitio web engañoso</translation>
 <translation id="1164899421101904659">Introducir código PUK</translation>
@@ -2554,6 +2556,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3809272675881623365">Conejo</translation>
 <translation id="3809280248639369696">Alienígena</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> puede ver archivos de las siguientes carpetas</translation>
+<translation id="3810914450553844415">El administrador no permite cuentas de Google adicionales.</translation>
 <translation id="3810973564298564668">Gestionar</translation>
 <translation id="381202950560906753">Añadir otra</translation>
 <translation id="3812525830114410218">Certificado erróneo</translation>
@@ -2675,6 +2678,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3926002189479431949">El teléfono de Smart Lock ha cambiado</translation>
 <translation id="3927932062596804919">Denegar</translation>
+<translation id="392803502090869922">Configuración de eSIM</translation>
 <translation id="3928570707778085600">¿Quieres guardar los cambios en <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Queda poca tinta</translation>
 <translation id="3929426037718431833">Estas extensiones pueden ver y cambiar información en este sitio web.</translation>
@@ -4244,6 +4248,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5764797882307050727">Libera espacio en el dispositivo.</translation>
 <translation id="5765425701854290211">Algunos archivos estaban dañados y no se ha podido instalar la actualización correctamente. Los archivos sincronizados están protegidos.</translation>
 <translation id="5765491088802881382">No hay redes disponibles</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> podría ser peligroso. ¿Enviar a Google para analizarlo? Pulsa Mayús + F6 para desplazarte al área de la barra de descargas.</translation>
 <translation id="5769519078756170258">Host o dominio que quieres excluir</translation>
 <translation id="5770125698810550803">Mostrar botones de navegación</translation>
 <translation id="5771816112378578655">Configuración en curso...</translation>
@@ -4400,6 +4405,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5942779427914696408">Visibilidad del dispositivo</translation>
 <translation id="5943127421590245687">Verificación realizada correctamente. Para desbloquear y restaurar tus datos locales, introduce la contraseña anterior de tu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Escanear código QR</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> podría ser peligroso. ¿Enviar a Navegación segura de Google para analizarlo?</translation>
 <translation id="5946591249682680882">ID de informe <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Conecta un teclado o un ratón, o continúa la configuración con tu pantalla táctil. Si usas dispositivos Bluetooth, asegúrate de que tus dispositivos estén listos para vincularse.</translation>
 <translation id="5949544233750246342">No se ha podido analizar el archivo</translation>
@@ -4447,6 +4453,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6002452033851752583">Contraseña eliminada de tu cuenta de Google</translation>
 <translation id="6002458620803359783">Voces preferidas</translation>
 <translation id="6003143259071779217">Quitar red móvil de eSIM</translation>
+<translation id="6003582434972667631">Tema establecido por tu organización</translation>
 <translation id="6006484371116297560">Clásico</translation>
 <translation id="6007240208646052708">La búsqueda por voz no está disponible en tu idioma.</translation>
 <translation id="6011074160056912900">Red Ethernet</translation>
@@ -4826,6 +4833,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6429384232893414837">Error de actualización</translation>
 <translation id="6430814529589430811">ASCII codificado en Base64, certificado único</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurará actualizaciones automáticas para todos los usuarios de este ordenador.</translation>
+<translation id="6434104957329207050">Velocidad de búsqueda por punto</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434325376267409267">Para usar <ph name="APP_NAME" />, debes actualizar el dispositivo.</translation>
 <translation id="6436164536244065364">Ver en Web Store</translation>
@@ -4868,6 +4876,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6474498546677193336">No se ha podido dejar de compartir esta carpeta porque una aplicación está usándola. Se dejará de compartir la próxima vez que se apague Linux.</translation>
 <translation id="6474884162850599008">Desconectar cuenta de Google Drive</translation>
 <translation id="6475294023568239942">Libera espacio en el disco o cambia el tamaño del disco de Linux en los ajustes</translation>
+<translation id="6476138569087741884">Nivel de zoom de pantalla completa</translation>
 <translation id="6477822444490674459">La sincronización de notificaciones no está disponible en teléfonos con un perfil de trabajo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">¿Quieres conservar el archivo peligroso?</translation>
 <translation id="6480327114083866287">Gestionado por <ph name="MANAGER" /></translation>
@@ -5323,6 +5332,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6985607387932385770">Impresoras</translation>
 <translation id="6988094684494323731">Iniciando contenedor de Linux</translation>
 <translation id="6988403677482707277">Pestaña movida al inicio de la barra de pestañas</translation>
+<translation id="6990209147952697693">Chrome clásico</translation>
 <translation id="6991665348624301627">Seleccionar un destino</translation>
 <translation id="6992554835374084304">Activa la revisión ortográfica mejorada</translation>
 <translation id="6993000214273684335">Pestaña quitada de grupo sin nombre (<ph name="GROUP_CONTENTS" />)</translation>
@@ -6310,6 +6320,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Configurar <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Este archivo está cifrado. Pídele al propietario que lo descifre.}other{Algunos de estos archivos están cifrados. Pídele al propietario que los descifre.}}</translation>
+<translation id="8087576439476816834">Descargar, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8090234456044969073">Leer una lista de los sitios web que visitas con más frecuencia</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> no responde</translation>
@@ -6551,6 +6562,8 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8368859634510605990">&amp;Abrir todos los marcadores</translation>
 <translation id="8370294614544004647">Suspender cuando el portátil esté cerrado</translation>
 <translation id="8371695176452482769">Habla ahora</translation>
+<translation id="8371749822919332187">Usa Ctrl + Alt + Aumentar el brillo para ampliar la pantalla.
+Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Silenciar sitio web}other{Silenciar sitios}}</translation>
 <translation id="8372369524088641025">Clave WEP incorrecta</translation>
 <translation id="8373652277231415614">Directorios compartidos de Crostini</translation>
@@ -6558,7 +6571,6 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8379878387931047019">Este dispositivo no es compatible con el tipo de llave de seguridad solicitado por el sitio web</translation>
 <translation id="8379991678458444070">Para volver aquí rápidamente, añade esta pestaña a marcadores</translation>
-<translation id="8380314198565901932">Se ha producido un error al descargar la máquina virtual. Actualiza tu <ph name="DEVICE_TYPE" /> y vuelve a intentarlo.</translation>
 <translation id="8382913212082956454">Copiar dir&amp;ección de correo electrónico</translation>
 <translation id="8386091599636877289">No se ha encontrado la política.</translation>
 <translation id="8386819192691131213">Permite que el Asistente use la información que aparece en pantalla para ofrecer respuestas rápidas, como traducciones, definiciones, conversión de unidades y mucho más.</translation>
@@ -7221,6 +7233,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Te damos la bienvenida a tu nuevo perfil</translation>
 <translation id="9112748030372401671">Cambia tu fondo de pantalla</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> podría ser peligroso. ¿Enviar a Google para analizarlo?</translation>
 <translation id="9112987648460918699">Buscar...</translation>
 <translation id="9114663181201435112">Iniciar sesión fácilmente</translation>
 <translation id="9115675100829699941">&amp;Marcadores</translation>

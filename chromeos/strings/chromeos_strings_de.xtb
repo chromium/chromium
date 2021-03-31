@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4297501883039923494">Angehalten – Unbekannter Fehler</translation>
+<translation id="4344214025510306853">APN anhängen</translation>
 <translation id="4378373042927530923">Nicht ausgeführt</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Meine Ablage</translation>
@@ -278,6 +279,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7059230779847288458">Vollständig geladen in <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ABGEBROCHEN</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="714876143603641390">LAN-Konnektivität</translation>

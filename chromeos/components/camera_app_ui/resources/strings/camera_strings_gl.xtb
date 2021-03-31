@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">Non se gravou nada</translation>
+<translation id="1838104802459806957">Inclinar cara arriba</translation>
 <translation id="1851616744363735765">EN PAUSA</translation>
 <translation id="1862930711583847113">Non se puido exportar o ficheiro <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolución da foto</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> (dispositivo activado)</translation>
 <translation id="2144806332417375165">Parámetros personalizados de vídeo</translation>
 <translation id="229579744168541441">Exportar ao disco</translation>
+<translation id="2320741269052147773">Desprazar cara á esquerda</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2501853267655415902">Detívose a gravación</translation>
 <translation id="2501953888035679275">Saca fotos e grava vídeos coa cámara.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">As fotos e os vídeos realizados coa cámara pasarán ao cartafol Descargas. Podes acceder a eles en Ficheiros.
 
         As aplicacións con permisos de almacenamento terán acceso ás túas fotos e vídeos.</translation>
+<translation id="3067436040345934772">Desprazar cara á dereita</translation>
 <translation id="3081586908890909590">Cambiar a gravar vídeo</translation>
 <translation id="313467653172006084">30 fps</translation>
 <translation id="3183731565330012717">Tipo de grade</translation>
@@ -89,6 +92,7 @@ Se está relacionado coa calidade da imaxe ou do vídeo, anexa unha foto ou un v
 <translation id="8145038249676204903">Cambiar a modo de cámara de fotos</translation>
 <translation id="8239780215768881278">Crear instantánea do vídeo</translation>
 <translation id="8261506727792406068">Eliminar</translation>
+<translation id="8425673304802773841">Inclinar cara abaixo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Mostrar vista previa dos metadatos</translation>

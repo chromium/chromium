@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">相機</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">沒有記錄任何內容</translation>
+<translation id="1838104802459806957">向上傾斜</translation>
 <translation id="1851616744363735765">已暫停</translation>
 <translation id="1862930711583847113">無法匯出 <ph name="FILE" /></translation>
 <translation id="1899697626337024495">相機解像度</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">開咗「<ph name="CAMERA" />」</translation>
 <translation id="2144806332417375165">自訂影片參數</translation>
 <translation id="229579744168541441">匯出至磁碟</translation>
+<translation id="2320741269052147773">向左平移</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501853267655415902">停咗錄影</translation>
 <translation id="2501953888035679275">使用您的相機拍照及錄影。</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">使用相機拍攝的相片和影片將會移至「下載」資料夾，您可以在「檔案」中存取這些相片和影片。
 
         擁有儲存空間權限的應用程式可以存取您的相片和影片。</translation>
+<translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切換至錄影模式</translation>
 <translation id="313467653172006084">每秒畫格數：30</translation>
 <translation id="3183731565330012717">網格類型</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">切換至拍照模式</translation>
 <translation id="8239780215768881278">拍攝影片快照</translation>
 <translation id="8261506727792406068">刪除</translation>
+<translation id="8425673304802773841">向下傾斜</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="8687491812650032292">高清畫質 <ph name="HEIGHT" />p (<ph name="WIDTH" />：<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">預覽元數據</translation>

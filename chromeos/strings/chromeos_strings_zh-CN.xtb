@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4297501883039923494">已停止 - 未知错误</translation>
+<translation id="4344214025510306853">附加 APN</translation>
 <translation id="4378373042927530923">未运行</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">我的云端硬盘</translation>
@@ -278,6 +279,7 @@
 <translation id="7040230719604914234">运营商</translation>
 <translation id="7059230779847288458">正在充电，还需 <ph name="TIME_VALUE" />才能充满</translation>
 <translation id="708426984172631313">已停止</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
 <translation id="714876143603641390">LAN 连接性</translation>

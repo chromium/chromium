@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
 <translation id="102360288709523007">Օգնեք բարելավել Chromium-ը՝ Google-ին ուղարկելով օգտագործման վիճակագրություններն ու խափանումների մասին հաշվետվությունները:</translation>
-<translation id="1043245583918962542">Հեռացնե՞լ Chromium-ի տվյալները այս սարքից</translation>
 <translation id="1185134272377778587">Chromium-ի մասին</translation>
 <translation id="1257458525759135959">Պատկերները պահելու համար հպեք Կարգավորումներին և թույլատրեք Chromium-ին ավելացնել դրանք ձեր լուսանկարներին։</translation>
 <translation id="1289216811211435351">Անցեք Chromium-ին</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Հեռացնե՞լ Chromium-ի տվյալները այս սարքից</translation>
 <translation id="8175055321229419309">Խորհուրդ․ <ph name="BEGIN_LINK" />տեղափոխեք Chrome-ը Dock վահանակ<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium-ին չհաջողվեց ստուգել թարմացումների առկայությունը։ Փորձեք ավելի ուշ։</translation>
-<translation id="8252885722420466166">Ավելի հարմարեցրեք Google-ի օգտագործումը Chromium-ում՝ ձեր տեղադրության տվյալների հիման վրա:</translation>
 <translation id="8586442755830160949">© <ph name="YEAR" /> The Chromium Authors: Բոլոր իրավունքները պահպանված են:</translation>
 <translation id="8663480472502753423">Chromium-ը թարմացված պահեք</translation>
 <translation id="8776843108004031667">Այս հաշիվը և բոլոր չպահված տվյալները կհեռացվեն Chromium-ից։</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium-ը հնացել է</translation>
 <translation id="921174536258924340">Chromium-ին չհաջողվեց ստուգել բոլոր գաղտնաբառերը։ Վաղը նորից փորձեք կամ <ph name="BEGIN_LINK" />գաղտնաբառերը ստուգեք ձեր Google հաշվում<ph name="END_LINK" />։</translation>
 <translation id="985602178874221306">Chromium Authors</translation>
-<translation id="994708389219151914">Chromium-ում պահվող ձեր բոլոր տվյալները կջնջվեն այս սարքից, քանի որ ձեր հաշիվը կառավարվում է <ph name="HOSTED_DOMAIN" /> տիրույթի կողմից։</translation>
 </translationbundle>

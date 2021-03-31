@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">‏אפשר עכשיו להשתמש ב-Chrome בכל פעם שמקישים על קישורים בהודעות, במסמכים ובאפליקציות אחרות.</translation>
 <translation id="3720541637541300822">‏כרטיסיות מצב אנונימי יינעלו כש-Chrome ייסגר</translation>
 <translation id="384394811301901750">‏Google Chrome לא יכול להשתמש עכשיו במצלמה</translation>
-<translation id="38949020760388809">‏האם לנקות את נתוני Chrome מהמכשיר הזה או לשמור אותם?</translation>
 <translation id="3980220367029651214">‏מתבצעת החלפה של חשבונות סנכרון מ-<ph name="USER_EMAIL1" /> ל-<ph name="USER_EMAIL2" />. הנתונים הקיימים שלך ב-Chrome מנוהלים על-ידי <ph name="DOMAIN" />. פעולה זו תמחק את הנתונים שלך מהמכשיר הזה, אבל הם יישארו ב-<ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">‏לפי דרישת הארגון שלך, אין אפשרות להתחבר לחשבון ב-Chrome.</translation>
 <translation id="3988789688219830639">‏ל-Google Chrome אין גישה לתמונות או לסרטונים שלך. אפשר גישה ב'הגדרות iOS' &gt; 'פרטיות' &gt; 'תמונות'.</translation>
 <translation id="4099578267706723511">‏אם שולחים אלינו נתוני שימוש ודוחות קריסה, עוזרים לשפר את Chrome.</translation>
-<translation id="415767770115540173">‏תוכל ליהנות מחוויית Google משופרת ב-Chrome בהתבסס על המיקום שלך.</translation>
 <translation id="417201473131094001">‏אין תמיכה ב-Chrome Canary</translation>
 <translation id="424864128008805179">‏האם לצאת מ-Chrome?</translation>
 <translation id="4249068189593983585">‏טיפ למשתמשי Chrome: כדי לקבל אפשרויות נוספות של כרטיסיות, יש ללחוץ לחיצה ארוכה על הלחצן 'הצגת כרטיסיות' בסרגל הכלים, שנמצא בחלק התחתון או העליון של המסך.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">‏הסיסמה שלך נחשפה בעקבות פרצה באבטחת מידע. ההמלצה של Chrome היא לשנות את הסיסמה עכשיו.</translation>
 <translation id="7698568245838009292">‏ל-Chrome דרושה גישה למצלמה</translation>
 <translation id="7855730255114109580">‏Google Chrome מעודכן</translation>
-<translation id="8109233255338845204">‏החשבון שלך מנוהל על ידי <ph name="HOSTED_DOMAIN" />, ולכן הנתונים מ-Chrome יימחקו מהמכשיר הזה.</translation>
 <translation id="8160472928944011082">‏אי אפשר לעדכן את Chrome</translation>
 <translation id="8370517070665726704">‏Copyright <ph name="YEAR" /> Google LLC.‎ כל הזכויות שמורות.</translation>
 <translation id="840168496893712993">‏תוספים מסוימים גורמים ל-Chrome לקרוס. יש לנסות להסיר את ההתקנה שלהם.</translation>

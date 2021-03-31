@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="kn">
 <translation id="102360288709523007">Google ಗೆ ಬಳಕೆಯ ಅಂಕಿಅಂಶಗಳು ಮತ್ತು ಕ್ರ್ಯಾಶ್ ವರದಿಗಳನ್ನು ಕಳುಹಿಸುವ ಮೂಲಕ Chromium ಉತ್ತಮಗೊಳಿಸಲು ಸಹಾಯ ಮಾಡಿ.</translation>
-<translation id="1043245583918962542">ಈ ಸಾಧನದಲ್ಲಿನ ನಿಮ್ಮ Chromium ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಬೇಕೆ ಅಥವಾ ಇರಿಸಿಕೊಳ್ಳಬೇಕೆ ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="1185134272377778587">Chromium ಕುರಿತು</translation>
 <translation id="1257458525759135959">ಚಿತ್ರಗಳನ್ನು ಉಳಿಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಮೇಲೆ ಟ್ಯಾಪ್ ಮಾಡುವ ಮೂಲಕ, ನಿಮ್ಮ ಫೋಟೋಗಳಿಗೆ ಸೇರಿಸಲು Chromium ಗೆ ಅನುಮತಿಸಿ</translation>
 <translation id="1289216811211435351">Chromium ಗೆ ಬದಲಿಸಿ</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">ಈ ಸಾಧನದಿಂದ ನಿಮ್ಮ Chromium ಡೇಟಾ ತೆರವುಗೊಳಿಸುವುದೇ?</translation>
 <translation id="8175055321229419309">ಸುಳಿವು: <ph name="BEGIN_LINK" />Chromium ಅನ್ನು ನಿಮ್ಮ ಡಾಕ್‌ಗೆ ಸರಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">ಅಪ್‌ಡೇಟ್‌ಗಳಿವೆಯೇ ಎಂಬುದನ್ನು ಪರಿಶೀಲಿಸಲು Chromium ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
-<translation id="8252885722420466166">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಆಧರಿಸಿ Chromium ನಲ್ಲಿ ಉತ್ತಮ Google ಅನುಭವವನ್ನು ಪಡೆಯಿರಿ.</translation>
 <translation id="8586442755830160949">ಹಕ್ಕುಸ್ವಾಮ್ಯ <ph name="YEAR" /> Chromium ಲೇಖಕರು. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="8663480472502753423">Chromium ಅನ್ನು ಅಪ್ ಟು ಡೇಟ್ ಆಗಿರಿಸಿ</translation>
 <translation id="8776843108004031667">ಈ ಖಾತೆ ಮತ್ತು ಯಾವುದೇ ಉಳಿಸದ ಡೇಟಾವನ್ನು Chromium ನಿಂದ ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium ನ ಅವಧಿ ಮುಗಿದಿದೆ</translation>
 <translation id="921174536258924340">ಎಲ್ಲಾ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು Chromium ಗೆ ಸಾಧ್ಯವಾಗಲಿಲ್ಲ ನಾಳೆ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿರುವ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium ಲೇಖಕರು</translation>
-<translation id="994708389219151914">ನಿಮ್ಮ ಖಾತೆಯನ್ನು <ph name="HOSTED_DOMAIN" /> ಡೊಮೇನ್ ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಈ ಸಾಧನದಲ್ಲಿರುವ ನಿಮ್ಮ Chromium ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 </translationbundle>

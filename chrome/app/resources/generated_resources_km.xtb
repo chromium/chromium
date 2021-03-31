@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> ណែនាំឱ្យអ្នក​ដំឡើងកំណែ <ph name="DEVICE_TYPE" /> នេះ។</translation>
 <translation id="1118738876271697201">ប្រព័ន្ធ​មិន​អាចកំណត់​លេខស៊េរី ឬម៉ូដែលឧបករណ៍បាន​ទេ។</translation>
 <translation id="1119447706177454957">កំហុសឆ្គងខាងក្នុង</translation>
+<translation id="111959947408687873">ប្រើ Ctrl+<ph name="SEARCH_KEY_NAME" />+M ដើម្បី​បិទ/បើក​កម្មវិធីពង្រីក​ពេញអេក្រង់។ ប្រើគ្រាប់ចុច Ctrl+Alt+ព្រួញ ដើម្បីផ្លាស់ទី​ជុំវិញអេក្រង់ នៅពេល​ពង្រីក។</translation>
 <translation id="1122068467107743258">ការងារ</translation>
 <translation id="1122198203221319518">ឧបករណ៍</translation>
 <translation id="1122242684574577509">បានបរាជ័យក្នុងការផ្ទៀងផ្ទាត់ ចុចដើម្បីចូលទៅកាន់ទំព័រចូលសម្រាប់បណ្តាញ Wi-Fi ដែលអ្នកកំពុងប្រើប្រាស់ (<ph name="NETWORK_ID" />)។</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">កម្មវិធី​ការពារ​កម្រិតខ្ពស់​របស់ Google</translation>
 <translation id="1155816283571436363">កំពុងភ្ជាប់​ជាមួយទូរសព្ទ​របស់អ្នក</translation>
 <translation id="1161575384898972166">សូមចូលទៅ <ph name="TOKEN_NAME" /> ដើម្បីនាំចេញវិញ្ញាបនប័ត្រអតិថិជន។</translation>
+<translation id="116173250649946226">អ្នកគ្រប់គ្រង​របស់អ្នក​បានកំណត់​រចនាប័ទ្មលំនាំដើម ដែលមិនអាច​ប្ដូរបានទេ។</translation>
 <translation id="1163931534039071049">មើលប្រភពហ្វ្រេម</translation>
 <translation id="1164891049599601209">បានបញ្ចូលនៅលើគេហទំព័របោកប្រាស់</translation>
 <translation id="1164899421101904659">បញ្ចូលកូដ PIN ដោះសោ</translation>
@@ -2554,6 +2556,7 @@
 <translation id="3809272675881623365">ទន្សាយ</translation>
 <translation id="3809280248639369696">ពន្លឺព្រះច័ន្ទ</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> អាច​មើល​ឯកសារ​នៅក្នុងថត​ខាងក្រោម</translation>
+<translation id="3810914450553844415">អ្នកគ្រប់គ្រង​របស់អ្នក​មិនអនុញ្ញាត​គណនី Google បន្ថែមទេ។</translation>
 <translation id="3810973564298564668">គ្រប់គ្រង</translation>
 <translation id="381202950560906753">បញ្ចូលស្នាមម្រាមដៃផ្សេងទៀត</translation>
 <translation id="3812525830114410218">វិញ្ញាបនប័ត្រមិនល្អ</translation>
@@ -2675,6 +2678,7 @@
 <translation id="3925573269917483990">កាមេរ៉ា៖</translation>
 <translation id="3926002189479431949">ទូរស័ព្ទ Smart Lock បានប្តូរ</translation>
 <translation id="3927932062596804919">បដិសេធ</translation>
+<translation id="392803502090869922">ការរៀបចំ eSIM</translation>
 <translation id="3928570707778085600">រក្សាទុក​ការផ្លាស់ប្ដូរ​ចំពោះ <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">ជិតអស់​ទឹកថ្នាំហើយ</translation>
 <translation id="3929426037718431833">កម្មវិធី​បន្ថែម​ទាំងនេះ​អាច​មើល និង​ប្ដូរ​ព័ត៌មាន​នៅលើ​គេហទំព័រ​នេះ​។</translation>
@@ -4246,6 +4250,7 @@
 <translation id="5764797882307050727">សូមបង្កើនទំហំផ្ទុកដែលនៅសល់នៅលើឧបករណ៍របស់អ្នក។</translation>
 <translation id="5765425701854290211">សូមអភ័យទោស ឯកសារមួយចំនួនត្រូវបានធ្វើឲ្យខូចខាត ហើយការដំឡើងកំណែមិនទាន់បានជោគជ័យទេ។ ឯកសារដែលអ្នកបានធ្វើសមកាលកម្មគឺមានសុវត្ថិភាព។</translation>
 <translation id="5765491088802881382">គ្មានបណ្តាញទេ</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> អាច​បង្ក​គ្រោះថ្នាក់​។ បញ្ជូនទៅ Google សម្រាប់ស្កេន​ដែរទេ? សូមចុច Shift+F6 ដើម្បីប្ដូរទៅផ្នែក​របារទាញយក។</translation>
 <translation id="5769519078756170258">ម៉ាស៊ីន ឬ​ដែនសម្រាប់​ដកចេញ</translation>
 <translation id="5770125698810550803">បង្ហាញ​ប៊ូតុង​រុករក</translation>
 <translation id="5771816112378578655">ការតំឡើងនៅក្នុងដំណើរការ...</translation>
@@ -4402,6 +4407,7 @@
 <translation id="5942779427914696408">លទ្ធភាព​មើលឃើញ​ឧបករណ៍</translation>
 <translation id="5943127421590245687">ការផ្ទៀងផ្ទាត់​របស់អ្នកបានជោគជ័យហើយ។ ដើម្បីដោះសោ ឬស្ដារទិន្នន័យមូលដ្ឋានរបស់អ្នក សូមបញ្ចូលពាក្យសម្ងាត់ <ph name="DEVICE_TYPE" /> ចាស់របស់អ្នក។</translation>
 <translation id="5944869793365969636">ស្កេន​កូដ QR</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> អាច​បង្ក​គ្រោះថ្នាក់​។ បញ្ជូនទៅ Google រុករក​ដោយ​សុវត្ថិភាព​សម្រាប់​ស្កេនដែរទេ?</translation>
 <translation id="5946591249682680882">លេខសម្គាល់របាយការណ៍ <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">ភ្ជាប់ក្ដារចុច ឬកណ្ដុរ ឬបន្ដការរៀបចំដោយប្រើអេក្រង់ថាច់របស់អ្នក។ ប្រសិនបើអ្នកកំពុងប្រើឧបករណ៍​ប៊្លូធូស សូមប្រាកដថា ឧបករណ៍របស់អ្នកអាចផ្គូផ្គងបាន។</translation>
 <translation id="5949544233750246342">មិនអាច​ញែក​ឯកសារ​បានទេ</translation>
@@ -4449,6 +4455,7 @@
 <translation id="6002452033851752583">បានលុបពាក្យសម្ងាត់ចេញពីគណនី Google របស់អ្នកហើយ</translation>
 <translation id="6002458620803359783">សូរអាន​តាម​ចំណូល​ចិត្ត</translation>
 <translation id="6003143259071779217">ដកបណ្ដាញ​ចល័ត eSIM​ ចេញ</translation>
+<translation id="6003582434972667631">រចនាប័ទ្ម​ត្រូវបានកំណត់​ដោយស្ថាប័ន​របស់អ្នក</translation>
 <translation id="6006484371116297560">ធម្មតា</translation>
 <translation id="6007240208646052708">មិនមាន​ការស្វែង​រកតាម​សំឡេង​ជាភាសា​របស់អ្នក​ទេ។</translation>
 <translation id="6011074160056912900">បណ្ដាញ​អ៊ីសឺរណិត</translation>
@@ -4828,6 +4835,7 @@
 <translation id="6429384232893414837">មាន​បញ្ហា​ក្នុង​ការ​ធ្វើ​បច្ចុប្បន្នភាព</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, វិញ្ញាបនប័ត្រទោល</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> នឹងតំឡើងការធ្វើបច្ចុប្បន្នភាពស្វ័យប្រវត្តិសម្រាប់អ្នកប្រើកុំព្យូទ័រនេះទាំងអស់។</translation>
+<translation id="6434104957329207050">ល្បឿនស្កេន​លក្ខណៈចំណុច</translation>
 <translation id="6434309073475700221">កម្ចាត់</translation>
 <translation id="6434325376267409267">ចាំបាច់ត្រូវ​ដំឡើងកំណែ​ឧបករណ៍​របស់អ្នក​ជាមុនសិន ទើបអ្នក​អាចប្រើ <ph name="APP_NAME" /> បាន។</translation>
 <translation id="6436164536244065364">មើលនៅក្នុង Web Store</translation>
@@ -4870,6 +4878,7 @@
 <translation id="6474498546677193336">មិនអាច​ឈប់ចែករំលែក​បានទេ ដោយសារ​កម្មវិធីកំពុង​ប្រើថតនេះ។ ថតនេះនឹង​ឈប់ចែករំលែក នៅពេល Linux បិទ​លើកក្រោយ។</translation>
 <translation id="6474884162850599008">ផ្តាច់គណនី Google Drive</translation>
 <translation id="6475294023568239942">បង្កើនទំហំផ្ទុកក្នុងថាស ឬប្ដូរទំហំថាស Linux នៅក្នុងការកំណត់</translation>
+<translation id="6476138569087741884">កម្រិត​ពង្រីកបង្រួម​ពេញអេក្រង់</translation>
 <translation id="6477822444490674459">មិនអាចធ្វើសមកាលកម្ម​ការជូនដំណឹងសម្រាប់ទូរសព្ទ​នៅក្នុងកម្រងព័ត៌មាន​ការងារបានទេ។ <ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">រក្សាឯកសារគ្រោះថ្នាក់ឬ?</translation>
 <translation id="6480327114083866287">ស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="MANAGER" /></translation>
@@ -5325,6 +5334,7 @@
 <translation id="6985607387932385770">ម៉ាស៊ីន​បោះពុម្ព</translation>
 <translation id="6988094684494323731">កំពុង​ចាប់ផ្ដើម​ទម្រង់ផ្ទុក Linux</translation>
 <translation id="6988403677482707277">បានផ្លាស់ទី​ផ្ទាំង​ទៅដើម​របារផ្ទាំង</translation>
+<translation id="6990209147952697693">Chrome ចាស់</translation>
 <translation id="6991665348624301627">ជ្រើសរើសគោលដៅ</translation>
 <translation id="6992554835374084304">បើកការពិនិត្យ​អក្ខរាវិរុទ្ធដែលបាន​កែលម្អ</translation>
 <translation id="6993000214273684335">បានលុបផ្ទាំង​ចេញពី​ក្រុម​ដែលគ្មានឈ្មោះ - <ph name="GROUP_CONTENTS" /></translation>
@@ -6311,6 +6321,7 @@
 <translation id="8086015605808120405">កំពុងកំណត់រចនាសម្ព័ន្ធ <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">រៀបចំ <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{ឯកសារ​នេះ​ត្រូវ​បាន​អ៊ីនគ្រីប។ សូមស្នើឱ្យម្ចាស់ឯកសារនេះឱ្យធ្វើការ​ឌិគ្រីប។}other{ឯកសារមួយចំនួនក្នុងចំណោមឯកសារទាំងនេះត្រូវបានអ៊ីនគ្រីប។ សូមស្នើឱ្យម្ចាស់ឯកសារទាំងនេះឱ្យធ្វើការ​ឌិគ្រីប។}}</translation>
+<translation id="8087576439476816834">ទាញយក, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">ប្ដូរ​ពាក្យ​សម្ងាត់</translation>
 <translation id="8090234456044969073">អានបញ្ជីគេហទំព័រដែលអ្នកទៅកាន់ញឹកញាប់បំផុត</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> មិនឆ្លើយ​តប​ទេ</translation>
@@ -6552,6 +6563,8 @@
 <translation id="8368859634510605990">បើកចំណាំទាំងអស់</translation>
 <translation id="8370294614544004647">ដេក​នៅពេល​បិទកុំព្យូទ័រ​យួរដៃ</translation>
 <translation id="8371695176452482769">និយាយឥឡូវនេះ</translation>
+<translation id="8371749822919332187">ប្រើ Ctrl+Alt+បង្កើនពន្លឺ ដើម្បី​ពង្រីក។
+ប្រើ Ctrl+Alt+បន្ថយពន្លឺ ដើម្បី​បង្រួម។</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{បិទសំឡេង​គេហទំព័រ}other{បិទសំឡេង​គេហទំព័រ}}</translation>
 <translation id="8372369524088641025">សោ WEP មិនល្អ</translation>
 <translation id="8373652277231415614">បញ្ជីដែល Crostini បានចែករំលែក</translation>
@@ -6559,7 +6572,6 @@
 <translation id="8378714024927312812">គ្រប់គ្រងដោយ​ស្ថាប័ន​របស់អ្នក</translation>
 <translation id="8379878387931047019">ឧបករណ៍នេះ​មិនស្គាល់​ប្រភេទសោសុវត្ថិភាព​ដែលបានស្នើសុំ​ដោយគេហទំព័រ​នេះទេ</translation>
 <translation id="8379991678458444070">ត្រឡប់​មកទីនេះ​វិញបាន​យ៉ាង​រហ័ស​ដោយ​ចំណាំ​ផ្ទាំងនេះ</translation>
-<translation id="8380314198565901932">មានបញ្ហាក្នុងការទាញយកម៉ាស៊ីននិមិ្មត។ សូមដំឡើងកំណែ <ph name="DEVICE_TYPE" /> របស់អ្នក រួចព្យាយាមម្ដងទៀត។</translation>
 <translation id="8382913212082956454">ចម្លងអាសយដ្ឋានអ៊ីម៉ែល</translation>
 <translation id="8386091599636877289">រកមិន​ឃើញគោលការណ៍ទេ។</translation>
 <translation id="8386819192691131213">អនុញ្ញាតឱ្យជំនួយ​ការប្រើព័ត៌មាននៅលើអេក្រង់ ដើម្បីផ្ដល់ចម្លើយ​រហ័សដូចជា ការបកប្រែ និយមន័យ ការបំប្លែងខ្នាត និងអ្វីៗជាច្រើនទៀត</translation>
@@ -7222,6 +7234,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">ស្វាគមន៍​មកកាន់កម្រងព័ត៌មានថ្មី​របស់អ្នក</translation>
 <translation id="9112748030372401671">ប្តូរផ្ទាំងរូបភាពរបស់អ្នក</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> អាច​បង្ក​គ្រោះថ្នាក់​។ បញ្ជូនទៅ Google សម្រាប់ស្កេន​ដែរទេ?</translation>
 <translation id="9112987648460918699">ស្វែងរក...</translation>
 <translation id="9114663181201435112">ចូលគណនីបានយ៉ាងងាយស្រួល</translation>
 <translation id="9115675100829699941">ចំណាំ</translation>

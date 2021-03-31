@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Vous pouvez maintenant utiliser Chrome chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="3720541637541300822">Verrouiller les onglets de navigation privée lorsque vous fermez Chrome</translation>
 <translation id="384394811301901750">Google Chrome ne peut pas utiliser votre appareil photo pour le moment</translation>
-<translation id="38949020760388809">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>
 <translation id="3980220367029651214">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Google Chrome actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données sur cet appareil, mais elles resteront dans le compte <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Votre organisation vous demande de rester déconnecté de Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome n'a pas accès à vos photos ou vidéos. Activez l'accès dans Réglages iOS &gt; Confidentialité &gt; Photos.</translation>
 <translation id="4099578267706723511">Envoyez des statistiques d'utilisation et des rapports d'erreur pour améliorer Chrome.</translation>
-<translation id="415767770115540173">Profitez d'une meilleure expérience Google dans Chrome en fonction de votre emplacement.</translation>
 <translation id="417201473131094001">Application non prise en charge par Chrome Canary</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome?</translation>
 <translation id="4249068189593983585">Astuce pour Chrome. Pour afficher plus d'options d'onglets, maintenez le doigt sur le bouton Afficher les onglets dans la barre d'outils, qui se trouve dans le bas ou dans le haut de votre écran.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Votre mot de passe a été exposé dans une violation de données. Chromium vous recommande de modifier ce mot de passe maintenant.</translation>
 <translation id="7698568245838009292">Chrome souhaite accéder à l'appareil photo</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
-<translation id="8109233255338845204">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chrome seront effacées de cet appareil.</translation>
 <translation id="8160472928944011082">Impossible de mettre à jour Chrome</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="840168496893712993">Certains modules complémentaires provoquent le plantage de Chrome. Veuillez essayer de les désinstaller.</translation>

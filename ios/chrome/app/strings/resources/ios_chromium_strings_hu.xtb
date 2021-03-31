@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
 <translation id="102360288709523007">Használati statisztikák és hibajelentések küldésével segíthet a Chromium fejlesztésében.</translation>
-<translation id="1043245583918962542">Döntse el, hogy törli-e a Chromium adatait erről az eszközről, vagy megtartja őket.</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
 <translation id="1257458525759135959">A képek mentéséhez koppintson a Beállítások lehetőségre, hogy a Chromium hozzáadhassa őket a fotóihoz.</translation>
 <translation id="1289216811211435351">Váltás Chromiumra</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Törli Chromium-adatait az eszközről?</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Helyezze át a Chromiumot a Dockra<ph name="END_LINK" />.</translation>
 <translation id="8240981428553046115">A Chromium nem tudott frissítéseket keresni. Próbálja újra később.</translation>
-<translation id="8252885722420466166">Jobb Google-felhasználói élmény a Chromiumban a tartózkodási hely alapján.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> – A Chromium szerzői. Minden jog fenntartva.</translation>
 <translation id="8663480472502753423">Chromium böngészője legyen mindig naprakész</translation>
 <translation id="8776843108004031667">Ezzel a fiók és a nem mentett adatok eltávolításra kerülnek a Chromiumból.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">A Chromium elavult</translation>
 <translation id="921174536258924340">A Chromium nem tudta ellenőrizni az összes jelszót. Próbálja újra holnap, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">A Chromium szerzői</translation>
-<translation id="994708389219151914">Fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, ezért Chromium-adatai törölve lesznek erről az eszközről.</translation>
 </translationbundle>

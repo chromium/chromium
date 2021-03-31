@@ -5150,6 +5150,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Úbbs, eitthvað fór úrskeiðis.</translation>
 <translation id="6798420440063423019">Öryggislykillinn er læstur vegna þess að rangt PIN-númer var slegið inn of oft. Þú þarft að endurstilla öryggislykilinn.</translation>
+<translation id="679845623837196966">Sýna leslista</translation>
 <translation id="6798578729981748444">Lokaðu öllum Firefox-gluggum til að ljúka við innflutning.</translation>
 <translation id="6798780071646309401">hástafalás á</translation>
 <translation id="6798954102094737107">Viðbót: <ph name="PLUGIN_NAME" /></translation>
@@ -6572,7 +6573,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="8378714024927312812">Stjórnað af fyrirtækinu þínu</translation>
 <translation id="8379878387931047019">Þetta tæki styður ekki þá gerð öryggislykils sem vefsíðan óskar eftir</translation>
 <translation id="8379991678458444070">Finndu þennan flipa aftur með því að bókamerkja hann</translation>
-<translation id="8380314198565901932">Villa við að hlaða niður sýndarvél. Uppfærðu <ph name="DEVICE_TYPE" /> og reyndu aftur.</translation>
 <translation id="8382913212082956454">Afrita n&amp;etfang</translation>
 <translation id="8386091599636877289">Regla fannst ekki.</translation>
 <translation id="8386819192691131213">Leyfa Hjálparanum að nota upplýsingar á skjánum til að gefa skjót svör, t.d. þýðingar, skilgreiningar, umreiknuð mæligildi og fleira.</translation>
@@ -7283,6 +7283,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
       <ph name="LIST_ITEM" />Keyra tengingargreiningu Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Mynd í mynd</translation>
+<translation id="9167063903968449027">Sýna leslista</translation>
 <translation id="9168436347345867845">Gera þetta seinna</translation>
 <translation id="9169496697824289689">Skoða flýtilykla</translation>
 <translation id="916964310188958970">Hvers vegna þessi tillaga?</translation>

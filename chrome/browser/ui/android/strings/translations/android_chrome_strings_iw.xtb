@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">גרסת אפליקציה</translation>
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1450753235335490080">לא ניתן לשתף את ה<ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">‏אפשר לנסות לשאול "What’s the weather today?‎"</translation>
 <translation id="1477626028522505441">הורדת <ph name="FILE_NAME" /> נכשלה עקב בעיות בשרת.</translation>
 <translation id="1492417797159476138">שם המשתמש הזה כבר נשמר לאתר זה</translation>
 <translation id="1506061864768559482">מנוע חיפוש</translation>
@@ -569,6 +570,7 @@
 <translation id="49268022542405662">המערכת תייצא את הסיסמאות ותוריד אותן כקובץ טקסט. הן יהיו גלויות לכל המשתמשים והאפליקציות שיש להם גישה לתיקיית היעד.</translation>
 <translation id="4932247056774066048">‏מכיוון שבחרת לצאת מחשבון שמנוהל על ידי <ph name="DOMAIN_NAME" />, נתוני Chrome שלך יימחקו מהמכשיר הזה. הם יישמרו בחשבון Google שלך.</translation>
 <translation id="4936039914467572121">רוצה להגיע לאתר הזה מהר יותר?</translation>
+<translation id="4941179133499732445">אפשר להקיש על המיקרופון כדי לחפש באמצעות הקול</translation>
 <translation id="4943703118917034429">מציאות מדומה</translation>
 <translation id="4943872375798546930">אין תוצאות</translation>
 <translation id="4961107849584082341">אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
@@ -583,6 +585,7 @@
 <translation id="5011311129201317034"><ph name="SITE" /> מבקש להתחבר אל</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">זה בסדר</translation>
+<translation id="5061533557687621530">‏כדי לבדוק את תנאי מזג האוויר, יש להקיש על המיקרופון ולשאול “What’s the weather today?‎”</translation>
 <translation id="5087580092889165836">הוספת כרטיס</translation>
 <translation id="5091249083535528968">נתונים נוספים על השימוש במכשיר</translation>
 <translation id="509429900233858213">אירעה שגיאה.</translation>
@@ -597,6 +600,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{הורדה אחת נכשלה.}two{# הורדות נכשלו.}many{# הורדות נכשלו.}other{# הורדות נכשלו.}}</translation>
 <translation id="5170568018924773124">הצגה בתיקייה</translation>
 <translation id="5184329579814168207">‏פתיחה ב-Chrome</translation>
+<translation id="5188992787241350004">חיפוש באמצעות הקול</translation>
 <translation id="5191251636205085390">‏מידע על טכנולוגיות חדשות שמיועדות להחליף קובצי cookie של צד שלישי והוראות לשליטה בהן.</translation>
 <translation id="5193988420012215838">הועתק אל הלוח</translation>
 <translation id="5199929503336119739">פרופיל עבודה</translation>

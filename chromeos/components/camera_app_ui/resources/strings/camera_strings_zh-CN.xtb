@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">未记录任何数据</translation>
+<translation id="1838104802459806957">向上倾斜</translation>
 <translation id="1851616744363735765">已暂停</translation>
 <translation id="1862930711583847113">无法导出“<ph name="FILE" />”</translation>
 <translation id="1899697626337024495">照片分辨率</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">已切换到<ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">自定义视频参数</translation>
 <translation id="229579744168541441">导出到磁盘</translation>
+<translation id="2320741269052147773">向左平移</translation>
 <translation id="2501278716633472235">返回</translation>
 <translation id="2501853267655415902">已停止录制</translation>
 <translation id="2501953888035679275">使用相机拍照和录制视频。</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">使用此相机拍摄的照片和视频将被移至“下载内容”文件夹。您可在“文件”中访问它们。
 
         具有存储权限的应用将有权访问您的照片和视频。</translation>
+<translation id="3067436040345934772">向右平移</translation>
 <translation id="3081586908890909590">切换到录制视频模式</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">网格类型</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">切换到拍照模式</translation>
 <translation id="8239780215768881278">拍摄视频快照</translation>
 <translation id="8261506727792406068">删除</translation>
+<translation id="8425673304802773841">向下倾斜</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8687491812650032292">高清 <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">预览元数据</translation>

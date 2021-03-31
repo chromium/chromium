@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sr">
 <translation id="102360288709523007">Побољшајте Chromium слањем статистике коришћења и извештаја о отказивању Google-у.</translation>
-<translation id="1043245583918962542">Одаберите да ли ћете обрисати Chromium податке са овог уређаја или их задржати.</translation>
 <translation id="1185134272377778587">О Chromium-у</translation>
 <translation id="1257458525759135959">Да бисте сачували слике, додирните Подешавања да бисте омогућили Chromium-у да додаје слике</translation>
 <translation id="1289216811211435351">Пређите на Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Желите ли да обришете Chromium податке са овог уређаја?</translation>
 <translation id="8175055321229419309">Савет: <ph name="BEGIN_LINK" />Преместите Chromium на док<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium не може да тражи ажурирања. Пробајте поново касније.</translation>
-<translation id="8252885722420466166">Побољшајте Google доживљај у Chromium-у на основу локације.</translation>
 <translation id="8586442755830160949">Ауторска права <ph name="YEAR" />. Аутори Chromium-а. Сва права задржана.</translation>
 <translation id="8663480472502753423">Редовно ажурирају Chromium</translation>
 <translation id="8776843108004031667">Овај налог и сви несачувани подаци уклониће се из Chromium-а.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium је застарео</translation>
 <translation id="921174536258924340">Chromium није успео да провери све лозинке. Пробајте поново сутра или <ph name="BEGIN_LINK" />проверите лозинке на Google налогу.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Налогом управља <ph name="HOSTED_DOMAIN" />, па ће Chromium подаци бити обрисани са овог уређаја.</translation>
 </translationbundle>

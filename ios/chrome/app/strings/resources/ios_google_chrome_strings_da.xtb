@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Du kan nu bruge Chrome, hver gang du trykker på links i meddelelser, dokumenter og andre apps.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner, når du lukker Chrome</translation>
 <translation id="384394811301901750">Google Chrome kan ikke bruge dit kamera lige nu</translation>
-<translation id="38949020760388809">Vælg, om du vil rydde dine Chrome-data fra denne enhed eller beholde dem.</translation>
 <translation id="3980220367029651214">Du er ved at skifte synkroniseringskonto fra <ph name="USER_EMAIL1" /> til <ph name="USER_EMAIL2" />. Dine eksisterende Chrome-data administreres af <ph name="DOMAIN" />. Denne handling sletter dine data fra denne enhed, men dine data forbliver på <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Din organisation kræver, at du forbliver logget ud af Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome har ikke adgang til dine billeder eller videoer. Gå til iOS Indstillinger &gt; Privatliv &gt; Billeder for at få adgang.</translation>
 <translation id="4099578267706723511">Vær med til at gøre Chrome bedre ved at sende brugsstatistik og nedbrudsrapporter til Google.</translation>
-<translation id="415767770115540173">Få en bedre Google-oplevelse i Chrome baseret på din placering.</translation>
 <translation id="417201473131094001">Understøttes ikke i Chrome Canary</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4249068189593983585">Chrome-tip. Hvis du vil se flere faneindstillinger, skal du trykke på knappen Vis faner på værktøjslinjen og holde fingeren nede. Du finder knappen nederst eller øverst på skærmen.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Chrome anbefaler, at du skifter din adgangskode med det samme.</translation>
 <translation id="7698568245838009292">Chrome anmoder om adgang til kameraet</translation>
 <translation id="7855730255114109580">Google Chrome er opdateret</translation>
-<translation id="8109233255338845204">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chrome-data ryddet fra denne enhed.</translation>
 <translation id="8160472928944011082">Chrome kan ikke opdateres</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="840168496893712993">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere dem.</translation>

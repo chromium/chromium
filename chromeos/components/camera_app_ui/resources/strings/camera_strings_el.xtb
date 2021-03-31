@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Καμία εγγραφή</translation>
+<translation id="1838104802459806957">Κλίση προς τα πάνω</translation>
 <translation id="1851616744363735765">ΣΕ ΠΑΥΣΗ</translation>
 <translation id="1862930711583847113">Δεν είναι δυνατή η εξαγωγή του αρχείου <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Ανάλυση φωτογραφίας</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ενεργή</translation>
 <translation id="2144806332417375165">Προσαρμοσμένες παράμετροι βίντεο</translation>
 <translation id="229579744168541441">Εξαγωγή σε δίσκο</translation>
+<translation id="2320741269052147773">Μετακίνηση αριστερά</translation>
 <translation id="2501278716633472235">Επιστροφή</translation>
 <translation id="2501853267655415902">Η εγγραφή διακόπηκε</translation>
 <translation id="2501953888035679275">Τραβήξτε φωτογραφίες και βίντεο με την κάμερά σας.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Οι φωτογραφίες και τα βίντεο που λήφθηκαν με την κάμερα θα μετακινηθούν στον φάκελο "Λήψεις". Μπορείτε να αποκτήσετε πρόσβαση σε αυτά στα Αρχεία.
 
         Οι εφαρμογές με άδειες αποθηκευτικού χώρου θα έχουν πρόσβαση στις φωτογραφίες και τα βίντεό σας.</translation>
+<translation id="3067436040345934772">Μετακίνηση δεξιά</translation>
 <translation id="3081586908890909590">Μετάβαση στη λειτουργία εγγραφής βίντεο</translation>
 <translation id="313467653172006084">30 καρέ ανά δευτερόλεπτο</translation>
 <translation id="3183731565330012717">Τύπος πλέγματος</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">Μετάβαση στη λειτουργία λήψης φωτογραφίας</translation>
 <translation id="8239780215768881278">Λήψη στιγμιότυπου βίντεο</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
+<translation id="8425673304802773841">Κλίση προς τα κάτω</translation>
 <translation id="8428213095426709021">Ρυθμίσεις</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Προεπισκόπηση μεταδεδομένων</translation>

@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Anda sekarang dapat menggunakan Chrome kapan saja dengan mengetuk link di pesan, dokumen, dan aplikasi lainnya.</translation>
 <translation id="3720541637541300822">Kunci Tab Samaran Saat Anda Menutup Chrome</translation>
 <translation id="384394811301901750">Google Chrome saat ini tidak dapat menggunakan kamera</translation>
-<translation id="38949020760388809">Pilih apakah akan menghapus data Chrome dari perangkat ini atau menyimpannya.</translation>
 <translation id="3980220367029651214">Anda berganti akun sinkronisasi dari <ph name="USER_EMAIL1" /> ke <ph name="USER_EMAIL2" />. Data Chrome yang sudah ada dikelola oleh <ph name="DOMAIN" />. Tindakan ini akan menghapus data Anda dari perangkat berikut, namun data Anda akan tetap tersedia di <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organisasi mengharuskan Anda tetap logout dari Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome tidak memiliki akses ke foto atau video Anda. Izinkan akses di iOS Settings &gt; Privacy &gt; Photos.</translation>
 <translation id="4099578267706723511">Bantu penyempurnaan Chrome dengan mengirimkan statistik penggunaan dan laporan error ke Google.</translation>
-<translation id="415767770115540173">Dapatkan pengalaman Google yang lebih baik di Chrome berdasarkan lokasi Anda.</translation>
 <translation id="417201473131094001">Tidak didukung di Chrome Canary</translation>
 <translation id="424864128008805179">Logout dari Chrome?</translation>
 <translation id="4249068189593983585">Tips Chrome. Untuk opsi tab lainnya, sentuh lama tombol Tampilkan Tab di toolbar, yang terdapat di bagian bawah atau atas layar.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Sandi Anda terekspos saat terjadi pelanggaran data. Chrome merekomendasikan untuk mengubah sandi sekarang.</translation>
 <translation id="7698568245838009292">Chrome Ingin Mengakses Kamera</translation>
 <translation id="7855730255114109580">Ini adalah Google Chrome versi terbaru</translation>
-<translation id="8109233255338845204">Akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, sehingga data Chrome Anda akan dihapus dari perangkat ini.</translation>
 <translation id="8160472928944011082">Chrome tidak dapat diupdate</translation>
 <translation id="8370517070665726704">Hak cipta <ph name="YEAR" /> Google LLC. Semua hak dilindungi undang-undang.</translation>
 <translation id="840168496893712993">Beberapa add-on telah menyebabkan Chrome berhenti bekerja. Harap coba uninstal.</translation>

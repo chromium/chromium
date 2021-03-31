@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">Versiunea aplicației</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1450753235335490080">Nu se poate trimite <ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">Întreabă „Cum este vremea azi?”</translation>
 <translation id="1477626028522505441">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor probleme de server.</translation>
 <translation id="1492417797159476138">Ai salvat deja acest nume de utilizator pentru site</translation>
 <translation id="1506061864768559482">Motor de căutare</translation>
@@ -569,6 +570,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="49268022542405662">Parolele vor fi exportate și descărcate ca fișier text. Acestea vor fi vizibile pentru oricine și pentru orice aplicație care are acces la dosarul de destinație.</translation>
 <translation id="4932247056774066048">Întrucât te deconectezi de la un cont gestionat de <ph name="DOMAIN_NAME" />, datele Chrome vor fi șterse de pe dispozitiv. Acestea vor fi păstrate în Contul tău Google.</translation>
 <translation id="4936039914467572121">Accesează mai repede acest site</translation>
+<translation id="4941179133499732445">Atinge microfonul pentru a căuta cu ajutorul vocii</translation>
 <translation id="4943703118917034429">Realitate virtuală</translation>
 <translation id="4943872375798546930">Nu există rezultate</translation>
 <translation id="4961107849584082341">Tradu această pagină în orice limbă</translation>
@@ -583,6 +585,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5011311129201317034"><ph name="SITE" /> dorește să se conecteze</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">Permite</translation>
+<translation id="5061533557687621530">Pentru a afla starea vremii, atinge microfonul și rostește „Cum este vremea azi?”</translation>
 <translation id="5087580092889165836">Adaugă un card</translation>
 <translation id="5091249083535528968">Date de utilizare detaliate</translation>
 <translation id="509429900233858213">A apărut o eroare.</translation>
@@ -597,6 +600,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{O descărcare nu a reușit.}few{# descărcări nu au reușit.}other{# de descărcări nu au reușit.}}</translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5184329579814168207">Deschide în Chrome</translation>
+<translation id="5188992787241350004">Caută cu ajutorul vocii</translation>
 <translation id="5191251636205085390">Află despre și folosește tehnologii noi, destinate să înlocuiască cookie-urile terță parte</translation>
 <translation id="5193988420012215838">Copiat în clipboard</translation>
 <translation id="5199929503336119739">Profilul de serviciu</translation>

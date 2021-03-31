@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1627744224761163218">۴ × ۴</translation>
 <translation id="1664224225747386870">چیزی ضبط نشد</translation>
+<translation id="1838104802459806957">بالا بردن</translation>
 <translation id="1851616744363735765">موقتاً متوقف شد</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> صادر نشد</translation>
 <translation id="1899697626337024495">وضوح عکس</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> فعال شد</translation>
 <translation id="2144806332417375165">پارامترهای ویدیوی سفارشی</translation>
 <translation id="229579744168541441">صادر کردن به دیسک</translation>
+<translation id="2320741269052147773">حرکت دادن به چپ</translation>
 <translation id="2501278716633472235">بازگشت</translation>
 <translation id="2501853267655415902">ضبط متوقف شد</translation>
 <translation id="2501953888035679275">با دوربینتان عکس بگیرید و فیلم‌برداری کنید.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">‏عکس‌ها و ویدیوهایی که با دوربین گرفته شده است، به پوشه «بارگیری‌ها» منتقل خواهد شد. می‌توانید در Files به آن‌ها دسترسی داشته باشید.
 
         برنامه‌هایی که مجوز فضای ذخیره‌سازی دارند، به عکس‌ها و ویدیوهایتان دسترسی خواهند داشت.</translation>
+<translation id="3067436040345934772">حرکت دادن به راست</translation>
 <translation id="3081586908890909590">رفتن به حالت فیلم‌برداری</translation>
 <translation id="313467653172006084">۳۰ FPS</translation>
 <translation id="3183731565330012717">نوع جدول</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">رفتن به حالت عکس‌برداری</translation>
 <translation id="8239780215768881278">گرفتن عکس آنی از ویدیو</translation>
 <translation id="8261506727792406068">حذف</translation>
+<translation id="8425673304802773841">پایین کشیدن</translation>
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">پیش‌نمایش فراداده</translation>

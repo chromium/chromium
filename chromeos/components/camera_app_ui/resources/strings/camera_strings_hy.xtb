@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Տեսագրություն չկա</translation>
+<translation id="1838104802459806957">Թեքել վերև</translation>
 <translation id="1851616744363735765">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
 <translation id="1862930711583847113">Չհաջողվեց արտահանել <ph name="FILE" /> ֆայլը</translation>
 <translation id="1899697626337024495">Լուսանկարի լուծաչափը</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> տեսախցիկն ակտիվ է</translation>
 <translation id="2144806332417375165">Տեսանյութի հատուկ պարամետրեր</translation>
 <translation id="229579744168541441">Արտահանել սկավառակ</translation>
+<translation id="2320741269052147773">Տեղաշարժել ձախ</translation>
 <translation id="2501278716633472235">Վերադառնալ</translation>
 <translation id="2501853267655415902">Տեսագրումը դադարեցվեց</translation>
 <translation id="2501953888035679275">Լուսանկարեք և տեսագրեք ձեր տեսախցիկով:</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Տեսախցիկով արված լուսանկարներն ու տեսանյութերը կտեղափոխվեն «Ներբեռնումներ» պանակ։ Դրանք կարող եք գտնել նաև «Ֆայլեր» պանակում։
 
         Հավելվածներին, որոնց թույլատրել եք օգտագործել հիշողությունը, հասանելի կդառնան ձեր լուսանկարները և տեսանյութերը:</translation>
+<translation id="3067436040345934772">Տեղաշարժել աջ</translation>
 <translation id="3081586908890909590">Տեսագրել</translation>
 <translation id="313467653172006084">30 կադր/վ</translation>
 <translation id="3183731565330012717">Ցանցի տեսակը</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">Լուսանկարել</translation>
 <translation id="8239780215768881278">Լուսանկարել տեսանյութի կադր</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
+<translation id="8425673304802773841">Թեքել ներքև</translation>
 <translation id="8428213095426709021">Կարգավորումներ</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Դիտել մետատվյալները</translation>

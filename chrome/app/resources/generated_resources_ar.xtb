@@ -103,6 +103,7 @@
 <translation id="1118549423835582252">يقترح <ph name="MANAGER" /> عليك تحديث جهاز <ph name="DEVICE_TYPE" /> هذا.</translation>
 <translation id="1118738876271697201">تعذَّر على النظام تحديد طراز الجهاز أو رقمه التسلسلي.</translation>
 <translation id="1119447706177454957">خطأ داخلي</translation>
+<translation id="111959947408687873">‏اضغط على Ctrl+<ph name="SEARCH_KEY_NAME" />+M لتفعيل ميزة "المكبِّر بملء الشاشة" أو إيقافها. واضغط على Ctrl+Alt+مفاتيح الأسهم للتنقّل داخل الشاشة بعد تكبيرها.</translation>
 <translation id="1122068467107743258">العمل</translation>
 <translation id="1122198203221319518">&amp;الأدوات</translation>
 <translation id="1122242684574577509">‏‫فشلت المصادقة‬. انقر للانتقال إلى صفحة تسجيل الدخول لشبكة Wi-Fi التي تستخدمها (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">‏برنامج الحماية المتقدّمة من Google</translation>
 <translation id="1155816283571436363">جارٍ الاتصال بهاتفك</translation>
 <translation id="1161575384898972166">يُرجى تسجيل الدخول إلى <ph name="TOKEN_NAME" /> لتصدير شهادة العميل.</translation>
+<translation id="116173250649946226">حدَّد مشرف مؤسستك مظهرًا تلقائيًا لا يمكن تغييره.</translation>
 <translation id="1163931534039071049">عرض م&amp;صدر الإطار</translation>
 <translation id="1164891049599601209">تم إدخالها على موقع إلكتروني مريب.</translation>
 <translation id="1164899421101904659">إدخال مفتاح فتح قفل رقم التعريف الشخصي</translation>
@@ -2560,6 +2562,7 @@
 <translation id="3809272675881623365">أرنب</translation>
 <translation id="3809280248639369696">شعاع القمر</translation>
 <translation id="3810593934879994994">بإمكان <ph name="ORIGIN" /> عرض الملفات في المجلدات التالية:</translation>
+<translation id="3810914450553844415">‏لا يسمح المشرف بإنشاء حسابات Google إضافية.</translation>
 <translation id="3810973564298564668">إدارة محرّكات البحث</translation>
 <translation id="381202950560906753">إضافة بصمة إصبع أخرى</translation>
 <translation id="3812525830114410218">شهادة سيئة</translation>
@@ -2681,6 +2684,7 @@
 <translation id="3925573269917483990">الكاميرا:</translation>
 <translation id="3926002189479431949">‏تم تغيير هاتف Smart Lock</translation>
 <translation id="3927932062596804919">رفض</translation>
+<translation id="392803502090869922">‏عملية إعداد eSIM</translation>
 <translation id="3928570707778085600">هل تريد حفظ التغييرات في <ph name="FILE_OR_FOLDER_NAME" />؟</translation>
 <translation id="3928659086758780856">هناك نقص في حبر الطابعة</translation>
 <translation id="3929426037718431833">يمكن لهذه الإضافات الوصول إلى معلومات هذا الموقع الإلكتروني وتغييرها.</translation>
@@ -4248,6 +4252,7 @@
 <translation id="5764797882307050727">يُرجى إخلاء بعض المساحة على جهازك.</translation>
 <translation id="5765425701854290211">عذرًا، حدث تلف لبعض الملفات ولم يتم التحديث بنجاح. غير أن ملفاتك المتزامنة آمنة.</translation>
 <translation id="5765491088802881382">لا تتوفر أي شبكات</translation>
+<translation id="5766243637773654698">‏قد يكون الملف <ph name="FILE_NAME" /> خطيرًا. هل تريد إرسال الملف إلى Google لفحصه؟ اضغط على Shift+F6 للانتقال إلى منطقة "شريط عمليات التنزيل".</translation>
 <translation id="5769519078756170258">المضيف أو النطاق المراد استبعاده</translation>
 <translation id="5770125698810550803">عرض أزرار التنقل</translation>
 <translation id="5771816112378578655">الإعداد قيد التقديم...</translation>
@@ -4404,6 +4409,7 @@
 <translation id="5942779427914696408">مستوى ظهور الجهاز</translation>
 <translation id="5943127421590245687">تم إثبات هويّتك. يُرجى إدخال كلمة المرور القديمة لجهاز <ph name="DEVICE_TYPE" /> لتتمكّن من فتح قفل الجهاز واستعادة البيانات المحلية.</translation>
 <translation id="5944869793365969636">مسح رمز الاستجابة السريعة</translation>
+<translation id="5945002094477276055">‏قد يكون الملف <ph name="FILE_NAME" /> خطيرًا. هل تريد إرسال الملف إلى "التصفح الآمن من Google" لفحصه؟</translation>
 <translation id="5946591249682680882">معرف التقرير: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">يمكنك توصيل لوحة مفاتيح أو ماوس أو مواصلة عملية الإعداد باستخدام الشاشة التي تعمل باللمس. وإذا كنت تستخدم أجهزة تتضمّن بلوتوث، يجب أن تكون هذه الأجهزة جاهزة لعملية الإقران.</translation>
 <translation id="5949544233750246342">تعذَّر تحليل الملف</translation>
@@ -4451,6 +4457,7 @@
 <translation id="6002452033851752583">‏تم حذف كلمة المرور من حسابك على Google.</translation>
 <translation id="6002458620803359783">الأصوات المُفضَّلة</translation>
 <translation id="6003143259071779217">‏إزالة شبكة الجوّال لشريحة eSIM</translation>
+<translation id="6003582434972667631">حدّدت مؤسستك هذا المظهر</translation>
 <translation id="6006484371116297560">كلاسيكي</translation>
 <translation id="6007240208646052708">البحث الصوتي غير متاح بلغتك.</translation>
 <translation id="6011074160056912900">شبكة إيثرنت</translation>
@@ -4830,6 +4837,7 @@
 <translation id="6429384232893414837">خطأ في التحديث</translation>
 <translation id="6430814529589430811">‏حفظ شهادة واحدة بتشفير ASCII المرمّز باستخدام Base64</translation>
 <translation id="6431347207794742960">سيعمل <ph name="PRODUCT_NAME" /> على إعداد التحديثات التلقائية لجميع مستخدمي هذا الكمبيوتر.</translation>
+<translation id="6434104957329207050">سرعة مؤشر فحص النقاط</translation>
 <translation id="6434309073475700221">تجاهل</translation>
 <translation id="6434325376267409267">يجب تحديث الجهاز للتمكّن من استخدام <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">عرض في السوق الإلكتروني</translation>
@@ -4872,6 +4880,7 @@
 <translation id="6474498546677193336">‏تعذّر إلغاء المشاركة بسبب استخدام تطبيق لهذا الملف. سيتم إلغاء مشاركة الملف عند إيقاف Linux.</translation>
 <translation id="6474884162850599008">‏إلغاء ربط حساب Google Drive</translation>
 <translation id="6475294023568239942">‏يجب إخلاء بعض المساحة على القرص أو تغيير حجم القرص في Linux من الإعدادات.</translation>
+<translation id="6476138569087741884">مستوى التكبير بملء الشاشة</translation>
 <translation id="6477822444490674459">ميزة "مزامنة الإشعارات" غير متاحة للهواتف التي تحتوي على ملف شخصي للعمل. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">هل تريد الاحتفاظ بالملف الضار؟</translation>
 <translation id="6480327114083866287">تتم الإدارة من خلال <ph name="MANAGER" /></translation>
@@ -5327,6 +5336,7 @@
 <translation id="6985607387932385770">الطابعات</translation>
 <translation id="6988094684494323731">‏جارٍ بدء تشغيل حاوية نظام التشغيل Linux</translation>
 <translation id="6988403677482707277">تم نقل علامة التبويب إلى بداية شريط علامات التبويب.</translation>
+<translation id="6990209147952697693">‏Chrome الكلاسيكي</translation>
 <translation id="6991665348624301627">اختيار وجهة</translation>
 <translation id="6992554835374084304">تفعيل التدقيق الإملائي المُحسَّن</translation>
 <translation id="6993000214273684335">تمت إزالة علامة التبويب من مجموعة لم تتم تسميتها وتحتوي على <ph name="GROUP_CONTENTS" />.</translation>
@@ -6314,6 +6324,7 @@
 <translation id="8086015605808120405">جارٍ إعداد <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">إعداد <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{هذا الملف مشفّر. يُرجى طلب فكّ تشفيره من المالك.}zero{بعض هذه الملفات مشفّرة. يُرجى طلب فكّ تشفيرها من المالك.}two{هذان الملفان مشفّران. يُرجى طلب فكّ تشفيرهما من المالك.}few{بعض هذه الملفات مشفّرة. يُرجى طلب فكّ تشفيرها من المالك.}many{بعض هذه الملفات مشفّرة. يُرجى طلب فكّ تشفيرها من المالك.}other{بعض هذه الملفات مشفّرة. يُرجى طلب فكّ تشفيرها من المالك.}}</translation>
+<translation id="8087576439476816834">تنزيل <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8090234456044969073">قراءة قائمة بمواقع الويب التي تتردد عليها بكثرة</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> لا يستجيب.</translation>
@@ -6555,6 +6566,8 @@
 <translation id="8368859634510605990">&amp;فتح كل الإشارات المرجعية</translation>
 <translation id="8370294614544004647">السكون عند غلق الكمبيوتر المحمول</translation>
 <translation id="8371695176452482769">تحدث الآن</translation>
+<translation id="8371749822919332187">‏اضغط على Ctrl+Alt+رفع مستوى السطوع لتكبير الشاشة.
+اضغط على Ctrl+Alt+خفض مستوى السطوع لتصغير الشاشة.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{كتم صوت موقع إلكتروني واحد}zero{كتم صوت المواقع الإلكترونية}two{كتم صوت موقعيِّ الويب}few{كتم صوت المواقع الإلكترونية}many{كتم صوت المواقع الإلكترونية}other{كتم صوت المواقع الإلكترونية}}</translation>
 <translation id="8372369524088641025">‏مفتاح WEP غير صالح</translation>
 <translation id="8373652277231415614">‏مجلدات نظام التشغيل Crostini التي تمت مشاركتها</translation>
@@ -6562,7 +6575,6 @@
 <translation id="8378714024927312812">بإدارة مؤسستك</translation>
 <translation id="8379878387931047019">لا يدعم هذا الجهاز نوع مفتاح الأمان الذي يطلبه هذا الموقع الإلكتروني.</translation>
 <translation id="8379991678458444070">يمكنك الرجوع إلى هنا بسرعة من خلال وضع إشارة مرجعية على علامة التبويب هذه.</translation>
-<translation id="8380314198565901932">حدث خطأ أثناء تنزيل الجهاز الافتراضي. يُرجى تحديث <ph name="DEVICE_TYPE" /> وإعادة المحاولة.</translation>
 <translation id="8382913212082956454">نسخ عنوان البريد الإل&amp;كتروني</translation>
 <translation id="8386091599636877289">تعذَّر العثور على السياسة.</translation>
 <translation id="8386819192691131213">‏يمكنك السماح لخدمة "مساعد Google" باستخدام المعلومات التي تظهر على الشاشة لتوفير إجابات سريعة، مثلاً كترجمة نص أو تقديم التعريف لمصطلح معين أو تحويل وحدات القياس أو غير ذلك.</translation>
@@ -7229,6 +7241,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">مرحبًا بك في ملفك الشخصي الجديد</translation>
 <translation id="9112748030372401671">تغيير الخلفية</translation>
+<translation id="9112786533191410418">‏قد يكون الملف <ph name="FILE_NAME" /> خطيرًا. هل تريد إرسال الملف إلى Google لفحصه؟</translation>
 <translation id="9112987648460918699">بحث...</translation>
 <translation id="9114663181201435112">تسجيل الدخول بسهولة</translation>
 <translation id="9115675100829699941">إ&amp;شارات مرجعية</translation>

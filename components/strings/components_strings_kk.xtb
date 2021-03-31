@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Деректерді көру</translation>
 <translation id="1030706264415084469"><ph name="URL" /> үлкен көлемді деректерді құрылғыңызда біржола сақтағысы келеді</translation>
 <translation id="1032854598605920125">Сағат тілінің бағытымен бұру</translation>
+<translation id="1036224116832931580">"Динозавр" ойыны: секіріп, ойнау үшін түртіңіз.</translation>
 <translation id="1036348656032585052">Өшіру</translation>
 <translation id="1038106730571050514">Ұсыныстарды көрсету</translation>
 <translation id="1038842779957582377">белгісіз ат</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Жоқ}=1{1 сайт}other{# сайт}}</translation>
 <translation id="1945968466830820669">Ұйымның есептік жазбасына кіре алмай қалуыңыз мүмкін немесе жеке деректеріңіз ұрлануы ықтимал. Chromium құпия сөзіңізді қазір өзгертуге кеңес береді.</translation>
 <translation id="1947454675006758438">Жоғарғы оң жағын қапсыру</translation>
+<translation id="1958218078413065209">Ең жоғары ұпайыңыз: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Google-ға <ph name="BEGIN_WHITEPAPER_LINK" />кірген беттердің URL мекенжайларын, шектеулі жүйе ақпаратын және кейбір бет мазмұнын<ph name="END_WHITEPAPER_LINK" /> жіберу арқылы барлық пайдаланушы үшін интернет қауіпсіздігін жақсартуға көмектесіңіз. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Құпиялылық саясаты<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> бетбелгілері</translation>
 <translation id="1973335181906896915">Сериалау қатесі</translation>
@@ -547,6 +549,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome параметрлерінен қауіпсіздік шарасын іске қосу үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="3061707000357573562">Қызметті түзету</translation>
 <translation id="3064966200440839136">Сыртқы қолданба арқылы төлеу үшін инкогнито режимінен шығасыз. Жалғастыра бересіз бе?</translation>
+<translation id="306573536155379004">Ойын басталды.</translation>
 <translation id="3080254622891793721">Кескін</translation>
 <translation id="3086579638707268289">Интернеттегі әрекетіңіз қадағаланып жатыр</translation>
 <translation id="3087734570205094154">Астына</translation>
@@ -1542,6 +1545,7 @@
 <translation id="6934672428414710184">Бұл атау Google есептік жазбаңызда бар.</translation>
 <translation id="6944692733090228304">Құпия сөзіңізді <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> басқармайтын сайтта енгіздіңіз. Есептік жазбаны қорғау үшін құпия сөзді басқа қолданбалар мен сайттарда пайдаланбаңыз.</translation>
 <translation id="6945221475159498467">Таңдау</translation>
+<translation id="6948051842255602737">Ойын аяқталды, ұпайыңыз: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Таңдау әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>
 <translation id="6949872517221025916">Құпия сөзді қайта орнату</translation>
 <translation id="6950684638814147129">JSON мәнін талдау кезінде қате кетті: <ph name="ERROR" /></translation>
@@ -1824,6 +1828,7 @@
 <translation id="7956713633345437162">Ұялы бетбелгілер</translation>
 <translation id="7961015016161918242">Ешқашан</translation>
 <translation id="7966803981046576691">Тапсырмадағы есептік жазбаның түрі</translation>
+<translation id="79682505114836835">"<ph name="VALUE" />" мәні – жарамсыз он алтылық түс.</translation>
 <translation id="7976214039405368314">Сұраулар саны өте көп.</translation>
 <translation id="7977538094055660992">Шығару құрылғысы</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1951,6 +1956,7 @@
 <translation id="8446884382197647889">Толығырақ</translation>
 <translation id="8457125768502047971">Белгісіз</translation>
 <translation id="8461694314515752532">Синхрондалған деректерді өзіңіздің синхрондау құпия фразаңызбен шифрлау</translation>
+<translation id="8463101686637053101">"Динозавр" ойыны: секіріп, ойнау үшін бос орын пернесін басыңыз.</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 несие картасы}other{# несие картасы}}</translation>
 <translation id="8473863474539038330">Мекенжайлар және басқа ақпарат</translation>
 <translation id="8474910779563686872">Әзірлеуші туралы мәліметтерді көрсету</translation>
@@ -2086,6 +2092,7 @@
 <translation id="8996941253935762404">Алдағы сайт зиянды бағдарламаларды қамтиды</translation>
 <translation id="8997023839087525404">Сервер Сертификат айқындығы саясаты жалпыға жарияламаған сертификатты ұсынды. Бұл – кейбір сертификаттардың сенімді екенін растау үшін және оларды шабуылдаушылардан қорғау мақсатында қойылатын міндетті талап.</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> проксиіне пайдаланушы аты мен құпия сөз қажет.</translation>
+<translation id="9001963517402879850">Секіріңіз!</translation>
 <translation id="9004367719664099443">VR сеансы жүруде</translation>
 <translation id="9005998258318286617">PDF құжаты жүктелмеді</translation>
 <translation id="9008201768610948239">Елемеу</translation>

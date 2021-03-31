@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="3720541637541300822">Bloquear pestanas do modo de incógnito ao pechar Chrome</translation>
 <translation id="384394811301901750">Google Chrome non pode usar a cámara neste momento</translation>
-<translation id="38949020760388809">Escolle se queres borrar os teus datos de Chrome deste dispositivo ou conservalos.</translation>
 <translation id="3980220367029651214">Estás cambiando a conta de sincronización <ph name="USER_EMAIL1" /> por <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> xestiona os datos de Chrome actuais. Ao realizar esta acción, eliminaranse os teus datos deste dispositivo, pero conservaranse en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">A túa organización require que manteñas a sesión pechada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome non ten acceso ás túas fotos nin aos teus vídeos. Activa o acceso en Configuración de iOS &gt; Privacidade &gt; Fotos.</translation>
 <translation id="4099578267706723511">Axúdanos a mellorar Chrome enviando estatísticas de uso e informes de erros a Google.</translation>
-<translation id="415767770115540173">Obtén unha mellor experiencia de Google en Chrome baseada na túa localización.</translation>
 <translation id="417201473131094001">Non compatible en Chrome Canary</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
 <translation id="4249068189593983585">Consello sobre Chrome: Para ver máis opcións relacionadas coas pestanas, mantén premido o botón Mostrar pestanas. Atoparalo na barra de ferramentas, situada na parte inferior ou superior da pantalla.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">O teu contrasinal quedou exposto debido a unha violación da seguranza dos datos. Chrome recoméndache que o cambies agora.</translation>
 <translation id="7698568245838009292">Chrome quere acceder á cámara</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
-<translation id="8109233255338845204"><ph name="HOSTED_DOMAIN" /> xestiona a túa conta, polo que se borrarán os teus datos de Chrome deste dispositivo.</translation>
 <translation id="8160472928944011082">Non se puido actualizar Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>
 <translation id="840168496893712993">Algúns complementos fan que Chrome falle. Proba a desinstalalos.</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
 <translation id="102360288709523007">사용 통계와 비정상 종료 보고서를 Google로 전송하면 Chromium 개선에 도움이 됩니다.</translation>
-<translation id="1043245583918962542">기기에서 Chromium 데이터를 삭제할지 또는 유지할지 선택하세요</translation>
 <translation id="1185134272377778587">Chromium 정보</translation>
 <translation id="1257458525759135959">이미지를 저장하려면 '설정'을 탭하여 Chromium에 사진 추가 권한을 부여하세요.</translation>
 <translation id="1289216811211435351">Chromium으로 전환</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">기기에서 Chromium 데이터를 삭제하시겠습니까?</translation>
 <translation id="8175055321229419309">도움말: <ph name="BEGIN_LINK" />Chromium을 내 Dock에 추가하세요.<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium에서 업데이트를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
-<translation id="8252885722420466166">위치 정보를 기반으로 Chromium에서 더 좋은 Google 서비스를 제공할 수 있습니다.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8663480472502753423">Chromium을 최신 상태로 유지합니다.</translation>
 <translation id="8776843108004031667">이 계정 및 저장되지 않은 모든 데이터가 Chromium에서 삭제됩니다.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium이 이전 버전임</translation>
 <translation id="921174536258924340">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도하거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chromium 데이터가 삭제됩니다</translation>
 </translationbundle>

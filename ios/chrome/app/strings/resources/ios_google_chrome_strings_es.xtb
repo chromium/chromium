@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Ahora puedes usar Chrome cada vez que toques enlaces de mensajes, documentos y otras aplicaciones.</translation>
 <translation id="3720541637541300822">Bloquear las pestañas de incógnito al cerrar Chrome</translation>
 <translation id="384394811301901750">Google Chrome no puede usar la cámara en este momento</translation>
-<translation id="38949020760388809">Elige si quieres borrar o conservar tus datos de Chrome en este dispositivo.</translation>
 <translation id="3980220367029651214">Estás cambiando las cuentas de sincronización de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. Tus datos actuales de Chrome están administrados por <ph name="DOMAIN" />. Se van a eliminar tus datos de este dispositivo, pero van a permanecer en <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Tu organización requiere que mantengas tu sesión cerrada en Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome no puede acceder a tus fotos y vídeos (para permitirlo, ve a Ajustes de iOS &gt; Privacidad &gt; Fotos).</translation>
 <translation id="4099578267706723511">Ayudar a mejorar Chrome enviando estadísticas de uso e informes sobre fallos.</translation>
-<translation id="415767770115540173">Disfruta de una mejor experiencia en Chrome compartiendo tu ubicación.</translation>
 <translation id="417201473131094001">No compatible con Chrome Canary</translation>
 <translation id="424864128008805179">¿Quieres cerrar sesión en Chrome?</translation>
 <translation id="4249068189593983585">Consejo sobre Chrome: Para ver más opciones de pestañas, mantén pulsado el botón Mostrar pestañas en la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Tu contraseña se ha visto expuesta en una quiebra de seguridad de datos. Chrome recomienda cambiar la contraseña ahora.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
-<translation id="8109233255338845204"><ph name="HOSTED_DOMAIN" /> gestiona tu cuenta, así que se borrarán tus datos de Chrome en este dispositivo.</translation>
 <translation id="8160472928944011082">No se puede actualizar Chrome</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="840168496893712993">Algunos complementos hacen que Chrome falle. Prueba a desinstalarlos.</translation>

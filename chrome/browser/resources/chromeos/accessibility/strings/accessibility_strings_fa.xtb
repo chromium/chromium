@@ -52,6 +52,7 @@
 <translation id="1268366246392928616">عبارت ریاضی قبلی وجود ندارد</translation>
 <translation id="1273314450961659276">تنظیمات نوشتار به گفتار</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
+<translation id="1284576163386164372">‏همیشه می‌توانید آموزش‌های گام‌به‌گام را با باز کردن منوها با ضربه چهار انگشتی مشاهده کنید. سپس، آموزش گام‌به‌گام را در بخش «ChromeVox» فعال‌سازی کنید.</translation>
 <translation id="1291286136605998134">دکمه تغییر وضعیت</translation>
 <translation id="1299774449519412690">آبی آسمانی روشن</translation>
 <translation id="1303806948938513162">‏برای ورود به منوهای ChromeVox، با ۴ انگشت ضربه بزنید</translation>
@@ -115,6 +116,7 @@
 <translation id="1690731385917361335">هیچ موردی وجود ندارد</translation>
 <translation id="1700517974991662022">بازدیدشده</translation>
 <translation id="1714116687360794776">متر</translation>
+<translation id="1717267964664691695">تکمیل آموزش گام‌به‌گام لمسی</translation>
 <translation id="1722567105086139392">پیوند</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">‏به آموزش گام‌به‌گام ChromeVox خوش آمدید. هرزمان خواستید از این آموزش گام‌به‌گام خارج شوید، کلید «گریز» را در گوشه بالا سمت چپ صفحه‌کلید فشار دهید. برای خاموش کردن ChromeVox، کلیدهای Control و Alt را نگه دارید و Z را فشار دهید. هرزمان آماده بودید، بااستفاده از کلید «فاصله» به درس بعدی بروید.</translation>
@@ -131,6 +133,7 @@
 <translation id="1834891354138622109">ستون</translation>
 <translation id="1845944666972354496">برای فعال کردن دو ضربه سریع بزنید</translation>
 <translation id="1846771122725914429">نمایشگر بریل بلوتوث</translation>
+<translation id="1852018405765032699">‏.اگر با چهار انگشت روی صفحه ضربه بزنید، می‌توانید منوهای ChromeVox را باز و بسته کنید. این منوها حاوی اطلاعات مفیدی درباره فرمان‌ها و میان‌برها هستند. وقتی منوها را باز می‌کنید، می‌توانید یک انگشتتان را تند روی صفحه بکشید تا بین موارد پیمایش کنید و برای فعال‌سازی موارد، دو ضربه بزنید. برای ادامه، با چهار انگشت روی صفحه ضربه بزنید.</translation>
 <translation id="1865601187525349519">پایان نوشتار</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">سلول</translation>
@@ -181,6 +184,7 @@
 <translation id="2267538686624070261">خارج شدن از کلمه با غلط املایی</translation>
 <translation id="2267945578749931355">نویسه بعدی</translation>
 <translation id="2278490101488436824">تند کشیدن سه انگشت به راست</translation>
+<translation id="2303873575703885770">فعال‌سازی یک مورد</translation>
 <translation id="2305942658236913680">عنوان بعدی وجود ندارد</translation>
 <translation id="2311237334957139798">حرکت به قبلی با جزئیات</translation>
 <translation id="2314393392395134769">بالانویس نیست</translation>
@@ -219,6 +223,7 @@
 <translation id="2592212930811759050">برای شروع ویرایش، دو ضربه سریع بزنید</translation>
 <translation id="2598495320872286378">خطای دستور زبانی</translation>
 <translation id="2603828437139726540">یک نویسه به جلو بروید</translation>
+<translation id="2619344480613750862">‏همچنین می‌توانید بین بخش‌های صفحه جابه‌جا شوید. برای مثال، می‌توانید بین راه‌انداز، قفسه، و برگه‌های Chrome جابه‌جا شوید. برای اینکه به بخش بعدی بروید، با چهار انگشت تند از چپ به راست بکشید. برای ادامه، اکنون آن را امتحان کنید.</translation>
 <translation id="2624431853467395961">باز کردن حالت یادگیری</translation>
 <translation id="2626530649491650971">قابل کلیک</translation>
 <translation id="2637227747952042642">ریاضی</translation>
@@ -247,6 +252,7 @@
 <translation id="2756452585631602151">برچسبی سفارشی وارد کنید</translation>
 <translation id="2766299274563946262">سلولی در سمت چپ وجود ندارد</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{#+}one{#+}other{#+}}</translation>
+<translation id="2792200646155001340">همچنین می‌توانید با یک انگشت از راست به چپ بکشید تا به مورد قبلی بروید. امتحان کنید.</translation>
 <translation id="280499067616661124">‏«پیدا کردن در صفحه» ChromeVox</translation>
 <translation id="2811019999044652585">‏برای رفتن به قسمت‌های دیگر صفحه، مثل نوارهای ابزار یا سینی سیستم، روی Control+Forward فشار دهید. در Chromebook، کلید Forward دقیقاً‌ در بالای کلید عدد ۲ قرار دارد.</translation>
 <translation id="2811204574343810641">ردیف</translation>
@@ -274,6 +280,7 @@
 <translation id="2968634799764242930">سبز لجنی</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{علامت جهش}one{# علامت جهش}other{# علامت جهش}}</translation>
 <translation id="2972205263822847197">راهنمای ابزار</translation>
+<translation id="2976476721782829799">همچنین می‌توانید با کشیدن یک انگشت روی صفحه، در صفحه حرکت کنید. به این کار «کاوش با لمس» گفته می‌شود. برای خواندن مابقی این درس، انگشتتان روی صفحه بکشید.</translation>
 <translation id="297825089465017871">تند کشیدن دو انگشت به راست</translation>
 <translation id="2998131015536248178">نویسه قبلی</translation>
 <translation id="2999559350546931576">کاهش گام</translation>
@@ -375,6 +382,7 @@
 <translation id="3587482841069643663">همه</translation>
 <translation id="3589661172894441357">واژه‌نامه</translation>
 <translation id="3591784666823501596">آبی سلطنتی</translation>
+<translation id="3592715211448024517">منوهای دسترسی</translation>
 <translation id="3594207934078151302">خزه‌ای</translation>
 <translation id="3599054940393788245">بدون ریاضی داخلی</translation>
 <translation id="360241989769010433">قدردانی</translation>
@@ -401,6 +409,7 @@
 <translation id="3781428340399460090">صورتی پررنگ</translation>
 <translation id="3783725005098956899">نمایش گزارش</translation>
 <translation id="3801735343383419236">فهرست تکمیل خودکار</translation>
+<translation id="3806327402890551732">رفتن به مورد بعدی یا قبلی</translation>
 <translation id="3810838688059735925">فیلم</translation>
 <translation id="3813387282697781382">مرجانی روشن</translation>
 <translation id="3816633764618089385">رسانه بعدی</translation>
@@ -410,6 +419,7 @@
 <translation id="3870295413168340326">عنوان سطح ۳ قبلی وجود ندارد</translation>
 <translation id="3887399638190992181">کلیدهای ضروری</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3893063449310326280">یا، با چهار انگشت تند از راست به چپ بکشید تا به عنصر اصلی قبلی بروید. اکنون امتحان کنید!</translation>
 <translation id="3897092660631435901">منو</translation>
 <translation id="3907138069015388678">جدول فهرست</translation>
 <translation id="3909320334364316587">عنوان قبلی سطح ۶</translation>
@@ -504,6 +514,7 @@
 <translation id="4615592953348396470">نادیده گرفتن فشار دکمه بعدی</translation>
 <translation id="4623097797855662355">انجامه</translation>
 <translation id="463135993322337640">‏برای آشنایی با موارد جدید،‌ به ترتیب کلیدهای ChromeVox،‏ n و o را فشار دهید</translation>
+<translation id="4649220074413114917">‏برای متوقف کردن گفتار فعلی، با دو انگشت روی صفحه ضربه بزنید. اگر نمی‌خواهید ChromeVox موردی را بخواند، این کار مفید است. برای ادامه، با دو انگشت روی صفحه ضربه بزنید.</translation>
 <translation id="4660783501463101648">‏نسخه کلاسیک برداشته شد. تغییر حالت صفحه‌کلید برای تغییر برگشتن به ChromeVox Classic برداشته شد.</translation>
 <translation id="4661075872484491155">درخت</translation>
 <translation id="4668929960204016307">،</translation>
@@ -579,12 +590,14 @@
 <translation id="5140016802771803559">بنفش ربه‌کا</translation>
 <translation id="5142101052131610456">همه درس‌ها</translation>
 <translation id="5158275234811857234">جلد</translation>
+<translation id="516076699907426116">برای ادامه، با لمس کردن کاوش کنید تا دکمه «درس بعدی» را پیدا کنید. سپس برای ادامه، دو ضربه بزنید.</translation>
 <translation id="5170206230005240598">زیرنویس بریل فعال شد</translation>
 <translation id="5183440668879371625">خط قبلی بریل</translation>
 <translation id="5189244881767082992">خط</translation>
 <translation id="5263034204789987535">کاهی</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">پایان</translation>
+<translation id="5290220123487191192">بیایید با چند اشاره شروع کنیم که به‌طور مرتب از آن‌ها استفاده می‌کنید. اگر به موردی رسیدید که می‌خواهید فعال‌سازی کنید، با یک انگشت دو ضربه روی صفحه بزنید. برای ادامه، اکنون دو ضربه بزنید.</translation>
 <translation id="5302089807023311274">مرجع فهرست منابع</translation>
 <translation id="530391007967514163">برای پیمایش در نوشتار زیر، پرش براساس عنوان را امتحان کنید.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />، برگه</translation>
@@ -655,10 +668,12 @@
 <translation id="5703716265115423771">پایین آوردن صدا</translation>
 <translation id="5704453877234251104">پیکان بالا یا پایین را برای تکمیل خودکار فشار دهید</translation>
 <translation id="5712244464475377681">popbtn</translation>
+<translation id="5712889723513495267">رفتن به بخش بعدی یا قبلی</translation>
 <translation id="5725079927589231571">بنفش مایل به آبی</translation>
 <translation id="5732189279857692565">‏این دومین عنوان است. ادامه دهید؛ یا Search+H یا Search+Shift+H را فشار دهید</translation>
 <translation id="5748623122140342504">عنوان قبلی سطح ۵</translation>
 <translation id="5760594853119905566">ضمیمه</translation>
+<translation id="5761219715606611783">‏عالی بود! با اصول اولیه گزینه‌های لمسی ChromeVox آشنا شدید. می‌توانید دوباره آموزش گام‌به‌گام را طی کنید یا بااستفاده از دکمه‌های زیر، از آموزش گام‌به‌گام خارج شوید.</translation>
 <translation id="5805940204952508776">ضربه با دو انگشت</translation>
 <translation id="5819072574982403430">مورد درختی</translation>
 <translation id="5822819874379903994">فیروزه‌ای سیر</translation>
@@ -683,6 +698,7 @@
 <translation id="5906974869830879618">لطفاً پین را وارد کنید</translation>
 <translation id="5921587111466148855">فصل</translation>
 <translation id="5923780477617566089">تاریخ کنونی</translation>
+<translation id="5926889058434275234">برای فهرست کامل اشاره‌ها، به مرکز راهنمایی بروید.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{علامت مساوی}one{# علامت مساوی}other{# علامت مساوی}}</translation>
 <translation id="5948123859135882163">جابه‌جایی بین تفسیر ساختاری و معنایی عبارات ریاضی</translation>
 <translation id="5955304353782037793">app</translation>
@@ -760,6 +776,7 @@
 <translation id="6561818612645211875">رفتن به شروع ردیف کنونی</translation>
 <translation id="6579990219486187401">صورتی کم‌رنگ</translation>
 <translation id="6583174818554398774">حرکت به بعدی با جزئیات</translation>
+<translation id="6584162722998608255">سپس، با نحوه حرکت در صفحه‌نمایش آشنا خواهید شد. می‌توانید یک انگشت را تند از سمت چپ به راست بکشید تا به مورد بعدی بروید. همین‌حالا امتحان کنید تا به مرحله بعدی بروید.</translation>
 <translation id="6609828810966525877">‏اشاره‌های بیشتر را در «حالت یادگیری» و «مرکز راهنمایی Chromebook» کاوش کنید</translation>
 <translation id="6628427060004938651">بخش</translation>
 <translation id="6637586476836377253">log</translation>
@@ -781,6 +798,7 @@
 <translation id="6759710362319508545">منابع</translation>
 <translation id="67862343314499040">بنفش</translation>
 <translation id="6786800275320335305">مقاله</translation>
+<translation id="6790781785997195160">بعدازاینکه چند بار تمرین کردید، دکمه درس بعدی را پیدا کنید. سپس برای ادامه، دو ضربه بزنید.</translation>
 <translation id="6793101435925451627">lstbx</translation>
 <translation id="6815255864998354418">شیرشکری</translation>
 <translation id="6816066673340002913">نخودی</translation>
@@ -806,6 +824,7 @@
 <translation id="6994042831499278539">مرجع واژه‌نامه</translation>
 <translation id="6996566555547746822">کادر ترکیبی بعدی</translation>
 <translation id="6997224546856374593">هنگام خواندن حروف بزرگ:</translation>
+<translation id="6999752561504308105">‏به آموزش گام‌به‌گام ChromeVox خوش آمدید. برای اینکه هرزمان خواستید از این آموزش گام‌به‌گام خارج شوید، با دو انگشت تند از راست به چپ بکشید. برای اینکه هرزمان خواستید ChromeVox را روشن یا خاموش کنید، هر دو دکمه میزان صدا را به‌مدت پنج ثانیه فشار دهید و نگه دارید. هرزمان آماده بودید، با یک انگشت دو ضربه روی صفحه بزنید تا به درس بعدی بروید.</translation>
 <translation id="700202842116345659">ورودی فهرست منابع</translation>
 <translation id="7005146664810010831">نشانی وب پیدا نشد</translation>
 <translation id="7026338066939101231">کاهش</translation>
@@ -819,6 +838,7 @@
 <translation id="7086377898680121060">زیاد کردن روشنایی</translation>
 <translation id="7088743565397416204">برای فعال کردن مورد کانونی‌شده، دو ضربه سریع بزنید</translation>
 <translation id="7088960765736518739">دسترسی کلیدی</translation>
+<translation id="7090715360595433170">همچنین ممکن است کارآمدتر از تند کشیدن به چپ و راست با یک انگشت عمل کند.</translation>
 <translation id="7091296112653361280">کرم سیر</translation>
 <translation id="7095834689119144465">فقط ویرایش عددی نوشتار</translation>
 <translation id="7096001299300236431">رسانه قبلی</translation>
@@ -856,6 +876,7 @@
 <translation id="7308519659008003150">فیلد فرم قبلی وجود ندارد</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">برخی انتخاب شده است</translation>
+<translation id="7322442671176251901">کاوش با لمس</translation>
 <translation id="7344012264516629579">‏برای نمونه، دستورات پرش دیگر شامل پرش بااستفاده از پیوند، دکمه، و مربع انتخاب می‌شود. فهرست کامل دستورات پرش را می‌توان در منوهای ChromeVox پیدا کرد، که با فشار دادن «جستجو» + «نقطه» باز می‌شود.</translation>
 <translation id="7356165926712028380">تغییر به بریل ۸ نقطه‌ای</translation>
 <translation id="7356610683936413584">جزئیات فهرست شرح</translation>
@@ -911,6 +932,7 @@
     اگر آموزش گام‌به‌گام را به پایان رسانده‌اید، بااستفاده از ChromeVox به دکمه «بستن» پیمایش کنید و روی آن کلیک کنید.</translation>
 <translation id="7724603315864178912">برش</translation>
 <translation id="7731785449856576010">ابزارک رسانه بعدی وجود ندارد</translation>
+<translation id="7735498529470878067">کاوش با لمس به شما کمک می‌کند به‌سرعت از آنچه روی صفحه است اطلاعاتی به‌دست آورید.</translation>
 <translation id="773906353055481349">‏برای پیمایش سلول‌به‌سلول، «Search+Ctrl+Alt» را به‌همراه پیکان‌ها فشار دهید</translation>
 <translation id="7763537600611320912">بارگیری <ph name="FILE_NAME" /> شروع شد</translation>
 <translation id="7768784765476638775">انتخاب برای شنیدن</translation>
@@ -1090,6 +1112,7 @@
 <translation id="9153606228985488238">گام <ph name="PERCENT" /> درصد</translation>
 <translation id="9160096769946561184">رفتن به انتهای ستون کنونی</translation>
 <translation id="9173115498289768110">میزان صدا <ph name="PERCENT" /> درصد</translation>
+<translation id="9185200690645120087">‏آموزش گام‌به‌گام گزینه‌های لمسی ChromeVox</translation>
 <translation id="9192904702577636854">محتوای متحرک</translation>
 <translation id="9205282956404529648">برای تکمیل خودکار، تایپ کنید</translation>
 <translation id="9208241857935108694">بژ تیره</translation>

@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> khuyên bạn nên cập nhật <ph name="DEVICE_TYPE" /> này.</translation>
 <translation id="1118738876271697201">Hệ thống không xác định được số sê-ri hoặc kiểu thiết bị.</translation>
 <translation id="1119447706177454957">Lỗi nội bộ</translation>
+<translation id="111959947408687873">Dùng tổ hợp phím Ctrl+<ph name="SEARCH_KEY_NAME" />+M để bật/tắt tính năng phóng to toàn màn hình. Dùng tổ hợp phím Ctrl+Alt+Mũi tên để di chuyển xung quanh màn hình khi đã phóng to.</translation>
 <translation id="1122068467107743258">Công việc</translation>
 <translation id="1122198203221319518">&amp;Công cụ</translation>
 <translation id="1122242684574577509">Xác thực bị lỗi. Nhấp để truy cập trang đăng nhập của mạng Wi-Fi mà bạn đang sử dụng (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Chương trình Bảo vệ nâng cao của Google</translation>
 <translation id="1155816283571436363">Đang kết nối với điện thoại của bạn</translation>
 <translation id="1161575384898972166">Vui lòng đăng nhập vào <ph name="TOKEN_NAME" /> để xuất chứng chỉ ứng dụng khách.</translation>
+<translation id="116173250649946226">Bạn không thể thay đổi giao diện vì đây là giao diện mặc định do quản trị viên đặt.</translation>
 <translation id="1163931534039071049">&amp;Xem nguồn khung</translation>
 <translation id="1164891049599601209">Đã được nhập trên trang web lừa đảo</translation>
 <translation id="1164899421101904659">Nhập khóa mở khóa mã PIN</translation>
@@ -2554,6 +2556,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3809272675881623365">Con thỏ</translation>
 <translation id="3809280248639369696">Ánh trăng</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> có thể xem tệp trong các thư mục sau đây</translation>
+<translation id="3810914450553844415">Quản trị viên của bạn không cho phép dùng các Tài khoản Google khác.</translation>
 <translation id="3810973564298564668">Quản lý</translation>
 <translation id="381202950560906753">Thêm vân tay khác</translation>
 <translation id="3812525830114410218">Chứng chỉ không hợp lệ</translation>
@@ -2675,6 +2678,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3925573269917483990">Máy ảnh:</translation>
 <translation id="3926002189479431949">Đã thay đổi điện thoại Smart Lock</translation>
 <translation id="3927932062596804919">Từ chối</translation>
+<translation id="392803502090869922">Thiết lập eSIM</translation>
 <translation id="3928570707778085600">Lưu các thay đổi vào <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Sắp hết mực</translation>
 <translation id="3929426037718431833">Các tiện ích này có thể xem và thay đổi thông tin trên trang web này.</translation>
@@ -4245,6 +4249,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5764797882307050727">Hãy giải phóng một số dung lượng trên thiết bị của bạn.</translation>
 <translation id="5765425701854290211">Rất tiếc, một số tệp đã bị hỏng và cập nhật không thành công. Các tệp đã đồng bộ hóa của bạn được an toàn.</translation>
 <translation id="5765491088802881382">Không có mạng nào</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> có thể nguy hiểm. Gửi cho Google để quét? Hãy nhấn tổ hợp phím Shift+F6 để chuyển tới khu vực thanh tệp tải xuống.</translation>
 <translation id="5769519078756170258">Máy chủ lưu trữ hoặc miền cần loại trừ</translation>
 <translation id="5770125698810550803">Hiển thị các nút di chuyển</translation>
 <translation id="5771816112378578655">Đang thiết lập...</translation>
@@ -4401,6 +4406,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5942779427914696408">Phạm vi hiển thị của thiết bị</translation>
 <translation id="5943127421590245687">Đã xác minh thành công. Để mở khóa và khôi phục dữ liệu trên thiết bị, vui lòng nhập mật khẩu cũ của <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Quét mã QR</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> có thể nguy hiểm. Gửi đến tính năng Duyệt web An toàn của Google để quét?</translation>
 <translation id="5946591249682680882">ID báo cáo <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Kết nối bàn phím/chuột hoặc tiếp tục thiết lập bằng màn hình cảm ứng. Nếu bạn đang dùng thiết bị Bluetooth, hãy đảm bảo thiết bị đã sẵn sàng ghép nối.</translation>
 <translation id="5949544233750246342">Không thể phân tích cú pháp tệp</translation>
@@ -4448,6 +4454,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6002452033851752583">Đã xóa mật khẩu khỏi Tài khoản Google của bạn</translation>
 <translation id="6002458620803359783">Giọng nói ưu tiên</translation>
 <translation id="6003143259071779217">Xóa mạng di động của eSIM</translation>
+<translation id="6003582434972667631">Giao diện sẽ do tổ chức của bạn đặt</translation>
 <translation id="6006484371116297560">Cổ điển</translation>
 <translation id="6007240208646052708">Chưa có dịch vụ tìm kiếm bằng giọng nói cho ngôn ngữ của bạn.</translation>
 <translation id="6011074160056912900">Mạng Ethernet</translation>
@@ -4827,6 +4834,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6429384232893414837">Lỗi cập nhật</translation>
 <translation id="6430814529589430811">ASCII được mã hóa base64, chứng chỉ đơn</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> sẽ thiết lập cập nhật tự động cho tất cả người dùng của máy tính này.</translation>
+<translation id="6434104957329207050">Tốc độ quét điểm</translation>
 <translation id="6434309073475700221">Hủy</translation>
 <translation id="6434325376267409267">Bạn cần cập nhật thiết bị của mình để sử dụng <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Xem trong Cửa hàng trực tuyến</translation>
@@ -4869,6 +4877,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6474498546677193336">Không thể ngừng chia sẻ vì một ứng dụng đang dùng thư mục này. Hệ thống sẽ ngừng chia sẻ thư mục này khi bạn tắt Linux vào lần tới.</translation>
 <translation id="6474884162850599008">Ngắt kết nối tài khoản Google Drive</translation>
 <translation id="6475294023568239942">Giải phóng dung lượng ổ đĩa hoặc thay đổi kích thước ổ đĩa Linux trong phần Cài đặt</translation>
+<translation id="6476138569087741884">Mức thu phóng toàn bộ màn hình</translation>
 <translation id="6477822444490674459">Không dùng được tính năng đồng bộ hóa thông báo trên điện thoại có hồ sơ công việc. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Giữ tệp nguy hiểm?</translation>
 <translation id="6480327114083866287">Do <ph name="MANAGER" /> quản lý</translation>
@@ -5249,7 +5258,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6911324888870229398">Đã mất kết nối mạng. Vui lòng kiểm tra kết nối của bạn hoặc thử một mạng Wi-Fi khác.</translation>
 <translation id="6911734910326569517">Mức sử dụng bộ nhớ</translation>
 <translation id="6912007319859991306">Mã PIN của SIM di động</translation>
-<translation id="691289340230098384">Tùy chọn phụ đề</translation>
+<translation id="691289340230098384">Lựa chọn ưu tiên về phụ đề</translation>
 <translation id="6914783257214138813">Bất cứ ai có thể xem tệp đã xuất đều có thể biết mật khẩu của bạn.</translation>
 <translation id="6916590542764765824">Quản lý các tiện ích</translation>
 <translation id="6919868320029503575">Mật khẩu yếu</translation>
@@ -5324,6 +5333,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6985607387932385770">Máy in</translation>
 <translation id="6988094684494323731">Đang khởi động vùng chứa Linux</translation>
 <translation id="6988403677482707277">Đã di chuyển thẻ sang đầu dải thẻ</translation>
+<translation id="6990209147952697693">Chrome phiên bản cũ</translation>
 <translation id="6991665348624301627">Chọn máy in đích</translation>
 <translation id="6992554835374084304">Bật tính năng kiểm tra lỗi chính tả nâng cao</translation>
 <translation id="6993000214273684335">Đã xóa thẻ khỏi nhóm chưa có tên – <ph name="GROUP_CONTENTS" /></translation>
@@ -6311,6 +6321,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8086015605808120405">Đang định cấu hình <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">Thiết lập <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Tệp này đã được mã hóa. Hãy yêu cầu chủ sở hữu tệp giải mã.}other{Một số tệp trong số này đã được mã hóa. Hãy yêu cầu chủ sở hữu tệp giải mã.}}</translation>
+<translation id="8087576439476816834">Tải xuống, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8090234456044969073">Đọc danh sách trang web được truy cập thường xuyên nhất của bạn</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> không phản hồi</translation>
@@ -6552,6 +6563,8 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8368859634510605990">&amp;Mở tất cả dấu trang</translation>
 <translation id="8370294614544004647">Chuyển sang chế độ ngủ khi gập máy tính</translation>
 <translation id="8371695176452482769">Nói ngay bây giờ</translation>
+<translation id="8371749822919332187">Dùng tổ hợp phím Ctrl+Alt+Tăng độ sáng để phóng to.
+Dùng tổ hợp phím Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Bật âm thanh trang web}other{Bật âm thanh các trang web}}</translation>
 <translation id="8372369524088641025">Khóa WEP sai</translation>
 <translation id="8373652277231415614">Thư mục do Crostini chia sẻ</translation>
@@ -6559,7 +6572,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8378714024927312812">Do tổ chức của bạn quản lý</translation>
 <translation id="8379878387931047019">Thiết bị này không hỗ trợ loại khóa bảo mật mà trang web này yêu cầu</translation>
 <translation id="8379991678458444070">Đánh dấu thẻ này để quay lại đây nhanh chóng</translation>
-<translation id="8380314198565901932">Lỗi khi tải máy ảo xuống. Vui lòng cập nhật <ph name="DEVICE_TYPE" /> của bạn rồi thử lại.</translation>
 <translation id="8382913212082956454">Sao chép địa chỉ &amp;email</translation>
 <translation id="8386091599636877289">Không tìm thấy chính sách.</translation>
 <translation id="8386819192691131213">Cho phép Trợ lý sử dụng thông tin trên màn hình để đưa ra câu trả lời nhanh, chẳng hạn như bản dịch, định nghĩa, kết quả chuyển đổi đơn vị và nhiều nội dung khác</translation>
@@ -7222,6 +7234,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Chào mừng bạn đến với hồ sơ mới</translation>
 <translation id="9112748030372401671">Thay đổi hình nền của bạn</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> có thể nguy hiểm. Gửi cho Google để quét?</translation>
 <translation id="9112987648460918699">Tìm...</translation>
 <translation id="9114663181201435112">Đăng nhập dễ dàng</translation>
 <translation id="9115675100829699941">&amp;Dấu trang</translation>

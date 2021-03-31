@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="102360288709523007">使用統計情報と障害レポートを Google に送信して Chromium の機能向上に役立てる。</translation>
-<translation id="1043245583918962542">このデバイスから Chromium データを削除するかどうかを選択してください。</translation>
 <translation id="1185134272377778587">Chromium について</translation>
 <translation id="1257458525759135959">画像を保存するには、[設定] をタップして写真への追加を Chromium に許可してください</translation>
 <translation id="1289216811211435351">Chromium に切り替え</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Chromium データをこのデバイスから削除しますか？</translation>
 <translation id="8175055321229419309">ヒント: <ph name="BEGIN_LINK" />Chromium を Dock に移動<ph name="END_LINK" />するとアクセスしやすくなります</translation>
 <translation id="8240981428553046115">Chromium でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>
-<translation id="8252885722420466166">ユーザーの現在時に基づいて Chromium で Google を使いやすくします。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. All rights reserved.</translation>
 <translation id="8663480472502753423">Chromium を最新の状態に維持します</translation>
 <translation id="8776843108004031667">このアカウントと保存されていないデータは Chromium から削除されます。</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium は古いバージョンです</translation>
 <translation id="921174536258924340">Chromium ですべてのパスワードを確認できませんでした。明日もう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウント内のパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="985602178874221306">Chromium 開発者</translation>
-<translation id="994708389219151914">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、Chromium データはこのデバイスから削除されます。</translation>
 </translationbundle>

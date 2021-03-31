@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nije snimljeno ništa</translation>
+<translation id="1838104802459806957">Nagni gore</translation>
 <translation id="1851616744363735765">PAUZIRANO</translation>
 <translation id="1862930711583847113">Nije moguće izvesti fajl <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Rezolucija fotografije</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">Kamera <ph name="CAMERA" /> je aktivna</translation>
 <translation id="2144806332417375165">Prilagođeni parametri videozapisa</translation>
 <translation id="229579744168541441">Izvezi na disk</translation>
+<translation id="2320741269052147773">Pomičite ulijevo</translation>
 <translation id="2501278716633472235">Nazad</translation>
 <translation id="2501853267655415902">Snimanje je zaustavljeno</translation>
 <translation id="2501953888035679275">Snimajte fotografije i videozapise kamerom.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Fotografije i videozapisi snimljeni kamerom premjestit će se u folder Preuzimanja. Možete im pristupiti u aplikaciji Files.
 
         Aplikacije s odobrenjem za pohranu moći će pristupiti vašim fotografijama i videozapisima.</translation>
+<translation id="3067436040345934772">Pomičite udesno</translation>
 <translation id="3081586908890909590">Prebaci na snimanje videozapisa</translation>
 <translation id="313467653172006084">30 fps</translation>
 <translation id="3183731565330012717">Mrežni prikaz</translation>
@@ -89,6 +92,7 @@ Ako se vaše povratne informacije odnose na kvalitet slike ili videozapisa, pril
 <translation id="8145038249676204903">Prebaci na snimanje fotografija</translation>
 <translation id="8239780215768881278">Snimi pregled videozapisa</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8425673304802773841">Nagni dolje</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Prikaži metapodatke</translation>

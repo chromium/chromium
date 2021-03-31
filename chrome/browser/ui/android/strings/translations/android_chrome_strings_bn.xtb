@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">অ্যাপ্লিকেশন ভার্সন</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> শেয়ার করা যাচ্ছে না</translation>
+<translation id="147113415845704694">বলে দেখুন, "আজকের আবহাওয়া কেমন?"</translation>
 <translation id="1477626028522505441">সার্ভার সমস্যার কারণে <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
 <translation id="1492417797159476138">আপনি আগেই এই সাইটের জন্য ইউজারনেমটি সেভ করেছেন</translation>
 <translation id="1506061864768559482">সার্চ ইঞ্জিন</translation>
@@ -571,6 +572,7 @@
 <translation id="49268022542405662">আপনার পাসওয়ার্ড এক্সপোর্ট করা হবে এবং টেক্সট ফাইল হিসেবে ডাউনলোড করা হবে। যে ফোল্ডারে ডাউনলোড হবে সেখানের অ্যাক্সেস সহ সেগুলি সবাই দেখতে পাবে এবং সব অ্যাপে দেখা যাবে।</translation>
 <translation id="4932247056774066048">যেহেতু আপনি <ph name="DOMAIN_NAME" />-এর ম্যানেজ করা অ্যাকাউন্ট থেকে সাইন-আউট করছেন তাই এই ডিভাইস থেকে আপনার Chrome ডেটা মুছে ফেলা হবে। এটি আপনার Google অ্যাকাউন্টে থাকবে।</translation>
 <translation id="4936039914467572121">আরও তাড়াতাড়ি এই সাইটে যান</translation>
+<translation id="4941179133499732445">ভয়েস ব্যবহার করে সার্চ করতে 'মাইক' আইকনে ট্যাপ করুন</translation>
 <translation id="4943703118917034429">ভার্চুয়াল রিয়ালিটি</translation>
 <translation id="4943872375798546930">কোন ফলাফল নেই</translation>
 <translation id="4961107849584082341">এই পৃষ্ঠাটি যেকোনও ভাষায় অনুবাদ করুন</translation>
@@ -585,6 +587,7 @@
 <translation id="5011311129201317034"><ph name="SITE" /> এদের সঙ্গে সংযুক্ত হতে চায়</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">অনুমতি দিন</translation>
+<translation id="5061533557687621530">আবহাওয়ার পরিস্থিতি জানতে 'মাইক' আইকনে ট্যাপ করুন ও বলুন, "আজকের আবহাওয়া কেমন?"</translation>
 <translation id="5087580092889165836">কার্ড জুড়ুন</translation>
 <translation id="5091249083535528968">বেশি ব্যবহারের ডেটা</translation>
 <translation id="509429900233858213">একটি ত্রুটি ঘটেছে৷</translation>
@@ -599,6 +602,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{১টি ডাউনলোড করা যায়নি।}one{#টি ডাউনলোড করা যায়নি।}other{#টি ডাউনলোড করা যায়নি।}}</translation>
 <translation id="5170568018924773124">ফোল্ডারে দেখান</translation>
 <translation id="5184329579814168207">Chrome এ খুলুন</translation>
+<translation id="5188992787241350004">ভয়েস ব্যবহার করে সার্চ করুন</translation>
 <translation id="5191251636205085390">থার্ড-পার্টি কুকি সরানোর নতুন প্রযুক্তি ও তা নিয়ন্ত্রণ সংক্রান্ত তথ্যগুলি জানুন</translation>
 <translation id="5193988420012215838">আপনার ক্লিপবোর্ডে কপি করা হয়েছে</translation>
 <translation id="5199929503336119739">কর্মস্থলের প্রোফাইল</translation>

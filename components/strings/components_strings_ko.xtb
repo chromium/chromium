@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">세부정보 보기</translation>
 <translation id="1030706264415084469"><ph name="URL" />에서 내 기기에 대용량 데이터를 영구 저장하려고 합니다</translation>
 <translation id="1032854598605920125">시계 방향으로 회전</translation>
+<translation id="1036224116832931580">공룡 게임, 탭하여 점프하고 플레이하세요</translation>
 <translation id="1036348656032585052">사용 중지</translation>
 <translation id="1038106730571050514">추천 보기</translation>
 <translation id="1038842779957582377">알 수 없는 이름</translation>
@@ -275,6 +276,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{없음}=1{사이트 1개}other{사이트 #개}}</translation>
 <translation id="1945968466830820669">조직의 계정에 액세스할 수 없게 되거나 신원 도용이 발생할 수도 있습니다. 지금 비밀번호를 변경하는 것이 좋습니다.</translation>
 <translation id="1947454675006758438">오른쪽 상단 스테이플</translation>
+<translation id="1958218078413065209">최고 점수는 <ph name="SCORE" />점입니다.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />방문한 일부 페이지의 URL, 제한된 시스템 정보, 일부 페이지 콘텐츠<ph name="END_WHITEPAPER_LINK" />를 Google에 전송하여 모든 웹 사용자를 위해 보안을 강화하는 데 참여해 주세요. <ph name="BEGIN_PRIVACY_PAGE_LINK" />개인정보처리방침<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 북마크</translation>
 <translation id="1973335181906896915">일련화 오류</translation>
@@ -541,6 +543,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab과 Enter 키를 차례로 눌러 Chrome 설정에서 안전 확인 실행</translation>
 <translation id="3061707000357573562">서비스 패치</translation>
 <translation id="3064966200440839136">시크릿 모드를 종료하고 외부 애플리케이션에서 결제합니다. 계속하시겠습니까?</translation>
+<translation id="306573536155379004">게임이 시작되었습니다.</translation>
 <translation id="3080254622891793721">그래픽</translation>
 <translation id="3086579638707268289">웹상의 활동이 모니터링되고 있음</translation>
 <translation id="3087734570205094154">맨 아래</translation>
@@ -1532,6 +1535,7 @@
 <translation id="6934672428414710184">Google 계정에 등록된 이름입니다.</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />에서 관리하지 않는 사이트에 비밀번호를 입력했습니다. 계정을 안전하게 보호하려면 다른 앱과 사이트에서 동일한 비밀번호를 재사용하지 마세요.</translation>
 <translation id="6945221475159498467">선택</translation>
+<translation id="6948051842255602737">게임 종료, 점수는 <ph name="SCORE" />점입니다.</translation>
 <translation id="6948701128805548767">수령 방법과 요구사항을 확인하려면 주소를 선택하세요.</translation>
 <translation id="6949872517221025916">비밀번호 재설정</translation>
 <translation id="6950684638814147129">JSON 값을 파싱하는 중에 오류가 발생했습니다. <ph name="ERROR" /></translation>
@@ -1813,6 +1817,7 @@
 <translation id="7956713633345437162">모바일 북마크</translation>
 <translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7966803981046576691">작업 계정 유형</translation>
+<translation id="79682505114836835">"<ph name="VALUE" />" 값은 유효하지 않은 16진수 색상입니다.</translation>
 <translation id="7976214039405368314">요청 횟수가 너무 많음</translation>
 <translation id="7977538094055660992">출력 기기</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1940,6 +1945,7 @@
 <translation id="8446884382197647889">자세히 알아보기</translation>
 <translation id="8457125768502047971">무기한</translation>
 <translation id="8461694314515752532">나만의 동기화 암호로 동기화된 데이터 암호화</translation>
+<translation id="8463101686637053101">공룡 게임, 스페이스바를 눌러 점프하고 플레이하세요</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{신용카드 1개}other{신용카드 #개}}</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="8474910779563686872">개발자 세부정보 표시</translation>
@@ -2075,6 +2081,7 @@
 <translation id="8996941253935762404">방문하려는 사이트에 유해한 프로그램이 있습니다.</translation>
 <translation id="8997023839087525404">서버에서 인증서 투명성 정책을 사용하여 공개되지 않은 인증서를 제시했습니다. 인증서 투명성 정책은 인증서가 신뢰할 수 있으며 공격자로부터 사용자를 보호하고 있음을 보장하기 위한 것으로 일부 인증서의 경우 필수사항입니다.</translation>
 <translation id="9001074447101275817">프록시 <ph name="DOMAIN" />에 사용자 이름 및 비밀번호를 입력해야 합니다.</translation>
+<translation id="9001963517402879850">점프하세요</translation>
 <translation id="9004367719664099443">VR 세션 진행 중</translation>
 <translation id="9005998258318286617">PDF 문서를 로드하지 못했습니다.</translation>
 <translation id="9008201768610948239">무시</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="is">
 <translation id="102360288709523007">Hjálpaðu til við að bæta Chromium með því að senda talnagögn um notkun og hrunskýrslur til Google.</translation>
-<translation id="1043245583918962542">Veldu hvort þú vilt hreinsa gögn Chromium úr þessu tæki eða geyma þau.</translation>
 <translation id="1185134272377778587">Um Chromium</translation>
 <translation id="1257458525759135959">Til að vista myndir og láta Chromium bæta við myndirnar þínar skaltu ýta á Stillingar</translation>
 <translation id="1289216811211435351">Skipta yfir í Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Viltu hreinsa Chromium gögnin þín úr þessu tæki?</translation>
 <translation id="8175055321229419309">Ábending: <ph name="BEGIN_LINK" />Færðu Chromium í forritastikuna<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium gat ekki leitað að uppfærslum. Reyndu aftur síðar.</translation>
-<translation id="8252885722420466166">Fáðu betri Google upplifun í Chromium út frá staðsetningu þinni.</translation>
 <translation id="8586442755830160949">Höfundarréttur <ph name="YEAR" /> höfundar Chromium. Allur réttur áskilinn.</translation>
 <translation id="8663480472502753423">Haltu Chromium uppfærðu</translation>
 <translation id="8776843108004031667">Þessi reikningur og öll óvistuð gögn verða fjarlægð úr Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium er úrelt</translation>
 <translation id="921174536258924340">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun eða <ph name="BEGIN_LINK" />athugaðu aðgangsorð á Google reikningnum þínum.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Höfundar Chromium</translation>
-<translation id="994708389219151914">Reikningurinn þinn er í umsjón <ph name="HOSTED_DOMAIN" /> og því verður Chromium gögnunum þínum eytt úr þessu tæki.</translation>
 </translationbundle>

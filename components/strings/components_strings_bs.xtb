@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Prikaži detalje</translation>
 <translation id="1030706264415084469"><ph name="URL" /> želi trajno pohraniti veliku količinu podataka na vaš uređaj</translation>
 <translation id="1032854598605920125">Okreni u smjeru kretanja kazaljki na satu</translation>
+<translation id="1036224116832931580">Igra s dinosaurusom, dodirnite da skočite i zaigrate</translation>
 <translation id="1036348656032585052">Isključi</translation>
 <translation id="1038106730571050514">Prikažite prijedloge</translation>
 <translation id="1038842779957582377">nepoznato ime</translation>
@@ -279,6 +280,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="192020519938775529">{COUNT,plural, =0{Nema}=1{1 web lokacija}one{# web lokacija}few{# web lokacije}other{# web lokacija}}</translation>
 <translation id="1945968466830820669">Možete izgubiti pristup računu svoje organizacije ili doživjeti krađu identiteta. Chromium preporučuje da odmah promijenite lozinku.</translation>
 <translation id="1947454675006758438">Spajanje u gornjem desnom uglu</translation>
+<translation id="1958218078413065209">Vaš najbolji rezultat je <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Pomozite nam da poboljšamo sigurnost na webu za sve slanjem <ph name="BEGIN_WHITEPAPER_LINK" />URL-ova nekih stranica koje posjećujete, ograničenih sistemskih informacija i sadržaja nekih stranica<ph name="END_WHITEPAPER_LINK" /> Googleu. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Pravila privatnosti<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Oznake domene <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Greška u serijalizaciji</translation>
@@ -547,6 +549,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da pokrenete Sigurnosnu provjeru u postavkama Chromea</translation>
 <translation id="3061707000357573562">Usluga za zakrpe</translation>
 <translation id="3064966200440839136">Napuštate anonimni način rada radi plaćanja putem vanjske aplikacije. Nastaviti?</translation>
+<translation id="306573536155379004">Igra je počela.</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3086579638707268289">Neko nadzire vašu aktivnost na webu</translation>
 <translation id="3087734570205094154">Dolje</translation>
@@ -1543,6 +1546,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6934672428414710184">Ovaj naziv je s vašeg Google računa</translation>
 <translation id="6944692733090228304">Unijeli ste lozinku na web lokaciji kojom ne upravlja organizacija <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Da zaštitite račun, lozinku nemojte ponovo koristiti u drugim aplikacijama i na drugim web lokacijama.</translation>
 <translation id="6945221475159498467">Odaberi</translation>
+<translation id="6948051842255602737">Igra je završena. Vaš rezultat je <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Da vidite načine i uslove preuzimanja, odaberite adresu</translation>
 <translation id="6949872517221025916">Poništite lozinku</translation>
 <translation id="6950684638814147129">Greška prilikom raščlanjivanja JSON vrijednosti: <ph name="ERROR" /></translation>
@@ -1825,6 +1829,7 @@ Dodatni detalji:
 <translation id="7956713633345437162">Mobilne oznake</translation>
 <translation id="7961015016161918242">Nikada</translation>
 <translation id="7966803981046576691">Vrsta računa za posao</translation>
+<translation id="79682505114836835">Vrijednost "<ph name="VALUE" />" je nevažeći kôd heksadecimalne boje.</translation>
 <translation id="7976214039405368314">Previše zahtjeva</translation>
 <translation id="7977538094055660992">Izlazni uređaj</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1952,6 +1957,7 @@ Dodatni detalji:
 <translation id="8446884382197647889">Saznajte više</translation>
 <translation id="8457125768502047971">Neodređeno</translation>
 <translation id="8461694314515752532">Šifrirajte sinhronizirane podatke svojim pristupnim izrazom</translation>
+<translation id="8463101686637053101">Igra s dinosaurusom, pritisnite tipku za razmak da skočite i zaigrate</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}few{# kreditne kartice}other{# kreditnih kartica}}</translation>
 <translation id="8473863474539038330">Adrese i još mnogo toga</translation>
 <translation id="8474910779563686872">Prikaži detalje o programeru</translation>
@@ -2087,6 +2093,7 @@ Dodatni detalji:
 <translation id="8996941253935762404">Naredna web lokacija sadrži štetne programe</translation>
 <translation id="8997023839087525404">Poslužitelj je prikazao certifikat koji nije javno otkriven putem pravila Transparentnost certifikata. Taj se zahtjev postavlja za neke certifikate radi provjere njihove pouzdanosti i zaštite od napada.</translation>
 <translation id="9001074447101275817">Domena proksi servera <ph name="DOMAIN" /> traži korisničko ime i lozinku.</translation>
+<translation id="9001963517402879850">Skočite!</translation>
 <translation id="9004367719664099443">VR sesija je u toku</translation>
 <translation id="9005998258318286617">Učitavanje PDF dokumenta nije uspjelo.</translation>
 <translation id="9008201768610948239">Zanemari</translation>

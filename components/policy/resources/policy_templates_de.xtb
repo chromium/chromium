@@ -841,6 +841,7 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 
       Ist "<ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" />" nicht konfiguriert, wird kein Symbol für den Suchanbieter angezeigt.</translation>
 <translation id="2145735238144543545">Erforderliche Clientzertifikate</translation>
+<translation id="2146103669166779785">Der Hex-Farbcode wird verwendet, um ein Design für den Browser zu erstellen.</translation>
 <translation id="214901426630414675">Duplexdruck einschränken</translation>
 <translation id="2149330464730004005">Farbdruck einschränken</translation>
 <translation id="2149592087996467903">Verhindern, dass WebRTC veraltete Versionen von TLS/DTLS verwendet</translation>
@@ -1449,6 +1450,7 @@ Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, N
 <translation id="2905984450136807296">Cachelebensdauer für Authentifizierungsdaten</translation>
 <translation id="2906874737073861391">Liste der AppPack-Erweiterungen</translation>
 <translation id="2908277604670530363">Maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver</translation>
+<translation id="2912366658685903301">Farbe des Browserdesigns ändern</translation>
 <translation id="291853569864365550">Keine Inhaltsvorschläge auf der Seite „Neuer Tab“ anzeigen</translation>
 <translation id="2920795918401557243">Mit dieser Einstellung können Nutzer über den Dienst für die Ablaufverfolgung eine systemweite Leistungs-Trace erfassen.
 
@@ -3800,6 +3802,11 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Ist diese Richtlinie nicht konfiguriert, können Nutzer die im Launcher angepinnten Apps ändern.</translation>
 <translation id="6190022522129724693">Standardeinstellung für Pop-ups</translation>
 <translation id="6190367314942602985">Personenbezogene Daten erfassen</translation>
+<translation id="6191963383731098056">Mit dieser Richtlinie können Administratoren die Farbe des Designs von <ph name="PRODUCT_NAME" /> konfigurieren. Der Eingabestring muss ein gültiger Hex-Farbcode mit dem Format „#RRGGBB“ sein.
+
+      Wenn für die Richtlinie ein gültiger Hex-Farbcode festgelegt ist, wird automatisch ein entsprechendes Design erstellt und auf den Browser angewendet. Nutzer können das Design, das durch diese Richtlinie festgelegt ist, nicht ändern.
+
+      Wird die Richtlinie nicht konfiguriert, können Nutzer das Design nach Belieben ändern.</translation>
 <translation id="6195802366906945965">Mit dieser Richtlinie kann festgelegt werden, ob die integrierte Zertifikatsprüfung zum Verifizieren von Serverzertifikaten verwendet wird</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" />-Richtliniendaten erfassen</translation>
 <translation id="6210259502936598222">Informationen zu Betriebssystem und <ph name="PRODUCT_NAME" />-Version erfassen</translation>

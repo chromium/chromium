@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Tidak ada yang direkam</translation>
+<translation id="1838104802459806957">Miringkan ke atas</translation>
 <translation id="1851616744363735765">DIJEDA</translation>
 <translation id="1862930711583847113">Tidak dapat mengekspor <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolusi foto</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> aktif</translation>
 <translation id="2144806332417375165">Parameter video kustom</translation>
 <translation id="229579744168541441">Ekspor ke disk</translation>
+<translation id="2320741269052147773">Geser ke kiri</translation>
 <translation id="2501278716633472235">Kembali</translation>
 <translation id="2501853267655415902">Perekaman dihentikan</translation>
 <translation id="2501953888035679275">Mengambil foto dan merekam video dengan kamera.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Foto dan video yang diambil dengan kamera akan dipindahkan ke folder Download. Anda dapat mengaksesnya di File.
 
         Aplikasi yang memiliki izin penyimpanan dapat mengakses foto dan video.</translation>
+<translation id="3067436040345934772">Geser ke kanan</translation>
 <translation id="3081586908890909590">Beralih ke mode merekam video</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">Jenis petak</translation>
@@ -89,6 +92,7 @@ Jika masukan Anda berkaitan dengan kualitas gambar atau video, lampirkan contoh 
 <translation id="8145038249676204903">Beralih ke mode mengambil foto</translation>
 <translation id="8239780215768881278">Ambil ringkasan video</translation>
 <translation id="8261506727792406068">Hapus</translation>
+<translation id="8425673304802773841">Miringkan ke bawah</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Lihat pratinjau metadata</translation>

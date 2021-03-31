@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lv">
 <translation id="102360288709523007">Uzlabojiet Chromium, sūtot lietojuma statistiku un avāriju pārskatus Google serveriem.</translation>
-<translation id="1043245583918962542">Izvēlieties, vai notīrīt Chromium datus no šīs ierīces vai tos paturēt.</translation>
 <translation id="1185134272377778587">Par Chromium</translation>
 <translation id="1257458525759135959">Lai saglabātu attēlus, pieskarieties vienumam Iestatījumi un atļaujiet Chromium pievienot fotoattēlus.</translation>
 <translation id="1289216811211435351">Pāriešana uz Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Vai dzēst jūsu Chromium datus no šīs ierīces?</translation>
 <translation id="8175055321229419309">Padoms. <ph name="BEGIN_LINK" />Pārvietojiet pārlūku Chromium uz savu doku<ph name="END_LINK" />.</translation>
 <translation id="8240981428553046115">Pārlūkā Chromium nevarēja pārbaudīt atjauninājumu pieejamību. Vēlāk mēģiniet vēlreiz.</translation>
-<translation id="8252885722420466166">Izmantojiet visas Google sniegtās iespējas pārlūkā Chromium, sūtot informāciju par savu atrašanās vietu.</translation>
 <translation id="8586442755830160949">Autortiesības <ph name="YEAR" /> Chromium autori. Visas tiesības paturētas.</translation>
 <translation id="8663480472502753423">Jaunākās Chromium iespējas</translation>
 <translation id="8776843108004031667">Šis konts un visi nesaglabātie dati tiks noņemti no pārlūka Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium versija ir novecojusi.</translation>
 <translation id="921174536258924340">Pārlūkprogrammā Chromium nevarēja pārbaudīt visas paroles. Mēģiniet vēlreiz rīt vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Chromium autori</translation>
-<translation id="994708389219151914">Jūsu konts tiek pārvaldīts domēnā <ph name="HOSTED_DOMAIN" />, tāpēc jūsu Chromium dati no šīs ierīces tiks dzēsti.</translation>
 </translationbundle>

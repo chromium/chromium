@@ -92,7 +92,6 @@
 <translation id="1698760176351776263">Адрас IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Працоўны стол: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Налады сеткі</translation>
-<translation id="1713296079175516843">У мэтах бяспекі перыферыйная прылада не падтрымліваецца</translation>
 <translation id="1719094688023114093">Імгненныя субцітры ўключаны.</translation>
 <translation id="1720011244392820496">Уключыце сінхранізацыю Wi-Fi</translation>
 <translation id="1743570585616704562">Не распазнана</translation>
@@ -277,6 +276,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> зможа ўвайсці пазней.</translation>
 <translation id="3321628682574733415">Няправільны бацькоўскі код</translation>
 <translation id="332587331255250389">Замяніце акумулятар</translation>
+<translation id="3333741161915951567">Мадэм перазагружаецца. Перш чым паўтараць спробу, пачакайце 30 секунд.</translation>
 <translation id="3341303451326249809">Здымак экрана зроблены</translation>
 <translation id="334252345105450327">Зрабіць здымак экрана</translation>
 <translation id="3351879221545518001">Вы трансліруеце экран.</translation>

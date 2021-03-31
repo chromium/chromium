@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">詳細を表示</translation>
 <translation id="1030706264415084469"><ph name="URL" /> から、デバイスに大きなデータを永続的に保存する許可を求められています</translation>
 <translation id="1032854598605920125">時計回りに回転</translation>
+<translation id="1036224116832931580">Dino ゲーム、プレイするにはタップしてジャンプさせます</translation>
 <translation id="1036348656032585052">オフにする</translation>
 <translation id="1038106730571050514">候補を表示する</translation>
 <translation id="1038842779957582377">不明な名前</translation>
@@ -275,6 +276,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{なし}=1{1 件のサイト}other{# 件のサイト}}</translation>
 <translation id="1945968466830820669">組織のアカウントにアクセスできなくなったり、個人情報が盗まれたりする可能性があります。今すぐパスワードを変更することをおすすめします。</translation>
 <translation id="1947454675006758438">ステープル（右上）</translation>
+<translation id="1958218078413065209">ハイスコアは <ph name="SCORE" /> です。</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />アクセスしたページの URL、システム情報、およびページのコンテンツの一部<ph name="END_WHITEPAPER_LINK" />を Google に送信して、ウェブ全体のセキュリティ強化にご協力ください。<ph name="BEGIN_PRIVACY_PAGE_LINK" />プライバシー ポリシー<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> のブックマーク</translation>
 <translation id="1973335181906896915">シリアル化エラーです</translation>
@@ -541,6 +543,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab キー、Enter キーの順に押すと、Chrome の設定で安全確認を実行します</translation>
 <translation id="3061707000357573562">サービスへのパッチの適用</translation>
 <translation id="3064966200440839136">外部アプリケーションを経由したお支払いの処理に進むため、シークレット モードを解除します。続行しますか？</translation>
+<translation id="306573536155379004">ゲームを開始しました。</translation>
 <translation id="3080254622891793721">グラフィック</translation>
 <translation id="3086579638707268289">ウェブでのアクティビティが監視されています</translation>
 <translation id="3087734570205094154">下</translation>
@@ -1532,6 +1535,7 @@
 <translation id="6934672428414710184">Google アカウントで設定されている名前です</translation>
 <translation id="6944692733090228304"><ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> が管理していないサイトでパスワードを入力しました。アカウントを保護するには、他のアプリやサイトでパスワードを再使用しないでください。</translation>
 <translation id="6945221475159498467">選択</translation>
+<translation id="6948051842255602737">ゲームオーバー、スコアは <ph name="SCORE" /> です。</translation>
 <translation id="6948701128805548767">受け取り方法と要件を確認するには、住所を選択してください</translation>
 <translation id="6949872517221025916">パスワードを再設定</translation>
 <translation id="6950684638814147129">JSON 値の解析中にエラーが発生しました: <ph name="ERROR" /></translation>
@@ -1814,6 +1818,7 @@
 <translation id="7956713633345437162">モバイルのブックマーク</translation>
 <translation id="7961015016161918242">使用しない</translation>
 <translation id="7966803981046576691">ジョブ管理タイプ</translation>
+<translation id="79682505114836835">値「<ph name="VALUE" />」は無効な 16 進数色コードです。</translation>
 <translation id="7976214039405368314">リクエストが多すぎます</translation>
 <translation id="7977538094055660992">出力デバイス</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1941,6 +1946,7 @@
 <translation id="8446884382197647889">詳細</translation>
 <translation id="8457125768502047971">無期限</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
+<translation id="8463101686637053101">Dino ゲーム、プレイするには Space キーを押してジャンプさせます</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 件のクレジット カード}other{# 件のクレジット カード}}</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474910779563686872">デベロッパーの詳細を表示</translation>
@@ -2077,6 +2083,7 @@
 <translation id="8996941253935762404">この先のサイトには有害なプログラムがあります</translation>
 <translation id="8997023839087525404">サーバーから提示された証明書は、証明書の透明性ポリシーを介して公開されていません。一部の証明書は、信頼性の確保と攻撃者からの保護のため、証明書の透明性ポリシーを介して公開されることが要件となっています。</translation>
 <translation id="9001074447101275817">プロキシ <ph name="DOMAIN" /> にはユーザー名とパスワードを指定する必要があります。</translation>
+<translation id="9001963517402879850">ジャンプ！</translation>
 <translation id="9004367719664099443">VR セッションが進行中</translation>
 <translation id="9005998258318286617">PDF ドキュメントを読み込めませんでした。</translation>
 <translation id="9008201768610948239">無視する</translation>

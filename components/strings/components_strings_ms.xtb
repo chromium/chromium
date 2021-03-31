@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Lihat butiran</translation>
 <translation id="1030706264415084469"><ph name="URL" /> mahu menyimpan data bersaiz besar pada peranti anda secara kekal</translation>
 <translation id="1032854598605920125">Putar ikut arah jam</translation>
+<translation id="1036224116832931580">Permainan Dino, ketik untuk melompat dan bermain</translation>
 <translation id="1036348656032585052">Matikan</translation>
 <translation id="1038106730571050514">Tunjukkan cadangan</translation>
 <translation id="1038842779957582377">nama tidak diketahui</translation>
@@ -279,6 +280,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="192020519938775529">{COUNT,plural, =0{Tiada}=1{1 tapak}other{# tapak}}</translation>
 <translation id="1945968466830820669">Anda boleh kehilangan akses kepada akaun organisasi anda atau mengalami kecurian identiti. Chromium mengesyorkan supaya kata laluan anda ditukar sekarang.</translation>
 <translation id="1947454675006758438">Kokot atas sebelah kanan</translation>
+<translation id="1958218078413065209">Markah tertinggi anda ialah <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Bantu kami meningkatkan keselamatan di web untuk semua orang dengan menghantar <ph name="BEGIN_WHITEPAPER_LINK" />URL sesetengah halaman yang anda lawati, maklumat sistem terhad dan sesetengah kandungan halaman<ph name="END_WHITEPAPER_LINK" /> kepada Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Dasar privasi<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Penanda halaman</translation>
 <translation id="1973335181906896915">Ralat penyirian</translation>
@@ -547,6 +549,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab kemudian Enter untuk menjalankan Semakan Keselamatan dalam tetapan Chrome</translation>
 <translation id="3061707000357573562">Perkhidmatan Tampung</translation>
 <translation id="3064966200440839136">Meninggalkan mod inkognito untuk membayar melalui aplikasi luar. Teruskan?</translation>
+<translation id="306573536155379004">Permainan dimulakan.</translation>
 <translation id="3080254622891793721">Grafik</translation>
 <translation id="3086579638707268289">Aktiviti anda di web sedang dipantau</translation>
 <translation id="3087734570205094154">Bawah</translation>
@@ -1544,6 +1547,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6934672428414710184">Nama ini daripada Akaun Google anda</translation>
 <translation id="6944692733090228304">Anda memasukkan kata laluan di tapak yang tidak diurus oleh <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Untuk melindungi akaun anda, jangan gunakan semula kata laluan anda pada apl dan tapak lain.</translation>
 <translation id="6945221475159498467">Pilih</translation>
+<translation id="6948051842255602737">Permainan tamat, markah anda ialah <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Pilih alamat untuk melihat kaedah dan syarat pengambilan</translation>
 <translation id="6949872517221025916">Tetapkan Semula Kata Laluan</translation>
 <translation id="6950684638814147129">Ralat semasa menghuraikan nilai JSON: <ph name="ERROR" /></translation>
@@ -1826,6 +1830,7 @@ Butiran tambahan:
 <translation id="7956713633345437162">Penanda halaman mudah alih</translation>
 <translation id="7961015016161918242">Tidak sama sekali</translation>
 <translation id="7966803981046576691">Jenis akaun kerja</translation>
+<translation id="79682505114836835">Nilai "<ph name="VALUE" />" ialah warna perenambelasan yang tidak sah.</translation>
 <translation id="7976214039405368314">Terlalu banyak permintaan</translation>
 <translation id="7977538094055660992">Peranti output</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1953,6 +1958,7 @@ Butiran tambahan:
 <translation id="8446884382197647889">Ketahui Lebih Lanjut</translation>
 <translation id="8457125768502047971">Tidak tentu</translation>
 <translation id="8461694314515752532">Sulitkan data yang disegerakkan dengan ungkapan laluan penyegerakan anda sendiri</translation>
+<translation id="8463101686637053101">Permainan Dino, tekan kekunci ruang untuk melompat dan bermain</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kad kredit}other{# kad kredit}}</translation>
 <translation id="8473863474539038330">Alamat dan pelbagai lagi</translation>
 <translation id="8474910779563686872">Tunjukkan butiran pembangun</translation>
@@ -2089,6 +2095,7 @@ Butiran tambahan:
 <translation id="8996941253935762404">Laman web yang akan dilayari mengandungi atur cara berbahaya</translation>
 <translation id="8997023839087525404">Pelayan memberikan sijil yang tidak didedahkan kepada umum menggunakan dasar Ketelusan Sijil. Ini merupakan keperluan bagi sesetengah sijil untuk memastikan sijil itu boleh dipercayai dan untuk melindungi pengguna daripada penyerang.</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> proksi memerlukan nama pengguna dan kata laluan.</translation>
+<translation id="9001963517402879850">Lompat!</translation>
 <translation id="9004367719664099443">Sesi VR sedang berlangsung</translation>
 <translation id="9005998258318286617">Gagal memuatkan dokumen PDF.</translation>
 <translation id="9008201768610948239">Abaikan</translation>

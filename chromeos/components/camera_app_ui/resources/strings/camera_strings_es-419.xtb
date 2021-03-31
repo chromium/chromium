@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1627744224761163218">4 × 4</translation>
 <translation id="1664224225747386870">No se grabaron datos</translation>
+<translation id="1838104802459806957">Inclinar hacia arriba</translation>
 <translation id="1851616744363735765">DETENIDA</translation>
 <translation id="1862930711583847113">No se puede exportar <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Resolución de foto</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> activa</translation>
 <translation id="2144806332417375165">Parámetros de video personalizados</translation>
 <translation id="229579744168541441">Exportar al disco</translation>
+<translation id="2320741269052147773">Desplazarse a la izquierda</translation>
 <translation id="2501278716633472235">Ir atrás</translation>
 <translation id="2501853267655415902">Se detuvo la grabación</translation>
 <translation id="2501953888035679275">Toma fotos y graba videos con la cámara.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Las fotos y los videos que tomes con la cámara se moverán a la carpeta "Descargas", que puedes abrir con la app de Archivos.
 
 Las apps que tengan permiso de almacenamiento podrán acceder a tus fotos y videos.</translation>
+<translation id="3067436040345934772">Desplazarse a la derecha</translation>
 <translation id="3081586908890909590">Cambiar al modo para grabar video</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">Cuadrícula</translation>
@@ -89,6 +92,7 @@ Si tus comentarios están relacionados con la calidad de imagen o video, adjunta
 <translation id="8145038249676204903">Cambiar al modo para tomar fotos</translation>
 <translation id="8239780215768881278">Tomar una instantánea del video</translation>
 <translation id="8261506727792406068">Borrar</translation>
+<translation id="8425673304802773841">Inclinar hacia abajo</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" /> p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Obtener vista previa de metadatos</translation>

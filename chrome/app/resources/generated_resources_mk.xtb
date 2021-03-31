@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> препорачува да го ажурирате овој <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Системот не успеа да го утврди моделот или серискиот број на уредот.</translation>
 <translation id="1119447706177454957">Внатрешна грешка</translation>
+<translation id="111959947408687873">Користете Ctrl + <ph name="SEARCH_KEY_NAME" /> + M за да се префрлите на лупа за цел екран. Користете Ctrl + Alt + копчињата со стрелки за да се движите низ екранот кога е зумиран.</translation>
 <translation id="1122068467107743258">Работен</translation>
 <translation id="1122198203221319518">&amp;Алатки</translation>
 <translation id="1122242684574577509">Проверката на успеа. Кликнете за да ја посетите страницата за пријавување за Wi-Fi мрежата што ја користите (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Програма за „Напредна заштита на Google“</translation>
 <translation id="1155816283571436363">Се поврзува со телефонот</translation>
 <translation id="1161575384898972166">Најави се на <ph name="TOKEN_NAME" /> за да извезеш сертификат на клиент.</translation>
+<translation id="116173250649946226">Вашиот администратор поставил стандардна тема што не може да се менува.</translation>
 <translation id="1163931534039071049">&amp;Прикажи извор на рамка</translation>
 <translation id="1164891049599601209">Внесена на измамнички сајт</translation>
 <translation id="1164899421101904659">Внесете клуч (PUK) за отклучување PIN</translation>
@@ -2555,6 +2557,7 @@
 <translation id="3809272675881623365">Зајак</translation>
 <translation id="3809280248639369696">Вонземјанин</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> може да прегледува датотеки во следниве папки</translation>
+<translation id="3810914450553844415">Вашиот администратор не дозволува дополнителни сметки на Google.</translation>
 <translation id="3810973564298564668">Управувај</translation>
 <translation id="381202950560906753">Додајте друг</translation>
 <translation id="3812525830114410218">Лош сертификат</translation>
@@ -2676,6 +2679,7 @@
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3926002189479431949">Сменет е телефонот со Smart Lock</translation>
 <translation id="3927932062596804919">Одбиј</translation>
+<translation id="392803502090869922">Поставување eSim</translation>
 <translation id="3928570707778085600">Дали да се зачувуваат промените на <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Мастилото е при крај</translation>
 <translation id="3929426037718431833">Екстензииве можат да гледаат и менуваат податоци на сајтов.</translation>
@@ -4246,6 +4250,7 @@
 <translation id="5764797882307050727">Ослободете простор на вашиот уред.</translation>
 <translation id="5765425701854290211">За жал, некои датотеки се оштетени и ажурирањето не беше успешно. Синхронизираните датотеки се безбедни.</translation>
 <translation id="5765491088802881382">Нема достапни мрежи</translation>
+<translation id="5766243637773654698">Датотеката <ph name="FILE_NAME" /> можеби е опасна. Да се испрати во Google за скенирање? Притиснете Shift + F6 за да одите до областа на лентата за преземања.</translation>
 <translation id="5769519078756170258">Хост или домен за исклучување</translation>
 <translation id="5770125698810550803">Прикажувај ги копчињата за навигација</translation>
 <translation id="5771816112378578655">Поставувањето е во тек…</translation>
@@ -4402,6 +4407,7 @@
 <translation id="5942779427914696408">Видливост на уредот</translation>
 <translation id="5943127421590245687">Вашата потврда беше успешна. За да ги отклучите и вратите локалните податоци, внесете ја старата лозинка за <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Скенирајте QR-код</translation>
+<translation id="5945002094477276055">Датотеката <ph name="FILE_NAME" /> можеби е опасна. Да се испрати во „Безбедно прелистување со Google“ за скенирање?</translation>
 <translation id="5946591249682680882">Пријави ИД <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Поврзете тастатура или глувче или продолжете го поставувањето преку допирниот екран. Ако користите уреди со Bluetooth, проверете дали уредите се подготвени за спарување.</translation>
 <translation id="5949544233750246342">Не може да ја анализира датотеката</translation>
@@ -4449,6 +4455,7 @@
 <translation id="6002452033851752583">Лозинката е избришана од сметката на Google</translation>
 <translation id="6002458620803359783">Претпочитани гласови</translation>
 <translation id="6003143259071779217">Отстранете ја мобилната мрежа на eSIM</translation>
+<translation id="6003582434972667631">Темата е поставена од вашата организација</translation>
 <translation id="6006484371116297560">Класична</translation>
 <translation id="6007240208646052708">Гласовно пребарување на вашиот јазик не е достапно.</translation>
 <translation id="6011074160056912900">Етернет-мрежа</translation>
@@ -4828,6 +4835,7 @@
 <translation id="6429384232893414837">Грешка при ажурирање</translation>
 <translation id="6430814529589430811">Base64-шифриран ASCII, еден сертификат</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> ќе постави автоматски ажурирања за сите корисници на компјутерот.</translation>
+<translation id="6434104957329207050">Брзина на скенирање точки</translation>
 <translation id="6434309073475700221">Отфрли</translation>
 <translation id="6434325376267409267">Уредот треба да се ажурира пред да може да користите <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Прикажи во веб-продавница</translation>
@@ -4870,6 +4878,7 @@
 <translation id="6474498546677193336">Не може да се откаже споделувањето бидејќи некоја апликација ја користи папкава. Споделувањето на папкава ќе се откаже кога Linux ќе се исклучи нареден пат.</translation>
 <translation id="6474884162850599008">Исклучете ја сметката на Дискот на Google</translation>
 <translation id="6475294023568239942">Ослободете простор на дискот или променете ја големината на дискот на Linux во „Поставки“</translation>
+<translation id="6476138569087741884">Ниво на зумирање на цел екран</translation>
 <translation id="6477822444490674459">Синхронизацијата на известувањата не е поддржана за телефоните во работен профил. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Да се задржи опасната датотека?</translation>
 <translation id="6480327114083866287">Управува: <ph name="MANAGER" /></translation>
@@ -5325,6 +5334,7 @@
 <translation id="6985607387932385770">Печатачи</translation>
 <translation id="6988094684494323731">Се стартува контејнерот за Linux</translation>
 <translation id="6988403677482707277">Картичката е преместена на почетокот од лентата со картички</translation>
+<translation id="6990209147952697693">Класичен Chrome</translation>
 <translation id="6991665348624301627">Изберете дестинација</translation>
 <translation id="6992554835374084304">Вклучете подобрена проверка на правопис</translation>
 <translation id="6993000214273684335">Картичката е отстранета од неименувана група - <ph name="GROUP_CONTENTS" /></translation>
@@ -6311,6 +6321,7 @@
 <translation id="8086015605808120405">Се конфигурира <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Постави <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Датотекава е шифрирана. Побарајте од сопственикот да ја дешифрира.}one{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}other{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}}</translation>
+<translation id="8087576439476816834">Преземање, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Промени лозинка</translation>
 <translation id="8090234456044969073">Прочитај листа со најчесто посетувани веб-локации</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> не реагира</translation>
@@ -6555,6 +6566,8 @@
 <translation id="8368859634510605990">&amp;Отвори ги сите обележувачи</translation>
 <translation id="8370294614544004647">Режим во мирување кога лаптопот е затворен</translation>
 <translation id="8371695176452482769">Зборувај сега</translation>
+<translation id="8371749822919332187">Користете Ctrl + Alt + Brightness Up за да зумирате.
+Користете Ctrl + Alt + Brightness Down за да одзумирате.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Исклучи звук на сајтот}one{Исклучи звук на сајтовите}other{Исклучи звук на сајтовите}}</translation>
 <translation id="8372369524088641025">Погрешен клуч WEP</translation>
 <translation id="8373652277231415614">Споделени директориуми на Crostini</translation>
@@ -6562,7 +6575,6 @@
 <translation id="8378714024927312812">Управувано од вашата организација</translation>
 <translation id="8379878387931047019">Уредов не го поддржува типот на безбедносен клуч што го бара веб-страницава</translation>
 <translation id="8379991678458444070">Ако ја обележите картичкава, ќе може да се вратите тука набрзина</translation>
-<translation id="8380314198565901932">Грешка при преземањето на виртуелната машина. Ажурирајте го вашиот <ph name="DEVICE_TYPE" /> и пробајте пак.</translation>
 <translation id="8382913212082956454">Копирај &amp;адреса на е-пошта</translation>
 <translation id="8386091599636877289">Правилото не е пронајдено.</translation>
 <translation id="8386819192691131213">Дозволете „Помошникот“ да ги користи информациите на екранот за да дава брзи одговори како превод, дефиниции, конверзија на единици и друго</translation>
@@ -7226,6 +7238,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Добре дојдовте на вашиот нов профил</translation>
 <translation id="9112748030372401671">Променете ја позадината</translation>
+<translation id="9112786533191410418">Датотеката <ph name="FILE_NAME" /> можеби е опасна. Да се испрати во Google за скенирање?</translation>
 <translation id="9112987648460918699">Најди...</translation>
 <translation id="9114663181201435112">Најавувајте се лесно</translation>
 <translation id="9115675100829699941">&amp;Обележувачи</translation>

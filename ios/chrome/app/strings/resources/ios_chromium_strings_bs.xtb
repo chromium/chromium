@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bs">
 <translation id="102360288709523007">Pomozite nam da poboljšamo Chromium slanjem statistika korištenja i izvještaja o padovima aplikacija Googleu.</translation>
-<translation id="1043245583918962542">Odaberite želite li obrisati podatke Chromiuma s ovog uređaja ili ih želite zadržati.</translation>
 <translation id="1185134272377778587">O programu Chromium</translation>
 <translation id="1257458525759135959">Da sačuvate slike, dodirnite Postavke da omogućite Chromiumu dodavanje u vaše fotografije</translation>
 <translation id="1289216811211435351">Pređite na Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Izbrisati Chromium podatke s ovog uređaja?</translation>
 <translation id="8175055321229419309">Savjet: <ph name="BEGIN_LINK" />Pomjerite Chromium na priključnu stranicu<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium nije mogao provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
-<translation id="8252885722420466166">Ostvarite bolje iskustvo s Googleom u Chromiumu na osnovu svoje lokacije.</translation>
 <translation id="8586442755830160949">Autorska prava <ph name="YEAR" /> Autori Chromiuma. Sva prava zadržana.</translation>
 <translation id="8663480472502753423">Redovno ažurirajte Chromium</translation>
 <translation id="8776843108004031667">Ovaj račun i svi podaci koji nisu sačuvani će se ukloniti iz Chromiuma.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium nije ažuriran</translation>
 <translation id="921174536258924340">Chromium nije mogao provjeriti sve lozinke. Pokušajte ponovo sutra ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu.<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Autori Chromiuma</translation>
-<translation id="994708389219151914">Vašim računom upravlja <ph name="HOSTED_DOMAIN" />, stoga će se vaši podaci Chromiuma obrisati s ovog uređaja.</translation>
 </translationbundle>

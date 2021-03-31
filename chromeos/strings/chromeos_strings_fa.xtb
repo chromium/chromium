@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">گذرواژه <ph name="TIME" /> دیگر منقضی می‌شود</translation>
 <translation id="4238516577297848345">هیچ کار چاپی درحال انجام نیست</translation>
 <translation id="4297501883039923494">متوقف شد - خطای نامشخص</translation>
+<translation id="4344214025510306853">‏پیوست APN</translation>
 <translation id="4378373042927530923">اجرا نشد</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -278,6 +279,7 @@
 <translation id="7040230719604914234">اپراتور</translation>
 <translation id="7059230779847288458">درحال شارژ، <ph name="TIME_VALUE" /> تا شارژ کامل</translation>
 <translation id="708426984172631313">متوقف شده است</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /><ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
 <translation id="714876143603641390">‏اتصال LAN</translation>

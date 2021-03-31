@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Wagwoord verval oor <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Geen druktake aan die gang nie</translation>
 <translation id="4297501883039923494">Gestop – onbekende fout</translation>
+<translation id="4344214025510306853">Heg APN aan</translation>
 <translation id="4378373042927530923">Nie laat loop nie</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">My Drive</translation>
@@ -278,6 +279,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7040230719604914234">Diensverskaffer</translation>
 <translation id="7059230779847288458">Laai tans; <ph name="TIME_VALUE" /> tot vol</translation>
 <translation id="708426984172631313">GESTOP</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
 <translation id="714876143603641390">LAN-konnektiwiteit</translation>

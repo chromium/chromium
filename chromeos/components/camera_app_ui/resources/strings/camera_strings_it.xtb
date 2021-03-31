@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nessun dato registrato</translation>
+<translation id="1838104802459806957">Panoramica verticale in alto</translation>
 <translation id="1851616744363735765">IN PAUSA</translation>
 <translation id="1862930711583847113">Impossibile esportare <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Risoluzione foto</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">Fotocamera <ph name="CAMERA" /> attiva</translation>
 <translation id="2144806332417375165">Parametri video personalizzati</translation>
 <translation id="229579744168541441">Esporta su disco</translation>
+<translation id="2320741269052147773">Esegui una panoramica a sinistra</translation>
 <translation id="2501278716633472235">Indietro</translation>
 <translation id="2501853267655415902">Registrazione interrotta</translation>
 <translation id="2501953888035679275">Realizza foto e video con la tua fotocamera.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">Le foto e i video acquisiti con la fotocamera verranno spostati nella cartella Download e potrai accedervi dall'app File.
 
 Le app con autorizzazioni di accesso allo spazio di archiviazione potranno accedere alle foto e ai video.</translation>
+<translation id="3067436040345934772">Panoramica a destra</translation>
 <translation id="3081586908890909590">Passa alla modalità video</translation>
 <translation id="313467653172006084">30 f/s</translation>
 <translation id="3183731565330012717">Tipo di griglia</translation>
@@ -89,6 +92,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="8145038249676204903">Passa alla modalità foto</translation>
 <translation id="8239780215768881278">Scatta istantanea video</translation>
 <translation id="8261506727792406068">Elimina</translation>
+<translation id="8425673304802773841">Panoramica verticale giù</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Anteprima metadati</translation>

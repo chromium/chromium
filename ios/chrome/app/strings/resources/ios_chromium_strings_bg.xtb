@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
 <translation id="102360288709523007">Помогнете за подобряването на Chromium, като изпращате до Google статистически данни за употребата и сигнали за сривове.</translation>
-<translation id="1043245583918962542">Изберете дали данните ви в Chromium да бъдат изчистени от това устройство, или запазени.</translation>
 <translation id="1185134272377778587">Всичко за Chromium</translation>
 <translation id="1257458525759135959">За да запазвате изображения, докоснете Settings и разрешете на Chromium да добавя снимки</translation>
 <translation id="1289216811211435351">Превключване към Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Искате ли данните ви в Chromium да бъдат изчистени от устройството?</translation>
 <translation id="8175055321229419309">Съвет: <ph name="BEGIN_LINK" />Преместете Chromium в лентата „Dock“<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium не можа да провери за актуализации. Опитайте отново по-късно.</translation>
-<translation id="8252885722420466166">Подобрете работата си с Google в Chromium въз основа на местоположението си.</translation>
 <translation id="8586442755830160949">Авторски права <ph name="YEAR" /> Авторите на Chromium. Всички права запазени.</translation>
 <translation id="8663480472502753423">Поддържане на браузъра Chromium актуален</translation>
 <translation id="8776843108004031667">Този профил и всички незапазени данни ще бъдат премахнати от Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium не е актуален</translation>
 <translation id="921174536258924340">Chromium не успя да провери всички пароли. Опитайте отново утре или <ph name="BEGIN_LINK" />ги проверете в профила си в Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Авторите на Chromium</translation>
-<translation id="994708389219151914">Тъй като профилът ви се управлява от <ph name="HOSTED_DOMAIN" />, данните ви в Chromium ще бъдат изчистени от това устройство.</translation>
 </translationbundle>

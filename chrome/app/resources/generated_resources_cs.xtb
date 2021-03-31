@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> aktualizovali.</translation>
 <translation id="1118738876271697201">Systému se nepodařilo určit model nebo sériové číslo zařízení</translation>
 <translation id="1119447706177454957">Interní chyba</translation>
+<translation id="111959947408687873">Kombinací kláves Ctrl+<ph name="SEARCH_KEY_NAME" />+M můžete přepnout zvětšení obrazovky. Po zvětšené obrazovce se můžete pohybovat stisknutím kláves Ctrl a Alt spolu se šipkami.</translation>
 <translation id="1122068467107743258">Práce</translation>
 <translation id="1122198203221319518">&amp;Nástroje</translation>
 <translation id="1122242684574577509">Ověření selhalo. Kliknutím přejděte na přihlašovací stránku sítě Wi-Fi, kterou používáte (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Program pokročilé ochrany Google</translation>
 <translation id="1155816283571436363">Připojování k telefonu</translation>
 <translation id="1161575384898972166">Chcete-li exportovat certifikát klienta, přihlaste se prosím do zařízení <ph name="TOKEN_NAME" />.</translation>
+<translation id="116173250649946226">Administrátor nastavil výchozí motiv, který nelze změnit.</translation>
 <translation id="1163931534039071049">Zobrazit zdrojový kód rámu</translation>
 <translation id="1164891049599601209">Zadáno na klamavém webu</translation>
 <translation id="1164899421101904659">Zadejte klíč k odemknutí kódu PIN</translation>
@@ -2555,6 +2557,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3809272675881623365">Králík</translation>
 <translation id="3809280248639369696">Marťan</translation>
 <translation id="3810593934879994994">Web <ph name="ORIGIN" /> může zobrazovat soubory v následujících složkách</translation>
+<translation id="3810914450553844415">Váš administrátor další účty Google nepovoluje.</translation>
 <translation id="3810973564298564668">Spravovat</translation>
 <translation id="381202950560906753">Přidat další</translation>
 <translation id="3812525830114410218">Nesprávný certifikát</translation>
@@ -2676,6 +2679,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3926002189479431949">Došlo ke změně telefonu funkce Smart Lock</translation>
 <translation id="3927932062596804919">Odmítnout</translation>
+<translation id="392803502090869922">Nastavení eSim</translation>
 <translation id="3928570707778085600">Uložit změny do souboru nebo složky <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Dochází inkoust</translation>
 <translation id="3929426037718431833">Tato rozšíření mohou zobrazit a změnit informace na tomto webu.</translation>
@@ -4245,6 +4249,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5764797882307050727">Uvolněte v zařízení místo.</translation>
 <translation id="5765425701854290211">Je nám líto, ale některé soubory byly poškozeny a aktualizace se nezdařila. Synchronizované soubory jsou v bezpečí.</translation>
 <translation id="5765491088802881382">K dispozici nejsou žádné sítě</translation>
+<translation id="5766243637773654698">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Chcete ho odeslat do Googlu ke kontrole? Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="5769519078756170258">Hostitelský server nebo doména k vyloučení</translation>
 <translation id="5770125698810550803">Zobrazit navigační tlačítka</translation>
 <translation id="5771816112378578655">Probíhá nastavování...</translation>
@@ -4401,6 +4406,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5942779427914696408">Viditelnost zařízení</translation>
 <translation id="5943127421590245687">Ověření proběhlo úspěšně. Pokud chcete zařízení odemknout a obnovit místní data, zadejte staré heslo zařízení <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Naskenovat QR kód</translation>
+<translation id="5945002094477276055">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Odeslat ke kontrole pomocí funkce Bezpečného prohlížení Google?</translation>
 <translation id="5946591249682680882">ID hlášení <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Připojte klávesnici nebo myš, případně pokračujte s nastavením pomocí dotykové obrazovky. Pokud používáte zařízení Bluetooth, zkontrolujte, zda jsou zařízení připravena ke spárování.</translation>
 <translation id="5949544233750246342">Soubor nelze analyzovat</translation>
@@ -4448,6 +4454,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6002452033851752583">Heslo bylo smazáno z účtu Google</translation>
 <translation id="6002458620803359783">Preferované hlasy</translation>
 <translation id="6003143259071779217">Odstranit mobilní síť eSIM</translation>
+<translation id="6003582434972667631">Motiv nastavila vaše organizace</translation>
 <translation id="6006484371116297560">Klasické</translation>
 <translation id="6007240208646052708">Hlasové vyhledávání ve vašem jazyce není k dispozici.</translation>
 <translation id="6011074160056912900">Síť Ethernet</translation>
@@ -4827,6 +4834,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6429384232893414837">Chyba aktualizace</translation>
 <translation id="6430814529589430811">Soubor ASCII kódovaný Base64, jeden certifikát</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> nastaví automatické aktualizace pro všechny uživatele tohoto počítače.</translation>
+<translation id="6434104957329207050">Rychlost zaměření místa</translation>
 <translation id="6434309073475700221">Zahodit</translation>
 <translation id="6434325376267409267">Aplikaci <ph name="APP_NAME" /> budete moci používat až poté, co zařízení aktualizujete.</translation>
 <translation id="6436164536244065364">Zobrazit v Internetovém obchodu</translation>
@@ -4869,6 +4877,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6474498546677193336">Sdílení se nepodařilo zrušit, protože tuto složku používá nějaká aplikace. Sdílení složky bude zrušeno při příštím vypnutí systému Linux.</translation>
 <translation id="6474884162850599008">Odpojit účet Disku Google</translation>
 <translation id="6475294023568239942">Uvolněte místo na disku nebo v Nastavení přidělte víc místa pro disk s Linuxem</translation>
+<translation id="6476138569087741884">Úroveň přiblížení lupy celé obrazovky</translation>
 <translation id="6477822444490674459">U telefonů s pracovním profilem není synchronizace oznámení podporována. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Ponechat nebezpečný soubor?</translation>
 <translation id="6480327114083866287">Spravováno doménou <ph name="MANAGER" /></translation>
@@ -5140,6 +5149,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Jejda, něco se pokazilo.</translation>
 <translation id="6798420440063423019">Bezpečnostní klíč je uzamčen, protože byl příliš mnohokrát zadán nesprávný PIN. Bezpečnostní klíč bude potřeba resetovat.</translation>
+<translation id="679845623837196966">Zobrazit seznam četby</translation>
 <translation id="6798578729981748444">Chcete-li import dokončit, zavřete všechna okna prohlížeče Firefox.</translation>
 <translation id="6798780071646309401">caps lock je zapnutý</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
@@ -5324,6 +5334,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6985607387932385770">Tiskárny</translation>
 <translation id="6988094684494323731">Probíhá spouštění kontejneru systému Linux</translation>
 <translation id="6988403677482707277">Karta byla přesunuta na začátek lišty karet</translation>
+<translation id="6990209147952697693">Klasický Chrome</translation>
 <translation id="6991665348624301627">Vybrat cíl</translation>
 <translation id="6992554835374084304">Zapnout vylepšenou kontrolu pravopisu</translation>
 <translation id="6993000214273684335">Karta byla odstraněna ze skupiny bez názvu – <ph name="GROUP_CONTENTS" /></translation>
@@ -6311,6 +6322,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8086015605808120405">Probíhá konfigurace tiskárny <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Nastavení zařízení <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Tento soubor je zašifrovaný. Požádejte vlastníka, aby ho dešifroval.}few{Některé z těchto souborů jsou zašifrované. Požádejte vlastníka, aby je dešifroval.}many{Některé z těchto souborů jsou zašifrované. Požádejte vlastníka, aby je dešifroval.}other{Některé z těchto souborů jsou zašifrované. Požádejte vlastníka, aby je dešifroval.}}</translation>
+<translation id="8087576439476816834">Stáhnout, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Změnit heslo</translation>
 <translation id="8090234456044969073">Může číst seznam nejčastěji navštěvovaných webů</translation>
 <translation id="8093359998839330381">Plugin <ph name="PLUGIN_NAME" /> neodpovídá</translation>
@@ -6551,6 +6563,8 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8368859634510605990">&amp;Otevřít všechny záložky</translation>
 <translation id="8370294614544004647">Při zavření notebooku přejít do režimu spánku</translation>
 <translation id="8371695176452482769">Mluvte</translation>
+<translation id="8371749822919332187">Přiblížení provedete stisknutím kláves Ctrl+Alt+Zvýšit jas.
+Oddálení provedete stisknutím kláves Ctrl+Alt+Snížit jas.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Vypnout zvuk webu}few{Vypnout zvuk webů}many{Vypnout zvuk webů}other{Vypnout zvuk webů}}</translation>
 <translation id="8372369524088641025">Chybný klíč WEP</translation>
 <translation id="8373652277231415614">Sdílené adresáře Crostini</translation>
@@ -6558,7 +6572,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8378714024927312812">Spravováno vaší organizací</translation>
 <translation id="8379878387931047019">Toto zařízení typ bezpečnostního klíče požadovaný tímto webem nepodporuje</translation>
 <translation id="8379991678458444070">Přidejte si tuto kartu do záložek, abyste se sem mohli rychle vrátit</translation>
-<translation id="8380314198565901932">Při stahování virtuálního počítače došlo k chybě. Aktualizujte zařízení <ph name="DEVICE_TYPE" /> a zkuste to znovu.</translation>
 <translation id="8382913212082956454">Kopírovat &amp;e-mailovou adresu</translation>
 <translation id="8386091599636877289">Zásady nebyly nalezeny.</translation>
 <translation id="8386819192691131213">Povolí Asistentovi využívat informace na obrazovce k poskytování rychlých odpovědí, jako jsou překlady, definice, převody jednotek apod.</translation>
@@ -7223,6 +7236,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Vítá vás váš nový profil</translation>
 <translation id="9112748030372401671">Změňte tapetu</translation>
+<translation id="9112786533191410418">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Chcete ho odeslat do Googlu ke kontrole?</translation>
 <translation id="9112987648460918699">Najít...</translation>
 <translation id="9114663181201435112">Snadné přihlášení</translation>
 <translation id="9115675100829699941">&amp;Záložky</translation>
@@ -7269,6 +7283,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
       <ph name="LIST_ITEM" />Spustit Diagnostiku připojení Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
+<translation id="9167063903968449027">Zobrazit seznam četby</translation>
 <translation id="9168436347345867845">Později</translation>
 <translation id="9169496697824289689">Zobrazit klávesové zkratky</translation>
 <translation id="916964310188958970">Proč tento návrh?</translation>

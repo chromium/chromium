@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">카메라</translation>
 <translation id="1627744224761163218">4x4</translation>
 <translation id="1664224225747386870">녹화된 동영상이 없습니다.</translation>
+<translation id="1838104802459806957">위로 기울이기</translation>
 <translation id="1851616744363735765">일시중지됨</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> 파일을 내보낼 수 없습니다.</translation>
 <translation id="1899697626337024495">사진 해상도</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> 사용 중</translation>
 <translation id="2144806332417375165">맞춤 동영상 매개변수</translation>
 <translation id="229579744168541441">디스크로 내보내기</translation>
+<translation id="2320741269052147773">왼쪽으로 화면 이동</translation>
 <translation id="2501278716633472235">뒤로 이동</translation>
 <translation id="2501853267655415902">녹화가 중지되었습니다.</translation>
 <translation id="2501953888035679275">카메라로 사진을 찍고 동영상을 녹화합니다.</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">카메라로 촬영된 사진 및 동영상은 다운로드 폴더로 이동됩니다. 파일 앱에서 이러한 사진 및 동영상에 액세스할 수 있습니다.
 
         저장용량 권한이 있는 앱은 사진 및 동영상에 액세스할 수 있습니다.</translation>
+<translation id="3067436040345934772">오른쪽으로 화면 이동</translation>
 <translation id="3081586908890909590">동영상 녹화 모드로 전환</translation>
 <translation id="313467653172006084">30FPS</translation>
 <translation id="3183731565330012717">그리드 유형</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">사진 촬영 모드로 전환</translation>
 <translation id="8239780215768881278">동영상 스냅샷 촬영</translation>
 <translation id="8261506727792406068">삭제</translation>
+<translation id="8425673304802773841">아래로 기울이기</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p(<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">메타데이터 미리보기</translation>

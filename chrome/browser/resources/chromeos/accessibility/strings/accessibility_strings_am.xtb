@@ -52,6 +52,7 @@
 <translation id="1268366246392928616">ምንም ቀዳሚ የሒሳብ ሐረግ የለም</translation>
 <translation id="1273314450961659276">የጽሑፍ ወደ ንግግር ቅንብሮች</translation>
 <translation id="1275718070701477396">ተመርጧል</translation>
+<translation id="1284576163386164372">በአራት ጣት መታ አድርገው ምናሌዎችን በመክፈት ሁልጊዜ አጋዥ ሥልጠናዎችን መመልከት ይችላሉ። ከዚያ አጋዥ ሥልጠናውን ከ«ChromeVox» ክፍሉ ስር ያግብሩት።</translation>
 <translation id="1291286136605998134">የማቀያየሪያ አዝራር</translation>
 <translation id="1299774449519412690">ፈካ ያለ የሰማይ ሰማያዊ</translation>
 <translation id="1303806948938513162">የChromeVox ምናሌዎችን ለማስገባት በ4 ጣቶች መታ ያድርጉ</translation>
@@ -115,6 +116,7 @@
 <translation id="1690731385917361335">ምንም ንጥሎች የሉም</translation>
 <translation id="1700517974991662022">ተጎብኝቷል</translation>
 <translation id="1714116687360794776">ሜትር</translation>
+<translation id="1717267964664691695">የንክኪ አጋዥ ሥልጠና ተጠናቅቋል</translation>
 <translation id="1722567105086139392">አገናኝ</translation>
 <translation id="1727806147743597030">ftr</translation>
 <translation id="1730447754326314349">እንኳን ወደ የChromeVox አጋዥ ስልጠና በደህና መጡ። በማንኛውም ጊዜ ከዚህ አጋዥ ስልጠና ለመውጣት በቁልፍ ሰሌዳው ከላይ ግራ ጥግ ላይ ያለውን የEscape ቁልፉን ይጫኑ። ChromeVoxን ለማጥፋት Controlን እና Altን ተጭነው ይያዙ፣ ከዚያ Zን ይጫኑ። ዝግጁ ሲሆኑ ወደ ቀጣዩ ትምህርት ለመሄድ የክፍተት አሞሌውን ይጠቀሙ።</translation>
@@ -131,6 +133,7 @@
 <translation id="1834891354138622109">አምድ</translation>
 <translation id="1845944666972354496">ለማግበር ሁለቴ መታ አድርግ</translation>
 <translation id="1846771122725914429">የብሉቱዝ ብሬይል ማሳያ</translation>
+<translation id="1852018405765032699">ማያ ገጹን በአራት ጣቶች መታ ማድረግ የChromeVox ምናሌዎችን ከፍቶ ይዘጋል። እነዚህ ምናሌዎች ስለትዕዛዞች እና አቋራጮች ጠቃሚ መረጃዎችን ይይዛሉ አንዴ ምናሌዎቹ ከተከፈቱ በኋላ ንጥሎችን ለማሰስ በአንድ ጣት ማንሸራተት እና ንጥሎችን ለማግበር ሁለቴ መታ ማድረግ ይችላሉ። ለመቀጠል ማያ ገጹን በአራት ጣቶች መታ ያድርጉ።</translation>
 <translation id="1865601187525349519">የጽሑፉ መጨረሻ</translation>
 <translation id="1876229593313240038">doc</translation>
 <translation id="1902396333223336119">ሕዋስ</translation>
@@ -181,6 +184,7 @@
 <translation id="2267538686624070261">መተው ተሳስቶ ተጽፏል</translation>
 <translation id="2267945578749931355">ቀጣዩ ቁምፊ</translation>
 <translation id="2278490101488436824">ሶስት ጣቶችን ወደ ግራ ያንሸራትቱ</translation>
+<translation id="2303873575703885770">አንድ ንጥል ያግብሩ</translation>
 <translation id="2305942658236913680">ምንም ቀጣይ ርዕስ የለም</translation>
 <translation id="2311237334957139798">በጥራት ደረጃ ላይ ወደ ቀዳሚው ውሰድ</translation>
 <translation id="2314393392395134769">ግርጌ አደር አይደለም</translation>
@@ -219,6 +223,7 @@
 <translation id="2592212930811759050">ማርትዕ ለመጀመር ሁለቴ መታ ያድርጉ</translation>
 <translation id="2598495320872286378">የሰዋስው ስሕተት</translation>
 <translation id="2603828437139726540">አንድ ቁምፊ ወደፊት</translation>
+<translation id="2619344480613750862">እንዲሁም በማያ ገጹ ክፍሎች መካከል ማንቀሳቀስ ይችላሉ። ለምሳሌ በማስጀመሪያው፣ በመደርደሪያው እና በChrome ትሮችዎ መካከል ማንቀሳቀስ ይችላሉ። ወደ ቀጣዩ ክፍል ለመሄድ በአራት ጣቶች ከግራ ወደ ቀኝ ያንሸራትቱ። ለመቀጠል አሁን ይሞክሩ።</translation>
 <translation id="2624431853467395961">የመማር ሁነታን ይክፈቱ</translation>
 <translation id="2626530649491650971">ጠቅ ሊደረግ የሚችል</translation>
 <translation id="2637227747952042642">ሒሳብ</translation>
@@ -247,6 +252,7 @@
 <translation id="2756452585631602151">ብጁ መሰየሚያ ያስገቡ</translation>
 <translation id="2766299274563946262">በግራ ምንም ሕዋስ የለም</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}other{+#}}</translation>
+<translation id="2792200646155001340">እንዲሁም ወደ ቀዳሚው ንጥል ለመሄድ አንድ ጣትን ከቀኝ ወደ ግራ ማንሸራተት ይችላሉ። አሁኑኑ ይሞክሩት።</translation>
 <translation id="280499067616661124">ChromeVox በገጽ ውስጥ ያግኙ</translation>
 <translation id="2811019999044652585">እንደ የመሣሪያ አሞሌዎች ወይም የሥርዓት ትሪ ወዳሉ ሌሎች የማያ ገጽ ክፍሎች ለመዝለል Control+Forward ይጫኑ። በChromebook ላይ የForward ቁልፍ ልክ ቁጥር 2 ቁልፍ በላይ ነው።</translation>
 <translation id="2811204574343810641">ረድፍ</translation>
@@ -274,6 +280,7 @@
 <translation id="2968634799764242930">ሰማያዊ አረንጓዴ</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{ትር}one{# ትሮች}other{# ትሮች}}</translation>
 <translation id="2972205263822847197">ጠቃሚ የመሣሪያ ምክር</translation>
+<translation id="2976476721782829799">እንዲሁም በማያ ገጹ አካባቢ አንድ ጣት በመጎተት መውሰድ ይችላሉ። ይህ በመንካት ማሰስ ይባላል። የተቀረውን የዚህን ትምህርት ክፍል ለማንበብ ጣትዎን በአካባቢው ላይ ለመጎተት ይሞክሩ።</translation>
 <translation id="297825089465017871">ሁለት ጣቶችን ወደ ግራ ያንሸራትቱ</translation>
 <translation id="2998131015536248178">ቀዳሚ ቁምፊ</translation>
 <translation id="2999559350546931576">የድምጽ ቅጥነት ይቀንሱ</translation>
@@ -375,6 +382,7 @@
 <translation id="3587482841069643663">ሁሉም</translation>
 <translation id="3589661172894441357">ሙዳየ ቃላት</translation>
 <translation id="3591784666823501596">ንጉሣዊ ሰማያዊ</translation>
+<translation id="3592715211448024517">የመዳረሻ ምናሌዎች</translation>
 <translation id="3594207934078151302">መካከለኛ የባሕር አረንጓዴ</translation>
 <translation id="3599054940393788245">ሒሳብ ውስጥ አይደለም</translation>
 <translation id="360241989769010433">ምስጋና</translation>
@@ -401,6 +409,7 @@
 <translation id="3781428340399460090">ደመቅ ያለ ሮዝ</translation>
 <translation id="3783725005098956899">ምዝግብን አሳይ</translation>
 <translation id="3801735343383419236">የራስ-አጠናቅቅ ዝርዝር</translation>
+<translation id="3806327402890551732">ወደ ቀጣዩ ወይም ቀዳሚው ንጥል ይሂዱ</translation>
 <translation id="3810838688059735925">ቪዲዮ</translation>
 <translation id="3813387282697781382">ፈዛዛ አረንጓዴ</translation>
 <translation id="3816633764618089385">ቀጣይ ሚዲያ</translation>
@@ -410,6 +419,7 @@
 <translation id="3870295413168340326">ምንም ቀዳሚ የደረጃ 3 ርዕስ የለም</translation>
 <translation id="3887399638190992181">መሠረታዊ ቁልፎች፦</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3893063449310326280">በተመሳሳይ ሁኔታ ወደ ቀዳሚው ዋና አባለ ነገር ለመሄድ በአራት ጣቶች ከቀኝ ወደ ግራ ማንሸራተትን መጠቀም ይቻላል። አሁኑኑ ይሞክሩት!</translation>
 <translation id="3897092660631435901">ምናሌ</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">ቀዳሚ የደረጃ 6 ርዕስ</translation>
@@ -504,6 +514,7 @@
 <translation id="4615592953348396470">ቀጣይ ቁልፍ መጫንን ችላ ብሎ በመተው ላይ</translation>
 <translation id="4623097797855662355">ኮሎፎን</translation>
 <translation id="463135993322337640">ምን አዲስ ነገር እንዳለ ለማወቅ ChromeVox o፣ n ይጫኑ</translation>
+<translation id="4649220074413114917">ማንኛውንም የአሁን ንግግር ለማቆም ማያ ገጹን በሁለት ጣቶች መታ ማድረግን መጠቀም ይቻላል። ChromeVox የሆነ ነገር እንዲያነብብ ካልፈለጉ ይህ ጠቃሚ ነው። ለመቀጠል ማያ ገጹን በሁለት ጣቶች መታ ያድርጉት።</translation>
 <translation id="4660783501463101648">የታወቀ ገጽታ ተወግዷል። ተመልሶ ወደ የታወቀው የChromeVox ገጽታ የሚወስደው የቁልፍ ሰሌዳ መቀያየሪያው ተወግዷል።</translation>
 <translation id="4661075872484491155">ዛፍ</translation>
 <translation id="4668929960204016307">,</translation>
@@ -579,12 +590,14 @@
 <translation id="5140016802771803559">ርብቃ ሐምራዊ</translation>
 <translation id="5142101052131610456">ሁሉም ትምህርቶች</translation>
 <translation id="5158275234811857234">ሽፋን</translation>
+<translation id="516076699907426116">ለመቀጠል የቀጣይ ትምህርት አዝራሩን ለማግኘት በመንካት ያስሱ። ከዚያ ለመቀጠል ሁለቴ መታ ያድርጉ።</translation>
 <translation id="5170206230005240598">የብሬይል መግለጫዎች ነቅተዋል</translation>
 <translation id="5183440668879371625">ቀዳሚ መስመር</translation>
 <translation id="5189244881767082992">መስመር</translation>
 <translation id="5263034204789987535">የበቆሎ ቆዳ</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">ጨርስ</translation>
+<translation id="5290220123487191192">በመደበኝነት በሚጠቀሙባቸው ጥቂት ምልክቶች እንጀምር። ለማግበር የሚፈልጉትን ንጥል ከደረሱ ማያ ገጹን በአንድ ጣት ሁለቴ መታ ያድርጉ። ለመቀጠል አሁን ሁለቴ መታ ያድርጉ።</translation>
 <translation id="5302089807023311274">የዋቢ መጽሐፍት ማጣቀሻ</translation>
 <translation id="530391007967514163">ታች ወዳለው ጽሑፍ በመዳሰስ ለመዝለል ይሞክሩ።</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />፣ ትር</translation>
@@ -655,10 +668,12 @@
 <translation id="5703716265115423771">ድምጽ ቀንስ</translation>
 <translation id="5704453877234251104">ለራስ-ሰር መሙላቶች የላይ ወይም የታች ቀስትን ይጫኑ</translation>
 <translation id="5712244464475377681">popbtn</translation>
+<translation id="5712889723513495267">ወደ ቀጣዩ ወይም ቀዳሚው ክፍል ይሂዱ</translation>
 <translation id="5725079927589231571">ፈካ ያለ ብረት ሰማያዊ</translation>
 <translation id="5732189279857692565">ይሄ ሁለተኛው ርዕስ ነው። ይቀጥሉ፤ ወይም Search+H ወይም Search+Shift+H ይጫኑ</translation>
 <translation id="5748623122140342504">ቀዳሚ የደረጃ 5 ርዕስ</translation>
 <translation id="5760594853119905566">ቅጥያዎች</translation>
+<translation id="5761219715606611783">ጥሩ ሰርተዋል! ChromeVoxን የመንካት መሠረታዊ ነገሮችን ተምረዋል። ከታች ያለውን አዝራር በመጠቀም እንደገና አጋዥ ስልጠናውን መውሰድ ወይም ከዚህ አጋዥ ሥልጠና መውጣት ይችላሉ።</translation>
 <translation id="5805940204952508776">በሁለት ጣቶች መታ ያድርጉ</translation>
 <translation id="5819072574982403430">የዛፍ ንጥል</translation>
 <translation id="5822819874379903994">ጠቆር ያለ ወይራ ቅጠል</translation>
@@ -683,6 +698,7 @@
 <translation id="5906974869830879618">እባክዎ ፒን ያስገቡ</translation>
 <translation id="5921587111466148855">ምዕራፍ</translation>
 <translation id="5923780477617566089">የአሁኑ ቀን</translation>
+<translation id="5926889058434275234">ሙሉ የምልክቶች ዝርዝርን ለማግኘት የእገዛ ማዕከሉን ይጎብኙ።</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{እኩል}one{# የእኩል ምልክቶች}other{# የእኩል ምልክቶች}}</translation>
 <translation id="5948123859135882163">የሒሳብ አገላለጾች አተረጓገም በመዋቅራዊ እና ስነ ፍቺ መካከል ይቀያይሩ</translation>
 <translation id="5955304353782037793">app</translation>
@@ -760,6 +776,7 @@
 <translation id="6561818612645211875">ወደ የአሁኑ ረድፍ መጀመሪያ ሂድ</translation>
 <translation id="6579990219486187401">ፈዛዛ ሮዝ</translation>
 <translation id="6583174818554398774">በጥራት ደረጃ ላይ ወደ ቀጣዩ ውሰድ</translation>
+<translation id="6584162722998608255">በመቀጠል በማያ ገጹ አካባቢ እንዴት እንደሚያንቀሳቅሱ ይማራሉ። ወደ ቀጣዩ ንጥል ለመሄድ አንድ ጣትን ከግራ ወደ ቀኝ ማንሸራተት ይችላሉ። ወደ ቀጣዩ ደረጃ ለመሄድ አሁን ይሞክሩት።</translation>
 <translation id="6609828810966525877">በመማር ሁነታ ውስጥ እና በChromebook እገዛ ማዕከል ውስጥ ተጨማሪ ያስሱ</translation>
 <translation id="6628427060004938651">ክፍለ አካል</translation>
 <translation id="6637586476836377253">የምዝግብ ማስታወሻ</translation>
@@ -781,6 +798,7 @@
 <translation id="6759710362319508545">መርጃዎች</translation>
 <translation id="67862343314499040">ወይን ጠጅ</translation>
 <translation id="6786800275320335305">ጽሑፍ</translation>
+<translation id="6790781785997195160">አንዴ ልምምድ ካደረጉ በኋላ የቀጣይ ትምህርት አዝራሩን ያግኙ። ከዚያ ለመቀጠል ሁለቴ መታ ያድርጉ።</translation>
 <translation id="6793101435925451627">lstbx</translation>
 <translation id="6815255864998354418">ሎሚ ሺፎን</translation>
 <translation id="6816066673340002913">ግራጫ ወርቃማ በትር</translation>
@@ -806,6 +824,7 @@
 <translation id="6994042831499278539">የሙዳየ ቃላት ዋቢ</translation>
 <translation id="6996566555547746822">ቀጣይ ጥምድ ሳጥን</translation>
 <translation id="6997224546856374593">አቢይ ሆሄያትን ስታነብ፦</translation>
+<translation id="6999752561504308105">እንኳን ወደ የChromeVox አጋዥ ስልጠና በደህና መጡ። በማንኛውም ጊዜ ከዚህ አጋዥ ስልጠና ለመውጣት በሁለት ጣቶች ከቀኝ ወደ ግራ ያንሸራትቱ። በማንኛውም ጊዜ ChromeVoxን ለማብራት ወይም ለማጥፋት ሁለቱንም የድምፅ አዝራሮች ለአምስት ሰከንዶች ተጭነው ይያዙ። ዝግጁ ሲሆኑ ወደ ቀጣዩ ትምህርት ለመሄድ ማያ ገጹን በአንድ ጣት ሁለቴ መታ ያድርጉ።</translation>
 <translation id="700202842116345659">የዋቢ መጽሐፍት ግቤት</translation>
 <translation id="7005146664810010831">ምንም ዩአርኤል አልተገኘም</translation>
 <translation id="7026338066939101231">ቅነሳ</translation>
@@ -819,6 +838,7 @@
 <translation id="7086377898680121060">ብሩህነት ጨምር</translation>
 <translation id="7088743565397416204">ትኩረት የተደረገበትን ለማግበር ሁለቴ መታ ያድርጉ</translation>
 <translation id="7088960765736518739">የመዳረሻ መቀየሪያ</translation>
+<translation id="7090715360595433170">እንዲሁም በአንድ ጣት ወደ ግራ እና ቀኝ ከማንሸራተት የበለጠ ቀልጣፋ ሊሆን ይችላል።</translation>
 <translation id="7091296112653361280">ናቫጆ ነጭ</translation>
 <translation id="7095834689119144465">የጽሑፍ ቁጥር ብቻ ያርትዑ</translation>
 <translation id="7096001299300236431">ቀዳሚ ሚዲያ</translation>
@@ -856,6 +876,7 @@
 <translation id="7308519659008003150">ምንም ቀዳሚ የቅጽ መስክ የለም</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7317017974771324508">በከፊል ተመርጧል</translation>
+<translation id="7322442671176251901">በመንካት ያስሱ</translation>
 <translation id="7344012264516629579">ተጨማሪ የዝላይ ትዕዛዞች በአገናኝ፣ በአዝራር እና በአመልካች ሳጥን መዝለልን ያካትታሉ። ሙሉ የዝላይ ትዕዛዞች በChromeVox ምናሌዎች ላይ ሊገኝ ይችላል፣ ይህም Search + ክፍለ-ጊዜን በመጫን ሊከፈት ይችላል።</translation>
 <translation id="7356165926712028380">ወደ ባለ8 ነጥብ ብሬይል ቀይር</translation>
 <translation id="7356610683936413584">የዝርዝር መግለጫ ዝርዝር</translation>
@@ -911,6 +932,7 @@
     የአጋዥ ስልጠናውን ከጨረሱ ChromeVoxን ተጠቅመው ወደ ዝጋ አዝራር ይሂዱና ጠቅ ያድርጉት።</translation>
 <translation id="7724603315864178912">ቁረጥ</translation>
 <translation id="7731785449856576010">ምንም ቀጣይ የሚዲያ ንዑስ ፕሮግራም የለም</translation>
+<translation id="7735498529470878067">በመንካት ያስሱ በማያ ገጹ ላይ ስላለው ነገር በፍጥነት እንዲገነዘቡ ያግዘዎታል።</translation>
 <translation id="773906353055481349">በሕዋስ ለማሰስ ፍለጋ+Ctrl+Alt ከቀስቶች ጋር ይጫኑ</translation>
 <translation id="7763537600611320912"><ph name="FILE_NAME" />ን ማውረድ ተጀምሯል</translation>
 <translation id="7768784765476638775">ለመናገር-ይምረጡ</translation>
@@ -1090,6 +1112,7 @@
 <translation id="9153606228985488238">ቅጥነት <ph name="PERCENT" /> በመቶ</translation>
 <translation id="9160096769946561184">ወደ የአሁኑ አምድ መጨረሻ ሂድ</translation>
 <translation id="9173115498289768110">የድምጽ መጠን <ph name="PERCENT" /> በመቶ</translation>
+<translation id="9185200690645120087">ChromeVoxን የመንካት አጋዥ ሥልጠና</translation>
 <translation id="9192904702577636854">ቀልብ ሳቢ</translation>
 <translation id="9205282956404529648">በራስ-ሰር ለማጠናቀቅ ይተይቡ</translation>
 <translation id="9208241857935108694">አንቲክ ነጭ</translation>

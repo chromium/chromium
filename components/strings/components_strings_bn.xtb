@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">বিবরণ দেখুন</translation>
 <translation id="1030706264415084469"><ph name="URL" /> আপনার ডিভাইসে স্থায়ীভাবে বেশি ডেটা স্টোর করে রাখতে চায়</translation>
 <translation id="1032854598605920125">ঘড়ির কাঁটার দিকে ঘোরান</translation>
+<translation id="1036224116832931580">ডাইনো গেম, লাফ দিতে সাহায্য করুন ও খেলুন</translation>
 <translation id="1036348656032585052">বন্ধ করুন</translation>
 <translation id="1038106730571050514">সাজেশনগুলি দেখান</translation>
 <translation id="1038842779957582377">অজানা নাম</translation>
@@ -280,6 +281,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{কিছুই নয়}=1{১টি সাইট}one{#টি সাইট}other{#টি সাইট}}</translation>
 <translation id="1945968466830820669">আপনি নিজের প্রতিষ্ঠানের অ্যাকাউন্টের অ্যাক্সেস হারাতে পারেন অথবা আপনার পরিচয় চুরি হয়ে যেতে পারে। Chromium এখনই আপনার পাসওয়ার্ড পরিবর্তন করার আর্জি জানাচ্ছে।</translation>
 <translation id="1947454675006758438">উপরের ডানদিকে স্টেপল করুন</translation>
+<translation id="1958218078413065209">আপনার সর্বোচ্চ স্কোর <ph name="SCORE" />।</translation>
 <translation id="1959001866257244765">Google-এ <ph name="BEGIN_WHITEPAPER_LINK" />আপনার দেখা পৃষ্ঠাগুলির ইউআরএল, সিস্টেমের কিছু সীমিত তথ্য এবং পৃষ্ঠার কিছু কন্টেন্ট<ph name="END_WHITEPAPER_LINK" /> পাঠিয়ে ওয়েবে সকলের জন্য নিরাপত্তা উন্নত করতে সাহায্য করুন। <ph name="BEGIN_PRIVACY_PAGE_LINK" />গোপনীয়তা নীতি<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> বুকমার্ক</translation>
 <translation id="1973335181906896915">ধারাবাহিকতাতে ত্রুটি</translation>
@@ -548,6 +550,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome সেটিংসে 'নিরাপত্তা সংক্রান্ত পরীক্ষা' চালাতে প্রথমে Tab আর তারপরে Enter কী প্রেস করুন</translation>
 <translation id="3061707000357573562">প্যাচ পরিষেবা</translation>
 <translation id="3064966200440839136">বহিরাগত অ্যাপের মাধ্যমে পেমেন্ট করার জন্য ছদ্মবেশী মোড থেকে বেরিয়ে যাচ্ছে। চালিয়ে যাবেন?</translation>
+<translation id="306573536155379004">গেম শুরু হয়েছে।</translation>
 <translation id="3080254622891793721">গ্রাফিক</translation>
 <translation id="3086579638707268289">ওয়েবে আপনার অ্যাক্টিভিটি নজরে রাখা হচ্ছে</translation>
 <translation id="3087734570205094154">নিচে</translation>
@@ -1543,6 +1546,7 @@
 <translation id="6934672428414710184">এই নাম আপনার Google অ্যাকাউন্ট থেকে নেওয়া</translation>
 <translation id="6944692733090228304">আপনার <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />-এর নয় এমন একটি সাইটে আপনার পাসওয়ার্ড লিখেছেন। আপনার অ্যাকাউন্টের সুরক্ষার জন্য অন্যান্য অ্যাপ এবং সাইটে আপনার এই পাসওয়ার্ডটি ব্যবহার করবেন না।</translation>
 <translation id="6945221475159498467">নির্বাচন</translation>
+<translation id="6948051842255602737">খেলা শেষ, আপনার স্কোর <ph name="SCORE" />।</translation>
 <translation id="6948701128805548767">পিকআপ এর পদ্ধতি এবং প্রয়োজনীয়তা দেখতে একটি ঠিকানা বেছে নিন</translation>
 <translation id="6949872517221025916">পাসওয়ার্ড রিসেট করুন</translation>
 <translation id="6950684638814147129">JSON মান পার্স করার সময় সমস্যা: <ph name="ERROR" /></translation>
@@ -1825,6 +1829,7 @@
 <translation id="7956713633345437162">মোবাইল বুকমার্ক</translation>
 <translation id="7961015016161918242">কখনই নয়</translation>
 <translation id="7966803981046576691">চাকরির অ্যাকাউন্টের ধরন</translation>
+<translation id="79682505114836835"><ph name="VALUE" /> মান ভুল হেক্স কালার কোড।</translation>
 <translation id="7976214039405368314">অত্যধিক অনুরোধ</translation>
 <translation id="7977538094055660992">আউটপুট ডিভাইস</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1952,6 +1957,7 @@
 <translation id="8446884382197647889">আরও জানুন</translation>
 <translation id="8457125768502047971">অনির্দিষ্ট</translation>
 <translation id="8461694314515752532">আপনার নিজস্ব সিঙ্ক পাসফ্রেজ দিয়ে সিঙ্ক করা ডেটা এনক্রিপ্ট করুন</translation>
+<translation id="8463101686637053101">ডাইনো গেম, 'স্পেস' বোতাম প্রেস করে ডাইনোকে লাফ দিতে সাহায্য করুন ও খেলুন</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{১টি ক্রেডিট কার্ড}one{#টি ক্রেডিট কার্ড}other{#টি ক্রেডিট কার্ড}}</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
 <translation id="8474910779563686872">ডেভেলপারের বিবরণ দেখান</translation>
@@ -2087,6 +2093,7 @@
 <translation id="8996941253935762404">সামনের সাইটটিতে ক্ষতিকর প্রোগ্রামগুলি রয়েছে</translation>
 <translation id="8997023839087525404">সার্ভারটি এমন একটি সার্টিফিকেট উপস্থাপন করেছে যেটি সার্টিফিকেটের স্বচ্ছতার নীতি ব্যবহার করে সর্বজনীনভাবে প্রকাশ করা হয়নি। এটা কিছু সার্টিফিকেটের জন্য একটি আবশ্যকতা, যাতে করে সেগুলির বিশ্বাসযোগ্যত করা যায় এবং আক্রমণকারীদের বিরুদ্ধে সুরক্ষা নেওয়া যায়।</translation>
 <translation id="9001074447101275817"><ph name="DOMAIN" /> প্রক্সিতে একটি ইউজারনেম এবং পাসওয়ার্ড দিতে হবে।</translation>
+<translation id="9001963517402879850">লাফ দিন!</translation>
 <translation id="9004367719664099443">ভিআর (VR) সেশন চলছে</translation>
 <translation id="9005998258318286617">পিডিএফ ডকুমেন্ট লোড করা যায়নি।</translation>
 <translation id="9008201768610948239">উপেক্ষা করুন</translation>

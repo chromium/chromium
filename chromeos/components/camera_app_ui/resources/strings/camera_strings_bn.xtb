@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">ক্যামেরা</translation>
 <translation id="1627744224761163218">৪ x ৪</translation>
 <translation id="1664224225747386870">কিছুই রেকর্ড করা হয়নি</translation>
+<translation id="1838104802459806957">উপরের দিকে টিল্ট করুন</translation>
 <translation id="1851616744363735765">পজ করা হয়েছে</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> এক্সপোর্ট করা যাচ্ছে না</translation>
 <translation id="1899697626337024495">ফটো রেজোলিউশন</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> চালু আছে</translation>
 <translation id="2144806332417375165">কাস্টম ভিডিও প্যারামিটার</translation>
 <translation id="229579744168541441">ডিস্কে এক্সপোর্ট করুন</translation>
+<translation id="2320741269052147773">বাঁদিকে প্যান করুন</translation>
 <translation id="2501278716633472235">ফিরে যান</translation>
 <translation id="2501853267655415902">রেকর্ডিং বন্ধ করা হয়েছে</translation>
 <translation id="2501953888035679275">আপনার ক্যামেরা ব্যবহার করে ছবি তুলুন এবং ভিডিও রেকর্ড করুন।</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">ক্যামেরায় তোলা ফটো ও ভিডিও ডাউনলোড ফোল্ডারে সরিয়ে দেওয়া হবে। আপনি সেগুলি ফাইল থেকে অ্যাক্সেস করতে পারবেন।
 
         আপনার ফটো ও ভিডিওতে স্টোরেজ ব্যবহারের অনুমতি আছে এমন অ্যাপের অ্যাক্সেস থাকবে।</translation>
+<translation id="3067436040345934772">ডানদিকে প্যান করুন</translation>
 <translation id="3081586908890909590">ভিডিও রেকর্ড মোডে পাল্টান</translation>
 <translation id="313467653172006084">৩০ FPS</translation>
 <translation id="3183731565330012717">গ্রিডের ধরন</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">ফটো মোডে পাল্টান</translation>
 <translation id="8239780215768881278">ভিডিও স্ন্যাপশট নিন</translation>
 <translation id="8261506727792406068">মুছুন</translation>
+<translation id="8425673304802773841">নীচের দিকে টিল্ট করুন</translation>
 <translation id="8428213095426709021">সেটিংস</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">মেটাডেটা প্রিভিউ করুন</translation>

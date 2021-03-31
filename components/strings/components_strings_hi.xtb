@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">ब्यौरा देखें</translation>
 <translation id="1030706264415084469"><ph name="URL" /> आपके डिवाइस पर हमेशा के लिए बड़ी मात्रा में डेटा संग्रहीत करना चाहता है</translation>
 <translation id="1032854598605920125">घड़ी की दिशा में घुमाएं</translation>
+<translation id="1036224116832931580">डायनो गेम, उछलने और खेलने के लिए टैप करें</translation>
 <translation id="1036348656032585052">बंद करें</translation>
 <translation id="1038106730571050514">सुझाव दिखाएं</translation>
 <translation id="1038842779957582377">अज्ञात नाम</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{कुछ नहीं}=1{1 साइट}one{# साइट}other{# साइट}}</translation>
 <translation id="1945968466830820669">आपके संगठन के खाते का एक्सेस खो सकता है या आपकी पहचान चोरी हो सकती है. Chromium आपको अभी अपना पासवर्ड बदलने का सुझाव देता है.</translation>
 <translation id="1947454675006758438">सबसे ऊपर दाईं ओर स्टेपल</translation>
+<translation id="1958218078413065209">आपका सबसे ज़्यादा स्कोर <ph name="SCORE" /> है.</translation>
 <translation id="1959001866257244765"><ph name="BEGIN_WHITEPAPER_LINK" />आप जिन पेजों पर जाते हैं उनमें से कुछ के यूआरएल, सिस्टम की थोड़ी जानकारी, और पेज का कुछ कॉन्टेंट<ph name="END_WHITEPAPER_LINK" /> Google को भेजकर, वेब पर सभी के लिए सुरक्षा को बेहतर बनाने में मदद करें. <ph name="BEGIN_PRIVACY_PAGE_LINK" />निजता नीति<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="1973335181906896915">क्रमबद्ध करने में गड़बड़ी</translation>
@@ -545,6 +547,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सेटिंग में, सुरक्षा जांच करने के लिए पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="3061707000357573562">पैच सेवा</translation>
 <translation id="3064966200440839136">किसी बाहरी ऐप्लिकेशन के ज़रिए भुगतान करने के लिए गुप्त मोड छोड़ रहे हैं. जारी रखना चाहते हैं?</translation>
+<translation id="306573536155379004">गेम शुरू हो गया.</translation>
 <translation id="3080254622891793721">ग्राफ़िक</translation>
 <translation id="3086579638707268289">वेब पर की जा रही आपकी गतिविधि पर नज़र रखी जा रही है</translation>
 <translation id="3087734570205094154">नीचे</translation>
@@ -1540,6 +1543,7 @@
 <translation id="6934672428414710184">यह नाम आपके Google खाते से है</translation>
 <translation id="6944692733090228304">आपने एक ऐसी साइट पर अपना पासवर्ड डाला है जिसे <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> प्रबंधित नहीं करता है. अपने खाते को सुरक्षित रखने के लिए, दूसरे ऐप्लिकेशन और साइटों पर अपने पासवर्ड का दोबारा इस्तेमाल न करें.</translation>
 <translation id="6945221475159498467">चुनें</translation>
+<translation id="6948051842255602737">गेम ओवर, आपका स्कोर <ph name="SCORE" /> है.</translation>
 <translation id="6948701128805548767">पिकअप के तरीके और ज़रूरतें देखने के लिए, कोई पता चुनें</translation>
 <translation id="6949872517221025916">पासवर्ड रीसेट करें</translation>
 <translation id="6950684638814147129">JSON मान पार्स करते समय गड़बड़ी हुई: <ph name="ERROR" /></translation>
@@ -1822,6 +1826,7 @@
 <translation id="7956713633345437162">मोबाइल बुकमार्क</translation>
 <translation id="7961015016161918242">कभी नहीं</translation>
 <translation id="7966803981046576691">जॉब का खाता प्रकार</translation>
+<translation id="79682505114836835">वैल्यू "<ph name="VALUE" />" मान्य हेक्स रंग नहीं है.</translation>
 <translation id="7976214039405368314">बहुत सारे अनुरोध</translation>
 <translation id="7977538094055660992">आउटपुट डिवाइस</translation>
 <translation id="7977894662897852582">ईडीपी</translation>
@@ -1949,6 +1954,7 @@
 <translation id="8446884382197647889">ज़्यादा जानें</translation>
 <translation id="8457125768502047971">कोई तय अवधि नहीं</translation>
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने खुद के सिंक लंबे पासवर्ड से सुरक्षित करें</translation>
+<translation id="8463101686637053101">डायनो गेम, उछलने और खेलने के लिए स्पेस दबाएं</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 क्रेडिट कार्ड}one{# क्रेडिट कार्ड}other{# क्रेडिट कार्ड}}</translation>
 <translation id="8473863474539038330">पते वगैरह</translation>
 <translation id="8474910779563686872">डेवलपर की जानकारी दिखाएं</translation>
@@ -2085,6 +2091,7 @@
 <translation id="8996941253935762404">साइट में आगे हानिकारक प्रोग्राम हैं</translation>
 <translation id="8997023839087525404">सर्वर ने एक प्रमाणपत्र प्रस्तुत किया है, जिसे प्रमाणपत्र पारदर्शिता पॉलिसी का उपयोग करके सार्वजनिक रूप से प्रकट नहीं किया गया था. कुछ प्रमाणपत्रों के लिए यह पक्का करना आवश्यक है कि वे विश्वसनीय हैं और आक्रमणकर्ताओं से रक्षा करते हैं.</translation>
 <translation id="9001074447101275817">प्रॉक्‍सी <ph name="DOMAIN" /> के लिए उपयोगकर्ता नाम और पासवर्ड की आवश्यकता है.</translation>
+<translation id="9001963517402879850">उछलें!</translation>
 <translation id="9004367719664099443">वीआर सेशन चल रहा है</translation>
 <translation id="9005998258318286617">PDF दस्तावेज़ लोड नहीं किया जा सका.</translation>
 <translation id="9008201768610948239">ध्यान न दें</translation>

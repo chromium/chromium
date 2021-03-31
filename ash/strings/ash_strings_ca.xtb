@@ -92,7 +92,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1698760176351776263">Adreça IPv6: <ph name="ADDRESS" /></translation>
 <translation id="1708345662127501511">Escriptori: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Configuració de la xarxa</translation>
-<translation id="1713296079175516843">Aquest perifèric no s'admet per motius de seguretat</translation>
 <translation id="1719094688023114093">La funció Subtítols instantanis està activada.</translation>
 <translation id="1720011244392820496">Activa Sincronització Wi-Fi</translation>
 <translation id="1743570585616704562">No s'ha reconegut</translation>
@@ -277,6 +276,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pot iniciar la sessió més tard.</translation>
 <translation id="3321628682574733415">Codi parental incorrecte</translation>
 <translation id="332587331255250389">Canvia la bateria</translation>
+<translation id="3333741161915951567">S'està reiniciant el mòdem. Espera 30 segons abans de tornar-ho a provar.</translation>
 <translation id="3341303451326249809">La pantalla s'ha capturat</translation>
 <translation id="334252345105450327">Fes una captura de pantalla</translation>
 <translation id="3351879221545518001">Estàs emetent la pantalla.</translation>

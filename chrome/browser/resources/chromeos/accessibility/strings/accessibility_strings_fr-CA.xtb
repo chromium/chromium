@@ -52,6 +52,7 @@
 <translation id="1268366246392928616">Aucune expression mathématique précédente</translation>
 <translation id="1273314450961659276">Paramètres de synthèse vocale</translation>
 <translation id="1275718070701477396">Sélectionné</translation>
+<translation id="1284576163386164372">Pour accéder aux tutoriels, ouvrez les menus en touchant l'écran avec quatre doigts. Activez ensuite le tutoriel dans la section « ChromeVox ».</translation>
 <translation id="1291286136605998134">Bouton Activer/désactiver</translation>
 <translation id="1299774449519412690">Bleu ciel clair</translation>
 <translation id="1303806948938513162">Touchez avec quatre doigts pour accéder aux menus de ChromeVox</translation>
@@ -115,6 +116,7 @@
 <translation id="1690731385917361335">Aucun élément</translation>
 <translation id="1700517974991662022">Visité</translation>
 <translation id="1714116687360794776">Outil de mesure</translation>
+<translation id="1717267964664691695">Le tutoriel sur les gestes est terminé</translation>
 <translation id="1722567105086139392">Lien</translation>
 <translation id="1727806147743597030">bas de page</translation>
 <translation id="1730447754326314349">Bienvenue dans le tutoriel de ChromeVox. Pour quitter ce tutoriel, appuyez à tout moment sur la touche Échap. située dans le haut de votre clavier, à gauche. Pour désactiver ChromeVox, maintenez les touches Ctrl+Alt. enfoncées et appuyez sur Z. Lorsque vous êtes prêt, utilisez la barre d'espacement pour passer à la leçon suivante.</translation>
@@ -131,6 +133,7 @@
 <translation id="1834891354138622109">Colonne</translation>
 <translation id="1845944666972354496">Touchez deux fois pour activer</translation>
 <translation id="1846771122725914429">Afficheur braille Bluetooth</translation>
+<translation id="1852018405765032699">Vous pouvez ouvrir et fermer les menus ChromeVox en touchant l'écran avec quatre doigts. Ces menus offrent de l'information utile sur les commandes et les raccourcis. Une fois ces menus ouverts, balayez l'écran avec un doigt pour parcourir les éléments et touchez-les deux fois pour les activer. Pour continuer, touchez l'écran avec quatre doigts.</translation>
 <translation id="1865601187525349519">Fin du texte</translation>
 <translation id="1876229593313240038">Document</translation>
 <translation id="1902396333223336119">Cellule</translation>
@@ -181,6 +184,7 @@
 <translation id="2267538686624070261">Abandon de la faute d'orthographe</translation>
 <translation id="2267945578749931355">Caractère suivant</translation>
 <translation id="2278490101488436824">Faites glisser trois doigts vers la gauche</translation>
+<translation id="2303873575703885770">Activer un élément</translation>
 <translation id="2305942658236913680">Aucun en-tête suivant</translation>
 <translation id="2311237334957139798">Accéder au niveau précédent de granularité</translation>
 <translation id="2314393392395134769">Pas en indice</translation>
@@ -219,6 +223,7 @@
 <translation id="2592212930811759050">Touchez deux fois pour commencer à modifier</translation>
 <translation id="2598495320872286378">Faute de grammaire</translation>
 <translation id="2603828437139726540">Déplacer d'un caractère vers l'avant</translation>
+<translation id="2619344480613750862">Vous pouvez vous déplacer entre des sections de l'écran, comme le lanceur, l'étagère et vos onglets Chrome. Pour passer à la section suivante, balayez l'écran de gauche à droite avec quatre doigts. Essayez cette opération maintenant pour continuer.</translation>
 <translation id="2624431853467395961">Ouvrir le mode apprentissage</translation>
 <translation id="2626530649491650971">Cliquable</translation>
 <translation id="2637227747952042642">Math</translation>
@@ -247,6 +252,7 @@
 <translation id="2756452585631602151">Entrez une étiquette personnalisée</translation>
 <translation id="2766299274563946262">Aucune cellule à gauche</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+ #}one{+ #}other{+ #}}</translation>
+<translation id="2792200646155001340">Vous pouvez aussi passer à l'élément précédent en balayant l'écran de droite à gauche avec un doigt. Essayez maintenant.</translation>
 <translation id="280499067616661124">Rechercher sur la page ChromeVox</translation>
 <translation id="2811019999044652585">Pour accéder aux autres parties de l'écran, comme les barres d'outils ou la barre d'état système, appuyez sur Ctrl + Suivant. Sur un Chromebook, la touche Suivant se situe immédiatement au-dessus de la touche du numéro 2.</translation>
 <translation id="2811204574343810641">Rangée</translation>
@@ -274,6 +280,7 @@
 <translation id="2968634799764242930">Vert mer</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{tabulation}one{# tabulation}other{# tabulations}}</translation>
 <translation id="2972205263822847197">Infobulle</translation>
+<translation id="2976476721782829799">Vous pouvez aussi vous déplacer en faisant glisser un doigt sur l'écran. C'est ce qu'on appelle explorer au toucher. Essayez de lire le reste de cette leçon en explorant l'écran au toucher.</translation>
 <translation id="297825089465017871">Faites glisser deux doigts vers la gauche</translation>
 <translation id="2998131015536248178">Caractère précédent</translation>
 <translation id="2999559350546931576">Diminuer la hauteur de la voix</translation>
@@ -375,6 +382,7 @@
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3589661172894441357">Glossaire</translation>
 <translation id="3591784666823501596">Bleu royal</translation>
+<translation id="3592715211448024517">Accéder aux menus</translation>
 <translation id="3594207934078151302">Vert mer moyen</translation>
 <translation id="3599054940393788245">En dehors de l'expression mathématique</translation>
 <translation id="360241989769010433">Remerciements</translation>
@@ -401,6 +409,7 @@
 <translation id="3781428340399460090">Rose indien</translation>
 <translation id="3783725005098956899">Afficher le journal</translation>
 <translation id="3801735343383419236">Remplissage automatique de liste</translation>
+<translation id="3806327402890551732">Passer à l'élément suivant ou précédent</translation>
 <translation id="3810838688059735925">Vidéo</translation>
 <translation id="3813387282697781382">Corail clair</translation>
 <translation id="3816633764618089385">Contenu multimédia suivant</translation>
@@ -410,6 +419,7 @@
 <translation id="3870295413168340326">Aucun en-tête de niveau 3 précédent</translation>
 <translation id="3887399638190992181">Touches essentielles</translation>
 <translation id="3887576927692165210">zone de texte</translation>
+<translation id="3893063449310326280">Vous pouvez utiliser le même geste, mais de droite à gauche, pour passer à l'élément principal précédent. Essayez maintenant!</translation>
 <translation id="3897092660631435901">Menu</translation>
 <translation id="3907138069015388678">grillist</translation>
 <translation id="3909320334364316587">En-tête de niveau 6 précédent</translation>
@@ -504,6 +514,7 @@
 <translation id="4615592953348396470">La prochaine touche actionnée ne sera pas utilisée.</translation>
 <translation id="4623097797855662355">Colophon</translation>
 <translation id="463135993322337640">Appuyez sur ChromeVox o, n pour découvrir les nouveautés</translation>
+<translation id="4649220074413114917">Vous pouvez toucher l'écran avec deux doigts pour arrêter la lecture en cours. Pour continuer, appuyez sur l'écran avec deux doigts. Pour continuer, touchez l'écran avec deux doigts.</translation>
 <translation id="4660783501463101648">Version classique supprimée. Le commutateur de clavier pour revenir à la version classique de ChromeVox a été supprimé.</translation>
 <translation id="4661075872484491155">arbre</translation>
 <translation id="4668929960204016307">,</translation>
@@ -579,12 +590,14 @@
 <translation id="5140016802771803559">Violet Rebecca</translation>
 <translation id="5142101052131610456">Toutes les leçons</translation>
 <translation id="5158275234811857234">Couverture</translation>
+<translation id="516076699907426116">Servez-vous de la fonctionnalité Explorer au toucher pour repérer le bouton Leçon suivante. Pour continuer, touchez deux fois.</translation>
 <translation id="5170206230005240598">Sous-titres en braille activés</translation>
 <translation id="5183440668879371625">Ligne précédente en braille</translation>
 <translation id="5189244881767082992">Ligne</translation>
 <translation id="5263034204789987535">Barbe de maïs</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Fin</translation>
+<translation id="5290220123487191192">Commençons par quelques gestes que vous utiliserez régulièrement. Si vous accédez à un élément que vous souhaitez activer, touchez deux fois l'écran avec un doigt. Pour continuer, touchez deux fois maintenant.</translation>
 <translation id="5302089807023311274">Référence bibliographique</translation>
 <translation id="530391007967514163">Essayez de naviguer d'un titre à l'autre pour parcourir le texte ci-dessous.</translation>
 <translation id="5304943142864553931">onglet <ph name="TITLE" /></translation>
@@ -655,10 +668,12 @@
 <translation id="5703716265115423771">diminuer le volume</translation>
 <translation id="5704453877234251104">Appuyez sur la flèche vers le haut ou vers le bas pour afficher la liste des saisies semi-automatiques</translation>
 <translation id="5712244464475377681">bouton fenêtre contextuelle</translation>
+<translation id="5712889723513495267">Passer à la section suivante ou précédente</translation>
 <translation id="5725079927589231571">Bleu acier clair</translation>
 <translation id="5732189279857692565">Ceci est le deuxième titre. Continuez en appuyant sur Recherche+h ou sur Recherche+Maj+h</translation>
 <translation id="5748623122140342504">En-tête de niveau 5 précédent</translation>
 <translation id="5760594853119905566">Annexe</translation>
+<translation id="5761219715606611783">Bien joué! Vous avez appris les bases nécessaires pour utiliser ChromeVox avec les gestes. Pour revoir ce tutoriel ou le quitter, utilisez les boutons ci-dessous.</translation>
 <translation id="5805940204952508776">Touchez avec deux doigts</translation>
 <translation id="5819072574982403430">Élément d'arborescence</translation>
 <translation id="5822819874379903994">Turquoise foncé</translation>
@@ -683,6 +698,7 @@
 <translation id="5906974869830879618">Veuillez entrer un NIP</translation>
 <translation id="5921587111466148855">Chapitre</translation>
 <translation id="5923780477617566089">Date actuelle</translation>
+<translation id="5926889058434275234">Vous trouverez la liste complète des gestes dans le centre d'aide.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{signe égal}one{# signe égal}other{# signes égal}}</translation>
 <translation id="5948123859135882163">Basculer entre l’interprétation structurelle et sémantique des expressions mathématiques</translation>
 <translation id="5955304353782037793">app</translation>
@@ -760,6 +776,7 @@
 <translation id="6561818612645211875">Aller au début de la rangée actuelle</translation>
 <translation id="6579990219486187401">Rose clair</translation>
 <translation id="6583174818554398774">Accéder au niveau suivant de granularité</translation>
+<translation id="6584162722998608255">Vous apprendrez maintenant comment vous déplacer sur l'écran. Pour passer à l'élément suivant, vous pouvez balayer l'écran de gauche à droite avec un doigt. Essayez ce geste maintenant pour passer à la prochaine étape.</translation>
 <translation id="6609828810966525877">Découvrez plus de gestes dans le mode apprentissage et dans le Centre d'aide de Chromebook</translation>
 <translation id="6628427060004938651">Partie</translation>
 <translation id="6637586476836377253">Journal</translation>
@@ -781,6 +798,7 @@
 <translation id="6759710362319508545">Ressources</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786800275320335305">Article</translation>
+<translation id="6790781785997195160">Une fois que vous vous êtes exercé un peu, trouvez le bouton Leçon suivante, puis touchez deux fois pour continuer.</translation>
 <translation id="6793101435925451627">zone de liste</translation>
 <translation id="6815255864998354418">Mousseline au citron</translation>
 <translation id="6816066673340002913">Or pâle</translation>
@@ -806,6 +824,7 @@
 <translation id="6994042831499278539">Référence du glossaire</translation>
 <translation id="6996566555547746822">Zone de liste déroulante suivante</translation>
 <translation id="6997224546856374593">Lors de la lecture des lettres majuscules :</translation>
+<translation id="6999752561504308105">Bienvenue dans le tutoriel de ChromeVox. Pour quitter ce tutoriel en tout temps, balayez l'écran de droite à gauche avec deux doigts. Pour activer ou désactiver ChromeVox, maintenez enfoncés les deux boutons de volume pendant cinq secondes. Pour passer à la leçon suivante, touchez deux fois l'écran avec un doigt.</translation>
 <translation id="700202842116345659">Entrée de bibliographie</translation>
 <translation id="7005146664810010831">Lien sans adresse URL</translation>
 <translation id="7026338066939101231">Diminuer</translation>
@@ -819,6 +838,7 @@
 <translation id="7086377898680121060">Augmenter la luminosité</translation>
 <translation id="7088743565397416204">Touchez deux fois pour activer l'élément mis en évidence</translation>
 <translation id="7088960765736518739">Switch Access</translation>
+<translation id="7090715360595433170">Cela peut aussi être plus efficace que de balayer l'écran de gauche à droite avec le doigt.</translation>
 <translation id="7091296112653361280">Blanc navajo</translation>
 <translation id="7095834689119144465">Modifier le texte, numérique seulement</translation>
 <translation id="7096001299300236431">Contenu multimédia précédent</translation>
@@ -856,6 +876,7 @@
 <translation id="7308519659008003150">Aucun champ de formulaire précédent</translation>
 <translation id="731121099745151312">élément d'arborescence</translation>
 <translation id="7317017974771324508">partiellement sélectionné</translation>
+<translation id="7322442671176251901">Explorer au toucher</translation>
 <translation id="7344012264516629579">Vous avez également la possibilité d'accéder directement à un lien, à un bouton ou à une case à cocher, entre autres. Pour consulter la liste complète des commandes d'accès direct, accédez aux menus ChromeVox en appuyant sur Recherche+Point.</translation>
 <translation id="7356165926712028380">Passer au braille à huit points</translation>
 <translation id="7356610683936413584">Détail de la liste de descriptions</translation>
@@ -911,6 +932,7 @@
     Si vous avez terminé le tutoriel, servez-vous de ChromeVox pour naviguer jusqu'au bouton Fermer et cliquez dessus.</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7731785449856576010">Aucun widget multimédia suivant</translation>
+<translation id="7735498529470878067">Grâce à la fonctionnalité Explorer au toucher, vous saurez rapidement ce qui se trouve à l'écran.</translation>
 <translation id="773906353055481349">Appuyez simultanément sur Recherche+Ctrl+Alt et sur les flèches pour naviguer entre les cellules</translation>
 <translation id="7763537600611320912">Le téléchargement du fichier <ph name="FILE_NAME" /> a commencé</translation>
 <translation id="7768784765476638775">Sélectionner pour énoncer</translation>
@@ -1089,6 +1111,7 @@
 <translation id="9153606228985488238">Hauteur à <ph name="PERCENT" /> %</translation>
 <translation id="9160096769946561184">Aller à la fin de la présente colonne</translation>
 <translation id="9173115498289768110">Volume : <ph name="PERCENT" /> %</translation>
+<translation id="9185200690645120087">Tutoriel sur l'utilisation des gestes avec ChromeVox</translation>
 <translation id="9192904702577636854">Bannière défilante</translation>
 <translation id="9205282956404529648">Tapez pour démarrer la saisie semi-automatique</translation>
 <translation id="9208241857935108694">Blanc antique</translation>

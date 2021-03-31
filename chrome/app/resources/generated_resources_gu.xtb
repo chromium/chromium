@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> દ્વારા સુઝાવ આપવામાં આવ્યો છે કે તમે આ <ph name="DEVICE_TYPE" /> અપડેટ કરો.</translation>
 <translation id="1118738876271697201">સિસ્ટમ, ડિવાઇસનું મૉડલ અથવા અનુક્રમ નંબર નિર્ધારિત કરવામાં નિષ્ફળ થઈ.</translation>
 <translation id="1119447706177454957">આંતરિક ભૂલ</translation>
+<translation id="111959947408687873">પૂર્ણસ્ક્રીન મૅગ્નિફાયર ટૉગલ કરવા માટે, Ctrl+<ph name="SEARCH_KEY_NAME" />+M કીનો ઉપયોગ કરો. જ્યારે મોટું કરેલું હોય ત્યારે સ્ક્રીન પર કોઈપણ જગ્યાએ જવા માટે, Ctrl+Alt+ઍરો કીનો ઉપયોગ કરો.</translation>
 <translation id="1122068467107743258">કાર્ય</translation>
 <translation id="1122198203221319518">&amp;સાધનો</translation>
 <translation id="1122242684574577509">પ્રમાણીકરણ નિષ્ફળ થયું. તમે ઉપયોગ કરી રહ્યા છો તે વાઇ-ફાઇ નેટવર્ક (<ph name="NETWORK_ID" />) માટેના લોગિન પેજની મુલાકાત લેવા માટે ક્લિક કરો.</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Google વિગતવાર સુરક્ષા પ્રોગ્રામ</translation>
 <translation id="1155816283571436363">તમારા ફોનને કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="1161575384898972166">ક્લાયંટ પ્રમાણપત્ર નિકાસ કરવા માટે કૃપા કરીને <ph name="TOKEN_NAME" /> પર સાઇન ઇન કરો.</translation>
+<translation id="116173250649946226">તમારા વ્યવસ્થાપકે ડિફૉલ્ટ થીમ સેટ કરી છે જે બદલી શકાતી નથી.</translation>
 <translation id="1163931534039071049">ફ્રેમ સ્રોત &amp;જુઓ</translation>
 <translation id="1164891049599601209">છેતરામણી સાઇટ પર પ્રવેશ કર્યો</translation>
 <translation id="1164899421101904659">PIN અનલૉક કી દાખલ કરો</translation>
@@ -2551,6 +2553,7 @@
 <translation id="3809272675881623365">સસલું</translation>
 <translation id="3809280248639369696">મૂનબીમ</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> નીચેના ફોલ્ડરોમાં સાચવેલી ફાઇલોને જોઈ શકે છે</translation>
+<translation id="3810914450553844415">તમારા વ્યવસ્થાપક વધારાના Google એકાઉન્ટની મંજૂરી આપતા નથી.</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
 <translation id="381202950560906753">બીજી ઉમેરો</translation>
 <translation id="3812525830114410218">ખોટું પ્રમાણપત્ર</translation>
@@ -2672,6 +2675,7 @@
 <translation id="3925573269917483990">કૅમેરા:</translation>
 <translation id="3926002189479431949">Smart Lock ફોન બદલાવ્યો</translation>
 <translation id="3927932062596804919">નકારો</translation>
+<translation id="392803502090869922">ઇ-સિમ સેટઅપ</translation>
 <translation id="3928570707778085600">ફેરફારોને <ph name="FILE_OR_FOLDER_NAME" />માં સાચવીએ?</translation>
 <translation id="3928659086758780856">શાહી ઓછી છે</translation>
 <translation id="3929426037718431833">આ સાઇટ પરની માહિતીને આ એક્સ્ટેંશન જોઈ શકે છે અને તેમાં ફેરફાર કરી શકે છે.</translation>
@@ -4243,6 +4247,7 @@
 <translation id="5764797882307050727">કૃપા કરીને તમારા ઉપકરણમાં થોડી જગ્યા ખાલી કરો.</translation>
 <translation id="5765425701854290211">માફ કરજો, અમુક ફાઇલોને નુકસાન થયું હતું અને અપડેટ સફળ રહ્યું ન હતું. તમારી સમન્વયિત થયેલી ફાઇલો સુરક્ષિત છે.</translation>
 <translation id="5765491088802881382">નેટવર્ક્સ ઉપલબ્ધ નથી</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. સ્કૅન કરવા માટે Googleને મોકલીએ? ડાઉનલોડ બાર વિભાગમાં પહોંચવા માટે Shift+F6 દબાવો.</translation>
 <translation id="5769519078756170258">બાકાત કરવા માટેનું હોસ્ટ અથવા ડોમેન</translation>
 <translation id="5770125698810550803">નૅવિગેશન બટન બતાવો</translation>
 <translation id="5771816112378578655">સેટઅપની પ્રક્રિયા ચાલુ છે...</translation>
@@ -4400,6 +4405,7 @@ USB ડિવાઇસ</translation>
 <translation id="5942779427914696408">ડિવાઇસની દૃશ્યતા</translation>
 <translation id="5943127421590245687">તમારી ચકાસણી સફળ રહી. તમારા સ્થાનિક ડેટાને અનલૉક કરવા અને તેને રિસ્ટોર કરવા માટે, કૃપા કરીને તમારો જૂનો <ph name="DEVICE_TYPE" /> પાસવર્ડ દાખલ કરો.</translation>
 <translation id="5944869793365969636">QR કોડ સ્કૅન કરો</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. સ્કૅન કરવા માટે Google Safe Browsingને મોકલીએ?</translation>
 <translation id="5946591249682680882">રીપોર્ટ ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">કોઈ કીબોર્ડ કે માઉસ કનેક્ટ કરો અથવા તમારી ટચસ્ક્રીનનો ઉપયોગ કરીને સેટઅપ કરવાનું ચાલુ રાખો. જો તમે બ્લૂટૂથ ડિવાઇસનો ઉપયોગ કરી રહ્યાં છો, તો ખાતરી કરો કે તમારા ડિવાઇસ જોડાણ બનાવવા માટે તૈયાર છે.</translation>
 <translation id="5949544233750246342">ફાઇલનું વિશ્લેષણ કરવામાં અસમર્થ</translation>
@@ -4447,6 +4453,7 @@ USB ડિવાઇસ</translation>
 <translation id="6002452033851752583">તમારા Google એકાઉન્ટમાંથી પાસવર્ડ ડિલીટ કર્યો</translation>
 <translation id="6002458620803359783">મનપસંદ વૉઇસ</translation>
 <translation id="6003143259071779217">ઇ-સિમ સેલ્યુલર નેટવર્ક કાઢી નાખો</translation>
+<translation id="6003582434972667631">થીમ તમારી સંસ્થા દ્વારા સેટ કરવામાં આવે છે</translation>
 <translation id="6006484371116297560">ક્લાસિક</translation>
 <translation id="6007240208646052708">વૉઇસ શોધ સેવા તમારી ભાષામાં ઉપલબ્ધ નથી.</translation>
 <translation id="6011074160056912900">ઇથરનેટ નેટવર્ક</translation>
@@ -4826,6 +4833,7 @@ USB ડિવાઇસ</translation>
 <translation id="6429384232893414837">અપડેટમાં ભૂલ</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, એકલ પ્રમાણપત્ર</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> આ કમ્પ્યૂટરના બધા વપરાશકર્તા માટે સ્વચાલિત અપડેટ્સ સેટ કરશે.</translation>
+<translation id="6434104957329207050">પૉઇન્ટ સ્કૅન કરવાની ઝડપ</translation>
 <translation id="6434309073475700221">કાઢી નાખો</translation>
 <translation id="6434325376267409267">તમે <ph name="APP_NAME" />નો ઉપયોગ કરો તે પહેલાં તમારા ડિવાઇસને અપડેટ કરવાની જરૂર છે.</translation>
 <translation id="6436164536244065364">વેબ સ્ટોરમાં જુઓ</translation>
@@ -4868,6 +4876,7 @@ USB ડિવાઇસ</translation>
 <translation id="6474498546677193336">કોઈ ઍપ્લિકેશન આ ફોલ્ડરનો ઉપયોગ કરી રહી હોવાને કારણે આને અનશેર કરી શકાતું નથી. જ્યારે આગલી વાર Linux શટ ડાઉન થશે, ત્યારે ફોલ્ડરને અનશેર કરવામાં આવશે.</translation>
 <translation id="6474884162850599008">Google ડ્રાઇવ એકાઉન્ટ ડિસ્કનેક્ટ કરો</translation>
 <translation id="6475294023568239942">ડિસ્કમાં સ્પેસ ખાલી કરો અથવા સેટિંગમાં Linux ડિસ્કનું કદ બદલો</translation>
+<translation id="6476138569087741884">પૂર્ણસ્ક્રીન ઝૂમ લેવલ</translation>
 <translation id="6477822444490674459">ઑફિસની પ્રોફાઇલમાંના ફોન માટે નોટિફિકેશન સિંક કરવાની સુવિધાને સપોર્ટ કરવામાં આવતો નથી. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">જોખમી ફાઇલ રાખીએ?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
@@ -5323,6 +5332,7 @@ USB ડિવાઇસ</translation>
 <translation id="6985607387932385770">પ્રિન્ટર્સ</translation>
 <translation id="6988094684494323731">Linux કન્ટેનર શરૂ કરી રહ્યાં છીએ</translation>
 <translation id="6988403677482707277">ટૅબને ટૅબસ્ટ્રિપની શરૂઆતમાં ખસેડવામાં આવી</translation>
+<translation id="6990209147952697693">ક્લાસિક Chrome</translation>
 <translation id="6991665348624301627">ગંતવ્ય પસંદ કરો</translation>
 <translation id="6992554835374084304">વધુ સારી બનાવાયેલી જોડણીની તપાસ ચાલુ કરો</translation>
 <translation id="6993000214273684335">નામ વિનાના ગ્રૂપ - <ph name="GROUP_CONTENTS" />માંથી ટૅબ કાઢી નાખવામાં આવી</translation>
@@ -6304,6 +6314,7 @@ USB ડિવાઇસ</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> ને ગોઠવી રહ્યાં છે ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" />નું સેટઅપ કરો</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{આ ફાઇલ એન્ક્રિપ્ટ કરેલી છે. તેના માલિકને તેને ડિક્રિપ્ટ કરવાનું કહો.}one{આમાંની કેટલીક ફાઇલો એન્ક્રિપ્ટ કરેલી છે. તેમના માલિકને તેને ડિક્રિપ્ટ કરવાનું કહો.}other{આમાંની કેટલીક ફાઇલો એન્ક્રિપ્ટ કરેલી છે. તેમના માલિકને તેને ડિક્રિપ્ટ કરવાનું કહો.}}</translation>
+<translation id="8087576439476816834"><ph name="PROFILE_NAME" /> ડાઉનલોડ કરો</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8090234456044969073">તમારી મોટાભાગની અવારનાવર મુલાકાત લીધેલ વેબસાઇટ્સની સૂચિ વાંચો</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> પ્રતિસાદ આપી રહ્યું નથી</translation>
@@ -6545,6 +6556,8 @@ USB ડિવાઇસ</translation>
 <translation id="8368859634510605990">બધાં બુકમાર્ક્સ &amp;ખોલો</translation>
 <translation id="8370294614544004647">લૅપટૉપ બંધ કરવામાં આવે ત્યારે નિષ્ક્રિય કરો</translation>
 <translation id="8371695176452482769">હવે બોલો</translation>
+<translation id="8371749822919332187">મોટું કરવા માટે, Ctrl+Alt+બ્રાઇટનેસ વધારવાની કીનો ઉપયોગ કરો.
+નાનું કરવા માટે, Ctrl+Alt+બ્રાઇટનેસ ઘટાડવાની કીનો ઉપયોગ કરો.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{સાઇટને મ્યૂટ કરો}one{સાઇટને મ્યૂટ કરો}other{સાઇટને મ્યૂટ કરો}}</translation>
 <translation id="8372369524088641025">ખરાબ WEP કી</translation>
 <translation id="8373652277231415614">Crostiniએ શેર કરેલી ડિરેક્ટરી</translation>
@@ -6552,7 +6565,6 @@ USB ડિવાઇસ</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
 <translation id="8379878387931047019">આ ઉપકરણ આ વેબસાઇટ દ્વારા વિનંતી કરાયેલ સુરક્ષા કોડના પ્રકારનું સમર્થન કરતું નથી</translation>
 <translation id="8379991678458444070">આ ટૅબને બુકમાર્ક કરીને તમે અહીં ઝડપથી પાછા ફરી શકશો</translation>
-<translation id="8380314198565901932">વર્ચ્યુઅલ મશીન ડાઉનલોડ કરવામાં ભૂલ આવી. કૃપા કરીને તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="8382913212082956454">&amp;ઇમેઇલ સરનામું કૉપિ કરો</translation>
 <translation id="8386091599636877289">નીતિ મળી નથી.</translation>
 <translation id="8386819192691131213">Assistantને અનુવાદ, વ્યાખ્યા અને એકમના રૂપાંતરણ જેવા અન્ય ઘણા પ્રશ્નોના ઝડપી જવાબો આપવા માટે, સ્ક્રીન પરની માહિતીનો ઉપયોગ કરવાની મંજૂરી આપો</translation>
@@ -7216,6 +7228,7 @@ USB ડિવાઇસ</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">તમારી નવી પ્રોફાઇલ પર સ્વાગત છે</translation>
 <translation id="9112748030372401671">તમારું વોલપેપર બદલો</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. સ્કૅન કરવા માટે Googleને મોકલીએ?</translation>
 <translation id="9112987648460918699">શોધો...</translation>
 <translation id="9114663181201435112">સરળતાથી સાઇન ઇન કરો</translation>
 <translation id="9115675100829699941">&amp;બુકમાર્ક્સ</translation>

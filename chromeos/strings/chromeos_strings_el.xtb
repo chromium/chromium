@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">Ο κωδικός πρόσβασης λήγει σε <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Δεν υπάρχουν εργασίες εκτύπωσης σε εξέλιξη</translation>
 <translation id="4297501883039923494">Διακοπή - Άγνωστο σφάλμα</translation>
+<translation id="4344214025510306853">Επισύναψη APN</translation>
 <translation id="4378373042927530923">Δεν εκτελέστηκε</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">Το Drive μου</translation>
@@ -278,6 +279,7 @@
 <translation id="7040230719604914234">Χειριστής</translation>
 <translation id="7059230779847288458">Φόρτιση, απομένουν <ph name="TIME_VALUE" /> μέχρι την ολοκλήρωση</translation>
 <translation id="708426984172631313">ΔΙΑΚΟΠΗΚΕ</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7144878232160441200">Επανάληψη</translation>
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>

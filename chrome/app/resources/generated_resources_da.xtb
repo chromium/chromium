@@ -103,6 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> anbefaler, at du opdaterer denne <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1118738876271697201">Systemet kunne ikke bestemme enhedsmodellen eller serienummeret.</translation>
 <translation id="1119447706177454957">Intern fejl</translation>
+<translation id="111959947408687873">Brug Ctrl+<ph name="SEARCH_KEY_NAME" />+M for at slå forstørrelse af fuld skærm til/fra. Brug Ctrl+Alt+piletasterne til at bevæge dig rundt på skærmen, når der er zoomet ind.</translation>
 <translation id="1122068467107743258">Arbejde</translation>
 <translation id="1122198203221319518">&amp;Værktøjer</translation>
 <translation id="1122242684574577509">Godkendelsen mislykkedes. Klik for at gå til loginsiden for det Wi-Fi-netværk, du bruger (<ph name="NETWORK_ID" />).</translation>
@@ -148,6 +149,7 @@
 <translation id="1153636665119721804">Google-programmet Avanceret beskyttelse</translation>
 <translation id="1155816283571436363">Opretter forbindelse til din telefon</translation>
 <translation id="1161575384898972166">Log ind på <ph name="TOKEN_NAME" /> for at eksportere klientcertifikatet.</translation>
+<translation id="116173250649946226">Din administrator har indstillet et standardtema, der ikke kan ændres.</translation>
 <translation id="1163931534039071049">&amp;Vis rammens kildetekst</translation>
 <translation id="1164891049599601209">Angivet på vildledende website</translation>
 <translation id="1164899421101904659">Angiv nøgle til oplåsning af pinkode</translation>
@@ -2555,6 +2557,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3809272675881623365">Kanin</translation>
 <translation id="3809280248639369696">Rumvæsen</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kan se filer i følgende mapper</translation>
+<translation id="3810914450553844415">Din administrator tillader ikke yderligere Google-konti.</translation>
 <translation id="3810973564298564668">Valgmuligheder</translation>
 <translation id="381202950560906753">Tilføj endnu et</translation>
 <translation id="3812525830114410218">Ugyldigt certifikat</translation>
@@ -2676,6 +2679,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3926002189479431949">Smart Lock-telefon er blevet ændret</translation>
 <translation id="3927932062596804919">Afvis</translation>
+<translation id="392803502090869922">Konfiguration af eSIM</translation>
 <translation id="3928570707778085600">Vil du gemme ændringerne i <ph name="FILE_OR_FOLDER_NAME" />?</translation>
 <translation id="3928659086758780856">Lavt blækniveau</translation>
 <translation id="3929426037718431833">Disse udvidelser kan se og ændre oplysninger på dette website.</translation>
@@ -4246,6 +4250,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5764797882307050727">Frigør plads på din enhed.</translation>
 <translation id="5765425701854290211">Nogle filer var desværre beskadiget, og opdateringen lykkedes ikke. Dine synkroniserede filer er sikre.</translation>
 <translation id="5765491088802881382">Der er ingen tilgængelige netværk</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> kan være skadelig. Vil du sende den til scanning hos Google? Tryk på Shift+F6 for at skifte til downloadlinjen.</translation>
 <translation id="5769519078756170258">Host eller domæne, der skal ekskluderes</translation>
 <translation id="5770125698810550803">Vis navigationsknapper</translation>
 <translation id="5771816112378578655">Konfigurationen er i gang...</translation>
@@ -4402,6 +4407,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5942779427914696408">Enhedens synlighed</translation>
 <translation id="5943127421590245687">Bekræftelsen er gennemført. Angiv din gamle <ph name="DEVICE_TYPE" /> adgangskode for at låse op for og gendanne dine lokale data.</translation>
 <translation id="5944869793365969636">Scan QR-kode</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> kan være skadelig. Skal Google Beskyttet browsing scanne den?</translation>
 <translation id="5946591249682680882">Rapport-id <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Tilslut et tastatur eller en mus, eller fortsæt konfigurationen med din touchskærm. Hvis du bruger Bluetooth-enheder, skal du sørge for, at dine enheder er klar til parring.</translation>
 <translation id="5949544233750246342">Filen kan ikke parses</translation>
@@ -4449,6 +4455,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6002452033851752583">Adgangskoden blev slettet fra din Google-konto</translation>
 <translation id="6002458620803359783">Foretrukne stemmer</translation>
 <translation id="6003143259071779217">Fjern eSIM-mobilnetværk</translation>
+<translation id="6003582434972667631">Temaet er indstillet af din organisation</translation>
 <translation id="6006484371116297560">Klassisk</translation>
 <translation id="6007240208646052708">Talesøgning er ikke tilgængelig på dit sprog.</translation>
 <translation id="6011074160056912900">Ethernet-netværk</translation>
@@ -4828,6 +4835,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6429384232893414837">Opdateringsfejl</translation>
 <translation id="6430814529589430811">Base64-kodet ASCII, enkeltcertifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> konfigurerer automatiske opdateringer for alle brugere af denne computer.</translation>
+<translation id="6434104957329207050">Hastighed for elementscanning</translation>
 <translation id="6434309073475700221">Kassér</translation>
 <translation id="6434325376267409267">Din enhed skal opdateres, før du kan bruge <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Vis i Webshop</translation>
@@ -4870,6 +4878,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6474498546677193336">Delingen kunne ikke ophæves, fordi mappen stadig anvendes af en app. Delingen af mappen ophæves, næste gang Linux lukkes.</translation>
 <translation id="6474884162850599008">Fjern tilknytningen af din Google Drev-konto</translation>
 <translation id="6475294023568239942">Du skal frigøre diskplads eller vælge en anden størrelse på Linux-disken i Indstillinger</translation>
+<translation id="6476138569087741884">Zoomniveau i fuld skærm</translation>
 <translation id="6477822444490674459">Synkronisering af notifikationer understøttes ikke for telefoner med en arbejdsprofil. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Vil du beholde den farlige fil?</translation>
 <translation id="6480327114083866287">Administreres af <ph name="MANAGER" /></translation>
@@ -5325,6 +5334,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6985607387932385770">Printere</translation>
 <translation id="6988094684494323731">Starter Linux-containeren</translation>
 <translation id="6988403677482707277">Fanen blev flyttet til starten af fanelinjen</translation>
+<translation id="6990209147952697693">Klassisk version af Chrome</translation>
 <translation id="6991665348624301627">Vælg en destination</translation>
 <translation id="6992554835374084304">Aktivér forbedret stavekontrol</translation>
 <translation id="6993000214273684335">Fanen blev fjernet fra en unavngiven gruppe – <ph name="GROUP_CONTENTS" /></translation>
@@ -6311,6 +6321,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8086015605808120405">Konfigurerer <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Konfigurer <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Denne fil er krypteret. Bed ejeren af filen om at dekryptere den.}one{En af disse filer er krypteret. Bed ejeren af den om at dekryptere den.}other{Nogle af disse filer er krypteret. Bed ejeren af dem om at dekryptere dem.}}</translation>
+<translation id="8087576439476816834">Download, <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8090234456044969073">Se en liste over dine mest besøgte websites</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> svarer ikke</translation>
@@ -6552,6 +6563,8 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8368859634510605990">&amp;Åbn alle bogmærker</translation>
 <translation id="8370294614544004647">Dvale, når skærmen er klappet ned</translation>
 <translation id="8371695176452482769">Indtal nu</translation>
+<translation id="8371749822919332187">Brug Ctrl+Alt+Lydstyrke op for at zoome ind.
+Brug Ctrl+Alt+Lydstyrke ned for at zoome ud.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Slå lyden fra på website}one{Slå lyden fra på website}other{Slå lyden fra på websites}}</translation>
 <translation id="8372369524088641025">Ugyldig WEP-nøgle</translation>
 <translation id="8373652277231415614">Delte indekser i Crostini</translation>
@@ -6559,7 +6572,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8378714024927312812">Administreret af din organisation</translation>
 <translation id="8379878387931047019">Denne enhed understøtter ikke den type sikkerhedsnøgle, der anmodes om på dette website</translation>
 <translation id="8379991678458444070">Tilføj denne fane som bogmærke, så du hurtigt kan vende tilbage hertil</translation>
-<translation id="8380314198565901932">Den virtuelle maskine kunne ikke downloades. Opdater din <ph name="DEVICE_TYPE" />, og prøv igen.</translation>
 <translation id="8382913212082956454">Kopier mailadress&amp;e</translation>
 <translation id="8386091599636877289">Politikken blev ikke fundet.</translation>
 <translation id="8386819192691131213">Giv Google Assistent tilladelse til at anvende oplysninger på skærmen til at give hurtige svar, f.eks. i forbindelse med oversættelse, definitioner og enhedsomregning</translation>
@@ -7224,6 +7236,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Velkommen til din nye profil</translation>
 <translation id="9112748030372401671">Skifte baggrund</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> kan være skadelig. Vil du sende den til scanning hos Google?</translation>
 <translation id="9112987648460918699">Find...</translation>
 <translation id="9114663181201435112">Log nemt ind</translation>
 <translation id="9115675100829699941">&amp;Bogmærker</translation>

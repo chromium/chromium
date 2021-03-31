@@ -5135,6 +5135,7 @@
 <translation id="6795884519221689054">पान्डा</translation>
 <translation id="6797493596609571643">ओहो, केही गलत भयो।</translation>
 <translation id="6798420440063423019">अत्यन्तै धेरै पटक गलत PIN हालिएका कारण सुरक्षा साँचो लक गरिएको छ। तपाईंले उक्त सुरक्षा साँचो रिसेट गर्नु पर्ने हुन्छ।</translation>
+<translation id="679845623837196966">पछि पढ्न सुरक्षित गरिएका वेबपेजको सूची देखाइयोस्</translation>
 <translation id="6798578729981748444">आयात गर्ने कार्य समाप्त गर्न Firefox का सबै विन्डोहरू बन्द गर्नुहोस्।</translation>
 <translation id="6798780071646309401">क्याप्स लक सक्रिय छ</translation>
 <translation id="6798954102094737107">प्लगइन: <ph name="PLUGIN_NAME" /></translation>
@@ -6553,7 +6554,6 @@
 <translation id="8378714024927312812">तपाईंको सङ्गठनले व्यवस्थापन गरेको</translation>
 <translation id="8379878387931047019">यस यन्त्रले यो वेबसाइटले अनुरोध गरेको प्रकारको सुरक्षा साँचो प्रयोग गर्दैन</translation>
 <translation id="8379991678458444070">यो ट्याबमा पुस्तक चिन्ह लगाएर छिट्टै यहाँ फर्कनुहोस्</translation>
-<translation id="8380314198565901932">भर्चुअल मेसिन डाउनलोड गर्ने क्रममा त्रुटि भयो। कृपया आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="8382913212082956454">&amp;इमेल ठेगानाको प्रतिलिपी बनाउनुहोस्</translation>
 <translation id="8386091599636877289">नीति फेला परेन।</translation>
 <translation id="8386819192691131213">अनुवाद, परिभाषा, एकाइ रूपान्तरणलगायतका द्रुत जवाफहरू दिने प्रयोजनका लागि सहायकलाई स्क्रिनमा भएको जानकारी प्रयोग गर्ने अनुमति दिनुहोस्</translation>
@@ -7262,6 +7262,7 @@
       <ph name="LIST_ITEM" />Chrome Connectivity Diagnostics चलाउने
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture in Picture</translation>
+<translation id="9167063903968449027">पछि पढ्न सुरक्षित गरिएका वेबपेजको सूची देखाइयोस्</translation>
 <translation id="9168436347345867845">यो कार्य पछि गर्नुहोस्‌</translation>
 <translation id="9169496697824289689">किबोर्ड शर्टकटरहरू हेर्नुहोस्</translation>
 <translation id="916964310188958970">यो सुझाव किन देखाइयो?</translation>

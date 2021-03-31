@@ -865,6 +865,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> n'est pas configurée, aucune icône n'est affichée pour le moteur de recherche.</translation>
 <translation id="2145735238144543545">Certificats client requis</translation>
+<translation id="2146103669166779785">Couleur hexadécimale qui sera utilisée pour générer et appliquer un thème au navigateur.</translation>
 <translation id="214901426630414675">Limiter l'impression en mode recto verso</translation>
 <translation id="2149330464730004005">Activer l'impression couleur</translation>
 <translation id="2149592087996467903">Empêcher WebRTC d'utiliser des versions obsolètes de TLS/DTLS</translation>
@@ -1473,6 +1474,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2905984450136807296">Durée de mise en cache des données d'authentification</translation>
 <translation id="2906874737073861391">Liste des extensions AppPack</translation>
 <translation id="2908277604670530363">Nombre maximal de connexions simultanées au serveur proxy</translation>
+<translation id="2912366658685903301">Configurer la couleur du thème du navigateur</translation>
 <translation id="291853569864365550">Ne pas afficher de recommandations de contenus sur la page "Nouvel onglet"</translation>
 <translation id="2920795918401557243">Ce paramètre permet de collecter une trace des performances au niveau du système via le service de traçage système.
 
@@ -3814,6 +3816,11 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
       Si cette règle n'est pas configurée, les utilisateurs peuvent modifier la liste des applications épinglées dans le Lanceur d'applications.</translation>
 <translation id="6190022522129724693">Paramètre de fenêtres pop-up par défaut</translation>
 <translation id="6190367314942602985">Enregistrer les informations d'identification de l'utilisateur</translation>
+<translation id="6191963383731098056">Cette règle permet aux administrateurs de configurer la couleur du thème de <ph name="PRODUCT_NAME" />. La chaîne saisie doit être une couleur hexadécimale valide comme "#RRGGBB".
+
+      Si tel est le cas, un thème basé sur cette couleur est automatiquement généré et appliqué au navigateur. Les utilisateurs ne peuvent pas modifier le thème défini dans cette règle.
+
+      En revanche, ils peuvent appliquer le thème de leur choix au navigateur si la règle n'est pas configurée.</translation>
 <translation id="6195802366906945965">Déterminer si l'outil de vérification des certificats intégré sera utilisé pour vérifier les certificats des serveurs</translation>
 <translation id="6208896993204286313">Enregistrer les informations sur les règles concernant <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enregistrer les informations sur la version de <ph name="PRODUCT_NAME" /> et l'OS</translation>

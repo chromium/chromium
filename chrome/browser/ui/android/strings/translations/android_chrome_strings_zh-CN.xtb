@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">应用版本</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1450753235335490080">无法分享<ph name="CONTENT_TYPE" /></translation>
+<translation id="147113415845704694">试着说“今天的天气如何？”</translation>
 <translation id="1477626028522505441">未能成功下载 <ph name="FILE_NAME" />，因为服务器出现了问题。</translation>
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
@@ -569,6 +570,7 @@
 <translation id="49268022542405662">系统会导出您的密码并将其下载为一个文本文件。有权访问目标文件夹的任何人和任何应用都能看到您的密码。</translation>
 <translation id="4932247056774066048">您将要退出由 <ph name="DOMAIN_NAME" /> 管理的帐号，因此您的 Chrome 数据将会从这部设备中删除，但仍会保留在您的 Google 帐号中。</translation>
 <translation id="4936039914467572121">更快速地访问该网站</translation>
+<translation id="4941179133499732445">点按麦克风图标即可使用语音进行搜索</translation>
 <translation id="4943703118917034429">虚拟实境</translation>
 <translation id="4943872375798546930">找不到结果</translation>
 <translation id="4961107849584082341">将此页面翻译成任何语言</translation>
@@ -583,6 +585,7 @@
 <translation id="5011311129201317034"><ph name="SITE" /> 希望连接到以下所选设备：</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">允许</translation>
+<translation id="5061533557687621530">若要查询天气，请点按麦克风图标并说“今天的天气如何？”</translation>
 <translation id="5087580092889165836">添加新卡</translation>
 <translation id="5091249083535528968">扩展的使用情况数据</translation>
 <translation id="509429900233858213">出现错误。</translation>
@@ -597,6 +600,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 项下载失败。}other{# 项下载失败。}}</translation>
 <translation id="5170568018924773124">在文件夹中显示</translation>
 <translation id="5184329579814168207">在 Chrome 中打开</translation>
+<translation id="5188992787241350004">使用语音进行搜索</translation>
 <translation id="5191251636205085390">了解和掌控旨在取代第三方 Cookie 的新技术</translation>
 <translation id="5193988420012215838">已复制到剪贴板</translation>
 <translation id="5199929503336119739">工作资料</translation>

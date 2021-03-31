@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Больш падрабязна</translation>
 <translation id="1030706264415084469">Сайт <ph name="URL" /> запытвае дазволу захоўваць вялікі аб'ём даных на вашай прыладзе</translation>
 <translation id="1032854598605920125">Павярнуць па гадзіннікавай стрэлцы</translation>
+<translation id="1036224116832931580">Гульня з дыназаўрам: каб дыназаўр падскочыў і пачалася гульня, дакраніцеся да экрана</translation>
 <translation id="1036348656032585052">Выключыць</translation>
 <translation id="1038106730571050514">Паказаць прапановы</translation>
 <translation id="1038842779957582377">невядомае імя</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Няма}=1{1 сайт}one{# сайт}few{# сайты}many{# сайтаў}other{# сайта}}</translation>
 <translation id="1945968466830820669">Вы можаце страціць доступ да ўліковага запісу арганізацыі, або ў вас могуць скрасці асабістыя даныя. Chromium рэкамендуе змяніць пароль.</translation>
 <translation id="1947454675006758438">Скаба зверху справа</translation>
+<translation id="1958218078413065209">Ваш рэзультат: <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Дапамагаць павысіць бяспеку ў інтэрнэце для ўсіх карыстальнікаў, адпраўляючы <ph name="BEGIN_WHITEPAPER_LINK" />URL-адрасы некаторых наведаных вамі старонак, пэўную сістэмную інфармацыю і змесціва старонак<ph name="END_WHITEPAPER_LINK" /> у Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Палітыка прыватнасці<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Закладкі з дамена <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Памылка серыялізацыі</translation>
@@ -547,6 +549,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, каб выканаць праверку бяспекі ў наладах Chrome, націсніце Tab, затым Enter</translation>
 <translation id="3061707000357573562">Сэрвіс выпраўленняў</translation>
 <translation id="3064966200440839136">Выхад з рэжыму інкогніта для плацяжу праз знешнюю праграму. Працягнуць?</translation>
+<translation id="306573536155379004">Гульня пачалася.</translation>
 <translation id="3080254622891793721">Графіка</translation>
 <translation id="3086579638707268289">Вашы дзеянні ў інтэрнэце адсочваюцца</translation>
 <translation id="3087734570205094154">Знізу</translation>
@@ -1542,6 +1545,7 @@
 <translation id="6934672428414710184">Гэта імя – з вашага Уліковага запісу Google</translation>
 <translation id="6944692733090228304">Вы ўвялі пароль на сайце, які не знаходзіцца пад кіраваннем арганізацыі <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Каб абараніць свой уліковы запіс, не выкарыстоўвайце пароль на іншых прыладах і сайтах.</translation>
 <translation id="6945221475159498467">Выбраць</translation>
+<translation id="6948051842255602737">Гульня скончана, ваш рэзультат: <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Выберыце адрас, каб убачыць спосабы і ўмовы атрымання</translation>
 <translation id="6949872517221025916">Скід пароля</translation>
 <translation id="6950684638814147129">Памылка аналізу значэння JSON: <ph name="ERROR" /></translation>
@@ -1825,6 +1829,7 @@
 <translation id="7956713633345437162">Мабільныя закладкі</translation>
 <translation id="7961015016161918242">Ніколі</translation>
 <translation id="7966803981046576691">Тып уліковага запісу задання</translation>
+<translation id="79682505114836835">Значэнне <ph name="VALUE" /> не з'яўляецца правільным шаснаццатковым кодам колеру.</translation>
 <translation id="7976214039405368314">Занадта шмат запытаў</translation>
 <translation id="7977538094055660992">Прылада вываду</translation>
 <translation id="7977894662897852582">EDP</translation>
@@ -1952,6 +1957,7 @@
 <translation id="8446884382197647889">Даведацца больш</translation>
 <translation id="8457125768502047971">Бясконца</translation>
 <translation id="8461694314515752532">Зашыфраваць сінхранізаваныя даныя з дапамогай фразы-пароля.</translation>
+<translation id="8463101686637053101">Гульня з дыназаўрам: каб дыназаўр падскочыў і пачалася гульня, націсніце прабел</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 крэдытная картка}one{# крэдытная картка}few{# крэдытныя карткі}many{# крэдытных картак}other{# крэдытнай карткі}}</translation>
 <translation id="8473863474539038330">Адрасы і іншае</translation>
 <translation id="8474910779563686872">Паказаць падрабязныя звесткі пра распрацоўшчыка</translation>
@@ -2087,6 +2093,7 @@
 <translation id="8996941253935762404">Сайт, на які вы збіраецеся перайсці, змяшчае шкодныя праграмы</translation>
 <translation id="8997023839087525404">Сервер падаў сертыфікат, які не быў публічна раскрыты згодна са стандартам "Празрыстасць сертыфікатаў". Гэта патрабаванне выстаўляецца да пэўных сертыфікатаў, каб упэўніцца ў іх надзейнасці і ў мэтах абароны ад зламыснікаў.</translation>
 <translation id="9001074447101275817">Проксі-сервер <ph name="DOMAIN" /> патрабуе імя карыстальніка і пароль.</translation>
+<translation id="9001963517402879850">Скочце!</translation>
 <translation id="9004367719664099443">Ідзе сеанс VR</translation>
 <translation id="9005998258318286617">Не ўдалося загрузіць дакумент PDF.</translation>
 <translation id="9008201768610948239">Ігнараваць</translation>

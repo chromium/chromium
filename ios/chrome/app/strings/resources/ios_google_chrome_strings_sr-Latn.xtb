@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Sada možete da koristite Chrome svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="3720541637541300822">Zaključajte kartice bez arhiviranja posle zatvaranja Chrome-a</translation>
 <translation id="384394811301901750">Google Chrome trenutno ne može da koristi kameru</translation>
-<translation id="38949020760388809">Odaberite da li ćete obrisati Chrome podatke sa ovog uređaja ili ih zadržati.</translation>
 <translation id="3980220367029651214">Menjate nalog za sinhronizaciju iz <ph name="USER_EMAIL1" /> u <ph name="USER_EMAIL2" />. Postojećim Chrome podacima upravlja <ph name="DOMAIN" />. Promena će izbrisati podatke sa ovog uređaja, ali će podaci ostati na <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Organizacija zahteva da ostanete odjavljeni sa Chrome-a.</translation>
 <translation id="3988789688219830639">Google Chrome ne može da pristupa slikama ili video snimcima. Omogućite pristup u iOS Settings (Podešavanja iOS-a) &gt; Privacy (Privatnost) &gt; Photos (Slike).</translation>
 <translation id="4099578267706723511">Poboljšajte Chrome slanjem statistike korišćenja i izveštaja o otkazivanju Google-u.</translation>
-<translation id="415767770115540173">Poboljšajte Google doživljaj u Chrome-u na osnovu lokacije.</translation>
 <translation id="417201473131094001">Nije podržano u verziji Chrome Canary</translation>
 <translation id="424864128008805179">Želite li da se odjavite iz Chrome-a?</translation>
 <translation id="4249068189593983585">Savet za Chrome. Ako želite više opcija za kartice, dodirnite i zadržite dugme Prikaži kartice na traci s alatkama, koja se nalazi u dnu ili vrhu ekrana.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Vaša lozinka je otkrivena pri upadu u podatke. Chrome preporučuje da odmah promenite lozinku.</translation>
 <translation id="7698568245838009292">Chrome želi da pristupi kameri</translation>
 <translation id="7855730255114109580">Google Chrome je aktuelan</translation>
-<translation id="8109233255338845204">Nalogom upravlja <ph name="HOSTED_DOMAIN" />, pa će Chrome podaci biti obrisani sa ovog uređaja.</translation>
 <translation id="8160472928944011082">Chrome ne može da se ažurira</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
 <translation id="840168496893712993">Neki programski dodaci izazivaju otkazivanje Chrome-a. Pokušajte da ih deinstalirate.</translation>

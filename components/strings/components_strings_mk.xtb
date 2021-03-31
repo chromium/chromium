@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Прикажи детали</translation>
 <translation id="1030706264415084469"><ph name="URL" /> сака трајно да складира податоци на вашиот уред</translation>
 <translation id="1032854598605920125">Ротирај надесно</translation>
+<translation id="1036224116832931580">Игра со диносаурус, допрете за да скокате и играте</translation>
 <translation id="1036348656032585052">Исклучи</translation>
 <translation id="1038106730571050514">Прикажувај предлози</translation>
 <translation id="1038842779957582377">непознато име</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Ниту еден}=1{1 сајт}one{# сајт}other{# сајтови}}</translation>
 <translation id="1945968466830820669">Може да го изгубите пристапот до сметката на вашата организација или да ви го украдат идентитетот. Chromium препорачува да ја смените лозинката веднаш.</translation>
 <translation id="1947454675006758438">Спојување горе десно</translation>
+<translation id="1958218078413065209">Вашиот најдобар резултат е <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Помогнете да се подобри безбедноста на интернет за сите преку испраќање <ph name="BEGIN_WHITEPAPER_LINK" />URL-адреси од некои страници што ги посетувате, ограничени податоци за системот и некои содржини од страниците<ph name="END_WHITEPAPER_LINK" /> до Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Политика за приватност<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Обележувачи на <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Грешка во серијализацијата</translation>
@@ -547,6 +549,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да извршите безбедносна проверка во поставките за Chrome</translation>
 <translation id="3061707000357573562">Услуга за поправање грешки</translation>
 <translation id="3064966200440839136">Ќе го напуштите режимот „Инкогнито“ за да платите преку надворешна апликација. Ќе продолжите?</translation>
+<translation id="306573536155379004">Играта започна.</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3086579638707268289">Вашата активност на интернет е под надзор</translation>
 <translation id="3087734570205094154">Дно</translation>
@@ -1543,6 +1546,7 @@
 <translation id="6934672428414710184">Ова име е од вашата сметка на Google</translation>
 <translation id="6944692733090228304">Ја внесовте лозинката на сајт што не е управуван од <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. За да ја заштитите сметката, не користете ја лозинката повторно на други апликации и сајтови.</translation>
 <translation id="6945221475159498467">Избери</translation>
+<translation id="6948051842255602737">Играта заврши, вашиот резултат е <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">За да ги видите методите и условите за подигнување, изберете адреса</translation>
 <translation id="6949872517221025916">Ресетирање лозинка</translation>
 <translation id="6950684638814147129">Грешка при анализирање JSON-вредност: <ph name="ERROR" /></translation>
@@ -1825,6 +1829,7 @@
 <translation id="7956713633345437162">Мобилни обележувачи</translation>
 <translation id="7961015016161918242">Никогаш</translation>
 <translation id="7966803981046576691">Тип работен налог</translation>
+<translation id="79682505114836835">Вредноста „<ph name="VALUE" />“ е неважечка хексадецимална боја.</translation>
 <translation id="7976214039405368314">Премногу барања</translation>
 <translation id="7977538094055660992">Излезен уред</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1952,6 +1957,7 @@
 <translation id="8446884382197647889">Дознај повеќе</translation>
 <translation id="8457125768502047971">Неодредено</translation>
 <translation id="8461694314515752532">Шифрирајте ги синхронизираните податоци со сопствената лозинка за синхронизација</translation>
+<translation id="8463101686637053101">Игра со диносаурус, притиснете празно место за да скокате и играте</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна картичка}one{# кредитна картичка}other{# кредитни картички}}</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="8474910779563686872">Прикажи ги деталите за програмерот</translation>
@@ -2087,6 +2093,7 @@
 <translation id="8996941253935762404">Локацијата што претстои содржи штетни програми</translation>
 <translation id="8997023839087525404">Серверот претстави сертификат што не е јавно откриен со политиката за Транспарентност на сертификати. Ова е услов за некои сертификати, со цел да се обезбеди нивната веродостојност и заштитата од напаѓачи.</translation>
 <translation id="9001074447101275817">Прокси-серверот <ph name="DOMAIN" /> бара корисничко име и лозинка.</translation>
+<translation id="9001963517402879850">Скокни!</translation>
 <translation id="9004367719664099443">Во тек е сесија за VR</translation>
 <translation id="9005998258318286617">Не успеа да се вчита PDF-документот.</translation>
 <translation id="9008201768610948239">Игнорирај</translation>

@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
 <translation id="102360288709523007">Bantu penyempurnaan Chromium dengan mengirimkan statistik penggunaan dan laporan kerusakan ke Google.</translation>
-<translation id="1043245583918962542">Pilih apakah akan menghapus data Chromium dari perangkat ini atau menyimpannya.</translation>
 <translation id="1185134272377778587">Tentang Chromium</translation>
 <translation id="1257458525759135959">Untuk menyimpan gambar, ketuk Setelan untuk mengizinkan Chromium menambahkannya ke galeri foto Anda</translation>
 <translation id="1289216811211435351">Beralih ke Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Hapus data Chromium Anda dari perangkat ini?</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Pindahkan Chromium ke dok<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium tidak dapat memeriksa update. Coba lagi nanti.</translation>
-<translation id="8252885722420466166">Dapatkan pengalaman menggunakan Google yang lebih baik di Chromium berdasarkan lokasi Anda.</translation>
 <translation id="8586442755830160949">Hak Cipta <ph name="YEAR" /> Pengarang Chromium. Semua hak dilindungi undang-undang.</translation>
 <translation id="8663480472502753423">Pastikan Chromium selalu terupdate</translation>
 <translation id="8776843108004031667">Akun ini dan semua data yang tidak disimpan akan dihapus dari Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium terlalu lawas</translation>
 <translation id="921174536258924340">Chromium tidak dapat memeriksa semua sandi. Coba lagi besok atau <ph name="BEGIN_LINK" />periksa sandi di Akun Google Anda<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">Pengarang Chromium</translation>
-<translation id="994708389219151914">Akun Anda dikelola oleh <ph name="HOSTED_DOMAIN" />, sehingga data Chromium Anda akan dihapus dari perangkat ini.</translation>
 </translationbundle>

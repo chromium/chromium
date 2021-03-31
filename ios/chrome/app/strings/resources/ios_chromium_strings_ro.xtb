@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="102360288709523007">Contribuie la îmbunătățirea Chromium trimițând statistici de utilizare și rapoarte de blocare la Google.</translation>
-<translation id="1043245583918962542">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi.</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
 <translation id="1257458525759135959">Pentru a salva imaginile, atinge Setări ca să permiți browserului Chromium să adauge fotografiile</translation>
 <translation id="1289216811211435351">Treci la Chromium</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Ștergi datele tale Chromium de pe dispozitiv?</translation>
 <translation id="8175055321229419309">Sfat: <ph name="BEGIN_LINK" />mută Chromium în bara de andocare<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
-<translation id="8252885722420466166">Beneficiază de o experiență Google mai bună în Chromium pe baza locației.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Toate drepturile rezervate.</translation>
 <translation id="8663480472502753423">Menține browserul Chromium actualizat</translation>
 <translation id="8776843108004031667">Acest cont și toate datele nesalvate vor fi eliminate din Chromium.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium nu este actualizat</translation>
 <translation id="921174536258924340">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chromium vor fi șterse de pe acest dispozitiv.</translation>
 </translationbundle>

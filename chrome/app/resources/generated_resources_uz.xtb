@@ -5147,6 +5147,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Xatolik sodir bo‘ldi.</translation>
 <translation id="6798420440063423019">PIN kod juda koʻp marta xato kiritilganligi uchun elektron kalit qulflandi. Elektron kalit sozlamalarini asliga qaytaring.</translation>
+<translation id="679845623837196966">Saqlangan sahifalarni chiqarish</translation>
 <translation id="6798578729981748444">Importni yakunlash uchun barcha Firefox oynalarini yoping.</translation>
 <translation id="6798780071646309401">caps lock yoniq</translation>
 <translation id="6798954102094737107">Plagin: <ph name="PLUGIN_NAME" /></translation>
@@ -6568,7 +6569,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="8378714024927312812">Tashkilotingiz tomonidan boshqariladi</translation>
 <translation id="8379878387931047019">Bu qurilmada sayt so‘ragan kalit turi mavjud emas</translation>
 <translation id="8379991678458444070">Bu varaq bukmarkka olinsa, keyinchalik oson topiladi</translation>
-<translation id="8380314198565901932">Virtual mashina yuklab olinmadi. <ph name="DEVICE_TYPE" /> qurilmani yangilab, qaytadan urining.</translation>
 <translation id="8382913212082956454">&amp;E-pochta manzilini nusxalash</translation>
 <translation id="8386091599636877289">Bu parametr topilmadi.</translation>
 <translation id="8386819192691131213">Assistentga tarjima, tavsif, birliklar konvertori va boshqa narsalarni chiqarish maqsadida ekrandagi axborotdan foydalanishiga ruxsat berish</translation>
@@ -7278,6 +7278,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
       <ph name="LIST_ITEM" />Chrome tarmoqlar diagnostikasini ishga tushiring
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Tasvir ustida tasvir</translation>
+<translation id="9167063903968449027">Saqlangan sahifalarni chiqarish</translation>
 <translation id="9168436347345867845">Keyinroq</translation>
 <translation id="9169496697824289689">Klaviatura yorliqlarini ko‘rish</translation>
 <translation id="916964310188958970">Bu taklif nega chiqdi?</translation>

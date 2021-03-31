@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Shiko detajet</translation>
 <translation id="1030706264415084469"><ph name="URL" /> do të ruajë në mënyrë të përhershme të dhëna të mëdha në pajisjen tënde</translation>
 <translation id="1032854598605920125">Rrotullo në drejtim të akrepave të orës</translation>
+<translation id="1036224116832931580">Loja me dinozaur. Trokit për të kërcyer dhe luajtur</translation>
 <translation id="1036348656032585052">Çaktivizo</translation>
 <translation id="1038106730571050514">Shfaq sugjerimet</translation>
 <translation id="1038842779957582377">emër i panjohur</translation>
@@ -278,6 +279,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="192020519938775529">{COUNT,plural, =0{Asnjë}=1{1 sajt}other{# sajte}}</translation>
 <translation id="1945968466830820669">Mund të humbasësh qasjen në llogarinë e organizatës ose mund të pësosh vjedhje të identitetit. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="1947454675006758438">Kapje me tel lart djathtas</translation>
+<translation id="1958218078413065209">Rezultati yt maksimal është <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Ndihmo për përmirësimin e sigurisë në ueb për të gjithë duke dërguar <ph name="BEGIN_WHITEPAPER_LINK" />URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit, si dhe disa përmbajtje të faqeve<ph name="END_WHITEPAPER_LINK" /> te Google. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Politika e privatësisë<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Faqeshënuesit e <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Gabim serializimi</translation>
@@ -544,6 +546,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp "Tab", më pas "Enter" për të ekzekutuar "Kontrollin e sigurisë" në cilësimet e Chrome</translation>
 <translation id="3061707000357573562">Shërbimi i korrigjimit</translation>
 <translation id="3064966200440839136">Po del nga modaliteti "i fshehur" për të paguar nëpërmjet një aplikacioni të jashtëm. Do të vazhdosh?</translation>
+<translation id="306573536155379004">Loja filloi.</translation>
 <translation id="3080254622891793721">Grafika</translation>
 <translation id="3086579638707268289">Aktiviteti yt në ueb po monitorohet</translation>
 <translation id="3087734570205094154">Në fund</translation>
@@ -1537,6 +1540,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6934672428414710184">Ky emër është nga "Llogaria jote e Google"</translation>
 <translation id="6944692733090228304">Ke futur fjalëkalimin tënd në një faqe që nuk menaxhohet nga <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Për të mbrojtur llogarinë, mos e ripërdor fjalëkalimin tënd në aplikacione dhe faqe të tjera.</translation>
 <translation id="6945221475159498467">Përzgjidhe</translation>
+<translation id="6948051842255602737">Loja mbaroi. Rezultati yt është <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Për të parë mënyrat dhe kërkesat e marrjes, zgjidh një adresë</translation>
 <translation id="6949872517221025916">Rivendos fjalëkalimin</translation>
 <translation id="6950684638814147129">Gabim gjatë paraqitjes së vlerës JSON: <ph name="ERROR" /></translation>
@@ -1819,6 +1823,7 @@ Detaje shtesë:
 <translation id="7956713633345437162">Faqeshënuesit celularë</translation>
 <translation id="7961015016161918242">Asnjëherë</translation>
 <translation id="7966803981046576691">Lloji i llogarisë së punës</translation>
+<translation id="79682505114836835">Vlera "<ph name="VALUE" />" është një ngjyrë hekzadecimale e pavlefshme.</translation>
 <translation id="7976214039405368314">Ka shumë kërkesa</translation>
 <translation id="7977538094055660992">Pajisja e daljes</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1946,6 +1951,7 @@ Detaje shtesë:
 <translation id="8446884382197647889">Mëso më shumë</translation>
 <translation id="8457125768502047971">E papërcaktuar</translation>
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
+<translation id="8463101686637053101">Loja me dinozaur. Shtyp tastin e hapësirës për të kërcyer dhe luajtur</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kartë krediti}other{# karta krediti}}</translation>
 <translation id="8473863474539038330">Adresat dhe të tjera</translation>
 <translation id="8474910779563686872">Shfaq detajet e zhvilluesit</translation>
@@ -2081,6 +2087,7 @@ Detaje shtesë:
 <translation id="8996941253935762404">Sajti përpara përmban programe të dëmshme</translation>
 <translation id="8997023839087525404">Serveri paraqiti një certifikatë që nuk ishte zbuluar publikisht duke përdorur politikën e "Transparencës së certifikatës". Kjo është e detyrueshme për disa certifikata, për të siguruar besueshmërinë e tyre dhe për t'u mbrojtur kundër sulmuesve.</translation>
 <translation id="9001074447101275817">Përfaqësuesi <ph name="DOMAIN" /> kërkon një emër përdoruesi dhe një fjalëkalim.</translation>
+<translation id="9001963517402879850">Kërce!</translation>
 <translation id="9004367719664099443">Sesioni VR në proces</translation>
 <translation id="9005998258318286617">Ngarkimi i dokumentit PDF dështoi.</translation>
 <translation id="9008201768610948239">Shpërfill</translation>

@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">အပလီကေးရှင်း ဗားရှင်း</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍ မရပါ</translation>
+<translation id="147113415845704694">ယနေ့မိုးလေဝသအခြေအနေ သိရှိရန် “What’s the weather today?” ဟု မေးကြည့်ပါ</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ အကြောင်း အမျိုးမျိုးကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
 <translation id="1492417797159476138">ယခုဝဘ်ဆိုက်အတွက် ဤအသုံးပြုသူအမည်ကို သိမ်းပြီးဖြစ်သည်</translation>
 <translation id="1506061864768559482">ရှာဖွေရေး အင်ဂျင်</translation>
@@ -569,6 +570,7 @@
 <translation id="49268022542405662">သင့်စကားဝှက်များကို စာသားဖိုင်အဖြစ် ထုတ်ယူပြီး ဒေါင်းလုဒ်လုပ်ပါမည်။ ထည့်သွင်းမည့်ဖိုင်တွဲသို့ ဝင်သုံးခွင့်ရှိသူမှန်သမျှနှင့် အက်ပ်မှန်သမျှက ၎င်းတို့ကို မြင်ရပါမည်။</translation>
 <translation id="4932247056774066048">သင်သည် <ph name="DOMAIN_NAME" /> က စီမံခန့်ခွဲသည့် အကောင့်မှနေ၍ ထွက်နေသောကြောင့် သင်၏ Chrome ဒေတာများကို ဤစက်မှနေ၍ ဖျက်လိုက်ပါမည်။ ၎င်းသည် သင့် Google အကောင့်တွင် ရှိနေပါဦးမည်။</translation>
 <translation id="4936039914467572121">ဤဝဘ်ဆိုက်သို့ ပိုမိုမြန်ဆန်စွာ ဝင်ကြည့်ခြင်း</translation>
+<translation id="4941179133499732445">အသံဖြင့်ရှာရန် မိုက်ကို တို့ပါ</translation>
 <translation id="4943703118917034429">ပကတိအသွင်</translation>
 <translation id="4943872375798546930">ရလဒ်မရှိပါ</translation>
 <translation id="4961107849584082341">ဤစာမျက်နှာကို နှစ်သက်ရာဘာသာစကားအဖြစ်သို့ ဘာသာပြန်ပါ</translation>
@@ -583,6 +585,7 @@
 <translation id="5011311129201317034"><ph name="SITE" /> သည် ချိတ်ဆက်လိုပါသည်</translation>
 <translation id="5016205925109358554">Serif</translation>
 <translation id="5039804452771397117">ခွင့်ပြုရန်</translation>
+<translation id="5061533557687621530">မိုးလေဝသအခြေအနေ သိရှိရန် မိုက်ကိုတို့ပြီး “What’s the weather today?” ဟု မေးကြည့်ပါ</translation>
 <translation id="5087580092889165836">ကတ်ကိုထည့်ရန်</translation>
 <translation id="5091249083535528968">နောက်ဆက်တွဲ သုံးစွဲမှုဒေတာ</translation>
 <translation id="509429900233858213">အမှား တစ်ခု ကြုံခဲ့ရသည်။</translation>
@@ -597,6 +600,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်၍မရပါ။}other{ဒေါင်းလုဒ် # ခု လုပ်၍မရပါ။}}</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="5184329579814168207">Chrome ထဲတွင် ဖွင့်မည်</translation>
+<translation id="5188992787241350004">အသံဖြင့် ရှာပါ</translation>
 <translation id="5191251636205085390">ပြင်ပကုမ္ပဏီကွတ်ကီးများကို အစားထိုးမည့် နည်းပညာသစ်များအကြောင်း လေ့လာပြီး စီမံပါ</translation>
 <translation id="5193988420012215838">သင့်ကလစ်ဘုတ်သို့ မိတ္တူကူးထားသည်</translation>
 <translation id="5199929503336119739">အလုပ်ပရိုဖိုင်</translation>

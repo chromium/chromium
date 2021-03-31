@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">अब आप मैसेज, दस्तावेज़ों, और दूसरे ऐप्लिकेशन में मिले लिंक पर टैप करके, किसी भी समय Chrome का इस्तेमाल कर सकते हैं.</translation>
 <translation id="3720541637541300822">Chrome बंद करने पर अपने गुप्त टैब लॉक करें</translation>
 <translation id="384394811301901750">Google Chrome इस समय आपके कैमरे का उपयोग नहीं कर सकता</translation>
-<translation id="38949020760388809">चुनें कि आप इस डिवाइस से अपना Chrome डेटा मिटाना चाहते हैं या सेव रखना चाहते हैं.</translation>
 <translation id="3980220367029651214">आप सिंक खातों को <ph name="USER_EMAIL1" /> से <ph name="USER_EMAIL2" /> में बदल रहे हैं. आपका मौजूदा Chrome डेटा <ph name="DOMAIN" /> से प्रबंधित किया जाता है. इससे आपका डेटा इस सेवा से मिट जाएगा, लेकिन आपका डेटा <ph name="USER_EMAIL1" /> में बना रहेगा.</translation>
 <translation id="3984746313391923992">आपके संगठन के लिए यह ज़रूरी है कि आप Chrome से साइन आउट रहें.</translation>
 <translation id="3988789688219830639">Google Chrome के पास आपकी फ़ोटो या वीडियो का एक्सेस नहीं है. iOS सेटिंग &gt; निजता &gt; फ़ोटो में जाकर एक्सेस चालू करें.</translation>
 <translation id="4099578267706723511">Google को इस्तेमाल के आंकड़े और खराबी रिपोर्ट भेजकर Chrome को बेहतर बनाने में मदद करें.</translation>
-<translation id="415767770115540173">अपने स्थान के आधार पर Chrome में एक बेहतर Google अनुभव पाएं.</translation>
 <translation id="417201473131094001">यह सुविधा Chrome के कैनरी वर्शन पर काम नहीं करती</translation>
 <translation id="424864128008805179">Chrome से साइन आउट करें?</translation>
 <translation id="4249068189593983585">Chrome इस्तेमाल करने के लिए सलाह. ज़्यादा टैब विकल्पों के लिए, टूलबार में 'टैब दिखाएं' बटन को दबाकर रखें. यह बटन आपकी स्क्रीन के सबसे नीचे या सबसे ऊपर मिलेगा.</translation>
@@ -80,7 +78,6 @@
 <translation id="766361182512894255">डेटा के गलत इस्तेमाल की वजह से, आपका पासवर्ड बिना अनुमति के सार्वजनिक हो गया था. Chrome का सुझाव है कि आप अभी पासवर्ड बदल लें.</translation>
 <translation id="7698568245838009292">Chrome आपका कैमरा ऐक्सेस करना चाहता है</translation>
 <translation id="7855730255114109580">Google Chrome अप टू डेट है</translation>
-<translation id="8109233255338845204">आपके खाते को <ph name="HOSTED_DOMAIN" /> मैनेज करता है, इसलिए इस डिवाइस से आपका Chrome डेटा मिटा दिया जाएगा.</translation>
 <translation id="8160472928944011082">Chrome को अपडेट नहीं किया जा सका</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्वाधिकार सुरक्षित.</translation>
 <translation id="840168496893712993">कुछ ऐड-ऑन के कारण Chrome क्रैश हो जाता है. कृपया उन्हें अनइंस्टॉल करके देखें.</translation>

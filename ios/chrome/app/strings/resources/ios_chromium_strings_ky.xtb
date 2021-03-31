@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ky">
 <translation id="102360288709523007">Google'га колдонуу статистикасын жана ката жөнүндө кабарды жиберип туруу</translation>
-<translation id="1043245583918962542">Chromium'дун дайын-даректери ушул түзмөктөн өчүрүлсүнбү же сакталсынбы?</translation>
 <translation id="1185134272377778587">Chromium жөнүндө</translation>
 <translation id="1257458525759135959">Сүрөттөрдү сактоо үчүн, Жөндөөлөрдү таптап, Chromium'га сүрөттөрүңүздү кошууга уруксат бериңиз.</translation>
 <translation id="1289216811211435351">Chromium'га которулуу</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Chromium'дагы дайын-даректериңиз бул түзмөктөн өчүрүлсүнбү?</translation>
 <translation id="8175055321229419309">Кеңеш: <ph name="BEGIN_LINK" />Chromium'ду Dock панелине көчүрүңүз<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium жаңыртууларды текшере алган жок. Кийинчерээк кайталаңыз.</translation>
-<translation id="8252885722420466166">Жайгашкан жериңиздин негизинде Chromium аркылуу жакшыраак Google тажрыйбасын алыңыз.</translation>
 <translation id="8586442755830160949">Автордук укук <ph name="YEAR" /> Chromium авторлору. Бардык укуктар корголгон.</translation>
 <translation id="8663480472502753423">Chromium'ду жаңыртып турат</translation>
 <translation id="8776843108004031667">Бул аккаунт жана башка сакталбаган маалымат Chromium'дан өчүрүлөт.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium эскирип калган.</translation>
 <translation id="921174536258924340">Chromium бардык сырсөздөрдү текшере алган жок. Эртең кайра аракет кылыңыз же <ph name="BEGIN_LINK" />Google аккаунтуңуздагы сырсөздөрдү текшериңиз<ph name="END_LINK" /></translation>
 <translation id="985602178874221306">Chromium'дун авторлору</translation>
-<translation id="994708389219151914">Аккаунтуңуз <ph name="HOSTED_DOMAIN" /> домени тарабынан башкарылгандыктан, Chromium’дагы дайын-даректериңиз бул түзмөктөн өчүрүлөт.</translation>
 </translationbundle>

@@ -32,12 +32,10 @@
 <translation id="3706101708757577809">Giờ đây, bạn có thể dùng Chrome bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="3720541637541300822">Khóa các thẻ Ẩn danh khi bạn đóng Chrome</translation>
 <translation id="384394811301901750">Chrome không thể dùng máy ảnh bây giờ</translation>
-<translation id="38949020760388809">Chọn xem bạn muốn xóa dữ liệu trên Chrome khỏi thiết bị này hay giữ lại dữ liệu đó.</translation>
 <translation id="3980220367029651214">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chrome hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
 <translation id="3984746313391923992">Tổ chức của bạn yêu cầu bạn duy trì trạng thái đăng xuất khỏi Chrome.</translation>
 <translation id="3988789688219830639">Google Chrome không có quyền truy cập ảnh hoặc video của bạn. Hãy cho phép truy cập trong Cài đặt iOS &gt; Bảo mật &gt; Ảnh.</translation>
 <translation id="4099578267706723511">Giúp cải thiện Chrome bằng cách gửi số liệu thống kê sử dụng và báo cáo sự cố cho Google.</translation>
-<translation id="415767770115540173">Nhận trải nghiệm Google tốt hơn trong Chrome dựa vào vị trí của bạn.</translation>
 <translation id="417201473131094001">Chưa hỗ trợ trên Chrome Canary</translation>
 <translation id="424864128008805179">Đăng xuất khỏi Chrome?</translation>
 <translation id="4249068189593983585">Mẹo sử dụng Chrome. Để xem thêm các tùy chọn về thẻ, hãy chạm và giữ nút Hiển thị thẻ trên thanh công cụ ở đầu hoặc cuối màn hình.</translation>
@@ -81,7 +79,6 @@
 <translation id="766361182512894255">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Chrome khuyên bạn nên đổi ngay mật khẩu.</translation>
 <translation id="7698568245838009292">Chrome muốn truy cập vào máy ảnh</translation>
 <translation id="7855730255114109580">Google Chrome đã được cập nhật</translation>
-<translation id="8109233255338845204">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý nên dữ liệu của bạn trên Chrome sẽ bị xóa khỏi thiết bị này.</translation>
 <translation id="8160472928944011082">Chrome không thể cập nhật</translation>
 <translation id="8370517070665726704">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="840168496893712993">Một số tiện ích bổ sung khiến Chrome trục trặc. Hãy thử gỡ cài đặt chúng.</translation>

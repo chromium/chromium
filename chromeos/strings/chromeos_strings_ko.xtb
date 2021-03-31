@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4297501883039923494">중지됨 - 알 수 없는 오류</translation>
+<translation id="4344214025510306853">APN 첨부</translation>
 <translation id="4378373042927530923">실행되지 않음</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">내 드라이브</translation>
@@ -278,6 +279,7 @@
 <translation id="7040230719604914234">운영자</translation>
 <translation id="7059230779847288458">충전 중, 완료까지 <ph name="TIME_VALUE" /> 남음</translation>
 <translation id="708426984172631313">중지됨</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /><ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">연결 중</translation>
 <translation id="7144878232160441200">다시 시도</translation>
 <translation id="714876143603641390">LAN 연결</translation>

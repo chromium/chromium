@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
 <translation id="102360288709523007">Kullanıcı istatistiklerini ve kilitlenme raporlarını Google'a göndererek Chromium'u iyileştirmemize yardımcı olun.</translation>
-<translation id="1043245583918962542">Chromium verilerinizi bu cihazdan temizlemeyi veya saklamayı seçin.</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1257458525759135959">Resimleri kaydetmek için Ayarlar'a dokunup Chromium'un resimlerinize eklemesine izin verin</translation>
 <translation id="1289216811211435351">Chromium'a geçin</translation>
@@ -80,7 +79,6 @@
 <translation id="8073677936375100957">Chromium verileriniz bu cihazdan temizlensin mi?</translation>
 <translation id="8175055321229419309">İpucu: <ph name="BEGIN_LINK" />Chromium'u yuva bölümüne taşıyın<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium, güncellemeleri denetleyemedi. Daha sonra tekrar deneyin.</translation>
-<translation id="8252885722420466166">Chromium'da, konumunuza dayalı olarak daha iyi bir Google deneyimi yaşayın.</translation>
 <translation id="8586442755830160949">Telif Hakkı <ph name="YEAR" /> The Chromium Authors. Tüm hakları saklıdır.</translation>
 <translation id="8663480472502753423">Chromium'u güncel tutun</translation>
 <translation id="8776843108004031667">Bu hesap ve kaydedilmemiş tüm veriler Chromium'dan kaldırılacak.</translation>
@@ -89,5 +87,4 @@
 <translation id="9089354809943900324">Chromium sürümü eski</translation>
 <translation id="921174536258924340">Chromium, şifrelerin tümünü kontrol edemedi. Yarın tekrar deneyin veya <ph name="BEGIN_LINK" />Google Hesabınızdaki şifreleri kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="985602178874221306">The Chromium Authors</translation>
-<translation id="994708389219151914">Hesabınız, <ph name="HOSTED_DOMAIN" /> tarafından yönetildiği için Chromium verileri bu cihazdan silinecek.</translation>
 </translationbundle>

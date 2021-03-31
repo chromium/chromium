@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">ไม่ได้บันทึกข้อมูลใด</translation>
+<translation id="1838104802459806957">เอียงขึ้น</translation>
 <translation id="1851616744363735765">หยุดชั่วคราว</translation>
 <translation id="1862930711583847113">ส่งออก <ph name="FILE" /> ไม่ได้</translation>
 <translation id="1899697626337024495">ความละเอียดรูปภาพ</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176">ใช้งาน <ph name="CAMERA" /> อยู่</translation>
 <translation id="2144806332417375165">กำหนดพารามิเตอร์วิดีโอเอง</translation>
 <translation id="229579744168541441">ส่งออกไปยังดิสก์</translation>
+<translation id="2320741269052147773">เลื่อนไปทางซ้าย</translation>
 <translation id="2501278716633472235">ย้อนกลับ</translation>
 <translation id="2501853267655415902">หยุดบันทึกแล้ว</translation>
 <translation id="2501953888035679275">ถ่ายภาพและบันทึกวิดีโอด้วยกล้อง</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">รูปภาพและวิดีโอที่ถ่ายจากกล้องจะย้ายไปยังโฟลเดอร์ "ดาวน์โหลด" คุณจะเข้าถึงรายการเหล่านี้ได้ในแอป Files
 
 แอปที่มีสิทธิ์ในพื้นที่เก็บข้อมูลจะเข้าถึงรูปภาพและวิดีโอของคุณได้</translation>
+<translation id="3067436040345934772">เลื่อนไปทางขวา</translation>
 <translation id="3081586908890909590">เปลี่ยนเป็นโหมดบันทึกวิดีโอ</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">ประเภทตารางกริด</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">เปลี่ยนเป็นโหมดถ่ายภาพ</translation>
 <translation id="8239780215768881278">ถ่ายสแนปชอตในวิดีโอ</translation>
 <translation id="8261506727792406068">ลบ</translation>
+<translation id="8425673304802773841">เอียงลง</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">แสดงตัวอย่างข้อมูลเมตา</translation>

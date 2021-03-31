@@ -12,6 +12,7 @@
 <translation id="1028781062521375153">Докладніше</translation>
 <translation id="1030706264415084469">Сайт <ph name="URL" /> хоче постійно зберігати великий обсяг даних на вашому пристрої</translation>
 <translation id="1032854598605920125">Обернути за годинниковою стрілкою</translation>
+<translation id="1036224116832931580">Гра Dino: торкайтеся, щоб стрибати й грати</translation>
 <translation id="1036348656032585052">Вимкнути</translation>
 <translation id="1038106730571050514">Показувати пропозиції</translation>
 <translation id="1038842779957582377">Невідоме ім’я</translation>
@@ -279,6 +280,7 @@
 <translation id="192020519938775529">{COUNT,plural, =0{Немає}=1{1 сайт}one{# сайт}few{# сайти}many{# сайтів}other{# сайту}}</translation>
 <translation id="1945968466830820669">Ви можете втратити доступ до облікового запису організації, або хтось може викрасти вашу особисту інформацію. Chromium радить змінити пароль.</translation>
 <translation id="1947454675006758438">Скріпити вгорі праворуч</translation>
+<translation id="1958218078413065209">Ваш найкращий результат – <ph name="SCORE" />.</translation>
 <translation id="1959001866257244765">Допоможіть посилити безпеку в Інтернеті для всіх користувачів, надсилаючи в Google <ph name="BEGIN_WHITEPAPER_LINK" />URL-адреси та вміст деяких відвіданих сторінок, а також обмежену системну інформацію<ph name="END_WHITEPAPER_LINK" />. <ph name="BEGIN_PRIVACY_PAGE_LINK" />Політика конфіденційності<ph name="END_PRIVACY_PAGE_LINK" /></translation>
 <translation id="1962204205936693436">Закладки <ph name="DOMAIN" /></translation>
 <translation id="1973335181906896915">Помилка серіалізації</translation>
@@ -545,6 +547,7 @@
 <translation id="3060557858482803256"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, натисніть Tab, а тоді Enter, щоб виконати перевірку безпеки в налаштуваннях Chrome</translation>
 <translation id="3061707000357573562">Служба виправлень</translation>
 <translation id="3064966200440839136">Щоб оплатити в зовнішньому додатку, ви вийдете з режиму анонімного перегляду. Продовжити?</translation>
+<translation id="306573536155379004">Гру почато.</translation>
 <translation id="3080254622891793721">Зображення</translation>
 <translation id="3086579638707268289">Ваші дії в Інтернеті відстежуються</translation>
 <translation id="3087734570205094154">Низ</translation>
@@ -1541,6 +1544,7 @@
 <translation id="6934672428414710184">Це ім’я з вашого облікового запису Google</translation>
 <translation id="6944692733090228304">Ви ввели пароль на сайті, яким не керує <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Щоб захистити свій обліковий запис, не використовуйте цей пароль для інших додатків і сайтів.</translation>
 <translation id="6945221475159498467">Вибрати</translation>
+<translation id="6948051842255602737">Гру закінчено, ваш результат – <ph name="SCORE" />.</translation>
 <translation id="6948701128805548767">Укажіть адресу, щоб переглянути способи отримання та вимоги.</translation>
 <translation id="6949872517221025916">Скидання пароля</translation>
 <translation id="6950684638814147129">Сталася помилка під час синтаксичного аналізу значення JSON: <ph name="ERROR" /></translation>
@@ -1823,6 +1827,7 @@
 <translation id="7956713633345437162">Закладки на мобільному</translation>
 <translation id="7961015016161918242">Ніколи</translation>
 <translation id="7966803981046576691">Тип робочого облікового запису</translation>
+<translation id="79682505114836835">Значення "<ph name="VALUE" />" – недійсний колір у форматі hex.</translation>
 <translation id="7976214039405368314">Забагато запитів</translation>
 <translation id="7977538094055660992">Пристрій виведення</translation>
 <translation id="7977894662897852582">Edp</translation>
@@ -1950,6 +1955,7 @@
 <translation id="8446884382197647889">Докладніше</translation>
 <translation id="8457125768502047971">Необмежено</translation>
 <translation id="8461694314515752532">Шифрувати синхронізовані дані за допомогою власної парольної фрази</translation>
+<translation id="8463101686637053101">Гра Dino: натискайте пробіл, щоб стрибати й грати</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна картка}one{# кредитна картка}few{# кредитні картки}many{# кредитних карток}other{# кредитної картки}}</translation>
 <translation id="8473863474539038330">Адреси й інше</translation>
 <translation id="8474910779563686872">Показати інформацію розробника</translation>
@@ -2086,6 +2092,7 @@
 <translation id="8996941253935762404">Сайт містить шкідливі програми</translation>
 <translation id="8997023839087525404">Сервер надав сертифікат без інформації про перевірку. Це обов’язкові дані для деяких сертифікатів. Вони підтверджують надійність сертифіката й захищають від атак зловмисників.</translation>
 <translation id="9001074447101275817">Для проксі <ph name="DOMAIN" /> потрібно ввести ім’я користувача та пароль.</translation>
+<translation id="9001963517402879850">Стрибайте!</translation>
 <translation id="9004367719664099443">Триває VR-сеанс</translation>
 <translation id="9005998258318286617">Не вдалося завантажити документ PDF.</translation>
 <translation id="9008201768610948239">Ігнорувати</translation>
