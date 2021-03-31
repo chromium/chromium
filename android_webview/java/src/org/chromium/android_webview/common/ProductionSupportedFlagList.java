@@ -116,5 +116,7 @@ public final class ProductionSupportedFlagList {
                             + "This flag will only take effect on Android 11 and above."),
             Flag.baseFeature(AwFeatures.WEBVIEW_JAVA_JS_BRIDGE_MOJO,
                     "Enables the new Java/JS Bridge code path with mojo implementation."),
+            Flag.baseFeature(UiFeatures.FORM_CONTROLS_REFRESH,
+                    "Enables the Form Controls visual improvements and dark mode."),
     };
 }
