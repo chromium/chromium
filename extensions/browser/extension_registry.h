@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/version.h"
@@ -213,7 +212,7 @@ class ExtensionRegistry : public KeyedService {
 
   base::ObserverList<ExtensionRegistryObserver>::Unchecked observers_;
 
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionRegistry);
 };

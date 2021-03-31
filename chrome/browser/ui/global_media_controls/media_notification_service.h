@@ -11,7 +11,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -256,7 +255,7 @@ class MediaNotificationService
 
     void MarkActiveIfNecessary();
 
-    const CheckedPtr<MediaSessionNotificationProducer> owner_;
+    MediaSessionNotificationProducer* const owner_;
     const std::string id_;
     std::unique_ptr<media_message_center::MediaSessionNotificationItem> item_;
 
@@ -312,7 +311,7 @@ class MediaNotificationService
   // SetDialogDelegate() and SetDialogDelegateForPresentationRequest().
   void SetDialogDelegateCommon(MediaDialogDelegate* delegate);
 
-  CheckedPtr<MediaDialogDelegate> dialog_delegate_ = nullptr;
+  MediaDialogDelegate* dialog_delegate_ = nullptr;
 
   std::unique_ptr<MediaSessionNotificationProducer>
       media_session_notification_producer_;

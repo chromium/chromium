@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 
@@ -51,8 +50,8 @@ class GlobalDumpGraph {
 
    private:
     base::ProcessId pid_;
-    CheckedPtr<GlobalDumpGraph> global_graph_;
-    CheckedPtr<GlobalDumpGraph::Node> root_;
+    GlobalDumpGraph* global_graph_;
+    GlobalDumpGraph::Node* root_;
 
     DISALLOW_COPY_AND_ASSIGN(Process);
   };
@@ -172,8 +171,8 @@ class GlobalDumpGraph {
     }
 
    private:
-    CheckedPtr<GlobalDumpGraph::Process> dump_graph_;
-    const CheckedPtr<Node> parent_;
+    GlobalDumpGraph::Process* dump_graph_;
+    Node* const parent_;
     base::trace_event::MemoryAllocatorDumpGuid guid_;
     std::map<std::string, Entry> entries_;
     std::map<std::string, Node*> children_;
@@ -186,7 +185,7 @@ class GlobalDumpGraph {
     double cumulative_owned_coefficient_ = 1;
     double cumulative_owning_coefficient_ = 1;
 
-    CheckedPtr<GlobalDumpGraph::Edge> owns_edge_;
+    GlobalDumpGraph::Edge* owns_edge_;
     std::vector<GlobalDumpGraph::Edge*> owned_by_edges_;
 
     DISALLOW_COPY_AND_ASSIGN(Node);

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -51,7 +50,7 @@ class MachineLevelUserCloudPolicyManagerTest : public ::testing::Test {
   }
 
   SchemaRegistry schema_registry_;
-  CheckedPtr<MockMachineLevelUserCloudPolicyStore> store_ = nullptr;
+  MockMachineLevelUserCloudPolicyStore* store_ = nullptr;
   std::unique_ptr<MachineLevelUserCloudPolicyManager> manager_;
 
  private:

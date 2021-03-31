@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -47,7 +46,7 @@ class ProfileNotification {
   NotificationHandler::Type type() const { return type_; }
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Used for equality comparision in notification maps.
   ProfileID profile_id_;

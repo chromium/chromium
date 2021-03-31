@@ -4,7 +4,6 @@
 
 #include "components/blocked_content/android/popup_blocked_message_delegate.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
@@ -56,12 +55,12 @@ class PopupBlockedMessageDelegateTest
   static int ResourceMap(int id) { return -1; }
 
  private:
-  CheckedPtr<PopupBlockerTabHelper> helper_ = nullptr;
+  PopupBlockerTabHelper* helper_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   messages::MockMessageDispatcherBridge message_dispatcher_bridge_;
-  CheckedPtr<PopupBlockedMessageDelegate> popup_blocked_message_delegate_;
+  PopupBlockedMessageDelegate* popup_blocked_message_delegate_;
 };
 
 PopupBlockedMessageDelegateTest::~PopupBlockedMessageDelegateTest() {

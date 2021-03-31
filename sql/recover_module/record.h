@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 
 struct sqlite3_context;
@@ -140,7 +139,7 @@ class RecordReader {
   //
   // Raw pointer usage is acceptable because this instance's owner is expected
   // to ensure that the LeafPayloadReader outlives this.
-  const CheckedPtr<LeafPayloadReader> payload_reader_;
+  LeafPayloadReader* const payload_reader_;
 
   // The number of columns in the table schema. No payload should have more than
   // this number of columns.

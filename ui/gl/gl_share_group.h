@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
@@ -57,7 +56,7 @@ class GL_EXPORT GLShareGroup : public base::RefCounted<GLShareGroup> {
   typedef std::set<GLContext*> ContextSet;
   ContextSet contexts_;
 
-  CheckedPtr<GLContext> shared_context_ = nullptr;
+  GLContext* shared_context_ = nullptr;
 
 #if defined(OS_APPLE)
   int renderer_id_;

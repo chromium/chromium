@@ -8,7 +8,6 @@
 #include <initializer_list>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -40,7 +39,7 @@ class ProcessStatsSender final {
  private:
   void ReportUsage();
 
-  const CheckedPtr<protocol::ProcessStatsStub> host_stats_stub_;
+  protocol::ProcessStatsStub* const host_stats_stub_;
   std::vector<ProcessStatsAgent*> agents_;
   const base::TimeDelta interval_;
   base::RepeatingTimer timer_;

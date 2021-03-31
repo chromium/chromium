@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
@@ -50,7 +49,7 @@ class BlockedActionWaiter
   // ExtensionActionRunner::TestObserver:
   void OnBlockedActionAdded() override { run_loop_->Quit(); }
 
-  CheckedPtr<extensions::ExtensionActionRunner> runner_;
+  extensions::ExtensionActionRunner* runner_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

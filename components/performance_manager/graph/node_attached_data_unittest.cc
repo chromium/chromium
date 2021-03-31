@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl.h"
@@ -115,7 +114,7 @@ class BarData : public ExternalNodeAttachedDataImpl<BarData> {
 
   ~BarData() override = default;
 
-  CheckedPtr<const PageNode> page_node_ = nullptr;
+  const PageNode* page_node_ = nullptr;
 };
 
 }  // namespace

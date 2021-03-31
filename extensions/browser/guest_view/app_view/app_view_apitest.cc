@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -138,16 +137,17 @@ class AppViewTest : public AppShellTest {
 
     ExtensionTestMessageListener done_listener("TEST_PASSED", false);
     done_listener.set_failure_message("TEST_FAILED");
-    ASSERT_TRUE(content::ExecuteScript(
-        embedder_web_contents_.get(),
-        base::StringPrintf("runTest('%s', '%s')", test_name.c_str(),
-                           app_embedded->id().c_str())))
+    ASSERT_TRUE(
+        content::ExecuteScript(embedder_web_contents_,
+                               base::StringPrintf("runTest('%s', '%s')",
+                                                  test_name.c_str(),
+                                                  app_embedded->id().c_str())))
         << "Unable to start test.";
     ASSERT_TRUE(done_listener.WaitUntilSatisfied());
   }
 
  private:
-  CheckedPtr<content::WebContents> embedder_web_contents_;
+  content::WebContents* embedder_web_contents_;
   TestGuestViewManagerFactory factory_;
 };
 

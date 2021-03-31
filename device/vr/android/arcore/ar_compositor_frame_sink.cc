@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/bind_post_task.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/host/host_display_client.h"
 #include "components/viz/host/renderer_settings_creation.h"
@@ -41,7 +40,7 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
   }
 
  private:
-  CheckedPtr<ui::WindowAndroid> root_window_;
+  ui::WindowAndroid* root_window_;
 };
 }  // namespace
 

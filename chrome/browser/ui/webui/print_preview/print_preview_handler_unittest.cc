@@ -14,7 +14,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -320,7 +319,7 @@ class TestPrintPreviewHandler : public PrintPreviewHandler {
   int bad_messages_;
   base::flat_set<PrinterType> called_for_type_;
   std::unique_ptr<PrinterHandler> test_printer_handler_;
-  const CheckedPtr<content::WebContents> initiator_;
+  content::WebContents* const initiator_;
 
   DISALLOW_COPY_AND_ASSIGN(TestPrintPreviewHandler);
 };
@@ -625,8 +624,8 @@ class PrintPreviewHandlerTest : public testing::Test {
   std::unique_ptr<content::WebContents> preview_web_contents_;
   std::unique_ptr<content::WebContents> initiator_web_contents_;
   std::vector<PrinterInfo> printers_;
-  CheckedPtr<TestPrinterHandler> printer_handler_;
-  CheckedPtr<TestPrintPreviewHandler> handler_;
+  TestPrinterHandler* printer_handler_;
+  TestPrintPreviewHandler* handler_;
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewHandlerTest);
 };

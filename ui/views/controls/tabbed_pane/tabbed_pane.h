@@ -11,7 +11,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/view.h"
@@ -128,12 +127,12 @@ class VIEWS_EXPORT TabbedPane : public View {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // A listener notified when tab selection changes. Weak, not owned.
-  CheckedPtr<TabbedPaneListener> listener_ = nullptr;
+  TabbedPaneListener* listener_ = nullptr;
 
   // The tab strip and contents container. The child indices of these members
   // correspond to match each Tab with its respective content View.
-  CheckedPtr<TabStrip> tab_strip_ = nullptr;
-  CheckedPtr<View> contents_ = nullptr;
+  TabStrip* tab_strip_ = nullptr;
+  View* contents_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TabbedPane);
 };
@@ -183,12 +182,12 @@ class VIEWS_EXPORT Tab : public View {
 
   void UpdatePreferredTitleWidth();
 
-  CheckedPtr<TabbedPane> tabbed_pane_;
-  CheckedPtr<Label> title_ = nullptr;
+  TabbedPane* tabbed_pane_;
+  Label* title_ = nullptr;
   int preferred_title_width_;
   State state_ = State::kActive;
   // The content view associated with this tab.
-  CheckedPtr<View> contents_;
+  View* contents_;
 
   DISALLOW_COPY_AND_ASSIGN(Tab);
 };

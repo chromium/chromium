@@ -16,7 +16,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
 #include "net/socket/client_socket_factory.h"
@@ -127,10 +126,10 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
   base::OnceClosure WaitForTriggerableSocketCreation();
 
  private:
-  CheckedPtr<NetLog> net_log_;
+  NetLog* net_log_;
   int allocation_count_;
   ClientSocketType client_socket_type_;
-  CheckedPtr<ClientSocketType> client_socket_types_;
+  ClientSocketType* client_socket_types_;
   int client_socket_index_;
   int client_socket_index_max_;
   base::TimeDelta delay_;

@@ -9,8 +9,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
-
 #if defined(OS_APPLE) || defined(OS_BSD)
 #include <sys/socket.h>  // Must be included before ifaddrs.h.
 #include <ifaddrs.h>
@@ -193,7 +191,7 @@ struct DestinationInfo {
   AddressSorterPosix::AddressScope scope;
   unsigned precedence;
   unsigned label;
-  CheckedPtr<const AddressSorterPosix::SourceAddressInfo> src;
+  const AddressSorterPosix::SourceAddressInfo* src;
   size_t common_prefix_length;
 };
 

@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/i18n/time_formatting.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
@@ -64,7 +63,7 @@ class GestureScrollableTextfield : public views::Textfield {
 
   void OnEnabledChanged() { SetCanProcessEventsWithinSubtree(GetEnabled()); }
 
-  const CheckedPtr<views::ScrollView> scroll_parent_;
+  views::ScrollView* const scroll_parent_;
   base::CallbackListSubscription on_enabled_subscription_;
 };
 

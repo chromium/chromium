@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/clamped_math.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -106,7 +105,7 @@ class RTree {
     // valid index pointing to an element in the vector that was used to build
     // this rtree. When the level is not 0, it's an internal node and it has a
     // valid subtree pointer.
-    CheckedPtr<Node<U>> subtree;
+    Node<U>* subtree;
     U payload;
 
     gfx::Rect bounds;
@@ -320,9 +319,9 @@ void RTree<T>::Search(const gfx::Rect& query,
   if (num_data_elements_ == 0)
     return;
   if (!has_valid_bounds_) {
-    SearchRecursiveFallback(root_.subtree.get(), query, results, rects);
+    SearchRecursiveFallback(root_.subtree, query, results, rects);
   } else if (query.Intersects(root_.bounds)) {
-    SearchRecursive(root_.subtree.get(), query, results, rects);
+    SearchRecursive(root_.subtree, query, results, rects);
   }
 }
 
@@ -333,9 +332,9 @@ void RTree<T>::SearchRefs(const gfx::Rect& query,
   if (num_data_elements_ == 0)
     return;
   if (!has_valid_bounds_) {
-    SearchRefsRecursiveFallback(root_.subtree.get(), query, results);
+    SearchRefsRecursiveFallback(root_.subtree, query, results);
   } else if (query.Intersects(root_.bounds)) {
-    SearchRefsRecursive(root_.subtree.get(), query, results);
+    SearchRefsRecursive(root_.subtree, query, results);
   }
 }
 
@@ -351,7 +350,7 @@ void RTree<T>::SearchRecursive(Node<T>* node,
         if (rects)
           rects->push_back(node->children[i].bounds);
       } else {
-        SearchRecursive(node->children[i].subtree.get(), query, results, rects);
+        SearchRecursive(node->children[i].subtree, query, results, rects);
       }
     }
   }
@@ -366,7 +365,7 @@ void RTree<T>::SearchRefsRecursive(Node<T>* node,
       if (node->level == 0)
         results->push_back(&node->children[i].payload);
       else
-        SearchRefsRecursive(node->children[i].subtree.get(), query, results);
+        SearchRefsRecursive(node->children[i].subtree, query, results);
     }
   }
 }
@@ -386,7 +385,7 @@ void RTree<T>::SearchRecursiveFallback(Node<T>* node,
           rects->push_back(node->children[i].bounds);
       }
     } else {
-      SearchRecursive(node->children[i].subtree.get(), query, results, rects);
+      SearchRecursive(node->children[i].subtree, query, results, rects);
     }
   }
 }
@@ -401,7 +400,7 @@ void RTree<T>::SearchRefsRecursiveFallback(
       if (query.Intersects(node->children[i].bounds))
         results->push_back(&node->children[i].payload);
     } else {
-      SearchRefsRecursive(node->children[i].subtree.get(), query, results);
+      SearchRefsRecursive(node->children[i].subtree, query, results);
     }
   }
 }
@@ -416,7 +415,7 @@ template <typename T>
 std::map<T, gfx::Rect> RTree<T>::GetAllBoundsForTracing() const {
   std::map<T, gfx::Rect> results;
   if (num_data_elements_ > 0)
-    GetAllBoundsRecursive(root_.subtree.get(), &results);
+    GetAllBoundsRecursive(root_.subtree, &results);
   return results;
 }
 
@@ -427,7 +426,7 @@ void RTree<T>::GetAllBoundsRecursive(Node<T>* node,
     if (node->level == 0)
       (*results)[node->children[i].payload] = node->children[i].bounds;
     else
-      GetAllBoundsRecursive(node->children[i].subtree.get(), results);
+      GetAllBoundsRecursive(node->children[i].subtree, results);
   }
 }
 

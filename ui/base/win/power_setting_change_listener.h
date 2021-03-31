@@ -6,7 +6,6 @@
 #define UI_BASE_WIN_POWER_SETTING_CHANGE_LISTENER_H_
 
 #include "base/component_export.h"
-#include "base/memory/checked_ptr.h"
 
 namespace ui {
 
@@ -28,7 +27,7 @@ class COMPONENT_EXPORT(UI_BASE) ScopedPowerSettingChangeListener {
   ~ScopedPowerSettingChangeListener();
 
  private:
-  CheckedPtr<PowerSettingChangeListener> listener_;
+  PowerSettingChangeListener* listener_;
 
   ScopedPowerSettingChangeListener(const ScopedPowerSettingChangeListener&) =
       delete;

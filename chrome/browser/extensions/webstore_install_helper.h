@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -83,7 +82,7 @@ class WebstoreInstallHelper : public base::RefCounted<WebstoreInstallHelper>,
   void ReportResultsIfComplete();
 
   // The client who we'll report results back to.
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   // The extension id of the manifest we're parsing.
   std::string id_;

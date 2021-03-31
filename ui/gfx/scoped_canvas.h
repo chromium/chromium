@@ -6,7 +6,6 @@
 #define UI_GFX_SCOPED_CANVAS_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/gfx_export.h"
 
@@ -25,7 +24,7 @@ class GFX_EXPORT ScopedCanvas {
   void FlipIfRTL(int width);
 
  private:
-  CheckedPtr<gfx::Canvas> canvas_;
+  gfx::Canvas* canvas_;
 };
 
 }  // namespace gfx

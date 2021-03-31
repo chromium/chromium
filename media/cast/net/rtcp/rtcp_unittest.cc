@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "media/cast/net/cast_transport_config.h"
 #include "media/cast/net/pacing/paced_sender.h"
@@ -67,9 +66,9 @@ class FakeRtcpTransport : public PacedPacketSender {
   void CancelSendingPacket(const PacketKey& packet_key) final {}
 
  private:
-  const CheckedPtr<base::SimpleTestTickClock> clock_;
+  base::SimpleTestTickClock* const clock_;
   base::TimeDelta packet_delay_;
-  CheckedPtr<RtcpSession> rtcp_session_;  //  RTCP destination.
+  RtcpSession* rtcp_session_;  //  RTCP destination.
 
   DISALLOW_COPY_AND_ASSIGN(FakeRtcpTransport);
 };

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 class InfoBarService;
@@ -35,7 +34,7 @@ class ReloadPluginInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
 
-  CheckedPtr<content::NavigationController> controller_;
+  content::NavigationController* controller_;
   std::u16string message_;
 };
 

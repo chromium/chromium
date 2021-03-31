@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -78,8 +77,7 @@ class TestDelegate: public RecentTabHelper::Delegate {
   void set_is_custom_tab(bool is_custom_tab) { is_custom_tab_ = is_custom_tab; }
 
  private:
-  CheckedPtr<OfflinePageTestArchiver::Observer>
-      observer_;  // observer owns this.
+  OfflinePageTestArchiver::Observer* observer_;  // observer owns this.
   int tab_id_;
   bool tab_id_result_;
 

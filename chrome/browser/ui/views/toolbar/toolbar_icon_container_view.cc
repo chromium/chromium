@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -99,7 +98,7 @@ class ToolbarIconContainerView::WidgetRestoreObserver
 
  private:
   bool was_collapsed_ = true;
-  const CheckedPtr<ToolbarIconContainerView> toolbar_icon_container_view_;
+  ToolbarIconContainerView* const toolbar_icon_container_view_;
   base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
       this};
 };
@@ -135,7 +134,7 @@ void ToolbarIconContainerView::AddMainButton(views::Button* main_button) {
   DCHECK(!main_button_);
   main_button_ = main_button;
   ObserveButton(main_button_);
-  AddChildView(main_button_.get());
+  AddChildView(main_button_);
 }
 
 void ToolbarIconContainerView::ObserveButton(views::Button* button) {

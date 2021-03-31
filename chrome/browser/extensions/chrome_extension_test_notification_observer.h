@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "extensions/test/extension_test_notification_observer.h"
 
@@ -51,7 +50,7 @@ class ChromeExtensionTestNotificationObserver
       content::WebContents* web_contents,
       content::BrowserContext* browser_context) override;
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeExtensionTestNotificationObserver);
 };

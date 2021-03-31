@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
@@ -125,7 +124,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       const WebFeedPageInformation* maybe_page_info);
   void DequeueInflightChange();
 
-  CheckedPtr<FeedStream> feed_stream_;  // Always non-null, it owns this.
+  FeedStream* feed_stream_;  // Always non-null, it owns this.
   WebFeedIndex index_;
   // A model of subscriptions. In memory only while needed.
   // TODO(harringtond): Unload the model eventually.

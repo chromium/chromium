@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/sync/driver/sync_service.h"
@@ -44,7 +43,7 @@ class SyncCredentialsFilter : public CredentialsFilter {
   bool IsSyncAccountEmail(const std::string& username) const override;
 
  private:
-  const CheckedPtr<PasswordManagerClient> client_;
+  PasswordManagerClient* const client_;
 
   const SyncServiceFactoryFunction sync_service_factory_function_;
 

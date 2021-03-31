@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -84,7 +83,7 @@ class CONTENT_EXPORT CrossOriginOpenerPolicyReporter {
                        FrameTreeNode* accessed_node);
 
   // See the class comment.
-  CheckedPtr<StoragePartition> storage_partition_;
+  StoragePartition* storage_partition_;
   GURL source_url_;
   GlobalFrameRoutingId source_routing_id_;
   const GURL context_url_;

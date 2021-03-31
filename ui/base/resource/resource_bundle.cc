@@ -17,7 +17,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -219,7 +218,7 @@ class ResourceBundle::ResourceBundleImageSource : public gfx::ImageSkiaSource {
   }
 
  private:
-  CheckedPtr<ResourceBundle> rb_;
+  ResourceBundle* rb_;
   const int resource_id_;
 
   DISALLOW_COPY_AND_ASSIGN(ResourceBundleImageSource);

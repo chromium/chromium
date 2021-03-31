@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/hover_button.h"
 
 namespace gfx {
@@ -74,9 +73,9 @@ class PageInfoHoverButton : public HoverButton {
 
   void UpdateAccessibleName();
 
-  CheckedPtr<views::StyledLabel> title_ = nullptr;
-  CheckedPtr<views::Label> subtitle_ = nullptr;
-  CheckedPtr<views::View> icon_view_ = nullptr;
+  views::StyledLabel* title_ = nullptr;
+  views::Label* subtitle_ = nullptr;
+  views::View* icon_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoHoverButton);
 };

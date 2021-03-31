@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "extensions/browser/api/execute_code_function.h"
 #include "extensions/browser/api/web_contents_capture_client.h"
 #include "extensions/browser/extension_function.h"
@@ -33,7 +32,7 @@ class WebViewInternalExtensionFunction : public ExtensionFunction {
   ~WebViewInternalExtensionFunction() override {}
   bool PreRunValidation(std::string* error) override;
 
-  CheckedPtr<WebViewGuest> guest_ = nullptr;
+  WebViewGuest* guest_ = nullptr;
 };
 
 class WebViewInternalCaptureVisibleRegionFunction

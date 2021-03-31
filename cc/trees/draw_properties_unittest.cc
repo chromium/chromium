@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
@@ -4768,9 +4767,9 @@ class DrawPropertiesStickyPositionTest : public DrawPropertiesTest {
   scoped_refptr<Layer> container_;
   scoped_refptr<Layer> scroller_;
   scoped_refptr<Layer> sticky_pos_;
-  CheckedPtr<LayerImpl> root_impl_;
-  CheckedPtr<LayerImpl> scroller_impl_;
-  CheckedPtr<LayerImpl> sticky_pos_impl_;
+  LayerImpl* root_impl_;
+  LayerImpl* scroller_impl_;
+  LayerImpl* sticky_pos_impl_;
 };
 
 TEST_F(DrawPropertiesStickyPositionTest, StickyPositionTop) {

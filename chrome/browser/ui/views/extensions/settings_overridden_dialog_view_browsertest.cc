@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/extensions/settings_overridden_dialog_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -59,7 +58,7 @@ class TestDialogController : public SettingsOverriddenDialogController {
   const ShowParams show_params_;
 
   // The result to populate. Must outlive this object.
-  const CheckedPtr<base::Optional<DialogResult>> dialog_result_out_;
+  base::Optional<DialogResult>* const dialog_result_out_;
 };
 
 }  // namespace

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -61,7 +60,7 @@ class DeletableObject {
   }
 
  private:
-  CheckedPtr<bool> deleted_;
+  bool* deleted_;
 };
 
 }  // namespace
@@ -90,7 +89,7 @@ class ThreadWrapperTest : public testing::Test {
 
   // ThreadWrapper destroyes itself when |message_loop_| is destroyed.
   base::test::SingleThreadTaskEnvironment task_environment_;
-  CheckedPtr<rtc::Thread> thread_;
+  rtc::Thread* thread_;
   MockMessageHandler handler1_;
   MockMessageHandler handler2_;
 };

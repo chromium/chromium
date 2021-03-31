@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/staging_buffer_pool.h"
@@ -112,8 +111,8 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
 
    private:
     // These fields may only be used on the compositor thread.
-    const CheckedPtr<OneCopyRasterBufferProvider> client_;
-    CheckedPtr<OneCopyGpuBacking> backing_;
+    OneCopyRasterBufferProvider* const client_;
+    OneCopyGpuBacking* backing_;
 
     // These fields are for use on the worker thread.
     const gfx::Size resource_size_;
@@ -151,9 +150,9 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
                                     const gpu::SyncToken& sync_token,
                                     const gfx::ColorSpace& color_space);
 
-  const CheckedPtr<viz::ContextProvider> compositor_context_provider_;
-  const CheckedPtr<viz::RasterContextProvider> worker_context_provider_;
-  const CheckedPtr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+  viz::ContextProvider* const compositor_context_provider_;
+  viz::RasterContextProvider* const worker_context_provider_;
+  gpu::GpuMemoryBufferManager* const gpu_memory_buffer_manager_;
   const int max_bytes_per_copy_operation_;
   const bool use_partial_raster_;
   const bool use_gpu_memory_buffer_resources_;

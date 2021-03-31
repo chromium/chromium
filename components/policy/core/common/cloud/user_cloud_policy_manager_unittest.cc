@@ -6,7 +6,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -71,7 +70,7 @@ class UserCloudPolicyManagerTest : public testing::Test {
   // Policy infrastructure.
   SchemaRegistry schema_registry_;
   MockConfigurationPolicyObserver observer_;
-  CheckedPtr<MockUserCloudPolicyStore> store_;  // Not owned.
+  MockUserCloudPolicyStore* store_;  // Not owned.
   std::unique_ptr<UserCloudPolicyManager> manager_;
 
  private:

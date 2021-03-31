@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
@@ -93,7 +92,7 @@ class PageFreezingPolicyTest : public GraphTestHarness {
   performance_manager::TestNodeWrapper<performance_manager::PageNodeImpl>
       page_node_;
 
-  CheckedPtr<PageFreezingPolicy> policy_;
+  PageFreezingPolicy* policy_;
 };
 
 TEST_F(PageFreezingPolicyTest, AudiblePageGetsCannotFreezeVote) {

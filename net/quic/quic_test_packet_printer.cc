@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "net/quic/quic_test_packet_printer.h"
-#include "base/memory/checked_ptr.h"
 
 #include <ostream>
 
@@ -211,8 +210,8 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
   }
 
  private:
-  CheckedPtr<QuicFramer> framer_;  // Unowned.
-  mutable CheckedPtr<std::ostream> output_;
+  QuicFramer* framer_;  // Unowned.
+  mutable std::ostream* output_;
 };
 
 }  // namespace quic

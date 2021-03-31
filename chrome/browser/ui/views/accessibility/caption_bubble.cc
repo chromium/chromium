@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_tick_clock.h"
 #include "base/timer/timer.h"
@@ -233,10 +232,10 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
   }
 
  private:
-  CheckedPtr<views::View> close_button_;
-  CheckedPtr<views::View> expand_button_;
-  CheckedPtr<views::View> collapse_button_;
-  CheckedPtr<views::FocusRing> focus_ring_ = nullptr;
+  views::View* close_button_;
+  views::View* expand_button_;
+  views::View* collapse_button_;
+  views::FocusRing* focus_ring_ = nullptr;
   bool contents_focused_ = false;
 };
 

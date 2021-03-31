@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/watch_time_keys.h"
@@ -111,7 +110,7 @@ class WatchTimeComponent {
   const std::vector<media::WatchTimeKey> keys_to_finalize_;
   const ValueToKeyCB value_to_key_cb_;
   const GetMediaTimeCB get_media_time_cb_;
-  const CheckedPtr<media::mojom::WatchTimeRecorder> recorder_;
+  media::mojom::WatchTimeRecorder* const recorder_;
 
   // The current value which will be used to select keys for reporting WatchTime
   // during the next RecordWatchTime() call.

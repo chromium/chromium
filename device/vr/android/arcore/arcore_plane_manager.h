@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/types/pass_key.h"
 #include "base/util/type_safety/id_type.h"
 #include "device/vr/android/arcore/address_to_id_map.h"
@@ -84,7 +83,7 @@ class ArCorePlaneManager {
 
   // Owned by ArCoreImpl - non-owning pointer is fine since ArCorePlaneManager
   // is also owned by ArCoreImpl.
-  CheckedPtr<ArSession> arcore_session_;
+  ArSession* arcore_session_;
 
   // List of trackables - used for retrieving planes detected by ARCore.
   // Allows reuse of the list across updates; ARCore clears the list on each

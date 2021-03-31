@@ -12,7 +12,6 @@
 
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -46,7 +45,7 @@ class UDPSocketTestHelper {
   int LeaveGroupSync(const net::IPAddress& group_address);
 
  private:
-  CheckedPtr<mojo::Remote<mojom::UDPSocket>> socket_;
+  mojo::Remote<mojom::UDPSocket>* socket_;
 };
 
 // An implementation of mojom::UDPSocketListener that records received results.

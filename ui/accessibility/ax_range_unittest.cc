@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -94,7 +93,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
   }
 
  private:
-  const CheckedPtr<TestAXTreeManager> tree_manager_;
+  TestAXTreeManager* const tree_manager_;
 };
 
 class AXRangeTest : public testing::Test, public TestAXTreeManager {

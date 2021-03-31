@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 
@@ -46,7 +45,7 @@ class HistoryDeleteDirectivesModelTypeController
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
-  const CheckedPtr<syncer::SyncService> sync_service_;
+  syncer::SyncService* const sync_service_;
 
   DISALLOW_COPY_AND_ASSIGN(HistoryDeleteDirectivesModelTypeController);
 };

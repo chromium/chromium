@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/ui/views/frame/windows_10_caption_button.h"
@@ -162,12 +161,12 @@ class GlassBrowserFrameView : public BrowserNonClientFrameView,
 
   // Icon and title. Only used when custom-drawing the titlebar for popups.
   TabIconView* window_icon_ = nullptr;
-  CheckedPtr<views::Label> window_title_ = nullptr;
+  views::Label* window_title_ = nullptr;
 
   // The container holding the caption buttons (minimize, maximize, close, etc.)
   // May be null if the caption button container is destroyed before the frame
   // view. Always check for validity before using!
-  CheckedPtr<GlassBrowserCaptionButtonContainer> caption_button_container_;
+  GlassBrowserCaptionButtonContainer* caption_button_container_;
 
   // Whether or not the window throbber is currently animating.
   bool throbber_running_ = false;

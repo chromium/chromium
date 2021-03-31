@@ -163,11 +163,11 @@ SaveAddressProfileView::SaveAddressProfileView(
       features::kAutofillAddressProfileSavePrompt));
   SetAcceptCallback(base::BindOnce(
       &SaveAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_.get()),
+      base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kAccepted));
   SetCancelCallback(base::BindOnce(
       &SaveAddressProfileBubbleController::OnUserDecision,
-      base::Unretained(controller_.get()),
+      base::Unretained(controller_),
       AutofillClient::SaveAddressProfileOfferUserDecision::kDeclined));
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
@@ -189,7 +189,7 @@ SaveAddressProfileView::SaveAddressProfileView(
       views::CreateVectorImageButtonWithNativeTheme(
           base::BindRepeating(
               &SaveAddressProfileBubbleController::OnEditButtonClicked,
-              base::Unretained(controller_.get())),
+              base::Unretained(controller_)),
           vector_icons::kEditIcon, gfx::kFaviconSize);
   // TODO(crbug.com/1167060): User internationlized string.
   edit_button->SetAccessibleName(u"Edit Address");

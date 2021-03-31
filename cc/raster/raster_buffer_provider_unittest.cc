@@ -20,7 +20,6 @@
 #include "base/cancelable_callback.h"
 #include "base/check.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/notreached.h"
@@ -114,7 +113,7 @@ class TestRasterTaskImpl : public TileTask {
   ~TestRasterTaskImpl() override = default;
 
  private:
-  CheckedPtr<TestRasterTaskCompletionHandler> completion_handler_;
+  TestRasterTaskCompletionHandler* completion_handler_;
   unsigned id_;
   std::unique_ptr<RasterBuffer> raster_buffer_;
   scoped_refptr<RasterSource> raster_source_;
@@ -148,7 +147,7 @@ class BlockingTestRasterTaskImpl : public TestRasterTaskImpl {
   ~BlockingTestRasterTaskImpl() override = default;
 
  private:
-  CheckedPtr<base::Lock> lock_;
+  base::Lock* lock_;
 };
 
 class RasterImplementationForOOPR

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 #include "base/util/memory_pressure/fake_memory_pressure_monitor.h"
@@ -44,7 +43,7 @@ class UrgentPageDiscardingPolicyTest
   }
 
  private:
-  CheckedPtr<UrgentPageDiscardingPolicy> policy_;
+  UrgentPageDiscardingPolicy* policy_;
 };
 
 TEST_F(UrgentPageDiscardingPolicyTest, DiscardOnCriticalPressure) {
