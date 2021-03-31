@@ -98,6 +98,8 @@ enum AuthenticationButtonType {
 // Lists of constraints that need to be activated when the view is in
 // regular size class.
 @property(nonatomic, strong, readonly) NSArray* regularSizeClassConstraints;
+// Unified consent view controller embedded in this view controller.
+@property(nonatomic, strong, readonly) UIViewController* embeddedViewController;
 
 @end
 
@@ -108,6 +110,16 @@ enum AuthenticationButtonType {
 @synthesize regularSizeClassConstraints = _regularSizeClassConstraints;
 
 #pragma mark - Public
+
+- (instancetype)initWithEmbeddedViewController:
+    (UIViewController*)embeddedViewController {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    DCHECK(embeddedViewController);
+    _embeddedViewController = embeddedViewController;
+  }
+  return self;
+}
 
 - (void)markUnifiedConsentScreenReachedBottom {
   // This is the first time the unified consent screen has reached the bottom.
@@ -191,7 +203,7 @@ enum AuthenticationButtonType {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  DCHECK(self.unifiedConsentViewController);
+  DCHECK(self.embeddedViewController);
   self.view.backgroundColor = self.systemBackgroundColor;
 
   self.containerView = [[UIView alloc] init];
@@ -215,18 +227,18 @@ enum AuthenticationButtonType {
   self.actionButtonsView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:self.actionButtonsView];
 
-  self.unifiedConsentViewController.view
-      .translatesAutoresizingMaskIntoConstraints = NO;
-  [self addChildViewController:self.unifiedConsentViewController];
-  [self.containerView addSubview:self.unifiedConsentViewController.view];
-  [self.unifiedConsentViewController didMoveToParentViewController:self];
+  self.embeddedViewController.view.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  [self addChildViewController:self.embeddedViewController];
+  [self.containerView addSubview:self.embeddedViewController.view];
+  [self.embeddedViewController didMoveToParentViewController:self];
 
   self.gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.containerView addSubview:self.gradientView];
 
   [NSLayoutConstraint activateConstraints:@[
     // Note that the bottom constraint of the container view and
-    // |unifiedConsentViewController.view| is dependent on the selected
+    // |embeddedViewController.view| is dependent on the selected
     // Accessibility options in Settings, e.g. text size. These constraints
     // are computed in |setAccessibilityLayoutConstraints|.
     [self.containerView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
@@ -237,13 +249,11 @@ enum AuthenticationButtonType {
     // The gradient view needs to be attatched to the bottom of the user
     // consent view which contains the scroll view.
     [self.gradientView.bottomAnchor
-        constraintEqualToAnchor:self.unifiedConsentViewController.view
-                                    .bottomAnchor],
+        constraintEqualToAnchor:self.embeddedViewController.view.bottomAnchor],
     [self.gradientView.leadingAnchor
-        constraintEqualToAnchor:self.unifiedConsentViewController.view
-                                    .leadingAnchor],
+        constraintEqualToAnchor:self.embeddedViewController.view.leadingAnchor],
     [self.gradientView.trailingAnchor
-        constraintEqualToAnchor:self.unifiedConsentViewController.view
+        constraintEqualToAnchor:self.embeddedViewController.view
                                     .trailingAnchor],
     [self.gradientView.heightAnchor constraintEqualToConstant:kGradientHeight],
   ]];
@@ -352,13 +362,13 @@ enum AuthenticationButtonType {
         [self generateConstraintsWithConstants:kCompactConstants];
     [constraints addObjectsFromArray:@[
       // Constraints for the user consent view inside the container view.
-      [self.unifiedConsentViewController.view.topAnchor
+      [self.embeddedViewController.view.topAnchor
           constraintEqualToAnchor:self.containerView.topAnchor],
-      [self.unifiedConsentViewController.view.bottomAnchor
+      [self.embeddedViewController.view.bottomAnchor
           constraintEqualToAnchor:self.containerView.bottomAnchor],
-      [self.unifiedConsentViewController.view.leadingAnchor
+      [self.embeddedViewController.view.leadingAnchor
           constraintEqualToAnchor:self.containerView.leadingAnchor],
-      [self.unifiedConsentViewController.view.trailingAnchor
+      [self.embeddedViewController.view.trailingAnchor
           constraintEqualToAnchor:self.containerView.trailingAnchor],
       // Constraint between the container view and the horizontal buttons.
       [self.actionButtonsView.topAnchor
@@ -377,20 +387,20 @@ enum AuthenticationButtonType {
     [constraints addObjectsFromArray:@[
       // Constraints for the user consent view inside the container view, to
       // make sure it is never bigger than the container view.
-      [self.unifiedConsentViewController.view.topAnchor
+      [self.embeddedViewController.view.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.containerView.topAnchor],
-      [self.unifiedConsentViewController.view.bottomAnchor
+      [self.embeddedViewController.view.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.containerView.bottomAnchor],
-      [self.unifiedConsentViewController.view.leadingAnchor
+      [self.embeddedViewController.view.leadingAnchor
           constraintGreaterThanOrEqualToAnchor:self.containerView
                                                    .leadingAnchor],
-      [self.unifiedConsentViewController.view.trailingAnchor
+      [self.embeddedViewController.view.trailingAnchor
           constraintLessThanOrEqualToAnchor:self.containerView.trailingAnchor],
       // The user consent view needs to be centered if the container view is
       // bigger than the max size authorized for the user consent view.
-      [self.unifiedConsentViewController.view.centerXAnchor
+      [self.embeddedViewController.view.centerXAnchor
           constraintEqualToAnchor:self.containerView.centerXAnchor],
-      [self.unifiedConsentViewController.view.centerYAnchor
+      [self.embeddedViewController.view.centerYAnchor
           constraintEqualToAnchor:self.containerView.centerYAnchor],
       // Constraint between the container view and the horizontal buttons.
       [self.actionButtonsView.topAnchor
@@ -403,9 +413,9 @@ enum AuthenticationButtonType {
     // If the screen is smaller than the max size, those constraints are ignored
     // since they have a lower priority than the constraints set aboved.
     NSArray* lowerPriorityConstraints = @[
-      [self.unifiedConsentViewController.view.heightAnchor
+      [self.embeddedViewController.view.heightAnchor
           constraintEqualToConstant:kUserConsentMaxSize],
-      [self.unifiedConsentViewController.view.widthAnchor
+      [self.embeddedViewController.view.widthAnchor
           constraintEqualToConstant:kUserConsentMaxSize],
     ];
     for (NSLayoutConstraint* constraints in lowerPriorityConstraints) {

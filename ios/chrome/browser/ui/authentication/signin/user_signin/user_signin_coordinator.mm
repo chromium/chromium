@@ -118,11 +118,8 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
          !authenticationService->IsAuthenticated() ||
          self.signinIntent == UserSigninIntentFirstRun);
   [super start];
-  self.viewController = [self generateUserSigninViewController];
-  self.viewController.delegate = self;
-  self.viewController.useFirstRunSkipButton =
-      self.signinIntent == UserSigninIntentFirstRun;
 
+  // Setup mediator.
   self.mediator = [[UserSigninMediator alloc]
       initWithAuthenticationService:AuthenticationServiceFactory::
                                         GetForBrowserState(
@@ -138,24 +135,27 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
                                         self.browser->GetBrowserState())];
   self.mediator.delegate = self;
 
+  // Setup UnifiedConsentCoordinator.
   self.unifiedConsentCoordinator = [[UnifiedConsentCoordinator alloc]
       initWithBaseViewController:nil
                          browser:self.browser];
   self.unifiedConsentCoordinator.delegate = self;
-
-  // Set UnifiedConsentCoordinator properties.
   if (self.defaultIdentity) {
     self.unifiedConsentCoordinator.selectedIdentity = self.defaultIdentity;
   }
   self.unifiedConsentCoordinator.autoOpenIdentityPicker =
       self.logger.promoAction == PromoAction::PROMO_ACTION_NOT_DEFAULT;
-
   [self.unifiedConsentCoordinator start];
 
-  // Display UnifiedConsentViewController within the host.
-  self.viewController.unifiedConsentViewController =
-      self.unifiedConsentCoordinator.viewController;
+  // Setup view controller.
+  self.viewController =
+      [self generateUserSigninViewControllerWithUnifiedConsentViewController:
+                self.unifiedConsentCoordinator.viewController];
+  self.viewController.delegate = self;
+  self.viewController.useFirstRunSkipButton =
+      self.signinIntent == UserSigninIntentFirstRun;
 
+  // Start.
   [self presentUserSigninViewController];
   [self.logger logSigninStarted];
 }
@@ -646,8 +646,11 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 
 // Returns a UserSigninViewController instance. This method is overriden for
 // unittests.
-- (UserSigninViewController*)generateUserSigninViewController {
-  return [[UserSigninViewController alloc] init];
+- (UserSigninViewController*)
+    generateUserSigninViewControllerWithUnifiedConsentViewController:
+        (UIViewController*)viewController {
+  return [[UserSigninViewController alloc]
+      initWithEmbeddedViewController:viewController];
 }
 
 @end

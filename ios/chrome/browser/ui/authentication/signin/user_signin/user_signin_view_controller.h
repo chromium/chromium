@@ -37,12 +37,20 @@
 // The delegate.
 @property(nonatomic, weak) id<UserSigninViewControllerDelegate> delegate;
 
-// View controller that handles the user consent before the user signs in.
-@property(nonatomic, weak) UIViewController* unifiedConsentViewController;
-
 @property(nonatomic, assign, readonly) int acceptSigninButtonStringId;
 
 @property(nonatomic, assign) BOOL useFirstRunSkipButton;
+
+// See |initWithEmbeddedViewController:|.
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
+- (instancetype)initWithNibName:(NSString*)nibNAme
+                         bundle:(NSBundle*)nibBundle NS_UNAVAILABLE;
+
+// Initializer with the UnifiedConsentViewController that is embedded in the
+// UserSigninViewController.
+- (instancetype)initWithEmbeddedViewController:
+    (UIViewController*)embeddedViewController NS_DESIGNATED_INITIALIZER;
 
 // Informs the view controller that the unified consent has reached the bottom
 // of the screen.
