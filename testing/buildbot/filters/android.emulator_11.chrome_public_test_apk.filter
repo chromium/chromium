@@ -16,3 +16,7 @@
 -org.chromium.chrome.browser.contextmenu.RevampedContextMenuTest.testSaveDataUrl
 -org.chromium.chrome.browser.contextmenu.RevampedContextMenuTest.testSaveImage
 -org.chromium.chrome.browser.contextmenu.RevampedContextMenuTest.testSaveVideo
+
+# crbug.com/1194290
+-org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragmentTest.testDarkenWebsiteButton__DefaultLightEnabled
+-org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragmentTest.testSelectThemes__DefaultLightEnabled
