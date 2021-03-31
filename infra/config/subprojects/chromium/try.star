@@ -1177,7 +1177,10 @@ try_.chromium_linux_builder(
     builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
+    goma_backend = None,
     reclient_instance = "rbe-chromium-gvisor-shadow",
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
