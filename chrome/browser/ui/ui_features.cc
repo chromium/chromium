@@ -87,7 +87,7 @@ const base::Feature kSignInProfileCreation{"SignInProfileCreation",
 // Smoother enterprise experience in the sign-in profile creation flow.
 // https://crbug.com/1178494
 const base::Feature kSignInProfileCreationEnterprise{
-    "kSignInProfileCreationEnterprise", base::FEATURE_DISABLED_BY_DEFAULT};
+    "SignInProfileCreationEnterprise", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Automatically create groups for users based on domain.
 // https://crbug.com/1128703

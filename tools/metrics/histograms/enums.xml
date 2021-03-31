@@ -46453,6 +46453,7 @@ from previous Chrome versions.
   <int value="266702296" label="disable-plugin-power-saver"/>
   <int value="268535107"
       label="ash-new-touch-support-for-screen-magnification"/>
+  <int value="270038252" label="SignInProfileCreationEnterprise:disabled"/>
   <int value="270118291" label="SyncAutofillWalletOfferData:disabled"/>
   <int value="270267831" label="enable-scripts-require-action"/>
   <int value="272108480" label="SmbFs:enabled"/>
@@ -48109,6 +48110,7 @@ from previous Chrome versions.
   <int value="1750658031" label="OmniboxBookmarkPaths:enabled"/>
   <int value="1750693293" label="AutofillPreventMixedFormsFilling:enabled"/>
   <int value="1752168018" label="enable-stale-while-revalidate"/>
+  <int value="1753732236" label="SignInProfileCreationEnterprise:enabled"/>
   <int value="1755024316" label="HostWindowsInAppShimProcess:disabled"/>
   <int value="1757894817" label="PrinterStatusDialog:disabled"/>
   <int value="1758262950"
