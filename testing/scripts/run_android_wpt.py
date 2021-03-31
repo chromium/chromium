@@ -175,6 +175,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
          self._metadata_dir,
          '--additional-expectations',
          ANDROID_DISABLED_TESTS,
+         '--use-subtest-results',
     ]
     metadata_builder_cmd.extend(self._extra_metadata_builder_args())
     return common.run_command(metadata_builder_cmd)

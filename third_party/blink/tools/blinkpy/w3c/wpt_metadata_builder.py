@@ -61,6 +61,7 @@ class WPTMetadataBuilder(object):
         self.process_baselines = True
         self.handle_annotations = True
         self.checked_in_metadata_copied = set()
+        self.use_subtest_results = False
 
     def run(self, args=None):
         """Main entry point to parse flags and execute the script."""
@@ -100,6 +101,10 @@ class WPTMetadataBuilder(object):
         parser.add_argument("--no-handle-annotations",
                             action="store_false",
                             dest="handle_annotations")
+        parser.add_argument(
+            "--use-subtest-results",
+            action="store_true",
+            help="Treat subtest failures as test-level failures")
         args = parser.parse_args(args)
 
         log_level = logging.DEBUG if args.verbose else logging.INFO
@@ -109,12 +114,13 @@ class WPTMetadataBuilder(object):
         self.checked_in_metadata_dir = args.checked_in_metadata_dir
         self.process_baselines = args.process_baselines
         self.handle_annotations = args.handle_annotations
+        self.use_subtest_results = args.use_subtest_results
         self._build_metadata_and_write()
 
         return 0
 
     @staticmethod
-    def status_bitmap_to_string(test_status_bitmap):
+    def status_bitmap_to_string(test_status_bitmap, use_subtest_results):
         # Nearly all statuses are the result of translating baselines or
         # expectations. The exception is explicitly flagging the test to use
         # checked-in metadata which must contain the correct subtest statuses.
@@ -141,9 +147,12 @@ class WPTMetadataBuilder(object):
         if test_status_bitmap & TEST_PRECONDITION_FAILED:
             statuses.append("PRECONDITION_FAILED")
 
+        result = ""
         # Since status translation is lossy, we always instruct wptrunner to
-        # ignore subtest statuses.
-        result = "  blink_expect_any_subtest_status: True # wpt_metadata_builder.py\n"
+        # ignore subtest statuses unless --use-subtest-results is set.
+        if not use_subtest_results:
+            result += ("  blink_expect_any_subtest_status: True"
+                       " # wpt_metadata_builder.py\n")
         if statuses:
             result += "  expected: [%s]\n" % ", ".join(statuses)
         return result
@@ -458,7 +467,8 @@ class WPTMetadataBuilder(object):
             return result
 
         # Other test statuses can exist together. But ensure we have at least one.
-        expected_string = self.status_bitmap_to_string(test_status_bitmap)
+        expected_string = self.status_bitmap_to_string(
+            test_status_bitmap, self.use_subtest_results)
         if expected_string:
             result += expected_string
         return result

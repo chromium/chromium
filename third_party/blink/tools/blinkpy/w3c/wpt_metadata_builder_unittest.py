@@ -632,3 +632,18 @@ class WPTMetadataBuilderTest(unittest.TestCase):
         self.assertEqual(
             "[test.html]\n  blink_expect_any_subtest_status: True # wpt_metadata_builder.py\n  expected: [TIMEOUT]\n",
             mb.fs.read_text_file(resulting_ini_file))
+
+    def test_use_subtest_results_flag(self):
+        """Test that the --use-subtest-results flag updates metadata correctly.
+
+        The --use-subtest-results flag should result in the
+        blink_expect_any_subtest_status tag not being applied to metadata for
+        any tests."""
+        test_name = "external/wpt/test.html"
+        expectations = _make_expectation(self.port, test_name, "FAILURE")
+        metadata_builder = WPTMetadataBuilder(expectations, self.port)
+        metadata_builder.use_subtest_results = True
+        filename, contents = metadata_builder.get_metadata_filename_and_contents(
+            test_name, TEST_FAIL)
+        self.assertEqual("test.html.ini", filename)
+        self.assertEqual("[test.html]\n  expected: [FAIL, ERROR]\n", contents)
