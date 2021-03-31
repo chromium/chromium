@@ -288,8 +288,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool ShouldOobeUseTabletModeFirstRun();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsAueReachedForUpdateRequiredForTest();
 
-// Returns true if the OOBE ChromeVox hint idle detection is disabled for
-// testing.
+// Returns true if the OOBE ChromeVox hint timer is disabled for testing.
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsOOBEChromeVoxHintTimerDisabledForTesting();
 

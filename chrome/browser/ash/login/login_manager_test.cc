@@ -39,8 +39,6 @@ LoginManagerTest::~LoginManagerTest() {}
 void LoginManagerTest::SetUpCommandLine(base::CommandLine* command_line) {
   command_line->AppendSwitch(chromeos::switches::kLoginManager);
   command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
-  command_line->AppendSwitch(
-      chromeos::switches::kDisableOOBEChromeVoxHintTimerForTesting);
 
   MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
 }
