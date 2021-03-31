@@ -44549,6 +44549,7 @@ from previous Chrome versions.
   <int value="-1466862366" label="TouchToFillAndroid:enabled"/>
   <int value="-1466759286" label="TabModalJsDialog:disabled"/>
   <int value="-1466600231" label="WakeOnWifiAllowed:enabled"/>
+  <int value="-1466206556" label="ArcDocumentsProviderUnknownSize:enabled"/>
   <int value="-1465172796" label="CCTModule:disabled"/>
   <int value="-1464832541" label="EnableFuzzyAppSearch:disabled"/>
   <int value="-1463489219" label="OfflinePagesCTSuppressNotifications:enabled"/>
@@ -47413,6 +47414,7 @@ from previous Chrome versions.
   <int value="1114629582" label="enable-floating-virtual-keyboard"/>
   <int value="1115635149" label="EnableUnifiedMultiDeviceSetup:enabled"/>
   <int value="1116593018" label="CaptureThumbnailOnLoadFinished:disabled"/>
+  <int value="1117270978" label="ArcDocumentsProviderUnknownSize:disabled"/>
   <int value="1117534750"
       label="ForceSecurePaymentConfirmationDialog:disabled"/>
   <int value="1117795262" label="BloatedRendererDetection:disabled"/>

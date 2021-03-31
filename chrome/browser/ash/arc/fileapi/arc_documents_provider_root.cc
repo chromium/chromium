@@ -17,6 +17,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_size_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
+#include "components/arc/arc_features.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"
 #include "url/gurl.h"
@@ -379,7 +380,8 @@ void ArcDocumentsProviderRoot::GetFileInfoFromDocument(
         base::Time::FromJavaTime(document->last_modified);
   }
 
-  if ((fields & storage::FileSystemOperation::GET_METADATA_FIELD_SIZE) &&
+  if (base::FeatureList::IsEnabled(kDocumentsProviderUnknownSizeFeature) &&
+      (fields & storage::FileSystemOperation::GET_METADATA_FIELD_SIZE) &&
       info.size == kUnknownFileSize && !is_directory) {
     // We don't know the size from metadata and the size is requested, find it
     // out by opening the file

@@ -2192,6 +2192,9 @@ extern const char kAppServiceExternalProtocolDescription[];
 extern const char kArcCustomTabsExperimentName[];
 extern const char kArcCustomTabsExperimentDescription[];
 
+extern const char kArcDocumentsProviderUnknownSizeName[];
+extern const char kArcDocumentsProviderUnknownSizeDescription[];
+
 extern const char kArcFilePickerExperimentName[];
 extern const char kArcFilePickerExperimentDescription[];
 

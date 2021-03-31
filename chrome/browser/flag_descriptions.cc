@@ -3805,6 +3805,11 @@ const char kArcCustomTabsExperimentDescription[] =
     "Allow Android apps to use Custom Tabs."
     "This feature only works on the Canary and Dev channels.";
 
+const char kArcDocumentsProviderUnknownSizeName[] =
+    "Enable ARC DocumentsProvider unknown file size handling";
+const char kArcDocumentsProviderUnknownSizeDescription[] =
+    "Allow opening DocumentsProvider files where size is not reported.";
+
 const char kArcFilePickerExperimentName[] =
     "Enable file picker experiment for ARC";
 const char kArcFilePickerExperimentDescription[] =

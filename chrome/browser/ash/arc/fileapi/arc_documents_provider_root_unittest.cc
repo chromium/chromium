@@ -13,9 +13,11 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/arc/arc_features.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/mojom/file_system.mojom.h"
 #include "components/arc/session/arc_bridge_service.h"
@@ -465,6 +467,9 @@ TEST_F(ArcDocumentsProviderRootTest, GetFileInfoWithCacheExpired) {
 }
 
 TEST_F(ArcDocumentsProviderRootTest, GetFileInfoUnknownSizeFile) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {arc::kDocumentsProviderUnknownSizeFeature}, {});
   base::RunLoop run_loop;
   root_->GetFileInfo(base::FilePath(FILE_PATH_LITERAL("dir/size-file.jpg")),
                      kAllMetadataFields,
@@ -483,6 +488,9 @@ TEST_F(ArcDocumentsProviderRootTest, GetFileInfoUnknownSizeFile) {
 }
 
 TEST_F(ArcDocumentsProviderRootTest, GetFileInfoUnknownSizePipe) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {arc::kDocumentsProviderUnknownSizeFeature}, {});
   base::RunLoop run_loop;
   root_->GetFileInfo(base::FilePath(FILE_PATH_LITERAL("dir/size-pipe.jpg")),
                      kAllMetadataFields,
