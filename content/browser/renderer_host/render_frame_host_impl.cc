@@ -1241,6 +1241,12 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 }
 
 RenderFrameHostImpl::~RenderFrameHostImpl() {
+  // The lifetime of this object has ended, so remove it from the id map before
+  // calling any delegates/observers, so that any calls to |FromID| no longer
+  // return |this|.
+  g_routing_id_frame_map.Get().erase(
+      GlobalFrameRoutingId(GetProcess()->GetID(), routing_id_));
+
   // When a RenderFrameHostImpl is deleted, it may still contain children. This
   // can happen with the unload timer. It causes a RenderFrameHost to delete
   // itself even if it is still waiting for its children to complete their
@@ -1354,8 +1360,6 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   }
 
   GetAgentSchedulingGroup().RemoveRoute(routing_id_);
-  g_routing_id_frame_map.Get().erase(
-      GlobalFrameRoutingId(GetProcess()->GetID(), routing_id_));
 
   // Null out the unload timer; in crash dumps this member will be null only if
   // the dtor has run.  (It may also be null in tests.)
