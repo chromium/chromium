@@ -713,6 +713,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillParseMerchantPromoCodeFields)},
+    {"search-history-link-ios", flag_descriptions::kSearchHistoryLinkIOSName,
+     flag_descriptions::kSearchHistoryLinkIOSDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kSearchHistoryLinkIOS)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

@@ -397,6 +397,11 @@ const char kScrollToTextIOSDescription[] =
     "example.com/#:~:text=examples) will cause matching text in the page to be "
     "highlighted and scrolled into view.";
 
+const char kSearchHistoryLinkIOSName[] = "Enables Search History Link";
+const char kSearchHistoryLinkIOSDescription[] =
+    "Changes the Clear Browsing Data "
+    "UI to display a link to clear search history on My Google Activity.";
+
 const char kSendTabToSelfName[] = "Send tab to self";
 const char kSendTabToSelfDescription[] =
     "Allows users to receive tabs that were pushed from another of their "

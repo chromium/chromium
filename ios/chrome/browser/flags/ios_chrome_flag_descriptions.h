@@ -326,6 +326,10 @@ extern const char kScreenTimeIntegrationDescription[];
 extern const char kScrollToTextIOSName[];
 extern const char kScrollToTextIOSDescription[];
 
+// Title and description for the flag to enable the Search History Link feature.
+extern const char kSearchHistoryLinkIOSName[];
+extern const char kSearchHistoryLinkIOSDescription[];
+
 // Title and description for the flag to enable the send tab to self receiving
 // feature.
 extern const char kSendTabToSelfName[];

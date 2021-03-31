@@ -64,3 +64,6 @@ const base::Feature kIOSNewOmniboxImplementation{
 
 const base::Feature kIOSPersistCrashRestore{"IOSPersistCrashRestore",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSearchHistoryLinkIOS{"SearchHistoryLinkIOS",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};

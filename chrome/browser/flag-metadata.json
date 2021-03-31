@@ -4607,6 +4607,16 @@
     "expiry_milestone": 99
   },
   {
+    "name": "search-history-link-ios",
+    "owners": [
+      "andzaytsev",
+      "harrisonsean",
+      "msramek",
+      "chrome-friendly-settings@google.com"
+    ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "search-prefetch",
     "owners": ["ryansturm"],
     "expiry_milestone": 95

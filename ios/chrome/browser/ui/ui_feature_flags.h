@@ -72,4 +72,7 @@ extern const base::Feature kIOSNewOmniboxImplementation;
 // navigations.
 extern const base::Feature kIOSPersistCrashRestore;
 
+// Enables the Search History Link in Clear Browsing Data for iOS.
+extern const base::Feature kSearchHistoryLinkIOS;
+
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_
