@@ -65,6 +65,7 @@ class FakeSpeechRecognitionService
   bool has_received_audio() { return has_received_audio_; }
 
  private:
+  void OnRecognizerClientDisconnected();
   // Whether the AudioSourceFetcher has been started.
   bool capturing_audio_ = false;
   // Whether any audio has been sent to the SpeechRecognitionRecognizer.
@@ -72,8 +73,8 @@ class FakeSpeechRecognitionService
   mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient>
       recognizer_client_remote_;
 
-  mojo::Receiver<media::mojom::SpeechRecognitionContext>
-      speech_recognition_context_{this};
+  mojo::ReceiverSet<media::mojom::SpeechRecognitionContext>
+      speech_recognition_contexts_;
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizer>
       recognizer_receiver_{this};
   mojo::Receiver<media::mojom::AudioSourceFetcher> fetcher_receiver_{this};

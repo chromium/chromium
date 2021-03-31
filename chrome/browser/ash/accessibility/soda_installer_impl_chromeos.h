@@ -11,6 +11,10 @@
 
 class PrefService;
 
+namespace ash {
+class DictationTest;
+}  // namespace ash
+
 namespace speech {
 
 // Installer of SODA (Speech On-Device API) for the Live Caption feature on
@@ -37,6 +41,7 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   bool IsSodaInstalled() const override;
 
  private:
+  friend class ::ash::DictationTest;
   // SodaInstaller:
   // Here "uninstall" is used in the DLC sense of the term: Uninstallation will
   // disable a DLC but not immediately remove it from disk.
@@ -63,6 +68,11 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
 
   // This is the UninstallCallback for DlcserviceClient::Uninstall().
   void OnDlcUninstalled(const std::string& dlc_id, const std::string& err);
+
+  // When true, IsSodaInstalled() will return true. This may be used by tests
+  // that need to pretend soda is installed before using
+  // FakeSpeechRecognitionService.
+  bool soda_installed_for_test_ = false;
 
   bool is_soda_downloading_ = false;
   bool is_language_downloading_ = false;

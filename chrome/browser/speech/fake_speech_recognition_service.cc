@@ -15,8 +15,7 @@ FakeSpeechRecognitionService::~FakeSpeechRecognitionService() = default;
 
 void FakeSpeechRecognitionService::Create(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
-  DCHECK(!speech_recognition_context_.is_bound());
-  speech_recognition_context_.Bind(std::move(receiver));
+  speech_recognition_contexts_.Add(this, std::move(receiver));
 }
 
 void FakeSpeechRecognitionService::BindRecognizer(
@@ -25,6 +24,9 @@ void FakeSpeechRecognitionService::BindRecognizer(
     BindRecognizerCallback callback) {
   recognizer_receiver_.Bind(std::move(receiver));
   recognizer_client_remote_.Bind(std::move(client));
+  recognizer_client_remote_.set_disconnect_handler(base::BindOnce(
+      &FakeSpeechRecognitionService::OnRecognizerClientDisconnected,
+      base::Unretained(this)));
   std::move(callback).Run(true /* multichannel supported */);
 }
 
@@ -35,6 +37,9 @@ void FakeSpeechRecognitionService::BindAudioSourceFetcher(
     BindRecognizerCallback callback) {
   fetcher_receiver_.Bind(std::move(fetcher_receiver));
   recognizer_client_remote_.Bind(std::move(client));
+  recognizer_client_remote_.set_disconnect_handler(base::BindOnce(
+      &FakeSpeechRecognitionService::OnRecognizerClientDisconnected,
+      base::Unretained(this)));
   std::move(callback).Run(true);
 }
 
@@ -57,8 +62,17 @@ void FakeSpeechRecognitionService::SendSpeechRecognitionResult(
   recognizer_client_remote_->OnSpeechRecognitionRecognitionEvent(
       std::move(result));
 }
+
 void FakeSpeechRecognitionService::SendSpeechRecognitionError() {
   ASSERT_TRUE(recognizer_client_remote_.is_bound());
   recognizer_client_remote_->OnSpeechRecognitionError();
 }
+
+void FakeSpeechRecognitionService::OnRecognizerClientDisconnected() {
+  // Reset everything in case it will be re-used.
+  recognizer_client_remote_.reset();
+  fetcher_receiver_.reset();
+  recognizer_receiver_.reset();
+}
+
 }  // namespace speech

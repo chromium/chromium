@@ -87,7 +87,8 @@ void SodaInstallerImplChromeOS::InstallLanguage(PrefService* prefs) {
 
 bool SodaInstallerImplChromeOS::IsSodaInstalled() const {
   DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
-  return soda_binary_installed_ && language_installed_;
+  return (soda_binary_installed_ && language_installed_) ||
+         soda_installed_for_test_;
 }
 
 void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
