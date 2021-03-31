@@ -21,30 +21,33 @@ class NGSVGTextLayoutAlgorithm {
 
  private:
   // Returns false if we should skip the following steps.
-  bool Setup();
+  bool Setup(wtf_size_t approximate_count);
+  void SetFlags(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
 
   NGInlineNode inline_node_;
 
-  // "count" defined in the specification.
-  wtf_size_t count_;
+  // This data member represents the number of addressable characters in the
+  // target IFC. It's similar to "count" defined in the specification.
+  wtf_size_t addressable_count_;
 
   // "horizontal" flag defined in the specification.
   bool horizontal_;
 
-  // "result" defined in the specification
   struct NGSVGPerCharacterInfo {
     base::Optional<float> x;
     base::Optional<float> y;
     base::Optional<float> rotate;
     bool hidden = false;
-    bool addressable = true;
     bool middle = false;
-    bool anchor_chunk = false;
+    bool anchored_chunk = false;
     wtf_size_t item_index = WTF::kNotFound;
   };
+  // This data member represents "result" defined in the specification, but it
+  // contains only addressable characters.
   Vector<NGSVGPerCharacterInfo> result_;
 
-  // "CSS_positions" defined in the specification.
+  // This data member represents "CSS_positions" defined in the specification,
+  // but it contains only addressable characters.
   Vector<FloatPoint> css_positions_;
 };
 
