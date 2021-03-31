@@ -1565,17 +1565,30 @@ bool TestLauncher::InitTests() {
     LOG(ERROR) << "Failed to get list of tests.";
     return false;
   }
+  std::vector<std::string> uninstantiated_tests;
   for (const TestIdentifier& test_id : tests) {
     TestInfo test_info(test_id);
     if (test_id.test_case_name == "GoogleTestVerification") {
-      LOG(INFO) << "The following parameterized test case is not instantiated: "
-                << test_id.test_name;
+      // GoogleTestVerification is used by googletest to detect tests that are
+      // parameterized but not instantiated.
+      uninstantiated_tests.push_back(test_id.test_name);
       continue;
     }
     // TODO(isamsonov): crbug.com/1004417 remove when windows builders
     // stop flaking on MANAUAL_ tests.
     if (launcher_delegate_->ShouldRunTest(test_id))
       tests_.push_back(test_info);
+  }
+  if (!uninstantiated_tests.empty()) {
+    LOG(ERROR) << "Found uninstantiated parameterized tests. These test suites "
+                  "will not run:";
+    for (const std::string& name : uninstantiated_tests)
+      LOG(ERROR) << "  " << name;
+    LOG(ERROR) << "Please use INSTANTIATE_TEST_SUITE_P to instantiate the "
+                  "tests, or GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST if "
+                  "the parameter list can be intentionally empty. See "
+                  "//third_party/googletest/src/docs/advanced.md";
+    return false;
   }
   return true;
 }
