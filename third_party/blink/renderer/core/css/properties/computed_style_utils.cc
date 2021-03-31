@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
-#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -2765,7 +2765,7 @@ ComputedStyleUtils::CrossThreadStyleValueFromCSSStyleValue(
           To<CSSUnitValue>(style_value)->GetInternalUnit());
     case CSSStyleValue::StyleValueType::kUnsupportedColorType:
       return std::make_unique<CrossThreadColorValue>(
-          To<CSSUnsupportedColorValue>(style_value)->Value());
+          To<CSSUnsupportedColor>(style_value)->Value());
     case CSSStyleValue::StyleValueType::kUnparsedType:
       return std::make_unique<CrossThreadUnparsedValue>(
           To<CSSUnparsedValue>(style_value)->ToString().IsolatedCopy());

@@ -20,7 +20,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_style_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_transform_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
-#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_url_image_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cssom_types.h"
@@ -56,7 +56,7 @@ CSSStyleValue* CreateStyleValue(const CSSValue& value) {
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value))
     return CSSNumericValue::FromCSSValue(*primitive_value);
   if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value))
-    return MakeGarbageCollected<CSSUnsupportedColorValue>(*color_value);
+    return MakeGarbageCollected<CSSUnsupportedColor>(*color_value);
   if (auto* image_value = DynamicTo<CSSImageValue>(value))
     return MakeGarbageCollected<CSSURLImageValue>(*image_value->Clone());
   return nullptr;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_UNSUPPORTED_COLOR_VALUE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_UNSUPPORTED_COLOR_VALUE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_UNSUPPORTED_COLOR_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_UNSUPPORTED_COLOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
@@ -13,26 +13,25 @@
 
 namespace blink {
 
-// CSSUnsupportedColorValue represents all color values that are normally
+// CSSUnsupportedColor represents all color values that are normally
 // treated as CSSUnsupportedValue.  When compositing color values cross thread,
 // this class can be used to differentiate between color values and other types
 // that use CSSUnsupportedStyleValue.
-class CORE_EXPORT CSSUnsupportedColorValue final
-    : public CSSUnsupportedStyleValue {
+class CORE_EXPORT CSSUnsupportedColor final : public CSSUnsupportedStyleValue {
  public:
-  explicit CSSUnsupportedColorValue(Color color)
+  explicit CSSUnsupportedColor(Color color)
       : CSSUnsupportedStyleValue(
             cssvalue::CSSColor::SerializeAsCSSComponentValue(color)),
         color_value_(color) {}
-  explicit CSSUnsupportedColorValue(const CSSPropertyName& name, Color color)
+  explicit CSSUnsupportedColor(const CSSPropertyName& name, Color color)
       : CSSUnsupportedStyleValue(
             name,
             cssvalue::CSSColor::SerializeAsCSSComponentValue(color)),
         color_value_(color) {}
-  explicit CSSUnsupportedColorValue(const cssvalue::CSSColor& color_value)
-      : CSSUnsupportedColorValue(color_value.Value()) {}
-  CSSUnsupportedColorValue(const CSSUnsupportedColorValue&) = delete;
-  CSSUnsupportedColorValue& operator=(const CSSUnsupportedColorValue&) = delete;
+  explicit CSSUnsupportedColor(const cssvalue::CSSColor& color_value)
+      : CSSUnsupportedColor(color_value.Value()) {}
+  CSSUnsupportedColor(const CSSUnsupportedColor&) = delete;
+  CSSUnsupportedColor& operator=(const CSSUnsupportedColor&) = delete;
 
   StyleValueType GetType() const override { return kUnsupportedColorType; }
 
@@ -45,7 +44,7 @@ class CORE_EXPORT CSSUnsupportedColorValue final
 };
 
 template <>
-struct DowncastTraits<CSSUnsupportedColorValue> {
+struct DowncastTraits<CSSUnsupportedColor> {
   static bool AllowFrom(const CSSStyleValue& value) {
     return value.GetType() ==
            CSSStyleValue::StyleValueType::kUnsupportedColorType;
@@ -54,4 +53,4 @@ struct DowncastTraits<CSSUnsupportedColorValue> {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_UNSUPPORTED_COLOR_VALUE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_UNSUPPORTED_COLOR_H_

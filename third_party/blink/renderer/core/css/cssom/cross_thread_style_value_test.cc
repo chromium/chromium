@@ -19,7 +19,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
-#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -246,7 +246,7 @@ TEST_F(CrossThreadStyleValueTest, CrossThreadColorValueToCSSStyleValue) {
   CSSStyleValue* style_value = value->ToCSSStyleValue();
   EXPECT_EQ(style_value->GetType(),
             CSSStyleValue::StyleValueType::kUnsupportedColorType);
-  EXPECT_EQ(static_cast<CSSUnsupportedColorValue*>(style_value)->Value(),
+  EXPECT_EQ(static_cast<CSSUnsupportedColor*>(style_value)->Value(),
             Color(0, 255, 0));
 }
 

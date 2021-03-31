@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -17,11 +17,11 @@
 
 namespace blink {
 
-Color CSSUnsupportedColorValue::Value() const {
+Color CSSUnsupportedColor::Value() const {
   return color_value_;
 }
 
-const CSSValue* CSSUnsupportedColorValue::ToCSSValue() const {
+const CSSValue* CSSUnsupportedColor::ToCSSValue() const {
   return cssvalue::CSSColor::Create(
       MakeRGBA(color_value_.Red(), color_value_.Green(), color_value_.Blue(),
                color_value_.Alpha()));
