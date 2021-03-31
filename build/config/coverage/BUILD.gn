@@ -26,7 +26,8 @@ config("default_coverage") {
       "-limited-coverage-experimental=true",
     ]
 
-    if (!is_win) {
+    if (is_linux || is_chromeos) {
+      # TODO(crbug.com/1194301): Remove this flag.
       cflags += [ "-fno-use-cxa-atexit" ]
     }
   }
