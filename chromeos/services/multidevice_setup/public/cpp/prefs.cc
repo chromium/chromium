@@ -59,7 +59,11 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry) {
   // This pref should be disabled for existing Better Together users;
   // they must go to settings to explicitly enable PhoneHub.
   registry->RegisterBooleanPref(kPhoneHubEnabledPrefName, false);
-  registry->RegisterBooleanPref(kPhoneHubNotificationsEnabledPrefName, true);
+
+  // This pref is disabled by default; it should not be enabled until access is
+  // granted from the phone.
+  registry->RegisterBooleanPref(kPhoneHubNotificationsEnabledPrefName, false);
+
   registry->RegisterBooleanPref(kPhoneHubTaskContinuationEnabledPrefName, true);
 }
 
@@ -114,6 +118,37 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
              pref_service->GetBoolean(kWifiSyncAllowedPrefName);
 
     default:
+      NOTREACHED();
+      return false;
+  }
+}
+
+bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
+                                  const PrefService* pref_service) {
+  switch (feature) {
+    case mojom::Feature::kBetterTogetherSuite:
+      return pref_service->FindPreference(kBetterTogetherSuiteEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kInstantTethering:
+      return pref_service->FindPreference(kInstantTetheringEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kMessages:
+      return pref_service->FindPreference(kMessagesEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kSmartLock:
+      return pref_service->FindPreference(kSmartLockEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kPhoneHub:
+      return pref_service->FindPreference(kPhoneHubEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kPhoneHubNotifications:
+      return pref_service->FindPreference(kPhoneHubNotificationsEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kPhoneHubTaskContinuation:
+      return pref_service
+          ->FindPreference(kPhoneHubTaskContinuationEnabledPrefName)
+          ->IsDefaultValue();
+    case mojom::Feature::kWifiSync:
       NOTREACHED();
       return false;
   }

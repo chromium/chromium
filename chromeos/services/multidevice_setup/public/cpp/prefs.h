@@ -46,6 +46,11 @@ void RegisterFeaturePrefs(PrefRegistrySimple* registry);
 bool AreAnyMultiDeviceFeaturesAllowed(const PrefService* pref_service);
 bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service);
 
+// Returns true if the pref tracking |feature|'s enabled state is using the
+// default value it was registered with.
+bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
+                                  const PrefService* pref_service);
+
 }  // namespace multidevice_setup
 
 }  // namespace chromeos

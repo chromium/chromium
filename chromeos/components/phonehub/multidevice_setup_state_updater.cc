@@ -7,6 +7,7 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/phonehub/pref_names.h"
 #include "chromeos/components/phonehub/util/histogram_util.h"
+#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -40,18 +41,28 @@ MultideviceSetupStateUpdater::~MultideviceSetupStateUpdater() {
 }
 
 void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
-  if (notification_access_manager_->GetAccessStatus() ==
-      NotificationAccessManager::AccessStatus::kAccessGranted) {
-    return;
+  switch (notification_access_manager_->GetAccessStatus()) {
+    case NotificationAccessManager::AccessStatus::kAccessGranted:
+      if (IsWaitingForAccessToInitiallyEnableNotifications()) {
+        PA_LOG(INFO) << "Enabling PhoneHubNotifications for the first time now "
+                     << "that access has been granted by the phone.";
+        multidevice_setup_client_->SetFeatureEnabledState(
+            Feature::kPhoneHubNotifications, /*enabled=*/true,
+            /*auth_token=*/base::nullopt, base::DoNothing());
+      }
+      break;
+
+    case NotificationAccessManager::AccessStatus::kAvailableButNotGranted:
+      FALLTHROUGH;
+    case NotificationAccessManager::AccessStatus::kProhibited:
+      // Disable kPhoneHubNotifications if notification access has been revoked
+      // by the phone.
+      PA_LOG(INFO) << "Disabling PhoneHubNotifications feature.";
+      multidevice_setup_client_->SetFeatureEnabledState(
+          Feature::kPhoneHubNotifications, /*enabled=*/false,
+          /*auth_token=*/base::nullopt, base::DoNothing());
+      break;
   }
-
-  PA_LOG(INFO) << "Disabling PhoneHubNotifications feature.";
-
-  // Disable kPhoneHubNotifications if notification access has been revoked by
-  // the phone.
-  multidevice_setup_client_->SetFeatureEnabledState(
-      Feature::kPhoneHubNotifications, /*enabled=*/false,
-      /*auth_token=*/base::nullopt, base::DoNothing());
 }
 
 void MultideviceSetupStateUpdater::OnHostStatusChanged(
@@ -64,6 +75,20 @@ void MultideviceSetupStateUpdater::OnFeatureStatesChanged(
     const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
         feature_state_map) {
   EnablePhoneHubIfAwaitingVerifiedHost();
+}
+
+bool MultideviceSetupStateUpdater::
+    IsWaitingForAccessToInitiallyEnableNotifications() const {
+  // If the Phone Hub notifications feature has never been explicitly set, we
+  // should enable it after
+  //   1. the top-level Phone Hub feature is enabled, and
+  //   2. the phone has granted access.
+  // We do *not* want disrupt the feature state if it was already explicitly set
+  // by the user.
+  return multidevice_setup::IsDefaultFeatureEnabledValue(
+             Feature::kPhoneHubNotifications, pref_service_) &&
+         multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
+             FeatureState::kEnabledByUser;
 }
 
 void MultideviceSetupStateUpdater::EnablePhoneHubIfAwaitingVerifiedHost() {

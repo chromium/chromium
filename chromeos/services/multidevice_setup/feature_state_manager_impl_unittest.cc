@@ -570,8 +570,8 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest,
                        phone_hub_feature);
   }
 
-  // This pref should is disabled for existing Better Together users;
-  // they must go to settings to explicitly enable PhoneHub.
+  // This pref is disabled for existing Better Together users; they must go to
+  // settings to explicitly enable PhoneHub.
   test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubHost,
@@ -717,9 +717,12 @@ TEST_F(MultiDeviceSetupFeatureStateManagerImplTest, PhoneHub) {
   VerifyFeatureStateChange(1u /* expected_index */, mojom::Feature::kPhoneHub,
                            mojom::FeatureState::kNotSupportedByPhone);
 
-  // This pref should is disabled for existing Better Together users;
-  // they must go to settings to explicitly enable PhoneHub.
+  // The top-level Phone Hub enabled pref is disabled for existing Better
+  // Together users; they must go to settings to explicitly enable PhoneHub.
+  // Likewise, the Phone Hub notifications enabled pref is disabled by default
+  // to ensure the phone grants access.
   test_pref_service()->SetBoolean(kPhoneHubEnabledPrefName, true);
+  test_pref_service()->SetBoolean(kPhoneHubNotificationsEnabledPrefName, true);
   SetSoftwareFeatureState(false /* use_local_device */,
                           multidevice::SoftwareFeature::kPhoneHubHost,
                           multidevice::SoftwareFeatureState::kEnabled);
