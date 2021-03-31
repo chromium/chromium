@@ -13,6 +13,7 @@
 // #import {AsyncUtil} from '../../common/js/async_util.m.js';
 // #import {volumeManagerFactory} from './volume_manager_factory.m.js';
 // #import {FileOperationProgressEvent, FileOperationError} from '../../common/js/file_operation_common.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
 // #import {Trash} from './trash.m.js';
 
 // #import {util} from '../../common/js/util.m.js';
@@ -310,7 +311,7 @@
     if (this.pendingCopyTasks_.length === 0 &&
         Object.keys(this.runningCopyTasks_).length === 0) {
       // All tasks have been serviced, clean up and exit.
-      chrome.power.releaseKeepAwake();
+      xfm.power.releaseKeepAwake();
       return;
     }
 
@@ -323,7 +324,7 @@
     }
 
     // Prevent the system from sleeping while copy is in progress.
-    chrome.power.requestKeepAwake('system');
+    xfm.power.requestKeepAwake('system');
 
     // Find next task which can run at now.
     let nextTask = null;

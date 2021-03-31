@@ -609,6 +609,7 @@ js_library("file_operation_manager") {
     ":trash",
     ":volume_manager_factory",
     "//ui/file_manager/file_manager/common/js:file_operation_common",
+    "//ui/file_manager/file_manager/common/js:xfm",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js/cr:event_target",
   ]
@@ -626,6 +627,7 @@ js_library("file_operation_manager.m") {
     "//ui/file_manager/file_manager/common/js:file_operation_common.m",
     "//ui/file_manager/file_manager/common/js:trash.m",
     "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:xfm.m",
     "//ui/file_manager/file_manager/externs:entry_location.m",
     "//ui/file_manager/file_manager/externs:files_app_entry_interfaces.m",
     "//ui/file_manager/file_manager/externs:volume_manager.m",
@@ -794,6 +796,7 @@ js_library("media_import_handler") {
     ":task_queue",
     "//ui/file_manager/file_manager/common/js:importer_common",
     "//ui/file_manager/file_manager/common/js:metrics",
+    "//ui/file_manager/file_manager/common/js:xfm",
   ]
   externs_list = [
     "//ui/file_manager/file_manager/externs/background/duplicate_finder.js",
@@ -812,6 +815,7 @@ js_library("media_import_handler.m") {
     "//ui/file_manager/file_manager/common/js:metrics.m",
     "//ui/file_manager/file_manager/common/js:progress_center_common.m",
     "//ui/file_manager/file_manager/common/js:util.m",
+    "//ui/file_manager/file_manager/common/js:xfm.m",
     "//ui/file_manager/file_manager/externs/background:drive_sync_handler.m",
     "//ui/file_manager/file_manager/externs/background:duplicate_finder.m",
     "//ui/file_manager/file_manager/externs/background:import_history.m",

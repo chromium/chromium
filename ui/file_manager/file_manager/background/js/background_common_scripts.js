@@ -14,6 +14,7 @@
 // <include src="../../common/js/file_type.js">
 // <include src="../../common/js/metrics_base.js">
 // <include src="../../common/js/files_app_entry_types.js">
+// <include src="../../common/js/power.js">
 // <include src="../../common/js/storage_adapter.js">
 // <include src="../../common/js/xfm.js">
 // <include src="../../../file_manager/common/js/app_util.js">

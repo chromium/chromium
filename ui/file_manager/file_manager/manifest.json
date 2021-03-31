@@ -154,6 +154,7 @@
     "common/js/metrics.m.js",
     "common/js/metrics_base.m.js",
     "common/js/mock_chrome.m.js",
+    "common/js/power.m.js",
     "common/js/storage_adapter.m.js",
     "common/js/test_error_reporting.m.js",
     "common/js/util.m.js",

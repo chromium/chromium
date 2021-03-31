@@ -85,6 +85,7 @@
 // <include src="../../../file_manager/common/js/volume_manager_types.js">
 // <include src="../../../file_manager/common/js/app_util.js">
 // <include src="../../common/js/util.js">
+// <include src="../../common/js/power.js">
 // <include src="../../common/js/progress_center_common.js">
 // <include src="../../common/js/storage_adapter.js">
 // <include src="../../common/js/importer_common.js">

@@ -39,6 +39,7 @@ js_type_check("closure_compile_module") {
     ":metrics",
     ":metrics_base",
     ":mock_entry",
+    ":power",
     ":progress_center_common",
     ":storage_adapter",
     ":trash",
@@ -62,6 +63,7 @@ js_type_check("closure_compile_jsmodules") {
     ":metrics.m",
     ":metrics_base.m",
     ":mock_entry.m",
+    ":power.m",
     ":progress_center_common.m",
     ":storage_adapter.m",
     ":trash.m",
@@ -416,6 +418,16 @@ js_library("progress_center_common.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("power") {
+}
+
+js_library("power.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/file_manager/common/js/power.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("storage_adapter") {
 }
 
@@ -444,12 +456,18 @@ js_library("test_error_reporting.m") {
 }
 
 js_library("xfm") {
-  deps = [ ":storage_adapter" ]
+  deps = [
+    ":power",
+    ":storage_adapter",
+  ]
 }
 
 js_library("xfm.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/common/js/xfm.m.js" ]
-  deps = [ ":storage_adapter.m" ]
+  deps = [
+    ":power.m",
+    ":storage_adapter.m",
+  ]
 
   extra_deps = [ ":modulize" ]
 }
@@ -619,6 +637,7 @@ js_modulizer("modulize") {
     "metrics_base.js",
     "mock_chrome.js",
     "mock_entry.js",
+    "power.js",
     "progress_center_common.js",
     "storage_adapter.js",
     "test_error_reporting.js",

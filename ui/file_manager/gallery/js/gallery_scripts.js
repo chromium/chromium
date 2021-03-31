@@ -13,6 +13,7 @@
 // <include src="../../file_manager/foreground/js/metrics_start.js">
 
 // <include src="../../file_manager/common/js/lru_cache.js">
+// <include src="../../file_manager/common/js/power.js">
 // <include src="../../file_manager/common/js/storage_adapter.js">
 // <include src="../../file_manager/common/js/xfm.js">
 // <include src="../../image_loader/load_image_request.js">

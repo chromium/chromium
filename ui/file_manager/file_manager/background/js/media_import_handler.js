@@ -10,6 +10,7 @@
 // #import {fileOperationUtil} from './file_operation_util.m.js';
 // #import {taskQueue} from './task_queue.m.js';
 // #import {metrics} from '../../common/js/metrics.m.js';
+// #import {xfm} from '../../common/js/xfm.m.js';
 
 // #import {importer} from '../../common/js/importer_common.m.js';
 // #import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.m.js';
@@ -52,10 +53,10 @@ mediaImport.MediaImportHandlerImpl = class {
 
     // Prevent the system from sleeping while imports are active.
     this.queue_.setActiveCallback(() => {
-      chrome.power.requestKeepAwake('system');
+      xfm.power.requestKeepAwake('system');
     });
     this.queue_.setIdleCallback(() => {
-      chrome.power.releaseKeepAwake();
+      xfm.power.releaseKeepAwake();
     });
 
     /** @private {number} */
