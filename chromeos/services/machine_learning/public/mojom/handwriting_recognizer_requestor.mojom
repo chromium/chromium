@@ -16,7 +16,6 @@ import "chromeos/services/machine_learning/public/mojom/model.mojom";
 // crbug/916760, we should look at removing this interface and any client uses
 // of it.
 // Next ordinal: 2
-[Stable]
 interface HandwritingRecognizerRequestor {
   // Load a gesture based handwriting recognizer, and connect it to the
   // given pending receiver.
