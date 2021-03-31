@@ -78,7 +78,7 @@ extern const char kTabHoverCardImagesLoadedDelayParameterName[];
 
 extern const base::Feature kTabOutlinesInLowContrastThemes;
 
-extern const base::Feature kTabSearch;
+extern const base::Feature kTabSearchFuzzySearch;
 
 extern const base::Feature kTabSearchFeedback;
 

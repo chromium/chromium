@@ -133,35 +133,29 @@ const char kTabHoverCardImagesLoadedDelayParameterName[] = "page_loaded_delay";
 const base::Feature kTabOutlinesInLowContrastThemes{
     "TabOutlinesInLowContrastThemes", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables searching tabs across multiple windows. This feature launch is
-// staggered to release to ChromeOS first and other platforms later. Tab Search
-// is enabled by default on ChromeOS following its launch on the platform.
-// TODO(crbug.com/1137558): Remove this after launch to the remaining desktop
-// platforms.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const base::Feature kTabSearch{"TabSearch", base::FEATURE_ENABLED_BY_DEFAULT};
-#else
-const base::Feature kTabSearch{"TabSearch", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+// Controls whether or not feature parameters should be used for Tab Search's
+// fuzzy search or if default values should be used.
+const base::Feature kTabSearchFuzzySearch{"kTabSearchFuzzySearch",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the tab search submit feedback button.
 const base::Feature kTabSearchFeedback{"TabSearchFeedback",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
-    &kTabSearch, "TabSearchSearchIgnoreLocation", true};
+    &kTabSearchFuzzySearch, "TabSearchSearchIgnoreLocation", true};
 
 const base::FeatureParam<int> kTabSearchSearchDistance{
-    &kTabSearch, "TabSearchSearchDistance", 200};
+    &kTabSearchFuzzySearch, "TabSearchSearchDistance", 200};
 
 const base::FeatureParam<double> kTabSearchSearchThreshold{
-    &kTabSearch, "TabSearchSearchThreshold", 0.0};
+    &kTabSearchFuzzySearch, "TabSearchSearchThreshold", 0.0};
 
 const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio{
-    &kTabSearch, "TabSearchTitleToHostnameWeightRatio", 2.0};
+    &kTabSearchFuzzySearch, "TabSearchTitleToHostnameWeightRatio", 2.0};
 
 const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom{
-    &kTabSearch, "TabSearchMoveActiveTabToBottom", true};
+    &kTabSearchFuzzySearch, "TabSearchMoveActiveTabToBottom", true};
 
 const base::Feature kToolbarUseHardwareBitmapDraw{
     "ToolbarUseHardwareBitmapDraw", base::FEATURE_DISABLED_BY_DEFAULT};

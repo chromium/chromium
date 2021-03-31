@@ -33,7 +33,6 @@ namespace {
 enum class ChromeLabsSelectedLab {
   kUnspecifiedSelected = 0,
   kReadLaterSelected = 1,
-  kTabSearchSelected = 2,
   kTabScrollingSelected = 3,
   kMaxValue = kTabScrollingSelected,
 };
@@ -60,8 +59,6 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
   const auto get_enum = [](const std::string& internal_name) {
     if (internal_name == flag_descriptions::kReadLaterFlagId) {
       return ChromeLabsSelectedLab::kReadLaterSelected;
-    } else if (internal_name == flag_descriptions::kEnableTabSearchFlagId) {
-      return ChromeLabsSelectedLab::kTabSearchSelected;
     } else if (internal_name == flag_descriptions::kScrollableTabStripFlagId) {
       return ChromeLabsSelectedLab::kTabScrollingSelected;
     } else {

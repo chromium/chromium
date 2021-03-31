@@ -4,12 +4,10 @@
 
 #include <string>
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/webui_url_constants.h"
@@ -19,11 +17,6 @@
 
 class TabSearchUIBrowserTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kTabSearch);
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     AppendTab(chrome::kChromeUISettingsURL);
     AppendTab(chrome::kChromeUIHistoryURL);
@@ -58,9 +51,6 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<content::WebContents> webui_contents_;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // TODO(romanarora): Investigate a way to call WebUI custom methods and refactor

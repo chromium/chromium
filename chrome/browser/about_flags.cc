@@ -6742,11 +6742,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContentSettingsRedesignDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kContentSettingsRedesign)},
 
-    {flag_descriptions::kEnableTabSearchFlagId,
-     flag_descriptions::kEnableTabSearchName,
-     flag_descriptions::kEnableTabSearchDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kTabSearch)},
-
 #if defined(OS_ANDROID)
     {"cpu-affinity-restrict-to-little-cores",
      flag_descriptions::kCpuAffinityRestrictToLittleCoresName,

@@ -1067,12 +1067,6 @@ const char kEnableRestrictedWebApisDescription[] =
     "Enable the restricted web APIs for dev trial. This will be replaced with "
     "permission policies to control the capabilities afterwards.";
 
-const char kEnableTabSearchFlagId[] = "enable-tab-search";
-const char kEnableTabSearchName[] = "Enable Tab Search";
-const char kEnableTabSearchDescription[] =
-    "Enable the Tab Search feature in Top Chrome UI, which will show a popup "
-    "bubble that allows users to search over their currently open tabs.";
-
 const char kEnableUseZoomForDsfName[] =
     "Use Blink's zoom for device scale factor.";
 const char kEnableUseZoomForDsfDescription[] =

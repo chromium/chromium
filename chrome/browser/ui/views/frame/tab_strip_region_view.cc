@@ -260,8 +260,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
   tip_marquee_view_->SetProperty(views::kMarginsKey, control_padding);
 
   const Browser* browser = tab_strip_->controller()->GetBrowser();
-  if (base::FeatureList::IsEnabled(features::kTabSearch) && browser &&
-      browser->is_type_normal()) {
+  if (browser && browser->is_type_normal()) {
     auto tab_search_button = std::make_unique<TabSearchButton>(tab_strip_);
     tab_search_button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_SEARCH));

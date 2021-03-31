@@ -56,13 +56,6 @@ const std::vector<LabInfo>& GetData() {
         "chrome-labs-tab-scrolling", version_info::Channel::BETA,
         tab_scrolling_variation_descriptions));
 
-    // Tab Search.
-    lab_info.emplace_back(LabInfo(
-        flag_descriptions::kEnableTabSearchFlagId,
-        l10n_util::GetStringUTF16(IDS_TAB_SEARCH_EXPERIMENT_NAME),
-        l10n_util::GetStringUTF16(IDS_TAB_SEARCH_EXPERIMENT_DESCRIPTION),
-        "chrome-labs-tab-search", version_info::Channel::BETA));
-
     return lab_info;
   }());
 

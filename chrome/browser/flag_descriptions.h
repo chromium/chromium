@@ -624,10 +624,6 @@ extern const char kEnableRestrictedWebApisDescription[];
 extern const char kEnableSubresourceRedirectName[];
 extern const char kEnableSubresourceRedirectDescription[];
 
-extern const char kEnableTabSearchFlagId[];
-extern const char kEnableTabSearchName[];
-extern const char kEnableTabSearchDescription[];
-
 extern const char kEnableUseZoomForDsfName[];
 extern const char kEnableUseZoomForDsfDescription[];
 extern const char kEnableUseZoomForDsfChoiceDefault[];

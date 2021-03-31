@@ -4,7 +4,6 @@
 
 #include <stddef.h>
 
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -12,7 +11,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -503,34 +501,9 @@ TEST_F(BrowserCommandsTest, ToggleCaretBrowsing) {
   }
 }
 
-class TabSearchCommandTest : public BrowserCommandsTest,
-                             public ::testing::WithParamInterface<bool> {
- public:
-  void SetUp() override {
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeatures({features::kTabSearch}, {});
-    } else {
-      scoped_feature_list_.InitWithFeatures({}, {features::kTabSearch});
-    }
-    BrowserCommandsTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_P(TabSearchCommandTest, TabSearchCommandStatus) {
-  if (base::FeatureList::IsEnabled(features::kTabSearch)) {
-    EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_TAB_SEARCH));
-    EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_TAB_SEARCH_CLOSE));
-  } else {
-    EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_TAB_SEARCH));
-    EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_TAB_SEARCH_CLOSE));
-  }
+TEST_F(BrowserCommandsTest, TabSearchCommandStatus) {
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_TAB_SEARCH));
+  EXPECT_TRUE(chrome::IsCommandEnabled(browser(), IDC_TAB_SEARCH_CLOSE));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         TabSearchCommandTest,
-                         ::testing::Values(true, false));
 
 }  // namespace

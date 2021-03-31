@@ -173,9 +173,9 @@ const std::vector<KeyboardShortcutData>& GetShortcutsNotPresentInMainMenu() {
     {true,  false, false, true,  kVK_DownArrow,         IDC_FOCUS_NEXT_PANE},
     {true,  false, false, true,  kVK_UpArrow,           IDC_FOCUS_PREVIOUS_PANE},
   });
-  if (base::FeatureList::IsEnabled(features::kTabSearch)) {
-    keys->push_back({true,  true,  false, false, kVK_ANSI_A, IDC_TAB_SEARCH});
-  }
+
+  keys->push_back({true,  true,  false, false, kVK_ANSI_A, IDC_TAB_SEARCH});
+
   if (base::FeatureList::IsEnabled(features::kUIDebugTools)) {
     keys->push_back({false, true, true, true, kVK_ANSI_T,
                      IDC_DEBUG_TOGGLE_TABLET_MODE});

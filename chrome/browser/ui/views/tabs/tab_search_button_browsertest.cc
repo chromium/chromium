@@ -6,14 +6,12 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -33,12 +31,6 @@ ui::MouseEvent GetDummyEvent() {
 
 class TabSearchButtonBrowserTest : public InProcessBrowserTest {
  public:
-  // InProcessBrowserTest:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kTabSearch);
-    InProcessBrowserTest::SetUp();
-  }
-
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());
   }
@@ -59,9 +51,6 @@ class TabSearchButtonBrowserTest : public InProcessBrowserTest {
     run_loop.Run();
     ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest, ButtonClickCreatesBubble) {
@@ -117,10 +106,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchButtonBrowserTest,
 class TabSearchButtonBrowserUITest : public DialogBrowserTest {
  public:
   // DialogBrowserTest:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kTabSearch);
-    DialogBrowserTest::SetUp();
-  }
   void ShowUi(const std::string& name) override {
     AppendTab(chrome::kChromeUISettingsURL);
     AppendTab(chrome::kChromeUIHistoryURL);
@@ -133,9 +118,6 @@ class TabSearchButtonBrowserUITest : public DialogBrowserTest {
   void AppendTab(std::string url) {
     chrome::AddTabAt(browser(), GURL(url), -1, true);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Invokes a tab search bubble.
