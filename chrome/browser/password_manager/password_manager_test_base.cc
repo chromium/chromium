@@ -144,6 +144,8 @@ void CustomManagePasswordsUIController::WaitForState(
     return;
 
   base::RunLoop run_loop;
+  VLOG(0) << "WaitForState target_state=" << target_state
+          << ", current state=" << GetState();
   target_state_ = target_state;
   run_loop_ = &run_loop;
   run_loop_->Run();
@@ -183,6 +185,7 @@ void CustomManagePasswordsUIController::OnPasswordSubmitted(
     std::unique_ptr<password_manager::PasswordFormManagerForUI> form_manager) {
   ManagePasswordsUIController::OnPasswordSubmitted(std::move(form_manager));
   was_prompt_automatically_shown_ = IsShowingBubbleForTest();
+  VLOG(0) << "OnPasswordSubmitted";
   ProcessStateExpectations(password_manager::ui::PENDING_PASSWORD_STATE);
 }
 
@@ -256,6 +259,11 @@ bool CustomManagePasswordsUIController::IsTargetStateObserved(
   // This function should not be used for manual fallback expectations.
   DCHECK(!wait_for_fallback_);
 
+  VLOG(0) << "IsTargetStateObserved target=" << target_state
+          << ", current_state=" << current_state
+          << ", was_prompt_automatically_shown_="
+          << was_prompt_automatically_shown_;
+
   bool should_wait_for_automatic_prompt =
       target_state == password_manager::ui::PENDING_PASSWORD_STATE ||
       target_state == password_manager::ui::PENDING_PASSWORD_UPDATE_STATE;
@@ -265,14 +273,17 @@ bool CustomManagePasswordsUIController::IsTargetStateObserved(
 
 void CustomManagePasswordsUIController::ProcessStateExpectations(
     const password_manager::ui::State current_state) {
-  if (!target_state_)
+  if (!target_state_) {
+    VLOG(0) << "No target state";
     return;
+  }
 
   if (IsTargetStateObserved(*target_state_, current_state))
     QuitRunLoop();
 }
 
 void CustomManagePasswordsUIController::QuitRunLoop() {
+  VLOG(0) << "QuitRunLoop";
   run_loop_->Quit();
   run_loop_ = nullptr;
   wait_for_fallback_ = false;
