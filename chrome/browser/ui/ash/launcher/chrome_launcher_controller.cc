@@ -1300,6 +1300,9 @@ void ChromeLauncherController::CreateBrowserShortcutLauncherItem() {
   browser_shortcut.id = ash::ShelfID(kChromeAppId);
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   browser_shortcut.image = *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192);
+  browser_shortcut.notification_badge_color =
+      CalculateNotificationBadgeColorForApp(kChromeAppId,
+                                            browser_shortcut.image);
   browser_shortcut.title = l10n_util::GetStringUTF16(IDS_PRODUCT_NAME);
   // Set the delegate first to avoid constructing another one in ShelfItemAdded.
   model_->SetShelfItemDelegate(
