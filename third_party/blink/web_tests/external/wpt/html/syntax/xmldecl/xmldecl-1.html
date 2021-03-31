@@ -1,0 +1,80 @@
+<!doctype html>
+<meta charset="windows-1252">
+<title>Bogo-XML declaration</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script>
+setup({explicit_done:true});
+window.onload = function() {
+    let divs = document.getElementsByTagName("div");
+    for (let i = 0; i < divs.length; ++i) {
+        let div = divs[i];
+        let expectation = div.className;
+        let iframes = div.getElementsByTagName("iframe");
+        for (let j = 0; j < iframes.length; ++j) {
+            let iframe = iframes[j];
+            let src = iframe.src;
+            let doc = iframe.contentWindow.document;
+            test(function() {
+                assert_equals(doc.characterSet, expectation, 'Check');
+                if (expectation == "windows-1251" || expectation == "windows-1252" && !(src.endsWith("/XML.htm") || src.endsWith("/XML-trail.htm"))) {
+                    let fc = doc.firstChild;
+                    assert_equals(fc.nodeType, Node.COMMENT_NODE, 'Should have comment node');
+                    assert_true(fc.nodeValue.startsWith("?xml"), 'Should start with ?xml');
+                } else if (expectation == "UTF-16BE" || expectation == "UTF-16BE") {
+                    let fc = doc.firstChild;
+                    assert_equals(fc.nodeType, Node.COMMENT_NODE, 'Should have comment node');
+                    assert_true(fc.nodeValue.startsWith("?x"), 'Should start with ?x');
+                }
+            }, "Check encoding " + expectation + ", " + src.substring(src.lastIndexOf("/") + 1));
+        }
+    }
+    done();
+};
+</script>
+
+<section style="display: none;">
+<div class="windows-1251">
+<iframe src="support/baseline.htm"></iframe>
+<iframe src="support/cp1251.htm"></iframe>
+<iframe src="support/kilobyte-after.htm"></iframe>
+<iframe src="support/kilobyte-before.htm"></iframe>
+<iframe src="support/letter-between-xml-and-encoding.htm"></iframe>
+<iframe src="support/lt-between-xml-and-encoding.htm"></iframe>
+<iframe src="support/meta-inside-xml-charset-before-encoding.htm"></iframe>
+<iframe src="support/meta-inside-xml-encoding-before-charset.htm"></iframe>
+<iframe src="support/no-version.htm"></iframe>
+<iframe src="support/no-version-or-space.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-body.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-body-single-quotes.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-and-line-breaks-around-equals.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-around-equals.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-lt.htm"></iframe>
+<iframe src="support/one-around-equals.htm"></iframe>
+<iframe src="support/VERSION.htm"></iframe>
+<iframe src="support/WINDOWS.htm"></iframe>
+<iframe src="support/zero-around-equals.htm"></iframe>
+<iframe src="support/baseline-trail.htm"></iframe>
+<iframe src="support/cp1251-trail.htm"></iframe>
+<iframe src="support/kilobyte-after-trail.htm"></iframe>
+<iframe src="support/kilobyte-before-trail.htm"></iframe>
+<iframe src="support/letter-between-xml-and-encoding-trail.htm"></iframe>
+<iframe src="support/lt-between-xml-and-encoding-trail.htm"></iframe>
+<iframe src="support/meta-inside-xml-charset-before-encoding-trail.htm"></iframe>
+<iframe src="support/meta-inside-xml-encoding-before-charset-trail.htm"></iframe>
+<iframe src="support/no-version-trail.htm"></iframe>
+<iframe src="support/no-version-or-space-trail.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trail.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-body-trail.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-trail.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-and-line-breaks-around-equals-trail.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-around-equals-trail.htm"></iframe>
+<iframe src="support/no-version-or-space-or-trailing-question-trailing-lt-trail.htm"></iframe>
+<iframe src="support/one-around-equals-trail.htm"></iframe>
+<iframe src="support/VERSION-trail.htm"></iframe>
+<iframe src="support/WINDOWS-trail.htm"></iframe>
+<iframe src="support/zero-around-equals-trail.htm"></iframe>
+<iframe src="support/trickle.py"></iframe>
+</div>
+</section>

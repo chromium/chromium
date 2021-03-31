@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 321 tests; 313 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 322 tests; 314 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Origin parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -263,8 +263,8 @@ PASS Origin parsing: <wow:%NBD> against <about:blank>
 PASS Origin parsing: <wow:%1G> against <about:blank>
 PASS Origin parsing: <wow:￿> against <about:blank>
 FAIL Origin parsing: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> Failed to construct 'URL': Invalid URL
-FAIL Origin parsing: <http://!"$&'()*+,-.;=_`{|}~/> against <about:blank> Failed to construct 'URL': Invalid URL
-PASS Origin parsing: <sc://!"$&'()*+,-.;=_`{|}~/> against <about:blank>
+FAIL Origin parsing: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank> Failed to construct 'URL': Invalid URL
+PASS Origin parsing: <sc://!"$&'()*+,-.;=_`{}~/> against <about:blank>
 PASS Origin parsing: <ftp://%e2%98%83> against <about:blank>
 PASS Origin parsing: <https://%e2%98%83> against <about:blank>
 PASS Origin parsing: <http://127.0.0.1:10100/relative_import.html> against <about:blank>
@@ -297,6 +297,7 @@ PASS Origin parsing: <http://4294967295> against <http://other.com/>
 PASS Origin parsing: <http://0xffffffff> against <http://other.com/>
 PASS Origin parsing: <http://256.256.256.256.256> against <http://other.com/>
 PASS Origin parsing: <https://0x.0x.0> against <about:blank>
+PASS Origin parsing: <asdf://%43%7C/> against <about:blank>
 PASS Origin parsing: <http://[1:0::]> against <http://example.net/>
 PASS Origin parsing: <sc://ñ> against <about:blank>
 PASS Origin parsing: <sc://ñ?x> against <about:blank>

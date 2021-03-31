@@ -33,4 +33,3 @@ async def test_bidi_session_with_different_capability(bidi_session):
 @pytest.mark.asyncio
 def test_classic_after_bidi_session(session):
     assert not isinstance(session, webdriver.BidiSession)
-

@@ -68,20 +68,20 @@ onload = t.step_func_done(function() {
   assert_ratio(images[6], 133/106, "The original aspect ratio of blue.png");
 });
 
-test(function() {
-  test_computed_style("10", "20", "auto 10 / 20");
-  test_computed_style("0", "1", "auto 0 / 1");
-  test_computed_style("1", "0", "auto 1 / 0");
-  test_computed_style("0", "0", "auto 0 / 0");
-  test_computed_style("0.5", "1.5", "auto 0.5 / 1.5");
-}, "Computed style");
+test_computed_style("10", "20", "auto 10 / 20");
+// These are invalid per spec, but see
+// https://github.com/whatwg/html/issues/4961
+test_computed_style("0", "1", "auto 0 / 1");
+test_computed_style("1", "0", "auto 1 / 0");
+test_computed_style("0", "0", "auto 0 / 0");
+// https://html.spec.whatwg.org/#map-to-the-aspect-ratio-property
+// https://html.spec.whatwg.org/#rules-for-parsing-non-zero-dimension-values
+test_computed_style("0.5", "1.5", "auto 0.5 / 1.5");
 
-test(function() {
-  test_computed_style(null, null, "auto");
-  test_computed_style("10", null, "auto");
-  test_computed_style(null, "20", "auto");
-  test_computed_style("xx", "20", "auto");
-  test_computed_style("10%", "20", "auto");
-}, "Computed style for invalid ratios");
+test_computed_style(null, null, "auto");
+test_computed_style("10", null, "auto");
+test_computed_style(null, "20", "auto");
+test_computed_style("xx", "20", "auto");
+test_computed_style("10%", "20", "auto");
 
 </script>

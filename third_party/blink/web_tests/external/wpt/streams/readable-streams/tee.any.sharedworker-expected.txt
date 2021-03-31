@@ -14,6 +14,8 @@ PASS ReadableStream teeing: closing the original should immediately close the br
 PASS ReadableStream teeing: erroring the original should immediately error the branches
 PASS ReadableStream teeing: canceling branch1 should finish when branch2 reads until end of stream
 PASS ReadableStream teeing: canceling branch1 should finish when original stream errors
+PASS ReadableStream teeing: canceling both branches in sequence with delay
+PASS ReadableStream teeing: failing to cancel when canceling both branches in sequence with delay
 PASS ReadableStreamTee should not use a modified ReadableStream constructor from the global object
 FAIL ReadableStreamTee should not pull more chunks than can fit in the branch queue assert_array_equals: pull should only be called once lengths differ, expected array ["pull"] length 1, got ["pull", "pull"] length 2
 PASS ReadableStreamTee should only pull enough to fill the emptiest queue

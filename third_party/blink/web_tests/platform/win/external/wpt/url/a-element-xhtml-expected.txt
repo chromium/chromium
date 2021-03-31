@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 588 tests; 345 PASS, 243 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 596 tests; 345 PASS, 251 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -367,8 +367,8 @@ FAIL Parsing: <http://a^b> against <about:blank> assert_equals: failure should s
 FAIL Parsing: <non-special://a<b> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <non-special://a>b> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
 FAIL Parsing: <non-special://a^b> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
-FAIL Parsing: <http://!"$&'()*+,-.;=_`{|}~/> against <about:blank> assert_equals: href expected "http://\x1f!\"$&'()*+,-.;=_`{|}~/" but got "http://%1F%21%22%24%26%27%28%29%2A+%2C-.%3B%3D_%60%7B%7C%7D%7E/"
-FAIL Parsing: <sc://!"$&'()*+,-.;=_`{|}~/> against <about:blank> assert_equals: host expected "%1F!\"$&'()*+,-.;=_`{|}~" but got ""
+FAIL Parsing: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: href expected "http://\x1f!\"$&'()*+,-.;=_`{}~/" but got "http://%1F%21%22%24%26%27%28%29%2A+%2C-.%3B%3D_%60%7B%7D%7E/"
+FAIL Parsing: <sc://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: host expected "%1F!\"$&'()*+,-.;=_`{}~" but got ""
 FAIL Parsing: <ftp://example.com%80/> against <about:blank> assert_equals: failure should set href to input expected "ftp://example.com%80/" but got "ftp://example.com%EF%BF%BD/"
 FAIL Parsing: <ftp://example.com%A0/> against <about:blank> assert_equals: failure should set href to input expected "ftp://example.com%A0/" but got "ftp://example.com%EF%BF%BD/"
 FAIL Parsing: <https://example.com%80/> against <about:blank> assert_equals: failure should set href to input expected "https://example.com%80/" but got "https://example.com%EF%BF%BD/"
@@ -414,6 +414,14 @@ PASS Parsing: <https://0x100000000/test> against <about:blank>
 PASS Parsing: <https://256.0.0.1/test> against <about:blank>
 PASS Parsing: <file:///C%3A/> against <about:blank>
 PASS Parsing: <file:///C%7C/> against <about:blank>
+FAIL Parsing: <file://%43%3A> against <about:blank> assert_equals: failure should set href to input expected "file://%43%3A" but got "file://c:/"
+FAIL Parsing: <file://%43%7C> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <file://%43|> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <file://C%7C> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <file://%43%7C/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <https://%43%7C/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <asdf://%43|/> against <about:blank> assert_unreached: Expected URL to fail parsing Reached unreachable code
+FAIL Parsing: <asdf://%43%7C/> against <about:blank> assert_equals: host expected "%43%7C" but got ""
 PASS Parsing: <pix/submit.gif> against <file:///C:/Users/Domenic/Dropbox/GitHub/tmpvar/jsdom/test/level2/html/files/anchor.html>
 PASS Parsing: <..> against <file:///C:/>
 PASS Parsing: <..> against <file:///>

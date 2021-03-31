@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+PASS ReadableStream teeing: rs.tee() returns an array of two ReadableStreams
+PASS ReadableStream teeing: should be able to read one branch to the end without affecting the other
+PASS ReadableStream teeing: values should be equal across each branch
+PASS ReadableStream teeing: errors in the source should propagate to both branches
+PASS ReadableStream teeing: canceling branch1 should not impact branch2
+PASS ReadableStream teeing: canceling branch2 should not impact branch1
+PASS ReadableStream teeing: canceling both branches should aggregate the cancel reasons into an array
+PASS ReadableStream teeing: canceling both branches in reverse order should aggregate the cancel reasons into an array
+PASS ReadableStream teeing: failing to cancel the original stream should cause cancel() to reject on branches
+PASS ReadableStream teeing: erroring a teed stream should properly handle canceled branches
+PASS ReadableStream teeing: erroring a teed stream should error both branches
+PASS ReadableStream teeing: closing the original should immediately close the branches
+PASS ReadableStream teeing: erroring the original should immediately error the branches
+PASS ReadableStream teeing: canceling branch1 should finish when branch2 reads until end of stream
+PASS ReadableStream teeing: canceling branch1 should finish when original stream errors
+PASS ReadableStreamTee should not use a modified ReadableStream constructor from the global object
+FAIL ReadableStreamTee should not pull more chunks than can fit in the branch queue assert_array_equals: pull should only be called once lengths differ, expected array ["pull"] length 1, got ["pull", "pull"] length 2
+PASS ReadableStreamTee should only pull enough to fill the emptiest queue
+PASS ReadableStreamTee should not pull when original is already errored
+FAIL ReadableStreamTee stops pulling when original stream errors while branch 1 is reading assert_array_equals: pull should be called once lengths differ, expected array ["pull"] length 1, got ["pull", "pull"] length 2
+FAIL ReadableStreamTee stops pulling when original stream errors while branch 2 is reading assert_array_equals: pull should be called once lengths differ, expected array ["pull"] length 1, got ["pull", "pull"] length 2
+FAIL ReadableStreamTee stops pulling when original stream errors while both branches are reading assert_array_equals: pull should be called once lengths differ, expected array ["pull"] length 1, got ["pull", "pull"] length 2
+Harness: the test ran to completion.
+

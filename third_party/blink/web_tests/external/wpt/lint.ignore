@@ -13,6 +13,8 @@ INDENT TABS: encoding/legacy*/*
 TRAILING WHITESPACE: html/canvas/tools/current-work-canvas.xhtml
 TRAILING WHITESPACE: conformance-checkers/*
 TRAILING WHITESPACE: WebIDL/valid/*
+TRAILING WHITESPACE: html/syntax/xmldecl/support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-and-line-breaks-around-equals.htm
+TRAILING WHITESPACE: html/syntax/xmldecl/support/no-version-or-space-or-trailing-question-trailing-body-single-quotes-spaces-and-line-breaks-around-equals-trail.htm
 
 ## File types that should never be checked ##
 
@@ -748,6 +750,10 @@ AHEM SYSTEM FONT: resource-timing/resources/all_resource_types.htm
 AHEM SYSTEM FONT: resource-timing/resources/iframe-reload-TAO.sub.html
 AHEM SYSTEM FONT: html/canvas/element/drawing-text-to-the-canvas/2d.text.measure.fontBoundingBox.ahem.html
 AHEM SYSTEM FONT: css/css-font-loading/fontface-override-descriptors.html
+AHEM SYSTEM FONT: css/css-font-loading/fontface-size-adjust-descriptor.html
+AHEM SYSTEM FONT: css/css-font-loading/fontface-size-adjust-descriptor-ref.html
+AHEM SYSTEM FONT: css/css-fonts/ascent-descent-override.html
+AHEM SYSTEM FONT: css/css-fonts/line-gap-override.html
 
 # TODO: The following should be deleted along with the Ahem web font cleanup
 # PR (https://github.com/web-platform-tests/wpt/pull/18702)

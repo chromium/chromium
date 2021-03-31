@@ -1,0 +1,383 @@
+This is a testharness.js-based test.
+Found 379 tests; 160 PASS, 219 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Loading data…
+PASS URL's constructor's base argument: file://example:1/ should throw
+FAIL URL's href: file://example:1/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: file://example:1/ should throw
+PASS sendBeacon(): file://example:1/ should throw
+FAIL Location's href: file://example:1/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'file://example:1/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): file://example:1/ should throw
+PASS URL's constructor's base argument: file://example:test/ should throw
+FAIL URL's href: file://example:test/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: file://example:test/ should throw
+PASS sendBeacon(): file://example:test/ should throw
+FAIL Location's href: file://example:test/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'file://example:test/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): file://example:test/ should throw
+PASS URL's constructor's base argument: file://example%/ should throw
+FAIL URL's href: file://example%/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: file://example%/ should throw
+PASS sendBeacon(): file://example%/ should throw
+FAIL Location's href: file://example%/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'file://example%/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): file://example%/ should throw
+PASS URL's constructor's base argument: file://[example]/ should throw
+FAIL URL's href: file://[example]/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: file://[example]/ should throw
+PASS sendBeacon(): file://[example]/ should throw
+FAIL Location's href: file://[example]/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'file://[example]/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): file://[example]/ should throw
+PASS URL's constructor's base argument: http://user:pass@/ should throw
+FAIL URL's href: http://user:pass@/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://user:pass@/ should throw
+PASS sendBeacon(): http://user:pass@/ should throw
+FAIL Location's href: http://user:pass@/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://user:pass@/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://user:pass@/ should throw
+PASS URL's constructor's base argument: http://foo:-80/ should throw
+FAIL URL's href: http://foo:-80/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://foo:-80/ should throw
+PASS sendBeacon(): http://foo:-80/ should throw
+FAIL Location's href: http://foo:-80/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://foo:-80/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://foo:-80/ should throw
+PASS URL's constructor's base argument: http:/:@/www.example.com should throw
+FAIL URL's href: http:/:@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http:/:@/www.example.com should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http:/:@/www.example.com should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http:/:@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http:/:@/www.example.com should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http://user@/www.example.com should throw
+FAIL URL's href: http://user@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://user@/www.example.com should throw
+PASS sendBeacon(): http://user@/www.example.com should throw
+FAIL Location's href: http://user@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://user@/www.example.com' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://user@/www.example.com should throw
+PASS URL's constructor's base argument: http:@/www.example.com should throw
+FAIL URL's href: http:@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http:@/www.example.com should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http:@/www.example.com should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http:@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http:@/www.example.com should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http:/@/www.example.com should throw
+FAIL URL's href: http:/@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http:/@/www.example.com should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http:/@/www.example.com should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http:/@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http:/@/www.example.com should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http://@/www.example.com should throw
+FAIL URL's href: http://@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://@/www.example.com should throw
+PASS sendBeacon(): http://@/www.example.com should throw
+FAIL Location's href: http://@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://@/www.example.com' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://@/www.example.com should throw
+PASS URL's constructor's base argument: https:@/www.example.com should throw
+FAIL URL's href: https:@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https:@/www.example.com should throw
+PASS sendBeacon(): https:@/www.example.com should throw
+FAIL Location's href: https:@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https:@/www.example.com' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https:@/www.example.com should throw
+PASS URL's constructor's base argument: http:a:b@/www.example.com should throw
+FAIL URL's href: http:a:b@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http:a:b@/www.example.com should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http:a:b@/www.example.com should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http:a:b@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http:a:b@/www.example.com should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http:/a:b@/www.example.com should throw
+FAIL URL's href: http:/a:b@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http:/a:b@/www.example.com should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http:/a:b@/www.example.com should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http:/a:b@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http:/a:b@/www.example.com should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http://a:b@/www.example.com should throw
+FAIL URL's href: http://a:b@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://a:b@/www.example.com should throw
+PASS sendBeacon(): http://a:b@/www.example.com should throw
+FAIL Location's href: http://a:b@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://a:b@/www.example.com' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://a:b@/www.example.com should throw
+PASS URL's constructor's base argument: http::@/www.example.com should throw
+FAIL URL's href: http::@/www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http::@/www.example.com should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http::@/www.example.com should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http::@/www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http::@/www.example.com should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http:@:www.example.com should throw
+FAIL URL's href: http:@:www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http:@:www.example.com should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http:@:www.example.com should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http:@:www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http:@:www.example.com should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http:/@:www.example.com should throw
+FAIL URL's href: http:/@:www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http:/@:www.example.com should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http:/@:www.example.com should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http:/@:www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http:/@:www.example.com should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http://@:www.example.com should throw
+FAIL URL's href: http://@:www.example.com should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://@:www.example.com should throw
+PASS sendBeacon(): http://@:www.example.com should throw
+FAIL Location's href: http://@:www.example.com should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://@:www.example.com' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://@:www.example.com should throw
+PASS URL's constructor's base argument: https://� should throw
+FAIL URL's href: https://� should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://� should throw
+PASS sendBeacon(): https://� should throw
+FAIL Location's href: https://� should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://�' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://� should throw
+PASS URL's constructor's base argument: https://%EF%BF%BD should throw
+FAIL URL's href: https://%EF%BF%BD should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://%EF%BF%BD should throw
+PASS sendBeacon(): https://%EF%BF%BD should throw
+FAIL Location's href: https://%EF%BF%BD should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://%EF%BF%BD' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://%EF%BF%BD should throw
+FAIL URL's constructor's base argument: https://x x:12 should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: https://x x:12 should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: https://x x:12 should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): https://x x:12 should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: https://x x:12 should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): https://x x:12 should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http://[www.google.com]/ should throw
+FAIL URL's href: http://[www.google.com]/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://[www.google.com]/ should throw
+PASS sendBeacon(): http://[www.google.com]/ should throw
+FAIL Location's href: http://[www.google.com]/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://[www.google.com]/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://[www.google.com]/ should throw
+FAIL URL's constructor's base argument: sc://\0/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: sc://\0/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: sc://\0/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): sc://\0/ should throw
+FAIL Location's href: sc://\0/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): sc://\0/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: sc:// / should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: sc:// / should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: sc:// / should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): sc:// / should throw
+FAIL Location's href: sc:// / should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): sc:// / should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: sc://@/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: sc://@/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: sc://@/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): sc://@/ should throw
+FAIL Location's href: sc://@/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): sc://@/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: sc://te@s:t@/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: sc://te@s:t@/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: sc://te@s:t@/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): sc://te@s:t@/ should throw
+FAIL Location's href: sc://te@s:t@/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): sc://te@s:t@/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: sc://:/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: sc://:/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: sc://:/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): sc://:/ should throw
+FAIL Location's href: sc://:/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): sc://:/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: sc://:12/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: sc://:12/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: sc://:12/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): sc://:12/ should throw
+FAIL Location's href: sc://:12/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): sc://:12/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: sc://[/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: sc://[/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: sc://[/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): sc://[/ should throw
+FAIL Location's href: sc://[/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): sc://[/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: sc://\/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: sc://\/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: sc://\/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): sc://\/ should throw
+FAIL Location's href: sc://\/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): sc://\/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: sc://]/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: sc://]/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: sc://]/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): sc://]/ should throw
+FAIL Location's href: sc://]/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): sc://]/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: http://a<b should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: http://a<b should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http://a<b should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http://a<b should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http://a<b should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http://a<b should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: http://a>b should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: http://a>b should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: http://a>b should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): http://a>b should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: http://a>b should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): http://a>b should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http://a^b should throw
+FAIL URL's href: http://a^b should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://a^b should throw
+PASS sendBeacon(): http://a^b should throw
+FAIL Location's href: http://a^b should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://a^b' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://a^b should throw
+FAIL URL's constructor's base argument: non-special://a<b should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: non-special://a<b should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: non-special://a<b should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): non-special://a<b should throw
+FAIL Location's href: non-special://a<b should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): non-special://a<b should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: non-special://a>b should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: non-special://a>b should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: non-special://a>b should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): non-special://a>b should throw
+FAIL Location's href: non-special://a>b should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): non-special://a>b should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+FAIL URL's constructor's base argument: non-special://a^b should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: non-special://a^b should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: non-special://a^b should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): non-special://a^b should throw
+FAIL Location's href: non-special://a^b should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): non-special://a^b should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: ftp://example.com%80/ should throw
+FAIL URL's href: ftp://example.com%80/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: ftp://example.com%80/ should throw
+PASS sendBeacon(): ftp://example.com%80/ should throw
+FAIL Location's href: ftp://example.com%80/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'ftp://example.com%80/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): ftp://example.com%80/ should throw
+PASS URL's constructor's base argument: ftp://example.com%A0/ should throw
+FAIL URL's href: ftp://example.com%A0/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: ftp://example.com%A0/ should throw
+PASS sendBeacon(): ftp://example.com%A0/ should throw
+FAIL Location's href: ftp://example.com%A0/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'ftp://example.com%A0/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): ftp://example.com%A0/ should throw
+PASS URL's constructor's base argument: https://example.com%80/ should throw
+FAIL URL's href: https://example.com%80/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://example.com%80/ should throw
+PASS sendBeacon(): https://example.com%80/ should throw
+FAIL Location's href: https://example.com%80/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://example.com%80/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://example.com%80/ should throw
+PASS URL's constructor's base argument: https://example.com%A0/ should throw
+FAIL URL's href: https://example.com%A0/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://example.com%A0/ should throw
+PASS sendBeacon(): https://example.com%A0/ should throw
+FAIL Location's href: https://example.com%A0/ should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://example.com%A0/' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://example.com%A0/ should throw
+PASS URL's constructor's base argument: https://0x100000000/test should throw
+FAIL URL's href: https://0x100000000/test should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://0x100000000/test should throw
+PASS sendBeacon(): https://0x100000000/test should throw
+FAIL Location's href: https://0x100000000/test should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://0x100000000/test' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://0x100000000/test should throw
+PASS URL's constructor's base argument: https://256.0.0.1/test should throw
+FAIL URL's href: https://256.0.0.1/test should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://256.0.0.1/test should throw
+PASS sendBeacon(): https://256.0.0.1/test should throw
+FAIL Location's href: https://256.0.0.1/test should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://256.0.0.1/test' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://256.0.0.1/test should throw
+PASS URL's constructor's base argument: \\\.\Y: should throw
+FAIL URL's href: \\\.\Y: should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: \\\.\Y: should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): \\\.\Y: should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: \\\.\Y: should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): \\\.\Y: should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: \\\.\y: should throw
+FAIL URL's href: \\\.\y: should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: \\\.\y: should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): \\\.\y: should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: \\\.\y: should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): \\\.\y: should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: https://[0::0::0] should throw
+FAIL URL's href: https://[0::0::0] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://[0::0::0] should throw
+PASS sendBeacon(): https://[0::0::0] should throw
+FAIL Location's href: https://[0::0::0] should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://[0::0::0]' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://[0::0::0] should throw
+PASS URL's constructor's base argument: https://[0:.0] should throw
+FAIL URL's href: https://[0:.0] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://[0:.0] should throw
+PASS sendBeacon(): https://[0:.0] should throw
+FAIL Location's href: https://[0:.0] should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://[0:.0]' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://[0:.0] should throw
+PASS URL's constructor's base argument: https://[0:0:] should throw
+FAIL URL's href: https://[0:0:] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://[0:0:] should throw
+PASS sendBeacon(): https://[0:0:] should throw
+FAIL Location's href: https://[0:0:] should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://[0:0:]' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://[0:0:] should throw
+PASS URL's constructor's base argument: https://[0:1:2:3:4:5:6:7.0.0.0.1] should throw
+FAIL URL's href: https://[0:1:2:3:4:5:6:7.0.0.0.1] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://[0:1:2:3:4:5:6:7.0.0.0.1] should throw
+PASS sendBeacon(): https://[0:1:2:3:4:5:6:7.0.0.0.1] should throw
+FAIL Location's href: https://[0:1:2:3:4:5:6:7.0.0.0.1] should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://[0:1:2:3:4:5:6:7.0.0.0.1]' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://[0:1:2:3:4:5:6:7.0.0.0.1] should throw
+PASS URL's constructor's base argument: https://[0:1.00.0.0.0] should throw
+FAIL URL's href: https://[0:1.00.0.0.0] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://[0:1.00.0.0.0] should throw
+PASS sendBeacon(): https://[0:1.00.0.0.0] should throw
+FAIL Location's href: https://[0:1.00.0.0.0] should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://[0:1.00.0.0.0]' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://[0:1.00.0.0.0] should throw
+PASS URL's constructor's base argument: https://[0:1.290.0.0.0] should throw
+FAIL URL's href: https://[0:1.290.0.0.0] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://[0:1.290.0.0.0] should throw
+PASS sendBeacon(): https://[0:1.290.0.0.0] should throw
+FAIL Location's href: https://[0:1.290.0.0.0] should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://[0:1.290.0.0.0]' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://[0:1.290.0.0.0] should throw
+PASS URL's constructor's base argument: https://[0:1.23.23] should throw
+FAIL URL's href: https://[0:1.23.23] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: https://[0:1.23.23] should throw
+PASS sendBeacon(): https://[0:1.23.23] should throw
+FAIL Location's href: https://[0:1.23.23] should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'https://[0:1.23.23]' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): https://[0:1.23.23] should throw
+PASS URL's constructor's base argument: http://? should throw
+FAIL URL's href: http://? should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://? should throw
+PASS sendBeacon(): http://? should throw
+FAIL Location's href: http://? should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://?' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://? should throw
+PASS URL's constructor's base argument: http://# should throw
+FAIL URL's href: http://# should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://# should throw
+PASS sendBeacon(): http://# should throw
+FAIL Location's href: http://# should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://#' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://# should throw
+FAIL URL's constructor's base argument: non-special://[:80/ should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: non-special://[:80/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: non-special://[:80/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): non-special://[:80/ should throw
+FAIL Location's href: non-special://[:80/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): non-special://[:80/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: http://[::127.0.0.0.1] should throw
+FAIL URL's href: http://[::127.0.0.0.1] should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: http://[::127.0.0.0.1] should throw
+PASS sendBeacon(): http://[::127.0.0.0.1] should throw
+FAIL Location's href: http://[::127.0.0.0.1] should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'http://[::127.0.0.0.1]' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): http://[::127.0.0.0.1] should throw
+PASS URL's constructor's base argument: a should throw
+FAIL URL's href: a should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: a should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): a should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: a should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): a should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: a/ should throw
+FAIL URL's href: a/ should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: a/ should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): a/ should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: a/ should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): a/ should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: a// should throw
+FAIL URL's href: a// should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: a// should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+FAIL sendBeacon(): a// should throw assert_throws_js: function "() => self.navigator.sendBeacon(test.input)" did not throw
+FAIL Location's href: a// should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): a// should throw assert_throws_dom: function "() => self.open(test.input).close()" did not throw
+PASS URL's constructor's base argument: file://­/p should throw
+FAIL URL's href: file://­/p should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: file://­/p should throw
+PASS sendBeacon(): file://­/p should throw
+FAIL Location's href: file://­/p should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'file://­/p' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): file://­/p should throw
+PASS URL's constructor's base argument: file://%C2%AD/p should throw
+FAIL URL's href: file://%C2%AD/p should throw assert_throws_js: function "() => url.href = test.input" did not throw
+PASS XHR: file://%C2%AD/p should throw
+PASS sendBeacon(): file://%C2%AD/p should throw
+FAIL Location's href: file://%C2%AD/p should throw assert_throws_js: function "() => self[0].location = test.input" threw object "SyntaxError: Failed to set the 'href' property on 'Location': 'file://%C2%AD/p' is not a valid URL." ("SyntaxError") expected instance of function "function TypeError() { [native code] }" ("TypeError")
+PASS window.open(): file://%C2%AD/p should throw
+FAIL URL's constructor's base argument: file://xn--/p should throw assert_throws_js: function "() => new URL("about:blank", test.input)" did not throw
+FAIL URL's href: file://xn--/p should throw assert_throws_js: function "() => url.href = test.input" did not throw
+FAIL XHR: file://xn--/p should throw assert_throws_dom: function "() => client.open("GET", test.input)" did not throw
+PASS sendBeacon(): file://xn--/p should throw
+FAIL Location's href: file://xn--/p should throw assert_throws_js: function "() => self[0].location = test.input" did not throw
+FAIL window.open(): file://xn--/p should throw assert_throws_dom: function "() => self.open(test.input).close()" threw object "TypeError: Cannot read property 'close' of null" that is not a DOMException SyntaxError: property "code" is equal to undefined, expected 12
+Harness: the test ran to completion.
+
