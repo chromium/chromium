@@ -16,8 +16,8 @@
 #include "components/autofill/core/browser/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/fake_autofill_agent.h"
-#import "components/autofill/ios/browser/fake_js_autofill_manager.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
@@ -35,7 +35,7 @@
 #import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
+#include "ios/web/public/test/web_test.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_suggestion_internal.h"
 #import "ios/web_view/internal/autofill/web_view_autofill_client_ios.h"
 #import "ios/web_view/internal/passwords/web_view_password_manager_client.h"
@@ -45,7 +45,6 @@
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 
@@ -72,7 +71,7 @@ NSString* const kTestDisplayDescription = @"DisplayDescription";
 
 }  // namespace
 
-class CWVAutofillControllerTest : public PlatformTest {
+class CWVAutofillControllerTest : public web::WebTest {
  protected:
   CWVAutofillControllerTest() {
     pref_service_.registry()->RegisterBooleanPref(
@@ -81,8 +80,6 @@ class CWVAutofillControllerTest : public PlatformTest {
         autofill::prefs::kAutofillProfileEnabled, true);
 
     web_state_.SetBrowserState(&browser_state_);
-
-    js_autofill_manager_ = [[FakeJSAutofillManager alloc] init];
 
     UniqueIDDataTabHelper::CreateForWebState(&web_state_);
 
@@ -118,7 +115,6 @@ class CWVAutofillControllerTest : public PlatformTest {
              initWithWebState:&web_state_
                autofillClient:std::move(autofill_client)
                 autofillAgent:autofill_agent_
-            JSAutofillManager:js_autofill_manager_
               passwordManager:std::move(password_manager)
         passwordManagerClient:std::move(password_manager_client)
         passwordManagerDriver:std::move(password_manager_driver)
@@ -128,13 +124,19 @@ class CWVAutofillControllerTest : public PlatformTest {
         std::make_unique<autofill::TestFormActivityTabHelper>(&web_state_);
   }
 
+  void SetUp() override {
+    web::WebTest::SetUp();
+
+    OverrideJavaScriptFeatures(
+        {autofill::AutofillJavaScriptFeature::GetInstance()});
+  }
+
   void AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
     web::WebFrame* frame_ptr = frame.get();
     web_frames_manager_->AddWebFrame(std::move(frame));
     web_state_.OnWebFrameDidBecomeAvailable(frame_ptr);
   }
 
-  web::WebTaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   web::FakeBrowserState browser_state_;
   web::FakeWebState web_state_;
@@ -145,7 +147,6 @@ class CWVAutofillControllerTest : public PlatformTest {
   web::FakeWebFramesManager* web_frames_manager_;
   CWVAutofillController* autofill_controller_;
   FakeAutofillAgent* autofill_agent_;
-  FakeJSAutofillManager* js_autofill_manager_;
   id password_controller_;
   std::unique_ptr<autofill::TestFormActivityTabHelper>
       form_activity_tab_helper_;
@@ -278,28 +279,6 @@ TEST_F(CWVAutofillControllerTest, AcceptSuggestion) {
       [autofill_agent_ selectedSuggestionForFormName:kTestFormName
                                      fieldIdentifier:kTestFieldIdentifier
                                              frameID:frame_id_]);
-}
-
-// Tests CWVAutofillController clears form.
-TEST_F(CWVAutofillControllerTest, ClearForm) {
-  auto frame = web::FakeWebFrame::CreateMainWebFrame(GURL::EmptyGURL());
-  AddWebFrame(std::move(frame));
-  __block BOOL clear_form_completion_was_called = NO;
-  [autofill_controller_ clearFormWithName:kTestFormName
-                          fieldIdentifier:kTestFieldIdentifier
-                                  frameID:frame_id_
-                        completionHandler:^{
-                          clear_form_completion_was_called = YES;
-                        }];
-
-  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
-    base::RunLoop().RunUntilIdle();
-    return clear_form_completion_was_called;
-  }));
-  EXPECT_NSEQ(kTestFormName, js_autofill_manager_.lastClearedFormName);
-  EXPECT_NSEQ(kTestFieldIdentifier,
-              js_autofill_manager_.lastClearedFieldIdentifier);
-  EXPECT_NSEQ(frame_id_, js_autofill_manager_.lastClearedFrameIdentifier);
 }
 
 // Tests CWVAutofillController delegate focus callback is invoked.

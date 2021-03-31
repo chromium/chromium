@@ -10,6 +10,7 @@
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/post_task.h"
+#include "components/autofill/ios/browser/autofill_java_script_feature.h"
 #include "components/ssl_errors/error_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/components/webui/web_ui_url_constants.h"
@@ -92,6 +93,11 @@ base::RefCountedMemory* WebViewWebClient::GetDataResourceBytes(
     int resource_id) const {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
       resource_id);
+}
+
+std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
+    web::BrowserState* browser_state) const {
+  return {autofill::AutofillJavaScriptFeature::GetInstance()};
 }
 
 NSString* WebViewWebClient::GetDocumentStartScriptForAllFrames(

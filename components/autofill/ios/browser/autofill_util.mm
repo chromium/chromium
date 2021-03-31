@@ -32,6 +32,31 @@ using base::StringToUint;
 namespace {
 // The timeout for any JavaScript call in this file.
 const int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
+
+// Runs |callback| with the NSString value of |res|.
+// |callback| must be non-null.
+void ConvertValueToNSString(base::OnceCallback<void(NSString*)> callback,
+                            const base::Value* res) {
+  DCHECK(!callback.is_null());
+
+  NSString* result = nil;
+  if (res && res->is_string()) {
+    result = base::SysUTF8ToNSString(res->GetString());
+  }
+  std::move(callback).Run(result);
+}
+
+// Runs |callback| with the BOOL value of |res|. |callback| must be non-null.
+void ConvertValueToBool(base::OnceCallback<void(BOOL)> callback,
+                        const base::Value* res) {
+  DCHECK(!callback.is_null());
+
+  BOOL result = NO;
+  if (res && res->is_bool()) {
+    result = res->GetBool();
+  }
+  std::move(callback).Run(result);
+}
 }
 
 namespace autofill {
@@ -225,23 +250,21 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
 
 JavaScriptResultCallback CreateStringCallback(
     void (^completionHandler)(NSString*)) {
-  return base::BindOnce(^(const base::Value* res) {
-    NSString* result = nil;
-    if (res && res->is_string()) {
-      result = base::SysUTF8ToNSString(res->GetString());
-    }
-    completionHandler(result);
-  });
+  return CreateStringCallback(base::BindOnce(completionHandler));
+}
+
+JavaScriptResultCallback CreateStringCallback(
+    base::OnceCallback<void(NSString*)> callback) {
+  return base::BindOnce(&ConvertValueToNSString, std::move(callback));
 }
 
 JavaScriptResultCallback CreateBoolCallback(void (^completionHandler)(BOOL)) {
-  return base::BindOnce(^(const base::Value* res) {
-    BOOL result = NO;
-    if (res && res->is_bool()) {
-      result = res->GetBool();
-    }
-    completionHandler(result);
-  });
+  return CreateBoolCallback(base::BindOnce(completionHandler));
+}
+
+JavaScriptResultCallback CreateBoolCallback(
+    base::OnceCallback<void(BOOL)> callback) {
+  return base::BindOnce(&ConvertValueToBool, std::move(callback));
 }
 
 void ExecuteJavaScriptFunction(const std::string& name,

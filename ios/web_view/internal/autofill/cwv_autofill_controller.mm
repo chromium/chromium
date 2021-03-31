@@ -18,8 +18,8 @@
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
-#import "components/autofill/ios/browser/js_autofill_manager.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
@@ -67,9 +67,6 @@ using autofill::FieldRendererId;
   // Autofill client associated with |webState|.
   std::unique_ptr<autofill::WebViewAutofillClientIOS> _autofillClient;
 
-  // Javascript autofill manager associated with |webState|.
-  JsAutofillManager* _JSAutofillManager;
-
   // The |webState| which this autofill controller should observe.
   web::WebState* _webState;
 
@@ -106,7 +103,6 @@ using autofill::FieldRendererId;
            autofillClient:(std::unique_ptr<autofill::WebViewAutofillClientIOS>)
                               autofillClient
             autofillAgent:(AutofillAgent*)autofillAgent
-        JSAutofillManager:(JsAutofillManager*)JSAutofillManager
           passwordManager:(std::unique_ptr<password_manager::PasswordManager>)
                               passwordManager
     passwordManagerClient:
@@ -137,8 +133,6 @@ using autofill::FieldRendererId;
     autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
         _webState, _autofillClient.get(), self, applicationLocale,
         autofill::AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
-
-    _JSAutofillManager = JSAutofillManager;
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);
@@ -174,17 +168,14 @@ using autofill::FieldRendererId;
         completionHandler:(nullable void (^)(void))completionHandler {
   web::WebFrame* frame =
       web::GetWebFrameWithId(_webState, base::SysNSStringToUTF8(frameID));
-  [_JSAutofillManager
-      clearAutofilledFieldsForFormName:formName
-                          formUniqueID:_lastFormActivityUniqueFormID
-                       fieldIdentifier:fieldIdentifier
-                         fieldUniqueID:_lastFormActivityUniqueFieldID
-                               inFrame:frame
-                     completionHandler:^(NSString*) {
-                       if (completionHandler) {
-                         completionHandler();
-                       }
-                     }];
+  autofill::AutofillJavaScriptFeature::GetInstance()
+      ->ClearAutofilledFieldsForFormName(
+          frame, formName, _lastFormActivityUniqueFormID, fieldIdentifier,
+          _lastFormActivityUniqueFieldID, base::BindOnce(^(NSString*) {
+            if (completionHandler) {
+              completionHandler();
+            }
+          }));
 }
 
 - (void)fetchSuggestionsForFormWithName:(NSString*)formName

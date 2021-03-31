@@ -16,22 +16,19 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
-#import "components/autofill/ios/browser/js_autofill_manager.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/prefs/pref_service.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
 #include "ios/web/public/test/fakes/fake_browser_state.h"
-#include "ios/web/public/test/fakes/fake_web_client.h"
 #include "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
-#include "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
+#include "ios/web/public/test/web_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
-#include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
 #include "url/gurl.h"
@@ -52,7 +49,7 @@ using base::test::ios::WaitUntilCondition;
 @end
 
 // Test fixture for AutofillAgent testing.
-class AutofillAgentTests : public PlatformTest {
+class AutofillAgentTests : public web::WebTest {
  public:
   AutofillAgentTests() {}
 
@@ -70,16 +67,21 @@ class AutofillAgentTests : public PlatformTest {
   }
 
   void SetUp() override {
-    PlatformTest::SetUp();
+    web::WebTest::SetUp();
 
-    fake_web_state_.SetBrowserState(&fake_browser_state_);
+    OverrideJavaScriptFeatures(
+        {autofill::AutofillJavaScriptFeature::GetInstance()});
+
+    fake_web_state_.SetBrowserState(GetBrowserState());
     fake_web_state_.SetContentIsHTML(true);
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     fake_web_frames_manager_ = frames_manager.get();
     fake_web_state_.SetWebFramesManager(std::move(frames_manager));
+
     GURL url("https://example.com");
     fake_web_state_.SetCurrentURL(url);
     auto main_frame = web::FakeWebFrame::Create("frameID", true, url);
+    main_frame->set_browser_state(GetBrowserState());
     fake_main_frame_ = main_frame.get();
     AddWebFrame(std::move(main_frame));
 
@@ -92,8 +94,20 @@ class AutofillAgentTests : public PlatformTest {
                                           webState:&fake_web_state_];
   }
 
-  web::WebTaskEnvironment task_environment_;
-  web::FakeBrowserState fake_browser_state_;
+  std::unique_ptr<web::FakeWebFrame> CreateMainWebFrame() {
+    std::unique_ptr<web::FakeWebFrame> frame =
+        web::FakeWebFrame::CreateMainWebFrame(GURL());
+    frame->set_browser_state(GetBrowserState());
+    return frame;
+  }
+
+  std::unique_ptr<web::FakeWebFrame> CreateChildWebFrame() {
+    std::unique_ptr<web::FakeWebFrame> frame =
+        web::FakeWebFrame::CreateChildWebFrame(GURL());
+    frame->set_browser_state(GetBrowserState());
+    return frame;
+  }
+
   web::FakeWebState fake_web_state_;
   web::FakeWebFrame* fake_main_frame_ = nullptr;
   web::FakeWebFramesManager* fake_web_frames_manager_ = nullptr;
@@ -499,14 +513,14 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
 
   // Both frames available, then page loaded.
   fake_web_state_.SetLoading(true);
-  auto main_frame_unique = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  auto main_frame_unique = CreateMainWebFrame();
   web::FakeWebFrame* main_frame = main_frame_unique.get();
   AddWebFrame(std::move(main_frame_unique));
   autofill::AutofillDriverIOS* main_frame_driver =
       autofill::AutofillDriverIOS::FromWebStateAndWebFrame(&fake_web_state_,
                                                            main_frame);
   EXPECT_TRUE(main_frame_driver->IsInMainFrame());
-  auto iframe_unique = web::FakeWebFrame::CreateChildWebFrame(GURL());
+  auto iframe_unique = CreateChildWebFrame();
   iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
     EXPECT_TRUE(main_frame_driver->is_processed());
   }));
@@ -526,11 +540,11 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   RemoveWebFrame(iframe->GetFrameId());
 
   // Main frame available, then page loaded, then iframe available
-  main_frame_unique = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  main_frame_unique = CreateMainWebFrame();
   main_frame = main_frame_unique.get();
   main_frame_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       &fake_web_state_, main_frame);
-  iframe_unique = web::FakeWebFrame::CreateChildWebFrame(GURL());
+  iframe_unique = CreateChildWebFrame();
   iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
     EXPECT_TRUE(main_frame_driver->is_processed());
   }));
@@ -552,11 +566,11 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   RemoveWebFrame(iframe->GetFrameId());
 
   // Page loaded, then main frame, then iframe
-  main_frame_unique = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  main_frame_unique = CreateMainWebFrame();
   main_frame = main_frame_unique.get();
   main_frame_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       &fake_web_state_, main_frame);
-  iframe_unique = web::FakeWebFrame::CreateChildWebFrame(GURL());
+  iframe_unique = CreateChildWebFrame();
   iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
     EXPECT_TRUE(main_frame_driver->is_processed());
   }));
@@ -578,11 +592,11 @@ TEST_F(AutofillAgentTests, FrameInitializationOrderFrames) {
   RemoveWebFrame(iframe->GetFrameId());
 
   // Page loaded, then iframe, then main frame
-  main_frame_unique = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  main_frame_unique = CreateMainWebFrame();
   main_frame = main_frame_unique.get();
   main_frame_driver = autofill::AutofillDriverIOS::FromWebStateAndWebFrame(
       &fake_web_state_, main_frame);
-  iframe_unique = web::FakeWebFrame::CreateChildWebFrame(GURL());
+  iframe_unique = CreateChildWebFrame();
   iframe_unique->set_call_java_script_function_callback(base::BindRepeating(^{
     EXPECT_TRUE(main_frame_driver->is_processed());
   }));

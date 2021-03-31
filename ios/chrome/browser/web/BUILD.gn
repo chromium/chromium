@@ -173,7 +173,6 @@ source_set("unit_tests") {
 js_compile_bundle("chrome_bundle_all_frames") {
   closure_entry_point = "__crWeb.chromeBundleAllFrames"
   sources = [
-    "//components/autofill/ios/browser/resources/autofill_controller.js",
     "//components/autofill/ios/browser/resources/suggestion_controller.js",
     "//components/autofill/ios/form_util/resources/fill.js",
     "//components/autofill/ios/form_util/resources/form.js",
@@ -219,6 +218,7 @@ source_set("web_internal") {
     ":chrome_bundle_main_frame",
     ":web",
     "//base",
+    "//components/autofill/ios/browser",
     "//components/content_settings/core/browser",
     "//components/dom_distiller/core",
     "//components/google/core/common",

@@ -15,6 +15,8 @@ source_set("browser") {
     "autofill_driver_ios_bridge.h",
     "autofill_driver_ios_webframe.h",
     "autofill_driver_ios_webframe.mm",
+    "autofill_java_script_feature.h",
+    "autofill_java_script_feature.mm",
     "autofill_switches.cc",
     "autofill_switches.h",
     "autofill_util.h",
@@ -26,8 +28,6 @@ source_set("browser") {
     "form_suggestion_provider.h",
     "form_suggestion_provider_query.h",
     "form_suggestion_provider_query.mm",
-    "js_autofill_manager.h",
-    "js_autofill_manager.mm",
     "js_suggestion_manager.h",
     "js_suggestion_manager.mm",
     "personal_data_manager_observer_bridge.h",
@@ -35,6 +35,7 @@ source_set("browser") {
   ]
 
   deps = [
+    ":autofill_js",
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
@@ -56,6 +57,11 @@ source_set("browser") {
   ]
 }
 
+js_compile_bundle("autofill_js") {
+  closure_entry_point = "__crWeb.autofill"
+  sources = [ "resources/autofill_controller.js" ]
+}
+
 source_set("test_support") {
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -64,8 +70,6 @@ source_set("test_support") {
     "credit_card_save_manager_test_observer_bridge.mm",
     "fake_autofill_agent.h",
     "fake_autofill_agent.mm",
-    "fake_js_autofill_manager.h",
-    "fake_js_autofill_manager.mm",
     "ios_test_event_waiter.h",
   ]
   public_deps = [ ":browser" ]

@@ -51,8 +51,8 @@ TEST_F(WebViewWebClientTest, WKWebViewEarlyPageScriptAutofillController) {
   NSString* script =
       web_client.Get()->GetDocumentStartScriptForAllFrames(GetBrowserState());
   web::test::ExecuteJavaScript(web_view, script);
-  EXPECT_NSEQ(@"object", web::test::ExecuteJavaScript(
-                             web_view, @"typeof __gCrWeb.autofill"));
+  EXPECT_NSEQ(@"object",
+              web::test::ExecuteJavaScript(web_view, @"typeof __gCrWeb.fill"));
 }
 
 // Tests that WebViewWebClientTest's GetUserAgent is configured by CWVWebView.

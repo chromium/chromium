@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -39,11 +40,6 @@
 #endif
 
 using base::UmaHistogramEnumeration;
-
-namespace {
-// The timeout for any JavaScript call in this file.
-const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
-}
 
 @interface ManualFillInjectionHandler ()<FormActivityObserver>
 
@@ -204,18 +200,13 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
     return;
   }
 
-  base::DictionaryValue data = base::DictionaryValue();
-  data.SetString("identifier", self.lastFocusedElementIdentifier);
-  data.SetString("value", base::SysNSStringToUTF16(string));
-  std::vector<base::Value> parameters;
-  parameters.push_back(std::move(data));
-
-  activeWebFrame->CallJavaScriptFunction(
-      "autofill.fillActiveFormField", parameters,
-      base::BindOnce(^(const base::Value*) {
+  auto data = std::make_unique<base::DictionaryValue>();
+  data->SetString("identifier", self.lastFocusedElementIdentifier);
+  data->SetString("value", base::SysNSStringToUTF16(string));
+  autofill::AutofillJavaScriptFeature::GetInstance()->FillActiveFormField(
+      activeWebFrame, std::move(data), base::BindOnce(^(BOOL success) {
         [self jumpToNextField];
-      }),
-      base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+      }));
 }
 
 // Attempts to jump to the next field in the current form.

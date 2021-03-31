@@ -145,8 +145,8 @@ TEST_F(ChromeWebClientTest, WKWebViewEarlyPageScriptAutofillController) {
   NSString* script =
       web_client.Get()->GetDocumentStartScriptForAllFrames(browser_state());
   web::test::ExecuteJavaScript(web_view, script);
-  EXPECT_NSEQ(@"object", web::test::ExecuteJavaScript(
-                             web_view, @"typeof __gCrWeb.autofill"));
+  EXPECT_NSEQ(@"object",
+              web::test::ExecuteJavaScript(web_view, @"typeof __gCrWeb.fill"));
 }
 
 // Tests PrepareErrorPage wth non-post, not Off The Record error.

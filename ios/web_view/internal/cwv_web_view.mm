@@ -15,7 +15,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
-#import "components/autofill/ios/browser/js_autofill_manager.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
@@ -683,7 +682,6 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
   AutofillAgent* autofillAgent = [[AutofillAgent alloc]
       initWithPrefService:_configuration.browserState->GetPrefs()
                  webState:_webState.get()];
-  JsAutofillManager* JSAutofillManager = [[JsAutofillManager alloc] init];
 
   auto passwordManagerClient =
       ios_web_view::WebViewPasswordManagerClient::Create(
@@ -708,7 +706,6 @@ BOOL gChromeLongPressAndForceTouchHandlingEnabled = YES;
            initWithWebState:_webState.get()
              autofillClient:std::move(autofillClient)
               autofillAgent:autofillAgent
-          JSAutofillManager:JSAutofillManager
             passwordManager:std::move(passwordManager)
       passwordManagerClient:std::move(passwordManagerClient)
       passwordManagerDriver:std::move(passwordManagerDriver)

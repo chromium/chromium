@@ -66,9 +66,12 @@ typedef base::OnceCallback<void(const base::Value*)> JavaScriptResultCallback;
 // Creates a callback for a string JS function return type.
 JavaScriptResultCallback CreateStringCallback(
     void (^completionHandler)(NSString*));
+JavaScriptResultCallback CreateStringCallback(
+    base::OnceCallback<void(NSString*)> callback);
 
 // Creates a callback for a bool JS function return type.
 JavaScriptResultCallback CreateBoolCallback(void (^completionHandler)(BOOL));
+JavaScriptResultCallback CreateBoolCallback(base::OnceCallback<void(BOOL)>);
 
 // Executes the JavaScript function with the given name and argument.
 // If |callback| is not null, it will be called when the result of the

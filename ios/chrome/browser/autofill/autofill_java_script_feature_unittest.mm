@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/autofill/ios/browser/js_autofill_manager.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 
 #import <Foundation/Foundation.h>
 
@@ -11,10 +11,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/ios/browser/js_autofill_manager.h"
-#include "ios/chrome/browser/web/chrome_web_client.h"
+#import "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/web_state.h"
 #import "testing/gtest_mac.h"
@@ -67,16 +67,15 @@ NSNumber* GetDefaultMaxLength() {
   return @524288;
 }
 
-// Text fixture to test JsAutofillManager.
-class JsAutofillManagerTest : public ChromeWebTest {
+// Text fixture to test AutofillJavaScriptFeature.
+class AutofillJavaScriptFeatureTest : public ChromeWebTest {
  protected:
-  JsAutofillManagerTest()
+  AutofillJavaScriptFeatureTest()
       : ChromeWebTest(std::make_unique<ChromeWebClient>()) {}
 
   // Loads the given HTML and initializes the Autofill JS scripts.
   void LoadHtml(NSString* html) {
     ChromeWebTest::LoadHtml(html);
-    manager_ = [[JsAutofillManager alloc] init];
     ExecuteJavaScript(@"__gCrWeb.fill.setUpForUniqueIDs(1);");
   }
 
@@ -86,32 +85,36 @@ class JsAutofillManagerTest : public ChromeWebTest {
 
   // Scans the page for forms and fields and sets unique renderer IDs.
   void RunFormsSearch() {
+    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForPageLoadTimeout, ^bool() {
+          return main_web_frame() != nullptr;
+        }));
+
     __block BOOL block_was_called = NO;
-    [manager_
-        fetchFormsWithMinimumRequiredFieldsCount:
-            autofill::kMinRequiredFieldsForHeuristics
-                                         inFrame:main_web_frame()
-                               completionHandler:^(NSString* actualResult) {
-                                 block_was_called = YES;
-                               }];
+    feature()->FetchForms(main_web_frame(),
+                          autofill::kMinRequiredFieldsForHeuristics,
+                          base::BindOnce(^(NSString* actualResult) {
+                            block_was_called = YES;
+                          }));
     base::test::ios::WaitUntilCondition(^bool() {
       return block_was_called;
     });
   }
 
-  // Testable autofill manager.
-  JsAutofillManager* manager_;
+  autofill::AutofillJavaScriptFeature* feature() {
+    return autofill::AutofillJavaScriptFeature::GetInstance();
+  }
 };
 
 // Tests that |hasBeenInjected| returns YES after |inject| call.
-TEST_F(JsAutofillManagerTest, InitAndInject) {
+TEST_F(AutofillJavaScriptFeatureTest, InitAndInject) {
   LoadHtml(@"<html></html>");
   EXPECT_NSEQ(@"object", ExecuteJavaScript(@"typeof __gCrWeb.autofill"));
 }
 
 // Tests forms extraction method
 // (fetchFormsWithRequirements:minimumRequiredFieldsCount:completionHandler:).
-TEST_F(JsAutofillManagerTest, ExtractForms) {
+TEST_F(AutofillJavaScriptFeatureTest, ExtractForms) {
   LoadHtml(@"<html><body><form name='testform' method='post'>"
             "<div id='div1'>Last Name</div>"
             "<div id='div2'>Email Address</div>"
@@ -180,13 +183,12 @@ TEST_F(JsAutofillManagerTest, ExtractForms) {
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::kMinRequiredFieldsForHeuristics
-                                             inFrame:main_web_frame()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  feature()->FetchForms(main_web_frame(),
+                        autofill::kMinRequiredFieldsForHeuristics,
+                        base::BindOnce(^(NSString* actualResult) {
+                          block_was_called = YES;
+                          result = [actualResult copy];
+                        }));
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
@@ -205,7 +207,7 @@ TEST_F(JsAutofillManagerTest, ExtractForms) {
 
 // Tests forms extraction method
 // (fetchFormsWithRequirements:minimumRequiredFieldsCount:completionHandler:).
-TEST_F(JsAutofillManagerTest, ExtractForms2) {
+TEST_F(AutofillJavaScriptFeatureTest, ExtractForms2) {
   LoadHtml(@"<html><body><form name='testform' method='post'>"
             "<input type='text' id='firstname' name='firstname'/"
             "    aria-label='First Name'>"
@@ -274,13 +276,12 @@ TEST_F(JsAutofillManagerTest, ExtractForms2) {
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::kMinRequiredFieldsForHeuristics
-                                             inFrame:main_web_frame()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  feature()->FetchForms(main_web_frame(),
+                        autofill::kMinRequiredFieldsForHeuristics,
+                        base::BindOnce(^(NSString* actualResult) {
+                          block_was_called = YES;
+                          result = [actualResult copy];
+                        }));
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
@@ -301,20 +302,19 @@ TEST_F(JsAutofillManagerTest, ExtractForms2) {
 // (fetchFormsWithRequirements:minimumRequiredFieldsCount:completionHandler:)
 // when all formless forms are extracted. A formless form is expected to be
 // extracted here.
-TEST_F(JsAutofillManagerTest, ExtractFormlessForms_AllFormlessForms) {
+TEST_F(AutofillJavaScriptFeatureTest, ExtractFormlessForms_AllFormlessForms) {
   // Allow all formless forms to be extracted.
 
   LoadHtml(kUnownedUntitledFormHtml);
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::kMinRequiredFieldsForHeuristics
-                                             inFrame:main_web_frame()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  feature()->FetchForms(main_web_frame(),
+                        autofill::kMinRequiredFieldsForHeuristics,
+                        base::BindOnce(^(NSString* actualResult) {
+                          block_was_called = YES;
+                          result = [actualResult copy];
+                        }));
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
@@ -329,11 +329,10 @@ TEST_F(JsAutofillManagerTest, ExtractFormlessForms_AllFormlessForms) {
 }
 
 // Tests form filling (fillActiveFormField:completionHandler:) method.
-TEST_F(JsAutofillManagerTest, FillActiveFormField) {
-  LoadHtml(
-      @"<html><body><form name='testform' method='post'>"
-       "<input type='email' id='email' name='email'/>"
-       "</form></body></html>");
+TEST_F(AutofillJavaScriptFeatureTest, FillActiveFormField) {
+  LoadHtml(@"<html><body><form name='testform' method='post'>"
+            "<input type='email' id='email' name='email'/>"
+            "</form></body></html>");
   RunFormsSearch();
 
   NSString* get_element_javascript = @"document.getElementsByName('email')[0]";
@@ -346,11 +345,10 @@ TEST_F(JsAutofillManagerTest, FillActiveFormField) {
   data->SetInteger("unique_renderer_id", 2);
   data->SetString("value", "newemail@com");
   __block BOOL success = NO;
-  [manager_ fillActiveFormField:std::move(data)
-                        inFrame:main_web_frame()
-              completionHandler:^(BOOL result) {
-                success = result;
-              }];
+  feature()->FillActiveFormField(main_web_frame(), std::move(data),
+                                 base::BindOnce(^(BOOL result) {
+                                   success = result;
+                                 }));
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^bool() {
         return success;
@@ -361,26 +359,24 @@ TEST_F(JsAutofillManagerTest, FillActiveFormField) {
 }
 
 // Tests the generation of the name of the fields.
-TEST_F(JsAutofillManagerTest, TestExtractedFieldsNames) {
-  LoadHtml(
-      @"<html><body><form name='testform' method='post'>"
-       "<input type='text' name='field_with_name'/>"
-       "<input type='text' id='field_with_id'/>"
-       "<input type='text' id='field_id' name='field_name'/>"
-       "<input type='text'/>"
-       "</form></body></html>");
+TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsNames) {
+  LoadHtml(@"<html><body><form name='testform' method='post'>"
+            "<input type='text' name='field_with_name'/>"
+            "<input type='text' id='field_with_id'/>"
+            "<input type='text' id='field_id' name='field_name'/>"
+            "<input type='text'/>"
+            "</form></body></html>");
   NSArray* expected_names =
       @[ @"field_with_name", @"field_with_id", @"field_name", @"" ];
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::kMinRequiredFieldsForHeuristics
-                                             inFrame:main_web_frame()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  feature()->FetchForms(main_web_frame(),
+                        autofill::kMinRequiredFieldsForHeuristics,
+                        base::BindOnce(^(NSString* actualResult) {
+                          block_was_called = YES;
+                          result = [actualResult copy];
+                        }));
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
@@ -399,7 +395,7 @@ TEST_F(JsAutofillManagerTest, TestExtractedFieldsNames) {
 }
 
 // Tests the generation of the name of the fields.
-TEST_F(JsAutofillManagerTest, TestExtractedFieldsIDs) {
+TEST_F(AutofillJavaScriptFeatureTest, TestExtractedFieldsIDs) {
   NSString* HTML =
       @"<html><body><form name='testform' method='post'>"
        // Field with name and id
@@ -439,13 +435,12 @@ TEST_F(JsAutofillManagerTest, TestExtractedFieldsIDs) {
 
   __block BOOL block_was_called = NO;
   __block NSString* result;
-  [manager_ fetchFormsWithMinimumRequiredFieldsCount:
-                autofill::kMinRequiredFieldsForHeuristics
-                                             inFrame:main_web_frame()
-                                   completionHandler:^(NSString* actualResult) {
-                                     block_was_called = YES;
-                                     result = [actualResult copy];
-                                   }];
+  feature()->FetchForms(main_web_frame(),
+                        autofill::kMinRequiredFieldsForHeuristics,
+                        base::BindOnce(^(NSString* actualResult) {
+                          block_was_called = YES;
+                          result = [actualResult copy];
+                        }));
   base::test::ios::WaitUntilCondition(^bool() {
     return block_was_called;
   });
@@ -470,8 +465,8 @@ TEST_F(JsAutofillManagerTest, TestExtractedFieldsIDs) {
 
 // Tests form filling (fillForm:forceFillFieldIdentifier:forceFillFieldUniqueID:
 // :inFrame:completionHandler:) method.
-// TODO(crbug/1131038): Remove once using only renderer IDs is launched.
-TEST_F(JsAutofillManagerTest, FillForm) {
+// TODO(crbug.com/1131038): Remove once using only renderer IDs is launched.
+TEST_F(AutofillJavaScriptFeatureTest, FillForm) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::Feature> disabled_features;
   disabled_features.push_back(
@@ -504,14 +499,11 @@ TEST_F(JsAutofillManagerTest, FillForm) {
 
   __block NSString* filling_result = nil;
   __block BOOL block_was_called = NO;
-  [manager_ fillForm:std::move(autofillData)
-      forceFillFieldIdentifier:@"firstname"
-        forceFillFieldUniqueID:FieldRendererId(2)
-                       inFrame:main_web_frame()
-             completionHandler:^(NSString* result) {
-               filling_result = [result copy];
-               block_was_called = YES;
-             }];
+  feature()->FillForm(main_web_frame(), std::move(autofillData), @"firstname",
+                      FieldRendererId(2), base::BindOnce(^(NSString* result) {
+                        filling_result = [result copy];
+                        block_was_called = YES;
+                      }));
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^bool() {
         return block_was_called;
@@ -521,7 +513,7 @@ TEST_F(JsAutofillManagerTest, FillForm) {
 
 // Tests form filling (fillForm:forceFillFieldIdentifier:forceFillFieldUniqueID:
 // :inFrame:completionHandler:) method.
-TEST_F(JsAutofillManagerTest, FillFormUsingRendererIDs) {
+TEST_F(AutofillJavaScriptFeatureTest, FillFormUsingRendererIDs) {
   base::test::ScopedFeatureList scoped_feature_list;
   std::vector<base::Feature> enabled_features;
   enabled_features.push_back(
@@ -560,14 +552,11 @@ TEST_F(JsAutofillManagerTest, FillFormUsingRendererIDs) {
 
   __block NSString* filling_result = nil;
   __block BOOL block_was_called = NO;
-  [manager_ fillForm:std::move(autofillData)
-      forceFillFieldIdentifier:@"firstname"
-        forceFillFieldUniqueID:FieldRendererId(2)
-                       inFrame:main_web_frame()
-             completionHandler:^(NSString* result) {
-               filling_result = [result copy];
-               block_was_called = YES;
-             }];
+  feature()->FillForm(main_web_frame(), std::move(autofillData), @"firstname",
+                      FieldRendererId(2), base::BindOnce(^(NSString* result) {
+                        filling_result = [result copy];
+                        block_was_called = YES;
+                      }));
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForActionTimeout, ^bool() {
         return block_was_called;
@@ -577,7 +566,7 @@ TEST_F(JsAutofillManagerTest, FillFormUsingRendererIDs) {
 
 // Tests form clearing (clearAutofilledFieldsForFormName:formUniqueID:
 // fieldIdentifier:fieldUniqueID:inFrame:completionHandler:) method.
-TEST_F(JsAutofillManagerTest, ClearForm) {
+TEST_F(AutofillJavaScriptFeatureTest, ClearForm) {
   for (bool use_renderer_ids : {true, false}) {
     SCOPED_TRACE(testing::Message()
                  << "For use_renderer_ids=" << use_renderer_ids);
@@ -615,11 +604,10 @@ TEST_F(JsAutofillManagerTest, ClearForm) {
       data->SetInteger("unique_renderer_id", field_data.second);
       data->SetString("value", "testvalue");
       __block BOOL success = NO;
-      [manager_ fillActiveFormField:std::move(data)
-                            inFrame:main_web_frame()
-                  completionHandler:^(BOOL result) {
-                    success = result;
-                  }];
+      feature()->FillActiveFormField(main_web_frame(), std::move(data),
+                                     base::BindOnce(^(BOOL result) {
+                                       success = result;
+                                     }));
       EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
           base::test::ios::kWaitForActionTimeout, ^bool() {
             return success;
@@ -628,15 +616,12 @@ TEST_F(JsAutofillManagerTest, ClearForm) {
 
     __block NSString* clearing_result = nil;
     __block BOOL block_was_called = NO;
-    [manager_ clearAutofilledFieldsForFormName:@"testform"
-                                  formUniqueID:FormRendererId(1)
-                               fieldIdentifier:@"firstname"
-                                 fieldUniqueID:FieldRendererId(2)
-                                       inFrame:main_web_frame()
-                             completionHandler:^(NSString* result) {
-                               clearing_result = [result copy];
-                               block_was_called = YES;
-                             }];
+    feature()->ClearAutofilledFieldsForFormName(
+        main_web_frame(), @"testform", FormRendererId(1), @"firstname",
+        FieldRendererId(2), base::BindOnce(^(NSString* result) {
+          clearing_result = [result copy];
+          block_was_called = YES;
+        }));
     EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
         base::test::ios::kWaitForActionTimeout, ^bool() {
           return block_was_called;
