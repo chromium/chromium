@@ -6,8 +6,9 @@ import {AsyncJobQueue} from '../../../async_job_queue.js';
 import {assert, assertString} from '../../../chrome_util.js';
 import * as dom from '../../../dom.js';
 // eslint-disable-next-line no-unused-vars
-import {EncoderParameters} from '../../../h264.js';
+import * as h264 from '../../../h264.js';
 import {Filenamer} from '../../../models/file_namer.js';
+import * as loadTimeData from '../../../models/load_time_data.js';
 import {
   VideoSaver,  // eslint-disable-line no-unused-vars
 } from '../../../models/video_saver.js';
@@ -29,13 +30,22 @@ import {PhotoResult} from './photo.js';  // eslint-disable-line no-unused-vars
 import {RecordTime} from './record_time.js';
 
 /**
- * @type {?EncoderParameters}
+ * Maps from board name to its default encoding profile and bitrate multiplier.
+ * @const {!Map<string, {profile: h264.Profile, multiplier: number}>}
+ */
+const encoderPreference = new Map([
+  ['strongbad', {profile: h264.Profile.HIGH, multiplier: 6}],
+  ['trogdor', {profile: h264.Profile.HIGH, multiplier: 6}],
+]);
+
+/**
+ * @type {?h264.EncoderParameters}
  */
 let avc1Parameters = null;
 
 /**
  * Sets avc1 parameter used in video recording.
- * @param {?EncoderParameters} params
+ * @param {?h264.EncoderParameters} params
  */
 export function setAvc1Parameters(params) {
   avc1Parameters = params;
@@ -43,12 +53,13 @@ export function setAvc1Parameters(params) {
 
 /**
  * Gets video recording MIME type. Mkv with AVC1 is the only preferred format.
+ * @param {?h264.EncoderParameters} param
  * @return {string} Video recording MIME type.
  */
-function getVideoMimeType() {
+function getVideoMimeType(param) {
   let suffix = '';
-  if (avc1Parameters !== null) {
-    const {profile, level} = avc1Parameters;
+  if (param !== null) {
+    const {profile, level} = param;
     suffix = '.' + profile.toString(16).padStart(2, '0') +
         level.toString(16).padStart(4, '0');
   }
@@ -268,6 +279,33 @@ export class Video extends ModeBase {
   }
 
   /**
+   * @return {?h264.EncoderParameters}
+   * @private
+   */
+  getEncoderParameters_() {
+    if (avc1Parameters !== null) {
+      return avc1Parameters;
+    }
+    const preference = encoderPreference.get(loadTimeData.getBoard());
+    if (preference === undefined) {
+      return null;
+    }
+    const {profile, multiplier} = preference;
+    const {width, height, frameRate} =
+        this.stream_.getVideoTracks()[0].getSettings();
+    const resolution = new Resolution(width, height);
+    const bitrate = resolution.area * multiplier;
+    const level = h264.getMinimalLevel(profile, bitrate, frameRate, resolution);
+    if (level === null) {
+      console.warn(
+          `No valid level found for ` +
+          `profile: ${h264.getProfileName(profile)} bitrate: ${bitrate}`);
+      return null;
+    }
+    return {profile, level, bitrate};
+  }
+
+  /**
    * @override
    */
   async start_() {
@@ -282,14 +320,15 @@ export class Video extends ModeBase {
     }
 
     try {
-      const mimeType = getVideoMimeType();
+      const param = this.getEncoderParameters_();
+      const mimeType = getVideoMimeType(param);
       if (!MediaRecorder.isTypeSupported(mimeType)) {
         throw new Error(
             `The preferred mimeType "${mimeType}" is not supported.`);
       }
       const option = {mimeType};
-      if (avc1Parameters !== null) {
-        option.videoBitsPerSecond = avc1Parameters.bitrate;
+      if (param !== null) {
+        option.videoBitsPerSecond = param.bitrate;
       }
       this.mediaRecorder_ = new MediaRecorder(this.stream_, option);
     } catch (e) {

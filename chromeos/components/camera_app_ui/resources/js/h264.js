@@ -156,3 +156,22 @@ export function checkLevelLimits(level, fps, {width, height}) {
   const limit = levelLimits.get(level);
   return frameSize <= limit.frameSize && processRate <= limit.processRate;
 }
+
+/**
+ * Gets minimal available level with respect to given profile, bitrate,
+ * resolution, fps.
+ * @param {!Profile} profile
+ * @param {number} bitrate
+ * @param {number} fps
+ * @param {!Resolution} resolution
+ * @return {?Level}
+ */
+export function getMinimalLevel(profile, bitrate, fps, resolution) {
+  for (const level of Levels) {
+    if (checkLevelLimits(level, fps, resolution) &&
+        getMaxBitrate(profile, level) >= bitrate) {
+      return level;
+    }
+  }
+  return null;
+}
