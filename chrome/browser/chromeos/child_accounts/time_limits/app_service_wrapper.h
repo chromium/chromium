@@ -18,7 +18,7 @@
 class Profile;
 
 namespace apps {
-class AppServiceProxyChromeOs;
+class AppServiceProxy;
 class AppUpdate;
 class InstanceUpdate;
 }  // namespace apps
@@ -157,7 +157,7 @@ class AppServiceWrapper : public apps::AppRegistryCache::Observer,
       apps::InstanceRegistry* cache) override;
 
  private:
-  apps::AppServiceProxyChromeOs* GetAppProxy();
+  apps::AppServiceProxy* GetAppProxy();
   apps::AppRegistryCache& GetAppCache() const;
   apps::InstanceRegistry& GetInstanceRegistry() const;
 

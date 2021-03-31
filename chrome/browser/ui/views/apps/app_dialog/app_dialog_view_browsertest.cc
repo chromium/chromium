@@ -70,9 +70,7 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
 
   const std::string& app_id() const { return app_id_; }
 
-  apps::AppServiceProxyChromeOs* app_service_proxy() {
-    return app_service_proxy_;
-  }
+  apps::AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
 
   bool IsAppPaused() {
     app_service_proxy()->FlushMojoCallsForTesting();
@@ -147,7 +145,7 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
 
  private:
   std::string app_id_;
-  apps::AppServiceProxyChromeOs* app_service_proxy_ = nullptr;
+  apps::AppServiceProxy* app_service_proxy_ = nullptr;
   ArcAppListPrefs* arc_app_list_pref_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
 };

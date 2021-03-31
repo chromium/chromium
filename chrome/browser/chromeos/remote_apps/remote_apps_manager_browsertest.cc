@@ -70,8 +70,9 @@ class AppUpdateWaiter : public apps::AppRegistryCache::Observer {
             return true;
           }))
       : id_(id), condition_(condition) {
-    app_registry_cache_ = &apps::AppServiceProxyFactory::GetForProfile(profile)
-                               ->AppRegistryCache();
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
+    app_registry_cache_ = &proxy->AppRegistryCache();
     app_registry_cache_observer_.Add(app_registry_cache_);
   }
 

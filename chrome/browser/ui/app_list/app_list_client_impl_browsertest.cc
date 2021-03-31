@@ -82,15 +82,16 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, IsExtensionAppOpen) {
     content::WindowedNotificationObserver app_loaded_observer(
         content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
         content::NotificationService::AllSources());
-    apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
-        extension_app->id(),
-        apps::GetEventFlags(
-            apps::mojom::LaunchContainer::kLaunchContainerWindow,
-            WindowOpenDisposition::NEW_WINDOW,
-            false /* preferred_containner */),
-        apps::mojom::LaunchSource::kFromTest,
-        apps::MakeWindowInfo(
-            display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile());
+    proxy->Launch(extension_app->id(),
+                  apps::GetEventFlags(
+                      apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                      WindowOpenDisposition::NEW_WINDOW,
+                      false /* preferred_containner */),
+                  apps::mojom::LaunchSource::kFromTest,
+                  apps::MakeWindowInfo(
+                      display::Screen::GetScreen()->GetPrimaryDisplay().id()));
     app_loaded_observer.Wait();
   }
   EXPECT_TRUE(delegate->IsAppOpen(extension_app->id()));
@@ -129,8 +130,9 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, UninstallApp) {
   base::RunLoop run_loop;
   client->UninstallApp(profile(), app->id());
 
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->FlushMojoCallsForTesting();
+  apps::AppServiceProxy* app_service_proxy_ =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+  app_service_proxy_->FlushMojoCallsForTesting();
 
   run_loop.RunUntilIdle();
   EXPECT_FALSE(wm::GetTransientChildren(client->GetAppListWindow()).empty());

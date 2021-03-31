@@ -194,13 +194,15 @@ class AppInfoGeneratorTest : public ::testing::Test {
   }
 
   apps::AppRegistryCache& GetCache() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile_.get())
-        ->AppRegistryCache();
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile_.get());
+    return proxy->AppRegistryCache();
   }
 
   apps::InstanceRegistry& GetInstanceRegistry() {
-    return apps::AppServiceProxyFactory::GetForProfile(profile_.get())
-        ->InstanceRegistry();
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile_.get());
+    return proxy->InstanceRegistry();
   }
 
   std::unique_ptr<AppInfoGenerator> GetGenerator(

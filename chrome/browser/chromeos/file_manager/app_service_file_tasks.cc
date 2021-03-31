@@ -72,7 +72,7 @@ void FindAppServiceTasks(Profile* profile,
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return;
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
   std::vector<std::string> mime_types;
@@ -119,6 +119,9 @@ void ExecuteAppServiceTask(
   if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
     return;
 
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+
   constexpr auto launch_source = apps::mojom::LaunchSource::kFromFileManager;
   constexpr auto launch_container =
       apps::mojom::LaunchContainer::kLaunchContainerWindow;
@@ -128,7 +131,7 @@ void ExecuteAppServiceTask(
   for (auto& file_system_url : file_system_urls)
     file_urls.push_back(file_system_url.ToGURL());
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithFileUrls(
+  proxy->LaunchAppWithFileUrls(
       task.app_id,
       apps::GetEventFlags(launch_container, WindowOpenDisposition::NEW_WINDOW,
                           /*prefer_container=*/true),

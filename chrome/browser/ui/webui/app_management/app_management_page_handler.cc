@@ -94,8 +94,10 @@ AppManagementPageHandler::AppManagementPageHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       profile_(profile) {
-  Observe(&apps::AppServiceProxyFactory::GetForProfile(profile_)
-               ->AppRegistryCache());
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+
+  Observe(&proxy->AppRegistryCache());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (arc::IsArcAllowedForProfile(profile_)) {
@@ -108,11 +110,13 @@ AppManagementPageHandler::~AppManagementPageHandler() {}
 
 void AppManagementPageHandler::OnPinnedChanged(const std::string& app_id,
                                                bool pinned) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+
   app_management::mojom::AppPtr app;
 
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [this, &app](const apps::AppUpdate& update) {
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [this, &app](const apps::AppUpdate& update) {
         if (update.Readiness() == apps::mojom::Readiness::kReady)
           app = CreateUIAppPtr(update);
       });
@@ -127,10 +131,12 @@ void AppManagementPageHandler::OnPinnedChanged(const std::string& app_id,
 }
 
 void AppManagementPageHandler::GetApps(GetAppsCallback callback) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+
   std::vector<app_management::mojom::AppPtr> apps;
-  apps::AppServiceProxyFactory::GetForProfile(profile_)
-      ->AppRegistryCache()
-      .ForEachApp([this, &apps](const apps::AppUpdate& update) {
+  proxy->AppRegistryCache().ForEachApp(
+      [this, &apps](const apps::AppUpdate& update) {
         if (update.ShowInManagement() == apps::mojom::OptionalBool::kTrue &&
             update.Readiness() != apps::mojom::Readiness::kUninstalledByUser) {
           apps.push_back(CreateUIAppPtr(update));
@@ -171,18 +177,24 @@ void AppManagementPageHandler::SetPinned(const std::string& app_id,
 void AppManagementPageHandler::SetPermission(
     const std::string& app_id,
     apps::mojom::PermissionPtr permission) {
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetPermission(
-      app_id, std::move(permission));
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+
+  proxy->SetPermission(app_id, std::move(permission));
 }
 
 void AppManagementPageHandler::Uninstall(const std::string& app_id) {
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->Uninstall(
-      app_id, nullptr /* parent_window */);
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+
+  proxy->Uninstall(app_id, nullptr /* parent_window */);
 }
 
 void AppManagementPageHandler::OpenNativeSettings(const std::string& app_id) {
-  apps::AppServiceProxyFactory::GetForProfile(profile_)->OpenNativeSettings(
-      app_id);
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+
+  proxy->OpenNativeSettings(app_id);
 }
 
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(

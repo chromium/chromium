@@ -64,9 +64,10 @@ AppServiceContextMenu::AppServiceContextMenu(
     const std::string& app_id,
     AppListControllerDelegate* controller)
     : AppContextMenu(delegate, profile, app_id, controller) {
-  apps::AppServiceProxyFactory::GetForProfile(profile)
-      ->AppRegistryCache()
-      .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [this](const apps::AppUpdate& update) {
         app_type_ =
             update.Readiness() == apps::mojom::Readiness::kUninstalledByUser
                 ? apps::mojom::AppType::kUnknown
@@ -77,7 +78,7 @@ AppServiceContextMenu::AppServiceContextMenu(
 AppServiceContextMenu::~AppServiceContextMenu() = default;
 
 void AppServiceContextMenu::GetMenuModel(GetMenuModelCallback callback) {
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   if (proxy->AppRegistryCache().GetAppType(app_id()) ==
       apps::mojom::AppType::kUnknown) {
@@ -359,8 +360,10 @@ void AppServiceContextMenu::ExecutePublisherContextMenuCommand(int command_id) {
   DCHECK(app_shortcut_items_);
   DCHECK_LT(index, app_shortcut_items_->size());
 
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->ExecuteContextMenuCommand(app_id(), command_id,
-                                  app_shortcut_items_->at(index).shortcut_id,
-                                  controller()->GetAppListDisplayId());
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+
+  proxy->ExecuteContextMenuCommand(app_id(), command_id,
+                                   app_shortcut_items_->at(index).shortcut_id,
+                                   controller()->GetAppListDisplayId());
 }

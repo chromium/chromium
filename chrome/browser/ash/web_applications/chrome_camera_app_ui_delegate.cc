@@ -122,14 +122,15 @@ void ChromeCameraAppUIDelegate::OpenFileInGallery(const std::string& name) {
   apps::mojom::FilePathsPtr launch_files =
       apps::mojom::FilePaths::New(file_paths);
 
-  apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_))
-      ->LaunchAppWithFiles(
-          web_app::kMediaAppId,
-          apps::mojom::LaunchContainer::kLaunchContainerWindow,
-          apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
-                              WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                              /* preferred_container=*/false),
-          apps::mojom::LaunchSource::kFromOtherApp, std::move(launch_files));
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(Profile::FromWebUI(web_ui_));
+  proxy->LaunchAppWithFiles(
+      web_app::kMediaAppId,
+      apps::mojom::LaunchContainer::kLaunchContainerWindow,
+      apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
+                          WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                          /* preferred_container=*/false),
+      apps::mojom::LaunchSource::kFromOtherApp, std::move(launch_files));
 }
 
 void ChromeCameraAppUIDelegate::OpenFeedbackDialog(

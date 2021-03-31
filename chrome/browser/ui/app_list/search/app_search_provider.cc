@@ -288,8 +288,9 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
       : AppSearchProvider::DataSource(profile, owner),
         icon_cache_(apps::AppServiceProxyFactory::GetForProfile(profile),
                     apps::IconCache::GarbageCollectionPolicy::kExplicit) {
-    Observe(&apps::AppServiceProxyFactory::GetForProfile(profile)
-                 ->AppRegistryCache());
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
+    Observe(&proxy->AppRegistryCache());
 
     sync_sessions::SessionSyncService* service =
         SessionSyncServiceFactory::GetInstance()->GetForProfile(profile);
@@ -307,7 +308,7 @@ class AppServiceDataSource : public AppSearchProvider::DataSource,
 
   // AppSearchProvider::DataSource overrides:
   void AddApps(AppSearchProvider::Apps* apps_vector) override {
-    apps::AppServiceProxyChromeOs* proxy =
+    apps::AppServiceProxy* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->AppRegistryCache().ForEachApp([this, apps_vector](
                                              const apps::AppUpdate& update) {

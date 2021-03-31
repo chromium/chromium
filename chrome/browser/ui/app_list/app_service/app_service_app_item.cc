@@ -103,10 +103,12 @@ void AppServiceAppItem::Activate(int event_flags) {
   //
   // TODO(crbug.com/1022541): Move the Chrome special case to ExtensionApps,
   // when AppService Instance feature is done.
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+
   bool is_active_app = false;
-  apps::AppServiceProxyFactory::GetForProfile(profile())
-      ->AppRegistryCache()
-      .ForOneApp(id(), [&is_active_app](const apps::AppUpdate& update) {
+  proxy->AppRegistryCache().ForOneApp(
+      id(), [&is_active_app](const apps::AppUpdate& update) {
         if (update.AppType() == apps::mojom::AppType::kCrostini ||
             ((update.AppType() == apps::mojom::AppType::kExtension ||
               update.AppType() == apps::mojom::AppType::kWeb) &&
@@ -151,17 +153,21 @@ void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
 
 void AppServiceAppItem::Launch(int event_flags,
                                apps::mojom::LaunchSource launch_source) {
-  apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
-      id(), event_flags, launch_source,
-      apps::MakeWindowInfo(GetController()->GetAppListDisplayId()));
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+  proxy->Launch(id(), event_flags, launch_source,
+                apps::MakeWindowInfo(GetController()->GetAppListDisplayId()));
 }
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile());
+
   auto icon_type =
       (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
           ? apps::mojom::IconType::kStandard
           : apps::mojom::IconType::kUncompressed;
-  apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
+  proxy->LoadIcon(
       app_type_, id(), icon_type,
       ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
       allow_placeholder_icon,

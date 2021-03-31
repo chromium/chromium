@@ -112,7 +112,9 @@ void StartSmartSelectionActionMenu::ExecuteCommand(int command_id) {
       display::Screen::GetScreen()->GetDisplayNearestPoint(point);
 
   Profile* profile = ArcSessionManager::Get()->profile();
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithIntent(
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->LaunchAppWithIntent(
       ArcAppListPrefs::Get(profile)->GetAppIdByPackageName(
           actions_[index]->activity->package_name),
       ui::EF_NONE,

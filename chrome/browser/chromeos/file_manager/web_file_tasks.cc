@@ -152,7 +152,9 @@ void ExecuteWebTask(Profile* profile,
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
 
-  apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithFiles(
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->LaunchAppWithFiles(
       task.app_id, launch_container,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
                           WindowOpenDisposition::NEW_FOREGROUND_TAB,

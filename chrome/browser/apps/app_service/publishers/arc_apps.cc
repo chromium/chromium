@@ -480,13 +480,13 @@ ArcApps* ArcApps::Get(Profile* profile) {
 
 // static
 ArcApps* ArcApps::CreateForTesting(Profile* profile,
-                                   apps::AppServiceProxyChromeOs* proxy) {
+                                   apps::AppServiceProxy* proxy) {
   return new ArcApps(profile, proxy);
 }
 
 ArcApps::ArcApps(Profile* profile) : ArcApps(profile, nullptr) {}
 
-ArcApps::ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy)
+ArcApps::ArcApps(Profile* profile, apps::AppServiceProxy* proxy)
     : profile_(profile), arc_icon_once_loader_(profile) {
   if (!arc::IsArcAllowedForProfile(profile_) ||
       (arc::ArcServiceManager::Get() == nullptr)) {

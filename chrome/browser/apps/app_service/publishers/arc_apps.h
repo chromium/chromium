@@ -40,7 +40,7 @@ class Profile;
 
 namespace apps {
 
-class AppServiceProxyChromeOs;
+class AppServiceProxy;
 
 // An app publisher (in the App Service sense) of ARC++ apps,
 //
@@ -56,7 +56,7 @@ class ArcApps : public KeyedService,
   static ArcApps* Get(Profile* profile);
 
   static ArcApps* CreateForTesting(Profile* profile,
-                                   apps::AppServiceProxyChromeOs* proxy);
+                                   apps::AppServiceProxy* proxy);
 
   explicit ArcApps(Profile* profile);
   ArcApps(const ArcApps&) = delete;
@@ -72,7 +72,7 @@ class ArcApps : public KeyedService,
   using AppIdToTaskIds = std::map<std::string, std::set<int>>;
   using TaskIdToAppId = std::map<int, std::string>;
 
-  ArcApps(Profile* profile, apps::AppServiceProxyChromeOs* proxy);
+  ArcApps(Profile* profile, apps::AppServiceProxy* proxy);
 
   // KeyedService overrides.
   void Shutdown() override;

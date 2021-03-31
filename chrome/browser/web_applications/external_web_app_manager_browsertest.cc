@@ -613,7 +613,7 @@ IN_PROC_BROWSER_TEST_F(ExternalWebAppManagerBrowserTest,
   GURL default_app_start_url("https://example.org/");
   GURL user_app_start_url("https://test.org/");
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   AppListClientImpl::GetInstance()->UpdateProfile();
   ash::AppListTestApi app_list_test_api;

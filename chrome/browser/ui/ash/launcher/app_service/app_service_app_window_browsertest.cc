@@ -175,7 +175,7 @@ class AppServiceAppWindowBrowserTest
   }
 
   ChromeLauncherController* controller_ = nullptr;
-  apps::AppServiceProxyChromeOs* app_service_proxy_ = nullptr;
+  apps::AppServiceProxy* app_service_proxy_ = nullptr;
 };
 
 // Test that we have the correct instance for Chrome apps.

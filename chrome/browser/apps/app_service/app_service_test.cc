@@ -31,10 +31,10 @@ void AppServiceTest::SetUp(Profile* profile) {
 }
 
 void AppServiceTest::UninstallAllApps(Profile* profile) {
-  auto* app_service_proxy =
+  AppServiceProxy* app_service_proxy_ =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   std::vector<apps::mojom::AppPtr> apps;
-  app_service_proxy->AppRegistryCache().ForEachApp(
+  app_service_proxy_->AppRegistryCache().ForEachApp(
       [&apps](const apps::AppUpdate& update) {
         apps::mojom::AppPtr app = apps::mojom::App::New();
         app->app_type = update.AppType();
@@ -42,7 +42,7 @@ void AppServiceTest::UninstallAllApps(Profile* profile) {
         app->readiness = apps::mojom::Readiness::kUninstalledByUser;
         apps.push_back(app.Clone());
       });
-  app_service_proxy->AppRegistryCache().OnApps(
+  app_service_proxy_->AppRegistryCache().OnApps(
       std::move(apps), apps::mojom::AppType::kUnknown,
       false /* should_notify_initialized */);
 

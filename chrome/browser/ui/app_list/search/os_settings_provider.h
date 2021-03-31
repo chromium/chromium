@@ -22,7 +22,7 @@
 class Profile;
 
 namespace apps {
-class AppServiceProxyChromeOs;
+class AppServiceProxy;
 }  // namespace apps
 
 namespace chromeos {
@@ -126,7 +126,7 @@ class OsSettingsProvider
   chromeos::settings::OsSettingsManager* const settings_manager_;
   chromeos::settings::SearchHandler* search_handler_;
   const chromeos::settings::Hierarchy* hierarchy_;
-  apps::AppServiceProxyChromeOs* app_service_proxy_;
+  apps::AppServiceProxy* app_service_proxy_;
   gfx::ImageSkia icon_;
 
   // Last query. It is reset when view is closed.

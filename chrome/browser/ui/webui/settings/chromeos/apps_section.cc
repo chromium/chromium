@@ -178,7 +178,7 @@ AppsSection::AppsSection(Profile* profile,
                          SearchTagRegistry* search_tag_registry,
                          PrefService* pref_service,
                          ArcAppListPrefs* arc_app_list_prefs,
-                         apps::AppServiceProxyChromeOs* app_service_proxy)
+                         apps::AppServiceProxy* app_service_proxy)
     : OsSettingsSection(profile, search_tag_registry),
       pref_service_(pref_service),
       arc_app_list_prefs_(arc_app_list_prefs),

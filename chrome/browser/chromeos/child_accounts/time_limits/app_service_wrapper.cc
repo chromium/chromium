@@ -169,7 +169,7 @@ void AppServiceWrapper::GetAppIcon(
     int size_hint_in_dp,
     base::OnceCallback<void(base::Optional<gfx::ImageSkia>)> on_icon_ready)
     const {
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
   const std::string app_service_id = AppServiceIdFromAppId(app_id, profile_);
   DCHECK(!app_service_id.empty());
@@ -297,7 +297,7 @@ void AppServiceWrapper::OnInstanceRegistryWillBeDestroyed(
   apps::InstanceRegistry::Observer::Observe(nullptr);
 }
 
-apps::AppServiceProxyChromeOs* AppServiceWrapper::GetAppProxy() {
+apps::AppServiceProxy* AppServiceWrapper::GetAppProxy() {
   return apps::AppServiceProxyFactory::GetForProfile(profile_);
 }
 

@@ -408,7 +408,7 @@ void SystemTrayClient::ShowGestureEducationHelp() {
   if (!profile)
     return;
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
   proxy->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
                           GURL(chrome::kChromeOSGestureEducationHelpURL),

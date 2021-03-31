@@ -493,7 +493,7 @@ void WallpaperControllerClientImpl::ShowWallpaperOnLoginScreen() {
 void WallpaperControllerClientImpl::OpenWallpaperPicker() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy->AppRegistryCache().GetAppType(
           extension_misc::kWallpaperManagerId) ==

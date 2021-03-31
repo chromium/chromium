@@ -20,9 +20,9 @@ AppBlockDialogView* g_app_block_dialog_view = nullptr;
 namespace apps {
 
 // static
-void AppServiceProxyChromeOs::CreateBlockDialog(const std::string& app_name,
-                                                const gfx::ImageSkia& image,
-                                                Profile* profile) {
+void AppServiceProxy::CreateBlockDialog(const std::string& app_name,
+                                        const gfx::ImageSkia& image,
+                                        Profile* profile) {
   views::DialogDelegate::CreateDialogWidget(
       new AppBlockDialogView(app_name, image, profile), nullptr, nullptr)
       ->Show();

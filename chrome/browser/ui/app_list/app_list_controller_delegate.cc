@@ -58,9 +58,9 @@ AppListControllerDelegate::~AppListControllerDelegate() {}
 
 void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
                                                   const std::string& app_id) {
-  DCHECK_NE(apps::AppServiceProxyFactory::GetForProfile(profile)
-                ->AppRegistryCache()
-                .GetAppType(app_id),
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  DCHECK_NE(proxy->AppRegistryCache().GetAppType(app_id),
             apps::mojom::AppType::kUnknown);
 
   web_app::AppRegistrar& registrar =
@@ -78,8 +78,9 @@ void AppListControllerDelegate::DoShowAppInfoFlow(Profile* profile,
 
 void AppListControllerDelegate::UninstallApp(Profile* profile,
                                              const std::string& app_id) {
-  apps::AppServiceProxyFactory::GetForProfile(profile)->Uninstall(
-      app_id, GetAppListWindow());
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  proxy->Uninstall(app_id, GetAppListWindow());
 }
 
 void AppListControllerDelegate::ShowOptionsPage(Profile* profile,

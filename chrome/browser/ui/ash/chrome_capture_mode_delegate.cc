@@ -103,9 +103,8 @@ void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
   if (!profile)
     return;
 
-  apps::AppServiceProxyChromeOs* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(
-          profile->GetOriginalProfile());
+  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
+      profile->GetOriginalProfile());
   apps::mojom::FilePathsPtr file_paths_ptr =
       apps::mojom::FilePaths::New(std::vector<base::FilePath>({file_path}));
 

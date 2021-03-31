@@ -120,7 +120,7 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  apps::AppServiceProxyChromeOs* proxy =
+  apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
   std::vector<std::string> app_ids =
@@ -182,9 +182,11 @@ bool CommonAppsNavigationThrottle::ShouldShowDisablePage(
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+
   std::vector<std::string> app_ids =
-      apps::AppServiceProxyFactory::GetForProfile(profile)->GetAppIdsForUrl(
-          url, /*exclude_browser=*/true);
+      proxy->GetAppIdsForUrl(url, /*exclude_browser=*/true);
 
   for (auto app_id : app_ids) {
     if (IsAppDisabled(app_id)) {

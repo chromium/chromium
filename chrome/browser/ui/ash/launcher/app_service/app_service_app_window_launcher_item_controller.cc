@@ -176,7 +176,8 @@ bool AppServiceAppWindowLauncherItemController::HasAnyTasks() const {
 
 bool AppServiceAppWindowLauncherItemController::IsChromeApp() {
   Profile* const profile = ChromeLauncherController::instance()->profile();
-  return apps::AppServiceProxyFactory::GetForProfile(profile)
-             ->AppRegistryCache()
-             .GetAppType(shelf_id().app_id) == apps::mojom::AppType::kExtension;
+  apps::AppServiceProxy* const proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
+  return proxy->AppRegistryCache().GetAppType(shelf_id().app_id) ==
+         apps::mojom::AppType::kExtension;
 }

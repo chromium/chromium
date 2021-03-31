@@ -270,7 +270,8 @@ class WebAppDeclarativeLinkCapturingBrowserTest
   }
 
   void TurnOnLinkCapturing() {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->AddPreferredApp(app_id_, start_url_);
     proxy->FlushMojoCallsForTesting();
   }

@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchAppIconKeyUnchanged) {
   const GURL app_url(embedded_test_server()->GetURL("/web_apps/basic.html"));
   const web_app::AppId app_id =
       web_app::InstallWebAppFromManifest(browser(), app_url);
-  auto* proxy =
+  AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
 
   apps::mojom::IconKeyPtr original_key;

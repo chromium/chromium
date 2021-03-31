@@ -19,13 +19,12 @@ AppPauseDialogView* g_app_pause_dialog_view = nullptr;
 }  // namespace
 
 // static
-void apps::AppServiceProxyChromeOs::CreatePauseDialog(
+void apps::AppServiceProxy::CreatePauseDialog(
     apps::mojom::AppType app_type,
     const std::string& app_name,
     const gfx::ImageSkia& image,
     const apps::PauseData& pause_data,
-    apps::AppServiceProxyChromeOs::OnPauseDialogClosedCallback
-        closed_callback) {
+    apps::AppServiceProxy::OnPauseDialogClosedCallback closed_callback) {
   views::DialogDelegate::CreateDialogWidget(
       new AppPauseDialogView(app_type, app_name, image, pause_data,
                              std::move(closed_callback)),
@@ -38,7 +37,7 @@ AppPauseDialogView::AppPauseDialogView(
     const std::string& app_name,
     const gfx::ImageSkia& image,
     const apps::PauseData& pause_data,
-    apps::AppServiceProxyChromeOs::OnPauseDialogClosedCallback closed_callback)
+    apps::AppServiceProxy::OnPauseDialogClosedCallback closed_callback)
     : AppDialogView(image) {
   SetTitle(l10n_util::GetStringFUTF16(IDS_APP_PAUSE_PROMPT_TITLE,
                                       base::UTF8ToUTF16(app_name)));

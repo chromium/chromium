@@ -3523,14 +3523,15 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeLauncherControllerTest,
       extension_system1->CreateExtensionService(
           base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
   extension_service1->Init();
+  apps::AppServiceProxy* proxy1 =
+      apps::AppServiceProxyFactory::GetForProfile(profile1);
 
   SwitchActiveUser(account_id1);
 
   // A v2 app for user #1 should be shown first and get hidden when switching
   // to desktop #2.
   extension_service1->AddExtension(extension1_.get());
-  apps::AppServiceProxyFactory::GetForProfile(profile1)
-      ->FlushMojoCallsForTesting();
+  proxy1->FlushMojoCallsForTesting();
   V2App v2_app_1(profile1, extension1_.get());
   EXPECT_TRUE(v2_app_1.window()->GetNativeWindow()->IsVisible());
   SwitchActiveUser(account_id2);

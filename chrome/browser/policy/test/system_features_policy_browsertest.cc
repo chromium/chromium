@@ -108,7 +108,8 @@ class SystemFeaturesPolicyTest : public PolicyTest {
                       bool blocked_icon,
                       const VisibilityFlags& expected_visibility) {
     auto* profile = browser()->profile();
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
     proxy->FlushMojoCallsForTesting();
 
     bool exist = proxy->AppRegistryCache().ForOneApp(
