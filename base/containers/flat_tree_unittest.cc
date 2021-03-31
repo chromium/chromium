@@ -6,7 +6,7 @@
 
 // Following tests are ported and extended tests from libcpp for std::set.
 // They can be found here:
-// https://github.com/llvm-mirror/libcxx/tree/master/test/std/containers/associative/set
+// https://github.com/llvm/llvm-project/tree/main/libcxx/test/std/containers/associative/set
 //
 // Not ported tests:
 // * No tests with PrivateConstructor and std::less<> changed to std::less<T>
