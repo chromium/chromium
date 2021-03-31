@@ -652,7 +652,17 @@ try_.chromium_angle_builder(
 )
 
 try_.chromium_angle_builder(
+    name = "fuchsia-angle-try",
+    executable = "recipe:angle_chromium_trybot",
+)
+
+try_.chromium_angle_builder(
     name = "linux-angle-rel",
+)
+
+try_.chromium_angle_builder(
+    name = "linux-angle-chromium-try",
+    executable = "recipe:angle_chromium_trybot",
 )
 
 try_.chromium_angle_builder(
@@ -660,7 +670,17 @@ try_.chromium_angle_builder(
 )
 
 try_.chromium_angle_builder(
+    name = "linux-angle-try",
+    executable = "recipe:angle_chromium_trybot",
+)
+
+try_.chromium_angle_builder(
     name = "linux_angle_ozone_rel_ng",
+)
+
+try_.chromium_angle_builder(
+    name = "linux-ozone-angle-try",
+    executable = "recipe:angle_chromium_trybot",
 )
 
 try_.chromium_angle_builder(
