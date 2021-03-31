@@ -4,7 +4,6 @@
 
 #include "ash/shelf/home_to_overview_nudge_controller.h"
 
-#include "ash/home_screen/swipe_home_to_overview_controller.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
@@ -13,6 +12,7 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
+#include "ash/shelf/swipe_home_to_overview_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/overview/overview_controller.h"

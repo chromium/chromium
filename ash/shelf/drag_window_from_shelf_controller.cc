@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/home_screen/drag_window_from_shelf_controller.h"
+#include "ash/shelf/drag_window_from_shelf_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/home_screen/window_scale_animation.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_backdrop.h"
@@ -16,6 +15,7 @@
 #include "ash/screen_util.h"
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
+#include "ash/shelf/window_scale_animation.h"
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_view.h"

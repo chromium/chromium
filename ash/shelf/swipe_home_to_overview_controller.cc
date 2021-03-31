@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/home_screen/swipe_home_to_overview_controller.h"
+#include "ash/shelf/swipe_home_to_overview_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/home_screen/drag_window_from_shelf_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/contextual_tooltip.h"
+#include "ash/shelf/drag_window_from_shelf_controller.h"
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -117,7 +117,6 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
       overview_transition_timer_.Stop();
     }
   }
-
 
   // Update the home screen scale to match progress during the drag.
   // Use extended threshold as the projected final transition position - UI

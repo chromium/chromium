@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/home_screen/swipe_home_to_overview_controller.h"
+#include "ash/shelf/swipe_home_to_overview_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"

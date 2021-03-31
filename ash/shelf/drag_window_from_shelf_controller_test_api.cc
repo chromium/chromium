@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/home_screen/drag_window_from_shelf_controller_test_api.h"
+#include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 

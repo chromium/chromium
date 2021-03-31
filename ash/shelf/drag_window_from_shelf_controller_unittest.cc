@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/home_screen/drag_window_from_shelf_controller.h"
+#include "ash/shelf/drag_window_from_shelf_controller.h"
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
-#include "ash/home_screen/drag_window_from_shelf_controller_test_api.h"
 #include "ash/public/cpp/overview_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/window_backdrop.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_metrics.h"
 #include "ash/shell.h"

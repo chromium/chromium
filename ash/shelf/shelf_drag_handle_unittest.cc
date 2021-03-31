@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 #include "ash/app_list/test/app_list_test_helper.h"
-#include "ash/home_screen/drag_window_from_shelf_controller.h"
-#include "ash/home_screen/drag_window_from_shelf_controller_test_api.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/contextual_tooltip.h"
 #include "ash/shelf/drag_handle.h"
+#include "ash/shelf/drag_window_from_shelf_controller.h"
+#include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/test/shelf_layout_manager_test_base.h"
 #include "ash/shell.h"

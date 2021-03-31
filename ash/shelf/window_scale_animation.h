@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_HOME_SCREEN_WINDOW_SCALE_ANIMATION_H_
-#define ASH_HOME_SCREEN_WINDOW_SCALE_ANIMATION_H_
+#ifndef ASH_SHELF_WINDOW_SCALE_ANIMATION_H_
+#define ASH_SHELF_WINDOW_SCALE_ANIMATION_H_
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -33,10 +33,9 @@ class WindowScaleAnimation : public ui::ImplicitAnimationObserver,
     kScaleUpToRestore,
   };
 
-  WindowScaleAnimation(
-      aura::Window* window,
-      WindowScaleType scale_type,
-      base::OnceClosure opt_callback);
+  WindowScaleAnimation(aura::Window* window,
+                       WindowScaleType scale_type,
+                       base::OnceClosure opt_callback);
   ~WindowScaleAnimation() override;
 
   // ui::ImplicitAnimationObserver:
@@ -63,4 +62,4 @@ class WindowScaleAnimation : public ui::ImplicitAnimationObserver,
 
 }  // namespace ash
 
-#endif  // ASH_HOME_SCREEN_WINDOW_SCALE_ANIMATION_H_
+#endif  // ASH_SHELF_WINDOW_SCALE_ANIMATION_H_

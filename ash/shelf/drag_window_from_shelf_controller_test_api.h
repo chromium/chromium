@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_HOME_SCREEN_DRAG_WINDOW_FROM_SHELF_CONTROLLER_TEST_API_H_
-#define ASH_HOME_SCREEN_DRAG_WINDOW_FROM_SHELF_CONTROLLER_TEST_API_H_
+#ifndef ASH_SHELF_DRAG_WINDOW_FROM_SHELF_CONTROLLER_TEST_API_H_
+#define ASH_SHELF_DRAG_WINDOW_FROM_SHELF_CONTROLLER_TEST_API_H_
 
 #include "ash/ash_export.h"
-#include "ash/home_screen/drag_window_from_shelf_controller.h"
+#include "ash/shelf/drag_window_from_shelf_controller.h"
 #include "base/run_loop.h"
 
 namespace ash {
@@ -34,4 +34,4 @@ class ASH_EXPORT DragWindowFromShelfControllerTestApi
 
 }  // namespace ash
 
-#endif  // ASH_HOME_SCREEN_DRAG_WINDOW_FROM_SHELF_CONTROLLER_TEST_API_H_
+#endif  // ASH_SHELF_DRAG_WINDOW_FROM_SHELF_CONTROLLER_TEST_API_H_
