@@ -156,14 +156,29 @@ def main():
   parser = argparse.ArgumentParser(description='build and package clang')
   parser.add_argument('--upload', action='store_true',
                       help='Upload the target archive to Google Cloud Storage.')
+  parser.add_argument('--build-mac-arm', action='store_true',
+                      help='Build arm binaries. Only valid on macOS.')
   args = parser.parse_args()
+
+  if args.build_mac_arm and sys.platform != 'darwin':
+    print('--build-mac-arm only valid on macOS')
+    return 1
 
   expected_stamp = GetExpectedStamp()
   pdir = 'clang-' + expected_stamp
   print(pdir)
 
   if sys.platform == 'darwin':
-    platform = 'Mac'
+    # When we need to run this script on an arm machine, we need to add a
+    # --build-mac-intel switch to pick which clang to build, pick the
+    # 'Mac_arm64' here when there's no flag and 'Mac' when --build-mac-intel is
+    # passed. Also update the build script to explicitly pass a default triple
+    # then.
+    assert platform.machine() != 'arm64'
+    if args.build_mac_arm:
+      platform = 'Mac_arm64'
+    else:
+      platform = 'Mac'
   elif sys.platform == 'win32':
     platform = 'Win'
   else:
@@ -182,6 +197,8 @@ def main():
         os.path.join(THIS_DIR, 'build.py'), '--bootstrap', '--disable-asserts',
         '--run-tests', '--pgo'
     ]
+    if args.build_mac_arm:
+      build_cmd.append('--build-mac-arm')
     if sys.platform != 'darwin':
       build_cmd.append('--thinlto')
 
@@ -219,8 +236,11 @@ def main():
       # Include libclang_rt.builtins.a for Fuchsia targets.
       'lib/clang/$V/lib/aarch64-fuchsia/libclang_rt.builtins.a',
       'lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.builtins.a',
-      'lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.profile.a',
     ])
+    if not args.build_mac_arm
+      # TODO(thakis): Figure out why this doesn't build in --build-mac-arm
+      # builds.
+      want.append('lib/clang/$V/lib/x86_64-fuchsia/libclang_rt.profile.a')
   if sys.platform == 'darwin':
     want.extend([
       # AddressSanitizer runtime.
