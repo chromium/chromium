@@ -750,6 +750,38 @@ Response InspectorOverlayAgent::setShowFlexOverlays(
   return Response::Success();
 }
 
+Response InspectorOverlayAgent::setShowScrollSnapOverlays(
+    std::unique_ptr<
+        protocol::Array<protocol::Overlay::ScrollSnapHighlightConfig>>
+        scroll_snap_highlight_configs) {
+  if (!persistent_tool_) {
+    persistent_tool_ =
+        MakeGarbageCollected<PersistentTool>(this, GetFrontend());
+  }
+
+  Vector<
+      std::pair<Member<Node>,
+                std::unique_ptr<InspectorScrollSnapContainerHighlightConfig>>>
+      configs;
+
+  for (std::unique_ptr<protocol::Overlay::ScrollSnapHighlightConfig>& config :
+       *scroll_snap_highlight_configs) {
+    Node* node = nullptr;
+    Response response = dom_agent_->AssertNode(config->getNodeId(), node);
+    if (!response.IsSuccess())
+      return response;
+    configs.push_back(std::make_pair(
+        node, InspectorOverlayAgent::ToScrollSnapContainerHighlightConfig(
+                  config->getScrollSnapContainerHighlightConfig())));
+  }
+
+  persistent_tool_->SetScrollSnapConfigs(std::move(configs));
+
+  PickTheRightTool();
+
+  return Response::Success();
+}
+
 Response InspectorOverlayAgent::highlightSourceOrder(
     std::unique_ptr<protocol::Overlay::SourceOrderConfig>
         source_order_inspector_object,
@@ -1543,6 +1575,29 @@ InspectorOverlayAgent::ToFlexContainerHighlightConfig(
       InspectorOverlayAgent::ToBoxStyle(config->getColumnGapSpace(nullptr));
   highlight_config->cross_alignment =
       InspectorOverlayAgent::ToLineStyle(config->getCrossAlignment(nullptr));
+
+  return highlight_config;
+}
+
+// static
+std::unique_ptr<InspectorScrollSnapContainerHighlightConfig>
+InspectorOverlayAgent::ToScrollSnapContainerHighlightConfig(
+    protocol::Overlay::ScrollSnapContainerHighlightConfig* config) {
+  if (!config) {
+    return nullptr;
+  }
+  std::unique_ptr<InspectorScrollSnapContainerHighlightConfig>
+      highlight_config =
+          std::make_unique<InspectorScrollSnapContainerHighlightConfig>();
+  highlight_config->snapport_border =
+      InspectorOverlayAgent::ToLineStyle(config->getSnapportBorder(nullptr));
+  highlight_config->snap_area_border =
+      InspectorOverlayAgent::ToLineStyle(config->getSnapAreaBorder(nullptr));
+
+  highlight_config->scroll_margin_color =
+      InspectorDOMAgent::ParseColor(config->getScrollMarginColor(nullptr));
+  highlight_config->scroll_padding_color =
+      InspectorDOMAgent::ParseColor(config->getScrollPaddingColor(nullptr));
 
   return highlight_config;
 }
