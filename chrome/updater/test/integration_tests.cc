@@ -44,9 +44,6 @@
 namespace updater {
 namespace test {
 
-// TODO(crbug.com/1096654): Enable tests for IntegrationTestCommandsSystem on
-// bots that support passwordless sudo.
-
 // TODO(crbug.com/1096654): Enable for system integration tests for Win.
 
 class IntegrationTest : public ::testing::Test {

@@ -5658,7 +5658,7 @@
       },
       'mac10.15-updater-tester-rel': {
         'test_suites': {
-          'gtest_tests': 'updater_gtests',
+          'gtest_tests': 'updater_mac_gtests',
           'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {

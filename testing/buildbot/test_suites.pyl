@@ -5214,6 +5214,18 @@
       'updater_integration_tests': {},
     },
 
+    'updater_system_gtests': {
+      'updater_tests_system': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.updater.mac',
+            }
+          ]
+        }
+      },
+    },
+
     'upload_perfetto': {
       'upload_trace_processor': {},
     },
@@ -6793,6 +6805,11 @@
 
     'sandboxed_chromium_memory_linux_gtests': [
       'chromium_browser_tests',
+    ],
+
+    'updater_mac_gtests': [
+      'updater_gtests',
+      'updater_system_gtests',
     ],
 
     'webrtc_android_tests_with_baremetal_tests': [
