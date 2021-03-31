@@ -124,12 +124,6 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // FlocSortingLshClustersService::Observer
   void OnSortingLshClustersFileReady() override;
 
-  // This function will be called at the start or when the sorting-lsh file is
-  // loaded. It'll trigger an immediate floc computation if the floc was never
-  // computed before, or if the floc already expired when the browser session
-  // starts.
-  void MaybeTriggerImmediateComputation();
-
   void ComputeFloc();
 
   void CheckCanComputeFloc(CanComputeFlocCallback callback);
@@ -145,13 +139,6 @@ class FlocIdProviderImpl : public FlocIdProvider,
   void OnGetRecentlyVisitedURLsCompleted(ComputeFlocCompletedCallback callback,
                                          history::QueryResults results);
 
-  // Apply the sorting-lsh post processing to compute the final versioned floc.
-  // The final floc may be invalid if the file is corrupted or the floc end up
-  // being blocked.
-  void ApplySortingLshPostProcessing(ComputeFlocCompletedCallback callback,
-                                     uint64_t sim_hash,
-                                     base::Time history_begin_time,
-                                     base::Time history_end_time);
   void DidApplySortingLshPostProcessing(ComputeFlocCompletedCallback callback,
                                         uint64_t sim_hash,
                                         base::Time history_begin_time,
@@ -196,8 +183,6 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // result, but since this would only happen in rare race situations, we just
   // always recompute to keep things simple.
   bool need_recompute_ = false;
-
-  bool first_sorting_lsh_file_ready_seen_ = false;
 
   // Used for the async tasks querying the HistoryService.
   base::CancelableTaskTracker history_task_tracker_;

@@ -178,13 +178,18 @@ class MockFlocEventLogger : public FlocEventLogger {
   std::vector<Event> events_;
 };
 
-class FlocIdProviderWithCustomizedServicesBrowserTest
+class FlocIdProviderSortingLshUninitializedBrowserTest
     : public FlocIdProviderBrowserTest {
  public:
-  FlocIdProviderWithCustomizedServicesBrowserTest() {
+  FlocIdProviderSortingLshUninitializedBrowserTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         kFederatedLearningOfCohorts,
         {{"minimum_history_domain_size_required", "1"}});
+  }
+
+  void SetUpOnMainThread() override {
+    FlocIdProviderBrowserTest::SetUpOnMainThread();
+    ConfigureReplacementHostAndPortForRemotePermissionService();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -197,7 +202,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
     subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &FlocIdProviderWithCustomizedServicesBrowserTest::
+                &FlocIdProviderSortingLshUninitializedBrowserTest::
                     OnWillCreateBrowserContextServices,
                 base::Unretained(this)));
   }
@@ -205,7 +210,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
   // FlocIdProviderBrowserTest::RegisterRequestHandler
   void RegisterRequestHandler() override {
     https_server_.RegisterRequestHandler(base::BindRepeating(
-        &FlocIdProviderWithCustomizedServicesBrowserTest::HandleRequest,
+        &FlocIdProviderSortingLshUninitializedBrowserTest::HandleRequest,
         base::Unretained(this)));
   }
 
@@ -349,10 +354,7 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
 
   void FinishOutstandingAsyncQueries() {
     FinishOutstandingHistoryQueries();
-
-    if (base::FeatureList::IsEnabled(kFlocIdSortingLshBasedComputation))
-      FinishOutstandingSortingLshQueries();
-
+    FinishOutstandingSortingLshQueries();
     FinishOutstandingRemotePermissionQueries();
   }
 
@@ -391,25 +393,25 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
   void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
     ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
         context,
-        base::BindRepeating(
-            &FlocIdProviderWithCustomizedServicesBrowserTest::CreateSyncService,
-            base::Unretained(this)));
+        base::BindRepeating(&FlocIdProviderSortingLshUninitializedBrowserTest::
+                                CreateSyncService,
+                            base::Unretained(this)));
 
     browser_sync::UserEventServiceFactory::GetInstance()->SetTestingFactory(
         context,
-        base::BindRepeating(&FlocIdProviderWithCustomizedServicesBrowserTest::
+        base::BindRepeating(&FlocIdProviderSortingLshUninitializedBrowserTest::
                                 CreateUserEventService,
                             base::Unretained(this)));
 
     FlocRemotePermissionServiceFactory::GetInstance()->SetTestingFactory(
         context,
-        base::BindRepeating(&FlocIdProviderWithCustomizedServicesBrowserTest::
+        base::BindRepeating(&FlocIdProviderSortingLshUninitializedBrowserTest::
                                 CreateFlocRemotePermissionService,
                             base::Unretained(this)));
 
     FlocIdProviderFactory::GetInstance()->SetTestingFactory(
         context,
-        base::BindRepeating(&FlocIdProviderWithCustomizedServicesBrowserTest::
+        base::BindRepeating(&FlocIdProviderSortingLshUninitializedBrowserTest::
                                 CreateFlocIdProvider,
                             base::Unretained(this)));
   }
@@ -499,18 +501,77 @@ class FlocIdProviderWithCustomizedServicesBrowserTest
   base::CallbackListSubscription subscription_;
 };
 
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
-                       FlocIdValue_ImmediateComputeOnStartUp) {
-  ConfigureReplacementHostAndPortForRemotePermissionService();
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshUninitializedBrowserTest,
+                       SortingLshBlocked) {
+  // All sim_hash will be encoded as 0 during sorting-lsh, and that result will
+  // be blocked.
+  InitializeSortingLsh({{kMaxNumberOfBitsInFloc, true}}, base::Version("2.0"));
 
+  // Expect that the final id is invalid because it was blocked.
+  EXPECT_FALSE(GetFlocId().IsValid());
+
+  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
+  floc_event_logger_->HandleLastRequest();
   FinishOutstandingAsyncQueries();
+
+  // Expect that the FlocIdComputed user event is recorded with the desired
+  // sim-hash.
+  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
+  const sync_pb::UserEventSpecifics& specifics =
+      user_event_service()->GetRecordedUserEvents()[0];
+  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
+      specifics.floc_id_computed_event();
+  EXPECT_EQ(FlocId::SimHashHistory({"initial-history.com"}), event.floc_id());
+}
+
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshUninitializedBrowserTest,
+                       CorruptedSortingLSH) {
+  // All sim_hash will be encoded as an invalid id.
+  InitializeSortingLsh({}, base::Version("3"));
+
+  // Expect that the final id is invalid due to unexpected sorting-lsh file
+  // format.
+  EXPECT_FALSE(GetFlocId().IsValid());
+
+  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
+  floc_event_logger_->HandleLastRequest();
+  FinishOutstandingAsyncQueries();
+
+  // Expect that the FlocIdComputed user event is recorded with the desired
+  // sim-hash.
+  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
+  const sync_pb::UserEventSpecifics& specifics =
+      user_event_service()->GetRecordedUserEvents()[0];
+  const sync_pb::UserEventSpecifics_FlocIdComputed& event =
+      specifics.floc_id_computed_event();
+  EXPECT_EQ(FlocId::SimHashHistory({"initial-history.com"}), event.floc_id());
+}
+
+class FlocIdProviderSortingLshInitializedBrowserTest
+    : public FlocIdProviderSortingLshUninitializedBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    FlocIdProviderSortingLshUninitializedBrowserTest::SetUpOnMainThread();
+    ConfigureReplacementHostAndPortForRemotePermissionService();
+
+    // Initialize the sorting-lsh file to trigger the 1st computation. All
+    // sim_hash will be encoded as 0 during sorting-lsh process.
+    InitializeSortingLsh({{kMaxNumberOfBitsInFloc, false}},
+                         base::Version("9.0"));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
+                       FlocIdValue_ImmediateComputeOnStartUp) {
   EXPECT_TRUE(GetFlocId().IsValid());
 
   EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
   floc_event_logger_->HandleLastRequest();
   FinishOutstandingAsyncQueries();
 
-  // Expect that the FlocIdComputed user event is recorded.
+  // Check that the original sim_hash is not 0, and we are recording the
+  // sim_hash in the event log.
+  EXPECT_NE(0u, FlocId::SimHashHistory({"initial-history.com"}));
   ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
   const sync_pb::UserEventSpecifics& specifics =
       user_event_service()->GetRecordedUserEvents()[0];
@@ -521,13 +582,10 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   EXPECT_EQ(FlocId::SimHashHistory({"initial-history.com"}), event.floc_id());
 }
 
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
                        UkmEvent) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  FinishOutstandingAsyncQueries();
   EXPECT_TRUE(GetFlocId().IsValid());
 
   auto entries =
@@ -542,16 +600,13 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   EXPECT_EQ(1u, entries.size());
 
   ukm_recorder.ExpectEntrySourceHasUrl(entries.front(), main_frame_url);
-  ukm_recorder.ExpectEntryMetric(
-      entries.front(), ukm::builders::FlocPageLoad::kFlocIdName,
-      /*expected_value=*/FlocId::SimHashHistory({"initial-history.com"}));
+  ukm_recorder.ExpectEntryMetric(entries.front(),
+                                 ukm::builders::FlocPageLoad::kFlocIdName,
+                                 /*expected_value=*/0);
 }
 
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
                        ClearCookiesInvalidateFloc) {
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  FinishOutstandingAsyncQueries();
   EXPECT_TRUE(GetFlocId().IsValid());
 
   EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
@@ -564,11 +619,8 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
 }
 
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
                        HistoryDeleteInvalidateFloc) {
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  FinishOutstandingAsyncQueries();
   EXPECT_TRUE(GetFlocId().IsValid());
 
   EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
@@ -597,9 +649,8 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   EXPECT_FALSE(event.has_floc_id());
 }
 
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
                        InterestCohortAPI_FlocNotAvailable) {
-  FinishOutstandingAsyncQueries();
   EXPECT_TRUE(GetFlocId().IsValid());
 
   ExpireHistoryBefore(base::Time::Now());
@@ -612,25 +663,20 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   EXPECT_EQ("rejected", InvokeInterestCohortJsApi(web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
                        InterestCohortAPI_MainFrame) {
-  FinishOutstandingAsyncQueries();
   EXPECT_TRUE(GetFlocId().IsValid());
 
   ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL(test_host(), "/title1.html"));
 
   // Promise resolved with the expected dictionary object.
-  EXPECT_EQ(base::StrCat({"{\"id\":\"",
-                          base::NumberToString(
-                              FlocId::SimHashHistory({"initial-history.com"})),
-                          "\",\"version\":\"chrome.1.0\"}"}),
+  EXPECT_EQ(base::StrCat({"{\"id\":\"0\",\"version\":\"chrome.1.9\"}"}),
             InvokeInterestCohortJsApi(web_contents()));
 }
 
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
                        InterestCohortAPI_SameOriginSubframe) {
-  FinishOutstandingAsyncQueries();
   EXPECT_TRUE(GetFlocId().IsValid());
 
   ui_test_utils::NavigateToURL(
@@ -644,16 +690,12 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Promise resolved with the expected dictionary object.
-  EXPECT_EQ(base::StrCat({"{\"id\":\"",
-                          base::NumberToString(
-                              FlocId::SimHashHistory({"initial-history.com"})),
-                          "\",\"version\":\"chrome.1.0\"}"}),
+  EXPECT_EQ(base::StrCat({"{\"id\":\"0\",\"version\":\"chrome.1.9\"}"}),
             InvokeInterestCohortJsApi(child));
 }
 
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
                        InterestCohortAPI_CrossOriginSubframe) {
-  FinishOutstandingAsyncQueries();
   EXPECT_TRUE(GetFlocId().IsValid());
 
   ui_test_utils::NavigateToURL(
@@ -667,16 +709,12 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
       content::ChildFrameAt(web_contents()->GetMainFrame(), 0);
 
   // Promise resolved with the expected dictionary object.
-  EXPECT_EQ(base::StrCat({"{\"id\":\"",
-                          base::NumberToString(
-                              FlocId::SimHashHistory({"initial-history.com"})),
-                          "\",\"version\":\"chrome.1.0\"}"}),
+  EXPECT_EQ(base::StrCat({"{\"id\":\"0\",\"version\":\"chrome.1.9\"}"}),
             InvokeInterestCohortJsApi(child));
 }
 
-IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshInitializedBrowserTest,
                        InterestCohortAPI_CookiesPermissionDisallow) {
-  FinishOutstandingAsyncQueries();
   EXPECT_TRUE(GetFlocId().IsValid());
 
   ui_test_utils::NavigateToURL(
@@ -699,24 +737,18 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderWithCustomizedServicesBrowserTest,
   EXPECT_EQ("rejected", InvokeInterestCohortJsApi(child));
 
   // Promise resolved with the expected dictionary object.
-  EXPECT_EQ(base::StrCat({"{\"id\":\"",
-                          base::NumberToString(
-                              FlocId::SimHashHistory({"initial-history.com"})),
-                          "\",\"version\":\"chrome.1.0\"}"}),
+  EXPECT_EQ(base::StrCat({"{\"id\":\"0\",\"version\":\"chrome.1.9\"}"}),
             InvokeInterestCohortJsApi(web_contents()));
 }
 
 class FlocIdProviderAutoDenyRemotePermissionBrowserTest
-    : public FlocIdProviderWithCustomizedServicesBrowserTest {
+    : public FlocIdProviderSortingLshInitializedBrowserTest {
  public:
   bool ShouldAllowRemotePermission() const override { return false; }
 };
 
 IN_PROC_BROWSER_TEST_F(FlocIdProviderAutoDenyRemotePermissionBrowserTest,
                        CookieNotSent_RemotePermissionDenied_NoEventLogging) {
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  FinishOutstandingHistoryQueries();
   EXPECT_TRUE(GetFlocId().IsValid());
 
   EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
@@ -725,91 +757,6 @@ IN_PROC_BROWSER_TEST_F(FlocIdProviderAutoDenyRemotePermissionBrowserTest,
 
   // The event shouldn't have been recorded.
   ASSERT_EQ(0u, user_event_service()->GetRecordedUserEvents().size());
-}
-
-class FlocIdProviderSortingLshEnabledBrowserTest
-    : public FlocIdProviderWithCustomizedServicesBrowserTest {
- public:
-  FlocIdProviderSortingLshEnabledBrowserTest() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{kFederatedLearningOfCohorts,
-          {{"minimum_history_domain_size_required", "1"}}},
-         {kFlocIdSortingLshBasedComputation, {}}},
-        {});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
-                       SingleSortingLshCluster) {
-  FinishOutstandingHistoryQueries();
-
-  // Initially the floc is invalid because the sorting-lsh file is not ready.
-  EXPECT_FALSE(GetFlocId().IsValid());
-
-  // All sim_hash will be encoded as 0 during sorting-lsh
-  InitializeSortingLsh({{kMaxNumberOfBitsInFloc, false}}, base::Version("9.0"));
-
-  EXPECT_TRUE(GetFlocId().IsValid());
-
-  // Check that the original sim_hash is not 0.
-  EXPECT_NE(0u, FlocId::SimHashHistory({test_host()}));
-
-  // Navigate to an https site. The initial about:blank page is not considered
-  // as a secure context to be able to use the API.
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL(test_host(), "/title1.html"));
-
-  // Expect that the final id is 0 because the sorting-lsh was applied.
-  EXPECT_EQ("{\"id\":\"0\",\"version\":\"chrome.1.9\"}",
-            InvokeInterestCohortJsApi(web_contents()));
-}
-
-IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
-                       SortingLshBlocked) {
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  FinishOutstandingHistoryQueries();
-  EXPECT_FALSE(GetFlocId().IsValid());
-
-  // All sim_hash will be encoded as 0 during sorting-lsh, and that result will
-  // be blocked.
-  InitializeSortingLsh({{kMaxNumberOfBitsInFloc, true}}, base::Version("2.0"));
-
-  // Check that the original sim_hash is not 0.
-  EXPECT_NE(0u, FlocId::SimHashHistory({test_host()}));
-
-  // Expect that the final id is invalid because it was blocked.
-  EXPECT_FALSE(GetFlocId().IsValid());
-
-  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
-  floc_event_logger_->HandleLastRequest();
-  FinishOutstandingAsyncQueries();
-
-  // Expect that the FlocIdComputed user event is recorded.
-  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
-}
-
-IN_PROC_BROWSER_TEST_F(FlocIdProviderSortingLshEnabledBrowserTest,
-                       CorruptedSortingLSH) {
-  ConfigureReplacementHostAndPortForRemotePermissionService();
-
-  FinishOutstandingHistoryQueries();
-  EXPECT_FALSE(GetFlocId().IsValid());
-
-  // All sim_hash will be encoded as an invalid id.
-  InitializeSortingLsh({}, base::Version("3"));
-
-  // Expect that the final id is invalid due to unexpected sorting-lsh file
-  // format.
-  EXPECT_FALSE(GetFlocId().IsValid());
-
-  EXPECT_EQ(1u, floc_event_logger_->NumberOfLogAttemptsQueued());
-  floc_event_logger_->HandleLastRequest();
-  FinishOutstandingAsyncQueries();
-
-  // Expect that the FlocIdComputed user event is recorded.
-  ASSERT_EQ(1u, user_event_service()->GetRecordedUserEvents().size());
 }
 
 }  // namespace federated_learning

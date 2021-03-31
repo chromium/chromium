@@ -23,9 +23,6 @@ namespace {
 
 constexpr int kQueryHistoryWindowInDays = 7;
 
-// The placeholder sorting-lsh version when the sorting-lsh feature is disabled.
-constexpr uint32_t kSortingLshVersionPlaceholder = 0;
-
 struct StartupComputeDecision {
   bool invalidate_existing_floc = true;
   // Will be base::nullopt if should recompute immediately.
@@ -127,8 +124,6 @@ FlocIdProviderImpl::FlocIdProviderImpl(
           ->IsSortingLshClustersFileReady()) {
     OnSortingLshClustersFileReady();
   }
-
-  MaybeTriggerImmediateComputation();
 }
 
 FlocIdProviderImpl::~FlocIdProviderImpl() {
@@ -259,25 +254,10 @@ void FlocIdProviderImpl::OnURLsDeleted(
 }
 
 void FlocIdProviderImpl::OnSortingLshClustersFileReady() {
-  if (first_sorting_lsh_file_ready_seen_)
-    return;
-
-  first_sorting_lsh_file_ready_seen_ = true;
-
-  MaybeTriggerImmediateComputation();
-}
-
-void FlocIdProviderImpl::MaybeTriggerImmediateComputation() {
-  // If the floc computation is neither in progress nor scheduled, it means we
-  // want to trigger an immediate computation, or as soon as the sorting-lsh
-  // file is loaded when the sorting-lsh feature is enabled.
+  // If the floc computation is happening now or is scheduled, no-op; otherwise,
+  // we want to trigger a computation as soon as the sorting-lsh file is loaded.
   if (floc_computation_in_progress_ || compute_floc_timer_.IsRunning())
     return;
-
-  if (!first_sorting_lsh_file_ready_seen_ &&
-      base::FeatureList::IsEnabled(kFlocIdSortingLshBasedComputation)) {
-    return;
-  }
 
   ComputeFloc();
 }
@@ -367,23 +347,11 @@ void FlocIdProviderImpl::OnGetRecentlyVisitedURLsCompleted(
     return;
   }
 
-  ApplySortingLshPostProcessing(std::move(callback),
-                                FlocId::SimHashHistory(domains),
-                                history_begin_time, history_end_time);
-}
+  uint64_t sim_hash = FlocId::SimHashHistory(domains);
 
-void FlocIdProviderImpl::ApplySortingLshPostProcessing(
-    ComputeFlocCompletedCallback callback,
-    uint64_t sim_hash,
-    base::Time history_begin_time,
-    base::Time history_end_time) {
-  if (!base::FeatureList::IsEnabled(kFlocIdSortingLshBasedComputation)) {
-    std::move(callback).Run(ComputeFlocResult(
-        sim_hash, FlocId(sim_hash, history_begin_time, history_end_time,
-                         kSortingLshVersionPlaceholder)));
-    return;
-  }
-
+  // Apply the sorting-lsh post processing to compute the final versioned floc.
+  // The final floc may be invalid if the file is corrupted or the floc is in
+  // the block list.
   g_browser_process->floc_sorting_lsh_clusters_service()->ApplySortingLsh(
       sim_hash,
       base::BindOnce(&FlocIdProviderImpl::DidApplySortingLshPostProcessing,

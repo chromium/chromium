@@ -14,11 +14,6 @@ namespace federated_learning {
 const base::Feature kFlocIdComputedEventLogging{
     "FlocIdComputedEventLogging", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// If enabled, the sim-hash floc computed from history will be further encoded
-// based on the sorting-lsh.
-const base::Feature kFlocIdSortingLshBasedComputation{
-    "FlocIdSortingLshBasedComputation", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // The main floc feature for all the subsidiary control and setting params. It's
 // controlling the floc update rate, and the minimum history domain size
 // required.
