@@ -152,4 +152,21 @@ export function scanDoneSectionTest() {
         chromeos.scanning.mojom.FileType.kPdf.toString();
     assertFalse(isVisible(editButton));
   });
+
+  test('editFileButtonLabel', () => {
+    scanDoneSection.numFilesSaved = 1;
+    return flushTasks()
+        .then(() => {
+          assertEquals(
+              'Edit file',
+              scanDoneSection.$$('#editButtonLabel').textContent.trim());
+          scanDoneSection.numFilesSaved = 2;
+          return flushTasks();
+        })
+        .then(() => {
+          assertEquals(
+              'Edit files',
+              scanDoneSection.$$('#editButtonLabel').textContent.trim());
+        });
+  });
 }

@@ -31,7 +31,10 @@ Polymer({
 
   properties: {
     /** @type {number} */
-    numFilesSaved: Number,
+    numFilesSaved: {
+      type: Number,
+      observer: 'onNumFilesSavedChange_',
+    },
 
     /** @type {!Array<!mojoBase.mojom.FilePath>} */
     scannedFilePaths: Array,
@@ -59,6 +62,9 @@ Polymer({
       computed:
           'computeShowEditButton_(scanAppMediaLinkEnabled_, selectedFileType)',
     },
+
+    /** @private {string} */
+    editButtonLabel_: String,
   },
 
   observers: ['setFileSavedTextContent_(numFilesSaved, selectedFolder)'],
@@ -165,4 +171,13 @@ Polymer({
     this.browserProxy_.openFilesInMediaApp(
         this.scannedFilePaths.map(filePath => filePath.path));
   },
+
+  /** @private */
+  onNumFilesSavedChange_() {
+    this.browserProxy_.getPluralString('editButtonLabel', this.numFilesSaved)
+        .then(
+            /* @type {string} */ (pluralString) => {
+              this.editButtonLabel_ = pluralString;
+            });
+  }
 });

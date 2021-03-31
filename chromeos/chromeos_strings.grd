@@ -626,7 +626,9 @@ Try tapping the mic to ask me anything.
         Retry
       </message>
       <message name="IDS_SCANNING_APP_EDIT_BUTTON_LABEL" desc="The label for the button that opens the Media app for editing scanned files.">
-        Edit
+        {0, plural,
+        =1 {Edit file}
+        other {Edit files}}
       </message>
 
       <!-- Diagnostics App -->
