@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+class ExceptionState;
 class ExecutionContext;
 
 class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
@@ -36,7 +37,7 @@ class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
   DEFINE_ATTRIBUTE_EVENT_LISTENER(prioritychange, kPrioritychange)
 
   void AddPriorityChangeAlgorithm(base::OnceClosure algorithm);
-  void SignalPriorityChange(const AtomicString& priority);
+  void SignalPriorityChange(const AtomicString& priority, ExceptionState&);
 
   bool IsTaskSignal() const override { return true; }
 
@@ -53,6 +54,8 @@ class MODULES_EXPORT DOMTaskSignal final : public AbortSignal {
       PriorityChangeStatus::kNoPriorityChange;
 
   Vector<base::OnceClosure> priority_change_algorithms_;
+
+  bool is_priority_changing_ = false;
 };
 
 template <>

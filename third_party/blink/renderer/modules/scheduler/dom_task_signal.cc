@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
 
@@ -26,18 +27,27 @@ void DOMTaskSignal::AddPriorityChangeAlgorithm(base::OnceClosure algorithm) {
   priority_change_algorithms_.push_back(std::move(algorithm));
 }
 
-void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority) {
+void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
+                                         ExceptionState& exception_state) {
+  if (is_priority_changing_) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "Cannot change priority when a prioritychange event is in progress.");
+    return;
+  }
   if (priority_ == priority)
     return;
+  is_priority_changing_ = true;
   priority_ = priority;
+  priority_change_status_ = PriorityChangeStatus::kPriorityHasChanged;
 
   for (base::OnceClosure& closure : priority_change_algorithms_) {
     std::move(closure).Run();
   }
   priority_change_algorithms_.clear();
 
-  priority_change_status_ = PriorityChangeStatus::kPriorityHasChanged;
   DispatchEvent(*Event::Create(event_type_names::kPrioritychange));
+  is_priority_changing_ = false;
 }
 
 void DOMTaskSignal::Trace(Visitor* visitor) const {

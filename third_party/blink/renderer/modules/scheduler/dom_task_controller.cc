@@ -21,8 +21,10 @@ DOMTaskController::DOMTaskController(ExecutionContext* context,
   DCHECK(!context->IsContextDestroyed());
 }
 
-void DOMTaskController::setPriority(const AtomicString& priority) {
-  return static_cast<DOMTaskSignal*>(signal())->SignalPriorityChange(priority);
+void DOMTaskController::setPriority(const AtomicString& priority,
+                                    ExceptionState& exception_state) {
+  static_cast<DOMTaskSignal*>(signal())->SignalPriorityChange(priority,
+                                                              exception_state);
 }
 
 }  // namespace blink
