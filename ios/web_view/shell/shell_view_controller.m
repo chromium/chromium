@@ -1049,6 +1049,31 @@ NSString* const kWebViewShellJavaScriptDialogTextFieldAccessibilityIdentifier =
   [self updateToolbar];
 }
 
+- (void)webView:(CWVWebView*)webView
+    handleSSLErrorWithHandler:(CWVSSLErrorHandler*)handler {
+  NSLog(@"%@", NSStringFromSelector(_cmd));
+  [handler displayErrorPageWithHTML:handler.error.localizedDescription];
+
+  if (!handler.overridable) {
+    return;
+  }
+
+  UIAlertController* alertController =
+      [self actionSheetWithTitle:@"SSL error encountered"
+                         message:@"Would you like to continue anyways?"];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Yes"
+                                         style:UIAlertActionStyleDefault
+                                       handler:^(UIAlertAction* action) {
+                                         [handler overrideErrorAndReloadPage];
+                                       }]];
+  [alertController
+      addAction:[UIAlertAction actionWithTitle:@"Cancel"
+                                         style:UIAlertActionStyleCancel
+                                       handler:nil]];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
 - (void)webViewWebContentProcessDidTerminate:(CWVWebView*)webView {
   NSLog(@"%@", NSStringFromSelector(_cmd));
 }

@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CWVDownloadTask;
 @class CWVSSLStatus;
+@class CWVSSLErrorHandler;
 @class CWVWebView;
 
 // The decision to pass back to the decision handler from
@@ -62,10 +63,14 @@ FOUNDATION_EXPORT CWV_EXPORT NSErrorUserInfoKey CWVCertStatusKey;
 - (void)webViewDidFinishNavigation:(CWVWebView*)webView;
 
 // Notifies the delegate that page load has failed.
-// When the page load has failed due to an SSL certification error,
-// -webView:didFailNavigationWithSSLError:overridable:decisionHandler:
 // is called instead of this method.
 - (void)webView:(CWVWebView*)webView didFailNavigationWithError:(NSError*)error;
+
+// Notifies the delegate that page load failed due to a SSL error.
+// |handler| can be used to help with communicating the error to the user, and
+// potentially override and ignore it.
+- (void)webView:(CWVWebView*)webView
+    handleSSLErrorWithHandler:(CWVSSLErrorHandler*)handler;
 
 // Notifies the delegate that the page load has failed due to an SSL error. If
 // |overridable| is YES, the method can ignore the error and reload the page by
@@ -81,6 +86,8 @@ FOUNDATION_EXPORT CWV_EXPORT NSErrorUserInfoKey CWVCertStatusKey;
 // CWVSSLErrorDecisionOverrideErrorAndReload, it must not be called
 // synchronously in the method. It breaks status management and causes an
 // assertion failure. It must be called asynchronously to avoid it.
+//
+// Deprecated: Use |webView:handleSSLErrorWithHandler:| instead.
 - (void)webView:(CWVWebView*)webView
     didFailNavigationWithSSLError:(NSError*)error
                       overridable:(BOOL)overridable

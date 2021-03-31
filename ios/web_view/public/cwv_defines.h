@@ -27,4 +27,7 @@
 // Allows customization of CWVWebView's user agent string.
 #define IOS_WEB_VIEW_SUPPORTS_CWV_WEB_VIEW_CUSTOM_USER_AGENT 1
 
+// Allows handling of SSL errors with CWVSSLErrorHandler.
+#define IOS_WEB_VIEW_SUPPORTS_CWV_SSL_ERROR_HANDLER 1
+
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_DEFINES_H_
