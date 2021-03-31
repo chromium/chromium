@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/scanning/scanning_handler.h"
+#include "ash/content/scanning/scanning_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/content/scanning/scanning_app_delegate.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/values.h"
-#include "chromeos/components/scanning/scanning_app_delegate.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/content/scanning/mojom/scanning.mojom-test-utils.h"
+#include "ash/content/scanning/mojom/scanning.mojom.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -21,8 +23,6 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/scanning/fake_lorgnette_scanner_manager.h"
-#include "chromeos/components/scanning/mojom/scanning.mojom-test-utils.h"
-#include "chromeos/components/scanning/mojom/scanning.mojom.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

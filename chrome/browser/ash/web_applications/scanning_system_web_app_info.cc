@@ -6,10 +6,10 @@
 
 #include <memory>
 
+#include "ash/content/scanning/url_constants.h"
+#include "ash/grit/ash_scanning_app_resources.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chromeos/components/scanning/url_constants.h"
-#include "chromeos/grit/chromeos_scanning_app_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"

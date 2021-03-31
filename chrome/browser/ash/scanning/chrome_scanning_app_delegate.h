@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/content/scanning/scanning_app_delegate.h"
 #include "base/files/file_path.h"
-#include "chromeos/components/scanning/scanning_app_delegate.h"
 
 namespace content {
 class WebUI;

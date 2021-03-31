@@ -1,7 +1,8 @@
 include_rules = [
   "+ash/constants",
+  "+ash/grit/ash_scanning_app_resources.h",
+  "+ash/grit/ash_scanning_app_resources_map.h",
   "-chrome",
-  "+chromeos/grit/chromeos_scanning_app_resources.h",
   "+chromeos/strings/grit/chromeos_strings.h",
   "+content/public/browser",
   "+content/public/test",

@@ -7,7 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_type_check("closure_compile") {
   is_polymer3 = true
   closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://scanning/=../../chromeos/components/scanning/resources/\"",
+                    "browser_resolver_prefix_replacements=\"chrome://scanning/=../../ash/content/scanning/resources/\"",
                     "js_module_root=../../chrome/test/data/webui/",
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
@@ -33,7 +33,7 @@ js_library("color_mode_select_test") {
   deps = [
     ":scanning_app_test_utils",
     "../..:chai_assert",
-    "//chromeos/components/scanning/resources:color_mode_select",
+    "//ash/content/scanning/resources:color_mode_select",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -41,7 +41,7 @@ js_library("color_mode_select_test") {
 js_library("file_type_select_test") {
   deps = [
     "../..:chai_assert",
-    "//chromeos/components/scanning/resources:file_type_select",
+    "//ash/content/scanning/resources:file_type_select",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -49,7 +49,7 @@ js_library("file_type_select_test") {
 js_library("loading_page_test") {
   deps = [
     "../..:chai_assert",
-    "//chromeos/components/scanning/resources:loading_page",
+    "//ash/content/scanning/resources:loading_page",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -57,7 +57,7 @@ js_library("loading_page_test") {
 js_library("page_size_select_test") {
   deps = [
     "../..:chai_assert",
-    "//chromeos/components/scanning/resources:page_size_select",
+    "//ash/content/scanning/resources:page_size_select",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -65,7 +65,7 @@ js_library("page_size_select_test") {
 js_library("resolution_select_test") {
   deps = [
     "../..:chai_assert",
-    "//chromeos/components/scanning/resources:resolution_select",
+    "//ash/content/scanning/resources:resolution_select",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -73,7 +73,7 @@ js_library("resolution_select_test") {
 js_library("scan_done_section_test") {
   deps = [
     "../..:chai_assert",
-    "//chromeos/components/scanning/resources:scan_done_section",
+    "//ash/content/scanning/resources:scan_done_section",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -81,7 +81,7 @@ js_library("scan_done_section_test") {
 js_library("scan_preview_test") {
   deps = [
     "../..:chai_assert",
-    "//chromeos/components/scanning/resources:scan_preview",
+    "//ash/content/scanning/resources:scan_preview",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -90,7 +90,7 @@ js_library("scan_to_select_test") {
   deps = [
     ":test_scanning_browser_proxy",
     "../..:chai_assert",
-    "//chromeos/components/scanning/resources:scan_to_select",
+    "//ash/content/scanning/resources:scan_to_select",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -99,7 +99,7 @@ js_library("scanner_select_test") {
   deps = [
     ":scanning_app_test_utils",
     "../..:chai_assert",
-    "//chromeos/components/scanning/resources:scanner_select",
+    "//ash/content/scanning/resources:scanner_select",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -109,7 +109,7 @@ js_library("scanning_app_test") {
     ":scanning_app_test_utils",
     "../..:chai_assert",
     "../..:test_util.m",
-    "//chromeos/components/scanning/resources:scanning_app",
+    "//ash/content/scanning/resources:scanning_app",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
@@ -126,7 +126,7 @@ js_library("scanning_app_unified_test") {
 js_library("source_select_test") {
   deps = [
     ":scanning_app_test_utils",
-    "//chromeos/components/scanning/resources:source_select",
+    "//ash/content/scanning/resources:source_select",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }
@@ -135,6 +135,6 @@ js_library("test_scanning_browser_proxy") {
   deps = [
     "../..:chai_assert",
     "../..:test_browser_proxy.m",
-    "//chromeos/components/scanning/resources:scanning_browser_proxy",
+    "//ash/content/scanning/resources:scanning_browser_proxy",
   ]
 }

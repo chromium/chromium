@@ -1664,7 +1664,7 @@
                   '|components/metrics/public/mojom/call_stack*',
     },
     'scanning': {
-      'filepath': 'chromeos/components/scanning/'\
+      'filepath': 'ash/content/scanning/'\
                   '|chrome/browser/ash/scanning/',
     },
     'screen_orientation': {

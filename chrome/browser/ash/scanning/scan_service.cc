@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "ash/content/scanning/scanning_uma.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -24,7 +25,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
-#include "chromeos/components/scanning/scanning_uma.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"

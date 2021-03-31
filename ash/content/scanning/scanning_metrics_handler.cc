@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/scanning/scanning_metrics_handler.h"
+#include "ash/content/scanning/scanning_metrics_handler.h"
 
+#include "ash/content/scanning/mojom/scanning.mojom.h"
+#include "ash/content/scanning/scanning_uma.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
-#include "chromeos/components/scanning/mojom/scanning.mojom.h"
-#include "chromeos/components/scanning/scanning_uma.h"
 
 namespace chromeos {
 

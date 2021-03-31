@@ -401,7 +401,7 @@
     "META": {"sizes": {"includes": [50],}},
     "includes": [2640],
   },
-  "chromeos/components/scanning/resources/scanning_app_resources.grd": {
+  "ash/content/scanning/resources/scanning_app_resources.grd": {
     "includes": [2645],
     "structures": [2650],
   },

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_SCANNING_SCANNING_METRICS_HANDLER_H_
-#define CHROMEOS_COMPONENTS_SCANNING_SCANNING_METRICS_HANDLER_H_
+#ifndef ASH_CONTENT_SCANNING_SCANNING_METRICS_HANDLER_H_
+#define ASH_CONTENT_SCANNING_SCANNING_METRICS_HANDLER_H_
 
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -35,4 +35,4 @@ class ScanningMetricsHandler : public content::WebUIMessageHandler {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_SCANNING_SCANNING_METRICS_HANDLER_H_
+#endif  // ASH_CONTENT_SCANNING_SCANNING_METRICS_HANDLER_H_

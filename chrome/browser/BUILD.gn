@@ -2371,6 +2371,8 @@ static_library("browser") {
     deps += [
       "//ash/components/audio",
       "//ash/constants",
+      "//ash/content/scanning",
+      "//ash/content/scanning/mojom",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser/nearby_sharing/common",
       "//chrome/browser/ui/webui/chromeos/add_supervision:mojo_bindings",
@@ -2401,8 +2403,6 @@ static_library("browser") {
       "//chromeos/components/print_management",
       "//chromeos/components/print_management/mojom",
       "//chromeos/components/quick_answers/public/cpp:prefs",
-      "//chromeos/components/scanning",
-      "//chromeos/components/scanning/mojom",
       "//chromeos/dbus/attestation",
       "//chromeos/dbus/attestation:attestation_proto",
       "//chromeos/dbus/cryptohome",

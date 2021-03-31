@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/grit_rule.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+grit("scanning_app_resources") {
+  source = "../../content/scanning/resources/scanning_app_resources.grd"
+
+  deps = [
+    "../../content/scanning/mojom:mojom_js",
+    "../../content/scanning/resources:web_components",
+  ]
+
+  outputs = [
+    "ash_scanning_app_resources.pak",
+    "grit/ash_scanning_app_resources.h",
+    "grit/ash_scanning_app_resources_map.cc",
+    "grit/ash_scanning_app_resources_map.h",
+  ]
+
+  output_dir = "$root_gen_dir/ash"
+}

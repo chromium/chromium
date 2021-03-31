@@ -412,6 +412,7 @@ include_rules = [
   # Code under //ash should be accessed via its public API. See //ash/README.md.
   "-ash",
   "+ash/constants",
+  "+ash/content",
   "+ash/public",
   "+ash/keyboard/ui/grit",
   "+ash/keyboard/ui/resources",

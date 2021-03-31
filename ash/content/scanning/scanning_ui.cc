@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/scanning/scanning_ui.h"
+#include "ash/content/scanning/scanning_ui.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/content/scanning/mojom/scanning.mojom.h"
+#include "ash/content/scanning/scanning_app_delegate.h"
+#include "ash/content/scanning/scanning_metrics_handler.h"
+#include "ash/content/scanning/url_constants.h"
+#include "ash/grit/ash_scanning_app_resources.h"
+#include "ash/grit/ash_scanning_app_resources_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "chromeos/components/scanning/mojom/scanning.mojom.h"
-#include "chromeos/components/scanning/scanning_app_delegate.h"
-#include "chromeos/components/scanning/scanning_metrics_handler.h"
-#include "chromeos/components/scanning/url_constants.h"
-#include "chromeos/grit/chromeos_scanning_app_resources.h"
-#include "chromeos/grit/chromeos_scanning_app_resources_map.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -135,8 +135,8 @@ ScanningUI::ScanningUI(
       "script-src chrome://resources chrome://test 'self';");
   html_source->DisableTrustedTypesCSP();
 
-  const auto resources = base::make_span(kChromeosScanningAppResources,
-                                         kChromeosScanningAppResourcesSize);
+  const auto resources =
+      base::make_span(kAshScanningAppResources, kAshScanningAppResourcesSize);
   SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_SCANNING_APP_INDEX_HTML);
 

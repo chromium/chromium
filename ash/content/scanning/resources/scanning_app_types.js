@@ -21,7 +21,7 @@ export const AppState = {
  * Enum for the action taken after a completed scan. These values are persisted
  * to logs. Entries should not be renumbered and numeric values should never be
  * reused. These values must be kept in sync with the ScanCompleteAction enum in
- * /chromeos/components/scanning/scanning_uma.h.
+ * /ash/content/scanning/scanning_uma.h.
  * @enum {number}
  */
 export const ScanCompleteAction = {

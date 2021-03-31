@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# TODO(https://crbug.com/1164001): When a directory which contains .grd moves
+# to ash during the code migration project, a target should be moved to
+# //ash/components/resources/BUILD.gn as well.
+
 import("//chromeos/assistant/assistant.gni")
 import("//chromeos/components/eche_app_ui/eche_app_ui.gni")
 import("//chromeos/components/help_app_ui/help_app_ui.gni")
@@ -234,24 +238,6 @@ grit("print_management_resources") {
     "grit/chromeos_print_management_resources_map.cc",
     "grit/chromeos_print_management_resources_map.h",
     "chromeos_print_management_resources.pak",
-  ]
-
-  output_dir = "$root_gen_dir/chromeos"
-}
-
-grit("scanning_app_resources") {
-  source = "../components/scanning/resources/scanning_app_resources.grd"
-
-  deps = [
-    "../components/scanning/mojom:mojom_js",
-    "../components/scanning/resources:web_components",
-  ]
-
-  outputs = [
-    "chromeos_scanning_app_resources.pak",
-    "grit/chromeos_scanning_app_resources.h",
-    "grit/chromeos_scanning_app_resources_map.cc",
-    "grit/chromeos_scanning_app_resources_map.h",
   ]
 
   output_dir = "$root_gen_dir/chromeos"

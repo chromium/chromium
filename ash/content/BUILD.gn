@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+# To add a unit test to this target, make a "unit_test" source_set in your
+# component and add a reference here.
+test("ash_content_unittests") {
+  sources = [ "run_all_unittests.cc" ]
+
+  deps = [
+    "//ash/content/scanning:unit_tests",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+  ]
+}
+
+group("closure_compile") {
+  testonly = true
+  deps = [ "//ash/content/scanning:closure_compile" ]
+}

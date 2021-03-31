@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SCANNING_SCANNING_TYPE_CONVERTERS_H_
 #define CHROME_BROWSER_ASH_SCANNING_SCANNING_TYPE_CONVERTERS_H_
 
-#include "chromeos/components/scanning/mojom/scanning.mojom.h"
+#include "ash/content/scanning/mojom/scanning.mojom.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 
 namespace lorgnette {

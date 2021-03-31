@@ -151,6 +151,8 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/content/scanning/scanning_ui.h"
+#include "ash/content/scanning/url_constants.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
@@ -228,8 +230,6 @@
 #include "chromeos/components/personalization_app/personalization_app_url_constants.h"
 #include "chromeos/components/print_management/print_management_ui.h"
 #include "chromeos/components/print_management/url_constants.h"
-#include "chromeos/components/scanning/scanning_ui.h"
-#include "chromeos/components/scanning/url_constants.h"
 #include "chromeos/services/multidevice_setup/multidevice_setup_service.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"

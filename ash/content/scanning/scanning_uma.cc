@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/scanning/scanning_uma.h"
+#include "ash/content/scanning/scanning_uma.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_SCANNING_SCANNING_APP_DELEGATE_H_
-#define CHROMEOS_COMPONENTS_SCANNING_SCANNING_APP_DELEGATE_H_
+#ifndef ASH_CONTENT_SCANNING_SCANNING_APP_DELEGATE_H_
+#define ASH_CONTENT_SCANNING_SCANNING_APP_DELEGATE_H_
 
 #include <memory>
 #include <string>
@@ -46,4 +46,4 @@ class ScanningAppDelegate {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_COMPONENTS_SCANNING_SCANNING_APP_DELEGATE_H_
+#endif  // ASH_CONTENT_SCANNING_SCANNING_APP_DELEGATE_H_
