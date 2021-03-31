@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.feed;
 
 import static org.chromium.components.browser_ui.widget.listmenu.BasicListMenu.buildMenuListItem;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.SystemClock;
@@ -18,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.MemoryPressureListener;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.app.feedmanagement.FeedManagementActivity;
 import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
@@ -72,6 +75,7 @@ public class FeedSurfaceMediator
     private static final int INTEREST_FEED_HEADER_POSITION = 0;
 
     private final FeedSurfaceCoordinator mCoordinator;
+    private final Context mContext;
     private final @Nullable SnapScrollHelper mSnapScrollHelper;
     private final PrefChangeRegistrar mPrefChangeRegistrar;
     private final SigninManager mSigninManager;
@@ -109,16 +113,18 @@ public class FeedSurfaceMediator
 
     /**
      * @param coordinator The {@link FeedSurfaceCoordinator} that interacts with this class.
+     * @param context The current context.
      * @param snapScrollHelper The {@link SnapScrollHelper} that handles snap scrolling.
      * @param pageNavigationDelegate The {@link NativePageNavigationDelegate} that handles page
      *         navigation.
      * @param propertyModel The {@link PropertyModel} that contains this mediator should work with.
      */
-    FeedSurfaceMediator(FeedSurfaceCoordinator coordinator,
+    FeedSurfaceMediator(FeedSurfaceCoordinator coordinator, Context context,
             @Nullable SnapScrollHelper snapScrollHelper,
             @Nullable NativePageNavigationDelegate pageNavigationDelegate,
             PropertyModel propertyModel) {
         mCoordinator = coordinator;
+        mContext = context;
         mSnapScrollHelper = snapScrollHelper;
         mSigninManager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
@@ -433,10 +439,15 @@ public class FeedSurfaceMediator
         ModelList itemList = new ModelList();
         int iconId = 0;
         if (mSigninManager.getIdentityManager().hasPrimaryAccount()) {
-            itemList.add(buildMenuListItem(R.string.ntp_manage_my_activity,
-                    R.id.ntp_feed_header_menu_item_activity, iconId));
-            itemList.add(buildMenuListItem(R.string.ntp_manage_interests,
-                    R.id.ntp_feed_header_menu_item_interest, iconId));
+            if (FeedFeatures.isWebFeedUIEnabled()) {
+                itemList.add(buildMenuListItem(
+                        R.string.ntp_manage_feed, R.id.ntp_feed_header_menu_item_manage, iconId));
+            } else {
+                itemList.add(buildMenuListItem(R.string.ntp_manage_my_activity,
+                        R.id.ntp_feed_header_menu_item_activity, iconId));
+                itemList.add(buildMenuListItem(R.string.ntp_manage_interests,
+                        R.id.ntp_feed_header_menu_item_interest, iconId));
+            }
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2_HEARTS)) {
                 itemList.add(buildMenuListItem(R.string.ntp_manage_reactions,
                         R.id.ntp_feed_header_menu_item_reactions, iconId));
@@ -580,7 +591,10 @@ public class FeedSurfaceMediator
     public void onItemSelected(PropertyModel item) {
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
         Stream stream = mCoordinator.getStream();
-        if (itemId == R.id.ntp_feed_header_menu_item_activity) {
+        if (itemId == R.id.ntp_feed_header_menu_item_manage) {
+            Intent intent = new Intent(mContext, FeedManagementActivity.class);
+            mContext.startActivity(intent);
+        } else if (itemId == R.id.ntp_feed_header_menu_item_activity) {
             mPageNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://myactivity.google.com/myactivity?product=50"));
             if (stream != null) {

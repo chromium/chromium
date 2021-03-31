@@ -94,6 +94,7 @@
     <item type="id" name="context_menu_delegate" />
 
     <!-- NTP-->
+    <item type="id" name="ntp_feed_header_menu_item_manage" />
     <item type="id" name="ntp_feed_header_menu_item_activity" />
     <item type="id" name="ntp_feed_header_menu_item_interest" />
     <item type="id" name="ntp_feed_header_menu_item_reactions" />

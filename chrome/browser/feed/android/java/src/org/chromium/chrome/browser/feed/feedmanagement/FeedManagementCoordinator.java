@@ -26,7 +26,7 @@ public class FeedManagementCoordinator {
 
         // Once this is attached to the ListView, there is no need to hold a reference to it.
         ModelListAdapter adapter = new ModelListAdapter(listItems);
-        adapter.registerType(FeedManagementItemProperties.ListItemType.DEFAULT,
+        adapter.registerType(FeedManagementItemProperties.DEFAULT_ITEM_TYPE,
                 new LayoutViewBuilder<FeedManagementItemView>(R.layout.feed_management_list_item),
                 FeedManagementItemViewBinder::bind);
 

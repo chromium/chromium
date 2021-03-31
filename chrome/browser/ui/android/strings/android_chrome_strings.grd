@@ -2762,6 +2762,33 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_NTP_MANAGE_REACTIONS" desc="Content description to manage feed reactions from the feed header overflow menu.">
         Manage reactions
       </message>
+      <message name="IDS_NTP_MANAGE_FEED" desc="Menu item to manage feed settings from the feed header overflow menu.">
+        Manage
+      </message>
+      <message name="IDS_FEED_MANAGE_ACTIVITY" desc="Menu item to manage my activity from the feed header overflow menu.">
+        Activity
+      </message>
+      <message name="IDS_FEED_MANAGE_ACTIVITY_DESCRIPTION" desc="Content description to manage my activity from the feed header overflow menu.">
+        Control your Google accounts data
+      </message>
+      <message name="IDS_FEED_MANAGE_INTERESTS" desc="Menu item to manage settings from the feed header overflow menu.">
+        Interests
+      </message>
+      <message name="IDS_FEED_MANAGE_INTERESTS_DESCRIPTION" desc="Content description to manage settings from the feed header overflow menu.">
+        Manage the topics that you're interested in
+      </message>
+      <message name="IDS_FEED_MANAGE_HIDDEN" desc="Menu item to manage hiding and unhiding topics.">
+        Hidden
+      </message>
+      <message name="IDS_FEED_MANAGE_HIDDEN_DESCRIPTION" desc="Content description to manage hiding and unhiding topics.">
+        Hide and unhide topics
+      </message>
+      <message name="IDS_FEED_MANAGE_FOLLOWING" desc="Menu item to manage followed sites.">
+        Following
+      </message>
+      <message name="IDS_FEED_MANAGE_FOLLOWING_DESCRIPTION" desc="Content description to manage followed sites.">
+        Manage the sites that you're following
+      </message>
       <message name="IDS_NTP_TURN_OFF_FEED" desc="Content description to turn off the feed from the feed header overflow menu.">
         Turn off
       </message>

@@ -14,13 +14,13 @@
     android:layoutDirection="locale">
 
   <!-- Header: we want back_arrow.icon, "Manage", then info.icon (png?) -->
-  <!-- TODO(petewil): Add string resource for "manage". -->
   <!-- TODO(petewil): Make the arrow into a clicable button. -->
   <TextView
       android:id="@+id/feed_management_page_title"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      app:drawableStartCompat="@drawable/ic_arrow_back_24dp" />
+      app:drawableStartCompat="@drawable/ic_arrow_back_24dp"
+      android:text="@string/ntp_manage_feed" />
 
   <ListView
       android:id="@+id/feed_management_menu"
