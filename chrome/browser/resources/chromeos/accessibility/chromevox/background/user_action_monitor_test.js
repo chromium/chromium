@@ -462,3 +462,26 @@ TEST_F('ChromeVoxUserActionMonitorTest', 'Gestures', function() {
     assertTrue(finished);
   });
 });
+
+// Tests that we can perform a command when an action has been matched.
+TEST_F('ChromeVoxUserActionMonitorTest', 'AfterActionCommand', function() {
+  const mockFeedback = this.createMockFeedback();
+  this.runWithLoadedTree(this.simpleDoc, function() {
+    let finished = false;
+    const actions = [{
+      type: 'gesture',
+      value: Gesture.SWIPE_RIGHT1,
+      afterActionCmd: 'announceBatteryDescription'
+    }];
+    const onFinished = () => finished = true;
+
+    ChromeVoxState.instance.createUserActionMonitor(actions, onFinished);
+    mockFeedback
+        .call(() => {
+          doGesture(Gesture.SWIPE_RIGHT1)();
+          assertTrue(finished);
+        })
+        .expectSpeech(/Battery at [0-9]+ percent/)
+        .replay();
+  });
+});

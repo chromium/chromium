@@ -180,6 +180,7 @@ UserActionMonitor.CLOSE_CHROMEVOX_KEY_SEQUENCE_ = KeySequence.deserialize(
  *    shouldPropagate: (boolean|undefined),
  *    beforeActionMsg: (string|undefined),
  *    afterActionMsg: (string|undefined),
+ *    afterActionCmd: (string|undefined),
  * }}
  */
 UserActionMonitor.ActionInfo;
@@ -262,6 +263,7 @@ UserActionMonitor.Action = class {
     const shouldPropagate = info.shouldPropagate;
     const beforeActionMsg = info.beforeActionMsg;
     const afterActionMsg = info.afterActionMsg;
+    const afterActionCmd = info.afterActionCmd;
 
     const beforeActionCallback = () => {
       if (!beforeActionMsg) {
@@ -271,12 +273,14 @@ UserActionMonitor.Action = class {
       UserActionMonitor.Action.output_(beforeActionMsg);
     };
 
+    // A function that either provides output or performs a command when the
+    // action has been matched.
     const afterActionCallback = () => {
-      if (!afterActionMsg) {
-        return;
+      if (afterActionMsg) {
+        UserActionMonitor.Action.output_(afterActionMsg);
+      } else if (afterActionCmd) {
+        UserActionMonitor.Action.onCommand_(afterActionCmd);
       }
-
-      UserActionMonitor.Action.output_(afterActionMsg);
     };
 
     return new UserActionMonitor.Action({
@@ -314,5 +318,14 @@ UserActionMonitor.Action = class {
    */
   static output_(message) {
     new Output().withString(message).withQueueMode(QueueMode.FLUSH).go();
+  }
+
+  /**
+   * Uses the CommandHandler to perform a command.
+   * @param {string} command
+   * @private
+   */
+  static onCommand_(command) {
+    CommandHandler.onCommand(command);
   }
 };
