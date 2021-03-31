@@ -115,6 +115,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.AutoDisabled.DisabledTime" units="ms"
+    expires_after="2021-09-30">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    The total amount of time accessibility was disabled due to being
+    auto-disabled, before being enabled again.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AutoDisabled.EnabledTime" units="ms"
+    expires_after="2021-09-30">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    The total amount of time accessibility was enabled before being
+    auto-disabled.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.AutoDisabled.EventCount" units="count"
+    expires_after="2021-09-30">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>abigailbklein@google.com</owner>
+  <summary>
+    The number of user input events that were received within one time window,
+    without any accompanying accessibility API usage, that triggered
+    accessibility to be auto-disabled.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CaptionSettingsLoadedFromPrefs"
     enum="BooleanEnabled" expires_after="2021-12-01">
   <owner>evliu@google.com</owner>

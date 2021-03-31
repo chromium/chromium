@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "content/public/test/browser_task_environment.h"
@@ -24,6 +25,8 @@ class BrowserAccessibilityStateImplTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(
         features::kAutoDisableAccessibility);
     ui::SetEventTickClockForTesting(&clock_);
+    // Set the initial time to something non-zero.
+    clock_.Advance(base::TimeDelta::FromSeconds(100));
     state_ = BrowserAccessibilityStateImpl::GetInstance();
   }
 
@@ -35,6 +38,8 @@ class BrowserAccessibilityStateImplTest : public testing::Test {
 
 TEST_F(BrowserAccessibilityStateImplTest,
        DisableAccessibilityBasedOnUserEvents) {
+  base::HistogramTester histograms;
+
   // Initially, accessibility should be disabled.
   EXPECT_FALSE(state_->IsAccessibleBrowser());
 
@@ -51,6 +56,15 @@ TEST_F(BrowserAccessibilityStateImplTest,
 
   // Accessibility should now be disabled.
   EXPECT_FALSE(state_->IsAccessibleBrowser());
+
+  // A histogram should record that accessibility was disabled with
+  // 3 input events.
+  histograms.ExpectUniqueSample("Accessibility.AutoDisabled.EventCount", 3, 1);
+
+  // A histogram should record that accessibility was enabled for
+  // 31 seconds.
+  histograms.ExpectUniqueTimeSample("Accessibility.AutoDisabled.EnabledTime",
+                                    base::TimeDelta::FromSeconds(31), 1);
 }
 
 TEST_F(BrowserAccessibilityStateImplTest,

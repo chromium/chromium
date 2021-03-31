@@ -248,6 +248,12 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
 
   if (now - first_user_input_event_time_ >
       base::TimeDelta::FromSeconds(kAutoDisableAccessibilityTimeSecs)) {
+    base::UmaHistogramCounts1000("Accessibility.AutoDisabled.EventCount",
+                                 user_input_event_count_);
+    DCHECK(!accessibility_enabled_time_.is_null());
+    base::UmaHistogramLongTimes("Accessibility.AutoDisabled.EnabledTime",
+                                now - accessibility_enabled_time_);
+    accessibility_disabled_time_ = now;
     DisableAccessibility();
   }
 }
@@ -275,6 +281,17 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
   accessibility_mode_ |= mode;
   if (accessibility_mode_ == previous_mode)
     return;
+
+  // Keep track of the total time accessibility is enabled, and the time
+  // it was previously disabled.
+  if (accessibility_enabled_time_.is_null()) {
+    base::TimeTicks now = ui::EventTimeForNow();
+    accessibility_enabled_time_ = now;
+    if (!accessibility_disabled_time_.is_null()) {
+      base::UmaHistogramLongTimes("Accessibility.AutoDisabled.DisabledTime",
+                                  now - accessibility_disabled_time_);
+    }
+  }
 
   // Proxy the AXMode to AXPlatformNode to enable accessibility.
   ui::AXPlatformNode::NotifyAddAXModeFlags(accessibility_mode_);
