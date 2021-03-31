@@ -307,6 +307,8 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   }
   void ResetFailureReasons() { supplemental_failure_reasons_ = base::nullopt; }
 
+  base::TimeDelta ComputeCompositorTimeOffset() const;
+
  protected:
   DispatchEventResult DispatchEventInternal(Event&) override;
   void AddedEventListener(const AtomicString& event_type,

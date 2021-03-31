@@ -388,7 +388,10 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
   }
 
   CompositorTiming out;
-  if (!ConvertTimingForCompositor(timing, base::TimeDelta(), out,
+  base::TimeDelta time_offset =
+      animation_to_add ? animation_to_add->ComputeCompositorTimeOffset()
+                       : base::TimeDelta();
+  if (!ConvertTimingForCompositor(timing, time_offset, out,
                                   animation_playback_rate)) {
     reasons |= kEffectHasUnsupportedTimingParameters;
   }

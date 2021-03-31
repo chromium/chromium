@@ -23,6 +23,7 @@
     "prefix": "threaded",
     "bases": ["compositing/visibility",
               "compositing/webgl",
+              "animations/stability",
               "external/wpt/animation-worklet",
               "external/wpt/css/css-animations",
               "external/wpt/css/css-scroll-snap",
