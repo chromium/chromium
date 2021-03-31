@@ -59,6 +59,7 @@ PowerModeArbiter* PowerModeArbiter::GetInstance() {
 
 PowerModeArbiter::PowerModeArbiter()
     : observers_(new base::ObserverListThreadSafe<Observer>()),
+      lock_("PowerModeArbiter.lock_"),
       active_mode_("PowerModeArbiter", this) {
   base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
 }

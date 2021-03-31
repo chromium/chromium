@@ -61,6 +61,8 @@ void TaskQueueSelector::DisableQueue(internal::TaskQueueImpl* queue) {
 
 void TaskQueueSelector::SetQueuePriority(internal::TaskQueueImpl* queue,
                                          TaskQueue::QueuePriority priority) {
+  recordreplay::Assert("TaskQueueSelector::SetQueuePriority %lu %lu",
+                       recordreplay::PointerId(queue), priority);
   DCHECK_LT(priority, TaskQueue::kQueuePriorityCount);
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   if (queue->IsQueueEnabled()) {

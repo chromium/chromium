@@ -114,6 +114,8 @@ MainThreadTaskQueue::MainThreadTaskQueue(
       main_thread_scheduler_(main_thread_scheduler),
       agent_group_scheduler_(params.agent_group_scheduler),
       frame_scheduler_(params.frame_scheduler) {
+  // Needed for sorting in TaskQueueVoterMap.
+  recordreplay::RegisterPointer(this);
   task_queue_ = base::MakeRefCounted<TaskQueue>(std::move(impl), spec);
   if (task_queue_->HasImpl() && spec.should_notify_observers) {
     // TaskQueueImpl may be null for tests.
@@ -128,7 +130,9 @@ MainThreadTaskQueue::MainThreadTaskQueue(
   }
 }
 
-MainThreadTaskQueue::~MainThreadTaskQueue() = default;
+MainThreadTaskQueue::~MainThreadTaskQueue() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void MainThreadTaskQueue::OnTaskStarted(
     const base::sequence_manager::Task& task,

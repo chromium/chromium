@@ -39,11 +39,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
-// V8 API for HTML parsing activity that will be reported to the record/replay driver.
-extern "C" void V8RecordReplayHTMLParseStart(void* token, const char* url);
-extern "C" void V8RecordReplayHTMLParseFinish(void* token);
-extern "C" void V8RecordReplayHTMLParseAddData(void* token, const char* data);
-
 namespace blink {
 
 // On a network with high latency and high bandwidth, using a device with a fast
@@ -87,9 +82,6 @@ void BackgroundHTMLParser::Init(
       document_url, std::move(cached_document_parameters),
       media_values_cached_data, TokenPreloadScanner::ScannerType::kMainDocument,
       priority_hints_origin_trial_enabled));
-  if (recordreplay::IsRecordingOrReplaying()) {
-    V8RecordReplayHTMLParseStart(this, document_url.GetString().Utf8().c_str());
-  }
 }
 
 BackgroundHTMLParser::Configuration::Configuration() {}
@@ -108,11 +100,7 @@ BackgroundHTMLParser::BackgroundHTMLParser(
           HTMLDocumentParser::TokenizedChunk::kNoPendingToken),
       starting_script_(false) {}
 
-BackgroundHTMLParser::~BackgroundHTMLParser() {
-  if (recordreplay::IsRecordingOrReplaying()) {
-    V8RecordReplayHTMLParseFinish(this);
-  }
-}
+BackgroundHTMLParser::~BackgroundHTMLParser() = default;
 
 void BackgroundHTMLParser::AppendRawBytesFromMainThread(
     std::unique_ptr<Vector<char>> buffer) {
@@ -123,9 +111,6 @@ void BackgroundHTMLParser::AppendRawBytesFromMainThread(
 
 void BackgroundHTMLParser::AppendDecodedBytes(const String& input) {
   DCHECK(!input_.Current().IsClosed());
-  if (recordreplay::IsRecordingOrReplaying()) {
-    V8RecordReplayHTMLParseAddData(this, input.Utf8().c_str());
-  }
   input_.Append(input);
   PumpTokenizer();
 }

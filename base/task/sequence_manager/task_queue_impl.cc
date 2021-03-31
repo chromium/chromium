@@ -649,6 +649,8 @@ void TaskQueueImpl::TraceQueueSize() const {
 }
 
 void TaskQueueImpl::SetQueuePriority(TaskQueue::QueuePriority priority) {
+  recordreplay::Assert("TaskQueueImpl::SetQueuePriority %lu %d",
+                       recordreplay::PointerId(this), priority);
   const TaskQueue::QueuePriority previous_priority = GetQueuePriority();
   if (priority == previous_priority)
     return;

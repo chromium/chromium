@@ -5,10 +5,27 @@ This repository is a chromium fork that has has been adapted to use the record/r
 
 Only one build configuration is currently supported.
 
-Install chromium tree and depot_tools per https://chromium.googlesource.com/chromium/src/+/master/docs/mac_build_instructions.md.  Then change the remote URL for `chromium/src` to https://github.com/RecordReplay/chromium.git and pull.
+Install chromium tree and depot_tools per https://chromium.googlesource.com/chromium/src/+/master/docs/mac_build_instructions.md.
+
+Then change update the remote URLs for chromium and V8 to our forks.
 
 ```
-cd src
+cd /path/to/src
+git remote set-url origin https://github.com/RecordReplay/chromium.git
+git branch -D master
+git pull
+git checkout master
+cd /path/to/src/v8
+git remote set-url origin https://github.com/RecordReplay/v8
+git branch -D master
+git pull
+git checkout master
+```
+
+Setup the build:
+
+```
+cd /path/to/src
 gn gen out/Release
 gn args out/Release
 ```

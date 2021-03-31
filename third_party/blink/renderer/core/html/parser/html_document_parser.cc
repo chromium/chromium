@@ -69,6 +69,11 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
+// V8 API for HTML parsing activity that will be reported to the record/replay driver.
+extern "C" void V8RecordReplayHTMLParseStart(void* token, const char* url);
+extern "C" void V8RecordReplayHTMLParseFinish(void* token);
+extern "C" void V8RecordReplayHTMLParseAddData(void* token, const char* data);
+
 namespace blink {
 
 static size_t g_discarded_token_count_for_testing = 0;
@@ -422,6 +427,10 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
       scheduler_(sync_policy == kAllowDeferredParsing
                      ? Thread::Current()->Scheduler()
                      : nullptr) {
+  if (recordreplay::IsRecordingOrReplaying()) {
+    V8RecordReplayHTMLParseStart(this, document.Url().GetString().Utf8().c_str());
+  }
+
   DCHECK(CanParseAsynchronously() || (token_ && tokenizer_));
   // Asynchronous parsing is not allowed in prefetch mode.
   DCHECK(!document.IsPrefetchOnly() || !CanParseAsynchronously());
@@ -462,7 +471,11 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
     preloader_ = MakeGarbageCollected<HTMLResourcePreloader>(document);
 }
 
-HTMLDocumentParser::~HTMLDocumentParser() = default;
+HTMLDocumentParser::~HTMLDocumentParser() {
+  if (recordreplay::IsRecordingOrReplaying()) {
+    V8RecordReplayHTMLParseFinish(this);
+  }
+}
 
 void HTMLDocumentParser::Dispose() {
   // In Oilpan, HTMLDocumentParser can die together with Document, and detach()
@@ -1284,6 +1297,10 @@ void HTMLDocumentParser::Append(const String& input_source) {
 
   if (IsStopped())
     return;
+
+  if (recordreplay::IsRecordingOrReplaying()) {
+    V8RecordReplayHTMLParseAddData(this, input_source.Utf8().c_str());
+  }
 
   // We should never reach this point if we're using a parser thread, as
   // appendBytes() will directly ship the data to the thread.

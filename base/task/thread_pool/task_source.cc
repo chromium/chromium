@@ -53,6 +53,7 @@ TaskSource::TaskSource(const TaskTraits& traits,
                        TaskSourceExecutionMode execution_mode)
     : traits_(traits),
       priority_racy_(traits.priority()),
+      lock_("TaskSource.lock_"),
       task_runner_(task_runner),
       execution_mode_(execution_mode) {
   DCHECK(task_runner_ ||

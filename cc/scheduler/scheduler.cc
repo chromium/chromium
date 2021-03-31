@@ -613,6 +613,7 @@ void Scheduler::BeginImplFrameSynchronous(const viz::BeginFrameArgs& args) {
 }
 
 void Scheduler::FinishImplFrame() {
+  recordreplay::Assert("Scheduler::FinishImplFrame Start");
   DCHECK(!needs_finish_frame_for_synchronous_compositor_);
   state_machine_.OnBeginImplFrameIdle();
 
@@ -643,6 +644,7 @@ void Scheduler::FinishImplFrame() {
 
   if (compositor_thread_pipeline_)
     compositor_thread_pipeline_->NotifyFrameFinished();
+  recordreplay::Assert("Scheduler::FinishImplFrame Done");
 }
 
 void Scheduler::SendDidNotProduceFrame(const viz::BeginFrameArgs& args,

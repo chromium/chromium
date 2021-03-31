@@ -17,6 +17,7 @@
 #include "base/metrics/single_sample_metrics.h"
 #include "base/optional.h"
 #include "base/profiler/sample_metadata.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequence_manager/task_queue.h"
@@ -76,6 +77,19 @@ class FrameSchedulerImpl;
 class PageSchedulerImpl;
 class TaskQueueThrottler;
 class WebRenderWidgetSchedulingState;
+
+template <typename T>
+struct RecordReplayCompareRefptrByPointerId {
+  bool operator()(const scoped_refptr<T>& a, const scoped_refptr<T>& b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId(a.get());
+      int idb = recordreplay::PointerId(b.get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
 
 class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerImpl,
@@ -836,7 +850,8 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
 
   using TaskQueueVoterMap = std::map<
       scoped_refptr<MainThreadTaskQueue>,
-      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>>;
+      std::unique_ptr<base::sequence_manager::TaskQueue::QueueEnabledVoter>,
+      RecordReplayCompareRefptrByPointerId<MainThreadTaskQueue>>;
 
   TaskQueueVoterMap task_runners_;
 
