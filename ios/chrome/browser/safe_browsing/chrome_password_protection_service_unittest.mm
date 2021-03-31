@@ -45,6 +45,7 @@ using ::testing::_;
 using password_manager::metrics_util::PasswordType;
 using password_manager::MockPasswordStore;
 using safe_browsing::LoginReputationClientRequest;
+using safe_browsing::LoginReputationClientResponse;
 using safe_browsing::PasswordProtectionTrigger;
 using safe_browsing::RequestOutcome;
 using safe_browsing::ReusedPasswordAccountType;
@@ -56,6 +57,9 @@ using PasswordReuseLookup = sync_pb::GaiaPasswordReuse::PasswordReuseLookup;
 namespace {
 
 const char kTestEmail[] = "foo@example.com";
+
+const unsigned int kMinute = 60;
+const unsigned int kDay = 24 * 60 * kMinute;
 
 constexpr struct {
   // The response from the password protection service.
@@ -176,6 +180,35 @@ class ChromePasswordProtectionServiceTest : public ChromeWebTest {
         account_info.account_id, account_info.email, account_info.gaia,
         hosted_domain, "full_name", "given_name", "locale",
         "http://picture.example.com/picture.jpg");
+  }
+
+  LoginReputationClientResponse CreateVerdictProto(
+      LoginReputationClientResponse::VerdictType verdict,
+      int cache_duration_sec,
+      const std::string& cache_expression) {
+    LoginReputationClientResponse verdict_proto;
+    verdict_proto.set_verdict_type(verdict);
+    verdict_proto.set_cache_duration_sec(cache_duration_sec);
+    verdict_proto.set_cache_expression(cache_expression);
+    return verdict_proto;
+  }
+
+  void CacheVerdict(const GURL& url,
+                    LoginReputationClientRequest::TriggerType trigger,
+                    ReusedPasswordAccountType password_type,
+                    LoginReputationClientResponse::VerdictType verdict,
+                    int cache_duration_sec,
+                    const std::string& cache_expression,
+                    const base::Time& verdict_received_time) {
+    ASSERT_FALSE(cache_expression.empty());
+    LoginReputationClientResponse response(
+        CreateVerdictProto(verdict, cache_duration_sec, cache_expression));
+    service_->CacheVerdict(url, trigger, password_type, response,
+                           verdict_received_time);
+  }
+
+  size_t GetStoredVerdictCount(LoginReputationClientRequest::TriggerType type) {
+    return service_->GetStoredVerdictCount(type);
   }
 
  protected:
@@ -585,4 +618,339 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
                   LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                   GURL("about:blank"), reused_password_type));
   }
+}
+
+TEST_F(ChromePasswordProtectionServiceTest, TestCachePasswordReuseVerdicts) {
+  ASSERT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+
+  service_->SetIsAccountSignedIn(true);
+
+  // Assume each verdict has a TTL of 10 minutes.
+  // Cache a verdict for http://www.test.com/foo/index.html
+  ReusedPasswordAccountType reused_password_account_type;
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::GSUITE);
+  reused_password_account_type.set_is_account_syncing(true);
+  CacheVerdict(GURL("http://www.test.com/foo/index.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/foo/", base::Time::Now());
+
+  EXPECT_EQ(1U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+
+  // Cache another verdict with the some origin and cache_expression should
+  // override the cache.
+  CacheVerdict(GURL("http://www.test.com/foo/index2.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::PHISHING, 10 * kMinute,
+               "test.com/foo/", base::Time::Now());
+  EXPECT_EQ(1U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+  LoginReputationClientResponse out_verdict;
+  EXPECT_EQ(LoginReputationClientResponse::PHISHING,
+            service_->GetCachedVerdict(
+                GURL("http://www.test.com/foo/index2.html"),
+                LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                reused_password_account_type, &out_verdict));
+
+  // Cache a password reuse verdict with a different password type but same
+  // origin and cache expression should add a new entry.
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
+  CacheVerdict(GURL("http://www.test.com/foo/index2.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::PHISHING, 10 * kMinute,
+               "test.com/foo/", base::Time::Now());
+  EXPECT_EQ(2U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+  EXPECT_EQ(LoginReputationClientResponse::PHISHING,
+            service_->GetCachedVerdict(
+                GURL("http://www.test.com/foo/index2.html"),
+                LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                reused_password_account_type, &out_verdict));
+
+  // Cache another verdict with the same origin but different cache_expression
+  // will increase the number of verdicts in the given origin.
+  CacheVerdict(GURL("http://www.test.com/bar/index2.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/bar/", base::Time::Now());
+  EXPECT_EQ(3U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+
+  // Now cache a UNFAMILIAR_LOGIN_PAGE verdict, stored verdict count for
+  // PASSWORD_REUSE_EVENT should be the same.
+  CacheVerdict(GURL("http://www.test.com/foobar/index3.html"),
+               LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/foobar/", base::Time::Now());
+  EXPECT_EQ(3U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+  EXPECT_EQ(1U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+}
+
+TEST_F(ChromePasswordProtectionServiceTest,
+       TestCachePasswordReuseVerdictsIncognito) {
+  service_->SetIsIncognito(true);
+  ASSERT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+
+  ReusedPasswordAccountType reused_password_account_type;
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::GSUITE);
+  reused_password_account_type.set_is_account_syncing(true);
+  // No verdict will be cached for incognito profile.
+  CacheVerdict(GURL("http://www.test.com/foo/index.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/foo/", base::Time::Now());
+
+  EXPECT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+
+  // Try cache another verdict with the some origin and cache_expression.
+  // Verdict count should not increase.
+  CacheVerdict(GURL("http://www.test.com/foo/index2.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::PHISHING, 10 * kMinute,
+               "test.com/foo/", base::Time::Now());
+  EXPECT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+
+  // Now cache a UNFAMILIAR_LOGIN_PAGE verdict, verdict count should not
+  // increase.
+  CacheVerdict(GURL("http://www.test.com/foobar/index3.html"),
+               LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/foobar/", base::Time::Now());
+  EXPECT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+  EXPECT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+}
+
+TEST_F(ChromePasswordProtectionServiceTest, TestCacheUnfamiliarLoginVerdicts) {
+  ASSERT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+  ReusedPasswordAccountType reused_password_account_type;
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::UNKNOWN);
+  reused_password_account_type.set_is_account_syncing(true);
+  // Assume each verdict has a TTL of 10 minutes.
+  // Cache a verdict for http://www.test.com/foo/index.html
+  CacheVerdict(GURL("http://www.test.com/foo/index.html"),
+               LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/foo/", base::Time::Now());
+
+  EXPECT_EQ(1U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+
+  // Cache another verdict with the same origin but different cache_expression
+  // will increase the number of verdicts in the given origin.
+  CacheVerdict(GURL("http://www.test.com/bar/index2.html"),
+               LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/bar/", base::Time::Now());
+  EXPECT_EQ(2U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+
+  // Now cache a PASSWORD_REUSE_EVENT verdict, stored verdict count for
+  // UNFAMILIAR_LOGIN_PAGE should be the same.
+  CacheVerdict(GURL("http://www.test.com/foobar/index3.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/foobar/", base::Time::Now());
+  EXPECT_EQ(2U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+  EXPECT_EQ(1U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+}
+
+TEST_F(ChromePasswordProtectionServiceTest,
+       TestCacheUnfamiliarLoginVerdictsIncognito) {
+  service_->SetIsIncognito(true);
+
+  ASSERT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+
+  ReusedPasswordAccountType reused_password_account_type;
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::UNKNOWN);
+  reused_password_account_type.set_is_account_syncing(true);
+  // No verdict will be cached for incognito profile.
+  CacheVerdict(GURL("http://www.test.com/foo/index.html"),
+               LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/foo/", base::Time::Now());
+
+  EXPECT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+
+  CacheVerdict(GURL("http://www.test.com/bar/index2.html"),
+               LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/bar/", base::Time::Now());
+  EXPECT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+
+  // Now cache a PASSWORD_REUSE_EVENT verdict. Verdict count should not
+  // increase.
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::GSUITE);
+  reused_password_account_type.set_is_account_syncing(true);
+  CacheVerdict(GURL("http://www.test.com/foobar/index3.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/foobar/", base::Time::Now());
+  EXPECT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+  EXPECT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+}
+
+TEST_F(ChromePasswordProtectionServiceTest, TestGetCachedVerdicts) {
+  ASSERT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+  ASSERT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+  ReusedPasswordAccountType reused_password_account_type;
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::GSUITE);
+  reused_password_account_type.set_is_account_syncing(true);
+  // Prepare 4 verdicts of the same origin with different cache expressions,
+  // or password type, one is expired, one is not, one is of a different
+  // trigger type, and the other is with a different password type.
+  base::Time now = base::Time::Now();
+  CacheVerdict(GURL("http://test.com/login.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute, "test.com/",
+               now);
+  CacheVerdict(
+      GURL("http://test.com/def/index.jsp"),
+      LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+      reused_password_account_type, LoginReputationClientResponse::PHISHING,
+      10 * kMinute, "test.com/def/",
+      base::Time::FromDoubleT(now.ToDoubleT() - kDay));  // Yesterday, expired.
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::UNKNOWN);
+  CacheVerdict(GURL("http://test.com/bar/login.html"),
+               LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+               reused_password_account_type,
+               LoginReputationClientResponse::PHISHING, 10 * kMinute,
+               "test.com/bar/", now);
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
+  CacheVerdict(GURL("http://test.com/login.html"),
+               LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute, "test.com/",
+               now);
+
+  ASSERT_EQ(3U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+  ASSERT_EQ(1U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE));
+
+  // Return VERDICT_TYPE_UNSPECIFIED if look up for a URL with unknown origin.
+  LoginReputationClientResponse actual_verdict;
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::GSUITE);
+  EXPECT_EQ(LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+            service_->GetCachedVerdict(
+                GURL("http://www.unknown.com/"),
+                LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                reused_password_account_type, &actual_verdict));
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
+  EXPECT_EQ(LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+            service_->GetCachedVerdict(
+                GURL("http://www.unknown.com/"),
+                LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                reused_password_account_type, &actual_verdict));
+
+  // Return SAFE if look up for a URL that matches "test.com" cache expression.
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::GSUITE);
+  EXPECT_EQ(LoginReputationClientResponse::SAFE,
+            service_->GetCachedVerdict(
+                GURL("http://test.com/xyz/foo.jsp"),
+                LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                reused_password_account_type, &actual_verdict));
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::NON_GAIA_ENTERPRISE);
+  EXPECT_EQ(LoginReputationClientResponse::SAFE,
+            service_->GetCachedVerdict(
+                GURL("http://test.com/xyz/foo.jsp"),
+                LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                reused_password_account_type, &actual_verdict));
+
+  // Return VERDICT_TYPE_UNSPECIFIED if look up for a URL whose variants match
+  // test.com/def, but the corresponding verdict is expired.
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::GSUITE);
+  EXPECT_EQ(LoginReputationClientResponse::VERDICT_TYPE_UNSPECIFIED,
+            service_->GetCachedVerdict(
+                GURL("http://test.com/def/ghi/index.html"),
+                LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+                reused_password_account_type, &actual_verdict));
+
+  // Return PHISHING. Matches "test.com/bar/" cache expression.
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::UNKNOWN);
+  EXPECT_EQ(LoginReputationClientResponse::PHISHING,
+            service_->GetCachedVerdict(
+                GURL("http://test.com/bar/foo.jsp"),
+                LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+                reused_password_account_type, &actual_verdict));
+
+  // Now cache SAFE verdict for the full path.
+  CacheVerdict(GURL("http://test.com/bar/foo.jsp"),
+               LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+               reused_password_account_type,
+               LoginReputationClientResponse::SAFE, 10 * kMinute,
+               "test.com/bar/foo.jsp", now);
+
+  // Return SAFE now. Matches the full cache expression.
+  EXPECT_EQ(LoginReputationClientResponse::SAFE,
+            service_->GetCachedVerdict(
+                GURL("http://test.com/bar/foo.jsp"),
+                LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+                reused_password_account_type, &actual_verdict));
+}
+
+TEST_F(ChromePasswordProtectionServiceTest, TestDoesNotCacheAboutBlank) {
+  ASSERT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
+  ReusedPasswordAccountType reused_password_account_type;
+  reused_password_account_type.set_account_type(
+      ReusedPasswordAccountType::UNKNOWN);
+
+  // Should not actually cache, since about:blank is not valid for reputation
+  // computing.
+  CacheVerdict(
+      GURL("about:blank"), LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE,
+      reused_password_account_type, LoginReputationClientResponse::SAFE,
+      10 * kMinute, "about:blank", base::Time::Now());
+
+  EXPECT_EQ(0U, GetStoredVerdictCount(
+                    LoginReputationClientRequest::PASSWORD_REUSE_EVENT));
 }
