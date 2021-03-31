@@ -23,3 +23,28 @@
 # crbug.com/1194290
 -org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragmentTest.testDarkenWebsiteButton__DefaultLightEnabled
 -org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragmentTest.testSelectThemes__DefaultLightEnabled
+
+# crbug.com/1036571
+-org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
+
+# crbug.com/1036552
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInFadeOut
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogViewTest.testDialog_ZoomInZoomOut
+
+# crbug.com/1036459
+-org.chromium.chrome.browser.ntp.NewTabPageTest.testFocusFakebox
+
+# crbug.com/1040088
+-org.chromium.chrome.browser.payments.PaymentRequestRetryTest.testRetryWithShippingAddressErrorsAndPayerErrors
+
+# crbug.com/1059046
+-org.chromium.chrome.browser.customtabs.CustomTabFromChromeExternalNavigationTest.testIntentWithRedirectToApp
+
+# crbug.com/1060724
+-org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerTest.testDoNotShowOfflineIndicatorWhenTemporarilyPaused
+
+# crbug.com/1061178
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
+
+# crbug.com/1061198
+-org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTest.testExportMenuDisabled
