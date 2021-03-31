@@ -591,9 +591,10 @@ TEST_F('MediaAppUIBrowserTest', 'FilePickerValidateExtension', async () => {
   assertDeepEquals(await pick('foo.png'), [[['.png']]]);
   assertDeepEquals(await pick('foo.jpg.jpg'), [[['.jpg']]]);
   assertDeepEquals(await pick('jpg.jpg (1)'), [[['.jpg1']]]);
-  assertDeepEquals(await pick(''), [[['.']]]);
+  assertDeepEquals(await pick(''), [[['.ext']]]);
   assertDeepEquals(await pick('foo.bar.jpg (1) - _baz'), [[['.jpg1baz']]]);
   assertDeepEquals(await pick('foo.svg+xml'), [[['.svg+xml']]]);
+  assertDeepEquals(await pick('foo.___'), [[['.ext']]]);
 
   // Ideally, double-barrelled extensions like this would be handled better. But
   // the only way to do that is with a hardcoded list of exceptions.
