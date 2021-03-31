@@ -146,9 +146,8 @@ bool MapReadOnlyMemfd(int fd, size_t size, void** out_address) {
   return MapReadOnlyWithFlags(fd, size, MAP_PRIVATE, out_address);
 }
 
-bool MapReadOnlyFixedWithFlags(int fd, size_t address, size_t size, int flags) {
-  void* new_addr = mmap(reinterpret_cast<void*>(address), size, PROT_READ,
-                        MAP_FIXED | flags, fd, 0);
+bool MapReadOnlyFixedWithFlags(int fd, void* address, size_t size, int flags) {
+  void* new_addr = mmap(address, size, PROT_READ, MAP_FIXED | flags, fd, 0);
   if (new_addr == MAP_FAILED) {
     PLOG_ERROR("mmap(MAP_FIXED, ...)");
     return false;
@@ -156,11 +155,11 @@ bool MapReadOnlyFixedWithFlags(int fd, size_t address, size_t size, int flags) {
   return true;
 }
 
-bool MapReadOnlyFixedAshmem(int fd, size_t address, size_t size) {
+bool MapReadOnlyFixedAshmem(int fd, void* address, size_t size) {
   return MapReadOnlyFixedWithFlags(fd, address, size, MAP_SHARED);
 }
 
-bool MapReadOnlyFixedMemfd(int fd, size_t address, size_t size) {
+bool MapReadOnlyFixedMemfd(int fd, void* address, size_t size) {
   return MapReadOnlyFixedWithFlags(fd, address, size, MAP_PRIVATE);
 }
 
@@ -264,7 +263,7 @@ struct SharedMemoryFunctions {
   typedef int (*CreateFunction)(const char*, size_t);
   typedef int (*SetProtectionFunction)(int fd, int prot);
   typedef bool (*MapReadOnlyFunction)(int fd, size_t size, void** out_address);
-  typedef bool (*MapReadOnlyFixedFunction)(int fd, size_t address, size_t size);
+  typedef bool (*MapReadOnlyFixedFunction)(int fd, void* address, size_t size);
 
   CreateFunction create;
   SetProtectionFunction set_protection;
@@ -326,9 +325,9 @@ void ResizeMapping(const ScopedAnonymousMmap& mapping, size_t load_size) {
   } else {
     // Unmap the part of the reserved address space that is beyond the end of
     // the loaded library data.
-    void* unmap = reinterpret_cast<void*>(uintptr_addr + load_size);
+    const uintptr_t unmap = uintptr_addr + load_size;
     const size_t length = mapping.size() - load_size;
-    munmap(unmap, length);
+    munmap(reinterpret_cast<void*>(unmap), length);
   }
 }
 
@@ -560,7 +559,8 @@ bool NativeLibInfo::ReplaceRelroWithSharedOne(
   // Map as read-only to *atomically* replace the RELRO region provided by the
   // dynamic linker. To avoid memory corruption it is important that the
   // contents of both memory regions is identical.
-  if (!functions.map_read_only_fixed(relro_fd_, relro_start_, relro_size_)) {
+  if (!functions.map_read_only_fixed(
+          relro_fd_, reinterpret_cast<void*>(relro_start_), relro_size_)) {
     return false;
   }
 

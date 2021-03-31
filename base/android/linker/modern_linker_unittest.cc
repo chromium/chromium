@@ -39,8 +39,8 @@ TEST_F(ModernLinkerTest, CreatedRegionIsSealedAshmem) {
   ASSERT_NE(MAP_FAILED, relro_address);
   NativeLibInfo lib_info = {0, 0, 0};
   lib_info.set_use_memfd(false);
-  lib_info.set_relro_info_for_testing(reinterpret_cast<size_t>(relro_address),
-                                      kRelroSize);
+  lib_info.set_relro_info_for_testing(
+      reinterpret_cast<uintptr_t>(relro_address), kRelroSize);
   memset(relro_address, 0xEE, kRelroSize);
 
   // Create shared RELRO.
@@ -92,8 +92,8 @@ TEST_F(ModernLinkerTest, CreatedRegionIsSealedMemfd) {
   ASSERT_NE(MAP_FAILED, relro_address);
   NativeLibInfo lib_info = {0, 0, 0};
   lib_info.set_use_memfd(true);
-  lib_info.set_relro_info_for_testing(reinterpret_cast<size_t>(relro_address),
-                                      kRelroSize);
+  lib_info.set_relro_info_for_testing(
+      reinterpret_cast<uintptr_t>(relro_address), kRelroSize);
   memset(relro_address, 0xEE, kRelroSize);
 
   // Create shared RELRO.

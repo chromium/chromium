@@ -94,7 +94,7 @@ class String {
 
 // Return true iff |address| is a valid address for the target CPU.
 inline bool IsValidAddress(jlong address) {
-  return static_cast<jlong>(static_cast<size_t>(address)) == address;
+  return static_cast<jlong>(static_cast<uintptr_t>(address)) == address;
 }
 
 // Find the jclass JNI reference corresponding to a given |class_name|.
@@ -156,7 +156,7 @@ struct LibInfo_class {
 
   void SetLoadInfo(JNIEnv* env,
                    jobject library_info_obj,
-                   size_t load_address,
+                   uintptr_t load_address,
                    size_t load_size) {
     env->SetLongField(library_info_obj, load_address_id, load_address);
     env->SetLongField(library_info_obj, load_size_id, load_size);
@@ -164,7 +164,7 @@ struct LibInfo_class {
 
   void SetRelroInfo(JNIEnv* env,
                     jobject library_info_obj,
-                    size_t relro_start,
+                    uintptr_t relro_start,
                     size_t relro_size,
                     int relro_fd) {
     env->SetLongField(library_info_obj, relro_start_id, relro_start);
@@ -174,25 +174,25 @@ struct LibInfo_class {
 
   void GetLoadInfo(JNIEnv* env,
                    jobject library_info_obj,
-                   size_t* load_address,
+                   uintptr_t* load_address,
                    size_t* load_size) {
     if (load_address) {
-      *load_address = static_cast<size_t>(
+      *load_address = static_cast<uintptr_t>(
           env->GetLongField(library_info_obj, load_address_id));
     }
     if (load_size) {
-      *load_size = static_cast<size_t>(
+      *load_size = static_cast<uintptr_t>(
           env->GetLongField(library_info_obj, load_size_id));
     }
   }
 
   void GetRelroInfo(JNIEnv* env,
                     jobject library_info_obj,
-                    size_t* relro_start,
+                    uintptr_t* relro_start,
                     size_t* relro_size,
                     int* relro_fd) {
     if (relro_start) {
-      *relro_start = static_cast<size_t>(
+      *relro_start = static_cast<uintptr_t>(
           env->GetLongField(library_info_obj, relro_start_id));
     }
 

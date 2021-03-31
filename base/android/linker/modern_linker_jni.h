@@ -42,7 +42,7 @@ class NativeLibInfo {
   // Constructs an (almost) empty instance. To be later populated from native
   // code. The |env| and |java_object| will be useful later for exporting the
   // values to the Java counterpart.
-  NativeLibInfo(size_t address, JNIEnv* env, jobject java_object);
+  NativeLibInfo(uintptr_t address, JNIEnv* env, jobject java_object);
 
   // Constructs and imports fields from the Java LibInfo. As above, the |env|
   // and |java_object| are used for exporting.
@@ -54,7 +54,7 @@ class NativeLibInfo {
     use_memfd_ = use_memfd;
   }
 
-  size_t load_address() const { return load_address_; }
+  uintptr_t load_address() const { return load_address_; }
 
   // Loads the native library using android_dlopen_ext and invokes JNI_OnLoad().
   //
@@ -87,7 +87,7 @@ class NativeLibInfo {
   // process has a writable mapping of the region remaining.
   bool CompareRelroAndReplaceItBy(const NativeLibInfo& other_lib_info);
 
-  void set_relro_info_for_testing(size_t start, size_t size) {
+  void set_relro_info_for_testing(uintptr_t start, size_t size) {
     relro_start_ = start;
     relro_size_ = size;
   }
@@ -146,9 +146,9 @@ class NativeLibInfo {
                         const SharedMemoryFunctions& functions) const;
 
   static constexpr int kInvalidFd = -1;
-  size_t load_address_ = 0;
+  uintptr_t load_address_ = 0;
   size_t load_size_ = 0;
-  size_t relro_start_ = 0;
+  uintptr_t relro_start_ = 0;
   size_t relro_size_ = 0;
   int relro_fd_ = kInvalidFd;
   JNIEnv* env_;
