@@ -3009,7 +3009,7 @@ ci.fyi_builder(
                         "{%channel%}",
                     ],
                     "tags": {
-                        "version": "{%version%}",
+                        "version": "{%chromium_version%}",
                     },
                 },
             ],
