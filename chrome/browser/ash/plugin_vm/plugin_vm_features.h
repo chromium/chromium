@@ -19,13 +19,46 @@ class PluginVmFeatures {
  public:
   static PluginVmFeatures* Get();
 
-  // Checks if Plugin VM is allowed for the current profile and provides
-  // areason if it is not allowed. The reason string is to only be used
-  // in crosh/vmc error messages.
-  virtual bool IsAllowed(const Profile* profile, std::string* reason);
+  enum class ProfileSupported {
+    kOk,
+    kErrorNonPrimary,
+    // This is for all the other cases where the profile is not supported. We
+    // might want to have more fine-grained error values in the future.
+    kErrorNotSupported,
+  };
 
-  // Checks if Plugin VM is allowed for the current profile.
-  virtual bool IsAllowed(const Profile* profile);
+  enum class PolicyConfigured {
+    kOk,
+    kErrorUnableToCheckPolicy,
+    kErrorNotEnterpriseEnrolled,
+    kErrorUserNotAffiliated,
+    kErrorUnableToCheckDevicePolicy,
+    kErrorNotAllowedByDevicePolicy,
+    kErrorNotAllowedByUserPolicy,
+    kErrorLicenseNotSetUp,
+  };
+
+  // Remember to update `plugin_vm::GetDiagnostics()` when this struct or the
+  // members change.
+  struct IsAllowedDiagnostics {
+    bool device_supported;
+    ProfileSupported profile_supported;
+    PolicyConfigured policy_configured;
+
+    bool IsOk() const;
+    // An empty string is returned if there is no error (i.e. `IsOk()`
+    // returns true).
+    std::string GetTopError() const;
+  };
+
+  // Check if Plugin VM is allowed for the current profile and return
+  // diagnostics.
+  virtual IsAllowedDiagnostics GetIsAllowedDiagnostics(const Profile* profile);
+
+  // Checks if Plugin VM is allowed for the current profile and provides
+  // a reason if it is not allowed. The reason string is to only be used
+  // in crosh/vmc error messages.
+  virtual bool IsAllowed(const Profile* profile, std::string* reason = nullptr);
 
   // Returns whether Plugin VM has been installed.
   // TODO(timloh): We should detect installations via VMC, currently the user
