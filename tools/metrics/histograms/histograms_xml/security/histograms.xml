@@ -499,8 +499,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SecurityLevel.CryptographicScheme"
-    enum="SecurityLevel" expires_after="M81">
+    enum="SecurityLevel" expires_after="2021-09-01">
   <owner>estark@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     Records the security level of a page with a cryptographic scheme (e.g.
     https). This histogram is recorded once at navigation commit time, and can
@@ -557,7 +558,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SecurityLevel.InsecureMainFrameNonFormNavigation"
-    enum="SecurityLevel" expires_after="M89">
+    enum="SecurityLevel" expires_after="2021-09-01">
   <owner>estark@chromium.org</owner>
   <owner>livvielin@chromium.org</owner>
   <summary>
@@ -568,8 +569,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Security.SecurityLevel.NoncryptographicScheme"
-    enum="SecurityLevel" expires_after="M77">
+    enum="SecurityLevel" expires_after="2021-09-01">
   <owner>estark@chromium.org</owner>
+  <owner>trusty-transport@chromium.org</owner>
   <summary>
     Records the security level of a page with a non-cryptographic scheme (e.g.
     http). This histogram is recorded once at navigation commit time, and can be
