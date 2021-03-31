@@ -18,6 +18,7 @@
 #include "base/util/values/values_util.h"
 #include "base/values.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/enterprise/arc_data_remove_requested_pref_handler.h"
@@ -72,6 +73,15 @@ bool IsInHeadlessMode() {
 void EnableHeadlessMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(switches::kOzonePlatform, kHeadless);
+}
+
+// Disables D-Bus clients:
+// * CrosDisks
+// Should be called while in BlockedUi state.
+void DisableDBusClients() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  // Disable USB input.
+  command_line->AppendSwitch(chromeos::switches::kCrosDisksFake);
 }
 
 // Returns non-empty account ID string if a MGS is active.
@@ -613,6 +623,7 @@ void ArcDataSnapshotdManager::OnLocalStateInitialized(bool initialized) {
       IsSnapshotEnabled()) {
     if (!IsInHeadlessMode()) {
       EnableHeadlessMode();
+      DisableDBusClients();
       delegate_->RestartChrome(*base::CommandLine::ForCurrentProcess());
       return;
     }
