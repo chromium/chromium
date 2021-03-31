@@ -163,9 +163,10 @@ Run `git cl upload`. Some useful options include:
 To help guide your reviewers, it is also recommended to provide a title for each
 patchset summarizing the changes and indicating whose comments the patchset
 addresses. Running `git cl upload` will upload a new patchset and prompt you for
-a brief patchset title. The title defaults to your most recent commit summary,
-so if you tend to squash all your commits into one, try to enter a new summary
-each time you upload. You can also modify the patchset title directly in Gerrit.
+a brief patchset title. The title defaults to your most recent commit summary
+(the `-T` option will use this without prompting). If you tend to squash all
+your commits into one, try to enter a new summary each time you upload. You can
+also modify the patchset title directly in Gerrit.
 
 ## 14. Check the CL again in Gerrit
 
