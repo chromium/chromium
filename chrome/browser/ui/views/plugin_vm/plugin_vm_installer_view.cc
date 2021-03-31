@@ -41,6 +41,10 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
+// This file contains VLOG logging to aid debugging tast tests.
+#define LOG_FUNCTION_CALL() \
+  VLOG(2) << "PluginVmInstallerView::" << __func__ << " called"
+
 namespace {
 
 PluginVmInstallerView* g_plugin_vm_installer_view = nullptr;
@@ -65,6 +69,7 @@ bool ShowRetryButton(plugin_vm::PluginVmInstaller::FailureReason reason) {
 }  // namespace
 
 void plugin_vm::ShowPluginVmInstallerView(Profile* profile) {
+  LOG_FUNCTION_CALL();
   if (!g_plugin_vm_installer_view) {
     g_plugin_vm_installer_view = new PluginVmInstallerView(profile);
     views::DialogDelegate::CreateDialogWidget(g_plugin_vm_installer_view,
@@ -82,6 +87,7 @@ PluginVmInstallerView::PluginVmInstallerView(Profile* profile)
       app_name_(l10n_util::GetStringUTF16(IDS_PLUGIN_VM_APP_NAME)),
       plugin_vm_installer_(
           plugin_vm::PluginVmInstallerFactory::GetForProfile(profile)) {
+  VLOG(2) << "PluginVmInstallerView created";
   // Layout constants from the spec.
   gfx::Insets kDialogInsets(60, 64, 0, 64);
   constexpr gfx::Size kLogoImageSize(32, 32);
@@ -193,6 +199,7 @@ bool PluginVmInstallerView::ShouldShowWindowTitle() const {
 }
 
 bool PluginVmInstallerView::Accept() {
+  LOG_FUNCTION_CALL();
   if (state_ == State::kConfirmInstall) {
     delete learn_more_link_;
     learn_more_link_ = nullptr;
@@ -214,6 +221,7 @@ bool PluginVmInstallerView::Accept() {
 }
 
 bool PluginVmInstallerView::Cancel() {
+  LOG_FUNCTION_CALL();
   return true;
 }
 
@@ -434,6 +442,7 @@ void PluginVmInstallerView::SetFinishedCallbackForTesting(
 }
 
 PluginVmInstallerView::~PluginVmInstallerView() {
+  VLOG(2) << "PluginVmInstallerView destroyed";
   plugin_vm_installer_->RemoveObserver();
   // We call |Cancel()| if the user hasn't started installation to log to UMA.
   if (state_ == State::kConfirmInstall || state_ == State::kInstalling)
@@ -490,6 +499,7 @@ void PluginVmInstallerView::AddedToWidget() {
 }
 
 void PluginVmInstallerView::OnStateUpdated() {
+  LOG_FUNCTION_CALL() << " with state_ = " << static_cast<int>(state_);
   SetTitleLabel();
   SetMessageLabel();
   SetBigImage();
@@ -581,6 +591,7 @@ void PluginVmInstallerView::SetBigImage() {
 }
 
 void PluginVmInstallerView::StartInstallation() {
+  LOG_FUNCTION_CALL();
   state_ = State::kInstalling;
   installing_state_ = InstallingState::kCheckingLicense;
   progress_bar_->SetValue(0);
@@ -597,3 +608,5 @@ BEGIN_METADATA(PluginVmInstallerView, views::BubbleDialogDelegateView)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Title)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Message)
 END_METADATA
+
+#undef LOG_FUNCTION_CALL

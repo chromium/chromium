@@ -40,6 +40,10 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
+// This file contains VLOG logging to aid debugging tast tests.
+#define LOG_FUNCTION_CALL() \
+  VLOG(2) << "PluginVmInstaller::" << __func__ << " called"
+
 namespace plugin_vm {
 
 namespace {
@@ -108,6 +112,7 @@ PluginVmInstaller::PluginVmInstaller(Profile* profile)
           DownloadServiceFactory::GetForKey(profile->GetProfileKey())) {}
 
 base::Optional<PluginVmInstaller::FailureReason> PluginVmInstaller::Start() {
+  LOG_FUNCTION_CALL();
   if (IsProcessing()) {
     LOG(ERROR) << "Download of a PluginVm image couldn't be started as"
                << " another PluginVm image is currently being processed "
@@ -145,6 +150,7 @@ base::Optional<PluginVmInstaller::FailureReason> PluginVmInstaller::Start() {
 }
 
 void PluginVmInstaller::Cancel() {
+  LOG_FUNCTION_CALL();
   if (state_ != State::kInstalling) {
     RecordPluginVmSetupResultHistogram(
         PluginVmSetupResult::kUserCancelledWithoutStarting);
@@ -432,6 +438,7 @@ void PluginVmInstaller::OnAvailableDiskSpace(int64_t bytes) {
 }
 
 void PluginVmInstaller::StartDlcDownload() {
+  LOG_FUNCTION_CALL();
   DCHECK_EQ(installing_state_, InstallingState::kCheckingDiskSpace);
   UpdateInstallingState(InstallingState::kDownloadingDlc);
 
@@ -502,6 +509,7 @@ void PluginVmInstaller::OnDlcDownloadCompleted(
 }
 
 void PluginVmInstaller::StartDispatcher() {
+  LOG_FUNCTION_CALL();
   DCHECK_EQ(installing_state_, InstallingState::kDownloadingDlc);
   UpdateInstallingState(InstallingState::kStartingDispatcher);
 
@@ -563,6 +571,7 @@ void PluginVmInstaller::OnStartDownload(
 }
 
 void PluginVmInstaller::StartImport() {
+  LOG_FUNCTION_CALL();
   DCHECK_EQ(installing_state_, InstallingState::kDownloadingImage);
   UpdateInstallingState(InstallingState::kImporting);
   UpdateProgress(/*state_progress=*/0);
@@ -730,6 +739,7 @@ void PluginVmInstaller::OnFinalDiskImageStatus(
 
 void PluginVmInstaller::OnImported(
     base::Optional<FailureReason> failure_reason) {
+  LOG_FUNCTION_CALL();
   GetConciergeClient()->RemoveDiskImageObserver(this);
   RemoveTemporaryImageIfExists();
   current_import_command_uuid_.clear();
@@ -756,6 +766,8 @@ void PluginVmInstaller::OnImported(
 
 void PluginVmInstaller::UpdateInstallingState(
     InstallingState installing_state) {
+  LOG_FUNCTION_CALL() << " with state "
+                      << GetInstallingStateName(installing_state);
   DCHECK_NE(installing_state, InstallingState::kInactive);
   installing_state_ = installing_state;
   observer_->OnStateUpdated(installing_state_);
@@ -805,6 +817,7 @@ void PluginVmInstaller::UpdateProgress(double state_progress) {
 }
 
 void PluginVmInstaller::InstallFailed(FailureReason reason) {
+  LOG_FUNCTION_CALL() << " with failure reason " << static_cast<int>(reason);
   state_ = State::kIdle;
   GetWakeLock()->CancelWakeLock();
   installing_state_ = InstallingState::kInactive;
@@ -815,6 +828,7 @@ void PluginVmInstaller::InstallFailed(FailureReason reason) {
 }
 
 void PluginVmInstaller::InstallFinished() {
+  LOG_FUNCTION_CALL();
   base::UmaHistogramLongTimes(kSetupTimeHistogram,
                               base::TimeTicks::Now() - setup_start_tick_);
   state_ = State::kIdle;
@@ -989,3 +1003,5 @@ device::mojom::WakeLock* PluginVmInstaller::GetWakeLock() {
 }
 
 }  // namespace plugin_vm
+
+#undef LOG_FUNCTION_CALL
