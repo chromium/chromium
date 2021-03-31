@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
 #include "base/macros.h"
@@ -38,6 +39,7 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
@@ -572,6 +574,11 @@ void NetworkUI::BindInterface(
         network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
   network_health::NetworkHealthService::GetInstance()->BindDiagnosticsReceiver(
       std::move(receiver));
+}
+
+void NetworkUI::BindInterface(
+    mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver) {
+  ash::GetESimManager(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(NetworkUI)
