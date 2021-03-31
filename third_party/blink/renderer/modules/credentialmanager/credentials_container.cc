@@ -471,15 +471,15 @@ void OnGetComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
   auto* resolver = scoped_resolver->Release();
 
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
-  if (error == CredentialManagerError::SUCCESS) {
-    DCHECK(credential_info);
-    UseCounter::Count(resolver->GetExecutionContext(),
-                      WebFeature::kCredentialManagerGetReturnedCredential);
-    resolver->Resolve(mojo::ConvertTo<Credential*>(std::move(credential_info)));
-  } else {
+  if (error != CredentialManagerError::SUCCESS) {
     DCHECK(!credential_info);
     resolver->Reject(CredentialManagerErrorToDOMException(error));
+    return;
   }
+  DCHECK(credential_info);
+  UseCounter::Count(resolver->GetExecutionContext(),
+                    WebFeature::kCredentialManagerGetReturnedCredential);
+  resolver->Resolve(mojo::ConvertTo<Credential*>(std::move(credential_info)));
 }
 
 DOMArrayBuffer* VectorToDOMArrayBuffer(const Vector<uint8_t> buffer) {
@@ -509,62 +509,61 @@ void OnMakePublicKeyCredentialComplete(
   const auto required_origin_type = RequiredOriginType::kSecure;
 
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
-  if (status == AuthenticatorStatus::SUCCESS) {
-    DCHECK(credential);
-    DCHECK(!credential->info->client_data_json.IsEmpty());
-    DCHECK(!credential->attestation_object.IsEmpty());
-    UseCounter::Count(
-        resolver->GetExecutionContext(),
-        WebFeature::kCredentialManagerMakePublicKeyCredentialSuccess);
-    DOMArrayBuffer* client_data_buffer =
-        VectorToDOMArrayBuffer(std::move(credential->info->client_data_json));
-    DOMArrayBuffer* raw_id =
-        VectorToDOMArrayBuffer(std::move(credential->info->raw_id));
-    DOMArrayBuffer* attestation_buffer =
-        VectorToDOMArrayBuffer(std::move(credential->attestation_object));
-    DOMArrayBuffer* authenticator_data =
-        VectorToDOMArrayBuffer(std::move(credential->info->authenticator_data));
-    DOMArrayBuffer* public_key_der = nullptr;
-    if (credential->public_key_der) {
-      public_key_der =
-          VectorToDOMArrayBuffer(std::move(credential->public_key_der.value()));
-    }
-    auto* authenticator_response =
-        MakeGarbageCollected<AuthenticatorAttestationResponse>(
-            client_data_buffer, attestation_buffer, credential->transports,
-            authenticator_data, public_key_der, credential->public_key_algo);
-
-    AuthenticationExtensionsClientOutputs* extension_outputs =
-        AuthenticationExtensionsClientOutputs::Create();
-    if (credential->echo_hmac_create_secret) {
-      extension_outputs->setHmacCreateSecret(credential->hmac_create_secret);
-    }
-    if (credential->echo_cred_props) {
-      DCHECK(RuntimeEnabledFeatures::
-                 WebAuthenticationResidentKeyRequirementEnabled());
-      CredentialPropertiesOutput* cred_props_output =
-          CredentialPropertiesOutput::Create();
-      if (credential->has_cred_props_rk) {
-        cred_props_output->setRk(credential->cred_props_rk);
-      }
-      extension_outputs->setCredProps(cred_props_output);
-    }
-    if (credential->echo_large_blob) {
-      DCHECK(
-          RuntimeEnabledFeatures::WebAuthenticationLargeBlobExtensionEnabled());
-      AuthenticationExtensionsLargeBlobOutputs* large_blob_outputs =
-          AuthenticationExtensionsLargeBlobOutputs::Create();
-      large_blob_outputs->setSupported(credential->supports_large_blob);
-      extension_outputs->setLargeBlob(large_blob_outputs);
-    }
-    resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
-        credential->info->id, raw_id, authenticator_response,
-        extension_outputs));
-  } else {
+  if (status != AuthenticatorStatus::SUCCESS) {
     DCHECK(!credential);
     resolver->Reject(CredentialManagerErrorToDOMException(
         mojo::ConvertTo<CredentialManagerError>(status)));
+    return;
   }
+  DCHECK(credential);
+  DCHECK(!credential->info->client_data_json.IsEmpty());
+  DCHECK(!credential->attestation_object.IsEmpty());
+  UseCounter::Count(
+      resolver->GetExecutionContext(),
+      WebFeature::kCredentialManagerMakePublicKeyCredentialSuccess);
+  DOMArrayBuffer* client_data_buffer =
+      VectorToDOMArrayBuffer(std::move(credential->info->client_data_json));
+  DOMArrayBuffer* raw_id =
+      VectorToDOMArrayBuffer(std::move(credential->info->raw_id));
+  DOMArrayBuffer* attestation_buffer =
+      VectorToDOMArrayBuffer(std::move(credential->attestation_object));
+  DOMArrayBuffer* authenticator_data =
+      VectorToDOMArrayBuffer(std::move(credential->info->authenticator_data));
+  DOMArrayBuffer* public_key_der = nullptr;
+  if (credential->public_key_der) {
+    public_key_der =
+        VectorToDOMArrayBuffer(std::move(credential->public_key_der.value()));
+  }
+  auto* authenticator_response =
+      MakeGarbageCollected<AuthenticatorAttestationResponse>(
+          client_data_buffer, attestation_buffer, credential->transports,
+          authenticator_data, public_key_der, credential->public_key_algo);
+
+  AuthenticationExtensionsClientOutputs* extension_outputs =
+      AuthenticationExtensionsClientOutputs::Create();
+  if (credential->echo_hmac_create_secret) {
+    extension_outputs->setHmacCreateSecret(credential->hmac_create_secret);
+  }
+  if (credential->echo_cred_props) {
+    DCHECK(RuntimeEnabledFeatures::
+               WebAuthenticationResidentKeyRequirementEnabled());
+    CredentialPropertiesOutput* cred_props_output =
+        CredentialPropertiesOutput::Create();
+    if (credential->has_cred_props_rk) {
+      cred_props_output->setRk(credential->cred_props_rk);
+    }
+    extension_outputs->setCredProps(cred_props_output);
+  }
+  if (credential->echo_large_blob) {
+    DCHECK(
+        RuntimeEnabledFeatures::WebAuthenticationLargeBlobExtensionEnabled());
+    AuthenticationExtensionsLargeBlobOutputs* large_blob_outputs =
+        AuthenticationExtensionsLargeBlobOutputs::Create();
+    large_blob_outputs->setSupported(credential->supports_large_blob);
+    extension_outputs->setLargeBlob(large_blob_outputs);
+  }
+  resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
+      credential->info->id, raw_id, authenticator_response, extension_outputs));
 }
 
 void OnGetAssertionComplete(
@@ -629,11 +628,11 @@ void OnGetAssertionComplete(
     resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
         credential->info->id, raw_id, authenticator_response,
         extension_outputs));
-  } else {
-    DCHECK(!credential);
-    resolver->Reject(CredentialManagerErrorToDOMException(
-        mojo::ConvertTo<CredentialManagerError>(status)));
+    return;
   }
+  DCHECK(!credential);
+  resolver->Reject(CredentialManagerErrorToDOMException(
+      mojo::ConvertTo<CredentialManagerError>(status)));
 }
 
 void OnSmsReceive(ScriptPromiseResolver* resolver,
@@ -651,19 +650,23 @@ void OnSmsReceive(ScriptPromiseResolver* resolver,
         DOMExceptionCode::kInvalidStateError,
         "OTP retrieval request not handled."));
     return;
-  } else if (status == mojom::blink::SmsStatus::kAborted) {
+  }
+  if (status == mojom::blink::SmsStatus::kAborted) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, "OTP retrieval was aborted."));
     return;
-  } else if (status == mojom::blink::SmsStatus::kCancelled) {
+  }
+  if (status == mojom::blink::SmsStatus::kCancelled) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kAbortError, "OTP retrieval was cancelled."));
     return;
-  } else if (status == mojom::blink::SmsStatus::kTimeout) {
+  }
+  if (status == mojom::blink::SmsStatus::kTimeout) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, "OTP retrieval timed out."));
     return;
-  } else if (status == mojom::blink::SmsStatus::kBackendNotAvailable) {
+  }
+  if (status == mojom::blink::SmsStatus::kBackendNotAvailable) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError, "OTP backend unavailable."));
     return;
@@ -682,9 +685,8 @@ void OnPaymentCredentialCreationComplete(
         DOMExceptionCode::kUnknownError,
         "Failed to store payment instrument."));
     return;
-  } else {
-    DCHECK(status == PaymentCredentialStorageStatus::SUCCESS);
   }
+  DCHECK(status == PaymentCredentialStorageStatus::SUCCESS);
 
   DOMArrayBuffer* client_data_buffer =
       VectorToDOMArrayBuffer(std::move(credential->info->client_data_json));
@@ -761,13 +763,13 @@ void DidDownloadPaymentCredentialIconAndShowUserPrompt(
         DOMExceptionCode::kNetworkError,
         "Unable to download payment instrument icon."));
     return;
-  } else if (status == PaymentCredentialUserPromptStatus::USER_CANCEL_FROM_UI) {
+  }
+  if (status == PaymentCredentialUserPromptStatus::USER_CANCEL_FROM_UI) {
     resolver->Reject(
         CredentialManagerErrorToDOMException(CredentialManagerError::ABORT));
     return;
-  } else {
-    DCHECK(status == PaymentCredentialUserPromptStatus::USER_CONFIRM_FROM_UI);
   }
+  DCHECK(status == PaymentCredentialUserPromptStatus::USER_CONFIRM_FROM_UI);
 
   auto* authenticator =
       CredentialManagerProxy::From(resolver->GetScriptState())->Authenticator();
@@ -1210,10 +1212,14 @@ ScriptPromise CredentialsContainer::create(
                   exception_state)
             : PasswordCredential::Create(
                   options->password().GetAsHTMLFormElement(), exception_state));
-  } else if (options->hasFederated()) {
+    return promise;
+  }
+  if (options->hasFederated()) {
     resolver->Resolve(
         FederatedCredential::Create(options->federated(), exception_state));
-  } else if (options->hasPayment()) {
+    return promise;
+  }
+  if (options->hasPayment()) {
     if (RuntimeEnabledFeatures::SecurePaymentConfirmationEnabled(
             resolver->GetExecutionContext()) &&
         resolver->GetExecutionContext()->IsFeatureEnabled(
@@ -1222,176 +1228,171 @@ ScriptPromise CredentialsContainer::create(
                         WebFeature::kSecurePaymentConfirmation);
       CreatePublicKeyCredentialForPaymentCredential(options->payment(),
                                                     resolver);
-    } else {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "PaymentCredentialCreationOptions are not enabled."));
+      return promise;
     }
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "PaymentCredentialCreationOptions are not enabled."));
     return promise;
-  } else {
-    DCHECK(options->hasPublicKey());
-    auto cryptotoken_origin = SecurityOrigin::Create(KURL(kCryptotokenOrigin));
-    if (!cryptotoken_origin->IsSameOriginWith(
-            resolver->GetExecutionContext()->GetSecurityOrigin())) {
-      // Cryptotoken requests are recorded as kU2FCryptotokenRegister from
-      // within the extension.
-      UseCounter::Count(
-          resolver->GetExecutionContext(),
-          WebFeature::kCredentialManagerCreatePublicKeyCredential);
-    }
+  }
+  DCHECK(options->hasPublicKey());
+  auto cryptotoken_origin = SecurityOrigin::Create(KURL(kCryptotokenOrigin));
+  if (!cryptotoken_origin->IsSameOriginWith(
+          resolver->GetExecutionContext()->GetSecurityOrigin())) {
+    // Cryptotoken requests are recorded as kU2FCryptotokenRegister from
+    // within the extension.
+    UseCounter::Count(resolver->GetExecutionContext(),
+                      WebFeature::kCredentialManagerCreatePublicKeyCredential);
+  }
 
-    if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
+  if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->challenge())) {
+    resolver->Reject(DOMException::Create(
+        "The `challenge` attribute exceeds the maximum allowed size.",
+        "RangeError"));
+    return promise;
+  }
+
+  if (!IsArrayBufferOrViewBelowSizeLimit(options->publicKey()->user()->id())) {
+    resolver->Reject(DOMException::Create(
+        "The `user.id` attribute exceeds the maximum allowed size.",
+        "RangeError"));
+    return promise;
+  }
+
+  for (const auto& credential : options->publicKey()->excludeCredentials()) {
+    if (!IsArrayBufferOrViewBelowSizeLimit(credential->id())) {
       resolver->Reject(DOMException::Create(
-          "The `challenge` attribute exceeds the maximum allowed size.",
+          "The `excludedCredentials.id` attribute exceeds the maximum "
+          "allowed size.",
           "RangeError"));
       return promise;
     }
-
-    if (!IsArrayBufferOrViewBelowSizeLimit(
-            options->publicKey()->user()->id())) {
-      resolver->Reject(DOMException::Create(
-          "The `user.id` attribute exceeds the maximum allowed size.",
-          "RangeError"));
-      return promise;
-    }
-
-    for (const auto& credential : options->publicKey()->excludeCredentials()) {
-      if (!IsArrayBufferOrViewBelowSizeLimit(credential->id())) {
-        resolver->Reject(DOMException::Create(
-            "The `excludedCredentials.id` attribute exceeds the maximum "
-            "allowed size.",
-            "RangeError"));
-        return promise;
-      }
-    }
-    if (options->publicKey()->hasExtensions()) {
-      if (options->publicKey()->extensions()->hasAppid()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "The 'appid' extension is only valid when requesting an assertion "
-            "for a pre-existing credential that was registered using the "
-            "legacy FIDO U2F API."));
-        return promise;
-      }
-      if (options->publicKey()->extensions()->hasAppidExclude()) {
-        const auto& appid_exclude =
-            options->publicKey()->extensions()->appidExclude();
-        if (!appid_exclude.IsEmpty()) {
-          KURL appid_exclude_url(appid_exclude);
-          if (!appid_exclude_url.IsValid()) {
-            resolver->Reject(MakeGarbageCollected<DOMException>(
-                DOMExceptionCode::kSyntaxError,
-                "The `appidExclude` extension value is neither "
-                "empty/null nor a valid URL."));
-            return promise;
-          }
-        }
-      }
-      if (options->publicKey()->extensions()->hasCableAuthentication()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kNotSupportedError,
-            "The 'cableAuthentication' extension is only valid when requesting "
-            "an assertion"));
-        return promise;
-      }
-      if (options->publicKey()->extensions()->hasLargeBlob()) {
-        if (options->publicKey()->extensions()->largeBlob()->hasRead()) {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kNotSupportedError,
-              "The 'largeBlob' extension's 'read' parameter is only valid when "
-              "requesting an assertion"));
-          return promise;
-        }
-        if (options->publicKey()->extensions()->largeBlob()->hasWrite()) {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kNotSupportedError,
-              "The 'largeBlob' extension's 'write' parameter is only valid "
-              "when requesting an assertion"));
-          return promise;
-        }
-      }
-    }
-
-    if (options->hasSignal()) {
-      if (options->signal()->aborted()) {
-        resolver->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kAbortError, "Request has been aborted."));
-        return promise;
-      }
-      options->signal()->AddAlgorithm(
-          WTF::Bind(&AbortPublicKeyRequest, WrapPersistent(script_state)));
-    }
-
-    if (options->publicKey()->hasAuthenticatorSelection() &&
-        !options->publicKey()
-             ->authenticatorSelection()
-             ->hasUserVerification()) {
-      resolver->DomWindow()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "publicKey.authenticatorSelection.userVerification was not set "
-              "to "
-              "any value in Web Authentication navigator.credentials.create() "
-              "call. This defaults to 'preferred', which is probably not what "
-              "you "
-              "want. If in doubt, set to 'discouraged'. See "
-              "https://chromium.googlesource.com/chromium/src/+/master/content/"
-              "browser/webauth/uv_preferred.md for details"));
-    }
-    if (options->publicKey()->hasAuthenticatorSelection() &&
-        options->publicKey()->authenticatorSelection()->hasResidentKey() &&
-        !mojo::ConvertTo<base::Optional<mojom::blink::ResidentKeyRequirement>>(
-            options->publicKey()->authenticatorSelection()->residentKey())) {
-      resolver->DomWindow()->AddConsoleMessage(
-          MakeGarbageCollected<ConsoleMessage>(
-              mojom::blink::ConsoleMessageSource::kJavaScript,
-              mojom::blink::ConsoleMessageLevel::kWarning,
-              "Ignoring unknown publicKey.authenticatorSelection.residentKey "
-              "value"));
-    }
-    auto mojo_options =
-        MojoPublicKeyCredentialCreationOptions::From(*options->publicKey());
-    if (!mojo_options) {
+  }
+  if (options->publicKey()->hasExtensions()) {
+    if (options->publicKey()->extensions()->hasAppid()) {
       resolver->Reject(MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError,
-          "Required parameters missing in `options.publicKey`."));
-    } else if (mojo_options->user->id.size() > 64) {
-      // https://www.w3.org/TR/webauthn/#user-handle
-      v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
-      resolver->Reject(V8ThrowException::CreateTypeError(
-          isolate, "User handle exceeds 64 bytes."));
-    } else {
-      if (!mojo_options->relying_party->id) {
-        mojo_options->relying_party->id =
-            resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
-      }
-
-      if (mojo_options->relying_party->icon) {
-        if (!IsIconURLNullOrSecure(mojo_options->relying_party->icon.value())) {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kSecurityError,
-              "'rp.icon' should be a secure URL"));
-          return promise;
-        }
-      }
-
-      if (mojo_options->user->icon) {
-        if (!IsIconURLNullOrSecure(mojo_options->user->icon.value())) {
-          resolver->Reject(MakeGarbageCollected<DOMException>(
-              DOMExceptionCode::kSecurityError,
-              "'user.icon' should be a secure URL"));
-          return promise;
-        }
-      }
-
-      auto* authenticator =
-          CredentialManagerProxy::From(script_state)->Authenticator();
-      authenticator->MakeCredential(
-          std::move(mojo_options),
-          WTF::Bind(&OnMakePublicKeyCredentialComplete,
-                    std::make_unique<ScopedPromiseResolver>(resolver)));
+          "The 'appid' extension is only valid when requesting an assertion "
+          "for a pre-existing credential that was registered using the "
+          "legacy FIDO U2F API."));
+      return promise;
     }
+    if (options->publicKey()->extensions()->hasAppidExclude()) {
+      const auto& appid_exclude =
+          options->publicKey()->extensions()->appidExclude();
+      if (!appid_exclude.IsEmpty()) {
+        KURL appid_exclude_url(appid_exclude);
+        if (!appid_exclude_url.IsValid()) {
+          resolver->Reject(MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kSyntaxError,
+              "The `appidExclude` extension value is neither "
+              "empty/null nor a valid URL."));
+          return promise;
+        }
+      }
+    }
+    if (options->publicKey()->extensions()->hasCableAuthentication()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError,
+          "The 'cableAuthentication' extension is only valid when requesting "
+          "an assertion"));
+      return promise;
+    }
+    if (options->publicKey()->extensions()->hasLargeBlob()) {
+      if (options->publicKey()->extensions()->largeBlob()->hasRead()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "The 'largeBlob' extension's 'read' parameter is only valid when "
+            "requesting an assertion"));
+        return promise;
+      }
+      if (options->publicKey()->extensions()->largeBlob()->hasWrite()) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kNotSupportedError,
+            "The 'largeBlob' extension's 'write' parameter is only valid "
+            "when requesting an assertion"));
+        return promise;
+      }
+    }
+  }
+
+  if (options->hasSignal()) {
+    if (options->signal()->aborted()) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, "Request has been aborted."));
+      return promise;
+    }
+    options->signal()->AddAlgorithm(
+        WTF::Bind(&AbortPublicKeyRequest, WrapPersistent(script_state)));
+  }
+
+  if (options->publicKey()->hasAuthenticatorSelection() &&
+      !options->publicKey()->authenticatorSelection()->hasUserVerification()) {
+    resolver->DomWindow()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "publicKey.authenticatorSelection.userVerification was not set "
+            "to "
+            "any value in Web Authentication navigator.credentials.create() "
+            "call. This defaults to 'preferred', which is probably not what "
+            "you "
+            "want. If in doubt, set to 'discouraged'. See "
+            "https://chromium.googlesource.com/chromium/src/+/master/content/"
+            "browser/webauth/uv_preferred.md for details"));
+  }
+  if (options->publicKey()->hasAuthenticatorSelection() &&
+      options->publicKey()->authenticatorSelection()->hasResidentKey() &&
+      !mojo::ConvertTo<base::Optional<mojom::blink::ResidentKeyRequirement>>(
+          options->publicKey()->authenticatorSelection()->residentKey())) {
+    resolver->DomWindow()->AddConsoleMessage(
+        MakeGarbageCollected<ConsoleMessage>(
+            mojom::blink::ConsoleMessageSource::kJavaScript,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "Ignoring unknown publicKey.authenticatorSelection.residentKey "
+            "value"));
+  }
+  auto mojo_options =
+      MojoPublicKeyCredentialCreationOptions::From(*options->publicKey());
+  if (!mojo_options) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Required parameters missing in `options.publicKey`."));
+  } else if (mojo_options->user->id.size() > 64) {
+    // https://www.w3.org/TR/webauthn/#user-handle
+    v8::Isolate* isolate = resolver->GetScriptState()->GetIsolate();
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        isolate, "User handle exceeds 64 bytes."));
+  } else {
+    if (!mojo_options->relying_party->id) {
+      mojo_options->relying_party->id =
+          resolver->GetExecutionContext()->GetSecurityOrigin()->Domain();
+    }
+
+    if (mojo_options->relying_party->icon) {
+      if (!IsIconURLNullOrSecure(mojo_options->relying_party->icon.value())) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSecurityError,
+            "'rp.icon' should be a secure URL"));
+        return promise;
+      }
+    }
+
+    if (mojo_options->user->icon) {
+      if (!IsIconURLNullOrSecure(mojo_options->user->icon.value())) {
+        resolver->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kSecurityError,
+            "'user.icon' should be a secure URL"));
+        return promise;
+      }
+    }
+
+    auto* authenticator =
+        CredentialManagerProxy::From(script_state)->Authenticator();
+    authenticator->MakeCredential(
+        std::move(mojo_options),
+        WTF::Bind(&OnMakePublicKeyCredentialComplete,
+                  std::make_unique<ScopedPromiseResolver>(resolver)));
   }
 
   return promise;
