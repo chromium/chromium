@@ -91,7 +91,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
 
   void CreateRecentlyClosedTabs(
       std::vector<tab_search::mojom::RecentlyClosedTabPtr>&
-          recently_closed_tabs);
+          recently_closed_tabs,
+      std::set<std::string>& tab_urls);
 
   tab_search::mojom::TabPtr GetTab(TabStripModel* tab_strip_model,
                                    content::WebContents* contents,
