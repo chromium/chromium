@@ -157,13 +157,11 @@ ContentSettingsContentSettingGetFunction::Run() {
     cookie_settings = CookieSettingsFactory::GetForProfile(profile).get();
   }
 
-  ContentSetting setting;
-  if (content_type == ContentSettingsType::COOKIES) {
-    cookie_settings->GetCookieSetting(primary_url, secondary_url, nullptr,
-                                      &setting);
-  } else {
-    setting = map->GetContentSetting(primary_url, secondary_url, content_type);
-  }
+  ContentSetting setting =
+      content_type == ContentSettingsType::COOKIES
+          ? cookie_settings->GetCookieSetting(primary_url, secondary_url,
+                                              nullptr)
+          : map->GetContentSetting(primary_url, secondary_url, content_type);
 
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   std::string setting_string =

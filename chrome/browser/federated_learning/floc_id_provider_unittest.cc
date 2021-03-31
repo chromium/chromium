@@ -71,13 +71,13 @@ class FakeCookieSettings : public content_settings::CookieSettings {
  public:
   using content_settings::CookieSettings::CookieSettings;
 
-  void GetCookieSettingInternal(const GURL& url,
-                                const GURL& first_party_url,
-                                bool is_third_party_request,
-                                content_settings::SettingSource* source,
-                                ContentSetting* cookie_setting) const override {
-    *cookie_setting =
-        allow_cookies_internal_ ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK;
+  ContentSetting GetCookieSettingInternal(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool is_third_party_request,
+      content_settings::SettingSource* source) const override {
+    return allow_cookies_internal_ ? CONTENT_SETTING_ALLOW
+                                   : CONTENT_SETTING_BLOCK;
   }
 
   bool ShouldBlockThirdPartyCookies() const override {

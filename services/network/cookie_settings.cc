@@ -107,27 +107,24 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
   return false;
 }
 
-void CookieSettings::GetCookieSettingInternal(
+ContentSetting CookieSettings::GetCookieSettingInternal(
     const GURL& url,
     const GURL& first_party_url,
     bool is_third_party_request,
-    content_settings::SettingSource* source,
-    ContentSetting* cookie_setting) const {
-  DCHECK(cookie_setting);
+    content_settings::SettingSource* source) const {
   if (ShouldAlwaysAllowCookies(url, first_party_url)) {
-    *cookie_setting = CONTENT_SETTING_ALLOW;
-    return;
+    return CONTENT_SETTING_ALLOW;
   }
 
   // Default to allowing cookies.
-  *cookie_setting = CONTENT_SETTING_ALLOW;
+  ContentSetting cookie_setting = CONTENT_SETTING_ALLOW;
   bool block_third = block_third_party_cookies_ &&
                      !base::Contains(third_party_cookies_allowed_schemes_,
                                      first_party_url.scheme());
   for (const auto& entry : content_settings_) {
     if (entry.primary_pattern.Matches(url) &&
         entry.secondary_pattern.Matches(first_party_url)) {
-      *cookie_setting = entry.GetContentSetting();
+      cookie_setting = entry.GetContentSetting();
       // Only continue to block third party cookies if there is not an explicit
       // exception.
       if (!IsDefaultSetting(entry))
@@ -169,10 +166,12 @@ void CookieSettings::GetCookieSettingInternal(
   }
 
   if (block) {
-    *cookie_setting = CONTENT_SETTING_BLOCK;
+    cookie_setting = CONTENT_SETTING_BLOCK;
     FireStorageAccessHistogram(
         net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
   }
+
+  return cookie_setting;
 }
 
 bool CookieSettings::HasSessionOnlyOrigins() const {

@@ -91,11 +91,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
                                 const GURL& first_party_url) const;
 
   // content_settings::CookieSettingsBase:
-  void GetCookieSettingInternal(const GURL& url,
-                                const GURL& first_party_url,
-                                bool is_third_party_request,
-                                content_settings::SettingSource* source,
-                                ContentSetting* cookie_setting) const override;
+  ContentSetting GetCookieSettingInternal(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool is_third_party_request,
+      content_settings::SettingSource* source) const override;
 
   // Returns true if at least one content settings is session only.
   bool HasSessionOnlyOrigins() const;

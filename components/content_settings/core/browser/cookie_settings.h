@@ -156,11 +156,11 @@ class CookieSettings : public CookieSettingsBase,
                                 const GURL& first_party_url) const;
 
   // content_settings::CookieSettingsBase:
-  void GetCookieSettingInternal(const GURL& url,
-                                const GURL& first_party_url,
-                                bool is_third_party_request,
-                                content_settings::SettingSource* source,
-                                ContentSetting* cookie_setting) const override;
+  ContentSetting GetCookieSettingInternal(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool is_third_party_request,
+      content_settings::SettingSource* source) const override;
 
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,

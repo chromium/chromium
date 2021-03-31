@@ -38,12 +38,12 @@ class CallbackCookieSettings : public CookieSettingsBase {
       : callback_(std::move(callback)) {}
 
   // CookieSettingsBase:
-  void GetCookieSettingInternal(const GURL& url,
-                                const GURL& first_party_url,
-                                bool is_third_party_request,
-                                content_settings::SettingSource* source,
-                                ContentSetting* cookie_setting) const override {
-    *cookie_setting = callback_.Run(url);
+  ContentSetting GetCookieSettingInternal(
+      const GURL& url,
+      const GURL& first_party_url,
+      bool is_third_party_request,
+      content_settings::SettingSource* source) const override {
+    return callback_.Run(url);
   }
   void GetSettingForLegacyCookieAccess(const std::string& cookie_domain,
                                        ContentSetting* setting) const override {

@@ -455,9 +455,8 @@ TEST_F(CookieSettingsTest, GetCookieSettingAllowedTelemetry) {
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 0);
 
-  ContentSetting setting;
-  cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
+            CONTENT_SETTING_ALLOW);
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
@@ -482,9 +481,8 @@ TEST_F(CookieSettingsTest, GetCookieSettingDisabledSAA) {
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
-  ContentSetting setting;
-  cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
+            CONTENT_SETTING_BLOCK);
 }
 
 // The current default behaviour of the Storage Access API should be to not
@@ -504,9 +502,8 @@ TEST_F(CookieSettingsTest, GetCookieSettingDefaultSAA) {
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
-  ContentSetting setting;
-  cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
+            CONTENT_SETTING_BLOCK);
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
@@ -538,9 +535,8 @@ TEST_F(CookieSettingsTest, GetCookieSettingEnabledSAA) {
   // When requesting our setting for the url/top-level combination our
   // grant is for access should be allowed. For any other domain pairs access
   // should still be blocked.
-  ContentSetting setting;
-  cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
+            CONTENT_SETTING_ALLOW);
   histogram_tester.ExpectTotalCount(kAllowedRequestsHistogram, 1);
   histogram_tester.ExpectBucketCount(
       kAllowedRequestsHistogram,
@@ -550,15 +546,15 @@ TEST_F(CookieSettingsTest, GetCookieSettingEnabledSAA) {
 
   // Invalid pair the |top_level_url| granting access to |url| is now
   // being loaded under |url| as the top level url.
-  cookie_settings_->GetCookieSetting(top_level_url, url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(top_level_url, url, nullptr),
+            CONTENT_SETTING_BLOCK);
 
   // Invalid pairs where a |third_url| is used.
-  cookie_settings_->GetCookieSetting(url, third_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
-  cookie_settings_->GetCookieSetting(third_url, top_level_url, nullptr,
-                                     &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, third_url, nullptr),
+            CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(
+      cookie_settings_->GetCookieSetting(third_url, top_level_url, nullptr),
+      CONTENT_SETTING_BLOCK);
 }
 
 // Subdomains of the granted resource url should not gain access if a valid
@@ -578,13 +574,11 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAResourceWildcards) {
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
-  ContentSetting setting;
-  cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
-
-  cookie_settings_->GetCookieSetting(GURL(kHttpsSubdomainSite), top_level_url,
-                                     nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(GURL(kHttpsSubdomainSite),
+                                               top_level_url, nullptr),
+            CONTENT_SETTING_BLOCK);
 }
 
 // Subdomains of the granted top level url should not grant access if a valid
@@ -604,13 +598,11 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAATopLevelWildcards) {
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
-  ContentSetting setting;
-  cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
-
-  cookie_settings_->GetCookieSetting(url, GURL(kHttpsSubdomainSite), nullptr,
-                                     &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
+            CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, GURL(kHttpsSubdomainSite),
+                                               nullptr),
+            CONTENT_SETTING_BLOCK);
 }
 
 // Any Storage Access API grant should not override an explicit setting to block
@@ -629,9 +621,8 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAARespectsSettings) {
       ContentSettingsPattern::FromURLNoWildcard(top_level_url),
       ContentSettingsType::STORAGE_ACCESS, CONTENT_SETTING_ALLOW);
 
-  ContentSetting setting;
-  cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
+            CONTENT_SETTING_BLOCK);
 }
 
 // Once a grant expires access should no longer be given.
@@ -656,15 +647,14 @@ TEST_F(CookieSettingsTest, GetCookieSettingSAAExpiredGrant) {
   // When requesting our setting for the url/top-level combination our
   // grant is for access should be allowed. For any other domain pairs access
   // should still be blocked.
-  ContentSetting setting;
-  cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
+            CONTENT_SETTING_ALLOW);
 
   // If we fastforward past the expiration of our grant the result should be
   // CONTENT_SETTING_BLOCK now.
   FastForwardTime(base::TimeDelta::FromSeconds(101));
-  cookie_settings_->GetCookieSetting(url, top_level_url, nullptr, &setting);
-  EXPECT_EQ(setting, CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings_->GetCookieSetting(url, top_level_url, nullptr),
+            CONTENT_SETTING_BLOCK);
 }
 #endif
 

@@ -126,8 +126,8 @@ bool GetSettingManagedByUser(const GURL& url,
   SettingSource source;
   ContentSetting setting;
   if (type == ContentSettingsType::COOKIES) {
-    CookieSettingsFactory::GetForProfile(profile)->GetCookieSetting(
-        url, url, &source, &setting);
+    setting = CookieSettingsFactory::GetForProfile(profile)->GetCookieSetting(
+        url, url, &source);
   } else {
     SettingInfo info;
     std::unique_ptr<base::Value> value =

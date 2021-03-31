@@ -107,10 +107,10 @@ class CookieSettingsBase {
   bool IsCookieSessionOnly(const GURL& url) const;
 
   // A helper for applying third party cookie blocking rules.
-  void GetCookieSetting(const GURL& url,
-                        const GURL& first_party_url,
-                        content_settings::SettingSource* source,
-                        ContentSetting* cookie_setting) const;
+  ContentSetting GetCookieSetting(
+      const GURL& url,
+      const GURL& first_party_url,
+      content_settings::SettingSource* source) const;
 
   // Returns the cookie access semantics (legacy or nonlegacy) to be applied for
   // cookies on the given domain. The |cookie_domain| can be provided as the
@@ -171,12 +171,11 @@ class CookieSettingsBase {
   static bool IsValidSettingForLegacyAccess(ContentSetting setting);
 
  private:
-  virtual void GetCookieSettingInternal(
+  virtual ContentSetting GetCookieSettingInternal(
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
-      content_settings::SettingSource* source,
-      ContentSetting* cookie_setting) const = 0;
+      content_settings::SettingSource* source) const = 0;
 
   DISALLOW_COPY_AND_ASSIGN(CookieSettingsBase);
 };

@@ -31,8 +31,7 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
     const std::string& domain,
     bool is_https) const {
   GURL origin = net::cookie_util::CookieOriginToURL(domain, is_https);
-  ContentSetting setting;
-  GetCookieSetting(origin, origin, nullptr, &setting);
+  ContentSetting setting = GetCookieSetting(origin, origin, nullptr);
   DCHECK(IsValidSetting(setting));
   if (setting == CONTENT_SETTING_ALLOW)
     return false;
@@ -61,14 +60,12 @@ bool CookieSettingsBase::ShouldDeleteCookieOnExit(
   return setting == CONTENT_SETTING_SESSION_ONLY || matches_session_only_rule;
 }
 
-void CookieSettingsBase::GetCookieSetting(
+ContentSetting CookieSettingsBase::GetCookieSetting(
     const GURL& url,
     const GURL& first_party_url,
-    content_settings::SettingSource* source,
-    ContentSetting* cookie_setting) const {
-  GetCookieSettingInternal(url, first_party_url,
-                           IsThirdPartyRequest(url, first_party_url), source,
-                           cookie_setting);
+    content_settings::SettingSource* source) const {
+  return GetCookieSettingInternal(
+      url, first_party_url, IsThirdPartyRequest(url, first_party_url), source);
 }
 
 bool CookieSettingsBase::IsCookieAccessAllowed(
@@ -79,25 +76,21 @@ bool CookieSettingsBase::IsCookieAccessAllowed(
   // content settings on IOS, so it does not matter.
   DCHECK(!first_party_url.is_empty() || url.is_empty()) << url;
 #endif
-  ContentSetting setting;
-  GetCookieSetting(url, first_party_url, nullptr, &setting);
-  return IsAllowed(setting);
+  return IsAllowed(GetCookieSetting(url, first_party_url, nullptr));
 }
 
 bool CookieSettingsBase::IsCookieAccessAllowed(
     const GURL& url,
     const GURL& site_for_cookies,
     const base::Optional<url::Origin>& top_frame_origin) const {
-  ContentSetting setting;
-  GetCookieSettingInternal(
+  ContentSetting setting = GetCookieSettingInternal(
       url, top_frame_origin ? top_frame_origin->GetURL() : site_for_cookies,
-      IsThirdPartyRequest(url, site_for_cookies), nullptr, &setting);
+      IsThirdPartyRequest(url, site_for_cookies), nullptr);
   return IsAllowed(setting);
 }
 
 bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
-  ContentSetting setting;
-  GetCookieSetting(origin, origin, nullptr, &setting);
+  ContentSetting setting = GetCookieSetting(origin, origin, nullptr);
   DCHECK(IsValidSetting(setting));
   return setting == CONTENT_SETTING_SESSION_ONLY;
 }

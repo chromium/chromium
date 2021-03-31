@@ -90,9 +90,7 @@ bool CookieSettings::IsThirdPartyAccessAllowed(
     content_settings::SettingSource* source) {
   // Use GURL() as an opaque primary url to check if any site
   // could access cookies in a 3p context on |first_party_url|.
-  ContentSetting setting;
-  GetCookieSetting(GURL(), first_party_url, source, &setting);
-  return IsAllowed(setting);
+  return IsAllowed(GetCookieSetting(GURL(), first_party_url, source));
 }
 
 void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
@@ -164,17 +162,14 @@ bool CookieSettings::ShouldAlwaysAllowCookies(
   return false;
 }
 
-void CookieSettings::GetCookieSettingInternal(
+ContentSetting CookieSettings::GetCookieSettingInternal(
     const GURL& url,
     const GURL& first_party_url,
     bool is_third_party_request,
-    content_settings::SettingSource* source,
-    ContentSetting* cookie_setting) const {
-  DCHECK(cookie_setting);
+    content_settings::SettingSource* source) const {
   // Auto-allow in extensions or for WebUI embedding a secure origin.
   if (ShouldAlwaysAllowCookies(url, first_party_url)) {
-    *cookie_setting = CONTENT_SETTING_ALLOW;
-    return;
+    return CONTENT_SETTING_ALLOW;
   }
 
   // First get any host-specific settings.
@@ -227,7 +222,7 @@ void CookieSettings::GetCookieSettingInternal(
         net::cookie_util::StorageAccessResult::ACCESS_BLOCKED);
   }
 
-  *cookie_setting = block ? CONTENT_SETTING_BLOCK : setting;
+  return block ? CONTENT_SETTING_BLOCK : setting;
 }
 
 CookieSettings::~CookieSettings() = default;
