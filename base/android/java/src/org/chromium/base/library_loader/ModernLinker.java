@@ -26,9 +26,8 @@ class ModernLinker extends Linker {
     private static final String TAG = "ModernLinker";
 
     // Whether to use memfd_create(2) for creating RELRO FD on supported systems.
-    // TODO(pasko): Change to |true| after modern_linker_unittest passes on all bots. Leave the
-    // constant as a kill-switch until it reaches Stable.
-    private static final boolean ALLOW_MEMFD = false;
+    // TODO(pasko): Remove this compile time constant when memfd reaches Stable (M91).
+    private static final boolean ALLOW_MEMFD = true;
 
     ModernLinker() {}
 
