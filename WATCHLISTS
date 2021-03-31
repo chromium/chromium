@@ -160,9 +160,6 @@
     'arc_power': {
       'filepath': 'components/arc/power/',
     },
-    'arc_video_accelerator': {
-      'filepath': 'components/arc/video_accelerator',
-    },
     'ash': {
       'filepath': 'ash/',
     },
@@ -1260,9 +1257,6 @@
                   '|chrome/common/media_galleries/'\
                   '|chrome/test/data/extensions/api_test/media_galleries/'
     },
-    'media_gpu': {
-      'filepath': 'media/gpu/',
-    },
     'media_gpu_cros': {
       'filepath': 'media/gpu/chromeos'\
                   '|media/gpu/vaapi'\
@@ -2157,7 +2151,6 @@
                 'cernekee@chromium.org',
                 'snanda@chromium.org'],
     'arc_power': ['ejcaruso+watch@chromium.org'],
-    'arc_video_accelerator': ['hiroh+watch@chromium.org'],
     'ash': ['kalyan.kondapally@intel.com',
             'sadrul@chromium.org'],
     'assistant': ['croissant-eng+reviews@chromium.org'],
@@ -2619,7 +2612,6 @@
                        'shihken@microsoft.com'],
     'media_galleries': ['thestig@chromium.org',
                         'tommycli@chromium.org'],
-    'media_gpu': ['hiroh+watch@chromium.org'],
     'media_gpu_cros': ['media-cros-reviews@chromium.org'],
     'media_gpu_vaapi': ['vaapi-reviews@chromium.org'],
     'media_gpu_win': ['media-win-reviews@chromium.org'],
