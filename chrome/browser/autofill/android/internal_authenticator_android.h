@@ -71,7 +71,7 @@ class InternalAuthenticatorAndroid : public autofill::InternalAuthenticator {
   base::android::JavaRef<jobject>& GetJavaObject();
 
   const content::GlobalFrameRoutingId render_frame_host_id_;
-  base::android::ScopedJavaGlobalRef<jobject> java_authenticator_impl_ref_;
+  base::android::ScopedJavaGlobalRef<jobject> java_internal_authenticator_ref_;
   blink::mojom::Authenticator::MakeCredentialCallback
       make_credential_response_callback_;
   blink::mojom::Authenticator::GetAssertionCallback

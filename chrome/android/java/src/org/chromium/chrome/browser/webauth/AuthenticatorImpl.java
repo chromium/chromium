@@ -10,8 +10,6 @@ import android.os.Build;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
-import org.chromium.base.annotations.CalledByNative;
-import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.Authenticator;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
@@ -23,15 +21,11 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.url.Origin;
 
-import java.nio.ByteBuffer;
 import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * Android implementation of the authenticator.mojom interface. This also acts as the bridge for
- * InternalAuthenticator declared in
- * //chrome/browser/autofill/android/internal_authenticator_android.h, which is meant for requests
- * that originate in the browser process.
+ * Android implementation of the authenticator.mojom interface.
  */
 public class AuthenticatorImpl implements Authenticator {
     private final RenderFrameHost mRenderFrameHost;
@@ -46,7 +40,6 @@ public class AuthenticatorImpl implements Authenticator {
      * process.
      */
     private Origin mOrigin;
-    private Long mNativeInternalAuthenticatorAndroid;
 
     private org.chromium.mojo.bindings.Callbacks
             .Callback2<Integer, MakeCredentialAuthenticatorResponse> mMakeCredentialCallback;
@@ -70,24 +63,11 @@ public class AuthenticatorImpl implements Authenticator {
         mOrigin = mRenderFrameHost.getLastCommittedOrigin();
     }
 
-    private AuthenticatorImpl(
-            long nativeInternalAuthenticatorAndroid, RenderFrameHost renderFrameHost) {
-        this(renderFrameHost);
-        mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
-    }
-
-    @CalledByNative
-    public static AuthenticatorImpl create(
-            long nativeInternalAuthenticatorAndroid, RenderFrameHost renderFrameHost) {
-        return new AuthenticatorImpl(nativeInternalAuthenticatorAndroid, renderFrameHost);
-    }
-
     /**
-     * Called by InternalAuthenticator, which facilitates WebAuthn for processes that originate from
-     * the browser process. Since the request is from the browser process, the Relying Party ID may
-     * not correspond with the origin of the renderer.
+     * Called by InternalAuthenticatorAndroid, which facilitates WebAuthn for processes that
+     * originate from the browser process. Since the request is from the browser process, the
+     * Relying Party ID may not correspond with the origin of the renderer.
      */
-    @CalledByNative
     public void setEffectiveOrigin(Origin origin) {
         mOrigin = origin;
     }
@@ -115,20 +95,6 @@ public class AuthenticatorImpl implements Authenticator {
                 status -> onError(status));
     }
 
-    /**
-     * Called by InternalAuthenticator, which facilitates WebAuthn for processes that originate from
-     * the browser process. The origin may be overridden through |setEffectiveOrigin()|. The
-     * response will be passed through |invokeMakeCredentialResponse()|.
-     */
-    @CalledByNative
-    public void makeCredentialBridge(ByteBuffer optionsByteBuffer) {
-        makeCredential(PublicKeyCredentialCreationOptions.deserialize(optionsByteBuffer),
-                (status, response)
-                        -> AuthenticatorImplJni.get().invokeMakeCredentialResponse(
-                                mNativeInternalAuthenticatorAndroid, status.intValue(),
-                                response == null ? null : response.serialize()));
-    }
-
     @Override
     public void getAssertion(
             PublicKeyCredentialRequestOptions options, GetAssertionResponse callback) {
@@ -149,20 +115,6 @@ public class AuthenticatorImpl implements Authenticator {
         mIsOperationPending = true;
         Fido2ApiHandler.getInstance().getAssertion(options, mRenderFrameHost, mOrigin,
                 (status, response) -> onSignResponse(status, response), status -> onError(status));
-    }
-
-    /**
-     * Called by InternalAuthenticator, which facilitates WebAuthn for processes that originate from
-     * the browser process. The origin may be overridden through |setEffectiveOrigin()|. The
-     * response will be passed through |invokeGetAssertionResponse()|.
-     */
-    @CalledByNative
-    public void getAssertionBridge(ByteBuffer optionsByteBuffer) {
-        getAssertion(PublicKeyCredentialRequestOptions.deserialize(optionsByteBuffer),
-                (status, response)
-                        -> AuthenticatorImplJni.get().invokeGetAssertionResponse(
-                                mNativeInternalAuthenticatorAndroid, status.intValue(),
-                                response == null ? null : response.serialize()));
     }
 
     @Override
@@ -193,32 +145,6 @@ public class AuthenticatorImpl implements Authenticator {
                 isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
     }
 
-    /**
-     * Called by InternalAuthenticator, which facilitates WebAuthn for processes that originate from
-     * the browser process. The origin may be overridden through |setEffectiveOrigin()|. The
-     * response will be passed through
-     * |invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse()|.
-     * This is exclusively called by Payments Autofill, and because Payments servers only accept
-     * security keys for Android P and above, this returns false if the build version
-     * is O or below. Otherwise, the return value is determined by
-     * |isUserVerifyingPlatformAuthenticatorAvailable()|.
-     */
-    @CalledByNative
-    public void isUserVerifyingPlatformAuthenticatorAvailableBridge() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            AuthenticatorImplJni.get().invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                    mNativeInternalAuthenticatorAndroid, false);
-            return;
-        }
-
-        isUserVerifyingPlatformAuthenticatorAvailable(
-                (isUVPAA)
-                        -> AuthenticatorImplJni.get()
-                                   .invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                                           mNativeInternalAuthenticatorAndroid, isUVPAA));
-    }
-
-    @CalledByNative
     @Override
     public void cancel() {
         // Not implemented, ignored because request sent to gmscore fido cannot be cancelled.
@@ -266,15 +192,5 @@ public class AuthenticatorImpl implements Authenticator {
     @Override
     public void onConnectionError(MojoException e) {
         close();
-    }
-
-    @NativeMethods
-    interface Natives {
-        void invokeMakeCredentialResponse(
-                long nativeInternalAuthenticatorAndroid, int status, ByteBuffer byteBuffer);
-        void invokeGetAssertionResponse(
-                long nativeInternalAuthenticatorAndroid, int status, ByteBuffer byteBuffer);
-        void invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                long nativeInternalAuthenticatorAndroid, boolean isUVPAA);
     }
 }

@@ -43,6 +43,8 @@ import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.autofill.InternalAuthenticator;
+import org.chromium.chrome.browser.autofill.InternalAuthenticatorJni;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -88,8 +90,7 @@ public class Fido2CredentialRequestTest {
     private String mUrl;
     private MockAuthenticatorRenderFrameHost mFrameHost;
     private Origin mOrigin;
-    private AuthenticatorImpl.Natives mTestAuthenticatorImplJni;
-    private AuthenticatorImpl mAuthenticatorImpl;
+    private InternalAuthenticator.Natives mTestAuthenticatorImplJni;
     private Fido2CredentialRequest mRequest;
     private PublicKeyCredentialCreationOptions mCreationOptions;
     private PublicKeyCredentialRequestOptions mRequestOptions;
@@ -297,7 +298,7 @@ public class Fido2CredentialRequestTest {
         }
     }
 
-    private static class TestAuthenticatorImplJni implements AuthenticatorImpl.Natives {
+    private static class TestAuthenticatorImplJni implements InternalAuthenticator.Natives {
         private AuthenticatorCallback mCallback;
 
         TestAuthenticatorImplJni(AuthenticatorCallback callback) {
@@ -306,7 +307,7 @@ public class Fido2CredentialRequestTest {
 
         @Override
         public void invokeMakeCredentialResponse(
-                long nativeInternalAuthenticatorAndroid, int status, ByteBuffer byteBuffer) {
+                long nativeInternalAuthenticator, int status, ByteBuffer byteBuffer) {
             mCallback.onRegisterResponse(status,
                     byteBuffer == null
                             ? null
@@ -315,7 +316,7 @@ public class Fido2CredentialRequestTest {
 
         @Override
         public void invokeGetAssertionResponse(
-                long nativeInternalAuthenticatorAndroid, int status, ByteBuffer byteBuffer) {
+                long nativeInternalAuthenticator, int status, ByteBuffer byteBuffer) {
             mCallback.onSignResponse(status,
                     byteBuffer == null ? null
                                        : GetAssertionAuthenticatorResponse.deserialize(byteBuffer));
@@ -323,7 +324,7 @@ public class Fido2CredentialRequestTest {
 
         @Override
         public void invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
-                long nativeInternalAuthenticatorAndroid, boolean isUVPAA) {}
+                long nativeInternalAuthenticator, boolean isUVPAA) {}
     }
 
     private static class MockOrigin extends Origin {
@@ -392,9 +393,8 @@ public class Fido2CredentialRequestTest {
 
         MockitoAnnotations.initMocks(this);
         mTestAuthenticatorImplJni = new TestAuthenticatorImplJni(mCallback);
-        mocker.mock(AuthenticatorImplJni.TEST_HOOKS, mTestAuthenticatorImplJni);
+        mocker.mock(InternalAuthenticatorJni.TEST_HOOKS, mTestAuthenticatorImplJni);
 
-        mAuthenticatorImpl = AuthenticatorImpl.create(0, mFrameHost);
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
         TestThreadUtils.runOnUiThreadBlocking(
@@ -649,10 +649,11 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplMakeCredential_success() {
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mFrameHost);
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
-            mAuthenticatorImpl.makeCredential(mCreationOptions,
+            authenticator.makeCredential(mCreationOptions,
                     (status, response) -> mCallback.onRegisterResponse(status, response));
         });
 
@@ -665,10 +666,11 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplMakeCredential_resultCanceled() {
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mFrameHost);
         mWindowAndroid.setResultCode(Activity.RESULT_CANCELED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
-            mAuthenticatorImpl.makeCredential(mCreationOptions,
+            authenticator.makeCredential(mCreationOptions,
                     (status, response) -> mCallback.onRegisterResponse(status, response));
         });
 
@@ -680,11 +682,12 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testAuthenticatorImplMakeCredentialBridge_success() {
+    public void testInternalAuthenticatorMakeCredential_success() {
+        InternalAuthenticator authenticator = InternalAuthenticator.create(0, mFrameHost);
         mWindowAndroid.setResponseIntent(Fido2ApiTestHelper.createSuccessfulMakeCredentialIntent());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
-            mAuthenticatorImpl.makeCredentialBridge(mCreationOptions.serialize());
+            authenticator.makeCredential(mCreationOptions.serialize());
         });
 
         mCallback.blockUntilCalled();
@@ -695,11 +698,12 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testAuthenticatorImplMakeCredentialBridge_resultCanceled() {
+    public void testInternalAuthenticatorMakeCredential_resultCanceled() {
+        InternalAuthenticator authenticator = InternalAuthenticator.create(0, mFrameHost);
         mWindowAndroid.setResultCode(Activity.RESULT_CANCELED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
-            mAuthenticatorImpl.makeCredentialBridge(mCreationOptions.serialize());
+            authenticator.makeCredential(mCreationOptions.serialize());
         });
         mCallback.blockUntilCalled();
         Assert.assertEquals(
@@ -880,13 +884,14 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplGetAssertionWithUvmRequestedWithUvmResponded_success() {
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mFrameHost);
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
         mRequestOptions.userVerificationMethods = true;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
-            mAuthenticatorImpl.getAssertion(mRequestOptions,
+            authenticator.getAssertion(mRequestOptions,
                     (status, response) -> mCallback.onSignResponse(status, response));
         });
         mCallback.blockUntilCalled();
@@ -898,10 +903,11 @@ public class Fido2CredentialRequestTest {
     @Test
     @SmallTest
     public void testAuthenticatorImplGetAssertion_resultCanceled() {
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mFrameHost);
         mWindowAndroid.setResultCode(Activity.RESULT_CANCELED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
-            mAuthenticatorImpl.getAssertion(mRequestOptions,
+            authenticator.getAssertion(mRequestOptions,
                     (status, response) -> mCallback.onSignResponse(status, response));
         });
         mCallback.blockUntilCalled();
@@ -912,14 +918,15 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testAuthenticatorImplGetAssertionBridgeWithUvmRequestedWithUvmResponded_success() {
+    public void testInternalAuthenticatorGetAssertionWithUvmRequestedWithUvmResponded_success() {
+        InternalAuthenticator authenticator = InternalAuthenticator.create(0, mFrameHost);
         mWindowAndroid.setResponseIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
         mRequestOptions.userVerificationMethods = true;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
-            mAuthenticatorImpl.getAssertionBridge(mRequestOptions.serialize());
+            authenticator.getAssertion(mRequestOptions.serialize());
         });
         mCallback.blockUntilCalled();
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
@@ -929,11 +936,12 @@ public class Fido2CredentialRequestTest {
 
     @Test
     @SmallTest
-    public void testAuthenticatorImplGetAssertionBridge_resultCanceled() {
+    public void testInternalAuthenticatorGetAssertion_resultCanceled() {
+        InternalAuthenticator authenticator = InternalAuthenticator.create(0, mFrameHost);
         mWindowAndroid.setResultCode(Activity.RESULT_CANCELED);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mRequest.setWindowForTesting(mWindowAndroid);
-            mAuthenticatorImpl.getAssertionBridge(mRequestOptions.serialize());
+            authenticator.getAssertion(mRequestOptions.serialize());
         });
 
         mCallback.blockUntilCalled();

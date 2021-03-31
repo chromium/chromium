@@ -106,6 +106,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java",
   "java/src/org/chromium/chrome/browser/autofill/CreditCardScanner.java",
   "java/src/org/chromium/chrome/browser/autofill/CreditCardScannerBridge.java",
+  "java/src/org/chromium/chrome/browser/autofill/InternalAuthenticator.java",
   "java/src/org/chromium/chrome/browser/autofill/PersonalDataManager.java",
   "java/src/org/chromium/chrome/browser/autofill/PhoneNumberUtil.java",
   "java/src/org/chromium/chrome/browser/autofill/prefeditor/DropdownFieldAdapter.java",
