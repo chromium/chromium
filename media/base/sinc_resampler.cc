@@ -84,13 +84,15 @@
 #include "cc/base/math_util.h"
 
 #if defined(ARCH_CPU_X86_FAMILY)
-#include <xmmintrin.h>
-#define CONVOLVE_FUNC Convolve_SSE
+#include <immintrin.h>
+// Including these headers directly should generally be avoided. Since
+// Chrome is compiled with -msse3 (the minimal requirement), we include the
+// headers directly to make the intrinsics available.
+#include <avxintrin.h>
+#include <avx2intrin.h>
+#include <fmaintrin.h>
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
 #include <arm_neon.h>
-#define CONVOLVE_FUNC Convolve_NEON
-#else
-#define CONVOLVE_FUNC Convolve_C
 #endif
 
 namespace media {
@@ -111,6 +113,25 @@ static double SincScaleFactor(double io_ratio) {
   return sinc_scale_factor;
 }
 
+// If we know the minimum architecture at compile time, avoid CPU detection.
+void SincResampler::InitializeCPUSpecificFeatures() {
+#if defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
+  convolve_proc_ = Convolve_NEON;
+#elif defined(ARCH_CPU_X86_FAMILY)
+  base::CPU cpu;
+  // Using AVX2 instead of SSE2 when AVX2 supported.
+  if (cpu.has_avx2())
+    convolve_proc_ = Convolve_AVX2;
+  else if (cpu.has_sse2())
+    convolve_proc_ = Convolve_SSE;
+  else
+    convolve_proc_ = Convolve_C;
+#else
+  // Unknown architecture.
+  convolve_proc_ = Convolve_C;
+#endif
+}
+
 static int CalculateChunkSize(int block_size_, double io_ratio) {
   return block_size_ / io_ratio;
 }
@@ -122,17 +143,19 @@ SincResampler::SincResampler(double io_sample_rate_ratio,
       read_cb_(std::move(read_cb)),
       request_frames_(request_frames),
       input_buffer_size_(request_frames_ + kKernelSize),
-      // Create input buffers with a 16-byte alignment for SSE optimizations.
+      // Create input buffers with a 32-byte alignment for SIMD optimizations.
       kernel_storage_(static_cast<float*>(
-          base::AlignedAlloc(sizeof(float) * kKernelStorageSize, 16))),
+          base::AlignedAlloc(sizeof(float) * kKernelStorageSize, 32))),
       kernel_pre_sinc_storage_(static_cast<float*>(
-          base::AlignedAlloc(sizeof(float) * kKernelStorageSize, 16))),
+          base::AlignedAlloc(sizeof(float) * kKernelStorageSize, 32))),
       kernel_window_storage_(static_cast<float*>(
-          base::AlignedAlloc(sizeof(float) * kKernelStorageSize, 16))),
+          base::AlignedAlloc(sizeof(float) * kKernelStorageSize, 32))),
       input_buffer_(static_cast<float*>(
-          base::AlignedAlloc(sizeof(float) * input_buffer_size_, 16))),
+          base::AlignedAlloc(sizeof(float) * input_buffer_size_, 32))),
       r1_(input_buffer_.get()),
       r2_(input_buffer_.get() + kKernelSize / 2) {
+  InitializeCPUSpecificFeatures();
+  DCHECK(convolve_proc_);
   CHECK_GT(request_frames_, 0);
   Flush();
   CHECK_GT(block_size_, kKernelSize)
@@ -259,10 +282,10 @@ void SincResampler::Resample(int frames, float* destination) {
         const float* k1 = kernel_storage_.get() + offset_idx * kKernelSize;
         const float* k2 = k1 + kKernelSize;
 
-        // Ensure |k1|, |k2| are 16-byte aligned for SIMD usage.  Should always
-        // be true so long as kKernelSize is a multiple of 16.
-        DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(k1) & 0x0F);
-        DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(k2) & 0x0F);
+        // Ensure |k1|, |k2| are 32-byte aligned for SIMD usage.  Should always
+        // be true so long as kKernelSize is a multiple of 32.
+        DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(k1) & 0x1F);
+        DCHECK_EQ(0u, reinterpret_cast<uintptr_t>(k2) & 0x1F);
 
         // Initialize input pointer based on quantized |virtual_source_idx_|.
         const float* input_ptr = r1_ + source_idx;
@@ -271,7 +294,7 @@ void SincResampler::Resample(int frames, float* destination) {
         const double kernel_interpolation_factor =
             virtual_offset_idx - offset_idx;
         *destination++ =
-            CONVOLVE_FUNC(input_ptr, k1, k2, kernel_interpolation_factor);
+            convolve_proc_(input_ptr, k1, k2, kernel_interpolation_factor);
 
         // Advance the virtual index.
         virtual_source_idx_ += io_sample_rate_ratio_;
@@ -380,6 +403,53 @@ float SincResampler::Convolve_SSE(const float* input_ptr, const float* k1,
   m_sums2 = _mm_add_ps(_mm_movehl_ps(m_sums1, m_sums1), m_sums1);
   _mm_store_ss(&result, _mm_add_ss(m_sums2, _mm_shuffle_ps(
       m_sums2, m_sums2, 1)));
+
+  return result;
+}
+
+__attribute__((target("avx2,fma"))) float SincResampler::Convolve_AVX2(
+    const float* input_ptr,
+    const float* k1,
+    const float* k2,
+    double kernel_interpolation_factor) {
+  __m256 m_input;
+  __m256 m_sums1 = _mm256_setzero_ps();
+  __m256 m_sums2 = _mm256_setzero_ps();
+
+  // Based on |input_ptr| alignment, we need to use loadu or load.  Unrolling
+  // these loops has not been tested or benchmarked.
+  bool aligned_input = (reinterpret_cast<uintptr_t>(input_ptr) & 0x1F) == 0;
+  if (!aligned_input) {
+    for (size_t i = 0; i < kKernelSize; i += 8) {
+      m_input = _mm256_loadu_ps(input_ptr + i);
+      m_sums1 = _mm256_fmadd_ps(m_input, _mm256_load_ps(k1 + i), m_sums1);
+      m_sums2 = _mm256_fmadd_ps(m_input, _mm256_load_ps(k2 + i), m_sums2);
+    }
+  } else {
+    for (size_t i = 0; i < kKernelSize; i += 8) {
+      m_input = _mm256_load_ps(input_ptr + i);
+      m_sums1 = _mm256_fmadd_ps(m_input, _mm256_load_ps(k1 + i), m_sums1);
+      m_sums2 = _mm256_fmadd_ps(m_input, _mm256_load_ps(k2 + i), m_sums2);
+    }
+  }
+
+  // Linearly interpolate the two "convolutions".
+  __m128 m128_sums1 = _mm_add_ps(_mm256_extractf128_ps(m_sums1, 0),
+                                 _mm256_extractf128_ps(m_sums1, 1));
+  __m128 m128_sums2 = _mm_add_ps(_mm256_extractf128_ps(m_sums2, 0),
+                                 _mm256_extractf128_ps(m_sums2, 1));
+  m128_sums1 = _mm_mul_ps(
+      m128_sums1,
+      _mm_set_ps1(static_cast<float>(1.0 - kernel_interpolation_factor)));
+  m128_sums2 = _mm_mul_ps(
+      m128_sums2, _mm_set_ps1(static_cast<float>(kernel_interpolation_factor)));
+  m128_sums1 = _mm_add_ps(m128_sums1, m128_sums2);
+
+  // Sum components together.
+  float result;
+  m128_sums2 = _mm_add_ps(_mm_movehl_ps(m128_sums1, m128_sums1), m128_sums1);
+  _mm_store_ss(&result, _mm_add_ss(m128_sums2,
+                                   _mm_shuffle_ps(m128_sums2, m128_sums2, 1)));
 
   return result;
 }

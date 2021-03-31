@@ -106,11 +106,19 @@ class MEDIA_EXPORT SincResampler {
   static float Convolve_SSE(const float* input_ptr, const float* k1,
                             const float* k2,
                             double kernel_interpolation_factor);
+  static float Convolve_AVX2(const float* input_ptr,
+                             const float* k1,
+                             const float* k2,
+                             double kernel_interpolation_factor);
 #elif defined(ARCH_CPU_ARM_FAMILY) && defined(USE_NEON)
   static float Convolve_NEON(const float* input_ptr, const float* k1,
                              const float* k2,
                              double kernel_interpolation_factor);
 #endif
+
+  // Selects runtime specific CPU features like SSE.  Must be called before
+  // using SincResampler.
+  void InitializeCPUSpecificFeatures();
 
   // The ratio of input / output sample rates.
   double io_sample_rate_ratio_;
@@ -147,6 +155,13 @@ class MEDIA_EXPORT SincResampler {
 
   // Data from the source is copied into this buffer for each processing pass.
   std::unique_ptr<float[], base::AlignedFreeDeleter> input_buffer_;
+
+  // Stores the runtime selection of which Convolve function to use.
+  using ConvolveProc = float (*)(const float*,
+                                 const float*,
+                                 const float*,
+                                 double);
+  ConvolveProc convolve_proc_;
 
   // Pointers to the various regions inside |input_buffer_|.  See the diagram at
   // the top of the .cc file for more information.
