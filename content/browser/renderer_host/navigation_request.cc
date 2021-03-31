@@ -764,15 +764,7 @@ network::mojom::IPAddressSpace IPAddressSpaceForSpecialScheme(const GURL& url) {
   // Some of these schemes are only known from the chrome layer. Query the
   // embedder for these.
   ContentBrowserClient* client = GetContentClient()->browser();
-  std::vector<std::string> special_chrome_schemes;
-  client->GetAdditionalLocalAddressSpaceSchemes(&special_chrome_schemes);
-
-  for (auto& scheme : special_chrome_schemes) {
-    if (url.SchemeIs(scheme))
-      return network::mojom::IPAddressSpace::kLocal;
-  }
-
-  return network::mojom::IPAddressSpace::kUnknown;
+  return client->DetermineAddressSpaceFromURL(url);
 }
 
 network::mojom::IPAddressSpace CalculateIPAddressSpace(

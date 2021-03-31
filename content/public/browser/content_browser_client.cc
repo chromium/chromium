@@ -195,6 +195,11 @@ void ContentBrowserClient::GetAdditionalViewSourceSchemes(
   GetAdditionalWebUISchemes(additional_schemes);
 }
 
+network::mojom::IPAddressSpace
+ContentBrowserClient::DetermineAddressSpaceFromURL(const GURL& url) {
+  return network::mojom::IPAddressSpace::kUnknown;
+}
+
 bool ContentBrowserClient::LogWebUIUrl(const GURL& web_ui_url) {
   return false;
 }

@@ -220,6 +220,7 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "components/dom_distiller/core/url_constants.h"
+#include "components/dom_distiller/core/url_utils.h"
 #include "components/embedder_support/content_settings_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -361,6 +362,7 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/strings/grit/services_strings.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -1815,15 +1817,18 @@ void ChromeContentBrowserClient::GetAdditionalViewSourceSchemes(
 #endif
 }
 
-void ChromeContentBrowserClient::GetAdditionalLocalAddressSpaceSchemes(
-    std::vector<std::string>* additional_schemes) {
-  additional_schemes->push_back(chrome::kChromeSearchScheme);
+network::mojom::IPAddressSpace
+ChromeContentBrowserClient::DetermineAddressSpaceFromURL(const GURL& url) {
+  if (url.SchemeIs(chrome::kChromeSearchScheme))
+    return network::mojom::IPAddressSpace::kLocal;
+  if (url.SchemeIs(dom_distiller::kDomDistillerScheme))
+    return network::mojom::IPAddressSpace::kPublic;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  additional_schemes->push_back(extensions::kExtensionScheme);
+  if (url.SchemeIs(extensions::kExtensionScheme))
+    return network::mojom::IPAddressSpace::kLocal;
 #endif
 
-  // TODO(crbug.com/1167698): dom_distiller::kDomDistillerScheme looks like a
-  // strong candidate. Verify if that makes sense.
+  return network::mojom::IPAddressSpace::kUnknown;
 }
 
 bool ChromeContentBrowserClient::LogWebUIUrl(const GURL& web_ui_url) {

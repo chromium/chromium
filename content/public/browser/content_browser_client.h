@@ -46,6 +46,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -453,12 +454,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual void GetAdditionalViewSourceSchemes(
       std::vector<std::string>* additional_schemes);
 
-  // Returns a list of additional schemes that the content layer should
-  // interpret as having a local address space for the purpose of blocking
-  // insecure private network requests.
-  // See https://wicg.github.io/private-network-access/ for details.
-  virtual void GetAdditionalLocalAddressSpaceSchemes(
-      std::vector<std::string>* additional_schemes) {}
+  // Computes the IPAddressSpace of the given URL with embedder knowledge.
+  // This is used to assign values to special schemes recognized only by the
+  // embedders of content/. Returns kUnknown if no such scheme was found.
+  // See https://wicg.github.io/private-network-access/ for details on what
+  // the IPAddressSpace represents.
+  virtual network::mojom::IPAddressSpace DetermineAddressSpaceFromURL(
+      const GURL& url);
 
   // Called when WebUI objects are created to get aggregate usage data (i.e. is
   // chrome://downloads used more than chrome://bookmarks?). Only internal (e.g.

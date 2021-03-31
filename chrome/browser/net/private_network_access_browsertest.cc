@@ -9,12 +9,19 @@
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/dom_distiller/tab_utils.h"
+#include "chrome/browser/dom_distiller/test_distillation_observers.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
+#include "components/dom_distiller/content/browser/test_distillability_observer.h"
+#include "components/dom_distiller/core/dom_distiller_features.h"
+#include "components/dom_distiller/core/dom_distiller_switches.h"
+#include "components/dom_distiller/core/url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
@@ -156,15 +163,20 @@ class PrivateNetworkAccessBrowserTest : public InProcessBrowserTest {
   // function because GetChromeTestDataDir() is a test fixture method itself.
   // We return a unique_ptr because EmbeddedTestServer is not movable and C++17
   // support is not available at time of writing.
-  std::unique_ptr<net::EmbeddedTestServer> NewServer() {
-    auto server = std::make_unique<net::EmbeddedTestServer>();
+  std::unique_ptr<net::EmbeddedTestServer> NewServer(
+      net::EmbeddedTestServer::Type server_type =
+          net::EmbeddedTestServer::TYPE_HTTP) {
+    std::unique_ptr<net::EmbeddedTestServer> server =
+        std::make_unique<net::EmbeddedTestServer>(server_type);
     server->AddDefaultHandlers(GetChromeTestDataDir());
     EXPECT_TRUE(server->Start());
     return server;
   }
 
  private:
-  void SetUpOnMainThread() final { host_resolver()->AddRule("*", "127.0.0.1"); }
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
 };
 
 // This test verifies that no feature is counted for the initial navigation from
@@ -340,11 +352,29 @@ class PrivateNetworkAccessWithFeatureEnabledBrowserTest
     : public PrivateNetworkAccessBrowserTest {
  public:
   PrivateNetworkAccessWithFeatureEnabledBrowserTest() {
-    features_.InitAndEnableFeature(
-        features::kBlockInsecurePrivateNetworkRequests);
+    std::vector<base::Feature> enabled_features = {
+        features::kBlockInsecurePrivateNetworkRequests,
+        dom_distiller::kReaderMode,
+    };
+    std::vector<base::Feature> disabled_features;
+    features_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kEnableDomDistiller);
   }
 
  private:
+  void SetUpOnMainThread() override {
+    // The distiller needs to run in an isolated environment. For tests we
+    // can simply use the last value available.
+    if (!dom_distiller::DistillerJavaScriptWorldIdIsSet()) {
+      dom_distiller::SetDistillerJavaScriptWorldId(
+          content::ISOLATED_WORLD_ID_CONTENT_END);
+    }
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
   base::test::ScopedFeatureList features_;
 };
 
@@ -499,6 +529,46 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
   EXPECT_EQ(true, content::EvalJs(web_contents(), FetchScript(fetch_url),
                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
                                   content::ISOLATED_WORLD_ID_CONTENT_END));
+}
+
+// This test verifies that the chrome-distiller:// scheme is considered public
+// for the purpose of Private Network Access.
+IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureEnabledBrowserTest,
+                       SpecialSchemeChromeDistiller) {
+  // Load the base page to be distilled. Note that HTTPS has to be used
+  // otherwise the page won't be distillable.
+  std::unique_ptr<net::EmbeddedTestServer> https_server =
+      NewServer(net::EmbeddedTestServer::TYPE_HTTPS);
+  GURL article_url = https_server->GetURL("/dom_distiller/simple_article.html");
+
+  dom_distiller::TestDistillabilityObserver distillability_observer(
+      web_contents());
+  dom_distiller::DistillabilityResult expected_result;
+  expected_result.is_distillable = true;
+  expected_result.is_last = false;
+  expected_result.is_mobile_friendly = false;
+
+  EXPECT_TRUE(content::NavigateToURL(web_contents(), article_url));
+  // This blocks until the page is found to be distillable.
+  distillability_observer.WaitForResult(expected_result);
+
+  // Distill the page. It will be placed in a new WebContents replacing the old
+  // one.
+  DistillCurrentPageAndView(web_contents());
+  dom_distiller::DistilledPageObserver(web_contents())
+      .WaitUntilFinishedLoading();
+
+  EXPECT_TRUE(web_contents()->GetMainFrame()->GetLastCommittedURL().SchemeIs(
+      dom_distiller::kDomDistillerScheme));
+
+  std::unique_ptr<net::EmbeddedTestServer> server = NewServer();
+  GURL fetch_url = LocalNonSecureWithCrossOriginCors(*server);
+
+  // Note: CSP is blocking javascript eval, unless we run it in an isolated
+  // world.
+  EXPECT_EQ(false, content::EvalJs(web_contents(), FetchScript(fetch_url),
+                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                   content::ISOLATED_WORLD_ID_CONTENT_END));
 }
 
 }  // namespace
