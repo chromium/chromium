@@ -38,6 +38,7 @@ ABSL_NAMESPACE_END
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 bool HaveLeakSanitizer() { return true; }
+bool FindAndReportLeaks() { return __lsan_do_recoverable_leak_check(); }
 void DoIgnoreLeak(const void* ptr) { __lsan_ignore_object(ptr); }
 void RegisterLivePointers(const void* ptr, size_t size) {
   __lsan_register_root_region(ptr, size);

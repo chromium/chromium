@@ -135,7 +135,7 @@ class ABSL_MUST_USE_RESULT StatusOr;
 //
 // NOTE: using `absl::StatusOr<T>::value()` when no valid value is present will
 // throw an exception if exceptions are enabled or terminate the process when
-// execeptions are not enabled.
+// exceptions are not enabled.
 //
 // Example:
 //

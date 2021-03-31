@@ -292,6 +292,10 @@ TEST(Status, ToStringMode) {
               AllOf(HasSubstr("INTERNAL: fail"), HasSubstr("[foo='bar']"),
                     HasSubstr("[bar='\\xff']")));
 
+  EXPECT_THAT(s.ToString(absl::StatusToStringMode::kWithEverything),
+              AllOf(HasSubstr("INTERNAL: fail"), HasSubstr("[foo='bar']"),
+                    HasSubstr("[bar='\\xff']")));
+
   EXPECT_THAT(s.ToString(~absl::StatusToStringMode::kWithPayload),
               AllOf(HasSubstr("INTERNAL: fail"), Not(HasSubstr("[foo='bar']")),
                     Not(HasSubstr("[bar='\\xff']"))));

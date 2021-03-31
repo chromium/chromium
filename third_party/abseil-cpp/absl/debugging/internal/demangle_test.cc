@@ -70,12 +70,34 @@ TEST(Demangle, Clones) {
   EXPECT_STREQ("Foo()", tmp);
   EXPECT_TRUE(Demangle("_ZL3Foov.isra.2.constprop.18", tmp, sizeof(tmp)));
   EXPECT_STREQ("Foo()", tmp);
-  // Invalid (truncated), should not demangle.
-  EXPECT_FALSE(Demangle("_ZL3Foov.clo", tmp, sizeof(tmp)));
+  // Demangle suffixes produced by -funique-internal-linkage-names.
+  EXPECT_TRUE(Demangle("_ZL3Foov.__uniq.12345", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  EXPECT_TRUE(Demangle("_ZL3Foov.__uniq.12345.isra.2.constprop.18", tmp,
+                       sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // Suffixes without the number should also demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.clo", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // Suffixes with just the number should also demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.123", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // (.clone. followed by non-number), should also demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.clone.foo", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // (.clone. followed by multiple numbers), should also demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.clone.123.456", tmp, sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // (a long valid suffix), should demangle.
+  EXPECT_TRUE(Demangle("_ZL3Foov.part.9.165493.constprop.775.31805", tmp,
+                       sizeof(tmp)));
+  EXPECT_STREQ("Foo()", tmp);
+  // Invalid (. without anything else), should not demangle.
+  EXPECT_FALSE(Demangle("_ZL3Foov.", tmp, sizeof(tmp)));
+  // Invalid (. with mix of alpha and digits), should not demangle.
+  EXPECT_FALSE(Demangle("_ZL3Foov.abc123", tmp, sizeof(tmp)));
   // Invalid (.clone. not followed by number), should not demangle.
   EXPECT_FALSE(Demangle("_ZL3Foov.clone.", tmp, sizeof(tmp)));
-  // Invalid (.clone. followed by non-number), should not demangle.
-  EXPECT_FALSE(Demangle("_ZL3Foov.clone.foo", tmp, sizeof(tmp)));
   // Invalid (.constprop. not followed by number), should not demangle.
   EXPECT_FALSE(Demangle("_ZL3Foov.isra.2.constprop.", tmp, sizeof(tmp)));
 }

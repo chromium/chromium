@@ -757,7 +757,14 @@ TEST(CommerceHintAgentTest, IsAddToCart) {
   }
 }
 
-TEST(CommerceHintAgentTest, IsVisitCart) {
+#if defined(ADDRESS_SANITIZER)
+// TODO(https://crbug.com/1194101): Fix, re-enable.
+#define MAYBE_IsVisitCart DISABLED_IsVisitCart
+#else
+#define MAYBE_IsVisitCart IsVisitCart
+#endif
+
+TEST(CommerceHintAgentTest, MAYBE_IsVisitCart) {
   for (auto* str : kVisitCart) {
     EXPECT_TRUE(CommerceHintAgent::IsVisitCart(GURL(str))) << str;
   }

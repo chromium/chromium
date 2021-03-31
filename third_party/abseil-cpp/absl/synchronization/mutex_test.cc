@@ -852,7 +852,7 @@ TEST(Mutex, MutexReaderDecrementBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 // held and then destroyed (w/o unlocking).
 #ifdef ABSL_HAVE_THREAD_SANITIZER
 // TSAN reports errors when locked Mutexes are destroyed.
-TEST(Mutex, DISABLED_LockedMutexDestructionBug) NO_THREAD_SAFETY_ANALYSIS {
+TEST(Mutex, DISABLED_LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #else
 TEST(Mutex, LockedMutexDestructionBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #endif
@@ -1153,7 +1153,7 @@ TEST(Mutex, DeadlockDetectorStressTest) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 
 #ifdef ABSL_HAVE_THREAD_SANITIZER
 // TSAN reports errors when locked Mutexes are destroyed.
-TEST(Mutex, DISABLED_DeadlockIdBug) NO_THREAD_SAFETY_ANALYSIS {
+TEST(Mutex, DISABLED_DeadlockIdBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #else
 TEST(Mutex, DeadlockIdBug) ABSL_NO_THREAD_SAFETY_ANALYSIS {
 #endif

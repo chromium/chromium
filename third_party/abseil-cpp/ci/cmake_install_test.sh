@@ -20,18 +20,24 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
   ABSEIL_ROOT="$(realpath $(dirname ${0})/..)"
 fi
 
+if [[ -z ${LINK_TYPE:-} ]]; then
+  LINK_TYPE="STATIC DYNAMIC"
+fi
+
 source "${ABSEIL_ROOT}/ci/cmake_common.sh"
 
 source "${ABSEIL_ROOT}/ci/linux_docker_containers.sh"
 readonly DOCKER_CONTAINER=${LINUX_GCC_LATEST_CONTAINER}
 
-time docker run \
-    --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp,readonly \
-    --workdir=/abseil-cpp \
+for link_type in ${LINK_TYPE}; do
+  time docker run \
+    --mount type=bind,source="${ABSEIL_ROOT}",target=/abseil-cpp-ro,readonly \
     --tmpfs=/buildfs:exec \
+    --tmpfs=/abseil-cpp:exec \
+    --workdir=/abseil-cpp \
     --cap-add=SYS_PTRACE \
+    -e "LINK_TYPE=${link_type}" \
     --rm \
-    -e CFLAGS="-Werror" \
-    -e CXXFLAGS="-Werror" \
     ${DOCKER_CONTAINER} \
-    /bin/bash CMake/install_test_project/test.sh $@
+    /bin/bash -c "cp -r /abseil-cpp-ro/* . && CMake/install_test_project/test.sh"
+done

@@ -579,10 +579,10 @@ class btree_node {
   };
 
   // Leaves can have less than kNodeSlots values.
-  constexpr static layout_type LeafLayout(const int slots = kNodeSlots) {
+  constexpr static layout_type LeafLayout(const int slot_count = kNodeSlots) {
     return layout_type(/*parent*/ 1,
                        /*position, start, finish, max_count*/ 4,
-                       /*slots*/ slots,
+                       /*slots*/ slot_count,
                        /*children*/ 0);
   }
   constexpr static layout_type InternalLayout() {
@@ -591,8 +591,8 @@ class btree_node {
                        /*slots*/ kNodeSlots,
                        /*children*/ kNodeSlots + 1);
   }
-  constexpr static size_type LeafSize(const int slots = kNodeSlots) {
-    return LeafLayout(slots).AllocSize();
+  constexpr static size_type LeafSize(const int slot_count = kNodeSlots) {
+    return LeafLayout(slot_count).AllocSize();
   }
   constexpr static size_type InternalSize() {
     return InternalLayout().AllocSize();

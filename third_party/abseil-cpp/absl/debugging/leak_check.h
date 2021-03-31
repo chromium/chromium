@@ -71,6 +71,19 @@ T* IgnoreLeak(T* ptr) {
   return ptr;
 }
 
+// FindAndReportLeaks()
+//
+// If any leaks are detected, prints a leak report and returns true.  This
+// function may be called repeatedly, and does not affect end-of-process leak
+// checking.
+//
+// Example:
+// if (FindAndReportLeaks()) {
+//   ... diagnostic already printed. Exit with failure code.
+//   exit(1)
+// }
+bool FindAndReportLeaks();
+
 // LeakCheckDisabler
 //
 // This helper class indicates that any heap allocations done in the code block

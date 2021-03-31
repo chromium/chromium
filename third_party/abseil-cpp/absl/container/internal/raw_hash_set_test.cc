@@ -419,6 +419,13 @@ TEST(Table, EmptyFunctorOptimization) {
     size_t growth_left;
     void* infoz;
   };
+  struct MockTableInfozDisabled {
+    void* ctrl;
+    void* slots;
+    size_t size;
+    size_t capacity;
+    size_t growth_left;
+  };
   struct StatelessHash {
     size_t operator()(absl::string_view) const { return 0; }
   };
@@ -426,17 +433,27 @@ TEST(Table, EmptyFunctorOptimization) {
     size_t dummy;
   };
 
-  EXPECT_EQ(
-      sizeof(MockTable),
-      sizeof(
-          raw_hash_set<StringPolicy, StatelessHash,
-                       std::equal_to<absl::string_view>, std::allocator<int>>));
+  if (std::is_empty<HashtablezInfoHandle>::value) {
+    EXPECT_EQ(sizeof(MockTableInfozDisabled),
+              sizeof(raw_hash_set<StringPolicy, StatelessHash,
+                                  std::equal_to<absl::string_view>,
+                                  std::allocator<int>>));
 
-  EXPECT_EQ(
-      sizeof(MockTable) + sizeof(StatefulHash),
-      sizeof(
-          raw_hash_set<StringPolicy, StatefulHash,
-                       std::equal_to<absl::string_view>, std::allocator<int>>));
+    EXPECT_EQ(sizeof(MockTableInfozDisabled) + sizeof(StatefulHash),
+              sizeof(raw_hash_set<StringPolicy, StatefulHash,
+                                  std::equal_to<absl::string_view>,
+                                  std::allocator<int>>));
+  } else {
+    EXPECT_EQ(sizeof(MockTable),
+              sizeof(raw_hash_set<StringPolicy, StatelessHash,
+                                  std::equal_to<absl::string_view>,
+                                  std::allocator<int>>));
+
+    EXPECT_EQ(sizeof(MockTable) + sizeof(StatefulHash),
+              sizeof(raw_hash_set<StringPolicy, StatefulHash,
+                                  std::equal_to<absl::string_view>,
+                                  std::allocator<int>>));
+  }
 }
 
 TEST(Table, Empty) {

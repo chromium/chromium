@@ -124,6 +124,7 @@ inline void PutTwoDigits(size_t i, char* buf) {
 }
 
 // safe_strto?() functions for implementing SimpleAtoi()
+
 bool safe_strto32_base(absl::string_view text, int32_t* value, int base);
 bool safe_strto64_base(absl::string_view text, int64_t* value, int base);
 bool safe_strto128_base(absl::string_view text, absl::int128* value,

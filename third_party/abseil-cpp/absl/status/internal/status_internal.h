@@ -19,6 +19,17 @@
 #include "absl/container/inlined_vector.h"
 #include "absl/strings/cord.h"
 
+#ifndef SWIG
+// Disabled for SWIG as it doesn't parse attributes correctly.
+namespace absl {
+ABSL_NAMESPACE_BEGIN
+// Returned Status objects may not be ignored. Codesearch doesn't handle ifdefs
+// as part of a class definitions (b/6995610), so we use a forward declaration.
+class ABSL_MUST_USE_RESULT Status;
+ABSL_NAMESPACE_END
+}  // namespace absl
+#endif  // !SWIG
+
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 

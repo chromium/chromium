@@ -45,7 +45,7 @@ endif (POLICY CMP0077)
 # This must come before the project() and include(CTest) lines.
 OPTION(BUILD_TESTING "Build tests" OFF)
 
-project(absl CXX)
+project(absl LANGUAGES CXX)
 include(CTest)
 
 # Output directory is correct by default for most build setups. However, when
@@ -67,8 +67,8 @@ list(APPEND CMAKE_MODULE_PATH
   ${CMAKE_CURRENT_LIST_DIR}/absl/copts
 )
 
-include(AbseilInstallDirs)
 include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
 include(AbseilDll)
 include(AbseilHelpers)
 
@@ -159,16 +159,16 @@ if(ABSL_ENABLE_INSTALL)
   # install as a subdirectory only
   install(EXPORT ${PROJECT_NAME}Targets
     NAMESPACE absl::
-    DESTINATION "${ABSL_INSTALL_CONFIGDIR}"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
   )
 
   configure_package_config_file(
     CMake/abslConfig.cmake.in
     "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-    INSTALL_DESTINATION "${ABSL_INSTALL_CONFIGDIR}"
+    INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
   )
   install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
-    DESTINATION "${ABSL_INSTALL_CONFIGDIR}"
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
   )
 
   # Abseil only has a version in LTS releases.  This mechanism is accomplished
@@ -181,12 +181,12 @@ if(ABSL_ENABLE_INSTALL)
     )
 
     install(FILES "${PROJECT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
-      DESTINATION ${ABSL_INSTALL_CONFIGDIR}
+      DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
     )
   endif()  # absl_VERSION
 
   install(DIRECTORY absl
-    DESTINATION ${ABSL_INSTALL_INCLUDEDIR}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING
       PATTERN "*.inc"
       PATTERN "*.h"

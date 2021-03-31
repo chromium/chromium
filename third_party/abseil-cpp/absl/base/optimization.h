@@ -106,9 +106,10 @@
 // Cacheline aligning objects properly allows constructive memory sharing and
 // prevents destructive (or "false") memory sharing.
 //
-// NOTE: this macro should be replaced with usage of `alignas()` using
+// NOTE: callers should replace uses of this macro with `alignas()` using
 // `std::hardware_constructive_interference_size` and/or
-// `std::hardware_destructive_interference_size` when available within C++17.
+// `std::hardware_destructive_interference_size` when C++17 becomes available to
+// them.
 //
 // See http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0154r1.html
 // for more information.

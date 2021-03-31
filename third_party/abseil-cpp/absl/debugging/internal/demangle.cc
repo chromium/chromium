@@ -386,24 +386,28 @@ static bool IsDigit(char c) { return c >= '0' && c <= '9'; }
 // by GCC 4.5.x and later versions (and our locally-modified version of GCC
 // 4.4.x) to indicate functions which have been cloned during optimization.
 // We treat any sequence (.<alpha>+.<digit>+)+ as a function clone suffix.
+// Additionally, '_' is allowed along with the alphanumeric sequence.
 static bool IsFunctionCloneSuffix(const char *str) {
   size_t i = 0;
   while (str[i] != '\0') {
-    // Consume a single .<alpha>+.<digit>+ sequence.
-    if (str[i] != '.' || !IsAlpha(str[i + 1])) {
+    bool parsed = false;
+    // Consume a single [.<alpha> | _]*[.<digit>]* sequence.
+    if (str[i] == '.' && (IsAlpha(str[i + 1]) || str[i + 1] == '_')) {
+      parsed = true;
+      i += 2;
+      while (IsAlpha(str[i]) || str[i] == '_') {
+        ++i;
+      }
+    }
+    if (str[i] == '.' && IsDigit(str[i + 1])) {
+      parsed = true;
+      i += 2;
+      while (IsDigit(str[i])) {
+        ++i;
+      }
+    }
+    if (!parsed)
       return false;
-    }
-    i += 2;
-    while (IsAlpha(str[i])) {
-      ++i;
-    }
-    if (str[i] != '.' || !IsDigit(str[i + 1])) {
-      return false;
-    }
-    i += 2;
-    while (IsDigit(str[i])) {
-      ++i;
-    }
   }
   return true;  // Consumed everything in "str".
 }
