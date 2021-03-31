@@ -7,7 +7,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_platform.h"
+#include "base/tracing/perfetto_platform.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h"

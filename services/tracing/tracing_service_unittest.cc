@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_platform.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/trace_packet_tokenizer.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"

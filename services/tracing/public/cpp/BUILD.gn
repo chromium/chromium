@@ -61,8 +61,6 @@ target(tracing_lib_type, "cpp") {
       "perfetto/interning_index.h",
       "perfetto/perfetto_config.cc",
       "perfetto/perfetto_config.h",
-      "perfetto/perfetto_platform.cc",
-      "perfetto/perfetto_platform.h",
       "perfetto/perfetto_producer.cc",
       "perfetto/perfetto_producer.h",
       "perfetto/perfetto_session.cc",

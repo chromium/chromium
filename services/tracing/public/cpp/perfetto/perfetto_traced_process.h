@@ -21,6 +21,9 @@ namespace base {
 namespace trace_event {
 class TraceConfig;
 }  // namespace trace_event
+namespace tracing {
+class PerfettoPlatform;
+}  // namespace tracing
 }  // namespace base
 
 namespace tracing {
@@ -28,7 +31,6 @@ namespace mojom {
 class TracingService;
 }  // namespace mojom
 
-class PerfettoPlatform;
 class PerfettoProducer;
 class ProducerClient;
 class SystemProducer;
@@ -188,7 +190,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   void ClearDataSourcesForTesting();
   static void DeleteSoonForTesting(std::unique_ptr<PerfettoTracedProcess>);
 
-  PerfettoPlatform* perfetto_platform_for_testing() const {
+  base::tracing::PerfettoPlatform* perfetto_platform_for_testing() const {
     return platform_.get();
   }
 
@@ -241,7 +243,7 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
   std::unique_ptr<SystemProducer> system_producer_;
 
   // Platform implementation for the Perfetto client library.
-  std::unique_ptr<PerfettoPlatform> platform_;
+  std::unique_ptr<base::tracing::PerfettoPlatform> platform_;
   std::unique_ptr<PerfettoTracingBackend> tracing_backend_;
 
   scoped_refptr<base::SequencedTaskRunner> consumer_connection_task_runner_;

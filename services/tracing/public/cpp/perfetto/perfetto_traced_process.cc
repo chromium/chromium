@@ -12,9 +12,9 @@
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_config.h"
 #include "base/trace_event/trace_log.h"
+#include "base/tracing/perfetto_platform.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/dummy_producer.h"
-#include "services/tracing/public/cpp/perfetto/perfetto_platform.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
@@ -84,7 +84,7 @@ PerfettoTracedProcess* PerfettoTracedProcess::Get() {
 
 PerfettoTracedProcess::PerfettoTracedProcess()
     : producer_client_(std::make_unique<ProducerClient>(GetTaskRunner())),
-      platform_(std::make_unique<PerfettoPlatform>()),
+      platform_(std::make_unique<base::tracing::PerfettoPlatform>()),
       tracing_backend_(std::make_unique<PerfettoTracingBackend>(*this)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

@@ -2287,6 +2287,8 @@ component("base") {
       "trace_event/typed_macros_embedder_support.h",
       "trace_event/typed_macros_internal.cc",
       "trace_event/typed_macros_internal.h",
+      "tracing/perfetto_platform.cc",
+      "tracing/perfetto_platform.h",
       "tracing/perfetto_task_runner.cc",
       "tracing/perfetto_task_runner.h",
       "tracing/tracing_tls.cc",
