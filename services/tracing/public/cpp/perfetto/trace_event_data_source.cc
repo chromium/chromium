@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/leak_annotations.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -23,7 +24,9 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
+#include "base/optional.h"
 #include "base/pickle.h"
+#include "base/rand_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
@@ -131,6 +134,17 @@ class SCOPED_LOCKABLE AutoLockWithDeferredTaskPosting {
   base::ScopedDeferTaskPosting defer_task_posting_;
   base::AutoLock autolock_;
 };
+
+base::Optional<uint64_t> GetTraceCrashId() {
+  static base::debug::CrashKeyString* key = base::debug::AllocateCrashKeyString(
+      "chrome-trace-id", base::debug::CrashKeySize::Size32);
+  if (!key) {
+    return base::nullopt;
+  }
+  uint64_t id = base::RandUint64();
+  base::debug::SetCrashKeyString(key, base::NumberToString(id));
+  return id;
+}
 
 }  // namespace
 
@@ -1321,6 +1335,17 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   auto process_type = GetProcessType(process_name);
   if (process_type != ChromeProcessDescriptor::PROCESS_UNSPECIFIED) {
     chrome_process->set_process_type(process_type);
+  }
+
+  // Add the crash trace ID to all the traces uploaded. If there are crashes
+  // during this tracing session, then the crash will contain the process's
+  // trace ID as "chrome-trace-id" crash key. This should be emitted
+  // periodically to ensure it is present in the traces when the process
+  // crashes. Metadata can go missing if process crashes. So, record this in
+  // process descriptor.
+  static const base::Optional<uint64_t> crash_trace_id = GetTraceCrashId();
+  if (crash_trace_id) {
+    chrome_process->set_crash_trace_id(*crash_trace_id);
   }
 
 #if defined(OS_ANDROID)
