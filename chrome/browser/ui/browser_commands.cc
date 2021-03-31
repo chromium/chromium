@@ -1106,10 +1106,8 @@ bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents) {
   model->AddEntry(url, base::UTF16ToUTF8(title),
                   reading_list::EntrySource::ADDED_VIA_CURRENT_APP);
   MaybeShowBookmarkBarForReadLater(browser);
-  if (browser->bookmark_bar_state() == BookmarkBar::SHOW) {
-    browser->window()->GetFeaturePromoController()->MaybeShowPromo(
-        feature_engagement::kIPHReadingListDiscoveryFeature);
-  }
+  browser->window()->GetFeaturePromoController()->MaybeShowPromo(
+      feature_engagement::kIPHReadingListDiscoveryFeature);
   base::UmaHistogramEnumeration(
       "ReadingList.BookmarkBarState.OnEveryAddToReadingList",
       browser->bookmark_bar_state());

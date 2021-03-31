@@ -151,6 +151,7 @@ class ToolbarView : public views::AccessiblePaneView,
   LocationBarView* location_bar() const { return location_bar_; }
   CustomTabBarView* custom_tab_bar() { return custom_tab_bar_; }
   media_router::CastToolbarButton* cast_button() const { return cast_; }
+  ToolbarButton* read_later_button() const { return read_later_button_; }
   MediaToolbarButtonView* media_button() const { return media_button_; }
   ToolbarAccountIconContainerView* toolbar_account_icon_container() const {
     return toolbar_account_icon_container_;
