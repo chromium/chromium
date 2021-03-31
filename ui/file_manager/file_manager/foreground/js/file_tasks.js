@@ -1407,6 +1407,7 @@ FileTasks.SharingActionSourceForUMA = {
   UNKNOWN: 'Unknown',
   CONTEXT_MENU: 'Context Menu',
   SHARE_BUTTON: 'Share Button',
+  SHARE_SHEET: 'Share Sheet',
 };
 
 /**
@@ -1417,6 +1418,7 @@ FileTasks.ValidSharingActionSource = Object.freeze([
   FileTasks.SharingActionSourceForUMA.UNKNOWN,
   FileTasks.SharingActionSourceForUMA.CONTEXT_MENU,
   FileTasks.SharingActionSourceForUMA.SHARE_BUTTON,
+  FileTasks.SharingActionSourceForUMA.SHARE_SHEET,
 ]);
 
 /**

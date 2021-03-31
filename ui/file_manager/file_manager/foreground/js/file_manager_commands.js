@@ -92,6 +92,8 @@ CommandUtil.getSharingActionSource = event => {
       return FileTasks.SharingActionSourceForUMA.CONTEXT_MENU;
     case CommandUtil.SharingActionElementId.SHARE_BUTTON:
       return FileTasks.SharingActionSourceForUMA.SHARE_BUTTON;
+    case CommandUtil.SharingActionElementId.SHARE_SHEET:
+      return FileTasks.SharingActionSourceForUMA.SHARE_SHEET;
     default: {
       console.error('Unrecognized event.target.id for sharing action "%s"', id);
       return FileTasks.SharingActionSourceForUMA.UNKNOWN;
