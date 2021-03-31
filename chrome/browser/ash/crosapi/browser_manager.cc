@@ -23,6 +23,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -326,6 +327,24 @@ void BrowserManager::SetState(State state) {
     }
     observer.OnStateChanged();
   }
+
+  LaunchForKeepAliveIfNecessary();
+}
+
+BrowserManager::ScopedKeepAlive::~ScopedKeepAlive() {
+  manager_->StopKeepAlive(feature_);
+}
+
+BrowserManager::ScopedKeepAlive::ScopedKeepAlive(BrowserManager* manager,
+                                                 Feature feature)
+    : manager_(manager), feature_(feature) {
+  manager_->StartKeepAlive(feature_);
+}
+
+std::unique_ptr<BrowserManager::ScopedKeepAlive> BrowserManager::KeepAlive(
+    Feature feature) {
+  // Using new explicitly because ScopedKeepAlive's constructor is private.
+  return base::WrapUnique(new ScopedKeepAlive(this, feature));
 }
 
 BrowserManager::BrowserServiceInfo::BrowserServiceInfo(
@@ -678,6 +697,34 @@ void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
     browser_service_->service->UpdateDeviceAccountPolicy(
         std::vector<uint8_t>(policy_blob.begin(), policy_blob.end()));
   }
+}
+
+void BrowserManager::StartKeepAlive(Feature feature) {
+  DCHECK(keep_alive_features_.find(feature) == keep_alive_features_.end())
+      << "Features should never be double registered.";
+
+  keep_alive_features_.insert(feature);
+}
+
+void BrowserManager::StopKeepAlive(Feature feature) {
+  keep_alive_features_.erase(feature);
+  if (keep_alive_features_.empty())
+    UnlauchForKeepAlive();
+}
+
+void BrowserManager::LaunchForKeepAliveIfNecessary() {
+  if (state_ == State::STOPPED && !keep_alive_features_.empty()) {
+    CHECK(browser_util::IsLacrosEnabled());
+    CHECK(browser_util::IsLacrosAllowedToLaunch());
+    // TODO(https://crbug.com/1194187): Call start with a different initial
+    // browser action. We need this even though UnlauchForKeepAlive is not
+    // implemented for unit testing.
+    Start(browser_util::InitialBrowserAction::kOpenIncognitoWindow);
+  }
+}
+
+void BrowserManager::UnlauchForKeepAlive() {
+  // TODO(https://crbug.com/1194187): Implement this.
 }
 
 }  // namespace crosapi

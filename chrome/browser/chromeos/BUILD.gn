@@ -3642,6 +3642,7 @@ source_set("unit_tests") {
     "../ash/cert_provisioning/mock_cert_provisioning_worker.h",
     "../ash/certificate_provider/certificate_provider_service_unittest.cc",
     "../ash/crosapi/browser_loader_unittest.cc",
+    "../ash/crosapi/browser_manager_unittest.cc",
     "../ash/crosapi/browser_util_unittest.cc",
     "../ash/crosapi/message_center_ash_unittest.cc",
     "../ash/crosapi/metrics_reporting_ash_unittest.cc",

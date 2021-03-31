@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_ASH_CROSAPI_BROWSER_MANAGER_H_
 
 #include <memory>
+#include <set>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -168,7 +170,40 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Changes |state| value and potentitally notify observers of the change.
   void SetState(State state);
 
+  // Posts CreateLogFile() and StartWithLogFile() to the thread pool.
+  // Virtual for tests.
+  virtual void Start(browser_util::InitialBrowserAction initial_browser_action);
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
+
+  // These ash features are allowed to request that Lacros stay running in the
+  // background.
+  enum class Feature {
+    kTestOnly,
+    kAppService,
+  };
+
+  // Any instance of this class will ensure that the Lacros browser will stay
+  // running in the background even when no windows are showing.
+  class ScopedKeepAlive {
+   public:
+    ~ScopedKeepAlive();
+
+   private:
+    friend class BrowserManager;
+
+    // BrowserManager must outlive this instance.
+    ScopedKeepAlive(BrowserManager* manager, Feature feature);
+
+    BrowserManager* manager_;
+    Feature feature_;
+  };
+
+  // Ash features that want Lacros to stay running in the background must be
+  // marked as friends of this class so that lacros owners can audit usage.
+  std::unique_ptr<ScopedKeepAlive> KeepAlive(Feature feature);
+
   struct BrowserServiceInfo {
     BrowserServiceInfo(mojo::RemoteSetElementId mojo_id,
                        mojom::BrowserService* service,
@@ -200,9 +235,6 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   MaybeStartResult MaybeStart(
       browser_util::InitialBrowserAction initial_browser_action);
 
-  // Posts CreateLogFile() and StartWithLogFile() to the thread pooll.
-  void Start(browser_util::InitialBrowserAction initial_browser_action);
-
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by logfd.
   void StartWithLogFile(
@@ -231,6 +263,19 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Called on load completion.
   void OnLoadComplete(const base::FilePath& path);
+
+  // Methods for features to register and de-register for needing to keep Lacros
+  // alive.
+  void StartKeepAlive(Feature feature);
+  void StopKeepAlive(Feature feature);
+
+  // The implementation of keep-alive is simple: every time state_ becomes
+  // STOPPED, launch Lacros.
+  void LaunchForKeepAliveIfNecessary();
+
+  // If no features want to keep Lacros alive, and it's running in the
+  // background, then stop running Lacros.
+  void UnlauchForKeepAlive();
 
   State state_ = State::NOT_INITIALIZED;
 
@@ -273,6 +318,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Used to pass ash-chrome specific flags/configurations to lacros-chrome.
   std::unique_ptr<EnvironmentProvider> environment_provider_;
+
+  // The features that are currently registered to keep Lacros alive.
+  std::set<Feature> keep_alive_features_;
 
   base::ObserverList<BrowserManagerObserver> observers_;
 
