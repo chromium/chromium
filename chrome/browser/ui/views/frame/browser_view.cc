@@ -437,6 +437,24 @@ bool ShouldShowWindowIcon(const Browser* browser) {
   return browser->SupportsWindowFeature(Browser::FEATURE_TITLEBAR);
 }
 
+#if defined(OS_MAC)
+void GetAnyTabAudioStates(const Browser* browser,
+                          bool* any_tab_playing_audio,
+                          bool* any_tab_playing_muted_audio) {
+  const TabStripModel* model = browser->tab_strip_model();
+  for (int i = 0; i < model->count(); i++) {
+    auto* contents = model->GetWebContentsAt(i);
+    auto* helper = RecentlyAudibleHelper::FromWebContents(contents);
+    if (helper && helper->WasRecentlyAudible()) {
+      if (contents->IsAudioMuted())
+        *any_tab_playing_muted_audio = true;
+      else
+        *any_tab_playing_audio = true;
+    }
+  }
+}
+#endif  // OS_MAC
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2231,16 +2249,16 @@ std::u16string BrowserView::GetWindowTitle() const {
   std::u16string title =
       browser_->GetWindowTitleForCurrentTab(true /* include_app_name */);
 #if defined(OS_MAC)
-  content::WebContents* contents = GetActiveWebContents();
-  if (contents) {
-    auto* helper = RecentlyAudibleHelper::FromWebContents(contents);
-    if (helper && helper->WasRecentlyAudible()) {
-      title = contents->IsAudioMuted()
-                  ? l10n_util::GetStringFUTF16(IDS_WINDOW_AUDIO_MUTING_MAC,
-                                               title, u"\U0001F507")
-                  : title = l10n_util::GetStringFUTF16(
-                        IDS_WINDOW_AUDIO_PLAYING_MAC, title, u"\U0001F50A");
-    }
+  bool any_tab_playing_audio = false;
+  bool any_tab_playing_muted_audio = false;
+  GetAnyTabAudioStates(browser_.get(), &any_tab_playing_audio,
+                       &any_tab_playing_muted_audio);
+  if (any_tab_playing_audio) {
+    title = l10n_util::GetStringFUTF16(IDS_WINDOW_AUDIO_PLAYING_MAC, title,
+                                       u"\U0001F50A");
+  } else if (any_tab_playing_muted_audio) {
+    title = l10n_util::GetStringFUTF16(IDS_WINDOW_AUDIO_MUTING_MAC, title,
+                                       u"\U0001F507");
   }
 #endif
   return title;
