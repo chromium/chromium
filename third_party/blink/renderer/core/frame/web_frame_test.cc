@@ -6176,19 +6176,6 @@ class CompositedSelectionBoundsTest
     frame_test_helpers::LoadFrame(
         web_view_helper_.GetWebView()->MainFrameImpl(), base_url_ + test_file);
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // TODO(crbug.com/1065049) Ensure tapping on selection causes repainting
-      // of selection bounds if handle visible state changed. For now, just
-      // force this during the next paint.
-      WebLocalFrameImpl* frame = web_view_helper_.LocalMainFrame();
-      frame->GetFrame()->Selection().SetHandleVisibleForTesting();
-      for (Frame* child = frame->GetFrame()->FirstChild(); child;
-           child = child->NextSibling()) {
-        if (child->IsLocalFrame())
-          To<LocalFrame>(child)->Selection().SetHandleVisibleForTesting();
-      }
-    }
-
     UpdateAllLifecyclePhases(web_view_helper_.GetWebView());
 
     v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
@@ -6274,6 +6261,8 @@ class CompositedSelectionBoundsTest
         ->GetFrame()
         ->GetEventHandler()
         .HandleGestureEvent(gesture_event);
+
+    UpdateAllLifecyclePhases(web_view_helper_.GetWebView());
 
     cc::LayerTreeHost* layer_tree_host = web_view_helper_.GetLayerTreeHost();
     const cc::LayerSelection& selection = layer_tree_host->selection();
