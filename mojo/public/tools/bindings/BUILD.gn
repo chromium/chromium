@@ -6,7 +6,8 @@ import("//build/config/python.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//third_party/jinja2/jinja2.gni")
 
-action("precompile_templates") {
+# TODO(crbug.com/1194274): Investigate nondeterminism in Py3 builds.
+python2_action("precompile_templates") {
   sources = mojom_generator_sources
   sources += [
     "$mojom_generator_root/generators/cpp_templates/enum_macros.tmpl",
