@@ -66,6 +66,9 @@ void PolicyUIHandler::AddCommonLocalizedStringsToSource(
       {"unknown", IDS_POLICY_UNKNOWN},
       {"unset", IDS_POLICY_UNSET},
       {"value", IDS_POLICY_LABEL_VALUE},
+      {"sourceDefault", IDS_POLICY_SOURCE_DEFAULT},
+      {"loadPoliciesDone", IDS_POLICY_LOAD_POLICIES_DONE},
+      {"loadingPolicies", IDS_POLICY_LOADING_POLICIES},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddLocalizedStrings(policy::kPolicySources);

@@ -194,7 +194,6 @@ void VerifyManagedSettingItem(NSString* accessibilityID,
   // the omnibox UI.
   SetPolicy(false, policy::key::kDefaultSearchProviderEnabled);
   [ChromeEarlGrey loadURL:GURL("chrome://policy")];
-  [EarlGrey dismissKeyboardWithError:nil];
 
   // Open a new tab and verify that the NTP does not crash. Regression test for
   // http://crbug.com/1148903.
