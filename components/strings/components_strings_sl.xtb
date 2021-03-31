@@ -118,7 +118,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1348198688976932919">Spletno mesto vsebuje nevarne aplikacije</translation>
 <translation id="1348779747280417563">Potrditev imena</translation>
 <translation id="1357195169723583938">Kdo je nedavno uporabljal napravo in kdaj</translation>
-<translation id="1360955481084547712">Odpiranje novega okna brez beleženja dejavnosti za zasebno brskanje</translation>
+<translation id="1360955481084547712">Odpiranje novega anonimnega okna za zasebno brskanje</translation>
 <translation id="1363819917331173092">Ne ponudi prevajanja strani v jeziku <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Ta pravilnik je blokiran in njegova vrednost bo prezrta.</translation>
 <translation id="1374468813861204354">predlogi</translation>
@@ -541,7 +541,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3041612393474885105">Informacije o potrdilu</translation>
 <translation id="3060227939791841287">C9 (Envelope)</translation>
 <translation id="3061707000357573562">Storitev za popravke</translation>
-<translation id="3064966200440839136">Zaradi plačila v zunanji aplikaciji boste zapustili način brez beleženja zgodovine. Želite nadaljevati?</translation>
+<translation id="3064966200440839136">Zaradi plačila v zunanji aplikaciji boste zapustili anonimni način. Želite nadaljevati?</translation>
 <translation id="3080254622891793721">Grafični elementi</translation>
 <translation id="3086579638707268289">Vaša dejavnost v spletu je nadzorovana</translation>
 <translation id="3087734570205094154">Na dno</translation>
@@ -563,7 +563,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="315504272643575312">Vaš račun upravlja <ph name="MANAGER" />.</translation>
 <translation id="3157931365184549694">Obnovi</translation>
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
-<translation id="3167968892399408617">Strani, ki si jih ogledujete na zavihkih brez beleženja zgodovine, se ne bodo ohranile v zgodovini brskalnika, hrambi piškotkov ali zgodovini iskanja, ko boste zaprli vse zavihke brez beleženja zgodovine. Datoteke, ki jih prenesete, ali zaznamki, ki jih ustvarite, se bodo ohranili.</translation>
+<translation id="3167968892399408617">Strani, ki si jih ogledujete na anonimnih zavihkih, se ne bodo ohranile v zgodovini brskalnika, hrambi piškotkov ali zgodovini iskanja, ko boste zaprli vse anonimne zavihke. Datoteke, ki jih prenesete, ali zaznamki, ki jih ustvarite, se bodo ohranili.</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3174168572213147020">Otok</translation>
 <translation id="3176929007561373547">Preverite nastavitve strežnika proxy ali se obrnite na skrbnika omrežja in
@@ -703,7 +703,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3676592649209844519">ID naprave:</translation>
 <translation id="3677008721441257057">Ali ste mislili &lt;a href="#" id="dont-proceed-link"&gt;<ph name="DOMAIN" />&lt;/a&gt;?</translation>
 <translation id="3678029195006412963">Zahteve ni bilo mogoče podpisati</translation>
-<translation id="3678529606614285348">Odpiranje strani v novem oknu brez beleženja zgodovine (Ctrl + Shift + N)</translation>
+<translation id="3678529606614285348">Odpiranje strani v novem anonimnem oknu (Ctrl + Shift + N)</translation>
 <translation id="3681007416295224113">Informacije o potrdilu</translation>
 <translation id="3701427423622901115">Ponastavitev je potrjena.</translation>
 <translation id="3704162925118123524">Omrežje, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
@@ -846,8 +846,8 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
     &lt;li&gt;Odprite poljubno spletno mesto, ki se začne s &lt;code&gt;http://&lt;/code&gt;, kot je &lt;a href="http://example.com" target="_blank"&gt;http://example.com&lt;/a&gt;.&lt;/li&gt;
     &lt;li&gt;Na strani za prijavo, ki se odpre, se prijavite za uporabo interneta.&lt;/li&gt;
     &lt;/ol&gt;
-    &lt;h4&gt;2. korak: odprite stran v načinu brez beleženja zgodovine (samo računalnik)&lt;/h4&gt;
-    &lt;p&gt;Odprite stran, ki ste jo obiskali, v oknu brez beleženja zgodovine.&lt;/p&gt;
+    &lt;h4&gt;2. korak: odprite stran v anonimnem načinu (samo računalnik)&lt;/h4&gt;
+    &lt;p&gt;Odprite stran, ki ste jo obiskali, v anonimnem oknu.&lt;/p&gt;
     &lt;p&gt;Če se stran odpre, imate razširitev za Chrome, ki ne deluje pravilno. Napako odpravite tako, da izklopite razširitev.&lt;/p&gt;
     &lt;h4&gt;3. korak: posodobite operacijski sistem&lt;/h4&gt;
     &lt;p&gt;Poskrbite, da je naprava posodobljena.&lt;/p&gt;
@@ -1019,7 +1019,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4880827082731008257">Zgodovina iskanja</translation>
 <translation id="4881695831933465202">Odpri</translation>
 <translation id="4885256590493466218">Plačajte s kartico <ph name="CARD_DETAIL" /> pri dokončanju nakupa.</translation>
-<translation id="4889420713887366944">Gumb za odpiranje okna brez beleženja dejavnosti, pritisnite Enter, če želite odpreti novo okno brez beleženja dejavnosti za zasebno brskanje</translation>
+<translation id="4889420713887366944">Gumb za odpiranje anonimnega okna, pritisnite Enter, če želite odpreti novo okno brez beleženja dejavnosti za zasebno brskanje</translation>
 <translation id="4892518386797173871">Zadaj</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4901778704868714008">Shrani ...</translation>
@@ -1092,7 +1092,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5148809049217731050">Z licem navzgor</translation>
 <translation id="515292512908731282">C4 (Envelope)</translation>
 <translation id="5158275234811857234">Naslovnica</translation>
-<translation id="5159010409087891077">Odpiranje strani v novem oknu brez beleženja zgodovine (⇧⌘N)</translation>
+<translation id="5159010409087891077">Odpiranje strani v novem anonimnem oknu (⇧⌘N)</translation>
 <translation id="5161334686036120870">Zadeva:</translation>
 <translation id="5161506081086828129">Zlagalnik 9</translation>
 <translation id="5164798890604758545">Besedilo je vneseno</translation>
@@ -1579,7 +1579,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7175401108899573750">{SHIPPING_OPTIONS,plural, =0{<ph name="SHIPPING_OPTION_PREVIEW" />}=1{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}one{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}two{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}few{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}other{<ph name="SHIPPING_OPTION_PREVIEW" /> in še <ph name="NUMBER_OF_ADDITIONAL_SHIPPING_OPTIONS" />}}</translation>
 <translation id="7179323680825933600">Shranjevanje in izpolnjevanje podatkov o plačilnih sredstvih</translation>
 <translation id="7180611975245234373">Osveži</translation>
-<translation id="7181261019481237103">Odpri okno brez beleženja dejavnosti</translation>
+<translation id="7181261019481237103">Odpri anonimno okno</translation>
 <translation id="7182878459783632708">Ni nastavljenih pravilnikov</translation>
 <translation id="7186367841673660872">Ta stran je bila prevedena iz jezika<ph name="ORIGINAL_LANGUAGE" />v jezik<ph name="LANGUAGE_LANGUAGE" /></translation>
 <translation id="7192203810768312527">Sprosti <ph name="SIZE" />. Nekatera spletna mesta se bodo ob naslednjem obisku morda počasneje naložila.</translation>
@@ -1766,7 +1766,7 @@ Dodatne podrobnosti:
 <translation id="782886543891417279">Omrežje Wi-Fi, ki ga uporabljate (<ph name="WIFI_NAME" />), morda zahteva, da obiščete stran za prijavo.</translation>
 <translation id="7836231406687464395">Postfix (Envelope)</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Brez}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}two{# aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacij (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
-<translation id="785549533363645510">Kljub temu pa niste nevidni. Z uporabo načina brez beleženja zgodovine brskanja ne skrijete pred delodajalcem, ponudnikom internetnih storitev ali spletnimi mesti, ki jih obiščete.</translation>
+<translation id="785549533363645510">Kljub temu pa niste nevidni. Z uporabo anonimnega načina svojega brskanja ne skrijete pred delodajalcem, ponudnikom internetnih storitev ali spletnimi mesti, ki jih obiščete.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
 <translation id="7862185352068345852">Želite zapustiti spletno mesto?</translation>
 <translation id="7865448901209910068">Najboljša hitrost</translation>
@@ -1858,7 +1858,7 @@ Dodatne podrobnosti:
 <translation id="8228419419708659934">Pogled dveh strani</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
 <translation id="8232343881378637145">Temperatura platforme</translation>
-<translation id="8238581221633243064">Odpiranje strani v novem zavihku brez beleženja zgodovine.</translation>
+<translation id="8238581221633243064">Odpiranje strani v novem anonimnem zavihku.</translation>
 <translation id="8241707690549784388">Stran, ki jo iščete, je uporabila informacije, ki ste jih vnesli. Z vrnitvijo na to stran se bodo morda ponovila vsa vaša dejanja, ki ste jih opravili. Ali želite nadaljevati?</translation>
 <translation id="8241712895048303527">Blokiraj na tem spletnem mestu</translation>
 <translation id="8242426110754782860">Naprej</translation>
@@ -1980,11 +1980,11 @@ Dodatne podrobnosti:
 <translation id="8719528812645237045">Večkratno luknjanje zgoraj</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8726549941689275341">Velikost strani:</translation>
-<translation id="8728672262656704056">Uporabljate način brez beleženja zgodovine</translation>
+<translation id="8728672262656704056">Uporabljate anonimni način</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8731544501227493793">Gumb za upravljanje gesel, pritisnite Enter, če si želite ogledati in upravljati gesla v Chromovih nastavitvah</translation>
 <translation id="8734529307927223492">Vašo napravo <ph name="DEVICE_TYPE" /> upravlja domena <ph name="MANAGER" /></translation>
-<translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite odpreti novo okno brez beleženja dejavnosti za zasebno brskanje</translation>
+<translation id="8737134861345396036"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite odpreti novo anonimno okno za zasebno brskanje</translation>
 <translation id="8738058698779197622">Če želite vzpostaviti varno povezavo, mora biti ura pravilno nastavljena. Potrdila, ki jih uporabljajo spletna mesta za prepoznavanje, namreč veljajo samo določen čas. Ker je ura sistema nepravilna, Chromium teh potrdil ne more preveriti.</translation>
 <translation id="8740359287975076522">&lt;abbr id="dnsDefinition"&gt;Naslova DNS&lt;/abbr&gt; spletnega mesta <ph name="HOST_NAME" /> ni bilo mogoče najti. Poteka diagnosticiranje težave.</translation>
 <translation id="8742371904523228557"><ph name="ONE_TIME_CODE" /> je vaša koda za <ph name="ORIGIN" /></translation>

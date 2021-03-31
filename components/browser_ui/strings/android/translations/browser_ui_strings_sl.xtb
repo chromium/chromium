@@ -95,7 +95,7 @@
 <translation id="3587482841069643663">Vse</translation>
 <translation id="358794129225322306">Dovoli spletnemu mestu samodejni prenos več datotek.</translation>
 <translation id="3594780231884063836">Izklop videa</translation>
-<translation id="3596414637720633074">Blokiranje piškotkov drugih mest v načinu brez beleženja dejavnosti</translation>
+<translation id="3596414637720633074">Blokiranje piškotkov drugih mest v anonimnem načinu</translation>
 <translation id="3600792891314830896">Izklop zvoka na spletnih mestih, ki predvajajo zvok</translation>
 <translation id="3744111561329211289">Sinhroniziranje v ozadju</translation>
 <translation id="3763247130972274048">Dvakrat se dotaknite videoposnetka levo ali desno, da preskočite 10 s</translation>
@@ -141,7 +141,7 @@
 <translation id="5048398596102334565">Spletnim mestom dovoli dostop do tipal gibanja (priporočeno)</translation>
 <translation id="5063480226653192405">Uporaba</translation>
 <translation id="5100237604440890931">Strnjeno – kliknite, če želite razširiti.</translation>
-<translation id="5123685120097942451">Zavihek brez beleženja zgodovine</translation>
+<translation id="5123685120097942451">Anonimni zavihek</translation>
 <translation id="5186036860380548585">Možnosti so na voljo blizu vrha zaslona</translation>
 <translation id="5197729504361054390">Izbrani stiki bodo v skupni rabi s spletnim mestom <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="528192093759286357">Povlecite z vrha in se dotaknite gumba za nazaj, če želite zapreti celozaslonski način.</translation>
@@ -152,7 +152,7 @@
 <translation id="5335288049665977812">Spletnim mestom dovoli izvajanje JavaScripta (priporočeno)</translation>
 <translation id="534295439873310000">Naprave s tehnologijo NFC</translation>
 <translation id="5354152178998424783">S tem boste izbrisali <ph name="DATASIZE" /> podatkov in piškotkov, ki so jih shranila spletna mesta.</translation>
-<translation id="5384883051496921101">To spletno mesto bo delilo podatke z aplikacijo zunaj načina brez beleženja zgodovine.</translation>
+<translation id="5384883051496921101">To spletno mesto bo delilo podatke z aplikacijo zunaj anonimnega načina.</translation>
 <translation id="5391532827096253100">Povezava s tem spletnim mestom ni varna. Podatki o spletnem mestu.</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(in še 1)}one{(in še #)}two{(in še #)}few{(in še #)}other{(in še #)}}</translation>
 <translation id="5403592356182871684">Imena</translation>

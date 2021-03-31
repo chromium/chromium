@@ -1971,7 +1971,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3160842278951476457"><ph name="ISSUED_BY" /> [<ph name="ISSUED_TO" />] (podržano hardverom)</translation>
 <translation id="3161522574479303604">Svi jezici</translation>
 <translation id="3162853326462195145">Školski račun</translation>
-<translation id="3162899666601560689">Web lokacije mogu koristiti kolačiće da poboljšaju vaše iskustvo pregledanja, naprimjer, da ostanete prijavljeni ili da stavke u korpi za kupovinu ostanu sačuvane</translation>
+<translation id="3162899666601560689">Web lokacije mogu koristiti kolačiće da poboljšaju vaše iskustvo pregledanja, naprimjer, da ostanete prijavljeni ili da stavke u kolicima za kupovinu ostanu sačuvane</translation>
 <translation id="3163201441334626963">Nepoznati proizvod <ph name="PRODUCT_ID" /> dobavljača <ph name="VENDOR_ID" /></translation>
 <translation id="3163254451837720982">Sljedeće usluge pomažu da vaši podaci ostanu sigurni. Ove funkcije možete isključiti bilo kada.</translation>
 <translation id="3164329792803560526">Dijeljenje kartice s aplikacijom <ph name="APP_NAME" /></translation>
@@ -5748,7 +5748,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="7531771599742723865">Uređaj se koristi</translation>
 <translation id="7531779363494549572">Otvorite Postavke &gt; Aplikacije i obavijesti &gt; Obavijesti.</translation>
 <translation id="7532009420053991888">Aplikacija <ph name="LINUX_APP_NAME" /> ne reagira. Odaberite "Prisilno zatvori" da zatvorite aplikaciju.</translation>
-<translation id="7537451260744431038">Web lokacije ne mogu koristiti kolačiće da poboljšaju vaše iskustvo pregledanja, naprimjer, da ostanete prijavljeni ili da stavke u korpi za kupovinu ostanu sačuvane</translation>
+<translation id="7537451260744431038">Web lokacije ne mogu koristiti kolačiće da poboljšaju vaše iskustvo pregledanja, naprimjer, da ostanete prijavljeni ili da stavke u kolicima za kupovinu ostanu sačuvane</translation>
 <translation id="7540972813190816353">Došlo je do greške prilikom provjeravanja ažuriranja: <ph name="ERROR" /></translation>
 <translation id="7541773865713908457"><ph name="ACTION_NAME" /> pomoću aplikacije <ph name="APP_NAME" /></translation>
 <translation id="754207240458482646">Mreža je sinhronizirana s drugim uređajima na vašem računu. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>

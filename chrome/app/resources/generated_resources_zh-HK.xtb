@@ -6319,7 +6319,7 @@
 <translation id="8157704005178149728">正在設定監控功能</translation>
 <translation id="8158117992543756526">此裝置已在 <ph name="MONTH_AND_YEAR" />停止自動更新軟件和安全性。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">憑證信任設定錯誤</translation>
-<translation id="8160775796528709999">透過啟用設定入面嘅即時字幕，為您嘅音訊同影片產生字幕</translation>
+<translation id="8160775796528709999">去設定度開著即時字幕，就可以為音訊同影片產生字幕</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">使用閱讀器模式查看網頁</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移至新視窗}other{將分頁移至新視窗}}</translation>
