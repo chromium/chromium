@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/peer_connection_tracker_host_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -38,7 +39,8 @@ class WebRTCInternalsUIObserver;
 // It collects peer connection infomation from the renderers,
 // forwards the data to WebRTCInternalsUIObserver and
 // sends data collecting commands to the renderers.
-class CONTENT_EXPORT WebRTCInternals : public RenderProcessHostObserver,
+class CONTENT_EXPORT WebRTCInternals : public PeerConnectionTrackerHostObserver,
+                                       public RenderProcessHostObserver,
                                        public ui::SelectFileDialog::Listener {
  public:
   // * CreateSingletonInstance() ensures that no previous instantiation of the
@@ -55,57 +57,31 @@ class CONTENT_EXPORT WebRTCInternals : public RenderProcessHostObserver,
 
   ~WebRTCInternals() override;
 
-  // This method is called when a PeerConnection is created.
-  // |frame_id| is the ID of the RenderFrameHost and |lid| is the renderer local
-  // ID which, together with |frame_id|, is used to identify a PeerConnection.
-  // |pid| is the renderer process id, |url| is the url of the tab owning the
-  // PeerConnection, |rtc_configuration| is the serialized RTCConfiguration,
-  // |constraints| is the serialized legacy constraints used to initialize the
-  // PeerConnection.
+  // PeerConnectionTrackerHostObserver implementation.
   void OnPeerConnectionAdded(GlobalFrameRoutingId frame_id,
                              int lid,
                              base::ProcessId pid,
                              const std::string& url,
                              const std::string& rtc_configuration,
-                             const std::string& constraints);
-
-  // This method is called when PeerConnection is destroyed.
-  // |frame_id| is the ID of the RenderFrameHost and |lid| is the renderer local
-  // ID.
-  void OnPeerConnectionRemoved(GlobalFrameRoutingId frame_id, int lid);
-
-  // This method is called when a PeerConnection is updated.
-  // |frame_id| is the ID of the RenderFrameHost and |lid| is the renderer local
-  // ID. |type| is the update type, |value| is the detail of the update.
+                             const std::string& constraints) override;
+  void OnPeerConnectionRemoved(GlobalFrameRoutingId frame_id, int lid) override;
   void OnPeerConnectionUpdated(GlobalFrameRoutingId frame_id,
                                int lid,
                                const std::string& type,
-                               const std::string& value);
-
-  // These methods are called when results from
-  // PeerConnectionInterface::GetStats (legacy or standard API) are available.
-  // |frame_id| is the ID of the RenderFrameHost and |lid| is the renderer local
-  // ID. |value| is the list of stats reports.
+                               const std::string& value) override;
   void OnAddStandardStats(GlobalFrameRoutingId frame_id,
                           int lid,
-                          base::Value value);
+                          base::Value value) override;
   void OnAddLegacyStats(GlobalFrameRoutingId frame_id,
                         int lid,
-                        base::Value value);
-
-  // This method is called when getUserMedia is called. |frame_id| is the ID of
-  // the RenderFrameHost. |pid| is the renderer OS process id, |origin| is the
-  // security origin of the getUserMedia call, |audio| is true if audio stream
-  // is requested, |video| is true if the video stream is requested,
-  // |audio_constraints| is the constraints for the audio, |video_constraints|
-  // is the constraints for the video.
+                        base::Value value) override;
   void OnGetUserMedia(GlobalFrameRoutingId frame_id,
                       base::ProcessId pid,
                       const std::string& origin,
                       bool audio,
                       bool video,
                       const std::string& audio_constraints,
-                      const std::string& video_constraints);
+                      const std::string& video_constraints) override;
 
   // Methods for adding or removing WebRTCInternalsUIObserver.
   void AddObserver(WebRTCInternalsUIObserver* observer);

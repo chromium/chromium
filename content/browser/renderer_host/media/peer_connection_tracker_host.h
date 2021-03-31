@@ -11,7 +11,9 @@
 #include "base/macros.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/process/process_handle.h"
+#include "base/types/pass_key.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/peer_connection_tracker_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,6 +31,9 @@ class RenderFrameHost;
 // managed by RenderFrameHostImpl. It receives PeerConnection events from
 // PeerConnectionTracker as IPC messages that it forwards to WebRTCInternals.
 // It also forwards browser process events to PeerConnectionTracker via IPC.
+//
+// Note: This class and all of its methods are meant to only be used on the UI
+//       thread.
 class PeerConnectionTrackerHost
     : public base::PowerSuspendObserver,
       public base::PowerThermalObserver,
@@ -36,6 +41,12 @@ class PeerConnectionTrackerHost
  public:
   explicit PeerConnectionTrackerHost(RenderFrameHost* rfh);
   ~PeerConnectionTrackerHost() override;
+
+  // Adds/removes a PeerConnectionTrackerHostObserver.
+  static void AddObserver(base::PassKey<PeerConnectionTrackerHostObserver>,
+                          PeerConnectionTrackerHostObserver* observer);
+  static void RemoveObserver(base::PassKey<PeerConnectionTrackerHostObserver>,
+                             PeerConnectionTrackerHostObserver* observer);
 
   static const std::set<PeerConnectionTrackerHost*>& GetAllHosts();
 

@@ -399,11 +399,17 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   void SetUpPeerConnection(const std::string& session_id = "") {
     auto* manager = WebRtcEventLogManager::GetInstance();
 
-    content::GlobalFrameRoutingId frame_id =
-        web_contents()->GetMainFrame()->GetGlobalFrameRoutingId();
+    content::RenderFrameHost* render_frame_host =
+        web_contents()->GetMainFrame();
+    const content::GlobalFrameRoutingId frame_id =
+        render_frame_host->GetGlobalFrameRoutingId();
+    const base::ProcessId pid =
+        render_frame_host->GetProcess()->GetProcess().Pid();
     const int lid = 0;
 
-    manager->OnPeerConnectionAdded(frame_id, lid);
+    manager->OnPeerConnectionAdded(frame_id, lid, pid, /*url=*/std::string(),
+                                   /*rtc_configuration=*/std::string(),
+                                   /*constraints=*/std::string());
 
     if (!session_id.empty()) {
       manager->OnPeerConnectionSessionIdSet(frame_id, lid, session_id);

@@ -232,7 +232,11 @@ void WebRtcEventLogManager::DisableForBrowserContext(
 
 void WebRtcEventLogManager::OnPeerConnectionAdded(
     content::GlobalFrameRoutingId frame_id,
-    int lid) {
+    int lid,
+    base::ProcessId pid,
+    const std::string& url,
+    const std::string& rtc_configuration,
+    const std::string& constraints) {
   OnPeerConnectionAdded(frame_id, lid, base::NullCallback());
 }
 

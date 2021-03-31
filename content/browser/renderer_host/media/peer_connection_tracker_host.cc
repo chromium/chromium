@@ -9,20 +9,28 @@
 
 #include "base/bind.h"
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/post_task.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/webrtc/webrtc_internals.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/webrtc_event_logger.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
 namespace content {
 
 namespace {
+
+using ObserverListType = base::ObserverList<PeerConnectionTrackerHostObserver,
+                                            /*check_empty=*/true,
+                                            /*allow_reentrancy=*/false>;
+ObserverListType& GetObserverList() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  static base::NoDestructor<ObserverListType> observer_list{};
+  return *observer_list;
+}
 
 std::set<PeerConnectionTrackerHost*>& AllHosts() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -38,6 +46,22 @@ void RemoveHost(PeerConnectionTrackerHost* host) {
 }
 
 }  // namespace
+
+// static
+void PeerConnectionTrackerHost::AddObserver(
+    base::PassKey<PeerConnectionTrackerHostObserver>,
+    PeerConnectionTrackerHostObserver* observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetObserverList().AddObserver(observer);
+}
+
+// static
+void PeerConnectionTrackerHost::RemoveObserver(
+    base::PassKey<PeerConnectionTrackerHostObserver>,
+    PeerConnectionTrackerHostObserver* observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  GetObserverList().RemoveObserver(observer);
+}
 
 // static
 const std::set<PeerConnectionTrackerHost*>&
@@ -75,30 +99,17 @@ void PeerConnectionTrackerHost::AddPeerConnection(
     blink::mojom::PeerConnectionInfoPtr info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
-  if (webrtc_internals) {
-    webrtc_internals->OnPeerConnectionAdded(frame_id_, info->lid, peer_pid_,
-                                            info->url, info->rtc_configuration,
-                                            info->constraints);
-  }
-
-  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
-  if (logger) {
-    logger->OnPeerConnectionAdded(frame_id_, info->lid);
+  for (auto& observer : GetObserverList()) {
+    observer.OnPeerConnectionAdded(frame_id_, info->lid, peer_pid_, info->url,
+                                   info->rtc_configuration, info->constraints);
   }
 }
 
 void PeerConnectionTrackerHost::RemovePeerConnection(int lid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
-  if (webrtc_internals) {
-    webrtc_internals->OnPeerConnectionRemoved(frame_id_, lid);
-  }
-
-  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
-  if (logger) {
-    logger->OnPeerConnectionRemoved(frame_id_, lid);
+  for (auto& observer : GetObserverList()) {
+    observer.OnPeerConnectionRemoved(frame_id_, lid);
   }
 }
 
@@ -107,14 +118,8 @@ void PeerConnectionTrackerHost::UpdatePeerConnection(int lid,
                                                      const std::string& value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
-  if (logger) {
-    logger->OnPeerConnectionUpdated(frame_id_, lid, type, value);
-  }
-
-  WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
-  if (webrtc_internals) {
-    webrtc_internals->OnPeerConnectionUpdated(frame_id_, lid, type, value);
+  for (auto& observer : GetObserverList()) {
+    observer.OnPeerConnectionUpdated(frame_id_, lid, type, value);
   }
 }
 
@@ -123,27 +128,24 @@ void PeerConnectionTrackerHost::OnPeerConnectionSessionIdSet(
     const std::string& session_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
-  if (logger) {
-    logger->OnPeerConnectionSessionIdSet(frame_id_, lid, session_id);
+  for (auto& observer : GetObserverList()) {
+    observer.OnPeerConnectionSessionIdSet(frame_id_, lid, session_id);
   }
 }
 
 void PeerConnectionTrackerHost::AddStandardStats(int lid, base::Value value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
-  if (webrtc_internals) {
-    webrtc_internals->OnAddStandardStats(frame_id_, lid, std::move(value));
+  for (auto& observer : GetObserverList()) {
+    observer.OnAddStandardStats(frame_id_, lid, value.Clone());
   }
 }
 
 void PeerConnectionTrackerHost::AddLegacyStats(int lid, base::Value value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
-  if (webrtc_internals) {
-    webrtc_internals->OnAddLegacyStats(frame_id_, lid, std::move(value));
+  for (auto& observer : GetObserverList()) {
+    observer.OnAddLegacyStats(frame_id_, lid, value.Clone());
   }
 }
 
@@ -155,10 +157,9 @@ void PeerConnectionTrackerHost::GetUserMedia(
     const std::string& video_constraints) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  WebRTCInternals* webrtc_internals = WebRTCInternals::GetInstance();
-  if (webrtc_internals) {
-    webrtc_internals->OnGetUserMedia(frame_id_, peer_pid_, origin, audio, video,
-                                     audio_constraints, video_constraints);
+  for (auto& observer : GetObserverList()) {
+    observer.OnGetUserMedia(frame_id_, peer_pid_, origin, audio, video,
+                            audio_constraints, video_constraints);
   }
 }
 
@@ -167,10 +168,9 @@ void PeerConnectionTrackerHost::WebRtcEventLogWrite(
     const std::vector<uint8_t>& output) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  std::string converted_output(output.begin(), output.end());
-  WebRtcEventLogger* logger = WebRtcEventLogger::Get();
-  if (logger) {
-    logger->OnWebRtcEventLogWrite(frame_id_, lid, converted_output);
+  std::string message(output.begin(), output.end());
+  for (auto& observer : GetObserverList()) {
+    observer.OnWebRtcEventLogWrite(frame_id_, lid, message);
   }
 }
 
