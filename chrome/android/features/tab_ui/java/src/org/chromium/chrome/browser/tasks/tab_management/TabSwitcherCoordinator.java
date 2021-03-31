@@ -330,8 +330,7 @@ public class TabSwitcherCoordinator
                         new PriceDropNotificationManager();
                 mPriceTrackingDialogCoordinator = new PriceTrackingDialogCoordinator(
                         context, modalDialogManager, this, mTabModelSelector, notificationManager);
-                mPriceMessageService = new PriceMessageService(
-                        mTabListCoordinator, mMediator, notificationManager);
+                mPriceMessageService = new PriceMessageService(mTabListCoordinator, mMediator);
                 mMessageCardProviderCoordinator.subscribeMessageService(mPriceMessageService);
                 mMediator.setPriceMessageService(mPriceMessageService);
             }
@@ -481,10 +480,6 @@ public class TabSwitcherCoordinator
         }
 
         if (tabs != null && tabs.size() > 0) {
-            if (mPriceMessageService != null
-                    && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled()) {
-                mPriceMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
-            }
             appendMessagesTo(cardsCount);
         }
 
@@ -546,13 +541,9 @@ public class TabSwitcherCoordinator
         List<MessageCardProviderMediator.Message> messages =
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
-            if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE) {
-                mTabListCoordinator.addSpecialListItem(
-                        index, TabProperties.UiType.LARGE_MESSAGE, messages.get(i).model);
-            } else {
-                mTabListCoordinator.addSpecialListItem(
-                        index, TabProperties.UiType.MESSAGE, messages.get(i).model);
-            }
+            if (messages.get(i).type == MessageService.MessageType.PRICE_MESSAGE) continue;
+            mTabListCoordinator.addSpecialListItem(
+                    index, TabProperties.UiType.MESSAGE, messages.get(i).model);
             index++;
         }
         if (messages.size() > 0) sAppendedMessagesForTesting = true;

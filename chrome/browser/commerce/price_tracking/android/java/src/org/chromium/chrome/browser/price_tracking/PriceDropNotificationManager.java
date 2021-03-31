@@ -33,10 +33,8 @@ public class PriceDropNotificationManager {
     private static final String EXTRA_APP_PACKAGE = "app_package";
     private static final String EXTRA_APP_UID = "app_uid";
 
-    private static NotificationManagerProxy sNotificationManagerForTesting;
-
-    private final Context mContext;
-    private final NotificationManagerProxy mNotificationManager;
+    private Context mContext;
+    private NotificationManagerProxy mNotificationManager;
 
     public PriceDropNotificationManager() {
         mContext = ContextUtils.getApplicationContext();
@@ -75,9 +73,6 @@ public class PriceDropNotificationManager {
      * @return Whether app notifications are enabled.
      */
     public boolean areAppNotificationsEnabled() {
-        if (sNotificationManagerForTesting != null) {
-            return sNotificationManagerForTesting.areNotificationsEnabled();
-        }
         return mNotificationManager.areNotificationsEnabled();
     }
 
@@ -102,9 +97,6 @@ public class PriceDropNotificationManager {
             createNotificationChannel();
         }
         mContext.startActivity(getNotificationSettingsIntent());
-        // Disable PriceAlertsMessageCard after the first time we send users to notification
-        // settings.
-        PriceTrackingUtilities.disablePriceAlertsMessageCard();
     }
 
     /**
@@ -148,9 +140,8 @@ public class PriceDropNotificationManager {
      * @param notificationManager that will be set.
      */
     @VisibleForTesting
-    public static void setNotificationManagerForTesting(
-            NotificationManagerProxy notificationManager) {
-        sNotificationManagerForTesting = notificationManager;
+    public void setNotificationManagerForTesting(NotificationManagerProxy notificationManager) {
+        mNotificationManager = notificationManager;
     }
 
     /**
