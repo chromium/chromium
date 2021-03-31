@@ -65,6 +65,8 @@ FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequenceInternal(
   if (IsScrollType(type)) {
     DCHECK_NE(scrolling_thread, ThreadType::kUnknown);
     metrics->SetScrollingThread(scrolling_thread);
+    compositor_frame_reporting_controller_->SetScrollingThread(
+        scrolling_thread);
   }
 
   if (metrics->GetEffectiveThread() == ThreadType::kCompositor) {
@@ -117,6 +119,8 @@ void FrameSequenceTrackerCollection::StopSequence(
 
   auto key = std::make_pair(type, ThreadType::kUnknown);
   if (IsScrollType(type)) {
+    compositor_frame_reporting_controller_->SetScrollingThread(
+        ThreadType::kUnknown);
     key = std::make_pair(type, ThreadType::kCompositor);
     if (!frame_trackers_.contains(key))
       key = std::make_pair(type, ThreadType::kMain);

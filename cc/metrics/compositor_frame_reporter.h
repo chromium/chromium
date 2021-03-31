@@ -231,6 +231,7 @@ class CC_EXPORT CompositorFrameReporter {
                           LatencyUkmReporter* latency_ukm_reporter,
                           bool should_report_metrics,
                           SmoothThread smooth_thread,
+                          FrameSequenceMetrics::ThreadType scrolling_thread,
                           int layer_tree_host_id,
                           DroppedFrameCounter* dropped_frame_counter);
   ~CompositorFrameReporter();
@@ -395,6 +396,7 @@ class CC_EXPORT CompositorFrameReporter {
       FrameTerminationStatus::kUnknown;
 
   const ActiveTrackers active_trackers_;
+  const FrameSequenceMetrics::ThreadType scrolling_thread_;
 
   LatencyUkmReporter* latency_ukm_reporter_;
 

@@ -81,6 +81,7 @@ class CC_EXPORT CompositorFrameReportingController {
 
   void AddActiveTracker(FrameSequenceTrackerType type);
   void RemoveActiveTracker(FrameSequenceTrackerType type);
+  void SetScrollingThread(FrameSequenceMetrics::ThreadType thread);
 
   void SetThreadAffectsSmoothness(FrameSequenceMetrics::ThreadType thread_type,
                                   bool affects_smoothness);
@@ -154,6 +155,8 @@ class CC_EXPORT CompositorFrameReportingController {
 
   bool next_activate_has_invalidation_ = false;
   CompositorFrameReporter::ActiveTrackers active_trackers_;
+  FrameSequenceMetrics::ThreadType scrolling_thread_ =
+      FrameSequenceMetrics::ThreadType::kUnknown;
 
   bool is_compositor_thread_driving_smoothness_ = false;
   bool is_main_thread_driving_smoothness_ = false;
