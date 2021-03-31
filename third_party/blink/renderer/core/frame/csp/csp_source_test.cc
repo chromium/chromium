@@ -434,6 +434,20 @@ TEST(CSPSourceTest, MatchingAsSelf) {
       {{"http", "example.com", "", url::PORT_UNSPECIFIED, false, false},
        "custom-scheme://example.com/some-path",
        false},
+
+      // If 'self' is file://, the host always matches.
+      {{"file", "", "", url::PORT_UNSPECIFIED, false, false},
+       "file:///info.txt",
+       true},
+      {{"file", "", "", url::PORT_UNSPECIFIED, false, false},
+       "file://localhost/info.txt",
+       true},
+      {{"file", "localhost", "", url::PORT_UNSPECIFIED, false, false},
+       "file:///info.txt",
+       true},
+      {{"file", "localhost", "", url::PORT_UNSPECIFIED, false, false},
+       "file://localhost/info.txt",
+       true},
   };
 
   KURL base;

@@ -175,6 +175,16 @@ bool CSPSourceMatchesAsSelf(const network::mojom::blink::CSPSource& source,
   // Step 4.
   SchemeMatchingResult schemes_match =
       SchemeMatches(source, url.Protocol(), source.scheme);
+
+  if (url.Protocol() == "file" &&
+      schemes_match == SchemeMatchingResult::kMatchingExact) {
+    // Determining the origin of a file URL is left as an exercise to the reader
+    // https://url.spec.whatwg.org/#concept-url-origin. Let's always match file
+    // URLs against 'self' delivered from a file. This avoids inconsistencies
+    // between file:/// and file://localhost/.
+    return true;
+  }
+
   bool hosts_match = HostMatches(source, url.Host());
   PortMatchingResult ports_match = PortMatches(
       source, source.scheme, url.HasPort() ? url.Port() : url::PORT_UNSPECIFIED,

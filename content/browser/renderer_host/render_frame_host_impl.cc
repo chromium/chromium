@@ -807,6 +807,16 @@ void VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(
     return;
 #endif
 
+  // Navigating to file://localhost/... on windows causes `browser_side_origin`
+  // and `renderer_side_origin` to be different (file://localhost/ vs file:///).
+  // In particular, without the following block the test
+  // ContentSecurityPolicyBrowserTest.FileURLs fails.
+  if ((browser_side_origin.opaque() == renderer_side_origin.opaque()) &&
+      browser_side_origin.scheme() == url::kFileScheme &&
+      renderer_side_origin.scheme() == url::kFileScheme) {
+    return;
+  }
+
   DCHECK_EQ(browser_side_origin, renderer_side_origin)
       << "; navigation_request->GetURL() = " << navigation_request->GetURL();
 }
