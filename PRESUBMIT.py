@@ -5369,10 +5369,10 @@ _NON_INCLUSIVE_TERMS = (
         # ...' will not. This may require some tweaking to catch these cases
         # without triggering a lot of false positives. Leaving it naive and
         # less matchy for now.
-        r'/\b(?i)((black|white)list|master|slave)\b',  # nocheck
+        r'/\b(?i)((black|white)list|slave)\b',  # nocheck
         (
             'Please don\'t use blacklist, whitelist, '  # nocheck
-            'master, or slave in your',  # nocheck
+            'or slave in your',  # nocheck
             'code and make every effort to use other terms. Using "// nocheck"',
             '"# nocheck" or "<!-- nocheck -->"',
             'at the end of the offending line will bypass this PRESUBMIT error',

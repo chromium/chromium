@@ -4000,12 +4000,12 @@ class InclusiveLanguageCheckTest(unittest.TestCase):
     self.assertTrue('some/mac/file.mm' in errors[0].message)
     self.assertTrue('some/ios/file_egtest.mm' in errors[0].message)
     self.assertTrue('some/ios/file_unittest.mm' in errors[0].message)
-    self.assertTrue('some/doc/file.md' in errors[0].message)
+    self.assertTrue('some/doc/file.md' not in errors[0].message)
     self.assertTrue('some/doc/ok_file.md' not in errors[0].message)
-    self.assertTrue('some/doc/branch_name_file.md' in errors[0].message)
+    self.assertTrue('some/doc/branch_name_file.md' not in errors[0].message)
     self.assertTrue('some/java/file/TestJavaDoc.java' not in errors[0].message)
-    self.assertTrue('some/java/file/TestJava.java' in errors[0].message)
-    self.assertTrue('some/html/file.html' in errors[0].message)
+    self.assertTrue('some/java/file/TestJava.java' not in errors[0].message)
+    self.assertTrue('some/html/file.html' not in errors[0].message)
 
   def testBlockedTermsWithLegacy(self):
     input_api = MockInputApi()
