@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/cocoa/screentime/history_bridge.h"
 
-#import <ScreenTime/ScreenTime.h>
+//#import <ScreenTime/ScreenTime.h>
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"

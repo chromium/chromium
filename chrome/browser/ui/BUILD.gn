@@ -3239,7 +3239,6 @@ static_library("ui") {
       "Carbon.framework",
       "Quartz.framework",
     ]
-    weak_frameworks = [ "ScreenTime.framework" ]
 
     if (enable_chromium_updater) {
       deps += [

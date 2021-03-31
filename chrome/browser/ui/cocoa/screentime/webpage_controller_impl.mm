@@ -8,7 +8,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "net/base/mac/url_conversions.h"
 
-#include <ScreenTime/ScreenTime.h>
+//#include <ScreenTime/ScreenTime.h>
 
 @interface BlockedObserver : NSObject
 @end
@@ -43,7 +43,7 @@ NS_AVAILABLE_MAC(11.0)
                         change:(NSDictionary*)change
                        context:(void*)context {
   DCHECK([forKeyPath isEqualToString:@"URLIsBlocked"]);
-  _controller->OnBlockedChanged(_nativeController.URLIsBlocked);
+  //_controller->OnBlockedChanged(_nativeController.URLIsBlocked);
 }
 
 @end
@@ -52,20 +52,20 @@ namespace screentime {
 
 WebpageControllerImpl::WebpageControllerImpl(
     const BlockedChangedCallback& blocked_changed_callback)
-    : platform_controller_([[STWebpageController alloc] init]),
+    : platform_controller_(/*[[STWebpageController alloc] init]*/nullptr),
       blocked_observer_([[BlockedObserver alloc]
           initWithController:this
             nativeController:platform_controller_.get()]),
       blocked_changed_callback_(blocked_changed_callback) {
-  NSError* error = nil;
-  NSString* bundle_id = base::SysUTF8ToNSString(base::mac::BaseBundleID());
-  [platform_controller_ setBundleIdentifier:bundle_id error:&error];
+  //NSError* error = nil;
+  //NSString* bundle_id = base::SysUTF8ToNSString(base::mac::BaseBundleID());
+  //[platform_controller_ setBundleIdentifier:bundle_id error:&error];
 }
 
 WebpageControllerImpl::~WebpageControllerImpl() = default;
 
 NSView* WebpageControllerImpl::GetView() {
-  return [platform_controller_ view];
+  return nullptr; // [platform_controller_ view];
 }
 
 void WebpageControllerImpl::PageURLChangedTo(const GURL& url) {
