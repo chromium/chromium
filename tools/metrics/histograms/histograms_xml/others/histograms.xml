@@ -17548,7 +17548,7 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="VRSessionTime" units="ms" expires_after="2021-05-10">
+<histogram name="VRSessionTime" units="ms" expires_after="2021-09-12">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
@@ -18884,6 +18884,9 @@ regressions. -->
 
 <histogram name="XR.WebXR.ReferenceSpace.Requested" enum="XRReferenceSpaceType"
     expires_after="2021-03-15">
+  <obsolete>
+    Removed 03/2021.
+  </obsolete>
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>

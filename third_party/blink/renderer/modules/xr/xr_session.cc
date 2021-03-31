@@ -578,9 +578,6 @@ ScriptPromise XRSession::requestReferenceSpace(
   device::mojom::blink::XRReferenceSpaceType requested_type =
       XRReferenceSpace::StringToReferenceSpaceType(type);
 
-  UMA_HISTOGRAM_ENUMERATION("XR.WebXR.ReferenceSpace.Requested",
-                            requested_type);
-
   if (sensorless_session_ &&
       requested_type != device::mojom::blink::XRReferenceSpaceType::kViewer) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
