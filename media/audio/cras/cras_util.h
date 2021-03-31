@@ -17,15 +17,14 @@ enum class DeviceType { kInput, kOutput };
 
 struct CrasDevice {
   CrasDevice();
-  explicit CrasDevice(const cras_ionode_info* node,
-                      const cras_iodev_info* dev,
-                      DeviceType type);
-  explicit CrasDevice(const std::vector<cras_ionode_info>& nodes,
-                      const cras_iodev_info* dev,
-                      DeviceType type);
+  explicit CrasDevice(struct libcras_node_info* node, DeviceType type);
+
   DeviceType type;
   uint64_t id;
-  int32_t active;
+  uint32_t dev_idx;
+  bool plugged;
+  bool active;
+  std::string node_type;
   std::string name;
   std::string dev_name;
 };

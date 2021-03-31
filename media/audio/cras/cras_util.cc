@@ -15,10 +15,25 @@ namespace media {
 
 namespace {
 
-const char kInternalInputVirtualDevice[] = "Built-in mic";
-const char kInternalOutputVirtualDevice[] = "Built-in speaker";
-const char kHeadphoneLineOutVirtualDevice[] = "Headphone/Line Out";
-const char kKeyBoardMic[] = "KEYBOARD_MIC";
+constexpr char kInternalInputVirtualDevice[] = "Built-in mic";
+constexpr char kInternalOutputVirtualDevice[] = "Built-in speaker";
+constexpr char kHeadphoneLineOutVirtualDevice[] = "Headphone/Line Out";
+
+// Names below are from the node_type_to_str function in CRAS server.
+// https://chromium.googlesource.com/chromiumos/third_party/adhd/+/refs/heads/main/cras/src/server/cras_iodev_list.c
+constexpr char kInternalSpeaker[] = "INTERNAL_SPEAKER";
+constexpr char kHeadphone[] = "HEADPHONE";
+constexpr char kHDMI[] = "HDMI";
+constexpr char kLineout[] = "LINEOUT";
+constexpr char kMic[] = "MIC";
+constexpr char kInternalMic[] = "INTERNAL_MIC";
+constexpr char kFrontMic[] = "FRONT_MIC";
+constexpr char kRearMic[] = "REAR_MIC";
+constexpr char kKeyBoardMic[] = "KEYBOARD_MIC";
+constexpr char kBluetoothNBMic[] = "BLUETOOTH_NB_MIC";
+constexpr char kUSB[] = "USB";
+constexpr char kBluetooth[] = "BLUETOOTH";
+constexpr char kAlsaLoopback[] = "ALSA_LOOPBACK";
 
 // Returns if that an input or output audio device is for simple usage like
 // playback or recording for user. In contrast, audio device such as loopback,
@@ -26,35 +41,35 @@ const char kKeyBoardMic[] = "KEYBOARD_MIC";
 // usage.
 // One special case is ALSA loopback device, which will only exist under
 // testing. We want it visible to users for e2e tests.
-bool IsForSimpleUsage(uint32_t type) {
-  return type == CRAS_NODE_TYPE_INTERNAL_SPEAKER ||
-         type == CRAS_NODE_TYPE_HEADPHONE || type == CRAS_NODE_TYPE_HDMI ||
-         type == CRAS_NODE_TYPE_LINEOUT || type == CRAS_NODE_TYPE_MIC ||
-         type == CRAS_NODE_TYPE_BLUETOOTH_NB_MIC ||
-         type == CRAS_NODE_TYPE_USB || type == CRAS_NODE_TYPE_BLUETOOTH ||
-         type == CRAS_NODE_TYPE_ALSA_LOOPBACK;
+bool IsForSimpleUsage(std::string type) {
+  return type == kInternalMic || type == kHeadphone || type == kHDMI ||
+         type == kLineout || type == kMic || type == kInternalMic ||
+         type == kFrontMic || type == kRearMic || type == kBluetoothNBMic ||
+         type == kUSB || type == kBluetooth || type == kAlsaLoopback;
 }
 
 // Connects to the CRAS server.
-cras_client* CrasConnect() {
-  cras_client* client;
-  if (cras_client_create(&client)) {
+libcras_client* CrasConnect() {
+  libcras_client* client;
+
+  client = libcras_client_create();
+  if (!client) {
     LOG(ERROR) << "Couldn't create CRAS client.\n";
     return nullptr;
   }
-  if (cras_client_connect(client)) {
+  if (libcras_client_connect(client)) {
     LOG(ERROR) << "Couldn't connect CRAS client.\n";
-    cras_client_destroy(client);
+    libcras_client_destroy(client);
     return nullptr;
   }
   return client;
 }
 
 // Disconnects from the CRAS server.
-void CrasDisconnect(cras_client** client) {
+void CrasDisconnect(libcras_client** client) {
   if (*client) {
-    cras_client_stop(*client);
-    cras_client_destroy(*client);
+    libcras_client_stop(*client);
+    libcras_client_destroy(*client);
     *client = nullptr;
   }
 }
@@ -63,103 +78,137 @@ void CrasDisconnect(cras_client** client) {
 
 CrasDevice::CrasDevice() = default;
 
-CrasDevice::CrasDevice(const cras_ionode_info* node,
-                       const cras_iodev_info* dev,
-                       DeviceType type)
+CrasDevice::CrasDevice(struct libcras_node_info* node, DeviceType type)
     : type(type) {
-  id = cras_make_node_id(node->iodev_idx, node->ionode_idx);
-  active = node->active;
-  name = std::string(node->name);
-  // If the name of node is not meaningful, use the device name instead.
+  int rc;
+  rc = libcras_node_info_get_id(node, &id);
+  if (rc) {
+    LOG(ERROR) << "Failed to get the node id: " << rc;
+    id = 0;
+  }
+
+  rc = libcras_node_info_get_dev_idx(node, &dev_idx);
+  if (rc) {
+    LOG(ERROR) << "Failed to get the dev idx: " << rc;
+    dev_idx = 0;
+  }
+
+  rc = libcras_node_info_is_plugged(node, &plugged);
+  if (rc) {
+    LOG(ERROR) << "Failed to get if the node is plugged: " << rc;
+    plugged = false;
+  }
+
+  rc = libcras_node_info_is_active(node, &active);
+  if (rc) {
+    LOG(ERROR) << "Failed to get if the node is active: " << rc;
+    active = false;
+  }
+
+  char* type_str;
+  rc = libcras_node_info_get_type(node, &type_str);
+  if (rc) {
+    LOG(ERROR) << "Failed to get the node type: " << rc;
+    node_type = nullptr;
+  }
+  node_type = type_str;
+
+  char* node_name;
+  rc = libcras_node_info_get_node_name(node, &node_name);
+  if (rc) {
+    LOG(ERROR) << "Failed to get the node name: " << rc;
+    node_name = nullptr;
+  }
+
+  char* device_name;
+  rc = libcras_node_info_get_dev_name(node, &device_name);
+  if (rc) {
+    LOG(ERROR) << "Failed to get the dev name: " << rc;
+    device_name = nullptr;
+  }
+
+  name = std::string(node_name);
   if (name.empty() || name == "(default)")
-    name = dev->name;
-  dev_name = dev->name;
+    name = device_name;
+  dev_name = device_name;
 }
 
-// Creates a CrasDevice based on the node list.
-// If there is only one node attached to this device, create it directly.
-// If there are two nodes, create a virtual device instead.
-CrasDevice::CrasDevice(const std::vector<cras_ionode_info>& nodes,
-                       const cras_iodev_info* dev,
-                       DeviceType type)
-    : CrasDevice(&nodes[0], dev, type) {
-  if (nodes.size() == 1)
-    return;
-
-  if (nodes.size() > 2) {
-    LOG(WARNING) << dev->name << " has more than 2 nodes";
-    return;
-  }
-
-  if (nodes[0].type_enum == CRAS_NODE_TYPE_LINEOUT ||
-      nodes[1].type_enum == CRAS_NODE_TYPE_LINEOUT) {
-    name = kHeadphoneLineOutVirtualDevice;
-  } else if (nodes[0].type_enum == CRAS_NODE_TYPE_INTERNAL_SPEAKER ||
-             nodes[1].type_enum == CRAS_NODE_TYPE_INTERNAL_SPEAKER) {
-    name = kInternalOutputVirtualDevice;
-  } else if (nodes[0].type_enum == CRAS_NODE_TYPE_MIC ||
-             nodes[1].type_enum == CRAS_NODE_TYPE_MIC) {
-    name = kInternalInputVirtualDevice;
+void mergeDevices(CrasDevice& old_dev, CrasDevice& new_dev) {
+  if (old_dev.node_type == kLineout || new_dev.node_type == kLineout) {
+    old_dev.name = kHeadphoneLineOutVirtualDevice;
+    old_dev.node_type = "";
+  } else if (old_dev.node_type == kInternalSpeaker ||
+             new_dev.node_type == kInternalSpeaker) {
+    old_dev.name = kInternalOutputVirtualDevice;
+    old_dev.node_type = "";
+  } else if (old_dev.node_type == kMic || new_dev.node_type == kMic) {
+    old_dev.name = kInternalInputVirtualDevice;
+    old_dev.node_type = "";
   } else {
-    LOG(WARNING) << "Failed to create virtual device for " << dev->name;
+    LOG(WARNING) << "Failed to create virtual device for " << old_dev.name;
   }
-
-  active = nodes[0].active || nodes[1].active;
+  old_dev.active |= new_dev.active;
 }
 
 std::vector<CrasDevice> CrasGetAudioDevices(DeviceType type) {
   std::vector<CrasDevice> devices;
 
-  cras_client* client = CrasConnect();
+  libcras_client* client = CrasConnect();
   if (!client)
     return devices;
 
-  struct cras_iodev_info devs[CRAS_MAX_IODEVS];
-  struct cras_ionode_info nodes[CRAS_MAX_IONODES];
-  size_t num_devs = CRAS_MAX_IODEVS, num_nodes = CRAS_MAX_IONODES;
   int rc;
 
+  struct libcras_node_info** nodes;
+  size_t num_nodes;
+
   if (type == DeviceType::kInput) {
-    rc = cras_client_get_input_devices(client, devs, nodes, &num_devs,
-                                       &num_nodes);
+    rc =
+        libcras_client_get_nodes(client, CRAS_STREAM_INPUT, &nodes, &num_nodes);
   } else {
-    rc = cras_client_get_output_devices(client, devs, nodes, &num_devs,
-                                        &num_nodes);
+    rc = libcras_client_get_nodes(client, CRAS_STREAM_OUTPUT, &nodes,
+                                  &num_nodes);
   }
+
   if (rc < 0) {
     LOG(ERROR) << "Failed to get devices: " << std::strerror(rc);
     CrasDisconnect(&client);
     return devices;
   }
 
-  for (size_t i = 0; i < num_devs; i++) {
-    std::vector<cras_ionode_info> dev_nodes;
-    for (size_t j = 0; j < num_nodes; j++) {
-      if (!nodes[j].plugged || !IsForSimpleUsage(nodes[j].type_enum))
-        continue;
-      if (devs[i].idx == nodes[j].iodev_idx)
-        dev_nodes.emplace_back(nodes[j]);
-    }
-    if (dev_nodes.empty())
+  for (size_t i = 0; i < num_nodes; i++) {
+    auto new_dev = CrasDevice(nodes[i], type);
+    if (!new_dev.plugged || !IsForSimpleUsage(new_dev.node_type))
       continue;
-    devices.emplace_back(dev_nodes, &devs[i], type);
+    bool added = false;
+    for (auto& dev : devices) {
+      if (dev.dev_idx == new_dev.dev_idx) {
+        mergeDevices(dev, new_dev);
+        added = true;
+        break;
+      }
+    }
+    if (!added)
+      devices.emplace_back(new_dev);
   }
+
+  libcras_node_info_array_destroy(nodes, num_nodes);
 
   CrasDisconnect(&client);
   return devices;
 }
 
 bool CrasHasKeyboardMic() {
-  cras_client* client = CrasConnect();
+  libcras_client* client = CrasConnect();
   if (!client)
     return false;
 
-  struct cras_iodev_info devs[CRAS_MAX_IODEVS];
-  struct cras_ionode_info nodes[CRAS_MAX_IONODES];
-  size_t num_devs = CRAS_MAX_IODEVS, num_nodes = CRAS_MAX_IONODES;
-
+  struct libcras_node_info** nodes;
+  size_t num_nodes;
   int rc =
-      cras_client_get_input_devices(client, devs, nodes, &num_devs, &num_nodes);
+      libcras_client_get_nodes(client, CRAS_STREAM_INPUT, &nodes, &num_nodes);
+  int ret = false;
+
   if (rc < 0) {
     LOG(ERROR) << "Failed to get devices: " << std::strerror(rc);
     CrasDisconnect(&client);
@@ -167,43 +216,44 @@ bool CrasHasKeyboardMic() {
   }
 
   for (size_t i = 0; i < num_nodes; i++) {
-    if (std::string(nodes[i].type) == kKeyBoardMic) {
-      CrasDisconnect(&client);
-      return true;
-    }
+    auto device = CrasDevice(nodes[i], DeviceType::kInput);
+    if (device.node_type == kKeyBoardMic)
+      ret = true;
   }
 
+  libcras_node_info_array_destroy(nodes, num_nodes);
+
   CrasDisconnect(&client);
-  return false;
+  return ret;
 }
 
 int CrasGetAecSupported() {
-  cras_client* client = CrasConnect();
+  libcras_client* client = CrasConnect();
   if (!client)
     return 0;
 
-  int rc = cras_client_get_aec_supported(client);
+  int rc = cras_client_get_aec_supported(client->client_);
   CrasDisconnect(&client);
   return rc;
 }
 
 int CrasGetAecGroupId() {
-  cras_client* client = CrasConnect();
+  libcras_client* client = CrasConnect();
   if (!client)
     return -1;
 
-  int rc = cras_client_get_aec_group_id(client);
+  int rc = cras_client_get_aec_group_id(client->client_);
   CrasDisconnect(&client);
 
   return rc;
 }
 
 int CrasGetDefaultOutputBufferSize() {
-  cras_client* client = CrasConnect();
+  libcras_client* client = CrasConnect();
   if (!client)
     return -1;
 
-  int rc = cras_client_get_default_output_buffer_size(client);
+  int rc = cras_client_get_default_output_buffer_size(client->client_);
   CrasDisconnect(&client);
 
   return rc;
