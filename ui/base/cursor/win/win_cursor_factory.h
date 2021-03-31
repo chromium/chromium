@@ -29,8 +29,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) WinCursorFactory : public CursorFactory {
   ~WinCursorFactory() override;
 
   // CursorFactory:
-  base::Optional<PlatformCursor> GetDefaultCursor(
-      mojom::CursorType type) override;
+  PlatformCursor GetDefaultCursor(mojom::CursorType type) override;
   PlatformCursor CreateImageCursor(mojom::CursorType type,
                                    const SkBitmap& bitmap,
                                    const gfx::Point& hotspot) override;

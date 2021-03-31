@@ -150,20 +150,25 @@ scoped_refptr<BitmapCursorOzone> BitmapCursorFactoryOzone::GetBitmapCursor(
   return base::WrapRefCounted(ToBitmapCursorOzone(platform_cursor));
 }
 
-base::Optional<PlatformCursor> BitmapCursorFactoryOzone::GetDefaultCursor(
+PlatformCursor BitmapCursorFactoryOzone::GetDefaultCursor(
     mojom::CursorType type) {
-  if (type == mojom::CursorType::kNone)
-    return nullptr;  // nullptr is used for the hidden cursor.
+  if (!default_cursors_.count(type)) {
+    if (type == mojom::CursorType::kNone
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (UseDefaultCursorForType(type)) {
-    // Lacros uses server-side cursors for most types. These cursors don't need
-    // to load bitmap images on the client.
-    BitmapCursorOzone* cursor = new BitmapCursorOzone(type);
-    cursor->AddRef();  // Balanced by UnrefImageCursor.
-    return ToPlatformCursor(cursor);
+        || UseDefaultCursorForType(type)
+#endif
+    ) {
+      // Lacros uses server-side cursors for most types. These cursors don't
+      // need to load bitmap images on the client.
+      // Similarly, the hidden cursor doesn't use any bitmap.
+      default_cursors_[type] = base::MakeRefCounted<BitmapCursorOzone>(type);
+    } else {
+      return nullptr;
+    }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return base::nullopt;
+
+  // Returns owned default cursor for this type.
+  return default_cursors_[type].get();
 }
 
 PlatformCursor BitmapCursorFactoryOzone::CreateImageCursor(

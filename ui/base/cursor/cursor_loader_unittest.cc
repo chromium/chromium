@@ -4,7 +4,6 @@
 
 #include "ui/base/cursor/cursor_loader.h"
 
-#include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/cursor/cursor.h"
@@ -50,7 +49,10 @@ TEST(CursorLoaderTest, InvisibleCursor) {
 #if defined(USE_OZONE) && !defined(USE_X11)
 TEST(CursorLoaderTest, InvisibleCursor) {
   BitmapCursorFactoryOzone cursor_factory;
-  EXPECT_EQ(LoadInvisibleCursor(), nullptr);
+  auto* invisible_cursor =
+      static_cast<BitmapCursorOzone*>(LoadInvisibleCursor());
+  ASSERT_NE(invisible_cursor, nullptr);
+  EXPECT_EQ(invisible_cursor->type(), mojom::CursorType::kNone);
 }
 #endif
 
@@ -61,7 +63,8 @@ TEST(CursorLoaderTest, InvisibleCursor) {
   // invisible cursor in X11.
   auto* invisible_cursor =
       cursor_factory.CreateImageCursor({}, SkBitmap(), gfx::Point());
-  EXPECT_EQ(LoadInvisibleCursor(), invisible_cursor);
+  ASSERT_NE(invisible_cursor, nullptr);
+  EXPECT_EQ(invisible_cursor, LoadInvisibleCursor());
 
   // Release our refcount on the cursor
   cursor_factory.UnrefImageCursor(invisible_cursor);

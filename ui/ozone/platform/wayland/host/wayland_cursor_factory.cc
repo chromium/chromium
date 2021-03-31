@@ -48,11 +48,7 @@ void WaylandCursorFactory::ObserveThemeChanges() {
   cursor_theme_observer_.Observe(cursor_theme_manager);
 }
 
-base::Optional<PlatformCursor> WaylandCursorFactory::GetDefaultCursor(
-    mojom::CursorType type) {
-  if (type == mojom::CursorType::kNone)
-    return nullptr;  // nullptr is used for the hidden cursor.
-
+PlatformCursor WaylandCursorFactory::GetDefaultCursor(mojom::CursorType type) {
   if (current_theme_->cache.count(type) == 0) {
     for (const std::string& name : CursorNamesFromType(type)) {
       wl_cursor* cursor = GetCursorFromTheme(name);

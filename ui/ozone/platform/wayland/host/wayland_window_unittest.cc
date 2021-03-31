@@ -1058,8 +1058,9 @@ TEST_P(WaylandWindowTest, SetCursorCallsZcrCursorShapesOncePerCursor) {
 TEST_P(WaylandWindowTest, SetCursorDoesNotUseZcrCursorShapesForNoneCursor) {
   MockZcrCursorShapes* mock_cursor_shapes = InstallMockZcrCursorShapes();
   EXPECT_CALL(*mock_cursor_shapes, SetCursorShape(_)).Times(0);
-  // The "none" cursor is represented by nullptr.
-  window_->SetCursor(nullptr);
+  auto none_cursor =
+      base::MakeRefCounted<BitmapCursorOzone>(mojom::CursorType::kNone);
+  window_->SetCursor(none_cursor.get());
 }
 
 TEST_P(WaylandWindowTest, SetCursorDoesNotUseZcrCursorShapesForCustomCursors) {

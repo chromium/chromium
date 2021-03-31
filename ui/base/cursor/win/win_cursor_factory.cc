@@ -10,7 +10,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
-#include "base/optional.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/windows_types.h"
 #include "ui/base/cursor/cursor.h"
@@ -132,8 +131,7 @@ WinCursorFactory::WinCursorFactory() = default;
 
 WinCursorFactory::~WinCursorFactory() = default;
 
-base::Optional<PlatformCursor> WinCursorFactory::GetDefaultCursor(
-    mojom::CursorType type) {
+PlatformCursor WinCursorFactory::GetDefaultCursor(mojom::CursorType type) {
   if (!default_cursors_.count(type)) {
     // Using a dark 1x1 bit bmp for the kNone cursor may still cause DWM to do
     // composition work unnecessarily. Better to totally remove it from the
@@ -146,7 +144,7 @@ base::Optional<PlatformCursor> WinCursorFactory::GetDefaultCursor(
       if (!hcursor)
         hcursor = LoadCursorFromResourcesDataDLL(id);
       if (!hcursor)
-        return base::nullopt;
+        return nullptr;
     }
     default_cursors_[type] = base::MakeRefCounted<WinCursor>(hcursor);
   }

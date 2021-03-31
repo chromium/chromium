@@ -9,8 +9,10 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -37,7 +39,10 @@
 #include "ui/platform_window/wm/wm_drag_handler.h"
 #include "ui/platform_window/wm/wm_drop_handler.h"
 
+namespace ui {
 namespace {
+
+using mojom::CursorType;
 
 bool OverlayStackOrderCompare(
     const ui::ozone::mojom::WaylandOverlayConfigPtr& i,
@@ -46,8 +51,6 @@ bool OverlayStackOrderCompare(
 }
 
 }  // namespace
-
-namespace ui {
 
 WaylandWindow::WaylandWindow(PlatformWindowDelegate* delegate,
                              WaylandConnection* connection)
@@ -158,7 +161,7 @@ void WaylandWindow::SetPointerFocus(bool focus) {
   // Whenever the window gets the pointer focus back, we must reinitialize the
   // cursor. Otherwise, it is invalidated whenever the pointer leaves the
   // surface and is not restored by the Wayland compositor.
-  if (has_pointer_focus_ && bitmap_) {
+  if (has_pointer_focus_ && bitmap_ && bitmap_->type() != CursorType::kNone) {
     // Check for theme-provided cursor.
     if (bitmap_->platform_data()) {
       connection_->SetPlatformCursor(
@@ -313,6 +316,8 @@ bool WaylandWindow::ShouldUseNativeFrame() const {
 }
 
 void WaylandWindow::SetCursor(PlatformCursor cursor) {
+  DCHECK(cursor);
+
   scoped_refptr<BitmapCursorOzone> bitmap =
       BitmapCursorFactoryOzone::GetBitmapCursor(cursor);
   if (bitmap_ == bitmap)
@@ -320,7 +325,7 @@ void WaylandWindow::SetCursor(PlatformCursor cursor) {
 
   bitmap_ = bitmap;
 
-  if (!bitmap_) {
+  if (bitmap_->type() == CursorType::kNone) {
     // Hide the cursor.
     connection_->SetCursorBitmap(std::vector<SkBitmap>(), gfx::Point(),
                                  buffer_scale());

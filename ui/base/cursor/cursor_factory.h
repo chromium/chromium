@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 
@@ -36,10 +35,8 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) CursorFactory {
   // Return the default cursor of the specified type. The types are listed in
   // ui/base/cursor/cursor.h. Default cursors are managed by the implementation
   // and must live indefinitely; there's no way to know when to free them.
-  // nullptr may be a valid value for the hidden cursor. When a default cursor
-  // is not available, base::nullopt is returned.
-  virtual base::Optional<PlatformCursor> GetDefaultCursor(
-      mojom::CursorType type);
+  // When a default cursor is not available, nullptr is returned.
+  virtual PlatformCursor GetDefaultCursor(mojom::CursorType type);
 
   // Return an image cursor for the specified |type| with a |bitmap| and
   // |hotspot|. Image cursors are referenced counted and have an initial

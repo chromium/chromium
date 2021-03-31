@@ -34,10 +34,9 @@ CursorFactory* CursorFactory::GetInstance() {
   return g_instance;
 }
 
-base::Optional<PlatformCursor> CursorFactory::GetDefaultCursor(
-    mojom::CursorType type) {
+PlatformCursor CursorFactory::GetDefaultCursor(mojom::CursorType type) {
   NOTIMPLEMENTED();
-  return base::nullopt;
+  return nullptr;
 }
 
 PlatformCursor CursorFactory::CreateImageCursor(mojom::CursorType type,
@@ -119,7 +118,7 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
     case mojom::CursorType::kWestResize:
       return {"w-resize", "left_side"};
     case mojom::CursorType::kNone:
-      return {"none"};
+      return {};
     case mojom::CursorType::kGrab:
       return {"openhand", "grab"};
     case mojom::CursorType::kGrabbing:

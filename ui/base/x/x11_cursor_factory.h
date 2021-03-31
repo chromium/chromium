@@ -31,9 +31,8 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
   X11CursorFactory& operator=(const X11CursorFactory&) = delete;
   ~X11CursorFactory() override;
 
-  // CursorFactoryOzone:
-  base::Optional<PlatformCursor> GetDefaultCursor(
-      mojom::CursorType type) override;
+  // CursorFactory:
+  PlatformCursor GetDefaultCursor(mojom::CursorType type) override;
   PlatformCursor CreateImageCursor(mojom::CursorType type,
                                    const SkBitmap& bitmap,
                                    const gfx::Point& hotspot) override;
@@ -53,13 +52,6 @@ class COMPONENT_EXPORT(UI_BASE_X) X11CursorFactory
   void ClearThemeCursors();
 
   std::unique_ptr<XCursorLoader> cursor_loader_;
-
-  // Loads/caches default cursor or returns cached version.
-  scoped_refptr<X11Cursor> GetDefaultCursorInternal(mojom::CursorType type);
-
-  // Holds a single instance of the invisible cursor. X11 has no way to hide
-  // the cursor so an invisible cursor mimics that.
-  scoped_refptr<X11Cursor> invisible_cursor_;
 
   std::map<mojom::CursorType, scoped_refptr<X11Cursor>> default_cursors_;
 

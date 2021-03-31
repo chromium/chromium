@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "ui/base/cursor/cursor_theme_manager.h"
 #include "ui/base/cursor/cursor_theme_manager_observer.h"
@@ -36,9 +35,8 @@ class WaylandCursorFactory : public BitmapCursorFactoryOzone,
   // CursorFactory:
   void ObserveThemeChanges() override;
 
-  // CursorFactoryOzone:
-  base::Optional<PlatformCursor> GetDefaultCursor(
-      mojom::CursorType type) override;
+  // CursorFactory:
+  PlatformCursor GetDefaultCursor(mojom::CursorType type) override;
   void SetDeviceScaleFactor(float scale) override;
 
  protected:

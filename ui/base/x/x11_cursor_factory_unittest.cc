@@ -20,6 +20,7 @@ TEST(X11CursorFactoryTest, InvisibleRefcount) {
   // CreateImageCursor should return an incremented refcount.
   auto* invisible_cursor = static_cast<X11Cursor*>(
       factory.CreateImageCursor({}, SkBitmap(), gfx::Point()));
+  ASSERT_NE(invisible_cursor, nullptr);
   ASSERT_FALSE(invisible_cursor->HasOneRef());
 
   // Release our refcount on the cursor

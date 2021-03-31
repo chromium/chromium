@@ -645,10 +645,11 @@ bool X11Window::ShouldUseNativeFrame() const {
 }
 
 void X11Window::SetCursor(PlatformCursor cursor) {
+  DCHECK(cursor);
+
   last_cursor_ = static_cast<X11Cursor*>(cursor);
   on_cursor_loaded_.Reset(base::BindOnce(DefineCursor, xwindow_));
-  if (last_cursor_)
-    last_cursor_->OnCursorLoaded(on_cursor_loaded_.callback());
+  last_cursor_->OnCursorLoaded(on_cursor_loaded_.callback());
 }
 
 void X11Window::MoveCursorTo(const gfx::Point& location_px) {

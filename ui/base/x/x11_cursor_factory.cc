@@ -33,18 +33,9 @@ scoped_refptr<X11Cursor> CreateInvisibleCursor(XCursorLoader* cursor_loader) {
 }  // namespace
 
 X11CursorFactory::X11CursorFactory()
-    : cursor_loader_(std::make_unique<XCursorLoader>(x11::Connection::Get())),
-      invisible_cursor_(CreateInvisibleCursor(cursor_loader_.get())) {}
+    : cursor_loader_(std::make_unique<XCursorLoader>(x11::Connection::Get())) {}
 
 X11CursorFactory::~X11CursorFactory() = default;
-
-base::Optional<PlatformCursor> X11CursorFactory::GetDefaultCursor(
-    mojom::CursorType type) {
-  auto cursor = GetDefaultCursorInternal(type);
-  if (!cursor)
-    return base::nullopt;
-  return ToPlatformCursor(cursor.get());
-}
 
 PlatformCursor X11CursorFactory::CreateImageCursor(mojom::CursorType type,
                                                    const SkBitmap& bitmap,
@@ -53,13 +44,13 @@ PlatformCursor X11CursorFactory::CreateImageCursor(mojom::CursorType type,
   // resulting SkBitmap is empty and X crashes when creating a zero size cursor
   // image. Return invisible cursor here instead.
   if (bitmap.drawsNothing()) {
-    // The result of |invisible_cursor_| is owned by the caller, and will be
+    // The result of `CreateImageCursor()` is owned by the caller, and will be
     // Unref()ed by code far away. (Usually in web_cursor.cc in content, among
     // others.) If we don't manually add another reference before we cast this
-    // to a void*, we can end up with |invisible_cursor_| being freed out from
-    // under us.
-    invisible_cursor_->AddRef();
-    return ToPlatformCursor(invisible_cursor_.get());
+    // to a void*, we can end up with the cursor being freed out from under us.
+    auto* invisible_cursor = GetDefaultCursor(mojom::CursorType::kNone);
+    RefImageCursor(invisible_cursor);
+    return invisible_cursor;
   }
 
   auto cursor = cursor_loader_->CreateCursor(bitmap, hotspot);
@@ -104,19 +95,17 @@ void X11CursorFactory::OnCursorThemeSizeChanged(int cursor_theme_size) {
   ClearThemeCursors();
 }
 
-scoped_refptr<X11Cursor> X11CursorFactory::GetDefaultCursorInternal(
-    mojom::CursorType type) {
-  if (type == mojom::CursorType::kNone)
-    return invisible_cursor_;
-
+PlatformCursor X11CursorFactory::GetDefaultCursor(mojom::CursorType type) {
   if (!default_cursors_.count(type)) {
     // Try to load a predefined X11 cursor.
     default_cursors_[type] =
-        cursor_loader_->LoadCursor(CursorNamesFromType(type));
+        type == mojom::CursorType::kNone
+            ? CreateInvisibleCursor(cursor_loader_.get())
+            : cursor_loader_->LoadCursor(CursorNamesFromType(type));
   }
 
   // Returns owned default cursor for this type.
-  return default_cursors_[type];
+  return default_cursors_[type].get();
 }
 
 void X11CursorFactory::ClearThemeCursors() {

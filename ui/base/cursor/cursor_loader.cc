@@ -99,24 +99,24 @@ PlatformCursor CursorLoader::CursorFromType(mojom::CursorType type) {
   // Check if there's a default platform cursor available.
   // For the none cursor, we also need to use the platform factory to take
   // into account the different ways of creating an invisible cursor.
+  PlatformCursor cursor;
   if (use_platform_cursors_ || type == mojom::CursorType::kNone) {
-    base::Optional<PlatformCursor> default_cursor =
-        factory_->GetDefaultCursor(type);
-    if (default_cursor)
-      return *default_cursor;
+    cursor = factory_->GetDefaultCursor(type);
+    if (cursor)
+      return cursor;
     LOG(ERROR) << "Failed to load a platform cursor of type " << type;
   }
 
   // Loads the default Aura cursor bitmap for the cursor type. Falls back on
   // pointer cursor if this fails.
-  PlatformCursor platform = LoadCursorFromAsset(type);
-  if (!platform && type != mojom::CursorType::kPointer) {
-    platform = CursorFromType(mojom::CursorType::kPointer);
-    factory_->RefImageCursor(platform);
-    image_cursors_[type] = platform;
+  cursor = LoadCursorFromAsset(type);
+  if (!cursor && type != mojom::CursorType::kPointer) {
+    cursor = CursorFromType(mojom::CursorType::kPointer);
+    factory_->RefImageCursor(cursor);
+    image_cursors_[type] = cursor;
   }
-  DCHECK(platform) << "Failed to load a bitmap for the pointer cursor.";
-  return platform;
+  DCHECK(cursor) << "Failed to load a bitmap for the pointer cursor.";
+  return cursor;
 }
 
 PlatformCursor CursorLoader::LoadCursorFromAsset(mojom::CursorType type) {

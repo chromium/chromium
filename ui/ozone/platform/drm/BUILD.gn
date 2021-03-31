@@ -133,6 +133,7 @@ source_set("gbm") {
     "//ui/base",
     "//ui/base/cursor",
     "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
     "//ui/display",
     "//ui/display/types",
