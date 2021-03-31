@@ -162,7 +162,6 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
-constexpr char kOfflineGmailUrl[] = "https://mail.google.com/mail/mu/u";
 constexpr char kGmailUrl[] = "https://mail.google.com/mail/u";
 constexpr char kGmailLaunchURL[] = "https://mail.google.com/mail/ca";
 constexpr char kLaunchURL[] = "https://foo.example/";
@@ -448,22 +447,10 @@ class ChromeLauncherControllerTest : public BrowserWithTestWindowTest {
     extension_service_->AddExtension(extension_chrome_.get());
 
     // Fake Gmail app.
-    base::DictionaryValue manifest_gmail;
-    manifest_gmail.SetString(extensions::manifest_keys::kName,
-                             "Gmail launcher controller test extension");
-    manifest_gmail.SetString(extensions::manifest_keys::kVersion, "1");
-    manifest_gmail.SetInteger(extensions::manifest_keys::kManifestVersion, 2);
-    manifest_gmail.SetString(extensions::manifest_keys::kDescription,
-                             "for testing pinned Gmail");
-    manifest_gmail.SetString(extensions::manifest_keys::kLaunchWebURL,
-                             kGmailLaunchURL);
-    auto list = std::make_unique<base::ListValue>();
-    list->AppendString("*://mail.google.com/mail/ca");
-    manifest_gmail.Set(extensions::manifest_keys::kWebURLs, std::move(list));
-
     extension_gmail_app_ = Extension::Create(
-        base::FilePath(), ManifestLocation::kUnpacked, manifest_gmail,
+        base::FilePath(), ManifestLocation::kUnpacked, manifest,
         Extension::NO_FLAGS, extension_misc::kGmailAppId, &error);
+
     // Fake Google Doc app.
     extension_doc_app_ = Extension::Create(
         base::FilePath(), ManifestLocation::kUnpacked, manifest,
@@ -3992,60 +3979,6 @@ TEST_F(ChromeLauncherControllerTest, V1AppMenuDeletionExecution) {
                                   display::kInvalidDisplayId);
     EXPECT_EQ(--tabs, browser()->tab_strip_model()->count());
   }
-}
-
-// Tests that the Gmail extension matches more than the app itself claims with
-// the manifest file.
-TEST_F(ChromeLauncherControllerTest, GmailMatching) {
-  InitLauncherControllerWithBrowser();
-  StartPrefSyncService(syncer::SyncDataList());
-
-  // Create a Gmail browser tab.
-  chrome::NewTab(browser());
-  std::u16string title = u"Test";
-  NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title);
-  content::WebContents* content =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Check that the launcher controller does not recognize the running app.
-  EXPECT_FALSE(launcher_controller_->ContentCanBeHandledByGmailApp(content));
-
-  // Installing |extension_gmail_app_| pins it to the launcher.
-  const ash::ShelfID gmail_id(extension_gmail_app_->id());
-  AddExtension(extension_gmail_app_.get());
-  EXPECT_TRUE(launcher_controller_->IsAppPinned(extension_gmail_app_->id()));
-
-  // Check that it is now handled.
-  EXPECT_TRUE(launcher_controller_->ContentCanBeHandledByGmailApp(content));
-
-  // Check also that the app has detected that properly.
-  ash::ShelfItem item_gmail;
-  item_gmail.type = ash::TYPE_PINNED_APP;
-  item_gmail.id = gmail_id;
-  EXPECT_EQ(1U,
-            launcher_controller_->GetAppMenuItemsForTesting(item_gmail).size());
-}
-
-// Tests that the Gmail extension does not match the offline version.
-TEST_F(ChromeLauncherControllerTest, GmailOfflineMatching) {
-  InitLauncherControllerWithBrowser();
-
-  StartPrefSyncService(syncer::SyncDataList());
-
-  // Create a Gmail browser tab.
-  chrome::NewTab(browser());
-  std::u16string title = u"Test";
-  NavigateAndCommitActiveTabWithTitle(browser(), GURL(kOfflineGmailUrl), title);
-  content::WebContents* content =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  // Installing |extension_gmail_app_| pins it to the launcher.
-  const ash::ShelfID gmail_id(extension_gmail_app_->id());
-  AddExtension(extension_gmail_app_.get());
-  EXPECT_TRUE(launcher_controller_->IsAppPinned(extension_gmail_app_->id()));
-
-  // The content should not be able to be handled by the app.
-  EXPECT_FALSE(launcher_controller_->ContentCanBeHandledByGmailApp(content));
 }
 
 // Verify that the launcher item positions are persisted and restored.

@@ -506,11 +506,6 @@ void ChromeLauncherController::UpdateAppState(content::WebContents* contents,
                                               bool remove) {
   ash::ShelfID shelf_id(launcher_controller_helper_->GetAppID(contents));
 
-  // Check if the gMail app is loaded and it matches the given content.
-  // This special treatment is needed to address crbug.com/234268.
-  if (shelf_id.IsNull() && ContentCanBeHandledByGmailApp(contents))
-    shelf_id = ash::ShelfID(kGmailAppId);
-
   // If the tab changed apps, remove its association with the previous app item.
   if (web_contents_to_app_id_.find(contents) != web_contents_to_app_id_.end()) {
     ash::ShelfID old_id(web_contents_to_app_id_[contents]);
@@ -559,9 +554,6 @@ std::string ChromeLauncherController::GetAppIDForWebContents(
 
   if (!app_id.empty())
     return app_id;
-
-  if (ContentCanBeHandledByGmailApp(contents))
-    return kGmailAppId;
 
   return kChromeAppId;
 }
@@ -680,27 +672,9 @@ void ChromeLauncherController::ActivateShellApp(const std::string& app_id,
 bool ChromeLauncherController::IsWebContentHandledByApplication(
     content::WebContents* web_contents,
     const std::string& app_id) {
-  if ((web_contents_to_app_id_.find(web_contents) !=
-       web_contents_to_app_id_.end()) &&
-      (web_contents_to_app_id_[web_contents] == app_id))
-    return true;
-  return (app_id == kGmailAppId && ContentCanBeHandledByGmailApp(web_contents));
-}
-
-bool ChromeLauncherController::ContentCanBeHandledByGmailApp(
-    content::WebContents* web_contents) {
-  if (GetItem(ash::ShelfID(kGmailAppId))) {
-    const GURL url = web_contents->GetURL();
-    // We need to extend the application matching for the gMail app beyond the
-    // manifest file's specification. This is required because of the namespace
-    // overlap with the offline app ("/mail/mu/").
-    if (!base::MatchPattern(url.path(), "/mail/mu/*") &&
-        base::MatchPattern(url.path(), "/mail/*") &&
-        GetExtensionForAppID(kGmailAppId, profile()) &&
-        GetExtensionForAppID(kGmailAppId, profile())->OverlapsWithOrigin(url))
-      return true;
-  }
-  return false;
+  return (web_contents_to_app_id_.find(web_contents) !=
+          web_contents_to_app_id_.end()) &&
+         (web_contents_to_app_id_[web_contents] == app_id);
 }
 
 gfx::Image ChromeLauncherController::GetAppMenuIcon(
