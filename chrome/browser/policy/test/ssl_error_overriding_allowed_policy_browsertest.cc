@@ -98,6 +98,45 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedEnabled) {
       tab->GetMainFrame(), "proceed-link"));
 }
 
+// Test that when SSL error overriding is disabled, the proceed link does not
+// appear appear on SSL blocking pages.
+IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingAllowedDisabled) {
+  net::EmbeddedTestServer https_server_expired(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server_expired.Start());
+
+  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
+
+  // Disallowing the proceed link by setting the policy to |false|.
+  PolicyMap policies;
+  policies.Set(key::kSSLErrorOverrideAllowed, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
+               nullptr);
+  UpdateProviderPolicy(policies);
+
+  // Policy should not allow overriding.
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
+
+  // Policy disallows overriding - navigate to an SSL error page and expect no
+  // proceed link.
+  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  WaitForInterstitial(tab);
+
+  // The interstitial should not display the proceed link.
+  EXPECT_FALSE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+      tab->GetMainFrame(), "proceed-link"));
+
+  // The interstitial should not proceed, even if the command is sent in
+  // some other way (e.g., via the keyboard shortcut).
+  SendInterstitialCommand(tab, security_interstitials::CMD_PROCEED);
+  EXPECT_TRUE(IsShowingInterstitial(tab));
+}
+
 // Test that when SSL error overriding is disallowed by policy and the origin
 // list is configured, the proceed link does not appear on SSL blocking pages if
 // the page is not on the origin list.
@@ -189,6 +228,56 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingForOriginsBadInput) {
   EXPECT_FALSE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
                    ->GetList()
                    .empty());
+
+  // Policy disallows overriding - navigate to an SSL error page and expect no
+  // proceed link.
+  ui_test_utils::NavigateToURL(browser(), https_server_expired.GetURL("/"));
+  content::WebContents* tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  WaitForInterstitial(tab);
+
+  // The interstitial should not display the proceed link.
+  EXPECT_FALSE(chrome_browser_interstitials::IsInterstitialDisplayingText(
+      tab->GetMainFrame(), "proceed-link"));
+
+  // The interstitial should not proceed, even if the command is sent in
+  // some other way (e.g., via the keyboard shortcut).
+  SendInterstitialCommand(tab, security_interstitials::CMD_PROCEED);
+  EXPECT_TRUE(IsShowingInterstitial(tab));
+}
+
+// Test that when SSL error overriding is disallowed by policy and the origin
+// list is empty, the proceed link does not appear on SSL blocking pages.
+IN_PROC_BROWSER_TEST_F(PolicyTest, SSLErrorOverridingForOriginsEmptyList) {
+  net::EmbeddedTestServer https_server_expired(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_server_expired.SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
+  https_server_expired.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server_expired.Start());
+
+  const PrefService* const prefs = browser()->profile()->GetPrefs();
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
+  EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
+                  ->GetList()
+                  .empty());
+
+  // Disallowing the proceed link by setting the policy to |false|.
+  PolicyMap policies;
+  policies.Set(key::kSSLErrorOverrideAllowed, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
+               nullptr);
+  // The policy is intentionally configured with an empty list for this test.
+  std::vector<base::Value> allow_list;
+  policies.Set(key::kSSLErrorOverrideAllowedForOrigins, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+               base::Value(std::move(allow_list)), nullptr);
+  UpdateProviderPolicy(policies);
+
+  // Policy should not allow overriding.
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kSSLErrorOverrideAllowed));
+  EXPECT_TRUE(prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)
+                  ->GetList()
+                  .empty());
 
   // Policy disallows overriding - navigate to an SSL error page and expect no
   // proceed link.

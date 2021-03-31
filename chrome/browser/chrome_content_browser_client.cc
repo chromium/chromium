@@ -736,12 +736,12 @@ bool IsSSLErrorOverrideAllowedForOrigin(const GURL& request_url,
     return true;
 
   if (!prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins))
-    return true;
+    return false;
 
   base::Value::ConstListView allow_list_urls =
       prefs->GetList(prefs::kSSLErrorOverrideAllowedForOrigins)->GetList();
   if (allow_list_urls.empty())
-    return true;
+    return false;
 
   for (auto const& value : allow_list_urls) {
     ContentSettingsPattern pattern =
