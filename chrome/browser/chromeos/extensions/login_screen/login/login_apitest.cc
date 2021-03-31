@@ -23,9 +23,9 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
@@ -336,9 +336,9 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSessionLockedWithApi) {
 
 IN_PROC_BROWSER_TEST_F(LoginApitest, UnlockManagedGuestSessionWrongPassword) {
   // Note: the password check will fail even if the correct password is used as
-  // |FakeCryptohomeClient::CheckKeyEx()| does not check the user session's
+  // |FakeUserDataAuthClient::CheckKeyEx()| does not check the user session's
   // cipher blob.
-  FakeCryptohomeClient::Get()->set_enable_auth_check(true);
+  FakeUserDataAuthClient::Get()->set_enable_auth_check(true);
   SetUpDeviceLocalAccountPolicy();
   LogInWithPassword();
 

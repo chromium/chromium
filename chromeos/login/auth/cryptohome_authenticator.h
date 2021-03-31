@@ -15,6 +15,7 @@
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/auth/auth_attempt_state.h"
 #include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/safe_mode_delegate.h"
@@ -22,10 +23,6 @@
 #include "google_apis/gaia/gaia_auth_consumer.h"
 
 class AuthFailure;
-
-namespace cryptohome {
-class BaseReply;
-}
 
 namespace chromeos {
 
@@ -156,7 +153,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) CryptohomeAuthenticator
   void ResyncEncryptedData() override;
 
   // Called after UnmountEx finishes.
-  void OnUnmountEx(base::Optional<cryptohome::BaseReply> reply);
+  void OnUnmountEx(base::Optional<user_data_auth::UnmountReply> reply);
 
   // Attempts to make a decision and call back |consumer_| based on
   // the state we have gathered at the time of call.  If a decision

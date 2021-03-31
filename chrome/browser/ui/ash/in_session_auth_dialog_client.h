@@ -87,7 +87,7 @@ class InSessionAuthDialogClient : public ash::InSessionAuthDialogClient,
 
   void OnFingerprintAuthDone(
       base::OnceCallback<void(bool, ash::FingerprintState)> callback,
-      cryptohome::CryptohomeErrorCode error);
+      user_data_auth::CryptohomeErrorCode error);
 
   // Used to authenticate the user to unlock supervised users.
   scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator_;

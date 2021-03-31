@@ -35,10 +35,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/challenge_response/known_user_pref_utils.h"
 #include "components/account_id/account_id.h"
@@ -89,25 +89,24 @@ Profile* GetOriginalSigninProfile() {
   return chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
 }
 
-// Custom implementation of the CryptohomeClient that triggers the
+// Custom implementation of the UserDataAuthClient that triggers the
 // challenge-response protocol when authenticating the user.
-class ChallengeResponseFakeCryptohomeClient : public FakeCryptohomeClient {
+class ChallengeResponseFakeUserDataAuthClient : public FakeUserDataAuthClient {
  public:
-  ChallengeResponseFakeCryptohomeClient() = default;
-  ChallengeResponseFakeCryptohomeClient(
-      const ChallengeResponseFakeCryptohomeClient&) = delete;
-  ChallengeResponseFakeCryptohomeClient& operator=(
-      const ChallengeResponseFakeCryptohomeClient&) = delete;
-  ~ChallengeResponseFakeCryptohomeClient() override = default;
+  ChallengeResponseFakeUserDataAuthClient() = default;
+  ChallengeResponseFakeUserDataAuthClient(
+      const ChallengeResponseFakeUserDataAuthClient&) = delete;
+  ChallengeResponseFakeUserDataAuthClient& operator=(
+      const ChallengeResponseFakeUserDataAuthClient&) = delete;
+  ~ChallengeResponseFakeUserDataAuthClient() override = default;
 
   void set_challenge_response_account_id(const AccountId& account_id) {
     challenge_response_account_id_ = account_id;
   }
 
-  void MountEx(const cryptohome::AccountIdentifier& cryptohome_id,
-               const cryptohome::AuthorizationRequest& auth,
-               const cryptohome::MountRequest& request,
-               DBusMethodCallback<cryptohome::BaseReply> callback) override {
+  void Mount(
+      const ::user_data_auth::MountRequest& request,
+      DBusMethodCallback<::user_data_auth::MountReply> callback) override {
     CertificateProviderService* certificate_provider_service =
         CertificateProviderServiceFactory::GetForBrowserContext(
             GetOriginalSigninProfile());
@@ -120,24 +119,23 @@ class ChallengeResponseFakeCryptohomeClient : public FakeCryptohomeClient {
         SSL_SIGN_RSA_PKCS1_SHA256,
         base::as_bytes(base::make_span(kChallengeData)),
         challenge_response_account_id_,
-        base::BindOnce(&ChallengeResponseFakeCryptohomeClient::
+        base::BindOnce(&ChallengeResponseFakeUserDataAuthClient::
                            ContinueMountExWithSignature,
-                       base::Unretained(this), cryptohome_id,
+                       base::Unretained(this), request.account(),
                        std::move(callback)));
   }
 
  private:
   void ContinueMountExWithSignature(
       const cryptohome::AccountIdentifier& cryptohome_id,
-      DBusMethodCallback<cryptohome::BaseReply> callback,
+      DBusMethodCallback<::user_data_auth::MountReply> callback,
       net::Error error,
       const std::vector<uint8_t>& signature) {
-    cryptohome::BaseReply reply;
-    cryptohome::MountReply* mount =
-        reply.MutableExtension(cryptohome::MountReply::reply);
-    mount->set_sanitized_username(GetStubSanitizedUsername(cryptohome_id));
+    ::user_data_auth::MountReply reply;
+    reply.set_sanitized_username(GetStubSanitizedUsername(cryptohome_id));
     if (error != net::OK || signature.empty())
-      reply.set_error(cryptohome::CRYPTOHOME_ERROR_MOUNT_FATAL);
+      reply.set_error(
+          ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_MOUNT_FATAL);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), reply));
   }
@@ -214,7 +212,7 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
                                public LocalStateMixin::Delegate {
  protected:
   SecurityTokenLoginTest()
-      : cryptohome_client_(new ChallengeResponseFakeCryptohomeClient) {
+      : cryptohome_client_(new ChallengeResponseFakeUserDataAuthClient) {
     // Don't shut down when no browser is open, since it breaks the test and
     // since it's not the real Chrome OS behavior.
     set_exit_when_last_browser_closes(false);
@@ -362,7 +360,7 @@ class SecurityTokenLoginTest : public MixinBasedInProcessBrowserTest,
       feature_allowlist_{TestCertificateProviderExtension::extension_id()};
 
   // Unowned (referencing a global singleton)
-  ChallengeResponseFakeCryptohomeClient* const cryptohome_client_;
+  ChallengeResponseFakeUserDataAuthClient* const cryptohome_client_;
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
   LocalStateMixin local_state_mixin_{&mixin_host_, this};
   ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};

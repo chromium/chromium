@@ -198,15 +198,15 @@ void InSessionAuthDialogClient::AuthenticateUserWithFingerprint(
 
 void InSessionAuthDialogClient::OnFingerprintAuthDone(
     base::OnceCallback<void(bool, ash::FingerprintState)> callback,
-    cryptohome::CryptohomeErrorCode error) {
+    user_data_auth::CryptohomeErrorCode error) {
   switch (error) {
-    case cryptohome::CRYPTOHOME_ERROR_NOT_SET:
+    case user_data_auth::CRYPTOHOME_ERROR_NOT_SET:
       std::move(callback).Run(true, ash::FingerprintState::AVAILABLE_DEFAULT);
       break;
-    case cryptohome::CRYPTOHOME_ERROR_FINGERPRINT_RETRY_REQUIRED:
+    case user_data_auth::CRYPTOHOME_ERROR_FINGERPRINT_RETRY_REQUIRED:
       std::move(callback).Run(false, ash::FingerprintState::AVAILABLE_DEFAULT);
       break;
-    case cryptohome::CRYPTOHOME_ERROR_FINGERPRINT_DENIED:
+    case user_data_auth::CRYPTOHOME_ERROR_FINGERPRINT_DENIED:
       std::move(callback).Run(false,
                               ash::FingerprintState::DISABLED_FROM_ATTEMPTS);
       break;

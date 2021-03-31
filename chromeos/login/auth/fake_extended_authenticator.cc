@@ -45,15 +45,15 @@ void FakeExtendedAuthenticator::EndFingerprintAuthSession() {}
 
 void FakeExtendedAuthenticator::AuthenticateWithFingerprint(
     const UserContext& context,
-    base::OnceCallback<void(cryptohome::CryptohomeErrorCode)> callback) {
+    base::OnceCallback<void(::user_data_auth::CryptohomeErrorCode)> callback) {
   if (expected_user_context_ == context) {
-    std::move(callback).Run(cryptohome::CryptohomeErrorCode::
+    std::move(callback).Run(::user_data_auth::CryptohomeErrorCode::
                                 CRYPTOHOME_ERROR_FINGERPRINT_RETRY_REQUIRED);
     return;
   }
 
   std::move(callback).Run(
-      cryptohome::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
+      ::user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
 }
 
 void FakeExtendedAuthenticator::AddKey(const UserContext& context,

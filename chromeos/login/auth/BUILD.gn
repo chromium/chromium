@@ -21,6 +21,8 @@ component("auth") {
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/session_manager",
+    "//chromeos/dbus/userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/login/login_state",
     "//chromeos/tpm",
     "//components/account_id",

@@ -30,7 +30,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) FakeExtendedAuthenticator
   void EndFingerprintAuthSession() override;
   void AuthenticateWithFingerprint(
       const UserContext& context,
-      base::OnceCallback<void(cryptohome::CryptohomeErrorCode)> callback)
+      base::OnceCallback<void(::user_data_auth::CryptohomeErrorCode)> callback)
       override;
   void AddKey(const UserContext& context,
               const cryptohome::KeyDefinition& key,
