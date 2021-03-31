@@ -96,7 +96,7 @@ class TabContentManager : public ThumbnailCacheObserver {
   void InvalidateIfChanged(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            jint tab_id,
-                           const base::android::JavaParamRef<jstring>& jurl);
+                           const base::android::JavaParamRef<jobject>& jurl);
   void UpdateVisibleIds(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         const base::android::JavaParamRef<jintArray>& priority,

@@ -85,6 +85,7 @@ import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -101,6 +102,10 @@ import java.util.List;
 public class LocationBarMediatorTest {
     @Implements(UrlUtilities.class)
     static class ShadowUrlUtilities {
+        @Implementation
+        public static boolean isNTPUrl(GURL url) {
+            return false;
+        }
         @Implementation
         public static boolean isNTPUrl(String url) {
             return false;

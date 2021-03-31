@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.customtabs;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +34,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -101,7 +101,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
     public void prepareMenu(Menu menu, AppMenuHandler handler) {
         Tab currentTab = mActivityTabProvider.get();
         if (currentTab != null) {
-            String url = currentTab.getUrlString();
+            GURL url = currentTab.getUrl();
 
             MenuItem forwardMenuItem = menu.findItem(R.id.forward_menu_id);
             forwardMenuItem.setEnabled(currentTab.canGoForward());
@@ -151,7 +151,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 requestDesktopSiteVisible = false;
                 // For Webapps & WebAPKs Verifier#wasPreviouslyVerified() performs verification
                 // (instead of looking up cached value).
-                addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url);
+                addToHomeScreenVisible = !mVerifier.wasPreviouslyVerified(url.getSpec());
                 downloadItemVisible = false;
                 bookmarkItemVisible = false;
             } else if (mUiType == CustomTabsUiType.OFFLINE_PAGE) {
@@ -175,9 +175,9 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 openInChromeItemVisible = false;
             }
 
-            boolean isChromeScheme = url.startsWith(UrlConstants.CHROME_URL_PREFIX)
-                    || url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX);
-            if (isChromeScheme || TextUtils.isEmpty(url)) {
+            boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+                    || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
+            if (isChromeScheme || url.isEmpty()) {
                 addToHomeScreenVisible = false;
             }
 

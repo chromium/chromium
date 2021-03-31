@@ -18,7 +18,8 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -77,7 +78,7 @@ public class ContextReporter {
     private TabModelSelectorTabObserver mSelectorTabObserver;
     private TabModelSelectorTabModelObserver mModelObserver;
     private boolean mLastContextWasTitleChange;
-    private String mLastUrl;
+    private GURL mLastUrl;
     private String mLastTitle;
     private final AtomicBoolean mContextInUse;
 
@@ -186,10 +187,8 @@ public class ContextReporter {
             return;
         }
 
-        String currentUrl = currentTab.getUrlString();
-        if (TextUtils.isEmpty(currentUrl)
-                || !(currentUrl.startsWith(UrlConstants.HTTP_URL_PREFIX)
-                        || currentUrl.startsWith(UrlConstants.HTTPS_URL_PREFIX))) {
+        GURL currentUrl = currentTab.getUrl();
+        if (currentUrl.isEmpty() || !UrlUtilities.isHttpOrHttps(currentUrl)) {
             reportStatus(STATUS_INVALID_SCHEME);
             Log.d(TAG, "Not reporting, URL scheme is invalid");
             reportUsageEndedIfNecessary();
@@ -207,7 +206,7 @@ public class ContextReporter {
             Log.d(TAG, "Not reporting, repeated title update");
             return;
         }
-        if (TextUtils.equals(currentTab.getUrlString(), mLastUrl)
+        if (currentTab.getUrl().equals(mLastUrl)
                 && TextUtils.equals(currentTab.getTitle(), mLastTitle)
                 && displaySelection == null) {
             reportStatus(STATUS_DUP_ENTRY);
@@ -217,9 +216,10 @@ public class ContextReporter {
 
         reportUsageEndedIfNecessary();
 
-        mDelegate.reportContext(currentTab.getUrlString(), currentTab.getTitle(), displaySelection);
+        mDelegate.reportContext(
+                currentTab.getUrl().getSpec(), currentTab.getTitle(), displaySelection);
         mLastContextWasTitleChange = isTitleChange;
-        mLastUrl = currentTab.getUrlString();
+        mLastUrl = currentTab.getUrl();
         mLastTitle = currentTab.getTitle();
         mContextInUse.set(true);
     }

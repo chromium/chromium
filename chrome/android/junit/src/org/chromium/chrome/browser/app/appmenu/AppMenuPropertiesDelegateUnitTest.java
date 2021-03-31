@@ -54,7 +54,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -65,6 +64,7 @@ import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.ConnectionType;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -228,7 +228,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Config(qualifiers = "sw320dp")
     public void testPageMenuItems_Phone_Ntp() {
         setUpMocksForPageMenu();
-        when(mTab.getUrlString()).thenReturn(UrlConstants.NTP_URL);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
         when(mTab.isNativePage()).thenReturn(true);
         doReturn(false)
                 .when(mAppMenuPropertiesDelegate)
@@ -410,7 +410,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Test
     public void testMenuItems_Accessibility_ImageDescriptions() {
         setUpMocksForPageMenu();
-        when(mTab.getUrlString()).thenReturn("https://google.com");
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL));
         when(mTab.isNativePage()).thenReturn(false);
         doReturn(false)
                 .when(mAppMenuPropertiesDelegate)
@@ -565,7 +565,7 @@ public class AppMenuPropertiesDelegateUnitTest {
     private void setMenuOptions(boolean isNativePage, boolean showTranslate, boolean showUpdate,
             boolean showMoveToOtherWindow, boolean showReaderModePrefs, boolean showAddToHomeScreen,
             boolean showPaintPreview) {
-        when(mTab.getUrlString()).thenReturn("https://google.com");
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL));
         when(mTab.isNativePage()).thenReturn(isNativePage);
         doReturn(showTranslate)
                 .when(mAppMenuPropertiesDelegate)

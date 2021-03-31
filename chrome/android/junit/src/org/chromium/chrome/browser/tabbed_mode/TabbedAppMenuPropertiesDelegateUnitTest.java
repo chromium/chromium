@@ -182,7 +182,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @EnableFeatures({ChromeFeatureList.ANDROID_MANAGED_BY_MENU_ITEM})
     public void testPageMenuItems_Phone_RegularPage_enterprise_user() {
         setUpMocksForPageMenu();
-        when(mTab.getUrlString()).thenReturn("https://google.com");
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL));
         when(mTab.isNativePage()).thenReturn(false);
         doReturn(false)
                 .when(mTabbedAppMenuPropertiesDelegate)

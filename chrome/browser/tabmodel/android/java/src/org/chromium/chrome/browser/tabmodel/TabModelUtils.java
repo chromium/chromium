@@ -103,7 +103,7 @@ public class TabModelUtils {
         int count = model.getCount();
 
         for (int i = 0; i < count; i++) {
-            if (model.getTabAt(i).getUrlString().contentEquals(url)) return i;
+            if (model.getTabAt(i).getUrl().getSpec().contentEquals(url)) return i;
         }
 
         return TabModel.INVALID_TAB_INDEX;

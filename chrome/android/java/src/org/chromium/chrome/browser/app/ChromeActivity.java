@@ -1321,7 +1321,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         // No information is provided in incognito mode and overview mode.
         if (tab != null && !tab.isIncognito() && !inOverviewMode) {
-            outContent.setWebUri(Uri.parse(tab.getUrlString()));
+            outContent.setWebUri(Uri.parse(tab.getUrl().getSpec()));
             if (structuredData != null) {
                 outContent.setStructuredData(structuredData);
             }
@@ -2230,7 +2230,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         final Tab currentTab = getActivityTab();
 
         if (id == R.id.help_id) {
-            String url = currentTab != null ? currentTab.getUrlString() : "";
+            String url = currentTab != null ? currentTab.getUrl().getSpec() : "";
             Profile profile = getTabModelSelector().isIncognitoSelected()
                     ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile()
                     : Profile.getLastUsedRegularProfile();
@@ -2242,7 +2242,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             // 'currentTab' could only be null when opening history from start surface, which is
             // not available on tablet.
             assert (isTablet() && currentTab != null) || !isTablet();
-            if (currentTab != null && UrlUtilities.isNTPUrl(currentTab.getUrlString())) {
+            if (currentTab != null && UrlUtilities.isNTPUrl(currentTab.getUrl())) {
                 NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_HISTORY_MANAGER);
             }
             RecordUserAction.record("MobileMenuHistory");
@@ -2340,9 +2340,9 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         if (id == R.id.open_webapk_id) {
             Context context = ContextUtils.getApplicationContext();
             String packageName =
-                    WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrlString());
+                    WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrl().getSpec());
             Intent launchIntent = WebApkNavigationClient.createLaunchWebApkIntent(
-                    packageName, currentTab.getUrlString(), false);
+                    packageName, currentTab.getUrl().getSpec(), false);
             try {
                 context.startActivity(launchIntent);
                 RecordUserAction.record("MobileMenuOpenWebApk");

@@ -53,6 +53,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.url.GURL;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -828,7 +829,7 @@ public class TabPersistentStore {
             return;
         }
 
-        if (UrlUtilities.isNTPUrl(tab.getUrlString()) && !tab.canGoBack() && !tab.canGoForward()) {
+        if (UrlUtilities.isNTPUrl(tab.getUrl()) && !tab.canGoBack() && !tab.canGoForward()) {
             return;
         }
         mTabsToSave.addLast(tab);
@@ -918,17 +919,18 @@ public class TabPersistentStore {
         ThreadUtils.assertOnUiThread();
 
         TabModel incognitoModel = selector.getModel(true);
+        // TODO(crbug/783819): Convert TabModelMetadata to use GURL.
         TabModelMetadata incognitoInfo = new TabModelMetadata(incognitoModel.index());
         for (int i = 0; i < incognitoModel.getCount(); i++) {
             incognitoInfo.ids.add(incognitoModel.getTabAt(i).getId());
-            incognitoInfo.urls.add(incognitoModel.getTabAt(i).getUrlString());
+            incognitoInfo.urls.add(incognitoModel.getTabAt(i).getUrl().getSpec());
         }
 
         TabModel normalModel = selector.getModel(false);
         TabModelMetadata normalInfo = new TabModelMetadata(normalModel.index());
         for (int i = 0; i < normalModel.getCount(); i++) {
             normalInfo.ids.add(normalModel.getTabAt(i).getId());
-            normalInfo.urls.add(normalModel.getTabAt(i).getUrlString());
+            normalInfo.urls.add(normalModel.getTabAt(i).getUrl().getSpec());
         }
 
         // Cache the active tab id to be pre-loaded next launch.
@@ -1624,8 +1626,8 @@ public class TabPersistentStore {
     }
 
     private boolean isTabUrlContentScheme(Tab tab) {
-        String url = tab.getUrlString();
-        return url != null && url.startsWith(UrlConstants.CONTENT_SCHEME);
+        GURL url = tab.getUrl();
+        return url != null && url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
     }
 
     /**

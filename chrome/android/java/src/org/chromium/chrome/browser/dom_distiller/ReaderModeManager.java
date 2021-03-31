@@ -321,8 +321,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 int index = controller.getLastCommittedEntryIndex();
                 NavigationEntry entry = controller.getEntryAtIndex(index);
 
-                if (entry != null
-                        && DomDistillerUrlUtils.isDistilledPage(entry.getUrl().getSpec())) {
+                if (entry != null && DomDistillerUrlUtils.isDistilledPage(entry.getUrl())) {
                     mShouldRemovePreviousNavigation = true;
                     mLastDistillerPageIndex = index;
                 }

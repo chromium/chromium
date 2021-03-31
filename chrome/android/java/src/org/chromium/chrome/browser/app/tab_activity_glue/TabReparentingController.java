@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabReparentingParams;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +31,7 @@ public class TabReparentingController {
         TabModelSelector getTabModelSelector();
 
         /** @return Whether the given Url is an NTP url, exists solely to support unit testing. */
-        boolean isNTPUrl(String url);
+        boolean isNTPUrl(GURL url);
     }
 
     private final Delegate mDelegate;
@@ -81,7 +82,7 @@ public class TabReparentingController {
             if (mAsyncTabParamsManager.hasParamsForTabId(tab.getId())) continue;
             // Intentionally skip new tab pages and allow them to reload and restore scroll
             // state themselves.
-            if (mDelegate.isNTPUrl(tab.getUrlString())) continue;
+            if (mDelegate.isNTPUrl(tab.getUrl())) continue;
 
             TabReparentingParams params = new TabReparentingParams(tab, null);
             mAsyncTabParamsManager.add(tab.getId(), params);

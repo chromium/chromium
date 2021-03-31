@@ -1182,7 +1182,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
         // Allow bitmap capturing once everything has been initialized.
         Tab currentTab = mTabModelSelector.getCurrentTab();
         if (currentTab != null && currentTab.getWebContents() != null
-                && !TextUtils.isEmpty(currentTab.getUrlString())) {
+                && !currentTab.getUrl().isEmpty()) {
             mControlContainer.setReadyForBitmapCapture(true);
         }
         maybeFocusOmnibox(mLayoutManager.getActiveLayout(), currentTab);

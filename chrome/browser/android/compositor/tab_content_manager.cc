@@ -36,6 +36,7 @@
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -305,9 +306,9 @@ void TabContentManager::CacheTabWithBitmap(JNIEnv* env,
 void TabContentManager::InvalidateIfChanged(JNIEnv* env,
                                             const JavaParamRef<jobject>& obj,
                                             jint tab_id,
-                                            const JavaParamRef<jstring>& jurl) {
-  thumbnail_cache_->InvalidateThumbnailIfChanged(
-      tab_id, GURL(base::android::ConvertJavaStringToUTF8(env, jurl)));
+                                            const JavaParamRef<jobject>& jurl) {
+  std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, jurl);
+  thumbnail_cache_->InvalidateThumbnailIfChanged(tab_id, *url);
 }
 
 void TabContentManager::UpdateVisibleIds(

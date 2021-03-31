@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.GURL;
 
 /**
  *  A collection of helper functions for sharing in a non static context.
@@ -23,10 +24,10 @@ public class ShareUtils {
             return false;
         }
 
-        String url = tab.getUrlString();
-        boolean isChromeScheme = url.startsWith(UrlConstants.CHROME_URL_PREFIX)
-                || url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX);
-        boolean isDataScheme = url.startsWith(UrlConstants.DATA_SCHEME);
+        GURL url = tab.getUrl();
+        boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+                || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
+        boolean isDataScheme = url.getScheme().equals(UrlConstants.DATA_SCHEME);
 
         return !isChromeScheme && !isDataScheme;
     }

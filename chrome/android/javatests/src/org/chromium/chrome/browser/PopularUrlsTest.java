@@ -356,7 +356,8 @@ public class PopularUrlsTest {
                 loadUrl(page, failureWriter);
                 long stopTime = System.currentTimeMillis();
 
-                String currentUrl = mActivityTestRule.getActivity().getActivityTab().getUrlString();
+                String currentUrl =
+                        mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec();
                 Log.i(TAG, "Finish: " + currentUrl);
                 logToStream(page + "|" + (stopTime - startTime) + NEW_LINE, outputWriter);
                 mStatus.incrementPage();

@@ -33,6 +33,8 @@ import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,8 +62,9 @@ public class TabReparentingControllerTest {
         }
 
         @Override
-        public boolean isNTPUrl(String url) {
-            return url.equals(UrlConstants.NTP_URL);
+        public boolean isNTPUrl(GURL url) {
+            return UrlConstants.NTP_NON_NATIVE_URL.equals(url.getSpec())
+                    || UrlConstants.NTP_URL.equals(url.getSpec());
         }
     }
 
@@ -114,7 +117,8 @@ public class TabReparentingControllerTest {
     @Test
     public void testReparenting_singleTab_NTP() {
         // New tab pages aren't reparented intentionally.
-        mForegroundTab = createAndAddMockTab(1, false, UrlConstants.NTP_URL);
+        mForegroundTab =
+                createAndAddMockTab(1, false, JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL));
         mController.prepareTabsForReparenting();
 
         Assert.assertFalse(mRealAsyncTabParamsManager.hasParamsWithTabToReparent());
@@ -214,7 +218,7 @@ public class TabReparentingControllerTest {
     @Test
     public void testReparenting_stopLoadingIfNeeded() {
         // New tab pages aren't reparented intentionally.
-        mForegroundTab = createAndAddMockTab(1, false, "https://www.google.com");
+        mForegroundTab = createAndAddMockTab(1, false);
         doReturn(true).when(mForegroundTab).isLoading();
 
         mController.prepareTabsForReparenting();
@@ -231,11 +235,11 @@ public class TabReparentingControllerTest {
      * @param url The url to set for the tab.
      * @return The tab that was added. Use the return value to set the foreground tab for tests.
      */
-    private Tab createAndAddMockTab(int id, boolean incognito, String url) {
+    private Tab createAndAddMockTab(int id, boolean incognito, GURL url) {
         Tab tab = Mockito.mock(Tab.class);
         WebContents wc = Mockito.mock(WebContents.class);
         NavigationController nc = Mockito.mock(NavigationController.class);
-        doReturn(url).when(tab).getUrlString();
+        doReturn(url).when(tab).getUrl();
         doReturn(wc).when(tab).getWebContents();
         doReturn(nc).when(wc).getNavigationController();
         UserDataHost udh = new UserDataHost();
@@ -259,6 +263,7 @@ public class TabReparentingControllerTest {
     }
 
     private Tab createAndAddMockTab(int id, boolean incognito) {
-        return createAndAddMockTab(id, incognito, "https://google.com");
+        return createAndAddMockTab(
+                id, incognito, JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL));
     }
 }

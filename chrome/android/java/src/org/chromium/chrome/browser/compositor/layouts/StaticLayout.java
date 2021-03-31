@@ -361,9 +361,9 @@ public class StaticLayout extends Layout {
         mModel.set(LayoutTab.SHOULD_STALL, shouldStall(tab));
         mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
 
-        String url = tab.getUrlString();
-        boolean isNativePage = tab.isNativePage()
-                || (url != null && url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX));
+        GURL url = tab.getUrl();
+        boolean isNativePage =
+                tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
         boolean canUseLiveTexture =
                 tab.getWebContents() != null && !SadTab.isShowing(tab) && !isNativePage;
         mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, canUseLiveTexture);

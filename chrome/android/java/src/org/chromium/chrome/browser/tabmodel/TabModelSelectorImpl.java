@@ -141,7 +141,7 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             public void onNewTabCreated(Tab tab, @TabCreationState int creationState) {
                 // Only invalidate if the tab exists in the currently selected model.
                 if (TabModelUtils.getTabById(getCurrentModel(), tab.getId()) != null) {
-                    mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrlString());
+                    mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrl());
                 }
             }
         });
@@ -151,14 +151,13 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
             public void onUrlUpdated(Tab tab) {
                 TabModel model = getModelForTabId(tab.getId());
                 if (model == getCurrentModel()) {
-                    mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrlString());
+                    mTabContentManager.invalidateIfChanged(tab.getId(), tab.getUrl());
                 }
             }
 
             @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
-                String previousUrl = tab.getUrlString();
-                mTabContentManager.invalidateTabThumbnail(tab.getId(), previousUrl);
+                mTabContentManager.invalidateTabThumbnail(tab.getId(), tab.getUrl());
             }
 
             @Override

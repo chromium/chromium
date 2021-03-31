@@ -1809,8 +1809,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     @Override
     public boolean onMenuOrKeyboardAction(final int id, boolean fromMenu) {
         final Tab currentTab = getActivityTab();
-        boolean currentTabIsNtp =
-                currentTab != null && UrlUtilities.isNTPUrl(currentTab.getUrlString());
+        boolean currentTabIsNtp = currentTab != null && UrlUtilities.isNTPUrl(currentTab.getUrl());
         if (id == R.id.new_tab_menu_id) {
             getTabModelSelector().getModel(false).commitAllTabClosures();
             RecordUserAction.record("MobileMenuNewTab");
@@ -1963,7 +1962,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         // get back to the previous state. The reason for startsWith check is that the
         // actual redirected URL is a different system language based help url.
         final @TabLaunchType int type = currentTab.getLaunchType();
-        final boolean helpUrl = currentTab.getUrlString().startsWith(HELP_URL_PREFIX);
+        final boolean helpUrl = currentTab.getUrl().getSpec().startsWith(HELP_URL_PREFIX);
         if (type == TabLaunchType.FROM_CHROME_UI && helpUrl) {
             getCurrentTabModel().closeTab(currentTab);
             return true;

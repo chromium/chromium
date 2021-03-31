@@ -174,10 +174,10 @@ public class TabStateBrowserControlsVisibilityDelegate
         WebContents webContents = mTab.getWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
 
-        String url = mTab.getUrlString();
+        GURL url = mTab.getUrl();
         boolean enableHidingBrowserControls = url != null;
-        enableHidingBrowserControls &= !url.startsWith(UrlConstants.CHROME_URL_PREFIX);
-        enableHidingBrowserControls &= !url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX);
+        enableHidingBrowserControls &= !url.getScheme().equals(UrlConstants.CHROME_SCHEME);
+        enableHidingBrowserControls &= !url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
 
         enableHidingBrowserControls &=
                 !SecurityStateModel.isContentDangerous(mTab.getWebContents());

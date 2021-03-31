@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
@@ -134,8 +135,8 @@ public class StaticLayoutUnitTest {
         mCompositorAnimationHandler = new CompositorAnimationHandler(mUpdateHost::requestUpdate);
         CompositorAnimationHandler.setTestingMode(true);
 
-        mTab1 = prepareTab(TAB1_ID, TAB1_URL);
-        mTab2 = prepareTab(TAB2_ID, TAB2_URL);
+        mTab1 = prepareTab(TAB1_ID, JUnitTestGURLs.getGURL(TAB1_URL));
+        mTab2 = prepareTab(TAB2_ID, JUnitTestGURLs.getGURL(TAB2_URL));
 
         doReturn(mResource).when(mContext).getResources();
         doReturn(mDisplayMetrics).when(mResource).getDisplayMetrics();
@@ -220,11 +221,11 @@ public class StaticLayoutUnitTest {
         assertTrue(mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
     }
 
-    private Tab prepareTab(int id, String url) {
+    private Tab prepareTab(int id, GURL url) {
         Tab tab = mock(Tab.class);
         doReturn(id).when(tab).getId();
         doReturn(false).when(tab).isIncognito();
-        doReturn(url).when(tab).getUrlString();
+        doReturn(url).when(tab).getUrl();
         doReturn(false).when(tab).isNativePage();
         doReturn(mock(WebContents.class)).when(tab).getWebContents();
         doReturn(true).when(tab).isInitialized();

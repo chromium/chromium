@@ -41,6 +41,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -258,10 +259,11 @@ public class CustomTabActivityNavigationController implements StartStopWithNativ
         Tab tab = mTabProvider.getTab();
         if (tab == null) return false;
 
-        String url = tab.getUrlString();
-        if (DomDistillerUrlUtils.isDistilledPage(url)) {
-            url = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(url);
+        GURL gurl = tab.getUrl();
+        if (DomDistillerUrlUtils.isDistilledPage(gurl)) {
+            gurl = DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(gurl);
         }
+        String url = gurl.getSpec();
         if (TextUtils.isEmpty(url)) url = mIntentDataProvider.getUrlToLoad();
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

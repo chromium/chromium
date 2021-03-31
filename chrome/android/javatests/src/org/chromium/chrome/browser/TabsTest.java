@@ -812,7 +812,7 @@ public class TabsTest {
 
             Assert.assertEquals("URL mismatch after switching back to the tab from tab-switch mode",
                     urls[lastUrlIndex],
-                    mActivityTestRule.getActivity().getActivityTab().getUrlString());
+                    mActivityTestRule.getActivity().getActivityTab().getUrl().getSpec());
         }
     }
 

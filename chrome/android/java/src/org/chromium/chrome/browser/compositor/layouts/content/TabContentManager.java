@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.native_page.FrozenNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.display.DisplayAndroid;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -577,7 +578,7 @@ public class TabContentManager {
      * @param tabId The id of the {@link Tab} thumbnail to check.
      * @param url   The current URL of the {@link Tab}.
      */
-    public void invalidateIfChanged(int tabId, String url) {
+    public void invalidateIfChanged(int tabId, GURL url) {
         if (mNativeTabContentManager != 0) {
             TabContentManagerJni.get().invalidateIfChanged(
                     mNativeTabContentManager, TabContentManager.this, tabId, url);
@@ -589,7 +590,7 @@ public class TabContentManager {
      * @param id The id of the {@link Tab} thumbnail to check.
      * @param url   The current URL of the {@link Tab}.
      */
-    public void invalidateTabThumbnail(int id, String url) {
+    public void invalidateTabThumbnail(int id, GURL url) {
         invalidateIfChanged(id, url);
     }
 
@@ -663,7 +664,7 @@ public class TabContentManager {
         void cacheTabWithBitmap(long nativeTabContentManager, TabContentManager caller, Object tab,
                 Object bitmap, float thumbnailScale);
         void invalidateIfChanged(
-                long nativeTabContentManager, TabContentManager caller, int tabId, String url);
+                long nativeTabContentManager, TabContentManager caller, int tabId, GURL url);
         void updateVisibleIds(long nativeTabContentManager, TabContentManager caller,
                 int[] priority, int primaryTabId);
         void removeTabThumbnail(long nativeTabContentManager, TabContentManager caller, int tabId);

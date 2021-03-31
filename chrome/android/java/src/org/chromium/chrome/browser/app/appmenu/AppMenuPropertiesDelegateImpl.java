@@ -10,7 +10,6 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
@@ -65,6 +64,7 @@ import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -237,11 +237,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
 
     private void preparePageMenu(
             Menu menu, Tab currentTab, AppMenuHandler handler, boolean isIncognito) {
-        String url = currentTab.getUrlString();
-        boolean isChromeScheme = url.startsWith(UrlConstants.CHROME_URL_PREFIX)
-                || url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX);
-        boolean isFileScheme = url.startsWith(UrlConstants.FILE_URL_PREFIX);
-        boolean isContentScheme = url.startsWith(UrlConstants.CONTENT_URL_PREFIX);
+        GURL url = currentTab.getUrl();
+        boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+                || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
+        boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
+        boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
 
         // Update the icon row items (shown in narrow form factors).
         boolean shouldShowIconRow = shouldShowIconRow();
@@ -413,7 +413,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public boolean shouldShowReaderModePrefs(@NonNull Tab currentTab) {
-        return DomDistillerUrlUtils.isDistilledPage(currentTab.getUrlString());
+        return DomDistillerUrlUtils.isDistilledPage(currentTab.getUrl());
     }
 
     /**
@@ -501,7 +501,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      * @return Whether the homescreen menu item should be displayed.
      */
     protected boolean shouldShowHomeScreenMenuItem(boolean isChromeScheme, boolean isFileScheme,
-            boolean isContentScheme, boolean isIncognito, String url) {
+            boolean isContentScheme, boolean isIncognito, @NonNull GURL url) {
         // Hide 'Add to homescreen' for the following:
         // * chrome:// pages - Android doesn't know how to direct those URLs.
         // * incognito pages - To avoid problems where users create shortcuts in incognito
@@ -513,7 +513,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         //                is not persisted when adding to the homescreen.
         // * If creating shortcuts it not supported by the current home screen.
         return WebappsUtils.isAddToHomeIntentSupported() && !isChromeScheme && !isFileScheme
-                && !isContentScheme && !isIncognito && !TextUtils.isEmpty(url);
+                && !isContentScheme && !isIncognito && !url.isEmpty();
     }
 
     /**
@@ -535,8 +535,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         if (shouldShowHomeScreenMenuItem) {
             Context context = ContextUtils.getApplicationContext();
             long addToHomeScreenStart = SystemClock.elapsedRealtime();
-            ResolveInfo resolveInfo =
-                    WebApkValidator.queryFirstWebApkResolveInfo(context, currentTab.getUrlString());
+            ResolveInfo resolveInfo = WebApkValidator.queryFirstWebApkResolveInfo(
+                    context, currentTab.getUrl().getSpec());
             RecordHistogram.recordTimesHistogram("Android.PrepareMenu.OpenWebApkVisibilityCheck",
                     SystemClock.elapsedRealtime() - addToHomeScreenStart);
 
@@ -707,9 +707,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         MenuItem requestMenuCheck = menu.findItem(R.id.request_desktop_site_check_id);
 
         // Hide request desktop site on all chrome:// pages except for the NTP.
-        String url = currentTab.getUrlString();
-        boolean isChromeScheme = url.startsWith(UrlConstants.CHROME_URL_PREFIX)
-                || url.startsWith(UrlConstants.CHROME_NATIVE_URL_PREFIX);
+        GURL url = currentTab.getUrl();
+        boolean isChromeScheme = url.getScheme().equals(UrlConstants.CHROME_SCHEME)
+                || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
 
         boolean itemVisible = canShowRequestDesktopSite
                 && (!isChromeScheme || currentTab.isNativePage())
