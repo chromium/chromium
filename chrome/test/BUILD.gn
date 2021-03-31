@@ -1804,10 +1804,14 @@ if (!is_android) {
     if (!is_chromeos_ash) {
       sources += [
         "../browser/policy/test/hardware_acceleration_mode_enabled_browsertest.cc",
-        "../browser/policy/test/native_messaging_policy_browsertest.cc",
         "../browser/policy/test/variation_restrict_parameter_policy_browsertest.cc",
         "../browser/ui/views/accessibility/accessibility_focus_highlight_browsertest.cc",
       ]
+    }
+
+    if (!is_chromeos) {
+      sources +=
+          [ "../browser/policy/test/native_messaging_policy_browsertest.cc" ]
     }
 
     if (include_js_tests) {
@@ -1853,10 +1857,15 @@ if (!is_android) {
     if (!is_chromeos_ash) {
       sources += [
         "../browser/external_protocol/external_protocol_handler_browsertest.cc",
-        "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
-        "../browser/policy/test/promotional_tabs_enabled_policy_browsertest.cc",
         "../browser/ui/signin_reauth_view_controller_browsertest.cc",
+      ]
+    }
+
+    if (!is_chromeos) {
+      sources += [
+        "../browser/external_protocol/external_protocol_policy_browsertest.cc",
+        "../browser/policy/test/promotional_tabs_enabled_policy_browsertest.cc",
       ]
     }
 
@@ -3089,17 +3098,17 @@ if (!is_android) {
     if (is_mac || is_win || (is_linux || is_chromeos_lacros)) {
       sources += [
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
-        "../browser/browser_switcher/browser_switcher_browsertest.cc",
-        "../browser/browser_switcher/browser_switcher_service_browsertest.cc",
         "../browser/browser_switcher/ieem_sitelist_parser_browsertest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
       ]
 
-      # Audio sandbox is disabled for lacros-chrome.
       if (!is_chromeos_lacros) {
-        sources +=
-            [ "../browser/policy/test/audio_sandbox_enabled_browsertest.cc" ]
+        sources += [
+          "../browser/browser_switcher/browser_switcher_browsertest.cc",
+          "../browser/browser_switcher/browser_switcher_service_browsertest.cc",
+          "../browser/policy/test/audio_sandbox_enabled_browsertest.cc",
+        ]
       }
     }
     if (is_win) {

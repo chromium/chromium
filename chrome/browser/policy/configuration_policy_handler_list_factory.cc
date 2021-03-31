@@ -112,6 +112,10 @@
 #include "chrome/browser/policy/local_sync_policy_handler.h"
 #endif  // defined(OS_ANDROID)
 
+#if !defined(OS_CHROMEOS)
+#include "chrome/browser/policy/browser_signin_policy_handler.h"
+#endif  // !defined(OS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -131,14 +135,12 @@
 #include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/1125897
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/policy/browser_signin_policy_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/external_protocol/auto_launch_protocols_policy_handler.h"
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/messaging/native_messaging_policy_handler.h"
@@ -692,6 +694,12 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // defined(OS_ANDROID)
 
+#if !defined(OS_CHROMEOS)
+  { key::kMetricsReportingEnabled,
+    metrics::prefs::kMetricsReportingEnabled,
+    base::Value::Type::BOOLEAN },
+#endif  // !defined(OS_CHROMEOS)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   { key::kClientCertificateManagementAllowed,
     prefs::kClientCertificateManagementAllowed,
@@ -1152,10 +1160,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserBorealisAllowed,
     borealis::prefs::kBorealisAllowedForUser,
     base::Value::Type::BOOLEAN },
-#else // BUILDFLAG(IS_CHROMEOS_ASH)
-  { key::kMetricsReportingEnabled,
-    metrics::prefs::kMetricsReportingEnabled,
-    base::Value::Type::BOOLEAN },
 #endif // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN)
@@ -1192,7 +1196,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
   { key::kNativeMessagingUserLevelHosts,
     extensions::pref_names::kNativeMessagingUserLevelHosts,
     base::Value::Type::BOOLEAN },
@@ -1247,7 +1251,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSigninInterceptionEnabled,
     prefs::kSigninInterceptionEnabled,
     base::Value::Type::BOOLEAN },
-#endif // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
 // TODO(crbug.com/1179280): Remove OS_LINUX once https://crbug.com/1169547 is
 // done.
@@ -1257,11 +1261,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::BOOLEAN },
 #endif // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_MAC) && !defined(OS_CHROMEOS)
   { key::kBackgroundModeEnabled,
     prefs::kBackgroundModeEnabled,
     base::Value::Type::BOOLEAN },
-#endif // !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif // !defined(OS_MAC) && !defined(OS_CHROMEOS)
 
 #if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_CHROMEOS)
   { key::kAuthNegotiateDelegateByKdcPolicy,
@@ -1287,11 +1291,11 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     base::Value::Type::LIST },
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
+#if !defined(OS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
   { key::kBlockExternalExtensions,
     extensions::pref_names::kBlockExternalExtensions,
     base::Value::Type::BOOLEAN },
-#endif // !BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
+#endif // !defined(OS_CHROMEOS) && BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_POLICY_SUPPORTED)
   { key::kBuiltinCertificateVerifierEnabled,
@@ -1622,10 +1626,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 #endif  // defined(OS_ANDROID)
 
-// TODO(crbug/1169547) Remove `BUILDFLAG(IS_CHROMEOS_LACROS)` once the
-// migration is complete.
-#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
   handlers->AddHandler(
       std::make_unique<
           enterprise_connectors::EnterpriseConnectorsPolicyHandler>(
@@ -1638,6 +1639,26 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
       key::kAttestationExtensionAllowlist,
       prefs::kAttestationExtensionAllowlist, false));
+#else  // defined(OS_CHROMEOS)
+  std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
+      signin_legacy_policies;
+  signin_legacy_policies.push_back(std::make_unique<SimplePolicyHandler>(
+      key::kForceBrowserSignin, prefs::kForceBrowserSignin,
+      base::Value::Type::BOOLEAN));
+  signin_legacy_policies.push_back(std::make_unique<SimplePolicyHandler>(
+      key::kSigninAllowed,
+#if defined(OS_ANDROID)
+      // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
+      // Keep the old kSigninAllowed pref for Android until the policy is
+      // fully deprecated in M71 and can be removed.
+      prefs::kSigninAllowed,
+#else   // defined(OS_ANDROID)
+      prefs::kSigninAllowedOnNextStartup,
+#endif  // defined(OS_ANDROID)
+      base::Value::Type::BOOLEAN));
+  handlers->AddHandler(std::make_unique<LegacyPoliciesDeprecatingPolicyHandler>(
+      std::move(signin_legacy_policies),
+      std::make_unique<BrowserSigninPolicyHandler>(chrome_schema)));
 #endif  // defined(OS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1890,26 +1911,6 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kPrintingAPIExtensionsAllowlist,
       prefs::kPrintingAPIExtensionsAllowlist, /*allow_wildcards=*/false));
 #endif  // defined(USE_CUPS)
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  std::vector<std::unique_ptr<ConfigurationPolicyHandler>>
-      signin_legacy_policies;
-  signin_legacy_policies.push_back(std::make_unique<SimplePolicyHandler>(
-      key::kForceBrowserSignin, prefs::kForceBrowserSignin,
-      base::Value::Type::BOOLEAN));
-  signin_legacy_policies.push_back(std::make_unique<SimplePolicyHandler>(
-      key::kSigninAllowed,
-#if defined(OS_ANDROID)
-      // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
-      // Keep the old kSigninAllowed pref for Android until the policy is
-      // fully deprecated in M71 and can be removed.
-      prefs::kSigninAllowed,
-#else   // defined(OS_ANDROID)
-      prefs::kSigninAllowedOnNextStartup,
-#endif  // defined(OS_ANDROID)
-      base::Value::Type::BOOLEAN));
-  handlers->AddHandler(std::make_unique<LegacyPoliciesDeprecatingPolicyHandler>(
-      std::move(signin_legacy_policies),
-      std::make_unique<BrowserSigninPolicyHandler>(chrome_schema)));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // On most platforms, there is a legacy policy
@@ -1917,7 +1918,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
 // kOverrideSecurityRestrictionsOnInsecureOrigins. The legacy policy was never
 // supported on ChromeOS or Android, so on those platforms, simply use the new
 // one.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
   handlers->AddHandler(std::make_unique<SecureOriginPolicyHandler>(
       key::kOverrideSecurityRestrictionsOnInsecureOrigin, chrome_schema));
 #else
@@ -1930,11 +1931,10 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::move(secure_origin_legacy_policy),
       std::make_unique<SecureOriginPolicyHandler>(
           key::kOverrideSecurityRestrictionsOnInsecureOrigin, chrome_schema)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#endif  // defined(OS_CHROMEOS) || defined(OS_ANDROID)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
   handlers->AddHandler(std::make_unique<DiskCacheDirPolicyHandler>());
-
   handlers->AddHandler(
       std::make_unique<extensions::NativeMessagingHostListPolicyHandler>(
           key::kNativeMessagingAllowlist,
@@ -1945,14 +1945,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           extensions::pref_names::kNativeMessagingBlocklist, true));
   handlers->AddHandler(
       std::make_unique<AutoLaunchProtocolsPolicyHandler>(chrome_schema));
-
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kProfilePickerOnStartupAvailability,
       prefs::kBrowserProfilePickerAvailabilityOnStartup, chrome_schema,
       SCHEMA_ALLOW_UNKNOWN,
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#endif  // !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   handlers->AddHandler(std::make_unique<extensions::ExtensionListPolicyHandler>(
@@ -1989,8 +1988,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       SimpleSchemaValidatingPolicyHandler::RECOMMENDED_PROHIBITED,
       SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
 
-// TODO(crbug.com/1175651): Remove BUILDFLAG(IS_CHROMEOS_LACROS)
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kWebAppSettings, prefs::kWebAppSettings, chrome_schema,
       SCHEMA_ALLOW_UNKNOWN,

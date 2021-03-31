@@ -640,6 +640,7 @@ IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, CECPQ2EnabledPolicy) {
   }));
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, ChromeVariations) {
   // Setting ChromeVariations to a non-zero value should also disable
   // CECPQ2.
@@ -656,5 +657,6 @@ IN_PROC_BROWSER_TEST_F(CECPQ2PolicyTest, ChromeVariations) {
     SetPolicy(policies, variations_key, base::Value(1));
   }));
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace policy

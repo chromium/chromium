@@ -64,6 +64,9 @@ std::string GetPolicyName(const std::string& policy_name_decorated) {
   return policy_name_decorated;
 }
 
+// TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
+// touching lacros will get their handlers in place.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void CheckPrefHasValue(const PrefService::Preference* pref,
                        const base::Value* expected_value) {
   EXPECT_TRUE(pref->GetValue()->Equals(expected_value))
@@ -102,6 +105,8 @@ void CheckPrefHasMandatoryValue(const PrefService::Preference* pref,
   if (expected_value)
     CheckPrefHasValue(pref, expected_value);
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Contains the testing details for a single pref affected by one or multiple
 // policies. This is part of the data loaded from
@@ -270,9 +275,9 @@ class PolicyTestCase {
     const std::string os("ios");
 #elif defined(OS_APPLE)
     const std::string os("mac");
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif defined(OS_CHROMEOS)
     const std::string os("chromeos");
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif defined(OS_LINUX)
     const std::string os("linux");
 #else
 #error "Unknown platform"
@@ -351,13 +356,16 @@ class PolicyTestCases {
   PolicyTestCaseMap policy_test_cases_;
 };
 
+// TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
+// touching lacros will get their handlers in place.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
                        const base::Value& policies,
                        PolicyLevel level) {
   PolicyMap policy_map;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   SetEnterpriseUsersDefaults(&policy_map);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // defined(OS_CHROMEOS)
   for (const auto& it : policies.DictItems()) {
     const PolicyDetails* policy_details = GetChromePolicyDetails(it.first);
     ASSERT_TRUE(policy_details);
@@ -370,6 +378,7 @@ void SetProviderPolicy(MockConfigurationPolicyProvider* provider,
   }
   provider->UpdateChromePolicy(policy_map);
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -444,6 +453,9 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
       if (!test_case->IsSupported() || pref_mappings.empty())
         continue;
 
+// TODO(https://crbug.com/1192629): Revisit it after all chromeos policies
+// touching lacros will get their handlers in place.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       for (const auto& pref_mapping : pref_mappings) {
         for (const auto& pref_case : pref_mapping->prefs()) {
           const bool check_recommended = test_case->can_be_recommended() &&
@@ -523,6 +535,7 @@ void VerifyPolicyToPrefMappings(const base::FilePath& test_case_path,
           }
         }
       }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     }
   }
 }

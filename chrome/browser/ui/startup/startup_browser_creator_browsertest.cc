@@ -2061,7 +2061,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorWasRestartedFlag, Test) {
 }
 
 // The kCommandLineFlagSecurityWarningsEnabled policy doesn't exist on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !defined(OS_CHROMEOS)
 enum class CommandLineFlagSecurityWarningsPolicy {
   kNoPolicy,
   kEnabled,
@@ -2173,6 +2173,10 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(CommandLineFlagSecurityWarningsPolicy::kNoPolicy,
                       CommandLineFlagSecurityWarningsPolicy::kEnabled,
                       CommandLineFlagSecurityWarningsPolicy::kDisabled));
+
+#endif  // !defined(OS_CHROMEOS)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Verifies that infobars are not displayed in Kiosk mode.
 class StartupBrowserCreatorInfobarsKioskTest : public InProcessBrowserTest {
