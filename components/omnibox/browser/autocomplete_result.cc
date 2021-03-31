@@ -22,12 +22,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/omnibox/browser/autocomplete_input.h"
-#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/intranet_redirector_state.h"
-#include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_pedal.h"
 #include "components/omnibox/browser/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -305,9 +303,7 @@ void AutocompleteResult::SortAndCull(
         next = std::next(next);
       }
     }
-    auto begin_url = GroupSuggestionsBySearchVsURL(next, matches_.end());
-    if (base::FeatureList::IsEnabled(omnibox::kBubbleUrlSuggestions))
-      BubbleURLSuggestions(next, begin_url, matches_);
+    GroupSuggestionsBySearchVsURL(next, matches_.end());
   }
 
   // Grouping and Demoting Matches with Headers needs to be done only after
@@ -1075,60 +1071,9 @@ void AutocompleteResult::LimitNumberOfURLsShown(
 }
 
 // static
-AutocompleteResult::iterator AutocompleteResult::GroupSuggestionsBySearchVsURL(
-    iterator begin,
-    iterator end) {
-  return std::stable_partition(begin, end, [](const AutocompleteMatch& match) {
+void AutocompleteResult::GroupSuggestionsBySearchVsURL(iterator begin,
+                                                       iterator end) {
+  std::stable_partition(begin, end, [](const AutocompleteMatch& match) {
     return AutocompleteMatch::IsSearchType(match.type);
   });
-}
-
-// static
-void AutocompleteResult::BubbleURLSuggestions(iterator begin_search,
-                                              iterator begin_url,
-                                              ACMatches& matches) {
-  auto absolute_gap = base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kBubbleUrlSuggestions,
-      OmniboxFieldTrial::kBubbleUrlSuggestionsAbsoluteGapParam, 200);
-  auto relative_gap = base::GetFieldTrialParamByFeatureAsDouble(
-      omnibox::kBubbleUrlSuggestions,
-      OmniboxFieldTrial::kBubbleUrlSuggestionsRelativeGapParam, 1);
-  auto absolute_buffer = base::GetFieldTrialParamByFeatureAsInt(
-      omnibox::kBubbleUrlSuggestions,
-      OmniboxFieldTrial::kBubbleUrlSuggestionsAbsoluteBufferParam, 100);
-  auto relative_buffer = base::GetFieldTrialParamByFeatureAsDouble(
-      omnibox::kBubbleUrlSuggestions,
-      OmniboxFieldTrial::kBubbleUrlSuggestionsRelativeBufferParam, 1);
-
-  // |next_url| tracks the first (i.e. highest scoring) yet unbubbled URL
-  // suggestion.
-  auto next_url = begin_url;
-
-  for (auto next_search = begin_search;
-       next_search != next_url && next_url != matches.end();
-       next_search = std::next(next_search)) {
-    // Only bubble if there's a sufficient score gap between adjacent searches.
-    if (next_search != begin_search &&
-        std::prev(next_search)->relevance <
-            std::max(next_search->relevance + absolute_gap * 1.,
-                     next_search->relevance * relative_gap))
-      continue;
-    // Only bubble if there's a sufficient buffer between the URL and search.
-    if (next_url->relevance <
-        std::max(next_search->relevance + absolute_buffer * 1.,
-                 next_search->relevance * relative_buffer))
-      continue;
-
-    // Find the series of URLs to bubble: [next_url, last_bubble_url).
-    // Although |next_url| must score higher than the |next_search| by at least
-    // the buffer amount, the remaining URls in the series need to score only
-    // as high as |next_search|.
-    auto last_bubble_url = std::find_if(
-        std::next(next_url), matches.end(),
-        [&](auto& match) { return match.relevance < next_search->relevance; });
-
-    // Bubble [next_url, last_bubble_url) above |next_search|.
-    next_search = std::rotate(next_search, next_url, last_bubble_url);
-    next_url = last_bubble_url;
-  }
 }

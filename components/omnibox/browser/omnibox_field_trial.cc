@@ -983,15 +983,6 @@ const char OmniboxFieldTrial::kDynamicMaxAutocompleteUrlCutoffParam[] =
 const char OmniboxFieldTrial::kDynamicMaxAutocompleteIncreasedLimitParam[] =
     "OmniboxDynamicMaxAutocompleteIncreasedLimit";
 
-const char OmniboxFieldTrial::kBubbleUrlSuggestionsAbsoluteGapParam[] =
-    "OmniboxBubbleUrlSuggestionsAbsoluteGap";
-const char OmniboxFieldTrial::kBubbleUrlSuggestionsRelativeGapParam[] =
-    "OmniboxBubbleUrlSuggestionsRelativeGap";
-const char OmniboxFieldTrial::kBubbleUrlSuggestionsAbsoluteBufferParam[] =
-    "OmniboxBubbleUrlSuggestionsAbsoluteBuffer";
-const char OmniboxFieldTrial::kBubbleUrlSuggestionsRelativeBufferParam[] =
-    "OmniboxBubbleUrlSuggestionsRelativeBuffer";
-
 const char OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint[] =
     "ForceModelLocaleConstraint";
 const char OmniboxFieldTrial::kOnDeviceHeadSuggestMaxScoreForNonUrlInput[] =

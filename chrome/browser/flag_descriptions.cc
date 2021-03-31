@@ -1774,12 +1774,6 @@ const char kOmniboxDynamicMaxAutocompleteDescription[] =
     "Configures the maximum number of autocomplete matches displayed in the "
     "Omnibox UI dynamically based on the number of URL matches.";
 
-const char kOmniboxBubbleUrlSuggestionsName[] =
-    "Omnibox Bubble URL Suggestions";
-const char kOmniboxBubbleUrlSuggestionsDescription[] =
-    "Configures the bubbling of URL suggestions after grouping searches "
-    "above URLs.";
-
 const char kOmniboxOnDeviceHeadSuggestionsIncognitoName[] =
     "Omnibox on device head suggestions (incognito only)";
 const char kOmniboxOnDeviceHeadSuggestionsIncognitoDescription[] =

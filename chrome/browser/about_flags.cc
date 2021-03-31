@@ -1419,38 +1419,6 @@ const FeatureEntry::FeatureVariation
             nullptr,
         }};
 
-const FeatureEntry::FeatureVariation kOmniboxBubbleUrlSuggestionsVariations[] =
-    {{
-         "Gap 200, Buffer 100",
-         (FeatureEntry::FeatureParam[]){
-             {"OmniboxBubbleUrlSuggestionsAbsoluteGap", "200"},
-             {"OmniboxBubbleUrlSuggestionsRelativeGap", "1"},
-             {"OmniboxBubbleUrlSuggestionsAbsoluteBuffer", "100"},
-             {"OmniboxBubbleUrlSuggestionsRelativeBuffer", "1"}},
-         4,
-         nullptr,
-     },
-     {
-         "Gap 200, Buffer 200",
-         (FeatureEntry::FeatureParam[]){
-             {"OmniboxBubbleUrlSuggestionsAbsoluteGap", "200"},
-             {"OmniboxBubbleUrlSuggestionsRelativeGap", "1"},
-             {"OmniboxBubbleUrlSuggestionsAbsoluteBuffer", "200"},
-             {"OmniboxBubbleUrlSuggestionsRelativeBuffer", "1"}},
-         4,
-         nullptr,
-     },
-     {
-         "Gap 400, Buffer 200",
-         (FeatureEntry::FeatureParam[]){
-             {"OmniboxBubbleUrlSuggestionsAbsoluteGap", "400"},
-             {"OmniboxBubbleUrlSuggestionsRelativeGap", "1"},
-             {"OmniboxBubbleUrlSuggestionsAbsoluteBuffer", "200"},
-             {"OmniboxBubbleUrlSuggestionsRelativeBuffer", "1"}},
-         4,
-         nullptr,
-     }};
-
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingPinned[] = {
     {features::kMinimumTabWidthFeatureParameterName, "54"}};
 const FeatureEntry::FeatureParam kMinimumTabWidthSettingMedium[] = {
@@ -4568,13 +4536,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxDynamicMaxAutocompleteDescription, kOsAll,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDynamicMaxAutocomplete,
                                     kOmniboxDynamicMaxAutocompleteVariations,
-                                    "OmniboxBundledExperimentV1")},
-
-    {"omnibox-bubble-url-suggestions",
-     flag_descriptions::kOmniboxBubbleUrlSuggestionsName,
-     flag_descriptions::kOmniboxBubbleUrlSuggestionsDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kBubbleUrlSuggestions,
-                                    kOmniboxBubbleUrlSuggestionsVariations,
                                     "OmniboxBundledExperimentV1")},
 
     {"omnibox-ui-swap-title-and-url",

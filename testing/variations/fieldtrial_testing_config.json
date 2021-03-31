@@ -4445,7 +4445,6 @@
                     },
                     "enable_features": [
                         "OmniboxBookmarkPaths",
-                        "OmniboxBubbleUrlSuggestions",
                         "OmniboxDisplayTitleForCurrentUrl",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",

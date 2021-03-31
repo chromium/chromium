@@ -45,9 +45,6 @@ extern const bool kOmniboxMaxURLMatchesEnabledByDefault;
 extern const base::Feature kOmniboxMaxURLMatches;
 extern const base::Feature kDynamicMaxAutocomplete;
 
-// Ranking
-extern const base::Feature kBubbleUrlSuggestions;
-
 // On-Focus Suggestions a.k.a. ZeroSuggest.
 extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
