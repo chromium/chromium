@@ -3173,6 +3173,7 @@ enum WebFeature {
   kXRFrameGetImageTrackingResults = 3864,
   kOpenWebDatabaseThirdPartyContext = 3865,
   kPointerId = 3866,
+  kTransform3dScene = 3867,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

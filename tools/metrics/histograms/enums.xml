@@ -32007,6 +32007,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3864" label="XRFrameGetImageTrackingResults"/>
   <int value="3865" label="OpenWebDatabaseThirdPartyContext"/>
   <int value="3866" label="PointerId"/>
+  <int value="3867" label="Transform3dScene"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
