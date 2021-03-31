@@ -2953,6 +2953,7 @@
       'mixins': ['no_symbols'],
     },
 
+    # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
     'cronet_common': {
       'gn_args': ('disable_file_support=true disable_ftp_support=true '
                   'enable_websockets=false '
@@ -2960,6 +2961,7 @@
                   'use_crash_key_stubs=true use_platform_icu_alternatives=true')
     },
 
+    # Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
     'cronet_android': {
       'mixins': ['cronet_common'],
       'gn_args': ('use_partition_alloc=false enable_reporting=true '
@@ -2967,7 +2969,7 @@
                   'default_min_sdk_version=16 '
                   'clang_use_default_sample_profile=false '
                   'media_use_ffmpeg = false'
-                  'use_thin_lto=false '
+                  'use_thin_lto=false '  # https://crbug.com/1136963
                   'enable_resource_allowlist_generation=false '
                   'enable_jdk_library_desugaring=false'),
     },
