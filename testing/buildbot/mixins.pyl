@@ -510,10 +510,6 @@
         'os': 'Ubuntu-18.04.5',
         'pool': 'chromium.tests.gpu',
       },
-      # Same long expiration as win10_intel_uhd_630_stable due to capacity.
-      # TODO(https://crbug.com/986939): Remove this when more devices
-      # are added.
-      'expiration': 14400,
     }
   },
   'linux_nvidia_gtx_1660_experimental': {

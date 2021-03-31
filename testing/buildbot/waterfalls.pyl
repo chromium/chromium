@@ -4285,6 +4285,7 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'mixins': [
+          'limited_capacity_bot',
           'linux_intel_uhd_630_stable',
         ],
         'test_suites': {
