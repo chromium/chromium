@@ -94,8 +94,7 @@ std::vector<arc::mojom::AppInfoPtr> GetTestAppsList() {
 
 OptionalBool HasBadge(Profile* profile, const std::string& app_id) {
   auto has_badge = OptionalBool::kUnknown;
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->FlushMojoCallsForTesting();
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&has_badge](const apps::AppUpdate& update) {
@@ -113,8 +112,7 @@ void RemoveNotification(Profile* profile, const std::string& notification_id) {
 }
 
 void UninstallApp(Profile* profile, const std::string& app_id) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->UninstallSilently(app_id, apps::mojom::UninstallSource::kUser);
   proxy->FlushMojoCallsForTesting();
 }

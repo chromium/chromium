@@ -16,7 +16,7 @@ class Profile;
 class SupervisedUserService;
 
 namespace apps {
-class AppServiceProxy;
+class AppServiceProxyChromeOs;
 }  // namespace apps
 
 namespace signin {
@@ -61,7 +61,7 @@ class OsSettingsSections {
       signin::IdentityManager* identity_manager,
       android_sms::AndroidSmsService* android_sms_service,
       CupsPrintersManager* printers_manager,
-      apps::AppServiceProxy* app_service_proxy);
+      apps::AppServiceProxyChromeOs* app_service_proxy);
   OsSettingsSections(const OsSettingsSections& other) = delete;
   OsSettingsSections& operator=(const OsSettingsSections& other) = delete;
   virtual ~OsSettingsSections();

@@ -49,7 +49,7 @@ namespace first_run {
 namespace {
 
 void LaunchApp(Profile* profile, std::string app_id) {
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
   proxy->Launch(app_id, ui::EventFlags::EF_NONE,

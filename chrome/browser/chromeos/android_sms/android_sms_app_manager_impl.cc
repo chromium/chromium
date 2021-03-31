@@ -46,9 +46,7 @@ AndroidSmsAppManagerImpl::PwaDelegate::~PwaDelegate() = default;
 
 void AndroidSmsAppManagerImpl::PwaDelegate::OpenApp(Profile* profile,
                                                     const std::string& app_id) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy->Launch(
+  apps::AppServiceProxyFactory::GetForProfile(profile)->Launch(
       app_id,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerWindow,
                           WindowOpenDisposition::NEW_WINDOW,

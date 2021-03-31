@@ -289,8 +289,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
         last_loaded_extension_id(), extensions::ExtensionRegistry::ENABLED);
     EXPECT_TRUE(extension);
 
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile());
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->FlushMojoCallsForTesting();
     proxy->Launch(extension->id(), event_flags,
                   apps::mojom::LaunchSource::kFromTest,
@@ -351,8 +350,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
 
   // Flush mojo calls to allow async callbacks to run.
   void FlushMojoCallsForAppService() {
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile());
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     if (proxy) {
       proxy->FlushMojoCallsForTesting();
     }
@@ -1616,8 +1614,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_EQ(0u, NumberOfDetectedLauncherBrowsers(false));
   EXPECT_EQ(++running_browser, chrome::GetTotalBrowserCount());
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->Launch(
       extension->id(),
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
@@ -2210,9 +2207,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
   EXPECT_EQ(ash::STATUS_CLOSED, shelf_model()->ItemByID(id)->status);
 
   // Create a windowed application.
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  proxy->Launch(
+  apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
       extensions::kWebStoreAppId,
       apps::GetEventFlags(apps::mojom::LaunchContainer::kLaunchContainerTab,
                           WindowOpenDisposition::NEW_FOREGROUND_TAB,

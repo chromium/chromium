@@ -139,7 +139,7 @@ scoped_refptr<extensions::Extension> MakeApp(const std::string& name,
 void RemoveApps(apps::mojom::AppType app_type,
                 Profile* profile,
                 FakeAppListModelUpdater* model_updater) {
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->FlushMojoCallsForTesting();
   proxy->AppRegistryCache().ForEachApp(

@@ -83,7 +83,7 @@ AppServiceAppModelBuilder::~AppServiceAppModelBuilder() {
 }
 
 void AppServiceAppModelBuilder::BuildModel() {
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   proxy->AppRegistryCache().ForEachApp(
       [this](const apps::AppUpdate& update) { OnAppUpdate(update); });

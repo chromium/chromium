@@ -17,7 +17,8 @@ namespace apps {
 RemoteApps::RemoteApps(Profile* profile, Delegate* delegate)
     : profile_(profile), delegate_(delegate) {
   DCHECK(delegate);
-  AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile_);
+  AppServiceProxyChromeOs* proxy =
+      AppServiceProxyFactory::GetForProfile(profile_);
 
   mojo::Remote<mojom::AppService>& app_service = proxy->AppService();
   if (!app_service.is_bound()) {

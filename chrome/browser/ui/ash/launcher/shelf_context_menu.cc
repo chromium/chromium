@@ -37,7 +37,7 @@ namespace {
 using ::ash::AccessibilityManager;
 
 void UninstallApp(Profile* profile, const std::string& app_id) {
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (proxy->AppRegistryCache().GetAppType(app_id) !=
       apps::mojom::AppType::kUnknown) {
@@ -64,13 +64,11 @@ std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
   DCHECK(item);
   DCHECK(!item->id.IsNull());
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(controller->profile());
-
   // AppServiceShelfContextMenu supports context menus for apps registered in
   // AppService, Arc shortcuts and Crostini apps with the prefix "crostini:".
-  if (proxy->AppRegistryCache().GetAppType(item->id.app_id) !=
-          apps::mojom::AppType::kUnknown ||
+  if (apps::AppServiceProxyFactory::GetForProfile(controller->profile())
+              ->AppRegistryCache()
+              .GetAppType(item->id.app_id) != apps::mojom::AppType::kUnknown ||
       crostini::IsUnmatchedCrostiniShelfAppId(item->id.app_id) ||
       arc::IsArcItem(controller->profile(), item->id.app_id)) {
     return std::make_unique<AppServiceShelfContextMenu>(controller, item,

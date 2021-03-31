@@ -61,9 +61,6 @@ void AddSupervisionHandler::GetInstalledArcApps(
     return;
   }
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-
   if (!arc::ArcSessionManager::Get()) {
     DLOG(WARNING) << "No ArcSessionManager available";
     std::move(callback).Run({});
@@ -77,8 +74,10 @@ void AddSupervisionHandler::GetInstalledArcApps(
   }
 
   std::vector<std::string> installed_arc_apps;
-  proxy->AppRegistryCache().ForEachApp(
-      [&installed_arc_apps, profile](const apps::AppUpdate& update) {
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForEachApp([&installed_arc_apps,
+                   profile](const apps::AppUpdate& update) {
         if (ShouldIncludeAppUpdate(update)) {
           std::string package_name =
               arc::AppIdToArcPackageName(update.AppId(), profile);

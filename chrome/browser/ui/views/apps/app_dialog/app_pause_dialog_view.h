@@ -21,7 +21,7 @@ class AppPauseDialogView : public AppDialogView {
       const std::string& app_name,
       const gfx::ImageSkia& image,
       const apps::PauseData& pause_data,
-      apps::AppServiceProxy::OnPauseDialogClosedCallback callback);
+      apps::AppServiceProxyChromeOs::OnPauseDialogClosedCallback callback);
   ~AppPauseDialogView() override;
 
   static AppPauseDialogView* GetActiveViewForTesting();

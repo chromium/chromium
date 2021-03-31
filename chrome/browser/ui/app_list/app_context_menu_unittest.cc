@@ -110,11 +110,10 @@ std::unique_ptr<KeyedService> MenuManagerFactory(
 
 std::unique_ptr<AppServiceAppItem> GetAppListItem(Profile* profile,
                                                   const std::string& app_id) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
   std::unique_ptr<AppServiceAppItem> item;
-  proxy->AppRegistryCache().ForOneApp(
-      app_id, [profile, &item](const apps::AppUpdate& update) {
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [profile, &item](const apps::AppUpdate& update) {
         item = std::make_unique<AppServiceAppItem>(profile, nullptr, nullptr,
                                                    update);
       });

@@ -50,14 +50,12 @@ HelpAppResult::HelpAppResult(float relevance,
 HelpAppResult::~HelpAppResult() = default;
 
 void HelpAppResult::Open(int event_flags) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
   base::RecordAction(
       base::UserMetricsAction("ReleaseNotes.SuggestionChipLaunched"));
-  proxy->LaunchAppWithUrl(web_app::kHelpAppId, event_flags,
-                          GURL("chrome://help-app/updates"),
-                          apps::mojom::LaunchSource::kFromAppListRecommendation,
-                          apps::MakeWindowInfo(display::kDefaultDisplayId));
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
+      web_app::kHelpAppId, event_flags, GURL("chrome://help-app/updates"),
+      apps::mojom::LaunchSource::kFromAppListRecommendation,
+      apps::MakeWindowInfo(display::kDefaultDisplayId));
   chromeos::ReleaseNotesStorage(profile_).StopShowingSuggestionChip();
 }
 

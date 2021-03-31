@@ -73,7 +73,7 @@ class AppServiceProxyTest : public testing::Test {
                                            base::Unretained(this)));
   }
 
-  void OverrideAppServiceProxyInnerIconLoader(apps::AppServiceProxy* proxy,
+  void OverrideAppServiceProxyInnerIconLoader(apps::AppServiceProxyBase* proxy,
                                               apps::IconLoader* icon_loader) {
     proxy->OverrideInnerIconLoaderForTesting(icon_loader);
   }
@@ -96,7 +96,11 @@ TEST_F(AppServiceProxyTest, IconCache) {
   // This tests an AppServiceProxy as a 'black box', which uses an
   // IconCache but also other IconLoader filters, such as an IconCoalescer.
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  apps::AppServiceProxyChromeOs proxy(nullptr);
+#else
   apps::AppServiceProxy proxy(nullptr);
+#endif
   FakeIconLoader fake;
   OverrideAppServiceProxyInnerIconLoader(&proxy, &fake);
 
@@ -142,7 +146,12 @@ TEST_F(AppServiceProxyTest, IconCoalescer) {
   // This tests an AppServiceProxy as a 'black box', which uses an
   // IconCoalescer but also other IconLoader filters, such as an IconCache.
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  apps::AppServiceProxyChromeOs proxy(nullptr);
+#else
   apps::AppServiceProxy proxy(nullptr);
+#endif
+
   FakeIconLoader fake;
   OverrideAppServiceProxyInnerIconLoader(&proxy, &fake);
 

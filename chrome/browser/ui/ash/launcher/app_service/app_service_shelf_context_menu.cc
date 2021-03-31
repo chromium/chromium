@@ -87,9 +87,6 @@ AppServiceShelfContextMenu::AppServiceShelfContextMenu(
     const ash::ShelfItem* item,
     int64_t display_id)
     : ShelfContextMenu(controller, item, display_id) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(controller->profile());
-
   if (crostini::IsUnmatchedCrostiniShelfAppId(item->id.app_id)) {
     // For Crostini app_id with the prefix "crostini:", set app_type as Unknown
     // to skip the ArcAppShelfId valid. App type can't be set as Crostini,
@@ -102,18 +99,19 @@ AppServiceShelfContextMenu::AppServiceShelfContextMenu(
   const arc::ArcAppShelfId arc_shelf_id =
       arc::ArcAppShelfId::FromString(item->id.app_id);
   DCHECK(arc_shelf_id.valid());
-  app_type_ = proxy->AppRegistryCache().GetAppType(arc_shelf_id.app_id());
+  app_type_ = apps::AppServiceProxyFactory::GetForProfile(controller->profile())
+                  ->AppRegistryCache()
+                  .GetAppType(arc_shelf_id.app_id());
 }
 
 AppServiceShelfContextMenu::~AppServiceShelfContextMenu() = default;
 
 void AppServiceShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(controller()->profile());
-  proxy->GetMenuModel(
-      item().id.app_id, apps::mojom::MenuType::kShelf, display_id(),
-      base::BindOnce(&AppServiceShelfContextMenu::OnGetMenuModel,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
+      ->GetMenuModel(
+          item().id.app_id, apps::mojom::MenuType::kShelf, display_id(),
+          base::BindOnce(&AppServiceShelfContextMenu::OnGetMenuModel,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
@@ -536,10 +534,10 @@ bool AppServiceShelfContextMenu::ShouldAddPinMenu() {
     case apps::mojom::AppType::kPluginVm:
     case apps::mojom::AppType::kBuiltIn: {
       bool show_in_launcher = false;
-      apps::AppServiceProxy* proxy =
-          apps::AppServiceProxyFactory::GetForProfile(controller()->profile());
-      proxy->AppRegistryCache().ForOneApp(
-          item().id.app_id, [&show_in_launcher](const apps::AppUpdate& update) {
+      apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
+          ->AppRegistryCache()
+          .ForOneApp(item().id.app_id, [&show_in_launcher](
+                                           const apps::AppUpdate& update) {
             if (update.ShowInLauncher() == apps::mojom::OptionalBool::kTrue)
               show_in_launcher = true;
           });
@@ -573,10 +571,8 @@ void AppServiceShelfContextMenu::ExecutePublisherContextMenuCommand(
   DCHECK(app_shortcut_items_);
   DCHECK_LT(index, app_shortcut_items_->size());
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(controller()->profile());
-
-  proxy->ExecuteContextMenuCommand(item().id.app_id, command_id,
-                                   app_shortcut_items_->at(index).shortcut_id,
-                                   display_id());
+  apps::AppServiceProxyFactory::GetForProfile(controller()->profile())
+      ->ExecuteContextMenuCommand(item().id.app_id, command_id,
+                                  app_shortcut_items_->at(index).shortcut_id,
+                                  display_id());
 }

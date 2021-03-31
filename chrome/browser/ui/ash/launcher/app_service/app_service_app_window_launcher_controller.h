@@ -143,7 +143,7 @@ class AppServiceAppWindowLauncherController
   AuraWindowToAppWindow aura_window_to_app_window_;
   ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_{this};
 
-  apps::AppServiceProxy* proxy_ = nullptr;
+  apps::AppServiceProxyChromeOs* proxy_ = nullptr;
   std::unique_ptr<AppServiceInstanceRegistryHelper>
       app_service_instance_helper_;
   std::unique_ptr<AppServiceAppWindowArcTracker> arc_tracker_;

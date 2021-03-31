@@ -16,7 +16,7 @@ class Profile;
 
 namespace apps {
 
-class AppServiceProxy;
+class AppServiceProxyBase;
 
 // Helper class to initialize AppService in unit tests.
 class AppServiceTest {
@@ -47,7 +47,7 @@ class AppServiceTest {
   void FlushMojoCalls();
 
  private:
-  AppServiceProxy* app_service_proxy_ = nullptr;
+  AppServiceProxyBase* app_service_proxy_ = nullptr;
 
   Profile* profile_ = nullptr;
 };

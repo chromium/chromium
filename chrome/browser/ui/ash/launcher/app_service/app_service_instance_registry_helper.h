@@ -13,7 +13,7 @@
 #include "components/services/app_service/public/cpp/instance.h"
 
 namespace apps {
-class AppServiceProxy;
+class AppServiceProxyChromeOs;
 }
 
 namespace aura {
@@ -120,7 +120,7 @@ class AppServiceInstanceRegistryHelper {
 
   AppServiceAppWindowLauncherController* controller_ = nullptr;
 
-  apps::AppServiceProxy* proxy_ = nullptr;
+  apps::AppServiceProxyChromeOs* proxy_ = nullptr;
 
   // Used to get app info for tabs.
   std::unique_ptr<LauncherControllerHelper> launcher_controller_helper_;

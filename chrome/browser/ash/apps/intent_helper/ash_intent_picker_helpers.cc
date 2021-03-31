@@ -41,7 +41,8 @@ std::vector<IntentPickerAppInfo> FindAppsForUrl(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile);
+  AppServiceProxyChromeOs* proxy =
+      AppServiceProxyFactory::GetForProfile(profile);
 
   std::vector<std::string> app_ids =
       proxy->GetAppIdsForUrl(url, /*exclude_browser=*/true);
@@ -103,7 +104,8 @@ bool ShouldAutoDisplayUi(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile);
+  AppServiceProxyChromeOs* proxy =
+      AppServiceProxyFactory::GetForProfile(profile);
 
   if (proxy) {
     auto preferred_app_id = proxy->PreferredApps().FindPreferredAppForUrl(url);
@@ -154,7 +156,8 @@ void OnIntentPickerClosed(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
-  AppServiceProxy* proxy = AppServiceProxyFactory::GetForProfile(profile);
+  AppServiceProxyChromeOs* proxy =
+      AppServiceProxyFactory::GetForProfile(profile);
 
   // If the picker was closed without an app being chosen,
   // e.g. due to the tab being closed. Keep count of this scenario so we can

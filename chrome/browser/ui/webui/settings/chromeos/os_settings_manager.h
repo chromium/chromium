@@ -15,7 +15,7 @@ class Profile;
 class SupervisedUserService;
 
 namespace apps {
-class AppServiceProxy;
+class AppServiceProxyChromeOs;
 }  // namespace apps
 
 namespace content {
@@ -100,7 +100,7 @@ class OsSettingsManager : public KeyedService {
       signin::IdentityManager* identity_manager,
       android_sms::AndroidSmsService* android_sms_service,
       CupsPrintersManager* printers_manager,
-      apps::AppServiceProxy* app_service_proxy);
+      apps::AppServiceProxyChromeOs* app_service_proxy);
   OsSettingsManager(const OsSettingsManager& other) = delete;
   OsSettingsManager& operator=(const OsSettingsManager& other) = delete;
   ~OsSettingsManager() override;

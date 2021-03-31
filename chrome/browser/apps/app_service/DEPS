@@ -1,15 +1,10 @@
 include_rules = [
+  "+components/services/app_service/app_service_impl.h",
   "+components/services/app_service/public",
   "+components/full_restore",
 ]
 
 specific_include_rules = {
-  "app_service_proxy\.cc": [
-    # App Service Proxy hosts the actual Mojo App Service as a private
-    # implementation detail. Allow the impl to be included there, but don't
-    # expose it to any other files except through the public mojo interface.
-    "+components/services/app_service/app_service_impl.h",
-  ],
   "notifications_browsertest\.cc": [
     "+ash/system/message_center/arc/arc_notification_manager.h",
     "+ash/system/message_center/arc/arc_notification_manager_delegate.h",

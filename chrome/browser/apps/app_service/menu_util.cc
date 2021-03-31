@@ -117,9 +117,10 @@ bool ShouldAddOpenItem(const std::string& app_id,
     return false;
   }
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  return proxy->InstanceRegistry().GetWindows(app_id).empty();
+  return apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->InstanceRegistry()
+      .GetWindows(app_id)
+      .empty();
 }
 
 bool ShouldAddCloseItem(const std::string& app_id,
@@ -129,9 +130,10 @@ bool ShouldAddCloseItem(const std::string& app_id,
     return false;
   }
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  return !proxy->InstanceRegistry().GetWindows(app_id).empty();
+  return !apps::AppServiceProxyFactory::GetForProfile(profile)
+              ->InstanceRegistry()
+              .GetWindows(app_id)
+              .empty();
 }
 
 void PopulateRadioItemFromMojoMenuItems(

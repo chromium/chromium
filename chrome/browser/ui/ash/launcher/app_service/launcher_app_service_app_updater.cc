@@ -14,8 +14,9 @@ LauncherAppServiceAppUpdater::LauncherAppServiceAppUpdater(
     Delegate* delegate,
     content::BrowserContext* browser_context)
     : LauncherAppUpdater(delegate, browser_context) {
-  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context));
+  apps::AppServiceProxyChromeOs* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
 
   proxy->AppRegistryCache().ForEachApp([this](const apps::AppUpdate& update) {
     if (update.Readiness() == apps::mojom::Readiness::kReady)
