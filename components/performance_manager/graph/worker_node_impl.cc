@@ -32,6 +32,7 @@ WorkerNodeImpl::~WorkerNodeImpl() {
   DCHECK(client_frames_.empty());
   DCHECK(client_workers_.empty());
   DCHECK(child_workers_.empty());
+  DCHECK(!execution_context_);
 }
 
 void WorkerNodeImpl::AddClientFrame(FrameNodeImpl* frame_node) {
@@ -167,6 +168,11 @@ void WorkerNodeImpl::OnBeforeLeavingGraph() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   process_node_->RemoveWorker(this);
+}
+
+void WorkerNodeImpl::RemoveNodeAttachedData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  execution_context_.reset();
 }
 
 WorkerNode::WorkerType WorkerNodeImpl::GetWorkerType() const {

@@ -182,6 +182,9 @@ class NodeAttachedDataImpl : public NodeAttachedData {
     static bool Destroy(const NodeType* node);
   };
 
+  NodeAttachedDataImpl() = default;
+  ~NodeAttachedDataImpl() override = default;
+
   static const void* UserDataKey() { return &DataType::kUserDataKey; }
 
   // NodeAttachedData implementation:

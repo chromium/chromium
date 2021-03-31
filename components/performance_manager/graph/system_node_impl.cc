@@ -28,6 +28,8 @@ SystemNodeImpl::~SystemNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
+void SystemNodeImpl::RemoveNodeAttachedData() {}
+
 void SystemNodeImpl::OnProcessMemoryMetricsAvailable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto* observer : GetObservers())

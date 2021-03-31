@@ -77,6 +77,8 @@ ProcessNodeImpl::~ProcessNodeImpl() {
   // TODO(https://crbug.com/1058705): Turn this into a DCHECK once the issue is
   //                                  resolved.
   CHECK(worker_nodes_.empty());
+  DCHECK(!frozen_frame_data_);
+  DCHECK(!process_priority_data_);
 }
 
 void ProcessNodeImpl::Bind(
@@ -374,6 +376,12 @@ void ProcessNodeImpl::OnBeforeLeavingGraph() {
 
   // All child frames should have been removed before the process is removed.
   DCHECK(frame_nodes_.empty());
+}
+
+void ProcessNodeImpl::RemoveNodeAttachedData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  frozen_frame_data_.Reset();
+  process_priority_data_.reset();
 }
 
 }  // namespace performance_manager

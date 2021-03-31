@@ -87,6 +87,7 @@ class WorkerNodeImpl
 
   void OnJoiningGraph() override;
   void OnBeforeLeavingGraph() override;
+  void RemoveNodeAttachedData() override;
 
   // WorkerNode: These are private so that users of the
   // impl use the private getters rather than the public interface.

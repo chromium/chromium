@@ -206,6 +206,7 @@ class ProcessNodeImpl
 
   // NodeBase:
   void OnBeforeLeavingGraph() override;
+  void RemoveNodeAttachedData() override;
 
   mojo::Receiver<mojom::ProcessCoordinationUnit> receiver_
       GUARDED_BY_CONTEXT(sequence_checker_){this};

@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "base/types/pass_key.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/node_type.h"
 #include "components/performance_manager/graph/properties.h"
@@ -122,6 +123,11 @@ class NodeBase {
   // during any of these notifications. The node is in the kLeavingGraph state.
 
   // Step 7:
+  // Called as this node is leaving |graph_|. Any private node-attached data
+  // should be destroyed at this point. The node is in the kLeavingGraph state.
+  virtual void RemoveNodeAttachedData() = 0;
+
+  // Step 8:
   // Leaves the graph that this node is a part of. The node is in the
   // kLeavingGraph state during this call, and will be in the kNotInGraph state
   // immediately afterwards.

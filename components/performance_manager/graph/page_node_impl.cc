@@ -38,6 +38,10 @@ PageNodeImpl::~PageNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(nullptr, opener_frame_node_);
   DCHECK_EQ(OpenedType::kInvalid, opened_type_);
+  DCHECK(!page_load_tracker_data_);
+  DCHECK(!site_data_);
+  DCHECK(!frozen_frame_data_);
+  DCHECK(!page_aggregator_data_);
 }
 
 const WebContentsProxy& PageNodeImpl::contents_proxy() const {
@@ -332,6 +336,14 @@ void PageNodeImpl::OnBeforeLeavingGraph() {
     ClearOpenerFrameNodeAndOpenedType();
 
   DCHECK_EQ(0u, frame_node_count_);
+}
+
+void PageNodeImpl::RemoveNodeAttachedData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  page_load_tracker_data_.reset();
+  site_data_.reset();
+  frozen_frame_data_.Reset();
+  page_aggregator_data_.Reset();
 }
 
 const std::string& PageNodeImpl::GetBrowserContextID() const {

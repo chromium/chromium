@@ -13,6 +13,7 @@
 namespace performance_manager {
 
 NodeAttachedData::NodeAttachedData() = default;
+
 NodeAttachedData::~NodeAttachedData() = default;
 
 // static

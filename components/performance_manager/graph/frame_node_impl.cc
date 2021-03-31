@@ -54,6 +54,7 @@ FrameNodeImpl::~FrameNodeImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(child_worker_nodes_.empty());
   DCHECK(opened_page_nodes_.empty());
+  DCHECK(!execution_context_);
 }
 
 void FrameNodeImpl::Bind(
@@ -609,6 +610,11 @@ void FrameNodeImpl::OnBeforeLeavingGraph() {
   // Disable querying this node using process and frame routing ids.
   graph()->UnregisterFrameNodeForId(process_node_->GetRenderProcessId(),
                                     render_frame_id_, this);
+}
+
+void FrameNodeImpl::RemoveNodeAttachedData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  execution_context_.reset();
 }
 
 void FrameNodeImpl::SeverOpenedPagesAndMaybeReparent() {

@@ -26,9 +26,6 @@
 namespace performance_manager {
 
 class FrameNodeImplDescriber;
-class PageNodeImpl;
-class ProcessNodeImpl;
-class WorkerNodeImpl;
 
 namespace execution_context {
 class ExecutionContextAccess;
@@ -76,6 +73,7 @@ class FrameNodeImpl
                 const blink::LocalFrameToken& frame_token,
                 int32_t browsing_instance_id,
                 int32_t site_instance_id);
+
   ~FrameNodeImpl() override;
 
   void Bind(mojo::PendingReceiver<mojom::DocumentCoordinationUnit> receiver);
@@ -236,6 +234,7 @@ class FrameNodeImpl
   // NodeBase:
   void OnJoiningGraph() override;
   void OnBeforeLeavingGraph() override;
+  void RemoveNodeAttachedData() override;
 
   // Helper function to sever all opened page relationships. This is called
   // before destroying the frame node in "OnBeforeLeavingGraph". Note that this

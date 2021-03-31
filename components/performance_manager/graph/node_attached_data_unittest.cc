@@ -37,6 +37,7 @@ class DummyNode : public NodeBase, public Node {
 
   // NodeBase implementation:
   const Node* ToNode() const override { return static_cast<const Node*>(this); }
+  void RemoveNodeAttachedData() override {}
 
   // Node implementation:
   Graph* GetGraph() const override { return graph(); }

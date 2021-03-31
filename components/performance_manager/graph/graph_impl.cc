@@ -456,12 +456,13 @@ void GraphImpl::RemoveNode(NodeBase* node) {
   node_in_transition_ = node;
   node_in_transition_state_ = NodeState::kLeavingGraph;
   DispatchNodeRemovedNotifications(node);
+  RemoveNodeAttachedData(node);    // Data added via the public interface.
+  node->RemoveNodeAttachedData();  // Data added via the private interface.
   node->LeaveGraph();
   node_in_transition_ = nullptr;
   node_in_transition_state_ = NodeState::kNotInGraph;
 
-  // Clean-up related resources and remove the node itself.
-  RemoveNodeAttachedData(node);
+  // Remove the node itself.
   size_t erased = nodes_.erase(node);
   DCHECK_EQ(1u, erased);
 }

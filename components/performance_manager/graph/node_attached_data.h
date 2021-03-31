@@ -28,6 +28,8 @@ class InternalNodeAttachedDataStorage {
 
   ~InternalNodeAttachedDataStorage() { Reset(); }
 
+  operator bool() const { return data_; }
+
   // Returns a pointer to the data object, if allocated.
   NodeAttachedData* Get() { return data_; }
 
