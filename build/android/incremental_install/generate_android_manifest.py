@@ -97,9 +97,9 @@ def _ProcessManifest(path, arsc_package_name, disable_isolated_processes):
 
   ret = ElementTree.tostring(doc.getroot(), encoding='UTF-8')
   # Disable check for page-aligned native libraries.
-  ret = ret.replace('extractNativeLibs="false"', 'extractNativeLibs="true"')
+  ret = ret.replace(b'extractNativeLibs="false"', b'extractNativeLibs="true"')
   if disable_isolated_processes:
-    ret = ret.replace('isolatedProcess="true"', 'isolatedProcess="false"')
+    ret = ret.replace(b'isolatedProcess="true"', b'isolatedProcess="false"')
   return ret
 
 

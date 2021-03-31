@@ -60,7 +60,7 @@ def main(args):
       'split_globs': options.split_globs,
   }
 
-  with build_utils.AtomicOutput(options.output_path) as f:
+  with build_utils.AtomicOutput(options.output_path, mode='w+') as f:
     json.dump(data, f, indent=2, sort_keys=True)
 
 
