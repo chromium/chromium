@@ -92,9 +92,9 @@ bool IsChargerConnected() {
     // If battery is full or battery is charging, that implies power is
     // connected. Also return true if a power source is connected and
     // battery is not discharging.
-    return power_status->IsBatteryCharging() || power_status->IsBatteryFull() ||
+    return power_status->IsBatteryCharging() ||
            (power_status->IsLinePowerConnected() &&
-            !power_status->IsBatteryDischargingOnLinePower());
+            power_status->GetBatteryPercent() > 95.f);
   } else {
     // Chromeboxes have no battery.
     return power_status->IsLinePowerConnected();

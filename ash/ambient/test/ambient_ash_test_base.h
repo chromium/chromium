@@ -115,6 +115,9 @@ class AmbientAshTestBase : public AshTestBase {
   void SetPowerStateCharging();
   void SetPowerStateDischarging();
   void SetPowerStateFull();
+  void SetExternalPowerConnected();
+  void SetExternalPowerDisconnected();
+  void SetBatteryPercent(double percent);
 
   // Returns the number of active wake locks of type |type|.
   int GetNumOfActiveWakeLocks(device::mojom::WakeLockType type);
@@ -173,6 +176,7 @@ class AmbientAshTestBase : public AshTestBase {
 
  private:
   std::unique_ptr<views::Widget> widget_;
+  power_manager::PowerSupplyProperties proto_;
 };
 
 }  // namespace ash

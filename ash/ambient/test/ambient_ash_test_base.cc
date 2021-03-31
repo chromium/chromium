@@ -373,32 +373,43 @@ void AmbientAshTestBase::FastForwardHalfLockScreenDelay() {
 }
 
 void AmbientAshTestBase::SetPowerStateCharging() {
-  power_manager::PowerSupplyProperties proto;
-  proto.set_battery_state(
+  proto_.set_battery_state(
       power_manager::PowerSupplyProperties_BatteryState_CHARGING);
-  proto.set_external_power(
-      power_manager::PowerSupplyProperties_ExternalPower_AC);
-  PowerStatus::Get()->SetProtoForTesting(proto);
+  PowerStatus::Get()->SetProtoForTesting(proto_);
   ambient_controller()->OnPowerStatusChanged();
 }
 
 void AmbientAshTestBase::SetPowerStateDischarging() {
-  power_manager::PowerSupplyProperties proto;
-  proto.set_battery_state(
+  proto_.set_battery_state(
       power_manager::PowerSupplyProperties_BatteryState_DISCHARGING);
-  proto.set_external_power(
-      power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);
-  PowerStatus::Get()->SetProtoForTesting(proto);
+  PowerStatus::Get()->SetProtoForTesting(proto_);
   ambient_controller()->OnPowerStatusChanged();
 }
 
 void AmbientAshTestBase::SetPowerStateFull() {
-  power_manager::PowerSupplyProperties proto;
-  proto.set_battery_state(
+  proto_.set_battery_state(
       power_manager::PowerSupplyProperties_BatteryState_FULL);
-  proto.set_external_power(
+  PowerStatus::Get()->SetProtoForTesting(proto_);
+  ambient_controller()->OnPowerStatusChanged();
+}
+
+void AmbientAshTestBase::SetExternalPowerConnected() {
+  proto_.set_external_power(
       power_manager::PowerSupplyProperties_ExternalPower_AC);
-  PowerStatus::Get()->SetProtoForTesting(proto);
+  PowerStatus::Get()->SetProtoForTesting(proto_);
+  ambient_controller()->OnPowerStatusChanged();
+}
+
+void AmbientAshTestBase::SetExternalPowerDisconnected() {
+  proto_.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);
+  PowerStatus::Get()->SetProtoForTesting(proto_);
+  ambient_controller()->OnPowerStatusChanged();
+}
+
+void AmbientAshTestBase::SetBatteryPercent(double percent) {
+  proto_.set_battery_percent(percent);
+  PowerStatus::Get()->SetProtoForTesting(proto_);
   ambient_controller()->OnPowerStatusChanged();
 }
 
