@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_VALUE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_VALUE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_H_
 
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -17,20 +17,18 @@ class CSSValuePool;
 namespace cssvalue {
 
 // Represents the non-keyword subset of <color>.
-class CORE_EXPORT CSSColorValue : public CSSValue {
+class CORE_EXPORT CSSColor : public CSSValue {
  public:
   // TODO(sashab): Make this create() method take a Color instead.
-  static CSSColorValue* Create(RGBA32 color);
+  static CSSColor* Create(RGBA32 color);
 
-  CSSColorValue(Color color) : CSSValue(kColorClass), color_(color) {}
+  CSSColor(Color color) : CSSValue(kColorClass), color_(color) {}
 
   String CustomCSSText() const { return SerializeAsCSSComponentValue(color_); }
 
   Color Value() const { return color_; }
 
-  bool Equals(const CSSColorValue& other) const {
-    return color_ == other.color_;
-  }
+  bool Equals(const CSSColor& other) const { return color_ == other.color_; }
 
   void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValue::TraceAfterDispatch(visitor);
@@ -49,10 +47,10 @@ class CORE_EXPORT CSSColorValue : public CSSValue {
 }  // namespace cssvalue
 
 template <>
-struct DowncastTraits<cssvalue::CSSColorValue> {
+struct DowncastTraits<cssvalue::CSSColor> {
   static bool AllowFrom(const CSSValue& value) { return value.IsColorValue(); }
 };
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_VALUE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_H_

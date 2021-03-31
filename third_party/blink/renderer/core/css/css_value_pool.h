@@ -29,7 +29,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_cyclic_variable_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -55,10 +55,10 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
 
   // TODO(sashab): Make all the value pools store const CSSValues.
   static const int kMaximumCacheableIntegerValue = 255;
-  using CSSColorValue = cssvalue::CSSColorValue;
+  using CSSColor = cssvalue::CSSColor;
   using CSSUnsetValue = cssvalue::CSSUnsetValue;
   using CSSRevertValue = cssvalue::CSSRevertValue;
-  using ColorValueCache = HeapHashMap<unsigned, Member<CSSColorValue>>;
+  using ColorValueCache = HeapHashMap<unsigned, Member<CSSColor>>;
   static const unsigned kMaximumColorCacheSize = 512;
   using FontFaceValueCache =
       HeapHashMap<AtomicString, Member<const CSSValueList>>;
@@ -70,9 +70,9 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   CSSValuePool& operator=(const CSSValuePool&) = delete;
 
   // Cached individual values.
-  CSSColorValue* TransparentColor() { return color_transparent_; }
-  CSSColorValue* WhiteColor() { return color_white_; }
-  CSSColorValue* BlackColor() { return color_black_; }
+  CSSColor* TransparentColor() { return color_transparent_; }
+  CSSColor* WhiteColor() { return color_white_; }
+  CSSColor* BlackColor() { return color_black_; }
   CSSInheritedValue* InheritedValue() { return inherited_value_; }
   CSSInitialValue* InitialValue() { return initial_value_; }
   CSSUnsetValue* UnsetValue() { return unset_value_; }
@@ -148,9 +148,9 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
   Member<CSSInvalidVariableValue> invalid_variable_value_;
   Member<CSSCyclicVariableValue> cyclic_variable_value_;
   Member<CSSInitialColorValue> initial_color_value_;
-  Member<CSSColorValue> color_transparent_;
-  Member<CSSColorValue> color_white_;
-  Member<CSSColorValue> color_black_;
+  Member<CSSColor> color_transparent_;
+  Member<CSSColor> color_white_;
+  Member<CSSColor> color_black_;
 
   // Vector caches.
   HeapVector<Member<CSSIdentifierValue>, numCSSValueKeywords>

@@ -26,7 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/editing_style_utilities.h"
 
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -203,7 +203,7 @@ EditingStyle* EditingStyleUtilities::CreateStyleAtSelectionStart(
 bool EditingStyleUtilities::IsTransparentColorValue(const CSSValue* css_value) {
   if (!css_value)
     return true;
-  if (auto* color_value = DynamicTo<cssvalue::CSSColorValue>(css_value))
+  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(css_value))
     return !color_value->Value().Alpha();
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(css_value))
     return identifier_value->GetValueID() == CSSValueID::kTransparent;

@@ -8,7 +8,7 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_init.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/ime/text_format_update_event.h"
@@ -160,13 +160,13 @@ void EditContext::DispatchTextFormatEvent(
     }
     TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(
         format_range_start, format_range_end,
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
+        cssvalue::CSSColor::SerializeAsCSSComponentValue(
             ime_text_span.underline_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
+        cssvalue::CSSColor::SerializeAsCSSComponentValue(
             ime_text_span.background_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
+        cssvalue::CSSColor::SerializeAsCSSComponentValue(
             ime_text_span.suggestion_highlight_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
+        cssvalue::CSSColor::SerializeAsCSSComponentValue(
             ime_text_span.text_color),
         underline_thickness, underline_style);
     DispatchEvent(*event);

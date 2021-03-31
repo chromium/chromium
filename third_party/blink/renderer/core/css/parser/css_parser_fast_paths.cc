@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/public_buildflags.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
@@ -549,7 +549,7 @@ static CSSValue* ParseColor(CSSPropertyID property_id,
       });
   if (!parse_result)
     return nullptr;
-  return cssvalue::CSSColorValue::Create(color);
+  return cssvalue::CSSColor::Create(color);
 }
 
 CSSValue* CSSParserFastPaths::ParseColor(const String& string,

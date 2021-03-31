@@ -29,7 +29,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
@@ -2320,7 +2320,7 @@ Response InspectorCSSAgent::getBackgroundColors(
     *background_colors = std::make_unique<protocol::Array<String>>();
     for (const auto& color : bgcolors) {
       background_colors->fromJust()->emplace_back(
-          cssvalue::CSSColorValue::SerializeAsCSSComponentValue(color));
+          cssvalue::CSSColor::SerializeAsCSSComponentValue(color));
     }
   }
   if (!fs.IsEmpty())

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -223,7 +223,7 @@ ContrastInfo InspectorContrast::GetContrast(Element* top_element) {
     return result;
 
   Color text_color =
-      static_cast<const cssvalue::CSSColorValue*>(text_color_value)->Value();
+      static_cast<const cssvalue::CSSColor*>(text_color_value)->Value();
 
   text_color = text_color.CombineWithAlpha(text_opacity);
 

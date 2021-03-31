@@ -24,7 +24,7 @@
 
 #include "third_party/blink/renderer/core/html/plugin_document.h"
 
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/raw_data_document_parser.h"
@@ -109,7 +109,7 @@ void PluginDocumentParser::CreateDocumentStructure() {
                      "height: 100%; width: 100%; overflow: hidden; margin: 0");
   body->SetInlineStyleProperty(
       CSSPropertyID::kBackgroundColor,
-      *cssvalue::CSSColorValue::Create(background_color_.Rgb()));
+      *cssvalue::CSSColor::Create(background_color_.Rgb()));
   root_element->AppendChild(body);
   if (IsStopped()) {
     // Possibly detached by a mutation event listener installed in

@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_color_value.h"
 
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
@@ -22,7 +22,7 @@ Color CSSUnsupportedColorValue::Value() const {
 }
 
 const CSSValue* CSSUnsupportedColorValue::ToCSSValue() const {
-  return cssvalue::CSSColorValue::Create(
+  return cssvalue::CSSColor::Create(
       MakeRGBA(color_value_.Red(), color_value_.Green(), color_value_.Blue(),
                color_value_.Alpha()));
 }

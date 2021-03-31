@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_highlight.h"
 
 #include "base/macros.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_grid_auto_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
@@ -293,7 +293,7 @@ void AppendStyleInfo(Node* node,
       continue;
     AtomicString name = CSSPropertyName(properties[i]).ToAtomicString();
     if (value->IsColorValue()) {
-      Color color = static_cast<const cssvalue::CSSColorValue*>(value)->Value();
+      Color color = static_cast<const cssvalue::CSSColor*>(value)->Value();
       computed_style->setString(name, ToHEXA(color));
     } else {
       computed_style->setString(name, value->CssText());
@@ -1693,7 +1693,7 @@ void InspectorHighlight::AppendDistanceInfo(Node* node) {
     if (!value)
       continue;
     if (value->IsColorValue()) {
-      Color color = static_cast<const cssvalue::CSSColorValue*>(value)->Value();
+      Color color = static_cast<const cssvalue::CSSColor*>(value)->Value();
       computed_style_->setString(name, ToHEXA(color));
     } else {
       computed_style_->setString(name, value->CssText());

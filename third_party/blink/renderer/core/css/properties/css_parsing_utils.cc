@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
@@ -1333,7 +1333,7 @@ CSSValue* ConsumeColor(CSSParserTokenRange& range,
     return ConsumeInternalLightDark(ConsumeColor, range, context,
                                     accept_quirky_colors);
   }
-  return cssvalue::CSSColorValue::Create(color);
+  return cssvalue::CSSColor::Create(color);
 }
 
 CSSValue* ConsumeLineWidth(CSSParserTokenRange& range,

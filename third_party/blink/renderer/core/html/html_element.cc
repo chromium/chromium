@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_script.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_treat_null_as_empty_string_or_trusted_script.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
@@ -1565,7 +1565,7 @@ void HTMLElement::AddHTMLColorToStyle(MutableCSSPropertyValueSet* style,
     return;
 
   style->SetProperty(property_id,
-                     *cssvalue::CSSColorValue::Create(parsed_color.Rgb()));
+                     *cssvalue::CSSColor::Create(parsed_color.Rgb()));
 }
 
 LabelsNodeList* HTMLElement::labels() {

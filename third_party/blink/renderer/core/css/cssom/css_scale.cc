@@ -69,7 +69,7 @@ CSSScale* CSSScale::Create(const CSSNumberish& x,
   CSSNumericValue* y_value = CSSNumericValue::FromNumberish(y);
 
   if (!IsValidScaleCoord(x_value) || !IsValidScaleCoord(y_value)) {
-    exception_state.ThrowTypeError("Must specify an number unit");
+    exception_state.ThrowTypeError("Must specify a number unit");
     return nullptr;
   }
 

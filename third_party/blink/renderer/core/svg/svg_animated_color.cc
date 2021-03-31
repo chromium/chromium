@@ -19,7 +19,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_animated_color.h"
 
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
@@ -38,7 +38,7 @@ SVGColorProperty::SVGColorProperty(const String& color_string)
 String SVGColorProperty::ValueAsString() const {
   return style_color_.IsCurrentColor()
              ? "currentColor"
-             : cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
+             : cssvalue::CSSColor::SerializeAsCSSComponentValue(
                    style_color_.GetColor());
 }
 

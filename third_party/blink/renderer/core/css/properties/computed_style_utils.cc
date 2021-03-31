@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
 #include "third_party/blink/renderer/core/css/css_border_image_slice_value.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_counter_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -122,7 +122,7 @@ CSSValue* ComputedStyleUtils::CurrentColorOrValidColor(
       RuntimeEnabledFeatures::CSSSystemColorComputeToSelfEnabled()) {
     return CSSIdentifierValue::Create(color.GetColorKeyword());
   }
-  return cssvalue::CSSColorValue::Create(
+  return cssvalue::CSSColor::Create(
       color.Resolve(style.GetCurrentColor(), style.UsedColorScheme()).Rgb());
 }
 
@@ -2743,7 +2743,7 @@ const CSSValue* ComputedStyleUtils::ValueForStyleAutoColor(
     const StyleAutoColor& color,
     CSSValuePhase value_phase) {
   if (color.IsAutoColor()) {
-    return cssvalue::CSSColorValue::Create(
+    return cssvalue::CSSColor::Create(
         StyleColor::CurrentColor()
             .Resolve(style.GetCurrentColor(), style.UsedColorScheme())
             .Rgb());

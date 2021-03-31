@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_UNSUPPORTED_COLOR_VALUE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_style_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -22,14 +22,14 @@ class CORE_EXPORT CSSUnsupportedColorValue final
  public:
   explicit CSSUnsupportedColorValue(Color color)
       : CSSUnsupportedStyleValue(
-            cssvalue::CSSColorValue::SerializeAsCSSComponentValue(color)),
+            cssvalue::CSSColor::SerializeAsCSSComponentValue(color)),
         color_value_(color) {}
   explicit CSSUnsupportedColorValue(const CSSPropertyName& name, Color color)
       : CSSUnsupportedStyleValue(
             name,
-            cssvalue::CSSColorValue::SerializeAsCSSComponentValue(color)),
+            cssvalue::CSSColor::SerializeAsCSSComponentValue(color)),
         color_value_(color) {}
-  explicit CSSUnsupportedColorValue(const cssvalue::CSSColorValue& color_value)
+  explicit CSSUnsupportedColorValue(const cssvalue::CSSColor& color_value)
       : CSSUnsupportedColorValue(color_value.Value()) {}
   CSSUnsupportedColorValue(const CSSUnsupportedColorValue&) = delete;
   CSSUnsupportedColorValue& operator=(const CSSUnsupportedColorValue&) = delete;

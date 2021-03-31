@@ -10,7 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/animation/color_property_functions.h"
 #include "third_party/blink/renderer/core/animation/interpolable_value.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -89,7 +89,7 @@ CSSColorInterpolationType::CreateInterpolableColor(const StyleColor& color) {
 
 std::unique_ptr<InterpolableValue>
 CSSColorInterpolationType::MaybeCreateInterpolableColor(const CSSValue& value) {
-  if (auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value))
+  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value))
     return CreateInterpolableColor(color_value->Value());
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (!identifier_value)
@@ -312,7 +312,7 @@ const CSSValue* CSSColorInterpolationType::CreateCSSValue(
     const StyleResolverState& state) const {
   const auto& color_pair = To<InterpolableList>(interpolable_value);
   Color color = ResolveInterpolableColor(*color_pair.Get(kUnvisited), state);
-  return cssvalue::CSSColorValue::Create(color.Rgb());
+  return cssvalue::CSSColor::Create(color.Rgb());
 }
 
 void CSSColorInterpolationType::Composite(

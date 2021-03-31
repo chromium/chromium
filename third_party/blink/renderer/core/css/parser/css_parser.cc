@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_fast_paths.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
@@ -275,7 +275,7 @@ bool CSSParser::ParseColor(Color& color, const String& string, bool strict) {
         StrictCSSParserContext(SecureContextMode::kInsecureContext));
   }
 
-  auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value);
+  auto* color_value = DynamicTo<cssvalue::CSSColor>(value);
   if (!color_value)
     return false;
 

@@ -31,7 +31,7 @@
 #include <utility>
 
 #include "base/stl_util.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
@@ -345,7 +345,7 @@ void CSSGradientValue::AddComputedStops(
         break;
       case CSSValueID::kCurrentcolor:
         if (allow_visited_style) {
-          stop.color_ = CSSColorValue::Create(
+          stop.color_ = CSSColor::Create(
               style.VisitedDependentColor(GetCSSPropertyColor()).Rgb());
         } else {
           stop.color_ = ComputedStyleUtils::CurrentColorOrValidColor(
@@ -354,10 +354,10 @@ void CSSGradientValue::AddComputedStops(
         break;
       default:
         // TODO(crbug.com/929098) Need to pass an appropriate color scheme here.
-        stop.color_ = CSSColorValue::Create(
-            StyleColor::ColorFromKeyword(value_id,
-                                         mojom::blink::ColorScheme::kLight)
-                .Rgb());
+        stop.color_ =
+            CSSColor::Create(StyleColor::ColorFromKeyword(
+                                 value_id, mojom::blink::ColorScheme::kLight)
+                                 .Rgb());
     }
     AddStop(stop);
   }

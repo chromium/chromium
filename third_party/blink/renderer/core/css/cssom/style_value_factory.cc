@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -55,7 +55,7 @@ CSSStyleValue* CreateStyleValue(const CSSValue& value) {
     return CSSKeywordValue::FromCSSValue(value);
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value))
     return CSSNumericValue::FromCSSValue(*primitive_value);
-  if (auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value))
+  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value))
     return MakeGarbageCollected<CSSUnsupportedColorValue>(*color_value);
   if (auto* image_value = DynamicTo<CSSImageValue>(value))
     return MakeGarbageCollected<CSSURLImageValue>(*image_value->Clone());

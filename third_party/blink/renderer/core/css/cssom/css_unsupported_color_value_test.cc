@@ -29,9 +29,8 @@ TEST(CSSUnsupportedColorValueTest, ColorStyleValueToString) {
       MakeGarbageCollected<CSSUnsupportedColorValue>(Color(0, 255, 0));
 
   EXPECT_TRUE(style_value);
-  EXPECT_EQ(
-      style_value->toString(),
-      cssvalue::CSSColorValue::SerializeAsCSSComponentValue(Color(0, 255, 0)));
+  EXPECT_EQ(style_value->toString(),
+            cssvalue::CSSColor::SerializeAsCSSComponentValue(Color(0, 255, 0)));
 }
 
 }  // namespace blink

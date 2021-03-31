@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
 #include "third_party/blink/renderer/core/animation/css_color_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_deferred_image.h"
 #include "third_party/blink/renderer/core/css/cssom/paint_worklet_input.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
@@ -156,8 +156,8 @@ bool GetColorsFromStringKeyframe(const PropertySpecificKeyframe* frame,
   const CSSValue* computed_value = StyleResolver::ComputeValue(
       const_cast<Element*>(element), property_name, *value);
   DCHECK(computed_value->IsColorValue());
-  const cssvalue::CSSColorValue* color_value =
-      static_cast<const cssvalue::CSSColorValue*>(computed_value);
+  const cssvalue::CSSColor* color_value =
+      static_cast<const cssvalue::CSSColor*>(computed_value);
   animated_colors->push_back(color_value->Value());
   return true;
 }

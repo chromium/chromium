@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
 
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
@@ -131,7 +131,7 @@ Color TextLinkColors::ColorFromCSSValue(const CSSValue& value,
                                         Color current_color,
                                         mojom::blink::ColorScheme color_scheme,
                                         bool for_visited_link) const {
-  if (auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value))
+  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value))
     return color_value->Value();
 
   if (auto* pair = DynamicTo<CSSLightDarkValuePair>(value)) {

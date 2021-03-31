@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_grid_integer_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -297,7 +297,7 @@ TEST(CSSPropertyParserTest, ColorFunction) {
       CSSPropertyID::kBackgroundColor, "rgba(0, 0, 0, 1)",
       StrictCSSParserContext(SecureContextMode::kSecureContext));
   ASSERT_TRUE(value);
-  EXPECT_EQ(Color::kBlack, To<cssvalue::CSSColorValue>(*value).Value());
+  EXPECT_EQ(Color::kBlack, To<cssvalue::CSSColor>(*value).Value());
 }
 
 TEST(CSSPropertyParserTest, IncompleteColor) {

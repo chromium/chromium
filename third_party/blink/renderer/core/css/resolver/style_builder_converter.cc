@@ -32,7 +32,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_font_family_value.h"
@@ -1398,7 +1398,7 @@ ShadowData StyleBuilderConverter::ConvertShadow(
       // Document dependent CSS colors.
       color = StyleColor(Color::kBlack);
       if (auto* color_value =
-              DynamicTo<cssvalue::CSSColorValue>(shadow.color.Get())) {
+              DynamicTo<cssvalue::CSSColor>(shadow.color.Get())) {
         color = StyleColor(color_value->Value());
       } else {
         CSSValueID value_id =
@@ -1935,7 +1935,7 @@ static const CSSValue& ComputeRegisteredPropertyValue(
                 : mojom::blink::ColorScheme::kLight;
       Color color = document.GetTextLinkColors().ColorFromCSSValue(
           value, Color(), scheme, false);
-      return *cssvalue::CSSColorValue::Create(color.Rgb());
+      return *cssvalue::CSSColor::Create(color.Rgb());
     }
   }
 
