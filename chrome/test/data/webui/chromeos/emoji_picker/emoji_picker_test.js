@@ -203,7 +203,7 @@ suite('<emoji-picker>', () => {
       assertLT(variantsRect.right, groupsRect.right);
     });
 
-    test('opening large variants should not overflow', async () => {
+    test('opening large variants (twice) should not overflow', async () => {
       const coupleEmojiButton = await waitForCondition(
           () =>
               findInEmojiPicker(
@@ -226,6 +226,26 @@ suite('<emoji-picker>', () => {
 
       assertLT(pickerRect.left, variantsRect.left);
       assertLT(variantsRect.right, pickerRect.right);
+
+      // Now close the variants and reopen, should still be positioned properly.
+      emojiPicker.click();
+      await waitForCondition(
+          () => !findEmojiVariants(firstEmojiButton),
+          'emoji-variants failed to disappear.');
+
+      const variantsPromise2 = waitForEvent(emojiPicker, EMOJI_VARIANTS_SHOWN);
+      // reshow
+      dispatchMouseEvent(coupleEmojiButton.querySelector('button'), 2);
+      const variants2 =
+          await waitForCondition(() => findEmojiVariants(coupleEmojiButton));
+      // ensure variants are positioned before we get bounding rectangle.
+      await waitWithTimeout(
+          variantsPromise2, 1000,
+          'did not receive second emoji variants event.');
+      const variantsRect2 = variants2.getBoundingClientRect();
+
+      assertLT(pickerRect.left, variantsRect2.left);
+      assertLT(variantsRect2.right, pickerRect.right);
     });
   });
 });
