@@ -158,7 +158,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoCableDiscovery
   // will be ignored. However, devices may rotate their BLE address at will so
   // this is not completely effective.
   std::set<std::string> active_devices_;
-  base::Optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
 
   // Note that on Windows, |advertisements_| is the only reference holder of
   // BluetoothAdvertisement.
