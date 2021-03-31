@@ -110,18 +110,13 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onKeypress_(event) {
+  onKeydown_(event) {
     if (event.target.id === 'input' && event.key === 'Enter') {
       event.stopPropagation();
       this.fire('enter');
+      return;
     }
-  },
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onKeydown_(event) {
     if (!this.isShowingPlaceholder_()) {
       return;
     }

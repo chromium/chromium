@@ -231,4 +231,29 @@ suite('NetworkSimLockDialogsTest', function() {
     assertEquals(networkConfigRemote_.testPin, '1234');
     assertFalse(changePinDialog.open);
   });
+
+  test('Submit on enter pressed', async function() {
+    const mojom = chromeos.networkConfig.mojom;
+    let deviceState = {
+      type: mojom.NetworkType.kCellular,
+      deviceState: chromeos.networkConfig.mojom.DeviceStateType.kEnabled,
+      simInfos: [{slot_id: 0, iccid: '1111111111111111'}],
+      simLockStatus: {lockEnabled: false, lockType: '', retriesLeft: 3}
+    };
+    networkConfigRemote_.setDeviceStateForTest(deviceState);
+    simLockDialog.deviceState = deviceState;
+    await flushAsync();
+
+    const enterPinDialog = simLockDialog.$$('#enterPinDialog');
+
+    let pinInput = enterPinDialog.querySelector('#enterPin');
+    pinInput.value = '1111111';
+    pinInput.fire('enter', {path: [pinInput]});
+    await flushAsync();
+
+    deviceState =
+        networkConfigRemote_.getDeviceStateForTest(mojom.NetworkType.kCellular);
+
+    assertEquals(2, deviceState.simLockStatus.retriesLeft);
+  });
 });
