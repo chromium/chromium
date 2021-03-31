@@ -4508,17 +4508,6 @@ void WebGLRenderingContextBase::readPixels(
     GLenum format,
     GLenum type,
     MaybeShared<DOMArrayBufferView> pixels) {
-  if (IsUserInIdentifiabilityStudy()) {
-    base::Optional<UkmParameters> ukm_params = ukm_parameters();
-    if (ukm_params) {
-      blink::IdentifiabilityMetricBuilder(ukm_params->source_id)
-          .Set(blink::IdentifiableSurface::FromTypeAndInput(
-                   blink::IdentifiableSurface::Type::kCanvasReadback,
-                   GetContextType()),
-               0)
-          .Record(ukm_params->ukm_recorder);
-    }
-  }
   ReadPixelsHelper(x, y, width, height, format, type, pixels.View(), 0);
 }
 

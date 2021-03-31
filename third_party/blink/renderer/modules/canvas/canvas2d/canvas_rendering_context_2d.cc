@@ -680,12 +680,6 @@ ImageData* CanvasRenderingContext2D::getImageData(
     int sw,
     int sh,
     ExceptionState& exception_state) {
-  blink::IdentifiabilityMetricBuilder(ukm_source_id_)
-      .Set(blink::IdentifiableSurface::FromTypeAndInput(
-               blink::IdentifiableSurface::Type::kCanvasReadback,
-               GetContextType()),
-           0)
-      .Record(ukm_recorder_);
   return BaseRenderingContext2D::getImageData(sx, sy, sw, sh, exception_state);
 }
 
