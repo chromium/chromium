@@ -1571,43 +1571,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPDefaultSrc) {
 // supported on Android. Enable this browser test after
 // https://crbug.com/1011535 is fixed.
 #if defined(OS_ANDROID)
-#define MAYBE_LocalFileSystemAccessError DISABLED_LocalFileSystemAccessError
-#else
-#define MAYBE_LocalFileSystemAccessError LocalFileSystemAccessError
-#endif
-
-// Tests that the prerendering page cannot access local file system via the File
-// System Access API.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MAYBE_LocalFileSystemAccessError) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Start a prerender.
-  AddPrerender(kPrerenderingUrl);
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  RenderFrameHostImpl* prerender_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHost();
-
-  // Executing showOpenFilePicker() on the prerendered page should fail.
-  auto result =
-      EvalJs(prerender_render_frame_host, "window.showOpenFilePicker()",
-             EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(result.error,
-              ::testing::HasSubstr(
-                  "Failed to execute 'showOpenFilePicker' on 'Window': Must be "
-                  "handling a user gesture to show a file picker."));
-}
-
-// TODO(https://crbug.com/1182032): Now the File System Access API is not
-// supported on Android. Enable this browser test after
-// https://crbug.com/1011535 is fixed.
-#if defined(OS_ANDROID)
 #define MAYBE_DeferPrivateOriginFileSystem DISABLED_DeferPrivateOriginFileSystem
 #else
 #define MAYBE_DeferPrivateOriginFileSystem DeferPrivateOriginFileSystem
@@ -1727,68 +1690,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, ClipboardByExecCommandFail) {
   EXPECT_EQ(false, EvalJs(prerendered_render_frame_host,
                           "document.execCommand('paste');",
                           EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
-}
-
-// Tests that prerendering pages cannot access the Async Clipboard API because
-// they are not focused.
-// This cannot be upstreamed as a WPT test because the spec (probably) will
-// require that no error is thrown until activation.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, AsyncClipboardAccessError) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl = GetUrl("/empty.html");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Make a prerendered page.
-  AddPrerender(kPrerenderingUrl);
-
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  RenderFrameHostImpl* prerendered_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHost();
-
-  // Accessing Clipboard on prerendering pages should fail because the
-  // prerendering documents are not focused.
-  // https://w3c.github.io/clipboard-apis/#privacy-async
-  auto result = EvalJs(prerendered_render_frame_host,
-                       "navigator.clipboard.writeText(location.href);",
-                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(result.error, ::testing::HasSubstr(
-                                "NotAllowedError: Document is not focused."));
-}
-
-// Tests that the Pointer Lock API is not valid on prerendering pages.
-// This cannot be upstreamed as a WPT test because the spec (probably) will
-// require that no error is thrown until activation.
-IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PointerLockError) {
-  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
-  const GURL kPrerenderingUrl =
-      GetUrl("/prerender/restriction_pointer_lock.html");
-
-  // Navigate to an initial page.
-  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
-
-  // Start a prerender.
-  AddPrerender(kPrerenderingUrl);
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
-  PrerenderHost* prerender_host =
-      registry.FindHostByUrlForTesting(kPrerenderingUrl);
-  ASSERT_TRUE(prerender_host);
-  RenderFrameHostImpl* prerender_render_frame_host =
-      prerender_host->GetPrerenderedMainFrameHost();
-
-  // The Pointer Lock API is not engaged on prerendering pages because the
-  // prerendering documents are not focused.
-  // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
-  auto result =
-      EvalJs(prerender_render_frame_host, "canvas.requestPointerLock();",
-             EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(result.error, ::testing::HasSubstr(
-                                "WrongDocumentError: The root document of this "
-                                "element is not valid for pointer lock."));
 }
 
 // End: Tests for feature restrictions in prerendered pages ====================

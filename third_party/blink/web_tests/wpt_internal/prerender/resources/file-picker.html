@@ -5,21 +5,19 @@
 
 assert_true(document.prerendering);
 
-async function startPresentationRequest() {
+async function showFilePicker(){
   const bc = new BroadcastChannel('prerender-channel');
-  const presentationRequest = new PresentationRequest(
-      'https://example.com/presentation.html');
 
   try {
-    const _ = await presentationRequest.start();
+    const _ = await window.showOpenFilePicker()
     bc.postMessage('unexpected success');
-  } catch (err) {
-    bc.postMessage('request failed');
+  } catch (err){
+    bc.postMessage(err.name);
   } finally {
     bc.close();
   }
 }
 
-startPresentationRequest();
+showFilePicker();
 
 </script>

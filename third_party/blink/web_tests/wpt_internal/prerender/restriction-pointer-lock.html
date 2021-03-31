@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<title>Same-origin prerendering cannot start presentation</title>
 <!-- This cannot be upstreamed as a WPT test because the spec (probably) will
      require that no error is thrown until activation. -->
+<title>Same-origin prerendering cannot request PointerLock</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="resources/utils.js"></script>
@@ -19,12 +19,11 @@ promise_test(async t => {
     });
   });
 
-  // Start prerendering a page that attempts to start presentation.
-  startPrerendering(`resources/presentation-request.html`);
-
+  // Start prerendering a page that attempts to request pointer lock.
+  startPrerendering(`resources/pointer-lock.html`);
   const result = await gotMessage;
-  assert_equals(result, 'request failed');
-}, 'prerendering page cannot start presentation');
+  assert_equals(result, 'WrongDocumentError');
+}, 'prerendering pages should not be able to request pointer lock');
 
 </script>
 </body>

@@ -1,25 +1,26 @@
 <!DOCTYPE html>
+<canvas id="pcanvas" width="320" height="320">
+  This is a canvas.
+</canvas>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script>
 
 assert_true(document.prerendering);
 
-async function startPresentationRequest() {
+async function requestPointerLock(){
   const bc = new BroadcastChannel('prerender-channel');
-  const presentationRequest = new PresentationRequest(
-      'https://example.com/presentation.html');
-
   try {
-    const _ = await presentationRequest.start();
+    const canvas = document.getElementById('pcanvas');
+    const _ = await canvas.requestPointerLock();
     bc.postMessage('unexpected success');
-  } catch (err) {
-    bc.postMessage('request failed');
+  } catch (err){
+    bc.postMessage(err.name);
   } finally {
     bc.close();
   }
 }
 
-startPresentationRequest();
+requestPointerLock();
 
 </script>
