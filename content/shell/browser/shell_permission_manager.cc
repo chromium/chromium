@@ -134,16 +134,16 @@ ShellPermissionManager::GetPermissionStatusForFrame(
           .GetOrigin());
 }
 
-int ShellPermissionManager::SubscribePermissionStatusChange(
+ShellPermissionManager::SubscriptionId
+ShellPermissionManager::SubscribePermissionStatusChange(
     PermissionType permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
-  return PermissionController::kNoPendingOperation;
+  return SubscriptionId();
 }
 
 void ShellPermissionManager::UnsubscribePermissionStatusChange(
-    int subscription_id) {
-}
+    SubscriptionId subscription_id) {}
 
 }  // namespace content

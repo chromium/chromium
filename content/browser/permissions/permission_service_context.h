@@ -9,6 +9,7 @@
 #include <unordered_map>
 
 #include "content/common/content_export.h"
+#include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_document_host_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -58,7 +59,8 @@ class CONTENT_EXPORT PermissionServiceContext
       mojo::PendingRemote<blink::mojom::PermissionObserver> observer);
 
   // Called when the connection to a PermissionObserver has an error.
-  void ObserverHadConnectionError(int subscription_id);
+  void ObserverHadConnectionError(
+      PermissionController::SubscriptionId subscription_id);
 
   // May return nullptr during teardown, or when showing an interstitial.
   BrowserContext* GetBrowserContext() const;
@@ -81,7 +83,8 @@ class CONTENT_EXPORT PermissionServiceContext
   RenderFrameHost* const render_frame_host_;
   RenderProcessHost* const render_process_host_;
   mojo::UniqueReceiverSet<blink::mojom::PermissionService> services_;
-  std::unordered_map<int, std::unique_ptr<PermissionSubscription>>
+  std::unordered_map<PermissionController::SubscriptionId,
+                     std::unique_ptr<PermissionSubscription>>
       subscriptions_;
 };
 
