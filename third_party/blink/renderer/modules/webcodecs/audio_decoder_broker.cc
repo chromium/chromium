@@ -73,13 +73,13 @@ class MediaAudioTaskWrapper {
   MediaAudioTaskWrapper(
       base::WeakPtr<CrossThreadAudioDecoderClient> weak_client,
       ExecutionContext& execution_context,
-      media::MediaLog* media_log,
+      std::unique_ptr<media::MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       scoped_refptr<base::SequencedTaskRunner> main_task_runner)
       : weak_client_(std::move(weak_client)),
         media_task_runner_(std::move(media_task_runner)),
         main_task_runner_(std::move(main_task_runner)),
-        media_log_(media_log) {
+        media_log_(std::move(media_log)) {
     DVLOG(2) << __func__;
     DETACH_FROM_SEQUENCE(sequence_checker_);
 
@@ -178,7 +178,7 @@ class MediaAudioTaskWrapper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     std::vector<std::unique_ptr<media::AudioDecoder>> audio_decoders;
-    decoder_factory_->CreateAudioDecoders(media_task_runner_, media_log_,
+    decoder_factory_->CreateAudioDecoders(media_task_runner_, media_log_.get(),
                                           &audio_decoders);
 
     return audio_decoders;
@@ -248,7 +248,7 @@ class MediaAudioTaskWrapper {
   std::unique_ptr<media::AudioDecoder> decoder_;
   gfx::ColorSpace target_color_space_;
 
-  media::MediaLog* media_log_;
+  std::unique_ptr<media::MediaLog> media_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -267,7 +267,7 @@ AudioDecoderBroker::AudioDecoderBroker(media::MediaLog* media_log,
     : media_task_runner_(worker_pool::CreateSequencedTaskRunner({})) {
   DVLOG(2) << __func__;
   media_tasks_ = std::make_unique<MediaAudioTaskWrapper>(
-      weak_factory_.GetWeakPtr(), execution_context, media_log,
+      weak_factory_.GetWeakPtr(), execution_context, media_log->Clone(),
       media_task_runner_,
       execution_context.GetTaskRunner(TaskType::kInternalMedia));
 }
