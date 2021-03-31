@@ -1406,7 +1406,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Apps.HomeLauncherTransition.AnimationSmoothness" units="%"
-    expires_after="2021-03-28">
+    expires_after="never">
+<!-- expires-never: These metrics are required
+     by Tast tests to monitor performance. We should
+     keep these metrics alive until we stop monitoring
+     performance of home launcher animations -->
+
 <!-- Name completed by histogram suffixes
      name="AppListTabletModeTransition" -->
 
