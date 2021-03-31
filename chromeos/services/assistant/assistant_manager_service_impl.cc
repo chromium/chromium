@@ -76,22 +76,12 @@ ToAuthenticationTokens(
   return result;
 }
 
-bool ShouldPutLogsInHomeDirectory() {
-  // If this command line flag is specified, the logs should *not* be put in
-  // the home directory.
-  const bool redirect_logging =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kRedirectLibassistantLogging);
-  return !redirect_logging;
-}
-
 chromeos::libassistant::mojom::BootupConfigPtr CreateBootupConfig(
     const base::Optional<std::string>& s3_server_uri_override,
     const base::Optional<std::string>& device_id_override) {
   auto result = chromeos::libassistant::mojom::BootupConfig::New();
   result->s3_server_uri_override = s3_server_uri_override;
   result->device_id_override = device_id_override;
-  result->log_in_home_dir = ShouldPutLogsInHomeDirectory();
   return result;
 }
 

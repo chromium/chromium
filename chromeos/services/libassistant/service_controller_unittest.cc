@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/base_paths.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager.h"
 #include "chromeos/assistant/internal/test_support/fake_assistant_manager_internal.h"
@@ -204,6 +206,7 @@ class AssistantServiceControllerTest : public testing::Test {
   }
 
   base::test::SingleThreadTaskEnvironment environment_;
+  base::ScopedPathOverride home_override{base::DIR_HOME};
 
   network::TestURLLoaderFactory url_loader_factory_;
 

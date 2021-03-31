@@ -21,8 +21,7 @@ namespace libassistant {
 // Creates the configuration for libassistant.
 std::string CreateLibAssistantConfig(
     base::Optional<std::string> s3_server_uri_override,
-    base::Optional<std::string> device_id_override,
-    bool log_in_home_dir);
+    base::Optional<std::string> device_id_override);
 
 // Returns the path where all downloaded LibAssistant resources are stored.
 base::FilePath GetBaseAssistantDir();

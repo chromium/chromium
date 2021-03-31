@@ -43,8 +43,7 @@ constexpr char kServersideResponseProcessingV2ExperimentId[] = "1793869";
 
 std::string ToLibassistantConfig(const mojom::BootupConfig& bootup_config) {
   return CreateLibAssistantConfig(bootup_config.s3_server_uri_override,
-                                  bootup_config.device_id_override,
-                                  bootup_config.log_in_home_dir);
+                                  bootup_config.device_id_override);
 }
 
 std::unique_ptr<network::PendingSharedURLLoaderFactory>

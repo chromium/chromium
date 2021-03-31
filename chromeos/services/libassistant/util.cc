@@ -4,6 +4,7 @@
 
 #include "chromeos/services/libassistant/util.h"
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
@@ -148,6 +149,29 @@ class V1InteractionBuilder {
   Interaction interaction_;
 };
 
+bool ShouldPutLogsInHomeDirectory() {
+  // Redirects libassistant logging to /var/log/chrome/. This is mainly used to
+  // help collect logs when running tests.
+  constexpr char kRedirectLibassistantLogging[] =
+      "redirect-libassistant-logging";
+
+  const bool redirect_logging =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kRedirectLibassistantLogging);
+  return !redirect_logging;
+}
+
+bool ShouldLogToFile() {
+  // Redirects libassistant logging to stdout. This is mainly used to help test
+  // locally.
+  constexpr char kDisableLibAssistantLogfile[] = "disable-libassistant-logfile";
+
+  const bool disable_logfile =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kDisableLibAssistantLogfile);
+  return !disable_logfile;
+}
+
 }  // namespace
 
 base::FilePath GetBaseAssistantDir() {
@@ -156,8 +180,7 @@ base::FilePath GetBaseAssistantDir() {
 
 std::string CreateLibAssistantConfig(
     base::Optional<std::string> s3_server_uri_override,
-    base::Optional<std::string> device_id_override,
-    bool log_in_home_dir) {
+    base::Optional<std::string> device_id_override) {
   using Value = base::Value;
   using Type = base::Value::Type;
 
@@ -192,11 +215,15 @@ std::string CreateLibAssistantConfig(
   // See //libassistant/shared/proto/device_properties.proto.
   internal.SetKey("visibility", Value("PRIVATE"));
 
-  if (base::SysInfo::IsRunningOnChromeOS()) {
+  if (ShouldLogToFile()) {
     Value logging(Type::DICTIONARY);
-    const std::string log_dir =
-        log_in_home_dir ? GetRootPath().Append(FILE_PATH_LITERAL("log")).value()
-                        : "/var/log/chrome/";
+    std::string log_dir("/var/log/chrome/");
+    if (ShouldPutLogsInHomeDirectory()) {
+      base::FilePath log_path =
+          GetBaseAssistantDir().Append(FILE_PATH_LITERAL("log"));
+      CHECK(base::CreateDirectory(log_path));
+      log_dir = log_path.value();
+    }
     logging.SetKey("directory", Value(log_dir));
     // Maximum disk space consumed by all log files. There are 5 rotating log
     // files on disk.

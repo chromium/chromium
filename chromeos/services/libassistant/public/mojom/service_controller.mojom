@@ -59,9 +59,6 @@ struct BootupConfig {
   string? s3_server_uri_override;
   // A custom device id. Used during unittests.
   string? device_id_override;
-  // If true, Libassistant logs will appear in the user's home directory.
-  // If false, the logs will end up in /var/log/chrome/.
-  bool log_in_home_dir;
 
   array<AuthenticationToken> authentication_tokens;
   string locale;

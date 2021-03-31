@@ -49,7 +49,7 @@ constexpr struct UserLogs {
 } kUserLogs[] = {
     {"chrome_user_log", "log/chrome"},
     {"chrome_user_log.PREVIOUS", "log/chrome.PREVIOUS"},
-    {"libassistant_user_log", "log/libassistant.log"},
+    {"libassistant_user_log", "google-assistant-library/log/libassistant.log"},
     {"login-times", "login-times"},
     {"logout-times", "logout-times"},
 };
