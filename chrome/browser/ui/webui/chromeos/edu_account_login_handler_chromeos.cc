@@ -55,12 +55,8 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
           setting: "This feature cannot be disabled by settings."
           policy_exception_justification: "Not implemented."
         })");
-constexpr char kFetchParentsListResultHistogram[] =
-    "AccountManager.EduCoexistence.FetchParentsListResult";
 constexpr char kFetchAccessTokenResultHistogram[] =
     "AccountManager.EduCoexistence.FetchAccessTokenResult";
-constexpr char kCreateRaptResultHistogram[] =
-    "AccountManager.EduCoexistence.CreateRaptResult";
 }  // namespace
 
 EduAccountLoginHandler::EduAccountLoginHandler(
@@ -283,8 +279,6 @@ void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
 
 void EduAccountLoginHandler::OnGetFamilyMembersSuccess(
     const std::vector<FamilyInfoFetcher::FamilyMember>& members) {
-  base::UmaHistogramEnumeration(kFetchParentsListResultHistogram,
-                                FamilyInfoFetcher::ErrorCode::kSuccess);
   family_fetcher_.reset();
   base::ListValue parents;
   std::map<std::string, GURL> profile_image_urls;
@@ -309,7 +303,6 @@ void EduAccountLoginHandler::OnGetFamilyMembersSuccess(
 }
 
 void EduAccountLoginHandler::OnFailure(FamilyInfoFetcher::ErrorCode error) {
-  base::UmaHistogramEnumeration(kFetchParentsListResultHistogram, error);
   family_fetcher_.reset();
   RejectJavascriptCallback(base::Value(get_parents_callback_id_),
                            base::ListValue());
@@ -369,9 +362,6 @@ void EduAccountLoginHandler::CreateReAuthProofTokenForParent(
 
 void EduAccountLoginHandler::OnReAuthProofTokenSuccess(
     const std::string& reauth_proof_token) {
-  base::UmaHistogramEnumeration(
-      kCreateRaptResultHistogram,
-      GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess);
   gaia_auth_fetcher_.reset();
   ResolveJavascriptCallback(base::Value(parent_signin_callback_id_),
                             base::Value(reauth_proof_token));
@@ -380,7 +370,6 @@ void EduAccountLoginHandler::OnReAuthProofTokenSuccess(
 
 void EduAccountLoginHandler::OnReAuthProofTokenFailure(
     const GaiaAuthConsumer::ReAuthProofTokenStatus error) {
-  base::UmaHistogramEnumeration(kCreateRaptResultHistogram, error);
   LOG(ERROR) << "Failed to fetch ReAuthProofToken for the parent, error="
              << static_cast<int>(error);
   gaia_auth_fetcher_.reset();

@@ -41,13 +41,10 @@ class SharedURLLoaderFactory;
 // stable.
 class SecondaryAccountConsentLogger {
  public:
-  // NOTE: This enum is persisted to histograms. Do not change or reorder
-  // values.
   enum class Result : int {
     kSuccess = 0,
-    kTokenError,    // Failed to get OAuth2 token.
-    kNetworkError,  // Network failure.
-    kMaxValue = kNetworkError,
+    kTokenError,   // Failed to get OAuth2 token.
+    kNetworkError  // Network failure.
   };
 
   // Create a new instance to log the consent. To start logging call

@@ -87,8 +87,6 @@ class GaiaAuthConsumer {
     kMaxValue = kUnknownError
   };
 
-  // Used in UMA, do not delete or reorder values.
-  // Update enums.xml when adding entries.
   enum class ReAuthProofTokenStatus : int {
     // Successful request: used only to control FakeGaia response.
     kSuccess = 0,
@@ -105,9 +103,7 @@ class GaiaAuthConsumer {
     // A network error.
     kNetworkError = 6,
     // Other error.
-    kUnknownError = 7,
-
-    kMaxValue = kUnknownError
+    kUnknownError = 7
   };
 
   virtual ~GaiaAuthConsumer() {}

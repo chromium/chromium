@@ -27763,6 +27763,9 @@ Called by update_extension_permission.py.-->
 </enum>
 
 <enum name="FamilyInfoFetcherErrorCode">
+  <obsolete>
+    Deprecated in M91 after v2 EduCoexistence.
+  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="OAuth2 token error"/>
   <int value="2" label="Network error"/>
@@ -34218,6 +34221,9 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="GaiaReAuthProofTokenStatus">
+  <obsolete>
+    Deprecated in M91 after v2 EduCoexistence.
+  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="Invalid Request"/>
   <int value="2" label="Invalid Grant"/>
@@ -69536,6 +69542,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SecondaryAccountConsentLoggerResult">
+  <obsolete>
+    Deprecated in M91 after v2 EduCoexistence.
+  </obsolete>
   <int value="0" label="Success"/>
   <int value="1" label="OAuth2 token error"/>
   <int value="2" label="Network error"/>

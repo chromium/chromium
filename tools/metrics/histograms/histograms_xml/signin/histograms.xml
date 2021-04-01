@@ -976,7 +976,10 @@ accounts .-->
 </histogram>
 
 <histogram name="Signin.SecondaryAccountConsentLog"
-    enum="SecondaryAccountConsentLoggerResult" expires_after="2021-08-09">
+    enum="SecondaryAccountConsentLoggerResult" expires_after="2021-03-30">
+  <obsolete>
+    Removed in M91. Deprecated after v2 EduCoexistence.
+  </obsolete>
   <owner>anastasiian@chromium.org</owner>
   <owner>sinhak@chromium.org</owner>
   <summary>

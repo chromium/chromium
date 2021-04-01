@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/account_manager_facade_factory.h"
@@ -139,7 +138,6 @@ class ChildSigninHelper : public SigninHelper {
 
   void OnConsentLogged(const std::string& refresh_token,
                        SecondaryAccountConsentLogger::Result result) {
-    UMA_HISTOGRAM_ENUMERATION("Signin.SecondaryAccountConsentLog", result);
     secondary_account_consent_logger_.reset();
     if (result == SecondaryAccountConsentLogger::Result::kSuccess) {
       // The EDU account has been added/re-authenticated. Mark migration to

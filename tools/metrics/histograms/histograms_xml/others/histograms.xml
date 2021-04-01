@@ -86,7 +86,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AccountManager.EduCoexistence.CreateRaptResult"
-    enum="GaiaReAuthProofTokenStatus" expires_after="2021-08-01">
+    enum="GaiaReAuthProofTokenStatus" expires_after="2021-03-30">
+  <obsolete>
+    Removed in M91. Deprecated after v2 EduCoexistence.
+  </obsolete>
   <owner>sinhak@chromium.org</owner>
   <owner>anastasiian@chromium.org</owner>
   <summary>
@@ -103,12 +106,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The result of fetching an access token for the child with |accounts.reauth|
     scope in secondary EDU account addition flow. Recorded after parent enters
-    their password.
+    their password. This metric covers both v1 and v2 of EduCoexistence.
   </summary>
 </histogram>
 
 <histogram name="AccountManager.EduCoexistence.FetchParentsListResult"
-    enum="FamilyInfoFetcherErrorCode" expires_after="2021-06-01">
+    enum="FamilyInfoFetcherErrorCode" expires_after="2021-03-30">
+  <obsolete>
+    Removed in M91. Deprecated after v2 EduCoexistence.
+  </obsolete>
   <owner>sinhak@chromium.org</owner>
   <owner>anastasiian@chromium.org</owner>
   <summary>
