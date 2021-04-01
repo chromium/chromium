@@ -226,14 +226,8 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/1187987): Test is flaky on Win7.
-#if defined(OS_WIN)
-#define MAYBE_ModelExecutes DISABLED_ModelExecutes
-#else
-#define MAYBE_ModelExecutes ModelExecutes
-#endif
 IN_PROC_BROWSER_TEST_F(PageContentAnnotationsServiceBrowserTest,
-                       MAYBE_ModelExecutes) {
+                       ModelExecutes) {
   base::HistogramTester histogram_tester;
 
   GURL url(embedded_test_server()->GetURL("a.com", "/hello.html"));
