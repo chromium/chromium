@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintUnlockTest, FeatureUsageMetrics) {
       kFingerprintAttemptsCountBeforeSuccessHistogramName, 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.FeatureUsage.Fingerprint",
-      static_cast<int>(FeatureUsageMetrics::Event::kUsedWithSucess), 1);
+      static_cast<int>(FeatureUsageMetrics::Event::kUsedWithSuccess), 1);
   histogram_tester.ExpectBucketCount(
       "ChromeOS.FeatureUsage.Fingerprint",
       static_cast<int>(FeatureUsageMetrics::Event::kUsedWithFailure), 1);

@@ -55,7 +55,7 @@ TEST_F(FeatureUsageMetricsTest, RecordUsageWithSuccess) {
   feature_usage_metrics_->RecordUsage(/*success=*/true);
   histogram_tester_->ExpectBucketCount(
       kTestMetric,
-      static_cast<int>(FeatureUsageMetrics::Event::kUsedWithSucess), 1);
+      static_cast<int>(FeatureUsageMetrics::Event::kUsedWithSuccess), 1);
 }
 
 TEST_F(FeatureUsageMetricsTest, RecordUsageWithFailure) {

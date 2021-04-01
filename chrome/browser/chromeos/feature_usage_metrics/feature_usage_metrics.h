@@ -32,7 +32,7 @@ class FeatureUsageMetrics {
   enum class Event {
     kEligible = 0,
     kEnabled = 1,
-    kUsedWithSucess = 2,
+    kUsedWithSuccess = 2,
     kUsedWithFailure = 3,
     kMaxValue = kUsedWithFailure,
   };

@@ -94,7 +94,7 @@ void FeatureUsageMetrics::RegisterPref(PrefRegistrySimple* registry,
 }
 
 void FeatureUsageMetrics::RecordUsage(bool success) const {
-  Event e = success ? Event::kUsedWithSucess : Event::kUsedWithFailure;
+  Event e = success ? Event::kUsedWithSuccess : Event::kUsedWithFailure;
   base::UmaHistogramEnumeration(histogram_name_, e);
 }
 
