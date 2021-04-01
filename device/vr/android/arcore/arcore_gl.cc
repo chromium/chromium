@@ -500,6 +500,7 @@ void ArCoreGl::GetFrameData(
   DCHECK(is_initialized_);
 
   if (restrict_frame_data_) {
+    DVLOG(2) << __func__ << ": frame data restricted, returning nullptr.";
     std::move(callback).Run(nullptr);
     return;
   }

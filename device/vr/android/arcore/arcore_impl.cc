@@ -903,6 +903,9 @@ mojom::VRPosePtr ArCoreImpl::Update(bool* camera_updated) {
     return nullptr;
   }
 
+  // TODO(https://crbug.com/1192844): If the call was successful, we should
+  // Update() the ArCore entity managers.
+
   // If we get here, assume we have a valid camera image, but we don't know yet
   // if tracking is working.
   *camera_updated = true;

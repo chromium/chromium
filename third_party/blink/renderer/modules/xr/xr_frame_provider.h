@@ -17,6 +17,7 @@
 
 namespace blink {
 
+class LocalDOMWindow;
 class XRFrameTransport;
 class XRSession;
 class XRSystem;
@@ -48,7 +49,7 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   void OnSessionEnded(XRSession* session);
   void RestartNonImmersiveFrameLoop();
 
-  void RequestFrame(XRSession*);
+  void RequestFrame(XRSession* session);
 
   void OnNonImmersiveVSync(double high_res_now_ms);
 
@@ -102,6 +103,14 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
       double timestamp,
       const base::Optional<gpu::MailboxHolder>& output_mailbox_holder,
       const base::Optional<gpu::MailboxHolder>& camera_image_mailbox_holder);
+
+  // Updates the |first_immersive_frame_time_| and
+  // |first_immersive_frame_time_delta_| members and returns the computed high
+  // resolution timestamp for the received frame. The result corresponds to
+  // WebXR's XRFrame's `time` attribute.
+  double UpdateImmersiveFrameTime(
+      LocalDOMWindow* window,
+      const device::mojom::blink::XRFrameData& data);
 
   const Member<XRSystem> xr_;
 
