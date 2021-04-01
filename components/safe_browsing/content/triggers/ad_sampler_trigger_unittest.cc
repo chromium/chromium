@@ -28,7 +28,7 @@ using testing::Return;
 namespace safe_browsing {
 
 namespace {
-const char kAdUrl[] = "https://tpc.googlesyndication.com/safeframe/1";
+const char kAdUrl[] = "https://tpc.safeframe.googlesyndication.com/safeframe/1";
 const char kNonAdUrl[] = "https://foo.com/";
 const char kAdName[] = "google_ads_iframe_1";
 const char kNonAdName[] = "foo";
