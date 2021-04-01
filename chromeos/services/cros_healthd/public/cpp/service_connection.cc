@@ -521,24 +521,22 @@ void ServiceConnectionImpl::AddBluetoothObserver(
     mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> pending_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();
-  mojom::CrosHealthdBluetoothObserverPtr ptr{std::move(pending_observer)};
-  cros_healthd_event_service_->AddBluetoothObserver(std::move(ptr));
+  cros_healthd_event_service_->AddBluetoothObserver(
+      std::move(pending_observer));
 }
 
 void ServiceConnectionImpl::AddLidObserver(
     mojo::PendingRemote<mojom::CrosHealthdLidObserver> pending_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();
-  mojom::CrosHealthdLidObserverPtr ptr{std::move(pending_observer)};
-  cros_healthd_event_service_->AddLidObserver(std::move(ptr));
+  cros_healthd_event_service_->AddLidObserver(std::move(pending_observer));
 }
 
 void ServiceConnectionImpl::AddPowerObserver(
     mojo::PendingRemote<mojom::CrosHealthdPowerObserver> pending_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();
-  mojom::CrosHealthdPowerObserverPtr ptr{std::move(pending_observer)};
-  cros_healthd_event_service_->AddPowerObserver(std::move(ptr));
+  cros_healthd_event_service_->AddPowerObserver(std::move(pending_observer));
 }
 
 void ServiceConnectionImpl::AddNetworkObserver(

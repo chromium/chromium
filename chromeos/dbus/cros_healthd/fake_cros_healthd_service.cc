@@ -42,17 +42,17 @@ FakeCrosHealthdService::FakeCrosHealthdService() = default;
 FakeCrosHealthdService::~FakeCrosHealthdService() = default;
 
 void FakeCrosHealthdService::GetProbeService(
-    mojom::CrosHealthdProbeServiceRequest service) {
+    mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) {
   probe_receiver_set_.Add(this, std::move(service));
 }
 
 void FakeCrosHealthdService::GetDiagnosticsService(
-    mojom::CrosHealthdDiagnosticsServiceRequest service) {
+    mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service) {
   diagnostics_receiver_set_.Add(this, std::move(service));
 }
 
 void FakeCrosHealthdService::GetEventService(
-    mojom::CrosHealthdEventServiceRequest service) {
+    mojo::PendingReceiver<mojom::CrosHealthdEventService> service) {
   event_receiver_set_.Add(this, std::move(service));
 }
 
@@ -70,7 +70,7 @@ void FakeCrosHealthdService::SendNetworkDiagnosticsRoutines(
 }
 
 void FakeCrosHealthdService::GetSystemService(
-    mojom::CrosHealthdSystemServiceRequest service) {
+    mojo::PendingReceiver<mojom::CrosHealthdSystemService> service) {
   system_receiver_set_.Add(this, std::move(service));
 }
 
@@ -305,18 +305,18 @@ void FakeCrosHealthdService::RunVideoConferencingRoutine(
 }
 
 void FakeCrosHealthdService::AddBluetoothObserver(
-    mojom::CrosHealthdBluetoothObserverPtr observer) {
-  bluetooth_observers_.Add(observer.PassInterface());
+    mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer) {
+  bluetooth_observers_.Add(std::move(observer));
 }
 
 void FakeCrosHealthdService::AddLidObserver(
-    mojom::CrosHealthdLidObserverPtr observer) {
-  lid_observers_.Add(observer.PassInterface());
+    mojo::PendingRemote<mojom::CrosHealthdLidObserver> observer) {
+  lid_observers_.Add(std::move(observer));
 }
 
 void FakeCrosHealthdService::AddPowerObserver(
-    mojom::CrosHealthdPowerObserverPtr observer) {
-  power_observers_.Add(observer.PassInterface());
+    mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) {
+  power_observers_.Add(std::move(observer));
 }
 
 void FakeCrosHealthdService::AddNetworkObserver(

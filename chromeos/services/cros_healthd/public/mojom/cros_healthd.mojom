@@ -22,11 +22,12 @@ import "chromeos/services/network_health/public/mojom/network_health.mojom";
 // network-related implementations to the cros_healthd daemon.
 interface CrosHealthdServiceFactory {
   // Returns a bound interface to the diagnostics service.
-  GetDiagnosticsService(CrosHealthdDiagnosticsService& service);
+  GetDiagnosticsService(
+      pending_receiver<CrosHealthdDiagnosticsService> service);
   // Returns a bound interface to the event service.
-  GetEventService(CrosHealthdEventService& service);
+  GetEventService(pending_receiver<CrosHealthdEventService> service);
   // Returns a bound interface to the probe service.
-  GetProbeService(CrosHealthdProbeService& service);
+  GetProbeService(pending_receiver<CrosHealthdProbeService> service);
   // Sends a bound interface to the Network Health service in Chrome.
   SendNetworkHealthService(
       pending_remote<
@@ -39,7 +40,7 @@ interface CrosHealthdServiceFactory {
               network_diagnostics_routines);
   // TODO(http://b/181133872): Move this service out of this interface
   // Returns a bound interface to the system service.
-  GetSystemService(CrosHealthdSystemService& service);
+  GetSystemService(pending_receiver<CrosHealthdSystemService> service);
 };
 
 // Diagnostics interface exposed by the cros_healthd daemon. Consumed in Chrome
@@ -445,21 +446,21 @@ interface CrosHealthdEventService {
   //
   // The request:
   // * |observer| - Bluetooth observer to be added to cros_healthd.
-  AddBluetoothObserver(CrosHealthdBluetoothObserver observer);
+  AddBluetoothObserver(pending_remote<CrosHealthdBluetoothObserver> observer);
 
   // Adds an observer to be notified on lid events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - lid observer to be added to cros_healthd.
-  AddLidObserver(CrosHealthdLidObserver observer);
+  AddLidObserver(pending_remote<CrosHealthdLidObserver> observer);
 
   // Adds an observer to be notified on power events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.
   //
   // The request:
   // * |observer| - power observer to be added to cros_healthd.
-  AddPowerObserver(CrosHealthdPowerObserver observer);
+  AddPowerObserver(pending_remote<CrosHealthdPowerObserver> observer);
 
   // Adds an observer to be notified on network events. The caller can remove
   // the observer created by this call by closing their end of the message pipe.

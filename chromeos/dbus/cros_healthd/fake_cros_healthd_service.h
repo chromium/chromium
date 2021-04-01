@@ -17,6 +17,7 @@
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -50,10 +51,13 @@ class FakeCrosHealthdService final
   ~FakeCrosHealthdService() override;
 
   // CrosHealthdServiceFactory overrides:
-  void GetProbeService(mojom::CrosHealthdProbeServiceRequest service) override;
+  void GetProbeService(
+      mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) override;
   void GetDiagnosticsService(
-      mojom::CrosHealthdDiagnosticsServiceRequest service) override;
-  void GetEventService(mojom::CrosHealthdEventServiceRequest service) override;
+      mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service)
+      override;
+  void GetEventService(
+      mojo::PendingReceiver<mojom::CrosHealthdEventService> service) override;
   void SendNetworkHealthService(
       mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>
           remote) override;
@@ -62,7 +66,7 @@ class FakeCrosHealthdService final
           chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
           network_diagnostics_routines) override;
   void GetSystemService(
-      mojom::CrosHealthdSystemServiceRequest service) override;
+      mojo::PendingReceiver<mojom::CrosHealthdSystemService> service) override;
 
   // CrosHealthdDiagnosticsService overrides:
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;
@@ -133,9 +137,12 @@ class FakeCrosHealthdService final
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(
-      mojom::CrosHealthdBluetoothObserverPtr observer) override;
-  void AddLidObserver(mojom::CrosHealthdLidObserverPtr observer) override;
-  void AddPowerObserver(mojom::CrosHealthdPowerObserverPtr observer) override;
+      mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> observer)
+      override;
+  void AddLidObserver(
+      mojo::PendingRemote<mojom::CrosHealthdLidObserver> observer) override;
+  void AddPowerObserver(
+      mojo::PendingRemote<mojom::CrosHealthdPowerObserver> observer) override;
   void AddNetworkObserver(
       mojo::PendingRemote<
           chromeos::network_health::mojom::NetworkEventsObserver> observer)
