@@ -8,9 +8,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/focused_node_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "ui/compositor/compositor_animation_observer.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/paint_recorder.h"
@@ -223,40 +222,33 @@ void AccessibilityFocusHighlight::AddOrRemoveObservers() {
   if (prefs->GetBoolean(prefs::kAccessibilityFocusHighlightEnabled)) {
     // Listen for focus changes. Automatically deregisters when destroyed,
     // or when the preference toggles off.
-    notification_registrar_.Add(this,
-                                content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-                                content::NotificationService::AllSources());
+    // TODO(crbug.com/1194802): This will fire even for focused-element changes
+    // in windows other than browser_view_, which might not be ideal behavior.
+    focus_changed_subscription_ =
+        content::BrowserAccessibilityState::GetInstance()
+            ->RegisterFocusChangedCallback(base::BindRepeating(
+                &AccessibilityFocusHighlight::OnFocusChangedInPage,
+                base::Unretained(this)));
 
     tab_strip_model->AddObserver(this);
     return;
   } else {
-    if (notification_registrar_.IsRegistered(
-            this, content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-            content::NotificationService::AllSources())) {
-      notification_registrar_.Remove(
-          this, content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE,
-          content::NotificationService::AllSources());
-    }
+    focus_changed_subscription_.reset();
     tab_strip_model->RemoveObserver(this);
   }
 }
 
-void AccessibilityFocusHighlight::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  if (type != content::NOTIFICATION_FOCUS_CHANGED_IN_PAGE)
-    return;
-
+void AccessibilityFocusHighlight::OnFocusChangedInPage(
+    const content::FocusedNodeDetails& details) {
   // Unless this is a test, only draw the focus ring if this BrowserView is
   // the active one.
+  // TODO(crbug.com/1194802): Even if this BrowserView is active, it doesn't
+  // necessarily own the node we're about to highlight.
   if (!browser_view_->IsActive() && !skip_activation_check_for_testing_)
     return;
 
   // Get the bounds of the focused node from the web page.
-  content::FocusedNodeDetails* node_details =
-      content::Details<content::FocusedNodeDetails>(details).ptr();
-  gfx::Rect node_bounds = node_details->node_bounds_in_screen;
+  gfx::Rect node_bounds = details.node_bounds_in_screen;
 
   // This happens if e.g. we focus on <body>. Don't show a confusing highlight.
   if (node_bounds.IsEmpty())
