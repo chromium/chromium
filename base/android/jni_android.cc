@@ -180,14 +180,14 @@ jclass LazyGetClass(JNIEnv* env,
                     const char* class_name,
                     const std::string& split_name,
                     std::atomic<jclass>* atomic_class_id) {
-  const jclass value = std::atomic_load(atomic_class_id);
+  const jclass value = atomic_class_id->load(std::memory_order_acquire);
   if (value)
     return value;
   ScopedJavaGlobalRef<jclass> clazz;
   clazz.Reset(GetClass(env, class_name, split_name));
   jclass cas_result = nullptr;
-  if (std::atomic_compare_exchange_strong(atomic_class_id, &cas_result,
-                                          clazz.obj())) {
+  if (atomic_class_id->compare_exchange_strong(cas_result, clazz.obj(),
+                                               std::memory_order_acq_rel)) {
     // We intentionally leak the global ref since we now storing it as a raw
     // pointer in |atomic_class_id|.
     return clazz.Release();
@@ -201,14 +201,14 @@ jclass LazyGetClass(JNIEnv* env,
 jclass LazyGetClass(JNIEnv* env,
                     const char* class_name,
                     std::atomic<jclass>* atomic_class_id) {
-  const jclass value = std::atomic_load(atomic_class_id);
+  const jclass value = atomic_class_id->load(std::memory_order_acquire);
   if (value)
     return value;
   ScopedJavaGlobalRef<jclass> clazz;
   clazz.Reset(GetClass(env, class_name));
   jclass cas_result = nullptr;
-  if (std::atomic_compare_exchange_strong(atomic_class_id, &cas_result,
-                                          clazz.obj())) {
+  if (atomic_class_id->compare_exchange_strong(cas_result, clazz.obj(),
+                                               std::memory_order_acq_rel)) {
     // We intentionally leak the global ref since we now storing it as a raw
     // pointer in |atomic_class_id|.
     return clazz.Release();
@@ -237,17 +237,17 @@ jmethodID MethodID::Get(JNIEnv* env,
 // If |atomic_method_id| set, it'll return immediately. Otherwise, it'll call
 // into ::Get() above. If there's a race, it's ok since the values are the same
 // (and the duplicated effort will happen only once).
-template<MethodID::Type type>
+template <MethodID::Type type>
 jmethodID MethodID::LazyGet(JNIEnv* env,
                             jclass clazz,
                             const char* method_name,
                             const char* jni_signature,
                             std::atomic<jmethodID>* atomic_method_id) {
-  const jmethodID value = std::atomic_load(atomic_method_id);
+  const jmethodID value = atomic_method_id->load(std::memory_order_acquire);
   if (value)
     return value;
   jmethodID id = MethodID::Get<type>(env, clazz, method_name, jni_signature);
-  std::atomic_store(atomic_method_id, id);
+  atomic_method_id->store(id, std::memory_order_release);
   return id;
 }
 
