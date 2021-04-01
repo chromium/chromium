@@ -66,7 +66,10 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     @IntDef({EligibilityFailureReason.AGSA_CANT_HANDLE_INTENT,
             EligibilityFailureReason.AGSA_VERSION_BELOW_MINIMUM,
             EligibilityFailureReason.CHROME_NOT_GOOGLE_SIGNED,
-            EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED, EligibilityFailureReason.MAX_VALUE})
+            EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED,
+            EligibilityFailureReason.NON_GOOGLE_SEARCH_ENGINE,
+            EligibilityFailureReason.NO_CHROME_ACCOUNT, EligibilityFailureReason.LOW_END_DEVICE,
+            EligibilityFailureReason.MULTIPLE_ACCOUNTS_ON_DEVICE})
     @Retention(RetentionPolicy.SOURCE)
     @interface EligibilityFailureReason {
         int AGSA_CANT_HANDLE_INTENT = 0;
@@ -84,8 +87,9 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
         int LOW_END_DEVICE = 9;
         int MULTIPLE_ACCOUNTS_ON_DEVICE = 10;
 
-        // STOP: When updating this, also update values in enums.xml.
-        int MAX_VALUE = 10;
+        // STOP: When updating this, also update values in enums.xml and make sure to update the
+        // IntDef above.
+        int NUM_ENTRIES = 11;
     }
 
     /** Allows outside classes to listen for changes in this service. */
@@ -331,7 +335,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
 
         for (@EligibilityFailureReason int reason : failureReasons) {
             RecordHistogram.recordEnumeratedHistogram(USER_ELIGIBILITY_FAILURE_REASON_HISTOGRAM,
-                    reason, EligibilityFailureReason.MAX_VALUE);
+                    reason, EligibilityFailureReason.NUM_ENTRIES);
         }
     }
 
