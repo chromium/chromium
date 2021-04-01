@@ -88,8 +88,13 @@ String Lock::mode() const {
 }
 
 void Lock::HoldUntil(ScriptPromise promise, ScriptPromiseResolver* resolver) {
-  DCHECK(handle_.is_bound());
   DCHECK(!resolver_);
+
+  // Note that it is possible for the ExecutionContext that this Lock lives in
+  // to have already been destroyed by the time this method is called. In that
+  // case `handle_` will have been reset, and the lock would have already been
+  // released. This is harmless, as nothing in this class uses `handle_` without
+  // first making sure it is still bound.
 
   ScriptState* script_state = resolver->GetScriptState();
   resolver_ = resolver;
@@ -121,6 +126,9 @@ String Lock::ModeToString(mojom::blink::LockMode mode) {
 }
 
 void Lock::ContextDestroyed() {
+  // This is kind of redundant, as `handle_` will reset itself as well when the
+  // context is destroyed, thereby releasing the lock. Explicitly releasing here
+  // as well doesn't hurt though.
   ReleaseIfHeld();
 }
 
