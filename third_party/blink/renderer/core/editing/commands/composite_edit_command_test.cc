@@ -257,4 +257,34 @@ TEST_F(CompositeEditCommandTest, MoveParagraphsWithBr) {
             GetDocument().body()->innerHTML());
 }
 
+TEST_F(CompositeEditCommandTest, MoveParagraphsWithInlineBlocks) {
+  InsertStyleElement("span {display: inline-block; width: 0; height: 10px}");
+  SetBodyContent("<div><span></span><span></span>&#x20;</div><br>");
+
+  EditingState editing_state;
+  SampleCommand& sample = *MakeGarbageCollected<SampleCommand>(GetDocument());
+  Element* div = GetDocument().QuerySelector("div");
+  Element* span1 = GetDocument().QuerySelector("span");
+  Element* span2 = GetDocument().QuerySelector("span + span");
+  Element* br = GetDocument().QuerySelector("br");
+
+  // The start precedes the end, but when using MostFor/BackwardCaretPosition
+  // to constrain the range, the resulting end would precede the start.
+  const VisiblePosition& start = VisiblePosition::FirstPositionInNode(*div);
+  const VisiblePosition& end = VisiblePosition::LastPositionInNode(*div);
+  const VisiblePosition& destination = VisiblePosition::BeforeNode(*br);
+  EXPECT_EQ(start.DeepEquivalent(), Position::BeforeNode(*span1));
+  EXPECT_EQ(end.DeepEquivalent(), Position::BeforeNode(*span2));
+  EXPECT_EQ(destination.DeepEquivalent(), Position::BeforeNode(*br));
+  EXPECT_LT(start.DeepEquivalent(), end.DeepEquivalent());
+  EXPECT_GT(MostForwardCaretPosition(start.DeepEquivalent()),
+            MostBackwardCaretPosition(end.DeepEquivalent()));
+
+  // Should not crash
+  sample.MoveParagraphs(start, end, destination, &editing_state);
+  EXPECT_FALSE(editing_state.IsAborted());
+  EXPECT_EQ("<div><span></span><span></span> </div><br>",
+            GetDocument().body()->innerHTML());
+}
+
 }  // namespace blink
