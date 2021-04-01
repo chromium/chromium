@@ -107,7 +107,6 @@ void WaylandInputEmulate::EmulatePointerMotion(gfx::AcceleratedWidget widget,
   auto window_type = wayland_proxy->GetWindowType(widget);
   if (window_type != ui::PlatformWindowType::kTooltip &&
       window_type != ui::PlatformWindowType::kMenu &&
-      window_type != ui::PlatformWindowType::kPopup &&
       !wayland_proxy->WindowHasPointerFocus(widget)) {
     weston_test_activate_surface(weston_test_, wlsurface);
   }

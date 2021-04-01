@@ -40,7 +40,8 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
             GetParentWindow(connection, properties.parent_widget));
         break;
       }
-      FALLTHROUGH;
+      window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
+      break;
     case PlatformWindowType::kMenu:
       // Set the parent window in advance otherwise it is not possible to know
       // if the popup is able to find one and if WaylandWindow::Initialize()

@@ -270,7 +270,7 @@ TEST_P(WaylandScreenTest, GetAcceleratedWidgetAtScreenPoint) {
       CreateWaylandWindowWithProperties(
           gfx::Rect(window_->GetBounds().width() - 10,
                     window_->GetBounds().height() - 10, 100, 100),
-          PlatformWindowType::kPopup, window_->GetWidget(), &delegate);
+          PlatformWindowType::kMenu, window_->GetWidget(), &delegate);
 
   Sync();
 
@@ -538,7 +538,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
       CreateWaylandWindowWithProperties(
           gfx::Rect(second_window_bounds.width() - 10,
                     second_window_bounds.height() - 10, 10, 20),
-          PlatformWindowType::kPopup, second_window->GetWidget(), &delegate);
+          PlatformWindowType::kMenu, second_window->GetWidget(), &delegate);
 
   Sync();
 
@@ -585,7 +585,7 @@ TEST_P(WaylandScreenTest, GetCursorScreenPoint) {
       CreateWaylandWindowWithProperties(
           gfx::Rect(menu_window_bounds.x() + menu_window_bounds.width(),
                     menu_window_bounds.y() + 2, 10, 20),
-          PlatformWindowType::kPopup, second_window->GetWidget(), &delegate);
+          PlatformWindowType::kMenu, second_window->GetWidget(), &delegate);
 
   Sync();
 
