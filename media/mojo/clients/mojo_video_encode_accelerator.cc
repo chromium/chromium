@@ -134,6 +134,7 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
   DCHECK_EQ(num_planes, frame->layout().num_planes());
   DCHECK(vea_.is_bound());
 
+  // GPU memory path: Pass-through.
   if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     vea_->Encode(
         frame, force_keyframe,
@@ -142,62 +143,26 @@ void MojoVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  if ((frame->format() != PIXEL_FORMAT_I420 &&
-       frame->format() != PIXEL_FORMAT_NV12) ||
-      VideoFrame::STORAGE_SHMEM != frame->storage_type() ||
-      !frame->shm_region()->IsValid()) {
-    DLOG(ERROR) << "Unexpected video frame buffer";
+  // Mappable memory path: Copy buffer to shared memory.
+  if (frame->format() != PIXEL_FORMAT_I420 &&
+      frame->format() != PIXEL_FORMAT_NV12) {
+    DLOG(ERROR) << "Unexpected pixel format: "
+                << VideoPixelFormatToString(frame->format());
+    return;
+  }
+  if (frame->storage_type() != VideoFrame::STORAGE_SHMEM &&
+      frame->storage_type() != VideoFrame::STORAGE_UNOWNED_MEMORY) {
+    DLOG(ERROR) << "Unexpected storage type: "
+                << VideoFrame::StorageTypeToString(frame->storage_type());
     return;
   }
 
-  // Oftentimes |frame|'s underlying planes will be aligned and not tightly
-  // packed, so don't use VideoFrame::AllocationSize().
-  const size_t allocation_size = frame->shm_region()->GetSize();
-
-  // A MojoSharedBufferVideoFrame is created with an owned writable handle. As
-  // the handle in |frame| is not owned, a new region must be created and
-  // |frame| copied into it.
-  mojo::ScopedSharedBufferHandle dst_handle =
-      mojo::SharedBufferHandle::Create(allocation_size);
-  if (!dst_handle->is_valid()) {
-    DLOG(ERROR) << "Can't create new frame backing memory";
-    return;
-  }
-  mojo::ScopedSharedBufferMapping dst_mapping =
-      dst_handle->Map(allocation_size);
-  if (!dst_mapping) {
-    DLOG(ERROR) << "Can't map new frame backing memory";
-    return;
-  }
-  DCHECK(frame->shm_region());
-  base::WritableSharedMemoryMapping src_mapping = frame->shm_region()->Map();
-  if (!src_mapping.IsValid()) {
-    DLOG(ERROR) << "Can't map src frame backing memory";
-    return;
-  }
-  memcpy(dst_mapping.get(), src_mapping.memory(), allocation_size);
-
-  std::vector<uint32_t> offsets(num_planes);
-  std::vector<int32_t> strides(num_planes);
-  for (size_t i = 0; i < num_planes; ++i) {
-    offsets[i] = frame->data(i) - frame->data(0);
-    strides[i] = frame->stride(i);
-  }
-
-  // Temporary Mojo VideoFrame to allow for marshalling.
   scoped_refptr<MojoSharedBufferVideoFrame> mojo_frame =
-      MojoSharedBufferVideoFrame::Create(
-          frame->format(), frame->coded_size(), frame->visible_rect(),
-          frame->natural_size(), std::move(dst_handle), allocation_size,
-          std::move(offsets), std::move(strides), frame->timestamp());
+      MojoSharedBufferVideoFrame::CreateFromYUVFrame(*frame);
   if (!mojo_frame) {
-    DLOG(ERROR) << "Failed creating MojoSharedBufferVideoFrame";
+    DLOG(ERROR) << "Failed creating MojoSharedBufferVideoFrame from YUV";
     return;
   }
-
-  // Encode() is synchronous: clients will assume full ownership of |frame| when
-  // this gets destroyed and probably recycle its shared_memory_handle(): keep
-  // the former alive until the remote end is actually finished.
   vea_->Encode(
       std::move(mojo_frame), force_keyframe,
       base::BindOnce(base::DoNothing::Once<scoped_refptr<VideoFrame>>(),

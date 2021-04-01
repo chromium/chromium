@@ -47,7 +47,7 @@ class MojoSharedBufferVideoFrame : public VideoFrame {
   // Internally the data from in-memory YUV frame will be copied to a
   // consecutive block in shared memory. Will return null on failure.
   static scoped_refptr<MojoSharedBufferVideoFrame> CreateFromYUVFrame(
-      const VideoFrame& frame);
+      VideoFrame& frame);
 
   // Creates a MojoSharedBufferVideoFrame that uses the memory in |handle|.
   // This will take ownership of |handle|, so the caller can no longer use it.

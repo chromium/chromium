@@ -37,6 +37,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapterInterface
   WebRtcVideoFrameAdapterInterface() = default;
   ~WebRtcVideoFrameAdapterInterface() override = default;
 
+  virtual bool SupportsOptimizedScaling() const = 0;
   virtual scoped_refptr<media::VideoFrame> getMediaVideoFrame() const = 0;
 };
 
@@ -206,6 +207,7 @@ class PLATFORM_EXPORT WebRtcVideoFrameAdapter
       std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
       scoped_refptr<SharedResources> shared_resources);
 
+  bool SupportsOptimizedScaling() const override { return true; }
   scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
     return frame_;
   }

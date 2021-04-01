@@ -120,6 +120,7 @@ class PLATFORM_EXPORT LegacyWebRtcVideoFrameAdapter
       scoped_refptr<media::VideoFrame> frame,
       scoped_refptr<SharedResources> shared_resources);
 
+  bool SupportsOptimizedScaling() const override { return false; }
   scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
     return frame_;
   }
