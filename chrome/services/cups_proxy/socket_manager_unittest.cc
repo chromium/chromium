@@ -244,13 +244,7 @@ TEST_F(SocketManagerTest, SyncEverything) {
   EXPECT_EQ(*response, ipp_converter::ConvertToByteBuffer(*http_handshake));
 }
 
-// Flaky on Chrome OS. See: crbug.com/1188650.
-#if defined(OS_CHROMEOS)
-#define MAYBE_AsyncEverything DISABLED_AsyncEverything
-#else
-#define MAYBE_AsyncEverything AsyncEverything
-#endif
-TEST_F(SocketManagerTest, MAYBE_AsyncEverything) {
+TEST_F(SocketManagerTest, AsyncEverything) {
   auto http_handshake = GetTestFile("basic_handshake");
   EXPECT_TRUE(http_handshake);
 

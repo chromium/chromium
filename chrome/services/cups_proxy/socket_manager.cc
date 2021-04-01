@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
+#include "base/threading/sequence_bound.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "chrome/services/cups_proxy/public/cpp/cups_util.h"
@@ -79,14 +80,12 @@ struct SocketRequest {
   SocketManagerCallback cb;
 };
 
-// All methods accessing |socket_| must be made on the IO thread.
-// TODO(luum): Consider inner IO-thread object, base::SequenceBound refactor.
-class SocketManagerImpl : public SocketManager {
+class ThreadSafeHelper : public SocketManager {
  public:
-  explicit SocketManagerImpl(
-      std::unique_ptr<net::UnixDomainClientSocket> socket,
-      CupsProxyServiceDelegate* const delegate);
-  ~SocketManagerImpl() override;
+  explicit ThreadSafeHelper(std::unique_ptr<net::UnixDomainClientSocket> socket,
+                            CupsProxyServiceDelegate* const delegate,
+                            scoped_refptr<base::SequencedTaskRunner> runner);
+  ~ThreadSafeHelper() override;
 
   void ProxyToCups(std::vector<uint8_t> request,
                    SocketManagerCallback cb) override;
@@ -110,15 +109,33 @@ class SocketManagerImpl : public SocketManager {
   // Sequence this manager runs on, |in_flight_->cb_| is posted here.
   const scoped_refptr<base::SequencedTaskRunner> main_runner_;
 
-  // Single thread task runner the thread-affine |socket_| runs on.
-  const scoped_refptr<base::SingleThreadTaskRunner> socket_runner_;
-
-  // Created in sequence but accessed and deleted on IO thread.
   std::unique_ptr<SocketRequest> in_flight_;
   std::unique_ptr<net::UnixDomainClientSocket> socket_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<SocketManagerImpl> weak_factory_{this};
+  base::WeakPtrFactory<ThreadSafeHelper> weak_factory_{this};
+};
+
+class SocketManagerImpl : public SocketManager {
+ public:
+  explicit SocketManagerImpl(
+      std::unique_ptr<net::UnixDomainClientSocket> socket,
+      CupsProxyServiceDelegate* const delegate)
+      : impl(delegate->GetIOTaskRunner(),
+             std::move(socket),
+             delegate,
+             base::SequencedTaskRunnerHandle::Get()) {}
+
+  ~SocketManagerImpl() override = default;
+
+  void ProxyToCups(std::vector<uint8_t> request,
+                   SocketManagerCallback cb) override {
+    impl.AsyncCall(&ThreadSafeHelper::ProxyToCups)
+        .WithArgs(std::move(request), std::move(cb));
+  }
+
+ private:
+  const base::SequenceBound<ThreadSafeHelper> impl;
 };
 
 // Defaults for SocketRequest.
@@ -126,17 +143,15 @@ SocketRequest::SocketRequest() = default;
 SocketRequest::SocketRequest(SocketRequest&& other) = default;
 SocketRequest::~SocketRequest() = default;
 
-SocketManagerImpl::SocketManagerImpl(
+ThreadSafeHelper::ThreadSafeHelper(
     std::unique_ptr<net::UnixDomainClientSocket> socket,
-    CupsProxyServiceDelegate* const delegate)
-    : main_runner_(base::SequencedTaskRunnerHandle::Get()),
-      socket_runner_(delegate->GetIOTaskRunner()),
-      socket_(std::move(socket)) {}
-SocketManagerImpl::~SocketManagerImpl() {}
+    CupsProxyServiceDelegate* const delegate,
+    scoped_refptr<base::SequencedTaskRunner> runner)
+    : main_runner_(runner), socket_(std::move(socket)) {}
+ThreadSafeHelper::~ThreadSafeHelper() {}
 
-void SocketManagerImpl::ProxyToCups(std::vector<uint8_t> request,
-                                    SocketManagerCallback cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+void ThreadSafeHelper::ProxyToCups(std::vector<uint8_t> request,
+                                   SocketManagerCallback cb) {
   DCHECK(!in_flight_);  // Only handles one request at a time.
 
   // Save request.
@@ -148,15 +163,11 @@ void SocketManagerImpl::ProxyToCups(std::vector<uint8_t> request,
       base::MakeRefCounted<net::IOBuffer>(request.size()), request.size());
   std::copy(request.begin(), request.end(), in_flight_->io_buffer->data());
 
-  socket_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&SocketManagerImpl::ConnectIfNeeded,
-                                          weak_factory_.GetWeakPtr()));
+  ConnectIfNeeded();
 }
 
 // Separate method since we need to check socket_ on the socket thread.
-void SocketManagerImpl::ConnectIfNeeded() {
-  DCHECK(socket_runner_->BelongsToCurrentThread());
-
+void ThreadSafeHelper::ConnectIfNeeded() {
   // If |socket_| isn't connected yet, connect it.
   if (!socket_->IsConnected()) {
     return Connect();
@@ -166,18 +177,15 @@ void SocketManagerImpl::ConnectIfNeeded() {
   return Write();
 }
 
-void SocketManagerImpl::Connect() {
-  DCHECK(socket_runner_->BelongsToCurrentThread());
-
-  int result = socket_->Connect(base::BindOnce(&SocketManagerImpl::OnConnect,
-                                               weak_factory_.GetWeakPtr()));
+void ThreadSafeHelper::Connect() {
+  int result = socket_->Connect(
+      base::BindOnce(&ThreadSafeHelper::OnConnect, weak_factory_.GetWeakPtr()));
   if (result != net::ERR_IO_PENDING) {
     return OnConnect(result);
   }
 }
 
-void SocketManagerImpl::OnConnect(int result) {
-  DCHECK(socket_runner_->BelongsToCurrentThread());
+void ThreadSafeHelper::OnConnect(int result) {
   DCHECK(in_flight_);
 
   if (result < 0) {
@@ -187,12 +195,10 @@ void SocketManagerImpl::OnConnect(int result) {
   return Write();
 }
 
-void SocketManagerImpl::Write() {
-  DCHECK(socket_runner_->BelongsToCurrentThread());
-
+void ThreadSafeHelper::Write() {
   int result = socket_->Write(
       in_flight_->io_buffer.get(), in_flight_->io_buffer->BytesRemaining(),
-      base::BindOnce(&SocketManagerImpl::OnWrite, weak_factory_.GetWeakPtr()),
+      base::BindOnce(&ThreadSafeHelper::OnWrite, weak_factory_.GetWeakPtr()),
       net::DefineNetworkTrafficAnnotation("unused", ""));
 
   if (result != net::ERR_IO_PENDING) {
@@ -200,8 +206,7 @@ void SocketManagerImpl::Write() {
   }
 }
 
-void SocketManagerImpl::OnWrite(int result) {
-  DCHECK(socket_runner_->BelongsToCurrentThread());
+void ThreadSafeHelper::OnWrite(int result) {
   DCHECK(in_flight_);
 
   if (result < 0) {
@@ -223,20 +228,17 @@ void SocketManagerImpl::OnWrite(int result) {
   return Read();
 }
 
-void SocketManagerImpl::Read() {
-  DCHECK(socket_runner_->BelongsToCurrentThread());
-
+void ThreadSafeHelper::Read() {
   int result = socket_->Read(
       in_flight_->io_buffer.get(), kHttpMaxBufferSize,
-      base::BindOnce(&SocketManagerImpl::OnRead, weak_factory_.GetWeakPtr()));
+      base::BindOnce(&ThreadSafeHelper::OnRead, weak_factory_.GetWeakPtr()));
 
   if (result != net::ERR_IO_PENDING) {
     return OnRead(result);
   }
 }
 
-void SocketManagerImpl::OnRead(int num_read) {
-  DCHECK(socket_runner_->BelongsToCurrentThread());
+void ThreadSafeHelper::OnRead(int num_read) {
   DCHECK(in_flight_);
 
   if (num_read < 0) {
@@ -257,9 +259,7 @@ void SocketManagerImpl::OnRead(int num_read) {
   return Finish();
 }
 
-void SocketManagerImpl::Finish(bool success) {
-  DCHECK(socket_runner_->BelongsToCurrentThread());
-
+void ThreadSafeHelper::Finish(bool success) {
   base::OnceClosure cb;
   if (success) {
     cb = base::BindOnce(std::move(in_flight_->cb),
@@ -275,7 +275,7 @@ void SocketManagerImpl::Finish(bool success) {
   in_flight_.reset();
 }
 
-void SocketManagerImpl::Fail(const char* error_message) {
+void ThreadSafeHelper::Fail(const char* error_message) {
   DVLOG(1) << "SocketManager Error: " << error_message;
   return Finish(false /* Fail this request */);
 }
