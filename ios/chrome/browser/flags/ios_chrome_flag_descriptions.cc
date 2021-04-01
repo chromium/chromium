@@ -189,6 +189,10 @@ const char kEnableCloseAllTabsConfirmationDescription[] =
     "Enable showing an action sheet that asks for confirmation when 'Close "
     "All' button is tapped on the tab grid to avoid unwanted clearing.";
 
+const char kEnableFREUIModuleIOSName[] = "Enable FRE UI module";
+const char kEnableFREUIModuleIOSDescription[] =
+    "Enable the option of using new FRE UI module to show first run screens.";
+
 const char kEnableFullPageScreenshotName[] = "Enable fullpage screenshots";
 const char kEnableFullPageScreenshotDescription[] =
     "Enables the option of capturing an entire webpage as a PDF when a "

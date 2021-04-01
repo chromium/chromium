@@ -28,6 +28,9 @@ const base::Feature kIllustratedEmptyStates{"IllustratedEmptyStates",
 const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kEnableFREUIModuleIOS{"EnableFREUIModuleIOS",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kEnableFullPageScreenshot{
     "EnableFullPageScreenshot", base::FEATURE_DISABLED_BY_DEFAULT};
 

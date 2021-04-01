@@ -166,6 +166,10 @@ extern const char kEnableAutofillAddressSavePromptDescription[];
 extern const char kEnableCloseAllTabsConfirmationName[];
 extern const char kEnableCloseAllTabsConfirmationDescription[];
 
+// Title and description for the flag to enable FRE UI module.
+extern const char kEnableFREUIModuleIOSName[];
+extern const char kEnableFREUIModuleIOSDescription[];
+
 // Title and description for the flag to enable fullpage screenshots.
 extern const char kEnableFullPageScreenshotName[];
 extern const char kEnableFullPageScreenshotDescription[];

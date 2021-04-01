@@ -36,6 +36,9 @@ extern const base::Feature kIllustratedEmptyStates;
 // kScrollToTextIOS to successfully open these links.
 extern const base::Feature kSharedHighlightingIOS;
 
+// Feature flag that enables using the FRE UI module to show first run screens.
+extern const base::Feature kEnableFREUIModuleIOS;
+
 // Feature flag that enables taking fullpage screenshots of a webpage.
 extern const base::Feature kEnableFullPageScreenshot;
 

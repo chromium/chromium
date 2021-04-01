@@ -1797,6 +1797,11 @@
     "expiry_milestone": 99
   },
   {
+    "name": "enable-fre-ui-module-ios",
+    "owners": [ "tinazwang", "gambard" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "enable-fs-nosymfollow",
     "owners": [ "mortonm@chromium.org" ],
     "expiry_milestone": 76
