@@ -8573,5 +8573,19 @@
         }
       }
     ]
+  },
+  "WebRtcIPHandling": {
+    "os": ["win", "linux", "mac", "chromeos"],
+    "can_be_recommended": false,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": { "WebRtcIPHandling": "default_public_interface_only" },
+        "prefs": { "webrtc.ip_handling_policy": {
+          "location": "user_profile",
+          "value": "default_public_interface_only",
+          "expect_default": false
+        } }
+      }
+    ]
   }
 }

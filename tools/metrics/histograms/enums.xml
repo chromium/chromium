@@ -24048,6 +24048,7 @@ Called by update_document_policy_enum.py.-->
   <int value="840" label="BrowserThemeColor"/>
   <int value="841" label="CECPQ2Enabled"/>
   <int value="842" label="HeadlessMode"/>
+  <int value="843" label="WebRTCIPHandlingPolicy"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

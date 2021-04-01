@@ -25258,6 +25258,48 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       Setting the policy to a valid hex color causes a theme based on that color to be automatically generated and applied to the browser. Users won't be able to change the theme set by the policy.
 
       Leaving the policy unset lets users change their browser's theme as preferred.''',
+    },
+    {
+      'name': 'WebRtcIPHandling',
+      'owners': ['file://third_party/blink/renderer/modules/peerconnection/OWNERS', 'toprice@chromium.org'],
+      'type': 'string-enum',
+      'schema': {
+        'type': 'string',
+        'enum': [ 'default', 'default_public_and_private_interfaces', 'default_public_interface_only', 'disable_non_proxied_udp' ],
+      },
+      'items': [
+        {
+          'name': 'default',
+          'value': 'default',
+          'caption': '''WebRTC will use all available interfaces when searching for the best path.''',
+        },
+        {
+          'name': 'default_public_and_private_interfaces',
+          'value': 'default_public_and_private_interfaces',
+          'caption': '''WebRTC will only use the interface connecting to the public Internet, but may connect using private IP addresses.''',
+        },
+        {
+          'name': 'default_public_interface_only',
+          'value': 'default_public_interface_only',
+          'caption': '''WebRTC will only use the interface connecting to the public Internet, and will not connect using private IP addresses.''',
+        },
+        {
+          'name': 'disable_non_proxied_udp',
+          'value': 'disable_non_proxied_udp',
+          'caption': '''WebRTC will use TCP on the public-facing interface, and will only use UDP if supported by a configured proxy.''',
+        },
+      ],
+      'future_on': ['chrome.*', 'chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'default': 'default',
+      'example_value': 'default',
+      'id': 843,
+      'caption': '''The IP handling policy of WebRTC''',
+      'tags': [],
+      'desc': '''This policy allows restricting which IP addresses and interfaces WebRTC uses when attempting to find the best available connection. See RFC 8828 section 5.2 (https://tools.ietf.org/html/rfc8828.html#section-5.2). When unset, defaults to using all available interfaces.''',
     }
   ],
   'messages': {
@@ -26188,6 +26230,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 842,
+  'highest_id_currently_used': 843,
   'highest_atomic_group_id_currently_used': 40
 }

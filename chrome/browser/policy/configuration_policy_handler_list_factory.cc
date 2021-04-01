@@ -1367,6 +1367,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kSuppressDifferentOriginSubframeDialogs,
     prefs::kSuppressDifferentOriginSubframeJSDialogs,
     base::Value::Type::BOOLEAN },
+  { key::kWebRtcIPHandling,
+    prefs::kWebRTCIPHandlingPolicy,
+    base::Value::Type::STRING },
 };
 // clang-format on
 
