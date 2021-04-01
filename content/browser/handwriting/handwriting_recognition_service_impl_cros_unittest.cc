@@ -26,7 +26,6 @@ class HandwritingRecognitionServiceImplCrOSTest
  public:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_ml_service_connection_);
     chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
@@ -42,8 +41,7 @@ class HandwritingRecognitionServiceImplCrOSTest
       fake_ml_service_connection_;
 };
 
-TEST_F(HandwritingRecognitionServiceImplCrOSTest,
-       DISABLED_CreateHandwritingRecognizer) {
+TEST_F(HandwritingRecognitionServiceImplCrOSTest, CreateHandwritingRecognizer) {
   mojo::Remote<handwriting::mojom::HandwritingRecognitionService>
       service_remote;
   CrOSHandwritingRecognitionServiceImpl::Create(
@@ -73,7 +71,7 @@ TEST_F(HandwritingRecognitionServiceImplCrOSTest,
 // that `ink_range->end_stroke >= strokes.size()` which can cause crash if this
 // case is not checked.
 TEST_F(HandwritingRecognitionServiceImplCrOSTest,
-       DISABLED_GetPredictionInvalidRecognitionResult) {
+       GetPredictionInvalidRecognitionResult) {
   mojo::Remote<handwriting::mojom::HandwritingRecognitionService>
       service_remote;
   CrOSHandwritingRecognitionServiceImpl::Create(
@@ -149,7 +147,7 @@ TEST_F(HandwritingRecognitionServiceImplCrOSTest,
 // In this test we provide valid input/output to check the conversion code works
 // correctly.
 TEST_F(HandwritingRecognitionServiceImplCrOSTest,
-       DISABLED_GetPredictionCorrectConversion) {
+       GetPredictionCorrectConversion) {
   mojo::Remote<handwriting::mojom::HandwritingRecognitionService>
       service_remote;
   CrOSHandwritingRecognitionServiceImpl::Create(

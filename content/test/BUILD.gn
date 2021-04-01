@@ -2477,8 +2477,8 @@ test("content_unittests") {
     deps += [
       "//ash/components/audio",
       "//chromeos/dbus/audio",
-      "//chromeos/services/machine_learning/public/cpp:cpp",
       "//chromeos/services/machine_learning/public/cpp:stub",
+      "//chromeos/services/machine_learning/public/mojom",
     ]
   }
   if (is_android) {

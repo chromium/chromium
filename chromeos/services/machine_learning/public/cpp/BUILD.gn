@@ -11,6 +11,7 @@ source_set("cpp") {
     "service_connection.cc",
     "service_connection.h",
   ]
+  defines = [ "IS_CHROMEOS_MLSERVICE_IMPL" ]
   deps = [
     "//base",
     "//chromeos/dbus/dlcservice",
@@ -19,17 +20,18 @@ source_set("cpp") {
   ]
 }
 
-source_set("stub") {
+component("stub") {
   sources = [
     "fake_service_connection.cc",
     "fake_service_connection.h",
   ]
+  defines = [ "IS_CHROMEOS_MLSERVICE_IMPL" ]
   deps = [
-    ":cpp",
     "//base",
     "//chromeos/services/machine_learning/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
+  public_deps = [ ":cpp" ]
 }
 
 source_set("unit_tests") {

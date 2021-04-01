@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/grammar_checker.mojom.h"
@@ -34,14 +35,15 @@ namespace machine_learning {
 // Handles TextClassifier::SuggestSelection by always returning the value
 // specified by a previous call to SetOutputSelection.
 // For use with ServiceConnection::UseFakeServiceConnectionForTesting().
-class FakeServiceConnectionImpl : public ServiceConnection,
-                                  public mojom::MachineLearningService,
-                                  public mojom::Model,
-                                  public mojom::TextClassifier,
-                                  public mojom::HandwritingRecognizer,
-                                  public mojom::GrammarChecker,
-                                  public mojom::GraphExecutor,
-                                  public mojom::SodaRecognizer {
+class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) FakeServiceConnectionImpl
+    : public ServiceConnection,
+      public mojom::MachineLearningService,
+      public mojom::Model,
+      public mojom::TextClassifier,
+      public mojom::HandwritingRecognizer,
+      public mojom::GrammarChecker,
+      public mojom::GraphExecutor,
+      public mojom::SodaRecognizer {
  public:
   FakeServiceConnectionImpl();
   ~FakeServiceConnectionImpl() override;

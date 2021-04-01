@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_SERVICES_MACHINE_LEARNING_PUBLIC_CPP_SERVICE_CONNECTION_H_
 #define CHROMEOS_SERVICES_MACHINE_LEARNING_PUBLIC_CPP_SERVICE_CONNECTION_H_
 
+#include "base/component_export.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -30,7 +31,7 @@ namespace machine_learning {
 // Sequencing: BindMachineLearningService can be called from any sequence, while
 // GetMachineLearningService must be called from the sequence that the instance
 // is created on.
-class ServiceConnection {
+class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) ServiceConnection {
  public:
   static ServiceConnection* GetInstance();
   // Overrides the result of GetInstance() for use in tests.

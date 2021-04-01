@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojom") {
+mojom_component("mojom") {
   sources = [
     "grammar_checker.mojom",
     "graph_executor.mojom",
@@ -17,4 +17,7 @@ mojom("mojom") {
   ]
 
   public_deps = [ "//mojo/public/mojom/base" ]
+
+  output_prefix = "mlservice_mojom"
+  macro_prefix = "MLSERVICE_MOJOM"
 }

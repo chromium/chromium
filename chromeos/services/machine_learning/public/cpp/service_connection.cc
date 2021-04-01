@@ -5,6 +5,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 
 #include "base/bind.h"
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -21,7 +22,8 @@ namespace machine_learning {
 namespace {
 
 // Real Impl of ServiceConnection
-class ServiceConnectionImpl : public ServiceConnection {
+class COMPONENT_EXPORT(CHROMEOS_MLSERVICE) ServiceConnectionImpl
+    : public ServiceConnection {
  public:
   ServiceConnectionImpl();
   ~ServiceConnectionImpl() override = default;
