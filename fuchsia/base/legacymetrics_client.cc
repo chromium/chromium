@@ -182,11 +182,21 @@ void LegacyMetricsClient::DrainBuffer() {
 
     if (is_flushing_) {
       metrics_recorder_.Unbind();
-      std::move(on_flush_complete_).Run();
-    } else {
-      ScheduleNextReport();
+
+      is_flushing_ = false;
+
+      // One of the callbacks may destroy |this|, so move them all to the stack
+      // first.
+      std::vector<base::OnceClosure> on_flush_complete_closures;
+      on_flush_complete_closures.swap(on_flush_complete_closures_);
+      for (auto& closure : on_flush_complete_closures) {
+        std::move(closure).Run();
+      }
+
+      return;
     }
 
+    ScheduleNextReport();
     return;
   }
 
@@ -242,10 +252,12 @@ void LegacyMetricsClient::FlushAndDisconnect(
     base::OnceClosure on_flush_complete) {
   DVLOG(1) << __func__ << " called.";
   DCHECK(on_flush_complete);
+
+  on_flush_complete_closures_.push_back(std::move(on_flush_complete));
+
   if (is_flushing_)
     return;
 
-  on_flush_complete_ = std::move(on_flush_complete);
   report_timer_.AbandonAndStop();
 
   is_flushing_ = true;

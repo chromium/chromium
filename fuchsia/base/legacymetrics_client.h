@@ -112,7 +112,7 @@ class LegacyMetricsClient {
   base::RetainingOneShotTimer report_timer_;
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::OnceClosure on_flush_complete_;
+  std::vector<base::OnceClosure> on_flush_complete_closures_;
 
   // Prevents use-after-free if |report_additional_callback_| is invoked after
   // |this| is destroyed.

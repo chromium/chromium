@@ -39,6 +39,8 @@ class TestMetricsRecorder
 
   bool IsRecordInFlight() const { return ack_callback_.has_value(); }
 
+  bool IsEmpty() const { return recorded_events_.empty(); }
+
   std::vector<fuchsia::legacymetrics::Event> WaitForEvents() {
     if (recorded_events_.empty()) {
       base::RunLoop run_loop;
@@ -495,6 +497,33 @@ TEST_F(LegacyMetricsClientTest, ExplicitFlush) {
   EXPECT_TRUE(called);
 }
 
+TEST_F(LegacyMetricsClientTest, DoubleFlush) {
+  client_.Start(kReportInterval);
+
+  base::RecordComputedAction("bar");
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(test_recorder_.IsRecordInFlight());
+
+  bool called = false;
+  client_.FlushAndDisconnect(
+      base::BindLambdaForTesting([&called] { called = true; }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+  EXPECT_FALSE(called);
+
+  bool called2 = false;
+  client_.FlushAndDisconnect(
+      base::BindLambdaForTesting([&called2] { called2 = true; }));
+
+  test_recorder_.WaitForEvents();
+  test_recorder_.SendAck();
+  base::RunLoop().RunUntilIdle();
+
+  // Verify that both FlushAndDisconnect() callbacks were called.
+  EXPECT_TRUE(called);
+  EXPECT_TRUE(called2);
+}
+
 TEST_F(LegacyMetricsClientTest, ExplicitFlushMultipleBatches) {
   const size_t kSizeForMultipleBatches = LegacyMetricsClient::kMaxBatchSize * 2;
   client_.Start(kReportInterval);
@@ -544,6 +573,40 @@ TEST_F(LegacyMetricsClientTest, UseInjectedMetricsRecorder) {
   task_environment_.FastForwardBy(LegacyMetricsClient::kInitialReconnectDelay *
                                   2);
   EXPECT_FALSE(service_binding_->has_clients());
+}
+
+TEST_F(LegacyMetricsClientTest, UseInjectedMetricsRecorderReconnect) {
+  // Disable auto connect and then connect |client_| to |test_recorder_|
+  // explicitly.
+  client_.DisableAutoConnect();
+  fidl::Binding<fuchsia::legacymetrics::MetricsRecorder> binding(
+      &test_recorder_);
+  fidl::InterfaceHandle<fuchsia::legacymetrics::MetricsRecorder>
+      metrics_recorder;
+  binding.Bind(metrics_recorder.NewRequest());
+  client_.SetMetricsRecorder(std::move(metrics_recorder));
+
+  client_.Start(kReportInterval);
+
+  bool flush_complete = false;
+  client_.FlushAndDisconnect(
+      base::BindLambdaForTesting([&flush_complete] { flush_complete = true; }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(flush_complete);
+
+  EXPECT_TRUE(test_recorder_.IsEmpty());
+
+  // Create a new recorder and verify that it receives metrics now.
+  binding.Bind(metrics_recorder.NewRequest());
+  client_.SetMetricsRecorder(std::move(metrics_recorder));
+
+  base::RecordComputedAction("bar");
+
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+
+  auto events = test_recorder_.WaitForEvents();
+  EXPECT_EQ(1u, events.size());
 }
 
 }  // namespace
