@@ -275,9 +275,6 @@ class CC_EXPORT SnapContainerData {
       const SnapSelectionStrategy& strategy,
       const SnapSearchResult& cross_axis_snap_result) const;
 
-  bool FindSnapPositionForMutualSnap(const SnapSelectionStrategy& strategy,
-                                     gfx::ScrollOffset* snap_position) const;
-
   // Finds the snap area associated with the target snap area element id for the
   // given axis.
   base::Optional<SnapSearchResult> GetTargetSnapAreaSearchResult(
