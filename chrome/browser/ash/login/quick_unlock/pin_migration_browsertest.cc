@@ -10,8 +10,8 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,10 +29,10 @@ class PinMigrationTest : public LoginManagerTest {
   ~PinMigrationTest() override = default;
 
   void SetUp() override {
-    // Initialize CryptohomeClient and configure it for testing. It will be
+    // Initialize UserDataAuthClient and configure it for testing. It will be
     // destroyed in ChromeBrowserMain.
-    CryptohomeClient::InitializeFake();
-    FakeCryptohomeClient::Get()->set_supports_low_entropy_credentials(true);
+    UserDataAuthClient::InitializeFake();
+    FakeUserDataAuthClient::Get()->set_supports_low_entropy_credentials(true);
 
     LoginManagerTest::SetUp();
   }

@@ -34,9 +34,10 @@
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/audio/cras_audio_client.h"
 #include "chromeos/dbus/biod/biod_client.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -76,6 +77,8 @@ class ScreenLockerUnitTest : public testing::Test {
     CrasAudioClient::InitializeFake();
     TpmManagerClient::InitializeFake();
     CryptohomeClient::InitializeFake();
+    CryptohomeMiscClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
 
     // MojoSystemInfoDispatcher dependency:
     bluez::BluezDBusManager::GetSetterForTesting();
@@ -138,6 +141,8 @@ class ScreenLockerUnitTest : public testing::Test {
     session_controller_client_.reset();
     LoginState::Shutdown();
     bluez::BluezDBusManager::Shutdown();
+    UserDataAuthClient::Shutdown();
+    CryptohomeMiscClient::Shutdown();
     CryptohomeClient::Shutdown();
     TpmManagerClient::Shutdown();
     CrasAudioClient::Shutdown();

@@ -11,9 +11,10 @@
 #include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/homedir_methods.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
+#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
@@ -38,23 +39,26 @@ void WriteSalt(const AccountId& account_id, const std::string& salt) {
       account_id, ash::prefs::kQuickUnlockPinSalt, salt);
 }
 
+template <typename ReplyType>
 void OnCryptohomeCallComplete(PinStorageCryptohome::BoolCallback callback,
-                              bool success,
-                              cryptohome::MountError return_code) {
-  std::move(callback).Run(success &&
-                          return_code == cryptohome::MOUNT_ERROR_NONE);
+                              base::Optional<ReplyType> reply) {
+  std::move(callback).Run(
+      reply.has_value() &&
+      reply->error() ==
+          user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_NOT_SET);
 }
 
 // Checks to see if there is a KeyDefinition instance with the pin label. If
 // `require_unlocked` is true, the key must not be locked.
-void CheckCryptohomePinKey(PinStorageCryptohome::BoolCallback callback,
-                           bool require_unlocked,
-                           base::Optional<cryptohome::BaseReply> reply) {
+void CheckCryptohomePinKey(
+    PinStorageCryptohome::BoolCallback callback,
+    bool require_unlocked,
+    base::Optional<user_data_auth::GetKeyDataReply> reply) {
   const cryptohome::MountError return_code =
-      cryptohome::GetKeyDataReplyToMountError(reply);
+      user_data_auth::ReplyToMountError(reply);
   if (return_code == cryptohome::MOUNT_ERROR_NONE) {
     const std::vector<cryptohome::KeyDefinition>& key_definitions =
-        cryptohome::GetKeyDataReplyToKeyDefinitions(reply);
+        user_data_auth::GetKeyDataReplyToKeyDefinitions(reply);
     for (const cryptohome::KeyDefinition& definition : key_definitions) {
       if (definition.label == kCryptohomePinLabel) {
         DCHECK(definition.policy.low_entropy_credential);
@@ -69,16 +73,15 @@ void CheckCryptohomePinKey(PinStorageCryptohome::BoolCallback callback,
 
 // Called after cryptohomed backend is available; used to check if the
 // cryptohome supports low entropy credentials (ie, PIN).
-void OnGetSupportedKeyPolicies(PinStorageCryptohome::BoolCallback callback,
-                               base::Optional<cryptohome::BaseReply> reply) {
+void OnGetSupportedKeyPolicies(
+    PinStorageCryptohome::BoolCallback callback,
+    base::Optional<user_data_auth::GetSupportedKeyPoliciesReply> reply) {
   if (!reply) {
     std::move(callback).Run(false);
     return;
   }
 
-  const cryptohome::GetSupportedKeyPoliciesReply& data =
-      reply->GetExtension(cryptohome::GetSupportedKeyPoliciesReply::reply);
-  std::move(callback).Run(data.low_entropy_credentials());
+  std::move(callback).Run(reply->low_entropy_credentials_supported());
 }
 
 // Forward declare CheckForCryptohomedService because there is a recursive
@@ -108,14 +111,14 @@ void OnCryptohomedServiceAvailable(int attempt,
     return;
   }
 
-  CryptohomeClient::Get()->GetSupportedKeyPolicies(
-      cryptohome::GetSupportedKeyPoliciesRequest(),
+  UserDataAuthClient::Get()->GetSupportedKeyPolicies(
+      user_data_auth::GetSupportedKeyPoliciesRequest(),
       base::BindOnce(&OnGetSupportedKeyPolicies, std::move(result)));
 }
 
 void CheckForCryptohomedService(int attempt,
                                 PinStorageCryptohome::BoolCallback result) {
-  CryptohomeClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+  UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       &OnCryptohomedServiceAvailable, attempt, std::move(result)));
 }
 
@@ -155,13 +158,15 @@ PinStorageCryptohome::~PinStorageCryptohome() = default;
 
 void PinStorageCryptohome::IsPinSetInCryptohome(const AccountId& account_id,
                                                 BoolCallback result) const {
-  cryptohome::GetKeyDataRequest request;
+  user_data_auth::GetKeyDataRequest request;
+  *request.mutable_account_id() =
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id);
+  request.mutable_authorization_request();
   request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
-  chromeos::CryptohomeClient::Get()->GetKeyDataEx(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-      cryptohome::AuthorizationRequest(), request,
-      base::BindOnce(&CheckCryptohomePinKey, std::move(result),
-                     false /*require_unlocked*/));
+
+  chromeos::UserDataAuthClient::Get()->GetKeyData(
+      request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
+                              false /*require_unlocked*/));
 }
 
 void PinStorageCryptohome::SetPin(const UserContext& user_context,
@@ -197,7 +202,7 @@ void PinStorageCryptohome::SetPin(const UserContext& user_context,
 
   WriteSalt(user_context.GetAccountId(), salt);
 
-  cryptohome::AddKeyRequest request;
+  ::user_data_auth::AddKeyRequest request;
   const cryptohome::KeyDefinition key_def =
       cryptohome::KeyDefinition::CreateForPassword(secret, kCryptohomePinLabel,
                                                    cryptohome::PRIV_MIGRATE);
@@ -207,10 +212,14 @@ void PinStorageCryptohome::SetPin(const UserContext& user_context,
       ->mutable_policy()
       ->set_low_entropy_credential(true);
   request.set_clobber_if_exists(true);
-  cryptohome::HomedirMethods::GetInstance()->AddKeyEx(
-      cryptohome::Identification(user_context.GetAccountId()),
-      cryptohome::CreateAuthorizationRequest(key.GetLabel(), key.GetSecret()),
-      request, base::BindOnce(&OnCryptohomeCallComplete, std::move(did_set)));
+  *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
+      cryptohome::Identification(user_context.GetAccountId()));
+  *request.mutable_authorization_request() =
+      cryptohome::CreateAuthorizationRequest(key.GetLabel(), key.GetSecret());
+  chromeos::UserDataAuthClient::Get()->AddKey(
+      request,
+      base::BindOnce(&OnCryptohomeCallComplete<::user_data_auth::AddKeyReply>,
+                     std::move(did_set)));
 }
 
 void PinStorageCryptohome::RemovePin(const UserContext& user_context,
@@ -224,15 +233,18 @@ void PinStorageCryptohome::RemovePin(const UserContext& user_context,
   }
 
   // Remove any PIN data from cryptohome.
-  cryptohome::RemoveKeyRequest request;
+  ::user_data_auth::RemoveKeyRequest request;
   request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
-  cryptohome::HomedirMethods::GetInstance()->RemoveKeyEx(
-      cryptohome::Identification(user_context.GetAccountId()),
+  *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
+      cryptohome::Identification(user_context.GetAccountId()));
+  *request.mutable_authorization_request() =
       cryptohome::CreateAuthorizationRequest(
           user_context.GetKey()->GetLabel(),
-          user_context.GetKey()->GetSecret()),
-      request,
-      base::BindOnce(&OnCryptohomeCallComplete, std::move(did_remove)));
+          user_context.GetKey()->GetSecret());
+  chromeos::UserDataAuthClient::Get()->RemoveKey(
+      request, base::BindOnce(
+                   &OnCryptohomeCallComplete<::user_data_auth::RemoveKeyReply>,
+                   std::move(did_remove)));
 }
 
 void PinStorageCryptohome::OnSystemSaltObtained(
@@ -250,13 +262,14 @@ void PinStorageCryptohome::OnSystemSaltObtained(
 
 void PinStorageCryptohome::CanAuthenticate(const AccountId& account_id,
                                            BoolCallback result) const {
-  cryptohome::GetKeyDataRequest request;
+  user_data_auth::GetKeyDataRequest request;
   request.mutable_key()->mutable_data()->set_label(kCryptohomePinLabel);
-  chromeos::CryptohomeClient::Get()->GetKeyDataEx(
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-      cryptohome::AuthorizationRequest(), request,
-      base::BindOnce(&CheckCryptohomePinKey, std::move(result),
-                     true /*require_unlocked*/));
+  *request.mutable_account_id() =
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id);
+  request.mutable_authorization_request();
+  chromeos::UserDataAuthClient::Get()->GetKeyData(
+      request, base::BindOnce(&CheckCryptohomePinKey, std::move(result),
+                              true /*require_unlocked*/));
 }
 
 void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
@@ -264,11 +277,16 @@ void PinStorageCryptohome::TryAuthenticate(const AccountId& account_id,
                                            BoolCallback result) {
   const std::string secret = PinBackend::ComputeSecret(
       key.GetSecret(), GetSalt(account_id), key.GetKeyType());
-  cryptohome::HomedirMethods::GetInstance()->CheckKeyEx(
-      cryptohome::Identification(account_id),
-      cryptohome::CreateAuthorizationRequest(kCryptohomePinLabel, secret),
-      cryptohome::CheckKeyRequest(),
-      base::BindOnce(&OnCryptohomeCallComplete, std::move(result)));
+  ::user_data_auth::CheckKeyRequest request;
+  *request.mutable_account_id() = CreateAccountIdentifierFromIdentification(
+      cryptohome::Identification(account_id));
+  *request.mutable_authorization_request() =
+      cryptohome::CreateAuthorizationRequest(kCryptohomePinLabel, secret);
+
+  chromeos::UserDataAuthClient::Get()->CheckKey(
+      request,
+      base::BindOnce(&OnCryptohomeCallComplete<::user_data_auth::CheckKeyReply>,
+                     std::move(result)));
 }
 
 }  // namespace quick_unlock

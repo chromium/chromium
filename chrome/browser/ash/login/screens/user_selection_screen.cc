@@ -52,6 +52,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_util.h"
@@ -266,7 +267,7 @@ class UserSelectionScreen::DircryptoMigrationChecker {
       return;
     }
 
-    CryptohomeClient::Get()->WaitForServiceToBeAvailable(
+    UserDataAuthClient::Get()->WaitForServiceToBeAvailable(
         base::BindOnce(&DircryptoMigrationChecker::RunCryptohomeCheck,
                        weak_ptr_factory_.GetWeakPtr(), account_id));
   }
@@ -280,29 +281,31 @@ class UserSelectionScreen::DircryptoMigrationChecker {
       return;
     }
 
-    CryptohomeClient::Get()->NeedsDircryptoMigration(
-        cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-        base::BindOnce(&DircryptoMigrationChecker::
-                           OnCryptohomeNeedsDircryptoMigrationCallback,
-                       weak_ptr_factory_.GetWeakPtr(), account_id));
+    user_data_auth::NeedsDircryptoMigrationRequest request;
+    *request.mutable_account_id() =
+        cryptohome::CreateAccountIdentifierFromAccountId(account_id);
+    UserDataAuthClient::Get()->NeedsDircryptoMigration(
+        request, base::BindOnce(&DircryptoMigrationChecker::
+                                    OnCryptohomeNeedsDircryptoMigrationCallback,
+                                weak_ptr_factory_.GetWeakPtr(), account_id));
   }
 
   // Callback invoked when NeedsDircryptoMigration call is finished.
   void OnCryptohomeNeedsDircryptoMigrationCallback(
       const AccountId& account_id,
-      base::Optional<bool> needs_migration) {
-    if (!needs_migration.has_value()) {
+      base::Optional<user_data_auth::NeedsDircryptoMigrationReply> reply) {
+    if (!reply.has_value()) {
       LOG(ERROR) << "Failed to call cryptohome NeedsDircryptoMigration.";
       // Hide the banner to avoid confusion in http://crbug.com/721948.
       // Cache is not updated so that cryptohome call will still be attempted.
       UpdateUI(account_id, false);
       return;
     }
-    UMA_HISTOGRAM_BOOLEAN("Ash.Login.Login.MigrationBanner",
-                          needs_migration.value());
+    bool needs_migration = reply->needs_dircrypto_migration();
+    UMA_HISTOGRAM_BOOLEAN("Ash.Login.Login.MigrationBanner", needs_migration);
 
-    needs_dircrypto_migration_cache_[account_id] = needs_migration.value();
-    UpdateUI(account_id, needs_migration.value());
+    needs_dircrypto_migration_cache_[account_id] = needs_migration;
+    UpdateUI(account_id, needs_migration);
   }
 
   // Update UI for the given user when the check result is available.
@@ -341,7 +344,7 @@ class UserSelectionScreen::TpmLockedChecker {
   ~TpmLockedChecker() = default;
 
   void Check() {
-    CryptohomeClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+    UserDataAuthClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
         &TpmLockedChecker::RunCryptohomeCheck, weak_ptr_factory_.GetWeakPtr()));
   }
 

@@ -37,9 +37,10 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/cryptohome/mock_homedir_methods.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/login/auth/fake_extended_authenticator.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
@@ -170,8 +171,10 @@ class QuickUnlockPrivateUnitTest
         features::kQuickUnlockPinAutosubmit, std::get<1>(param));
 
     CryptohomeClient::InitializeFake();
+    CryptohomeMiscClient::InitializeFake();
+    UserDataAuthClient::InitializeFake();
     if (std::get<0>(param) == TestType::kCryptohome) {
-      auto* cryptohome_client = FakeCryptohomeClient::Get();
+      auto* cryptohome_client = FakeUserDataAuthClient::Get();
       cryptohome_client->set_supports_low_entropy_credentials(true);
       cryptohome_client->set_enable_auth_check(true);
     }
@@ -184,7 +187,6 @@ class QuickUnlockPrivateUnitTest
     ExtensionApiUnittest::SetUp();
 
     SystemSaltGetter::Get()->SetRawSaltForTesting({1, 2, 3, 4, 5, 6, 7, 8});
-    cryptohome::HomedirMethods::Initialize();
     fake_user_manager_->CreateLocalState();
 
     // Rebuild quick unlock state.
@@ -241,8 +243,9 @@ class QuickUnlockPrivateUnitTest
     scoped_user_manager_.reset();
 
     SystemSaltGetter::Shutdown();
+    UserDataAuthClient::Shutdown();
+    CryptohomeMiscClient::Shutdown();
     CryptohomeClient::Shutdown();
-    cryptohome::HomedirMethods::Shutdown();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {

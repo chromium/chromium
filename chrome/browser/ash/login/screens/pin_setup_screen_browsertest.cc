@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
@@ -47,8 +47,8 @@ class PinSetupScreenTest
       public testing::WithParamInterface<user_manager::UserType> {
  public:
   PinSetupScreenTest() {
-    CryptohomeClient::InitializeFake();
-    FakeCryptohomeClient::Get()->set_supports_low_entropy_credentials(false);
+    UserDataAuthClient::InitializeFake();
+    FakeUserDataAuthClient::Get()->set_supports_low_entropy_credentials(false);
 
     if (GetParam() == user_manager::USER_TYPE_CHILD) {
       fake_gaia_ =
@@ -244,8 +244,8 @@ class PinForLoginSetupScreenTest : public PinSetupScreenTest {
  protected:
   PinForLoginSetupScreenTest() {
     // Enable PIN for login (overrides base class setting).
-    CryptohomeClient::InitializeFake();
-    FakeCryptohomeClient::Get()->set_supports_low_entropy_credentials(true);
+    UserDataAuthClient::InitializeFake();
+    FakeUserDataAuthClient::Get()->set_supports_low_entropy_credentials(true);
     scoped_feature_list_.InitAndEnableFeature(features::kPinSetupForFamilyLink);
   }
 

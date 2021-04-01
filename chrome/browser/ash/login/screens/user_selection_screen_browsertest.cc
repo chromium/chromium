@@ -21,7 +21,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/test/browser_test.h"
 
@@ -79,14 +79,14 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
 
   std::unique_ptr<base::HistogramTester> histogram_tester =
       std::make_unique<base::HistogramTester>();
-  FakeCryptohomeClient::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::Get()->SetEcryptfsUserHome(
       cryptohome::CreateAccountIdentifierFromAccountId(users[1].account_id),
       true);
 
   // Focus the 2nd user pod (consumer).
   ASSERT_TRUE(ash::LoginScreenTestApi::FocusUser(users[1].account_id));
 
-  // Wait for FakeCryptohomeClient to send back the check result.
+  // Wait for FakeUserDataAuthClient to send back the check result.
   test::TestPredicateWaiter(base::BindRepeating([]() {
     // Banner should be shown for the 2nd user (consumer).
     return ash::LoginScreenTestApi::IsWarningBubbleShown();
@@ -94,14 +94,14 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", true,
                                       1);
 
-  FakeCryptohomeClient::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::Get()->SetEcryptfsUserHome(
       cryptohome::CreateAccountIdentifierFromAccountId(users[2].account_id),
       false);
   histogram_tester = std::make_unique<base::HistogramTester>();
   // Focus the 3rd user pod (consumer).
   ASSERT_TRUE(ash::LoginScreenTestApi::FocusUser(users[2].account_id));
 
-  // Wait for FakeCryptohomeClient to send back the check result.
+  // Wait for FakeUserDataAuthClient to send back the check result.
   test::TestPredicateWaiter(base::BindRepeating([]() {
     // Banner should be shown for the 3rd user (consumer).
     return !ash::LoginScreenTestApi::IsWarningBubbleShown();
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   histogram_tester->ExpectBucketCount("Ash.Login.Login.MigrationBanner", false,
                                       1);
 
-  FakeCryptohomeClient::Get()->SetEcryptfsUserHome(
+  FakeUserDataAuthClient::Get()->SetEcryptfsUserHome(
       cryptohome::CreateAccountIdentifierFromAccountId(users[3].account_id),
       true);
   histogram_tester = std::make_unique<base::HistogramTester>();
@@ -117,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(UserSelectionScreenTest, ShowDircryptoMigrationBanner) {
   // Focus to the 4th user pod (enterprise).
   ASSERT_TRUE(ash::LoginScreenTestApi::FocusUser(users[3].account_id));
 
-  // Wait for FakeCryptohomeClient to send back the check result.
+  // Wait for FakeUserDataAuthClient to send back the check result.
   test::TestPredicateWaiter(base::BindRepeating([]() {
     // Banner should not be shown for the enterprise user.
     return !ash::LoginScreenTestApi::IsWarningBubbleShown();
