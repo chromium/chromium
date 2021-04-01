@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/common/extension_id.h"
@@ -123,7 +124,6 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
     failure_message_ = failure_message;
   }
 
-  const std::string& extension_id() const { return extension_id_; }
   void set_extension_id(const std::string& extension_id) {
     extension_id_ = extension_id;
   }
@@ -142,36 +142,31 @@ class ExtensionTestMessageListener : public content::NotificationObserver {
 
   content::NotificationRegistrar registrar_;
 
-  // The message we're expecting.
-  std::string expected_message_;
+  // The message we're expecting. If empty, we will wait for any message,
+  // regardless of contents.
+  const base::Optional<std::string> expected_message_;
 
   // The last message we received.
   std::string message_;
 
   // Whether we've seen expected_message_ yet.
-  bool satisfied_;
+  bool satisfied_ = false;
 
   // Holds the quit Closure for the RunLoop during WaitUntilSatisfied().
   base::OnceClosure quit_wait_closure_;
 
-  // Whether or not we will wait for any message, regardless of contents.
-  bool wait_for_any_message_;
-
   // If true, we expect the calling code to manually send a reply. Otherwise,
   // we send an automatic empty reply to the extension.
-  bool will_reply_;
-
-  // Whether or not we have already replied (we can only reply once).
-  bool replied_;
+  const bool will_reply_;
 
   // The extension id that we listen for, or empty.
   std::string extension_id_;
 
   // The message that signals failure.
-  std::string failure_message_;
+  base::Optional<std::string> failure_message_;
 
   // If we received a message that was the failure message.
-  bool failed_;
+  bool failed_ = false;
 
   // The extension id from which |message_| was received.
   extensions::ExtensionId extension_id_for_message_;

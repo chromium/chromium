@@ -80,7 +80,7 @@ class TestSendMessageFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
   // Whether or not the function is currently waiting for a reply.
-  bool waiting_;
+  bool waiting_ = false;
 
   ResponseValue response_;
 };

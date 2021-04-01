@@ -79,7 +79,7 @@ ExtensionFunction::ResponseAction TestLogFunction::Run() {
   return RespondNow(NoArguments());
 }
 
-TestSendMessageFunction::TestSendMessageFunction() : waiting_(false) {}
+TestSendMessageFunction::TestSendMessageFunction() = default;
 
 ExtensionFunction::ResponseAction TestSendMessageFunction::Run() {
   std::unique_ptr<PassMessage::Params> params(
@@ -92,8 +92,9 @@ ExtensionFunction::ResponseAction TestSendMessageFunction::Run() {
       extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
       content::Source<TestSendMessageFunction>(this),
       content::Details<std::pair<std::string, bool*>>(&details));
-  // If the listener is not intending to respond, or has already responded,
-  // finish the function.
+  // If none of the listeners intend to respond, or one has already responded,
+  // finish the function. We always reply to the message, even if it's just an
+  // empty string.
   if (!listener_will_respond || response_.get()) {
     if (!response_) {
       response_ = OneArgument(base::Value(std::string()));
@@ -105,7 +106,7 @@ ExtensionFunction::ResponseAction TestSendMessageFunction::Run() {
   return RespondLater();
 }
 
-TestSendMessageFunction::~TestSendMessageFunction() {}
+TestSendMessageFunction::~TestSendMessageFunction() = default;
 
 void TestSendMessageFunction::Reply(const std::string& message) {
   DCHECK(!response_);

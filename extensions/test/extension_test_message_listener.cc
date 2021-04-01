@@ -16,31 +16,24 @@
 ExtensionTestMessageListener::ExtensionTestMessageListener(
     const std::string& expected_message,
     bool will_reply)
-    : expected_message_(expected_message),
-      satisfied_(false),
-      wait_for_any_message_(false),
-      will_reply_(will_reply),
-      replied_(false),
-      failed_(false) {
+    : expected_message_(expected_message), will_reply_(will_reply) {
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
                  content::NotificationService::AllSources());
 }
 
 ExtensionTestMessageListener::ExtensionTestMessageListener(bool will_reply)
-    : satisfied_(false),
-      wait_for_any_message_(true),
-      will_reply_(will_reply),
-      replied_(false),
-      failed_(false) {
+    : will_reply_(will_reply) {
   registrar_.Add(this,
                  extensions::NOTIFICATION_EXTENSION_TEST_MESSAGE,
                  content::NotificationService::AllSources());
 }
 
-ExtensionTestMessageListener::~ExtensionTestMessageListener() {}
+ExtensionTestMessageListener::~ExtensionTestMessageListener() {
+  DCHECK(!function_) << "MessageListener did not reply, but signaled it would.";
+}
 
-bool ExtensionTestMessageListener::WaitUntilSatisfied()  {
+bool ExtensionTestMessageListener::WaitUntilSatisfied() {
   if (satisfied_)
     return !failed_;
   base::RunLoop run_loop;
@@ -51,9 +44,8 @@ bool ExtensionTestMessageListener::WaitUntilSatisfied()  {
 
 void ExtensionTestMessageListener::Reply(const std::string& message) {
   CHECK(satisfied_);
-  CHECK(!replied_);
+  CHECK(function_);
 
-  replied_ = true;
   function_->Reply(message);
   function_.reset();
 }
@@ -64,19 +56,18 @@ void ExtensionTestMessageListener::Reply(int message) {
 
 void ExtensionTestMessageListener::ReplyWithError(const std::string& error) {
   CHECK(satisfied_);
-  CHECK(!replied_);
+  CHECK(function_);
 
-  replied_ = true;
   function_->ReplyWithError(error);
   function_.reset();
 }
 
 void ExtensionTestMessageListener::Reset() {
+  DCHECK(!function_) << "MessageListener did not reply, but signaled it would.";
   satisfied_ = false;
   failed_ = false;
   message_.clear();
   extension_id_for_message_.clear();
-  replied_ = false;
 }
 
 void ExtensionTestMessageListener::Observe(
@@ -106,20 +97,26 @@ void ExtensionTestMessageListener::Observe(
   std::pair<std::string, bool*>* message_details =
       content::Details<std::pair<std::string, bool*>>(details).ptr();
   const std::string& message = message_details->first;
-  if (message == expected_message_ || wait_for_any_message_ ||
-      (!failure_message_.empty() && message == failure_message_)) {
-    // We always reply to the message we were waiting for, even if it's just an
-    // empty string.
-    *message_details->second = true;
+  bool* listener_will_respond = message_details->second;
+
+  const bool wait_for_any_message = !expected_message_;
+  const bool is_expected_message =
+      expected_message_ && message == *expected_message_;
+  const bool is_failure_message =
+      failure_message_ && message == *failure_message_;
+
+  if (is_expected_message || wait_for_any_message || is_failure_message) {
     message_ = message;
     extension_id_for_message_ = sender_extension_id;
     satisfied_ = true;
-    failed_ = (message_ == failure_message_);
+    failed_ = is_failure_message;
 
-    // Reply immediately, or save the function for future use.
-    function_ = function;
-    if (!will_reply_)
-      Reply(std::string());
+    if (will_reply_) {
+      DCHECK(!*listener_will_respond) << "Only one listener may reply.";
+
+      *listener_will_respond = true;
+      function_ = function;
+    }
 
     if (quit_wait_closure_)
       std::move(quit_wait_closure_).Run();
