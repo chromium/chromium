@@ -3,12 +3,7 @@
  **/ export const description = `
 Tests using a destroyed query set on a queue.
 
-- used in {resolveQuerySet, timestamp {compute, render, non-pass},
-    pipeline statistics {compute, render}, occlusion}
-- x= {destroyed, not destroyed (control case)}
-
-TODO: implement. (Search for other places some of these cases may have already been tested.)
-Consider whether these tests should be distributed throughout the suite, instead of centralized.
+TODO: Test with pipeline statistics queries on {compute, render} as well.
 `;
 import { poptions } from '../../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';

@@ -3,11 +3,10 @@
  **/ export const description = `
 TODO:
 
-- For each way to start a query (all possible types in all possible encoders):
+- Start a pipeline statistics query in all possible encoders:
     - queryIndex {in, out of} range for GPUQuerySet
     - GPUQuerySet {valid, invalid}
-        - or {undefined}, for occlusionQuerySet
-    - x = {occlusion, pipeline statistics, timestamp} query
+    - x ={render pass, compute pass} encoder
 `;
 import { params, poptions } from '../../../../../common/framework/params_builder.js';
 import { makeTestGroup } from '../../../../../common/framework/test_group.js';

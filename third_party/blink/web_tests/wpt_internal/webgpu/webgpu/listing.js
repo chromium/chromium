@@ -114,7 +114,7 @@ export const listing = [
       "command_buffer",
       "queries"
     ],
-    "readme": "TODO: test the behavior of creating/using/resolving queries.\n- occlusion\n- pipeline statistics\n- timestamp\n- nested (e.g. timestamp or PS query inside occlusion query), if any such cases are valid. Try\n  writing to the same query set (at same or different indices), if valid. Check results make sense."
+    "readme": "TODO: test the behavior of creating/using/resolving queries.\n- occlusion\n- pipeline statistics\n- timestamp\n- nested (e.g. timestamp or PS query inside occlusion query), if any such cases are valid. Try\n  writing to the same query set (at same or different indices), if valid. Check results make sense.\n- start a query (all types) with no draw calls"
   },
   {
     "file": [
@@ -736,15 +736,6 @@ export const listing = [
       "validation",
       "encoding",
       "queries",
-      "occlusion"
-    ]
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "encoding",
-      "queries",
       "pipeline_statistics"
     ]
   },
@@ -755,15 +746,6 @@ export const listing = [
       "encoding",
       "queries",
       "resolveQuerySet"
-    ]
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "encoding",
-      "queries",
-      "timestamp"
     ]
   },
   {

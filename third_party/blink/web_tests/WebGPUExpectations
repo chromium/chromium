@@ -67,9 +67,6 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,operation,render_pass,resolve:* [ Skip
 # Test uses incorrect WGSL
 crbug.com/tint/354 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";* [ Failure ]
 
-# github.com/gpuweb/cts/issues/513
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,sampling,anisotropy:* [ Failure ]
-
 ## webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,*
 
 # Windows (Intel but not NVIDIA). Possibly nondeterministic.
