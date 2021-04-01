@@ -243,6 +243,14 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     }
     return CreatePermissionDescriptor(PermissionName::DISPLAY_CAPTURE);
   }
+  if (name == "file-handling") {
+    if (!RuntimeEnabledFeatures::FileHandlingEnabled(
+            ExecutionContext::From(script_state))) {
+      exception_state.ThrowTypeError("File Handling is not enabled.");
+      return nullptr;
+    }
+    return CreatePermissionDescriptor(PermissionName::FILE_HANDLING);
+  }
   return nullptr;
 }
 

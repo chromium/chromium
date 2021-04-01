@@ -25,6 +25,7 @@ aggregate_vector_icons("components_vector_icons") {
     "code.icon",
     "content_paste.icon",
     "cookie.icon",
+    "description.icon",
     "devices.icon",
     "edit.icon",
     "error.icon",

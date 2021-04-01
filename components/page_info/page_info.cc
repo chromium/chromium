@@ -114,6 +114,7 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::SERIAL_GUARD,
     ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
     ContentSettingsType::FONT_ACCESS,
+    ContentSettingsType::FILE_HANDLING,
 #endif
     ContentSettingsType::BLUETOOTH_GUARD,
     ContentSettingsType::BLUETOOTH_SCANNING,

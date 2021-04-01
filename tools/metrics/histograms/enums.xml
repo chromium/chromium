@@ -13188,6 +13188,7 @@ Called by update_net_error_codes.py.-->
   <int value="70" label="Insecure private network requests"/>
   <int value="71" label="Font Access"/>
   <int value="74" label="Display Capture"/>
+  <int value="75" label="File Handling"/>
 </enum>
 
 <enum name="ContentTypeParseableResult">

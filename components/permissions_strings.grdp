@@ -140,6 +140,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
   <message name="IDS_PERMISSIONS_BUBBLE_PROMPT_ONE_TIME" desc="The label that is used to introduce permission request details to the user in a popup.">
     Allow <ph name="SITE_NAME">$1<ex>google.com</ex></ph> to:
   </message>
+  <message name="IDS_FILE_HANDLING_PERMISSION_FRAGMENT" desc="Permission request shown if the user is opening a file using a PWA with a registered file handler. Follows a prompt: 'This site would like to:'">
+    Open files with file type associations.
+  </message>
 
   <if expr="not is_android">
     <message name="IDS_GEOLOCATION_PERMISSION_CHIP" desc="Button text representing a request for the user's physical location from a website. When clicked, shows a permission prompt bubble with more information.">

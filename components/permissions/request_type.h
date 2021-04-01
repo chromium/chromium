@@ -29,6 +29,7 @@ enum class RequestType {
   kClipboard,
   kDiskQuota,
 #if !defined(OS_ANDROID)
+  kFileHandling,
   kFontAccess,
 #endif
   kGeolocation,

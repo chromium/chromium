@@ -214,6 +214,8 @@ CameraAppUI::CameraAppUI(content::WebUI* web_ui,
       host_origin, ContentSettingsType::MEDIASTREAM_MIC);
   allowlist->RegisterAutoGrantedPermission(
       host_origin, ContentSettingsType::MEDIASTREAM_CAMERA);
+  allowlist->RegisterAutoGrantedPermission(host_origin,
+                                           ContentSettingsType::FILE_HANDLING);
   allowlist->RegisterAutoGrantedPermission(
       host_origin, ContentSettingsType::FILE_SYSTEM_READ_GUARD);
   allowlist->RegisterAutoGrantedPermission(

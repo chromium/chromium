@@ -112,6 +112,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
      kBluetoothChooserDataGroupType},
     {ContentSettingsType::WINDOW_PLACEMENT, "window-placement"},
     {ContentSettingsType::FONT_ACCESS, "font-access"},
+    {ContentSettingsType::FILE_HANDLING, "file-handling"},
 
     // Add new content settings here if a corresponding Javascript string
     // representation for it is not required. Note some exceptions do have UI in

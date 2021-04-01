@@ -72,6 +72,9 @@ class WebLaunchFilesHelper
   // renderer is ready to receive them.
   void MaybeSendLaunchEntries();
 
+  // After a permission check, tries to send the launch entries to the renderer.
+  void MaybeSendLaunchEntriesWithPermission(ContentSetting content_setting);
+
   // The entries causing the launch (may be empty).
   std::vector<blink::mojom::FileSystemAccessEntryPtr> launch_entries_;
 

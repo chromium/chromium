@@ -23,6 +23,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -259,6 +260,13 @@ class SystemWebAppManagerFileHandlingBrowserTestBase
         std::move(params));
   }
 
+  void GrantFileHandlingPermisson() {
+    auto* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    map->SetDefaultContentSetting(ContentSettingsType::FILE_HANDLING,
+                                  CONTENT_SETTING_ALLOW);
+  }
+
   // Must be called before WaitAndExposeLaunchParamsToWindow. This sets up the
   // promise used to wait for launchParam callback.
   bool PrepareToReceiveLaunchParams(content::WebContents* web_contents) {
@@ -317,6 +325,7 @@ class SystemWebAppManagerLaunchFilesBrowserTest
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchFilesBrowserTest,
                        LaunchFilesForSystemWebApp) {
   WaitForTestSystemAppInstall();
+  GrantFileHandlingPermisson();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
@@ -500,6 +509,7 @@ class SystemWebAppManagerLaunchDirectoryBrowserTest
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        LaunchDirectoryForSystemWebApp) {
   WaitForTestSystemAppInstall();
+  GrantFileHandlingPermisson();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_directory;
@@ -556,6 +566,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        ReadWritePermissions_OrdinaryDirectory) {
   WaitForTestSystemAppInstall();
+  GrantFileHandlingPermisson();
 
   // Test for ordinary directory.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -567,6 +578,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerLaunchDirectoryBrowserTest,
                        ReadWritePermissions_SensitiveDirectory) {
   WaitForTestSystemAppInstall();
+  GrantFileHandlingPermisson();
 
   // Test for sensitive directory (which are otherwise blocked by
   // FileSystemAccess API). It is safe to use |chrome::DIR_DEFAULT_DOWNLOADS|,
@@ -664,6 +676,7 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
+  GrantFileHandlingPermisson();
   InstallTestFileSystemProvider(profile);
 
   // Launch from FileSystemProvider path.
@@ -713,6 +726,7 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
+  GrantFileHandlingPermisson();
   InstallTestFileSystemProvider(profile);
 
   content::WebContents* web_contents =
@@ -737,6 +751,7 @@ IN_PROC_BROWSER_TEST_P(
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
+  GrantFileHandlingPermisson();
   InstallTestFileSystemProvider(profile);
 
   content::WebContents* web_contents =
@@ -778,6 +793,12 @@ class SystemWebAppManagerFileHandlingOriginTrialsBrowserTest
   ~SystemWebAppManagerFileHandlingOriginTrialsBrowserTest() override = default;
 
   content::WebContents* LaunchWithTestFiles() {
+    // Grant permission.
+    auto* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    map->SetDefaultContentSetting(ContentSettingsType::FILE_HANDLING,
+                                  CONTENT_SETTING_ALLOW);
+
     // Create temporary directory and files.
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::ScopedTempDir temp_directory;

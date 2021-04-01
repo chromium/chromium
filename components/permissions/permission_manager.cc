@@ -131,6 +131,8 @@ ContentSettingsType PermissionTypeToContentSettingSafe(
       return ContentSettingsType::FONT_ACCESS;
     case PermissionType::DISPLAY_CAPTURE:
       return ContentSettingsType::DISPLAY_CAPTURE;
+    case PermissionType::FILE_HANDLING:
+      return ContentSettingsType::FILE_HANDLING;
     case PermissionType::NUM:
       break;
   }

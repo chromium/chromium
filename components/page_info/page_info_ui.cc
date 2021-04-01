@@ -187,6 +187,7 @@ base::span<const PermissionsUIInfo> GetContentSettingsUIInfo() {
     {ContentSettingsType::HID_GUARD, IDS_PAGE_INFO_TYPE_HID},
 #endif
     {ContentSettingsType::IDLE_DETECTION, IDS_PAGE_INFO_TYPE_IDLE_DETECTION},
+    {ContentSettingsType::FILE_HANDLING, IDS_PAGE_INFO_TYPE_FILE_HANDLING},
   };
   return kPermissionsUIInfo;
 }
@@ -732,6 +733,9 @@ const gfx::ImageSkia PageInfoUI::GetPermissionIcon(
       break;
     case ContentSettingsType::IDLE_DETECTION:
       icon = &vector_icons::kDevicesIcon;
+      break;
+    case ContentSettingsType::FILE_HANDLING:
+      icon = &vector_icons::kDescriptionIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are

@@ -75,6 +75,8 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
       return vector_icons::kContentPasteIcon;
     case RequestType::kDiskQuota:
       return vector_icons::kFolderIcon;
+    case RequestType::kFileHandling:
+      return vector_icons::kDescriptionIcon;
     case RequestType::kFontAccess:
       return vector_icons::kFontDownloadIcon;
     case RequestType::kGeolocation:
@@ -127,6 +129,8 @@ RequestType ContentSettingsTypeToRequestType(
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
       return RequestType::kClipboard;
 #if !defined(OS_ANDROID)
+    case ContentSettingsType::FILE_HANDLING:
+      return RequestType::kFileHandling;
     case ContentSettingsType::FONT_ACCESS:
       return RequestType::kFontAccess;
 #endif
@@ -192,6 +196,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
     case permissions::RequestType::kDiskQuota:
       return "disk_quota";
 #if !defined(OS_ANDROID)
+    case permissions::RequestType::kFileHandling:
+      return "file_handling";
     case permissions::RequestType::kFontAccess:
       return "font_access";
 #endif

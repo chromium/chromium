@@ -168,6 +168,9 @@ std::u16string PermissionRequestImpl::GetMessageTextFragment() const {
     case ContentSettingsType::IDLE_DETECTION:
       message_id = IDS_IDLE_DETECTION_PERMISSION_FRAGMENT;
       break;
+    case ContentSettingsType::FILE_HANDLING:
+      message_id = IDS_FILE_HANDLING_PERMISSION_FRAGMENT;
+      break;
     default:
       NOTREACHED();
       return std::u16string();

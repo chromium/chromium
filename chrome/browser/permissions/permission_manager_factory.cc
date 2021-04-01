@@ -34,6 +34,7 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/contexts/clipboard_read_write_permission_context.h"
 #include "components/permissions/contexts/clipboard_sanitized_write_permission_context.h"
+#include "components/permissions/contexts/file_handling_permission_context.h"
 #include "components/permissions/contexts/font_access_permission_context.h"
 #include "components/permissions/contexts/payment_handler_permission_context.h"
 #include "components/permissions/contexts/webxr_permission_context.h"
@@ -140,6 +141,8 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<FontAccessPermissionContext>(profile);
   permission_contexts[ContentSettingsType::DISPLAY_CAPTURE] =
       std::make_unique<DisplayCapturePermissionContext>(profile);
+  permission_contexts[ContentSettingsType::FILE_HANDLING] =
+      std::make_unique<FileHandlingPermissionContext>(profile);
   return permission_contexts;
 }
 }  // namespace

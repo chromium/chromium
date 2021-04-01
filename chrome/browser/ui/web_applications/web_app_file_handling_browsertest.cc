@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/app_registrar.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
@@ -134,6 +135,12 @@ class WebAppFileHandlingTestBase : public web_app::WebAppControllerBrowserTest {
   }
 
  protected:
+  void SetFileHandlingPermission(ContentSetting setting) {
+    auto* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    map->SetDefaultContentSetting(ContentSettingsType::FILE_HANDLING, setting);
+  }
+
   const web_app::AppId& app_id() { return app_id_; }
 
  private:
@@ -216,6 +223,7 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchConsumerIsNotTriggeredWithNoFiles) {
   InstallFileHandlingPWA();
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   content::WebContents* web_contents =
       LaunchWithFiles(app_id(), GetSecureAppURL(), {});
   EXPECT_EQ(false, content::EvalJs(web_contents, "!!window.launchParams"));
@@ -224,6 +232,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParams) {
   InstallFileHandlingPWA();
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
   content::WebContents* web_contents = LaunchWithFiles(
       app_id(), GetTextFileHandlerActionURL(), {test_file_path});
@@ -235,8 +244,20 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       LaunchConsumerIsNotTriggeredWithPermissionDenied) {
+  InstallFileHandlingPWA();
+  SetFileHandlingPermission(CONTENT_SETTING_BLOCK);
+  base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
+  content::WebContents* web_contents = LaunchWithFiles(
+      app_id(), GetTextFileHandlerActionURL(), {test_file_path});
+
+  EXPECT_EQ(false, content::EvalJs(web_contents, "!!window.launchParams"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsCanReceiveFileLaunchParamsInTab) {
   InstallFileHandlingPWA();
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
   base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
   content::WebContents* web_contents =
       LaunchWithFiles(app_id(), GetTextFileHandlerActionURL(), {test_file_path},
@@ -251,6 +272,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        PWAsDispatchOnCorrectFileHandlingURL) {
   InstallFileHandlingPWA();
+  SetFileHandlingPermission(CONTENT_SETTING_ALLOW);
 
   // Test that file handler dispatches correct URL based on file extension.
   LaunchWithFiles(app_id(), GetSecureAppURL(), {});
@@ -499,6 +521,13 @@ class WebAppFileHandlingOriginTrialTest
   void TearDownOnMainThread() override { interceptor_.reset(); }
 
  protected:
+  void GrantFileHandlingPermission() {
+    auto* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+    map->SetDefaultContentSetting(ContentSettingsType::FILE_HANDLING,
+                                  CONTENT_SETTING_ALLOW);
+  }
+
   web_app::AppId InstallFileHandlingWebApp(GURL* start_url_out = nullptr) {
     std::string origin = "https://file-handling-pwa";
 
@@ -545,6 +574,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        LaunchParamsArePassedCorrectly) {
   GURL start_url;
   const web_app::AppId app_id = InstallFileHandlingWebApp(&start_url);
+  GrantFileHandlingPermission();
   base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
   content::WebContents* web_content = LaunchApplication(
       profile(), app_id, start_url,
@@ -564,6 +594,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        IsFileHandlerOnChromeOS) {
   const web_app::AppId app_id = InstallFileHandlingWebApp();
+  GrantFileHandlingPermission();
   base::FilePath test_file_path = NewTestFilePath(FILE_PATH_LITERAL("txt"));
   std::vector<file_manager::file_tasks::FullTaskDescriptor> tasks =
       file_manager::test::GetTasksForFile(profile(), test_file_path);
@@ -581,6 +612,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingOriginTrialTest,
                        NotHandlerForNonNativeFiles) {
   const web_app::AppId app_id = InstallFileHandlingWebApp();
+  GrantFileHandlingPermission();
   base::WeakPtr<file_manager::Volume> fsp_volume =
       file_manager::test::InstallFileSystemProviderChromeApp(profile());
 

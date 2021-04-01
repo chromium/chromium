@@ -11,6 +11,9 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/permissions/permission_manager_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/permissions/permission_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -22,6 +25,7 @@
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
 
 namespace web_launch {
@@ -185,12 +189,30 @@ void WebLaunchFilesHelper::MaybeSendLaunchEntries() {
   if (launch_url_ != web_contents()->GetLastCommittedURL())
     return;
 
-  mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
-  web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces()->GetInterface(
-      &launch_service);
-  DCHECK(launch_service);
-  launch_service->SetLaunchFiles(std::move(launch_entries_));
+  content::RenderFrameHost* frame = web_contents()->GetMainFrame();
+  permissions::PermissionManager* permission_manager =
+      PermissionManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  permission_manager->RequestPermission(
+      ContentSettingsType::FILE_HANDLING, frame, launch_url_,
+      /*user_gesture=*/true,
+      base::BindOnce(
+          &WebLaunchFilesHelper::MaybeSendLaunchEntriesWithPermission,
+          weak_ptr_factory_.GetWeakPtr()));
+}
 
+void WebLaunchFilesHelper::MaybeSendLaunchEntriesWithPermission(
+    ContentSetting content_setting) {
+  if (content_setting == CONTENT_SETTING_ALLOW) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
+    web_contents()
+        ->GetMainFrame()
+        ->GetRemoteAssociatedInterfaces()
+        ->GetInterface(&launch_service);
+    DCHECK(launch_service);
+    launch_service->SetLaunchFiles(std::move(launch_entries_));
+  }
   // LaunchParams are sent, clean up.
   web_contents()->RemoveUserData(UserDataKey());
 }

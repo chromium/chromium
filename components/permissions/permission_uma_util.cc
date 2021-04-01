@@ -70,6 +70,8 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #if !defined(OS_ANDROID)
     case RequestType::kFontAccess:
       return RequestTypeForUma::PERMISSION_FONT_ACCESS;
+    case RequestType::kFileHandling:
+      return RequestTypeForUma::PERMISSION_FILE_HANDLING;
 #endif
     case RequestType::kGeolocation:
       return RequestTypeForUma::PERMISSION_GEOLOCATION;
@@ -154,6 +156,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "FontAccess";
     case RequestTypeForUma::PERMISSION_IDLE_DETECTION:
       return "IdleDetection";
+    case RequestTypeForUma::PERMISSION_FILE_HANDLING:
+      return "FileHandling";
     default:
       NOTREACHED();
       return "";
@@ -735,6 +739,10 @@ void PermissionUmaUtil::RecordPermissionAction(
       break;
     case ContentSettingsType::IDLE_DETECTION:
       base::UmaHistogramEnumeration("Permissions.Action.IdleDetection", action,
+                                    PermissionAction::NUM);
+      break;
+    case ContentSettingsType::FILE_HANDLING:
+      base::UmaHistogramEnumeration("Permissions.Action.FileHandling", action,
                                     PermissionAction::NUM);
       break;
     // The user is not prompted for these permissions, thus there is no

@@ -23,6 +23,8 @@ source_set("permissions") {
     "contexts/clipboard_read_write_permission_context.h",
     "contexts/clipboard_sanitized_write_permission_context.cc",
     "contexts/clipboard_sanitized_write_permission_context.h",
+    "contexts/file_handling_permission_context.cc",
+    "contexts/file_handling_permission_context.h",
     "contexts/font_access_permission_context.cc",
     "contexts/font_access_permission_context.h",
     "contexts/geolocation_permission_context.cc",

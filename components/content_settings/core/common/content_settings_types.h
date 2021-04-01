@@ -236,6 +236,13 @@ enum class ContentSettingsType : int32_t {
   // register the PermissionContext.
   DISPLAY_CAPTURE,
 
+  // Register file-type associations with the operating system and obtain
+  // read-only access to files that the user chooses to open with this
+  // installed web application from the system file manager. This setting has
+  // no effect on the File System API, <input type="file">, or the ability to
+  // access files through drag & drop or clipboard paste operations.
+  FILE_HANDLING,
+
   NUM_TYPES,
 };
 

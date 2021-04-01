@@ -51,6 +51,7 @@ enum class PermissionType {
   WINDOW_PLACEMENT = 29,
   FONT_ACCESS = 30,
   DISPLAY_CAPTURE = 31,
+  FILE_HANDLING = 32,
 
   // Always keep this at the end.
   NUM,

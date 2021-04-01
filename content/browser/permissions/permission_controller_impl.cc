@@ -66,6 +66,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::WINDOW_PLACEMENT:
     case PermissionType::FONT_ACCESS:
     case PermissionType::DISPLAY_CAPTURE:
+    case PermissionType::FILE_HANDLING:
       return base::nullopt;
   }
 }
