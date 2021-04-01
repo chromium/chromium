@@ -474,14 +474,16 @@ void IsCertInNSSDatabaseOnIOThread(NssCertDatabaseGetter database_getter,
                                    bool* out_cert_found,
                                    base::OnceClosure done_closure) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  auto did_get_cert_db_callback = base::BindRepeating(
+  auto did_get_cert_db_split_callback = base::SplitOnceCallback(base::BindOnce(
       &IsCertInNSSDatabaseOnIOThreadWithCertDb, subject_common_name,
-      out_cert_found, base::AdaptCallbackForRepeating(std::move(done_closure)));
+      out_cert_found, std::move(done_closure)));
 
   net::NSSCertDatabase* cert_db =
-      std::move(database_getter).Run(did_get_cert_db_callback);
-  if (cert_db)
-    did_get_cert_db_callback.Run(cert_db);
+      std::move(database_getter)
+          .Run(std::move(did_get_cert_db_split_callback.first));
+  if (cert_db) {
+    std::move(did_get_cert_db_split_callback.second).Run(cert_db);
+  }
 }
 
 // Returns true if a certificate with subject CommonName |common_name| is
