@@ -16,7 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -120,4 +120,4 @@ TEST_F(FileFlusherTest, DuplicateRequests) {
   EXPECT_EQ(1, GetFlushCount("dir1/file3"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

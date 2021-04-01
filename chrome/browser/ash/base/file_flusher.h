@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
-namespace chromeos {
+namespace ash {
 
 // Flushes files under the requested directories in the blocking pool. If the
 // same directory is requested more than once, the last request cancels all
@@ -63,6 +63,6 @@ class FileFlusher {
   DISALLOW_COPY_AND_ASSIGN(FileFlusher);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_BASE_FILE_FLUSHER_H_

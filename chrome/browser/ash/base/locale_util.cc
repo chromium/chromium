@@ -26,7 +26,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/platform_font_skia.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -76,10 +76,10 @@ void FinishSwitchLanguage(std::unique_ptr<SwitchLanguageData> data) {
     extension_l10n_util::SetPreferredLocale(data->result.requested_locale);
 
     if (data->enable_locale_keyboard_layouts) {
-      input_method::InputMethodManager* manager =
-          input_method::InputMethodManager::Get();
-      scoped_refptr<input_method::InputMethodManager::State> ime_state =
-          UserSessionManager::GetInstance()->GetDefaultIMEState(data->profile);
+      auto* manager = chromeos::input_method::InputMethodManager::Get();
+      scoped_refptr<chromeos::input_method::InputMethodManager::State>
+          ime_state = UserSessionManager::GetInstance()->GetDefaultIMEState(
+              data->profile);
       if (data->login_layouts_only) {
         // Enable the hardware keyboard layouts and locale-specific layouts
         // suitable for use on the login screen. This will also switch to the
@@ -98,8 +98,7 @@ void FinishSwitchLanguage(std::unique_ptr<SwitchLanguageData> data) {
         std::vector<std::string> input_methods;
         manager->GetInputMethodUtil()->GetInputMethodIdsFromLanguageCode(
             data->result.loaded_locale,
-            input_method::kKeyboardLayoutsOnly,
-            &input_methods);
+            chromeos::input_method::kKeyboardLayoutsOnly, &input_methods);
         for (std::vector<std::string>::const_iterator it =
                 input_methods.begin(); it != input_methods.end(); ++it) {
           ime_state->EnableInputMethod(*it);
@@ -248,4 +247,4 @@ bool AddLocaleToPreferredLanguages(const std::string& locale,
 }
 
 }  // namespace locale_util
-}  // namespace chromeos
+}  // namespace ash

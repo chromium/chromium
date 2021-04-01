@@ -15,6 +15,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
+// TODO(https://crbug.com/1164001): forward declare LanguageSwitchResult
+// after this file is moved to ash.
+#include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -24,10 +27,6 @@ namespace chromeos {
 
 class InputEventsBlocker;
 class WelcomeView;
-
-namespace locale_util {
-struct LanguageSwitchResult;
-}
 
 class WelcomeScreen : public BaseScreen,
                       public input_method::InputMethodManager::Observer,

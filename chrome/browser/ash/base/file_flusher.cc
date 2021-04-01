@@ -16,7 +16,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-namespace chromeos {
+namespace ash {
 
 ////////////////////////////////////////////////////////////////////////////////
 // FileFlusher::Job
@@ -197,4 +197,4 @@ void FileFlusher::OnJobDone(FileFlusher::Job* job) {
   ScheduleJob();
 }
 
-}  // namespace chromeos
+}  // namespace ash

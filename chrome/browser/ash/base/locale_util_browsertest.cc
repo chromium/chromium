@@ -14,7 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 void OnLocaleSwitched(base::RunLoop* run_loop,
@@ -44,4 +44,4 @@ IN_PROC_BROWSER_TEST_F(LocaleUtilTest, SwitchLanguage) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

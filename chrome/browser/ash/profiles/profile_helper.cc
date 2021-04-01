@@ -48,7 +48,6 @@ namespace {
 // TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
 // source migration is finished.
 namespace login = ::chromeos::login;
-using ::chromeos::FileFlusher;
 using ::chromeos::OAuth2LoginManager;
 
 // This array contains a subset of the explicitly allowlisted extensions that

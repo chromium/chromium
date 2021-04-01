@@ -15,7 +15,7 @@
 class Profile;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace locale_util {
 
 struct LanguageSwitchResult {
@@ -93,6 +93,20 @@ std::string GetAllowedFallbackUILanguage(const PrefService* prefs);
 bool AddLocaleToPreferredLanguages(const std::string& locale,
                                    PrefService* prefs);
 
+}  // namespace locale_util
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace chromeos {
+namespace locale_util {
+using ::ash::locale_util::GetAllowedFallbackUILanguage;
+using ::ash::locale_util::IsAllowedLanguage;
+using ::ash::locale_util::IsAllowedUILanguage;
+using ::ash::locale_util::LanguageSwitchResult;
+using ::ash::locale_util::RemoveDisallowedLanguagesFromPreferred;
+using ::ash::locale_util::SwitchLanguage;
+using ::ash::locale_util::SwitchLanguageCallback;
 }  // namespace locale_util
 }  // namespace chromeos
 

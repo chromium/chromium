@@ -2648,11 +2648,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     std::string language;
     ASSERT_TRUE(value.GetString("language", &language));
     base::RunLoop run_loop;
-    chromeos::locale_util::SwitchLanguage(
+    ash::locale_util::SwitchLanguage(
         language, true, false,
         base::BindRepeating(
             [](base::RunLoop* run_loop,
-               const chromeos::locale_util::LanguageSwitchResult&) {
+               const ash::locale_util::LanguageSwitchResult&) {
               run_loop->Quit();
             },
             &run_loop),
