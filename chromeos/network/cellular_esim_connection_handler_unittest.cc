@@ -17,6 +17,7 @@
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
+#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
@@ -76,7 +77,9 @@ class CellularESimConnectionHandlerTest : public testing::Test {
   void SetUp() override {
     inhibitor_.Init(helper_.network_state_handler(),
                     helper_.network_device_handler());
-    handler_.Init(helper_.network_state_handler(), &inhibitor_);
+    profile_handler_.Init(&inhibitor_);
+    handler_.Init(helper_.network_state_handler(), &inhibitor_,
+                  &profile_handler_);
   }
 
   void StartEnableProfileForConnection(int profile_num) {
@@ -211,6 +214,7 @@ class CellularESimConnectionHandlerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper helper_;
   CellularInhibitor inhibitor_;
+  TestCellularESimProfileHandler profile_handler_;
   CellularESimConnectionHandler handler_;
 
   base::OnceClosure on_success_callback_;

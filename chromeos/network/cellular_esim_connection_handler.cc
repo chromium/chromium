@@ -10,6 +10,7 @@
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_event_log.h"
@@ -89,9 +90,11 @@ CellularESimConnectionHandler::~CellularESimConnectionHandler() {
 
 void CellularESimConnectionHandler::Init(
     NetworkStateHandler* network_state_handler,
-    CellularInhibitor* cellular_inhibitor) {
+    CellularInhibitor* cellular_inhibitor,
+    CellularESimProfileHandler* cellular_esim_profile_handler) {
   network_state_handler_ = network_state_handler;
   cellular_inhibitor_ = cellular_inhibitor;
+  cellular_esim_profile_handler_ = cellular_esim_profile_handler;
 
   network_state_handler_->AddObserver(this, FROM_HERE);
 }
@@ -303,24 +306,26 @@ void CellularESimConnectionHandler::RequestInstalledProfiles() {
     return;
   }
 
-  HermesEuiccClient::Get()->RequestInstalledProfiles(
+  cellular_esim_profile_handler_->RefreshProfileList(
       *euicc_path,
-      base::BindOnce(
-          &CellularESimConnectionHandler::OnRequestInstalledProfilesResult,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CellularESimConnectionHandler::OnRefreshProfileListResult,
+                     weak_ptr_factory_.GetWeakPtr()),
+      std::move(request_queue_.front()->inhibit_lock));
 }
 
-void CellularESimConnectionHandler::OnRequestInstalledProfilesResult(
-    HermesResponseStatus status) {
+void CellularESimConnectionHandler::OnRefreshProfileListResult(
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   DCHECK(state_ == ConnectionState::kRequestingProfilesBeforeEnabling ||
          state_ == ConnectionState::kRequestingProfilesAfterEnabling);
 
-  if (status != HermesResponseStatus::kSuccess) {
+  if (!inhibit_lock) {
     NET_LOG(ERROR) << "eSIM connection flow failed to request profiles";
     CompleteConnectionAttempt(NetworkConnectionHandler::kErrorESimProfileIssue,
                               /*service_path=*/base::nullopt);
     return;
   }
+
+  request_queue_.front()->inhibit_lock = std::move(inhibit_lock);
 
   if (state_ == ConnectionState::kRequestingProfilesAfterEnabling) {
     // Reset the inhibit_lock so that the device will be uninhibited

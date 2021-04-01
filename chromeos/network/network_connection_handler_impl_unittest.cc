@@ -29,6 +29,7 @@
 #include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
+#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "components/onc/onc_constants.h"
 #include "crypto/scoped_nss_types.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -182,10 +183,14 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
     cellular_inhibitor_->Init(helper_.network_state_handler(),
                               helper_.network_device_handler());
 
+    cellular_esim_profile_handler_.reset(new TestCellularESimProfileHandler());
+    cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
+
     cellular_esim_connection_handler_.reset(
         new CellularESimConnectionHandler());
-    cellular_esim_connection_handler_->Init(helper_.network_state_handler(),
-                                            cellular_inhibitor_.get());
+    cellular_esim_connection_handler_->Init(
+        helper_.network_state_handler(), cellular_inhibitor_.get(),
+        cellular_esim_profile_handler_.get());
 
     network_connection_handler_.reset(new NetworkConnectionHandlerImpl());
     network_connection_handler_->Init(
@@ -439,6 +444,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   std::unique_ptr<ManagedNetworkConfigurationHandlerImpl>
       managed_config_handler_;
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
+  std::unique_ptr<TestCellularESimProfileHandler>
+      cellular_esim_profile_handler_;
   std::unique_ptr<CellularESimConnectionHandler>
       cellular_esim_connection_handler_;
   std::unique_ptr<NetworkProfileHandler> network_profile_handler_;

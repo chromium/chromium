@@ -19,6 +19,7 @@
 
 namespace chromeos {
 
+class CellularESimProfileHandler;
 class CellularInhibitor;
 class NetworkStateHandler;
 class NetworkState;
@@ -48,7 +49,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
   ~CellularESimConnectionHandler() override;
 
   void Init(NetworkStateHandler* network_state_handler,
-            CellularInhibitor* cellular_inhibitor);
+            CellularInhibitor* cellular_inhibitor,
+            CellularESimProfileHandler* cellular_esim_profile_handler);
 
   // Type of success callback for enable profile operations. This callback is
   // called when enable was successful and profile is ready for connection. The
@@ -130,7 +132,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
   void OnInhibitScanResult(
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void RequestInstalledProfiles();
-  void OnRequestInstalledProfilesResult(HermesResponseStatus status);
+  void OnRefreshProfileListResult(
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void EnableProfile();
   void OnEnableCarrierProfileResult(HermesResponseStatus status);
 
@@ -146,6 +149,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimConnectionHandler
 
   NetworkStateHandler* network_state_handler_ = nullptr;
   CellularInhibitor* cellular_inhibitor_ = nullptr;
+  CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
 
   ConnectionState state_ = ConnectionState::kIdle;
   base::queue<std::unique_ptr<ConnectionRequestMetadata>> request_queue_;
