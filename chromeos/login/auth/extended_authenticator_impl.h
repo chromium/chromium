@@ -13,7 +13,7 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/login/auth/extended_authenticator.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -39,7 +39,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
   void EndFingerprintAuthSession() override;
   void AuthenticateWithFingerprint(
       const UserContext& context,
-      base::OnceCallback<void(cryptohome::CryptohomeErrorCode)> callback)
+      base::OnceCallback<void(user_data_auth::CryptohomeErrorCode)> callback)
       override;
   void AddKey(const UserContext& context,
               const cryptohome::KeyDefinition& key,
@@ -70,17 +70,18 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) ExtendedAuthenticatorImpl
                    const UserContext& context);
 
   // Inner operation callbacks.
+  template <typename ReplyType>
   void OnOperationComplete(const std::string& time_marker,
                            const UserContext& context,
                            base::OnceClosure success_callback,
-                           bool success,
-                           cryptohome::MountError return_code);
+                           base::Optional<ReplyType> reply);
+
   void OnStartFingerprintAuthSessionComplete(
       base::OnceCallback<void(bool)> callback,
-      base::Optional<cryptohome::BaseReply> reply);
+      base::Optional<user_data_auth::StartFingerprintAuthSessionReply> reply);
   void OnFingerprintScanComplete(
-      base::OnceCallback<void(cryptohome::CryptohomeErrorCode)> callback,
-      base::Optional<cryptohome::BaseReply> reply);
+      base::OnceCallback<void(user_data_auth::CryptohomeErrorCode)> callback,
+      base::Optional<user_data_auth::CheckKeyReply> reply);
 
   bool salt_obtained_;
   std::string system_salt_;
