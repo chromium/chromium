@@ -5,22 +5,13 @@
 package org.chromium.chrome.browser.signin.services;
 
 import android.accounts.Account;
-import android.content.Context;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
-
-import com.google.android.gms.auth.AccountChangeEvent;
-import com.google.android.gms.auth.GoogleAuthException;
-import com.google.android.gms.auth.GoogleAuthUtil;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountRenameChecker;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -28,7 +19,6 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -37,45 +27,9 @@ import java.util.List;
  * This should be merged into SigninManager when it is upstreamed.
  */
 public class SigninHelper implements ApplicationStatus.ApplicationStateListener {
-    private static final String TAG = "SigninHelper";
-
-    /**
-     * Retrieve more detailed information from account changed intents.
-     */
-    interface AccountChangeEventChecker {
-        /**
-         * Gets the new account name of the renamed account.
-         */
-        @Nullable
-        String getNewNameOfRenamedAccount(Context context, String accountEmail);
-    }
-
-    /**
-     * Uses GoogleAuthUtil.getAccountChangeEvents to detect if account
-     * renaming has occurred.
-     */
-    private static final class SystemAccountChangeEventChecker
-            implements AccountChangeEventChecker {
-        @Override
-        public @Nullable String getNewNameOfRenamedAccount(Context context, String accountEmail) {
-            try {
-                final List<AccountChangeEvent> accountChangeEvents =
-                        GoogleAuthUtil.getAccountChangeEvents(context, 0, accountEmail);
-                for (AccountChangeEvent event : accountChangeEvents) {
-                    if (event.getChangeType() == GoogleAuthUtil.CHANGE_TYPE_ACCOUNT_RENAMED_TO) {
-                        return event.getChangeData();
-                    }
-                }
-            } catch (IOException | GoogleAuthException e) {
-                Log.w(TAG, "Failed to get change events", e);
-            }
-            return null;
-        }
-    }
-
     private final SigninManager mSigninManager;
-
     private final AccountTrackerService mAccountTrackerService;
+    private final AccountRenameChecker mAccountRenameChecker;
 
     /**
      * Please use SigninHelperProvider to get SigninHelper instance instead of creating it
@@ -88,6 +42,7 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
     public SigninHelper(SigninManager signinManager, AccountTrackerService accountTrackerService) {
         mSigninManager = signinManager;
         mAccountTrackerService = accountTrackerService;
+        mAccountRenameChecker = new AccountRenameChecker();
         ApplicationStatus.registerApplicationStateListener(this);
     }
 
@@ -122,8 +77,8 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
         new AsyncTask<String>() {
             @Override
             protected String doInBackground() {
-                return getNewNameOfRenamedAccount(
-                        new SystemAccountChangeEventChecker(), oldAccount.getEmail(), accounts);
+                return mAccountRenameChecker.getNewNameOfRenamedAccount(
+                        oldAccount.getEmail(), accounts);
             }
 
             @Override
@@ -140,22 +95,6 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
                 }
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-    }
-
-    @VisibleForTesting
-    static @Nullable String getNewNameOfRenamedAccount(
-            AccountChangeEventChecker checker, String oldAccountName, List<Account> accounts) {
-        final Context context = ContextUtils.getApplicationContext();
-        String newAccountName = checker.getNewNameOfRenamedAccount(context, oldAccountName);
-        while (newAccountName != null) {
-            if (AccountUtils.findAccountByName(accounts, newAccountName) != null) {
-                break;
-            }
-            // When the new name does not exist on device, continue to search if it is
-            // renamed to another account existing on device.
-            newAccountName = checker.getNewNameOfRenamedAccount(context, newAccountName);
-        }
-        return newAccountName;
     }
 
     /**

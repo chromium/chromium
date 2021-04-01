@@ -24,6 +24,7 @@ android_library("java") {
     "java/src/org/chromium/components/signin/AccountManagerFacadeImpl.java",
     "java/src/org/chromium/components/signin/AccountManagerFacadeProvider.java",
     "java/src/org/chromium/components/signin/AccountManagerResult.java",
+    "java/src/org/chromium/components/signin/AccountRenameChecker.java",
     "java/src/org/chromium/components/signin/AccountTrackerService.java",
     "java/src/org/chromium/components/signin/AccountUtils.java",
     "java/src/org/chromium/components/signin/AccountsChangeObserver.java",
@@ -125,6 +126,7 @@ java_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/signin/AccountManagerFacadeImplTest.java",
+    "junit/src/org/chromium/components/signin/AccountRenameCheckerTest.java",
     "junit/src/org/chromium/components/signin/AccountTrackerServiceTest.java",
     "junit/src/org/chromium/components/signin/ObservableValueTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
@@ -132,6 +134,7 @@ java_library("junit") {
   deps = [
     ":java",
     ":signin_java_test_support",
+    "$google_play_services_package:google_play_services_auth_base_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
