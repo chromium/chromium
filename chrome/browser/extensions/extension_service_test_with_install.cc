@@ -16,6 +16,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_creator.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/common/verifier_formats.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -340,6 +341,13 @@ void ExtensionServiceTestWithInstall::UninstallExtension(
   EXPECT_TRUE(base::PathExists(extension_path));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   EXPECT_TRUE(prefs->GetInstalledExtensionInfo(id));
+
+  // Make sure RegisterClient calls for storage are finished to avoid flaky
+  // crashes in QuotaManagerImpl::RegisterClient due to its getting called
+  // after LazyInitialize.
+  // TODO(crbug.com/1182630) : Remove this when 1182630 is fixed.
+  util::GetStoragePartitionForExtensionId(id, profile());
+  task_environment()->RunUntilIdle();
 
   // We make a copy of the extension's id since the extension can be deleted
   // once it's uninstalled.
