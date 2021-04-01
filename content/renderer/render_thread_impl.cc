@@ -367,6 +367,11 @@ class UkmRecorderFactoryImpl : public cc::UkmRecorderFactory {
   const mojo::SharedRemote<mojom::ChildProcessHost> process_host_;
 };
 
+static bool IsSingleProcess() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kSingleProcess);
+}
+
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
@@ -781,14 +786,12 @@ void RenderThreadImpl::Shutdown() {
 
   // In a single-process mode, we cannot call _exit(0) in Shutdown() because
   // it will exit the process before the browser side is ready to exit.
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSingleProcess))
+  if (!IsSingleProcess())
     base::Process::TerminateCurrentProcessImmediately(0);
 }
 
 bool RenderThreadImpl::ShouldBeDestroyed() {
-  DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kSingleProcess));
+  DCHECK(IsSingleProcess());
   // In a single-process mode, it is unsafe to destruct this renderer thread
   // because we haven't run the shutdown sequence. Hence we leak the render
   // thread.
@@ -1334,8 +1337,7 @@ void RenderThreadImpl::OnChannelError() {
   // So, if we get a channel error, crash the whole process right now to get a
   // more informative stack, since we will otherwise just crash later when we
   // try to restart it.
-  CHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kSingleProcess));
+  CHECK(!IsSingleProcess());
   ChildThreadImpl::OnChannelError();
 }
 
@@ -1705,8 +1707,18 @@ void RenderThreadImpl::OnSystemColorsChanged(
     const std::string& highlight_text_color,
     const std::string& highlight_color) {
 #if defined(OS_MAC)
-  SystemColorsDidChange(aqua_color_variant, highlight_text_color,
-                        highlight_color);
+  if (!IsSingleProcess()) {
+    // The purpose of this function is to send an IPC to the renderer notifying
+    // it that the browser received an NSNotificationCenter notification, which
+    // the renderer needs to repost in its own process so that AppKit-side state
+    // in its process can be updated. This makes no sense in single-process
+    // mode, since that state is already updated, and in fact is actively
+    // harmful: that IPC is received on a different thread, then the
+    // notification is reposted (again) from a different thread.
+    // See https://crbug.com/1162066
+    SystemColorsDidChange(aqua_color_variant, highlight_text_color,
+                          highlight_color);
+  }
 #else
   NOTREACHED();
 #endif
