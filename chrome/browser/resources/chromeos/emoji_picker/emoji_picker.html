@@ -53,7 +53,16 @@
     left: var(--emoji-group-tabs-left);
     overflow-x: scroll;
     scroll-behavior: smooth;
+    scroll-padding: var(--emoji-group-button-size);
+    scroll-snap-type: x mandatory;
     width: 100%;
+  }
+
+  /* Mark the first and 9th group as scroll targets to get the correct scroll
+   * snapping behavior. */
+  #tabs emoji-group-button:nth-child(9n-7) {
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
   }
 
   #tabs::-webkit-scrollbar {
