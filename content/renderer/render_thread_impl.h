@@ -99,7 +99,6 @@ namespace viz {
 class ContextProviderCommandBuffer;
 class Gpu;
 class RasterContextProvider;
-class SyntheticBeginFrameSource;
 }  // namespace viz
 
 namespace content {
@@ -478,9 +477,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
   void OnSyncMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
-
-  std::unique_ptr<viz::SyntheticBeginFrameSource>
-  CreateSyntheticBeginFrameSource();
 
   void OnRendererInterfaceReceiver(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
