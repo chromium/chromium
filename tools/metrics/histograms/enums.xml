@@ -1689,7 +1689,7 @@ Unknown properties are collapsed to zero. -->
   <int value="19" label="KITKAT"/>
   <int value="20" label="KITKAT_WATCH"/>
   <int value="21" label="LOLLIPOP"/>
-  <int value="22" label="LILLIPOP_MR1"/>
+  <int value="22" label="LOLLIPOP_MR1"/>
   <int value="23" label="M"/>
   <int value="24" label="N"/>
   <int value="25" label="N_MR1"/>
