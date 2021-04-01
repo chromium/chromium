@@ -530,6 +530,16 @@ config("compiler") {
     ]
   }
 
+  if (llvm_force_head_revision) {
+    if (is_clang && !is_nacl) {
+      # TODO(https://crbug.com/1194605): Investigate and remove.
+      cflags += [
+        "-Xclang",
+        "-no-round-trip-args",
+      ]
+    }
+  }
+
   # C11/C++11 compiler flags setup.
   # ---------------------------
   if (is_linux || is_chromeos || is_android || (is_nacl && is_clang) ||
