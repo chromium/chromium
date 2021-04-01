@@ -64,6 +64,7 @@ import java.io.IOException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Features.EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
+@Features.DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 @Batch(Batch.PER_CLASS)
 public class AccountPickerBottomSheetRenderTest {
     private static final ProfileDataSource.ProfileData PROFILE_DATA1 =

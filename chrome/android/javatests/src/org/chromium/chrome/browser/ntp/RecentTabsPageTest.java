@@ -30,6 +30,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
@@ -46,6 +47,7 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class RecentTabsPageTest {
     // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_off badge
     // for Sync promo.

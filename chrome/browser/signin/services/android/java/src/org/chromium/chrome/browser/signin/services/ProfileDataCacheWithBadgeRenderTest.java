@@ -27,8 +27,11 @@ import org.mockito.Mock;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -45,10 +48,14 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
+@DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class ProfileDataCacheWithBadgeRenderTest extends DummyUiActivityTestCase {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
+
+    @Rule
+    public final Features.JUnitProcessor mProcessor = new Features.JUnitProcessor();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =

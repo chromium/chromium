@@ -103,7 +103,7 @@ import java.util.concurrent.TimeUnit;
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "disable-features=IPH_FeedHeaderMenu"})
 @Features.DisableFeatures({ChromeFeatureList.EXPLORE_SITES, ChromeFeatureList.QUERY_TILES,
-        ChromeFeatureList.VIDEO_TUTORIALS})
+        ChromeFeatureList.VIDEO_TUTORIALS, ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class NewTabPageTest {
     private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;

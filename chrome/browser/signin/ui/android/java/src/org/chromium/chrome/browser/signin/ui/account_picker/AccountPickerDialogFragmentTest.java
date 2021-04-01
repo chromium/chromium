@@ -53,7 +53,8 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY})
+@DisableFeatures(
+        {ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY, ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class AccountPickerDialogFragmentTest extends DummyUiActivityTestCase {
     private static class DummyAccountPickerTargetFragment
             extends Fragment implements AccountPickerCoordinator.Listener {

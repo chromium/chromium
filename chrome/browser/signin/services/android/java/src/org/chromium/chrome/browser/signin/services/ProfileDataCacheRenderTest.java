@@ -200,16 +200,15 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
                                 anyLong(), eq(ACCOUNT_EMAIL)))
                 .thenReturn(mAccountInfoWithAvatar);
         mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL);
-
         mProfileDataCache = new ProfileDataCache(getActivity(), mImageSize, /*badgeConfig=*/null);
-        mProfileDataCache.disableGmsProfileDataSource();
+
         // ProfileDataCache only populates the cache when an observer is added.
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mProfileDataCache.addObserver(mObserverMock); });
+
         // Certain classes like IdentityDiscController can trigger infinite loop if we populate
         // the cache with an existing observer, details can be found in crbug/1183295.
         verify(mObserverMock, never()).onProfileDataUpdated(any());
-
         final DisplayableProfileData profileData =
                 mProfileDataCache.getProfileDataOrDefault(mAccountInfoWithAvatar.getEmail());
         Assert.assertEquals(mAccountInfoWithAvatar.getFullName(), profileData.getFullName());

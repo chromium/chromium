@@ -99,7 +99,7 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final Map<String, DisplayableProfileData> mCachedProfileData = new HashMap<>();
-    private @Nullable ProfileDataSource mProfileDataSource;
+    private final @Nullable ProfileDataSource mProfileDataSource;
     private final AccountInfoService mAccountInfoService;
 
     @VisibleForTesting
@@ -108,7 +108,9 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
         mImageSize = imageSize;
         mBadgeConfig = badgeConfig;
         mPlaceholderImage = getScaledPlaceholderImage(context, imageSize);
-        mProfileDataSource = AccountManagerFacadeProvider.getInstance().getProfileDataSource();
+        mProfileDataSource = ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
+                ? null
+                : AccountManagerFacadeProvider.getInstance().getProfileDataSource();
         mAccountInfoService = AccountInfoService.get();
     }
 
@@ -146,18 +148,6 @@ public class ProfileDataCache implements ProfileDataSource.Observer, AccountInfo
             Context context, @DimenRes int imageSizeRedId) {
         return new ProfileDataCache(context,
                 context.getResources().getDimensionPixelSize(imageSizeRedId), /*badgeConfig=*/null);
-    }
-
-    /**
-     * Disables the Gms profile data source in this class. The {@link AccountInfoService} will
-     * query the native code for profile data in this case.
-     * This method is only used to deprecate the Gms profile data source.
-     * TODO(crbug/1154606): Remove this method after retiring the GmsProfileDataSource.
-     */
-    public void disableGmsProfileDataSource() {
-        assert ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)
-            : "This method should only be called with DEPRECATE_MENAGERIE_API enabled";
-        mProfileDataSource = null;
     }
 
     /**
