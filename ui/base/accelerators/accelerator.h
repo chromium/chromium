@@ -59,11 +59,11 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
 
   // Define the < operator so that the KeyboardShortcut can be used as a key in
   // a std::map.
-  bool operator <(const Accelerator& rhs) const;
+  bool operator<(const Accelerator& rhs) const;
 
-  bool operator ==(const Accelerator& rhs) const;
+  bool operator==(const Accelerator& rhs) const;
 
-  bool operator !=(const Accelerator& rhs) const;
+  bool operator!=(const Accelerator& rhs) const;
 
   KeyboardCode key_code() const { return key_code_; }
 
@@ -87,7 +87,7 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   // Returns a string with the localized shortcut if any.
   std::u16string GetShortcutText() const;
 
-#if defined(OS_APPLE)
+#if defined(OS_MAC)
   std::u16string KeyCodeToMacSymbol() const;
 #endif
   std::u16string KeyCodeToName() const;
@@ -101,8 +101,8 @@ class COMPONENT_EXPORT(UI_BASE) Accelerator {
   }
 
  private:
-  std::u16string ApplyLongFormModifiers(std::u16string shortcut) const;
-  std::u16string ApplyShortFormModifiers(std::u16string shortcut) const;
+  std::u16string ApplyLongFormModifiers(const std::u16string& shortcut) const;
+  std::u16string ApplyShortFormModifiers(const std::u16string& shortcut) const;
 
   // The keycode (VK_...).
   KeyboardCode key_code_;
@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorTarget {
   virtual bool CanHandleAccelerators() const = 0;
 
  protected:
-  virtual ~AcceleratorTarget() {}
+  virtual ~AcceleratorTarget() = default;
 };
 
 // Since accelerator code is one of the few things that can't be cross platform
@@ -153,7 +153,7 @@ class AcceleratorProvider {
                                           Accelerator* accelerator) const = 0;
 
  protected:
-  virtual ~AcceleratorProvider() {}
+  virtual ~AcceleratorProvider() = default;
 };
 
 }  // namespace ui

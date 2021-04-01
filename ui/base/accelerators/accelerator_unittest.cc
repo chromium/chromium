@@ -46,25 +46,25 @@ TEST(AcceleratorTest, MAYBE_GetShortcutText) {
   struct {
     KeyboardCode code;
     int modifiers;
-    const char* expected_long;
-    const char* expected_short;
+    const char16_t* expected_long;
+    const char16_t* expected_short;
   } keys[] = {
-    {VKEY_Q, EF_CONTROL_DOWN | EF_SHIFT_DOWN, "Ctrl+Shift+Q", "\u2303\u21e7Q"},
-    {VKEY_A, EF_ALT_DOWN | EF_SHIFT_DOWN, "Alt+Shift+A", "\u2325\u21e7A"},
+    {VKEY_Q, EF_CONTROL_DOWN | EF_SHIFT_DOWN, u"Ctrl+Shift+Q", u"⌃⇧Q"},
+    {VKEY_A, EF_ALT_DOWN | EF_SHIFT_DOWN, u"Alt+Shift+A", u"⌥⇧A"},
     // Regression test for https://crbug.com/867732:
-    {VKEY_OEM_COMMA, EF_CONTROL_DOWN, "Ctrl+Comma", "\u2303,"},
-#if defined(OS_APPLE)
-    {VKEY_T, EF_COMMAND_DOWN | EF_CONTROL_DOWN, nullptr, "\u2303\u2318T"},
+    {VKEY_OEM_COMMA, EF_CONTROL_DOWN, u"Ctrl+Comma", u"⌃,"},
+#if defined(OS_MAC)
+    {VKEY_T, EF_COMMAND_DOWN | EF_CONTROL_DOWN, nullptr, u"⌃⌘T"},
 #endif
   };
 
   for (const auto& key : keys) {
     std::u16string text =
         Accelerator(key.code, key.modifiers).GetShortcutText();
-#if defined(OS_APPLE)
-    EXPECT_EQ(text, base::UTF8ToUTF16(key.expected_short));
+#if defined(OS_MAC)
+    EXPECT_EQ(text, key.expected_short);
 #else
-    EXPECT_EQ(text, base::UTF8ToUTF16(key.expected_long));
+    EXPECT_EQ(text, key.expected_long);
 #endif
   }
 }
