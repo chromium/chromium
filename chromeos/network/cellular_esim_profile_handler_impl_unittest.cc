@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -88,11 +89,20 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     handler_->SetDevicePrefs(set_to_null ? nullptr : &device_prefs_);
   }
 
-  void AddEuicc(int euicc_num) {
+  void AddEuicc(int euicc_num, bool also_add_to_prefs = true) {
+    std::string euicc_path = CreateTestEuiccPath(euicc_num);
+
     helper_.hermes_manager_test()->AddEuicc(
-        dbus::ObjectPath(CreateTestEuiccPath(euicc_num)),
-        CreateTestEid(euicc_num), /*is_active=*/true, /*physical_slot=*/0);
+        dbus::ObjectPath(euicc_path), CreateTestEid(euicc_num),
+        /*is_active=*/true, /*physical_slot=*/0);
     base::RunLoop().RunUntilIdle();
+
+    if (also_add_to_prefs) {
+      base::Value euicc_paths_from_prefs = GetEuiccListFromPrefs();
+      euicc_paths_from_prefs.Append(euicc_path);
+      device_prefs_.Set(prefs::kESimRefreshedEuiccs,
+                        std::move(euicc_paths_from_prefs));
+    }
   }
 
   dbus::ObjectPath AddProfile(int euicc_num,
@@ -140,6 +150,10 @@ class CellularESimProfileHandlerImplTest : public testing::Test {
     handler_->RefreshProfileList(
         dbus::ObjectPath(CreateTestEuiccPath(euicc_num)), std::move(callback),
         std::move(inhibit_lock));
+  }
+
+  base::Value GetEuiccListFromPrefs() {
+    return device_prefs_.GetList(prefs::kESimRefreshedEuiccs)->Clone();
   }
 
  private:
@@ -237,7 +251,7 @@ TEST_F(CellularESimProfileHandlerImplTest, Persistent) {
 
   // Add a EUICC and profile; should be available.
   AddEuicc(/*euicc_num=*/1);
-  AddProfile(/*euicc_num=*/1, hermes::profile::State::kPending,
+  AddProfile(/*euicc_num=*/1, hermes::profile::State::kInactive,
              /*activation_code=*/"code1");
   EXPECT_EQ(1u, GetESimProfiles().size());
   EXPECT_EQ(1u, NumObserverEvents());
@@ -255,6 +269,21 @@ TEST_F(CellularESimProfileHandlerImplTest, Persistent) {
   // a profile available.
   SetDevicePrefs();
   EXPECT_EQ(1u, GetESimProfiles().size());
+
+  // Now, refresh the list.
+  base::RunLoop run_loop;
+  RefreshProfileList(
+      /*euicc_num=*/1,
+      base::BindLambdaForTesting(
+          [&](std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+            EXPECT_TRUE(inhibit_lock);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  // Because the list was refreshed, we now expect GetESimProfiles() to return
+  // an empty list.
+  EXPECT_TRUE(GetESimProfiles().empty());
 }
 
 TEST_F(CellularESimProfileHandlerImplTest,
@@ -344,6 +373,23 @@ TEST_F(CellularESimProfileHandlerImplTest,
 
   run_loop1.Run();
   run_loop2.Run();
+}
+
+TEST_F(CellularESimProfileHandlerImplTest,
+       RefreshesAutomaticallyWhenNotSeenBefore) {
+  AddEuicc(/*euicc_num=*/1, /*also_add_to_prefs=*/false);
+
+  Init();
+  base::Value euicc_paths_from_prefs = GetEuiccListFromPrefs();
+  EXPECT_TRUE(euicc_paths_from_prefs.is_list());
+  EXPECT_TRUE(euicc_paths_from_prefs.GetList().empty());
+
+  SetDevicePrefs();
+  euicc_paths_from_prefs = GetEuiccListFromPrefs();
+  EXPECT_TRUE(euicc_paths_from_prefs.is_list());
+  EXPECT_EQ(1u, euicc_paths_from_prefs.GetList().size());
+  EXPECT_EQ(CreateTestEuiccPath(/*euicc_num=*/1),
+            euicc_paths_from_prefs.GetList()[0].GetString());
 }
 
 }  // namespace chromeos

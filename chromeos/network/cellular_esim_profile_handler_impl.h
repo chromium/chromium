@@ -6,6 +6,7 @@
 #define CHROMEOS_NETWORK_CELLULAR_ESIM_PROFILE_HANDLER_IMPL_H_
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "chromeos/network/cellular_esim_profile_handler.h"
 
 class PrefService;
@@ -31,6 +32,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
   void SetDevicePrefs(PrefService* device_prefs) override;
   void OnHermesPropertiesUpdated() override;
 
+  void RefreshEuiccsIfNecessary();
+  base::flat_set<std::string> GetEuiccPathsFromPrefs() const;
+  void StoreEuiccPathsToPrefs(const base::flat_set<std::string>& paths);
   void UpdateProfilesFromHermes();
 
   // Initialized to null and set once SetDevicePrefs() is called.

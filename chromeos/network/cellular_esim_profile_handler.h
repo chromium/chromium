@@ -73,6 +73,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
  protected:
   CellularESimProfileHandler();
 
+  bool has_completed_successful_profile_refresh() const {
+    return has_completed_successful_profile_refresh_;
+  }
+
   virtual void OnHermesPropertiesUpdated() = 0;
   void NotifyESimProfileListUpdated();
 
@@ -102,6 +106,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandler
   CellularInhibitor* cellular_inhibitor_ = nullptr;
 
   base::ObserverList<Observer> observer_list_;
+
+  // True if the profile list has been refreshed successfully during this
+  // session.
+  bool has_completed_successful_profile_refresh_ = false;
 
   // When a profile refresh is in progress, the inhibit lock.
   std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock_;

@@ -23,9 +23,14 @@ const char kEmojiSuggestionEnabled[] =
 const char kEmojiSuggestionEnterpriseAllowed[] =
     "assistive_input.emoji_suggestion.enterprise_allowed";
 
+// Pref which stores a list of Embedded Universal Integrated Circuit Card
+// (EUICC) D-Bus paths which have had their installed profiles refreshed from
+// Hermes. Each path is stored as a string.
+const char kESimRefreshedEuiccs[] = "cros_esim.refreshed_euiccs";
+
 // Pref which stores a list of eSIM profiles. Each entry in the list is created
 // by serializing a CellularESimProfile.
-const char kESimProfilesPrefName[] = "cros.network.esim_profiles";
+const char kESimProfiles[] = "cros_esim.esim_profiles";
 
 // A dictionary pref to hold the mute setting for all the currently known
 // audio devices.

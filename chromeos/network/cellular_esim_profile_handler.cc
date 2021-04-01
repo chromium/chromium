@@ -112,8 +112,12 @@ void CellularESimProfileHandler::OnRequestInstalledProfilesResult(
 
   // If the operation failed, reset |inhibit_lock_| before it is returned to
   // the callback below to indicate failure.
-  if (status != HermesResponseStatus::kSuccess)
+  if (status != HermesResponseStatus::kSuccess) {
     inhibit_lock_.reset();
+  } else {
+    has_completed_successful_profile_refresh_ = true;
+    OnHermesPropertiesUpdated();
+  }
 
   std::move(callback_).Run(std::move(inhibit_lock_));
 }
