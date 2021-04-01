@@ -141,6 +141,10 @@ std::string SchemefulSite::GetDebugString() const {
   return site_as_origin_.GetDebugString();
 }
 
+GURL SchemefulSite::GetURL() const {
+  return site_as_origin_.GetURL();
+}
+
 const url::Origin& SchemefulSite::GetInternalOriginForTesting() const {
   return site_as_origin_;
 }

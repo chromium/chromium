@@ -30,7 +30,7 @@ class TestCookieAccessDelegate : public CookieAccessDelegate {
       const SiteForCookies& site_for_cookies) const override;
   bool IsContextSamePartyWithSite(
       const net::SchemefulSite& site,
-      const net::SchemefulSite& top_frame_site,
+      const base::Optional<net::SchemefulSite>& top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const override;
   bool IsInNontrivialFirstPartySet(
       const net::SchemefulSite& site) const override;

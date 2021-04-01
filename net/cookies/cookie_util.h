@@ -241,15 +241,19 @@ NET_EXPORT bool IsSchemefulSameSiteEnabled();
 
 NET_EXPORT bool IsFirstPartySetsEnabled();
 
-// Compute SameParty context, determines which of the cookies for `request_url`
+// Compute SameParty context, determines which of the cookies for `request_site`
 // can be accessed. Returns either kCrossParty or kSameParty. `isolation_info`
 // must be fully populated. In Chrome, all requests with credentials enabled
 // have a fully populated IsolationInfo.  But that might not be true for other
-// embedders yet (including cast, WebView, etc).  Also not sure about iOS.
+// embedders yet (including cast, WebView, etc). Also not sure about iOS. If
+// `force_ignore_top_frame_party` is true, the top frame from `isolation_info`
+// will be assumed to be same-party with `request_site`, regardless of what it
+// is.
 NET_EXPORT CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
-    const net::SchemefulSite& request_url,
+    const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
-    const CookieAccessDelegate* cookie_access_delegate);
+    const CookieAccessDelegate* cookie_access_delegate,
+    bool force_ignore_top_frame_party);
 
 // Get the SameParty inclusion status. If the cookie is not SameParty, returns
 // kNoSamePartyEnforcement; if the cookie is SameParty but does not have a

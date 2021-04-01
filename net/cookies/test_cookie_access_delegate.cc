@@ -35,7 +35,7 @@ bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(
 
 bool TestCookieAccessDelegate::IsContextSamePartyWithSite(
     const net::SchemefulSite& site,
-    const net::SchemefulSite& top_frame_site,
+    const base::Optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
   return false;
 }

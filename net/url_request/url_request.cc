@@ -547,6 +547,7 @@ URLRequest::URLRequest(const GURL& url,
                                       NetLogSourceType::URL_REQUEST)),
       url_chain_(1, url),
       force_ignore_site_for_cookies_(false),
+      force_ignore_top_frame_party_for_cookies_(false),
       method_("GET"),
       referrer_policy_(
           ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE),

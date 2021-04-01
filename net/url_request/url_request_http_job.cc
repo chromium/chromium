@@ -573,7 +573,8 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
 
     CookieOptions::SamePartyCookieContextType same_party_context =
         net::cookie_util::ComputeSamePartyContext(
-            request_site, request_->isolation_info(), delegate);
+            request_site, request_->isolation_info(), delegate,
+            request_->force_ignore_top_frame_party_for_cookies());
     bool is_in_nontrivial_first_party_set =
         delegate && delegate->IsInNontrivialFirstPartySet(request_site);
     CookieOptions options = CreateCookieOptions(
@@ -736,7 +737,8 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
 
   CookieOptions::SamePartyCookieContextType same_party_context =
       net::cookie_util::ComputeSamePartyContext(
-          request_site, request_->isolation_info(), delegate);
+          request_site, request_->isolation_info(), delegate,
+          request_->force_ignore_top_frame_party_for_cookies());
   bool is_in_nontrivial_first_party_set =
       delegate && delegate->IsInNontrivialFirstPartySet(request_site);
   CookieOptions options = CreateCookieOptions(

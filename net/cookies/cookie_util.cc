@@ -701,17 +701,23 @@ bool IsFirstPartySetsEnabled() {
 // 2) `isolation_info.party_context` is null.
 // 3) `cookie_access_delegate.IsContextSamePartyWithSite` returns false.
 CookieOptions::SamePartyCookieContextType ComputeSamePartyContext(
-    const net::SchemefulSite& request_site,
+    const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
-    const CookieAccessDelegate* cookie_access_delegate) {
+    const CookieAccessDelegate* cookie_access_delegate,
+    bool force_ignore_top_frame_party) {
   if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
       cookie_access_delegate &&
       cookie_access_delegate->IsContextSamePartyWithSite(
           request_site,
-          isolation_info.network_isolation_key().GetTopFrameSite().value(),
+          force_ignore_top_frame_party
+              ? base::nullopt
+              : base::make_optional(isolation_info.network_isolation_key()
+                                        .GetTopFrameSite()
+                                        .value()),
           isolation_info.party_context().value())) {
     return CookieOptions::SamePartyCookieContextType::kSameParty;
   }
+
   return CookieOptions::SamePartyCookieContextType::kCrossParty;
 }
 

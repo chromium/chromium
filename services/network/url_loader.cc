@@ -20,6 +20,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -31,6 +32,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_sniffer.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/transport_info.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_file_element_reader.h"
@@ -559,6 +561,9 @@ URLLoader::URLLoader(
 
   if (require_network_isolation_key)
     DCHECK(!url_request_->isolation_info().IsEmpty());
+
+  if (ShouldForceIgnoreTopFramePartyForCookies())
+    url_request_->set_force_ignore_top_frame_party_for_cookies(true);
 
   if (factory_params_->disable_secure_dns) {
     url_request_->SetDisableSecureDns(true);
@@ -2239,6 +2244,36 @@ bool URLLoader::ShouldForceIgnoreSiteForCookies(
   }
 
   return false;
+}
+
+bool URLLoader::ShouldForceIgnoreTopFramePartyForCookies() const {
+  const net::IsolationInfo& isolation_info = url_request_->isolation_info();
+  const base::Optional<url::Origin>& top_frame_origin =
+      isolation_info.top_frame_origin();
+
+  if (!top_frame_origin || top_frame_origin->opaque())
+    return false;
+
+  const base::Optional<std::set<net::SchemefulSite>>& party_context =
+      isolation_info.party_context();
+  if (!party_context)
+    return false;
+
+  // The top frame origin must have access to the request URL.
+  if (cors::OriginAccessList::AccessState::kAllowed !=
+      origin_access_list_.CheckAccessState(*top_frame_origin,
+                                           url_request_->url())) {
+    return false;
+  }
+
+  // The top frame origin must have access to each site in the party_context.
+  return base::ranges::all_of(
+      *party_context,
+      [this, &top_frame_origin](const net::SchemefulSite& site) {
+        return origin_access_list_.CheckAccessState(*top_frame_origin,
+                                                    site.GetURL()) ==
+               cors::OriginAccessList::AccessState::kAllowed;
+      });
 }
 
 mojom::DevToolsObserver* URLLoader::GetDevToolsObserver() const {

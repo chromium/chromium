@@ -2933,20 +2933,9 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
   url::Origin top_frame_origin = ComputeTopFrameOrigin(frame_origin);
   net::SchemefulSite top_frame_site = net::SchemefulSite(top_frame_origin);
 
-  net::SiteForCookies candidate_site_for_cookies =
-      net::SiteForCookies(top_frame_site);
+  net::SiteForCookies candidate_site_for_cookies(top_frame_site);
 
   std::set<net::SchemefulSite> party_context;
-
-  if (GetContentClient()
-          ->browser()
-          ->ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
-              top_frame_origin.scheme(),
-              GURL::SchemeIsCryptographic(frame_origin.scheme()))) {
-    return net::IsolationInfo::Create(request_type, top_frame_origin,
-                                      frame_origin, candidate_site_for_cookies,
-                                      std::move(party_context));
-  }
 
   // Walk up the frame tree to check SiteForCookies and compute the
   // |party_context|.
@@ -2971,6 +2960,16 @@ net::IsolationInfo RenderFrameHostImpl::ComputeIsolationInfoInternal(
       party_context.insert(cur_site);
     }
     candidate_site_for_cookies.CompareWithFrameTreeSiteAndRevise(cur_site);
+  }
+
+  // Reset the SiteForCookies if the top frame origin is of a scheme that should
+  // always be treated as the SiteForCookies.
+  if (GetContentClient()
+          ->browser()
+          ->ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
+              top_frame_origin.scheme(),
+              GURL::SchemeIsCryptographic(frame_origin.scheme()))) {
+    candidate_site_for_cookies = net::SiteForCookies(top_frame_site);
   }
 
   return net::IsolationInfo::Create(request_type, top_frame_origin,

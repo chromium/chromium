@@ -54,7 +54,7 @@ bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
 
 bool CookieAccessDelegateImpl::IsContextSamePartyWithSite(
     const net::SchemefulSite& site,
-    const net::SchemefulSite& top_frame_site,
+    const base::Optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
   return first_party_sets_ && first_party_sets_->IsContextSamePartyWithSite(
                                   site, top_frame_site, party_context);

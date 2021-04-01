@@ -268,6 +268,16 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     force_ignore_site_for_cookies_ = attach;
   }
 
+  // Indicates whether the top frame party will be considered same-party to the
+  // request URL (regardless of what it is), for the purpose of SameParty
+  // cookies.
+  bool force_ignore_top_frame_party_for_cookies() const {
+    return force_ignore_top_frame_party_for_cookies_;
+  }
+  void set_force_ignore_top_frame_party_for_cookies(bool force) {
+    force_ignore_top_frame_party_for_cookies_ = force;
+  }
+
   // The first-party URL policy to apply when updating the first party URL
   // during redirects. The first-party URL policy may only be changed before
   // Start() is called.
@@ -879,6 +889,7 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   IsolationInfo isolation_info_;
 
   bool force_ignore_site_for_cookies_;
+  bool force_ignore_top_frame_party_for_cookies_;
   base::Optional<url::Origin> initiator_;
   GURL delegate_redirect_url_;
   std::string method_;  // "GET", "POST", etc. Should be all uppercase.

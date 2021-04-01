@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/optional.h"
 #include "net/base/schemeful_site.h"
 
 namespace network {
@@ -39,14 +40,15 @@ class FirstPartySets {
   base::flat_map<net::SchemefulSite, net::SchemefulSite>* ParseAndSet(
       base::StringPiece raw_sets);
 
-  // Returns whether the `site` is same-party with the `party_context` and
-  // `top_frame_site`. That is, is the `site`'s owner the same as the owners of
-  // every member of `party_context` and of `top_frame_site`? Note: if `site` is
-  // not a member of a First-Party Set (with more than one member), then this
-  // returns false.
+  // Returns whether the `site` is same-party with the `party_context`, and
+  // `top_frame_site` (if it is not nullopt). That is, is the `site`'s owner the
+  // same as the owners of every member of `party_context` and of
+  // `top_frame_site`? Note: if `site` is not a member of a First-Party Set
+  // (with more than one member), then this returns false. If `top_frame_site`
+  // is nullopt, then it is ignored.
   bool IsContextSamePartyWithSite(
       const net::SchemefulSite& site,
-      const net::SchemefulSite& top_frame_site,
+      const base::Optional<net::SchemefulSite>& top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const;
 
   // Returns whether the `site` is a member of a non-trivial (i.e.

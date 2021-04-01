@@ -63,9 +63,15 @@ net::CookieOptions MakeOptionsForSet(
             url, site_for_cookies, force_ignore_site_for_cookies));
   }
   net::SchemefulSite request_site(url);
+  // TODO(cfredric): the `force_ignore_top_frame_party` param below prevents
+  // `document.cookie` access for same-party scripts embedded in an extension
+  // frame. It would be better if we allowed that similarly to how we allow
+  // SameParty cookies for requests in same-party contexts embedded in top-level
+  // extension frames.
   options.set_same_party_cookie_context_type(
-      net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
-                                                cookie_access_delegate));
+      net::cookie_util::ComputeSamePartyContext(
+          request_site, isolation_info, cookie_access_delegate,
+          false /* force_ignore_top_frame_party */));
   if (isolation_info.party_context().has_value()) {
     // Count the top-frame site since it's not in the party_context.
     options.set_full_party_context_size(isolation_info.party_context()->size() +
@@ -107,8 +113,9 @@ net::CookieOptions MakeOptionsForGet(
   }
   net::SchemefulSite request_site(url);
   options.set_same_party_cookie_context_type(
-      net::cookie_util::ComputeSamePartyContext(request_site, isolation_info,
-                                                cookie_access_delegate));
+      net::cookie_util::ComputeSamePartyContext(
+          request_site, isolation_info, cookie_access_delegate,
+          false /* force_ignore_top_frame_party */));
   if (isolation_info.party_context().has_value()) {
     // Count the top-frame site since it's not in the party_context.
     options.set_full_party_context_size(isolation_info.party_context()->size() +

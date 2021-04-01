@@ -376,4 +376,37 @@ TEST(SchemefulSiteTest, SiteDomainIsSafeHistogram) {
   histogram_tester5.ExpectTotalCount("Net.SiteDomainIsSafe", 0);
 }
 
+TEST(SchemefulSiteTest, GetGURL) {
+  struct {
+    url::Origin origin;
+    GURL wantGURL;
+  } kTestCases[] = {
+      {
+          url::Origin::Create(GURL("data:text/html,<body>Hello World</body>")),
+          GURL(),
+      },
+      {url::Origin::Create(GURL("file://foo")), GURL("file:///")},
+      {url::Origin::Create(GURL("http://a.bar.test")), GURL("http://bar.test")},
+      {url::Origin::Create(GURL("http://c.test")), GURL("http://c.test")},
+      {url::Origin::Create(GURL("http://c.test:8000")), GURL("http://c.test")},
+      {
+          url::Origin::Create(GURL("https://a.bar.test")),
+          GURL("https://bar.test"),
+      },
+      {
+          url::Origin::Create(GURL("https://c.test")),
+          GURL("https://c.test"),
+      },
+      {
+          url::Origin::Create(GURL("https://c.test:1337")),
+          GURL("https://c.test"),
+      },
+  };
+
+  for (const auto& testcase : kTestCases) {
+    SchemefulSite site(testcase.origin);
+    EXPECT_EQ(site.GetURL(), testcase.wantGURL);
+  }
+}
+
 }  // namespace net

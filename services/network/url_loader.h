@@ -374,6 +374,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Whether `force_ignore_site_for_cookies` should be set on net::URLRequest.
   bool ShouldForceIgnoreSiteForCookies(const ResourceRequest& request);
 
+  // Whether `force_ignore_top_frame_party_for_cookies` should be set on
+  // net::URLRequest.
+  bool ShouldForceIgnoreTopFramePartyForCookies() const;
+
   // Returns whether the request initiator should be allowed to make requests to
   // an endpoint in |resource_address_space|.
   //

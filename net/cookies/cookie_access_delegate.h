@@ -39,10 +39,11 @@ class NET_EXPORT CookieAccessDelegate {
       const SiteForCookies& site_for_cookies) const = 0;
 
   // Returns whether `site` is same-party with `party_context` and
-  // `top_frame_site`.
+  // `top_frame_site`. If `top_frame_site` is nullopt, then `site` will be
+  // checked only against `party_context`.
   virtual bool IsContextSamePartyWithSite(
       const net::SchemefulSite& site,
-      const net::SchemefulSite& top_frame_site,
+      const base::Optional<net::SchemefulSite>& top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const = 0;
 
   // Returns whether `site` belongs to a non-singleton First-Party Set.

@@ -81,7 +81,7 @@ FirstPartySets::ParseAndSet(base::StringPiece raw_sets) {
 
 bool FirstPartySets::IsContextSamePartyWithSite(
     const net::SchemefulSite& site,
-    const net::SchemefulSite& top_frame_site,
+    const base::Optional<net::SchemefulSite>& top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
   const auto it = sets_.find(site);
   if (it == sets_.end())
@@ -93,8 +93,11 @@ bool FirstPartySets::IsContextSamePartyWithSite(
         return context_owner != sets_.end() &&
                context_owner->second == site_owner;
       };
-  return is_owned_by_site_owner(top_frame_site) &&
-         base::ranges::all_of(party_context, is_owned_by_site_owner);
+
+  if (top_frame_site && !is_owned_by_site_owner(*top_frame_site))
+    return false;
+
+  return base::ranges::all_of(party_context, is_owned_by_site_owner);
 }
 
 bool FirstPartySets::IsInNontrivialFirstPartySet(

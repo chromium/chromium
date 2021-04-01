@@ -4,7 +4,10 @@
 
 #include "services/network/first_party_sets/first_party_sets.h"
 
+#include <initializer_list>
+
 #include "base/json/json_reader.h"
+#include "base/optional.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -502,15 +505,18 @@ class FirstPartySetsTest : public ::testing::Test {
 };
 
 TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_EmptyContext) {
-  net::SchemefulSite top_frame(GURL("https://example.test"));
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://nonmember.test")), top_frame, {}));
+  for (const base::Optional<net::SchemefulSite>& top_frame :
+       std::initializer_list<base::Optional<net::SchemefulSite>>{
+           net::SchemefulSite(GURL("https://example.test")), base::nullopt}) {
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://nonmember.test")), top_frame, {}));
 
-  EXPECT_TRUE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://example.test")), top_frame, {}));
+    EXPECT_TRUE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://example.test")), top_frame, {}));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("http://example.test")), top_frame, {}));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("http://example.test")), top_frame, {}));
+  }
 
   EXPECT_FALSE(sets().IsContextSamePartyWithSite(
       net::SchemefulSite(GURL("https://example.test")),
@@ -521,190 +527,218 @@ TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_EmptyContext) {
 }
 
 TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsNonmember) {
-  net::SchemefulSite top_frame(GURL("https://example.test"));
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://nonmember.test")),
   });
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://example.test")), top_frame, context));
+  for (const base::Optional<net::SchemefulSite>& top_frame :
+       std::initializer_list<base::Optional<net::SchemefulSite>>{
+           net::SchemefulSite(GURL("https://example.test")), base::nullopt}) {
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("http://example.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("http://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://nonmember.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
+        context));
+  }
 }
 
 TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsOwner) {
-  net::SchemefulSite top_frame(GURL("https://example.test"));
   std::set<net::SchemefulSite> context(
       {net::SchemefulSite(GURL("https://example.test"))});
 
-  EXPECT_TRUE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://example.test")), top_frame, context));
+  for (const base::Optional<net::SchemefulSite>& top_frame :
+       std::initializer_list<base::Optional<net::SchemefulSite>>{
+           net::SchemefulSite(GURL("https://example.test")), base::nullopt}) {
+    EXPECT_TRUE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("http://example.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("http://example.test")), top_frame, context));
 
-  EXPECT_TRUE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
+    EXPECT_TRUE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://nonmember.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
+        context));
+  }
 }
 
 TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsMember) {
-  net::SchemefulSite top_frame(GURL("https://example.test"));
   std::set<net::SchemefulSite> context(
       {net::SchemefulSite(GURL("https://member1.test"))});
 
-  EXPECT_TRUE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://example.test")), top_frame, context));
+  for (const base::Optional<net::SchemefulSite>& top_frame :
+       std::initializer_list<base::Optional<net::SchemefulSite>>{
+           net::SchemefulSite(GURL("https://example.test")), base::nullopt}) {
+    EXPECT_TRUE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("http://example.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("http://example.test")), top_frame, context));
 
-  EXPECT_TRUE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://example.test")), top_frame, context));
+    EXPECT_TRUE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://example.test")), top_frame, context));
 
-  EXPECT_TRUE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
+    EXPECT_TRUE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://nonmember.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
+        context));
+  }
 }
 
 TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextIsOwnerAndMember) {
-  net::SchemefulSite top_frame(GURL("https://example.test"));
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
   });
 
-  EXPECT_TRUE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://example.test")), top_frame, context));
+  for (const base::Optional<net::SchemefulSite>& top_frame :
+       std::initializer_list<base::Optional<net::SchemefulSite>>{
+           net::SchemefulSite(GURL("https://example.test")), base::nullopt}) {
+    EXPECT_TRUE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("http://example.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("http://example.test")), top_frame, context));
 
-  EXPECT_TRUE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
+    EXPECT_TRUE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
 
-  EXPECT_TRUE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member3.test")), top_frame, context));
+    EXPECT_TRUE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member3.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://nonmember.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
+        context));
+  }
 }
 
 TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextMixesParties) {
-  net::SchemefulSite top_frame(GURL("https://example.test"));
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
       net::SchemefulSite(GURL("https://foo.test")),
   });
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://example.test")), top_frame, context));
+  for (const base::Optional<net::SchemefulSite>& top_frame :
+       std::initializer_list<base::Optional<net::SchemefulSite>>{
+           net::SchemefulSite(GURL("https://example.test")), base::nullopt}) {
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("http://example.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("http://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://nonmember.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
+        context));
+  }
 }
 
 TEST_F(FirstPartySetsTest,
        IsContextSamePartyWithSite_ContextMixesMembersAndNonmembers) {
-  net::SchemefulSite top_frame(GURL("https://example.test"));
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
       net::SchemefulSite(GURL("http://nonmember.test")),
   });
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://example.test")), top_frame, context));
+  for (const base::Optional<net::SchemefulSite>& top_frame :
+       std::initializer_list<base::Optional<net::SchemefulSite>>{
+           net::SchemefulSite(GURL("https://example.test")), base::nullopt}) {
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("http://example.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("http://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://nonmember.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
+        context));
+  }
 }
 
 TEST_F(FirstPartySetsTest, IsContextSamePartyWithSite_ContextMixesSchemes) {
-  net::SchemefulSite top_frame(GURL("https://example.test"));
   std::set<net::SchemefulSite> context({
       net::SchemefulSite(GURL("https://example.test")),
       net::SchemefulSite(GURL("https://member1.test")),
       net::SchemefulSite(GURL("http://example.test")),
   });
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://example.test")), top_frame, context));
+  for (const base::Optional<net::SchemefulSite>& top_frame :
+       std::initializer_list<base::Optional<net::SchemefulSite>>{
+           net::SchemefulSite(GURL("https://example.test")), base::nullopt}) {
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("http://example.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("http://example.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member1.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://foo.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://member2.test")), top_frame, context));
 
-  EXPECT_FALSE(sets().IsContextSamePartyWithSite(
-      net::SchemefulSite(GURL("https://nonmember.test")), top_frame, context));
+    EXPECT_FALSE(sets().IsContextSamePartyWithSite(
+        net::SchemefulSite(GURL("https://nonmember.test")), top_frame,
+        context));
+  }
 }
 
 TEST_F(FirstPartySetsTest, IsInNontrivialFirstPartySet) {

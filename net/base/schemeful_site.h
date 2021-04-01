@@ -97,6 +97,10 @@ class NET_EXPORT SchemefulSite {
 
   std::string GetDebugString() const;
 
+  // Gets the underlying site as a GURL. If the internal Origin is opaque,
+  // returns an empty GURL.
+  GURL GetURL() const;
+
   bool opaque() const { return site_as_origin_.opaque(); }
 
   bool has_registrable_domain_or_host() const {
