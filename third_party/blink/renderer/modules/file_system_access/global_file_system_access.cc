@@ -191,21 +191,20 @@ void VerifyIsAllowedToShowFilePicker(const LocalDOMWindow& window,
 }
 
 mojom::blink::WellKnownDirectory ConvertWellKnownDirectory(
-    const String& directory,
-    ExceptionState& exception_state) {
+    const String& directory) {
   if (directory == "")
     return mojom::blink::WellKnownDirectory::kDefault;
-  else if (directory == "desktop")
+  if (directory == "desktop")
     return mojom::blink::WellKnownDirectory::kDirDesktop;
-  else if (directory == "documents")
+  if (directory == "documents")
     return mojom::blink::WellKnownDirectory::kDirDocuments;
-  else if (directory == "downloads")
+  if (directory == "downloads")
     return mojom::blink::WellKnownDirectory::kDirDownloads;
-  else if (directory == "music")
+  if (directory == "music")
     return mojom::blink::WellKnownDirectory::kDirMusic;
-  else if (directory == "pictures")
+  if (directory == "pictures")
     return mojom::blink::WellKnownDirectory::kDirPictures;
-  else if (directory == "videos")
+  if (directory == "videos")
     return mojom::blink::WellKnownDirectory::kDirVideos;
 
   NOTREACHED();
@@ -312,10 +311,8 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
   if (options->hasStartIn()) {
     auto& start_in = options->startIn();
     if (start_in.IsWellKnownDirectory()) {
-      well_known_starting_directory = ConvertWellKnownDirectory(
-          start_in.GetAsWellKnownDirectory(), exception_state);
-      if (exception_state.HadException())
-        return ScriptPromise();
+      well_known_starting_directory =
+          ConvertWellKnownDirectory(start_in.GetAsWellKnownDirectory());
     }
     if (start_in.IsFileSystemHandle()) {
       token = start_in.GetAsFileSystemHandle()->Transfer();
@@ -373,10 +370,8 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
   if (options->hasStartIn()) {
     auto& start_in = options->startIn();
     if (start_in.IsWellKnownDirectory()) {
-      well_known_starting_directory = ConvertWellKnownDirectory(
-          start_in.GetAsWellKnownDirectory(), exception_state);
-      if (exception_state.HadException())
-        return ScriptPromise();
+      well_known_starting_directory =
+          ConvertWellKnownDirectory(start_in.GetAsWellKnownDirectory());
     }
     if (start_in.IsFileSystemHandle()) {
       token = start_in.GetAsFileSystemHandle()->Transfer();
@@ -424,10 +419,8 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
   if (options->hasStartIn()) {
     auto& start_in = options->startIn();
     if (start_in.IsWellKnownDirectory()) {
-      well_known_starting_directory = ConvertWellKnownDirectory(
-          start_in.GetAsWellKnownDirectory(), exception_state);
-      if (exception_state.HadException())
-        return ScriptPromise();
+      well_known_starting_directory =
+          ConvertWellKnownDirectory(start_in.GetAsWellKnownDirectory());
     }
     if (start_in.IsFileSystemHandle()) {
       token = start_in.GetAsFileSystemHandle()->Transfer();
