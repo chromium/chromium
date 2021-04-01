@@ -5,6 +5,8 @@
 #ifndef UI_ACCELERATED_WIDGET_MAC_CA_TRANSACTION_OBSERVER_H_
 #define UI_ACCELERATED_WIDGET_MAC_CA_TRANSACTION_OBSERVER_H_
 
+#include <set>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"

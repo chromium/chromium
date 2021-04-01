@@ -5,6 +5,8 @@
 #ifndef ASH_FAST_INK_FAST_INK_POINTER_CONTROLLER_H_
 #define ASH_FAST_INK_FAST_INK_POINTER_CONTROLLER_H_
 
+#include <set>
+
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"

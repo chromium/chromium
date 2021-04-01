@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/portal/portal_navigation_throttle.h"
 #include "content/browser/prerender/prerender_navigation_throttle.h"

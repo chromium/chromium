@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_H_
 #define IOS_CHROME_BROWSER_MAIN_BROWSER_LIST_H_
 
+#include <set>
+
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/keyed_service/core/keyed_service.h"

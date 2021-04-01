@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONTROLLER_H_
 #define ASH_PUBLIC_CPP_HOLDING_SPACE_HOLDING_SPACE_CONTROLLER_H_
 
+#include <map>
 #include <memory>
 
 #include "ash/public/cpp/ash_public_export.h"

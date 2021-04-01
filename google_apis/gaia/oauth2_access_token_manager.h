@@ -5,6 +5,9 @@
 #ifndef GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_MANAGER_H_
 #define GOOGLE_APIS_GAIA_OAUTH2_ACCESS_TOKEN_MANAGER_H_
 
+#include <map>
+#include <set>
+
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"

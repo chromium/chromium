@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <set>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
