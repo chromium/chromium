@@ -87,9 +87,11 @@ class RenderDocumentHostUserData : public base::SupportsUserData::Data {
 
   static T* GetOrCreateForCurrentDocument(RenderFrameHost* rfh) {
     DCHECK(rfh);
-    if (!GetForCurrentDocument(rfh)) {
-      CreateForCurrentDocument(rfh);
+    if (auto* data = GetForCurrentDocument(rfh)) {
+      return data;
     }
+
+    CreateForCurrentDocument(rfh);
     return GetForCurrentDocument(rfh);
   }
 
