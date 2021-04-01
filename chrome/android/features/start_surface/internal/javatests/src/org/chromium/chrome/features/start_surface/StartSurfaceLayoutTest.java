@@ -2183,6 +2183,29 @@ public class StartSurfaceLayoutTest {
         verifyTabSwitcherCardCount(cta, 1);
     }
 
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID})
+    public void testUndoGroupClosureInTabSwitcher() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
+        createTabs(cta, false, 2);
+        enterTabSwitcher(cta);
+        verifyTabSwitcherCardCount(cta, 2);
+        // Create a tab group.
+        mergeAllNormalTabsToAGroup(cta);
+        verifyTabSwitcherCardCount(cta, 1);
+        assertNull(snackbarManager.getCurrentSnackbarForTesting());
+
+        // Verify close this tab group and undo in tab switcher.
+        closeFirstTabInTabSwitcher();
+        assertTrue(snackbarManager.getCurrentSnackbarForTesting().getController()
+                           instanceof UndoBarController);
+        verifyTabSwitcherCardCount(cta, 0);
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
+        verifyTabSwitcherCardCount(cta, 1);
+    }
+
     private void enterTabGroupManualSelection(ChromeTabbedActivity cta) {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_group_tabs);
