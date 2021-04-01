@@ -95,7 +95,7 @@ def main():
     with zipfile.ZipFile(f.name, 'w') as srcjar_file:
       build_utils.AddToZipHermetic(
           zip_file=srcjar_file,
-          zip_path='org/chromium/base/library_loader/NativeLibraries.java',
+          zip_path='org/chromium/build/NativeLibraries.java',
           data=NATIVE_LIBRARIES_TEMPLATE.format(**format_dict))
 
   if options.depfile:

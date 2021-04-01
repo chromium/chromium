@@ -490,7 +490,7 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
 
         # trichrome_webview_google_bundle contains this missing reference.
         # TODO(crbug.com/1142530): Fix this missing reference properly.
-        'org/chromium/base/library_loader/NativeLibraries',
+        'org/chromium/build/NativeLibraries',
 
         # TODO(agrieve): Exclude these only when use_jacoco_coverage=true.
         'Ljava/lang/instrument/ClassFileTransformer',

@@ -7,7 +7,7 @@ NATIVE_LIBRARIES_TEMPLATE = """\
 //     build/android/gyp/write_native_libraries_java.py
 // Please do not change its content.
 
-package org.chromium.base.library_loader;
+package org.chromium.build;
 
 public class NativeLibraries {{
     public static final int CPU_FAMILY_UNKNOWN = 0;

@@ -33,7 +33,7 @@ _IGNORE_WARNINGS = (
     # TODO(wnwen): Remove this after R8 version 3.0.26-dev:
     r'Missing class sun.misc.Unsafe',
     # Caused when the test apk and the apk under test do not having native libs.
-    r'Missing class org.chromium.base.library_loader.NativeLibraries',
+    r'Missing class org.chromium.build.NativeLibraries',
     # Caused by internal annotation: https://crbug.com/1180222
     r'Missing class com.google.errorprone.annotations.RestrictedInheritance',
     # Caused by internal protobuf package: https://crbug.com/1183971
