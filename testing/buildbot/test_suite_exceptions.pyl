@@ -853,6 +853,7 @@
       'android-11-x86-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.chrome_public_test_apk.filter',
+          '--timeout-scale=2.0',
         ],
         # TODO(crbug.com/1137474): Revisit the shard number once failed tests
         # are fixed.
