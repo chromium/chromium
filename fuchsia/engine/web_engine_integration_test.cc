@@ -17,9 +17,8 @@
 #include "media/base/media_switches.h"
 #include "media/fuchsia/audio/fake_audio_consumer.h"
 #include "media/fuchsia/camera/fake_fuchsia_camera.h"
-#include "net/base/test_completion_callback.h"
 #include "net/http/http_request_headers.h"
-#include "net/socket/tcp_client_socket.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
@@ -245,32 +244,8 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   // handled the Frame tear down.
   controller_run_loop.Run();
 
-  // Verify that devtools server is shut down properly. WebEngine may shutdown
-  // the socket after shutting down the Frame, so make several attempts to
-  // connect until it fails. Don't try to read or write from/to the socket to
-  // avoid fxb/49779.
-  bool failed_to_connect = false;
-  for (int i = 0; i < 10; ++i) {
-    net::TestCompletionCallback connect_callback;
-    net::TCPClientSocket connecting_socket(
-        net::AddressList(net::IPEndPoint(net::IPAddress::IPv4Localhost(),
-                                         remote_debugging_port)),
-        nullptr, nullptr, nullptr, net::NetLogSource());
-    int connect_result = connecting_socket.Connect(connect_callback.callback());
-    connect_result = connect_callback.GetResult(connect_result);
-
-    if (connect_result == net::OK) {
-      // If Connect() succeeded then try again a bit later.
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
-      continue;
-    }
-
-    EXPECT_EQ(connect_result, net::ERR_CONNECTION_REFUSED);
-    failed_to_connect = true;
-    break;
-  }
-
-  EXPECT_TRUE(failed_to_connect);
+  devtools_list = cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
+  EXPECT_TRUE(devtools_list.is_none());
 }
 
 // Check that remote debugging requests for Frames in non-debuggable Contexts
