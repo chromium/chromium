@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gin/gin_features.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace features {
 
@@ -69,5 +70,13 @@ const base::Feature kV8ShortBuiltinCalls{"V8ShortBuiltinCalls",
 // Enables fast API calls in TurboFan.
 const base::Feature kV8TurboFastApiCalls{"V8TurboFastApiCalls",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Artificially delays script execution.
+const base::Feature kV8ScriptAblation{"V8ScriptAblation",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kV8ScriptRunDelayOnceMs{
+    &kV8ScriptAblation, "V8ScriptRunDelayOnceMs", 0};
+const base::FeatureParam<int> kV8ScriptRunDelayMs{&kV8ScriptAblation,
+                                                  "V8ScriptRunDelayMs", 0};
 
 }  // namespace features
