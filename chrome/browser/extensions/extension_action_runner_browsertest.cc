@@ -336,9 +336,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   EXPECT_FALSE(action_runner->WantsToRun(extension2.get()));
 
   // We should still be able to run the request for extension1.
-  ExtensionTestMessageListener inject_success_listener(
-      new ExtensionTestMessageListener(kInjectSucceeded,
-                                       false /* won't reply */));
+  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded,
+                                                       false /* won't reply */);
   inject_success_listener.set_extension_id(extension1->id());
   action_runner->RunAction(extension1.get(), true);
   EXPECT_TRUE(inject_success_listener.WaitUntilSatisfied());
@@ -360,9 +359,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
       ExtensionActionRunner::GetForWebContents(web_contents);
   ASSERT_TRUE(action_runner);
 
-  ExtensionTestMessageListener inject_success_listener(
-      new ExtensionTestMessageListener(kInjectSucceeded,
-                                       false /* won't reply */));
+  ExtensionTestMessageListener inject_success_listener(kInjectSucceeded,
+                                                       false /* won't reply */);
   inject_success_listener.set_extension_id(extension->id());
 
   ASSERT_TRUE(embedded_test_server()->Start());
