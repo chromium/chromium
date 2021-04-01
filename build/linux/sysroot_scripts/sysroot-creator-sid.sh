@@ -82,6 +82,8 @@ DEBIAN_PACKAGES="\
   libcupsimage2
   libcupsimage2-dev
   libdatrie-dev
+  libcurl3-gnutls
+  libcurl4-gnutls-dev
   libdatrie1
   libdb5.3
   libdbus-1-3
@@ -194,6 +196,7 @@ DEBIAN_PACKAGES="\
   libkrb5-dev
   libkrb5support0
   liblcms2-2
+  libldap-2.4-2
   libltdl7
   liblz4-1
   liblzma5
@@ -208,6 +211,7 @@ DEBIAN_PACKAGES="\
   libncurses6
   libncursesw6
   libnettle8
+  libnghttp2-14
   libnsl2
   libnspr4
   libnspr4-dev
@@ -256,6 +260,8 @@ DEBIAN_PACKAGES="\
   libre2-9
   libre2-dev
   librest-0.7-0
+  librtmp1
+  libsasl2-2
   libselinux1
   libselinux1-dev
   libsepol1
@@ -270,6 +276,7 @@ DEBIAN_PACKAGES="\
   libspeechd-dev
   libspeechd2
   libsqlite3-0
+  libssh2-1
   libssl-dev
   libssl1.1
   libstdc++-10-dev

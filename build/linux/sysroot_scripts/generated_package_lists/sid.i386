@@ -23,6 +23,9 @@ https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/c/cups/lib
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/c/cups/libcups2-dev_2.3.3op2-3_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/c/cups/libcupsimage2_2.3.3op2-3_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/c/cups/libcupsimage2-dev_2.3.3op2-3_i386.deb
+https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/c/curl/libcurl3-gnutls_7.74.0-1.1_i386.deb
+https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/c/curl/libcurl4-gnutls-dev_7.74.0-1.1_i386.deb
+https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/c/cyrus-sasl2/libsasl2-2_2.1.27+dfsg-2.1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/d/db5.3/libdb5.3_5.3.28+dfsg1-0.8_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/d/dbus-glib/libdbus-glib-1-2_0.110-6_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/d/dbus/libdbus-1-3_1.12.20-2_i386.deb
@@ -173,6 +176,7 @@ https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/libs/libsm
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/libs/libsndfile/libsndfile1_1.0.31-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/libs/libsoup2.4/libsoup2.4-1_2.72.0-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/libs/libsoup2.4/libsoup-gnome2.4-1_2.72.0-2_i386.deb
+https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/libs/libssh2/libssh2-1_1.9.0-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/libt/libtasn1-6/libtasn1-6_4.16.0-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/libt/libthai/libthai0_0.1.28-4_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/libt/libthai/libthai-dev_0.1.28-4_i386.deb
@@ -275,10 +279,12 @@ https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/n/ncurses/
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/n/ncurses/libtinfo6_6.2+20201114-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/n/nettle/libhogweed6_3.7-2.1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/n/nettle/libnettle8_3.7-2.1_i386.deb
+https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/n/nghttp2/libnghttp2-14_1.43.0-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/n/nspr/libnspr4_4.29-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/n/nspr/libnspr4-dev_4.29-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/n/nss/libnss3_3.61-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/n/nss/libnss3-dev_3.61-1_i386.deb
+https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/o/openldap/libldap-2.4-2_2.4.57+dfsg-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/o/openssl/libssl1.1_1.1.1j-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/o/openssl/libssl-dev_1.1.1j-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/o/opus/libopus0_1.3.1-0.1_i386.deb
@@ -315,6 +321,7 @@ https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/p/pulseaud
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/p/pulseaudio/libpulse-mainloop-glib0_14.2-2_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/r/re2/libre2-9_20210201+dfsg-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/r/re2/libre2-dev_20210201+dfsg-1_i386.deb
+https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/r/rtmpdump/librtmp1_2.4+20151223.gitfa8646d.1-2+b2_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/s/shared-mime-info/shared-mime-info_2.0-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/s/snappy/libsnappy1v5_1.1.8-1_i386.deb
 https://snapshot.debian.org/archive/debian/20210309T203820Z/pool/main/s/snappy/libsnappy-dev_1.1.8-1_i386.deb
