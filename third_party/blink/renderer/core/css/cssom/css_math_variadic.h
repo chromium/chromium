@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_VARIADIC_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_VARIADIC_H_
 
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_array.h"
 
@@ -59,6 +60,21 @@ class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
     }
 
     return final_type;
+  }
+
+  CSSMathExpressionNode* ToCalcExporessionNodeForVariadic(
+      CSSMathOperator op) const {
+    CSSMathExpressionNode* node = NumericValues()[0]->ToCalcExpressionNode();
+    if (!node)
+      return nullptr;
+    for (wtf_size_t i = 1; i < NumericValues().size(); i++) {
+      CSSMathExpressionNode* next_arg =
+          NumericValues()[i]->ToCalcExpressionNode();
+      if (!next_arg)
+        return nullptr;
+      node = CSSMathExpressionBinaryOperation::Create(node, next_arg, op);
+    }
+    return node;
   }
 
  private:

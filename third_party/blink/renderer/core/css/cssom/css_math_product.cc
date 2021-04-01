@@ -83,20 +83,7 @@ base::Optional<CSSNumericSumValue> CSSMathProduct::SumValue() const {
 
 CSSMathExpressionNode* CSSMathProduct::ToCalcExpressionNode() const {
   // TODO(crbug.com/782103): Handle the single value case correctly.
-  if (NumericValues().size() == 1)
-    return NumericValues()[0]->ToCalcExpressionNode();
-
-  CSSMathExpressionNode* node = CSSMathExpressionBinaryOperation::Create(
-      NumericValues()[0]->ToCalcExpressionNode(),
-      NumericValues()[1]->ToCalcExpressionNode(), CSSMathOperator::kMultiply);
-
-  for (wtf_size_t i = 2; i < NumericValues().size(); i++) {
-    node = CSSMathExpressionBinaryOperation::Create(
-        node, NumericValues()[i]->ToCalcExpressionNode(),
-        CSSMathOperator::kMultiply);
-  }
-
-  return node;
+  return ToCalcExporessionNodeForVariadic(CSSMathOperator::kMultiply);
 }
 
 void CSSMathProduct::BuildCSSText(Nested nested,

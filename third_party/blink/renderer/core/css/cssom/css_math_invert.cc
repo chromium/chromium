@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_math_invert.h"
 
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_sum_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -32,6 +33,16 @@ void CSSMathInvert::BuildCSSText(Nested nested,
 
   if (paren_less == ParenLess::kNo)
     result.Append(")");
+}
+
+CSSMathExpressionNode* CSSMathInvert::ToCalcExpressionNode() const {
+  CSSMathExpressionNode* right_side = value_->ToCalcExpressionNode();
+  if (!right_side)
+    return nullptr;
+  return CSSMathExpressionBinaryOperation::Create(
+      CSSMathExpressionNumericLiteral::Create(
+          1, CSSPrimitiveValue::UnitType::kNumber, false),
+      right_side, CSSMathOperator::kDivide);
 }
 
 }  // namespace blink

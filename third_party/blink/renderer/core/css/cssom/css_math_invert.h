@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_INVERT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_INVERT_H_
 
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_value.h"
 
 namespace blink {
@@ -54,10 +55,7 @@ class CORE_EXPORT CSSMathInvert : public CSSMathValue {
     return value_->Equals(*other_invert.value_);
   }
 
-  CSSMathExpressionNode* ToCalcExpressionNode() const final {
-    // TODO(crbug.com/782103): Implement.
-    return nullptr;
-  }
+  CSSMathExpressionNode* ToCalcExpressionNode() const final;
 
  private:
   // From CSSNumericValue
