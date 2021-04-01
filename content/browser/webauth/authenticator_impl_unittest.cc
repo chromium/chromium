@@ -499,22 +499,15 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
     device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
   }
 
-  void TearDown() override {
-    // The |RenderFrameHost| must outlive |AuthenticatorImpl|.
-    authenticator_impl_.reset();
-    AuthenticatorTestBase::TearDown();
-  }
-
   void NavigateAndCommit(const GURL& url) {
-    // The |RenderFrameHost| must outlive |AuthenticatorImpl|.
-    authenticator_impl_.reset();
     content::RenderViewHostTestHarness::NavigateAndCommit(url);
   }
 
   mojo::Remote<blink::mojom::Authenticator> ConnectToAuthenticator() {
-    authenticator_impl_ = std::make_unique<AuthenticatorImpl>(main_rfh());
     mojo::Remote<blink::mojom::Authenticator> authenticator;
-    authenticator_impl_->Bind(authenticator.BindNewPipeAndPassReceiver());
+    static_cast<RenderFrameHostImpl*>(main_rfh())
+        ->GetWebAuthenticationService(
+            authenticator.BindNewPipeAndPassReceiver());
     return authenticator;
   }
 
@@ -633,7 +626,6 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
   }
 
  protected:
-  std::unique_ptr<AuthenticatorImpl> authenticator_impl_;
   base::Optional<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<device::BluetoothAdapterFactory::GlobalValuesForTesting>
       bluetooth_global_values_ =
@@ -653,11 +645,12 @@ TEST_F(AuthenticatorImplTest, ClientDataJSONSerialization) {
   // extra elements, this can only test that the expected value is a prefix of
   // the returned value.
   std::vector<uint8_t> challenge_bytes = {1, 2, 3};
-  EXPECT_TRUE(
+  EXPECT_EQ(
       SerializeWebAuthnCollectedClientDataToJson("t\x05ype", "ori\"gin",
                                                  challenge_bytes, false)
           .find("{\"type\":\"t\\u0005ype\",\"challenge\":\"AQID\",\"origin\":"
-                "\"ori\\\"gin\",\"crossOrigin\":false") == 0);
+                "\"ori\\\"gin\",\"crossOrigin\":false"),
+      0u);
 
   // Second, check that a generic JSON parser correctly parses the result.
   static const struct {
@@ -3094,19 +3087,15 @@ class AuthenticatorImplRequestDelegateTest : public AuthenticatorImplTest {
   AuthenticatorImplRequestDelegateTest() = default;
   ~AuthenticatorImplRequestDelegateTest() override = default;
 
-  void TearDown() override {
-    // The |RenderFrameHost| must outlive |AuthenticatorImpl|.
-    authenticator_impl_.reset();
-    content::RenderViewHostTestHarness::TearDown();
-  }
-
   mojo::Remote<blink::mojom::Authenticator> ConnectToFakeAuthenticator(
       std::unique_ptr<MockAuthenticatorRequestDelegateObserver> delegate) {
-    authenticator_impl_ = std::make_unique<AuthenticatorImpl>(
-        main_rfh(), std::make_unique<FakeAuthenticatorCommon>(
-                        main_rfh(), std::move(delegate)));
     mojo::Remote<blink::mojom::Authenticator> authenticator;
-    authenticator_impl_->Bind(authenticator.BindNewPipeAndPassReceiver());
+    // AuthenticatorImpl owns itself. It self-destructs when the RenderFrameHost
+    // navigates or is deleted.
+    new AuthenticatorImpl(main_rfh(),
+                          authenticator.BindNewPipeAndPassReceiver(),
+                          std::make_unique<FakeAuthenticatorCommon>(
+                              main_rfh(), std::move(delegate)));
     return authenticator;
   }
 };

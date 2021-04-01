@@ -4,11 +4,13 @@
 
 #include "content/browser/webauth/authenticator_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
 #include "base/timer/timer.h"
 #include "content/browser/webauth/authenticator_common.h"
+#include "content/public/browser/frame_service_base.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -16,49 +18,48 @@
 
 namespace content {
 
-AuthenticatorImpl::AuthenticatorImpl(RenderFrameHost* render_frame_host)
-    : AuthenticatorImpl(
-          render_frame_host,
-          std::make_unique<AuthenticatorCommon>(render_frame_host)) {}
+void AuthenticatorImpl::Create(
+    RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
+  // Avoid creating the service if the RenderFrameHost isn't current, e.g. if a
+  // request arrives during a navigation.
+  if (!render_frame_host->IsCurrent()) {
+    return;
+  }
+
+  // AuthenticatorImpl owns itself. It self-destructs when the RenderFrameHost
+  // navigates or is deleted. See FrameServiceBase for details.
+  DCHECK(render_frame_host);
+  new AuthenticatorImpl(
+      render_frame_host, std::move(receiver),
+      std::make_unique<AuthenticatorCommon>(render_frame_host));
+}
 
 AuthenticatorImpl::AuthenticatorImpl(
     RenderFrameHost* render_frame_host,
+    mojo::PendingReceiver<blink::mojom::Authenticator> receiver,
     std::unique_ptr<AuthenticatorCommon> authenticator_common)
-    : WebContentsObserver(WebContents::FromRenderFrameHost(render_frame_host)),
+    : FrameServiceBase(render_frame_host, std::move(receiver)),
       authenticator_common_(std::move(authenticator_common)) {
   DCHECK(authenticator_common_);
 }
 
 AuthenticatorImpl::~AuthenticatorImpl() = default;
 
-void AuthenticatorImpl::Bind(
-    mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
-  // If the RenderFrameHost is being unloaded then binding requests are
-  // rejected.
-  if (!authenticator_common_->GetRenderFrameHost()->IsCurrent()) {
-    return;
-  }
-
-  DCHECK(!receiver_.is_bound());
-  receiver_.Bind(std::move(receiver));
-}
-
 // mojom::Authenticator
 void AuthenticatorImpl::MakeCredential(
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakeCredentialCallback callback) {
-  authenticator_common_->MakeCredential(
-      authenticator_common_->GetRenderFrameHost()->GetLastCommittedOrigin(),
-      std::move(options), std::move(callback));
+  authenticator_common_->MakeCredential(origin(), std::move(options),
+                                        std::move(callback));
 }
 
 // mojom:Authenticator
 void AuthenticatorImpl::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     GetAssertionCallback callback) {
-  authenticator_common_->GetAssertion(
-      authenticator_common_->GetRenderFrameHost()->GetLastCommittedOrigin(),
-      std::move(options), std::move(callback));
+  authenticator_common_->GetAssertion(origin(), std::move(options),
+                                      std::move(callback));
 }
 
 void AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
@@ -69,24 +70,6 @@ void AuthenticatorImpl::IsUserVerifyingPlatformAuthenticatorAvailable(
 
 void AuthenticatorImpl::Cancel() {
   authenticator_common_->Cancel();
-}
-
-void AuthenticatorImpl::DidFinishNavigation(
-    NavigationHandle* navigation_handle) {
-  // If the RenderFrameHost itself is navigated then this function will cause
-  // request state to be cleaned up. It's also possible for a navigation in the
-  // same frame to use a fresh RenderFrameHost. In this case,
-  // |render_frame_host_->IsCurrent()| will start returning false, causing all
-  // focus checks to fail if any Mojo requests are made in that state.
-  if (!navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument() ||
-      navigation_handle->GetRenderFrameHost() !=
-          authenticator_common_->GetRenderFrameHost()) {
-    return;
-  }
-
-  receiver_.reset();
-  authenticator_common_->Cleanup();
 }
 
 }  // namespace content

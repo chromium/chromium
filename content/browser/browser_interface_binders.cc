@@ -725,11 +725,12 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::PushMessaging>(base::BindRepeating(
       &RenderFrameHostImpl::GetPushMessaging, base::Unretained(host)));
 
-  map->Add<blink::mojom::Authenticator>(base::BindRepeating(
-      &RenderFrameHostImpl::GetAuthenticator, base::Unretained(host)));
-
   map->Add<blink::mojom::QuicTransportConnector>(
       base::BindRepeating(&RenderFrameHostImpl::CreateQuicTransportConnector,
+                          base::Unretained(host)));
+
+  map->Add<blink::mojom::Authenticator>(
+      base::BindRepeating(&RenderFrameHostImpl::GetWebAuthenticationService,
                           base::Unretained(host)));
 
   map->Add<blink::test::mojom::VirtualAuthenticatorManager>(

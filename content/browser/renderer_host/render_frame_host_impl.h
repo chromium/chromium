@@ -209,7 +209,6 @@ class ClipboardFormatType;
 namespace content {
 class AgentSchedulingGroupHost;
 class AppCacheNavigationHandle;
-class AuthenticatorImpl;
 class BackForwardCacheMetrics;
 class CrossOriginEmbedderPolicyReporter;
 class FrameTree;
@@ -1498,7 +1497,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void CreateWebBluetoothService(
       mojo::PendingReceiver<blink::mojom::WebBluetoothService> receiver);
 
-  void GetAuthenticator(
+  void GetWebAuthenticationService(
       mojo::PendingReceiver<blink::mojom::Authenticator> receiver);
 
   void GetVirtualAuthenticatorManager(
@@ -2473,11 +2472,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DeleteWebBluetoothService(
       WebBluetoothServiceImpl* web_bluetooth_service);
 
-#if !defined(OS_ANDROID)
-  void BindAuthenticatorReceiver(
-      mojo::PendingReceiver<blink::mojom::Authenticator> receiver);
-#endif
-
   // Allows tests to disable the unload event timer to simulate bugs that
   // happen before it fires (to avoid flakiness).
   void DisableUnloadTimerForTesting();
@@ -3202,10 +3196,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Hosts blink::mojom::SpeechSynthesis for the RenderFrame.
   std::unique_ptr<SpeechSynthesisImpl> speech_synthesis_impl_;
-
-#if !defined(OS_ANDROID)
-  std::unique_ptr<AuthenticatorImpl> authenticator_impl_;
-#endif
 
   std::unique_ptr<blink::AssociatedInterfaceProvider>
       remote_associated_interfaces_;

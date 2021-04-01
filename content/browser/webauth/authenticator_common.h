@@ -20,7 +20,6 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_selection_criteria.h"
@@ -86,6 +85,8 @@ CONTENT_EXPORT std::string SerializeWebAuthnCollectedClientDataToJson(
 // Common code for any WebAuthn Authenticator interfaces.
 class CONTENT_EXPORT AuthenticatorCommon {
  public:
+  // Creates a new AuthenticatorCommon. Callers must ensure that this instance
+  // outlives the RenderFrameHost.
   explicit AuthenticatorCommon(RenderFrameHost* render_frame_host);
   virtual ~AuthenticatorCommon();
 

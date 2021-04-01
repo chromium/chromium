@@ -466,14 +466,7 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
 // accessed from a testing client in the browser process.
 class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
  public:
-  WebAuthLocalClientBrowserTest() {
-    auto discovery_factory =
-        std::make_unique<device::test::FakeFidoDiscoveryFactory>();
-    discovery_factory_ = discovery_factory.get();
-    AuthenticatorEnvironmentImpl::GetInstance()
-        ->ReplaceDefaultDiscoveryFactoryForTesting(
-            std::move(discovery_factory));
-  }
+  WebAuthLocalClientBrowserTest() = default;
   ~WebAuthLocalClientBrowserTest() override = default;
 
  protected:
@@ -482,13 +475,17 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
     ConnectToAuthenticator();
   }
 
+  void TearDownOnMainThread() override {
+    authenticator_remote_.reset();
+    WebAuthBrowserTestBase::TearDownOnMainThread();
+  }
+
   void ConnectToAuthenticator() {
-    auto* render_frame_host_impl = static_cast<RenderFrameHostImpl*>(
-        shell()->web_contents()->GetMainFrame());
     if (authenticator_remote_.is_bound())
       authenticator_remote_.reset();
-    render_frame_host_impl->GetAuthenticator(
-        authenticator_remote_.BindNewPipeAndPassReceiver());
+    static_cast<RenderFrameHostImpl*>(shell()->web_contents()->GetMainFrame())
+        ->GetWebAuthenticationService(
+            authenticator_remote_.BindNewPipeAndPassReceiver());
   }
 
   blink::mojom::PublicKeyCredentialCreationOptionsPtr
@@ -574,46 +571,61 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 // pending navigator.credentials.create({publicKey: ...}) call.
 IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
                        CreatePublicKeyCredentialThenNavigateAway) {
-  auto* fake_hid_discovery = discovery_factory_->ForgeNextHidDiscovery();
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
+      InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [&](device::VirtualFidoDevice* device) { return false; });
+
   TestCreateCallbackReceiver create_callback_receiver;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
                                   create_callback_receiver.callback());
-
-  fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();
+  ASSERT_FALSE(create_callback_receiver.was_called());
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
   WaitForConnectionError();
+  create_callback_receiver.WaitForCallback();
 
   // The next active document should be able to successfully call
   // navigator.credentials.create({publicKey: ...}) again.
   ConnectToAuthenticator();
-  fake_hid_discovery = discovery_factory_->ForgeNextHidDiscovery();
+  InjectVirtualFidoDeviceFactory();
+  TestCreateCallbackReceiver create_callback_receiver2;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  create_callback_receiver.callback());
-  fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();
+                                  create_callback_receiver2.callback());
+  create_callback_receiver2.WaitForCallback();
+  EXPECT_EQ(create_callback_receiver2.status(), AuthenticatorStatus::SUCCESS);
 }
 
 // Tests that no crash occurs when the implementation is destroyed with a
 // pending navigator.credentials.get({publicKey: ...}) call.
 IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
                        GetPublicKeyCredentialThenNavigateAway) {
-  auto* fake_hid_discovery = discovery_factory_->ForgeNextHidDiscovery();
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
+      InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [&](device::VirtualFidoDevice* device) { return false; });
+
   TestGetCallbackReceiver get_callback_receiver;
   authenticator()->GetAssertion(BuildBasicGetOptions(),
                                 get_callback_receiver.callback());
-
-  fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();
+  ASSERT_FALSE(get_callback_receiver.was_called());
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
   WaitForConnectionError();
+  get_callback_receiver.WaitForCallback();
 
   // The next active document should be able to successfully call
   // navigator.credentials.get({publicKey: ...}) again.
   ConnectToAuthenticator();
-  fake_hid_discovery = discovery_factory_->ForgeNextHidDiscovery();
+  InjectVirtualFidoDeviceFactory();
+  TestGetCallbackReceiver get_callback_receiver2;
   authenticator()->GetAssertion(BuildBasicGetOptions(),
-                                get_callback_receiver.callback());
-  fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();
+                                get_callback_receiver2.callback());
+  get_callback_receiver2.WaitForCallback();
+  EXPECT_EQ(get_callback_receiver2.status(),
+            AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
 enum class AttestationCallbackBehavior {
@@ -686,18 +698,20 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
   EXPECT_FALSE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
 
-  auto* fake_hid_discovery = discovery_factory_->ForgeNextHidDiscovery();
+  InjectVirtualFidoDeviceFactory();
   TestCreateCallbackReceiver create_callback_receiver;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
                                   create_callback_receiver.callback());
-
-  fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();
+  create_callback_receiver.WaitForCallback();
+  EXPECT_EQ(create_callback_receiver.status(), AuthenticatorStatus::SUCCESS);
 }
 
 // Tests that a navigator.credentials.create({publicKey: ...}) issued at the
 // moment just before a navigation commits is not serviced.
 IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
                        CreatePublicKeyCredentialRacingWithNavigation) {
+  InjectVirtualFidoDeviceFactory();
+
   TestCreateCallbackReceiver create_callback_receiver;
   auto request_options = BuildBasicCreateOptions();
 
@@ -707,32 +721,29 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
                                         create_callback_receiver.callback());
       }));
 
-  auto* fake_hid_discovery = discovery_factory_->ForgeNextHidDiscovery();
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title2.html")));
   WaitForConnectionError();
 
-  // Normally, when the request is serviced, the implementation retrieves the
-  // factory as one of the first steps. Here, the request should not have been
-  // serviced at all, so the fake request should still be pending on the fake
-  // factory.
-  std::vector<std::unique_ptr<device::FidoDiscoveryBase>> discoveries =
-      discovery_factory_->Create(
-          ::device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
-  EXPECT_EQ(discoveries.size(), 1u);
-
   // The next active document should be able to successfully call
   // navigator.credentials.create({publicKey: ...}) again.
   ConnectToAuthenticator();
-  fake_hid_discovery = discovery_factory_->ForgeNextHidDiscovery();
+  TestCreateCallbackReceiver create_callback_receiver2;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  create_callback_receiver.callback());
-  fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();
+                                  create_callback_receiver2.callback());
+  create_callback_receiver2.WaitForCallback();
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS, create_callback_receiver2.status());
 }
 
 // Regression test for https://crbug.com/818219.
 IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
                        CreatePublicKeyCredentialTwiceInARow) {
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
+      InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [&](device::VirtualFidoDevice* device) { return false; });
+
   TestCreateCallbackReceiver callback_receiver_1;
   TestCreateCallbackReceiver callback_receiver_2;
   authenticator()->MakeCredential(BuildBasicCreateOptions(),
@@ -748,44 +759,16 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
 // Regression test for https://crbug.com/818219.
 IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
                        GetPublicKeyCredentialTwiceInARow) {
+  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
+      InjectVirtualFidoDeviceFactory();
+  virtual_device_factory->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [&](device::VirtualFidoDevice* device) { return false; });
+
   TestGetCallbackReceiver callback_receiver_1;
   TestGetCallbackReceiver callback_receiver_2;
   authenticator()->GetAssertion(BuildBasicGetOptions(),
                                 callback_receiver_1.callback());
-  authenticator()->GetAssertion(BuildBasicGetOptions(),
-                                callback_receiver_2.callback());
-  callback_receiver_2.WaitForCallback();
-
-  EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST, callback_receiver_2.status());
-  EXPECT_FALSE(callback_receiver_1.was_called());
-}
-
-IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
-                       CreatePublicKeyCredentialWhileRequestIsPending) {
-  auto* fake_hid_discovery = discovery_factory_->ForgeNextHidDiscovery();
-  TestCreateCallbackReceiver callback_receiver_1;
-  TestCreateCallbackReceiver callback_receiver_2;
-  authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  callback_receiver_1.callback());
-  fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();
-
-  authenticator()->MakeCredential(BuildBasicCreateOptions(),
-                                  callback_receiver_2.callback());
-  callback_receiver_2.WaitForCallback();
-
-  EXPECT_EQ(AuthenticatorStatus::PENDING_REQUEST, callback_receiver_2.status());
-  EXPECT_FALSE(callback_receiver_1.was_called());
-}
-
-IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
-                       GetPublicKeyCredentialWhileRequestIsPending) {
-  auto* fake_hid_discovery = discovery_factory_->ForgeNextHidDiscovery();
-  TestGetCallbackReceiver callback_receiver_1;
-  TestGetCallbackReceiver callback_receiver_2;
-  authenticator()->GetAssertion(BuildBasicGetOptions(),
-                                callback_receiver_1.callback());
-  fake_hid_discovery->WaitForCallToStartAndSimulateSuccess();
-
   authenticator()->GetAssertion(BuildBasicGetOptions(),
                                 callback_receiver_2.callback());
   callback_receiver_2.WaitForCallback();

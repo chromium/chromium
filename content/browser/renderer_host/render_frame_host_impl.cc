@@ -8123,14 +8123,6 @@ void RenderFrameHostImpl::BindSerialService(
   SerialService::GetOrCreateForCurrentDocument(this)->Bind(std::move(receiver));
 }
 
-void RenderFrameHostImpl::BindAuthenticatorReceiver(
-    mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
-  if (!authenticator_impl_)
-    authenticator_impl_ = std::make_unique<AuthenticatorImpl>(this);
-
-  authenticator_impl_->Bind(std::move(receiver));
-}
-
 void RenderFrameHostImpl::GetHidService(
     mojo::PendingReceiver<blink::mojom::HidService> receiver) {
   HidService::Create(this, std::move(receiver));
@@ -8388,11 +8380,11 @@ void RenderFrameHostImpl::CreatePermissionService(
       std::move(receiver));
 }
 
-void RenderFrameHostImpl::GetAuthenticator(
+void RenderFrameHostImpl::GetWebAuthenticationService(
     mojo::PendingReceiver<blink::mojom::Authenticator> receiver) {
 #if !defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kWebAuth)) {
-    BindAuthenticatorReceiver(std::move(receiver));
+    AuthenticatorImpl::Create(this, std::move(receiver));
   }
 #else
   GetJavaInterfaces()->GetInterface(std::move(receiver));

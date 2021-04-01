@@ -35,7 +35,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "crypto/sha2.h"
@@ -747,7 +746,17 @@ AuthenticatorCommon::AuthenticatorCommon(RenderFrameHost* render_frame_host)
           BackForwardCacheDisable::DisabledReasonId::kWebAuthenticationAPI));
 }
 
-AuthenticatorCommon::~AuthenticatorCommon() = default;
+AuthenticatorCommon::~AuthenticatorCommon() {
+  // Resolve pending callbacks before disconnecting the receiver.
+  if (make_credential_response_callback_) {
+    CompleteMakeCredentialRequest(
+        blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR);
+  }
+  if (get_assertion_response_callback_) {
+    CompleteGetAssertionRequest(
+        blink::mojom::AuthenticatorStatus::UNKNOWN_ERROR);
+  }
+}
 
 std::unique_ptr<AuthenticatorRequestClientDelegate>
 AuthenticatorCommon::CreateRequestDelegate() {
