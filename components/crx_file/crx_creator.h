@@ -26,8 +26,8 @@ enum class CreatorResult {
 };
 
 // Similar to `Create` method but also injects `verified_contents` into the
-// header. This should only be used for testing.
-CreatorResult CreateCrxWithVerifiedContentsInHeaderForTesting(
+// header.
+CreatorResult CreateCrxWithVerifiedContentsInHeader(
     const base::FilePath& output_path,
     const base::FilePath& zip_path,
     crypto::RSAPrivateKey* signing_key,

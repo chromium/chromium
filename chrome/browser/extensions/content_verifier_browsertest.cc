@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/policy_extension_reinstaller.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/crx_file/id_util.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/test/browser_test.h"
@@ -43,6 +44,8 @@
 #include "extensions/browser/updater/manifest_fetch_data.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/file_util.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 using extensions::mojom::ManifestLocation;
 
@@ -184,6 +187,49 @@ class ContentVerifierTest : public ExtensionBrowserTest {
     ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
     int reasons = prefs->GetDisableReasons(extension_id);
     EXPECT_EQ(disable_reason::DISABLE_CORRUPTED, reasons);
+  }
+
+  // Reads private key from |private_key_path| and generates extension id using
+  // it.
+  std::string GetExtensionIdFromPrivateKeyFile(
+      const base::FilePath& private_key_path) {
+    std::string private_key_contents;
+    EXPECT_TRUE(
+        base::ReadFileToString(private_key_path, &private_key_contents));
+    std::string private_key_bytes;
+    EXPECT_TRUE(
+        Extension::ParsePEMKeyBytes(private_key_contents, &private_key_bytes));
+    auto signing_key =
+        crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
+            private_key_bytes.begin(), private_key_bytes.end()));
+    std::vector<uint8_t> public_key;
+    signing_key->ExportPublicKey(&public_key);
+    const std::string public_key_str(public_key.begin(), public_key.end());
+    return crx_file::id_util::GenerateId(public_key_str);
+  }
+
+  // Creates a CRX in a temporary directory under |temp_dir| using contents from
+  // |unpacked_path|. Compresses the contents in |verified_contents_path| and
+  // injects these contents into the the header of the CRX. Creates a random
+  // signing key and sets |extension_id| using it.
+  base::FilePath CreateCrxWithVerifiedContentsInHeader(
+      base::ScopedTempDir* temp_dir,
+      const base::FilePath& unpacked_path,
+      const base::FilePath& verified_contents_path,
+      std::string* extension_id) {
+    std::string contents;
+    EXPECT_TRUE(base::ReadFileToString(verified_contents_path, &contents));
+    std::string compressed_verified_contents;
+    EXPECT_TRUE(
+        compression::GzipCompress(contents, &compressed_verified_contents));
+
+    EXPECT_TRUE(temp_dir->CreateUniqueTempDir());
+    base::FilePath crx_path = temp_dir->GetPath().AppendASCII("temp.crx");
+
+    ExtensionCreator creator;
+    creator.CreateCrxWithVerifiedContentsInHeaderForTesting(
+        unpacked_path, crx_path, compressed_verified_contents, extension_id);
+    return crx_path;
   }
 
  protected:
@@ -403,6 +449,73 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest, VerificationFailureOnNavigate) {
 
   GURL page_url = extension->GetResourceURL("page.html");
   NavigateToResourceAndExpectExtensionDisabled(kExtensionId, page_url);
+}
+
+// Verifies that CRX with verified contents injected into the header is
+// successfully installed and verified.
+IN_PROC_BROWSER_TEST_F(
+    ContentVerifierTest,
+    VerificationSuccessfullForCrxWithVerifiedContentsInjectedInHeader) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::ScopedTempDir temp_dir;
+  base::FilePath test_dir =
+      test_data_dir_.AppendASCII("content_verifier/missing_verified_contents");
+  std::string extension_id;
+  base::FilePath crx_path = CreateCrxWithVerifiedContentsInHeader(
+      &temp_dir, test_dir.AppendASCII("source"),
+      test_dir.AppendASCII("verified_contents.json"), &extension_id);
+
+  TestContentVerifySingleJobObserver observer(
+      extension_id, base::FilePath().AppendASCII("script.js"));
+
+  const Extension* extension = InstallExtensionFromWebstore(crx_path, 1);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->id(), extension_id);
+
+  ContentHashReader::InitStatus hashes_status = observer.WaitForOnHashesReady();
+  EXPECT_EQ(ContentHashReader::InitStatus::SUCCESS, hashes_status);
+}
+
+// Verifies that CRX with malformed verified contents injected into the header
+// is not installed.
+IN_PROC_BROWSER_TEST_F(
+    ContentVerifierTest,
+    InstallationFailureForCrxWithMalformedVerifiedContentsInjectedInHeader) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  base::FilePath test_dir =
+      test_data_dir_.AppendASCII("content_verifier/missing_verified_contents");
+  std::string extension_id;
+  base::FilePath crx_path = CreateCrxWithVerifiedContentsInHeader(
+      &temp_dir, test_dir.AppendASCII("source"),
+      test_dir.AppendASCII("invalid_verified_contents.json"), &extension_id);
+
+  const Extension* extension = InstallExtensionFromWebstore(crx_path, 0);
+  ASSERT_FALSE(extension);
+}
+
+// Verifies that CRX with missing verified contents is successfully installed
+// but not verified due to missing hashes.
+IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
+                       VerificationFailureForMissingVerifiedContents) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::FilePath unpacked_path = test_data_dir_.AppendASCII(
+      "content_verifier/missing_verified_contents/source");
+  base::FilePath crx_path = PackExtension(unpacked_path);
+  ASSERT_TRUE(base::PathExists(crx_path.DirName().AppendASCII("temp.pem")));
+  const std::string extension_id = GetExtensionIdFromPrivateKeyFile(
+      crx_path.DirName().AppendASCII("temp.pem"));
+
+  TestContentVerifySingleJobObserver observer(
+      extension_id, base::FilePath().AppendASCII("script.js"));
+
+  const Extension* extension = InstallExtensionFromWebstore(crx_path, 1);
+  ASSERT_TRUE(extension);
+  EXPECT_EQ(extension->id(), extension_id);
+
+  ContentHashReader::InitStatus hashes_status = observer.WaitForOnHashesReady();
+  EXPECT_EQ(ContentHashReader::InitStatus::HASHES_MISSING, hashes_status);
 }
 
 // Tests that tampering with a large resource fails content verification as

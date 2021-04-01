@@ -129,7 +129,7 @@ CreatorResult WriteCRX(const CrxFileHeader& header,
 
 }  // namespace
 
-CreatorResult CreateCrxWithVerifiedContentsInHeaderForTesting(
+CreatorResult CreateCrxWithVerifiedContentsInHeader(
     const base::FilePath& output_path,
     const base::FilePath& zip_path,
     crypto::RSAPrivateKey* signing_key,

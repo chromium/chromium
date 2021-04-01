@@ -1,0 +1,14 @@
+{
+"update_url": "https://clients2.google.com/service/update2/crx",
+
+  "name": "Hello Wikipedia Content Script",
+  "description": "Inserts 'hello world' on wikipedia pages",
+  "version": "0.8",
+  "manifest_version": 2,
+  "content_scripts": [
+    {
+      "matches": ["*://*.wikipedia.org/*"],
+      "js": ["script.js"]
+    }
+  ]
+}
