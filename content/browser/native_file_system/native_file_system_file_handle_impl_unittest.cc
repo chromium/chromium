@@ -30,8 +30,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
-using storage::FileSystemURL;
-
 namespace content {
 
 using blink::mojom::PermissionStatus;

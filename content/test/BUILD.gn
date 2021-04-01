@@ -1812,6 +1812,7 @@ test("content_unittests") {
     "../browser/media/webaudio/audio_context_manager_impl_unittest.cc",
     "../browser/memory/swap_metrics_driver_impl_unittest.cc",
     "../browser/native_file_system/file_system_chooser_unittest.cc",
+    "../browser/native_file_system/native_file_system_directory_handle_impl_unittest.cc",
     "../browser/native_file_system/native_file_system_file_handle_impl_unittest.cc",
     "../browser/native_file_system/native_file_system_file_writer_impl_unittest.cc",
     "../browser/native_file_system/native_file_system_handle_base_unittest.cc",

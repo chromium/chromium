@@ -57,6 +57,14 @@ class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
       mojo::PendingReceiver<blink::mojom::NativeFileSystemTransferToken> token)
       override;
 
+  // The File System Access API should not give access to files that might
+  // trigger special handling from the operating system. This method is used to
+  // validate that all paths passed to GetFileHandle/GetDirectoryHandle are safe
+  // to be exposed to the web.
+  // TODO(https://crbug.com/1154757): Merge this with
+  // net::IsSafePortablePathComponent.
+  static bool IsSafePathComponent(const std::string& name);
+
  private:
   // This method creates the file if it does not currently exists. I.e. it is
   // the implementation for passing create=true to GetFile.
