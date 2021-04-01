@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/kiosk_session_plugin_handler.h"
 #include "chrome/browser/ash/app_mode/kiosk_settings_navigation_throttle.h"
-#include "chrome/browser/ash/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -138,16 +137,6 @@ class AppSession::AppWindowHandler : public AppWindowRegistry::Observer {
       return;
     }
 
-    if (DemoAppLauncher::IsDemoAppSession(user_manager::UserManager::Get()
-                                              ->GetActiveUser()
-                                              ->GetAccountId())) {
-      // If we were in demo mode, we disabled all our network technologies,
-      // re-enable them.
-      NetworkHandler::Get()->network_state_handler()->SetTechnologyEnabled(
-          NetworkTypePattern::Physical(), true,
-          chromeos::network_handler::ErrorCallback());
-    }
-
     app_session_->OnLastAppWindowClosed();
     window_registry_->RemoveObserver(this);
   }
@@ -258,12 +247,6 @@ void AppSession::Init(Profile* profile, const std::string& app_id) {
   plugin_handler_ = std::make_unique<KioskSessionPluginHandler>(this);
 
   StartFloatingAccessibilityMenu();
-
-  // For a demo app, we don't need to either setup the update service or
-  // the idle app name notification.
-  if (DemoAppLauncher::IsDemoAppSession(
-          user_manager::UserManager::Get()->GetActiveUser()->GetAccountId()))
-    return;
 
   // Set the app_id for the current instance of KioskAppUpdateService.
   KioskAppUpdateService* update_service =

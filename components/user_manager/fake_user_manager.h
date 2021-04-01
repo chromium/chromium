@@ -142,10 +142,8 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
       std::set<AccountId>* device_local_accounts_set) override {}
   void PerformPostUserListLoadingActions() override {}
   void PerformPostUserLoggedInActions(bool browser_restart) override {}
-  bool IsDemoApp(const AccountId& account_id) const override;
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
-  void DemoAccountLoggedIn() override {}
   void KioskAppLoggedIn(User* user) override {}
   void PublicAccountUserLoggedIn(User* user) override {}
   void OnUserRemoved(const AccountId& account_id) override {}

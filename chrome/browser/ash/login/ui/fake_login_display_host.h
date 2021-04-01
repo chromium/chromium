@@ -42,7 +42,6 @@ class FakeLoginDisplayHost : public LoginDisplayHost {
   void CancelUserAdding() override;
   void StartSignInScreen() override;
   void OnPreferencesChanged() override;
-  void StartDemoAppLaunch() override;
   void StartKiosk(const KioskAppId& kiosk_app_id, bool is_auto_launch) override;
   void AttemptShowEnableConsumerKioskScreen() override;
   void CompleteLogin(const chromeos::UserContext& user_context) override;

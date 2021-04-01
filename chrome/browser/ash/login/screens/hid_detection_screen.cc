@@ -74,8 +74,6 @@ std::string HIDDetectionScreen::GetResultString(Result result) {
   switch (result) {
     case Result::NEXT:
       return "Next";
-    case Result::START_DEMO:
-      return "StartDemo";
     case Result::SKIP:
     case Result::SKIPPED_FOR_TESTS:
       return BaseScreen::kNotApplicable;
@@ -125,11 +123,6 @@ void HIDDetectionScreen::OnContinueButtonClicked() {
 
   CleanupOnExit();
   Exit(Result::NEXT);
-}
-
-void HIDDetectionScreen::OnShouldStartDemoMode() {
-  CleanupOnExit();
-  Exit(Result::START_DEMO);
 }
 
 void HIDDetectionScreen::CleanupOnExit() {

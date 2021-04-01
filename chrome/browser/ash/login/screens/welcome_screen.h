@@ -64,7 +64,7 @@ class WelcomeScreen : public BaseScreen,
     virtual void OnLanguageListReloaded() = 0;
   };
 
-  enum class Result { NEXT, START_DEMO, SETUP_DEMO, ENABLE_DEBUGGING };
+  enum class Result { NEXT, SETUP_DEMO, ENABLE_DEBUGGING };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -125,9 +125,6 @@ class WelcomeScreen : public BaseScreen,
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
   bool HandleAccelerator(ash::LoginAcceleratorAction action) override;
-
-  // DemoModeDetector::Observer:
-  void OnShouldStartDemoMode() override;
 
   // InputMethodManager::Observer:
   void InputMethodChanged(input_method::InputMethodManager* manager,

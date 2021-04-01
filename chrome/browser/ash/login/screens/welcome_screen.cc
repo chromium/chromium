@@ -168,8 +168,6 @@ std::string WelcomeScreen::GetResultString(Result result) {
   switch (result) {
     case Result::NEXT:
       return "Next";
-    case Result::START_DEMO:
-      return "StartDemo";
     case Result::SETUP_DEMO:
       return "SetupDemo";
     case Result::ENABLE_DEBUGGING:
@@ -514,11 +512,6 @@ void WelcomeScreen::OnContinueButtonPressed() {
   demo_mode_detector_.reset();
   CancelChromeVoxHintTimer();
   exit_callback_.Run(Result::NEXT);
-}
-
-void WelcomeScreen::OnShouldStartDemoMode() {
-  demo_mode_detector_.reset();
-  exit_callback_.Run(Result::START_DEMO);
 }
 
 void WelcomeScreen::OnSetupDemoMode() {

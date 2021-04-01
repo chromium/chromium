@@ -517,7 +517,7 @@ std::string InstallAttributes::GetDeviceModeString(policy::DeviceMode mode) {
       return InstallAttributes::kEnterpriseDeviceMode;
     case policy::DEVICE_MODE_ENTERPRISE_AD:
       return InstallAttributes::kEnterpriseADDeviceMode;
-    case policy::DEVICE_MODE_LEGACY_RETAIL_MODE:
+    case policy::DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE:
       return InstallAttributes::kLegacyRetailDeviceMode;
     case policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH:
       return InstallAttributes::kConsumerKioskDeviceMode;
@@ -540,7 +540,7 @@ policy::DeviceMode InstallAttributes::GetDeviceModeFromString(
   if (mode == InstallAttributes::kEnterpriseADDeviceMode)
     return policy::DEVICE_MODE_ENTERPRISE_AD;
   if (mode == InstallAttributes::kLegacyRetailDeviceMode)
-    return policy::DEVICE_MODE_LEGACY_RETAIL_MODE;
+    return policy::DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE;
   if (mode == InstallAttributes::kConsumerKioskDeviceMode)
     return policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH;
   if (mode == InstallAttributes::kDemoDeviceMode)

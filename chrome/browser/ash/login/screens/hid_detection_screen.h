@@ -43,7 +43,7 @@ class HIDDetectionScreen : public BaseScreen,
   using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
   using DeviceMap = std::map<std::string, InputDeviceInfoPtr>;
 
-  enum class Result { NEXT, START_DEMO, SKIP, SKIPPED_FOR_TESTS };
+  enum class Result { NEXT, SKIP, SKIPPED_FOR_TESTS };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -106,9 +106,6 @@ class HIDDetectionScreen : public BaseScreen,
   // device::mojom::InputDeviceManagerClient:
   void InputDeviceAdded(InputDeviceInfoPtr info) override;
   void InputDeviceRemoved(const std::string& id) override;
-
-  // DemoModeDetector::Observer:
-  void OnShouldStartDemoMode() override;
 
   // Called when continue button was clicked.
   void OnContinueButtonClicked();

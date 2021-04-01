@@ -671,17 +671,9 @@ void FakeChromeUserManager::PerformPostUserLoggedInActions(
   NOTREACHED();
 }
 
-bool FakeChromeUserManager::IsDemoApp(const AccountId& account_id) const {
-  return account_id == user_manager::DemoAccountId();
-}
-
 bool FakeChromeUserManager::IsDeviceLocalAccountMarkedForRemoval(
     const AccountId& account_id) const {
   return false;
-}
-
-void FakeChromeUserManager::DemoAccountLoggedIn() {
-  NOTREACHED();
 }
 
 void FakeChromeUserManager::KioskAppLoggedIn(user_manager::User* user) {}

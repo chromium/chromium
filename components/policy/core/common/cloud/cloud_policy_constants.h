@@ -147,27 +147,23 @@ enum DeviceManagementStatus {
 
 // List of modes that the device can be locked into.
 enum DeviceMode {
-  DEVICE_MODE_PENDING,             // The device mode is not yet available.
-  DEVICE_MODE_NOT_SET,             // The device is not yet enrolled or owned.
-  DEVICE_MODE_CONSUMER,            // The device is locally owned as consumer
-                                   // device.
-  DEVICE_MODE_ENTERPRISE,          // The device is enrolled as an enterprise
-                                   // device.
-  DEVICE_MODE_ENTERPRISE_AD,       // The device has joined AD.
-  DEVICE_MODE_LEGACY_RETAIL_MODE,  // The device is enrolled as a retail kiosk
-                                   // device. Even though retail mode is
-                                   // deprecated, we still check for this device
-                                   // mode so that if an existing device is
-                                   // still enrolled in retail mode, we take the
-                                   // appropriate action (currently, launching
-                                   // offline demo mode).
-  DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,  // The device is locally owned as
+  DEVICE_MODE_PENDING,        // The device mode is not yet available.
+  DEVICE_MODE_NOT_SET,        // The device is not yet enrolled or owned.
+  DEVICE_MODE_CONSUMER,       // The device is locally owned as consumer
+                              // device.
+  DEVICE_MODE_ENTERPRISE,     // The device is enrolled as an enterprise
+                              // device.
+  DEVICE_MODE_ENTERPRISE_AD,  // The device has joined AD.
+  DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE,  // The device is enrolled as a
+                                              // retail kiosk device. This is
+                                              // deprecated.
+  DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH,      // The device is locally owned as
                                           // consumer kiosk with ability to auto
                                           // launch a kiosk webapp.
-  DEVICE_MODE_DEMO,                       // The device is in demo mode. It was
-                                          // either enrolled online or setup
-                                          // offline into demo mode domain -
-                                          // see kDemoModeDomain.
+  DEVICE_MODE_DEMO,  // The device is in demo mode. It was
+                     // either enrolled online or setup
+                     // offline into demo mode domain -
+                     // see kDemoModeDomain.
 };
 
 // Domain that demo mode devices are enrolled into: cros-demo-mode.com

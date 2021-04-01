@@ -10,7 +10,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
-#include "chrome/browser/ash/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
@@ -187,14 +186,6 @@ void LoginDisplayHostCommon::StartSignInScreen() {
   // Enable status area after starting sign-in screen, as it may depend on the
   // UI being visible.
   SetStatusAreaVisible(true);
-}
-
-void LoginDisplayHostCommon::StartDemoAppLaunch() {
-  VLOG(1) << "Login >> starting demo app.";
-  SetStatusAreaVisible(false);
-
-  demo_app_launcher_ = std::make_unique<DemoAppLauncher>();
-  demo_app_launcher_->StartDemoAppLaunch();
 }
 
 void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,

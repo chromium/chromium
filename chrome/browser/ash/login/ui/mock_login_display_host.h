@@ -55,7 +55,6 @@ class MockLoginDisplayHost : public LoginDisplayHost {
   MOCK_METHOD(void, CancelUserAdding, (), (override));
   MOCK_METHOD(void, StartSignInScreen, (), (override));
   MOCK_METHOD(void, OnPreferencesChanged, (), (override));
-  MOCK_METHOD(void, StartDemoAppLaunch, (), (override));
   MOCK_METHOD(void, StartKiosk, (const KioskAppId&, bool), (override));
   MOCK_METHOD(void, AttemptShowEnableConsumerKioskScreen, (), (override));
   MOCK_METHOD(void, ShowGaiaDialog, (const AccountId&), (override));

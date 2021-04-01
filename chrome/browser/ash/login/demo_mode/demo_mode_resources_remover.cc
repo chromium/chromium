@@ -20,7 +20,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/ash/login/demo_mode/demo_resources.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
@@ -150,12 +149,6 @@ void DemoModeResourcesRemover::LowDiskSpace(
 void DemoModeResourcesRemover::ActiveUserChanged(user_manager::User* user) {
   // Ignore user activity in guest sessions.
   if (user->GetType() == user_manager::USER_TYPE_GUEST)
-    return;
-
-  // Do not remove resources if the device is in a legacy derelict demo session,
-  // which is implemented as kiosk - note that this is different than sessions
-  // detected by IsLegacyDemoRetailModeSession().
-  if (DemoAppLauncher::IsDemoAppSession(user->GetAccountId()))
     return;
 
   // Attempt resources removal if the device is managed, and not in a retail

@@ -51,7 +51,7 @@ DeviceMode TranslateProtobufDeviceMode(
     case em::DeviceRegisterResponse::ENTERPRISE:
       return DEVICE_MODE_ENTERPRISE;
     case em::DeviceRegisterResponse::RETAIL_DEPRECATED:
-      return DEVICE_MODE_LEGACY_RETAIL_MODE;
+      return DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE;
     case em::DeviceRegisterResponse::CHROME_AD:
       return DEVICE_MODE_ENTERPRISE_AD;
     case em::DeviceRegisterResponse::DEMO:

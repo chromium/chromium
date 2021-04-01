@@ -160,10 +160,8 @@ class ChromeUserManagerImpl
   void RemoveNonCryptohomeData(const AccountId& account_id) override;
   void RemoveUserInternal(const AccountId& account_id,
                           user_manager::RemoveUserDelegate* delegate) override;
-  bool IsDemoApp(const AccountId& account_id) const override;
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
-  void DemoAccountLoggedIn() override;
   void GuestUserLoggedIn() override;
   void KioskAppLoggedIn(user_manager::User* user) override;
   void PublicAccountUserLoggedIn(user_manager::User* user) override;

@@ -102,7 +102,6 @@ class MockUserManager : public ChromeUserManager {
   MOCK_CONST_METHOD1(IsKioskApp, bool(const AccountId&));
   MOCK_CONST_METHOD1(IsDeviceLocalAccountMarkedForRemoval,
                      bool(const AccountId&));
-  MOCK_METHOD0(DemoAccountLoggedIn, void(void));
   MOCK_METHOD1(KioskAppLoggedIn, void(user_manager::User*));
   MOCK_METHOD1(PublicAccountUserLoggedIn, void(user_manager::User*));
   MOCK_METHOD1(OnUserRemoved, void(const AccountId&));

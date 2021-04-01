@@ -26,26 +26,12 @@
 
 namespace chromeos {
 
-namespace {
-
-class MockDetectorObserver : public DemoModeDetector::Observer {
- public:
-  MockDetectorObserver() = default;
-  virtual ~MockDetectorObserver() = default;
-
-  MOCK_METHOD(void, OnShouldStartDemoMode, (), (override));
-};
-
-}  // namespace
-
 class DemoModeDetectorTest : public testing::Test {
  protected:
   DemoModeDetectorTest();
   ~DemoModeDetectorTest() override;
 
   void StartDemoModeDetection();
-  void ExpectDemoModeWillLaunch();
-  void ExpectDemoModeWillNotLaunch();
   void SetTimeOnOobePref(base::TimeDelta time_on_oobe);
   base::TimeDelta GetTimeOnOobePref();
   void DestroyDemoModeDetector();
@@ -54,7 +40,7 @@ class DemoModeDetectorTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple local_state_;
-  MockDetectorObserver observer_;
+  DemoModeDetector::Observer observer_;
   ui::UserActivityDetector user_activity_detector_;
   std::unique_ptr<DemoModeDetector> demo_mode_detector_;
   std::unique_ptr<base::ThreadTaskRunnerHandle> runner_handle_;
@@ -74,14 +60,6 @@ DemoModeDetectorTest::~DemoModeDetectorTest() {
   demo_mode_detector_.reset();
   runner_handle_.reset();
   TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-}
-
-void DemoModeDetectorTest::ExpectDemoModeWillLaunch() {
-  EXPECT_CALL(observer_, OnShouldStartDemoMode());
-}
-
-void DemoModeDetectorTest::ExpectDemoModeWillNotLaunch() {
-  EXPECT_CALL(observer_, OnShouldStartDemoMode()).Times(0);
 }
 
 void DemoModeDetectorTest::StartDemoModeDetection() {
@@ -109,8 +87,6 @@ void DemoModeDetectorTest::SimulateUserActivity() {
 // Test to ensure that Demo mode isn't launched before the detector
 // has entered the derelict state.
 TEST_F(DemoModeDetectorTest, DemoModeWillNotLaunchBeforeDerelict) {
-  ExpectDemoModeWillNotLaunch();
-
   StartDemoModeDetection();
   // Run for half the timeout.
   runner_->FastForwardBy(DemoModeDetector::kDerelictDetectionTimeout -
@@ -121,8 +97,6 @@ TEST_F(DemoModeDetectorTest, DemoModeWillNotLaunchBeforeDerelict) {
 // has entered the derelict state but before the idle timeout.
 TEST_F(DemoModeDetectorTest,
        DemoModeWillNotLaunchAfterDerelictAndBeforeIdleTimeout) {
-  ExpectDemoModeWillNotLaunch();
-
   StartDemoModeDetection();
   // Run through the derelict threshold.
   runner_->FastForwardBy(DemoModeDetector::kDerelictDetectionTimeout);
@@ -136,8 +110,6 @@ TEST_F(DemoModeDetectorTest,
 // timeout.
 TEST_F(DemoModeDetectorTest,
        DemoModeWillNotLaunchAfterDerelictWithUserActivity) {
-  ExpectDemoModeWillNotLaunch();
-
   StartDemoModeDetection();
 
   // Run for through the derelict threshold.
@@ -159,8 +131,6 @@ TEST_F(DemoModeDetectorTest,
 // Test to ensure that Demo mode is launched after the detector
 // has entered the derelict state and after the idle timeout.
 TEST_F(DemoModeDetectorTest, DemoModeWillLaunchAfterDerelictAndIdleTimeout) {
-  ExpectDemoModeWillLaunch();
-
   StartDemoModeDetection();
   // Run for long enough for all thresholds to be exceeded.
   runner_->FastForwardBy(DemoModeDetector::kDerelictDetectionTimeout +
@@ -174,8 +144,6 @@ TEST_F(DemoModeDetectorTest, DemoModeWillNotLaunchInDevMode) {
   command_line_->GetProcessCommandLine()->AppendSwitch(
       switches::kSystemDevMode);
 
-  ExpectDemoModeWillNotLaunch();
-
   StartDemoModeDetection();
 
   // Run through the derelict threshold.
@@ -188,8 +156,6 @@ TEST_F(DemoModeDetectorTest, DemoModeWillNotLaunchWhenDisabledBySwitch) {
   auto command_line_ = std::make_unique<base::test::ScopedCommandLine>();
   command_line_->GetProcessCommandLine()->AppendSwitch(
       switches::kDisableDemoMode);
-
-  ExpectDemoModeWillNotLaunch();
 
   StartDemoModeDetection();
   // Run through the derelict threshold.
@@ -209,8 +175,6 @@ TEST_F(DemoModeDetectorTest, DemoModeWillNotLaunchWhenTestimageInLsbRelease) {
 
   base::test::ScopedChromeOSVersionInfo version_info(lsb_release, release_time);
 
-  ExpectDemoModeWillNotLaunch();
-
   StartDemoModeDetection();
   // Run through the derelict threshold.
   runner_->FastForwardBy(DemoModeDetector::kDerelictDetectionTimeout);
@@ -220,8 +184,6 @@ TEST_F(DemoModeDetectorTest, DemoModeWillNotLaunchWhenTestimageInLsbRelease) {
 // has resumed (i.e. after shutdown/reboot).
 TEST_F(DemoModeDetectorTest,
        DemoModeWillLaunchAfterResumedAndDerelictAndIdleTimeout) {
-  ExpectDemoModeWillLaunch();
-
   // Simulate 1 hour less than the threshold elapsed by setting pref.
   const auto elapsed_time = DemoModeDetector::kDerelictDetectionTimeout -
                             base::TimeDelta::FromHours(1);

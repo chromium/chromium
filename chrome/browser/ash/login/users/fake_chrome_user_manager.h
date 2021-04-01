@@ -148,10 +148,8 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool IsEnterpriseManaged() const override;
   void PerformPostUserListLoadingActions() override;
   void PerformPostUserLoggedInActions(bool browser_restart) override;
-  bool IsDemoApp(const AccountId& account_id) const override;
   bool IsDeviceLocalAccountMarkedForRemoval(
       const AccountId& account_id) const override;
-  void DemoAccountLoggedIn() override;
   void KioskAppLoggedIn(user_manager::User* user) override;
   void PublicAccountUserLoggedIn(user_manager::User* user) override;
   void OnUserRemoved(const AccountId& account_id) override;

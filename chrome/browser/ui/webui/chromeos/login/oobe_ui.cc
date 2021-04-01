@@ -859,16 +859,6 @@ void OobeUI::ShowOobeUI(bool show) {
 }
 
 void OobeUI::ShowSigninScreen(SigninScreenHandlerDelegate* delegate) {
-  // Check our device mode.
-  policy::BrowserPolicyConnectorChromeOS* connector =
-      g_browser_process->platform_part()->browser_policy_connector_chromeos();
-  if (connector->GetDeviceMode() == policy::DEVICE_MODE_LEGACY_RETAIL_MODE) {
-    // If we're in legacy retail mode, the best thing we can do is launch the
-    // new offline demo mode.
-    LoginDisplayHost::default_host()->StartDemoAppLaunch();
-    return;
-  }
-
   signin_screen_handler_->SetDelegate(delegate);
 
   signin_screen_handler_->Show(core_handler_->show_oobe_ui());

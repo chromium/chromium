@@ -50,7 +50,7 @@ mojom::DeviceMode EnvironmentProvider::GetDeviceMode() {
       return mojom::DeviceMode::kEnterprise;
     case policy::DEVICE_MODE_ENTERPRISE_AD:
       return mojom::DeviceMode::kEnterpriseActiveDirectory;
-    case policy::DEVICE_MODE_LEGACY_RETAIL_MODE:
+    case policy::DEPRECATED_DEVICE_MODE_LEGACY_RETAIL_MODE:
       return mojom::DeviceMode::kLegacyRetailMode;
     case policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH:
       return mojom::DeviceMode::kConsumerKioskAutolaunch;

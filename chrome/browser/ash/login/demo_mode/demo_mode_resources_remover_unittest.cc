@@ -787,30 +787,6 @@ TEST_F(DemoModeResourcesRemoverTest, NoRemovalInKioskDemoMode) {
   EXPECT_TRUE(DemoModeResourcesExist());
 }
 
-TEST_F(DemoModeResourcesRemoverInLegacyDemoRetailModeTest,
-       NoRemovalInKioskDemoModeWithUserActivity) {
-  ASSERT_TRUE(CreateDemoModeResources());
-  std::unique_ptr<DemoModeResourcesRemover> remover =
-      DemoModeResourcesRemover::CreateIfNeeded(&local_state_);
-  ASSERT_TRUE(remover.get());
-
-  AdvanceTestTime(base::TimeDelta::FromMinutes(1));
-
-  remover->OverrideTimeForTesting(
-      &test_clock_,
-      DemoModeResourcesRemover::UsageAccumulationConfig(
-          base::TimeDelta::FromSeconds(4) /*resources_removal_threshold*/,
-          base::TimeDelta::FromSeconds(2) /*update_interval*/,
-          base::TimeDelta::FromSeconds(9) /*idle_threshold*/));
-
-  AddAndLogInUser(TestUserType::kDerelictDemoKiosk, remover.get());
-
-  AdvanceTestTime(base::TimeDelta::FromSeconds(5));
-
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(DemoModeResourcesExist());
-}
-
 TEST_F(ManagedDemoModeResourcesRemoverTest, RemoveOnRegularLogin) {
   ASSERT_TRUE(CreateDemoModeResources());
   std::unique_ptr<DemoModeResourcesRemover> remover =

@@ -27,7 +27,6 @@ class DemoModeDetector {
   // to trigger Demo mode.
   class Observer {
    public:
-    virtual void OnShouldStartDemoMode() {}
     virtual ~Observer() = default;
   };
 

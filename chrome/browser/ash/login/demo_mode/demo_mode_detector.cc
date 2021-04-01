@@ -95,7 +95,6 @@ void DemoModeDetector::OnIdle() {
   if (demo_launched_)
     return;
   demo_launched_ = true;
-  observer_->OnShouldStartDemoMode();
 }
 
 void DemoModeDetector::OnOobeTimerUpdate() {

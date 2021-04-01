@@ -85,8 +85,6 @@ void FakeLoginDisplayHost::StartSignInScreen() {}
 
 void FakeLoginDisplayHost::OnPreferencesChanged() {}
 
-void FakeLoginDisplayHost::StartDemoAppLaunch() {}
-
 void FakeLoginDisplayHost::StartKiosk(const KioskAppId& kiosk_app_id,
                                       bool is_auto_launch) {}
 

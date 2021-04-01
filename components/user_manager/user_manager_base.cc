@@ -176,44 +176,40 @@ void UserManagerBase::UserLoggedIn(const AccountId& account_id,
     return;
   }
 
-  if (IsDemoApp(account_id)) {
-    DemoAccountLoggedIn();
-  } else {
-    switch (user_type) {
-      case USER_TYPE_REGULAR:  // fallthrough
-      case USER_TYPE_CHILD:    // fallthrough
-      case USER_TYPE_ACTIVE_DIRECTORY:
-        if (account_id != GetOwnerAccountId() && !user &&
-            (AreEphemeralUsersEnabled() || browser_restart)) {
-          RegularUserLoggedInAsEphemeral(account_id, user_type);
-        } else {
-          RegularUserLoggedIn(account_id, user_type);
-        }
-        break;
+  switch (user_type) {
+    case USER_TYPE_REGULAR:  // fallthrough
+    case USER_TYPE_CHILD:    // fallthrough
+    case USER_TYPE_ACTIVE_DIRECTORY:
+      if (account_id != GetOwnerAccountId() && !user &&
+          (AreEphemeralUsersEnabled() || browser_restart)) {
+        RegularUserLoggedInAsEphemeral(account_id, user_type);
+      } else {
+        RegularUserLoggedIn(account_id, user_type);
+      }
+      break;
 
-      case USER_TYPE_GUEST:
-        GuestUserLoggedIn();
-        break;
+    case USER_TYPE_GUEST:
+      GuestUserLoggedIn();
+      break;
 
-      case USER_TYPE_PUBLIC_ACCOUNT:
-        PublicAccountUserLoggedIn(
-            user ? user : User::CreatePublicAccountUser(account_id));
-        break;
+    case USER_TYPE_PUBLIC_ACCOUNT:
+      PublicAccountUserLoggedIn(
+          user ? user : User::CreatePublicAccountUser(account_id));
+      break;
 
-        // TODO(crbug/1155729): Remove this case.
-      case USER_TYPE_SUPERVISED_DEPRECATED:
-        NOTREACHED() << "Supervised users are not supported anymore";
-        break;
+      // TODO(crbug/1155729): Remove this case.
+    case USER_TYPE_SUPERVISED_DEPRECATED:
+      NOTREACHED() << "Supervised users are not supported anymore";
+      break;
 
-      case USER_TYPE_KIOSK_APP:
-      case USER_TYPE_ARC_KIOSK_APP:
-      case USER_TYPE_WEB_KIOSK_APP:
-        KioskAppLoggedIn(user);
-        break;
+    case USER_TYPE_KIOSK_APP:
+    case USER_TYPE_ARC_KIOSK_APP:
+    case USER_TYPE_WEB_KIOSK_APP:
+      KioskAppLoggedIn(user);
+      break;
 
-      default:
-        NOTREACHED() << "Unhandled usert type " << user_type;
-    }
+    default:
+      NOTREACHED() << "Unhandled usert type " << user_type;
   }
 
   DCHECK(active_user_);
@@ -657,8 +653,8 @@ bool UserManagerBase::IsUserCryptohomeDataEphemeral(
   if (IsStubAccountId(account_id))
     return false;
 
-  // Data belonging to the guest and demo users is always ephemeral.
-  if (IsGuestAccountId(account_id) || IsDemoApp(account_id))
+  // Data belonging to the guest users is always ephemeral.
+  if (IsGuestAccountId(account_id))
     return true;
 
   // Data belonging to the public accounts is always ephemeral.

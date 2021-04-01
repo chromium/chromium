@@ -207,13 +207,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
 
   // Check for a particular user type.
 
-  // Returns true if |account_id| represents demo app.
-  virtual bool IsDemoApp(const AccountId& account_id) const = 0;
-
   // These methods are called when corresponding user type has signed in.
-
-  // Indicates that the demo account has just logged in.
-  virtual void DemoAccountLoggedIn() = 0;
 
   // Indicates that a user just logged in as guest.
   virtual void GuestUserLoggedIn();

@@ -24,7 +24,6 @@ class AccountId;
 
 namespace chromeos {
 
-class DemoAppLauncher;
 class LoginFeedback;
 
 // LoginDisplayHostCommon contains code which is not specific to a particular UI
@@ -45,7 +44,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   KioskLaunchController* GetKioskLaunchController() final;
   void StartUserAdding(base::OnceClosure completion_callback) final;
   void StartSignInScreen() final;
-  void StartDemoAppLaunch() final;
   void StartKiosk(const KioskAppId& kiosk_app_id, bool is_auto_launch) final;
   void AttemptShowEnableConsumerKioskScreen() final;
   void CompleteLogin(const UserContext& user_context) final;
@@ -101,9 +99,6 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
 
   // Kiosk launch controller.
   std::unique_ptr<KioskLaunchController> kiosk_launch_controller_;
-
-  // Demo app launcher.
-  std::unique_ptr<DemoAppLauncher> demo_app_launcher_;
 
   content::NotificationRegistrar registrar_;
 

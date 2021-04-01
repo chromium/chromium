@@ -34,7 +34,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/ash/login/demo_mode/demo_app_launcher.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service.h"
 #include "chrome/browser/ash/login/enterprise_user_session_metrics.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
@@ -713,10 +712,6 @@ void ChromeUserManagerImpl::PerformPostUserLoggedInActions(
       new SessionLengthLimiter(NULL, browser_restart));
 }
 
-bool ChromeUserManagerImpl::IsDemoApp(const AccountId& account_id) const {
-  return DemoAppLauncher::IsDemoAppSession(account_id);
-}
-
 bool ChromeUserManagerImpl::IsDeviceLocalAccountMarkedForRemoval(
     const AccountId& account_id) const {
   return account_id == AccountId::FromUserEmail(GetLocalState()->GetString(
@@ -897,29 +892,6 @@ void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
       !kiosk_app_id.empty()) {
     KioskAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(kiosk_app_id);
   }
-}
-
-void ChromeUserManagerImpl::DemoAccountLoggedIn() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  active_user_ =
-      user_manager::User::CreateKioskAppUser(user_manager::DemoAccountId());
-  active_user_->SetStubImage(
-      std::make_unique<user_manager::UserImage>(
-          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_LOGIN_DEFAULT_USER)),
-      user_manager::User::USER_IMAGE_INVALID, false);
-  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(
-      user_manager::DemoAccountId());
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitch(::switches::kForceAppMode);
-  command_line->AppendSwitchASCII(::switches::kAppId,
-                                  DemoAppLauncher::kDemoAppId);
-
-  // Disable window animation since the demo app runs in a single full screen
-  // window and window animation causes start-up janks.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      wm::switches::kWindowAnimationsDisabled);
 }
 
 void ChromeUserManagerImpl::NotifyOnLogin() {

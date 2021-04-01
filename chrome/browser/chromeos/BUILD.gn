@@ -1086,8 +1086,6 @@ source_set("chromeos") {
     "../ash/login/chrome_restart_request.h",
     "../ash/login/configuration_keys.cc",
     "../ash/login/configuration_keys.h",
-    "../ash/login/demo_mode/demo_app_launcher.cc",
-    "../ash/login/demo_mode/demo_app_launcher.h",
     "../ash/login/demo_mode/demo_extensions_external_loader.cc",
     "../ash/login/demo_mode/demo_extensions_external_loader.h",
     "../ash/login/demo_mode/demo_mode_detector.cc",

@@ -1090,12 +1090,9 @@ void WizardController::OnHidDetectionScreenExit(
   OnScreenExit(HIDDetectionView::kScreenId,
                HIDDetectionScreen::GetResultString(result));
 
-  if (result == HIDDetectionScreen::Result::START_DEMO) {
-    LoginDisplayHost::default_host()->StartDemoAppLaunch();
-    return;
-  } else if ((result == HIDDetectionScreen::Result::SKIP ||
-              result == HIDDetectionScreen::Result::SKIPPED_FOR_TESTS) &&
-             current_screen_) {
+  if ((result == HIDDetectionScreen::Result::SKIP ||
+       result == HIDDetectionScreen::Result::SKIPPED_FOR_TESTS) &&
+      current_screen_) {
     return;
   }
 
@@ -1106,9 +1103,6 @@ void WizardController::OnWelcomeScreenExit(WelcomeScreen::Result result) {
   OnScreenExit(WelcomeView::kScreenId, WelcomeScreen::GetResultString(result));
 
   switch (result) {
-    case WelcomeScreen::Result::START_DEMO:
-      LoginDisplayHost::default_host()->StartDemoAppLaunch();
-      return;
     case WelcomeScreen::Result::SETUP_DEMO:
       StartDemoModeSetup();
       return;
