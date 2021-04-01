@@ -689,9 +689,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CrossOriginRedirection) {
       PrerenderHost::FinalStatus::kCrossOriginRedirect, 1);
 }
 
-// TODO(https://crbug.com/1158248): Add tests for activation with a redirected
-// URL.
-
 // Makes sure that activation on navigation for an iframes doesn't happen.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, Activation_iFrame) {
   // Navigate to an initial page.
