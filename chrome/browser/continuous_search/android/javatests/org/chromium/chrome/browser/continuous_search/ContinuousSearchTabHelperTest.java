@@ -78,8 +78,8 @@ public class ContinuousSearchTabHelperTest {
             mSearchUrl = url;
             mQuery = query;
             new Handler().postDelayed(() -> {
-                mListener.onResult(new SearchResultMetadata(
-                        mSearchUrl, mQuery, 0, new ArrayList<SearchResultGroup>()));
+                mListener.onResult(new ContinuousNavigationMetadata(
+                        mSearchUrl, mQuery, 0, new ArrayList<PageGroup>()));
             }, 300);
         }
 
@@ -88,12 +88,13 @@ public class ContinuousSearchTabHelperTest {
     }
 
     /**
-     * A {@link SearchResultUserDataObserver} used to wait on events.
+     * A {@link ContinuousNavigationUserDataObserver} used to wait on events.
      */
-    public class WaitableSearchResultUserDataObserver implements SearchResultUserDataObserver {
+    public class WaitableContinuousNavigationUserDataObserver
+            implements ContinuousNavigationUserDataObserver {
         public CallbackHelper mInvalidateCallbackHelper = new CallbackHelper();
         public CallbackHelper mOnUpdateCallbackHelper = new CallbackHelper();
-        public SearchResultMetadata mMetadata;
+        public ContinuousNavigationMetadata mMetadata;
         public GURL mUrl;
         public boolean mOnSrp;
 
@@ -103,7 +104,7 @@ public class ContinuousSearchTabHelperTest {
         }
 
         @Override
-        public void onUpdate(SearchResultMetadata metadata) {
+        public void onUpdate(ContinuousNavigationMetadata metadata) {
             mMetadata = metadata;
             mOnUpdateCallbackHelper.notifyCalled();
         }
@@ -207,14 +208,16 @@ public class ContinuousSearchTabHelperTest {
     @Test
     @MediumTest
     public void testContinuousSearchFakeResults() throws TimeoutException {
-        WaitableSearchResultUserDataObserver observer = new WaitableSearchResultUserDataObserver();
+        WaitableContinuousNavigationUserDataObserver observer =
+                new WaitableContinuousNavigationUserDataObserver();
 
         // Load a SRP URL.
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            SearchResultUserData searchResultUserData = SearchResultUserData.getOrCreateForTab(tab);
-            Assert.assertNotNull(searchResultUserData);
-            searchResultUserData.addObserver(observer);
+            ContinuousNavigationUserData continuousNavigationUserData =
+                    ContinuousNavigationUserData.getOrCreateForTab(tab);
+            Assert.assertNotNull(continuousNavigationUserData);
+            continuousNavigationUserData.addObserver(observer);
         });
         loadUrl(tab,
                 new LoadUrlParams(
@@ -226,10 +229,11 @@ public class ContinuousSearchTabHelperTest {
         // Check the retuned data.
         Assert.assertEquals("cat dog", observer.mMetadata.getQuery());
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> {
-            SearchResultUserData searchResultUserData = SearchResultUserData.getOrCreateForTab(tab);
-            Assert.assertTrue(searchResultUserData.isValid());
+            ContinuousNavigationUserData continuousNavigationUserData =
+                    ContinuousNavigationUserData.getOrCreateForTab(tab);
+            Assert.assertTrue(continuousNavigationUserData.isValid());
             String url = mServer.getURLWithHostName("www.google.com", TEST_URL + "?q=cat+dog");
-            Assert.assertTrue(observer.mMetadata.getResultUrl().getSpec().startsWith(url));
+            Assert.assertTrue(observer.mMetadata.getRootUrl().getSpec().startsWith(url));
             Assert.assertTrue(observer.mUrl.getSpec().startsWith(url));
             Assert.assertTrue(observer.mOnSrp);
         });

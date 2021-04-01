@@ -13,7 +13,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/callback.h"
-#include "chrome/browser/continuous_search/internal/search_result_category.h"
+#include "chrome/browser/continuous_search/internal/page_category.h"
 #include "chrome/browser/continuous_search/internal/search_result_extractor_producer_interface.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/continuous_search/browser/test/fake_search_result_extractor.h"
@@ -179,7 +179,7 @@ TEST_F(SearchResultExtractorProducerRenderViewHostTest, FetchSuccess) {
               OnResultsAvailable(
                   ::testing::_, ::testing::_, EqualsJavaGURL(GURL(kUrl)),
                   EqualsJavaString(kQuery),
-                  static_cast<jint>(SearchResultCategory::kOrganic),
+                  static_cast<jint>(PageCategory::kOrganicSrp),
                   EqualsJavaStringArray(std::vector<std::string>({"Group 1"})),
                   EqualsJavaBooleanArray(std::vector<bool>({false})),
                   EqualsJavaIntArray(std::vector<int>({1})),

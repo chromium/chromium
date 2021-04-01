@@ -25,15 +25,15 @@ import org.chromium.url.GURL;
  * Business logic for the UI component of Continuous Search Navigation. This class updates the UI on
  * search result updates.
  */
-class ContinuousSearchListMediator implements SearchResultUserDataObserver, Callback<Tab> {
+class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserver, Callback<Tab> {
     private final ModelList mModelList;
     private final Callback<Boolean> mSetLayoutVisibility;
     private final ThemeColorProvider mThemeColorProvider;
     private final Resources mResources;
     private Tab mCurrentTab;
     private boolean mOnSrp;
-    private SearchResultUserData mCurrentSearchUserData;
-    private @SearchResultCategory int mResultCategory;
+    private ContinuousNavigationUserData mCurrentUserData;
+    private @PageCategory int mPageCategory;
     private boolean mVisible;
     private boolean mScrolled;
 
@@ -53,7 +53,7 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
         mCurrentTab.loadUrl(params);
 
         RecordHistogram.recordCount100Histogram("Browser.ContinuousSearch.UI.ClickedItemPosition"
-                        + SearchUrlHelper.getHistogramSuffixForResultCategory(mResultCategory),
+                        + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
                 position);
     }
 
@@ -62,17 +62,17 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
      */
     @Override
     public void onResult(Tab tab) {
-        if (mCurrentSearchUserData != null) {
-            mCurrentSearchUserData.removeObserver(this);
-            mCurrentSearchUserData = null;
+        if (mCurrentUserData != null) {
+            mCurrentUserData.removeObserver(this);
+            mCurrentUserData = null;
         }
 
         onInvalidate();
         mCurrentTab = tab;
         if (mCurrentTab == null) return;
 
-        mCurrentSearchUserData = SearchResultUserData.getOrCreateForTab(mCurrentTab);
-        mCurrentSearchUserData.addObserver(this);
+        mCurrentUserData = ContinuousNavigationUserData.getOrCreateForTab(mCurrentTab);
+        mCurrentUserData.addObserver(this);
     }
 
     @Override
@@ -83,22 +83,22 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
     }
 
     @Override
-    public void onUpdate(SearchResultMetadata metadata) {
+    public void onUpdate(ContinuousNavigationMetadata metadata) {
         mModelList.clear();
 
         int linkCount = 0;
-        for (SearchResultGroup group : metadata.getGroups()) {
+        for (PageGroup group : metadata.getGroups()) {
             if (!group.isAdGroup()) {
                 mModelList.add(new ListItem(
                         ListItemType.GROUP_LABEL, generateListItem(group.getLabel(), null, 0)));
             }
             int itemType = group.isAdGroup() ? ListItemType.AD : ListItemType.SEARCH_RESULT;
-            for (SearchResult result : group.getResults()) {
+            for (PageItem result : group.getPageItems()) {
                 mModelList.add(new ListItem(itemType,
                         generateListItem(result.getTitle(), result.getUrl(), linkCount++)));
             }
         }
-        mResultCategory = metadata.getCategory();
+        mPageCategory = metadata.getCategory();
     }
 
     @Override
@@ -146,13 +146,13 @@ class ContinuousSearchListMediator implements SearchResultUserDataObserver, Call
 
     private void recordListScrolled() {
         RecordHistogram.recordBooleanHistogram("Browser.ContinuousSearch.UI.CarouselScrolled"
-                        + SearchUrlHelper.getHistogramSuffixForResultCategory(mResultCategory),
+                        + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
                 mScrolled);
         mScrolled = false;
     }
 
     void destroy() {
-        if (mCurrentSearchUserData != null) mCurrentSearchUserData.removeObserver(this);
+        if (mCurrentUserData != null) mCurrentUserData.removeObserver(this);
     }
 
     void onThemeColorChanged(int color, boolean shouldAnimate) {

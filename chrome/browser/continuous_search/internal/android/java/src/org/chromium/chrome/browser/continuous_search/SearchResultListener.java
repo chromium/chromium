@@ -5,14 +5,14 @@
 package org.chromium.chrome.browser.continuous_search;
 
 /**
- * Listener for new {@link SearchResultMetadata}.
+ * Listener for new {@link ContinuousNavigationMetadata}.
  */
 public interface SearchResultListener {
     /**
      * Called when returning set of results.
      * @param metadata The result data.
      */
-    void onResult(SearchResultMetadata metadata);
+    void onResult(ContinuousNavigationMetadata metadata);
 
     /**
      * Called when there is an error getting results.

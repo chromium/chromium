@@ -58,19 +58,19 @@ public class SearchResultExtractorProducer extends SearchResultProducer {
         if (oldState == State.CANCELLED) return;
 
         int groupOffset = 0;
-        List<SearchResultGroup> groups = new ArrayList<SearchResultGroup>();
+        List<PageGroup> groups = new ArrayList<PageGroup>();
         for (int i = 0; i < groupLabel.length; i++) {
-            List<SearchResult> results = new ArrayList<SearchResult>();
+            List<PageItem> results = new ArrayList<PageItem>();
             for (int j = 0; j < groupSize[i]; j++) {
-                results.add(new SearchResult(urls[groupOffset + j], titles[groupOffset + j]));
+                results.add(new PageItem(urls[groupOffset + j], titles[groupOffset + j]));
             }
             groupOffset += groupSize[i];
 
-            groups.add(new SearchResultGroup(groupLabel[i], isAdGroup[i], results));
+            groups.add(new PageGroup(groupLabel[i], isAdGroup[i], results));
         }
 
-        SearchResultMetadata metadata =
-                new SearchResultMetadata(url, query, resultCategory, groups);
+        ContinuousNavigationMetadata metadata =
+                new ContinuousNavigationMetadata(url, query, resultCategory, groups);
         mListener.onResult(metadata);
     }
 

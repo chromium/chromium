@@ -96,18 +96,19 @@ public class SearchResultExtractorProducerTest {
             return;
         }
 
-        List<SearchResultGroup> groups = new ArrayList<SearchResultGroup>();
-        List<SearchResult> results1 = new ArrayList<SearchResult>();
-        results1.add(new SearchResult(url1, "Foo.com 1"));
-        groups.add(new SearchResultGroup("Foo", false, results1));
-        List<SearchResult> results2 = new ArrayList<SearchResult>();
-        results2.add(new SearchResult(url2, "Bar.com 1"));
-        results2.add(new SearchResult(url3, "Bar.com 2"));
-        results2.add(new SearchResult(url4, "Bar.com 3"));
-        groups.add(new SearchResultGroup("Bar", true, results2));
+        List<PageGroup> groups = new ArrayList<PageGroup>();
+        List<PageItem> results1 = new ArrayList<PageItem>();
+        results1.add(new PageItem(url1, "Foo.com 1"));
+        groups.add(new PageGroup("Foo", false, results1));
+        List<PageItem> results2 = new ArrayList<PageItem>();
+        results2.add(new PageItem(url2, "Bar.com 1"));
+        results2.add(new PageItem(url3, "Bar.com 2"));
+        results2.add(new PageItem(url4, "Bar.com 3"));
+        groups.add(new PageGroup("Bar", true, results2));
 
         verify(mListenerMock, times(1))
-                .onResult(new SearchResultMetadata(mTestUrl, TEST_QUERY, TEST_RESULT_TYPE, groups));
+                .onResult(new ContinuousNavigationMetadata(
+                        mTestUrl, TEST_QUERY, TEST_RESULT_TYPE, groups));
     }
 
     /**

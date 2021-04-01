@@ -12,7 +12,7 @@
 #include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/continuous_search/internal/jni_headers/SearchResultExtractorProducer_jni.h"
-#include "chrome/browser/continuous_search/internal/search_result_category.h"
+#include "chrome/browser/continuous_search/internal/page_category.h"
 #include "chrome/browser/continuous_search/internal/search_result_extractor_producer_interface.h"
 #include "chrome/browser/continuous_search/internal/search_url_helper.h"
 #include "content/public/browser/web_contents.h"
@@ -141,13 +141,13 @@ void SearchResultExtractorProducer::OnResultsCallback(
   // The SearchResultExtractorClient has already verified `document_url` matches
   // the last committed URL of the web contents when the request returned.
   // Document URL must also be a SRP url.
-  DCHECK(GetResultCategoryForUrl(results->document_url) !=
-         SearchResultCategory::kNone);
+  DCHECK(GetSrpPageCategoryForUrl(results->document_url) !=
+         PageCategory::kNone);
   java_interface_->OnResultsAvailable(
       env, java_ref_,
       url::GURLAndroid::FromNativeGURL(env, results->document_url),
       base::android::ConvertUTF8ToJavaString(env, query),
-      static_cast<jint>(GetResultCategoryForUrl(results->document_url)),
+      static_cast<jint>(GetSrpPageCategoryForUrl(results->document_url)),
       base::android::ToJavaArrayOfStrings(env, labels),
       base::android::ToJavaBooleanArray(env, groups_are_ad_type.get(),
                                         results->groups.size()),

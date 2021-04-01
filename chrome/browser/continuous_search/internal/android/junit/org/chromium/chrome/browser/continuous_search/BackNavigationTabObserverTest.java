@@ -55,19 +55,18 @@ public class BackNavigationTabObserverTest {
     private SearchUrlHelper.Natives mSearchUrlHelperJniMock;
 
     private BackNavigationTabObserver mBackNavigationTabObserver;
-    private final @SearchResultCategory int mResultCategory;
+    private final @PageCategory int mPageCategory;
     private final String mHistogramSuffix;
 
-    public BackNavigationTabObserverTest(
-            @SearchResultCategory int resultCategory, String histogramSuffix) {
-        mResultCategory = resultCategory;
+    public BackNavigationTabObserverTest(@PageCategory int pageCategory, String histogramSuffix) {
+        mPageCategory = pageCategory;
         mHistogramSuffix = histogramSuffix;
     }
 
     @ParameterizedRobolectricTestRunner.Parameters
     public static Collection resultCategories() {
         return Arrays.asList(new Object[][] {
-                {SearchResultCategory.ORGANIC, ".Organic"}, {SearchResultCategory.NEWS, ".News"}});
+                {PageCategory.ORGANIC_SRP, ".Organic"}, {PageCategory.NEWS_SRP, ".News"}});
     }
 
     @Before
@@ -96,12 +95,12 @@ public class BackNavigationTabObserverTest {
                 .getQueryIfValidSrpUrl(eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1)));
         doReturn(true).when(mSearchUrlHelperJniMock).isGoogleDomainUrl(eq(searchUrl));
         doReturn(false).when(mSearchUrlHelperJniMock).isGoogleDomainUrl(eq(GURL.emptyGURL()));
-        doReturn(mResultCategory)
+        doReturn(mPageCategory)
                 .when(mSearchUrlHelperJniMock)
-                .getResultCategoryFromUrl(eq(searchUrl));
-        doReturn(mResultCategory)
+                .getSrpPageCategoryFromUrl(eq(searchUrl));
+        doReturn(mPageCategory)
                 .when(mSearchUrlHelperJniMock)
-                .getResultCategoryFromUrl(eq(searchUrl2));
+                .getSrpPageCategoryFromUrl(eq(searchUrl2));
     }
 
     private NavigationEntry createNavigationEntry(GURL url) {
@@ -172,9 +171,9 @@ public class BackNavigationTabObserverTest {
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL)),
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1),
                         JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL)));
-        when(mSearchUrlHelperJniMock.getResultCategoryFromUrl(
+        when(mSearchUrlHelperJniMock.getSrpPageCategoryFromUrl(
                      eq(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL))))
-                .thenReturn(SearchResultCategory.NONE);
+                .thenReturn(PageCategory.NONE);
         navigateThroughEntries(
                 createNavigationEntry(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL)));
 

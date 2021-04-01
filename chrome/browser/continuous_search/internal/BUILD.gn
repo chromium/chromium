@@ -4,8 +4,8 @@
 
 import("//build/config/android/rules.gni")
 
-java_cpp_enum("search_result_category_generated_enum") {
-  sources = [ "search_result_category.h" ]
+java_cpp_enum("page_category_generated_enum") {
+  sources = [ "page_category.h" ]
 }
 
 generate_jni("jni_headers") {
@@ -20,21 +20,21 @@ android_library("java") {
 
   sources = [
     "android/java/src/org/chromium/chrome/browser/continuous_search/BackNavigationTabObserver.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationMetadata.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserData.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataObserver.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabObserver.java",
-    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResult.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/PageGroup.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/PageItem.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducer.java",
-    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultGroup.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListener.java",
-    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultMetadata.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultProducer.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultProducerFactory.java",
-    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultUserData.java",
-    "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultUserDataObserver.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchUrlHelper.java",
   ]
 
   srcjar_deps = [
-    ":search_result_category_generated_enum",
+    ":page_category_generated_enum",
     "//components/continuous_search/browser:search_result_extractor_client_status_generated_enum",
   ]
 
@@ -75,7 +75,7 @@ android_library("junit") {
 
 source_set("internal") {
   sources = [
-    "search_result_category.h",
+    "page_category.h",
     "search_result_extractor_producer.cc",
     "search_result_extractor_producer.h",
     "search_result_extractor_producer_interface.h",

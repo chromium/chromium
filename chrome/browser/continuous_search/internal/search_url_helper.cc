@@ -10,7 +10,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/continuous_search/internal/jni_headers/SearchUrlHelper_jni.h"
-#include "chrome/browser/continuous_search/internal/search_result_category.h"
+#include "chrome/browser/continuous_search/internal/page_category.h"
 #include "components/google/core/common/google_util.h"
 #include "net/base/url_util.h"
 #include "url/android/gurl_android.h"
@@ -46,19 +46,19 @@ JNI_SearchUrlHelper_GetQueryIfValidSrpUrl(
              : base::android::ScopedJavaLocalRef<jstring>();
 }
 
-jint JNI_SearchUrlHelper_GetResultCategoryFromUrl(
+jint JNI_SearchUrlHelper_GetSrpPageCategoryFromUrl(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_gurl) {
   std::unique_ptr<GURL> url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
   if (!url->is_valid())
-    return static_cast<jint>(SearchResultCategory::kNone);
+    return static_cast<jint>(PageCategory::kNone);
 
-  return static_cast<jint>(GetResultCategoryForUrl(*url));
+  return static_cast<jint>(GetSrpPageCategoryForUrl(*url));
 }
 
 base::Optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url) {
   if (!google_util::IsGoogleSearchUrl(url) ||
-      GetResultCategoryForUrl(url) == SearchResultCategory::kNone)
+      GetSrpPageCategoryForUrl(url) == PageCategory::kNone)
     return base::nullopt;
 
   base::StringPiece query_str = url.query_piece();
@@ -76,15 +76,15 @@ base::Optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url) {
   return base::nullopt;
 }
 
-SearchResultCategory GetResultCategoryForUrl(const GURL& url) {
+PageCategory GetSrpPageCategoryForUrl(const GURL& url) {
   std::string value;
   // Organic results tab
   if (!net::GetValueForKeyInQuery(url, "tbm", &value))
-    return SearchResultCategory::kOrganic;
+    return PageCategory::kOrganicSrp;
   // News tab
   if (value == "nws")
-    return SearchResultCategory::kNews;
-  return SearchResultCategory::kNone;
+    return PageCategory::kNewsSrp;
+  return PageCategory::kNone;
 }
 
 }  // namespace continuous_search

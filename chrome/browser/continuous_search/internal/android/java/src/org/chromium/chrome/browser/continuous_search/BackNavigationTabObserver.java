@@ -21,7 +21,7 @@ import org.chromium.url.GURL;
 public class BackNavigationTabObserver extends EmptyTabObserver {
     private GURL mLastVisitedUrl;
     private String mLastSrpUrlQuery;
-    private @SearchResultCategory int mResultCategory;
+    private @PageCategory int mResultCategory;
     private int mBackNavigationCount;
     private boolean mClickedOnResultLink;
 
@@ -42,8 +42,8 @@ public class BackNavigationTabObserver extends EmptyTabObserver {
 
         String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
         if (query != null) {
-            @SearchResultCategory
-            int resultCategory = SearchUrlHelper.getResultCategoryFromUrl(url);
+            @PageCategory
+            int resultCategory = SearchUrlHelper.getSrpPageCategoryFromUrl(url);
             if (query.equals(mLastSrpUrlQuery) && resultCategory == mResultCategory) {
                 // Treat re-navigation to the last seen SRP as a back navigation.
                 mBackNavigationCount++;
@@ -102,7 +102,7 @@ public class BackNavigationTabObserver extends EmptyTabObserver {
         // Record if seen a SRP or it was not abandoned (clicked on at least one result)
         if (mLastSrpUrlQuery != null && mClickedOnResultLink) {
             RecordHistogram.recordCount100Histogram("Browser.ContinuousSearch.BackNavigationToSrp"
-                            + SearchUrlHelper.getHistogramSuffixForResultCategory(mResultCategory),
+                            + SearchUrlHelper.getHistogramSuffixForPageCategory(mResultCategory),
                     mBackNavigationCount);
         }
         mLastSrpUrlQuery = null;

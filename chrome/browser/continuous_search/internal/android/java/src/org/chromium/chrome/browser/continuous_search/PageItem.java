@@ -9,13 +9,13 @@ import org.chromium.url.GURL;
 import java.util.Objects;
 
 /**
- * Holds a single result from the SRP.
+ * Holds a single page info.
  */
-public class SearchResult {
+public class PageItem {
     private GURL mUrl;
     private String mTitle;
 
-    public SearchResult(GURL url, String title) {
+    public PageItem(GURL url, String title) {
         mUrl = url;
         mTitle = title;
     }
@@ -38,9 +38,9 @@ public class SearchResult {
     public boolean equals(Object o) {
         if (o == this) return true;
 
-        if (!(o instanceof SearchResult)) return false;
+        if (!(o instanceof PageItem)) return false;
 
-        SearchResult other = (SearchResult) o;
+        PageItem other = (PageItem) o;
 
         return mUrl.equals(other.mUrl) && mTitle.equals(other.mTitle);
     }

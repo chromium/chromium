@@ -13,31 +13,32 @@ import org.chromium.url.GURL;
 import java.util.HashSet;
 
 /**
- * Per-tab storage of {@link SearchResultMetadata}.
+ * Per-tab storage of {@link ContinuousNavigationMetadata}.
  */
-public class SearchResultUserData implements UserData {
+public class ContinuousNavigationUserData implements UserData {
     public static final int INVALID_POSITION = -2;
     public static final int ON_SRP = -1;
-    private static final Class<SearchResultUserData> USER_DATA_KEY = SearchResultUserData.class;
+    private static final Class<ContinuousNavigationUserData> USER_DATA_KEY =
+            ContinuousNavigationUserData.class;
 
-    private SearchResultMetadata mData;
+    private ContinuousNavigationMetadata mData;
     private HashSet<GURL> mValidUrls;
-    private HashSet<SearchResultUserDataObserver> mObservers = new HashSet<>();
+    private HashSet<ContinuousNavigationUserDataObserver> mObservers = new HashSet<>();
     private GURL mCurrentUrl;
     private int mCurrentPosition = INVALID_POSITION;
 
-    private static SearchResultUserData sInstanceForTesting;
+    private static ContinuousNavigationUserData sInstanceForTesting;
 
-    static SearchResultUserData getOrCreateForTab(Tab tab) {
+    static ContinuousNavigationUserData getOrCreateForTab(Tab tab) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
 
         if (tab.getUserDataHost().getUserData(USER_DATA_KEY) == null) {
-            tab.getUserDataHost().setUserData(USER_DATA_KEY, new SearchResultUserData());
+            tab.getUserDataHost().setUserData(USER_DATA_KEY, new ContinuousNavigationUserData());
         }
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
-    private SearchResultUserData() {}
+    private ContinuousNavigationUserData() {}
 
     /**
      * @return Whether this contains valid data.
@@ -46,7 +47,7 @@ public class SearchResultUserData implements UserData {
         return mData != null;
     }
 
-    void addObserver(SearchResultUserDataObserver observer) {
+    void addObserver(ContinuousNavigationUserDataObserver observer) {
         mObservers.add(observer);
         if (isValid()) {
             observer.onUpdate(mData);
@@ -54,23 +55,23 @@ public class SearchResultUserData implements UserData {
         }
     }
 
-    void removeObserver(SearchResultUserDataObserver observer) {
+    void removeObserver(ContinuousNavigationUserDataObserver observer) {
         mObservers.remove(observer);
     }
 
-    void updateData(SearchResultMetadata metadata, GURL currentUrl) {
+    void updateData(ContinuousNavigationMetadata metadata, GURL currentUrl) {
         mData = metadata;
         mValidUrls = new HashSet<>();
         for (int i = 0; i < mData.getGroups().size(); i++) {
-            SearchResultGroup group = mData.getGroups().get(i);
-            for (int j = 0; j < group.getResults().size(); j++) {
-                mValidUrls.add(group.getResults().get(j).getUrl());
+            PageGroup group = mData.getGroups().get(i);
+            for (int j = 0; j < group.getPageItems().size(); j++) {
+                mValidUrls.add(group.getPageItems().get(j).getUrl());
             }
         }
         updateCurrentUrlInternal(currentUrl, false);
         if (mData == null) return;
 
-        for (SearchResultUserDataObserver observer : mObservers) {
+        for (ContinuousNavigationUserDataObserver observer : mObservers) {
             observer.onUpdate(mData);
             observer.onUrlChanged(mCurrentUrl, isMatchingSrp(mCurrentUrl));
         }
@@ -80,7 +81,7 @@ public class SearchResultUserData implements UserData {
         mData = null;
         mValidUrls = null;
         mCurrentUrl = null;
-        for (SearchResultUserDataObserver observer : mObservers) {
+        for (ContinuousNavigationUserDataObserver observer : mObservers) {
             observer.onInvalidate();
         }
     }
@@ -108,7 +109,7 @@ public class SearchResultUserData implements UserData {
 
         if (!notify) return;
 
-        for (SearchResultUserDataObserver observer : mObservers) {
+        for (ContinuousNavigationUserDataObserver observer : mObservers) {
             observer.onUrlChanged(url, onSrp);
         }
     }
@@ -116,11 +117,11 @@ public class SearchResultUserData implements UserData {
     private boolean isMatchingSrp(GURL url) {
         String query = SearchUrlHelper.getQueryIfValidSrpUrl(url);
         return query != null && query.equals(mData.getQuery())
-                && SearchUrlHelper.getResultCategoryFromUrl(url) == mData.getCategory();
+                && SearchUrlHelper.getSrpPageCategoryFromUrl(url) == mData.getCategory();
     }
 
     @VisibleForTesting
-    static void setInstanceForTesting(SearchResultUserData instance) {
+    static void setInstanceForTesting(ContinuousNavigationUserData instance) {
         sInstanceForTesting = instance;
     }
 }

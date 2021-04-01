@@ -12,22 +12,22 @@ import java.util.Objects;
 /**
  * A class that holds the extracted data from a SRP.
  */
-public class SearchResultMetadata {
-    private final GURL mResultUrl;
+public class ContinuousNavigationMetadata {
+    private final GURL mRootUrl;
     private final String mQuery;
-    private final @SearchResultCategory int mCategory;
-    private final List<SearchResultGroup> mGroups;
+    private final @PageCategory int mCategory;
+    private final List<PageGroup> mGroups;
 
-    SearchResultMetadata(GURL url, String query, @SearchResultCategory int category,
-            List<SearchResultGroup> groups) {
-        mResultUrl = url;
+    ContinuousNavigationMetadata(
+            GURL url, String query, @PageCategory int category, List<PageGroup> groups) {
+        mRootUrl = url;
         mQuery = query;
         mCategory = category;
         mGroups = groups;
     }
 
-    GURL getResultUrl() {
-        return mResultUrl;
+    GURL getRootUrl() {
+        return mRootUrl;
     }
 
     String getQuery() {
@@ -38,7 +38,7 @@ public class SearchResultMetadata {
         return mCategory;
     }
 
-    List<SearchResultGroup> getGroups() {
+    List<PageGroup> getGroups() {
         return mGroups;
     }
 
@@ -46,15 +46,15 @@ public class SearchResultMetadata {
     public boolean equals(Object o) {
         if (o == this) return true;
 
-        if (!(o instanceof SearchResultMetadata)) return false;
+        if (!(o instanceof ContinuousNavigationMetadata)) return false;
 
-        SearchResultMetadata other = (SearchResultMetadata) o;
-        return mResultUrl.equals(other.mResultUrl) && mQuery.equals(other.mQuery)
+        ContinuousNavigationMetadata other = (ContinuousNavigationMetadata) o;
+        return mRootUrl.equals(other.mRootUrl) && mQuery.equals(other.mQuery)
                 && mCategory == other.mCategory && mGroups.equals(other.mGroups);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mResultUrl, mQuery, mCategory, mGroups);
+        return Objects.hash(mRootUrl, mQuery, mCategory, mGroups);
     }
 }

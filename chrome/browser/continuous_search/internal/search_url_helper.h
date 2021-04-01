@@ -8,14 +8,14 @@
 #include <string>
 
 #include "base/optional.h"
-#include "chrome/browser/continuous_search/internal/search_result_category.h"
+#include "chrome/browser/continuous_search/internal/page_category.h"
 #include "url/gurl.h"
 
 namespace continuous_search {
 
 base::Optional<std::string> ExtractSearchQueryIfValidUrl(const GURL& url);
 
-SearchResultCategory GetResultCategoryForUrl(const GURL& url);
+PageCategory GetSrpPageCategoryForUrl(const GURL& url);
 
 }  // namespace continuous_search
 

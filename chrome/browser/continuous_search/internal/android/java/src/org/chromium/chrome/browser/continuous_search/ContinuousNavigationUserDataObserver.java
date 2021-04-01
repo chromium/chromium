@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.continuous_search;
 import org.chromium.url.GURL;
 
 /**
- * Interface for classes which need to observe a {@link SearchResultUserData}.
+ * Interface for classes which need to observe a {@link ContinuousNavigationUserData}.
  */
-public interface SearchResultUserDataObserver {
+public interface ContinuousNavigationUserDataObserver {
     /**
      * Called when the underlying data is no longer valid.
      */
@@ -18,7 +18,7 @@ public interface SearchResultUserDataObserver {
     /**
      * Called when the underlying data has entirely changed.
      */
-    void onUpdate(SearchResultMetadata metadata);
+    void onUpdate(ContinuousNavigationMetadata metadata);
 
     /**
      * Called when a new page is loaded that is in the data set.

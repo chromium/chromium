@@ -8,17 +8,17 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * A class that holds a group of related {@link SearchResult}s.
+ * A class that holds a group of related {@link PageItem}s.
  */
-public class SearchResultGroup {
+public class PageGroup {
     private final String mLabel;
     private final boolean mIsAdGroup;
-    private final List<SearchResult> mResults;
+    private final List<PageItem> mPageItems;
 
-    SearchResultGroup(String label, boolean isAdGroup, List<SearchResult> results) {
+    PageGroup(String label, boolean isAdGroup, List<PageItem> pageItems) {
         mLabel = label;
         mIsAdGroup = isAdGroup;
-        mResults = results;
+        mPageItems = pageItems;
     }
 
     String getLabel() {
@@ -29,24 +29,24 @@ public class SearchResultGroup {
         return mIsAdGroup;
     }
 
-    List<SearchResult> getResults() {
-        return mResults;
+    List<PageItem> getPageItems() {
+        return mPageItems;
     }
 
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
 
-        if (!(o instanceof SearchResultGroup)) return false;
+        if (!(o instanceof PageGroup)) return false;
 
-        SearchResultGroup other = (SearchResultGroup) o;
+        PageGroup other = (PageGroup) o;
 
         return mLabel.equals(other.mLabel) && mIsAdGroup == other.mIsAdGroup
-                && mResults.equals(other.mResults);
+                && mPageItems.equals(other.mPageItems);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(mLabel, mIsAdGroup, mResults);
+        return Objects.hash(mLabel, mIsAdGroup, mPageItems);
     }
 }
