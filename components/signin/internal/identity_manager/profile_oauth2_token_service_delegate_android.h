@@ -30,28 +30,11 @@ class ProfileOAuth2TokenServiceDelegateAndroid
     : public ProfileOAuth2TokenServiceDelegate {
  public:
   ProfileOAuth2TokenServiceDelegateAndroid(
-      AccountTrackerService* account_tracker_service,
-      const base::android::JavaRef<jobject>& account_manager_facade);
+      AccountTrackerService* account_tracker_service);
   ~ProfileOAuth2TokenServiceDelegateAndroid() override;
-
-  // Creates a new instance of the ProfileOAuth2TokenServiceDelegateAndroid.
-  static ProfileOAuth2TokenServiceDelegateAndroid* Create();
 
   // Returns a reference to the corresponding Java OAuth2TokenService object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
-
-  // Called by the TestingProfile class to disable account validation in
-  // tests.  This prevents the token service from building the java objects
-  // which require prior initialization (AccountManagerFacade)
-  // TODO(crbug.com/1009957) Remove disable_interation_with_system_accounts_
-  // from ProfileOAuth2TokenServiceDelegateAndroid
-  static void set_disable_interaction_with_system_accounts() {
-    disable_interaction_with_system_accounts_ = true;
-  }
-
-  static bool get_disable_interaction_with_system_accounts() {
-    return disable_interaction_with_system_accounts_;
-  }
 
   // ProfileOAuth2TokenServiceDelegate overrides:
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
@@ -142,12 +125,6 @@ class ProfileOAuth2TokenServiceDelegateAndroid
 
   AccountTrackerService* account_tracker_service_;
   RefreshTokenLoadStatus fire_refresh_token_loaded_;
-
-  // For testing, disables the creation of the java counterpart, see
-  // set_disable_interaction_with_system_accounts().
-  // TODO(crbug.com/1009957) Remove disable_interation_with_system_accounts_
-  // from ProfileOAuth2TokenServiceDelegateAndroid
-  static bool disable_interaction_with_system_accounts_;
 
   DISALLOW_COPY_AND_ASSIGN(ProfileOAuth2TokenServiceDelegateAndroid);
 };

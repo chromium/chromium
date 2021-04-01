@@ -15,6 +15,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AuthException;
@@ -55,24 +56,16 @@ final class ProfileOAuth2TokenServiceDelegate {
     private final AccountTrackerService mAccountTrackerService;
     private final AccountManagerFacade mAccountManagerFacade;
 
-    private ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegate,
-            AccountTrackerService accountTrackerService,
-            AccountManagerFacade accountManagerFacade) {
+    @VisibleForTesting
+    @CalledByNative
+    ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegate,
+            AccountTrackerService accountTrackerService) {
         assert nativeProfileOAuth2TokenServiceDelegate
                 != 0 : "nativeProfileOAuth2TokenServiceDelegate should not be zero!";
         assert accountTrackerService != null : "accountTrackerService should not be null!";
         mNativeProfileOAuth2TokenServiceDelegate = nativeProfileOAuth2TokenServiceDelegate;
         mAccountTrackerService = accountTrackerService;
-        mAccountManagerFacade = accountManagerFacade;
-    }
-
-    @VisibleForTesting
-    @CalledByNative
-    static ProfileOAuth2TokenServiceDelegate create(long nativeProfileOAuth2TokenServiceDelegate,
-            AccountTrackerService accountTrackerService,
-            AccountManagerFacade accountManagerFacade) {
-        return new ProfileOAuth2TokenServiceDelegate(nativeProfileOAuth2TokenServiceDelegate,
-                accountTrackerService, accountManagerFacade);
+        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
     }
 
     /**

@@ -31,6 +31,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccessTokenData;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
@@ -104,8 +105,9 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @Before
     public void setUp() {
         mocker.mock(ProfileOAuth2TokenServiceDelegateJni.TEST_HOOKS, mNativeMock);
-        mDelegate = ProfileOAuth2TokenServiceDelegate.create(
-                NATIVE_DELEGATE, mAccountTrackerServiceMock, mAccountManagerFacade);
+        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
+        mDelegate =
+                new ProfileOAuth2TokenServiceDelegate(NATIVE_DELEGATE, mAccountTrackerServiceMock);
     }
 
     @Test

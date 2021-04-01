@@ -173,6 +173,8 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [ "profile_oauth2_token_service_delegate_android_unittest.cc" ]
+
+    deps += [ "//components/signin/public/identity_manager:test_support" ]
   }
 
   if (is_chromeos_ash) {

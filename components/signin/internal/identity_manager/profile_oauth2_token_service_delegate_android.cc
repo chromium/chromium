@@ -141,15 +141,9 @@ std::string AndroidAccessTokenFetcher::CombineScopes(
 
 }  // namespace
 
-// TODO(crbug.com/1009957) Remove disable_interation_with_system_accounts_
-// from ProfileOAuth2TokenServiceDelegateAndroid
-bool ProfileOAuth2TokenServiceDelegateAndroid::
-    disable_interaction_with_system_accounts_ = false;
-
 ProfileOAuth2TokenServiceDelegateAndroid::
     ProfileOAuth2TokenServiceDelegateAndroid(
-        AccountTrackerService* account_tracker_service,
-        const base::android::JavaRef<jobject>& account_manager_facade)
+        AccountTrackerService* account_tracker_service)
     : account_tracker_service_(account_tracker_service),
       fire_refresh_token_loaded_(RT_LOAD_NOT_START) {
   DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::ctor";
@@ -157,9 +151,9 @@ ProfileOAuth2TokenServiceDelegateAndroid::
 
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> local_java_ref =
-      signin::Java_ProfileOAuth2TokenServiceDelegate_create(
+      signin::Java_ProfileOAuth2TokenServiceDelegate_Constructor(
           env, reinterpret_cast<intptr_t>(this),
-          account_tracker_service_->GetJavaObject(), account_manager_facade);
+          account_tracker_service_->GetJavaObject());
   java_ref_.Reset(env, local_java_ref.obj());
 
   if (account_tracker_service_->GetMigrationState() ==
@@ -187,10 +181,6 @@ ProfileOAuth2TokenServiceDelegateAndroid::GetJavaObject() {
 
 bool ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable(
     const CoreAccountId& account_id) const {
-  DCHECK(!disable_interaction_with_system_accounts_)
-      << __FUNCTION__
-      << " needs to interact with system accounts and cannot be used with "
-         "disable_interaction_with_system_accounts_";
   DVLOG(1)
       << "ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable"
       << " account= " << account_id;
@@ -248,10 +238,6 @@ ProfileOAuth2TokenServiceDelegateAndroid::GetAccounts() const {
 
 std::vector<std::string>
 ProfileOAuth2TokenServiceDelegateAndroid::GetSystemAccountNames() {
-  DCHECK(!disable_interaction_with_system_accounts_)
-      << __FUNCTION__
-      << " needs to interact with system accounts and cannot be used with "
-         "disable_interaction_with_system_accounts_";
   std::vector<std::string> account_names;
   JNIEnv* env = AttachCurrentThread();
 
@@ -313,10 +299,6 @@ void ProfileOAuth2TokenServiceDelegateAndroid::OnAccessTokenInvalidated(
     const std::string& client_id,
     const OAuth2AccessTokenManager::ScopeSet& scopes,
     const std::string& access_token) {
-  DCHECK(!disable_interaction_with_system_accounts_)
-      << __FUNCTION__
-      << " needs to interact with system accounts and cannot be used with "
-         "disable_interaction_with_system_accounts_";
   ValidateAccountId(account_id);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_access_token =
