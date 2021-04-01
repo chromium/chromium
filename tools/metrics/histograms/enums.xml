@@ -53119,6 +53119,18 @@ Called by update_use_counter_css.py.-->
   <int value="7" label="Media unavailable"/>
   <int value="8" label="Not enough space"/>
   <int value="9" label="Unsupported attachment type"/>
+  <int value="10" label="Decode advertisement failed"/>
+  <int value="11" label="Missing transfer update callback"/>
+  <int value="12" label="Missing share target"/>
+  <int value="13" label="Missing endpoint id"/>
+  <int value="14" label="Missing payloads"/>
+  <int value="15" label="Paired key verification failed"/>
+  <int value="16" label="Invalid introduction frame"/>
+  <int value="17" label="Incomplete payloads"/>
+  <int value="18" label="Failed to create share target"/>
+  <int value="19" label="Failed to initiate outgoing connection"/>
+  <int value="20" label="Failed to read outgoing connection response"/>
+  <int value="21" label="Unexpected disconnection"/>
 </enum>
 
 <enum name="NearbyShareTransferNotCompletedReason">
