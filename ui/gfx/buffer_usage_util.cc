@@ -28,6 +28,8 @@ const char* BufferUsageToString(BufferUsage usage) {
       return "SCANOUT_VEA_CPU_READ";
     case BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE:
       return "VEA_READ_CAMERA_AND_CPU_READ_WRITE";
+    case BufferUsage::SCANOUT_FRONT_RENDERING:
+      return "SCANOUT_FRONT_RENDERING";
   }
   return "Invalid Usage";
 }

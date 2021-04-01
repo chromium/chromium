@@ -43,6 +43,7 @@ GpuMemoryBufferConfigurationSet GetNativeGpuMemoryBufferConfigurations(
       gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
       gfx::BufferUsage::SCANOUT_VEA_CPU_READ,
       gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+      gfx::BufferUsage::SCANOUT_FRONT_RENDERING,
   };
 
   for (auto format : kBufferFormats) {

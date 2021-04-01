@@ -109,6 +109,7 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
              format == gfx::BufferFormat::BGRA_8888 ||
              format == gfx::BufferFormat::RGBA_1010102 ||
              format == gfx::BufferFormat::BGRA_1010102;
+    case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
     case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
       // TODO(crbug.com/954233): RG_88 is enabled only with
       // --enable-native-gpu-memory-buffers . Otherwise it breaks some telemetry

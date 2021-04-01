@@ -37,9 +37,15 @@ uint32_t BufferUsageToGbmFlags(gfx::BufferUsage usage) {
       return GBM_BO_USE_LINEAR | GBM_BO_USE_CAMERA_WRITE |
              GBM_BO_USE_TEXTURING | GBM_BO_USE_HW_VIDEO_ENCODER |
              GBM_BO_USE_SW_READ_OFTEN;
-    default:
+    case gfx::BufferUsage::SCANOUT_FRONT_RENDERING:
+// TODO(sashamcintosh): remove after crrev.com/c/2450927 is upreved
+#ifdef GBM_BO_USE_FRONT_RENDERING
+      return GBM_BO_USE_SCANOUT | GBM_BO_USE_TEXTURING |
+             GBM_BO_USE_FRONT_RENDERING;
+#else
       NOTREACHED();
       return 0;
+#endif
   }
 }
 
