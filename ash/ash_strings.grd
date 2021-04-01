@@ -192,7 +192,7 @@ This file contains the strings for ash.
         Learn more
       </message>
       <message name="IDS_EXO_UI_LOCK_NOTIFICATION_BUBBLE_MESSAGE" desc="The text string prompting users on how to exit non-immersive fullscreen mode.">
-        Press and hold [Esc] to exit.
+        Press and hold [Esc] to exit full screen
       </message>
 
       <!-- Status tray items -->

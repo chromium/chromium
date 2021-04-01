@@ -23,11 +23,16 @@
 #include "ui/views/widget/widget.h"
 
 namespace exo {
+namespace {
+
+constexpr int kPaddingTop = 100;
+
+}  // namespace
 
 UILockBubbleView::~UILockBubbleView() = default;
 
 UILockBubbleView::UILockBubbleView(views::View* anchor_view)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::FLOAT) {
+    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_CENTER) {
   set_margins(views::LayoutProvider::Get()->GetInsetsMetric(
       views::InsetsMetric::INSETS_DIALOG));
   SetCanActivate(false);
@@ -43,6 +48,7 @@ UILockBubbleView::UILockBubbleView(views::View* anchor_view)
   text_label->SetBackgroundColor(SK_ColorBLACK);
   text_label->SetAutoColorReadabilityEnabled(true);
   text_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+  set_anchor_view_insets(gfx::Insets(kPaddingTop, 0, 0, 0));
 }
 
 // TODO(crbug.com/1178861): Refactor this functionality to be provided by Ash
