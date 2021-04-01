@@ -1295,6 +1295,10 @@ body.taking.video #panel-container {
   width: 48px;
 }
 
+#panel-container button:disabled {
+  opacity: 0.38;
+}
+
 .body:not(.HAS_PAN_SUPPORT) :is(#pan-left, #pan-right),
 .body:not(.HAS_TILT_SUPPORT) :is(#tilt-up, #tilt-down),
 .body:not(.HAS_ZOOM_SUPPORT) :is(#zoom-in, #zoom-out) {
@@ -1451,8 +1455,7 @@ body.has-pan-support.has-tilt-support.has-zoom-support #panel-container {
   width: 192px;
 }
 
-/* TODO(b/172881094): Polish focusd, active, disabled visual look of clipped
- button. */
+/* TODO(b/172881094): Polish focusd, active visual look of clipped button. */
 
 body.has-pan-support.has-tilt-support.has-zoom-support #panel-container button {
   height: 100%;
