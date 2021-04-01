@@ -4860,9 +4860,9 @@
             ],
             "experiments": [
                 {
-                    "name": "10MS",
+                    "name": "100MS",
                     "params": {
-                        "BufferTimerDelayMillis": "10"
+                        "BufferTimerDelayMillis": "100"
                     },
                     "enable_features": [
                         "PageLoadMetricsTimerDelay"
