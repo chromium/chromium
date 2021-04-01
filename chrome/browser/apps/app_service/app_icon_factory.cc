@@ -1155,8 +1155,7 @@ void ArcRawIconPngDataToImageSkia(
   if (!icon->is_adaptive_icon) {
     base::UmaHistogramBoolean("Arc.AdaptiveIconLoad.FromNonArcAppIcon", false);
 
-    if (!icon->icon_png_data.has_value() ||
-        icon->icon_png_data.value().empty()) {
+    if (!icon->icon_png_data.has_value()) {
       std::move(callback).Run(gfx::ImageSkia());
       return;
     }
