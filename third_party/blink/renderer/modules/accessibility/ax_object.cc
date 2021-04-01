@@ -1506,12 +1506,17 @@ void AXObject::SerializeColorAttributes(ui::AXNodeData* node_data) {
 }
 
 void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) {
-  AXObject* parent = ParentObjectUnignored();
-  if (FontFamily().length()) {
-    if (!parent || parent->FontFamily() != FontFamily()) {
+  // Only serialize font family if there is one, and it is different from the
+  // parent. Use the value from computed style first since that is a fast lookup
+  // and comparison, and serialize the user-friendly name at points in the tree
+  // where the font family changes between parent/child.
+  const AtomicString& computed_family = ComputedFontFamily();
+  if (computed_family.length()) {
+    AXObject* parent = ParentObjectUnignored();
+    if (!parent || parent->ComputedFontFamily() != computed_family) {
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kFontFamily,
-          FontFamily().Utf8());
+          FontFamilyForSerialization().Utf8());
     }
   }
 

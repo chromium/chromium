@@ -128,7 +128,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   RGBA32 ColorValue() const final;
   RGBA32 GetColor() const final;
   RGBA32 BackgroundColor() const override;
-  String FontFamily() const final;
+  const AtomicString& ComputedFontFamily() const final;
+  String FontFamilyForSerialization() const final;
   // Font size is in pixels.
   float FontSize() const final;
   float FontWeight() const final;

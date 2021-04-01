@@ -2266,18 +2266,32 @@ RGBA32 AXNodeObject::GetColor() const {
   return color.Rgb();
 }
 
-String AXNodeObject::FontFamily() const {
+const AtomicString& AXNodeObject::ComputedFontFamily() const {
   if (!GetLayoutObject())
-    return AXObject::FontFamily();
+    return AXObject::ComputedFontFamily();
 
   const ComputedStyle* style = GetLayoutObject()->Style();
   if (!style)
-    return AXObject::FontFamily();
+    return AXObject::ComputedFontFamily();
+
+  const FontDescription& font_description = style->GetFontDescription();
+  return font_description.FirstFamily().Family();
+}
+
+String AXNodeObject::FontFamilyForSerialization() const {
+  if (!GetLayoutObject())
+    return AXObject::FontFamilyForSerialization();
+
+  const ComputedStyle* style = GetLayoutObject()->Style();
+  if (!style)
+    return AXObject::FontFamilyForSerialization();
 
   const SimpleFontData* primary_font = style->GetFont().PrimaryFont();
   if (!primary_font)
-    return AXObject::FontFamily();
+    return AXObject::FontFamilyForSerialization();
 
+  // Note that repeatedly querying this can be expensive - only use this when
+  // serializing. For other comparisons consider using `ComputedFontFamily`.
   return primary_font->PlatformData().FontFamilyName();
 }
 
