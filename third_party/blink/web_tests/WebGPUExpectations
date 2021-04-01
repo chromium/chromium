@@ -19,39 +19,7 @@
 # external/wpt/webgpu/cts.html, as the latter is not run.
 # ****************************************************************************
 
-###
-### Test file splits. These expectations should all be Pass, but they tell
-### regenerate_internal_cts_html.sh to run them (and siblings) as separate tests.
-###
-
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,copyTextureToTexture:copy_ranges_with_compressed_texture_formats:format="bc1-rgba-unorm";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,color_format,* [ Pass Slow ]
-
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,array:format="bc1-rgba-unorm";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,compressed,non_array:format="bc1-rgba-unorm";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,array:format="rgba8unorm";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,command_buffer,copyTextureToTexture:color_textures,non_compressed,non_array:format="rgba8unorm";* [ Pass ]
-
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="rgba8unorm";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="CopyToTexture";format="rgba8unorm";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rgba8unorm";* [ Pass ]
-
-wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=false;indirect=false;* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,execution,robust_access_vertex:vertexAccess:indexed=true;indirect=false;* [ Pass ]
-
-wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0033:variableOrConstant="var";lhsContainerType="_undef_";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0033:variableOrConstant="const";lhsContainerType="_undef_";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0038:storageClass="in";containerType="_undef_";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0038:storageClass="out";containerType="_undef_";* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:shader,validation,variable_and_const:v_0038:storageClass="private";containerType="_undef_";* [ Pass ]
-
-# Combined with a Failure because we need both Failure and a test split. The linter doesn't let these conflict. The problem will go away when we have a separate file for splits.
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="1d";* [ Pass Failure ]
-
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,default_value_and_smallest_size,* [ Pass ]
-
-# Combined with a Failure because we need both Failure and a test split. The linter doesn't let these conflict. The problem will go away when we have a separate file for splits.
-wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:dimension="1d";* [ Pass Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,attachment_compatibility:render_pass_or_bundle_and_pipeline,color_format,* [ Slow ]
 
 ###
 ### Untriaged failures
@@ -96,10 +64,6 @@ crbug.com/1161355 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,co
 # Fails on Windows for non-zero first/firstInstance.
 crbug.com/dawn/720 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:* [ Slow Failure ]
 
-# Test splits here must come after the previous suppression.
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=0;count=0;* [ Pass ]
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:first=3;count=0;* [ Pass ]
-
 # Only on Mac Intel
 crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:arguments:indirect=true;base_vertex=9;* [ Failure ]
 
@@ -119,9 +83,6 @@ crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,r
 # Win missing resource state D3D12_RESOURCE_STATE_DEPTH_WRITE
 crbug.com/dawn/603 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="DepthTest";* [ Failure Crash Timeout ]
 crbug.com/dawn/603 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="StencilTest";* [ Failure Crash Timeout ]
-
-# Test split here must come after the previous suppression.
-wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="DepthTest";format="depth32float";* [ Pass ]
 
 # Only on Mac Intel
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="CopyToBuffer";format="depth32float";mipLevelCount=5;sliceCount=7;* [ Failure ]
@@ -271,7 +232,7 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,uncompressed_format:format="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,2d_texture,uncompressed_format:format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_size,3d_texture,* [ Failure ]
-# Combined with a test split at the top of the file. wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:dimension="1d";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:dimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:dimension="3d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:format="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:texture_usage:format="depth16unorm";* [ Failure ]
@@ -279,7 +240,7 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,buffer_textur
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,buffer_texture_copies:depth_stencil_format,copy_buffer_size:format="stencil8";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="DepthTest";format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="StencilTest";format="stencil8";* [ Failure ]
-# Combined with a test split at the top of the file. wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="1d";* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="1d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:dimension="3d";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:format="depth16unorm";* [ Failure ]
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,valid_sampleCount_with_other_parameter_varies:format="stencil8";* [ Failure ]

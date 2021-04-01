@@ -29,6 +29,8 @@ echo 'Extracting expectation names...'
 third_party/webgpu-cts/scripts/extract_expectation_names_for_variant_generation.py \
     third_party/blink/web_tests/WebGPUExpectations > $expectations
 
+cat third_party/blink/web_tests/webgpu/internal_cts_test_splits.txt >> $expectations
+
 pushd third_party/webgpu-cts/src > /dev/null
 
   echo 'Updating node for webgpu-cts...'
