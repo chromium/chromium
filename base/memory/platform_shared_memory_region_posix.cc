@@ -6,13 +6,11 @@
 
 #include <fcntl.h>
 #include <sys/mman.h>
-#include <sys/stat.h>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
@@ -189,29 +187,6 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
                                                size_t size,
                                                void** memory,
                                                size_t* mapped_size) const {
-  // Validate the underlying file's size first. OSes like Linux will still allow
-  // mmap() to succeed even if the requested offset + size exceeds the file's
-  // size. In such cases we find ourselves with an apparent region of
-  // `mapped_size` bytes that -- while legally addressable -- is only partially
-  // mapped to physical memory. Attempts by application code to then address the
-  // physically unmapped portion will assert a SIGBUS.
-  //
-  // This check ensures that we only succeed if the file was of sufficient size
-  // at call time, which in turn ensures that we only indicate success when the
-  // full range of `mapped_size` bytes would be safely addressable without
-  // incurring any faults. This matches the expectations upheld by other
-  // platform implementations.
-  struct stat status;
-  int result = fstat(handle_.fd.get(), &status);
-  if (result != 0) {
-    DPLOG(ERROR) << "fstat failed on shared memory object " << handle_.fd.get();
-    return false;
-  }
-  if (status.st_size <
-      base::ClampAdd(base::saturated_cast<off_t>(size), offset)) {
-    return false;
-  }
-
   bool write_allowed = mode_ != Mode::kReadOnly;
   *memory = mmap(nullptr, size, PROT_READ | (write_allowed ? PROT_WRITE : 0),
                  MAP_SHARED, handle_.fd.get(), offset);
@@ -223,16 +198,6 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
   }
 
   *mapped_size = size;
-  return true;
-}
-
-// static
-bool PlatformSharedMemoryRegion::Unmap(void* memory, size_t mapped_size) {
-  if (munmap(memory, mapped_size) < 0) {
-    DPLOG(ERROR) << "munmap";
-    return false;
-  }
-
   return true;
 }
 
