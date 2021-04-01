@@ -3174,6 +3174,9 @@ enum WebFeature {
   kOpenWebDatabaseThirdPartyContext = 3865,
   kPointerId = 3866,
   kTransform3dScene = 3867,
+  kPrefersColorSchemeMediaFeature = 3868,
+  kPrefersContrastMediaFeature = 3869,
+  kForcedColorsMediaFeature = 3870,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

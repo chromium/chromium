@@ -32013,6 +32013,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3865" label="OpenWebDatabaseThirdPartyContext"/>
   <int value="3866" label="PointerId"/>
   <int value="3867" label="Transform3dScene"/>
+  <int value="3868" label="PrefersColorSchemeMediaFeature"/>
+  <int value="3869" label="PrefersContrastMediaFeature"/>
+  <int value="3870" label="ForcedColorsMediaFeature"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

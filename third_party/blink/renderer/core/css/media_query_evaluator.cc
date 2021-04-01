@@ -878,6 +878,9 @@ static bool PrefersColorSchemeMediaFeatureEval(
     const MediaQueryExpValue& value,
     MediaFeaturePrefix,
     const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kPrefersColorSchemeMediaFeature);
+
   auto preferred_scheme = media_values.GetPreferredColorScheme();
 
   if (!value.IsValid())
@@ -895,6 +898,9 @@ static bool PrefersColorSchemeMediaFeatureEval(
 static bool PrefersContrastMediaFeatureEval(const MediaQueryExpValue& value,
                                             MediaFeaturePrefix,
                                             const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kPrefersContrastMediaFeature);
+
   auto preferred_contrast = media_values.GetPreferredContrast();
   ForcedColors forced_colors = media_values.GetForcedColors();
 
@@ -926,6 +932,9 @@ static bool PrefersContrastMediaFeatureEval(const MediaQueryExpValue& value,
 static bool ForcedColorsMediaFeatureEval(const MediaQueryExpValue& value,
                                          MediaFeaturePrefix,
                                          const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kForcedColorsMediaFeature);
+
   ForcedColors forced_colors = media_values.GetForcedColors();
 
   if (!value.IsValid())
