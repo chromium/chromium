@@ -32018,6 +32018,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3868" label="PrefersColorSchemeMediaFeature"/>
   <int value="3869" label="PrefersContrastMediaFeature"/>
   <int value="3870" label="ForcedColorsMediaFeature"/>
+  <int value="3871" label="PaymentRequestCSPViolation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

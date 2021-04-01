@@ -706,10 +706,8 @@ void ValidateAndConvertPaymentMethodData(
     if (url.IsValid() &&
         !execution_context.GetContentSecurityPolicy()->AllowConnectToSource(
             url, url, RedirectStatus::kNoRedirect)) {
-      exception_state.ThrowRangeError(
-          payment_method_data->supportedMethod() +
-          " payment method identifier violates Content Security Policy.");
-      return;
+      UseCounter::Count(&execution_context,
+                        WebFeature::kPaymentRequestCSPViolation);
     }
 
     method_names.insert(payment_method_data->supportedMethod());
