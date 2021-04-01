@@ -45,6 +45,13 @@ InlineLoginDialogChromeOS* dialog = nullptr;
 constexpr int kSigninDialogWidth = 768;
 constexpr int kSigninDialogHeight = 640;
 
+// The EDU Coexistence signin dialog uses different dimensions
+// that match the dimensions of the equivalent OOBE
+// dialog, and are required for the size of the web content
+// that the dialog hosts.
+constexpr int kEduCoexistenceSigninDialogWidth = 1040;
+constexpr int kEduCoexistenceSigninDialogHeight = 680;
+
 bool IsDeviceAccountEmail(const std::string& email) {
   auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
   return active_user &&
@@ -192,6 +199,16 @@ InlineLoginDialogChromeOS::~InlineLoginDialogChromeOS() {
 void InlineLoginDialogChromeOS::GetDialogSize(gfx::Size* size) const {
   const display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(dialog_window());
+
+  if (ProfileManager::GetActiveUserProfile()->IsChild() &&
+      base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)) {
+    size->SetSize(
+        std::min(kEduCoexistenceSigninDialogWidth, display.work_area().width()),
+        std::min(kEduCoexistenceSigninDialogHeight,
+                 display.work_area().height()));
+    return;
+  }
+
   size->SetSize(std::min(kSigninDialogWidth, display.work_area().width()),
                 std::min(kSigninDialogHeight, display.work_area().height()));
 }
