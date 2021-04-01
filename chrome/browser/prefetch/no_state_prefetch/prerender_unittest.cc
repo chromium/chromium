@@ -126,7 +126,6 @@ const gfx::Size kDefaultViewSize(640, 480);
 
 class UnitTestNoStatePrefetchManager : public NoStatePrefetchManager {
  public:
-  using NoStatePrefetchManager::kMinTimeBetweenPrerendersMs;
   using NoStatePrefetchManager::kNavigationRecordWindowMs;
 
   explicit UnitTestNoStatePrefetchManager(Profile* profile)
@@ -155,21 +154,22 @@ class UnitTestNoStatePrefetchManager : public NoStatePrefetchManager {
 
   NoStatePrefetchContents* FindEntry(const GURL& url) {
     DeleteOldEntries();
-    to_delete_prerenders_.clear();
-    PrerenderData* data = FindPrerenderData(url, nullptr);
+    to_delete_prefetches_.clear();
+    NoStatePrefetchData* data = FindNoStatePrefetchData(url, nullptr);
     return data ? data->contents() : nullptr;
   }
 
   std::unique_ptr<NoStatePrefetchContents> FindAndUseEntry(const GURL& url) {
-    PrerenderData* prerender_data = FindPrerenderData(url, nullptr);
-    if (!prerender_data)
+    NoStatePrefetchData* no_state_prefetch_data =
+        FindNoStatePrefetchData(url, nullptr);
+    if (!no_state_prefetch_data)
       return nullptr;
-    auto to_erase =
-        FindIteratorForNoStatePrefetchContents(prerender_data->contents());
-    CHECK(to_erase != active_prerenders_.end());
+    auto to_erase = FindIteratorForNoStatePrefetchContents(
+        no_state_prefetch_data->contents());
+    CHECK(to_erase != active_prefetches_.end());
     std::unique_ptr<NoStatePrefetchContents> no_state_prefetch_contents =
-        prerender_data->ReleaseContents();
-    active_prerenders_.erase(to_erase);
+        no_state_prefetch_data->ReleaseContents();
+    active_prefetches_.erase(to_erase);
 
     no_state_prefetch_contents->MarkAsUsedForTesting();
     return no_state_prefetch_contents;

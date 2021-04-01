@@ -139,16 +139,16 @@ NoStatePrefetchManager::NoStatePrefetchManager(
       tick_clock_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  last_prerender_start_time_ =
+  last_prefetch_start_time_ =
       GetCurrentTimeTicks() -
-      base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrerendersMs);
+      base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrefetchesMs);
 }
 
 NoStatePrefetchManager::~NoStatePrefetchManager() {
   // The earlier call to KeyedService::Shutdown() should have
   // emptied these vectors already.
-  DCHECK(active_prerenders_.empty());
-  DCHECK(to_delete_prerenders_.empty());
+  DCHECK(active_prefetches_.empty());
+  DCHECK(to_delete_prefetches_.empty());
 
   for (auto* host : prerender_process_hosts_) {
     host->RemoveObserver(this);
@@ -160,7 +160,7 @@ void NoStatePrefetchManager::Shutdown() {
   on_close_web_contents_deleters_.clear();
   browser_context_ = nullptr;
 
-  DCHECK(active_prerenders_.empty());
+  DCHECK(active_prefetches_.empty());
 }
 
 std::unique_ptr<NoStatePrefetchHandle>
@@ -261,9 +261,9 @@ NoStatePrefetchManager::AddForcedPrerenderFromExternalRequest(
 
 void NoStatePrefetchManager::CancelAllPrerenders() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  while (!active_prerenders_.empty()) {
+  while (!active_prefetches_.empty()) {
     NoStatePrefetchContents* no_state_prefetch_contents =
-        active_prerenders_.front()->contents();
+        active_prefetches_.front()->contents();
     no_state_prefetch_contents->Destroy(FINAL_STATUS_CANCELLED);
   }
 }
@@ -275,9 +275,9 @@ void NoStatePrefetchManager::MoveEntryToPendingDelete(
   DCHECK(entry);
 
   auto it = FindIteratorForNoStatePrefetchContents(entry);
-  DCHECK(it != active_prerenders_.end());
-  to_delete_prerenders_.push_back(std::move(*it));
-  active_prerenders_.erase(it);
+  DCHECK(it != active_prefetches_.end());
+  to_delete_prefetches_.push_back(std::move(*it));
+  active_prefetches_.erase(it);
   // Destroy the old WebContents relatively promptly to reduce resource usage.
   PostCleanupTask();
 }
@@ -291,21 +291,21 @@ bool NoStatePrefetchManager::IsWebContentsPrerendering(
 NoStatePrefetchContents* NoStatePrefetchManager::GetNoStatePrefetchContents(
     const content::WebContents* web_contents) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (const auto& prerender : active_prerenders_) {
-    WebContents* prerender_web_contents =
-        prerender->contents()->no_state_prefetch_contents();
-    if (prerender_web_contents == web_contents) {
-      return prerender->contents();
+  for (const auto& prefetch : active_prefetches_) {
+    WebContents* prefetch_web_contents =
+        prefetch->contents()->no_state_prefetch_contents();
+    if (prefetch_web_contents == web_contents) {
+      return prefetch->contents();
     }
   }
 
-  // Also check the pending-deletion list. If the prerender is in pending
-  // delete, anyone with a handle on the WebContents needs to know.
-  for (const auto& prerender : to_delete_prerenders_) {
-    WebContents* prerender_web_contents =
-        prerender->contents()->no_state_prefetch_contents();
-    if (prerender_web_contents == web_contents) {
-      return prerender->contents();
+  // Also check the pending-deletion list. If the prefetch is in pending delete,
+  // anyone with a handle on the WebContents needs to know.
+  for (const auto& prefetch : to_delete_prefetches_) {
+    WebContents* prefetch_web_contents =
+        prefetch->contents()->no_state_prefetch_contents();
+    if (prefetch_web_contents == web_contents) {
+      return prefetch->contents();
     }
   }
   return nullptr;
@@ -325,8 +325,8 @@ NoStatePrefetchManager::GetAllNoStatePrefetchingContentsForTesting() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::vector<WebContents*> result;
 
-  for (const auto& prerender : active_prerenders_) {
-    WebContents* contents = prerender->contents()->no_state_prefetch_contents();
+  for (const auto& prefetch : active_prefetches_) {
+    WebContents* contents = prefetch->contents()->no_state_prefetch_contents();
     if (contents)
       result.push_back(contents);
   }
@@ -388,14 +388,14 @@ void NoStatePrefetchManager::RecordNavigation(const GURL& url) {
                                            kNavigationRecordWindowMs));
 }
 
-struct NoStatePrefetchManager::PrerenderData::OrderByExpiryTime {
-  bool operator()(const std::unique_ptr<PrerenderData>& a,
-                  const std::unique_ptr<PrerenderData>& b) const {
+struct NoStatePrefetchManager::NoStatePrefetchData::OrderByExpiryTime {
+  bool operator()(const std::unique_ptr<NoStatePrefetchData>& a,
+                  const std::unique_ptr<NoStatePrefetchData>& b) const {
     return a->expiry_time() < b->expiry_time();
   }
 };
 
-NoStatePrefetchManager::PrerenderData::PrerenderData(
+NoStatePrefetchManager::NoStatePrefetchData::NoStatePrefetchData(
     NoStatePrefetchManager* manager,
     std::unique_ptr<NoStatePrefetchContents> contents,
     base::TimeTicks expiry_time)
@@ -405,53 +405,53 @@ NoStatePrefetchManager::PrerenderData::PrerenderData(
   DCHECK(contents_);
 }
 
-NoStatePrefetchManager::PrerenderData::~PrerenderData() = default;
+NoStatePrefetchManager::NoStatePrefetchData::~NoStatePrefetchData() = default;
 
-void NoStatePrefetchManager::PrerenderData::OnHandleCreated(
+void NoStatePrefetchManager::NoStatePrefetchData::OnHandleCreated(
     NoStatePrefetchHandle* handle) {
   DCHECK(contents_);
   ++handle_count_;
   contents_->AddObserver(handle);
 }
 
-void NoStatePrefetchManager::PrerenderData::OnHandleNavigatedAway(
+void NoStatePrefetchManager::NoStatePrefetchData::OnHandleNavigatedAway(
     NoStatePrefetchHandle* handle) {
   DCHECK_LT(0, handle_count_);
   DCHECK(contents_);
   if (abandon_time_.is_null())
     abandon_time_ = base::TimeTicks::Now();
   // We intentionally don't decrement the handle count here, so that the
-  // prerender won't be canceled until it times out.
+  // prefetch won't be canceled until it times out.
   manager_->SourceNavigatedAway(this);
 }
 
-void NoStatePrefetchManager::PrerenderData::OnHandleCanceled(
+void NoStatePrefetchManager::NoStatePrefetchData::OnHandleCanceled(
     NoStatePrefetchHandle* handle) {
   DCHECK_LT(0, handle_count_);
   DCHECK(contents_);
 
   if (--handle_count_ == 0) {
-    // This will eventually remove this object from |active_prerenders_|.
+    // This will eventually remove this object from |active_prefetches_|.
     contents_->Destroy(FINAL_STATUS_CANCELLED);
   }
 }
 
 std::unique_ptr<NoStatePrefetchContents>
-NoStatePrefetchManager::PrerenderData::ReleaseContents() {
+NoStatePrefetchManager::NoStatePrefetchData::ReleaseContents() {
   return std::move(contents_);
 }
 
 void NoStatePrefetchManager::SourceNavigatedAway(
-    PrerenderData* prerender_data) {
-  // The expiry time of our prerender data will likely change because of
-  // this navigation. This requires a re-sort of |active_prerenders_|.
-  for (auto it = active_prerenders_.begin(); it != active_prerenders_.end();
+    NoStatePrefetchData* prefetch_data) {
+  // The expiry time of our prefetch data will likely change because of
+  // this navigation. This requires a re-sort of |active_prefetches_|.
+  for (auto it = active_prefetches_.begin(); it != active_prefetches_.end();
        ++it) {
-    PrerenderData* data = it->get();
-    if (data == prerender_data) {
+    NoStatePrefetchData* data = it->get();
+    if (data == prefetch_data) {
       data->set_expiry_time(std::min(data->expiry_time(),
                                      GetExpiryTimeForNavigatedAwayPrerender()));
-      SortActivePrerenders();
+      SortActivePrefetches();
       return;
     }
   }
@@ -543,12 +543,12 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
     return nullptr;
   }
 
-  if (PrerenderData* preexisting_prerender_data =
-          FindPrerenderData(url, session_storage_namespace)) {
+  if (NoStatePrefetchData* preexisting_prefetch_data =
+          FindNoStatePrefetchData(url, session_storage_namespace)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
                                                   FINAL_STATUS_DUPLICATE);
     return base::WrapUnique(
-        new NoStatePrefetchHandle(preexisting_prerender_data));
+        new NoStatePrefetchHandle(preexisting_prefetch_data));
   }
 
   base::TimeDelta prefetch_age;
@@ -562,14 +562,14 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
     return nullptr;
   }
 
-  // Do not prerender if there are too many render processes, and we would
-  // have to use an existing one.  We do not want prerendering to happen in
-  // a shared process, so that we can always reliably lower the CPU
-  // priority for prerendering.
+  // Do not prefetch if there are too many render processes, and we would have
+  // to use an existing one.  We do not want prefetching to happen in a shared
+  // process, so that we can always reliably lower the CPU priority for
+  // prefetching.
   // In single-process mode, ShouldTryToUseExistingProcessHost() always returns
   // true, so that case needs to be explicitly checked for.
-  // TODO(tburkard): Figure out how to cancel prerendering in the opposite
-  // case, when a new tab is added to a process used for prerendering.
+  // TODO(tburkard): Figure out how to cancel prefetching in the opposite case,
+  // when a new tab is added to a process used for prefetching.
   // TODO(ppi): Check whether there are usually enough render processes
   // available on Android. If not, kill an existing renderers so that we can
   // create a new one.
@@ -581,10 +581,10 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
     return nullptr;
   }
 
-  // Check if enough time has passed since the last prerender.
-  if (!DoesRateLimitAllowPrerender(origin)) {
-    // Cancel the prerender. We could add it to the pending prerender list but
-    // this doesn't make sense as the next prerender request will be triggered
+  // Check if enough time has passed since the last prefetch.
+  if (!DoesRateLimitAllowPrefetch(origin)) {
+    // Cancel the prefetch. We could add it to the pending prefetch list but
+    // this doesn't make sense as the next prefetch request will be triggered
     // by a navigation and is unlikely to be the same site.
     SkipNoStatePrefetchContentsAndMaybePreconnect(
         url, origin, FINAL_STATUS_RATE_LIMIT_EXCEEDED);
@@ -623,11 +623,11 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
   DCHECK(no_state_prefetch_contents);
   NoStatePrefetchContents* no_state_prefetch_contents_ptr =
       no_state_prefetch_contents.get();
-  active_prerenders_.push_back(std::make_unique<PrerenderData>(
+  active_prefetches_.push_back(std::make_unique<NoStatePrefetchData>(
       this, std::move(no_state_prefetch_contents),
       GetExpiryTimeForNewPrerender(origin)));
   if (!no_state_prefetch_contents_ptr->Init()) {
-    DCHECK(active_prerenders_.end() == FindIteratorForNoStatePrefetchContents(
+    DCHECK(active_prefetches_.end() == FindIteratorForNoStatePrefetchContents(
                                            no_state_prefetch_contents_ptr));
     return nullptr;
   }
@@ -636,10 +636,10 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
 
   std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle =
       base::WrapUnique(
-          new NoStatePrefetchHandle(active_prerenders_.back().get()));
-  SortActivePrerenders();
+          new NoStatePrefetchHandle(active_prefetches_.back().get()));
+  SortActivePrefetches();
 
-  last_prerender_start_time_ = GetCurrentTimeTicks();
+  last_prefetch_start_time_ = GetCurrentTimeTicks();
 
   gfx::Rect contents_bounds =
       bounds.IsEmpty() ? config_.default_tab_bounds : bounds;
@@ -674,13 +674,13 @@ void NoStatePrefetchManager::PeriodicCleanup() {
 
   // Grab a copy of the current NoStatePrefetchContents pointers, so that we
   // will not interfere with potential deletions of the list.
-  std::vector<NoStatePrefetchContents*> no_state_prefetch_contents;
-  no_state_prefetch_contents.reserve(active_prerenders_.size());
-  for (auto& prerender : active_prerenders_)
-    no_state_prefetch_contents.push_back(prerender->contents());
+  std::vector<NoStatePrefetchContents*> prefetch_contents;
+  prefetch_contents.reserve(active_prefetches_.size());
+  for (auto& prefetch : active_prefetches_)
+    prefetch_contents.push_back(prefetch->contents());
 
   // And now check for prerenders using too much memory.
-  for (auto* contents : no_state_prefetch_contents)
+  for (auto* contents : prefetch_contents)
     contents->DestroyWhenUsingTooManyResources();
 
   base::ElapsedTimer cleanup_timer;
@@ -688,7 +688,7 @@ void NoStatePrefetchManager::PeriodicCleanup() {
   // Perform deferred cleanup work.
   DeleteOldWebContents();
   DeleteOldEntries();
-  if (active_prerenders_.empty())
+  if (active_prefetches_.empty())
     StopSchedulingPeriodicCleanups();
 
   DeleteToDeletePrerenders();
@@ -715,14 +715,14 @@ base::TimeTicks NoStatePrefetchManager::GetExpiryTimeForNavigatedAwayPrerender()
 
 void NoStatePrefetchManager::DeleteOldEntries() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  while (!active_prerenders_.empty()) {
-    auto& prerender_data = active_prerenders_.front();
-    DCHECK(prerender_data);
-    DCHECK(prerender_data->contents());
+  while (!active_prefetches_.empty()) {
+    auto& prefetch_data = active_prefetches_.front();
+    DCHECK(prefetch_data);
+    DCHECK(prefetch_data->contents());
 
-    if (prerender_data->expiry_time() > GetCurrentTimeTicks())
+    if (prefetch_data->expiry_time() > GetCurrentTimeTicks())
       return;
-    prerender_data->contents()->Destroy(FINAL_STATUS_TIMED_OUT);
+    prefetch_data->contents()->Destroy(FINAL_STATUS_TIMED_OUT);
   }
 }
 
@@ -730,11 +730,11 @@ void NoStatePrefetchManager::DeleteToDeletePrerenders() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // Delete the items one by one (after removing from the vector) as deleting
   // the WebContents may trigger a call to GetNoStatePrefetchContents(), which
-  // iterates over |to_delete_prerenders_|.
-  while (!to_delete_prerenders_.empty()) {
-    std::unique_ptr<PrerenderData> prerender_data =
-        std::move(to_delete_prerenders_.back());
-    to_delete_prerenders_.pop_back();
+  // iterates over |to_delete_prefetches_|.
+  while (!to_delete_prefetches_.empty()) {
+    std::unique_ptr<NoStatePrefetchData> prefetch_data =
+        std::move(to_delete_prefetches_.back());
+    to_delete_prefetches_.pop_back();
   }
 }
 
@@ -769,46 +769,46 @@ NoStatePrefetchManager::CreateNoStatePrefetchContents(
           browser_context_, url, referrer, initiator_origin, origin));
 }
 
-void NoStatePrefetchManager::SortActivePrerenders() {
-  std::sort(active_prerenders_.begin(), active_prerenders_.end(),
-            PrerenderData::OrderByExpiryTime());
+void NoStatePrefetchManager::SortActivePrefetches() {
+  std::sort(active_prefetches_.begin(), active_prefetches_.end(),
+            NoStatePrefetchData::OrderByExpiryTime());
 }
 
-NoStatePrefetchManager::PrerenderData*
-NoStatePrefetchManager::FindPrerenderData(
+NoStatePrefetchManager::NoStatePrefetchData*
+NoStatePrefetchManager::FindNoStatePrefetchData(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace) {
-  for (const auto& prerender : active_prerenders_) {
-    NoStatePrefetchContents* contents = prerender->contents();
+  for (const auto& prefetch : active_prefetches_) {
+    NoStatePrefetchContents* contents = prefetch->contents();
     if (contents->Matches(url, session_storage_namespace))
-      return prerender.get();
+      return prefetch.get();
   }
   return nullptr;
 }
 
-NoStatePrefetchManager::PrerenderDataVector::iterator
+NoStatePrefetchManager::NoStatePrefetchDataVector::iterator
 NoStatePrefetchManager::FindIteratorForNoStatePrefetchContents(
     NoStatePrefetchContents* no_state_prefetch_contents) {
-  for (auto it = active_prerenders_.begin(); it != active_prerenders_.end();
+  for (auto it = active_prefetches_.begin(); it != active_prefetches_.end();
        ++it) {
     if ((*it)->contents() == no_state_prefetch_contents)
       return it;
   }
-  return active_prerenders_.end();
+  return active_prefetches_.end();
 }
 
-bool NoStatePrefetchManager::DoesRateLimitAllowPrerender(Origin origin) const {
+bool NoStatePrefetchManager::DoesRateLimitAllowPrefetch(Origin origin) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // Allow navigation predictor to manage its own rate limit.
   if (origin == ORIGIN_NAVIGATION_PREDICTOR)
     return true;
   base::TimeDelta elapsed_time =
-      GetCurrentTimeTicks() - last_prerender_start_time_;
+      GetCurrentTimeTicks() - last_prefetch_start_time_;
   if (!config_.rate_limit_enabled)
     return true;
   return elapsed_time >=
-         base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrerendersMs);
+         base::TimeDelta::FromMilliseconds(kMinTimeBetweenPrefetchesMs);
 }
 
 void NoStatePrefetchManager::DeleteOldWebContents() {
@@ -915,18 +915,18 @@ void NoStatePrefetchManager::AddToHistory(NoStatePrefetchContents* contents) {
 std::unique_ptr<base::ListValue>
 NoStatePrefetchManager::GetActivePrerendersAsValue() const {
   auto list_value = std::make_unique<base::ListValue>();
-  for (const auto& prerender : active_prerenders_) {
-    auto prerender_value = prerender->contents()->GetAsValue();
-    if (prerender_value)
-      list_value->Append(std::move(prerender_value));
+  for (const auto& prefetch : active_prefetches_) {
+    auto prefetch_value = prefetch->contents()->GetAsValue();
+    if (prefetch_value)
+      list_value->Append(std::move(prefetch_value));
   }
   return list_value;
 }
 
 void NoStatePrefetchManager::DestroyAllContents(FinalStatus final_status) {
   DeleteOldWebContents();
-  while (!active_prerenders_.empty()) {
-    NoStatePrefetchContents* contents = active_prerenders_.front()->contents();
+  while (!active_prefetches_.empty()) {
+    NoStatePrefetchContents* contents = active_prefetches_.front()->contents();
     contents->Destroy(final_status);
   }
   DeleteToDeletePrerenders();
@@ -958,7 +958,7 @@ void NoStatePrefetchManager::SkipNoStatePrefetchContentsAndMaybePreconnect(
 
   static_assert(
       FINAL_STATUS_MAX == FINAL_STATUS_LINK_REL_NEXT_NOT_ALLOWED + 1,
-      "Consider whether a failed prerender should fallback to preconnect");
+      "Consider whether a failed prefetch should fallback to preconnect");
 }
 
 void NoStatePrefetchManager::RecordNetworkBytesConsumed(
@@ -984,7 +984,7 @@ void NoStatePrefetchManager::AddPrerenderProcessHost(
 bool NoStatePrefetchManager::MayReuseProcessHost(
     content::RenderProcessHost* process_host) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Isolate prerender processes to make the resource monitoring check more
+  // Isolate prefetch processes to make the resource monitoring check more
   // accurate.
   return !base::Contains(prerender_process_hosts_, process_host);
 }

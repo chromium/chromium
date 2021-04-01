@@ -423,7 +423,7 @@ bool PrerenderInProcessBrowserTest::UrlIsInNoStatePrefetchManager(
 
 bool PrerenderInProcessBrowserTest::UrlIsInNoStatePrefetchManager(
     const GURL& url) const {
-  return GetNoStatePrefetchManager()->FindPrerenderData(
+  return GetNoStatePrefetchManager()->FindNoStatePrefetchData(
              url, GetSessionStorageNamespace()) != nullptr;
 }
 
@@ -441,10 +441,10 @@ PrerenderInProcessBrowserTest::GetNoStatePrefetchManager() const {
 TestNoStatePrefetchContents*
 PrerenderInProcessBrowserTest::GetNoStatePrefetchContentsFor(
     const GURL& url) const {
-  NoStatePrefetchManager::PrerenderData* prerender_data =
-      GetNoStatePrefetchManager()->FindPrerenderData(url, nullptr);
+  NoStatePrefetchManager::NoStatePrefetchData* no_state_prefetch_data =
+      GetNoStatePrefetchManager()->FindNoStatePrefetchData(url, nullptr);
   return static_cast<TestNoStatePrefetchContents*>(
-      prerender_data ? prerender_data->contents() : nullptr);
+      no_state_prefetch_data ? no_state_prefetch_data->contents() : nullptr);
 }
 
 net::EmbeddedTestServer* PrerenderInProcessBrowserTest::src_server() {

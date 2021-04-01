@@ -21,8 +21,8 @@ NoStatePrefetchHandle::Observer::~Observer() {}
 
 NoStatePrefetchHandle::~NoStatePrefetchHandle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (prerender_data_) {
-    prerender_data_->contents()->RemoveObserver(this);
+  if (prefetch_data_) {
+    prefetch_data_->contents()->RemoveObserver(this);
   }
 }
 
@@ -32,44 +32,44 @@ void NoStatePrefetchHandle::SetObserver(Observer* observer) {
 
 void NoStatePrefetchHandle::OnNavigateAway() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (prerender_data_)
-    prerender_data_->OnHandleNavigatedAway(this);
+  if (prefetch_data_)
+    prefetch_data_->OnHandleNavigatedAway(this);
 }
 
 void NoStatePrefetchHandle::OnCancel() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (prerender_data_)
-    prerender_data_->OnHandleCanceled(this);
+  if (prefetch_data_)
+    prefetch_data_->OnHandleCanceled(this);
 }
 
 bool NoStatePrefetchHandle::IsPrefetching() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return prerender_data_.get() != nullptr &&
-         !prerender_data_->contents()->prerendering_has_been_cancelled();
+  return prefetch_data_.get() != nullptr &&
+         !prefetch_data_->contents()->prerendering_has_been_cancelled();
 }
 
 bool NoStatePrefetchHandle::IsFinishedLoading() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return prerender_data_ && prerender_data_->contents()->has_finished_loading();
+  return prefetch_data_ && prefetch_data_->contents()->has_finished_loading();
 }
 
 bool NoStatePrefetchHandle::IsAbandoned() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return prerender_data_ && !prerender_data_->abandon_time().is_null();
+  return prefetch_data_ && !prefetch_data_->abandon_time().is_null();
 }
 
 NoStatePrefetchContents* NoStatePrefetchHandle::contents() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return prerender_data_ ? prerender_data_->contents() : nullptr;
+  return prefetch_data_ ? prefetch_data_->contents() : nullptr;
 }
 
 NoStatePrefetchHandle::NoStatePrefetchHandle(
-    NoStatePrefetchManager::PrerenderData* prerender_data)
+    NoStatePrefetchManager::NoStatePrefetchData* prefetch_data)
     : observer_(nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (prerender_data) {
-    prerender_data_ = prerender_data->AsWeakPtr();
-    prerender_data->OnHandleCreated(this);
+  if (prefetch_data) {
+    prefetch_data_ = prefetch_data->AsWeakPtr();
+    prefetch_data->OnHandleCreated(this);
   }
 }
 
@@ -89,8 +89,8 @@ void NoStatePrefetchHandle::OnPrefetchNetworkBytesChanged(
 
 bool NoStatePrefetchHandle::RepresentingSamePrefetchAs(
     NoStatePrefetchHandle* other) const {
-  return other && other->prerender_data_ && prerender_data_ &&
-         prerender_data_.get() == other->prerender_data_.get();
+  return other && other->prefetch_data_ && prefetch_data_ &&
+         prefetch_data_.get() == other->prefetch_data_.get();
 }
 
 }  // namespace prerender
