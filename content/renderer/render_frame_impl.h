@@ -385,6 +385,7 @@ class CONTENT_EXPORT RenderFrameImpl
   gfx::RectF ElementBoundsInWindow(const blink::WebElement& element) override;
   void ConvertViewportToWindow(gfx::Rect* rect) override;
   float GetDeviceScaleFactor() override;
+  blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override;
 
   // blink::mojom::AutoplayConfigurationClient implementation:
   void AddAutoplayFlags(const url::Origin& origin,
@@ -711,7 +712,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void SetWebURLLoaderFactoryOverrideForTest(
       std::unique_ptr<blink::WebURLLoaderFactoryForTest> factory);
 
-  blink::scheduler::WebAgentGroupScheduler& GetAgentGroupScheduler() override;
+  void InheritLoaderFactoriesFrom(RenderFrameImpl& frame);
 
   url::Origin GetSecurityOriginOfTopFrame();
 
@@ -884,16 +885,11 @@ class CONTENT_EXPORT RenderFrameImpl
 
   // Returns a blink::ChildURLLoaderFactoryBundle which can be used to request
   // subresources for this frame.
-  // For frames with committed navigations, this bundle is created with the
-  // factories provided by the browser at navigation time. For any other frames
-  // (i.e. frames on the initial about:blank Document), the bundle returned here
-  // is lazily cloned from the parent or opener's own bundle.
+  //
+  // The returned bundle was typically sent by the browser process when
+  // committing a navigation, but in some cases (about:srcdoc, initial empty
+  // document) it may be inherited from the parent or opener.
   blink::ChildURLLoaderFactoryBundle* GetLoaderFactoryBundle();
-
-  // Clones and returns the creator's (parent's or opener's)
-  // blink::ChildURLLoaderFactoryBundle.
-  scoped_refptr<blink::ChildURLLoaderFactoryBundle>
-  GetLoaderFactoryBundleFromCreator();
 
   // Returns a mostly empty bundle, with a fallback that uses a process-wide,
   // direct-network factory.
@@ -902,6 +898,10 @@ class CONTENT_EXPORT RenderFrameImpl
   // longer needed.
   scoped_refptr<blink::ChildURLLoaderFactoryBundle>
   GetLoaderFactoryBundleFallback();
+
+  // Clones and returns the `frame`'s blink::ChildURLLoaderFactoryBundle.
+  scoped_refptr<blink::ChildURLLoaderFactoryBundle> CloneLoaderFactoriesFrom(
+      RenderFrameImpl& frame);
 
   scoped_refptr<blink::ChildURLLoaderFactoryBundle> CreateLoaderFactoryBundle(
       std::unique_ptr<blink::PendingURLLoaderFactoryBundle> info,

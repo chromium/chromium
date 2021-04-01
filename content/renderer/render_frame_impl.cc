@@ -3052,7 +3052,15 @@ void RenderFrameImpl::CommitNavigationWithParams(
     DCHECK(!subresource_overrides);
     DCHECK(!prefetch_loader_factory);
 
-    new_loader_factories = GetLoaderFactoryBundleFromCreator();
+    // Presence of the parent is verified by the browser process before
+    // committing.
+    //
+    // TODO(arthursonzogni, dcheng): If `inherit_loaders_from_creator` is ever
+    // extended to 'about:blank', then `creator` might also need to come from
+    // the opener.
+    auto* creator = RenderFrameImpl::FromWebFrame(frame_->Parent());
+    DCHECK(creator);
+    new_loader_factories = CloneLoaderFactoriesFrom(*creator);
   } else {
     new_loader_factories = CreateLoaderFactoryBundle(
         std::move(subresource_loader_factories),
@@ -3460,8 +3468,6 @@ void RenderFrameImpl::UpdateSubresourceLoaderFactories(
   // only be called after a commit).  The check below is just a temporary
   // workaround to paper-over the crash in https://crbug.com/1013254.
   if (!loader_factories_)
-    loader_factories_ = GetLoaderFactoryBundleFromCreator();
-  if (!loader_factories_)
     loader_factories_ = GetLoaderFactoryBundleFallback();
 
   if (loader_factories_->IsHostChildURLLoaderFactoryBundle()) {
@@ -3790,6 +3796,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       agent_scheduling_group_, render_view_, child_routing_id,
       std::move(pending_frame_receiver), std::move(browser_interface_broker),
       devtools_frame_token);
+  child_render_frame->InheritLoaderFactoriesFrom(*this);
   child_render_frame->unique_name_helper_.set_propagated_name(
       frame_unique_name);
   if (is_created_by_script)
@@ -3992,17 +3999,24 @@ void RenderFrameImpl::DidCommitNavigation(
     // Commits triggered by the browser process should always provide
     // |pending_loader_factories_|.
     loader_factories_ = std::move(pending_loader_factories_);
+    DCHECK(loader_factories_->HasBoundDefaultFactory());
   } else if (!loader_factories_) {
-    // When committing an initial empty document synchronously (e,g, in response
-    // to |window.open('', '_blank')|) we won't get |pending_loader_factories_|
-    // from the browser.  In such cases we expect to always have a local parent
-    // or opener - we should eagerly inherit the factories from them (so that
-    // even if the opener gets closed, our factories will be correctly
-    // initialized).
-    loader_factories_ = GetLoaderFactoryBundleFromCreator();
+    // For renderer-initiated frame creation, the factories should be inherited
+    // using the InheritLoaderFactoriesFrom method, but browser-created initial
+    // empty document currently won't get any factories.  For now, the
+    // process-wide fallback factory will be used for such browser-created
+    // initial empty documents.
+    //
+    // TODO(https://crbug.com/1114822): This case should be covered by always
+    // providing a bundle of factories via a new field of
+    // `mojom::CreateLocalMainFrameParams`.  See also
+    // https://crrev.com/c/2787689.
+
+    // This should only happen for a browser-created initial empty document.
+    DCHECK(GetWebFrame()->GetSecurityOrigin().IsOpaque());
+    DCHECK(document_loader->GetUrl().IsEmpty());
+    DCHECK(!navigation_state->common_params().initiator_origin.has_value());
   }
-  DCHECK(loader_factories_);
-  DCHECK(loader_factories_->HasBoundDefaultFactory());
 
   // TODO(dgozman): call DidStartNavigation in various places where we call
   // CommitNavigation() on the frame.
@@ -5567,8 +5581,6 @@ void RenderFrameImpl::OpenURL(std::unique_ptr<blink::WebNavigationInfo> info) {
 
 blink::ChildURLLoaderFactoryBundle* RenderFrameImpl::GetLoaderFactoryBundle() {
   if (!loader_factories_)
-    loader_factories_ = GetLoaderFactoryBundleFromCreator();
-  if (!loader_factories_)
     loader_factories_ = GetLoaderFactoryBundleFallback();
   return loader_factories_.get();
 }
@@ -5581,17 +5593,12 @@ RenderFrameImpl::GetLoaderFactoryBundleFallback() {
 }
 
 scoped_refptr<blink::ChildURLLoaderFactoryBundle>
-RenderFrameImpl::GetLoaderFactoryBundleFromCreator() {
-  RenderFrameImpl* creator = RenderFrameImpl::FromWebFrame(
-      frame_->Parent() ? frame_->Parent() : frame_->Opener());
-  if (creator) {
-    auto bundle_info = base::WrapUnique(
-        static_cast<blink::TrackedChildPendingURLLoaderFactoryBundle*>(
-            creator->GetLoaderFactoryBundle()->Clone().release()));
-    return base::MakeRefCounted<blink::TrackedChildURLLoaderFactoryBundle>(
-        std::move(bundle_info));
-  }
-  return nullptr;
+RenderFrameImpl::CloneLoaderFactoriesFrom(RenderFrameImpl& frame) {
+  auto bundle_info = base::WrapUnique(
+      static_cast<blink::TrackedChildPendingURLLoaderFactoryBundle*>(
+          frame.GetLoaderFactoryBundle()->Clone().release()));
+  return base::MakeRefCounted<blink::TrackedChildURLLoaderFactoryBundle>(
+      std::move(bundle_info));
 }
 
 scoped_refptr<blink::ChildURLLoaderFactoryBundle>
@@ -5601,7 +5608,7 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
         subresource_overrides,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory) {
-  scoped_refptr<blink::ChildURLLoaderFactoryBundle> loader_factories =
+  auto loader_factories =
       base::MakeRefCounted<blink::HostChildURLLoaderFactoryBundle>(
           GetTaskRunner(blink::TaskType::kInternalLoading));
 
@@ -5621,6 +5628,7 @@ RenderFrameImpl::CreateLoaderFactoryBundle(
         std::make_unique<blink::ChildPendingURLLoaderFactoryBundle>(
             std::move(info)));
   }
+
   if (subresource_overrides) {
     loader_factories->UpdateSubresourceOverrides(&*subresource_overrides);
   }
@@ -6195,6 +6203,11 @@ void RenderFrameImpl::AddMessageToConsoleImpl(
 void RenderFrameImpl::SetWebURLLoaderFactoryOverrideForTest(
     std::unique_ptr<blink::WebURLLoaderFactoryForTest> factory) {
   web_url_loader_factory_override_for_test_ = std::move(factory);
+}
+
+void RenderFrameImpl::InheritLoaderFactoriesFrom(RenderFrameImpl& frame) {
+  CHECK(!loader_factories_);
+  loader_factories_ = CloneLoaderFactoriesFrom(frame);
 }
 
 blink::scheduler::WebAgentGroupScheduler&

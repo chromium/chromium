@@ -411,6 +411,7 @@ WebView* RenderViewImpl::CreateView(
       agent_scheduling_group_, compositor_deps_, std::move(view_params),
       /*was_created_by_renderer=*/true,
       creator->GetTaskRunner(blink::TaskType::kInternalDefault));
+  view->GetMainRenderFrame()->InheritLoaderFactoriesFrom(*creator_frame);
 
   if (reply->wait_for_debugger) {
     blink::WebFrameWidget* frame_widget =
