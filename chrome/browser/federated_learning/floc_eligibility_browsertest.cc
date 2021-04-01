@@ -17,6 +17,7 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"

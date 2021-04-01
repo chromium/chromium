@@ -19,6 +19,7 @@
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/authenticator_environment.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "device/fido/virtual_ctap2_device.h"

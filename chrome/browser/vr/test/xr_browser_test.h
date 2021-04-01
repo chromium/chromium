@@ -16,9 +16,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/vr/test/conditional_skipping.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
 #include "device/base/features.h"
 #include "device/vr/test/test_hook.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -27,6 +24,10 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #endif
+
+namespace content {
+class WebContents;
+}
 
 namespace vr {
 

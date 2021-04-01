@@ -8,6 +8,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"

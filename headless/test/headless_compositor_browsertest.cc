@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/switches.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/switches.h"
 
 namespace headless {

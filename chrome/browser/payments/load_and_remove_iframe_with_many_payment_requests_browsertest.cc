@@ -5,6 +5,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
