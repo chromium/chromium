@@ -9,8 +9,8 @@ source_set("browser") {
     "content_capture_frame.h",
     "content_capture_receiver.cc",
     "content_capture_receiver.h",
-    "content_capture_receiver_manager.cc",
-    "content_capture_receiver_manager.h",
+    "onscreen_content_provider.cc",
+    "onscreen_content_provider.h",
   ]
 
   public_deps = [

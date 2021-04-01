@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CONTENT_CAPTURE_BROWSER_CONTENT_CAPTURE_RECEIVER_MANAGER_H_
-#define COMPONENTS_CONTENT_CAPTURE_BROWSER_CONTENT_CAPTURE_RECEIVER_MANAGER_H_
+#ifndef COMPONENTS_CONTENT_CAPTURE_BROWSER_ONSCREEN_CONTENT_PROVIDER_H_
+#define COMPONENTS_CONTENT_CAPTURE_BROWSER_ONSCREEN_CONTENT_PROVIDER_H_
 
 #include <map>
 #include <memory>
@@ -31,14 +31,13 @@ class ContentCaptureConsumer;
 // the ContentCaptureReceiver and associates it with RenderFrameHost, it also
 // binds ContentCaptureReceiver with its peer ContentCaptureSender in renderer.
 // The ContentSession here is used to specify which frame the message came from.
-class ContentCaptureReceiverManager : public content::WebContentsObserver,
-                                      public base::SupportsUserData::Data {
+class OnscreenContentProvider : public content::WebContentsObserver,
+                                public base::SupportsUserData::Data {
  public:
-  ~ContentCaptureReceiverManager() override;
-  static ContentCaptureReceiverManager* FromWebContents(
+  ~OnscreenContentProvider() override;
+  static OnscreenContentProvider* FromWebContents(
       content::WebContents* contents);
-  static ContentCaptureReceiverManager* Create(
-      content::WebContents* web_contents);
+  static OnscreenContentProvider* Create(content::WebContents* web_contents);
 
   // Binds the |request| with the |render_frame_host| associated
   // ContentCaptureReceiver.
@@ -69,7 +68,7 @@ class ContentCaptureReceiverManager : public content::WebContentsObserver,
 
   size_t GetFrameMapSizeForTesting() const { return frame_map_.size(); }
 
-  base::WeakPtr<ContentCaptureReceiverManager> GetWeakPtr() {
+  base::WeakPtr<OnscreenContentProvider> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -85,7 +84,7 @@ class ContentCaptureReceiverManager : public content::WebContentsObserver,
 #endif
 
  private:
-  explicit ContentCaptureReceiverManager(content::WebContents* web_contents);
+  explicit OnscreenContentProvider(content::WebContents* web_contents);
 
   ContentCaptureReceiver* ContentCaptureReceiverForFrame(
       content::RenderFrameHost* render_frame_host) const;
@@ -113,9 +112,9 @@ class ContentCaptureReceiverManager : public content::WebContentsObserver,
 
   std::vector<ContentCaptureConsumer*> consumers_;
 
-  base::WeakPtrFactory<ContentCaptureReceiverManager> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OnscreenContentProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace content_capture
 
-#endif  // COMPONENTS_CONTENT_CAPTURE_BROWSER_CONTENT_CAPTURE_RECEIVER_MANAGER_H_
+#endif  // COMPONENTS_CONTENT_CAPTURE_BROWSER_ONSCREEN_CONTENT_PROVIDER_H_

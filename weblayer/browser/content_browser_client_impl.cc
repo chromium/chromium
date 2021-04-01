@@ -20,7 +20,7 @@
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/blocked_content/popup_blocker.h"
 #include "components/captive_portal/core/buildflags.h"
-#include "components/content_capture/browser/content_capture_receiver_manager.h"
+#include "components/content_capture/browser/onscreen_content_provider.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/embedder_support/content_settings_utils.h"
 #include "components/embedder_support/switches.h"
@@ -860,7 +860,7 @@ bool ContentBrowserClientImpl::BindAssociatedReceiverFromFrame(
     return true;
   }
   if (interface_name == content_capture::mojom::ContentCaptureReceiver::Name_) {
-    content_capture::ContentCaptureReceiverManager::BindContentCaptureReceiver(
+    content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
         mojo::PendingAssociatedReceiver<
             content_capture::mojom::ContentCaptureReceiver>(std::move(*handle)),
         render_frame_host);

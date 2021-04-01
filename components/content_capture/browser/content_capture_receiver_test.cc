@@ -13,7 +13,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "components/content_capture/browser/content_capture_consumer.h"
-#include "components/content_capture/browser/content_capture_receiver_manager.h"
+#include "components/content_capture/browser/onscreen_content_provider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -161,13 +161,13 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
           {features::kBackForwardCacheMemoryControls});
     }
     content::RenderViewHostTestHarness::SetUp();
-    content_capture_receiver_manager_ =
-        ContentCaptureReceiverManager::Create(web_contents());
+    onscreen_content_provider_ =
+        OnscreenContentProvider::Create(web_contents());
 
     content_capture_consumer_helper_ =
         std::make_unique<ContentCaptureConsumerHelper>(
             &session_removed_test_helper_);
-    content_capture_receiver_manager_->AddConsumer(
+    onscreen_content_provider_->AddConsumer(
         *(content_capture_consumer_helper_.get()));
 
     // This needed to keep the WebContentsObserverConsistencyChecker checks
@@ -176,7 +176,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     content_capture_sender_ = std::make_unique<FakeContentCaptureSender>();
     main_frame_ = web_contents()->GetMainFrame();
     // Binds sender with receiver.
-    ContentCaptureReceiverManager::BindContentCaptureReceiver(
+    OnscreenContentProvider::BindContentCaptureReceiver(
         content_capture_sender_->GetPendingAssociatedReceiver(), main_frame_);
 
     ContentCaptureData child;
@@ -229,7 +229,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     child_frame_ =
         content::RenderFrameHostTester::For(main_frame_)->AppendChild("child");
     // Binds sender with receiver for child frame.
-    ContentCaptureReceiverManager::BindContentCaptureReceiver(
+    OnscreenContentProvider::BindContentCaptureReceiver(
         child_content_capture_sender_->GetPendingAssociatedReceiver(),
         child_frame_);
   }
@@ -289,8 +289,8 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
     return content_capture_consumer_helper_.get();
   }
 
-  ContentCaptureReceiverManager* content_capture_receiver_manager() const {
-    return content_capture_receiver_manager_;
+  OnscreenContentProvider* onscreen_content_provider() const {
+    return onscreen_content_provider_;
   }
 
   SessionRemovedTestHelper* session_removed_test_helper() {
@@ -350,7 +350,7 @@ class ContentCaptureReceiverTest : public content::RenderViewHostTestHarness,
  protected:
   std::unique_ptr<ContentCaptureConsumerHelper>
       content_capture_consumer_helper_;
-  ContentCaptureReceiverManager* content_capture_receiver_manager_ = nullptr;
+  OnscreenContentProvider* onscreen_content_provider_ = nullptr;
 
  private:
   // The sender for main frame.
@@ -385,7 +385,7 @@ TEST_P(ContentCaptureReceiverTest, MultipleConsumers) {
   std::unique_ptr<ContentCaptureConsumerHelper> consumer2 =
       std::make_unique<ContentCaptureConsumerHelper>(nullptr);
 
-  content_capture_receiver_manager()->AddConsumer(*(consumer2.get()));
+  onscreen_content_provider()->AddConsumer(*(consumer2.get()));
   DidCaptureContent(test_data(), true /* first_data */);
   EXPECT_TRUE(content_capture_consumer_helper()->parent_session().empty());
   EXPECT_TRUE(content_capture_consumer_helper()->removed_sessions().empty());
@@ -398,16 +398,15 @@ TEST_P(ContentCaptureReceiverTest, MultipleConsumers) {
             consumer2->captured_data());
 
   // Verifies to get the remove session callback in RemoveConsumer.
-  content_capture_receiver_manager()->RemoveConsumer(*(consumer2.get()));
+  onscreen_content_provider()->RemoveConsumer(*(consumer2.get()));
   EXPECT_TRUE(content_capture_consumer_helper()->removed_sessions().empty());
   EXPECT_EQ(1u, consumer2->removed_sessions().size());
   std::vector<ContentCaptureFrame> expected{
       GetExpectedTestData(true /* main_frame */)};
   VerifySession(expected, consumer2->removed_sessions().front());
-  EXPECT_EQ(
-      1u, content_capture_receiver_manager()->GetConsumersForTesting().size());
+  EXPECT_EQ(1u, onscreen_content_provider()->GetConsumersForTesting().size());
   EXPECT_EQ(content_capture_consumer_helper(),
-            content_capture_receiver_manager()->GetConsumersForTesting()[0]);
+            onscreen_content_provider()->GetConsumersForTesting()[0]);
 }
 
 // TODO(https://crbug.com/1010179): Fix flakes on win10_chromium_x64_rel_ng and
@@ -523,9 +522,9 @@ TEST_P(ContentCaptureReceiverTest, ChildFrameDidCaptureContent) {
 
 // This test is for issue crbug.com/995121 .
 TEST_P(ContentCaptureReceiverTest, RenderFrameHostGone) {
-  auto* receiver = content_capture_receiver_manager()
-                       ->ContentCaptureReceiverForFrameForTesting(
-                           web_contents()->GetMainFrame());
+  auto* receiver =
+      onscreen_content_provider()->ContentCaptureReceiverForFrameForTesting(
+          web_contents()->GetMainFrame());
   // No good way to simulate crbug.com/995121, just set rfh_ to nullptr in
   // ContentCaptureReceiver, so content::WebContents::FromRenderFrameHost()
   // won't return WebContents.
@@ -537,9 +536,9 @@ TEST_P(ContentCaptureReceiverTest, RenderFrameHostGone) {
 }
 
 TEST_P(ContentCaptureReceiverTest, TitleUpdateTaskDelay) {
-  auto* receiver = content_capture_receiver_manager()
-                       ->ContentCaptureReceiverForFrameForTesting(
-                           web_contents()->GetMainFrame());
+  auto* receiver =
+      onscreen_content_provider()->ContentCaptureReceiverForFrameForTesting(
+          web_contents()->GetMainFrame());
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   // Uses TestMockTimeTaskRunner to check the task state.
   receiver->title_update_task_runner_ = task_runner;
@@ -726,19 +725,19 @@ class ContentCaptureReceiverMultipleFrameTest
     : public ContentCaptureReceiverTest {
  public:
   void SetUp() override {
-    // Setup multiple frames before creates ContentCaptureReceiverManager.
+    // Setup multiple frames before creates OnscreenContentProvider.
     content::RenderViewHostTestHarness::SetUp();
     // This needed to keep the WebContentsObserverConsistencyChecker checks
     // happy for when AppendChild is called.
     NavigateAndCommit(GURL("about:blank"));
     content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
         ->AppendChild("child");
-    content_capture_receiver_manager_ =
-        ContentCaptureReceiverManager::Create(web_contents());
+    onscreen_content_provider_ =
+        OnscreenContentProvider::Create(web_contents());
 
     content_capture_consumer_helper_ =
         std::make_unique<ContentCaptureConsumerHelper>(nullptr);
-    content_capture_receiver_manager_->AddConsumer(
+    onscreen_content_provider_->AddConsumer(
         *(content_capture_consumer_helper_.get()));
   }
 
@@ -755,8 +754,7 @@ class ContentCaptureReceiverMultipleFrameTest
 #endif
 TEST_F(ContentCaptureReceiverMultipleFrameTest,
        MAYBE_ReceiverCreatedForExistingFrame) {
-  EXPECT_EQ(2u,
-            content_capture_receiver_manager()->GetFrameMapSizeForTesting());
+  EXPECT_EQ(2u, onscreen_content_provider()->GetFrameMapSizeForTesting());
 }
 
 }  // namespace content_capture

@@ -23,7 +23,7 @@ class RenderFrameHost;
 namespace content_capture {
 
 // This class has an instance per RenderFrameHost, it receives messages from
-// renderer and forward them to ContentCaptureReceiverManager for further
+// renderer and forward them to OnscreenContentProvider for further
 // processing.
 class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
  public:
@@ -74,7 +74,7 @@ class ContentCaptureReceiver : public mojom::ContentCaptureReceiver {
   // The ID is always generated in receiver because neither does the parent
   // frame always have content, nor is its content always captured before child
   // frame's; if the Id is generated in sender, the
-  // ContentCaptureReceiverManager can't get parent frame id in both cases.
+  // OnscreenContentProvider can't get parent frame id in both cases.
   int64_t id_;
   bool content_capture_enabled_ = false;
 

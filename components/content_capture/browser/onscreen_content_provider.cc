@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_capture/browser/content_capture_receiver_manager.h"
+#include "components/content_capture/browser/onscreen_content_provider.h"
 
 #include <utility>
 
@@ -23,7 +23,7 @@ const void* const kUserDataKey = &kUserDataKey;
 
 }  // namespace
 
-ContentCaptureReceiverManager::ContentCaptureReceiverManager(
+OnscreenContentProvider::OnscreenContentProvider(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents) {
   const std::vector<content::RenderFrameHost*> frames =
@@ -31,27 +31,26 @@ ContentCaptureReceiverManager::ContentCaptureReceiverManager(
   for (content::RenderFrameHost* frame : frames)
     RenderFrameCreated(frame);
 
-  web_contents->SetUserData(
-      kUserDataKey, std::unique_ptr<ContentCaptureReceiverManager>(this));
+  web_contents->SetUserData(kUserDataKey, base::WrapUnique(this));
 }
 
-ContentCaptureReceiverManager::~ContentCaptureReceiverManager() = default;
+OnscreenContentProvider::~OnscreenContentProvider() = default;
 
 // static
-ContentCaptureReceiverManager* ContentCaptureReceiverManager::FromWebContents(
+OnscreenContentProvider* OnscreenContentProvider::FromWebContents(
     content::WebContents* contents) {
-  return static_cast<ContentCaptureReceiverManager*>(
+  return static_cast<OnscreenContentProvider*>(
       contents->GetUserData(kUserDataKey));
 }
 
-ContentCaptureReceiverManager* ContentCaptureReceiverManager::Create(
+OnscreenContentProvider* OnscreenContentProvider::Create(
     content::WebContents* web_contents) {
   DCHECK(!FromWebContents(web_contents));
-  return new ContentCaptureReceiverManager(web_contents);
+  return new OnscreenContentProvider(web_contents);
 }
 
 // static
-void ContentCaptureReceiverManager::BindContentCaptureReceiver(
+void OnscreenContentProvider::BindContentCaptureReceiver(
     mojo::PendingAssociatedReceiver<mojom::ContentCaptureReceiver>
         pending_receiver,
     content::RenderFrameHost* render_frame_host) {
@@ -61,8 +60,8 @@ void ContentCaptureReceiverManager::BindContentCaptureReceiver(
   if (!web_contents)
     return;
 
-  ContentCaptureReceiverManager* manager =
-      ContentCaptureReceiverManager::FromWebContents(web_contents);
+  OnscreenContentProvider* manager =
+      OnscreenContentProvider::FromWebContents(web_contents);
   if (!manager)
     return;
 
@@ -71,13 +70,11 @@ void ContentCaptureReceiverManager::BindContentCaptureReceiver(
     receiver->BindPendingReceiver(std::move(pending_receiver));
 }
 
-void ContentCaptureReceiverManager::AddConsumer(
-    ContentCaptureConsumer& consumer) {
+void OnscreenContentProvider::AddConsumer(ContentCaptureConsumer& consumer) {
   consumers_.push_back(&consumer);
 }
 
-void ContentCaptureReceiverManager::RemoveConsumer(
-    ContentCaptureConsumer& consumer) {
+void OnscreenContentProvider::RemoveConsumer(ContentCaptureConsumer& consumer) {
   for (auto it = consumers_.begin(); it != consumers_.end(); ++it) {
     if (*it == &consumer) {
       ContentCaptureSession session;
@@ -91,14 +88,13 @@ void ContentCaptureReceiverManager::RemoveConsumer(
   NOTREACHED();
 }
 
-ContentCaptureReceiver*
-ContentCaptureReceiverManager::ContentCaptureReceiverForFrame(
+ContentCaptureReceiver* OnscreenContentProvider::ContentCaptureReceiverForFrame(
     content::RenderFrameHost* render_frame_host) const {
   auto mapping = frame_map_.find(render_frame_host);
   return mapping == frame_map_.end() ? nullptr : mapping->second.get();
 }
 
-void ContentCaptureReceiverManager::RenderFrameCreated(
+void OnscreenContentProvider::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
   // The frame might not have content, but it could be parent of other frame. we
   // always create the ContentCaptureReceiver for ContentCaptureSession
@@ -110,7 +106,7 @@ void ContentCaptureReceiverManager::RenderFrameCreated(
       std::make_unique<ContentCaptureReceiver>(render_frame_host)));
 }
 
-void ContentCaptureReceiverManager::RenderFrameDeleted(
+void OnscreenContentProvider::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   if (auto* content_capture_receiver =
           ContentCaptureReceiverForFrame(render_frame_host)) {
@@ -119,7 +115,7 @@ void ContentCaptureReceiverManager::RenderFrameDeleted(
   frame_map_.erase(render_frame_host);
 }
 
-void ContentCaptureReceiverManager::ReadyToCommitNavigation(
+void OnscreenContentProvider::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   // Don't remove the session for the same document navigation.
   if (!navigation_handle->IsSameDocument()) {
@@ -142,8 +138,7 @@ void ContentCaptureReceiverManager::ReadyToCommitNavigation(
   }
 }
 
-void ContentCaptureReceiverManager::TitleWasSet(
-    content::NavigationEntry* entry) {
+void OnscreenContentProvider::TitleWasSet(content::NavigationEntry* entry) {
   // Set the title to the mainframe.
   if (auto* receiver =
           ContentCaptureReceiverForFrame(web_contents()->GetMainFrame())) {
@@ -153,7 +148,7 @@ void ContentCaptureReceiverManager::TitleWasSet(
   }
 }
 
-void ContentCaptureReceiverManager::DidCaptureContent(
+void OnscreenContentProvider::DidCaptureContent(
     ContentCaptureReceiver* content_capture_receiver,
     const ContentCaptureFrame& data) {
   // The root of |data| is frame, we need get its ancestor only.
@@ -164,7 +159,7 @@ void ContentCaptureReceiverManager::DidCaptureContent(
     consumer->DidCaptureContent(parent_session, data);
 }
 
-void ContentCaptureReceiverManager::DidUpdateContent(
+void OnscreenContentProvider::DidUpdateContent(
     ContentCaptureReceiver* content_capture_receiver,
     const ContentCaptureFrame& data) {
   ContentCaptureSession parent_session;
@@ -174,7 +169,7 @@ void ContentCaptureReceiverManager::DidUpdateContent(
     consumer->DidUpdateContent(parent_session, data);
 }
 
-void ContentCaptureReceiverManager::DidRemoveContent(
+void OnscreenContentProvider::DidRemoveContent(
     ContentCaptureReceiver* content_capture_receiver,
     const std::vector<int64_t>& data) {
   ContentCaptureSession session;
@@ -186,7 +181,7 @@ void ContentCaptureReceiverManager::DidRemoveContent(
     consumer->DidRemoveContent(session, data);
 }
 
-void ContentCaptureReceiverManager::DidRemoveSession(
+void OnscreenContentProvider::DidRemoveSession(
     ContentCaptureReceiver* content_capture_receiver) {
   ContentCaptureSession session;
   // The session should include the removed frame that the
@@ -205,7 +200,7 @@ void ContentCaptureReceiverManager::DidRemoveSession(
     consumer->DidRemoveSession(session);
 }
 
-void ContentCaptureReceiverManager::DidUpdateTitle(
+void OnscreenContentProvider::DidUpdateTitle(
     ContentCaptureReceiver* content_capture_receiver) {
   ContentCaptureSession session;
   BuildContentCaptureSession(content_capture_receiver,
@@ -218,7 +213,7 @@ void ContentCaptureReceiverManager::DidUpdateTitle(
     consumer->DidUpdateTitle(*session.begin());
 }
 
-void ContentCaptureReceiverManager::BuildContentCaptureSession(
+void OnscreenContentProvider::BuildContentCaptureSession(
     ContentCaptureReceiver* content_capture_receiver,
     bool ancestor_only,
     ContentCaptureSession* session) {
@@ -240,7 +235,7 @@ void ContentCaptureReceiverManager::BuildContentCaptureSession(
   }
 }
 
-bool ContentCaptureReceiverManager::BuildContentCaptureSessionLastSeen(
+bool OnscreenContentProvider::BuildContentCaptureSessionLastSeen(
     ContentCaptureReceiver* content_capture_receiver,
     ContentCaptureSession* session) {
   session->push_back(
@@ -256,7 +251,7 @@ bool ContentCaptureReceiverManager::BuildContentCaptureSessionLastSeen(
   return true;
 }
 
-bool ContentCaptureReceiverManager::BuildContentCaptureSessionForMainFrame(
+bool OnscreenContentProvider::BuildContentCaptureSessionForMainFrame(
     ContentCaptureSession* session) {
   if (auto* receiver =
           ContentCaptureReceiverForFrame(web_contents()->GetMainFrame())) {
@@ -266,7 +261,7 @@ bool ContentCaptureReceiverManager::BuildContentCaptureSessionForMainFrame(
   return false;
 }
 
-bool ContentCaptureReceiverManager::ShouldCapture(const GURL& url) {
+bool OnscreenContentProvider::ShouldCapture(const GURL& url) {
   for (auto* consumer : consumers_) {
     if (consumer->ShouldCapture(url))
       return true;

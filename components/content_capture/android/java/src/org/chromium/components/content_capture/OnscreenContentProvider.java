@@ -31,7 +31,7 @@ public class OnscreenContentProvider {
     private static final String TAG = "ContentCapture";
     private static Boolean sDump;
 
-    private long mNativeContentCaptureReceiverManagerAndroid;
+    private long mNativeOnscreenContentProviderAndroid;
 
     private ArrayList<ContentCaptureConsumer> mContentCaptureConsumers =
             new ArrayList<ContentCaptureConsumer>();
@@ -67,22 +67,22 @@ public class OnscreenContentProvider {
     }
 
     private void destroyNativeObject() {
-        if (mNativeContentCaptureReceiverManagerAndroid == 0) return;
-        OnscreenContentProviderJni.get().destroy(mNativeContentCaptureReceiverManagerAndroid);
-        mNativeContentCaptureReceiverManagerAndroid = 0;
+        if (mNativeOnscreenContentProviderAndroid == 0) return;
+        OnscreenContentProviderJni.get().destroy(mNativeOnscreenContentProviderAndroid);
+        mNativeOnscreenContentProviderAndroid = 0;
     }
 
     private void createNativeObject() {
         WebContents webContents = mWebContents.get();
         if (webContents != null) {
-            mNativeContentCaptureReceiverManagerAndroid =
+            mNativeOnscreenContentProviderAndroid =
                     OnscreenContentProviderJni.get().init(this, webContents);
         }
     }
 
     public void addConsumer(ContentCaptureConsumer consumer) {
         mContentCaptureConsumers.add(consumer);
-        if (mNativeContentCaptureReceiverManagerAndroid == 0) createNativeObject();
+        if (mNativeOnscreenContentProviderAndroid == 0) createNativeObject();
     }
 
     public void removeConsumer(ContentCaptureConsumer consumer) {
@@ -92,9 +92,9 @@ public class OnscreenContentProvider {
 
     public void onWebContentsChanged(WebContents current) {
         mWebContents = new WeakReference<WebContents>(current);
-        if (mNativeContentCaptureReceiverManagerAndroid != 0) {
+        if (mNativeOnscreenContentProviderAndroid != 0) {
             OnscreenContentProviderJni.get().onWebContentsChanged(
-                    mNativeContentCaptureReceiverManagerAndroid, current);
+                    mNativeOnscreenContentProviderAndroid, current);
         }
     }
 
@@ -211,7 +211,7 @@ public class OnscreenContentProvider {
     interface Natives {
         long init(OnscreenContentProvider caller, WebContents webContents);
         void onWebContentsChanged(
-                long nativeContentCaptureReceiverManagerAndroid, WebContents webContents);
-        void destroy(long nativeContentCaptureReceiverManagerAndroid);
+                long nativeOnscreenContentProviderAndroid, WebContents webContents);
+        void destroy(long nativeOnscreenContentProviderAndroid);
     }
 }

@@ -15,23 +15,23 @@ namespace content_capture {
 
 // The interface for the embedder to get onscreen content.
 //
-// The embedder shall call ContentCaptureReceiverManager::AddConsumer() to add
+// The embedder shall call OnscreenContentProvider::AddConsumer() to add
 // itself as consumer.
 //
-//   ContentCaptureReceiverManager* manager =
-//      ContentCaptureReceiverManager::FromWebContents(web_contents);
-//   if (!manager)
-//     manager = ContentCaptureReceiverManager::Create(web_contents);
-//   manager->AddConsumer(*this);
+//   OnscreenContentProvider* provider =
+//      OnscreenContentProvider::FromWebContents(web_contents);
+//   if (!provider)
+//     provider = OnscreenContentProvider::Create(web_contents);
+//   provider->AddConsumer(*this);
 //
 // The embedder might remove itself when the onscreen content is no longer
 // needed.
 //   // Keep the weak reference
-//   content_capture_receiver_manager_ = manager->GetWeakPtr();
+//   onscreen_content_provider_ = provider->GetWeakPtr();
 //
 //   // Remove from the consumers
-//   if (auto* manager = content_capture_receiver_manager_.get())
-//     manager->RemoveConsumer(*this);
+//   if (auto* provider = onscreen_content_provider_.get())
+//     provider->RemoveConsumer(*this);
 class ContentCaptureConsumer {
  public:
   virtual ~ContentCaptureConsumer() = default;
@@ -50,7 +50,7 @@ class ContentCaptureConsumer {
   // Invoked when the given |session| was removed because
   // - the corresponding frame is deleted,
   // - or the corresponding WebContents is deleted.
-  // - or the consumer removes itself from ContentCaptureReceiverManager, only
+  // - or the consumer removes itself from OnscreenContentProvider, only
   //   main session will be notified in this case.
   virtual void DidRemoveSession(const ContentCaptureSession& session) = 0;
   // Invoked when the given |main_frame|'s title updated.

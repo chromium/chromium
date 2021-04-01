@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_CONTENT_CAPTURE_ANDROID_CONTENT_CAPTURE_RECEIVER_MANAGER_ANDROID_H_
-#define COMPONENTS_CONTENT_CAPTURE_ANDROID_CONTENT_CAPTURE_RECEIVER_MANAGER_ANDROID_H_
+#ifndef COMPONENTS_CONTENT_CAPTURE_ANDROID_ONSCREEN_CONTENT_PROVIDER_ANDROID_H_
+#define COMPONENTS_CONTENT_CAPTURE_ANDROID_ONSCREEN_CONTENT_PROVIDER_ANDROID_H_
 
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "components/content_capture/browser/content_capture_consumer.h"
-#include "components/content_capture/browser/content_capture_receiver_manager.h"
+#include "components/content_capture/browser/onscreen_content_provider.h"
 
 namespace content_capture {
 
-// The Android's implementation of ContentCaptureReceiverManager, it forwards
-// the received message to Java.
-class ContentCaptureReceiverManagerAndroid : public ContentCaptureConsumer {
+// The Android's implementation of OnscreenContentProvider, it forwards
+// the received message to Java and switches among the OnscreenContentProvider.
+class OnscreenContentProviderAndroid : public ContentCaptureConsumer {
  public:
-  ContentCaptureReceiverManagerAndroid(
+  OnscreenContentProviderAndroid(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobject,
       content::WebContents* web_contents);
-  ~ContentCaptureReceiverManagerAndroid() override;
+  ~OnscreenContentProviderAndroid() override;
 
   // ContentCaptureConsumer
   void DidCaptureContent(const ContentCaptureSession& parent_session,
@@ -46,12 +46,11 @@ class ContentCaptureReceiverManagerAndroid : public ContentCaptureConsumer {
   void DetachFromWebContents();
   content::WebContents* GetWebContents();
 
-  base::WeakPtr<ContentCaptureReceiverManager>
-      content_capture_receiver_manager_;
+  base::WeakPtr<OnscreenContentProvider> onscreen_content_provider_;
 
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 };
 
 }  // namespace content_capture
 
-#endif  // COMPONENTS_CONTENT_CAPTURE_ANDROID_CONTENT_CAPTURE_RECEIVER_MANAGER_ANDROID_H_
+#endif  // COMPONENTS_CONTENT_CAPTURE_ANDROID_ONSCREEN_CONTENT_PROVIDER_ANDROID_H_

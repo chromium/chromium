@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/content_capture/android/content_capture_receiver_manager_android.h"
+#include "components/content_capture/android/onscreen_content_provider_android.h"
 
 #include <utility>
 
@@ -93,12 +93,12 @@ static jlong JNI_OnscreenContentProvider_Init(
     const base::android::JavaParamRef<jobject>& jwebContents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jwebContents);
   DCHECK(web_contents);
-  auto* manager = new content_capture::ContentCaptureReceiverManagerAndroid(
+  auto* provider = new content_capture::OnscreenContentProviderAndroid(
       env, jcaller, web_contents);
-  return reinterpret_cast<intptr_t>(manager);
+  return reinterpret_cast<intptr_t>(provider);
 }
 
-ContentCaptureReceiverManagerAndroid::ContentCaptureReceiverManagerAndroid(
+OnscreenContentProviderAndroid::OnscreenContentProviderAndroid(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jobject,
     content::WebContents* web_contents)
@@ -106,10 +106,9 @@ ContentCaptureReceiverManagerAndroid::ContentCaptureReceiverManagerAndroid(
   AttachToWebContents(web_contents);
 }
 
-ContentCaptureReceiverManagerAndroid::~ContentCaptureReceiverManagerAndroid() =
-    default;
+OnscreenContentProviderAndroid::~OnscreenContentProviderAndroid() = default;
 
-void ContentCaptureReceiverManagerAndroid::DidCaptureContent(
+void OnscreenContentProviderAndroid::DidCaptureContent(
     const ContentCaptureSession& parent_session,
     const ContentCaptureFrame& data) {
   JNIEnv* env = AttachCurrentThread();
@@ -128,7 +127,7 @@ void ContentCaptureReceiverManagerAndroid::DidCaptureContent(
       ToJavaArrayOfContentCaptureFrame(env, parent_session, offset_y), jdata);
 }
 
-void ContentCaptureReceiverManagerAndroid::DidUpdateContent(
+void OnscreenContentProviderAndroid::DidUpdateContent(
     const ContentCaptureSession& parent_session,
     const ContentCaptureFrame& data) {
   JNIEnv* env = AttachCurrentThread();
@@ -147,7 +146,7 @@ void ContentCaptureReceiverManagerAndroid::DidUpdateContent(
       ToJavaArrayOfContentCaptureFrame(env, parent_session, offset_y), jdata);
 }
 
-void ContentCaptureReceiverManagerAndroid::DidRemoveContent(
+void OnscreenContentProviderAndroid::DidRemoveContent(
     const ContentCaptureSession& session,
     const std::vector<int64_t>& data) {
   JNIEnv* env = AttachCurrentThread();
@@ -162,7 +161,7 @@ void ContentCaptureReceiverManagerAndroid::DidRemoveContent(
       ToJavaLongArray(env, data));
 }
 
-void ContentCaptureReceiverManagerAndroid::DidRemoveSession(
+void OnscreenContentProviderAndroid::DidRemoveSession(
     const ContentCaptureSession& session) {
   JNIEnv* env = AttachCurrentThread();
   DCHECK(java_ref_.obj());
@@ -175,7 +174,7 @@ void ContentCaptureReceiverManagerAndroid::DidRemoveSession(
       env, java_ref_, ToJavaArrayOfContentCaptureFrame(env, session, offset_y));
 }
 
-void ContentCaptureReceiverManagerAndroid::DidUpdateTitle(
+void OnscreenContentProviderAndroid::DidUpdateTitle(
     const ContentCaptureFrame& main_frame) {
   JNIEnv* env = AttachCurrentThread();
   DCHECK(java_ref_.obj());
@@ -191,7 +190,7 @@ void ContentCaptureReceiverManagerAndroid::DidUpdateTitle(
   Java_OnscreenContentProvider_didUpdateTitle(env, java_ref_, jdata);
 }
 
-bool ContentCaptureReceiverManagerAndroid::ShouldCapture(const GURL& url) {
+bool OnscreenContentProviderAndroid::ShouldCapture(const GURL& url) {
   // Capture all urls for experiment, the url will be checked
   // before the content is sent to the consumers.
   if (features::ShouldTriggerContentCaptureForExperiment())
@@ -201,12 +200,11 @@ bool ContentCaptureReceiverManagerAndroid::ShouldCapture(const GURL& url) {
       env, java_ref_, ConvertUTF8ToJavaString(env, url.spec()));
 }
 
-ScopedJavaLocalRef<jobject>
-ContentCaptureReceiverManagerAndroid::GetJavaObject() {
+ScopedJavaLocalRef<jobject> OnscreenContentProviderAndroid::GetJavaObject() {
   return ScopedJavaLocalRef<jobject>(java_ref_);
 }
 
-void ContentCaptureReceiverManagerAndroid::OnWebContentsChanged(
+void OnscreenContentProviderAndroid::OnWebContentsChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   if (auto* web_contents =
@@ -215,30 +213,30 @@ void ContentCaptureReceiverManagerAndroid::OnWebContentsChanged(
   }
 }
 
-void ContentCaptureReceiverManagerAndroid::AttachToWebContents(
+void OnscreenContentProviderAndroid::AttachToWebContents(
     content::WebContents* web_contents) {
   DetachFromWebContents();
-  ContentCaptureReceiverManager* manager =
-      ContentCaptureReceiverManager::FromWebContents(web_contents);
-  if (!manager)
-    manager = ContentCaptureReceiverManager::Create(web_contents);
-  manager->AddConsumer(*this);
-  content_capture_receiver_manager_ = manager->GetWeakPtr();
+  OnscreenContentProvider* provider =
+      OnscreenContentProvider::FromWebContents(web_contents);
+  if (!provider)
+    provider = OnscreenContentProvider::Create(web_contents);
+  provider->AddConsumer(*this);
+  onscreen_content_provider_ = provider->GetWeakPtr();
 }
 
-void ContentCaptureReceiverManagerAndroid::DetachFromWebContents() {
-  if (auto* manager = content_capture_receiver_manager_.get())
-    manager->RemoveConsumer(*this);
+void OnscreenContentProviderAndroid::DetachFromWebContents() {
+  if (auto* provider = onscreen_content_provider_.get())
+    provider->RemoveConsumer(*this);
 }
 
-void ContentCaptureReceiverManagerAndroid::Destroy(JNIEnv* env) {
+void OnscreenContentProviderAndroid::Destroy(JNIEnv* env) {
   DetachFromWebContents();
   delete this;
 }
 
-content::WebContents* ContentCaptureReceiverManagerAndroid::GetWebContents() {
-  if (auto* manager = content_capture_receiver_manager_.get())
-    return manager->web_contents();
+content::WebContents* OnscreenContentProviderAndroid::GetWebContents() {
+  if (auto* provider = onscreen_content_provider_.get())
+    return provider->web_contents();
   return nullptr;
 }
 
