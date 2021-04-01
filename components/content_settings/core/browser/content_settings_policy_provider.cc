@@ -114,6 +114,32 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedWebUsbBlockedForUrls,
 };
 
+// The following preferences are only used to indicate if a default content
+// setting is managed and to hold the managed default setting value. If the
+// value for any of the following preferences is set then the corresponding
+// default content setting is managed. These preferences exist in parallel to
+// the preference default content settings. If a default content settings type
+// is managed any user defined exceptions (patterns) for this type are ignored.
+constexpr const char* kManagedDefaultPrefs[] = {
+    prefs::kManagedDefaultAdsSetting,
+    prefs::kManagedDefaultCookiesSetting,
+    prefs::kManagedDefaultFileSystemReadGuardSetting,
+    prefs::kManagedDefaultFileSystemWriteGuardSetting,
+    prefs::kManagedDefaultGeolocationSetting,
+    prefs::kManagedDefaultImagesSetting,
+    prefs::kManagedDefaultInsecureContentSetting,
+    prefs::kManagedDefaultInsecurePrivateNetworkSetting,
+    prefs::kManagedDefaultJavaScriptSetting,
+    prefs::kManagedDefaultLegacyCookieAccessSetting,
+    prefs::kManagedDefaultMediaStreamSetting,
+    prefs::kManagedDefaultNotificationsSetting,
+    prefs::kManagedDefaultPopupsSetting,
+    prefs::kManagedDefaultSensorsSetting,
+    prefs::kManagedDefaultSerialGuardSetting,
+    prefs::kManagedDefaultWebBluetoothGuardSetting,
+    prefs::kManagedDefaultWebUsbGuardSetting,
+};
+
 }  // namespace
 
 namespace content_settings {
@@ -164,75 +190,15 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
 // static
 void PolicyProvider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kManagedAutoSelectCertificateForUrls);
-  registry->RegisterListPref(prefs::kManagedCookiesAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedCookiesBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedCookiesSessionOnlyForUrls);
-  registry->RegisterListPref(prefs::kManagedImagesAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedImagesBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedInsecureContentAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedInsecureContentBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedJavaScriptAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedJavaScriptBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedNotificationsAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedNotificationsBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedPopupsAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedPopupsBlockedForUrls);
+  for (const char* pref : kManagedPrefs)
+    registry->RegisterListPref(pref);
+
   registry->RegisterListPref(prefs::kManagedWebUsbAllowDevicesForUrls);
-  registry->RegisterListPref(prefs::kManagedWebUsbAskForUrls);
-  registry->RegisterListPref(prefs::kManagedWebUsbBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedFileSystemReadAskForUrls);
-  registry->RegisterListPref(prefs::kManagedFileSystemReadBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedFileSystemWriteAskForUrls);
-  registry->RegisterListPref(prefs::kManagedFileSystemWriteBlockedForUrls);
-  registry->RegisterListPref(
-      prefs::kManagedLegacyCookieAccessAllowedForDomains);
-  registry->RegisterListPref(prefs::kManagedSerialAskForUrls);
-  registry->RegisterListPref(prefs::kManagedSerialBlockedForUrls);
-  registry->RegisterListPref(prefs::kManagedSensorsAllowedForUrls);
-  registry->RegisterListPref(prefs::kManagedSensorsBlockedForUrls);
-  registry->RegisterListPref(
-      prefs::kManagedInsecurePrivateNetworkAllowedForUrls);
 
   // Preferences for default content setting policies. If a policy is not set of
   // the corresponding preferences below is set to CONTENT_SETTING_DEFAULT.
-  registry->RegisterIntegerPref(prefs::kManagedDefaultAdsSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultCookiesSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultGeolocationSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultImagesSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultInsecureContentSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultJavaScriptSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultNotificationsSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultMediaStreamSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultPopupsSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultWebBluetoothGuardSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultWebUsbGuardSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(
-      prefs::kManagedDefaultFileSystemReadGuardSetting,
-      CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(
-      prefs::kManagedDefaultFileSystemWriteGuardSetting,
-      CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultLegacyCookieAccessSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultSerialGuardSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(prefs::kManagedDefaultSensorsSetting,
-                                CONTENT_SETTING_DEFAULT);
-  registry->RegisterIntegerPref(
-      prefs::kManagedDefaultInsecurePrivateNetworkSetting,
-      CONTENT_SETTING_DEFAULT);
+  for (const char* pref : kManagedDefaultPrefs)
+    registry->RegisterIntegerPref(pref, CONTENT_SETTING_DEFAULT);
 }
 
 PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
@@ -245,32 +211,6 @@ PolicyProvider::PolicyProvider(PrefService* prefs) : prefs_(prefs) {
   for (const char* pref : kManagedPrefs)
     pref_change_registrar_.Add(pref, callback);
 
-  // The following preferences are only used to indicate if a default content
-  // setting is managed and to hold the managed default setting value. If the
-  // value for any of the following preferences is set then the corresponding
-  // default content setting is managed. These preferences exist in parallel to
-  // the preference default content settings. If a default content settings type
-  // is managed any user defined exceptions (patterns) for this type are
-  // ignored.
-  static constexpr const char* kManagedDefaultPrefs[] = {
-      prefs::kManagedDefaultAdsSetting,
-      prefs::kManagedDefaultCookiesSetting,
-      prefs::kManagedDefaultFileSystemReadGuardSetting,
-      prefs::kManagedDefaultFileSystemWriteGuardSetting,
-      prefs::kManagedDefaultGeolocationSetting,
-      prefs::kManagedDefaultImagesSetting,
-      prefs::kManagedDefaultInsecureContentSetting,
-      prefs::kManagedDefaultInsecurePrivateNetworkSetting,
-      prefs::kManagedDefaultJavaScriptSetting,
-      prefs::kManagedDefaultLegacyCookieAccessSetting,
-      prefs::kManagedDefaultMediaStreamSetting,
-      prefs::kManagedDefaultNotificationsSetting,
-      prefs::kManagedDefaultPopupsSetting,
-      prefs::kManagedDefaultSensorsSetting,
-      prefs::kManagedDefaultSerialGuardSetting,
-      prefs::kManagedDefaultWebBluetoothGuardSetting,
-      prefs::kManagedDefaultWebUsbGuardSetting,
-  };
   for (const char* pref : kManagedDefaultPrefs)
     pref_change_registrar_.Add(pref, callback);
 }
@@ -484,7 +424,7 @@ void PolicyProvider::ReadManagedContentSettings(bool overwrite) {
 }
 
 // Since the PolicyProvider is a read only content settings provider, all
-// methodes of the ProviderInterface that set or delete any settings do nothing.
+// methods of the ProviderInterface that set or delete any settings do nothing.
 bool PolicyProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
