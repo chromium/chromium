@@ -44,8 +44,8 @@ function testModuleCompilationOnWorker(blobURL) {
 // Test that WebAssembly exceptions are disabled and a WebAssembly module which
 // uses exceptions cannot be compiled.
 function testWasmExceptionsDisabled() {
-  // If WebAssembly exceptions are enabled even without origin trial token, then we
-  // do not run this test.
+  // If WebAssembly exceptions are enabled even without origin trial token, then
+  // we do not run this test.
   if (window.internals.runtimeFlags.webAssemblyExceptionsEnabled)
     return;
 
@@ -58,8 +58,6 @@ function testWasmExceptionsDisabled() {
   }
 }
 
-// Test that WebAssembly exceptions are disabled and a WebAssembly module which
-// uses shared memory and atomics cannot be compiled on a worker.
 function testWasmExceptionsDisabledOnWorker() {
   // If WebAssembly exceptions are enabled even without origin trial token, then
   // we do not run this test.
@@ -88,16 +86,12 @@ function testWasmExceptionsDisabledOnWorker() {
   return testModuleCompilationOnWorker(blobURL);
 }
 
-// Test that WebAssembly exceptions are enabled and a WebAssembly module which
-// uses shared memory and atomics can be compiled.
 function testWasmExceptionsEnabled() {
   const module = createBuilderWithExceptions().toModule();
-  assert_true(module !== undefined);
+  assert_not_equals(module, undefined);
   assert_true(module instanceof WebAssembly.Module);
 }
 
-// Test that WebAssembly exceptions are enabled and a WebAssembly module which
-// uses shared memory and atomics can be compiled on a worker.
 function testWasmExceptionsEnabledOnWorker() {
   let blobURL = URL.createObjectURL(new Blob(
       [
@@ -120,3 +114,53 @@ function testWasmExceptionsEnabledOnWorker() {
   return testModuleCompilationOnWorker(blobURL);
 }
 
+function testWasmExceptionConstructorEnabled() {
+  assert_not_equals(WebAssembly.Exception, undefined);
+}
+
+function testWasmExceptionConstructorDisabled() {
+  // If WebAssembly exceptions are enabled even without origin trial token, then
+  // we do not run this test.
+  if (window.internals.runtimeFlags.webAssemblyExceptionsEnabled)
+    return;
+
+  assert_equals(WebAssembly.Exception, undefined);
+}
+
+function testWasmExceptionConstructorEnabledOnWorker() {
+  let blobURL = URL.createObjectURL(new Blob(
+      [
+        '(',
+        function() {
+          self.addEventListener('message', data => {
+            self.postMessage(WebAssembly.Exception !== undefined);
+          });
+        }.toString(),
+        ')()'
+      ],
+      {type: 'application/javascript'}));
+
+  return testModuleCompilationOnWorker(blobURL);
+}
+
+function testWasmExceptionConstructorDisabledOnWorker() {
+  // If WebAssembly exceptions are enabled even without origin trial token, then
+  // we do not run this test.
+  if (window.internals.runtimeFlags.webAssemblyExceptionsEnabled) {
+    return Promise.resolve();
+  }
+
+  let blobURL = URL.createObjectURL(new Blob(
+      [
+        '(',
+        function() {
+          self.addEventListener('message', data => {
+            self.postMessage(WebAssembly.Exception === undefined);
+          });
+        }.toString(),
+        ')()'
+      ],
+      {type: 'application/javascript'}));
+
+  return testModuleCompilationOnWorker(blobURL);
+}

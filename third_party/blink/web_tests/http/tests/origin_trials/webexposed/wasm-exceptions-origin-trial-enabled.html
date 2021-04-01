@@ -13,4 +13,8 @@ test(testWasmExceptionsEnabled,
      "Test that WebAssembly exceptions are enabled with origin trial token");
 promise_test(testWasmExceptionsEnabledOnWorker,
      "Test that WebAssembly exceptions are enabled in worker with origin trial token");
+test(testWasmExceptionConstructorEnabled,
+     "Test that WebAssembly.Exception constructor is enabled with origin trial token");
+promise_test(testWasmExceptionConstructorEnabledOnWorker,
+     "Test that the WebAssembly.Exception constructor exists in workers with origin trial token");
 </script>

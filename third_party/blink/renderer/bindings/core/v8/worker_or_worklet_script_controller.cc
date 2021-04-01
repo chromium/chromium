@@ -257,6 +257,9 @@ void WorkerOrWorkletScriptController::PrepareForEvaluation() {
   V8PerContextData* per_context_data = script_state_->PerContextData();
   ignore_result(per_context_data->ConstructorForType(
       global_scope_->GetWrapperTypeInfo()));
+  // Inform V8 that origin trial information is now connected with the context,
+  // and V8 can extend the context with origin trial features.
+  isolate_->InstallConditionalFeatures(script_state_->GetContext());
 #else   // USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Context> context = script_state_->GetContext();

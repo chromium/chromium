@@ -171,8 +171,9 @@ class CORE_EXPORT OriginTrialContext final
                                              bool is_third_party);
 
   // Installs JavaScript bindings on the relevant objects for the specified
-  // OriginTrialFeature.
-  void InstallFeature(OriginTrialFeature, ScriptState*);
+  // OriginTrialFeature. Returns true if the feature was not already added
+  // before, otherwise false.
+  bool InstallFeature(OriginTrialFeature, ScriptState*);
 
   const SecurityOrigin* GetSecurityOrigin();
   bool IsSecureContext();

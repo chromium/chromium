@@ -258,6 +258,10 @@ void LocalWindowProxy::InstallConditionalFeatures() {
   V8PerContextData* per_context_data = script_state_->PerContextData();
   ignore_result(
       per_context_data->ConstructorForType(V8Window::GetWrapperTypeInfo()));
+  // Inform V8 that origin trial information is now connected with the context,
+  // and V8 can extend the context with origin trial features.
+  script_state_->GetIsolate()->InstallConditionalFeatures(
+      script_state_->GetContext());
 #else   // USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE
   v8::Local<v8::Context> context = script_state_->GetContext();
 

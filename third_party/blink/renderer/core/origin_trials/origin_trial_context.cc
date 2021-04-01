@@ -310,24 +310,31 @@ void OriginTrialContext::InitializePendingFeatures() {
   if (!script_state->ContextIsValid())
     return;
   ScriptState::Scope scope(script_state);
+  int new_feature_added = 0;
   for (OriginTrialFeature enabled_feature : enabled_features_) {
-    InstallFeature(enabled_feature, script_state);
+    new_feature_added += InstallFeature(enabled_feature, script_state);
   }
   for (OriginTrialFeature enabled_feature : navigation_activated_features_) {
-    InstallFeature(enabled_feature, script_state);
+    new_feature_added += InstallFeature(enabled_feature, script_state);
+  }
+  if (new_feature_added > 0) {
+    // Also allow V8 to install conditional features now.
+    script_state->GetIsolate()->InstallConditionalFeatures(
+        script_state->GetContext());
   }
 }
 
-void OriginTrialContext::InstallFeature(OriginTrialFeature enabled_feature,
+bool OriginTrialContext::InstallFeature(OriginTrialFeature enabled_feature,
                                         ScriptState* script_state) {
   if (installed_features_.Contains(enabled_feature))
-    return;
+    return false;
 #if defined(USE_BLINK_V8_BINDING_NEW_IDL_INTERFACE)
   InstallPropertiesPerFeature(script_state, enabled_feature);
 #else
   InstallPendingOriginTrialFeature(enabled_feature, script_state);
 #endif
   installed_features_.insert(enabled_feature);
+  return true;
 }
 
 void OriginTrialContext::AddFeature(OriginTrialFeature feature) {
