@@ -119,6 +119,10 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     # Here we add all of the arguments required to run WPT tests on Android.
     rest_args.extend([self.options.wpt_path])
 
+    # By default, WPT will treat unexpected passes as errors, so we disable
+    # that to be consistent with Chromium CI.
+    rest_args.extend(["--no-fail-on-unexpected-pass"])
+
     # vpython has packages needed by wpt, so force it to skip the setup
     rest_args.extend(["--venv=" + SRC_DIR, "--skip-venv-setup"])
 
