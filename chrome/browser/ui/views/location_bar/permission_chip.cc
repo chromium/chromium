@@ -80,6 +80,9 @@ PermissionChip::PermissionChip(Browser* browser) : browser_(browser) {
 
   chip_button_->SetExpandAnimationEndedCallback(base::BindRepeating(
       &PermissionChip::ExpandAnimationEnded, base::Unretained(this)));
+
+  chip_button_->SetTheme(OmniboxChipButton::Theme::kBlue);
+  chip_button_->SetProminent(true);
 }
 
 PermissionChip::~PermissionChip() {

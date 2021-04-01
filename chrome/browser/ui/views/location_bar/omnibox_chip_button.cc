@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
@@ -17,7 +18,6 @@ OmniboxChipButton::OmniboxChipButton(PressedCallback callback,
                                      int button_context)
     : MdTextButton(std::move(callback), std::u16string(), button_context) {
   views::InstallPillHighlightPathGenerator(this);
-  SetProminent(true);
   SetCornerRadius(GetIconSize());
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
   SetElideBehavior(gfx::ElideBehavior::FADE_TAIL);
@@ -54,7 +54,7 @@ void OmniboxChipButton::ResetAnimation() {
 
 void OmniboxChipButton::SetIcon(const gfx::VectorIcon* icon) {
   icon_ = icon;
-  UpdateIconAndTextColor();
+  UpdateColors();
 }
 
 void OmniboxChipButton::SetExpandAnimationEndedCallback(
@@ -74,7 +74,7 @@ gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
 
 void OmniboxChipButton::OnThemeChanged() {
   View::OnThemeChanged();
-  UpdateIconAndTextColor();
+  UpdateColors();
 }
 
 void OmniboxChipButton::AnimationEnded(const gfx::Animation* animation) {
@@ -91,22 +91,54 @@ void OmniboxChipButton::AnimationProgressed(const gfx::Animation* animation) {
     PreferredSizeChanged();
 }
 
+void OmniboxChipButton::SetTheme(Theme theme) {
+  theme_ = theme;
+  UpdateColors();
+}
+
+void OmniboxChipButton::SetProminent(bool is_prominent) {
+  views::MdTextButton::SetProminent(is_prominent);
+  UpdateColors();
+}
+
 int OmniboxChipButton::GetIconSize() const {
   return GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
 }
 
-void OmniboxChipButton::UpdateIconAndTextColor() {
-  // Set label and icon color to be the same color.
-  SkColor enabled_text_color = views::style::GetColor(
-      *this, label()->GetTextContext(),
-      GetProminent() ? views::style::STYLE_DIALOG_BUTTON_DEFAULT
-                     : views::style::STYLE_PRIMARY);
-  if (icon_) {
-    SetEnabledTextColors(enabled_text_color);
-    SetImageModel(views::Button::STATE_NORMAL,
-                  ui::ImageModel::FromVectorIcon(*icon_, enabled_text_color,
-                                                 GetIconSize()));
+void OmniboxChipButton::UpdateColors() {
+  if (!icon_)
+    return;
+
+  SetEnabledTextColors(GetForegroundColor());
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(*icon_, GetForegroundColor(),
+                                               GetIconSize()));
+  SetBgColorOverride(GetBackgroundColor());
+}
+
+SkColor OmniboxChipButton::GetMainColor() {
+  ui::NativeTheme* native_theme = GetNativeTheme();
+  switch (theme_) {
+    case Theme::kBlue:
+      // TODO(crbug.com/1003612): ui::NativeTheme::kColorId_ProminentButtonColor
+      // does not always represent the blue color we need, but it is OK to use
+      // for now.
+      return native_theme->GetSystemColor(
+          ui::NativeTheme::kColorId_ProminentButtonColor);
   }
+}
+
+SkColor OmniboxChipButton::GetNeutralColor() {
+  return views::style::GetColor(*this, label()->GetTextContext(),
+                                views::style::STYLE_DIALOG_BUTTON_DEFAULT);
+}
+
+SkColor OmniboxChipButton::GetForegroundColor() {
+  return GetProminent() ? GetNeutralColor() : GetMainColor();
+}
+
+SkColor OmniboxChipButton::GetBackgroundColor() {
+  return GetProminent() ? GetMainColor() : GetNeutralColor();
 }
 
 BEGIN_METADATA(OmniboxChipButton, views::MdTextButton)
