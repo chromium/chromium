@@ -315,7 +315,6 @@ target(link_target_type, "gles2_sources") {
     "//skia:buildflags",
     "//third_party/angle:angle_image_util",
     "//third_party/angle:commit_id",
-    "//third_party/angle:translator",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
     "//third_party/zlib",
@@ -325,6 +324,13 @@ target(link_target_type, "gles2_sources") {
     "//ui/gl:buildflags",
     "//ui/gl/init",
   ]
+
+  # If statically linked against ANGLE, link against angle:translator which is already included with ANGLE.
+  if (use_static_angle) {
+    deps += [ "//third_party/angle:translator" ]
+  } else {
+    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
+  }
 
   if (use_ozone) {
     deps += [
