@@ -50,19 +50,21 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
     DCHECK_GT(requested_format_.frame_rate, 0);
     min_frame_rate_ = ComputeMinFrameRate(requested_format_.frame_rate);
 
-    base::RepeatingCallback<void(IOSurfaceRef)> received_io_surface_callback =
-        base::BindRepeating(
+    base::RepeatingCallback<void(gfx::ScopedInUseIOSurface)>
+        received_io_surface_callback = base::BindRepeating(
             &DesktopCaptureDeviceMac::OnReceivedIOSurfaceFromStream,
             weak_factory_.GetWeakPtr());
-    CGDisplayStreamFrameAvailableHandler handler = ^(
-        CGDisplayStreamFrameStatus status, uint64_t display_time,
-        IOSurfaceRef frame_surface, CGDisplayStreamUpdateRef update_ref) {
-      if (status == kCGDisplayStreamFrameStatusFrameComplete) {
-        device_task_runner_->PostTask(
-            FROM_HERE,
-            base::BindRepeating(received_io_surface_callback, frame_surface));
-      }
-    };
+    CGDisplayStreamFrameAvailableHandler handler =
+        ^(CGDisplayStreamFrameStatus status, uint64_t display_time,
+          IOSurfaceRef frame_surface, CGDisplayStreamUpdateRef update_ref) {
+          gfx::ScopedInUseIOSurface io_surface(frame_surface,
+                                               base::scoped_policy::RETAIN);
+          if (status == kCGDisplayStreamFrameStatusFrameComplete) {
+            device_task_runner_->PostTask(
+                FROM_HERE,
+                base::BindRepeating(received_io_surface_callback, io_surface));
+          }
+        };
 
     base::ScopedCFTypeRef<CFDictionaryRef> properties;
     {
@@ -129,9 +131,9 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
   }
 
  private:
-  void OnReceivedIOSurfaceFromStream(IOSurfaceRef io_surface) {
+  void OnReceivedIOSurfaceFromStream(gfx::ScopedInUseIOSurface io_surface) {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-    last_received_io_surface_.reset(io_surface, base::scoped_policy::RETAIN);
+    last_received_io_surface_ = std::move(io_surface);
 
     // Immediately send the new frame to the client.
     SendLastReceivedIOSurfaceToClient();
