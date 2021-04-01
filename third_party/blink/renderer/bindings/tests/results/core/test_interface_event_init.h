@@ -26,7 +26,7 @@ class CORE_EXPORT TestInterfaceEventInit : public EventInit {
   }
 
   TestInterfaceEventInit();
-  virtual ~TestInterfaceEventInit();
+  ~TestInterfaceEventInit() override;
 
   bool hasStringMember() const { return !string_member_.IsNull(); }
   const String& stringMember() const {

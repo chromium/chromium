@@ -24,7 +24,7 @@ class {{exported}}{{cpp_class}} : public {{parent_cpp_class}} {
   }
 
   {{cpp_class}}();
-  virtual ~{{cpp_class}}();
+  ~{{cpp_class}}() override;
 
   {% for member in members %}
   bool {{member.has_method_name}}() const { return {{member.has_method_expression}}; }

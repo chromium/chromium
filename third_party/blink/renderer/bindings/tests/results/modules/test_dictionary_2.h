@@ -29,7 +29,7 @@ class MODULES_EXPORT TestDictionary2 : public IDLDictionaryBase {
   }
 
   TestDictionary2();
-  virtual ~TestDictionary2();
+  ~TestDictionary2() override;
 
   bool hasDefaultEmptyDictionary() const { return !!default_empty_dictionary_; }
   TestDictionary* defaultEmptyDictionary() const {

@@ -25,7 +25,7 @@ class CORE_EXPORT TestPermissiveDictionary : public IDLDictionaryBase {
   }
 
   TestPermissiveDictionary();
-  virtual ~TestPermissiveDictionary();
+  ~TestPermissiveDictionary() override;
 
   bool hasBooleanMember() const { return has_boolean_member_; }
   bool booleanMember() const {

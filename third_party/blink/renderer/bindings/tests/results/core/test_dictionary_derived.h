@@ -28,7 +28,7 @@ class CORE_EXPORT TestDictionaryDerivedImplementedAs : public TestDictionary {
   }
 
   TestDictionaryDerivedImplementedAs();
-  virtual ~TestDictionaryDerivedImplementedAs();
+  ~TestDictionaryDerivedImplementedAs() override;
 
   bool hasDerivedStringMember() const { return !derived_string_member_.IsNull(); }
   const String& derivedStringMember() const {

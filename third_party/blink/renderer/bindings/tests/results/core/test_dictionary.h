@@ -52,7 +52,7 @@ class CORE_EXPORT TestDictionary : public IDLDictionaryBase {
   }
 
   TestDictionary();
-  virtual ~TestDictionary();
+  ~TestDictionary() override;
 
   bool hasAnyInRecordMember() const { return has_any_in_record_member_; }
   const HeapVector<std::pair<String, ScriptValue>>& anyInRecordMember() const {
