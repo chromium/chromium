@@ -5,6 +5,7 @@
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_tooltip_icon.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="network_property_list_mojo.html">
@@ -22,7 +23,17 @@
       }
 
       #attachApnPropertyRow {
+        display: flex;
         width: var(--cr-property-box-width);
+      }
+
+      #attachApnDescription {
+        display: flex;
+      }
+
+      #attachApnTooltip {
+        --cr-icon-size: 16px;
+        margin-inline-start: 6px;
       }
     </style>
     <div class="property-box">
@@ -48,17 +59,15 @@
         </network-property-list-mojo>
         <template is="dom-if" if="[[isAttachApnAllowed_]]">
           <div id="attachApnPropertyRow" class="property-box horizontal center">
-            <div id="description" class="start">
-              [[i18n('OncCellular-APN-Attach')]]
-              <iron-icon id="help-icon" tabindex="0" icon="cr:help-outline"
-                  aria-labelledby="tooltip">
-              </iron-icon>
-              <paper-tooltip id="tooltip" for="help-icon" position="top"
-                  aria-hidden="true" fit-to-visible-bounds>
-                [[i18n('OncCellular-APN-Attach_TooltipText')]]
-              </paper-tooltip>
+            <div id="attachApnDescription" class="start" aria-hidden="true">
+              <span id="attachApnTitle">[[i18n('OncCellular-APN-Attach')]]</span>
+              <cr-tooltip-icon id="attachApnTooltip" tooltip-position="right"
+                  icon-class="cr:help-outline"
+                  tooltip-text="[[i18n('OncCellular-APN-Attach_TooltipText')]]">
+              </cr-tooltip-icon>
             </div>
-            <cr-toggle id="attachApnControl" aria-labelledby="description"
+            <cr-toggle id="attachApnControl" aria-labelledby="attachApnTitle"
+                aria-describedby="attachApnTooltip"
                 checked="{{isAttachApnToggleEnabled_}}">
             </cr-toggle>
           </div>
