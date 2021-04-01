@@ -10,74 +10,110 @@
 
 namespace blink {
 namespace {
-const double kInterval = TimeClamper::kFineResolutionSeconds;
+const int64_t kIntervalInMicroseconds =
+    TimeClamper::kFineResolutionMicroseconds;
 }
 
 TEST(TimeClamperTest, TimeStampsAreNonNegative) {
   TimeClamper clamper;
-  EXPECT_GE(clamper.ClampTimeResolution(0, true), 0.f);
   EXPECT_GE(
-      clamper.ClampTimeResolution(TimeClamper::kFineResolutionSeconds, true),
+      clamper.ClampTimeResolution(base::TimeDelta(), true).InMicroseconds(),
+      0.f);
+  EXPECT_GE(
+      clamper
+          .ClampTimeResolution(base::TimeDelta::FromMicroseconds(
+                                   TimeClamper::kFineResolutionMicroseconds),
+                               true)
+          .InMicroseconds(),
       0.f);
 }
 
 TEST(TimeClamperTest, TimeStampsIncreaseByFixedAmount) {
-  const double kEpsilon = 1e-10;
   TimeClamper clamper;
-  double prev = clamper.ClampTimeResolution(0, true);
-  for (double time_seconds = 0; time_seconds < kInterval * 100;
-       time_seconds += kInterval * 0.1) {
-    double clamped_time = clamper.ClampTimeResolution(time_seconds, true);
-    double delta = clamped_time - prev;
+  int64_t prev =
+      clamper.ClampTimeResolution(base::TimeDelta(), true).InMicroseconds();
+  for (int64_t time_microseconds = 0;
+       time_microseconds < kIntervalInMicroseconds * 100;
+       time_microseconds += 1) {
+    int64_t clamped_time =
+        clamper
+            .ClampTimeResolution(
+                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+            .InMicroseconds();
+    int64_t delta = clamped_time - prev;
     ASSERT_GE(delta, 0);
-    if (delta > kEpsilon) {
-      ASSERT_TRUE(std::fabs(delta - kInterval) < kEpsilon);
+    if (delta >= 1) {
+      ASSERT_EQ(delta, kIntervalInMicroseconds);
       prev = clamped_time;
     }
   }
 }
 
-TEST(TimeClamperTest, ClampingIsConsistent) {
+TEST(TimeClamperTest, ClampingIsDeterministic) {
   TimeClamper clamper;
-  for (double time_seconds = 0; time_seconds < kInterval * 100;
-       time_seconds += kInterval * 0.1) {
-    double t1 = clamper.ClampTimeResolution(time_seconds, true);
-    double t2 = clamper.ClampTimeResolution(time_seconds, true);
+  for (int64_t time_microseconds = 0;
+       time_microseconds < kIntervalInMicroseconds * 100;
+       time_microseconds += 1) {
+    int64_t t1 =
+        clamper
+            .ClampTimeResolution(
+                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+            .InMicroseconds();
+    int64_t t2 =
+        clamper
+            .ClampTimeResolution(
+                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+            .InMicroseconds();
     EXPECT_EQ(t1, t2);
   }
 }
 
 TEST(TimeClamperTest, ClampingNegativeNumbersIsConsistent) {
   TimeClamper clamper;
-  for (double time_seconds = -kInterval * 100; time_seconds <= 0;
-       time_seconds += kInterval * 0.1) {
-    double t1 = clamper.ClampTimeResolution(time_seconds, true);
-    double t2 = clamper.ClampTimeResolution(time_seconds, true);
+  for (int64_t time_microseconds = -kIntervalInMicroseconds * 100;
+       time_microseconds < kIntervalInMicroseconds * 100;
+       time_microseconds += 1) {
+    int64_t t1 =
+        clamper
+            .ClampTimeResolution(
+                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+            .InMicroseconds();
+    int64_t t2 =
+        clamper
+            .ClampTimeResolution(
+                base::TimeDelta::FromMicroseconds(time_microseconds), true)
+            .InMicroseconds();
     EXPECT_EQ(t1, t2);
   }
 }
 
 TEST(TimeClamperTest, ClampingIsPerInstance) {
-  const double kEpsilon = 1e-10;
   TimeClamper clamper1;
   TimeClamper clamper2;
-  double time_seconds = 0;
+  int64_t time_microseconds = 0;
   while (true) {
-    if (std::fabs(clamper1.ClampTimeResolution(time_seconds, true) -
-                  clamper2.ClampTimeResolution(time_seconds, true)) >
-        kEpsilon) {
+    if (std::abs(
+            clamper1
+                .ClampTimeResolution(
+                    base::TimeDelta::FromMicroseconds(time_microseconds), true)
+                .InMicroseconds() -
+            clamper2
+                .ClampTimeResolution(
+                    base::TimeDelta::FromMicroseconds(time_microseconds), true)
+                .InMicroseconds()) >= 1) {
       break;
     }
-    time_seconds += kInterval;
+    time_microseconds += kIntervalInMicroseconds;
   }
 }
 
-TEST(TimeClamperTest, ClampingIsUniform) {
-  const int kBuckets = 8;
+void UniformityTest(int64_t time_microseconds,
+                    int interval,
+                    bool cross_origin_isolated_capability) {
+  // Number of buckets should be a divisor of the tested intervals.
+  const int kBuckets = 5;
   const int kSampleCount = 10000;
-  const double kEpsilon = 1e-10;
-  const double kTimeStep = kInterval / kBuckets;
-  double time_seconds = 299792.458;
+  const int kTimeStep = interval / kBuckets;
   int histogram[kBuckets] = {0};
   TimeClamper clamper;
 
@@ -85,15 +121,25 @@ TEST(TimeClamperTest, ClampingIsUniform) {
   // distributed inside the clamping intervals. It samples individual intervals
   // to detect where the threshold is and counts the number of steps taken.
   for (int i = 0; i < kSampleCount; i++) {
-    double start = clamper.ClampTimeResolution(time_seconds, true);
+    int64_t start =
+        clamper
+            .ClampTimeResolution(
+                base::TimeDelta::FromMicroseconds(time_microseconds),
+                cross_origin_isolated_capability)
+            .InMicroseconds();
     for (int step = 0; step < kBuckets; step++) {
-      time_seconds += kTimeStep;
-      if (std::abs(clamper.ClampTimeResolution(time_seconds, true) - start) >
-          kEpsilon) {
+      time_microseconds += kTimeStep;
+      if (std::abs(clamper
+                       .ClampTimeResolution(
+                           base::TimeDelta::FromMicroseconds(time_microseconds),
+                           cross_origin_isolated_capability)
+                       .InMicroseconds() -
+                   start) >= 1) {
         histogram[step]++;
         // Skip to the next interval to make sure each measurement is
         // independent.
-        time_seconds = floor(time_seconds / kInterval) * kInterval + kInterval;
+        time_microseconds =
+            floor(time_microseconds / interval) * interval + interval;
         break;
       }
     }
@@ -107,6 +153,15 @@ TEST(TimeClamperTest, ClampingIsUniform) {
   }
   // P-value for a 0.001 significance level with 7 degrees of freedom.
   EXPECT_LT(chi_squared, 24.322);
+}
+
+TEST(TimeClamperTest, ClampingIsUniform) {
+  UniformityTest(299792458238, 5, true);
+  UniformityTest(29979245823800, 5, true);
+  UniformityTest(1616533323846260, 5, true);
+  UniformityTest(299792458238, 100, false);
+  UniformityTest(29979245823800, 100, false);
+  UniformityTest(1616533323846260, 100, false);
 }
 
 }  // namespace blink

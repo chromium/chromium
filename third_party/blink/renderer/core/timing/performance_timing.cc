@@ -56,9 +56,8 @@ static uint64_t ToIntegerMilliseconds(base::TimeDelta duration,
   // negative.
   // TODO(crbug.com/1063989): stop clamping when it is not needed (i.e. for
   // methods which do not expose the timestamp to a web perf API).
-  double clamped_seconds = Performance::ClampTimeResolution(
-      duration.InSecondsF(), cross_origin_isolated_capability);
-  return static_cast<uint64_t>(clamped_seconds * 1000.0);
+  return static_cast<uint64_t>(Performance::ClampTimeResolution(
+      duration, cross_origin_isolated_capability));
 }
 
 PerformanceTiming::PerformanceTiming(ExecutionContext* context)

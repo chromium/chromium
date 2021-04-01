@@ -98,6 +98,13 @@ bool IsMeasureOptionsEmpty(const PerformanceMeasureOptions& options) {
          !options.hasDuration();
 }
 
+base::TimeDelta GetUnixAtZeroMonotonic(const base::Clock* clock,
+                                       const base::TickClock* tick_clock) {
+  base::TimeDelta unix_time_now = clock->Now() - base::Time::UnixEpoch();
+  base::TimeDelta time_since_origin = tick_clock->NowTicks().since_origin();
+  return unix_time_now - time_since_origin;
+}
+
 }  // namespace
 
 using PerformanceObserverVector = HeapVector<Member<PerformanceObserver>>;
@@ -130,9 +137,8 @@ Performance::Performance(
           task_runner_,
           this,
           &Performance::FireResourceTimingBufferFull) {
-  unix_at_zero_monotonic_ = ConvertSecondsToDOMHighResTimeStamp(
-      base::DefaultClock::GetInstance()->Now().ToDoubleT() -
-      tick_clock_->NowTicks().since_origin().InSecondsF());
+  unix_at_zero_monotonic_ =
+      GetUnixAtZeroMonotonic(base::DefaultClock::GetInstance(), tick_clock_);
   // |context| may be null in tests.
   if (context) {
     background_tracing_helper_ =
@@ -171,8 +177,11 @@ ScriptPromise Performance::measureUserAgentSpecificMemory(
 
 DOMHighResTimeStamp Performance::timeOrigin() const {
   DCHECK(!time_origin_.is_null());
-  return unix_at_zero_monotonic_ +
-         ConvertTimeTicksToDOMHighResTimeStamp(time_origin_);
+  base::TimeDelta time_origin_from_zero_monotonic =
+      time_origin_ - base::TimeTicks();
+  return ClampTimeResolution(
+      unix_at_zero_monotonic_ + time_origin_from_zero_monotonic,
+      cross_origin_isolated_capability_);
 }
 
 PerformanceEntryVector Performance::getEntries() {
@@ -982,11 +991,12 @@ void Performance::DeliverObservationsTimerFired(TimerBase*) {
 }
 
 // static
-double Performance::ClampTimeResolution(double time_seconds,
-                                        bool cross_origin_isolated_capability) {
+DOMHighResTimeStamp Performance::ClampTimeResolution(
+    base::TimeDelta time,
+    bool cross_origin_isolated_capability) {
   DEFINE_THREAD_SAFE_STATIC_LOCAL(TimeClamper, clamper, ());
-  return clamper.ClampTimeResolution(time_seconds,
-                                     cross_origin_isolated_capability);
+  return clamper.ClampTimeResolution(time, cross_origin_isolated_capability)
+      .InMillisecondsF();
 }
 
 // static
@@ -999,14 +1009,14 @@ DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
   if (monotonic_time.is_null() || time_origin.is_null())
     return 0.0;
 
-  double clamped_time_in_seconds =
-      ClampTimeResolution(monotonic_time.since_origin().InSecondsF(),
+  DOMHighResTimeStamp clamped_time =
+      ClampTimeResolution(monotonic_time.since_origin(),
                           cross_origin_isolated_capability) -
-      ClampTimeResolution(time_origin.since_origin().InSecondsF(),
+      ClampTimeResolution(time_origin.since_origin(),
                           cross_origin_isolated_capability);
-  if (clamped_time_in_seconds < 0 && !allow_negative_value)
+  if (clamped_time < 0 && !allow_negative_value)
     return 0.0;
-  return ConvertSecondsToDOMHighResTimeStamp(clamped_time_in_seconds);
+  return clamped_time;
 }
 
 // static
@@ -1089,9 +1099,7 @@ void Performance::SetClocksForTesting(const base::Clock* clock,
                                       const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
   // Recompute |unix_at_zero_monotonic_|.
-  unix_at_zero_monotonic_ = ConvertSecondsToDOMHighResTimeStamp(
-      clock->Now().ToDoubleT() -
-      tick_clock_->NowTicks().since_origin().InSecondsF());
+  unix_at_zero_monotonic_ = GetUnixAtZeroMonotonic(clock, tick_clock_);
 }
 
 void Performance::ResetTimeOriginForTesting(base::TimeTicks time_origin) {

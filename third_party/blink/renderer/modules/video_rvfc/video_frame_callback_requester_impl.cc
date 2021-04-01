@@ -298,9 +298,8 @@ void VideoFrameCallbackRequesterImpl::OnExecution(double high_res_now_ms) {
 double VideoFrameCallbackRequesterImpl::GetClampedTimeInMillis(
     base::TimeDelta time,
     bool cross_origin_isolated_capability) {
-  return Performance::ClampTimeResolution(time.InSecondsF(),
-                                          cross_origin_isolated_capability) *
-         base::Time::kMillisecondsPerSecond;
+  return Performance::ClampTimeResolution(time,
+                                          cross_origin_isolated_capability);
 }
 
 // static
@@ -309,10 +308,11 @@ double VideoFrameCallbackRequesterImpl::GetCoarseClampedTimeInSeconds(
   constexpr auto kCoarseResolution = base::TimeDelta::FromMicroseconds(100);
   // Add this assert, in case TimeClamper's resolution were to change to be
   // stricter.
-  static_assert(kCoarseResolution >= base::TimeDelta::FromSecondsD(
-                                         TimeClamper::kCoarseResolutionSeconds),
-                "kCoarseResolution should be at least as coarse as other clock "
-                "resolutions");
+  static_assert(
+      kCoarseResolution >= base::TimeDelta::FromMicrosecondsD(
+                               TimeClamper::kCoarseResolutionMicroseconds),
+      "kCoarseResolution should be at least as coarse as other clock "
+      "resolutions");
 
   return time.FloorToMultiple(kCoarseResolution).InSecondsF();
 }

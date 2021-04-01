@@ -26,8 +26,7 @@ double IdleDeadline::timeRemaining() const {
     return 0;
   }
 
-  return 1000.0 *
-         Performance::ClampTimeResolution(time_remaining.InSecondsF(),
+  return Performance::ClampTimeResolution(time_remaining,
                                           cross_origin_isolated_capability_);
 }
 

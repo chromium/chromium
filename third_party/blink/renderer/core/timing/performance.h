@@ -106,8 +106,12 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
 
   // Reduce the resolution to prevent timing attacks. See:
   // http://www.w3.org/TR/hr-time-2/#privacy-security
-  static double ClampTimeResolution(double time_seconds,
-                                    bool cross_origin_isolated_capability);
+  // This returns a DOMHighResTimeStamp (double), representing clamped, jittered
+  // time in milliseconds. The actual clamping resolution varies based on the
+  // provided CrossOriginIsolatedCapability.
+  static DOMHighResTimeStamp ClampTimeResolution(
+      base::TimeDelta time,
+      bool cross_origin_isolated_capability);
 
   static DOMHighResTimeStamp MonotonicTimeToDOMHighResTimeStamp(
       base::TimeTicks time_origin,
@@ -388,7 +392,7 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
   Member<PerformanceEventTiming> first_input_timing_;
 
   base::TimeTicks time_origin_;
-  DOMHighResTimeStamp unix_at_zero_monotonic_;
+  base::TimeDelta unix_at_zero_monotonic_;
   const base::TickClock* tick_clock_;
   bool cross_origin_isolated_capability_;
 
