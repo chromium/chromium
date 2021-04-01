@@ -276,12 +276,16 @@ void FidoRequestHandlerBase::DiscoveryStarted(
     // Allow GetAssertionRequestHandler to asynchronously check for known
     // platform credentials and defer |OnTransportAvailabilityEnumerated| until
     // that check is done.
-    if (discovery->transport() == FidoTransportProtocol::kInternal) {
+    if (discovery->transport() == FidoTransportProtocol::kInternal &&
+        // |authenticators| can be empty in tests.
+        !authenticators.empty()) {
+      DCHECK(!internal_authenticator_found_);
+      internal_authenticator_found_ = true;
+
+      DCHECK_EQ(authenticators.size(), 1u);
       transport_availability_callback_readiness_
           ->platform_credential_check_pending = true;
-      FillHasRecognizedPlatformCredential(base::BindOnce(
-          &FidoRequestHandlerBase::OnHasRecognizedPlatformCredentialFilled,
-          GetWeakPtr()));
+      GetPlatformCredentialStatus(authenticators[0]);
     }
   }
 
@@ -340,14 +344,31 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
 #endif  // defined(OS_WIN)
 }
 
+void FidoRequestHandlerBase::GetPlatformCredentialStatus(
+    FidoAuthenticator* platform_authenticator) {
+  transport_availability_callback_readiness_
+      ->platform_credential_check_pending = false;
+}
+
+void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
+    std::vector<PublicKeyCredentialUserEntity> user_entities,
+    bool have_credential) {
+  DCHECK(!transport_availability_info_
+              .has_recognized_platform_authenticator_credential.has_value());
+
+  transport_availability_info_
+      .has_recognized_platform_authenticator_credential = have_credential;
+  transport_availability_info_.recognized_platform_authenticator_credentials =
+      std::move(user_entities);
+
+  transport_availability_callback_readiness_
+      ->platform_credential_check_pending = false;
+  MaybeSignalTransportsEnumerated();
+}
+
 bool FidoRequestHandlerBase::HasAuthenticator(
     const std::string& authenticator_id) const {
   return base::Contains(active_authenticators_, authenticator_id);
-}
-
-void FidoRequestHandlerBase::FillHasRecognizedPlatformCredential(
-    base::OnceCallback<void()> done_callback) {
-  std::move(done_callback).Run();
 }
 
 void FidoRequestHandlerBase::MaybeSignalTransportsEnumerated() {
@@ -374,12 +395,6 @@ void FidoRequestHandlerBase::InitializeAuthenticatorAndDispatchRequest(
 
 void FidoRequestHandlerBase::ConstructBleAdapterPowerManager() {
   bluetooth_adapter_manager_ = std::make_unique<BleAdapterManager>(this);
-}
-
-void FidoRequestHandlerBase::OnHasRecognizedPlatformCredentialFilled() {
-  transport_availability_callback_readiness_
-      ->platform_credential_check_pending = false;
-  MaybeSignalTransportsEnumerated();
 }
 
 void FidoRequestHandlerBase::StopDiscoveries() {

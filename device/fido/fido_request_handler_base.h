@@ -233,13 +233,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // is known to the system.
   virtual bool HasAuthenticator(const std::string& authentiator_id) const;
 
-  // Subclasses may override this method to set a value for
-  // |has_recognized_platform_authenticator_credential|. |done_callback| must be
-  // invoked once a value has been set. This method runs only after the platform
-  // discovery has started successfully.
-  virtual void FillHasRecognizedPlatformCredential(
-      base::OnceCallback<void()> done_callback);
-
   TransportAvailabilityInfo& transport_availability_info() {
     return transport_availability_info_;
   }
@@ -288,6 +281,26 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                             FidoAuthenticator* authenticator) override;
 
+  // GetPlatformCredentialStatus is called to learn whether a platform
+  // authenticator has credentials responsive to the current request. If this
+  // method is overridden in a subclass then either:
+  //  · The method in this base class must be called immediately, or
+  //  · |OnHavePlatformCredentialStatus| must eventually called.
+  //
+  // This method runs only after the platform discovery has started
+  // successfully. (The Windows API doesn't count as a platform authenticator
+  // for the purposes of this call.)
+  virtual void GetPlatformCredentialStatus(
+      FidoAuthenticator* platform_authenticator);
+
+  // OnHavePlatformCredentialStatus is called by subclasses (after
+  // |GetPlatformCredentialStatus| has been called) to report on whether the
+  // platform authenticator whether it has responsive discoverable credentials
+  // and whether it has responsive credentials at all.
+  void OnHavePlatformCredentialStatus(
+      std::vector<PublicKeyCredentialUserEntity> user_entities,
+      bool have_credential);
+
  private:
   friend class FidoRequestHandlerTest;
 
@@ -300,7 +313,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   void InitializeAuthenticatorAndDispatchRequest(
       const std::string& authenticator_id);
   void ConstructBleAdapterPowerManager();
-  void OnHasRecognizedPlatformCredentialFilled();
 
   AuthenticatorMap active_authenticators_;
   std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries_;
@@ -313,6 +325,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // |OnTransportAvailabilityEnumerated| on |observer_|.
   std::unique_ptr<TransportAvailabilityCallbackReadiness>
       transport_availability_callback_readiness_;
+
+  // internal_authenticator_found_ is used to check that at most one kInternal
+  // authenticator is discovered.
+  bool internal_authenticator_found_ = false;
 
   base::WeakPtrFactory<FidoRequestHandlerBase> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(FidoRequestHandlerBase);

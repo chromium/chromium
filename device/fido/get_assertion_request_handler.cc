@@ -403,39 +403,30 @@ void GetAssertionRequestHandler::AuthenticatorRemoved(
   }
 }
 
-void GetAssertionRequestHandler::FillHasRecognizedPlatformCredential(
-    base::OnceCallback<void()> done_callback) {
-  DCHECK(!transport_availability_info()
-              .has_recognized_platform_authenticator_credential.has_value());
+void GetAssertionRequestHandler::GetPlatformCredentialStatus(
+    FidoAuthenticator* platform_authenticator) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
 
 #if defined(OS_MAC)
-  fido::mac::TouchIdAuthenticator* touch_id_authenticator = nullptr;
-  for (auto& authenticator_it : active_authenticators()) {
-    if (authenticator_it.second->IsTouchIdAuthenticator()) {
-      touch_id_authenticator = static_cast<fido::mac::TouchIdAuthenticator*>(
-          authenticator_it.second);
-      break;
-    }
-  }
+  CHECK(platform_authenticator->IsTouchIdAuthenticator());
+  fido::mac::TouchIdAuthenticator* touch_id_authenticator =
+      static_cast<fido::mac::TouchIdAuthenticator*>(platform_authenticator);
   bool has_credential =
-      touch_id_authenticator &&
       touch_id_authenticator->HasCredentialForGetAssertionRequest(request_);
   std::vector<PublicKeyCredentialUserEntity> credential_users;
   if (has_credential && request_.allow_list.empty()) {
     credential_users =
         touch_id_authenticator->GetResidentCredentialUsersForRequest(request_);
   }
-  OnHasPlatformCredential(std::move(done_callback), std::move(credential_users),
-                          has_credential);
+  OnHavePlatformCredentialStatus(std::move(credential_users), has_credential);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   ChromeOSAuthenticator::HasCredentialForGetAssertionRequest(
-      request_,
-      base::BindOnce(&GetAssertionRequestHandler::OnHasPlatformCredential,
-                     weak_factory_.GetWeakPtr(), std::move(done_callback),
-                     std::vector<PublicKeyCredentialUserEntity>()));
+      request_, base::BindOnce(
+                    &GetAssertionRequestHandler::OnHavePlatformCredentialStatus,
+                    weak_factory_.GetWeakPtr(),
+                    std::vector<PublicKeyCredentialUserEntity>()));
 #else
-  std::move(done_callback).Run();
+  FidoRequestHandlerBase::GetPlatformCredentialStatus(platform_authenticator);
 #endif
 }
 
@@ -813,18 +804,6 @@ void GetAssertionRequestHandler::OnWriteLargeBlob(
       (status == CtapDeviceResponseCode::kSuccess);
   std::move(completion_callback_)
       .Run(GetAssertionStatus::kSuccess, std::move(responses_), authenticator);
-}
-
-void GetAssertionRequestHandler::OnHasPlatformCredential(
-    base::OnceCallback<void()> done_callback,
-    std::vector<PublicKeyCredentialUserEntity> user_entities,
-    bool has_credential) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-  transport_availability_info()
-      .has_recognized_platform_authenticator_credential = has_credential;
-  transport_availability_info().recognized_platform_authenticator_credentials =
-      std::move(user_entities);
-  std::move(done_callback).Run();
 }
 
 }  // namespace device
