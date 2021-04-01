@@ -1405,8 +1405,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     return YES;
   }
 
-  if (!ui::PageTransitionIsNewNavigation(pageTransition)) {
-    // Allow reloads and back-forward navigations.
+  if (pageTransition & ui::PAGE_TRANSITION_FORWARD_BACK) {
+    // Allow back-forward navigations.
     return YES;
   }
 
@@ -1521,7 +1521,15 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     // frame to prevent abusive behavior (crbug.com/890558).
     web::NavigationContext* context =
         [self contextForPendingMainFrameNavigationWithURL:responseURL];
-    if (context->IsRendererInitiated()) {
+    // If the server is doing a redirect on a user reload, the navigation is
+    // treated as a reload instead of a redirect. See crbug.com/1165654.
+    web::NavigationItem* lastCommittedItem =
+        self.navigationManagerImpl->GetLastCommittedItem();
+    BOOL isFakeReload = PageTransitionCoreTypeIs(context->GetPageTransition(),
+                                                 ui::PAGE_TRANSITION_RELOAD) &&
+                        lastCommittedItem &&
+                        lastCommittedItem->GetURL() != responseURL;
+    if (context->IsRendererInitiated() || isFakeReload) {
       return NO;
     }
   }
