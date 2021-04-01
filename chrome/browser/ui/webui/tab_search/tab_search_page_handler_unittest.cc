@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/tab_search/tab_search_page_handler.h"
 
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/timer/mock_timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -484,18 +483,6 @@ TEST_F(TabSearchPageHandlerTest, RecentlyClosedTabEntriesFilterOpenTabUrls) {
             ASSERT_EQ(0u, recently_closed_tabs.size());
           });
   handler()->GetProfileData(std::move(callback1));
-}
-
-// TODO(crbug.com/1128855): Fix the test for Lacros build.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ShowFeedbackPage DISABLED_ShowFeedbackPage
-#else
-#define MAYBE_ShowFeedbackPage ShowFeedbackPage
-#endif
-TEST_F(TabSearchPageHandlerTest, MAYBE_ShowFeedbackPage) {
-  base::HistogramTester histogram_tester;
-  handler()->ShowFeedbackPage();
-  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
 
 }  // namespace

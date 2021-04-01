@@ -115,9 +115,6 @@ interface PageHandler {
   // Get tab groups for the current profile.
   GetTabGroups() => (TabGroups tab_groups);
 
-  // Show the feedback page.
-  ShowFeedbackPage();
-
   // Switch to a specific tab.
   SwitchToTab(SwitchToTabInfo switch_to_tab_info);
 

@@ -51,16 +51,6 @@
     z-index: 1000;
   }
 </style>
-<iron-iconset-svg name="ts" size="24">
-  <svg>
-    <defs>
-      <g id="feedback">
-        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z">
-        </path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
 <tab-search-search-field id="searchField" autofocus
     clear-label="$i18n{clearSearch}" label="$i18n{searchTabs}"
     on-focus="onSearchFocus_" on-keydown="onSearchKeyDown_"
@@ -86,10 +76,3 @@
 <div id="no-results" hidden="[[filteredTabItemsCount_(filteredOpenTabs_, filteredRecentlyClosedTabs_)]]">
   $i18n{noResultsFound}
 </div>
-<template is="dom-if" if="[[feedbackButtonEnabled_]]">
-  <button id="feedback-footer" class="mwb-list-item" on-click="onFeedbackClick_"
-      on-focus="onFeedbackFocus_">
-    <iron-icon id="feedback-icon" icon="ts:feedback"></iron-icon>
-    <div id="feedback-text">$i18n{submitFeedback}</div>
-  </button>
-</template>

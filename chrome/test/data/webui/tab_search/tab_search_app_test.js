@@ -447,21 +447,6 @@ suite('TabSearchAppTest', () => {
     assertEquals(1, testProxy.getCallCount('showUI'));
   });
 
-  test('Submit feeedback footer disabled by default', async () => {
-    await setupTest(sampleData());
-    assertTrue(
-        tabSearchApp.shadowRoot.querySelector('#feedback-footer') === null);
-  });
-
-  test('Click on Sumit Feedback footer triggers action', async () => {
-    await setupTest(sampleData(), {'submitFeedbackEnabled': true});
-
-    const feedbackButton = /** @type {!HTMLButtonElement} */
-        (tabSearchApp.shadowRoot.querySelector('#feedback-footer'));
-    feedbackButton.click();
-    await testProxy.whenCalled('showFeedbackPage');
-  });
-
   test('Sort by most recent active tabs', async () => {
     const tabs = [
       {
@@ -508,20 +493,19 @@ suite('TabSearchAppTest', () => {
   });
 
   test('Escape key triggers close UI API', async () => {
-    await setupTest(sampleData(), {'submitFeedbackEnabled': true});
+    await setupTest(sampleData());
 
     const elements = [
       tabSearchApp.shadowRoot.querySelector('#searchField'),
       tabSearchApp.shadowRoot.querySelector('#tabsList'),
       tabSearchApp.shadowRoot.querySelector('#tabsList')
           .querySelector('tab-search-item'),
-      tabSearchApp.shadowRoot.querySelector('#feedback-footer'),
     ];
 
     for (const element of elements) {
       keyDownOn(element, 0, [], 'Escape');
     }
 
-    assertEquals(4, testProxy.getCallCount('closeUI'));
+    assertEquals(3, testProxy.getCallCount('closeUI'));
   });
 });

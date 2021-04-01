@@ -28,8 +28,6 @@ export class TabSearchApiProxy {
   /** @return {Promise<{profileData: ProfileData}>} */
   getProfileData() {}
 
-  showFeedbackPage() {}
-
   /** @param {number} tabId */
   openRecentlyClosedTab(tabId) {}
 
@@ -75,11 +73,6 @@ export class TabSearchApiProxyImpl {
   /** @override */
   getProfileData() {
     return this.handler.getProfileData();
-  }
-
-  /** @override */
-  showFeedbackPage() {
-    this.handler.showFeedbackPage();
   }
 
   /** @override */

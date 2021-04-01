@@ -51,7 +51,7 @@ suite('TabSearchAppFocusTest', () => {
   }
 
   test('KeyNavigation', async () => {
-    await setupTest(sampleData(), {'submitFeedbackEnabled': true});
+    await setupTest(sampleData());
 
     // Initially, the search input should have focus.
     const searchField = /** @type {!TabSearchSearchField} */
@@ -75,12 +75,6 @@ suite('TabSearchAppFocusTest', () => {
 
     keyDownOn(tabSearchItems[tabSearchItems.length - 1], 0, [], 'Home');
     assertEquals(tabSearchItems[0], getDeepActiveElement());
-
-    // Once the feedback button is focused, no list item should be selected.
-    const feedbackButton = /** @type {!HTMLElement} */ (
-        tabSearchApp.shadowRoot.querySelector('#feedback-footer'));
-    feedbackButton.focus();
-    assertEquals(-1, tabSearchApp.getSelectedIndex());
 
     // On restoring focus to the search field, a list item should be selected if
     // available.

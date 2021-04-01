@@ -26,7 +26,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
@@ -37,12 +36,6 @@ namespace {
 constexpr base::TimeDelta kTabsChangeDelay =
     base::TimeDelta::FromMilliseconds(50);
 constexpr int kMaxRecentlyClosedTabCount = 100;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kFeedbackCategoryTag[] = "FromTabSearch";
-#else
-constexpr char kFeedbackCategoryTag[] = "FromTabSearchBrowser";
-#endif
 
 std::string GetLastActiveElapsedText(
     const base::TimeTicks& last_active_time_ticks) {
@@ -147,18 +140,6 @@ void TabSearchPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
   // TODO(crbug.com/1096120): Implement this when we can get theme color from
   // browser
   NOTIMPLEMENTED();
-}
-
-void TabSearchPageHandler::ShowFeedbackPage() {
-  Browser* browser = chrome::FindLastActive();
-  if (!browser)
-    return;
-  chrome::ShowFeedbackPage(browser,
-                           chrome::FeedbackSource::kFeedbackSourceTabSearch,
-                           std::string() /* description_template */,
-                           std::string() /* description_placeholder_text */,
-                           std::string(kFeedbackCategoryTag) /* category_tag */,
-                           std::string() /* extra_diagnostics */);
 }
 
 void TabSearchPageHandler::SwitchToTab(

@@ -101,12 +101,6 @@ export class TabSearchAppElement extends PolymerElement {
       },
 
       /** @private {boolean} */
-      feedbackButtonEnabled_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('submitFeedbackEnabled'),
-      },
-
-      /** @private {boolean} */
       moveActiveTabToBottom_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('moveActiveTabToBottom'),
@@ -223,15 +217,8 @@ export class TabSearchAppElement extends PolymerElement {
    * @private
    */
   listMaxHeight_(height) {
-    const footerHeight =
-        (this.feedbackButtonEnabled_ ?
-             /** @type {HTMLElement} */ (
-                 this.shadowRoot.getElementById('feedback-footer'))
-                 .offsetHeight :
-             0);
-
     return Math.max(
-        height - this.$.searchField.offsetHeight - footerHeight,
+        height - this.$.searchField.offsetHeight,
         Math.round(
             MINIMUM_AVAILABLE_HEIGHT_LIST_ITEM_COUNT *
             this.getStylePropertyPixelValue_('--mwb-item-height')));
@@ -351,16 +338,6 @@ export class TabSearchAppElement extends PolymerElement {
           length == 1 ? 'a11yFoundTab' : 'a11yFoundTabs', length);
     }
     return text;
-  }
-
-  /** @private */
-  onFeedbackClick_() {
-    this.apiProxy_.showFeedbackPage();
-  }
-
-  /** @private */
-  onFeedbackFocus_() {
-    /** @type {!InfiniteList} */ (this.$.tabsList).selected = NO_SELECTION;
   }
 
   /**

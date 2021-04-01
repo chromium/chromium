@@ -63,7 +63,6 @@ bool IsFromUserInteraction(FeedbackSource source) {
     case kFeedbackSourceDesktopTabGroups:
     case kFeedbackSourceMdSettingsAboutPage:
     case kFeedbackSourceOldSettingsAboutPage:
-    case kFeedbackSourceTabSearch:
       return true;
     default:
       return false;
