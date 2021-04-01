@@ -394,6 +394,7 @@ export class EmojiPicker extends PolymerElement {
     const shift = EMOJI_ICON_SIZE * Math.ceil(overflowWidth / EMOJI_ICON_SIZE);
     // negative value means we are already within bounds, so no shift needed.
     variants.style.marginLeft = `-${Math.max(shift, 0)}px`;
+    variants.scrollIntoView({behavior: 'smooth', block: 'nearest'});
   }
 
   onEmojiDataLoaded(data) {
