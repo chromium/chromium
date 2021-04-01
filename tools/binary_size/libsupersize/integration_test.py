@@ -288,7 +288,7 @@ class IntegrationTest(unittest.TestCase):
           container, raw_symbols = archive.CreateContainerAndSymbols(
               knobs=knobs,
               opts=opts,
-              container_name='{}/on_demand.apk'.format(container_name),
+              container_name='{}/on_demand.apk?'.format(container_name),
               metadata=metadata,
               tool_prefix=args.tool_prefix,
               output_directory=args.output_directory,

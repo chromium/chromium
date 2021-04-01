@@ -854,7 +854,6 @@ def CreateMetadata(args, linker_name, build_config):
     if args.split_name and args.split_name != 'base':
       metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
       metadata[models.METADATA_APK_SPLIT_NAME] = args.split_name
-      metadata[models.METADATA_APK_SPLIT_ON_DEMAND] = _IsOnDemand(args.apk_file)
     else:
       sizes_by_module = _CollectModuleSizes(args.minimal_apks_file)
       for name, size in sizes_by_module.items():
@@ -2220,8 +2219,8 @@ def _IterSubArgs(top_args, on_config_error):
       container_name = sub_args.name
     else:
       container_name = os.path.basename(main_file)
-    if set(container_name) & set('<>'):
-      parser.error('Container name cannot have characters in "<>"')
+    if set(container_name) & set('<>?'):
+      parser.error('Container name cannot have characters in "<>?"')
 
 
     # If needed, extract .apk file to a temp file and process that instead.
@@ -2234,6 +2233,11 @@ def _IterSubArgs(top_args, on_config_error):
           module_sub_args.apk_file = temp
           module_sub_args.split_name = module_name
           module_sub_args.name = '{}/{}.apk'.format(container_name, module_name)
+          # Make on-demand a part of the name so that:
+          # * It's obvious from the name which DFMs are on-demand.
+          # * Diffs that change an on-demand status show as adds/removes.
+          if _IsOnDemand(temp):
+            module_sub_args.name += '?'
           if module_name != 'base':
             # TODO(crbug.com/1143690): Fix native analysis for split APKs.
             module_sub_args.map_file = None

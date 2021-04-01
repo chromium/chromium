@@ -18,13 +18,11 @@ apk_file_name=Bundle.minimal.apks
 apk_signature_block_size=0
 apk_size=696
 apk_split_name=not_on_demand
-apk_split_on_demand=False
 zipalign_padding=0
 apk_file_name=Bundle.minimal.apks
 apk_signature_block_size=0
 apk_size=695
 apk_split_name=on_demand
-apk_split_on_demand=True
 zipalign_padding=0
 Container <Bundle.minimal.apks/base.apk>
 Section .text: has 100.0% of 35982248 bytes accounted for from 22 symbols. 0 bytes are unaccounted for.
@@ -153,7 +151,7 @@ Section .other: has 100.0% of 696 bytes accounted for from 2 symbols. 0 bytes ar
 * 0 symbols have shared ownership.
 * 1 symbols are from generated sources. Accounts for 560 bytes (80.5%).
 
-Container <Bundle.minimal.apks/on_demand.apk>
+Container <Bundle.minimal.apks/on_demand.apk?>
 Section .text: 0 bytes from 0 symbols.
 * Padding accounts for 0 bytes (0.0%)
 * 0 have source paths. Accounts for 0 bytes (0.0%).
@@ -704,5 +702,5 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/base.apk>.other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=560,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={gen},num_aliases=1,component=)
 <Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/on_demand.apk>.other@0(size_without_padding=559,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={gen},num_aliases=1,component=)
-<Bundle.minimal.apks/on_demand.apk>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=559,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={gen},num_aliases=1,component=)
+<Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
