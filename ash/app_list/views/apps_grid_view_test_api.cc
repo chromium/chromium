@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/app_list/views/test/apps_grid_view_test_api.h"
+#include "ash/app_list/views/apps_grid_view_test_api.h"
 
 #include <memory>
 #include <vector>

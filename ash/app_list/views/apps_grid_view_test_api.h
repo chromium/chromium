@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_VIEWS_TEST_APPS_GRID_VIEW_TEST_API_H_
-#define ASH_APP_LIST_VIEWS_TEST_APPS_GRID_VIEW_TEST_API_H_
+#ifndef ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_TEST_API_H_
+#define ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_TEST_API_H_
 
 #include "ash/app_list/views/apps_grid_view.h"
 #include "base/macros.h"
@@ -63,4 +63,4 @@ class AppsGridViewTestApi {
 }  // namespace test
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_VIEWS_TEST_APPS_GRID_VIEW_TEST_API_H_
+#endif  // ASH_APP_LIST_VIEWS_APPS_GRID_VIEW_TEST_API_H_

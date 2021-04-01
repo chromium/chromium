@@ -12,8 +12,8 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/test/app_list_test_view_delegate.h"
-#include "ash/app_list/test/test_search_result.h"
+#include "ash/app_list/app_list_test_view_delegate.h"
+#include "ash/app_list/model/search/test_search_result.h"
 #include "ash/app_list/views/search_result_actions_view.h"
 #include "ash/app_list/views/search_result_actions_view_delegate.h"
 #include "ash/app_list/views/search_result_container_view.h"

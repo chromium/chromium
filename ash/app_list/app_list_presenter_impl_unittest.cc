@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-#include "ash/app_list/test/app_list_test_view_delegate.h"
+#include "ash/app_list/app_list_test_view_delegate.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/app_list/views/apps_grid_view.h"

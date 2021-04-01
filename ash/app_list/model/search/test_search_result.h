@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_TEST_TEST_SEARCH_RESULT_H_
-#define ASH_APP_LIST_TEST_TEST_SEARCH_RESULT_H_
+#ifndef ASH_APP_LIST_MODEL_SEARCH_TEST_SEARCH_RESULT_H_
+#define ASH_APP_LIST_MODEL_SEARCH_TEST_SEARCH_RESULT_H_
 
 #include <memory>
 #include <string>
@@ -27,4 +27,4 @@ class TestSearchResult : public SearchResult {
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_TEST_TEST_SEARCH_RESULT_H_
+#endif  // ASH_APP_LIST_MODEL_SEARCH_TEST_SEARCH_RESULT_H_

@@ -176,14 +176,14 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "test/app_list_test_model.cc",
-    "test/app_list_test_model.h",
-    "test/app_list_test_view_delegate.cc",
-    "test/app_list_test_view_delegate.h",
-    "test/test_search_result.cc",
-    "test/test_search_result.h",
-    "views/test/apps_grid_view_test_api.cc",
-    "views/test/apps_grid_view_test_api.h",
+    "app_list_test_view_delegate.cc",
+    "app_list_test_view_delegate.h",
+    "model/app_list_test_model.cc",
+    "model/app_list_test_model.h",
+    "model/search/test_search_result.cc",
+    "model/search/test_search_result.h",
+    "views/apps_grid_view_test_api.cc",
+    "views/apps_grid_view_test_api.h",
   ]
 
   deps = [

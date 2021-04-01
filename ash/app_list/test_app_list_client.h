@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_TEST_TEST_APP_LIST_CLIENT_H_
-#define ASH_APP_LIST_TEST_TEST_APP_LIST_CLIENT_H_
+#ifndef ASH_APP_LIST_TEST_APP_LIST_CLIENT_H_
+#define ASH_APP_LIST_TEST_APP_LIST_CLIENT_H_
 
 #include <map>
 #include <memory>
@@ -76,4 +76,4 @@ class TestAppListClient : public AppListClient {
 
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_TEST_TEST_APP_LIST_CLIENT_H_
+#endif  // ASH_APP_LIST_TEST_APP_LIST_CLIENT_H_

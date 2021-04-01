@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_TEST_APP_LIST_TEST_MODEL_H_
-#define ASH_APP_LIST_TEST_APP_LIST_TEST_MODEL_H_
+#ifndef ASH_APP_LIST_MODEL_APP_LIST_TEST_MODEL_H_
+#define ASH_APP_LIST_MODEL_APP_LIST_TEST_MODEL_H_
 
 #include <memory>
 #include <string>
@@ -92,4 +92,4 @@ class AppListTestModel : public AppListModel {
 }  // namespace test
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_TEST_APP_LIST_TEST_MODEL_H_
+#endif  // ASH_APP_LIST_MODEL_APP_LIST_TEST_MODEL_H_

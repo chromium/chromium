@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/app_list/app_list_metrics.h"
-#include "ash/app_list/test/test_app_list_client.h"
+#include "ash/app_list/test_app_list_client.h"
 
 namespace ash {
 

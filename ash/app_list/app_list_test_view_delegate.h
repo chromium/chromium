@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_APP_LIST_TEST_APP_LIST_TEST_VIEW_DELEGATE_H_
-#define ASH_APP_LIST_TEST_APP_LIST_TEST_VIEW_DELEGATE_H_
+#ifndef ASH_APP_LIST_APP_LIST_TEST_VIEW_DELEGATE_H_
+#define ASH_APP_LIST_APP_LIST_TEST_VIEW_DELEGATE_H_
 
 #include <stddef.h>
 
@@ -14,8 +14,8 @@
 #include <vector>
 
 #include "ash/app_list/app_list_view_delegate.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/model/search/search_model.h"
-#include "ash/app_list/test/app_list_test_model.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
@@ -147,4 +147,4 @@ class AppListTestViewDelegate : public AppListViewDelegate,
 }  // namespace test
 }  // namespace ash
 
-#endif  // ASH_APP_LIST_TEST_APP_LIST_TEST_VIEW_DELEGATE_H_
+#endif  // ASH_APP_LIST_APP_LIST_TEST_VIEW_DELEGATE_H_

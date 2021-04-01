@@ -28,7 +28,7 @@ namespace {
 
 // Create the icon image for the app-item with |id|.
 // TODO(mukai): consolidate the implementation with
-// ash/app_list/test/app_list_test_model.cc.
+// ash/app_list/model/app_list_test_model.cc.
 gfx::ImageSkia CreateImageSkia(int id) {
   const int size =
       ash::SharedAppListConfig::instance().default_grid_icon_dimension();
