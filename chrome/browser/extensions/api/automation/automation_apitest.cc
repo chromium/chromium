@@ -288,7 +288,9 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, DesktopGetNextTextMatch) {
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTest, LocationInWebView) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunPlatformAppTest("automation/tests/webview")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "automation/tests/webview", .launch_as_platform_app = true}))
+      << message_;
 }
 #endif
 
@@ -452,7 +454,8 @@ class AutomationApiTestWithDeviceScaleFactor : public AutomationApiTest {
 
 IN_PROC_BROWSER_TEST_F(AutomationApiTestWithDeviceScaleFactor, LocationScaled) {
   StartEmbeddedTestServer();
-  ASSERT_TRUE(RunPlatformAppTest("automation/tests/location_scaled"))
+  ASSERT_TRUE(RunExtensionTest({.name = "automation/tests/location_scaled",
+                                .launch_as_platform_app = true}))
       << message_;
 }
 

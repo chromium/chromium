@@ -105,7 +105,8 @@ IN_PROC_BROWSER_TEST_F(ImageWriterPrivateApiTest, TestWriteFromFile) {
       base::BindOnce(set_up_utility_client_callbacks));
 #endif
 
-  ASSERT_TRUE(RunPlatformAppTest("image_writer_private/write_from_file"))
+  ASSERT_TRUE(RunExtensionTest({.name = "image_writer_private/write_from_file",
+                                .launch_as_platform_app = true}))
       << message_;
 }
 }  // namespace extensions

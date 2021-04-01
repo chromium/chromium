@@ -90,35 +90,43 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, OnBoundsChangedEvent) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlwaysOnTopWithPermissions) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_always_on_top/has_permissions")) << message_;
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_always_on_top/has_permissions",
+       .launch_as_platform_app = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlwaysOnTopWithOldPermissions) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_always_on_top/has_old_permissions"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_always_on_top/has_old_permissions",
+       .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlwaysOnTopNoPermissions) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_always_on_top/no_permissions")) << message_;
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_always_on_top/no_permissions",
+       .launch_as_platform_app = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, Get) {
-  EXPECT_TRUE(RunPlatformAppTest("platform_apps/windows_api_get"))
+  EXPECT_TRUE(RunExtensionTest({.name = "platform_apps/windows_api_get",
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, SetShapeHasPerm) {
-  EXPECT_TRUE(
-      RunPlatformAppTest("platform_apps/windows_api_shape/has_permission"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_shape/has_permission",
+       .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, SetShapeNoPerm) {
   EXPECT_TRUE(
-      RunPlatformAppTest("platform_apps/windows_api_shape/no_permission"))
+      RunExtensionTest({.name = "platform_apps/windows_api_shape/no_permission",
+                        .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -148,12 +156,15 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
 #endif  // OS_WIN
 #endif  // USE_AURA && !(OS_LINUX || IS_CHROMEOS_LACROS)
 
-  EXPECT_TRUE(RunPlatformAppTest(test_dir)) << message_;
+  EXPECT_TRUE(
+      RunExtensionTest({.name = test_dir, .launch_as_platform_app = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledNoPermissions) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_alpha_enabled/no_permissions"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_alpha_enabled/no_permissions",
+       .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -169,15 +180,17 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledInStable) {
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, AlphaEnabledWrongFrameType) {
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_alpha_enabled/wrong_frame_type"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_alpha_enabled/wrong_frame_type",
+       .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, VisibleOnAllWorkspacesInStable) {
   extensions::ScopedCurrentChannel channel(version_info::Channel::STABLE);
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_visible_on_all_workspaces/in_stable"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_visible_on_all_workspaces/in_stable",
+       .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -201,8 +214,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNoPermissions) {
        .load_as_component = true}))
       << message_;
 
-  EXPECT_TRUE(RunPlatformAppTest(
-      "platform_apps/windows_api_ime/no_permissions_platform_app"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/windows_api_ime/no_permissions_platform_app",
+       .launch_as_platform_app = true}))
       << message_;
 }
 

@@ -132,7 +132,9 @@ class NetworkingCastPrivateApiTest : public ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkingCastPrivateApiTest, Basic) {
-  EXPECT_TRUE(RunPlatformAppTest("networking_cast_private")) << message_;
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "networking_cast_private", .launch_as_platform_app = true}))
+      << message_;
 }
 
 }  // namespace extensions

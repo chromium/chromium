@@ -17,7 +17,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        ExtensionFullscreenAccessFail) {
   // Test that fullscreen cannot be accessed from an extension without
   // permission.
-  ASSERT_TRUE(RunPlatformAppTest("fullscreen/no_permission")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "fullscreen/no_permission", .launch_as_platform_app = true}))
+      << message_;
 }
 
 #if defined(OS_MAC)
@@ -29,7 +31,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
 #endif  // defined(OS_MAC)
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_ExtensionFullscreenAccessPass) {
   // Test that fullscreen can be accessed from an extension with permission.
-  ASSERT_TRUE(RunPlatformAppTest("fullscreen/has_permission")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "fullscreen/has_permission", .launch_as_platform_app = true}))
+      << message_;
 }
 
 #if defined(OS_MAC)
@@ -75,7 +79,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
 
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest,
                        MAYBE_DisplayModeWindowIsInFullscreen) {
-  ASSERT_TRUE(RunPlatformAppTest("fullscreen/mq_display_mode")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "fullscreen/mq_display_mode", .launch_as_platform_app = true}))
+      << message_;
 }
 
 }  // namespace extensions

@@ -177,11 +177,6 @@ bool ExtensionApiTest::RunExtensionSubtest(const std::string& extension_name,
                               kFlagNone);
 }
 
-bool ExtensionApiTest::RunPlatformAppTest(const std::string& extension_name) {
-  return RunExtensionTestImpl(extension_name, std::string(), nullptr, kFlagNone,
-                              kFlagLaunchPlatformApp);
-}
-
 bool ExtensionApiTest::RunExtensionTestImpl(const std::string& extension_name,
                                             const std::string& page_url,
                                             const char* custom_arg,

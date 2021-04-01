@@ -150,7 +150,8 @@ IN_PROC_BROWSER_TEST_F(MDnsAPITest, RegisterTooManyListeners) {
               RemoveObserver(A<DnsSdRegistry::DnsSdObserver*>()))
       .Times(1);
 
-  EXPECT_TRUE(RunPlatformAppTest("mdns/api-packaged-apps"))
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "mdns/api-packaged-apps", .launch_as_platform_app = true}))
       << message_;
 }
 

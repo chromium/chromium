@@ -942,7 +942,9 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, GetCertificateLists) {
 // missing permissions).
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, Alias) {
   SetupCellular();
-  EXPECT_TRUE(RunPlatformAppTest("networking_private/alias")) << message_;
+  EXPECT_TRUE(RunExtensionTest(
+      {.name = "networking_private/alias", .launch_as_platform_app = true}))
+      << message_;
 }
 
 }  // namespace

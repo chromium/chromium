@@ -183,7 +183,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, ChromeRuntimeGetPlatformInfo) {
 // Tests chrome.runtime.getPackageDirectory with an app.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        ChromeRuntimeGetPackageDirectoryEntryApp) {
-  ASSERT_TRUE(RunPlatformAppTest("api_test/runtime/get_package_directory/app"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "api_test/runtime/get_package_directory/app",
+                        .launch_as_platform_app = true}))
       << message_;
 }
 

@@ -68,9 +68,10 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
                        TestStartAudioDebugRecordingsForWebviewFromApp) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnableAudioDebugRecordingsFromExtension);
-  ASSERT_TRUE(
-      RunPlatformAppTest("api_test/webrtc_logging_private/audio_debug/"
-                         "start_audio_debug_recordings_for_webview_from_app"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "api_test/webrtc_logging_private/audio_debug/"
+               "start_audio_debug_recordings_for_webview_from_app",
+       .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -78,15 +79,17 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     WebrtcLoggingPrivateApiBrowserTest,
     TestStartAudioDebugRecordingsForWebviewFromAppWithoutSwitch) {
-  ASSERT_TRUE(
-      RunPlatformAppTest("api_test/webrtc_logging_private/audio_debug/"
-                         "start_audio_debug_recordings_for_webview_from_app"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "api_test/webrtc_logging_private/audio_debug/"
+               "start_audio_debug_recordings_for_webview_from_app",
+       .launch_as_platform_app = true}))
       << message_;
 }
 #endif
 
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiBrowserTest, TestStartStopStart) {
-  ASSERT_TRUE(
-      RunPlatformAppTest("api_test/webrtc_logging_private/start_stop_start"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "api_test/webrtc_logging_private/start_stop_start",
+       .launch_as_platform_app = true}))
       << message_;
 }

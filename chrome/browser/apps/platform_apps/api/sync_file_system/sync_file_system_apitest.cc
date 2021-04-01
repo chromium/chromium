@@ -120,7 +120,8 @@ struct ReturnWithFakeFileAddedStatusFunctor {
 
 // Flaky on Win, OS X, and Linux: http://crbug.com/417330.
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, DISABLED_GetFileStatus) {
-  ASSERT_TRUE(RunPlatformAppTest("sync_file_system/get_file_status"))
+  ASSERT_TRUE(RunExtensionTest({.name = "sync_file_system/get_file_status",
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -128,7 +129,8 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, DISABLED_GetFileStatus) {
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, DISABLED_GetFileStatuses) {
   // Mocking to return IsConflicting() == true only for the path "Conflicting".
   base::FilePath conflicting = base::FilePath::FromUTF8Unsafe("Conflicting");
-  ASSERT_TRUE(RunPlatformAppTest("sync_file_system/get_file_statuses"))
+  ASSERT_TRUE(RunExtensionTest({.name = "sync_file_system/get_file_statuses",
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -152,7 +154,9 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChanged) {
           sync_file_system::SYNC_FILE_STATUS_SYNCED,
           sync_file_system::SYNC_ACTION_ADDED,
           sync_file_system::SYNC_DIRECTION_REMOTE_TO_LOCAL))));
-  ASSERT_TRUE(RunPlatformAppTest("sync_file_system/on_file_status_changed"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "sync_file_system/on_file_status_changed",
+                        .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -171,8 +175,9 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
           sync_file_system::SYNC_FILE_STATUS_SYNCED,
           sync_file_system::SYNC_ACTION_DELETED,
           sync_file_system::SYNC_DIRECTION_REMOTE_TO_LOCAL))));
-  ASSERT_TRUE(
-      RunPlatformAppTest("sync_file_system/on_file_status_changed_deleted"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "sync_file_system/on_file_status_changed_deleted",
+       .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -187,29 +192,37 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnServiceStatusChanged) {
                                       sync_file_system::SYNC_STATUS_OK));
       });
 
-  ASSERT_TRUE(RunPlatformAppTest("sync_file_system/on_service_status_changed"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "sync_file_system/on_service_status_changed",
+                        .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, RequestFileSystem) {
   EXPECT_CALL(*mock_remote_service(), RegisterOrigin(_, _)).Times(1);
-  ASSERT_TRUE(RunPlatformAppTest("sync_file_system/request_file_system"))
+  ASSERT_TRUE(RunExtensionTest({.name = "sync_file_system/request_file_system",
+                                .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, WriteFileThenGetUsage) {
-  ASSERT_TRUE(RunPlatformAppTest("sync_file_system/write_file_then_get_usage"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "sync_file_system/write_file_then_get_usage",
+                        .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, ConflictResolutionPolicy) {
-  ASSERT_TRUE(RunPlatformAppTest("sync_file_system/conflict_resolution_policy"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "sync_file_system/conflict_resolution_policy",
+                        .launch_as_platform_app = true}))
       << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, GetServiceStatus) {
   mock_remote_service()->SetServiceState(
       sync_file_system::REMOTE_SERVICE_AUTHENTICATION_REQUIRED);
-  ASSERT_TRUE(RunPlatformAppTest("sync_file_system/get_service_status"))
+  ASSERT_TRUE(RunExtensionTest({.name = "sync_file_system/get_service_status",
+                                .launch_as_platform_app = true}))
       << message_;
 }

@@ -74,7 +74,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, EventsAreUnregistered) {
 // Test that listeners for webview-related events are not stored (even for lazy
 // contexts). See crbug.com/736381.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WebViewEventRegistration) {
-  ASSERT_TRUE(RunPlatformAppTest("events/webview_events")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "events/webview_events", .launch_as_platform_app = true}))
+      << message_;
   EventRouter* event_router = EventRouter::Get(profile());
   // We should not register lazy listeners for any webview-related events.
   EXPECT_FALSE(

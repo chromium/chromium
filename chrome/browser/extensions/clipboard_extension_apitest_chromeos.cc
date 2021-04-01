@@ -10,7 +10,8 @@ using ClipboardExtensionApiTest = extensions::ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(ClipboardExtensionApiTest, ClipboardDataChanged) {
   ExtensionTestMessageListener result_listener("success 2", false);
-  ASSERT_TRUE(RunPlatformAppTest("clipboard/clipboard_data_changed"))
+  ASSERT_TRUE(RunExtensionTest({.name = "clipboard/clipboard_data_changed",
+                                .launch_as_platform_app = true}))
       << message_;
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
 }
@@ -19,7 +20,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardExtensionApiTest, SetImageData) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ExtensionTestMessageListener clipboard_change_listener(
       "clipboard data changed 2", false);
-  ASSERT_TRUE(RunPlatformAppTest("clipboard/set_image_data"))
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "clipboard/set_image_data", .launch_as_platform_app = true}))
       << message_;
   ASSERT_TRUE(clipboard_change_listener.WaitUntilSatisfied());
 }

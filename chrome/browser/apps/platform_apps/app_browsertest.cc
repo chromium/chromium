@@ -308,13 +308,17 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, CreateAndCloseAppWindow) {
 
 // Tests that platform apps received the "launch" event when launched.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, OnLaunchedEvent) {
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/launch")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/launch", .launch_as_platform_app = true}))
+      << message_;
 }
 
 // Tests that platform apps cannot use certain disabled window properties, but
 // can override them and then use them.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DisabledWindowProperties) {
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/disabled_window_properties"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "platform_apps/disabled_window_properties",
+                        .launch_as_platform_app = true}))
       << message_;
 }
 
@@ -475,7 +479,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_DisallowNavigation) {
   TabsAddedNotificationObserver observer(browser(), 1);
 
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/navigation")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/navigation", .launch_as_platform_app = true}))
+      << message_;
 
   observer.Wait();
   ASSERT_EQ(1U, observer.tabs().size());
@@ -488,7 +494,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
   // and window.open(). Only the external urls should succeed in opening tabs.
   const size_t kExpectedNumberOfTabs = 2u;
   TabsAddedNotificationObserver observer(browser(), kExpectedNumberOfTabs);
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/background_page_navigation"))
+  ASSERT_TRUE(
+      RunExtensionTest({.name = "platform_apps/background_page_navigation",
+                        .launch_as_platform_app = true}))
       << message_;
   observer.Wait();
   ASSERT_EQ(kExpectedNumberOfTabs, observer.tabs().size());
@@ -510,16 +518,22 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_Iframes) {
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/iframes")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/iframes", .launch_as_platform_app = true}))
+      << message_;
 }
 
 // Tests that localStorage and WebSQL are disabled for platform apps.
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DisallowStorage) {
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/storage")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/storage", .launch_as_platform_app = true}))
+      << message_;
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, Restrictions) {
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/restrictions")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/restrictions", .launch_as_platform_app = true}))
+      << message_;
 }
 
 // Tests that extensions can't use platform-app-only APIs.
@@ -552,7 +566,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, Isolation) {
 
   // Let the platform app request the same URL, and make sure that it doesn't
   // see the cookie.
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/isolation")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/isolation", .launch_as_platform_app = true}))
+      << message_;
 }
 
 // See crbug.com/248441
@@ -818,7 +834,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, OpenLink) {
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MutationEventsDisabled) {
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/mutation_events")) << message_;
+  ASSERT_TRUE(RunExtensionTest({.name = "platform_apps/mutation_events",
+                                .launch_as_platform_app = true}))
+      << message_;
 }
 
 // This appears to be unreliable.
@@ -830,7 +848,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MutationEventsDisabled) {
 #define MAYBE_AppWindowRestoreState AppWindowRestoreState
 #endif
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, MAYBE_AppWindowRestoreState) {
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/restore_state"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/restore_state", .launch_as_platform_app = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
@@ -1218,7 +1237,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, DISABLED_WebContentsHasFocus) {
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        WindowDotPrintShouldBringUpPrintPreview) {
   ScopedPreviewTestDelegate preview_delegate;
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/print_api")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/print_api", .launch_as_platform_app = true}))
+      << message_;
   preview_delegate.WaitUntilPreviewIsReady();
 }
 
@@ -1226,7 +1247,9 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
                        DISABLED_ClosingWindowWhilePrintingShouldNotCrash) {
   ScopedPreviewTestDelegate preview_delegate;
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/print_api")) << message_;
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/print_api", .launch_as_platform_app = true}))
+      << message_;
   preview_delegate.WaitUntilPreviewIsReady();
   GetFirstAppWindow()->GetBaseWindow()->Close();
 }
@@ -1431,16 +1454,19 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, AppWindowIframe) {
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, NewWindowWithNonExistingFile) {
-  ASSERT_TRUE(
-      RunPlatformAppTest("platform_apps/new_window_with_non_existing_file"));
+  ASSERT_TRUE(RunExtensionTest(
+      {.name = "platform_apps/new_window_with_non_existing_file",
+       .launch_as_platform_app = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, SandboxedLocalFile) {
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/sandboxed_local_file"));
+  ASSERT_TRUE(RunExtensionTest({.name = "platform_apps/sandboxed_local_file",
+                                .launch_as_platform_app = true}));
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, NewWindowAboutBlank) {
-  ASSERT_TRUE(RunPlatformAppTest("platform_apps/new_window_about_blank"));
+  ASSERT_TRUE(RunExtensionTest({.name = "platform_apps/new_window_about_blank",
+                                .launch_as_platform_app = true}));
 }
 
 // Test that an app window sees the synthetic wheel events of a touchpad pinch.

@@ -109,10 +109,6 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   bool RunExtensionSubtest(const std::string& extension_name,
                            const std::string& page_url) WARN_UNUSED_RESULT;
 
-  // Similar to RunExtensionTest, except used for running tests in platform app
-  // shell windows.
-  bool RunPlatformAppTest(const std::string& extension_name) WARN_UNUSED_RESULT;
-
   // Start the test server, and store details of its state. Those details
   // will be available to JavaScript tests using chrome.test.getConfig().
   bool StartEmbeddedTestServer();
