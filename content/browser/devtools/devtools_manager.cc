@@ -54,8 +54,8 @@ DevToolsManager* DevToolsManager::GetInstance() {
 }
 
 DevToolsManager::DevToolsManager()
-    : delegate_(GetContentClient()->browser()->GetDevToolsManagerDelegate()) {
-}
+    : delegate_(
+          GetContentClient()->browser()->CreateDevToolsManagerDelegate()) {}
 
 DevToolsManager::~DevToolsManager() = default;
 

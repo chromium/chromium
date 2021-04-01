@@ -4268,12 +4268,12 @@ void ChromeContentBrowserClient::GetHardwareSecureDecryptionCaps(
 #endif
 }
 
-content::DevToolsManagerDelegate*
-ChromeContentBrowserClient::GetDevToolsManagerDelegate() {
+std::unique_ptr<content::DevToolsManagerDelegate>
+ChromeContentBrowserClient::CreateDevToolsManagerDelegate() {
 #if defined(OS_ANDROID)
-  return new DevToolsManagerDelegateAndroid();
+  return std::make_unique<DevToolsManagerDelegateAndroid>();
 #else
-  return new ChromeDevToolsManagerDelegate();
+  return std::make_unique<ChromeDevToolsManagerDelegate>();
 #endif
 }
 

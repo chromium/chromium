@@ -1027,9 +1027,9 @@ class CONTENT_EXPORT ContentBrowserClient {
       std::vector<std::unique_ptr<storage::FileSystemBackend>>*
           additional_backends) {}
 
-  // Creates a new DevToolsManagerDelegate. The caller owns the returned value.
-  // It's valid to return nullptr.
-  virtual DevToolsManagerDelegate* GetDevToolsManagerDelegate();
+  // Creates a new DevToolsManagerDelegate. It's valid to return nullptr.
+  virtual std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate();
 
   // Stores the new expiration time up until which events related to |service|
   // can still be logged. |service| is the int value of the

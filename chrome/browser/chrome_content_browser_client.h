@@ -373,7 +373,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const base::FilePath& storage_partition_path,
       std::vector<std::unique_ptr<storage::FileSystemBackend>>*
           additional_backends) override;
-  content::DevToolsManagerDelegate* GetDevToolsManagerDelegate() override;
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() override;
   void UpdateDevToolsBackgroundServiceExpiration(
       content::BrowserContext* browser_context,
       int service,

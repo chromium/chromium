@@ -325,9 +325,9 @@ base::FilePath ShellContentBrowserClient::GetFontLookupTableCacheDir() {
       FILE_PATH_LITERAL("FontLookupTableCache"));
 }
 
-DevToolsManagerDelegate*
-ShellContentBrowserClient::GetDevToolsManagerDelegate() {
-  return new ShellDevToolsManagerDelegate(browser_context());
+std::unique_ptr<content::DevToolsManagerDelegate>
+ShellContentBrowserClient::CreateDevToolsManagerDelegate() {
+  return std::make_unique<ShellDevToolsManagerDelegate>(browser_context());
 }
 
 void ShellContentBrowserClient::ExposeInterfacesToRenderer(

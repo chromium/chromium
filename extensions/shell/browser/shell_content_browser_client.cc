@@ -216,9 +216,10 @@ void ShellContentBrowserClient::GetAdditionalAllowedSchemesForFileSystem(
   additional_allowed_schemes->push_back(kExtensionScheme);
 }
 
-content::DevToolsManagerDelegate*
-ShellContentBrowserClient::GetDevToolsManagerDelegate() {
-  return new content::ShellDevToolsManagerDelegate(GetBrowserContext());
+std::unique_ptr<content::DevToolsManagerDelegate>
+ShellContentBrowserClient::CreateDevToolsManagerDelegate() {
+  return std::make_unique<content::ShellDevToolsManagerDelegate>(
+      GetBrowserContext());
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>

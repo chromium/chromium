@@ -387,12 +387,12 @@ bool ContentBrowserClientImpl::CanShutdownGpuProcessNowOnIOThread() {
   return true;
 }
 
-content::DevToolsManagerDelegate*
-ContentBrowserClientImpl::GetDevToolsManagerDelegate() {
+std::unique_ptr<content::DevToolsManagerDelegate>
+ContentBrowserClientImpl::CreateDevToolsManagerDelegate() {
 #if defined(OS_ANDROID)
-  return new DevToolsManagerDelegateAndroid();
+  return std::make_unique<DevToolsManagerDelegateAndroid>();
 #else
-  return new content::DevToolsManagerDelegate();
+  return std::make_unique<content::DevToolsManagerDelegate>();
 #endif
 }
 

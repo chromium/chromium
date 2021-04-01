@@ -29,7 +29,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   void RegisterBrowserInterfaceBindersForFrame(
       content::RenderFrameHost* render_frame_host,
       mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
-  content::DevToolsManagerDelegate* GetDevToolsManagerDelegate() override;
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
       override;
   content::GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(

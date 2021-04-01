@@ -99,10 +99,10 @@ WebEngineContentBrowserClient::CreateBrowserMainParts(
   return browser_main_parts;
 }
 
-content::DevToolsManagerDelegate*
-WebEngineContentBrowserClient::GetDevToolsManagerDelegate() {
+std::unique_ptr<content::DevToolsManagerDelegate>
+WebEngineContentBrowserClient::CreateDevToolsManagerDelegate() {
   DCHECK(main_parts_);
-  return new DevToolsManagerDelegate(main_parts_);
+  return std::make_unique<DevToolsManagerDelegate>(main_parts_);
 }
 
 std::string WebEngineContentBrowserClient::GetProduct() {

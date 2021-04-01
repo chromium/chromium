@@ -109,8 +109,9 @@ class BrowserClient : public ContentBrowserClient {
  public:
   BrowserClient() {}
   ~BrowserClient() override {}
-  DevToolsManagerDelegate* GetDevToolsManagerDelegate() override {
-    return new DevToolsManagerDelegate();
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() override {
+    return std::make_unique<DevToolsManagerDelegate>();
   }
 };
 

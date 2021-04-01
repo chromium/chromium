@@ -177,9 +177,10 @@ void HeadlessContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
       &HeadlessContentBrowserClient::BindBadgeService, base::Unretained(this)));
 }
 
-content::DevToolsManagerDelegate*
-HeadlessContentBrowserClient::GetDevToolsManagerDelegate() {
-  return new HeadlessDevToolsManagerDelegate(browser_->GetWeakPtr());
+std::unique_ptr<content::DevToolsManagerDelegate>
+HeadlessContentBrowserClient::CreateDevToolsManagerDelegate() {
+  return std::make_unique<HeadlessDevToolsManagerDelegate>(
+      browser_->GetWeakPtr());
 }
 
 scoped_refptr<content::QuotaPermissionContext>

@@ -28,6 +28,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/browser/client_certificate_delegate.h"
+#include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -633,7 +634,8 @@ ContentBrowserClient::CreateSelectFilePolicy(WebContents* web_contents) {
   return std::unique_ptr<ui::SelectFilePolicy>();
 }
 
-DevToolsManagerDelegate* ContentBrowserClient::GetDevToolsManagerDelegate() {
+std::unique_ptr<content::DevToolsManagerDelegate>
+ContentBrowserClient::CreateDevToolsManagerDelegate() {
   return nullptr;
 }
 

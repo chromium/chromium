@@ -603,9 +603,9 @@ AwContentBrowserClient::CreateThrottlesForNavigation(
   return throttles;
 }
 
-content::DevToolsManagerDelegate*
-AwContentBrowserClient::GetDevToolsManagerDelegate() {
-  return new AwDevToolsManagerDelegate();
+std::unique_ptr<content::DevToolsManagerDelegate>
+AwContentBrowserClient::CreateDevToolsManagerDelegate() {
+  return std::make_unique<AwDevToolsManagerDelegate>();
 }
 
 bool AwContentBrowserClient::BindAssociatedReceiverFromFrame(

@@ -32,7 +32,8 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
   // ContentBrowserClient overrides.
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
       const content::MainFunctionParams& parameters) final;
-  content::DevToolsManagerDelegate* GetDevToolsManagerDelegate() final;
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() final;
   std::string GetProduct() final;
   std::string GetUserAgent() final;
   void OverrideWebkitPrefs(content::WebContents* web_contents,
