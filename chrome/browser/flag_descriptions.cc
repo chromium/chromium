@@ -704,6 +704,11 @@ const char kDesktopPWAsAppIconShortcutsMenuDescription[] =
     "Enable installed PWAs to include a menu of shortcuts associated with the "
     "app icon in the taskbar on Windows, or the dock on macOS or Linux.";
 
+const char kDesktopPWAsAppIconShortcutsMenuUIName[] =
+    "Desktop PWAs app icon shortcuts menu UI";
+const char kDesktopPWAsAppIconShortcutsMenuUIDescription[] =
+    "Show web app shortcuts in the shelf context menu";
+
 const char kDesktopPWAsAttentionBadgingCrOSName[] =
     "Desktop PWAs Attention Badging";
 const char kDesktopPWAsAttentionBadgingCrOSDescription[] =

@@ -224,7 +224,7 @@ const base::Feature kDesktopPWAsAppIconShortcutsMenu{
 // Enables Desktop PWAs shortcuts menu to be visible and executable in ChromeOS
 // UI surfaces.
 const base::Feature kDesktopPWAsAppIconShortcutsMenuUI{
-    "DesktopPWAsAppIconShortcutsMenuUI", base::FEATURE_ENABLED_BY_DEFAULT};
+    "DesktopPWAsAppIconShortcutsMenuUI", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables attention badging for PWA icons in the shelf and launcher.
 const base::Feature kDesktopPWAsAttentionBadgingCrOS{

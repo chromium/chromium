@@ -45030,6 +45030,7 @@ from previous Chrome versions.
   <int value="-1082302549" label="scan-cards-in-web-payments"/>
   <int value="-1082053427"
       label="OmniboxUIExperimentElideToRegistrableDomain:disabled"/>
+  <int value="-1081705762" label="DesktopPWAsAppIconShortcutsMenuUI:disabled"/>
   <int value="-1081295536"
       label="ContextMenuSearchAndShopWithGoogleLens:enabled"/>
   <int value="-1078093206" label="ash-debug-shortcuts"/>
@@ -47798,6 +47799,7 @@ from previous Chrome versions.
   <int value="1436454450" label="InterestFeedV2:disabled"/>
   <int value="1437413720" label="CooperativeScheduling:disabled"/>
   <int value="1440618113" label="EnableNetworkingInDiagnosticsApp:disabled"/>
+  <int value="1440881073" label="DesktopPWAsAppIconShortcutsMenuUI:enabled"/>
   <int value="1441897340" label="AndroidSpellCheckerNonLowEnd:enabled"/>
   <int value="1441978318" label="WifiSyncAndroid:disabled"/>
   <int value="1442129147"

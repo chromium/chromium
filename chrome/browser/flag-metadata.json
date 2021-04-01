@@ -1635,6 +1635,11 @@
     "expiry_milestone": 93
   },
   {
+    "name": "enable-desktop-pwas-app-icon-shortcuts-menu-ui",
+    "owners": [ "ericwilligers@google.com", "desktop-pwas-team@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "enable-desktop-pwas-attention-badging-cros",
     "owners": [ "loubrett@google.com", "chromeos-web-apps-platform-syd@google.com" ],
     "expiry_milestone": 93

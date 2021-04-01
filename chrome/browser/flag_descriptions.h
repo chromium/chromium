@@ -431,6 +431,9 @@ extern const char kColorProviderRedirectionDescription[];
 extern const char kDesktopPWAsAppIconShortcutsMenuName[];
 extern const char kDesktopPWAsAppIconShortcutsMenuDescription[];
 
+extern const char kDesktopPWAsAppIconShortcutsMenuUIName[];
+extern const char kDesktopPWAsAppIconShortcutsMenuUIDescription[];
+
 extern const char kDesktopPWAsAttentionBadgingCrOSName[];
 extern const char kDesktopPWAsAttentionBadgingCrOSDescription[];
 extern const char kDesktopPWAsAttentionBadgingCrOSApiAndNotifications[];
