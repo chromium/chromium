@@ -24,6 +24,9 @@ extern const base::Feature kMobileIdentityConsistencyVar;
 // Returns true if the flag |kMobileIdentityConsistency| is enabled for the
 // platform.
 bool IsMobileIdentityConsistencyEnabled();
+
+// Feature flag for FRE related changes as part of MICE.
+extern const base::Feature kMobileIdentityConsistencyFRE;
 #endif
 
 enum class AccountConsistencyMethod : int {

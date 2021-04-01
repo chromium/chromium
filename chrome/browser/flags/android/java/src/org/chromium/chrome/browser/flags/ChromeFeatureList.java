@@ -363,6 +363,7 @@ public abstract class ChromeFeatureList {
             "MessagesForAndroidInfrastructure";
     public static final String MOBILE_IDENTITY_CONSISTENCY = "MobileIdentityConsistency";
     public static final String MOBILE_IDENTITY_CONSISTENCY_VAR = "MobileIdentityConsistencyVar";
+    public static final String MOBILE_IDENTITY_CONSISTENCY_M2 = "MobileIdentityConsistencyFRE";
     public static final String MODAL_PERMISSION_DIALOG_VIEW = "ModalPermissionDialogView";
     public static final String METRICS_SETTINGS_ANDROID = "MetricsSettingsAndroid";
     public static final String NOTIFICATION_SUSPENDER = "NotificationSuspender";

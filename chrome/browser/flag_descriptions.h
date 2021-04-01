@@ -871,6 +871,9 @@ extern const char kMixedFormsInterstitialDescription[];
 extern const char kMobileIdentityConsistencyName[];
 extern const char kMobileIdentityConsistencyDescription[];
 
+extern const char kMobileIdentityConsistencyFREName[];
+extern const char kMobileIdentityConsistencyFREDescription[];
+
 extern const char kMobileIdentityConsistencyVarName[];
 extern const char kMobileIdentityConsistencyVarDescription[];
 

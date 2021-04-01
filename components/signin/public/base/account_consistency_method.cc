@@ -16,6 +16,9 @@ const base::Feature kMobileIdentityConsistency{
 // of MICE on Android.
 const base::Feature kMobileIdentityConsistencyVar{
     "MobileIdentityConsistencyVar", base::FEATURE_DISABLED_BY_DEFAULT};
+// Feature flag for FRE related changes as part of MICE.
+const base::Feature kMobileIdentityConsistencyFRE{
+    "MobileIdentityConsistencyFRE", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
 #if defined(OS_IOS)

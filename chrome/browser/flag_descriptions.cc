@@ -1490,6 +1490,12 @@ const char kMobileIdentityConsistencyVarDescription[] =
     "Enables stronger identity consistency on mobile with different UI "
     "variations";
 
+const char kMobileIdentityConsistencyFREName[] =
+    "Mobile identity consistency FRE";
+const char kMobileIdentityConsistencyFREDescription[] =
+    "Enables stronger identity consistency on mobile with different UIs for "
+    "the First Run Experience.";
+
 const char kMobilePwaInstallUseBottomSheetName[] =
     "Mobile PWA Installation bottom sheet";
 const char kMobilePwaInstallUseBottomSheetDescription[] =

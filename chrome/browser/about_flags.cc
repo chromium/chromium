@@ -5506,6 +5506,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(signin::kMobileIdentityConsistencyVar,
                                     kMobileIdentityConsistencyVariations,
                                     "MobileIdentityConsistencyVar")},
+    {"mobile-identity-consistency-fre",
+     flag_descriptions::kMobileIdentityConsistencyFREName,
+     flag_descriptions::kMobileIdentityConsistencyFREDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(signin::kMobileIdentityConsistencyFRE)},
 #endif  // defined(OS_ANDROID)
 
     {"autofill-use-improved-label-disambiguation",

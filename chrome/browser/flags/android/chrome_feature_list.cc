@@ -299,6 +299,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &reading_list::switches::kReadLater,
     &signin::kMobileIdentityConsistency,
     &signin::kMobileIdentityConsistencyVar,
+    &signin::kMobileIdentityConsistencyFRE,
     &switches::kDeprecateMenagerieAPI,
     &switches::kDecoupleSyncFromAndroidMasterSync,
     &switches::kSyncUseSessionsUnregisterDelay,
