@@ -161,7 +161,7 @@ void ModulesInitializer::Initialize() {
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   if (frame.IsMainFrame()) {
     frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-        &DocumentMetadataServer::BindMojoReceiver, WrapWeakPersistent(&frame)));
+        &DocumentMetadataServer::BindReceiver, WrapWeakPersistent(&frame)));
   }
   frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
       &WebLaunchServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));

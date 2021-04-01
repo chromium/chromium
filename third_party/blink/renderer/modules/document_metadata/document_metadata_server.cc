@@ -4,36 +4,59 @@
 
 #include "third_party/blink/renderer/modules/document_metadata/document_metadata_server.h"
 
-#include <memory>
-#include <utility>
-
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/document_metadata/document_metadata_extractor.h"
 
 namespace blink {
 
-DocumentMetadataServer::DocumentMetadataServer(LocalFrame& frame)
-    : frame_(frame) {}
+// static
+const char DocumentMetadataServer::kSupplementName[] = "DocumentMetadataServer";
 
-void DocumentMetadataServer::BindMojoReceiver(
+// static
+DocumentMetadataServer* DocumentMetadataServer::From(Document& document) {
+  return Supplement<Document>::From<DocumentMetadataServer>(document);
+}
+
+// static
+void DocumentMetadataServer::BindReceiver(
     LocalFrame* frame,
     mojo::PendingReceiver<mojom::blink::DocumentMetadata> receiver) {
-  DCHECK(frame);
+  DCHECK(frame && frame->GetDocument());
+  auto& document = *frame->GetDocument();
+  auto* server = DocumentMetadataServer::From(document);
+  if (!server) {
+    server = MakeGarbageCollected<DocumentMetadataServer>(
+        base::PassKey<DocumentMetadataServer>(), *frame);
+    Supplement<Document>::ProvideTo(document, server);
+  }
+  server->Bind(std::move(receiver));
+}
 
-  // TODO(wychen): remove BindMojoReceiver pattern, and make this a service
-  // associated with frame lifetime.
-  mojo::MakeSelfOwnedReceiver(std::make_unique<DocumentMetadataServer>(*frame),
-                              std::move(receiver));
+DocumentMetadataServer::DocumentMetadataServer(
+    base::PassKey<DocumentMetadataServer>,
+    LocalFrame& frame)
+    : Supplement<Document>(*frame.GetDocument()),
+      receiver_(this, frame.DomWindow()) {}
+
+void DocumentMetadataServer::Bind(
+    mojo::PendingReceiver<mojom::blink::DocumentMetadata> receiver) {
+  // We expect the interface to be bound at most once when the page is loaded
+  // to service the GetEntities() call.
+  receiver_.reset();
+  // See https://bit.ly/2S0zRAS for task types.
+  receiver_.Bind(std::move(receiver), GetSupplementable()->GetTaskRunner(
+                                          TaskType::kMiscPlatformAPI));
+}
+
+void DocumentMetadataServer::Trace(Visitor* visitor) const {
+  visitor->Trace(receiver_);
+  Supplement<Document>::Trace(visitor);
 }
 
 void DocumentMetadataServer::GetEntities(GetEntitiesCallback callback) {
-  if (!frame_ || !frame_->GetDocument()) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
   std::move(callback).Run(
-      DocumentMetadataExtractor::Extract(*frame_->GetDocument()));
+      DocumentMetadataExtractor::Extract(*GetSupplementable()));
 }
 
 }  // namespace blink
