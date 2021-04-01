@@ -143,8 +143,8 @@ class MockRenderProcessHost : public RenderProcessHost {
   const base::TimeTicks& GetInitTimeForNavigationMetrics() override;
   bool IsProcessBackgrounded() override;
   size_t GetKeepAliveRefCount() const;
-  void IncrementKeepAliveRefCount() override;
-  void DecrementKeepAliveRefCount() override;
+  void IncrementKeepAliveRefCount(KeepAliveSource source) override;
+  void DecrementKeepAliveRefCount(KeepAliveSource source) override;
   void DisableKeepAliveRefCount() override;
   bool IsKeepAliveRefCountDisabled() override;
   mojom::Renderer* GetRendererInterface() override;

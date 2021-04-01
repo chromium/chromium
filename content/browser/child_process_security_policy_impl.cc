@@ -150,7 +150,7 @@ base::debug::CrashKeyString* GetKilledProcessOriginLockKey() {
 
 base::debug::CrashKeyString* GetCanAccessDataFailureReasonKey() {
   static auto* crash_key = base::debug::AllocateCrashKeyString(
-      "can_access_data_failure_reason", base::debug::CrashKeySize::Size64);
+      "can_access_data_failure_reason", base::debug::CrashKeySize::Size256);
   return crash_key;
 }
 
@@ -1654,9 +1654,18 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
       // do not agree, the check might be slightly weaker (as the least common
       // denominator), but the differences must never violate the ProcessLock.
       if (security_state->browsing_instance_ids().empty()) {
-        failure_reason = "No BrowsingInstanceIDs.";
+        // TODO(wjmaclean): Remove the keepalive source tracking after
+        // diagnosing the cause of the remaining reports in
+        // https://crbug.com/1148542.
+        RenderProcessHostImpl* child_host = static_cast<RenderProcessHostImpl*>(
+            RenderProcessHost::FromID(child_id));
+        DCHECK(child_host);
+        failure_reason =
+            base::StringPrintf("No BIids, keep_alive_count = %zu, sources = %s",
+                               child_host->keep_alive_ref_count(),
+                               child_host->keep_alive_sources().c_str());
         // This will fall through to the call to
-        // LogCanAccessDataForOriginCrashKeys below, then return false.
+        // LogCanAccessDataForOriginCrashKeys and then return false.
       }
       for (auto browsing_instance_id :
            security_state->browsing_instance_ids()) {

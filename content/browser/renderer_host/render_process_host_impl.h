@@ -239,8 +239,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
       override;
   const base::TimeTicks& GetInitTimeForNavigationMetrics() override;
   bool IsProcessBackgrounded() override;
-  void IncrementKeepAliveRefCount() override;
-  void DecrementKeepAliveRefCount() override;
+  void IncrementKeepAliveRefCount(KeepAliveSource source) override;
+  void DecrementKeepAliveRefCount(KeepAliveSource source) override;
   void DisableKeepAliveRefCount() override;
   bool IsKeepAliveRefCountDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
@@ -655,6 +655,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   }
 
   size_t keep_alive_ref_count() const { return keep_alive_ref_count_; }
+  // TODO(wjmaclean): remove this when the experiment is done.
+  std::string keep_alive_sources() const { return keep_alive_sources_; }
 
   // Allows overriding the URLLoaderFactory creation via CreateURLLoaderFactory.
   // Passing a null callback will restore the default behavior.
@@ -921,6 +923,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   mojo::OutgoingInvitation mojo_invitation_;
 
   size_t keep_alive_ref_count_;
+  std::string keep_alive_sources_;
 
   // Set in DisableKeepAliveRefCount(). When true, |keep_alive_ref_count_| must
   // no longer be modified.
