@@ -250,8 +250,7 @@ ExtensionFunction::ResponseAction FileSystemProviderNotifyFunction::Run() {
   std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ChromeExtensionFunctionDetails details(this);
-  Service* const service = Service::Get(details.GetProfile());
+  Service* const service = Service::Get(browser_context());
   DCHECK(service);
 
   ProvidedFileSystemInterface* const file_system =

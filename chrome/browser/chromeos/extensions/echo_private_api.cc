@@ -19,8 +19,8 @@
 #include "chrome/browser/ash/notifications/echo_dialog_view.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/extensions/api/echo_private.h"
@@ -205,8 +205,8 @@ void EchoPrivateGetUserConsentFunction::OnCancel() {
 }
 
 void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
-  ChromeExtensionFunctionDetails details(this);
-  NavigateParams params(details.GetProfile(), GURL(chrome::kEchoLearnMoreURL),
+  NavigateParams params(Profile::FromBrowserContext(browser_context()),
+                        GURL(chrome::kEchoLearnMoreURL),
                         ui::PAGE_TRANSITION_LINK);
   // Open the link in a new window. The echo dialog is modal, so the current
   // window is useless until the dialog is closed.
