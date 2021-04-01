@@ -2150,30 +2150,6 @@
         "test_id_prefix": "ninja://content/test:content_browsertests/"
       },
       {
-        "args": [
-          "--disable-features=UseSkiaRenderer",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/skia_renderer.content_browsertests.filter"
-        ],
-        "isolate_profile_data": true,
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "name": "non_skia_renderer_content_browsertests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "x86-64",
-              "os": "Windows-10-18363"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_browsertests",
-        "test_id_prefix": "ninja://content/test:content_browsertests/"
-      },
-      {
         "isolate_profile_data": true,
         "merge": {
           "args": [],

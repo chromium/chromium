@@ -4627,19 +4627,6 @@
       },
     },
 
-    'non_skia_renderer_gtests': {
-      'non_skia_renderer_content_browsertests': {
-        'args': [
-          '--disable-features=UseSkiaRenderer',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/skia_renderer.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-        'test': 'content_browsertests',
-      },
-    },
-
     'opus_tests': {
       'opus_tests': {
         'args': [
@@ -5752,7 +5739,6 @@
     #   'chromium_gtests',
     #   'chromium_gtests_for_devices_with_graphical_output',
     #   'linux_flavor_specific_chromium_gtests',
-    #   'non_skia_renderer_gtests',
     #   'system_webview_shell_instrumentation_tests', # Not an experimental test
     #   'vr_platform_specific_chromium_gtests',
     #   'weblayer_android_gtests',
@@ -5946,7 +5932,6 @@
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'non_android_chromium_gtests_skia_gold',
-      'non_skia_renderer_gtests',
       'pixel_browser_tests_gtests',
       'vr_platform_specific_chromium_gtests',
       'weblayer_gtests',
