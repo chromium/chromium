@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webauth;
+package org.chromium.components.webauthn;
 
 import org.chromium.blink.mojom.Authenticator;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.services.service_manager.InterfaceFactory;
 
@@ -21,7 +21,7 @@ public class AuthenticatorFactory implements InterfaceFactory<Authenticator> {
 
     @Override
     public Authenticator createImpl() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_AUTH)) {
+        if (!ContentFeatureList.isEnabled(ContentFeatureList.WEB_AUTH)) {
             return null;
         }
 

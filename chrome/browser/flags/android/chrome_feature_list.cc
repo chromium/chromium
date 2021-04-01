@@ -113,7 +113,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kSearchHistoryLink,
     &features::kToolbarUseHardwareBitmapDraw,
     &features::kUseNotificationCompatBuilder,
-    &features::kWebAuth,
     &features::kWebNfc,
     &feature_engagement::kIPHHomepagePromoCardFeature,
     &feature_engagement::kIPHNewTabPageHomeButtonFeature,

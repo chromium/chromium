@@ -12,7 +12,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
-import org.chromium.chrome.browser.webauth.AuthenticatorImpl;
+import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.url.Origin;
 

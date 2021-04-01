@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.webauthn.Fido2Helper;
 import org.chromium.mojo_base.mojom.TimeDelta;
 
 /**

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webauth;
+package org.chromium.components.webauthn;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -16,7 +16,7 @@ import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.url.Origin;
@@ -128,7 +128,7 @@ public class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_AUTH)) {
+        if (!ContentFeatureList.isEnabled(ContentFeatureList.WEB_AUTH)) {
             callback.call(false);
             return;
         }

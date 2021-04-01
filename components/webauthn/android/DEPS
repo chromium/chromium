@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/cbor",
+  "+components/externalauth/android/java",
+  "+content/public/android/java",
+  "+device/fido",
+  "+mojo/public/java",
+  "+net/android/java",
+  "+services/service_manager/public/java",
+  "+third_party/boringssl",
+  "+ui/android/java",
+]

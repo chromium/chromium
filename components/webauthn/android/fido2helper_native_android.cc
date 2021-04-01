@@ -5,14 +5,16 @@
 #include <jni.h>
 
 #include "base/android/jni_array.h"
-#include "chrome/android/chrome_jni_headers/Fido2Helper_jni.h"
 #include "components/cbor/reader.h"
+#include "components/webauthn/android/jni_headers/Fido2Helper_jni.h"
 #include "device/fido/attested_credential_data.h"
 #include "device/fido/public_key.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
+
+namespace webauthn {
 
 // Parses a CTAP2 attestation[1] and extracts the
 // parts that the browser provides via Javascript API [2]. Called
@@ -75,3 +77,5 @@ static jboolean JNI_Fido2Helper_ParseAttestationObject(
 
   return true;
 }
+
+}  // namespace webauthn

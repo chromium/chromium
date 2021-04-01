@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webauth;
+package org.chromium.components.webauthn;
 
 import android.util.Base64;
+
+import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.fido.common.Transport;
 import com.google.android.gms.fido.fido2.api.common.Attachment;
@@ -28,6 +30,7 @@ import com.google.android.gms.fido.fido2.api.common.UvmEntries;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -48,6 +51,7 @@ import java.util.concurrent.TimeUnit;
  * Utility class that provides conversions between GmsCore Fido2
  * and authenticator.mojom data structures.
  */
+@JNINamespace("webauthn")
 public final class Fido2Helper {
     private static final String TAG = "Fido2Helper";
     private static final int ECDSA_COSE_IDENTIFIER = -7;
@@ -60,8 +64,10 @@ public final class Fido2Helper {
     private static final String CREDENTIAL_EXISTS_ERROR_MSG =
             "One of the excluded credentials exists on the local device";
     private static final String LOW_LEVEL_ERROR_MSG = "Low level error 0x6a80";
-    static final double MIN_TIMEOUT_SECONDS = 10;
-    static final double MAX_TIMEOUT_SECONDS = 600;
+    @VisibleForTesting
+    public static final double MIN_TIMEOUT_SECONDS = 10;
+    @VisibleForTesting
+    public static final double MAX_TIMEOUT_SECONDS = 600;
 
     /**
      * Converts mojo options to gmscore options.

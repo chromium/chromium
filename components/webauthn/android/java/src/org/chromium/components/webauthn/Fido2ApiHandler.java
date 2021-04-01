@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webauth;
+package org.chromium.components.webauthn;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -24,7 +24,7 @@ public class Fido2ApiHandler {
     public static final int GMSCORE_MIN_VERSION = 16890000;
 
     @VisibleForTesting
-    static void overrideInstanceForTesting(Fido2ApiHandler instance) {
+    public static void overrideInstanceForTesting(Fido2ApiHandler instance) {
         sInstance = instance;
     }
 

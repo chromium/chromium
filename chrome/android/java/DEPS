@@ -57,6 +57,7 @@ include_rules = [
   "+components/query_tiles/android/java",
   "+components/thin_webview/java",
   "+components/ukm/android/java",
+  "+components/webauthn/android/java",
   "+components/webxr/android/java",
 
   "-content/public/android",

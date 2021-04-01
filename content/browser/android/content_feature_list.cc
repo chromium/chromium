@@ -24,6 +24,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &features::kBackgroundMediaRendererHasModerateBinding,
     &features::kBindingManagementWaiveCpu,
     &features::kExperimentalAccessibilityLabels,
+    &features::kWebAuth,
     &features::kWebBluetoothNewPermissionsBackend,
     &features::kWebNfc,
 };

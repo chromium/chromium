@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.webauth;
+package org.chromium.components.webauthn;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -266,12 +266,12 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     }
 
     @VisibleForTesting
-    protected void setWindowForTesting(WindowAndroid window) {
+    public void setWindowForTesting(WindowAndroid window) {
         mWindow = window;
     }
 
     @VisibleForTesting
-    protected void setWebContentsForTesting(WebContents webContents) {
+    public void setWebContentsForTesting(WebContents webContents) {
         mWebContents = webContents;
     }
 
@@ -377,7 +377,8 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
         }
     }
 
-    String convertOriginToString(Origin origin) {
+    @VisibleForTesting
+    public String convertOriginToString(Origin origin) {
         // Wrapping with GURLUtils.getOrigin() in order to trim default ports.
         return GURLUtils.getOrigin(
                 origin.getScheme() + "://" + origin.getHost() + ":" + origin.getPort());

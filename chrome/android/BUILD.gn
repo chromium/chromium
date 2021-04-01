@@ -495,6 +495,7 @@ android_library("chrome_java") {
     "//components/webapk/android/libs/client:java",
     "//components/webapk/android/libs/common:java",
     "//components/webapps/browser/android:java",
+    "//components/webauthn/android:java",
     "//components/webrtc/android:java",
     "//components/webxr/android:ar_java_interfaces",
     "//content/public/android:content_java",
@@ -726,6 +727,7 @@ group("jni_headers") {
     "//chrome/browser/webauthn/android:jni_headers",
     "//components/media_router/browser/android:jni_headers",
     "//components/ukm/android:jni_headers",
+    "//components/webauthn/android:jni_headers",
   ]
 }
 
@@ -1318,6 +1320,7 @@ android_library("chrome_test_java") {
     "//components/user_prefs/android:java",
     "//components/webapk/android/libs/client:java",
     "//components/webapps/browser/android:java",
+    "//components/webauthn/android:java",
     "//content/public/android:content_java",
     "//content/public/test/android:content_java_test_support",
     "//media/base/android:java_switches",
@@ -3569,7 +3572,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateDataFetcher.java",
     "java/src/org/chromium/chrome/browser/webapps/WebApkUpdateManager.java",
     "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
-    "java/src/org/chromium/chrome/browser/webauth/Fido2Helper.java",
   ]
 
   # Used for testing only, should not be shipped to end users.
