@@ -168,6 +168,8 @@ static_library("performance_manager") {
     "v8_memory/v8_context_tracker_internal.cc",
     "v8_memory/v8_context_tracker_internal.h",
     "v8_memory/v8_detailed_memory.cc",
+    "v8_memory/v8_detailed_memory_any_seq.cc",
+    "v8_memory/v8_detailed_memory_decorator.cc",
     "v8_memory/v8_detailed_memory_decorator.h",
     "v8_memory/web_memory_aggregator.cc",
     "v8_memory/web_memory_aggregator.h",
