@@ -438,6 +438,17 @@ Polymer({
   },
 
   /**
+   * @return {string}
+   * @private
+   */
+  getContainerClassName_() {
+    if (this.isStateTextVisible_() && this.isSubtitleVisible_()) {
+      return 'div-outer-with-subtitle-height';
+    }
+    return 'div-outer-with-standard-height';
+  },
+
+  /**
    * This only gets called for network items once networkState is set.
    * @return {string}
    * @private

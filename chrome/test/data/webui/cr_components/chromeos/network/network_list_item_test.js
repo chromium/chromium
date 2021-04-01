@@ -374,4 +374,65 @@ suite('NetworkListItemTest', function() {
         assertNotEquals(
             networkStateScanningText, networkStateText.textContent.trim());
       });
+
+  test('Cellular network item standard height', async () => {
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
+    const networkState = initCellularNetwork(/*iccid=*/ '1', /*eid=*/ '1');
+    networkState.connectionState = mojom.ConnectionStateType.kNotConnected;
+    listItem.item = networkState;
+
+    const networkStateText = listItem.$$('#networkStateText');
+    networkStateText.hidden = true;
+    networkStateText.active = false;
+    await flushAsync();
+    assertTrue(networkStateText.hidden);
+    assertFalse(networkStateText.active);
+    assertEquals(networkStateText.textContent.trim(), '');
+
+    const networkName = listItem.$$('#networkName');
+    assertFalse(networkName.hidden);
+
+    const subtitle = listItem.$$('#subtitle');
+    subtitle.hidden = false;
+    await flushAsync();
+    assertFalse(subtitle.hidden);
+
+    const divOuter = listItem.$$('#divOuter');
+    assertTrue(!!divOuter);
+    assertTrue(divOuter.classList.contains('div-outer-with-standard-height'));
+    assertFalse(divOuter.classList.contains('div-outer-with-subtitle-height'));
+  });
+
+  test('Cellular network item subtitle height', async () => {
+    eSimManagerRemote.addEuiccForTest(/*numProfiles=*/ 1);
+    const networkState = initCellularNetwork(/*iccid=*/ '1', /*eid=*/ '1');
+    networkState.connectionState = mojom.ConnectionStateType.kConnected;
+    listItem.item = networkState;
+
+    const networkStateText = listItem.$$('#networkStateText');
+    networkStateText.hidden = false;
+    networkStateText.active = true;
+    await flushAsync();
+    assertTrue(!!networkStateText);
+    assertFalse(networkStateText.hidden);
+    assertTrue(networkStateText.active);
+    assertEquals(
+        networkStateText.textContent.trim(),
+        listItem.i18n('networkListItemConnected'));
+
+    const networkName = listItem.$$('#networkName');
+    assertFalse(!!networkName.hidden);
+
+    const subtitle = listItem.$$('#subtitle');
+    subtitle.hidden = false;
+    await flushAsync();
+    assertTrue(!!subtitle);
+    assertFalse(subtitle.hidden);
+
+    const divOuter = listItem.$$('#divOuter');
+    assertTrue(!!divOuter);
+    assertFalse(divOuter.classList.contains('div-outer-with-standard-height'));
+    assertTrue(divOuter.classList.contains('div-outer-with-subtitle-height'));
+  });
+
 });

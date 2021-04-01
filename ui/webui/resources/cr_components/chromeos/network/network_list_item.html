@@ -27,11 +27,18 @@
       }
 
       #divOuter {
-        height: var(--cr-network-row-height, 48px);
         overflow: auto;
-        padding-bottom: var(--cr-network-row-padding-bottom, 0);
+        padding-bottom: 0;
         padding-inline-end: var(--cr-icon-ripple-padding);
-        padding-top: var(--cr-network-row-padding-bottom, 0);
+        padding-top: 0;
+      }
+
+      .div-outer-with-standard-height {
+        height: var(--cr-network-item-with-standard-height, 48px);
+      }
+
+      .div-outer-with-subtitle-height {
+        height: var(--cr-network-item-with-subtitle-height, 60px);
       }
 
       :host([disabled_]) {
@@ -112,7 +119,8 @@
     <div id="wrapper" focus-row-container
          class="layout horizontal center flex">
       <div id="divOuter"
-           class="layout horizontal center flex"
+           class$="layout horizontal center flex
+              [[getContainerClassName_(networkState.*, subtitle_)]]"
            actionable
            focus-row-control
            selectable
