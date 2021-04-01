@@ -93,7 +93,15 @@ export class TabSearchItem extends PolymerElement {
 
     // Show chrome:// if it's a chrome internal url
     let secondaryLabel = this.data.hostname;
-    if (new URL(this.data.tab.url).protocol === 'chrome:') {
+    let protocol = '';
+    try {
+      protocol = new URL(this.data.tab.url).protocol;
+    } catch (e) {
+      // TODO(crbug.com/1186409): Remove this after we root cause the issue
+      console.error(
+          `Error parsing URL on Tab Search: url=${this.data.tab.url}`);
+    }
+    if (protocol === 'chrome:') {
       /** @type {!HTMLElement} */ (this.$.secondaryText)
           .prepend(document.createTextNode('chrome://'));
       secondaryLabel = `chrome://${secondaryLabel}`;

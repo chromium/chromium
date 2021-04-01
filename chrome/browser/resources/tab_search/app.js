@@ -580,7 +580,13 @@ export class TabSearchAppElement extends PolymerElement {
    */
   tabData_(tab, inActiveWindow, type) {
     const tabData = new TabData();
-    tabData.hostname = new URL(tab.url).hostname;
+    try {
+      tabData.hostname = new URL(tab.url).hostname;
+    } catch (e) {
+      // TODO(crbug.com/1186409): Remove this after we root cause the issue
+      console.error(`Error parsing URL on Tab Search: url=${tab.url}`);
+      tabData.hostname = '';
+    }
     tabData.inActiveWindow = inActiveWindow;
     tabData.tab = tab;
     tabData.type = type;
