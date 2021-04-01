@@ -22,6 +22,7 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
       'getMyFilesPath',
       'openFilesInMediaApp',
       'recordScanCompleteAction',
+      'recordNumScanSettingChanges',
     ]);
 
     /** @private {?SelectedPath} */
@@ -35,6 +36,9 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
 
     /** @private {!Array<string>} */
     this.filePaths_ = [];
+
+    /** @private {number} */
+    this.expectedNumScanSettingChanges_ = 0;
   }
 
   /** @override */
@@ -99,6 +103,11 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   /** @override */
   recordScanCompleteAction() {}
 
+  /** @override */
+  recordNumScanSettingChanges(numChanges) {
+    assertEquals(this.expectedNumScanSettingChanges_, numChanges);
+  }
+
   /** @param {!SelectedPath} selectedPath */
   setSelectedPath(selectedPath) {
     this.selectedPath_ = selectedPath;
@@ -117,5 +126,10 @@ export class TestScanningBrowserProxy extends TestBrowserProxy {
   /** @param {!Array<string>} filePaths */
   setFilePaths(filePaths) {
     this.filePaths_ = filePaths;
+  }
+
+  /** @param {number} numChanges */
+  setExpectedNumScanSettingChanges(numChanges) {
+    this.expectedNumScanSettingChanges_ = numChanges;
   }
 }

@@ -805,4 +805,67 @@ export function scanningAppTest() {
               /** @type {!HTMLElement} */ (scanningApp.$$('#panelContainer'))));
         });
   });
+
+  test('RecordNoSettingChanges', () => {
+    testBrowserProxy.setExpectedNumScanSettingChanges(0);
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
+        .then(() => {
+          scanningApp.$$('#scanButton').click();
+        });
+  });
+
+  test('RecordSomeSettingChanges', () => {
+    testBrowserProxy.setExpectedNumScanSettingChanges(2);
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
+        .then(() => {
+          return changeSelect(
+              scanningApp.$$('#fileTypeSelect').$$('select'),
+              FileType.JPG.toString(), /* selectedIndex */ null);
+        })
+        .then(() => {
+          return changeSelect(
+              scanningApp.$$('#resolutionSelect').$$('select'), '75',
+              /* selectedIndex */ null);
+        })
+        .then(() => {
+          scanningApp.$$('#scanButton').click();
+        });
+  });
+
+  test('RecordSettingsWithScannerChange', () => {
+    testBrowserProxy.setExpectedNumScanSettingChanges(3);
+    return initializeScanningApp(expectedScanners, capabilities)
+        .then(() => {
+          return fakeScanService_.whenCalled('getScannerCapabilities');
+        })
+        .then(() => {
+          return changeSelect(
+              scanningApp.$$('#colorModeSelect').$$('select'),
+              ColorMode.BLACK_AND_WHITE.toString(), /* selectedIndex */ null);
+        })
+        .then(() => {
+          return changeSelect(
+              scanningApp.$$('#scannerSelect').$$('select'), /* value */ null,
+              /* selectedIndex */ 1);
+        })
+        .then(() => {
+          return changeSelect(
+              scanningApp.$$('#fileTypeSelect').$$('select'),
+              FileType.JPG.toString(), /* selectedIndex */ null);
+        })
+        .then(() => {
+          return changeSelect(
+              scanningApp.$$('#resolutionSelect').$$('select'), '150',
+              /* selectedIndex */ null);
+        })
+        .then(() => {
+          scanningApp.$$('#scanButton').click();
+        });
+  });
 }

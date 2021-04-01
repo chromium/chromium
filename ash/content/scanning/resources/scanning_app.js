@@ -241,7 +241,23 @@ Polymer({
       value: false,
       reflectToAttribute: true,
     },
+
+    /**
+     * Used to track the number of times a user changes scan settings before
+     * initiating a scan. This gets reset to 1 when the user selects a different
+     * scanner (selecting a different scanner is treated as a setting change).
+     * @private {number}
+     */
+    numScanSettingChanges_: {
+      type: Number,
+      value: 0,
+    },
   },
+
+  observers:
+      ['scanSettingsChange_(selectedSource, selectedFileType, ' +
+       'selectedFilePath, selectedColorMode, selectedPageSize, ' +
+       'selectedResolution)'],
 
   /** @override */
   created() {
@@ -386,6 +402,9 @@ Polymer({
       return;
     }
 
+    // If |selectedScannerId| is changed when the app's in a non-READY state,
+    // that change was triggered by the app's initial load so it's not counted.
+    this.numScanSettingChanges_ = this.appState_ === AppState.READY ? 1 : 0;
     this.setAppState_(AppState.GETTING_CAPS);
 
     this.scanService_
@@ -451,6 +470,9 @@ Polymer({
       resolution: resolution,
     };
     this.browserProxy_.recordScanJobSettings(scanJobSettingsForMetrics);
+
+    this.browserProxy_.recordNumScanSettingChanges(this.numScanSettingChanges_);
+    this.numScanSettingChanges_ = 0;
   },
 
   /** @private */
@@ -644,5 +666,21 @@ Polymer({
   /** @private */
   onLearnMoreClick_() {
     window.open(HELP_PAGE_LINK);
+  },
+
+  /**
+   * Increments the counter for the number of scan setting changes before a
+   * scan is initiated.
+   * @private
+   */
+  scanSettingsChange_() {
+    // The user can only change scan settings when the app is in READY state. If
+    // a setting is changed while the app's in a non-READY state, that change
+    // was triggered by the scanner's capabilities loading so it's not counted.
+    if (this.appState_ !== AppState.READY) {
+      return;
+    }
+
+    ++this.numScanSettingChanges_;
   },
 });

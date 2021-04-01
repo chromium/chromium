@@ -33,6 +33,11 @@ ScanningMetricsHandler::~ScanningMetricsHandler() = default;
 
 void ScanningMetricsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
+      "recordNumScanSettingChanges",
+      base::BindRepeating(
+          &ScanningMetricsHandler::HandleRecordNumScanSettingChanges,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "recordScanCompleteAction",
       base::BindRepeating(
           &ScanningMetricsHandler::HandleRecordScanCompleteAction,
@@ -41,6 +46,15 @@ void ScanningMetricsHandler::RegisterMessages() {
       "recordScanJobSettings",
       base::BindRepeating(&ScanningMetricsHandler::HandleRecordScanJobSettings,
                           base::Unretained(this)));
+}
+
+void ScanningMetricsHandler::HandleRecordNumScanSettingChanges(
+    const base::ListValue* args) {
+  AllowJavascript();
+
+  CHECK_EQ(1U, args->GetSize());
+  base::UmaHistogramCounts100("Scanning.NumScanSettingChanges",
+                              args->GetList()[0].GetInt());
 }
 
 void ScanningMetricsHandler::HandleRecordScanCompleteAction(

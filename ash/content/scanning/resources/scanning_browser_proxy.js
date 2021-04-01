@@ -80,6 +80,12 @@ export class ScanningBrowserProxy {
    * @param {!ScanCompleteAction} action
    */
   recordScanCompleteAction(action) {}
+
+  /**
+   * Records the number of scan setting changes before a scan is initiated.
+   * @param {number} numChanges
+   */
+  recordNumScanSettingChanges(numChanges) {}
 }
 
 /** @implements {ScanningBrowserProxy} */
@@ -122,6 +128,11 @@ export class ScanningBrowserProxyImpl {
   /** @override */
   recordScanCompleteAction(action) {
     chrome.send('recordScanCompleteAction', [action]);
+  }
+
+  /** @override */
+  recordNumScanSettingChanges(numChanges) {
+    chrome.send('recordNumScanSettingChanges', [numChanges]);
   }
 }
 
