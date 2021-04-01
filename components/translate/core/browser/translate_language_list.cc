@@ -79,9 +79,9 @@ const char* const kDefaultSupportedLanguages[] = {
     "ig",     // Igbo
     "is",     // Icelandic
     "it",     // Italian
-    "iw",     // Hebrew
+    "iw",     // Hebrew - Chrome uses "he"
     "ja",     // Japanese
-    "jv",     // Javanese
+    "jw",     // Javanese - Chrome uses "jv"
     "ka",     // Georgian
     "kk",     // Kazakh
     "km",     // Khmer
@@ -105,7 +105,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "my",     // Burmese
     "ne",     // Nepali
     "nl",     // Dutch
-    "no",     // Norwegian
+    "no",     // Norwegian - Chrome uses "nb"
     "ny",     // Nyanja
     "or",     // Odia (Oriya)
     "pa",     // Punjabi
@@ -133,7 +133,7 @@ const char* const kDefaultSupportedLanguages[] = {
     "tg",     // Tajik
     "th",     // Thai
     "tk",     // Turkmen
-    "tl",     // Tagalog
+    "tl",     // Tagalog - Chrome uses "fil"
     "tr",     // Turkish
     "tt",     // Tatar
     "ug",     // Uyghur
