@@ -9,6 +9,8 @@
 #include "base/callback.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/scheduler/task_priority_change_event.h"
+#include "third_party/blink/renderer/modules/scheduler/task_priority_change_event_init.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -38,6 +40,7 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
   if (priority_ == priority)
     return;
   is_priority_changing_ = true;
+  const AtomicString previous_priority = priority_;
   priority_ = priority;
   priority_change_status_ = PriorityChangeStatus::kPriorityHasChanged;
 
@@ -46,7 +49,10 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
   }
   priority_change_algorithms_.clear();
 
-  DispatchEvent(*Event::Create(event_type_names::kPrioritychange));
+  auto* init = TaskPriorityChangeEventInit::Create();
+  init->setPreviousPriority(previous_priority);
+  DispatchEvent(*TaskPriorityChangeEvent::Create(
+      event_type_names::kPrioritychange, init));
   is_priority_changing_ = false;
 }
 

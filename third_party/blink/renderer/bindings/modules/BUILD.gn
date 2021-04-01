@@ -56,6 +56,7 @@ generate_event_interfaces("modules_bindings_generated_event_interfaces") {
     "//third_party/blink/renderer/modules/presentation/presentation_connection_available_event.idl",
     "//third_party/blink/renderer/modules/presentation/presentation_connection_close_event.idl",
     "//third_party/blink/renderer/modules/push_messaging/push_event.idl",
+    "//third_party/blink/renderer/modules/scheduler/task_priority_change_event.idl",
     "//third_party/blink/renderer/modules/sensor/sensor_error_event.idl",
     "//third_party/blink/renderer/modules/service_worker/extendable_event.idl",
     "//third_party/blink/renderer/modules/service_worker/extendable_message_event.idl",

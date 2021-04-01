@@ -11037,6 +11037,10 @@ interface TaskController : AbortController
     attribute @@toStringTag
     method constructor
     method setPriority
+interface TaskPriorityChangeEvent : Event
+    attribute @@toStringTag
+    getter previousPriority
+    method constructor
 interface TaskSignal : AbortSignal
     attribute @@toStringTag
     getter onprioritychange
