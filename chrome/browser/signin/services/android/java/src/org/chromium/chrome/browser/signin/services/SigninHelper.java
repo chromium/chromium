@@ -48,19 +48,14 @@ public class SigninHelper implements ApplicationStatus.ApplicationStateListener 
 
     public void validateAccountSettings() {
         AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts(accounts -> {
-            mAccountTrackerService.seedAccountsIfNeeded(
-                    () -> { validateSignedInAccountExists(accounts); });
+            mAccountTrackerService.seedAccountsIfNeeded(() -> {
+                mSigninManager.runAfterOperationInProgress(
+                        () -> { validateSignedInAccountExists(accounts); });
+            });
         });
     }
 
     private void validateSignedInAccountExists(List<Account> accounts) {
-        if (mSigninManager.isOperationInProgress()) {
-            // Wait for ongoing sign-in/sign-out operation to finish before validating accounts.
-            mSigninManager.runAfterOperationInProgress(
-                    () -> validateSignedInAccountExists(accounts));
-            return;
-        }
-
         final CoreAccountInfo oldAccount =
                 mSigninManager.getIdentityManager().getPrimaryAccountInfo(ConsentLevel.SYNC);
         if (oldAccount == null) {

@@ -195,16 +195,9 @@ public interface SigninManager {
             @SigninAccessPoint int accessPoint, Account account, @Nullable SignInCallback callback);
 
     /**
-     * Returns true if a sign-in or sign-out operation is in progress. See also
-     * {@link SigninManager#runAfterOperationInProgress}.
-     */
-    @MainThread
-    boolean isOperationInProgress();
-
-    /**
      * Schedules the runnable to be invoked after currently ongoing a sign-in or sign-out operation
      * is finished. If there's no operation is progress, posts the callback to the UI thread right
-     * away. See also {@link SigninManager#isOperationInProgress}.
+     * away.
      */
     @MainThread
     void runAfterOperationInProgress(Runnable runnable);

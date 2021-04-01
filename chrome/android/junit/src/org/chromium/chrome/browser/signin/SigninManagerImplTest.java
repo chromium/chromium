@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.signin;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -370,7 +368,6 @@ public class SigninManagerImplTest {
 
     @Test
     public void callbackNotifiedWhenNoOperationIsInProgress() {
-        assertFalse(mSigninManager.isOperationInProgress());
         AtomicInteger callCount = new AtomicInteger(0);
 
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
@@ -388,13 +385,11 @@ public class SigninManagerImplTest {
                 .clearPrimaryAccount(anyInt(), anyInt());
 
         mSigninManager.signOut(SignoutReason.SIGNOUT_TEST);
-        assertTrue(mSigninManager.isOperationInProgress());
         AtomicInteger callCount = new AtomicInteger(0);
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
         assertEquals(0, callCount.get());
 
         mSigninManager.finishSignOut();
-        assertFalse(mSigninManager.isOperationInProgress());
         assertEquals(1, callCount.get());
     }
 
@@ -414,13 +409,12 @@ public class SigninManagerImplTest {
         mSigninManager.onFirstRunCheckDone(); // Allow sign-in.
 
         mSigninManager.signinAndEnableSync(SigninAccessPoint.UNKNOWN, ACCOUNT_INFO, null);
-        assertTrue(mSigninManager.isOperationInProgress());
+
         AtomicInteger callCount = new AtomicInteger(0);
         mSigninManager.runAfterOperationInProgress(callCount::incrementAndGet);
         assertEquals(0, callCount.get());
 
         mSigninManager.finishSignInAfterPolicyEnforced();
-        assertFalse(mSigninManager.isOperationInProgress());
         assertEquals(1, callCount.get());
     }
 

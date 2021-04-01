@@ -506,26 +506,16 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
     }
 
     /**
-     * Returns true if a sign-in or sign-out operation is in progress. See also
-     * {@link #runAfterOperationInProgress}.
-     */
-    @Override
-    @MainThread
-    public boolean isOperationInProgress() {
-        ThreadUtils.assertOnUiThread();
-        return mSignInState != null || mSignOutState != null;
-    }
-
-    /**
      * Schedules the runnable to be invoked after currently ongoing a sign-in or sign-out operation
      * is finished. If there's no operation is progress, posts the callback to the UI thread right
-     * away. See also {@link #isOperationInProgress}.
+     * away.
      */
     @Override
     @MainThread
     public void runAfterOperationInProgress(Runnable runnable) {
         ThreadUtils.assertOnUiThread();
-        if (isOperationInProgress()) {
+        boolean isOperationInProgress = mSignInState != null || mSignOutState != null;
+        if (isOperationInProgress) {
             mCallbacksWaitingForPendingOperation.add(runnable);
             return;
         }
