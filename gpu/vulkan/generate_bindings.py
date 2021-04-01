@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-"""code generator for Vulkan function pointers."""
+"""Code generator for Vulkan function pointers."""
 
 import filecmp
 import optparse
