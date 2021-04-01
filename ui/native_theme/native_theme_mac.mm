@@ -5,6 +5,7 @@
 #include "ui/native_theme/native_theme_mac.h"
 
 #import <Cocoa/Cocoa.h>
+#include <MediaAccessibility/MediaAccessibility.h>
 #include <stddef.h>
 #include <vector>
 
@@ -561,6 +562,15 @@ void NativeThemeMac::PaintMenuItemBackground(
   }
 }
 
+// static
+static void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
+                                                       void*,
+                                                       CFStringRef,
+                                                       const void*,
+                                                       CFDictionaryRef) {
+  NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
+}
+
 NativeThemeMac::NativeThemeMac(bool configure_web_instance,
                                bool should_only_use_dark_colors)
     : NativeThemeBase(should_only_use_dark_colors) {
@@ -579,7 +589,7 @@ NativeThemeMac::NativeThemeMac(bool configure_web_instance,
                     usingBlock:^(NSNotification* notification) {
                       theme->set_preferred_contrast(
                           CalculatePreferredContrast());
-                      theme->NotifyObservers();
+                      theme->NotifyOnNativeThemeUpdated();
                     }];
   }
 
@@ -610,7 +620,7 @@ void NativeThemeMac::InitializeDarkModeStateAndObserver() {
       [[NativeThemeEffectiveAppearanceObserver alloc] initWithHandler:^{
         theme->set_use_dark_colors(IsDarkMode());
         theme->set_preferred_color_scheme(CalculatePreferredColorScheme());
-        theme->NotifyObservers();
+        theme->NotifyOnNativeThemeUpdated();
       }]);
 }
 
@@ -631,6 +641,13 @@ void NativeThemeMac::ConfigureWebInstance() {
       std::make_unique<NativeTheme::ColorSchemeNativeThemeObserver>(
           NativeTheme::GetInstanceForWeb());
   AddObserver(color_scheme_observer_.get());
+
+  // Observe caption style changes.
+  CFNotificationCenterAddObserver(
+      CFNotificationCenterGetLocalCenter(), this,
+      CaptionSettingsChangedNotificationCallback,
+      kMACaptionAppearanceSettingsChangedNotification, 0,
+      CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
 }  // namespace ui

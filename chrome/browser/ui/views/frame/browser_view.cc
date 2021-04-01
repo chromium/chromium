@@ -1934,8 +1934,8 @@ void BrowserView::UserChangedTheme(BrowserThemeChangeType theme_change_type) {
   // In Incognito, the usage of dark or normal hinges on the browser theme.
   if (theme_change_type == BrowserThemeChangeType::kBrowserTheme &&
       !GetRegularOrGuestSession()) {
-    ui::NativeTheme::GetInstanceForDarkUI()->NotifyObservers();
-    ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
+    ui::NativeTheme::GetInstanceForDarkUI()->NotifyOnNativeThemeUpdated();
+    ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 
     // Early exit. A native theme change will update all the
     // NativeThemeObservers, and then BrowserFrame will re-enter this method

@@ -1684,6 +1684,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // ui::NativeThemeObserver:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
+  void OnCaptionStyleUpdated() override;
 
   // Sets the visibility to |new_visibility| and propagates this to the
   // renderer side, taking into account the current capture state. This

@@ -484,8 +484,8 @@ void NativeThemeGtk::SetThemeCssOverride(ScopedCssProvider provider) {
   }
 }
 
-void NativeThemeGtk::NotifyObservers() {
-  NativeTheme::NotifyObservers();
+void NativeThemeGtk::NotifyOnNativeThemeUpdated() {
+  NativeTheme::NotifyOnNativeThemeUpdated();
 
   // Update the preferred contrast settings for the NativeThemeAura instance and
   // notify its observers about the change.
@@ -494,7 +494,7 @@ void NativeThemeGtk::NotifyObservers() {
       UserHasContrastPreference()
           ? ui::NativeThemeBase::PreferredContrast::kMore
           : ui::NativeThemeBase::PreferredContrast::kNoPreference);
-  native_theme->NotifyObservers();
+  native_theme->NotifyOnNativeThemeUpdated();
 }
 
 void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
@@ -540,7 +540,7 @@ void NativeThemeGtk::OnThemeChanged(GtkSettings* settings,
       high_contrast ? ui::NativeThemeBase::PreferredContrast::kMore
                     : ui::NativeThemeBase::PreferredContrast::kNoPreference);
 
-  NotifyObservers();
+  NotifyOnNativeThemeUpdated();
 }
 
 bool NativeThemeGtk::AllowColorPipelineRedirection(

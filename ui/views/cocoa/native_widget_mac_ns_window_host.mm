@@ -791,7 +791,7 @@ void NativeWidgetMacNSWindowHost::OnVisibilityChanged(bool window_visible) {
 }
 
 void NativeWidgetMacNSWindowHost::OnWindowNativeThemeChanged() {
-  ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 }
 
 void NativeWidgetMacNSWindowHost::OnScrollEvent(

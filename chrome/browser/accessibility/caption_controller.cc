@@ -27,6 +27,7 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "media/base/media_switches.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace {
 
@@ -186,14 +187,18 @@ void CaptionController::CreateUI() {
   // Add observers to the BrowserList for new browser views being added.
   BrowserList::GetInstance()->AddObserver(this);
 
+  // Observe native theme changes for caption style updates.
+  ui::NativeTheme::GetInstanceForWeb()->AddObserver(this);
+
   // Observe caption style prefs.
   for (const char* const pref_name : kCaptionStylePrefsToObserve) {
     DCHECK(!pref_change_registrar_->IsObserved(pref_name));
     pref_change_registrar_->Add(
-        pref_name, base::BindRepeating(&CaptionController::UpdateCaptionStyle,
-                                       base::Unretained(this)));
+        pref_name,
+        base::BindRepeating(&CaptionController::OnCaptionStyleUpdated,
+                            base::Unretained(this)));
   }
-  UpdateCaptionStyle();
+  OnCaptionStyleUpdated();
 }
 
 void CaptionController::DestroyUI() {
@@ -206,6 +211,7 @@ void CaptionController::DestroyUI() {
 
   // Remove observers.
   BrowserList::GetInstance()->RemoveObserver(this);
+  ui::NativeTheme::GetInstanceForWeb()->RemoveObserver(this);
 
   // Remove prefs to observe.
   for (const char* const pref_name : kCaptionStylePrefsToObserve) {
@@ -279,7 +285,7 @@ CaptionController::GetCaptionBubbleControllerForBrowser(Browser* browser) {
   return caption_bubble_controllers_[browser].get();
 }
 
-void CaptionController::UpdateCaptionStyle() {
+void CaptionController::OnCaptionStyleUpdated() {
   PrefService* profile_prefs = profile_->GetPrefs();
   // Metrics are recorded when passing the caption prefs to the browser, so do
   // not duplicate them here.

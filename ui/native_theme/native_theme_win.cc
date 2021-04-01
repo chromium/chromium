@@ -369,7 +369,7 @@ void NativeThemeWin::OnSysColorChange() {
     set_forced_colors(IsUsingHighContrastThemeInternal());
   set_preferred_color_scheme(CalculatePreferredColorScheme());
   set_preferred_contrast(CalculatePreferredContrast());
-  NotifyObservers();
+  NotifyOnNativeThemeUpdated();
 }
 
 void NativeThemeWin::UpdateSystemColors() {
@@ -1691,7 +1691,7 @@ void NativeThemeWin::UpdateDarkModeStatus() {
   }
   set_use_dark_colors(dark_mode_enabled);
   set_preferred_color_scheme(CalculatePreferredColorScheme());
-  NotifyObservers();
+  NotifyOnNativeThemeUpdated();
 }
 
 }  // namespace ui

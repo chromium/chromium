@@ -285,13 +285,22 @@ void NativeTheme::RemoveObserver(NativeThemeObserver* observer) {
   native_theme_observers_.RemoveObserver(observer);
 }
 
-void NativeTheme::NotifyObservers() {
+void NativeTheme::NotifyOnNativeThemeUpdated() {
   // This specific method is prone to being mistakenly called on the wrong
   // sequence, because it is often invoked from a platform-specific event
   // listener, and those events may be delivered on unexpected sequences.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (NativeThemeObserver& observer : native_theme_observers_)
     observer.OnNativeThemeUpdated(this);
+}
+
+void NativeTheme::NotifyOnCaptionStyleUpdated() {
+  // This specific method is prone to being mistakenly called on the wrong
+  // sequence, because it is often invoked from a platform-specific event
+  // listener, and those events may be delivered on unexpected sequences.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (NativeThemeObserver& observer : native_theme_observers_)
+    observer.OnCaptionStyleUpdated();
 }
 
 NativeTheme::NativeTheme(bool should_use_dark_colors)
@@ -484,7 +493,7 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
   }
 
   if (notify_observers)
-    theme_to_update_->NotifyObservers();
+    theme_to_update_->NotifyOnNativeThemeUpdated();
 }
 
 NativeTheme::ColorScheme NativeTheme::GetDefaultSystemColorScheme() const {

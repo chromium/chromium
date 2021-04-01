@@ -47,14 +47,14 @@ SystemThemeX11::SystemThemeX11(PrefService* pref_service)
 void SystemThemeX11::StartUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, true);
   // Have the former theme notify its observers of change.
-  ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 }
 
 void SystemThemeX11::StopUsingTheme() {
   pref_service_->SetBoolean(prefs::kUsesSystemTheme, false);
   // Have the former theme notify its observers of change.
   if (linux_ui_)
-    linux_ui_->GetNativeTheme(nullptr)->NotifyObservers();
+    linux_ui_->GetNativeTheme(nullptr)->NotifyOnNativeThemeUpdated();
 }
 
 bool SystemThemeX11::GetTint(int id, color_utils::HSL* hsl) const {

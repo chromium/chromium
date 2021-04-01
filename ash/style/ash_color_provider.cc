@@ -67,7 +67,7 @@ constexpr int kPillButtonImageLabelSpacingDp = 8;
 // AshColorProvider is kind of NativeTheme of ChromeOS. This will notify the
 // View::OnThemeChanged to live update the colors on color mode/theme changes.
 void NotifyThemeChanges() {
-  ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 }
 
 // Get the corresponding ColorName for |type|. ColorName is an enum in
@@ -111,13 +111,13 @@ SkColor ResolveColor(AshColorProvider::ContentLayerType type,
 void NotifyColorModeChanges(bool is_dark_mode_enabled) {
   auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   native_theme->set_use_dark_colors(is_dark_mode_enabled);
-  native_theme->NotifyObservers();
+  native_theme->NotifyOnNativeThemeUpdated();
 
   auto* native_theme_web = ui::NativeTheme::GetInstanceForWeb();
   native_theme_web->set_preferred_color_scheme(
       is_dark_mode_enabled ? ui::NativeTheme::PreferredColorScheme::kDark
                            : ui::NativeTheme::PreferredColorScheme::kLight);
-  native_theme_web->NotifyObservers();
+  native_theme_web->NotifyOnNativeThemeUpdated();
 }
 
 }  // namespace

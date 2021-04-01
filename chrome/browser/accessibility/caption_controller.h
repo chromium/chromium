@@ -14,10 +14,15 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/native_theme/caption_style.h"
+#include "ui/native_theme/native_theme_observer.h"
 
 class Browser;
 class Profile;
 class PrefChangeRegistrar;
+
+namespace ui {
+class NativeTheme;
+}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -39,7 +44,8 @@ class CaptionHostImpl;
 //
 class CaptionController : public BrowserListObserver,
                           public KeyedService,
-                          public speech::SodaInstaller::Observer {
+                          public speech::SodaInstaller::Observer,
+                          public ui::NativeThemeObserver {
  public:
   explicit CaptionController(Profile* profile);
   ~CaptionController() override;
@@ -84,6 +90,10 @@ class CaptionController : public BrowserListObserver,
   void OnSodaProgress(int progress) override {}
   void OnSodaError() override {}
 
+  // ui::NativeThemeObserver:
+  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override {}
+  void OnCaptionStyleUpdated() override;
+
   void OnLiveCaptionEnabledChanged();
   void OnLiveCaptionLanguageChanged();
   bool IsLiveCaptionEnabled();
@@ -91,7 +101,6 @@ class CaptionController : public BrowserListObserver,
   void StopLiveCaption();
   void CreateUI();
   void DestroyUI();
-  void UpdateCaptionStyle();
 
   void UpdateAccessibilityCaptionHistograms();
 

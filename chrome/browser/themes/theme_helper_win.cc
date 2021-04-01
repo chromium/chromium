@@ -288,7 +288,7 @@ void ThemeHelperWin::OnDwmKeyUpdated() {
   }
 
   // Notify native theme observers that the native theme has changed.
-  ui::NativeTheme::GetInstanceForNativeUi()->NotifyObservers();
+  ui::NativeTheme::GetInstanceForNativeUi()->NotifyOnNativeThemeUpdated();
 
   // Watch for future changes.
   if (!dwm_key_->StartWatching(base::BindOnce(&ThemeHelperWin::OnDwmKeyUpdated,

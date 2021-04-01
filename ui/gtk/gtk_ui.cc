@@ -806,7 +806,7 @@ void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {
   native_frame_colors_.clear();
   native_theme_->OnThemeChanged(settings, param);
   LoadGtkValues();
-  native_theme_->NotifyObservers();
+  native_theme_->NotifyOnNativeThemeUpdated();
 }
 
 void GtkUi::OnCursorThemeNameChanged(GtkSettings* settings,
