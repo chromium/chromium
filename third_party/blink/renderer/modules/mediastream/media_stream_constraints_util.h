@@ -205,13 +205,14 @@ class MODULES_EXPORT AudioCaptureSettings {
   explicit AudioCaptureSettings(const char* failed_constraint_name);
 
   // Creates an object with the given values.
-  explicit AudioCaptureSettings(
+  AudioCaptureSettings(
       std::string device_id,
       const base::Optional<int>& requested_buffer_size,
       bool disable_local_echo,
       bool enable_automatic_output_device_selection,
       ProcessingType processing_type,
-      const AudioProcessingProperties& audio_processing_properties);
+      const AudioProcessingProperties& audio_processing_properties,
+      int num_channels);
   AudioCaptureSettings(const AudioCaptureSettings& other);
   AudioCaptureSettings& operator=(const AudioCaptureSettings& other);
   AudioCaptureSettings(AudioCaptureSettings&& other);
@@ -245,6 +246,10 @@ class MODULES_EXPORT AudioCaptureSettings {
     DCHECK(HasValue());
     return audio_processing_properties_;
   }
+  int num_channels() const {
+    DCHECK(HasValue());
+    return num_channels_;
+  }
 
  private:
   const char* failed_constraint_name_;
@@ -254,6 +259,7 @@ class MODULES_EXPORT AudioCaptureSettings {
   bool render_to_associated_sink_;
   ProcessingType processing_type_;
   AudioProcessingProperties audio_processing_properties_;
+  int num_channels_;
 };
 
 // Method to get boolean value of constraint with |name| from constraints.

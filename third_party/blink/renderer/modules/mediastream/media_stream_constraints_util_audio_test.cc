@@ -12,6 +12,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
 #include "media/webrtc/webrtc_switches.h"
@@ -116,7 +117,8 @@ class MediaStreamConstraintsUtilAudioTestBase {
       const AudioProcessingProperties& properties,
       bool disable_local_echo,
       bool render_to_associated_sink,
-      int effects) {
+      int effects,
+      int num_requested_channels) {
     blink::MediaStreamDevice device;
     device.id = "processed_source";
     device.type = GetMediaStreamType();
@@ -126,7 +128,7 @@ class MediaStreamConstraintsUtilAudioTestBase {
 
     return std::make_unique<ProcessedLocalAudioSource>(
         nullptr /*web_frame*/, device, disable_local_echo, properties,
-        base::NullCallback(),
+        num_requested_channels, base::NullCallback(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }
 
@@ -136,7 +138,8 @@ class MediaStreamConstraintsUtilAudioTestBase {
       bool render_to_associated_sink) {
     return GetProcessedLocalAudioSource(
         properties, disable_local_echo, render_to_associated_sink,
-        media::AudioParameters::PlatformEffectsMask::NO_EFFECTS);
+        media::AudioParameters::PlatformEffectsMask::NO_EFFECTS,
+        1 /* num_requested_channels */);
   }
 
   std::unique_ptr<blink::LocalMediaStreamAudioSource>
@@ -535,6 +538,14 @@ class MediaStreamConstraintsUtilAudioTest
               media::AudioParameters::kAudioCDSampleRate, 512,
               media::AudioParameters::HardwareCapabilities(128, 4096)));
 
+      capabilities_.emplace_back(
+          "keyboard_mic_device", "fake_group6",
+          media::AudioParameters(
+              media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+              media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC,
+              media::AudioParameters::kAudioCDSampleRate, 512,
+              media::AudioParameters::HardwareCapabilities(128, 4096)));
+
       default_device_ = &capabilities_[0];
       system_echo_canceller_device_ = &capabilities_[1];
       four_channels_device_ = &capabilities_[2];
@@ -720,13 +731,15 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, Channels) {
       continue;
     }
 
-    if (channel_count == 3 || channel_count > 4) {
+    if (channel_count > 4) {
       EXPECT_FALSE(result.HasValue());
       continue;
     }
 
     EXPECT_TRUE(result.HasValue());
-    if (channel_count == 4)
+    if (channel_count == 3)
+      EXPECT_EQ(result.device_id(), "keyboard_mic_device");
+    else if (channel_count == 4)
       EXPECT_EQ(result.device_id(), "4_channels_device");
     else
       EXPECT_EQ(result.device_id(), "default_device");
@@ -786,6 +799,150 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, Channels) {
         EXPECT_EQ(result.device_id(), "default_device");
     }
   }
+}
+
+TEST_P(MediaStreamConstraintsUtilAudioTest, MultiChannelEchoCancellation) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(features::kWebRtcEnableCaptureMultiChannelApm,
+                                true);
+  if (!IsDeviceCapture())
+    return;
+
+  AudioCaptureSettings result;
+
+  ResetFactory();
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "default_device");
+  // By default, use the default deevice with echo cancellation enabled
+  // and 1 channel,
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.num_channels(), 1);
+
+  ResetFactory();
+  constraint_factory_.basic().device_id.SetExact("default_device");
+  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "default_device");
+  // By default, use 1 channel, even with a stereo device.
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.num_channels(), 1);
+
+  ResetFactory();
+  constraint_factory_.basic().channel_count.SetExact(2);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "default_device");
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.num_channels(), 2);
+
+  ResetFactory();
+  constraint_factory_.basic().channel_count.SetIdeal(2);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "default_device");
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.num_channels(), 2);
+
+  ResetFactory();
+  constraint_factory_.basic().channel_count.SetIdeal(4);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "4_channels_device");
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.num_channels(), 4);
+
+  ResetFactory();
+  constraint_factory_.basic().device_id.SetExact("keyboard_mic_device");
+  constraint_factory_.basic().echo_cancellation.SetIdeal(true);
+  constraint_factory_.basic().channel_count.SetIdeal(4);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "keyboard_mic_device");
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationAec3);
+  // Keyboard Mic devices can provide 2 channels with echo cancellation,
+  // which is the closest to the requested 4 channels.
+  EXPECT_EQ(result.num_channels(), 2);
+}
+
+TEST_P(MediaStreamConstraintsUtilAudioTest,
+       MultiChannelEchoCancellationDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatureState(features::kWebRtcEnableCaptureMultiChannelApm,
+                                false);
+  if (!IsDeviceCapture())
+    return;
+
+  AudioCaptureSettings result;
+
+  ResetFactory();
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "default_device");
+  // By default the number of channels must be 1 with echo cancellation enabled.
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.num_channels(), 1);
+
+  ResetFactory();
+  constraint_factory_.basic().device_id.SetExact("default_device");
+  constraint_factory_.basic().echo_cancellation.SetExact(true);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  // By default, use 1 channel,
+  EXPECT_EQ(result.device_id(), "default_device");
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationAec3);
+  EXPECT_EQ(result.num_channels(), 1);
+
+  ResetFactory();
+  constraint_factory_.basic().channel_count.SetExact(2);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "default_device");
+  // Forcing two channels requires APM disabled.
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationDisabled);
+  EXPECT_EQ(result.num_channels(), 2);
+
+  ResetFactory();
+  constraint_factory_.basic().channel_count.SetIdeal(2);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "default_device");
+  // Satisfying the requested 2 channels requires APM disabled.
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationDisabled);
+  EXPECT_EQ(result.num_channels(), 2);
+
+  ResetFactory();
+  constraint_factory_.basic().channel_count.SetIdeal(4);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "4_channels_device");
+  // Satisfying the requested 4 channels requires APM disabled.
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationDisabled);
+  EXPECT_EQ(result.num_channels(), 4);
+
+  ResetFactory();
+  constraint_factory_.basic().device_id.SetExact("keyboard_mic_device");
+  constraint_factory_.basic().echo_cancellation.SetIdeal(true);
+  constraint_factory_.basic().channel_count.SetIdeal(4);
+  result = SelectSettings();
+  EXPECT_TRUE(result.HasValue());
+  EXPECT_EQ(result.device_id(), "keyboard_mic_device");
+  EXPECT_EQ(result.audio_processing_properties().echo_cancellation_type,
+            EchoCancellationType::kEchoCancellationAec3);
+  // Only 1 channel supported with echo cancellation enabled.
+  EXPECT_EQ(result.num_channels(), 1);
 }
 
 TEST_P(MediaStreamConstraintsUtilAudioTest, ChannelsWithSource) {
@@ -1528,7 +1685,8 @@ TEST_P(MediaStreamConstraintsUtilAudioTest,
       GetProcessedLocalAudioSource(
           properties, false /* disable_local_echo */,
           false /* render_to_associated_sink */,
-          media::AudioParameters::PlatformEffectsMask::ECHO_CANCELLER);
+          media::AudioParameters::PlatformEffectsMask::ECHO_CANCELLER,
+          1 /* num_requested_channels */);
   AudioDeviceCaptureCapabilities capabilities = {
       AudioDeviceCaptureCapability(system_echo_canceller_source.get())};
   AudioDeviceCaptureCapability* system_echo_canceller_with_source =

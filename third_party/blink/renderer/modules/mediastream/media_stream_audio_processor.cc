@@ -62,11 +62,6 @@ namespace {
 
 using webrtc::AudioProcessing;
 
-bool UseMultiChannelCaptureProcessing() {
-  return base::FeatureList::IsEnabled(
-      features::kWebRtcEnableCaptureMultiChannelApm);
-}
-
 bool Allow48kHzApmProcessing() {
   return base::FeatureList::IsEnabled(
       features::kWebRtcAllow48kHzProcessingOnArm);
@@ -237,6 +232,7 @@ class MediaStreamAudioFifo {
 
 MediaStreamAudioProcessor::MediaStreamAudioProcessor(
     const blink::AudioProcessingProperties& properties,
+    bool use_capture_multi_channel_processing,
     blink::WebRtcPlayoutDataSource* playout_data_source)
     : render_delay_ms_(0),
       audio_delay_stats_reporter_(kBuffersPerSecond),
@@ -247,7 +243,7 @@ MediaStreamAudioProcessor::MediaStreamAudioProcessor(
       aec_dump_agent_impl_(AecDumpAgentImpl::Create(this)),
       stopped_(false),
       use_capture_multi_channel_processing_(
-          UseMultiChannelCaptureProcessing()) {
+          use_capture_multi_channel_processing) {
   DCHECK(main_thread_runner_);
   DETACH_FROM_THREAD(capture_thread_checker_);
   DETACH_FROM_THREAD(render_thread_checker_);

@@ -97,7 +97,8 @@ class ProcessedLocalAudioSourceTest : public testing::Test {
   }
 
   void CreateProcessedLocalAudioSource(
-      const AudioProcessingProperties& properties) {
+      const AudioProcessingProperties& properties,
+      int num_requested_channels) {
     std::unique_ptr<blink::ProcessedLocalAudioSource> source =
         std::make_unique<blink::ProcessedLocalAudioSource>(
             nullptr /* consumer_web_frame is N/A for non-browser tests */,
@@ -105,7 +106,8 @@ class ProcessedLocalAudioSourceTest : public testing::Test {
                               "mock_audio_device_id", "Mock audio device",
                               kSampleRate, kChannelLayout,
                               kRequestedBufferSize),
-            false /* disable_local_echo */, properties, base::DoNothing(),
+            false /* disable_local_echo */, properties, num_requested_channels,
+            base::DoNothing(),
             scheduler::GetSingleThreadTaskRunnerForTesting());
     source->SetAllowInvalidRenderFrameIdForTesting(true);
     audio_source_->SetPlatformSource(std::move(source));
@@ -157,7 +159,7 @@ TEST_F(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   // the native buffer size.
   AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
-  CreateProcessedLocalAudioSource(properties);
+  CreateProcessedLocalAudioSource(properties, 1 /* num_requested_channels */);
 
   // Connect the track, and expect the MockAudioCapturerSource to be initialized
   // and started by ProcessedLocalAudioSource.

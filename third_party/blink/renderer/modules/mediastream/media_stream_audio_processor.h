@@ -56,6 +56,7 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   // Threading note: The constructor assumes it is being run on the main render
   // thread.
   MediaStreamAudioProcessor(const AudioProcessingProperties& properties,
+                            bool use_capture_multi_channel_processing,
                             WebRtcPlayoutDataSource* playout_data_source);
 
   // Called when the format of the capture data has changed.

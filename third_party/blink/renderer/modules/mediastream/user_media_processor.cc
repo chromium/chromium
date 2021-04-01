@@ -1414,7 +1414,9 @@ UserMediaProcessor::CreateAudioSource(
   // processing.
   return std::make_unique<blink::ProcessedLocalAudioSource>(
       frame_, device, stream_controls->disable_local_echo,
-      audio_processing_properties, std::move(source_ready), task_runner_);
+      audio_processing_properties,
+      current_request_info_->audio_capture_settings().num_channels(),
+      std::move(source_ready), task_runner_);
 }
 
 std::unique_ptr<blink::MediaStreamVideoSource>

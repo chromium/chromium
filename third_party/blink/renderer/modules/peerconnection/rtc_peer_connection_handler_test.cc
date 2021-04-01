@@ -337,7 +337,7 @@ class RTCPeerConnectionHandlerTest : public ::testing::Test {
                           media::CHANNEL_LAYOUT_STEREO,
                           media::AudioParameters::kAudioCDSampleRate / 100),
         false /* disable_local_echo */, blink::AudioProcessingProperties(),
-        base::DoNothing(),
+        1 /* num_requested_channels */, base::DoNothing(),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
     auto* processed_audio_source_ptr = processed_audio_source.get();
     processed_audio_source->SetAllowInvalidRenderFrameIdForTesting(true);
