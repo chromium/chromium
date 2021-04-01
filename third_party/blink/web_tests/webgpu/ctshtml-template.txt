@@ -17,6 +17,10 @@
 
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
+<script>
+    const loadWebGPUExpectations = import('http://localhost:3000/webgpuCtsExpectations.js')
+        .then(m => m.expectations);
+</script>
 <script type=module src=/wpt_internal/webgpu/common/runtime/wpt.js></script>
 
 <!-- Manually-selected tests to run on worker: -->

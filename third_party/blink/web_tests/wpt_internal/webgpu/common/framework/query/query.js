@@ -178,7 +178,19 @@ Expectation should be of the form path/to/cts.html?worker=0&q=suite:test_path:te
       expectationQuery = parseQuery(entry.query);
     }
 
-    if (compareQueries(query, expectationQuery) === Ordering.Unordered) {
+    // Strip params from multicase expectations so that an expectation of foo=2;*
+    // is stored if the test query is bar=3;*
+    const queryForFilter =
+      expectationQuery instanceof TestQueryMultiCase
+        ? new TestQueryMultiCase(
+            expectationQuery.suite,
+            expectationQuery.filePathParts,
+            expectationQuery.testPathParts,
+            {}
+          )
+        : expectationQuery;
+
+    if (compareQueries(query, queryForFilter) === Ordering.Unordered) {
       continue;
     }
 

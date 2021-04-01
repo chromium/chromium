@@ -44,7 +44,7 @@ setup({
     const wpt_fn = async () => {
       const [rec, res] = log.record(name);
       if (worker) {
-        await worker.run(rec, name);
+        await worker.run(rec, name, expectations);
       } else {
         await testcase.run(rec, expectations);
       }

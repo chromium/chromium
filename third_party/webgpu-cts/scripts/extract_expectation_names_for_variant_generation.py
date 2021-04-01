@@ -7,8 +7,8 @@
 # Given an expectations file (e.g. web_tests/WebGPUExpectations), extracts only
 # the test name from each expectation (e.g. wpt_internal/webgpu/cts.html?...).
 
-import sys
 from os import path as os_path
+import sys
 
 try:
     old_sys_path = sys.path
@@ -16,17 +16,14 @@ try:
         os_path.dirname(os_path.dirname(os_path.abspath(__file__))))
     sys.path = old_sys_path + [os_path.join(third_party_dir, 'blink', 'tools')]
 
-    from blinkpy.common import path_finder
+    from run_webgpu_cts import split_cts_expectations_and_web_test_expectations
 finally:
     sys.path = old_sys_path
 
-path_finder.add_typ_dir_to_sys_path()
-
-from typ.expectations_parser import TaggedTestListParser
-
 filename = sys.argv[1]
 with open(filename) as f:
-    parser = TaggedTestListParser(f.read())
-    for test_expectation in parser.expectations:
-        if test_expectation.test:
-            print test_expectation.test
+    expectations = split_cts_expectations_and_web_test_expectations(
+        f.read())['web_test_expectations']['expectations']
+    for expectation in expectations:
+        if expectation.test:
+            print(expectation.test)
