@@ -487,6 +487,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_floating_descendants_for_paint_ : 1;
   unsigned has_adjoining_object_descendants_ : 1;
   unsigned depends_on_percentage_block_size_ : 1;
+  mutable unsigned children_valid_ : 1;
 
   // The following bitfields are only to be used by NGPhysicalLineBoxFragment
   // (it's defined here to save memory, since that class has no bitfields).
@@ -508,6 +509,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_inflow_bounds_ : 1;
   unsigned const_has_rare_data_ : 1;
   unsigned is_first_for_node_ : 1;
+  unsigned has_descendants_for_table_part_ : 1;
 
   Member<LayoutObject> layout_object_;
   const PhysicalSize size_;

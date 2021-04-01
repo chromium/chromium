@@ -901,10 +901,6 @@ void LayoutBox::LayoutSubtreeRoot() {
     LayoutBlock* cb = ContainingBlock();
     while (NGBlockNode::CanUseNewLayout(*cb) && !cb->NeedsLayout()) {
       // Create and set a new identical results.
-      if (cb->measure_result_) {
-        cb->measure_result_ =
-            NGLayoutResult::CloneWithPostLayoutFragments(*cb->measure_result_);
-      }
       for (auto& layout_result : cb->layout_results_) {
         layout_result =
             NGLayoutResult::CloneWithPostLayoutFragments(*layout_result);
@@ -3279,6 +3275,16 @@ void LayoutBox::SetCachedLayoutResult(const NGLayoutResult* result) {
     }
   }
 
+  // If we're about to cache a layout result that is different than the measure
+  // result, mark the measure result's fragment as no longer having valid
+  // children. It can still be used to query information about this box's
+  // fragment from the measure pass, but children might be out of sync with the
+  // latest version of the tree.
+  if (measure_result_ && measure_result_ != result) {
+    measure_result_->GetMutableForLayoutBoxCachedResults()
+        .SetFragmentChildrenInvalid();
+  }
+
   AddLayoutResult(std::move(result), 0);
 }
 
@@ -3531,6 +3537,15 @@ const NGLayoutResult* LayoutBox::CachedLayoutResult(
   // If our size may change (or we know a descendants size may change), we miss
   // the cache.
   if (size_cache_status == NGLayoutCacheStatus::kNeedsLayout)
+    return nullptr;
+
+  // If we need simplified layout, but the cached fragment's children are not
+  // valid (see comment in `SetCachedLayoutResult`), don't return the fragment,
+  // since it will be used to iteration the invalid children when running
+  // simplified layout.
+  if (!physical_fragment.ChildrenValid() &&
+      (size_cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout ||
+       cache_status == NGLayoutCacheStatus::kNeedsSimplifiedLayout))
     return nullptr;
 
   // Update our temporary cache status, if the size cache check indicated we

@@ -52,6 +52,7 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
   has_adjoining_object_descendants_ =
       builder->has_adjoining_object_descendants_;
   depends_on_percentage_block_size_ = DependsOnPercentageBlockSize(*builder);
+  children_valid_ = true;
 
   PhysicalSize size = Size();
   if (oof_positioned_descendants_) {
@@ -96,6 +97,8 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
                     *other.oof_positioned_descendants_)
               : nullptr),
       buffer_(buffer) {
+  DCHECK(other.children_valid_);
+  DCHECK(children_valid_);
   // To ensure the fragment tree is consistent, use the post-layout fragment.
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {
     buffer[i].offset = other.buffer_[i].offset;
@@ -121,6 +124,16 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
 }
 
 NGPhysicalContainerFragment::~NGPhysicalContainerFragment() = default;
+
+void NGPhysicalContainerFragment::SetChildrenInvalid() const {
+  if (!children_valid_)
+    return;
+
+  for (const NGLink& child : Children()) {
+    const_cast<NGLink&>(child).fragment = nullptr;
+  }
+  children_valid_ = false;
+}
 
 // additional_offset must be offset from the containing_block.
 void NGPhysicalContainerFragment::AddOutlineRectsForNormalChildren(
@@ -425,9 +438,10 @@ bool NGPhysicalContainerFragment::DependsOnPercentageBlockSize(
 }
 
 void NGPhysicalContainerFragment::TraceAfterDispatch(Visitor* visitor) const {
-  // Looking up Children() inside Trace() here is safe since
-  // |const_num_children_| is const.
-  for (const auto& child : Children())
+  // Accessing |const_num_children_| inside Trace() here is safe since it is
+  // const. Note we don't check children_valid_ since that is not threadsafe.
+  // Tracing the child links themselves is safe from a background thread.
+  for (const auto& child : base::make_span(buffer_, const_num_children_))
     visitor->Trace(child);
   visitor->Trace(break_token_);
   visitor->Trace(oof_positioned_descendants_);

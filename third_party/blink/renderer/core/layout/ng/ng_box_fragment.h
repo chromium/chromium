@@ -71,10 +71,7 @@ class CORE_EXPORT NGBoxFragment final : public NGFragment {
   bool HasDescendantsForTablePart() const {
     const NGPhysicalBoxFragment& box_fragment =
         To<NGPhysicalBoxFragment>(physical_fragment_);
-    DCHECK(physical_fragment_.IsTableNGPart() || box_fragment.IsTableNGCell());
-    return !box_fragment.Children().empty() ||
-           box_fragment.HasOutOfFlowPositionedFragmentainerDescendants() ||
-           box_fragment.HasOutOfFlowPositionedDescendants();
+    return box_fragment.HasDescendantsForTablePart();
   }
 };
 

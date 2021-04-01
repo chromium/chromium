@@ -293,6 +293,10 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     last_baseline_ = LayoutUnit::Min();
   }
 
+  has_descendants_for_table_part_ =
+      const_num_children_ || HasOutOfFlowPositionedFragmentainerDescendants() ||
+      HasOutOfFlowPositionedDescendants();
+
 #if DCHECK_IS_ON()
   CheckIntegrity();
 #endif
@@ -1193,6 +1197,8 @@ void NGPhysicalBoxFragment::CheckSameForSimplifiedLayout(
             other.may_have_descendant_above_block_start_);
   DCHECK_EQ(depends_on_percentage_block_size_,
             other.depends_on_percentage_block_size_);
+  DCHECK_EQ(has_descendants_for_table_part_,
+            other.has_descendants_for_table_part_);
 
   DCHECK_EQ(is_fieldset_container_, other.is_fieldset_container_);
   DCHECK_EQ(is_table_ng_part_, other.is_table_ng_part_);

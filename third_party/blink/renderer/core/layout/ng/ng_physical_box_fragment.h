@@ -301,6 +301,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   // Return true if this is the first fragment generated from a node.
   bool IsFirstForNode() const { return is_first_for_node_; }
 
+  bool HasDescendantsForTablePart() const {
+    DCHECK(IsTableNGPart() || IsTableNGCell());
+    return has_descendants_for_table_part_;
+  }
+
   // Returns true if we have a descendant within this formatting context, which
   // is potentially above our block-start edge.
   bool MayHaveDescendantAboveBlockStart() const {
@@ -359,7 +364,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   const NGFragmentItems* ComputeItemsAddress() const {
     DCHECK(const_has_fragment_items_ || has_layout_overflow_ || has_borders_ ||
            has_padding_ || has_inflow_bounds_ || const_has_rare_data_);
-    const NGLink* children_end = children_ + Children().size();
+    const NGLink* children_end = children_ + const_num_children_;
     return reinterpret_cast<const NGFragmentItems*>(children_end);
   }
 

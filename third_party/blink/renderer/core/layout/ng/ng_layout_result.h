@@ -364,6 +364,29 @@ class CORE_EXPORT NGLayoutResult final
     return MutableForOutOfFlow(this);
   }
 
+  class MutableForLayoutBoxCachedResults final {
+    STACK_ALLOCATED();
+
+   protected:
+    friend class LayoutBox;
+
+    void SetFragmentChildrenInvalid() {
+      layout_result_->physical_fragment_->SetChildrenInvalid();
+    }
+
+   private:
+    friend class NGLayoutResult;
+    explicit MutableForLayoutBoxCachedResults(
+        const NGLayoutResult* layout_result)
+        : layout_result_(const_cast<NGLayoutResult*>(layout_result)) {}
+
+    NGLayoutResult* layout_result_;
+  };
+
+  MutableForLayoutBoxCachedResults GetMutableForLayoutBoxCachedResults() const {
+    return MutableForLayoutBoxCachedResults(this);
+  }
+
 #if DCHECK_IS_ON()
   void CheckSameForSimplifiedLayout(const NGLayoutResult&,
                                     bool check_same_block_size = true) const;

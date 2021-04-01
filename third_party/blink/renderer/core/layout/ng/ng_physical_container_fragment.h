@@ -109,12 +109,14 @@ class CORE_EXPORT NGPhysicalContainerFragment : public NGPhysicalFragment {
   // collection are safe, but their children (grandchildren of |this|) maybe
   // from deleted nodes or LayoutObjects. Also see |PostLayoutChildren()|.
   base::span<const NGLink> Children() const {
+    DCHECK(children_valid_);
     return base::make_span(buffer_, const_num_children_);
   }
 
   // Similar to |Children()| but all children are the latest generation of
   // post-layout, and therefore all descendants are safe.
   PostLayoutChildLinkList PostLayoutChildren() const {
+    DCHECK(children_valid_);
     return PostLayoutChildLinkList(const_num_children_, buffer_);
   }
 
@@ -135,6 +137,9 @@ class CORE_EXPORT NGPhysicalContainerFragment : public NGPhysicalFragment {
   bool DependsOnPercentageBlockSize() const {
     return depends_on_percentage_block_size_;
   }
+
+  void SetChildrenInvalid() const;
+  bool ChildrenValid() const { return children_valid_; }
 
   bool HasOutOfFlowPositionedDescendants() const {
     DCHECK(!oof_positioned_descendants_ ||
@@ -170,6 +175,7 @@ class CORE_EXPORT NGPhysicalContainerFragment : public NGPhysicalFragment {
   };
 
   MutableChildrenForOutOfFlow GetMutableChildrenForOutOfFlow() const {
+    DCHECK(children_valid_);
     return MutableChildrenForOutOfFlow(buffer_, const_num_children_);
   }
 
