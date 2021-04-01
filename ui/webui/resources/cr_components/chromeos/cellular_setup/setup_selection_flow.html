@@ -151,9 +151,11 @@
             <div id="esimBtnDescription"
                 class="sim-btn-description sim-btn-text"
                 aria-hidden="true">
-              <template is="dom-if" if="[[!isConnectedToNonCellularNetwork_]]]">
+              <template is="dom-if"
+                  if="[[!isConnectedToNonCellularNetwork_]]" restamp>
                 <iron-icon
                   icon="cellular-setup:warning">
+                </iron-icon>
               </template>
               [[i18n('eSimFlowSetupMessage')]]
             </div>

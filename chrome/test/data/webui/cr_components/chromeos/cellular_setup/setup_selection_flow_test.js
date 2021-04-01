@@ -55,10 +55,12 @@ suite('CrComponentsSetupSelectionFlowTest', function() {
         await flushAsync();
 
         assertFalse(setupSelectionFlow.$.esimFlowUiBtn.disabled);
+        assertFalse(!!setupSelectionFlow.$$('iron-icon'));
 
         networkConfigRemote.removeNetworkForTest(wifiNetwork);
         await flushAsync();
 
         assertTrue(setupSelectionFlow.$.esimFlowUiBtn.disabled);
+        assertTrue(!!setupSelectionFlow.$$('iron-icon'));
       });
 });
