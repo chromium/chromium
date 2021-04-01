@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.xsurface;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -14,6 +15,12 @@ import androidx.annotation.Nullable;
  * Should only be called on the UI thread.
  */
 public interface SurfaceScopeDependencyProvider {
+    /** Returns the activity. */
+    @Nullable
+    default Activity getActivity() {
+        return null;
+    }
+
     /** Returns the application context. */
     @Nullable
     default Context getApplicationContext() {
