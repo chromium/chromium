@@ -394,17 +394,22 @@ void TraceEventMetadataSource::GenerateMetadata(
   for (auto& generator : *proto_generators) {
     generator.Run(chrome_metadata, privacy_filtering_enabled);
   }
+  trace_packet->Finalize();
 
   if (!privacy_filtering_enabled) {
+    trace_packet = trace_writer_->NewTracePacket();
+    trace_packet->set_timestamp(
+        TRACE_TIME_TICKS_NOW().since_origin().InNanoseconds());
+    trace_packet->set_timestamp_clock_id(kTraceClockId);
     ChromeEventBundle* event_bundle = trace_packet->set_chrome_events();
     for (auto& generator : *json_generators) {
       GenerateJsonMetadataFromGenerator(generator, event_bundle);
     }
+    trace_packet->Finalize();
   }
 
-  // Force flush the packet since the default flush happens at end of
-  // trace, and the packet can be discarded then.
-  trace_packet->Finalize();
+  // Force flush the packets since the default flush happens at end of trace,
+  // and the trace writer's chunk could then be discarded (in kDiscard mode).
   trace_writer->Flush();
 }
 
