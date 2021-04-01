@@ -71,7 +71,7 @@ class MockKeyboardDelegate : public exo::KeyboardDelegate {
   MOCK_METHOD(void,
               OnKeyboardEnter,
               (exo::Surface*,
-               (const base::flat_map<ui::DomCode, exo::KeyState>&)),
+               (const base::flat_map<ui::DomCode, ui::DomCode>&)),
               (override));
   MOCK_METHOD(void, OnKeyboardLeave, (exo::Surface*), (override));
   MOCK_METHOD(uint32_t,

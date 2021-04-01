@@ -38,7 +38,7 @@ class WaylandKeyboardDelegate : public WaylandInputDelegate,
   bool CanAcceptKeyboardEventsForSurface(Surface* surface) const override;
   void OnKeyboardEnter(
       Surface* surface,
-      const base::flat_map<ui::DomCode, KeyState>& pressed_keys) override;
+      const base::flat_map<ui::DomCode, ui::DomCode>& pressed_keys) override;
   void OnKeyboardLeave(Surface* surface) override;
   uint32_t OnKeyboardKey(base::TimeTicks time_stamp,
                          ui::DomCode key,

@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/observer_list.h"
-#include "components/exo/key_state.h"
 #include "components/exo/keyboard_observer.h"
 #include "components/exo/seat_observer.h"
 #include "components/exo/surface_observer.h"
@@ -119,7 +118,7 @@ class Keyboard : public ui::EventHandler,
   // Set of currently pressed keys. First value is a platform code and second
   // value is the code that was delivered to client. See Seat.h for more
   // details.
-  base::flat_map<ui::DomCode, KeyState> pressed_keys_;
+  base::flat_map<ui::DomCode, ui::DomCode> pressed_keys_;
 
   // Key state changes that are expected to be acknowledged.
   using KeyStateChange = std::pair<ui::KeyEvent, base::TimeTicks>;

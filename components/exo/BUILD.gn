@@ -38,7 +38,6 @@ static_library("exo") {
     "frame_sink_resource_manager.cc",
     "frame_sink_resource_manager.h",
     "input_trace.h",
-    "key_state.h",
     "keyboard_delegate.h",
     "keyboard_device_configuration_delegate.h",
     "keyboard_observer.h",

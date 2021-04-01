@@ -12,7 +12,6 @@
 #include "base/containers/flat_map.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "ui/events/keycodes/dom/dom_code.h"
-#include "ui/events/keycodes/dom/keycode_converter.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
 #include <xkbcommon/xkbcommon.h>
@@ -40,7 +39,7 @@ bool WaylandKeyboardDelegate::CanAcceptKeyboardEventsForSurface(
 
 void WaylandKeyboardDelegate::OnKeyboardEnter(
     Surface* surface,
-    const base::flat_map<ui::DomCode, KeyState>& pressed_keys) {
+    const base::flat_map<ui::DomCode, ui::DomCode>& pressed_keys) {
   wl_resource* surface_resource = GetSurfaceResource(surface);
   DCHECK(surface_resource);
   wl_array keys;
@@ -49,7 +48,7 @@ void WaylandKeyboardDelegate::OnKeyboardEnter(
     uint32_t* value =
         static_cast<uint32_t*>(wl_array_add(&keys, sizeof(uint32_t)));
     DCHECK(value);
-    *value = ui::KeycodeConverter::DomCodeToEvdevCode(entry.second.code);
+    *value = ui::KeycodeConverter::DomCodeToEvdevCode(entry.second);
   }
   wl_keyboard_send_enter(
       keyboard_resource_,
@@ -72,8 +71,8 @@ void WaylandKeyboardDelegate::OnKeyboardLeave(Surface* surface) {
 uint32_t WaylandKeyboardDelegate::OnKeyboardKey(base::TimeTicks time_stamp,
                                                 ui::DomCode code,
                                                 bool pressed) {
-  uint32_t serial = serial_tracker_->MaybeNextKeySerial();
-  serial_tracker_->ResetKeySerial();
+  uint32_t serial =
+      serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
   SendTimestamp(time_stamp);
   wl_keyboard_send_key(
       keyboard_resource_, serial, TimeTicksToMilliseconds(time_stamp),

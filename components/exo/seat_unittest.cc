@@ -585,15 +585,15 @@ TEST_F(SeatTest, PressedKeys) {
   seat.WillProcessEvent(&press_a);
   seat.OnKeyEvent(press_a.AsKeyEvent());
   seat.DidProcessEvent(&press_a);
-  base::flat_map<ui::DomCode, KeyState> pressed_keys;
-  pressed_keys[ui::CodeFromNative(&press_a)] = KeyState{press_a.code(), false};
+  base::flat_map<ui::DomCode, ui::DomCode> pressed_keys;
+  pressed_keys[ui::CodeFromNative(&press_a)] = press_a.code();
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Press B, then A & B should be in the map.
   seat.WillProcessEvent(&press_b);
   seat.OnKeyEvent(press_b.AsKeyEvent());
   seat.DidProcessEvent(&press_b);
-  pressed_keys[ui::CodeFromNative(&press_b)] = KeyState{press_b.code(), false};
+  pressed_keys[ui::CodeFromNative(&press_b)] = press_b.code();
   EXPECT_EQ(pressed_keys, seat.pressed_keys());
 
   // Release A, with the normal order where DidProcessEvent is after OnKeyEvent,
