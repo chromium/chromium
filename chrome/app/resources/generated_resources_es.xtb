@@ -3352,7 +3352,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4716483597559580346">Powerwash para mayor seguridad</translation>
 <translation id="471880041731876836">No tienes permiso para acceder a este sitio web</translation>
 <translation id="4720185134442950733">Red de datos móviles</translation>
-<translation id="4722483286922621738">Los sitios se suelen conectar a dispositivos en serie para usarlos en funciones relacionadas con la transferencia de datos, como la configuración de la red.</translation>
 <translation id="4722735765955348426">Contraseña de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartiendo tu pantalla.</translation>
 <translation id="4723140812774948886">Intercambiar con el siguiente</translation>
@@ -4792,7 +4791,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6387674443318562538">División vertical</translation>
 <translation id="6388429472088318283">Buscar idiomas</translation>
 <translation id="6388711141388085034">Ocupado</translation>
-<translation id="6388997627483458007">No permitir que los sitios se conecten a dispositivos serie</translation>
 <translation id="6390020764191254941">Mover pestaña a ventana nueva</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
@@ -5116,7 +5114,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6758056191028427665">Envíanos tu opinión sobre nuestro servicio.</translation>
 <translation id="6759193508432371551">Restablecer estado de fábrica</translation>
 <translation id="6762833852331690540">Activado</translation>
-<translation id="6763264843598438739">Los sitios pueden solicitar permiso para conectarse a dispositivos en serie</translation>
 <translation id="676560328519657314">Tus métodos de pago en Google Pay</translation>
 <translation id="6767566652486411142">Elegir otro idioma...</translation>
 <translation id="6767639283522617719">No se puede vincular el dominio. Comprueba que la configuración de la unidad organizativa sea correcta.</translation>
@@ -5148,6 +5145,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Vaya, algo ha salido mal...</translation>
 <translation id="6798420440063423019">La llave de seguridad está bloqueada porque se ha introducido el PIN de forma incorrecta demasiadas veces. Tendrás que restablecer la llave de seguridad.</translation>
+<translation id="679845623837196966">Mostrar lista de lectura</translation>
 <translation id="6798578729981748444">Para terminar la importación, cierra todas las ventanas de Firefox.</translation>
 <translation id="6798780071646309401">bloqueo de mayúsculas activado</translation>
 <translation id="6798954102094737107">Complemento: <ph name="PLUGIN_NAME" /></translation>
@@ -7280,6 +7278,7 @@ Pulsa un interruptor asignado para quitar la asignación.</translation>
       <ph name="LIST_ITEM" />Ejecutar el Diagnóstico de conectividad de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Imagen en imagen</translation>
+<translation id="9167063903968449027">Mostrar lista de lectura</translation>
 <translation id="9168436347345867845">En otro momento</translation>
 <translation id="9169496697824289689">Ver combinaciones de teclas</translation>
 <translation id="916964310188958970">¿Por qué aparece esta sugerencia?</translation>

@@ -103,7 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> तुम्हाला हे <ph name="DEVICE_TYPE" /> अपडेट करण्याची शिफारस करतो.</translation>
 <translation id="1118738876271697201">सिस्टमला डिव्हाइस मॉडेल किंवा सिरीअल नंबर निर्धारित करता आला नाही.</translation>
 <translation id="1119447706177454957">अंतर्गत एरर</translation>
-<translation id="111959947408687873">फुलस्क्रीन मॅग्निफायर टॉगल करण्यासाठी Ctrl+<ph name="SEARCH_KEY_NAME" />+M वापरा. झूम इन केलेले असताना स्क्रीनभोवती हलवण्यासाठी Ctrl+Alt+ॲरो की वापरा.</translation>
+<translation id="111959947408687873">फुलस्क्रीन मॅग्निफायर टॉगल करण्यासाठी Ctrl+<ph name="SEARCH_KEY_NAME" />+M वापरा. झूम इन केलेले असताना स्क्रीनभोवती हलवण्यासाठी Ctrl+Alt+Arrow की वापरा.</translation>
 <translation id="1122068467107743258">कार्य</translation>
 <translation id="1122198203221319518">&amp;साधने</translation>
 <translation id="1122242684574577509">ऑथेंटिकेशन अयशस्वी. तुम्ही वापरत असलेल्या (<ph name="NETWORK_ID" />) वाय-फाय नेटवर्कसाठी लॉग इन पेजला भेट देण्यासाठी वर क्लिक करा.</translation>
@@ -3350,7 +3350,6 @@
 <translation id="4716483597559580346">अतिरिक्त सुरक्षिततेसाठी पॉवरवॉश</translation>
 <translation id="471880041731876836">या साइटला भेट देण्याची तुम्हाला परवानगी नाही</translation>
 <translation id="4720185134442950733">मोबाइल डेटा नेटवर्क</translation>
-<translation id="4722483286922621738">तुमचे नेटवर्क सेट करणे यासारख्या डेटा ट्रान्सफर वैशिष्ट्यांसाठी साइट सामान्यपणे सिरीअल डिव्हाइसशी कनेक्ट करतात</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> साठी पासवर्ड</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> तुमची स्क्रीन शेअर करत आहे.</translation>
 <translation id="4723140812774948886">पुढच्याशी बदला</translation>
@@ -4791,7 +4790,6 @@
 <translation id="6387674443318562538">उभे विभाजित करा</translation>
 <translation id="6388429472088318283">भाषा शोधा</translation>
 <translation id="6388711141388085034">व्यस्त</translation>
-<translation id="6388997627483458007">साइटना सिरीअल डिव्हाइसशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="6390020764191254941">टॅब नवीन विंडोवर हलवा</translation>
 <translation id="6393156038355142111">क्लिष्ट पासवर्ड सुचवा</translation>
 <translation id="6393550101331051049">असुरक्षित आशय दाखवण्याची अनुमती आहे</translation>
@@ -5115,7 +5113,6 @@
 <translation id="6758056191028427665">आम्ही आमचे काम कसे करत आहोत त्याबद्दल आम्हाला कळवा.</translation>
 <translation id="6759193508432371551">फॅक्टरी रीसेट</translation>
 <translation id="6762833852331690540">सुरू</translation>
-<translation id="6763264843598438739">साइट सिरीअल डिव्हाइसशी कनेक्ट करण्यासाठी विचारू शकतात</translation>
 <translation id="676560328519657314">Google Pay मधील तुमच्या पेमेंट पद्धती</translation>
 <translation id="6767566652486411142">दुसरी भाषा निवडा...</translation>
 <translation id="6767639283522617719">डोमेनशी जोडू शकत नाही. संस्थात्मक एककासाठी सेटिंग्ज योग्य असल्याची खात्री करा.</translation>
@@ -6559,8 +6556,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8368859634510605990">सर्व बुकमार्क &amp;उघडा</translation>
 <translation id="8370294614544004647">लॅपटॉप बंद केल्यावर स्लीप मोड ऑन करा</translation>
 <translation id="8371695176452482769">आता बोला</translation>
-<translation id="8371749822919332187">झूम इन करण्यासाठी Ctrl+Alt+ब्राइटनेस वाढवा वापरा.
-झूम आउट करण्यासाठी Ctrl+Alt+ब्राइटनेस कमी करा वापरा.</translation>
+<translation id="8371749822919332187">झूम इन करण्यासाठी Ctrl+Alt+Brightness Up वापरा.
+झूम आउट करण्यासाठी Ctrl+Alt+Brightness Down वापरा.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{साइट म्यूट करा}other{साइट म्यूट करा}}</translation>
 <translation id="8372369524088641025">खराब WEP की</translation>
 <translation id="8373652277231415614">Crostini ने शेअर केलेल्या डिरेक्टरी</translation>

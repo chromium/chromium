@@ -3355,7 +3355,6 @@
 <translation id="4716483597559580346">Powerwash լրացուցիչ անվտանգության համար</translation>
 <translation id="471880041731876836">Դուք այս կայք այցելելու թույլտվություն չունեք</translation>
 <translation id="4720185134442950733">Բջջային ցանց</translation>
-<translation id="4722483286922621738">Կայքերը սովորաբար միանում են հաջորդական սարքերին՝ տվյալների փոխանցման գործառույթների, օրինակ՝ ցանցի կարգավորման համար</translation>
 <translation id="4722735765955348426">Գաղտնաբառ <ph name="USERNAME" />-ի համար</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />-ը համօգտագործում է ձեր էկրանը:</translation>
 <translation id="4723140812774948886">Փոխել տեղերով հաջորդի հետ</translation>
@@ -4798,7 +4797,6 @@
 <translation id="6387674443318562538">Ուղղաձիգ տրոհում</translation>
 <translation id="6388429472088318283">Որոնեք լեզուներ</translation>
 <translation id="6388711141388085034">Զբաղված է</translation>
-<translation id="6388997627483458007">Թույլ չտալ կայքերին միանալ սերիական սարքերին</translation>
 <translation id="6390020764191254941">Բացել ներդիրը նոր պատուհանում</translation>
 <translation id="6393156038355142111">Ստեղծել հուսալի գաղտնաբառ…</translation>
 <translation id="6393550101331051049">Թույլատրվում է ցուցադրել վտանգավոր բովանդակություն</translation>
@@ -5122,7 +5120,6 @@
 <translation id="6758056191028427665">Կիսվեք մեզ հետ ձեր տպավորություններով:</translation>
 <translation id="6759193508432371551">Գործարանային կարգավորումների վերականգնում</translation>
 <translation id="6762833852331690540">Միացված է</translation>
-<translation id="6763264843598438739">Կայքերը կարող են հաջորդական սարքերին միանալու թույլտվություն հայցել</translation>
 <translation id="676560328519657314">Ձեր վճարման եղանակները Google Pay-ում</translation>
 <translation id="6767566652486411142">Ընտրել մեկ այլ լեզու...</translation>
 <translation id="6767639283522617719">Չհաջողվեց միանալ տիրույթին: Համոզվեք, որ ստորաբաժանման կարգավորումները ճիշտ են:</translation>
@@ -5154,6 +5151,7 @@
 <translation id="6795884519221689054">Պանդա</translation>
 <translation id="6797493596609571643">Ինչ-որ սխալ տեղի ունեցավ:</translation>
 <translation id="6798420440063423019">Անվտանգության բանալին կողպվել է, քանի որ սխալ PIN կոդի մուտքագրման չափազանց շատ փորձեր են կատարվել։ Անհրաժեշտ է զրոյացնել բանալու կարգավորումները։</translation>
+<translation id="679845623837196966">Ցուցադրել ընթերցանության ցանկը</translation>
 <translation id="6798578729981748444">Ներմուծումն ավարտելու համար փակեք Firefox-ի բոլոր պատուհանները:</translation>
 <translation id="6798780071646309401">Caps Lock-ը միացված է</translation>
 <translation id="6798954102094737107">Փլագին՝ <ph name="PLUGIN_NAME" /></translation>
@@ -7285,6 +7283,7 @@
       <ph name="LIST_ITEM" />Գործարկել Chrome-ի կապի ախտորոշումը
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Նկար նկարի մեջ</translation>
+<translation id="9167063903968449027">Ցուցադրել ընթերցանության ցանկը</translation>
 <translation id="9168436347345867845">Ավելի ուշ</translation>
 <translation id="9169496697824289689">Դիտել ստեղնաշարի դյուրանցումները</translation>
 <translation id="916964310188958970">Ինչո՞ւ եմ տեսնում այս հուշումը</translation>

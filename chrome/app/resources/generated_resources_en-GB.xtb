@@ -3353,7 +3353,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4716483597559580346">Powerwash for added security</translation>
 <translation id="471880041731876836">You don't have permission to visit this site</translation>
 <translation id="4720185134442950733">Mobile data network</translation>
-<translation id="4722483286922621738">Sites usually connect to serial devices for data transfer features, like setting up your network</translation>
 <translation id="4722735765955348426">Password for <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> is sharing your screen.</translation>
 <translation id="4723140812774948886">Swap with next</translation>
@@ -4793,7 +4792,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6387674443318562538">Split vertical</translation>
 <translation id="6388429472088318283">Search languages</translation>
 <translation id="6388711141388085034">Busy</translation>
-<translation id="6388997627483458007">Don't allow sites to connect to serial devices</translation>
 <translation id="6390020764191254941">Move tab to new window</translation>
 <translation id="6393156038355142111">Suggest strong password</translation>
 <translation id="6393550101331051049">Allowed to show insecure content</translation>
@@ -5117,7 +5115,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6758056191028427665">Let us know how we’re doing.</translation>
 <translation id="6759193508432371551">Factory reset</translation>
 <translation id="6762833852331690540">On</translation>
-<translation id="6763264843598438739">Sites can ask to connect to serial devices</translation>
 <translation id="676560328519657314">Your payment methods in Google Pay</translation>
 <translation id="6767566652486411142">Choose another language…</translation>
 <translation id="6767639283522617719">Can’t join the domain. Make sure that the settings are correct for the organisational unit.</translation>

@@ -853,7 +853,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
 
       <ph name="DEFAULT_SEARCH_PROVIDER_ICON_URL_POLICY_NAME" /> protokolünün ayarlanmadan bırakılması, arama sağlayıcısının simgesi olmadığı anlamına gelir.</translation>
 <translation id="2145735238144543545">Gerekli İstemci Sertifikaları</translation>
-<translation id="2146103669166779785">Bir tema oluşturup tarayıcıya uygulamak için kullanılacak altılı renk.</translation>
+<translation id="2146103669166779785">Bir tema oluşturup tarayıcıya uygulamak için kullanılacak onaltılık renk.</translation>
 <translation id="214901426630414675">Dupleks yazdırma modunu kısıtla</translation>
 <translation id="2149330464730004005">Renkli yazdırmayı etkinleştir</translation>
 <translation id="2149592087996467903">WebRTC'nin, TLD/DTLS protokolünün eski sürümlerini kullunmasını engelle</translation>
@@ -3791,9 +3791,9 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Ayarlanmadan bırakılması, kullanıcıların başlatıcıdaki sabitlenmiş uygulamalar listesini değiştirmesine izin verir.</translation>
 <translation id="6190022522129724693">Varsayılan pop-up'lar ayarı</translation>
 <translation id="6190367314942602985">Kullanıcı Kimlik bilgilerini bildir</translation>
-<translation id="6191963383731098056">Bu politika, yöneticilere <ph name="PRODUCT_NAME" /> temasının rengini yapılandırma imkanı tanır. Giriş dizesi, "#RRGGBB" biçimine uygun geçerli bir altılı renk dizesi olmalıdır.
+<translation id="6191963383731098056">Bu politika, yöneticilere <ph name="PRODUCT_NAME" /> temasının rengini yapılandırma imkanı tanır. Giriş dizesi, "#RRGGBB" biçimine uygun geçerli bir onaltılık renk dizesi olmalıdır.
 
-      Bu politika geçerli bir altılı renge ayarlanırsa otomatik olarak o renge dayalı bir tema oluşturularak tarayıcıya uygulanır. Kullanıcılar, politika tarafından ayarlanan temayı değiştiremez.
+      Bu politika geçerli bir onaltılık renge ayarlanırsa otomatik olarak o renge dayalı bir tema oluşturularak tarayıcıya uygulanır. Kullanıcılar, politika tarafından ayarlanan temayı değiştiremez.
 
       Bu politika ayarlanmadan bırakılırsa kullanıcılar tarayıcılarının temasını istedikleri gibi değiştirebilir.</translation>
 <translation id="6195802366906945965">Yerleşik sertifika doğrulayıcının sunucu sertifikalarını doğrulamak için kullanılıp kullanılmayacağını belirler.</translation>

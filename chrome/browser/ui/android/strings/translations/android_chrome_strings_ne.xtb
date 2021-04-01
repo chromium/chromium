@@ -71,6 +71,7 @@
 <translation id="1416550906796893042">एपको संस्करण</translation>
 <translation id="1430915738399379752">प्रिन्ट गर्नुहोस्</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> आदान प्रदान गर्न सकिएन</translation>
+<translation id="147113415845704694">“आज मौसम कस्तो छ?” भनी हेर्नुहोस्</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> डाउनलोड सर्भरको समस्याको कारण असफल भयो।</translation>
 <translation id="1492417797159476138">तपाईंले यो साइटका लागि यो युजरनेम सुरक्षित गरिसक्नुभएको छ</translation>
 <translation id="1506061864768559482">सर्च इन्जिन</translation>
@@ -165,6 +166,7 @@
 <translation id="2126426811489709554">Chrome द्वारा संचालित</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> बचत गरियो</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बन्द भयो</translation>
+<translation id="2139186145475833000">गृह स्क्रिनमा थप्नुहोस्</translation>
 <translation id="214888715418183969">तपाईं Chrome सँग कुन कुन जानकारी सेयर गर्न चाहनुहुन्छ भन्ने कुरा छनौट गर्नुहोस्। तपाईंले सेयर गर्ने मेट्रिकहरू Chrome का सुविधा, कार्यसम्पादन र स्थिरता सुधार गर्न प्रयोग गरिने छ।</translation>
 <translation id="2154484045852737596">कार्ड सम्पादन गर्नुहोस्</translation>
 <translation id="2154710561487035718">URL प्रतिलिपि गर्नुहोस्</translation>
@@ -528,7 +530,6 @@
 <translation id="4720982865791209136">Chrome लाई सुधार्न मद्दत गर्नुहोस्। <ph name="BEGIN_LINK" />सर्वेक्षणमा भाग लिनुहोस्।<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">तपाईंका लागि सिफारिस गरिएका शीर्ष साइटहरू हेर्नुहोस्</translation>
 <translation id="4732120983431207637">स्ट्याक Unwinder</translation>
-<translation id="4732693703583195378">तपाईं यो साइटमा अझ सजिलैसँग जानका खातिर आफ्नो ट्याब्लेटको होम स्क्रिनमा उक्त साइटको लिंक हाल्नुहोस्</translation>
 <translation id="4738836084190194332">अन्तिम पटक सिंक गरिएको: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">एउटा नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
@@ -567,7 +568,7 @@
 <translation id="4925120120285606924">स्क्रिनसट <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">तपाईंका पासवर्डहरू एक्स्पोर्ट गरी एउटा पाठ फाइलका रूपमा डाउनलोड गरिने छ। गन्तव्य फोल्डर हेर्ने अनुमति भएका जोसुकै व्यक्ति वा जुनसुकै एप यी पासवर्डहरू हेर्न सक्ने छन्।</translation>
 <translation id="4932247056774066048">तपाईं <ph name="DOMAIN_NAME" /> ले व्यवस्थापन गरेको खाताबाट साइन आउट गरिरहनुभएको हुनाले तपाईंको Chrome को डेटा यस यन्त्रबाट मेटाइने छ। यो डेटा तपाईंको Google खातामै रहिरहने छ।</translation>
-<translation id="4936039914467572121">यो साइटमा अझ छिटो जानुहोस्</translation>
+<translation id="4941179133499732445">आफ्नो आवाज प्रयोग गरी खोज्न माइक जनाउने आइकनमा ट्याप गर्नुहोस्</translation>
 <translation id="4943703118917034429">भर्चुअल रियालिटी</translation>
 <translation id="4943872375798546930">कुनै नतिजा छैन</translation>
 <translation id="4961107849584082341">यस पृष्ठलाई जुनसुकै भाषामा अनुवाद गर्नुहोस्</translation>
@@ -582,10 +583,12 @@
 <translation id="5011311129201317034"><ph name="SITE" /> जडान गर्न चाहन्छ</translation>
 <translation id="5016205925109358554">सेरिफ</translation>
 <translation id="5039804452771397117">अनुमति दिनुहोस्</translation>
+<translation id="5061533557687621530">मौसमबारे जानकारी प्राप्त गर्न माइक जनाउने आइकनमा ट्याप गर्नुहोस् र “आज मौसम कस्तो छ?” भन्नुहोस्</translation>
 <translation id="5087580092889165836">कार्ड थप्नुहोस्</translation>
 <translation id="5091249083535528968">प्रयोगसम्बन्धी थप डेटा</translation>
 <translation id="509429900233858213">त्रुटि भयो।</translation>
 <translation id="510275257476243843">१ घन्टा बाँकी छ</translation>
+<translation id="5118713593561876160">रूचिहरू</translation>
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5127805178023152808">सिंक बन्द छ</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
@@ -596,6 +599,7 @@
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{१ डाउनलोड असफल भयो।}other{# डाउनलोडहरू असफल भए।}}</translation>
 <translation id="5170568018924773124">फोल्डरमा देखाउनुहोस्</translation>
 <translation id="5184329579814168207">Chrome मा खोल्नुहोस्</translation>
+<translation id="5188992787241350004">आफ्नो आवाज प्रयोग गरी खोज्नुहोस्</translation>
 <translation id="5191251636205085390">तेस्रो पक्षीय कुकीहरूलाई प्रतिस्थापन गर्ने प्रविधिका बारेमा जानकारी प्राप्त गर्नुहोस् र तिनलाई नियन्त्रण गर्ने तरिका सिक्नुहोस्</translation>
 <translation id="5193988420012215838">तपाईंको क्लिपबोर्डमा प्रतिलिपि गरियो</translation>
 <translation id="5199929503336119739">कार्य प्रोफाइल</translation>
@@ -1153,6 +1157,7 @@
 <translation id="8820817407110198400">बुकमार्कहरू</translation>
 <translation id="883806473910249246">उक्त सामग्री डाउलोड गर्ने क्रममा एउटा त्रुटि भयो।</translation>
 <translation id="8840953339110955557">यो पृष्ठ अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
+<translation id="8849001918648564819">लुकाइएको</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, ट्याब</translation>
 <translation id="8854223127042600341">आफ्ना अफलाइन फाइलहरू हेर्नुहोस्</translation>
 <translation id="8856607253650333758">विवरणहरू प्राप्त गर्नुहोस्</translation>
@@ -1201,7 +1206,6 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">मूल देखाउनुहोस्</translation>
 <translation id="9148126808321036104">पुन: साइन इन गर्नुहोस्</translation>
-<translation id="9149286894143103695">तपाईं यो साइटमा अझ सजिलैसँग जानका खातिर आफ्नो फोनको होम स्क्रिनमा उक्त साइटको लिंक हाल्नुहोस्</translation>
 <translation id="9155898266292537608">कुनै शब्दमा द्रुत ट्याप गरेर पनि तपाईं खोज्न सक्नुहुन्छ</translation>
 <translation id="9169507124922466868">नेभिगेसनको इतिहास आधा खुला छ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{१ मिनेटअघि जाँच गरिएको}other{# मिनेटअघि जाँच गरिएको}}</translation>

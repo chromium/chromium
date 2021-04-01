@@ -3354,7 +3354,6 @@
 <translation id="4716483597559580346">Фабричко ресетирање за дополнителна безбедност</translation>
 <translation id="471880041731876836">Немате дозвола за посета на сајтов</translation>
 <translation id="4720185134442950733">Мобилна мрежа на податоци</translation>
-<translation id="4722483286922621738">Сајтовите обично се поврзуваат со сериските уреди за функциите за пренос на податоци како што е поставувањето на мрежата</translation>
 <translation id="4722735765955348426">Лозинка за <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> го споделува вашиот екран.</translation>
 <translation id="4723140812774948886">Заменете ја со следната</translation>
@@ -4794,7 +4793,6 @@
 <translation id="6387674443318562538">Подели вертикално</translation>
 <translation id="6388429472088318283">Пребарувајте јазици</translation>
 <translation id="6388711141388085034">Зафатено</translation>
-<translation id="6388997627483458007">Не им дозволувај на сајтовите да се поврзуваат со сериски уреди</translation>
 <translation id="6390020764191254941">Преместете ја картичката во нов прозорец</translation>
 <translation id="6393156038355142111">Предложи силна лозинка</translation>
 <translation id="6393550101331051049">Дозволено им е да прикажуваат небезбедни содржини</translation>
@@ -5118,7 +5116,6 @@
 <translation id="6758056191028427665">Оценете ја нашата работа.</translation>
 <translation id="6759193508432371551">Ресетирање до фабрички вредности</translation>
 <translation id="6762833852331690540">Вклучено</translation>
-<translation id="6763264843598438739">Сајтовите може да прашуваат дали да се поврзат со сериските уреди</translation>
 <translation id="676560328519657314">Вашите начини на плаќање во Google Pay</translation>
 <translation id="6767566652486411142">Изберете друг јазик…</translation>
 <translation id="6767639283522617719">Не може да се приклучи на доменот. Проверете дали поставките се точни за организациската единица.</translation>
@@ -5150,6 +5147,7 @@
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">Упс, нешто не е во ред.</translation>
 <translation id="6798420440063423019">Безбедносниот клуч е заклучен бидејќи внесовте погрешен PIN премногу пати. Ќе треба да го ресетирате безбедносниот клуч.</translation>
+<translation id="679845623837196966">Прикажи го списокот за читање</translation>
 <translation id="6798578729981748444">За да го завршите увезувањето, затворете ги сите прозорци на Firefox.</translation>
 <translation id="6798780071646309401">Caps Lock е вклучено</translation>
 <translation id="6798954102094737107">Приклучок: <ph name="PLUGIN_NAME" /></translation>
@@ -7285,6 +7283,7 @@
       <ph name="LIST_ITEM" />да извршите проверка преку „Дијагностика за поврзливост на Chrome“
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Слика во слика</translation>
+<translation id="9167063903968449027">Прикажи го списокот за читање</translation>
 <translation id="9168436347345867845">Остави за подоцна</translation>
 <translation id="9169496697824289689">Прикажи кратенки на тастатура</translation>
 <translation id="916964310188958970">Зошто овој предлог?</translation>

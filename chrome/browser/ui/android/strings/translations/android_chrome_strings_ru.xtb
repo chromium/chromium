@@ -166,6 +166,7 @@
 <translation id="2126426811489709554">Технологии Chrome</translation>
 <translation id="2131665479022868825">Сэкономлено: <ph name="DATA" /></translation>
 <translation id="213279576345780926">Вкладка "<ph name="TAB_TITLE" />" закрыта.</translation>
+<translation id="2139186145475833000">Добавить на гл. экран</translation>
 <translation id="214888715418183969">Укажите, какие данные вы готовы передавать Chrome. Информация, которую вы будете предоставлять, поможет нам улучшать функции браузера, а также повышать его производительность и стабильность.</translation>
 <translation id="2154484045852737596">Изменение данных карты</translation>
 <translation id="2154710561487035718">Копировать URL</translation>
@@ -530,7 +531,6 @@
 <translation id="4720982865791209136">Помогите улучшить Chrome. <ph name="BEGIN_LINK" />Пройти опрос<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Интересные вам сайты</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
-<translation id="4732693703583195378">Добавьте этот сайт на главный экран планшета для быстрого доступа.</translation>
 <translation id="4738836084190194332">Последняя синхронизация: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Открыть новую вкладку</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
@@ -569,7 +569,6 @@
 <translation id="4925120120285606924">Скриншот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Ваши пароли будут экспортированы и скачаны в виде текстового файла. Они будут видны всем пользователям и приложениям с доступом к папке назначения.</translation>
 <translation id="4932247056774066048">Вы выходите из аккаунта, которым управляет администратор домена <ph name="DOMAIN_NAME" />. Все данные Chrome будут удалены с этого устройства, но сохранятся в аккаунте Google.</translation>
-<translation id="4936039914467572121">Переходите на сайт быстрее</translation>
 <translation id="4941179133499732445">Чтобы начать голосовой поиск, нажмите на значок микрофона</translation>
 <translation id="4943703118917034429">Виртуальная реальность</translation>
 <translation id="4943872375798546930">Нет результатов</translation>
@@ -590,6 +589,7 @@
 <translation id="5091249083535528968">Расширенные данные</translation>
 <translation id="509429900233858213">Произошла ошибка.</translation>
 <translation id="510275257476243843">Остался 1 час</translation>
+<translation id="5118713593561876160">Интересы</translation>
 <translation id="5123685120097942451">Вкладка инкогнито</translation>
 <translation id="5127805178023152808">Синхронизация выключена</translation>
 <translation id="5132942445612118989">Синхронизируйте пароли, историю и другие данные на всех ваших устройствах</translation>
@@ -1012,6 +1012,7 @@
 <translation id="7846296061357476882">Сервисы Google</translation>
 <translation id="784934925303690534">Временной диапазон</translation>
 <translation id="7851858861565204677">Другие устройства</translation>
+<translation id="7853202427316060426">Действия</translation>
 <translation id="7857691613771368249">Спрашивать, когда сохранять файлы</translation>
 <translation id="7859988229622350291">Никогда не переводить</translation>
 <translation id="7875915731392087153">Написать письмо</translation>
@@ -1158,6 +1159,7 @@
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="883806473910249246">При скачивании контента произошла ошибка.</translation>
 <translation id="8840953339110955557">Страница может отличаться от онлайн-версии.</translation>
+<translation id="8849001918648564819">Никто</translation>
 <translation id="8853345339104747198">Вкладка "<ph name="TAB_TITLE" />"</translation>
 <translation id="8854223127042600341">Посмотреть скачанные файлы</translation>
 <translation id="8856607253650333758">Генерировать описания</translation>
@@ -1206,7 +1208,6 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Показать оригинал</translation>
 <translation id="9148126808321036104">Повторите вход</translation>
-<translation id="9149286894143103695">Добавьте этот сайт на главный экран телефона для быстрого доступа.</translation>
 <translation id="9155898266292537608">Также можно выполнить поиск, нажав на слово.</translation>
 <translation id="9169507124922466868">История переходов открыта наполовину</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено 1 минуту назад.}one{Проверено # минуту назад.}few{Проверено # минуты назад.}many{Проверено # минут назад.}other{Проверено # минуты назад.}}</translation>

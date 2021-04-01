@@ -12,7 +12,7 @@
 <translation id="1028781062521375153">Voir les détails</translation>
 <translation id="1030706264415084469"><ph name="URL" /> souhaite stocker de façon permanente des données volumineuses sur votre appareil</translation>
 <translation id="1032854598605920125">Faire pivoter vers la droite</translation>
-<translation id="1036224116832931580">Appuyez sur l'écran pour lancer le jeu du dinosaure et sauter</translation>
+<translation id="1036224116832931580">Jeu du dino : appuyez sur l'écran pour jouer</translation>
 <translation id="1036348656032585052">Désactiver</translation>
 <translation id="1038106730571050514">Afficher les suggestions</translation>
 <translation id="1038842779957582377">Nom inconnu</translation>
@@ -1955,7 +1955,7 @@ Informations supplémentaires :
 <translation id="8446884382197647889">En savoir plus</translation>
 <translation id="8457125768502047971">Indéfiniment</translation>
 <translation id="8461694314515752532">Chiffrer les données synchronisées avec votre propre phrase secrète de synchronisation</translation>
-<translation id="8463101686637053101">Appuyez sur la barre d'espace pour lancer le jeu du dinosaure et sauter</translation>
+<translation id="8463101686637053101">Jeu du dino, appuyez sur la barre espace pour jouer</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 carte de paiement}one{# carte de paiement}other{# cartes de paiement}}</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8474910779563686872">Afficher les informations destinées aux développeurs</translation>

@@ -166,6 +166,7 @@
 <translation id="2126426811489709554">Овозможено од Chrome</translation>
 <translation id="2131665479022868825">Зачувани: <ph name="DATA" /></translation>
 <translation id="213279576345780926">Се затвори <ph name="TAB_TITLE" /></translation>
+<translation id="2139186145475833000">Додај на почетен екран</translation>
 <translation id="214888715418183969">Изберете какви податоци за користењето сакате да споделувате со Chrome. Метриката што ја споделувате ќе се користи за подобрување на функциите, изведбата и стабилноста на Chrome.</translation>
 <translation id="2154484045852737596">Уредете ја картичката</translation>
 <translation id="2154710561487035718">Копирај URL</translation>
@@ -530,7 +531,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4720982865791209136">Помогнете да се подобри Chrome. <ph name="BEGIN_LINK" />Учествувајте во анкетата<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Видете ги вашите најдобри сајтови</translation>
 <translation id="4732120983431207637">Модул за продолжување претходни задачи</translation>
-<translation id="4732693703583195378">Додајте го сајтов на почетниот екран на таблетот за да имате полесен пристап до него</translation>
 <translation id="4738836084190194332">Последна синхронизација: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Отворете нова картичка</translation>
 <translation id="4759238208242260848">Преземања</translation>
@@ -569,7 +569,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4925120120285606924">Слика од екранот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Вашите лозинки ќе се извезат и преземат како текстуална датотека. Тие ќе бидат видливи за секого и за секоја апликација со пристап до дестинациската папка.</translation>
 <translation id="4932247056774066048">Бидејќи се одјавувате од сметка управувана од <ph name="DOMAIN_NAME" />, вашите податоци на Chrome ќе се избришат од уредов. Тие ќе останат во вашата сметка на Google.</translation>
-<translation id="4936039914467572121">Побрзо пристапувајте до сајтов</translation>
 <translation id="4941179133499732445">Допрете го микрофонот за да пребарувате со гласот</translation>
 <translation id="4943703118917034429">Виртуелна реалност</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
@@ -590,6 +589,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="5091249083535528968">Проширени податоци за користењето</translation>
 <translation id="509429900233858213">Настана грешка.</translation>
 <translation id="510275257476243843">Остана 1 час</translation>
+<translation id="5118713593561876160">Интереси</translation>
 <translation id="5123685120097942451">Картичка инкогнито</translation>
 <translation id="5127805178023152808">Синхронизацијата е исклучена</translation>
 <translation id="5132942445612118989">Синхронизирајте ги лозинките, историјата и друго на сите уреди</translation>
@@ -1158,6 +1158,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8820817407110198400">Обележувачи</translation>
 <translation id="883806473910249246">Грешка при преземањето на содржината.</translation>
 <translation id="8840953339110955557">Страницава може да се разликува од онлајн верзијата.</translation>
+<translation id="8849001918648564819">Сокриен</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, картичка</translation>
 <translation id="8854223127042600341">Погледнете ги вашите офлајн датотеки</translation>
 <translation id="8856607253650333758">Добивај описи</translation>
@@ -1206,7 +1207,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Покажи оригинална страница</translation>
 <translation id="9148126808321036104">Најави се повторно</translation>
-<translation id="9149286894143103695">Додајте го сајтов на почетниот екран на телефонот за да имате полесен пристап до него</translation>
 <translation id="9155898266292537608">Може да пребарувате и со брзо допирање збор</translation>
 <translation id="9169507124922466868">Историјата на навигација е отворена до половина екран</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено пред 1 минута}one{Проверено пред # минута}other{Проверено пред # минути}}</translation>

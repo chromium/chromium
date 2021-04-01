@@ -3352,7 +3352,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4716483597559580346">Levar a cabo un Powerwash para conseguir unha maior seguranza</translation>
 <translation id="471880041731876836">Non tes permiso para visitar este sitio</translation>
 <translation id="4720185134442950733">Rede de datos móbiles</translation>
-<translation id="4722483286922621738">Os sitios adoitan conectarse aos dispositivos en serie para ofrecerche determinadas funcións relacionadas coa transferencia de datos (por exemplo, configurar a túa rede)</translation>
 <translation id="4722735765955348426">Contrasinal de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartindo a túa pantalla.</translation>
 <translation id="4723140812774948886">Cambiar co seguinte</translation>
@@ -4792,7 +4791,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6387674443318562538">Dividir verticalmente</translation>
 <translation id="6388429472088318283">Buscar idiomas</translation>
 <translation id="6388711141388085034">Ocupado</translation>
-<translation id="6388997627483458007">Non permitir que os sitios se conecten a dispositivos en serie</translation>
 <translation id="6390020764191254941">Mover pestana a ventá nova</translation>
 <translation id="6393156038355142111">Suxerir contrasinal seguro</translation>
 <translation id="6393550101331051049">Sitios que poden mostrar contido inseguro</translation>
@@ -5116,7 +5114,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6758056191028427665">Indícanos o teu grao de satisfacción.</translation>
 <translation id="6759193508432371551">Restablecemento de fábrica</translation>
 <translation id="6762833852331690540">Si</translation>
-<translation id="6763264843598438739">Os sitios poden pedirche permiso para conectarse a dispositivos en serie</translation>
 <translation id="676560328519657314">Os teus métodos de pago en Google Pay</translation>
 <translation id="6767566652486411142">Escoller outro idioma…</translation>
 <translation id="6767639283522617719">O dispositivo non se puido vincular ao dominio. Asegúrate de que a configuración sexa correcta para a unidade organizativa.</translation>
@@ -5148,6 +5145,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Produciuse un erro.</translation>
 <translation id="6798420440063423019">A chave de seguranza bloqueouse porque se meteu un PIN incorrecto demasiadas veces. Deberás restablecela.</translation>
+<translation id="679845623837196966">Mostrar Lista de lectura</translation>
 <translation id="6798578729981748444">Para finalizar a importación, pecha todas as ventás de Firefox.</translation>
 <translation id="6798780071646309401">activouse o bloqueo de maiúsculas</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
@@ -7279,6 +7277,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
       <ph name="LIST_ITEM" />Executa a ferramenta Diagnóstico de conectividade de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantalla superposta</translation>
+<translation id="9167063903968449027">Mostrar Lista de lectura</translation>
 <translation id="9168436347345867845">Configurar máis tarde</translation>
 <translation id="9169496697824289689">Ver atallos de teclado</translation>
 <translation id="916964310188958970">Por que ves esta suxestión?</translation>

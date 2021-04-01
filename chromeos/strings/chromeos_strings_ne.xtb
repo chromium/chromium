@@ -135,6 +135,7 @@
 <translation id="4227825898293920515">पासवर्डको म्याद <ph name="TIME" /> मा सकिन्छ</translation>
 <translation id="4238516577297848345">प्रिन्टसम्बन्धी कुनै पनि काम भइरहेको छैन</translation>
 <translation id="4297501883039923494">रोकियो - अज्ञात त्रुटि भयो</translation>
+<translation id="4344214025510306853">APN एट्याच गर्नुहोस्</translation>
 <translation id="4378373042927530923">चलेन</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4425149324548788773">मेरो ड्राइभ</translation>
@@ -277,6 +278,7 @@
 <translation id="7040230719604914234">सेवा प्रदायक</translation>
 <translation id="7059230779847288458">चार्ज भइरहेको छ, पूर्ण रूपमा चार्ज हुन अझै <ph name="TIME_VALUE" /> लाग्छ</translation>
 <translation id="708426984172631313">रोकिएको छ</translation>
+<translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="714876143603641390">Lan कनेक्टिभिटी</translation>

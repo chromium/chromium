@@ -166,6 +166,7 @@
 <translation id="2126426811489709554">Chromeஇல் இயங்குகிறது</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> சேமிக்கப்பட்டது</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> மூடப்பட்டது</translation>
+<translation id="2139186145475833000">முகப்புத் திரையில் சேர்</translation>
 <translation id="214888715418183969">Chromeமுடன் எதையெல்லாம் பகிரலாம் என்பதைத் தேர்வுசெய்யுங்கள். Chromeமின் அம்சங்கள், செயல்திறன், நிலைப்புத்தன்மை ஆகியவற்றை மேம்படுத்த இந்த அளவீடுகள் பயன்படுத்தப்படும்.</translation>
 <translation id="2154484045852737596">கார்டைத் திருத்தவும்</translation>
 <translation id="2154710561487035718">URL ஐ நகலெடு</translation>
@@ -530,7 +531,6 @@
 <translation id="4720982865791209136">Chromeஐ மேம்படுத்த உதவவும். <ph name="BEGIN_LINK" />கருத்துக்கணிப்பில் பங்கேற்கவும்<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">நீங்கள் அடிக்கடி பயன்படுத்தும் தளங்களைப் பார்க்கலாம்</translation>
 <translation id="4732120983431207637">ஸ்டேக் அன்வைண்டர்</translation>
-<translation id="4732693703583195378">உங்கள் டேப்லெட்டின் முகப்புத் திரையில் இந்தத் தளத்தைச் சேர்ப்பதன் மூலம் இதை மேலும் எளிதாக அணுகலாம்</translation>
 <translation id="4738836084190194332">கடைசியாக ஒத்திசைத்தது: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">புதிய தாவலைத் திறக்கும்</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
@@ -569,7 +569,6 @@
 <translation id="4925120120285606924">ஸ்கிரீன்ஷாட் <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">உங்கள் கடவுச்சொற்கள் உரைக் கோப்பாக ஏற்றப்பட்டுப் பதிவிறக்கப்படும். இலக்குக் கோப்புறையை அணுகக்கூடிய எந்தவொரு நபரும் ஆப்ஸும் இவற்றைப் பார்க்க முடியும்.</translation>
 <translation id="4932247056774066048">நீங்கள் <ph name="DOMAIN_NAME" /> நிர்வகிக்கும் கணக்கிலிருந்து வெளியேறுவதால் உங்கள் Chrome தரவு இந்தச் சாதனத்திலிருந்து நீக்கப்படும். எனினும் இது உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கும்.</translation>
-<translation id="4936039914467572121">இந்தத் தளத்தை விரைவாக அணுகுங்கள்</translation>
 <translation id="4941179133499732445">குரல் மூலம் தேட, மைக்கைத் தட்டுங்கள்</translation>
 <translation id="4943703118917034429">விர்ச்சுவல் ரியாலிட்டி</translation>
 <translation id="4943872375798546930">முடிவுகள் இல்லை</translation>
@@ -590,6 +589,7 @@
 <translation id="5091249083535528968">கூடுதல் உபயோகத் தரவு</translation>
 <translation id="509429900233858213">பிழை ஏற்பட்டது.</translation>
 <translation id="510275257476243843">1 மணிநேரம் மீதமுள்ளது</translation>
+<translation id="5118713593561876160">ஆர்வங்கள்</translation>
 <translation id="5123685120097942451">மறைநிலைத் தாவல்</translation>
 <translation id="5127805178023152808">ஒத்திசைவு முடக்கத்தில்</translation>
 <translation id="5132942445612118989">எல்லாச் சாதனங்களிலும் உங்கள் கடவுச்சொற்கள், வரலாறு மற்றும் பலவற்றை ஒத்திசைக்கலாம்</translation>
@@ -1012,6 +1012,7 @@
 <translation id="7846296061357476882">Google சேவைகள்</translation>
 <translation id="784934925303690534">நேர வரம்பு</translation>
 <translation id="7851858861565204677">பிற சாதனங்கள்</translation>
+<translation id="7853202427316060426">செயல்பாடு</translation>
 <translation id="7857691613771368249">கோப்புகளை எப்போது சேமிக்க வேண்டும் எனக் கேள்</translation>
 <translation id="7859988229622350291">மொழிபெயர்க்கக்கூடாதவை</translation>
 <translation id="7875915731392087153">மின்னஞ்சலை உருவாக்கவும்</translation>
@@ -1158,6 +1159,7 @@
 <translation id="8820817407110198400">புக்மார்க்குகள்</translation>
 <translation id="883806473910249246">உள்ளடக்கத்தைப் பதிவிறக்கும் போது பிழை ஏற்பட்டது.</translation>
 <translation id="8840953339110955557">ஆன்லைன் பதிப்பிலிருந்து இந்தப் பக்கம் வேறுபடலாம்.</translation>
+<translation id="8849001918648564819">மறைக்கப்பட்டுள்ளது</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, தாவல்</translation>
 <translation id="8854223127042600341">உங்கள் ஆஃப்லைன் கோப்புகளைப் பாருங்கள்</translation>
 <translation id="8856607253650333758">விளக்கங்களைப் பெறுக</translation>
@@ -1206,7 +1208,6 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">அசலைக் காண்பி</translation>
 <translation id="9148126808321036104">மீண்டும் உள்நுழைக</translation>
-<translation id="9149286894143103695">உங்கள் மொபைலின் முகப்புத் திரையில் இந்தத் தளத்தைச் சேர்ப்பதன் மூலம் இதை மேலும் எளிதாக அணுகலாம்</translation>
 <translation id="9155898266292537608">ஒரு சொல்லைத் தட்டி உடனடியாகவும் தேடலாம்</translation>
 <translation id="9169507124922466868">வழிசெலுத்தல் வரலாறு பாதியளவு திறந்துள்ளது</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{சரிபார்த்தது: 1 நிமிடத்திற்கு முன்பு}other{சரிபார்த்தது: # நிமிடங்களுக்கு முன்பு}}</translation>

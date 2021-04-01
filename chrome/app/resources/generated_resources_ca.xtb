@@ -2555,7 +2555,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3809272675881623365">Conill</translation>
 <translation id="3809280248639369696">Extraterrestre</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> pot veure els fitxers de les carpetes següents</translation>
-<translation id="3810914450553844415">L'administrador no permet tenir Comptes de Google addicionals.</translation>
+<translation id="3810914450553844415">L'administrador no permet Comptes de Google addicionals.</translation>
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="381202950560906753">Afegeix-ne una altra</translation>
 <translation id="3812525830114410218">Certificat incorrecte</translation>
@@ -3351,7 +3351,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4716483597559580346">Powerwash per a més seguretat</translation>
 <translation id="471880041731876836">No tens permís per visitar aquest lloc web</translation>
 <translation id="4720185134442950733">Xarxa de dades mòbils</translation>
-<translation id="4722483286922621738">Els llocs web solen connectar-se a dispositius en sèrie per a funcions de transferència de dades, com ara configurar la teva xarxa</translation>
 <translation id="4722735765955348426">Contrasenya per a <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> comparteix la vostra pantalla.</translation>
 <translation id="4723140812774948886">Canvia pel següent</translation>
@@ -3760,7 +3759,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="520621735928254154">S'ha produït un error en importar el certificat</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{La contrasenya en perill s'ha canviat correctament. Tens # contrasenya més en perill. Chrome et recomana que comprovis aquesta contrasenya ara.}other{La contrasenya en perill s'ha canviat correctament. Tens # contrasenyes més en perill. Chrome et recomana que comprovis aquestes contrasenyes ara.}}</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
-<translation id="520902706163766447">Activa un quadre emergent a la interfície d'usuari de Top Chrome per fer cerques a les pestanyes que estiguin obertes.</translation>
+<translation id="520902706163766447">Activa un quadre emergent a la part superior de la interfície d'usuari de Chrome per fer cerques a les pestanyes que estiguin obertes.</translation>
 <translation id="5209320130288484488">No s'ha trobat cap dispositiu</translation>
 <translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5213481667492808996">Ja pots utilitzar el servei de dades <ph name="NAME" /></translation>
@@ -4454,7 +4453,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6002452033851752583">S'ha suprimit la contrasenya del teu Compte de Google</translation>
 <translation id="6002458620803359783">Veus preferides</translation>
 <translation id="6003143259071779217">Suprimeix la xarxa mòbil de l'eSIM</translation>
-<translation id="6003582434972667631">El tema l'ha establert la teva organització</translation>
+<translation id="6003582434972667631">La teva organització ha establert el tema</translation>
 <translation id="6006484371116297560">Clàssic</translation>
 <translation id="6007240208646052708">La cerca per veu en el teu idioma no està disponible.</translation>
 <translation id="6011074160056912900">Xarxa Ethernet</translation>
@@ -4793,7 +4792,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6387674443318562538">Divisió vertical</translation>
 <translation id="6388429472088318283">Cerca idiomes</translation>
 <translation id="6388711141388085034">Ocupat</translation>
-<translation id="6388997627483458007">No permetis que els llocs web es connectin a dispositius en sèrie</translation>
 <translation id="6390020764191254941">Mou la pestanya a una finestra nova</translation>
 <translation id="6393156038355142111">Suggereix una contrasenya segura</translation>
 <translation id="6393550101331051049">Amb permís per mostrar contingut no segur</translation>
@@ -5117,7 +5115,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6758056191028427665">Digue'ns si ho estem fent bé.</translation>
 <translation id="6759193508432371551">Restabliment de fàbrica</translation>
 <translation id="6762833852331690540">Activat</translation>
-<translation id="6763264843598438739">Els llocs web poden demanar permís per connectar-se a dispositius en sèrie</translation>
 <translation id="676560328519657314">Les teves formes de pagament a Google Pay</translation>
 <translation id="6767566652486411142">Tria un altre idioma...</translation>
 <translation id="6767639283522617719">No es pot connectar el domini. Comprova que la configuració sigui l'adequada per a la unitat organitzativa.</translation>
@@ -5149,6 +5146,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">S'ha produït un error.</translation>
 <translation id="6798420440063423019">La clau de seguretat està bloquejada perquè s'ha introduït un PIN incorrecte massa vegades. Cal que la restableixis.</translation>
+<translation id="679845623837196966">Mostra la Llista de lectura</translation>
 <translation id="6798578729981748444">Per finalitzar la importació, tanca totes les finestres de Firefox.</translation>
 <translation id="6798780071646309401">bloqueig de majúscules activat</translation>
 <translation id="6798954102094737107">Connector: <ph name="PLUGIN_NAME" /></translation>
@@ -7281,6 +7279,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
       <ph name="LIST_ITEM" />Executa Diagnòstic de connectivitat de Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantalla en pantalla</translation>
+<translation id="9167063903968449027">Mostra la Llista de lectura</translation>
 <translation id="9168436347345867845">Fes-ho més tard</translation>
 <translation id="9169496697824289689">Mostra les tecles de drecera</translation>
 <translation id="916964310188958970">Per què es mostra aquest suggeriment?</translation>

@@ -3354,7 +3354,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4716483597559580346">Powerwash pentru securitate suplimentară</translation>
 <translation id="471880041731876836">Nu ai permisiunea să accesezi acest site</translation>
 <translation id="4720185134442950733">Rețea de date mobile</translation>
-<translation id="4722483286922621738">Site-urile se conectează de obicei la dispozitive seriale pentru funcții de transfer de date, cum ar fi configurarea rețelei</translation>
 <translation id="4722735765955348426">Parola pentru <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Aplicația <ph name="APP_NAME" /> are acces la ecran.</translation>
 <translation id="4723140812774948886">Schimbă cu următorul</translation>
@@ -4794,7 +4793,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6387674443318562538">Împarte pe verticală</translation>
 <translation id="6388429472088318283">Caută limbi</translation>
 <translation id="6388711141388085034">Ocupat</translation>
-<translation id="6388997627483458007">Nu permite site-urilor să se conecteze la dispozitive seriale</translation>
 <translation id="6390020764191254941">Mută fila în fereastră nouă</translation>
 <translation id="6393156038355142111">Sugerează o parolă puternică</translation>
 <translation id="6393550101331051049">Au permisiunea de a afișa conținut nesigur</translation>
@@ -5118,7 +5116,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6758056191028427665">Spune-ne cum ne descurcăm.</translation>
 <translation id="6759193508432371551">Resetare la setările din fabrică</translation>
 <translation id="6762833852331690540">Activat</translation>
-<translation id="6763264843598438739">Site-urile pot solicita permisiunea de a se conecta la dispozitive seriale</translation>
 <translation id="676560328519657314">Metodele tale de plată din Google Pay</translation>
 <translation id="6767566652486411142">Alege altă limbă...</translation>
 <translation id="6767639283522617719">Dispozitivul nu poate fi asociat domeniului. Asigură-te că setările pentru unitatea organizațională sunt corecte.</translation>
@@ -5150,6 +5147,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hopa! A apărut o eroare.</translation>
 <translation id="6798420440063423019">Cheia de securitate este blocată deoarece codul PIN a fost introdus greșit de prea multe ori. Trebuie să resetezi cheia de securitate.</translation>
+<translation id="679845623837196966">Afișează lista de lecturi</translation>
 <translation id="6798578729981748444">Pentru a finaliza importul, închide toate ferestrele Firefox.</translation>
 <translation id="6798780071646309401">tasta Caps Lock este activată</translation>
 <translation id="6798954102094737107">Plugin: <ph name="PLUGIN_NAME" /></translation>
@@ -7283,6 +7281,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
       <ph name="LIST_ITEM" />să rulezi Diagnostice conectivitate Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture-in-Picture</translation>
+<translation id="9167063903968449027">Afișează Lista de lecturi</translation>
 <translation id="9168436347345867845">Mai târziu</translation>
 <translation id="9169496697824289689">Vedeți comenzile rapide de la tastatură</translation>
 <translation id="916964310188958970">De ce se afișează această sugestie?</translation>

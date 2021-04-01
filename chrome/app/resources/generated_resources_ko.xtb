@@ -3351,7 +3351,6 @@
 <translation id="4716483597559580346">파워워시를 사용하여 보안 강화</translation>
 <translation id="471880041731876836">이 사이트에 방문할 수 있는 권한이 없습니다.</translation>
 <translation id="4720185134442950733">모바일 데이터 네트워크</translation>
-<translation id="4722483286922621738">사이트에서는 일반적으로 네트워크 설정과 같은 데이터 전송 기능을 사용하기 위해 직렬 기기에 연결합니다.</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />의 비밀번호</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" />에서 내 화면을 공유하는 중입니다.</translation>
 <translation id="4723140812774948886">다음 항목과 교환</translation>
@@ -4791,7 +4790,6 @@
 <translation id="6387674443318562538">수직 분할</translation>
 <translation id="6388429472088318283">언어 검색</translation>
 <translation id="6388711141388085034">사용량 많음</translation>
-<translation id="6388997627483458007">사이트에서 직렬 장치에 연결하도록 허용하지 않음</translation>
 <translation id="6390020764191254941">탭을 새 창으로 이동</translation>
 <translation id="6393156038355142111">안전한 비밀번호 추천</translation>
 <translation id="6393550101331051049">안전하지 않은 콘텐츠 표시가 허용됨</translation>
@@ -5115,7 +5113,6 @@
 <translation id="6758056191028427665">개선할 점이나 격려하고 싶은 점을 알려주세요.</translation>
 <translation id="6759193508432371551">초기화</translation>
 <translation id="6762833852331690540">사용</translation>
-<translation id="6763264843598438739">사이트에서 직렬 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="676560328519657314">Google Pay 결제 수단</translation>
 <translation id="6767566652486411142">다른 언어 선택...</translation>
 <translation id="6767639283522617719">도메인에 가입할 수 없습니다. 조직 단위에 맞는 설정인지 확인하세요.</translation>
@@ -5147,6 +5144,7 @@
 <translation id="6795884519221689054">판다</translation>
 <translation id="6797493596609571643">문제가 발생했습니다.</translation>
 <translation id="6798420440063423019">잘못된 PIN을 너무 여러 번 입력하여 보안 키가 잠겼습니다. 보안 키를 재설정해야 합니다.</translation>
+<translation id="679845623837196966">읽기 목록 표시</translation>
 <translation id="6798578729981748444">가져오기를 완료하려면 Firefox 창을 모두 닫으세요.</translation>
 <translation id="6798780071646309401">Caps Lock 사용</translation>
 <translation id="6798954102094737107">플러그인: <ph name="PLUGIN_NAME" /></translation>
@@ -7279,6 +7277,7 @@ Ctrl+Alt+어둡게 키를 사용하여 축소합니다.</translation>
       <ph name="LIST_ITEM" />Chrome 연결 진단 실행
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">PIP 모드</translation>
+<translation id="9167063903968449027">읽기 목록 표시</translation>
 <translation id="9168436347345867845">나중에</translation>
 <translation id="9169496697824289689">단축키 보기</translation>
 <translation id="916964310188958970">이러한 추천이 표시된 이유는 무엇인가요?</translation>

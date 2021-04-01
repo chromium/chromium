@@ -166,6 +166,7 @@
 <translation id="2126426811489709554">Chrome द्वारे समर्थित</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> बचत केली</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> बंद केले</translation>
+<translation id="2139186145475833000">होम स्क्रीनवर जोडा</translation>
 <translation id="214888715418183969">तुम्हाला Chrome सह काय शेअर करायचे आहे ते निवडा. तुम्ही शेअर केलेली मेट्रिक Chrome ची वैशिष्ट्ये, परफॉर्मन्स आणि स्थिरता सुधारण्यात मदत करण्यासाठी वापरली जाईल.</translation>
 <translation id="2154484045852737596">कार्ड संपादित करा</translation>
 <translation id="2154710561487035718">URL कॉपी करा</translation>
@@ -530,7 +531,6 @@
 <translation id="4720982865791209136">Chrome सुधारण्यात मदत करा. <ph name="BEGIN_LINK" />सर्वेक्षण करा<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">तुमच्या टॉप साइट पहा</translation>
 <translation id="4732120983431207637">स्टॅक अनवाइंडर</translation>
-<translation id="4732693703583195378">तुम्हाला येथे परत येणे आणखी सोपे होण्यासाठी, ही साइट तुमच्या टॅबलेटच्या होम स्क्रीनवर जोडा</translation>
 <translation id="4738836084190194332">अखेरचे संकालित: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">एक नवीन टॅब उघडा</translation>
 <translation id="4759238208242260848">डाउनलोड</translation>
@@ -569,7 +569,6 @@
 <translation id="4925120120285606924">स्क्रीनशॉट <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">तुमचे पासवर्ड एखादी मजकूर फाइल म्हणून एक्सपोर्ट आणि डाउनलोड केले जातील. गंतव्य फोल्डरचा अ‍ॅक्सेस असलेल्या कोणालाही आणि कोणत्याही अ‍ॅपसाठी ते दृश्यमान असतील.</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> द्वारे व्यवस्थापित केलेल्या खात्यामधून तुम्ही साइन आउट करत असल्यामुळे, या डिव्हाइसवरून Chrome डेटा हटवला जाईल. तो तुमच्या Google खात्यामध्ये तसाच राहिल.</translation>
-<translation id="4936039914467572121">या साइटवर झटपट जा</translation>
 <translation id="4941179133499732445">तुमचा आवाज वापरून शोधण्यासाठी माइकवर टॅप करा</translation>
 <translation id="4943703118917034429">आभासी वास्तविकता</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
@@ -590,6 +589,7 @@
 <translation id="5091249083535528968">वाढलेला वापर डेटा</translation>
 <translation id="509429900233858213">एक एरर आली आहे.</translation>
 <translation id="510275257476243843">1 तास शिल्लक</translation>
+<translation id="5118713593561876160">स्वारस्ये</translation>
 <translation id="5123685120097942451">गुप्त टॅब</translation>
 <translation id="5127805178023152808">सिंक बंद आहे</translation>
 <translation id="5132942445612118989">सर्व डिव्हाइसवर तुमचे पासवर्ड, इतिहास आणि बरेच काही सिंक करा</translation>
@@ -1012,6 +1012,7 @@
 <translation id="7846296061357476882">Google सेवा</translation>
 <translation id="784934925303690534">वेळ वर्गवारी</translation>
 <translation id="7851858861565204677">इतर डिव्हाइसेस</translation>
+<translation id="7853202427316060426">गतिविधी</translation>
 <translation id="7857691613771368249">फाइल कधी सेव्ह करायच्या ते विचारा</translation>
 <translation id="7859988229622350291">कधीही भाषांतर करू नका</translation>
 <translation id="7875915731392087153">ईमेल तयार करा</translation>
@@ -1158,6 +1159,7 @@
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="883806473910249246">आशय डाउनलोड करताना एरर आली.</translation>
 <translation id="8840953339110955557">हे पेज ऑनलाइन आवृत्तीपेक्षा वेगळे असू शकते.</translation>
+<translation id="8849001918648564819">लपवलेली</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, टॅब</translation>
 <translation id="8854223127042600341">तुमच्या ऑफलाइन फाइल पहा</translation>
 <translation id="8856607253650333758">वर्णने मिळवा</translation>
@@ -1206,7 +1208,6 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">मूळ दर्शवा</translation>
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>
-<translation id="9149286894143103695">तुम्हाला येथे परत येणे आणखी सोपे होण्यासाठी, ही साइट तुमच्या फोनच्या होम स्क्रीनवर जोडा</translation>
 <translation id="9155898266292537608">तुम्ही शब्दावर जलद टॅप करूनदेखील शोधू शकता</translation>
 <translation id="9169507124922466868">नेव्हिगेशन इतिहास अर्धा उघडा आहे</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{एका मिनिटापूर्वी तपासले}other{# मिनिटांपूर्वी तपासले}}</translation>

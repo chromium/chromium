@@ -2706,6 +2706,7 @@
       如果您启用了此政策，网站将可以在导航的同时打开新窗口/标签页。
       如果您停用了或未设置此政策，网站将无法在导航的同时打开新窗口/标签页。</translation>
 <translation id="4680961954980851756">启用自动填充</translation>
+<translation id="4685721728282448265">已为 TLS 启用 CECPQ2 后量子密钥协议算法</translation>
 <translation id="4693779768620889402">基于扩展程序的目的地</translation>
 <translation id="4699172675775169585">缓存的图片和文件</translation>
 <translation id="4699592681017489215">借助此政策，您可以配置一个用于停用 DNS 拦截检查功能的本地开关。该检查功能旨在尝试检测浏览器是否使用了会重定向不明主机名的代理。
@@ -3388,6 +3389,7 @@
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="5620392548325769024">在操作系统升级后，允许该浏览器首次启动时显示欢迎页面</translation>
+<translation id="5622924058222112599">启用默认 CECPQ2 发布流程</translation>
 <translation id="5630352020869108293">恢复上次的会话</translation>
 <translation id="5633871703004128675">启用“插入符号突出显示”无障碍功能</translation>
 <translation id="5636088574608432506">此政策旨在控制浏览器的登录行为。通过设置此政策，您可以指定用户能否使用其帐号登录 <ph name="PRODUCT_NAME" /> 并使用帐号相关服务（如 <ph name="PRODUCT_NAME" /> 同步）。
@@ -3774,7 +3776,7 @@
 
       如果此政策设为一种有效的十六进制颜色，系统便会根据该颜色自动生成主题并将其应用于浏览器。用户将无法更改此政策中设定的主题。
 
-      如果此政策未设置，用户则可根据自己的偏好更改所用浏览器的主题。</translation>
+      如果此政策未设置，用户可根据自己的偏好更改所用浏览器的主题。</translation>
 <translation id="6195802366906945965">确定是否会使用内置的证书验证程序来验证服务器证书</translation>
 <translation id="6208896993204286313">报告 <ph name="PRODUCT_NAME" /> 政策信息</translation>
 <translation id="6210259502936598222">报告操作系统和 <ph name="PRODUCT_NAME" /> 版本信息</translation>
@@ -4512,6 +4514,7 @@
       如果此政策设为 true，系统将会报告设备的风扇信息。</translation>
 <translation id="710003290625031750">已展开的架构说明：</translation>
 <translation id="7101550508196914704">不在书签栏中显示应用快捷方式</translation>
+<translation id="7109384070286741861">停用 CECPQ2</translation>
 <translation id="7126716959063786004">允许在任务管理器中结束进程</translation>
 <translation id="7126928806195745404">JavaScript 设置</translation>
 <translation id="7127892035367404455">回滚到目标版本</translation>
@@ -5329,6 +5332,11 @@
       如果此政策已停用或未设置，用户在看到警告后可以选择继续访问被标记为可能存在恶意内容的网站。
 
       详细了解“安全浏览”功能 (https://developers.google.com/safe-browsing)。</translation>
+<translation id="8212900161626657849">如果您未配置或已启用此政策，<ph name="PRODUCT_NAME" /> 将会遵循 CECPQ2（TLS 中的一种后量子密钥协议算法）的默认发布流程。
+
+      CECPQ2 会引发更长的 TLS 消息；在极少数情况下，这种消息可能会致使某些网络硬件出错。您也可将此政策设为 False，以便在解决网络问题期间停用 CECPQ2。
+
+      此政策只是一项暂时性措施，会从 <ph name="PRODUCT_NAME" /> 的未来版本中移除。</translation>
 <translation id="8213770777756919897">请注意，此政策已被弃用，并将在 <ph name="PRODUCT_OS_NAME" />版本 85 中移除。请改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           如果您设置了此政策，即是指定了当设备闲置时长超过所设的闲置延迟时间后 <ph name="PRODUCT_OS_NAME" />会执行的操作；闲置延迟时长可单独配置。

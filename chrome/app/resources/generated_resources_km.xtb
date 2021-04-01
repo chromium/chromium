@@ -3353,7 +3353,6 @@
 <translation id="4716483597559580346">ផៅអឺវ៉ស់សម្រាប់​សុវត្ថិភាព​បន្ថែម</translation>
 <translation id="471880041731876836">អ្នកមិនមានការអនុញ្ញាតដើម្បីចូលទៅកាន់ទំព័រនេះទេ</translation>
 <translation id="4720185134442950733">បណ្ដាញ​ទិន្នន័យ​ទូរសព្ទចល័ត</translation>
-<translation id="4722483286922621738">ជាធម្មតា គេហទំព័រភ្ជាប់ជាមួយឧបករណ៍ស៊េរីសម្រាប់មុខងារផ្ទេរទិន្នន័យដូចជា ការរៀបចំបណ្ដាញរបស់អ្នកជាដើម</translation>
 <translation id="4722735765955348426">ពាក្យ​សម្ងាត់​សម្រាប់ <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> កំពុងចែករំលែកអេក្រង់របស់អ្នក។</translation>
 <translation id="4723140812774948886">ប្ដូរជាមួយធាតុបន្ទាប់</translation>
@@ -4794,7 +4793,6 @@
 <translation id="6387674443318562538">បំបែកបញ្ឈរ</translation>
 <translation id="6388429472088318283">ភាសា​សម្រាប់​ការ​ស្វែងរក</translation>
 <translation id="6388711141388085034">រវល់</translation>
-<translation id="6388997627483458007">មិនអនុញ្ញាតឱ្យ​គេហទំព័រ​ភ្ជាប់ជាមួយ​ឧបករណ៍ស៊េរីទេ</translation>
 <translation id="6390020764191254941">ផ្លាស់ទី​ផ្ទាំង​ទៅ​វិនដូ​ថ្មី</translation>
 <translation id="6393156038355142111">ណែនាំ​ពាក្យ​សម្ងាត់​ខ្លាំង</translation>
 <translation id="6393550101331051049">អនុញ្ញាតឱ្យបង្ហាញខ្លឹមសារគ្មានសុវត្ថិភាព</translation>
@@ -5118,7 +5116,6 @@
 <translation id="6758056191028427665">អនុញ្ញាតឱ្យយើងដឹងថា ការបំពេញការងាររបស់យើងដូចម្ដេចដែរ។</translation>
 <translation id="6759193508432371551">កំណត់ដូចដើមឡើងវិញ</translation>
 <translation id="6762833852331690540">បើក</translation>
-<translation id="6763264843598438739">គេហទំព័រអាចស្នើសុំភ្ជាប់ជាមួយឧបករណ៍ស៊េរី</translation>
 <translation id="676560328519657314">វិធីបង់ប្រាក់របស់អ្នកនៅក្នុង Google Pay</translation>
 <translation id="6767566652486411142">ជ្រើសរើស​ភាសា​ផ្សេងទៀត...</translation>
 <translation id="6767639283522617719">មិន​អាចភ្ជាប់​ទៅដែន​បានទេ។ សូម​ប្រាកដថា ការកំណត់មាន​ភាព​ត្រឹមត្រូវ​សម្រាប់​ឯកតារៀបចំ។</translation>
@@ -5150,6 +5147,7 @@
 <translation id="6795884519221689054">ខ្លាឃ្មុំ​ផេនដា</translation>
 <translation id="6797493596609571643">អូ មានបញ្ហាអ្វីមួយកើតឡើង។</translation>
 <translation id="6798420440063423019">សោសុវត្ថិភាព​ជាប់សោហើយ ដោយសារបញ្ចូល​កូដ PIN មិនត្រឹមត្រូវ​ច្រើនដងពេក។ អ្នកនឹង​ត្រូវកំណត់​សោសុវត្ថិភាព​ឡើងវិញ។</translation>
+<translation id="679845623837196966">បង្ហាញ​បញ្ជីអាន</translation>
 <translation id="6798578729981748444">ដើម្បីបញ្ចប់ការនាំចូល សូមបិទវិនដូ Firefox ទាំងអស់។</translation>
 <translation id="6798780071646309401">បើកពុម្ពអក្សរធំ</translation>
 <translation id="6798954102094737107">កម្មវិធីជំនួយ៖ <ph name="PLUGIN_NAME" /></translation>
@@ -7281,6 +7279,7 @@
       <ph name="LIST_ITEM" />ដំណើរការ​ការធ្វើតេស្ត​ការតភ្ជាប់ Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">រូបក្នុងរូប</translation>
+<translation id="9167063903968449027">បង្ហាញ​បញ្ជីអាន</translation>
 <translation id="9168436347345867845">ធ្វើនៅ​ពេលក្រោយ</translation>
 <translation id="9169496697824289689">មើលផ្លូវកាត់ក្តារចុច</translation>
 <translation id="916964310188958970">ហេតុអ្វី​ឃើញ​ការណែនាំ​នេះ?</translation>

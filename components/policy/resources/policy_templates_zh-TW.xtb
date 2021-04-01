@@ -2700,6 +2700,7 @@
       如果啟用這項政策，即可同時在多個網站中進行瀏覽及開啟新視窗/分頁。
       如果停用這項政策或不予設定，則無法同時在多個網站中進行瀏覽及開啟新視窗/分頁。</translation>
 <translation id="4680961954980851756">啟用自動填入</translation>
+<translation id="4685721728282448265">已啟用傳輸層安全標準 (TLS) 的 CECPQ2 後量子金鑰協議</translation>
 <translation id="4693779768620889402">可支援擴充功能的目的地</translation>
 <translation id="4699172675775169585">快取的圖片和檔案</translation>
 <translation id="4699592681017489215">這項政策會設定可用於停用 DNS 攔截檢查功能的本機切換按鈕。這些檢查機制會嘗試偵測瀏覽器是否透過 Proxy，將使用者重新導向未知的主機名稱。
@@ -3382,6 +3383,7 @@
 
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="5620392548325769024">這會啟用歡迎頁面，並在作業系統升級後第一次啟動瀏覽器時顯示。</translation>
+<translation id="5622924058222112599">啟用預設的 CECPQ2 推出程序</translation>
 <translation id="5630352020869108293">還原上次工作階段</translation>
 <translation id="5633871703004128675">啟用插入點醒目顯示無障礙功能</translation>
 <translation id="5636088574608432506">這項政策可控管瀏覽器的登入行為，讓你指定使用者是否能用帳戶登入 <ph name="PRODUCT_NAME" />，並使用帳戶相關服務 (例如 <ph name="PRODUCT_NAME" /> 同步功能)。
@@ -4495,6 +4497,7 @@
       如果設為 True，系統會回報裝置的風扇資訊。</translation>
 <translation id="710003290625031750">展開的架構說明：</translation>
 <translation id="7101550508196914704">不在書籤列中顯示應用程式捷徑</translation>
+<translation id="7109384070286741861">停用 CECPQ2</translation>
 <translation id="7126716959063786004">允許在工作管理員中結束處理程序</translation>
 <translation id="7126928806195745404">JavaScript 設定</translation>
 <translation id="7127892035367404455">復原至目標版本</translation>
@@ -5306,6 +5309,11 @@
       如果將這項政策設為停用或不設定，使用者在收到警告後，仍可選擇繼續前往有安全風險的網站。
 
       如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
+<translation id="8212900161626657849">如果將這項政策設為啟用或不設定，<ph name="PRODUCT_NAME" /> 會遵循預設的 CECPQ2 推出程序；CECPQ2 是傳輸層安全標準 (TLS) 中的後量子金鑰協議演算法。
+
+      CECPQ2 會產生更大量的傳輸層安全標準 (TLS) 訊息，在極少數情況下可能觸發某些網路硬體的錯誤。網路問題解決後，你可以將這項政策設為 False 以停用 CECPQ2。
+
+      這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。</translation>
 <translation id="8213770777756919897">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           如果設定這項政策，當使用者的閒置時間已達閒置延遲時間指定的長度 (可另行設定)，<ph name="PRODUCT_OS_NAME" />會採取這項政策指定的動作。

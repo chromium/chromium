@@ -3354,7 +3354,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="4716483597559580346">Vymazanie Powerwash v rámci zvýšenia zabezpečenia</translation>
 <translation id="471880041731876836">Nemáte povolenie na návštevu tohto webu</translation>
 <translation id="4720185134442950733">Mobilná dátová sieť</translation>
-<translation id="4722483286922621738">Weby sa zvyčajne pripájajú k sériovým zariadeniam, aby mohli poskytovať funkcie na prenos dát, ako nastavenie siete</translation>
 <translation id="4722735765955348426">Heslo používateľa <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856">Aplikácia <ph name="APP_NAME" /> zdieľa vašu obrazovku.</translation>
 <translation id="4723140812774948886">Vymeniť s nasledujúcou</translation>
@@ -4794,7 +4793,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6387674443318562538">Rozdeliť zvislo</translation>
 <translation id="6388429472088318283">Vyhľadajte jazyky</translation>
 <translation id="6388711141388085034">Zaneprázdené</translation>
-<translation id="6388997627483458007">Nepovoliť webom pripájať sa k zariadeniam so sériovým portom</translation>
 <translation id="6390020764191254941">Presun karty do nového okna</translation>
 <translation id="6393156038355142111">Navrhnúť silné heslo</translation>
 <translation id="6393550101331051049">Môže zobrazovať nezabezpečený obsah</translation>
@@ -5118,7 +5116,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6758056191028427665">Dajte nám tak vedieť, ako sa nám darí v našom úsilí.</translation>
 <translation id="6759193508432371551">Obnovenie výrobných nastavení</translation>
 <translation id="6762833852331690540">Zapnuté</translation>
-<translation id="6763264843598438739">Weby môžu žiadať o pripojenie k sériovým zariadeniam</translation>
 <translation id="676560328519657314">Vaše spôsoby platby v službe Google Pay</translation>
 <translation id="6767566652486411142">Vybrať iný jazyk…</translation>
 <translation id="6767639283522617719">Nepodarilo sa pripojiť k doméne. Skontrolujte, či sú nastavenia organizačnej jednotky správne.</translation>
@@ -5150,6 +5147,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hops, niečo sa pokazilo.</translation>
 <translation id="6798420440063423019">Bezpečnostný kľúč je uzamknutý, pretože bol príliš veľakrát zadaný nesprávny PIN. Musíte resetovať bezpečnostný kľúč.</translation>
+<translation id="679845623837196966">Zobraziť čitateľský zoznam</translation>
 <translation id="6798578729981748444">Importovanie dokončíte zavretím všetkých okien prehliadača Firefox.</translation>
 <translation id="6798780071646309401">Funkcia Caps Lock je zapnutá</translation>
 <translation id="6798954102094737107">Doplnok: <ph name="PLUGIN_NAME" /></translation>
@@ -7283,6 +7281,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
       <ph name="LIST_ITEM" />spustiť Diagnostiku pripojenia Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Obraz v obraze</translation>
+<translation id="9167063903968449027">Zobraziť čitateľský zoznam</translation>
 <translation id="9168436347345867845">Neskôr</translation>
 <translation id="9169496697824289689">Zobraziť klávesové skratky</translation>
 <translation id="916964310188958970">Prečo tento návrh?</translation>

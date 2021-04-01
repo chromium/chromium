@@ -8,6 +8,7 @@
 <translation id="1620510694547887537">ਕੈਮਰਾ</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">ਕੁਝ ਵੀ ਰਿਕਾਰਡ ਨਹੀਂ ਹੋਇਆ</translation>
+<translation id="1838104802459806957">ਉੱਪਰ ਵੱਲ ਝੁਕਾਓ</translation>
 <translation id="1851616744363735765">ਰੋਕੀ ਗਈ</translation>
 <translation id="1862930711583847113"><ph name="FILE" /> ਨੂੰ ਨਿਰਯਾਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
 <translation id="1899697626337024495">ਫ਼ੋਟੋ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
@@ -17,6 +18,7 @@
 <translation id="2064538373111010176"><ph name="CAMERA" /> ਕਿਰਿਆਸ਼ੀਲ</translation>
 <translation id="2144806332417375165">ਵਿਉਂਤਬੱਧ ਵੀਡੀਓ ਮਾਪਦੰਡ</translation>
 <translation id="229579744168541441">ਡਿਸਕ ਵਿੱਚ ਨਿਰਯਾਤ ਕਰੋ</translation>
+<translation id="2320741269052147773">ਖੱਬੇ ਪਾਸੇ ਪੈਨ ਕਰੋ</translation>
 <translation id="2501278716633472235">ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="2501853267655415902">ਰਿਕਾਰਡਿੰਗ ਬੰਦ ਹੋਈ</translation>
 <translation id="2501953888035679275">ਆਪਣੇ ਕੈਮਰੇ ਨਾਲ ਫ਼ੋਟੋਆਂ ਖਿੱਚੋ ਅਤੇ ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ।</translation>
@@ -26,6 +28,7 @@
 <translation id="2968794441791257519">ਕੈਮਰੇ ਨਾਲ ਖਿੱਚੀਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਬਣਾਏ ਵੀਡੀਓ 'ਡਾਊਨਲੋਡ' ਫੋਲਡਰ ਵਿੱਚ ਲਿਜਾਏ ਜਾਣਗੇ। ਤੁਸੀਂ 'ਫ਼ਾਈਲਾਂ' ਵਿੱਚ ਉਹਨਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ।
 
         ਸਟੋਰੇਜ ਇਜਾਜ਼ਤਾਂ ਵਾਲੀਆਂ ਐਪਾਂ ਕੋਲ ਤੁਹਾਡੀਆਂ ਫ਼ੋਟੋਆਂ ਅਤੇ ਵੀਡੀਓ ਤੱਕ ਪਹੁੰਚ ਹੋਵੇਗੀ।</translation>
+<translation id="3067436040345934772">ਸੱਜੇ ਪਾਸੇ ਪੈਨ ਕਰੋ</translation>
 <translation id="3081586908890909590">'ਵੀਡੀਓ ਰਿਕਾਰਡ ਕਰੋ' ਮੋਡ 'ਤੇ ਜਾਓ</translation>
 <translation id="313467653172006084">30 FPS</translation>
 <translation id="3183731565330012717">ਗ੍ਰਿਡ ਕਿਸਮ</translation>
@@ -89,6 +92,7 @@
 <translation id="8145038249676204903">'ਫ਼ੋਟੋ ਖਿੱਚੋ' ਮੋਡ 'ਤੇ ਜਾਓ</translation>
 <translation id="8239780215768881278">ਵੀਡੀਓ ਸਨੈਪਸ਼ਾਟ ਲਓ</translation>
 <translation id="8261506727792406068">ਮਿਟਾਓ</translation>
+<translation id="8425673304802773841">ਹੇਠਾਂ ਵੱਲ ਝੁਕਾਓ</translation>
 <translation id="8428213095426709021">ਸੈਟਿੰਗਾਂ</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">ਮੈਟਾਡਾਟੇ ਦੀ ਪੂਰਵ-ਝਲਕ ਦੇਖੋ</translation>

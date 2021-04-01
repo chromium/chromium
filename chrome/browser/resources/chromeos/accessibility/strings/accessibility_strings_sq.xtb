@@ -133,7 +133,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="1834891354138622109">Kolona</translation>
 <translation id="1845944666972354496">Trokit dy herë për ta aktivizuar</translation>
 <translation id="1846771122725914429">Ekrani breil me Bluetooth</translation>
-<translation id="1852018405765032699">Trokitja në ekran me katër gishta do të hapë dhe mbyllë menytë e ChromeVox. Këto meny përfshijnë informacione të dobishme në lidhje me komandat dhe shkurtoret. Pasi të hapen menytë, mund të rrëshqasësh shpejt me një gisht për të naviguar nëpër artikujt dhe të trokasësh dy herë për t'i aktivizuar artikujt. Për të vazhduar, trokit në ekran me katër gishta.</translation>
+<translation id="1852018405765032699">Trokitja në ekran me katër gishta do të hapë dhe mbyllë menytë e ChromeVox. Këto meny përfshijnë informacione të dobishme në lidhje me komandat dhe shkurtoret. Pasi të hapen menytë, mund të rrëshqasësh shpejt me një gisht për të naviguar nëpër artikuj dhe të trokasësh dy herë për t'i aktivizuar ata. Për të vazhduar, trokit në ekran me katër gishta.</translation>
 <translation id="1865601187525349519">Fundi i tekstit</translation>
 <translation id="1876229593313240038">dokument</translation>
 <translation id="1902396333223336119">Qelizë</translation>
@@ -223,7 +223,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2592212930811759050">Trokit dy herë për të filluar modifikimin</translation>
 <translation id="2598495320872286378">Gabim gramatikor</translation>
 <translation id="2603828437139726540">Lëviz përpara një karakter</translation>
-<translation id="2619344480613750862">Mund të lëvizësh po ashtu me seksioneve të ekranit. Për shembull, mund të lëvizësh mes nisësit, raftit dhe skedave të tua të Chrome. Për të kaluar te seksioni tjetër, rrëshqit shpejt nga e majta në të djathtë me katër gishta. Provoje tani për të vazhduar.</translation>
+<translation id="2619344480613750862">Mund të lëvizësh po ashtu mes seksioneve të ekranit. Për shembull, mund të lëvizësh mes nisësit, raftit dhe skedave të tua të Chrome. Për të kaluar te seksioni tjetër, rrëshqit shpejt nga e majta në të djathtë me katër gishta. Provoje tani për të vazhduar.</translation>
 <translation id="2624431853467395961">Hap modalitetin e të mësuarit</translation>
 <translation id="2626530649491650971">i klikueshëm</translation>
 <translation id="2637227747952042642">matematikor</translation>
@@ -280,7 +280,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2968634799764242930">E gjelbër deti</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{skedë}other{# skeda}}</translation>
 <translation id="2972205263822847197">Informacion mbi veglën</translation>
-<translation id="2976476721782829799">Mund të lëvizësh duke zvarritur një gisht nëpër ekran. Ky quhet eksplorimi me prekje. Provo ta zvarritësh gishtin nëpër ekran për të lexuar pjesën tjetër të mësimit.</translation>
+<translation id="2976476721782829799">Mund të lëvizësh duke zvarritur një gisht nëpër ekran. Ky quhet "Eksplorimi me prekje". Provo ta zvarritësh gishtin nëpër ekran për të lexuar pjesën tjetër të mësimit.</translation>
 <translation id="297825089465017871">Rrëshqit shpejt dy gishta majtas</translation>
 <translation id="2998131015536248178">Karakteri i mëparshëm</translation>
 <translation id="2999559350546931576">Ul tonin</translation>
@@ -673,7 +673,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="5732189279857692565">Ky është titulli i dytë. Vazhdo; shtyp "Kërko+H ose "Kërko+Shift+H"</translation>
 <translation id="5748623122140342504">Titulli i mëparshëm i nivelit 5</translation>
 <translation id="5760594853119905566">Shtojcë</translation>
-<translation id="5761219715606611783">Shumë mirë! Ke mësuar bazat e gjesteve të prekjes në ChromeVox. Mund ta përsërisësh përsëri udhëzuesin ose dil nga ky udhëzues duke përdorur butonat më poshtë.</translation>
+<translation id="5761219715606611783">Shumë mirë! Ke mësuar bazat e gjesteve të prekjes në ChromeVox. Mund ta shfletosh nga e para udhëzuesin ose dil nga ai duke përdorur butonat më poshtë.</translation>
 <translation id="5805940204952508776">Trokit me dy gishta</translation>
 <translation id="5819072574982403430">Artikull pemë</translation>
 <translation id="5822819874379903994">Gurkali e errët</translation>
@@ -1046,7 +1046,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="8603071050456974042">Paneli i ChromeVox</translation>
 <translation id="8606621670302093223">Kontrolli i datës</translation>
 <translation id="8613709718990529335">Bisk</translation>
-<translation id="8614129468475308349">Shumë mirë! Ke mësuar bazat e ChromeVox. Mund ta përsërisësh përsëri udhëzuesin ose dil nga ky udhëzues duke gjetur dhe duke klikuar një buton poshtë.</translation>
+<translation id="8614129468475308349">Shumë mirë! Ke mësuar bazat e ChromeVox. Mund ta shfletosh nga e para udhëzuesin ose dil nga ai duke gjetur dhe duke klikuar një buton poshtë.</translation>
 <translation id="8625173877182443267">Nuk ka titull tjetër të nivelit 6</translation>
 <translation id="8628186274519446680">Domate</translation>
 <translation id="8638532244051952400">Njofto për koordinatat e qelizës aktuale</translation>

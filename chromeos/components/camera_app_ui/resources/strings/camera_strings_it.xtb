@@ -8,7 +8,7 @@
 <translation id="1620510694547887537">Fotocamera</translation>
 <translation id="1627744224761163218">4 x 4</translation>
 <translation id="1664224225747386870">Nessun dato registrato</translation>
-<translation id="1838104802459806957">Panoramica verticale in alto</translation>
+<translation id="1838104802459806957">Inclinazione verso l'alto</translation>
 <translation id="1851616744363735765">IN PAUSA</translation>
 <translation id="1862930711583847113">Impossibile esportare <ph name="FILE" /></translation>
 <translation id="1899697626337024495">Risoluzione foto</translation>
@@ -92,7 +92,7 @@ Se il feedback riguarda la qualità di immagini o video, allega una foto o un vi
 <translation id="8145038249676204903">Passa alla modalità foto</translation>
 <translation id="8239780215768881278">Scatta istantanea video</translation>
 <translation id="8261506727792406068">Elimina</translation>
-<translation id="8425673304802773841">Panoramica verticale giù</translation>
+<translation id="8425673304802773841">Inclinazione verso il basso</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
 <translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
 <translation id="8732462232047530626">Anteprima metadati</translation>

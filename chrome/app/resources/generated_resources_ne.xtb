@@ -101,6 +101,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> का अनुसार तपाईंलाई <ph name="DEVICE_TYPE" /> अपडेट गर्न सिफारिस गरिन्छ।</translation>
 <translation id="1118738876271697201">प्रणालीले यन्त्रको मोडल वा क्रम सङ्ख्या निर्धारण गर्न सकेन।</translation>
 <translation id="1119447706177454957">आन्तरिक त्रुटि</translation>
+<translation id="111959947408687873">पूर्ण स्क्रिन म्याग्निफायर टगल गर्न Ctrl+<ph name="SEARCH_KEY_NAME" />+M थिच्नुहोस्। जुम इन गरेका बेला स्क्रिनमा एक ठाउँबाट अर्को ठाउँमा जान Ctrl+Alt+एरो कीहरू थिच्नुहोस्।</translation>
 <translation id="1122068467107743258">कार्य प्रोफाइल</translation>
 <translation id="1122198203221319518">&amp;उपकरणहरू</translation>
 <translation id="1122242684574577509">प्रमाणीकरण विफल भयो। तपाईँले प्रयोग गरिरहेको (<ph name="NETWORK_ID" /> ) Wi-Fi नेटवर्कका लागि लगइन पृष्ठमा भ्रमण गर्न क्लिक गर्नुहोस्।</translation>
@@ -146,6 +147,7 @@
 <translation id="1153636665119721804">Google को सुरक्षासम्बन्धी उन्नत सुविधा कार्यक्रम</translation>
 <translation id="1155816283571436363">तपाईंको फोनसँग कनेक्ट गरिँदै छ</translation>
 <translation id="1161575384898972166">ग्राहक प्रमाणपत्र निर्यात गर्नको लागि कृपया <ph name="TOKEN_NAME" /> मा साइन इन गर्नुहोस्।</translation>
+<translation id="116173250649946226">तपाईंका एड्मिनले पूर्वनिर्धारित थिम तय गर्नुभएको छ र उक्त थिम परिवर्तन गर्न मिल्दैन।</translation>
 <translation id="1163931534039071049">&amp;फ्रेम स्रोत हेर्नुहोस्</translation>
 <translation id="1164891049599601209">भ्रामक साइटमा प्रविष्टि गरिएको</translation>
 <translation id="1164899421101904659">PIN अनलक गर्ने साँचो प्रविष्टि गर्नुहोस्</translation>
@@ -2551,6 +2553,7 @@
 <translation id="3809272675881623365">खरायो</translation>
 <translation id="3809280248639369696">मुनबिम</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> ले निम्न फोल्डरहरूमा रहेका फाइलहरू हेर्न सक्छन्</translation>
+<translation id="3810914450553844415">तपाईंका एड्मिनले Google का थप खाताहरू चलाउन दिनुहुन्न।</translation>
 <translation id="3810973564298564668">व्यवस्थित गर्नुहोस्</translation>
 <translation id="381202950560906753">अर्को थप्नुहोस्</translation>
 <translation id="3812525830114410218">खराब प्रमाणपत्र</translation>
@@ -2672,6 +2675,7 @@
 <translation id="3925573269917483990">क्यामेरा:</translation>
 <translation id="3926002189479431949">Smart Lock फोन परिवर्तन भयो</translation>
 <translation id="3927932062596804919">अस्वीकार गर्नुहोस्</translation>
+<translation id="392803502090869922">eSIM सेटअप गर्ने प्रक्रिया</translation>
 <translation id="3928570707778085600"><ph name="FILE_OR_FOLDER_NAME" /> मा गरिएका परिवर्तनहरू सुरक्षित गर्ने हो?</translation>
 <translation id="3928659086758780856">प्रिन्टरको मसी सकिनै लागेको छ</translation>
 <translation id="3929426037718431833">यी एक्स्टेन्सनहरूले यो साइटमा भएको जानकारी हेर्न र परिवर्तन गर्न सक्छन्।</translation>
@@ -3345,7 +3349,6 @@
 <translation id="4716483597559580346">थप सुरक्षाको लागि पावरवास</translation>
 <translation id="471880041731876836">तपाईंसँग यो साइटमा जाने अनुमति छैन</translation>
 <translation id="4720185134442950733">मोबाइल डेटा नेटवर्क</translation>
-<translation id="4722483286922621738">साइटहरूले तपाईंको नेटवर्क सेटअप गर्ने जस्ता डेटा स्थानान्तरणसम्बन्धी सुविधाहरू प्रदान गर्न सामान्यतया सिरियल यन्त्रहरूमा कनेक्ट गर्छन्</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> को पासवर्ड</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> ले तपाईंको स्क्रिन साझा गर्दैछ।</translation>
 <translation id="4723140812774948886">यसपछिको वस्तुसँग साट्नुहोस्</translation>
@@ -4241,6 +4244,7 @@
 <translation id="5764797882307050727">कृपया आफ्नो यन्त्रमा केही ठाउँ खाली गर्नुहोस्।</translation>
 <translation id="5765425701854290211">माफ गर्नुहोस्, केही फाइलहरू बिग्रेका थिए र उक्त अद्यावधिक सफल हुन सकेन। तपाईंका सिंक भएका फाइलहरू सुरक्षित छन्।</translation>
 <translation id="5765491088802881382">सञ्जालहरू उपलब्ध छैनन्</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google मा पठाउने हो? डाउनलोड बारमा जान Shift+F6 थिच्नुहोस्।</translation>
 <translation id="5769519078756170258">वर्जित गर्नु पर्ने होस्ट वा डोमेन</translation>
 <translation id="5770125698810550803">नेभिगेसन गर्ने बटनहरू देखाउनुहोस्</translation>
 <translation id="5771816112378578655">सेटअप प्रक्रियामा...</translation>
@@ -4396,6 +4400,7 @@
 <translation id="5942779427914696408">यन्त्रको भिजिबिलिटी</translation>
 <translation id="5943127421590245687">तपाईंको खाता पुष्टि गरिएको छ। आफ्नो लोकल डेटा रिस्टोर गर्न कृपया तपाईंको पुरानो <ph name="DEVICE_TYPE" /> को पासवर्ड हाल्नुहोस्।</translation>
 <translation id="5944869793365969636">QR कोड स्क्यान गर्नुहोस्</translation>
+<translation id="5945002094477276055"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google सुरक्षित ब्राउजिङ नामक सुविधामा पठाउने हो?</translation>
 <translation id="5946591249682680882">रिपोर्ट आईडी <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">किबोर्ड वा माउस जोड्नुहोस् वा टचस्क्रिन प्रयोग गरेर सेटअप गर्ने प्रक्रिया जारी राख्नुहोस्। तपाईं ब्लुटुथ चल्ने यन्त्रहरू प्रयोग गर्दै हुनुहुन्छ भने ती यन्त्र ब्लुटुथबाट कनेक्ट गर्न सकिने अवस्थामा छन् भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="5949544233750246342">फाइल पार्स गर्न सकिएन</translation>
@@ -4443,6 +4448,7 @@
 <translation id="6002452033851752583">तपाईंको Google खातामा सुरक्षित गरिएको पासवर्ड मेटाइयो</translation>
 <translation id="6002458620803359783">रुचाइएका आवाजहरू</translation>
 <translation id="6003143259071779217">मोबाइल नेटवर्कको eSIM प्रोफाइल हटाउनुहोस्</translation>
+<translation id="6003582434972667631">तपाईंको सङ्गठनले थिम व्यवस्थापन गर्छ</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6007240208646052708">तपाईंको भाषामा आवाजमार्फत खोजी गर्ने सुविधा उपलब्ध छैन।</translation>
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
@@ -4781,7 +4787,6 @@
 <translation id="6387674443318562538">ठाडो रूपमा विभाजन गर्नुहोस्</translation>
 <translation id="6388429472088318283">भाषाहरू खोज्नुहोस्</translation>
 <translation id="6388711141388085034">व्यस्त</translation>
-<translation id="6388997627483458007">साइटहरूलाई सिरियल यन्त्रमा कनेक्ट गर्ने अनुमति नदिइयोस्</translation>
 <translation id="6390020764191254941">ट्याब नयाँ विन्डोमा सार्नुहोस्</translation>
 <translation id="6393156038355142111">भरपर्दो पासवर्ड सिफारिस गर्नुहोस्</translation>
 <translation id="6393550101331051049">असुरक्षित सामग्री देखाउन अनुमति दिइएका साइटहरू</translation>
@@ -4822,6 +4827,7 @@
 <translation id="6429384232893414837">अद्यावधिकसम्बन्धी त्रुटि</translation>
 <translation id="6430814529589430811">आधार 64-सङ्केतन ASCII, एकल प्रमाणपत्र</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> ले यो कम्प्युटरको सबै प्रयोगकर्ताहरूको लागि स्वचालित अपडेटहरू सेटअप गर्ने छ।.</translation>
+<translation id="6434104957329207050">पोइन्ट स्क्यानिङ कर्सरको गति</translation>
 <translation id="6434309073475700221">त्याग्नुहोस्</translation>
 <translation id="6434325376267409267">तपाईंले आफ्नो यन्त्र अपडेट गरिसकेपछि मात्र तपाईं <ph name="APP_NAME" /> प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="6436164536244065364">वेब स्टोरमा हेर्नुहोस्</translation>
@@ -4864,6 +4870,7 @@
 <translation id="6474498546677193336">एउटा अनुप्रयोगले यो फोल्डर प्रयोग गरिरहेका कारण आदान प्रदान गर्ने कार्य रद्द गर्न सकिएन। अर्को पटक Linux बन्द हुँदा उक्त फोल्डरको आदान प्रदान रद्द गरिने छ।</translation>
 <translation id="6474884162850599008">Google ड्राइभ खाता बिच्छेद गर्नुहोस्</translation>
 <translation id="6475294023568239942">डिस्कमा ठाउँ खाली गर्नुहोस् वा सेटिङमा गई Linux डिस्कको आकार बदल्नुहोस्</translation>
+<translation id="6476138569087741884">पूर्ण स्क्रिनको जुमको स्तर</translation>
 <translation id="6477822444490674459">कार्य प्रोफाइल भएका फोनमा सूचना सिंक गर्ने सुविधा प्रयोग गर्न मिल्दैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">खतरनाक फाइल राख्ने हो?</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> ले व्यवस्थापन गर्छ</translation>
@@ -5103,7 +5110,6 @@
 <translation id="6758056191028427665">हामी कस्तो काम गर्दैछौं भन्नेबारे प्रतिक्रिया दिनुहोस्।</translation>
 <translation id="6759193508432371551">कारखाना रिसेट</translation>
 <translation id="6762833852331690540">सक्रिय छ</translation>
-<translation id="6763264843598438739">साइटहरूले सिरियल यन्त्रहरूमा कनेक्ट हुने अनुमति माग्न सक्छन्</translation>
 <translation id="676560328519657314">Google Pay मा रहेका तपाईंका भुक्तानी विधिहरू</translation>
 <translation id="6767566652486411142">अर्को भाषा छनौट गर्नुहोस्...</translation>
 <translation id="6767639283522617719">डोमेन जोड्न सकिँदैन। संगठनात्मक एकाइका लागि सेटिङहरू सही छन् भन्ने सुनिश्चित गर्नुहोस्।</translation>
@@ -5320,6 +5326,7 @@
 <translation id="6985607387932385770">प्रिन्टरहरू</translation>
 <translation id="6988094684494323731">Linux कन्टेनर सुरु गर्दै</translation>
 <translation id="6988403677482707277">यो ट्याब ट्याबस्ट्रिपको सुरुवातमा सारियो</translation>
+<translation id="6990209147952697693">क्लासिक Chrome</translation>
 <translation id="6991665348624301627">गन्तव्य चयन गर्नुहोस्</translation>
 <translation id="6992554835374084304">हिज्जे जाँचसम्बन्धी परिष्कृत सुविधा सक्रिय गर्नुहोस्</translation>
 <translation id="6993000214273684335">यो ट्याब नामविहीन समूहबाट हटाइयो - <ph name="GROUP_CONTENTS" /></translation>
@@ -6306,6 +6313,7 @@
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> लाई कन्फिगर गर्दै ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेटअप गर्नुहोस्</translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{यो फाइल इन्क्रिप्ट गरिएको छ। यसका मालिकलाई डिक्रिप्ट गर्न लगाउनुहोस्।}other{यीमध्ये केही फाइलहरू इन्क्रिप्ट गरिएका छन्। यिनका मालिकलाई डिक्रिप्ट गर्न लगाउनुहोस्।}}</translation>
+<translation id="8087576439476816834"><ph name="PROFILE_NAME" /> डाउनलोड गर्नुहोस्</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8090234456044969073">तपाइँको सबैभन्दा धेरै भ्रमण गरिएका वेबसाइटहरूको सूची पढ्नुहोस्</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन</translation>
@@ -6547,6 +6555,8 @@
 <translation id="8368859634510605990">&amp;सबै बुकमार्कहरू खोल्नुहोस्</translation>
 <translation id="8370294614544004647">ल्यापटप बन्द गरिएका बेला स्लिप मोडमा लगियोस्</translation>
 <translation id="8371695176452482769">अब बोल्नुहोस्</translation>
+<translation id="8371749822919332187">जुम इन गर्न Ctrl+Alt+चमक बढाउने की थिच्नुहोस्।
+जुम आउट गर्न Ctrl+Alt+चमक घटाउने की थिच्नुहोस्।</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{साइट म्युट गर्नुहोस्}other{साइटहरू म्युट गर्नुहोस्}}</translation>
 <translation id="8372369524088641025">खराब WEP कुञ्जी</translation>
 <translation id="8373652277231415614">Crostini बाट सेयर गरिएका डिरेक्टरीहरू</translation>
@@ -7216,6 +7226,7 @@
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">तपाईंको नयाँ प्रोफाइलमा स्वागत छ</translation>
 <translation id="9112748030372401671">आफ्नो वालपेपर परिवर्तन गर्नुहोस्</translation>
+<translation id="9112786533191410418"><ph name="FILE_NAME" /> हानिकारक हुन सक्छ। यो फाइल सुरक्षित छ कि छैन भनी स्क्यान गर्न यसलाई Google मा पठाउने हो?</translation>
 <translation id="9112987648460918699">फेला पार्नुहोस्...</translation>
 <translation id="9114663181201435112">सजिलो तरिकाले साइन इन गर्नुहोस्</translation>
 <translation id="9115675100829699941">&amp;बुकमार्कहरू</translation>

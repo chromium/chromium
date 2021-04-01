@@ -166,6 +166,7 @@
 <translation id="2126426811489709554">Chrome аркылуу иштетилүүдө</translation>
 <translation id="2131665479022868825"><ph name="DATA" /> үнөмдөлдү</translation>
 <translation id="213279576345780926"><ph name="TAB_TITLE" /> жабылган</translation>
+<translation id="2139186145475833000">Башкы экранга кошуу</translation>
 <translation id="214888715418183969">Chrome менен бөлүшкүңүз келген нерселерди тандаңыз. Сиз бөлүшкөн маалымат Chrome'дун функцияларын, ишин жана туруктуулугун жакшыртууга жардам берет.</translation>
 <translation id="2154484045852737596">Карточканы түзөтүү</translation>
 <translation id="2154710561487035718">URL көчүрүү</translation>
@@ -530,7 +531,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4720982865791209136">Chrome'ду өркүндөтүүгө жардам бериңиз. <ph name="BEGIN_LINK" />Сурамжылоого катышыңыз<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Мыкты сайттарды караңыз</translation>
 <translation id="4732120983431207637">Ороосун ачуу</translation>
-<translation id="4732693703583195378">Бул сайтты планшетиңиздин башкы экранына кошсоңуз, бул жерге оңой киресиз</translation>
 <translation id="4738836084190194332">Акыркы жолу качан шайкештирилген: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Жаңы өтмөк ачуу</translation>
 <translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
@@ -569,7 +569,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4925120120285606924">Скриншот <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Сырсөздөрүңүз экспорттолуп, текст файлы катары жүктөлүп алынат. Алар жүктөлүп алынган папкага кирүү мүмкүнчүлүгү бар колдонуучуларга жана колдонмолорго көрүнөт.</translation>
 <translation id="4932247056774066048"><ph name="DOMAIN_NAME" /> домениндеги аккаунтуңуздан чыгып жатканыңызга байланыштуу Chrome’догу дайын-даректериңиз бул түзмөктөн өчүрүлөт. Дайындар Google аккаунтуңузда сакталат.</translation>
-<translation id="4936039914467572121">Бул сайтты оңой ачыңыз</translation>
 <translation id="4941179133499732445">Айтып издөө үчүн микрофонду таптап коюңуз</translation>
 <translation id="4943703118917034429">Виртуалдык чындык</translation>
 <translation id="4943872375798546930">Натыйжалар жок</translation>
@@ -590,6 +589,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5091249083535528968">Кеңейтилген колдонуу статистикасы</translation>
 <translation id="509429900233858213">Ката кетти.</translation>
 <translation id="510275257476243843">1 саат калды</translation>
+<translation id="5118713593561876160">Кызыккан нерселер</translation>
 <translation id="5123685120097942451">Жашыруун өтмөк</translation>
 <translation id="5127805178023152808">Шайкештештирүү өчүк</translation>
 <translation id="5132942445612118989">Бардык түзмөктөрдөгү сырсөздөрдү, таржымалды жана башкаларды шайкештирүү</translation>
@@ -1158,6 +1158,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8820817407110198400">Кыстармалар</translation>
 <translation id="883806473910249246">Мазмун жүктөлүп алынып жатканда ката кетти.</translation>
 <translation id="8840953339110955557">Бул барак онлайн версиясынан айырмаланышы мүмкүн.</translation>
+<translation id="8849001918648564819">Жашырылды</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, кыстырма</translation>
 <translation id="8854223127042600341">Оффлайн файлдарын көрүү</translation>
 <translation id="8856607253650333758">Сүрөттөмөлөрдү алуу</translation>
@@ -1206,7 +1207,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Түпверсиясын көрсөтүү</translation>
 <translation id="9148126808321036104">Кайра кириңиз</translation>
-<translation id="9149286894143103695">Бул сайтты телефонуңуздун башкы экранына кошсоңуз, бул жерге оңой киресиз</translation>
 <translation id="9155898266292537608">Ошондой эле сөзду таптап коюп, издесеңиз болот</translation>
 <translation id="9169507124922466868">Чабыттоо таржымалынын жарымы жабык</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 мүнөт мурда текшерилди}other{# мүнөт мурда текшерилди}}</translation>

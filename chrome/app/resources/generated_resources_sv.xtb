@@ -3353,7 +3353,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4716483597559580346">Gör en powerwash för ökad säkerhet</translation>
 <translation id="471880041731876836">Du har inte behörighet att besöka den här webbplatsen.</translation>
 <translation id="4720185134442950733">Mobilt datanätverk</translation>
-<translation id="4722483286922621738">Åtkomst till serieportsanslutna enheter brukar kunna behövas för dataöverföring, t.ex. vid konfigurering av ett nätverk</translation>
 <translation id="4722735765955348426">Lösenord för <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> delar din skärm.</translation>
 <translation id="4723140812774948886">Byta mot nästa</translation>
@@ -4793,7 +4792,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6387674443318562538">Dela lodrätt</translation>
 <translation id="6388429472088318283">Sök efter språk</translation>
 <translation id="6388711141388085034">Upptagen</translation>
-<translation id="6388997627483458007">Tillåt inte att webbplatser ansluter till enheter med serieport</translation>
 <translation id="6390020764191254941">Flytta fliken till ett nytt fönster</translation>
 <translation id="6393156038355142111">Föreslå ett starkt lösenord</translation>
 <translation id="6393550101331051049">Får visa osäkert innehåll</translation>
@@ -5117,7 +5115,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6758056191028427665">Berätta hur vi sköter oss.</translation>
 <translation id="6759193508432371551">Återställ standardinställningar</translation>
 <translation id="6762833852331690540">På</translation>
-<translation id="6763264843598438739">Webbplatser får begära tillstånd att ansluta till enheter via serieporten</translation>
 <translation id="676560328519657314">Dina betalningsmetoder i Google Pay</translation>
 <translation id="6767566652486411142">Välj ett annat språk …</translation>
 <translation id="6767639283522617719">Det gick inte att ansluta till domänen. Kontrollera inställningarna för organisationsenheten.</translation>

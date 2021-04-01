@@ -3352,7 +3352,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4716483597559580346">Powerwash per maggiore sicurezza</translation>
 <translation id="471880041731876836">Non sei autorizzato a visitare questo sito</translation>
 <translation id="4720185134442950733">Rete di dati mobili</translation>
-<translation id="4722483286922621738">In genere, i siti si connettono a dispositivi seriali per funzionalità di trasferimento dati come la configurazione della rete</translation>
 <translation id="4722735765955348426">Password di <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> sta condividendo il tuo schermo.</translation>
 <translation id="4723140812774948886">Scambia con elemento successivo</translation>
@@ -4792,7 +4791,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6387674443318562538">Divisione in verticale</translation>
 <translation id="6388429472088318283">Cerca lingue</translation>
 <translation id="6388711141388085034">Occupato</translation>
-<translation id="6388997627483458007">Non consentire ai siti di connettersi ai dispositivi seriali</translation>
 <translation id="6390020764191254941">Sposta scheda in una nuova finestra</translation>
 <translation id="6393156038355142111">Suggerisci password efficace</translation>
 <translation id="6393550101331051049">Possono mostrare contenuti non sicuri</translation>
@@ -4833,7 +4831,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6429384232893414837">Errore di aggiornamento</translation>
 <translation id="6430814529589430811">ASCII con codifica Base64, singolo certificato</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> imposterà gli aggiornamenti automatici per tutti gli utenti di questo computer.</translation>
-<translation id="6434104957329207050">Velocità di scansione punto</translation>
+<translation id="6434104957329207050">Velocità della scansione per punto</translation>
 <translation id="6434309073475700221">Elimina</translation>
 <translation id="6434325376267409267">Il dispositivo deve essere aggiornato per poter utilizzare <ph name="APP_NAME" />.</translation>
 <translation id="6436164536244065364">Visualizza nel Web Store</translation>
@@ -5116,7 +5114,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6758056191028427665">Comunicaci la tua opinione sul nostro lavoro.</translation>
 <translation id="6759193508432371551">Ripristino dati di fabbrica</translation>
 <translation id="6762833852331690540">On</translation>
-<translation id="6763264843598438739">I siti possono chiedere di connettersi ai dispositivi seriali</translation>
 <translation id="676560328519657314">I tuoi metodi di pagamento in Google Pay</translation>
 <translation id="6767566652486411142">Seleziona un'altra lingua…</translation>
 <translation id="6767639283522617719">Impossibile aggiungere al dominio. Assicurati che le impostazioni dell'unità organizzativa siano corrette.</translation>
@@ -5148,6 +5145,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Spiacenti, qualcosa è andato storto.</translation>
 <translation id="6798420440063423019">Il token di sicurezza è stato bloccato perché è stato inserito troppe volte il PIN errato. Dovrai reimpostare il token di sicurezza.</translation>
+<translation id="679845623837196966">Mostra Elenco di lettura</translation>
 <translation id="6798578729981748444">Per terminare l'importazione, chiudi tutte le finestre di Firefox.</translation>
 <translation id="6798780071646309401">bloc maiusc attivo</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
@@ -7279,6 +7277,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
       <ph name="LIST_ITEM" />Eseguire lo strumento Diagnostica della connettività Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Picture in picture</translation>
+<translation id="9167063903968449027">Mostra Elenco di lettura</translation>
 <translation id="9168436347345867845">Più tardi</translation>
 <translation id="9169496697824289689">Visualizza scorciatoie da tastiera</translation>
 <translation id="916964310188958970">Perché questo suggerimento?</translation>

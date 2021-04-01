@@ -3348,7 +3348,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4716483597559580346">Powerwash for økt sikkerhet</translation>
 <translation id="471880041731876836">Du har ikke tillatelse til å besøke dette nettstedet</translation>
 <translation id="4720185134442950733">Mobildatanettverk</translation>
-<translation id="4722483286922621738">Nettsteder kobler vanligvis til serielle enheter for å kunne tilby funksjoner for dataoverføring, som å konfigurere nettverket ditt</translation>
 <translation id="4722735765955348426">Passord for <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deler skjermen din.</translation>
 <translation id="4723140812774948886">Bytt med neste</translation>
@@ -4788,7 +4787,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6387674443318562538">Del vertikalt</translation>
 <translation id="6388429472088318283">Søk etter språk</translation>
 <translation id="6388711141388085034">Opptatt</translation>
-<translation id="6388997627483458007">Ikke la nettsteder koble til serielle enheter</translation>
 <translation id="6390020764191254941">Flytt fanen til et nytt vindu</translation>
 <translation id="6393156038355142111">Foreslå et sterkt passord</translation>
 <translation id="6393550101331051049">Nettsteder som har lov til å vise usikkert innhold</translation>
@@ -5112,7 +5110,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6758056191028427665">Gi oss tilbakemelding.</translation>
 <translation id="6759193508432371551">Tilbakestilling til fabrikkstandard</translation>
 <translation id="6762833852331690540">På</translation>
-<translation id="6763264843598438739">Nettsteder kan be om å få koble til serielle enheter</translation>
 <translation id="676560328519657314">Betalingsmåtene dine i Google Pay</translation>
 <translation id="6767566652486411142">Velg et annet språk</translation>
 <translation id="6767639283522617719">Kan ikke bli med på domenet. Kontrollér at innstillingene for organisasjonsenheten er riktige.</translation>
@@ -5144,6 +5141,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Beklager. Noe gikk galt.</translation>
 <translation id="6798420440063423019">Sikkerhetsnøkkelen er låst fordi feil PIN-kode ble skrevet inn for mange ganger. Du må tilbakestille sikkerhetsnøkkelen.</translation>
+<translation id="679845623837196966">Vis leselisten</translation>
 <translation id="6798578729981748444">Lukk alle Firefox-vinduer for å fullføre importeringen.</translation>
 <translation id="6798780071646309401">capslock er på</translation>
 <translation id="6798954102094737107">Programtillegg: <ph name="PLUGIN_NAME" /></translation>
@@ -7276,6 +7274,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
       <ph name="LIST_ITEM" />kjøre Tilkoblingsdiagnostikk for Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Bilde i bilde</translation>
+<translation id="9167063903968449027">Vis leselisten</translation>
 <translation id="9168436347345867845">Gjør det senere</translation>
 <translation id="9169496697824289689">Se tastaturets hurtigtaster</translation>
 <translation id="916964310188958970">Hvorfor dette forslaget?</translation>

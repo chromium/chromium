@@ -166,6 +166,7 @@
 <translation id="2126426811489709554">Με την υποστήριξη του Chrome</translation>
 <translation id="2131665479022868825">Αποθηκεύτηκαν <ph name="DATA" /></translation>
 <translation id="213279576345780926">Η καρτέλα <ph name="TAB_TITLE" /> έκλεισε</translation>
+<translation id="2139186145475833000">Προσθήκη στην αρχική οθόνη</translation>
 <translation id="214888715418183969">Επιλέξτε τα δεδομένα που νιώθετε άνετα να κοινοποιείτε στο Chrome. Οι μετρήσεις που θα κοινοποιήσετε θα χρησιμοποιηθούν για τη βελτίωση των λειτουργιών, της απόδοσης και της σταθερότητας του Chrome.</translation>
 <translation id="2154484045852737596">Επεξεργασία κάρτας</translation>
 <translation id="2154710561487035718">Αντιγραφή διεύθυνσης URL</translation>
@@ -530,7 +531,6 @@
 <translation id="4720982865791209136">Συμβάλλετε στη βελτίωση του Chrome. <ph name="BEGIN_LINK" />Λάβετε μέρος στην έρευνα<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Δείτε τους κορυφαίους ιστοτόπους σας.</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
-<translation id="4732693703583195378">Προσθέστε αυτόν τον ιστότοπο στην αρχική οθόνη του tablet για ταχύτερη μετάβαση.</translation>
 <translation id="4738836084190194332">Τελευταίος συγχρονισμός: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Άνοιγμα νέας καρτέλας</translation>
 <translation id="4759238208242260848">Λήψεις</translation>
@@ -569,7 +569,6 @@
 <translation id="4925120120285606924">Στιγμιότυπο οθόνης <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Θα γίνει εξαγωγή και λήψη των κωδικών πρόσβασης ως αρχείου κειμένου. Θα είναι ορατοί σε όλους και σε κάθε εφαρμογή που έχει πρόσβαση στον φάκελο προορισμού.</translation>
 <translation id="4932247056774066048">Τα δεδομένα σας Chrome θα διαγραφούν από αυτήν τη συσκευή, λόγω της αποσύνδεσής σας από έναν λογαριασμό, η διαχείριση του οποίου γίνεται από τον τομέα <ph name="DOMAIN_NAME" />. Θα παραμείνει στον Λογαριασμό σας Google.</translation>
-<translation id="4936039914467572121">Ταχύτερη μετάβαση σε αυτόν τον ιστότοπο</translation>
 <translation id="4941179133499732445">Πατήστε το μικρόφωνο για να κάνετε αναζήτηση με τη φωνή σας.</translation>
 <translation id="4943703118917034429">Εικονική πραγματικότητα</translation>
 <translation id="4943872375798546930">Δεν υπάρχουν αποτελέσματα</translation>
@@ -590,6 +589,7 @@
 <translation id="5091249083535528968">Εκτεταμένα δεδομένα χρήσης</translation>
 <translation id="509429900233858213">Παρουσιάστηκε σφάλμα.</translation>
 <translation id="510275257476243843">Απομένει 1 ώρα</translation>
+<translation id="5118713593561876160">Ενδιαφέροντα</translation>
 <translation id="5123685120097942451">Καρτέλα ανώνυμης περιήγησης</translation>
 <translation id="5127805178023152808">Ο συγχρονισμός είναι απενεργοποιημένος</translation>
 <translation id="5132942445612118989">Συγχρονίστε κωδικούς πρόσβασης, ιστορικό και πολλά άλλα σε όλες τις συσκευές</translation>
@@ -1012,6 +1012,7 @@
 <translation id="7846296061357476882">Υπηρεσίες Google</translation>
 <translation id="784934925303690534">Χρονικό εύρος</translation>
 <translation id="7851858861565204677">Άλλες συσκευές</translation>
+<translation id="7853202427316060426">Δραστηριότητα</translation>
 <translation id="7857691613771368249">Να γίνεται ερώτηση σχετικά με το πότε αποθηκεύονται αρχεία</translation>
 <translation id="7859988229622350291">Να μην γίνεται ποτέ μετάφραση από</translation>
 <translation id="7875915731392087153">Δημιουργία μηνύματος ηλεκτρονικού ταχυδρομείου</translation>
@@ -1158,6 +1159,7 @@
 <translation id="8820817407110198400">Σελιδοδείκτες</translation>
 <translation id="883806473910249246">Παρουσιάστηκε σφάλμα κατά τη λήψη του περιεχομένου.</translation>
 <translation id="8840953339110955557">Αυτή η σελίδα μπορεί να διαφέρει από την έκδοση στο διαδίκτυο.</translation>
+<translation id="8849001918648564819">Κρυφή</translation>
 <translation id="8853345339104747198">Καρτέλα <ph name="TAB_TITLE" /></translation>
 <translation id="8854223127042600341">Δείτε τα αρχεία εκτός σύνδεσης</translation>
 <translation id="8856607253650333758">Λήψη περιγραφών</translation>
@@ -1206,7 +1208,6 @@
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Εμφάνιση πρωτοτύπου</translation>
 <translation id="9148126808321036104">Συνδεθείτε ξανά</translation>
-<translation id="9149286894143103695">Προσθέστε αυτόν τον ιστότοπο στην αρχική οθόνη του τηλεφώνου για ταχύτερη μετάβαση.</translation>
 <translation id="9155898266292537608">Επίσης, μπορείτε να κάνετε αναζήτηση με ένα γρήγορο πάτημα σε μια λέξη</translation>
 <translation id="9169507124922466868">Το ιστορικό πλοήγησης έχει ανοίξει κατά το ήμισυ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ελέγχθηκε πριν από ένα λεπτό}other{Ελέγχθηκε πριν από # λεπτά}}</translation>

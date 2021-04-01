@@ -166,6 +166,7 @@
 <translation id="2126426811489709554">На платформе Chrome</translation>
 <translation id="2131665479022868825">Эканомія: <ph name="DATA" /></translation>
 <translation id="213279576345780926">Закрыта ўкладка <ph name="TAB_TITLE" /></translation>
+<translation id="2139186145475833000">Дадаць на галоўны экран</translation>
 <translation id="214888715418183969">Выберыце, што вы хочаце абагульваць з Chrome. Паказчыкі, якія вы з намі абагуліце, будуць выкарыстаны для паляпшэння функцый браўзера Chrome, стабільнасці і эфектыўнасці яго работы.</translation>
 <translation id="2154484045852737596">Рэдагаваць картку</translation>
 <translation id="2154710561487035718">Скапіраваць URL-адрас</translation>
@@ -530,7 +531,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4720982865791209136">Дапамажыце палепшыць Chrome. <ph name="BEGIN_LINK" />Прыміце ўдзел у апытанні<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Прагледзьце папулярныя сайты</translation>
 <translation id="4732120983431207637">Размотчык стэка</translation>
-<translation id="4732693703583195378">Каб вы маглі пераходзіць на гэты сайт хутчэй, дадайце яго на галоўны экран вашага планшэта</translation>
 <translation id="4738836084190194332">Апошняя сінхранізацыя: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Адкрыць новую ўкладку</translation>
 <translation id="4759238208242260848">Спампоўкі</translation>
@@ -569,7 +569,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4925120120285606924">Здымак экрана <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Паролі будуць экспартаваны і спампаваны як тэкставы файл. Яны будуць бачныя ўсім карыстальнікам і праграмам з доступам да папкі, у якую гэты файл будзе захаваны.</translation>
 <translation id="4932247056774066048">Даныя Chrome будуць выдалены з гэтай прылады, паколькі вы выходзіце з уліковага запісу, якім кіруе <ph name="DOMAIN_NAME" />. Яны застануцца ва Уліковым запісе Google.</translation>
-<translation id="4936039914467572121">Пераходзьце на гэты сайт хутчэй</translation>
 <translation id="4941179133499732445">Каб шукаць з дапамогай голасу, націсніце на значок мікрафона</translation>
 <translation id="4943703118917034429">Віртуальная рэальнасць</translation>
 <translation id="4943872375798546930">Няма вынікаў</translation>
@@ -1158,6 +1157,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8820817407110198400">Закладкі</translation>
 <translation id="883806473910249246">Адбылася памылка падчас спампоўвання змесціва.</translation>
 <translation id="8840953339110955557">Гэта старонка можа адрознівацца ад сваёй інтэрнэт-версіі.</translation>
+<translation id="8849001918648564819">Схавана</translation>
 <translation id="8853345339104747198"><ph name="TAB_TITLE" />, укладка</translation>
 <translation id="8854223127042600341">Праглядзіце файлы, даступныя па-за сеткай</translation>
 <translation id="8856607253650333758">Атрымліваць апісанні</translation>
@@ -1206,7 +1206,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Паказаць арыгінал</translation>
 <translation id="9148126808321036104">Увайсці зноў</translation>
-<translation id="9149286894143103695">Каб вы маглі пераходзіць на гэты сайт хутчэй, дадайце яго на галоўны экран вашага тэлефона</translation>
 <translation id="9155898266292537608">Запусціць пошук таксама можна, коратка націснуўшы на слова</translation>
 <translation id="9169507124922466868">Гісторыя навігацыі адкрыта напалову</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Праверка праводзілася хвіліну таму}one{Праверка праводзілася # хвіліну таму}few{Праверка праводзілася # хвіліны таму}many{Праверка праводзілася # хвілін таму}other{Праверка праводзілася # хвіліны таму}}</translation>

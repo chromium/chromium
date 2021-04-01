@@ -3350,7 +3350,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4716483597559580346">Powerwash para mejorar la seguridad</translation>
 <translation id="471880041731876836">No tienes permiso para visitar este sitio</translation>
 <translation id="4720185134442950733">Red de datos móviles</translation>
-<translation id="4722483286922621738">Por lo general los sitios se conectan a dispositivos en serie para habilitar funciones de transferencia de datos, como la configuración de la red.</translation>
 <translation id="4722735765955348426">Contraseña de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está compartiendo tu pantalla.</translation>
 <translation id="4723140812774948886">Intercambiar con el siguiente elemento</translation>
@@ -4246,7 +4245,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5764797882307050727">Libera espacio en tu dispositivo.</translation>
 <translation id="5765425701854290211">Algunos archivos estaban dañaron y la actualización no pudo completarse. Tus archivos sincronizados están a salvo.</translation>
 <translation id="5765491088802881382">No hay redes disponibles</translation>
-<translation id="5766243637773654698">Es posible que el archivo <ph name="FILE_NAME" /> sea peligroso. ¿Quieres enviarlo a Google para analizarlo? Presiona Mayúsculas+F6 para ir al área de la barra de descargas.</translation>
+<translation id="5766243637773654698">El archivo <ph name="FILE_NAME" /> puede ser peligroso. ¿Quieres enviarlo a Google para analizarlo? Presiona Mayúsculas+F6 para ir al área de la barra de descargas.</translation>
 <translation id="5769519078756170258">Host o dominio para excluir</translation>
 <translation id="5770125698810550803">Mostrar los botones de navegación</translation>
 <translation id="5771816112378578655">Configuración en progreso...</translation>
@@ -4403,7 +4402,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5942779427914696408">Visibilidad del dispositivo</translation>
 <translation id="5943127421590245687">Se completó correctamente la verificación de la cuenta. Para desbloquearla y restablecer los datos locales, ingresa la contraseña anterior de <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5944869793365969636">Escanea el código QR</translation>
-<translation id="5945002094477276055">Es posible que el archivo <ph name="FILE_NAME" /> sea peligroso. ¿Quieres enviarlo a la Navegación segura de Google para analizarlo?</translation>
+<translation id="5945002094477276055">El archivo <ph name="FILE_NAME" /> puede ser peligroso. ¿Quieres enviarlo a la Navegación segura de Google para analizarlo?</translation>
 <translation id="5946591249682680882">ID de informe: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
 <translation id="5948536763493709626">Conecta un teclado o mouse, o continua la configuración con la pantalla táctil. Si usas dispositivos Bluetooth, asegúrate de que estén listos para vincularse.</translation>
 <translation id="5949544233750246342">No se puede analizar el archivo</translation>
@@ -4790,7 +4789,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6387674443318562538">División vertical</translation>
 <translation id="6388429472088318283">Buscar idiomas</translation>
 <translation id="6388711141388085034">Ocupado</translation>
-<translation id="6388997627483458007">No permitir que los sitios se conecten a dispositivos seriales</translation>
 <translation id="6390020764191254941">Mueve la pestaña a una ventana nueva</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393550101331051049">Puede mostrar contenido no seguro</translation>
@@ -5114,7 +5112,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6758056191028427665">Danos tu opinión sobre nuestro trabajo.</translation>
 <translation id="6759193508432371551">Restablecer configuración de fábrica</translation>
 <translation id="6762833852331690540">Sí</translation>
-<translation id="6763264843598438739">Permitir que los sitios soliciten permiso para conectarse a dispositivos en serie</translation>
 <translation id="676560328519657314">Tus formas de pago de Google Pay</translation>
 <translation id="6767566652486411142">Elegir otro idioma…</translation>
 <translation id="6767639283522617719">No se puede unir al dominio. Asegúrate de que sea correcta la configuración de la unidad organizacional.</translation>
@@ -5146,6 +5143,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Se produjo un error.</translation>
 <translation id="6798420440063423019">Se ingresó el PIN de forma incorrecta demasiadas veces; por lo tanto, se bloqueó la llave de seguridad. Deberás restablecerla.</translation>
+<translation id="679845623837196966">Mostrar la Lista de lectura</translation>
 <translation id="6798578729981748444">Para finalizar la importación, cierra todas las ventanas de Firefox.</translation>
 <translation id="6798780071646309401">bloqueo de mayúscula activado</translation>
 <translation id="6798954102094737107">Complemento: <ph name="PLUGIN_NAME" /></translation>
@@ -5330,7 +5328,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6985607387932385770">Impresoras</translation>
 <translation id="6988094684494323731">Iniciando el contenedor de Linux</translation>
 <translation id="6988403677482707277">Se movió la pestaña al inicio de la barra de pestañas</translation>
-<translation id="6990209147952697693">Chrome clásico</translation>
+<translation id="6990209147952697693">Versión clásica de Chrome</translation>
 <translation id="6991665348624301627">Seleccionar un destino</translation>
 <translation id="6992554835374084304">Activa el corrector ortográfico mejorado</translation>
 <translation id="6993000214273684335">Se quitó la pestaña del grupo sin nombre - <ph name="GROUP_CONTENTS" /></translation>
@@ -7231,7 +7229,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9111395131601239814"><ph name="NETWORKDEVICE" />: <ph name="STATUS" /></translation>
 <translation id="9111668656364922873">Te damos la bienvenida a tu nuevo perfil</translation>
 <translation id="9112748030372401671">Cambiar el fondo de pantalla</translation>
-<translation id="9112786533191410418">Es posible que el archivo <ph name="FILE_NAME" /> sea peligroso. ¿Quieres enviarlo a Google para analizarlo?</translation>
+<translation id="9112786533191410418">El archivo <ph name="FILE_NAME" /> puede ser peligroso. ¿Quieres enviarlo a Google para analizarlo?</translation>
 <translation id="9112987648460918699">Buscar...</translation>
 <translation id="9114663181201435112">Acceder de forma fácil</translation>
 <translation id="9115675100829699941">&amp;Favoritos</translation>
@@ -7278,6 +7276,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
       <ph name="LIST_ITEM" />Ejecuta el Diagnóstico de conectividad de Chrome
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantalla en pantalla</translation>
+<translation id="9167063903968449027">Mostrar la Lista de lectura</translation>
 <translation id="9168436347345867845">Hacerlo más tarde</translation>
 <translation id="9169496697824289689">Ver combinaciones de teclas para acceso directo</translation>
 <translation id="916964310188958970">¿Por qué recibo esta sugerencia?</translation>

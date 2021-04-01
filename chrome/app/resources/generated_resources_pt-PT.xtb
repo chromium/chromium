@@ -3353,7 +3353,6 @@ Pretende pará-lo?</translation>
 <translation id="4716483597559580346">Efetuar Powerwash para maior segurança</translation>
 <translation id="471880041731876836">Não tem autorização para aceder a este site</translation>
 <translation id="4720185134442950733">Rede de dados móveis</translation>
-<translation id="4722483286922621738">Normalmente, os sites estabelecem ligação a dispositivos de série para funcionalidades de transferência de dados como configurar a sua rede.</translation>
 <translation id="4722735765955348426">Palavra-passe de <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> está a partilhar o seu ecrã.</translation>
 <translation id="4723140812774948886">Trocar com o seguinte</translation>
@@ -4794,7 +4793,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6387674443318562538">Divisão vertical</translation>
 <translation id="6388429472088318283">Pesquisar idiomas</translation>
 <translation id="6388711141388085034">Ocupado</translation>
-<translation id="6388997627483458007">Não permitir que os sites estabeleçam ligação a dispositivos de série</translation>
 <translation id="6390020764191254941">Mover separador para nova janela</translation>
 <translation id="6393156038355142111">Sugerir palavra-passe forte</translation>
 <translation id="6393550101331051049">Com autorização para mostrar conteúdo inseguro</translation>
@@ -5118,7 +5116,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6758056191028427665">Dê-nos a sua opinião acerca do nosso desempenho.</translation>
 <translation id="6759193508432371551">Reposição de dados de fábrica</translation>
 <translation id="6762833852331690540">Ativado</translation>
-<translation id="6763264843598438739">Os sites podem solicitar a ligação a dispositivos de série</translation>
 <translation id="676560328519657314">Os seus métodos de pagamento no Google Pay</translation>
 <translation id="6767566652486411142">Selecionar outro idioma…</translation>
 <translation id="6767639283522617719">Não é possível associar ao domínio. Certifique-se de que as definições estão corretas para a unidade organizacional.</translation>
@@ -5150,6 +5147,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Ups... algo correu mal.</translation>
 <translation id="6798420440063423019">A chave de segurança está bloqueada porque foi introduzido o PIN incorreto demasiadas vezes. Tem de repor a chave de segurança.</translation>
+<translation id="679845623837196966">Mostrar Lista de leitura</translation>
 <translation id="6798578729981748444">Para concluir a importação, feche todas as janelas do Firefox.</translation>
 <translation id="6798780071646309401">caps lock ativado</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
@@ -7281,6 +7279,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
       <ph name="LIST_ITEM" />Executar o Diagnóstico de conetividade do Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Ecrã no ecrã</translation>
+<translation id="9167063903968449027">Mostrar Lista de leitura</translation>
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
 <translation id="9169496697824289689">Ver atalhos de teclado</translation>
 <translation id="916964310188958970">Porquê esta sugestão?</translation>

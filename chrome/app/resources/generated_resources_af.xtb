@@ -3353,7 +3353,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4716483597559580346">Powerwash vir bykomende sekuriteit</translation>
 <translation id="471880041731876836">Jy het nie toestemming om hierdie werf te besoek nie</translation>
 <translation id="4720185134442950733">Mobiele datanetwerk</translation>
-<translation id="4722483286922621738">Werwe koppel gewoonlik aan serietoestelle vir dataoordragkenmerke, soos die opstel van jou netwerk</translation>
 <translation id="4722735765955348426">Wagwoord vir <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> deel tans jou skerm.</translation>
 <translation id="4723140812774948886">Ruil met volgende</translation>
@@ -4794,7 +4793,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6387674443318562538">Verdeel vertikaal</translation>
 <translation id="6388429472088318283">Soek tale</translation>
 <translation id="6388711141388085034">Besig</translation>
-<translation id="6388997627483458007">Moenie werwe toelaat om aan reekstoestelle te koppel nie</translation>
 <translation id="6390020764191254941">Skuif oortjie na nuwe venster</translation>
 <translation id="6393156038355142111">Stel sterk wagwoord voor</translation>
 <translation id="6393550101331051049">Mag onveilige inhoud wys</translation>
@@ -5118,7 +5116,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6758056191028427665">Sê vir ons hoe ons vaar.</translation>
 <translation id="6759193508432371551">Fabriekterugstelling</translation>
 <translation id="6762833852331690540">Aan</translation>
-<translation id="6763264843598438739">Werwe kan vra om aan serietoestelle te koppel</translation>
 <translation id="676560328519657314">Jou betaalmetodes in Google Pay</translation>
 <translation id="6767566652486411142">Kies 'n ander taal …</translation>
 <translation id="6767639283522617719">Kan nie by die domein aansluit nie. Maak seker dat die instellings vir die organisatoriese eenheid korrek is.</translation>
@@ -5150,6 +5147,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Oeps, iets het verkeerd geloop.</translation>
 <translation id="6798420440063423019">Die sekuriteitsleutel is gesluit omdat die verkeerde PIN te veel kere ingevoer is. Jy sal die sekuriteitsleutel moet terugstel.</translation>
+<translation id="679845623837196966">Wys leeslys</translation>
 <translation id="6798578729981748444">Om die invoer te voltooi, maak alle Firefox-vensters toe.</translation>
 <translation id="6798780071646309401">caps lock is aan</translation>
 <translation id="6798954102094737107">Inprop: <ph name="PLUGIN_NAME" /></translation>
@@ -7281,6 +7279,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
       <ph name="LIST_ITEM" />Chrome-konnektiwiteitdiagnostiek uitvoer
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Beeld-in-beeld</translation>
+<translation id="9167063903968449027">Wys Leeslys</translation>
 <translation id="9168436347345867845">Doen dit later</translation>
 <translation id="9169496697824289689">Bekyk sleutelbordkortpaaie</translation>
 <translation id="916964310188958970">Hoekom hierdie voorstel?</translation>

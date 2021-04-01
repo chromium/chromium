@@ -3350,7 +3350,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="4716483597559580346">Powerwash për më shumë siguri</translation>
 <translation id="471880041731876836">Nuk ke leje për të vizituar këtë sajt</translation>
 <translation id="4720185134442950733">Rrjeti i të dhënave celulare</translation>
-<translation id="4722483286922621738">Sajtet lidhen zakonisht me pajisjet me portë seriale për veçoritë e transferimit të të dhënave, si p.sh. konfigurimi i rrjetit tënd</translation>
 <translation id="4722735765955348426">Fjalëkalimi për <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> po ndan ekranin tënd.</translation>
 <translation id="4723140812774948886">Ndërroje me tjetrin</translation>
@@ -4790,7 +4789,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6387674443318562538">Vertikal i ndarë</translation>
 <translation id="6388429472088318283">Kërko për gjuhët</translation>
 <translation id="6388711141388085034">I zënë</translation>
-<translation id="6388997627483458007">Mos lejo që sajtet të lidhen me pajisjet me portë seriale</translation>
 <translation id="6390020764191254941">Lëvize skedën në dritare të re</translation>
 <translation id="6393156038355142111">Sugjero fjalëkalim të fortë</translation>
 <translation id="6393550101331051049">Lejohen të shfaqin përmbajtje të pasigurta</translation>
@@ -5114,7 +5112,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6758056191028427665">Na trego se si po ecim.</translation>
 <translation id="6759193508432371551">Rivendosje në gjendje fabrike</translation>
 <translation id="6762833852331690540">Aktiv</translation>
-<translation id="6763264843598438739">Sajtet mund të kërkojnë të lidhen me pajisjet me portë seriale</translation>
 <translation id="676560328519657314">Metodat e tua të pagesës në Google Pay</translation>
 <translation id="6767566652486411142">Zgjidh një gjuhë tjetër...</translation>
 <translation id="6767639283522617719">Nuk mund t'i bashkohet domenit. Sigurohu që cilësimet të jenë të sakta për njësinë organizative.</translation>
@@ -5146,6 +5143,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Mos, ndodhi një gabim.</translation>
 <translation id="6798420440063423019">Çelësi i sigurisë është i kyçur sepse është futur shumë herë kod PIN i gabuar. Do të të duhet të rivendosësh çelësin e sigurisë.</translation>
+<translation id="679845623837196966">Shfaq "Listën e leximit"</translation>
 <translation id="6798578729981748444">Për të përfunduar importimin, mbyll të gjitha dritaret e Firefox.</translation>
 <translation id="6798780071646309401">kyçja e germave kapitale aktive</translation>
 <translation id="6798954102094737107">Përbërësi shtesë: <ph name="PLUGIN_NAME" /></translation>
@@ -7276,6 +7274,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
       <ph name="LIST_ITEM" />Të ekzekutosh "Diagnostikimin e lidhjes së Chrome"
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Figura brenda figurës</translation>
+<translation id="9167063903968449027">Shfaq "Listën e leximit"</translation>
 <translation id="9168436347345867845">Bëje më vonë</translation>
 <translation id="9169496697824289689">Shiko shkurtoret e tastierës</translation>
 <translation id="916964310188958970">Pse ky sugjerim?</translation>

@@ -103,7 +103,7 @@
 <translation id="1118549423835582252"><ph name="MANAGER" /> empfiehlt, dieses Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="1118738876271697201">Das System konnte das Gerätemodell oder die Seriennummer nicht ermitteln.</translation>
 <translation id="1119447706177454957">Interner Fehler</translation>
-<translation id="111959947408687873">Drücken Sie Strg + <ph name="SEARCH_KEY_NAME" /> +M, um die Vollbildlupe zu aktivieren. Mit Strg + Alt + Pfeiltasten können Sie sich über den Bildschirm bewegen, während die Vollbildlupe aktiviert ist.</translation>
+<translation id="111959947408687873">Drücke „Strg + <ph name="SEARCH_KEY_NAME" /> +M“, um die Vollbildlupe zu aktivieren. Mit „Strg + Alt + Pfeiltasten“ kannst du dich über den Bildschirm bewegen, während die Vollbildlupe aktiviert ist.</translation>
 <translation id="1122068467107743258">Arbeit</translation>
 <translation id="1122198203221319518">&amp;Tools</translation>
 <translation id="1122242684574577509">Fehler bei der Authentifizierung. Klicken Sie hier, um die Anmeldeseite für das verwendete WLAN aufzurufen (<ph name="NETWORK_ID" />).</translation>
@@ -149,7 +149,7 @@
 <translation id="1153636665119721804">Erweitertes Sicherheitsprogramm von Google</translation>
 <translation id="1155816283571436363">Verbindung zu Ihrem Smartphone wird hergestellt</translation>
 <translation id="1161575384898972166">Melden Sie sich in <ph name="TOKEN_NAME" /> an, um das Clientzertifikat zu exportieren.</translation>
-<translation id="116173250649946226">Ihr Administrator hat ein Standarddesign festgelegt, das nicht geändert werden kann.</translation>
+<translation id="116173250649946226">Der Administrator hat ein Standarddesign festgelegt, das nicht geändert werden kann.</translation>
 <translation id="1163931534039071049">Frame-Quelltext &amp;anzeigen</translation>
 <translation id="1164891049599601209">Auf betrügerischer Website eingegeben</translation>
 <translation id="1164899421101904659">PUK eingeben</translation>
@@ -2552,7 +2552,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3809272675881623365">Kaninchen</translation>
 <translation id="3809280248639369696">Alien</translation>
 <translation id="3810593934879994994"><ph name="ORIGIN" /> kann Dateien in den folgenden Ordnern lesen</translation>
-<translation id="3810914450553844415">Ihr Administrator lässt keine zusätzlichen Google-Konten zu.</translation>
+<translation id="3810914450553844415">Der Administrator lässt keine zusätzlichen Google-Konten zu.</translation>
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="381202950560906753">Weitere hinzufügen</translation>
 <translation id="3812525830114410218">Ungültiges Zertifikat</translation>
@@ -3349,7 +3349,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4716483597559580346">Powerwash für mehr Sicherheit</translation>
 <translation id="471880041731876836">Sie sind nicht berechtigt, auf diese Website zuzugreifen</translation>
 <translation id="4720185134442950733">Mobilfunknetz</translation>
-<translation id="4722483286922621738">Websites stellen normalerweise eine Verbindung mit seriellen Geräten her, um Datenübertragungsfunktionen, wie das Einrichten Ihres Netzwerks, umzusetzen</translation>
 <translation id="4722735765955348426">Passwort für <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> hat Ihren Bildschirm freigegeben.</translation>
 <translation id="4723140812774948886">Mit nächstem tauschen</translation>
@@ -4245,7 +4244,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5764797882307050727">Bitte geben Sie Speicherplatz auf Ihrem Gerät frei.</translation>
 <translation id="5765425701854290211">Einige Dateien wurden beschädigt und das Update konnte nicht abgeschlossen werden. Ihre synchronisierten Dateien sind jedoch sicher.</translation>
 <translation id="5765491088802881382">Keine Netzwerke verfügbar</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> könnte schädlich sein. Zum Scannen an Google senden? Drücken Sie Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
+<translation id="5766243637773654698"><ph name="FILE_NAME" /> könnte schädlich sein. Zum Scannen an Google senden? Drücken Sie „Umschalttaste + F6“, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="5769519078756170258">Auszuschließende Host oder Domain</translation>
 <translation id="5770125698810550803">Navigationsschaltflächen anzeigen</translation>
 <translation id="5771816112378578655">Einrichtung läuft...</translation>
@@ -4789,7 +4788,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6387674443318562538">Vertikal teilen</translation>
 <translation id="6388429472088318283">Nach Sprache suchen</translation>
 <translation id="6388711141388085034">Beschäftigt</translation>
-<translation id="6388997627483458007">Websites dürfen keine Verbindung mit seriellen Geräten herstellen</translation>
 <translation id="6390020764191254941">Tab in ein neues Fenster verschieben</translation>
 <translation id="6393156038355142111">Starkes Passwort vorschlagen</translation>
 <translation id="6393550101331051049">Unsichere Inhalte dürfen angezeigt werden</translation>
@@ -5113,7 +5111,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6758056191028427665">Teilen Sie uns mit, wie zufrieden Sie mit uns sind.</translation>
 <translation id="6759193508432371551">Zurücksetzen auf Werkseinstellungen</translation>
 <translation id="6762833852331690540">An</translation>
-<translation id="6763264843598438739">Websites dürfen nachfragen, wenn sie eine Verbindung mit seriellen Geräten herstellen möchten</translation>
 <translation id="676560328519657314">Ihre Zahlungsmethoden in Google Pay</translation>
 <translation id="6767566652486411142">Andere Sprache auswählen…</translation>
 <translation id="6767639283522617719">Beitritt zur Domain nicht möglich. Achten Sie darauf, dass die Einstellungen für die Organisationseinheit richtig sind.</translation>
@@ -5145,6 +5142,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6795884519221689054">Panda</translation>
 <translation id="6797493596609571643">Hoppla, ein Fehler ist aufgetreten.</translation>
 <translation id="6798420440063423019">Der Sicherheitsschlüssel wurde gesperrt, weil zu oft die falsche PIN eingegeben wurde. Sie müssen den Sicherheitsschlüssel zurücksetzen.</translation>
+<translation id="679845623837196966">Leseliste anzeigen</translation>
 <translation id="6798578729981748444">Schließen Sie alle Firefox-Fenster, um den Import abzuschließen.</translation>
 <translation id="6798780071646309401">Feststelltaste an</translation>
 <translation id="6798954102094737107">Plug-in: <ph name="PLUGIN_NAME" /></translation>
@@ -5329,7 +5327,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6985607387932385770">Drucker</translation>
 <translation id="6988094684494323731">Der Linux-Container wird gestartet</translation>
 <translation id="6988403677482707277">Tab wurde zum Anfang der Tableiste verschoben</translation>
-<translation id="6990209147952697693">Classic Chrome</translation>
+<translation id="6990209147952697693">Klassisches Chrome</translation>
 <translation id="6991665348624301627">Ziel auswählen</translation>
 <translation id="6992554835374084304">Erweiterte Rechtschreibprüfung aktivieren</translation>
 <translation id="6993000214273684335">Tab wurde aus unbenannter Gruppe entfernt – <ph name="GROUP_CONTENTS" /></translation>
@@ -6558,8 +6556,8 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8368859634510605990">&amp;Alle Lesezeichen öffnen</translation>
 <translation id="8370294614544004647">Beim Zuklappen des Laptops in den Ruhemodus wechseln</translation>
 <translation id="8371695176452482769">Jetzt sprechen</translation>
-<translation id="8371749822919332187">Drücken Sie Strg + Alt + „Helligkeit erhöhen“ zum Heranzoomen.
-Drücken Sie Strg + Alt + „Helligkeit verringern“ zum Herauszoomen.</translation>
+<translation id="8371749822919332187">Drücke „Strg + Alt + ‚Helligkeit erhöhen‘“ zum Heranzoomen.
+Drücke „Strg + Alt + ‚Helligkeit verringern‘“ zum Herauszoomen.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Website stummschalten}other{Websites stummschalten}}</translation>
 <translation id="8372369524088641025">Ungültiger WEP-Schlüssel</translation>
 <translation id="8373652277231415614">Freigegebene Crostini-Verzeichnisse</translation>
@@ -7276,6 +7274,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
       <ph name="LIST_ITEM" />Verbindungsdiagnose für Chrome ausführen
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Bild im Bild</translation>
+<translation id="9167063903968449027">Leseliste anzeigen</translation>
 <translation id="9168436347345867845">Später</translation>
 <translation id="9169496697824289689">Tastenkombinationen ansehen</translation>
 <translation id="916964310188958970">Warum erhalte ich diesen Vorschlag?</translation>

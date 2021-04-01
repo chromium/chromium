@@ -3356,7 +3356,6 @@
 <translation id="4716483597559580346">‏Powerwash لمزيد من الأمان</translation>
 <translation id="471880041731876836">ليس لديك إذن لزيارة هذا الموقع</translation>
 <translation id="4720185134442950733">شبكة بيانات الجوّال</translation>
-<translation id="4722483286922621738">تتّصل المواقع الإلكترونية عادةً بأجهزة تسلسلية لتتيح ميزات نقل البيانات، مثل إعداد شبكة الإنترنت.</translation>
 <translation id="4722735765955348426">كلمة مرور <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> يشارك شاشتك.</translation>
 <translation id="4723140812774948886">تبديل العنصر المختار مع العنصر التالي</translation>
@@ -4796,7 +4795,6 @@
 <translation id="6387674443318562538">تقسيم رأسي</translation>
 <translation id="6388429472088318283">البحث عن اللغات</translation>
 <translation id="6388711141388085034">مشغولة</translation>
-<translation id="6388997627483458007">عدم السماح للمواقع الإلكترونية بالاتصال بأجهزة تسلسلية</translation>
 <translation id="6390020764191254941">نقل علامة التبويب إلى نافذة جديدة</translation>
 <translation id="6393156038355142111">اقتراح كلمة مرور قوية</translation>
 <translation id="6393550101331051049">المواقع الإلكترونية التي يُسمح لها بعرض المحتوى غير الآمن</translation>
@@ -5120,7 +5118,6 @@
 <translation id="6758056191028427665">يُرجى تقييم أدائنا.</translation>
 <translation id="6759193508432371551">إعادة الضبط على الإعدادات الأصلية</translation>
 <translation id="6762833852331690540">مفعّل</translation>
-<translation id="6763264843598438739">السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة تسلسلية</translation>
 <translation id="676560328519657314">‏طُرق الدفع المُستخدَمة في Google Pay</translation>
 <translation id="6767566652486411142">اختيار لغة أخرى...</translation>
 <translation id="6767639283522617719">يتعذَّر ضم الجهاز إلى النطاق. يُرجى التأكُّد من صحة الإعدادات في الوحدة التنظيمية.</translation>
@@ -5152,6 +5149,7 @@
 <translation id="6795884519221689054">باندا</translation>
 <translation id="6797493596609571643">عفوًا، حدث خطأ ما.</translation>
 <translation id="6798420440063423019">تم قفل مفتاح الأمان بسبب إدخال رقم تعريف شخصي غير صحيح عدّة مرات. عليك إعادة ضبط مفتاح الأمان.</translation>
+<translation id="679845623837196966">إظهار قائمة القراءة</translation>
 <translation id="6798578729981748444">‏لإنهاء الاستيراد، أغلق جميع نوافذ Firefox.</translation>
 <translation id="6798780071646309401">‏مفتاح caps lock قيد التفعيل</translation>
 <translation id="6798954102094737107">المكوّن الإضافي: <ph name="PLUGIN_NAME" /></translation>
@@ -7288,6 +7286,7 @@
       <ph name="LIST_ITEM" />تشغيل "بيانات تشخيص مشاكل الاتصال بالشبكة في Chrome"
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">نافذة ضمن النافذة</translation>
+<translation id="9167063903968449027">إظهار قائمة القراءة</translation>
 <translation id="9168436347345867845">تنفيذ ذلك لاحقًا</translation>
 <translation id="9169496697824289689">عرض اختصارات لوحة المفاتيح</translation>
 <translation id="916964310188958970">لماذا يظهر هذا الاقتراح؟</translation>

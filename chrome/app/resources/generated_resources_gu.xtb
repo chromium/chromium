@@ -3350,7 +3350,6 @@
 <translation id="4716483597559580346">વધારાની સુરક્ષા માટે પાવરવૉશ</translation>
 <translation id="471880041731876836">તમારી પાસે આ સાઇટની મુલાકાત લેવાની પરવાનગી નથી</translation>
 <translation id="4720185134442950733">મોબાઇલ ડેટા નેટવર્ક</translation>
-<translation id="4722483286922621738">તમારું નેટવર્ક સેટઅપ કરવા જેવી ડેટા ટ્રાન્સફરની સુવિધાઓ માટે, સાઇટ સામાન્ય રીતે સિરિઅલ ડિવાઇસ સાથે કનેક્ટ કરે છે</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" /> માટેનો પાસવર્ડ</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> તમારી સ્ક્રીનને શેર કરી રહી છે.</translation>
 <translation id="4723140812774948886">આગલી આઇટમ સાથે અદલાબદલી કરો</translation>
@@ -4792,7 +4791,6 @@ USB ડિવાઇસ</translation>
 <translation id="6387674443318562538">સ્ક્રીનને ઊભી વિભાજિત કરો</translation>
 <translation id="6388429472088318283">ભાષાઓ શોધો</translation>
 <translation id="6388711141388085034">વ્યસ્ત</translation>
-<translation id="6388997627483458007">સાઇટને સીરિયલ ડિવાઇસ સાથે કનેક્ટ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="6390020764191254941">ટૅબને નવી વિંડોમાં ખસેડો</translation>
 <translation id="6393156038355142111">સશક્ત પાસવર્ડ સૂચવો</translation>
 <translation id="6393550101331051049">અસુરક્ષિત કન્ટેન્ટ બતાવવાની મંજૂરી છે</translation>
@@ -5116,7 +5114,6 @@ USB ડિવાઇસ</translation>
 <translation id="6758056191028427665">અમને જણાવો કે અમે કેવું કાર્ય કરી રહ્યાં છીએ.</translation>
 <translation id="6759193508432371551">ફેક્ટરી ફરીથી સેટ કરો</translation>
 <translation id="6762833852331690540">ચાલુ</translation>
-<translation id="6763264843598438739">સાઇટ સિરિઅલ ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="676560328519657314">Google Payમાં તમારી ચુકવણી પદ્ધતિઓ</translation>
 <translation id="6767566652486411142">બીજી ભાષા પસંદ કરો...</translation>
 <translation id="6767639283522617719">ડોમેન જોડી શકાતું નથી. સંસ્થાકીય એકમ માટે સેટિંગ યોગ્ય છે તેની ખાતરી કરો.</translation>
@@ -5148,6 +5145,7 @@ USB ડિવાઇસ</translation>
 <translation id="6795884519221689054">પાંડા</translation>
 <translation id="6797493596609571643">અરેરે, કંઈક ખોટું થયું.</translation>
 <translation id="6798420440063423019">ઘણી બધી વખત ખોટો પિન દાખલ કર્યો હોવાને કારણે સિક્યુરિટી કી લૉક કરવામાં આવી છે. તમારે સિક્યુરિટી કી રીસેટ કરવાની જરૂર રહેશે.</translation>
+<translation id="679845623837196966">વાંચન સૂચિ બતાવો</translation>
 <translation id="6798578729981748444">આયાત કરવાનું સમાપ્ત કરવા માટે, બધી Firefox વિંડો બંધ કરો.</translation>
 <translation id="6798780071646309401">caps lock ચાલુ છે</translation>
 <translation id="6798954102094737107">પ્લગિન: <ph name="PLUGIN_NAME" /></translation>
@@ -7275,6 +7273,7 @@ USB ડિવાઇસ</translation>
       <ph name="LIST_ITEM" />Chrome Connectivity Diagnostics સાધન ચલાવો
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">ચિત્ર-માં-ચિત્ર</translation>
+<translation id="9167063903968449027">વાંચન સૂચિ બતાવો</translation>
 <translation id="9168436347345867845">આ પછીથી કરો</translation>
 <translation id="9169496697824289689">કીબોર્ડ શૉર્ટકટ જુઓ</translation>
 <translation id="916964310188958970">આ સૂચન શા માટે?</translation>

@@ -116,7 +116,7 @@
 <translation id="1690731385917361335">Aucun élément</translation>
 <translation id="1700517974991662022">Consulté</translation>
 <translation id="1714116687360794776">Outil de mesure</translation>
-<translation id="1717267964664691695">Tutoriel sur les commandes tactiles terminé</translation>
+<translation id="1717267964664691695">Tutoriel sur les gestes terminé</translation>
 <translation id="1722567105086139392">Lien</translation>
 <translation id="1727806147743597030">conclusion</translation>
 <translation id="1730447754326314349">Bienvenue dans le tutoriel ChromeVox. Pour quitter ce tutoriel, appuyez à tout moment sur la touche Échap située en haut à gauche de votre clavier. Pour désactiver ChromeVox, maintenez les touches Ctrl+Alt enfoncées et appuyez sur Z. Lorsque vous êtes prêt, utilisez la barre d'espace pour passer à la leçon suivante.</translation>
@@ -280,7 +280,7 @@
 <translation id="2968634799764242930">Vert d'eau</translation>
 <translation id="296951647852255825">{COUNT,plural, =1{tabulation}one{# tabulation}other{# tabulations}}</translation>
 <translation id="2972205263822847197">Info-bulle</translation>
-<translation id="2976476721782829799">Cette action consiste à faire glisser un seul doigt sur l'écran pour vous y déplacer. Essayez de lire le reste de cette leçon en explorant l'écran au toucher.</translation>
+<translation id="2976476721782829799">Ce geste consiste à faire glisser un seul doigt sur l'écran pour vous y déplacer. Essayez de lire le reste de cette leçon en explorant l'écran au toucher.</translation>
 <translation id="297825089465017871">Balayer l'écran vers la gauche avec deux doigts</translation>
 <translation id="2998131015536248178">Caractère précédent</translation>
 <translation id="2999559350546931576">Diminuer le timbre de la voix</translation>
@@ -514,7 +514,7 @@
 <translation id="4615592953348396470">La prochaine touche actionnée sera ignorée.</translation>
 <translation id="4623097797855662355">Achevé d'imprimer</translation>
 <translation id="463135993322337640">Appuyez sur ChromeVox o, n pour découvrir les nouveautés</translation>
-<translation id="4649220074413114917">Appuyez sur l'écran avec deux doigts si vous ne voulez plus que ChromeVox lise le texte actuellement à l'écran. Pour continuer, appuyez sur l'écran avec deux doigts.</translation>
+<translation id="4649220074413114917">Appuyez sur l'écran avec deux doigts si vous ne voulez plus que ChromeVox énonce le texte affiché. Pour continuer, appuyez sur l'écran avec deux doigts.</translation>
 <translation id="4660783501463101648">Version classique supprimée. Il est désormais impossible de basculer vers la version classique de ChromeVox par le biais de la touche du clavier initialement prévue à cet effet.</translation>
 <translation id="4661075872484491155">tree</translation>
 <translation id="4668929960204016307">,</translation>
@@ -776,7 +776,7 @@
 <translation id="6561818612645211875">Accéder au début de la ligne actuelle</translation>
 <translation id="6579990219486187401">Rose clair</translation>
 <translation id="6583174818554398774">Passer au niveau de précision suivant</translation>
-<translation id="6584162722998608255">Voici maintenant comment vous déplacer sur l'écran. Pour passer à l'élément suivant, vous devez balayer l'écran de gauche à droite avec un doigt. Faites le test.</translation>
+<translation id="6584162722998608255">Voici maintenant comment faire pour vous déplacer. Pour passer à l'élément suivant, vous devez balayer l'écran de gauche à droite avec un doigt. Essayez !</translation>
 <translation id="6609828810966525877">Découvrez davantage de gestes dans le mode d'apprentissage et dans le centre d'aide Chromebook</translation>
 <translation id="6628427060004938651">Partie</translation>
 <translation id="6637586476836377253">journal</translation>
@@ -1112,7 +1112,7 @@
 <translation id="9153606228985488238">Timbre de voix : <ph name="PERCENT" /> %</translation>
 <translation id="9160096769946561184">Accéder à la fin de la colonne actuelle</translation>
 <translation id="9173115498289768110">Volume : <ph name="PERCENT" /> %</translation>
-<translation id="9185200690645120087">Tutoriel sur les commandes tactiles avec ChromeVox</translation>
+<translation id="9185200690645120087">Tutoriel sur les gestes avec ChromeVox</translation>
 <translation id="9192904702577636854">Marquee</translation>
 <translation id="9205282956404529648">Saisissez du texte pour activer la saisie semi-automatique</translation>
 <translation id="9208241857935108694">Blanc antique</translation>

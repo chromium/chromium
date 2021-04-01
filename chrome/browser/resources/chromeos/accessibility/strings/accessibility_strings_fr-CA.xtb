@@ -514,7 +514,7 @@
 <translation id="4615592953348396470">La prochaine touche actionnée ne sera pas utilisée.</translation>
 <translation id="4623097797855662355">Colophon</translation>
 <translation id="463135993322337640">Appuyez sur ChromeVox o, n pour découvrir les nouveautés</translation>
-<translation id="4649220074413114917">Vous pouvez toucher l'écran avec deux doigts pour arrêter la lecture en cours. Pour continuer, appuyez sur l'écran avec deux doigts. Pour continuer, touchez l'écran avec deux doigts.</translation>
+<translation id="4649220074413114917">Vous pouvez toucher l'écran avec deux doigts pour arrêter la lecture en cours. Cela est utile si vous ne voulez pas que ChromeVox lise quelque chose. Pour continuer, touchez l'écran avec deux doigts.</translation>
 <translation id="4660783501463101648">Version classique supprimée. Le commutateur de clavier pour revenir à la version classique de ChromeVox a été supprimé.</translation>
 <translation id="4661075872484491155">arbre</translation>
 <translation id="4668929960204016307">,</translation>
@@ -590,7 +590,7 @@
 <translation id="5140016802771803559">Violet Rebecca</translation>
 <translation id="5142101052131610456">Toutes les leçons</translation>
 <translation id="5158275234811857234">Couverture</translation>
-<translation id="516076699907426116">Servez-vous de la fonctionnalité Explorer au toucher pour repérer le bouton Leçon suivante. Pour continuer, touchez deux fois.</translation>
+<translation id="516076699907426116">Servez-vous de la fonctionnalité Explorer au toucher pour repérer le bouton Prochaine leçon. Pour continuer, touchez deux fois.</translation>
 <translation id="5170206230005240598">Sous-titres en braille activés</translation>
 <translation id="5183440668879371625">Ligne précédente en braille</translation>
 <translation id="5189244881767082992">Ligne</translation>
@@ -798,7 +798,7 @@
 <translation id="6759710362319508545">Ressources</translation>
 <translation id="67862343314499040">Violet</translation>
 <translation id="6786800275320335305">Article</translation>
-<translation id="6790781785997195160">Une fois que vous vous êtes exercé un peu, trouvez le bouton Leçon suivante, puis touchez deux fois pour continuer.</translation>
+<translation id="6790781785997195160">Une fois que vous vous êtes exercé un peu, trouvez le bouton Prochaine leçon, puis touchez deux fois pour continuer.</translation>
 <translation id="6793101435925451627">zone de liste</translation>
 <translation id="6815255864998354418">Mousseline au citron</translation>
 <translation id="6816066673340002913">Or pâle</translation>
@@ -838,7 +838,7 @@
 <translation id="7086377898680121060">Augmenter la luminosité</translation>
 <translation id="7088743565397416204">Touchez deux fois pour activer l'élément mis en évidence</translation>
 <translation id="7088960765736518739">Switch Access</translation>
-<translation id="7090715360595433170">Cela peut aussi être plus efficace que de balayer l'écran de gauche à droite avec le doigt.</translation>
+<translation id="7090715360595433170">Cela peut aussi être plus efficace que de balayer l'écran vers la gauche ou vers la droite avec un doigt.</translation>
 <translation id="7091296112653361280">Blanc navajo</translation>
 <translation id="7095834689119144465">Modifier le texte, numérique seulement</translation>
 <translation id="7096001299300236431">Contenu multimédia précédent</translation>

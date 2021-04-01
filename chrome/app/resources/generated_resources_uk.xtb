@@ -3356,7 +3356,6 @@
 <translation id="4716483597559580346">Powerwash для додаткового захисту</translation>
 <translation id="471880041731876836">У вас немає дозволу відвідувати цей сайт</translation>
 <translation id="4720185134442950733">Мережа мобільного передавання даних</translation>
-<translation id="4722483286922621738">Сайти зазвичай підключаються до серійних пристроїв для роботи функцій перенесення даних, як-от налаштування мережі</translation>
 <translation id="4722735765955348426">Пароль користувача <ph name="USERNAME" /></translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> має доступ до вашого екрана.</translation>
 <translation id="4723140812774948886">Замінити наступним</translation>
@@ -4796,7 +4795,6 @@
 <translation id="6387674443318562538">Розділити вертикально</translation>
 <translation id="6388429472088318283">Шукати мови</translation>
 <translation id="6388711141388085034">Використовується</translation>
-<translation id="6388997627483458007">Заборонити сайтам підключатися до пристроїв із послідовним інтерфейсом</translation>
 <translation id="6390020764191254941">Перемістити вкладку в нове вікно</translation>
 <translation id="6393156038355142111">Запропонувати надійний пароль</translation>
 <translation id="6393550101331051049">Дозволено показувати незахищений контент</translation>
@@ -5120,7 +5118,6 @@
 <translation id="6758056191028427665">Поділіться з нами своїми враженнями.</translation>
 <translation id="6759193508432371551">Відновлення заводських налаштувань</translation>
 <translation id="6762833852331690540">Увімкнено</translation>
-<translation id="6763264843598438739">Сайти можуть запитувати дозвіл на підключення до серійних пристроїв</translation>
 <translation id="676560328519657314">Ваші способи оплати в Google Pay</translation>
 <translation id="6767566652486411142">Вибрати іншу мову…</translation>
 <translation id="6767639283522617719">Не вдається приєднатися до домену. Переконайтеся, що налаштування для організаційного підрозділу правильні.</translation>
@@ -5152,6 +5149,7 @@
 <translation id="6795884519221689054">Панда</translation>
 <translation id="6797493596609571643">На жаль, сталася помилка.</translation>
 <translation id="6798420440063423019">Ключ безпеки заблоковано, оскільки ви ввели неправильний PIN-код забагато разів. Потрібно скинути ключ безпеки.</translation>
+<translation id="679845623837196966">Показувати список читання</translation>
 <translation id="6798578729981748444">Щоб завершити імпорт, закрийте всі вікна Firefox.</translation>
 <translation id="6798780071646309401">Caps Lock увімкнено</translation>
 <translation id="6798954102094737107">Плагін: <ph name="PLUGIN_NAME" /></translation>
@@ -6324,7 +6322,7 @@
 <translation id="8086015605808120405">Налаштування принтера <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Налаштувати принтер <ph name="PRINTER_NAME" /></translation>
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Цей файл зашифровано. Попросіть власника файлу розшифрувати його.}one{Деякі з цих файлів зашифровано. Попросіть власника файлів розшифрувати їх.}few{Деякі з цих файлів зашифровано. Попросіть власника файлів розшифрувати їх.}many{Деякі з цих файлів зашифровано. Попросіть власника файлів розшифрувати їх.}other{Деякі з цих файлів зашифровано. Попросіть власника файлів розшифрувати їх.}}</translation>
-<translation id="8087576439476816834">Завантаження, <ph name="PROFILE_NAME" /></translation>
+<translation id="8087576439476816834">Завантажити профіль <ph name="PROFILE_NAME" /></translation>
 <translation id="808894953321890993">Змінити пароль</translation>
 <translation id="8090234456044969073">Переглядати список ваших найчастіше відвідуваних веб-сайтів</translation>
 <translation id="8093359998839330381">Плагін <ph name="PLUGIN_NAME" /> не відповідає</translation>
@@ -7287,6 +7285,7 @@
       <ph name="LIST_ITEM" />запустити Діагностику з'єднання в Chrome.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Картинка в картинці</translation>
+<translation id="9167063903968449027">Показувати список читання</translation>
 <translation id="9168436347345867845">Пізніше</translation>
 <translation id="9169496697824289689">Переглянути комбінації клавіш</translation>
 <translation id="916964310188958970">Чому ця пропозиція?</translation>

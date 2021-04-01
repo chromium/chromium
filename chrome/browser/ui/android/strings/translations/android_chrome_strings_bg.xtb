@@ -166,6 +166,7 @@
 <translation id="2126426811489709554">Предоставено от Chrome</translation>
 <translation id="2131665479022868825">Спестихте <ph name="DATA" /></translation>
 <translation id="213279576345780926">Затворихте „<ph name="TAB_TITLE" />“</translation>
+<translation id="2139186145475833000">Добавяне към началния екран</translation>
 <translation id="214888715418183969">Изберете какви данни сте готови да споделяте с Chrome. Показателите, които споделяте, ще се използват за подобряване на функциите, производителността и стабилността на Chrome.</translation>
 <translation id="2154484045852737596">Редактиране на картата</translation>
 <translation id="2154710561487035718">Копиране на URL адреса</translation>
@@ -530,7 +531,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4720982865791209136">Помогнете за подобряването на Chrome. <ph name="BEGIN_LINK" />Участвайте в анкетата<ph name="END_LINK" /></translation>
 <translation id="47217992755561375">Преглед на водещите сайтове за вас</translation>
 <translation id="4732120983431207637">Stack Unwinder</translation>
-<translation id="4732693703583195378">Добавете този сайт към началния екран на таблета си, за да можете да го отваряте по-лесно</translation>
 <translation id="4738836084190194332">Последно синхронизиране: <ph name="WHEN" /></translation>
 <translation id="4749960740855309258">Отваряне на нов раздел</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
@@ -569,7 +569,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4925120120285606924">Екранна снимка от <ph name="CURRENT_DATE_ISO" /></translation>
 <translation id="49268022542405662">Паролите ви ще бъдат експортирани и изтеглени като текстов файл. Те ще бъдат видими за всички хора и приложения, които имат достъп до целевата папка.</translation>
 <translation id="4932247056774066048">Тъй като излизате от профил, управляван от <ph name="DOMAIN_NAME" />, данните ви в Chrome ще бъдат изтрити от това устройство. Те ще останат в профила ви в Google.</translation>
-<translation id="4936039914467572121">Отваряйте този сайт по-бързо</translation>
 <translation id="4941179133499732445">Докоснете иконата на микрофон, за да търсите чрез гласа си</translation>
 <translation id="4943703118917034429">Виртуална реалност</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
@@ -590,6 +589,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5091249083535528968">Разширени данни за употребата</translation>
 <translation id="509429900233858213">Възникна грешка.</translation>
 <translation id="510275257476243843">Остава 1 час</translation>
+<translation id="5118713593561876160">Интереси</translation>
 <translation id="5123685120097942451">Раздел в режим „инкогнито“</translation>
 <translation id="5127805178023152808">Синхронизирането е изключено</translation>
 <translation id="5132942445612118989">Синхронизиране на паролите, историята ви и др. на всички устройства</translation>
@@ -1012,6 +1012,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="784934925303690534">Период от време</translation>
 <translation id="7851858861565204677">Други устройства</translation>
+<translation id="7853202427316060426">Активност</translation>
 <translation id="7857691613771368249">Извеждане на запитване кога да се запазват файловете</translation>
 <translation id="7859988229622350291">Никога да не се превежда от</translation>
 <translation id="7875915731392087153">Създайте имейл</translation>
@@ -1158,6 +1159,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="883806473910249246">При изтеглянето на съдържанието възникна грешка.</translation>
 <translation id="8840953339110955557">Тази страница може да се различава от онлайн версията.</translation>
+<translation id="8849001918648564819">Скрито</translation>
 <translation id="8853345339104747198">„<ph name="TAB_TITLE" />“ – раздел</translation>
 <translation id="8854223127042600341">Преглед на офлайн файловете ви</translation>
 <translation id="8856607253650333758">Получаване на описания</translation>
@@ -1206,7 +1208,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="9133703968756164531"><ph name="ITEM_NAME" /> (<ph name="ITEM_ID" />)</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>
 <translation id="9148126808321036104">Влезте отново</translation>
-<translation id="9149286894143103695">Добавете този сайт към началния екран на телефона си, за да можете да го отваряте по-лесно</translation>
 <translation id="9155898266292537608">Можете също да извършите търсене с бързо докосване на дума</translation>
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено преди 1 минута}other{Проверено преди # минути}}</translation>

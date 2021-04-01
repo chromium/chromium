@@ -3351,7 +3351,6 @@
 <translation id="4716483597559580346">執行 Powerwash 以提升安全性</translation>
 <translation id="471880041731876836">你沒有這個網站的瀏覽權限</translation>
 <translation id="4720185134442950733">行動數據網路</translation>
-<translation id="4722483286922621738">網站通常會連線至序列裝置，以提供設定網路等資料移轉功能</translation>
 <translation id="4722735765955348426"><ph name="USERNAME" />的密碼</translation>
 <translation id="4722920479021006856"><ph name="APP_NAME" /> 正在共用你的畫面。</translation>
 <translation id="4723140812774948886">與下一個交換</translation>
@@ -4791,7 +4790,6 @@
 <translation id="6387674443318562538">垂直分割</translation>
 <translation id="6388429472088318283">搜尋語言</translation>
 <translation id="6388711141388085034">忙碌</translation>
-<translation id="6388997627483458007">禁止網站連線至序列裝置</translation>
 <translation id="6390020764191254941">將分頁移到新視窗</translation>
 <translation id="6393156038355142111">建議高強度密碼</translation>
 <translation id="6393550101331051049">可以顯示不安全的內容</translation>
@@ -5115,7 +5113,6 @@
 <translation id="6758056191028427665">請讓我們瞭解你的滿意度。</translation>
 <translation id="6759193508432371551">恢復原廠設定</translation>
 <translation id="6762833852331690540">開啟</translation>
-<translation id="6763264843598438739">網站可以要求連線至序列裝置</translation>
 <translation id="676560328519657314">你的 Google Pay 付款方式</translation>
 <translation id="6767566652486411142">選擇其他語言...</translation>
 <translation id="6767639283522617719">無法加入網域。請確認該機構單位使用正確設定。</translation>
@@ -5147,6 +5144,7 @@
 <translation id="6795884519221689054">熊貓</translation>
 <translation id="6797493596609571643">糟糕，發生錯誤。</translation>
 <translation id="6798420440063423019">輸入錯誤 PIN 碼的次數太多，因此安全金鑰已遭到鎖定。你必須重設安全金鑰。</translation>
+<translation id="679845623837196966">顯示閱讀清單</translation>
 <translation id="6798578729981748444">如要結束匯入作業，請關閉所有 Firefox 視窗。</translation>
 <translation id="6798780071646309401">大寫鎖定模式已開啟</translation>
 <translation id="6798954102094737107">外掛程式：<ph name="PLUGIN_NAME" /></translation>
@@ -7278,6 +7276,7 @@
       <ph name="LIST_ITEM" />執行 Chrome 連線診斷工具
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">子母畫面</translation>
+<translation id="9167063903968449027">顯示閱讀清單</translation>
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9169496697824289689">查看鍵盤快速鍵</translation>
 <translation id="916964310188958970">為什麼會顯示這項建議？</translation>
