@@ -4165,6 +4165,7 @@
         'os_type': 'lacros',
         'browser_config': 'release',
         'mixins': [
+          'limited_capacity_bot',
           'linux_amd_rx_5500_xt',
         ],
         'test_suites': {

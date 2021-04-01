@@ -7374,6 +7374,7 @@
               "pool": "chromium.tests.gpu.experimental"
             }
           ],
+          "expiration": 21600,
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
