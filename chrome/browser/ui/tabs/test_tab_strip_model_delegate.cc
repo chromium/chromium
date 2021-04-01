@@ -72,6 +72,12 @@ base::Optional<SessionID> TestTabStripModelDelegate::CreateHistoricalTab(
   return base::nullopt;
 }
 
+void TestTabStripModelDelegate::CreateHistoricalGroup(
+    const tab_groups::TabGroupId& group) {}
+
+void TestTabStripModelDelegate::GroupCloseStopped(
+    const tab_groups::TabGroupId& group) {}
+
 bool TestTabStripModelDelegate::ShouldRunUnloadListenerBeforeClosing(
     content::WebContents* contents) {
   return false;

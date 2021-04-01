@@ -43,6 +43,8 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) override;
   base::Optional<SessionID> CreateHistoricalTab(
       content::WebContents* contents) override;
+  void CreateHistoricalGroup(const tab_groups::TabGroupId& group) override;
+  void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;
   bool RunUnloadListenerBeforeClosing(content::WebContents* contents) override;

@@ -325,13 +325,7 @@ void TabGroupEditorBubbleView::UngroupPressed(TabGroupHeader* header_view) {
 void TabGroupEditorBubbleView::CloseGroupPressed() {
   base::RecordAction(
       base::UserMetricsAction("TabGroups_TabGroupBubble_CloseGroup"));
-  TabStripModel* const model = browser_->tab_strip_model();
-  const gfx::Range tabs = model->group_model()->GetTabGroup(group_)->ListTabs();
-  for (auto i = tabs.end(); i != tabs.start(); --i) {
-    model->CloseWebContentsAt(i - 1,
-                              TabStripModel::CLOSE_USER_GESTURE |
-                                  TabStripModel::CLOSE_CREATE_HISTORICAL_TAB);
-  }
+  browser_->tab_strip_model()->CloseAllTabsInGroup(group_);
   // Close the widget because it is no longer applicable.
   GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
 }

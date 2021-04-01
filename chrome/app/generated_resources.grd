@@ -1242,6 +1242,9 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_RESTORE_WINDOW" desc="The text label of the Restore Window menu item">
           R&amp;eopen closed window
         </message>
+        <message name="IDS_RESTORE_GROUP" desc="The text label of the Restore Group menu item">
+          Reopen closed group
+        </message>
         <message name="IDS_NAME_WINDOW" desc="The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;window...
         </message>
@@ -1276,6 +1279,9 @@ are declared in tools/grit/grit_rule.gni.
         </message>
         <message name="IDS_RESTORE_WINDOW" desc="In Title Case: The text label of the Restore Window menu item">
           R&amp;eopen Closed Window
+        </message>
+        <message name="IDS_RESTORE_GROUP" desc="In Title Case: The text label of the Restore Group menu item">
+          Reopen Closed Group
         </message>
         <message name="IDS_NAME_WINDOW" desc="In Title Case: The text label of the Name Window menu item, used to give a user-specified name to a window.">
           Name &amp;Window...
@@ -8335,6 +8341,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_RECENTLY_CLOSED_WINDOW" desc="In Title Case: Title of recently closed windows in Recent Tabs menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 Tab} other {# Tabs}}
         </message>
+        <message name="IDS_RECENTLY_CLOSED_GROUP" desc="In Title Case: Title of recently closed group that has a name, in Recent Tabs menu. [ICU_Syntax]">
+          {NUM_TABS, plural, =1 {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> - 1 Tab} other {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> - # Tabs}}
+        </message>
+        <message name="IDS_RECENTLY_CLOSED_GROUP_UNNAMED" desc="In Title Case: Title of recently closed group that does not have a name, in Recent Tabs menu. [ICU_Syntax]">
+          {NUM_TABS, plural, =1 {Unnamed Group - 1 Tab} other {Unnamed Group - # Tabs}}
+        </message>
         <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="In Title Case: The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
           No Tabs From Other Devices
         </message>
@@ -8345,6 +8357,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
         <message name="IDS_RECENTLY_CLOSED_WINDOW" desc="Title of recently closed windows in Recent Tabs menu. [ICU_Syntax]">
           {NUM_TABS, plural, =1 {1 tab} other {# tabs}}
+        </message>
+        <message name="IDS_RECENTLY_CLOSED_GROUP" desc="Title of recently closed group that has a name, in Recent Tabs menu. [ICU_Syntax]">
+          {NUM_TABS, plural, =1 {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> - 1 tab} other {<ph name="GROUP_TITLE">$1<ex>MyGroup</ex></ph> - # tabs}}
+        </message>
+        <message name="IDS_RECENTLY_CLOSED_GROUP_UNNAMED" desc="Title of recently closed group that does not have a name, in Recent Tabs menu. [ICU_Syntax]">
+          {NUM_TABS, plural, =1 {Unnamed group - 1 tab} other {Unnamed group - # tabs}}
         </message>
         <message name="IDS_RECENT_TABS_NO_DEVICE_TABS" desc="The label in the Recent Tabs menu in the wrench menu when there's no tabs from other devices.">
           No tabs from other devices

@@ -314,6 +314,9 @@ class TabStripModel : public TabGroupController {
   // notifications this method causes.
   void CloseAllTabs();
 
+  // Close all tabs in the given |group| at once.
+  void CloseAllTabsInGroup(const tab_groups::TabGroupId& group);
+
   // Returns true if there are any WebContentses that are currently loading.
   bool TabsAreLoading() const;
 

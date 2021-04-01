@@ -1206,6 +1206,11 @@ void Browser::OnTabGroupChanged(const TabGroupChange& change) {
       session_service->SetTabGroupMetadata(session_id(), change.group,
                                            visual_data);
     }
+  } else if (change.type == TabGroupChange::kClosed) {
+    sessions::TabRestoreService* tab_restore_service =
+        TabRestoreServiceFactory::GetForProfile(profile());
+    if (tab_restore_service)
+      tab_restore_service->GroupClosed(change.group);
   }
 }
 

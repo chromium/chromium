@@ -65645,6 +65645,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Other Device Tab"/>
   <int value="2" label="Restore Window"/>
   <int value="3" label="Show More"/>
+  <int value="4" label="Limit Recent Tab Action"/>
+  <int value="5" label="Restore Group"/>
 </enum>
 
 <enum name="RecommendAppsResponseParseResult">

@@ -35,6 +35,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/find_in_page/find_notification_details.h"
+#include "components/javascript_dialogs/app_modal_dialog_controller.h"
+#include "components/javascript_dialogs/app_modal_dialog_view.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -120,6 +122,34 @@ class TabRestoreTest : public InProcessBrowserTest {
     destroyed_watcher.Wait();
   }
 
+  void CloseGroup(const tab_groups::TabGroupId& group) {
+    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    int first_tab_in_group =
+        tab_strip_model->group_model()->GetTabGroup(group)->ListTabs().start();
+    content::WebContentsDestroyedWatcher destroyed_watcher(
+        tab_strip_model->GetWebContentsAt(first_tab_in_group));
+    browser()->tab_strip_model()->CloseAllTabsInGroup(group);
+    destroyed_watcher.Wait();
+  }
+
+  // Uses the undo-close-tab accelerator to undo the most recent close
+  // operation.
+  content::WebContents* RestoreMostRecentlyClosed(Browser* browser) {
+    ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
+    content::WindowedNotificationObserver tab_loaded_observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::NotificationService::AllSources());
+    {
+      TabRestoreServiceLoadWaiter waiter(
+          TabRestoreServiceFactory::GetForProfile(browser->profile()));
+      chrome::RestoreTab(browser);
+      waiter.Wait();
+    }
+    content::WebContents* new_tab = tab_added_waiter.Wait();
+    tab_loaded_observer.Wait();
+    return new_tab;
+  }
+
   // Uses the undo-close-tab accelerator to undo a close-tab or close-window
   // operation. The newly restored tab is expected to appear in the
   // window at index |expected_window_index|, at the |expected_tabstrip_index|,
@@ -142,18 +172,7 @@ class TabRestoreTest : public InProcessBrowserTest {
     ASSERT_GT(tab_count, 0);
 
     // Restore the tab.
-    ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
-    content::WindowedNotificationObserver tab_loaded_observer(
-        content::NOTIFICATION_LOAD_STOP,
-        content::NotificationService::AllSources());
-    {
-      TabRestoreServiceLoadWaiter waiter(
-          TabRestoreServiceFactory::GetForProfile(browser->profile()));
-      chrome::RestoreTab(browser);
-      waiter.Wait();
-    }
-    content::WebContents* new_tab = tab_added_waiter.Wait();
-    tab_loaded_observer.Wait();
+    content::WebContents* new_tab = RestoreMostRecentlyClosed(browser);
 
     if (expect_new_window) {
       int new_window_count = static_cast<int>(active_browser_list_->size());
@@ -171,6 +190,64 @@ class TabRestoreTest : public InProcessBrowserTest {
     // Ensure that the tab and window are active.
     EXPECT_EQ(expected_tabstrip_index,
               browser->tab_strip_model()->active_index());
+  }
+
+  // Uses the undo-close-tab accelerator to undo a close-group operation.
+  // The first tab in the group |expected_group| is expected to appear in the
+  // window at index |expected_window_index|, at the |expected_tabstrip_index|.
+  // If |expected_window_index| is equal to the number of current windows, the
+  // restored tab is expected to be created in a new window.
+  void RestoreGroup(tab_groups::TabGroupId expected_group,
+                    int expected_window_index,
+                    int expected_tabstrip_index) {
+    int window_count = static_cast<int>(active_browser_list_->size());
+    ASSERT_GT(window_count, 0);
+
+    bool expect_new_window = (expected_window_index == window_count);
+
+    Browser* browser;
+    if (expect_new_window) {
+      browser = active_browser_list_->get(0);
+    } else {
+      browser = GetBrowser(expected_window_index);
+    }
+
+    // Get the baseline conditions to compare against post-restore.
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    TabGroupModel* group_model = tab_strip_model->group_model();
+    int tab_count = tab_strip_model->count();
+    int group_count = group_model->ListTabGroups().size();
+    ASSERT_GT(tab_count, 0);
+
+    // Restore the group.
+    RestoreMostRecentlyClosed(browser);
+
+    // Reset all baseline conditions if a new window is expected to be opened.
+    // Note that we're resetting what browser models to compare against as well
+    // as the baseline counts for those models.
+    if (expect_new_window) {
+      EXPECT_EQ(++window_count, static_cast<int>(active_browser_list_->size()));
+      browser = GetBrowser(expected_window_index);
+      tab_strip_model = browser->tab_strip_model();
+      group_model = tab_strip_model->group_model();
+      tab_count = 0;
+      group_count = 0;
+    }
+
+    EXPECT_EQ(++group_count,
+              static_cast<int>(group_model->ListTabGroups().size()));
+
+    gfx::Range tabs_in_group =
+        group_model->GetTabGroup(expected_group)->ListTabs();
+
+    // Expect the entire group to be restored to the right place.
+    EXPECT_EQ(tab_count + static_cast<int>(tabs_in_group.length()),
+              tab_strip_model->count());
+    EXPECT_EQ(static_cast<int>(tabs_in_group.start()), expected_tabstrip_index);
+
+    // Expect the active tab to be the first tab in the group.
+    EXPECT_EQ(tab_strip_model->active_index(),
+              static_cast<int>(tabs_in_group.start()));
   }
 
   void GoBack(Browser* browser) {
@@ -480,6 +557,140 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreWindowBounds) {
   // change as the browser refuses to create windows that are offscreen, so will
   // adjust bounds slightly in some cases.
   EXPECT_EQ(bounds, browser->override_bounds());
+}
+
+// Close a group not at the end of the current window, then restore it. The
+// group should be in its original position.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroup) {
+  AddSomeTabs(browser(), 3);
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  CloseGroup(group);
+  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 1));
+
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(group)
+                ->ListTabs(),
+            gfx::Range(1, 3));
+}
+
+// Close a grouped tab, then the entire group. Restore both. The group should be
+// in its original position, with the tab in its original position as well.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupedTabThenGroup) {
+  AddSomeTabs(browser(), 3);
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1, 2});
+
+  CloseTab(1);
+  CloseGroup(group);
+  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 0, 0));
+  ASSERT_NO_FATAL_FAILURE(RestoreTab(0, 1));
+
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(group)
+                ->ListTabs(),
+            gfx::Range(0, 3));
+}
+
+// Close a group that contains all tabs in a window, resulting in the window
+// closing. Then restore the group. The window should be recreated with the
+// group intact.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupInNewWindow) {
+  // Add all tabs in the starting browser to a group.
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+
+  // Create a new browser.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabURL),
+      WindowOpenDisposition::NEW_WINDOW,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_BROWSER);
+  ASSERT_EQ(2u, active_browser_list_->size());
+
+  // Close the original group, which closes the original window.
+  CloseGroup(group);
+  ui_test_utils::WaitForBrowserToClose();
+  EXPECT_EQ(1u, active_browser_list_->size());
+
+  // Restore the original group, which should create a new window.
+  ASSERT_NO_FATAL_FAILURE(RestoreGroup(group, 1, 0));
+  Browser* browser = GetBrowser(1);
+  EXPECT_EQ(1, browser->tab_strip_model()->count());
+
+  EXPECT_EQ(
+      browser->tab_strip_model()->group_model()->GetTabGroup(group)->ListTabs(),
+      gfx::Range(0, 1));
+}
+
+// Close a group that contains a tab with an unload handler, resulting in the
+// tab not closing while the group does. Then restore the group. The group
+// should restore intact and duplicate the still-open tab.
+// TODO(crbug.com/1181521): Run unload handlers before the group is closed.
+IN_PROC_BROWSER_TEST_F(TabRestoreTest, RestoreGroupWithUnloadHandler) {
+  const char kUnloadHTML[] =
+      "<html><body>"
+      "<script>window.onbeforeunload=function(e){return 'foo';}</script>"
+      "</body></html>";
+  GURL unload_url = GURL(std::string("data:text/html,") + kUnloadHTML);
+
+  // Set up the tabstrip with:
+  // 0: An ungrouped tab (already present).
+  // 1: A grouped tab.
+  // 2: A grouped tab with an unload handler.
+  AddSomeTabs(browser(), 1);
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), unload_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  tab_groups::TabGroupId group =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+
+  ASSERT_EQ(browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(group)
+                ->ListTabs(),
+            gfx::Range(1, 3));
+  ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
+
+  // Close the group, but don't close the tab with the unload handler. Then
+  // check that the tab with an unload handler is still there and still grouped.
+  content::PrepContentsForBeforeUnloadTest(
+      browser()->tab_strip_model()->GetWebContentsAt(2));
+  CloseGroup(group);
+  javascript_dialogs::AppModalDialogController* dialog =
+      ui_test_utils::WaitForAppModalDialog();
+  dialog->view()->CancelAppModalDialog();
+
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(group)
+                ->ListTabs(),
+            gfx::Range(1, 2));
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
+
+  // Restore the group, which will restore all tabs, including one that is now
+  // a duplicate of the unclosed tab. Then check that the group is now one
+  // bigger than before.
+  RestoreMostRecentlyClosed(browser());
+
+  EXPECT_EQ(browser()
+                ->tab_strip_model()
+                ->group_model()
+                ->GetTabGroup(group)
+                ->ListTabs(),
+            gfx::Range(1, 4));
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 4);
+
+  // Close the tab with the unload handler, otherwise it will prevent test
+  // cleanup.
+  browser()->tab_strip_model()->CloseAllTabs();
+  dialog = ui_test_utils::WaitForAppModalDialog();
+  dialog->view()->AcceptAppModalDialog();
 }
 
 // Open a window with two tabs, close both (closing the window), then restore

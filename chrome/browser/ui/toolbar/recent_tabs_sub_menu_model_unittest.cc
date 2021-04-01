@@ -41,6 +41,7 @@
 #include "components/sync/model/model_type_controller_delegate.h"
 #include "components/sync_sessions/session_sync_service_impl.h"
 #include "components/sync_sessions/synced_session.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -262,6 +263,68 @@ TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedTabsFromCurrentSession) {
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
   EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(3, &url, &title));
   EXPECT_TRUE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
+  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(5, &url, &title));
+  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(6, &url, &title));
+}
+
+// Test recently closed groups with no foreign tabs.
+TEST_F(RecentTabsSubMenuModelTest, RecentlyClosedGroupsFromCurrentSession) {
+  DisableSync();
+
+  TabRestoreServiceFactory::GetInstance()->SetTestingFactory(
+      profile(),
+      base::BindRepeating(&RecentTabsSubMenuModelTest::GetTabRestoreService));
+
+  AddTab(browser(), GURL("http://foo/1"));
+  AddTab(browser(), GURL("http://foo/2"));
+  AddTab(browser(), GURL("http://foo/3"));
+  tab_groups::TabGroupId group1 =
+      browser()->tab_strip_model()->AddToNewGroup({0});
+  tab_groups::TabGroupId group2 =
+      browser()->tab_strip_model()->AddToNewGroup({1, 2});
+  browser()->tab_strip_model()->CloseAllTabsInGroup(group1);
+  browser()->tab_strip_model()->CloseAllTabsInGroup(group2);
+
+  TestRecentTabsSubMenuModel model(nullptr, browser());
+  // Expected menu:
+  // Menu index  Menu items
+  // --------------------------------------
+  // 0           History
+  // 1           <separator>
+  // 2           Recently closed header
+  // 3           <group1>
+  // 4           <group2>
+  // 5           <separator>
+  // 6           No tabs from other Devices
+  int num_items = model.GetItemCount();
+  EXPECT_EQ(7, num_items);
+  EXPECT_TRUE(model.IsEnabledAt(0));
+  model.ActivatedAt(0);
+  EXPECT_TRUE(model.IsEnabledAt(1));
+  EXPECT_FALSE(model.IsEnabledAt(2));
+  EXPECT_TRUE(model.IsEnabledAt(3));
+  EXPECT_TRUE(model.IsEnabledAt(4));
+  model.ActivatedAt(3);
+  model.ActivatedAt(4);
+  EXPECT_FALSE(model.IsEnabledAt(6));
+  EXPECT_EQ(3, model.enable_count());
+  EXPECT_EQ(3, model.execute_count());
+
+  EXPECT_EQ(NULL, model.GetLabelFontListAt(0));
+  EXPECT_EQ(NULL, model.GetLabelFontListAt(1));
+  EXPECT_TRUE(model.GetLabelFontListAt(2));
+  EXPECT_EQ(NULL, model.GetLabelFontListAt(3));
+  EXPECT_EQ(NULL, model.GetLabelFontListAt(4));
+  EXPECT_EQ(NULL, model.GetLabelFontListAt(5));
+  EXPECT_EQ(NULL, model.GetLabelFontListAt(6));
+
+  std::string url;
+  std::u16string title;
+  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(0, &url, &title));
+  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(1, &url, &title));
+  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(2, &url, &title));
+  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(3, &url, &title));
+  EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(4, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(5, &url, &title));
   EXPECT_FALSE(model.GetURLAndTitleForItemAtIndex(6, &url, &title));
 }

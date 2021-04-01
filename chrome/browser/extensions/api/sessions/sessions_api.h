@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "chrome/common/extensions/api/sessions.h"
+#include "chrome/common/extensions/api/tab_groups.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "components/sessions/core/tab_restore_service.h"
@@ -40,6 +41,8 @@ class SessionsGetRecentlyClosedFunction : public ExtensionFunction {
                                 bool active);
   std::unique_ptr<api::windows::Window> CreateWindowModel(
       const sessions::TabRestoreService::Window& window);
+  std::unique_ptr<api::tab_groups::TabGroup> CreateGroupModel(
+      const sessions::TabRestoreService::Group& group);
   std::unique_ptr<api::sessions::Session> CreateSessionModel(
       const sessions::TabRestoreService::Entry& entry);
 };

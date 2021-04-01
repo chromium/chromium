@@ -44,12 +44,18 @@ class BrowserTabStripModelDelegate : public TabStripModelDelegate {
   void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) override;
   base::Optional<SessionID> CreateHistoricalTab(
       content::WebContents* contents) override;
+  void CreateHistoricalGroup(const tab_groups::TabGroupId& group) override;
+  void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
   bool RunUnloadListenerBeforeClosing(content::WebContents* contents) override;
   bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) override;
   bool ShouldDisplayFavicon(content::WebContents* contents) const override;
 
   void CloseFrame();
+
+  // Returns whether the browser has the right conditions for creating
+  // historical tabs or groups.
+  bool BrowserSupportsHistoricalEntries();
 
   Browser* const browser_;
 

@@ -89,6 +89,19 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
     NOTREACHED();
   }
 
+  void CreateHistoricalGroup(sessions::LiveTabContext* context,
+                             const tab_groups::TabGroupId& group) override {
+    NOTREACHED();
+  }
+
+  void GroupClosed(const tab_groups::TabGroupId& group) override {
+    NOTREACHED();
+  }
+
+  void GroupCloseStopped(const tab_groups::TabGroupId& group) override {
+    NOTREACHED();
+  }
+
   void ClearEntries() override { NOTREACHED(); }
 
   void DeleteNavigationEntries(const DeletionPredicate& predicate) override {

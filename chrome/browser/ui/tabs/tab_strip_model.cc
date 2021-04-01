@@ -730,6 +730,25 @@ void TabStripModel::CloseAllTabs() {
   InternalCloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
 }
 
+void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
+  ReentrancyCheck reentrancy_check(&reentrancy_guard_);
+
+  delegate_->CreateHistoricalGroup(group);
+
+  gfx::Range tabs_in_group = group_model_->GetTabGroup(group)->ListTabs();
+  if (static_cast<int>(tabs_in_group.length()) == count())
+    closing_all_ = true;
+
+  std::vector<content::WebContents*> closing_tabs;
+  closing_tabs.reserve(tabs_in_group.length());
+  for (uint32_t i = tabs_in_group.end(); i > tabs_in_group.start(); --i)
+    closing_tabs.push_back(GetWebContentsAt(i - 1));
+  bool closed_all =
+      InternalCloseTabs(closing_tabs, CLOSE_CREATE_HISTORICAL_TAB);
+  if (!closed_all)
+    delegate_->GroupCloseStopped(group);
+}
+
 bool TabStripModel::CloseWebContentsAt(int index, uint32_t close_types) {
   DCHECK(ContainsIndex(index));
   WebContents* contents = GetWebContentsAt(index);

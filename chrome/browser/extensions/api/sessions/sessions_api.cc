@@ -17,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/sessions/session_id.h"
+#include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
@@ -128,7 +129,8 @@ std::unique_ptr<api::windows::Window> CreateWindowModelHelper(
 std::unique_ptr<api::sessions::Session> CreateSessionModelHelper(
     int last_modified,
     std::unique_ptr<api::tabs::Tab> tab,
-    std::unique_ptr<api::windows::Window> window) {
+    std::unique_ptr<api::windows::Window> window,
+    std::unique_ptr<api::tab_groups::TabGroup> group) {
   std::unique_ptr<api::sessions::Session> session_struct(
       new api::sessions::Session());
   session_struct->last_modified = last_modified;
@@ -136,6 +138,8 @@ std::unique_ptr<api::sessions::Session> CreateSessionModelHelper(
     session_struct->tab = std::move(tab);
   else if (window)
     session_struct->window = std::move(window);
+  else if (group)
+    NOTREACHED();  // TODO(crbug.com/1192309): Implement group support.
   else
     NOTREACHED();
   return session_struct;
@@ -171,11 +175,21 @@ SessionsGetRecentlyClosedFunction::CreateWindowModel(
       api::windows::WINDOW_TYPE_NORMAL, api::windows::WINDOW_STATE_NORMAL);
 }
 
+std::unique_ptr<api::tab_groups::TabGroup>
+SessionsGetRecentlyClosedFunction::CreateGroupModel(
+    const sessions::TabRestoreService::Group& group) {
+  DCHECK(!group.tabs.empty());
+
+  return tab_groups_util::CreateTabGroupObject(group.group_id,
+                                               group.visual_data);
+}
+
 std::unique_ptr<api::sessions::Session>
 SessionsGetRecentlyClosedFunction::CreateSessionModel(
     const sessions::TabRestoreService::Entry& entry) {
   std::unique_ptr<api::tabs::Tab> tab;
   std::unique_ptr<api::windows::Window> window;
+  std::unique_ptr<api::tab_groups::TabGroup> group;
   switch (entry.type) {
     case sessions::TabRestoreService::TAB:
       tab.reset(new api::tabs::Tab(CreateTabModel(
@@ -185,11 +199,12 @@ SessionsGetRecentlyClosedFunction::CreateSessionModel(
       window = CreateWindowModel(
           static_cast<const sessions::TabRestoreService::Window&>(entry));
       break;
-    default:
-      NOTREACHED();
+    case sessions::TabRestoreService::GROUP:
+      group = CreateGroupModel(
+          static_cast<const sessions::TabRestoreService::Group&>(entry));
   }
   return CreateSessionModelHelper(entry.timestamp.ToTimeT(), std::move(tab),
-                                  std::move(window));
+                                  std::move(window), std::move(group));
 }
 
 ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
@@ -219,7 +234,16 @@ ExtensionFunction::ResponseAction SessionsGetRecentlyClosedFunction::Run() {
   // We prune the list to contain max 25 entries at any time and removes
   // uninteresting entries.
   for (const auto& entry : tab_restore_service->entries()) {
-    result.push_back(std::move(*CreateSessionModel(*entry)));
+    // TODO(crbug.com/1192309): Support group entries in the Sessions API,
+    // rather than sharding the group out into individual tabs.
+    if (entry->type == sessions::TabRestoreService::GROUP) {
+      auto& group =
+          static_cast<const sessions::TabRestoreService::Group&>(*entry);
+      for (const auto& tab : group.tabs)
+        result.push_back(std::move(*CreateSessionModel(*tab)));
+    } else {
+      result.push_back(std::move(*CreateSessionModel(*entry)));
+    }
   }
 
   return RespondNow(ArgumentList(GetRecentlyClosed::Results::Create(result)));
@@ -337,9 +361,10 @@ SessionsGetDevicesFunction::CreateSessionModel(
   // empty.
   return !window_model
              ? nullptr
-             : CreateSessionModelHelper(window.timestamp.ToTimeT(),
-                                        std::unique_ptr<api::tabs::Tab>(),
-                                        std::move(window_model));
+             : CreateSessionModelHelper(
+                   window.timestamp.ToTimeT(),
+                   std::unique_ptr<api::tabs::Tab>(), std::move(window_model),
+                   std::unique_ptr<api::tab_groups::TabGroup>());
 }
 
 api::sessions::Device SessionsGetDevicesFunction::CreateDeviceModel(
@@ -408,7 +433,8 @@ ExtensionFunction::ResponseValue SessionsRestoreFunction::GetRestoredTabResult(
       contents, scrub_tab_behavior, extension()));
   std::unique_ptr<api::sessions::Session> restored_session(
       CreateSessionModelHelper(base::Time::Now().ToTimeT(), std::move(tab),
-                               std::unique_ptr<api::windows::Window>()));
+                               std::unique_ptr<api::windows::Window>(),
+                               std::unique_ptr<api::tab_groups::TabGroup>()));
   return ArgumentList(Restore::Results::Create(*restored_session));
 }
 
@@ -428,7 +454,7 @@ SessionsRestoreFunction::GetRestoredWindowResult(int window_id) {
       api::windows::Window::FromValue(*window_value));
   return ArgumentList(Restore::Results::Create(*CreateSessionModelHelper(
       base::Time::Now().ToTimeT(), std::unique_ptr<api::tabs::Tab>(),
-      std::move(window))));
+      std::move(window), std::unique_ptr<api::tab_groups::TabGroup>())));
 }
 
 ExtensionFunction::ResponseValue

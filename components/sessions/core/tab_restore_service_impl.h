@@ -39,6 +39,10 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
                                                 int index) override;
   void BrowserClosing(LiveTabContext* context) override;
   void BrowserClosed(LiveTabContext* context) override;
+  void CreateHistoricalGroup(LiveTabContext* context,
+                             const tab_groups::TabGroupId& id) override;
+  void GroupClosed(const tab_groups::TabGroupId& group) override;
+  void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
   void ClearEntries() override;
   void DeleteNavigationEntries(const DeletionPredicate& predicate) override;
   const Entries& entries() const override;

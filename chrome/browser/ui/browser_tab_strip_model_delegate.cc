@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_live_tab_context.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_helpers.h"
@@ -177,9 +178,7 @@ void BrowserTabStripModelDelegate::MoveGroupToNewWindow(
 
 base::Optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
     content::WebContents* contents) {
-  // We don't create historical tabs for incognito windows or windows without
-  // profiles.
-  if (!browser_->profile() || browser_->profile()->IsOffTheRecord())
+  if (!BrowserSupportsHistoricalEntries())
     return base::nullopt;
 
   sessions::TabRestoreService* service =
@@ -192,6 +191,28 @@ base::Optional<SessionID> BrowserTabStripModelDelegate::CreateHistoricalTab(
         browser_->tab_strip_model()->GetIndexOfWebContents(contents));
   }
   return base::nullopt;
+}
+
+void BrowserTabStripModelDelegate::CreateHistoricalGroup(
+    const tab_groups::TabGroupId& group) {
+  if (!BrowserSupportsHistoricalEntries())
+    return;
+
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser_->profile());
+  if (service) {
+    service->CreateHistoricalGroup(
+        BrowserLiveTabContext::FindContextWithGroup(group, browser_->profile()),
+        group);
+  }
+}
+
+void BrowserTabStripModelDelegate::GroupCloseStopped(
+    const tab_groups::TabGroupId& group) {
+  sessions::TabRestoreService* service =
+      TabRestoreServiceFactory::GetForProfile(browser_->profile());
+  if (service)
+    service->GroupCloseStopped(group);
 }
 
 bool BrowserTabStripModelDelegate::RunUnloadListenerBeforeClosing(
@@ -214,6 +235,12 @@ bool BrowserTabStripModelDelegate::ShouldDisplayFavicon(
 
 void BrowserTabStripModelDelegate::CloseFrame() {
   browser_->window()->Close();
+}
+
+bool BrowserTabStripModelDelegate::BrowserSupportsHistoricalEntries() {
+  // We don't create historical tabs for incognito windows or windows without
+  // profiles.
+  return browser_->profile() && !browser_->profile()->IsOffTheRecord();
 }
 
 }  // namespace chrome

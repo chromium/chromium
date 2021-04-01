@@ -439,6 +439,10 @@ void JumpList::ProcessTabRestoreServiceNotification() {
             static_cast<const sessions::TabRestoreService::Window&>(*entry),
             profile_dir, kRecentlyClosedItems);
         break;
+      case sessions::TabRestoreService::GROUP:
+        AddGroup(static_cast<const sessions::TabRestoreService::Group&>(*entry),
+                 profile_dir, kRecentlyClosedItems);
+        break;
     }
   }
 
@@ -514,6 +518,18 @@ void JumpList::AddWindow(const sessions::TabRestoreService::Window& window,
   DCHECK(!window.tabs.empty());
 
   for (const auto& tab : window.tabs) {
+    if (!AddTab(*tab, cmd_line_profile_dir, max_items))
+      return;
+  }
+}
+
+void JumpList::AddGroup(const sessions::TabRestoreService::Group& group,
+                        const base::FilePath& cmd_line_profile_dir,
+                        size_t max_items) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!group.tabs.empty());
+
+  for (const auto& tab : group.tabs) {
     if (!AddTab(*tab, cmd_line_profile_dir, max_items))
       return;
   }

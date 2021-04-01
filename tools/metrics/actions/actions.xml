@@ -27800,6 +27800,11 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WrenchMenu_OpenRecentGroup">
+  <owner>connily@chromium.org</owner>
+  <description>App Menu: Recently Closed: Open a recent group.</description>
+</action>
+
 <action name="WrenchMenu_OpenRecentTabFromDevice">
   <owner>jwd@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>

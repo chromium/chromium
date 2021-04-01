@@ -52,8 +52,8 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
  public:
   // Command Id for recently closed items header or disabled item to which the
   // accelerator string will be appended.
-  static constexpr int kRecentlyClosedHeaderCommandId = 1120;
-  static constexpr int kDisabledRecentlyClosedHeaderCommandId = 1121;
+  static constexpr int kRecentlyClosedHeaderCommandId = 1140;
+  static constexpr int kDisabledRecentlyClosedHeaderCommandId = 1141;
 
   // Exposed for tests only: return the Command Id for the first entry in the
   // recently closed window items list.
@@ -80,6 +80,7 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   struct TabNavigationItem;
   using TabNavigationItems = std::vector<TabNavigationItem>;
   using WindowItems = std::vector<SessionID>;
+  using GroupItems = std::vector<SessionID>;
 
   // Index of the separator that follows the history menu item. Used as a
   // reference position for inserting local entries.
@@ -106,6 +107,13 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   void BuildLocalWindowItem(SessionID window_id,
                             int num_tabs,
                             int curr_model_index);
+
+  // Build the recently closed group item with parameters needed to restore it,
+  // and add it to the menumodel at |curr_model_index|.
+  void BuildLocalGroupItem(SessionID session_id,
+                           tab_groups::TabGroupVisualData visual_data,
+                           int num_tabs,
+                           int curr_model_index);
 
   // Build the tab item for other devices with parameters needed to restore it.
   void BuildOtherDevicesTabItem(const std::string& session_tag,
@@ -171,8 +179,14 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
   // |local_window_items_| and used to create the specified window.
   WindowItems local_window_items_;
 
-  // Index of the last local entry (recently closed tab or window) in the
-  // menumodel.
+  // Group items for local recently closed groups.  The |command_id| for
+  // these is set to |kFirstLocalGroupCommandId| plus the index into the
+  // vector.  Upon invocation of the menu, information is retrieved from
+  // |local_group_items_| and used to create the specified group.
+  GroupItems local_group_items_;
+
+  // Index of the last local entry (recently closed tab or window or group) in
+  // the menumodel.
   int last_local_model_index_ = kHistorySeparatorIndex;
 
   base::CancelableTaskTracker local_tab_cancelable_task_tracker_;
