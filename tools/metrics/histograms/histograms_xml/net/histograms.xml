@@ -5279,6 +5279,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Net.TrustTokens.RedemptionRequestEmpty" enum="BooleanEmpty"
+    expires_after="2021-09-30">
+  <owner>davidvc@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    Whether the Trust Tokens redemption logic received an empty redemption
+    request string from its underlying cryptographic library. If this is always
+    true, but servers occasionally see empty redemption request headers, it
+    might suggest middleware (namely extensions) is removing the headers'
+    values.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Net.TrustTokens.RequestHelperFactoryOutcome"
     enum="TrustTokenRequestHelperFactoryOutcome" expires_after="2021-08-01">
 <!-- Name completed by histogram_suffixes name="TrustTokenOperationType" -->

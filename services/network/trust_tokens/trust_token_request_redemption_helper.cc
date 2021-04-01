@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/stl_util.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_response_headers.h"
@@ -159,6 +160,9 @@ void TrustTokenRequestRedemptionHelper::OnGotKeyCommitment(
     std::move(done).Run(mojom::TrustTokenOperationStatus::kInternalError);
     return;
   }
+
+  base::UmaHistogramBoolean("Net.TrustTokens.RedemptionRequestEmpty",
+                            maybe_redemption_header->empty());
 
   request->SetExtraRequestHeaderByName(kTrustTokensSecTrustTokenHeader,
                                        std::move(*maybe_redemption_header),
