@@ -179,7 +179,6 @@ TEST_F(IntegrationTest, SelfUninstallOutdatedUpdater) {
   Clean();
 }
 
-#if defined(OS_MAC)
 // TODO(crbug.com/1163524): Enable on Windows.
 TEST_F(IntegrationTest, RegisterTestApp) {
   RegisterTestApp();
@@ -188,7 +187,6 @@ TEST_F(IntegrationTest, RegisterTestApp) {
   ExpectActiveUpdater();
   Uninstall();
 }
-#endif  // OS_MAC
 
 // TODO(crbug.com/1163625): Failing on Mac 10.11.
 TEST_F(IntegrationTest, ReportsActive) {
@@ -256,7 +254,6 @@ TEST_F(IntegrationTest, MAYBE_UnregisterUninstalledApp) {
   Uninstall();
 }
 
-#if defined(OS_MAC)
 // TODO(https://crbug.com/1186583): Test failing frequently on Mac
 #if defined(OS_MAC)
 #define MAYBE_UninstallUpdaterWhenAllAppsUninstalled \
@@ -316,8 +313,6 @@ TEST_F(IntegrationTest, MAYBE_UnregisterUnownedApp) {
 
   Uninstall();
 }
-
-#endif  // OS_MAC
 
 #endif  // defined(OS_WIN) || !defined(COMPONENT_BUILD)
 
