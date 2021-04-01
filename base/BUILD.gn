@@ -1395,7 +1395,10 @@ component("base") {
       all_dependent_configs += [ "//base/allocator:wrap_malloc_symbols" ]
     }
     if (is_apple) {
-      sources += [ "allocator/allocator_shim_override_mac_symbols.h" ]
+      sources += [
+        "allocator/allocator_shim_override_mac_default_zone.h",
+        "allocator/allocator_shim_override_mac_symbols.h",
+      ]
     }
     if (is_chromeos || is_linux) {
       sources += [
