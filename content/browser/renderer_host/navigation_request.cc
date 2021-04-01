@@ -3067,6 +3067,26 @@ void NavigationRequest::OnRequestFailedInternal(
   extended_error_code_ = status.extended_error_code;
   resolve_error_info_ = status.resolve_error_info;
 
+  // Abandon the prerender host if the request failed for the main frame
+  // navigation. The host may be already abandoned by other prerendering
+  // specific cancellation code path, i.e. PrerenderNavigationThrottle did it
+  // with a dedicated FinalStatus code. In such cases, following call does
+  // nothing.
+  if (IsInMainFrame() && frame_tree_node_->frame_tree()->is_prerendering()) {
+    auto final_status = PrerenderHost::FinalStatus::kNavigationRequestFailure;
+    if (net_error_ == net::Error::ERR_BLOCKED_BY_CSP) {
+      final_status = PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp;
+    }
+
+    auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
+        frame_tree_node_->current_frame_host()->GetStoragePartition());
+    PrerenderHostRegistry* prerender_host_registry =
+        storage_partition_impl->GetPrerenderHostRegistry();
+    prerender_host_registry->AbandonHostAsync(GetFrameTreeNodeId(),
+                                              final_status);
+    return;
+  }
+
   if (MaybeCancelFailedNavigation())
     return;
 

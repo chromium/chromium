@@ -96,8 +96,10 @@ void PrerenderHostRegistry::AbandonHostAsync(
   // activation during asynchronous deletion.
   std::unique_ptr<PrerenderHost> prerender_host =
       AbandonHostInternal(frame_tree_node_id);
-  prerender_host->RecordFinalStatus(PassKey(), final_status);
   if (prerender_host) {
+    // Report only if this is the first valid call for `frame_tree_node_id`.
+    prerender_host->RecordFinalStatus(PassKey(), final_status);
+
     // Asynchronously delete the prerender host.
     GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, std::move(prerender_host));
   }

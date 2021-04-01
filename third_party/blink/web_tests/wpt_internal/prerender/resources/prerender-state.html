@@ -70,7 +70,9 @@ if (!run_test) {
     if (did_load) {
       result.onprerenderingchangeCalledAfterActivate = true;
       result.prerenderingValueAfterActivate = document.prerendering;
-      writeValueToServer(key, JSON.stringify(result));
+      writeValueToServer(key, JSON.stringify(result)).then(() => {
+        window.close();
+      });
     } else {
       result.onprerenderingchangeCalledBeforeActivate = true;
     }

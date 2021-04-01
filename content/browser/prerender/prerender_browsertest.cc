@@ -673,14 +673,20 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CrossOriginRedirection) {
   const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
-  // Start prerendering a URL that causes cross-origin redirection.
+  // Start prerendering a URL that causes cross-origin redirection. The
+  // cross-origin redirection should fail prerendering.
   const GURL kRedirectedUrl = GetCrossOriginUrl("/empty.html");
   const GURL kPrerenderingUrl =
       GetUrl("/server-redirect?" + kRedirectedUrl.spec());
-  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistryObserver registry_observer(GetPrerenderHostRegistry());
+  EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                     JsReplace("add_prerender($1)", kPrerenderingUrl)));
+  registry_observer.WaitForTrigger(kPrerenderingUrl);
+  PrerenderHost* prerender_host =
+      GetPrerenderHostRegistry().FindHostByUrlForTesting(kPrerenderingUrl);
+  PrerenderHostObserver host_observer(*prerender_host);
+  host_observer.WaitForDestroyed();
   EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-
-  // Cross-origin redirection should fail prerendering.
   EXPECT_EQ(GetRequestCount(kRedirectedUrl), 0);
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
   EXPECT_FALSE(registry.FindHostByUrlForTesting(kPrerenderingUrl));
@@ -1475,6 +1481,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, RenderFrameHostLifecycleState) {
 
 // Tests that prerendering is gated behind CSP:prefetch-src
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPPrefetchSrc) {
+  base::HistogramTester histogram_tester;
+
   GURL initial_url = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
@@ -1497,16 +1505,20 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPPrefetchSrc) {
     GURL disallowed_url = GetUrl("/title1.html");
     WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kConsolePattern);
-    // Prerender will fail, but PrerenderHost is not abandoned for navigation
-    // failures. PrerenderHost can be found in the registry, but the request
-    // should not reach the server.
-    AddPrerender(disallowed_url);
-    // TODO(https://crbug.com/1189602): Call AbandonHost even for CSP failure
-    // cases. Then FindHostByUrlForTesting() should return null.
-    EXPECT_TRUE(
+
+    // Prerender will fail. Then FindHostByUrlForTesting() should return null.
+    PrerenderHostRegistryObserver observer(GetPrerenderHostRegistry());
+    EXPECT_TRUE(ExecJs(shell()->web_contents(),
+                       JsReplace("add_prerender($1)", disallowed_url)));
+    observer.WaitForTrigger(disallowed_url);
+    EXPECT_FALSE(
         GetPrerenderHostRegistry().FindHostByUrlForTesting(disallowed_url));
+    console_observer.Wait();
     EXPECT_EQ(1u, console_observer.messages().size());
     EXPECT_EQ(GetRequestCount(disallowed_url), 0);
+    histogram_tester.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus",
+        PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp, 1);
   }
 
   // Check what happens when prerendering isn't blocked.
@@ -1521,8 +1533,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPPrefetchSrc) {
 }
 
 // Tests that prerendering is gated behind CSP:default-src
-// TODO(https://crbug.com/1185679) This is currently not the case. Fix this.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPDefaultSrc) {
+  base::HistogramTester histogram_tester;
+
   GURL initial_url = GetUrl("/prerender/add_prerender.html");
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
@@ -1530,15 +1543,16 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPDefaultSrc) {
   EXPECT_TRUE(ExecJs(current_frame_host(), R"(
     const meta = document.createElement('meta');
     meta.httpEquiv = "Content-Security-Policy";
-    meta.content = "default-src */empty.html; script-src 'unsafe-eval'";
+    meta.content =
+        "default-src https://a.test:*/empty.html; script-src 'unsafe-eval'";
     document.getElementsByTagName('head')[0].appendChild(meta);
   )"));
 
   const char* kConsolePattern =
       "Refused to prefetch content from "
-      "'https://a.test:*/prerender/add_prerender.html' because it violates the "
+      "'https://a.test:*/*.html' because it violates the "
       "following Content Security Policy directive: \"default-src "
-      "*/empty.html\"*";
+      "https://a.test:*/empty.html\"*";
 
   // Check what happens when a prerendering is blocked:
   {
@@ -1549,19 +1563,24 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, CSPDefaultSrc) {
     EXPECT_TRUE(ExecJs(shell()->web_contents(),
                        JsReplace("add_prerender($1)", disallowed_url)));
     observer.WaitForTrigger(disallowed_url);
-    // TODO(https://crbug.com/1185679): This should be false:
-    EXPECT_TRUE(
+    EXPECT_FALSE(
         GetPrerenderHostRegistry().FindHostByUrlForTesting(disallowed_url));
-    // TODO(https://crbug.com/1185679): This should be 1.
-    EXPECT_EQ(0u, console_observer.messages().size());
+    console_observer.Wait();
+    EXPECT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(GetRequestCount(disallowed_url), 0);
+    histogram_tester.ExpectUniqueSample(
+        "Prerender.Experimental.PrerenderHostFinalStatus",
+        PrerenderHost::FinalStatus::kNavigationRequestBlockedByCsp, 1);
   }
 
   // Check what happens when prerendering isn't blocked.
   {
     WebContentsConsoleObserver console_observer(web_contents());
     console_observer.SetPattern(kConsolePattern);
-    AddPrerender(GetUrl("/empty.html"));
+    GURL kAllowedUrl = GetUrl("/empty.html");
+    AddPrerender(kAllowedUrl);
     EXPECT_EQ(0u, console_observer.messages().size());
+    EXPECT_EQ(GetRequestCount(kAllowedUrl), 1);
   }
 }
 

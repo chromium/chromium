@@ -2,8 +2,6 @@
 <script src="/common/utils.js"></script>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/resources/testdriver.js"></script>
-<script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/utils.js"></script>
 <body>
 <script>
@@ -15,10 +13,7 @@ promise_test(async t => {
   // Open the test runner in a popup - it will prerender itself, record the
   // test results, and send them back to this harness.
   const url = `resources/prerender-state.html?key=${key}`;
-
-  test_driver.bless('Open a popup that will run the tests', () => {
-    window.open(url, '_blank', 'noopener');
-  });
+  window.open(url, '_blank', 'noopener');
 
   // Wait until the test sends us the results.
   let result = await nextValueFromServer(key);

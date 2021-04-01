@@ -62580,6 +62580,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="kInvalidSchemeRedirect"/>
   <int value="6" label="kInvalidSchemeNavigation"/>
   <int value="7" label="kInProgressNavigation"/>
+  <int value="8" label="kNavigationRequestFailure"/>
+  <int value="9" label="kNavigationRequestBlockedByCsp"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">
