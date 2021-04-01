@@ -1194,7 +1194,6 @@ try_.chromium_linux_builder(
 try_.chromium_linux_builder(
     name = "linux-rel-reclient",
     branch_selector = branches.STANDARD_MILESTONE,
-    builderless = not settings.is_main,
     goma_jobs = goma.jobs.J150,
     main_list_view = "try",
     goma_backend = None,
