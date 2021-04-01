@@ -305,10 +305,11 @@ void BindCommerceHintObserver(
       frame_host->GetProcess()->GetBrowserContext());
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      profile_manager->GetNumberOfProfiles() <= 1) {
+  if (!identity_manager || !profile_manager)
     return;
-  }
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      profile_manager->GetNumberOfProfiles() <= 1)
+    return;
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
   if (!web_contents)
     return;
