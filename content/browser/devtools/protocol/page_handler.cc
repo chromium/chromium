@@ -507,8 +507,12 @@ void PageHandler::Navigate(const std::string& url,
   params.referrer = Referrer(GURL(referrer.fromMaybe("")), policy);
   params.transition_type = type;
   params.frame_tree_node_id = frame_tree_node->frame_tree_node_id();
+  // Handler may be destroyed while navigating if the session
+  // gets disconnected as a result of access checks.
+  base::WeakPtr<PageHandler> weak_self = weak_factory_.GetWeakPtr();
   frame_tree_node->navigator().controller().LoadURLWithParams(params);
-
+  if (!weak_self)
+    return;
   base::UnguessableToken frame_token = frame_tree_node->devtools_frame_token();
   auto navigate_callback = navigate_callbacks_.find(frame_token);
   if (navigate_callback != navigate_callbacks_.end()) {

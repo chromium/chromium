@@ -27,6 +27,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -453,6 +454,15 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest,
 
 IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, AttachToEmptyUrls) {
   ASSERT_TRUE(RunExtensionTest("debugger_attach_to_empty_urls")) << message_;
+}
+
+// Tests that navigation to a forbidden URL is properly denied and
+// does not cause a crash.
+// This is a regression test for https://crbug.com/1188889.
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, NavigateToForbiddenUrl) {
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+  ASSERT_TRUE(RunExtensionTest("debugger_navigate_to_forbidden_url"))
+      << message_;
 }
 
 class SitePerProcessDebuggerExtensionApiTest : public DebuggerExtensionApiTest {
