@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller_delegate.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
+#include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -45,43 +46,6 @@ class MockMediaToolbarButtonControllerDelegate
   MOCK_METHOD0(Hide, void());
   MOCK_METHOD0(Enable, void());
   MOCK_METHOD0(Disable, void());
-};
-
-class MockMediaDialogDelegate : public MediaDialogDelegate {
- public:
-  MockMediaDialogDelegate() = default;
-  ~MockMediaDialogDelegate() override { Close(); }
-
-  void Open(MediaNotificationService* service) {
-    ASSERT_NE(nullptr, service);
-    service_ = service;
-    service_->SetDialogDelegate(this);
-  }
-
-  void Close() {
-    if (!service_)
-      return;
-
-    service_->SetDialogDelegate(nullptr);
-    service_ = nullptr;
-  }
-
-  // MediaDialogDelegate implementation.
-  MOCK_METHOD2(
-      ShowMediaSession,
-      MediaNotificationContainerImpl*(
-          const std::string& id,
-          base::WeakPtr<media_message_center::MediaNotificationItem> item));
-  MOCK_METHOD1(HideMediaSession, void(const std::string& id));
-  MOCK_METHOD2(PopOut,
-               std::unique_ptr<OverlayMediaNotification>(const std::string& id,
-                                                         gfx::Rect bounds));
-  MOCK_METHOD0(HideMediaDialog, void());
-
- private:
-  MediaNotificationService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaDialogDelegate);
 };
 
 }  // anonymous namespace

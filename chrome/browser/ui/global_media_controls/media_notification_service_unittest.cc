@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_service_observer.h"
 #include "chrome/browser/ui/global_media_controls/media_session_notification_producer.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notification.h"
+#include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -60,56 +61,6 @@ class MockMediaNotificationServiceObserver
   MOCK_METHOD(void, OnNotificationListChanged, ());
   MOCK_METHOD(void, OnMediaDialogOpened, ());
   MOCK_METHOD(void, OnMediaDialogClosed, ());
-};
-
-class MockMediaDialogDelegate : public MediaDialogDelegate {
- public:
-  MockMediaDialogDelegate() = default;
-  ~MockMediaDialogDelegate() override { Close(); }
-
-  void Open(MediaNotificationService* service) {
-    ASSERT_TRUE(service);
-    service_ = service;
-    service_->SetDialogDelegate(this);
-  }
-
-  void OpenForWebContents(MediaNotificationService* service,
-                          content::WebContents* content) {
-    ASSERT_TRUE(service);
-    service_ = service;
-    service_->SetDialogDelegateForWebContents(this, content);
-  }
-
-  void Close() {
-    if (!service_)
-      return;
-
-    service_->SetDialogDelegate(nullptr);
-    service_ = nullptr;
-  }
-
-  // MediaDialogDelegate implementation.
-  MOCK_METHOD2(
-      ShowMediaSession,
-      MediaNotificationContainerImpl*(
-          const std::string& id,
-          base::WeakPtr<media_message_center::MediaNotificationItem> item));
-  MOCK_METHOD1(HideMediaSession, void(const std::string& id));
-  std::unique_ptr<OverlayMediaNotification> PopOut(const std::string& id,
-                                                   gfx::Rect bounds) {
-    return std::unique_ptr<OverlayMediaNotification>(PopOutProxy(id, bounds));
-  }
-
-  // Need to use a proxy since std::unique_ptr is not copyable.
-  MOCK_METHOD2(PopOutProxy,
-               OverlayMediaNotification*(const std::string& id,
-                                         gfx::Rect bounds));
-  void HideMediaDialog() override { Close(); }
-
- private:
-  MediaNotificationService* service_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockMediaDialogDelegate);
 };
 
 class MockOverlayMediaNotification : public OverlayMediaNotification {
@@ -433,11 +384,6 @@ class MediaNotificationServiceTest : public ChromeRenderViewHostTestHarness {
       const base::UnguessableToken& id) {
     return service_->media_session_notification_producer_->GetSession(
         id.ToString());
-  }
-
-  PresentationRequestNotificationProducer*
-  GetPresentationRequestNotificationProducer() {
-    return service_->presentation_request_notification_producer_.get();
   }
 
   MockMediaNotificationServiceObserver& observer() { return observer_; }

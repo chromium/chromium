@@ -7,8 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
-#include "chrome/browser/ui/views/global_media_controls/test_helper.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 
 namespace {

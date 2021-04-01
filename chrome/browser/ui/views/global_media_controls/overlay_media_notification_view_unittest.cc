@@ -6,8 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/global_media_controls/overlay_media_notifications_manager.h"
+#include "chrome/browser/ui/global_media_controls/test_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_container_impl_view.h"
-#include "chrome/browser/ui/views/global_media_controls/test_helper.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "media/base/media_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"

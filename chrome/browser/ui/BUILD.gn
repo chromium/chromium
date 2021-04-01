@@ -4912,6 +4912,8 @@ static_library("test_support") {
       "exclusive_access/fullscreen_controller_state_tests.h",
       "global_error/global_error_waiter.cc",
       "global_error/global_error_waiter.h",
+      "global_media_controls/test_helper.cc",
+      "global_media_controls/test_helper.h",
       "hats/mock_hats_service.cc",
       "hats/mock_hats_service.h",
       "passwords/credential_manager_dialog_controller_mock.cc",
@@ -4926,8 +4928,6 @@ static_library("test_support") {
       "tabs/tab_ukm_test_helper.h",
       "test/test_confirm_bubble_model.cc",
       "test/test_confirm_bubble_model.h",
-      "views/global_media_controls/test_helper.cc",
-      "views/global_media_controls/test_helper.h",
       "webui/help/test_version_updater.cc",
       "webui/help/test_version_updater.h",
     ]
