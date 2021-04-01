@@ -717,6 +717,9 @@ Polymer({
     if (!this.propertiesReceived_) {
       return;
     }
+    settings.recordSettingChange(
+        chromeos.settings.mojom.Setting.kWifiHidden,
+        {boolValue: !!this.hiddenPref_.value});
     const config = this.getDefaultConfigProperties_();
     config.typeConfig.wifi.hiddenSsid = this.hiddenPref_.value ?
         chromeos.networkConfig.mojom.HiddenSsidMode.kEnabled :
@@ -810,7 +813,7 @@ Polymer({
   },
 
   /**
-   * Updates auto-connect pref value.
+   * Updates hidden pref value.
    * @private
    */
   updateHiddenPref_() {

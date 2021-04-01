@@ -1258,6 +1258,17 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Settings.Wifi.Hidden" enum="BooleanToggled"
+    expires_after="2022-03-30">
+  <owner>jonmann@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-customization@google.com</owner>
+  <summary>
+    Recorded when the &quot;Hidden&quot; Wi-Fi network toggle is changed by the
+    user.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Settings.WindowOpenDuration" units="ms"
     expires_after="2021-10-01">
   <owner>khorimoto@chromium.org</owner>

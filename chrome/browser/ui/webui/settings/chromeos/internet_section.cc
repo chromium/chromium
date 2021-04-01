@@ -8,6 +8,7 @@
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
@@ -833,8 +834,15 @@ std::string InternetSection::GetSectionPath() const {
 
 bool InternetSection::LogMetric(mojom::Setting setting,
                                 base::Value& value) const {
-  // Unimplemented.
-  return false;
+  switch (setting) {
+    case mojom::Setting::kWifiHidden:
+      base::UmaHistogramBoolean("ChromeOS.Settings.Wifi.Hidden",
+                                value.GetBool());
+      return true;
+
+    default:
+      return false;
+  }
 }
 
 void InternetSection::RegisterHierarchy(HierarchyGenerator* generator) const {
