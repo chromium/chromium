@@ -2365,6 +2365,11 @@ void WebMediaPlayerImpl::OnAudioConfigChange(const AudioDecoderConfig& config) {
   if (observer_)
     observer_->OnMetadataChanged(pipeline_metadata_);
 
+  if (codec_change) {
+    media_metrics_provider_->SetHasAudio(
+        pipeline_metadata_.audio_decoder_config.codec());
+  }
+
   if (codec_change || codec_profile_change)
     UpdateSecondaryProperties();
 }
@@ -2382,6 +2387,11 @@ void WebMediaPlayerImpl::OnVideoConfigChange(const VideoDecoderConfig& config) {
 
   if (observer_)
     observer_->OnMetadataChanged(pipeline_metadata_);
+
+  if (codec_change) {
+    media_metrics_provider_->SetHasVideo(
+        pipeline_metadata_.video_decoder_config.codec());
+  }
 
   if (codec_change || codec_profile_change)
     UpdateSecondaryProperties();
