@@ -37,7 +37,7 @@ class HeapPointersOnStackScope final {
 
 class TestSupportingGC : public testing::Test {
  public:
-  ~TestSupportingGC() override { CompleteGarbageCollectionIfNeeded(); }
+  ~TestSupportingGC() override { PreciselyCollectGarbage(); }
 
   // Performs a precise garbage collection with eager sweeping.
   static void PreciselyCollectGarbage() {
@@ -55,9 +55,6 @@ class TestSupportingGC : public testing::Test {
   // freed. This is useful to avoid other garbage collections having to deal
   // with stale memory.
   void ClearOutOldGarbage() {}
-
-  // Completes GC if it is currently running.
-  void CompleteGarbageCollectionIfNeeded() {}
 
   void ForceCompactionForNextGC() {}
 
@@ -83,7 +80,7 @@ class IncrementalMarkingTestDriver {
   v8::CppHeap& cpp_heap_;
 };
 
-// Test driver for incremental marking. Assumes that no stack handling is
+// Test driver for concurrent marking. Assumes that no stack handling is
 // required.
 class ConcurrentMarkingTestDriver : public IncrementalMarkingTestDriver {
  public:

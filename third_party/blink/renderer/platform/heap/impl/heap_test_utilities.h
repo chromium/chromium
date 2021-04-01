@@ -48,9 +48,6 @@ class TestSupportingGC : public testing::Test {
   // with stale memory.
   void ClearOutOldGarbage();
 
-  // Completes GC if it is currently running.
-  void CompleteGarbageCollectionIfNeeded();
-
   void ForceCompactionForNextGC();
 
  protected:
@@ -81,7 +78,7 @@ class IncrementalMarkingTestDriver {
   ThreadState* const thread_state_;
 };
 
-// Test driver for incremental marking. Assumes that no stack handling is
+// Test driver for concurrent marking. Assumes that no stack handling is
 // required.
 class ConcurrentMarkingTestDriver : public IncrementalMarkingTestDriver {
  public:

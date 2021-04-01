@@ -1670,7 +1670,8 @@ TEST_F(HeapTest, BasicFunctionality) {
         DynamicallySizedObject::Create(size));
     slack += 4;
     // The allocations in the loop may trigger GC with lazy sweeping.
-    CompleteGarbageCollectionIfNeeded();
+    if (ThreadState::Current()->IsSweepingInProgress())
+      ThreadState::Current()->CompleteSweep();
     CheckWithSlack(base_level + total, heap.ObjectPayloadSizeForTesting(),
                    slack);
     if (test_pages_allocated) {

@@ -31,7 +31,8 @@ void TestSupportingGC::ConservativelyCollectGarbage(
 
 TestSupportingGC::~TestSupportingGC() {
   // Complete sweeping before |task_environment_| is destroyed.
-  CompleteGarbageCollectionIfNeeded();
+  if (ThreadState::Current()->IsSweepingInProgress())
+    ThreadState::Current()->CompleteSweep();
 }
 
 void TestSupportingGC::ClearOutOldGarbage() {
@@ -43,11 +44,6 @@ void TestSupportingGC::ClearOutOldGarbage() {
     if (heap.ObjectPayloadSizeForTesting() >= used)
       break;
   }
-}
-
-void TestSupportingGC::CompleteGarbageCollectionIfNeeded() {
-  if (ThreadState::Current()->IsSweepingInProgress())
-    ThreadState::Current()->CompleteSweep();
 }
 
 void TestSupportingGC::ForceCompactionForNextGC() {

@@ -173,7 +173,6 @@ TEST_F(HeapMojoReceiverGCWithContextObserverTest, ResetsOnGC) {
   PreciselyCollectGarbage();
   run_loop().Run();
   EXPECT_TRUE(disconnected());
-  CompleteGarbageCollectionIfNeeded();
 }
 
 // Check that the owner
@@ -196,7 +195,6 @@ TEST_F(HeapMojoReceiverGCWithoutContextObserverTest, ResetsOnGC) {
   PreciselyCollectGarbage();
   run_loop().Run();
   EXPECT_TRUE(disconnected());
-  CompleteGarbageCollectionIfNeeded();
 }
 
 // Destroy the context with context observer and check that the connection is
