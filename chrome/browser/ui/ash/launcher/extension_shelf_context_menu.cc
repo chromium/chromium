@@ -72,7 +72,8 @@ void ExtensionShelfContextMenu::GetMenuModel(GetMenuModelCallback callback) {
       AddContextMenuOption(menu_model.get(), ash::MENU_CLOSE,
                            IDS_SHELF_CONTEXT_MENU_CLOSE);
     }
-  } else if (item().type == ash::TYPE_BROWSER_SHORTCUT) {
+  } else if (item().type == ash::TYPE_BROWSER_SHORTCUT ||
+             item().type == ash::TYPE_UNPINNED_BROWSER_SHORTCUT) {
     AddContextMenuOption(menu_model.get(), ash::MENU_NEW_WINDOW,
                          IDS_APP_LIST_NEW_WINDOW);
     if (!profile->IsGuestSession()) {

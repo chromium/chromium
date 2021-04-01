@@ -31,6 +31,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
 #include "chrome/browser/extensions/chrome_app_icon_loader.h"
@@ -319,8 +320,10 @@ ChromeLauncherController::~ChromeLauncherController() {
 }
 
 void ChromeLauncherController::Init() {
-  CreateBrowserShortcutLauncherItem();
-  UpdateBrowserItemState();
+  if (!crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    CreateBrowserShortcutLauncherItem(/*pinned=*/true);
+    UpdateBrowserItemState();
+  }
 
   // Tag all open browser windows with the appropriate shelf id property. This
   // associates each window with the shelf item for the active web contents.
@@ -722,10 +725,6 @@ ChromeLauncherController::GetBrowserShortcutLauncherItemControllerForTesting() {
 }
 
 void ChromeLauncherController::UpdateBrowserItemState() {
-  // Determine the new browser's active state and change if necessary.
-  int browser_index = model_->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT);
-  DCHECK_GE(browser_index, 0);
-  ash::ShelfItem browser_item = model_->items()[browser_index];
   ash::ShelfItemStatus browser_status = ash::STATUS_CLOSED;
   for (auto* browser : *BrowserList::GetInstance()) {
     if (IsBrowserRepresentedInBrowserList(browser, model_)) {
@@ -734,10 +733,38 @@ void ChromeLauncherController::UpdateBrowserItemState() {
     }
   }
 
-  if (browser_status != browser_item.status) {
-    browser_item.status = browser_status;
-    model_->Set(browser_index, browser_item);
+  if (browser_status == ash::STATUS_CLOSED) {
+    // If browser shortcut icon is not pinned, remove it.
+    // Practically, this happens when Lacros is the primary browser.
+    int item_index =
+        model_->GetItemIndexForType(ash::TYPE_UNPINNED_BROWSER_SHORTCUT);
+    if (item_index >= 0) {
+      model_->RemoveItemAt(item_index);
+      return;
+    }
   }
+
+  const ash::ShelfID chrome_id(kChromeAppId);
+  if (browser_status == ash::STATUS_RUNNING &&
+      model_->ItemIndexByID(chrome_id) < 0) {
+    // If browser short cut is not present, create it.
+    // This happens iff browser shortcut is not pinned.
+    CreateBrowserShortcutLauncherItem(/*pinned=*/false);
+  }
+
+  int browser_index = model_->ItemIndexByID(chrome_id);
+  if (browser_index < 0) {
+    DCHECK_EQ(browser_status, ash::STATUS_CLOSED);
+    return;
+  }
+  ash::ShelfItem browser_item = model_->items()[browser_index];
+  if (browser_status == browser_item.status) {
+    // Nothing is changed.
+    return;
+  }
+
+  browser_item.status = browser_status;
+  model_->Set(browser_index, browser_item);
 }
 
 void ChromeLauncherController::SetShelfIDForBrowserWindowContents(
@@ -1095,6 +1122,12 @@ void ChromeLauncherController::RemoveShelfItem(const ash::ShelfID& id) {
 void ChromeLauncherController::PinRunningAppInternal(
     int index,
     const ash::ShelfID& shelf_id) {
+  if (GetItem(shelf_id)->type == ash::TYPE_UNPINNED_BROWSER_SHORTCUT) {
+    // If the item is unpinned browser shortcut, which should never be
+    // pinned during the session, do nothing.
+    return;
+  }
+
   DCHECK_EQ(GetItem(shelf_id)->type, ash::TYPE_APP);
   SetItemType(shelf_id, ash::TYPE_PINNED_APP);
   int running_index = model_->ItemIndexByID(shelf_id);
@@ -1213,9 +1246,13 @@ void ChromeLauncherController::UpdateAppLaunchersFromSync() {
       }
       DCHECK_EQ(model_->ItemIndexByID(item.id), index);
     } else {
-      // This is fresh pin. Create new one.
-      DCHECK_NE(pref_shelf_id.app_id, kChromeAppId);
-      CreateAppShortcutLauncherItem(pref_shelf_id, index);
+      // app_id may be kChromeAppId. This happens when sync happens,
+      // but Lacros becomes the primary browser so that the browser
+      // shortcut is unpinned. Do nothing then.
+      if (pref_shelf_id.app_id != kChromeAppId) {
+        // This is fresh pin. Create new one.
+        CreateAppShortcutLauncherItem(pref_shelf_id, index);
+      }
     }
     ++index;
   }
@@ -1289,14 +1326,15 @@ ash::ShelfID ChromeLauncherController::InsertAppLauncherItem(
   return item.id;
 }
 
-void ChromeLauncherController::CreateBrowserShortcutLauncherItem() {
+void ChromeLauncherController::CreateBrowserShortcutLauncherItem(bool pinned) {
   // Do not sync the pin position of the browser shortcut item yet; its initial
   // position before prefs have loaded is unimportant and the sync service may
   // not yet be initialized.
   ScopedPinSyncDisabler scoped_pin_sync_disabler = GetScopedPinSyncDisabler();
 
   ash::ShelfItem browser_shortcut;
-  browser_shortcut.type = ash::TYPE_BROWSER_SHORTCUT;
+  browser_shortcut.type =
+      pinned ? ash::TYPE_BROWSER_SHORTCUT : ash::TYPE_UNPINNED_BROWSER_SHORTCUT;
   browser_shortcut.id = ash::ShelfID(kChromeAppId);
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   browser_shortcut.image = *rb.GetImageSkiaNamed(IDR_CHROME_APP_ICON_192);
@@ -1308,8 +1346,13 @@ void ChromeLauncherController::CreateBrowserShortcutLauncherItem() {
   model_->SetShelfItemDelegate(
       browser_shortcut.id,
       std::make_unique<BrowserShortcutLauncherItemController>(model_));
-  // Add the item towards the start of the shelf, it will be ordered by weight.
-  model_->AddAt(0, browser_shortcut);
+
+  // If pinned, add the item towards the start of the shelf, it will be ordered
+  // by weight. Otherwise put at the end as usual.
+  if (pinned)
+    model_->AddAt(0, browser_shortcut);
+  else
+    model_->Add(browser_shortcut);
 }
 
 int ChromeLauncherController::FindInsertionPoint() {

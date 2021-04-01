@@ -348,10 +348,7 @@ class ChromeLauncherController
       const std::u16string& title = std::u16string());
 
   // Create the Chrome browser shortcut ShelfItem.
-  void CreateBrowserShortcutLauncherItem();
-
-  // Creates the Lacros browser shortcut ShelfItem.
-  void CreateLacrosBrowserShortcut();
+  void CreateBrowserShortcutLauncherItem(bool pinned);
 
   // Finds the index of where to insert the next item.
   int FindInsertionPoint();

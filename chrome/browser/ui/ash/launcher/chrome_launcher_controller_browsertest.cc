@@ -48,6 +48,7 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/file_manager/file_manager_test_util.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -264,7 +265,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
   ShelfAppBrowserTest& operator=(const ShelfAppBrowserTest&) = delete;
   ~ShelfAppBrowserTest() override {}
 
-  ash::ShelfModel* shelf_model() const { return controller_->shelf_model(); }
+  ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
 
   void SetUpOnMainThread() override {
     controller_ = ChromeLauncherController::instance();
@@ -321,7 +322,7 @@ class ShelfAppBrowserTest : public extensions::ExtensionBrowserTest {
 
   // Get the index of an item which has the given type.
   int GetIndexOfShelfItemType(ash::ShelfItemType type) const {
-    return shelf_model()->GetItemIndexForType(type);
+    return controller_->shelf_model()->GetItemIndexForType(type);
   }
 
   // Creates a context menu for the existing browser shortcut item.
@@ -599,6 +600,46 @@ IN_PROC_BROWSER_TEST_F(LauncherPlatformAppBrowserTest, UnpinRunning) {
   CloseAppWindow(window);
   --item_count;
   ASSERT_EQ(item_count, shelf_model()->item_count());
+}
+
+class UnpinnedBrowserShortcutTest : public extensions::ExtensionBrowserTest {
+ protected:
+  UnpinnedBrowserShortcutTest() {
+    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
+  }
+  UnpinnedBrowserShortcutTest(const UnpinnedBrowserShortcutTest&) = delete;
+  UnpinnedBrowserShortcutTest& operator=(const UnpinnedBrowserShortcutTest&) =
+      delete;
+  ~UnpinnedBrowserShortcutTest() override {
+    crosapi::browser_util::SetLacrosPrimaryBrowserForTest(base::nullopt);
+  }
+
+  ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kNoStartupWindow);
+  }
+
+  void SetUpOnMainThread() override {
+    controller_ = ChromeLauncherController::instance();
+    ASSERT_TRUE(controller_);
+    extensions::ExtensionBrowserTest::SetUpOnMainThread();
+  }
+
+  ChromeLauncherController* controller_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(UnpinnedBrowserShortcutTest, UnpinnedBrowserShortcut) {
+  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT));
+  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(
+                    ash::TYPE_UNPINNED_BROWSER_SHORTCUT));
+
+  CreateBrowser(profile());
+
+  EXPECT_EQ(-1, shelf_model()->GetItemIndexForType(ash::TYPE_BROWSER_SHORTCUT));
+  EXPECT_NE(-1, shelf_model()->GetItemIndexForType(
+                    ash::TYPE_UNPINNED_BROWSER_SHORTCUT));
 }
 
 // Test that we can launch a platform app with more than one window.
@@ -2752,7 +2793,7 @@ class PerDeskShelfAppBrowserTest : public ShelfAppBrowserTest,
       delete;
   ~PerDeskShelfAppBrowserTest() override = default;
 
-  ash::ShelfView* shelf_view() const { return shelf_view_; }
+  ash::ShelfView* shelf_view() { return shelf_view_; }
 
   // ShelfAppBrowserTest:
   void SetUp() override {
@@ -2787,7 +2828,7 @@ class PerDeskShelfAppBrowserTest : public ShelfAppBrowserTest,
   ash::ShelfID GetBrowserId() const {
     const int browser_index =
         GetIndexOfShelfItemType(ash::TYPE_BROWSER_SHORTCUT);
-    return shelf_model()->items()[browser_index].id;
+    return controller_->shelf_model()->items()[browser_index].id;
   }
 
   ash::ShelfMenuModelAdapter* ClickBrowserShelfButtonAndGetMenu() {
