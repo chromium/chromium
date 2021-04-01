@@ -4,22 +4,13 @@
 
 import("//chrome/android/channel.gni")
 
-# Chrome can be built with any combination of v1/v2 enabled.
-# When both are enabled, we use the InterestFeedV2 feature to select which
-# one is used at runtime.
-# If both are false, some of the Feed V2 UI classes are still used to display
-# the NTP.
 declare_args() {
-  # Whether version 2 of the NTP feed is enabled in the build.
+  # Whether Feed is enabled in the build.
   enable_feed_v2 = is_android
 
-  # Whether to include Feed V2 in ChromeModern builds.
+  # Whether to include Feed in ChromeModern builds.
   enable_feed_v2_modern = true
 
-  # Whether to include Feed V2 as a DFM in ChromeModern builds.
+  # Whether to include Feed as a DFM in ChromeModern builds.
   dfmify_feed_v2_modern = false
-
-  # Set to "true" or "false" to override whether Feed uses
-  # doubledown. Provided for use with pinpoint.
-  override_use_doubledown_feed = "use_default"
 }
