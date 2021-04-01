@@ -19,7 +19,7 @@ namespace scheduler {
 //
 // Please keep in sync with WebSchedulerTrackedFeature in
 // tools/metrics/histograms/enums.xml. These values should not be renumbered.
-enum class WebSchedulerTrackedFeature {
+enum class WebSchedulerTrackedFeature : uint32_t {
   kWebSocket = 0,
   kWebRTC = 1,
 
