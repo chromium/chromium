@@ -347,7 +347,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -715,7 +716,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -9289,7 +9291,8 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -10183,7 +10186,8 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -12076,7 +12080,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -24458,7 +24463,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -26247,7 +26253,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -26792,7 +26799,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -28367,7 +28375,8 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -29381,7 +29390,8 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -30426,7 +30436,8 @@
             }
           ],
           "expiration": 21600,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -31353,7 +31364,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -33253,7 +33265,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },
@@ -34422,7 +34435,8 @@
               "pool": "chromium.tests.gpu"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test_id_prefix": "ninja://third_party/angle/src/tests:angle_perftests/"
       },

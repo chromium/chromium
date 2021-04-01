@@ -2485,6 +2485,9 @@
             '--smoke-test-mode',
           ],
         },
+        'swarming': {
+          'shards': 2,
+        },
         'android_swarming': {
           'shards': 6,
         },
