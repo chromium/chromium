@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -529,28 +530,58 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
 }
 
-// TODO(https://crbug.com/1134601): `about:` URLs are all treated as `kUnknown`
-// today. This is ~incorrect, but safe, as their web-facing behavior will be
-// equivalent to "public".
+// This test verifies the contents of the ClientSecurityState for the initial
+// empty document in a new main frame created by the browser.
+//
+// Note: the renderer-created main frame case is exercised by the
+// OpeneeInherits* tests below.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       CommitsClientSecurityStateForAboutURL) {
+                       ClientSecurityStateForInitialEmptyDoc) {
+  // Start a navigation. This forces the RenderFrameHost to initialize its
+  // RenderFrame. The navigation is then cancelled by a HTTP 204 code.
+  // We're left with a RenderFrameHost containing the default
+  // ClientSecurityState values.
+  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(
+      shell(), embedded_test_server()->GetURL("/nocontent")));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+  EXPECT_FALSE(security_state->is_web_secure_context);
+  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
+            security_state->cross_origin_embedder_policy.value);
+  EXPECT_EQ(network::mojom::PrivateNetworkRequestPolicy::
+                kBlockFromInsecureToMorePrivate,
+            security_state->private_network_request_policy);
+
+  // Browser-created empty main frames are trusted to access the local network,
+  // if they execute code injected via DevTools, WebView APIs or extensions.
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+
+  EXPECT_EQ("local", EvalJs(root_frame_host(), "document.addressSpace"));
+}
+
+// This test verifies the contents of the ClientSecurityState for `about:blank`
+// in a new main frame created by the browser.
+//
+// Note: the renderer-created main frame case is exercised by the Openee
+// inheritance tests below.
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       ClientSecurityStateForAboutBlank) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
   ASSERT_FALSE(security_state.is_null());
   EXPECT_FALSE(security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
             security_state->ip_address_space);
 
-  EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
+  EXPECT_EQ("local", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
-// TODO(https://crbug.com/1134601): `data:` URLs are all treated as `kUnknown`
-// today. This is ~incorrect, but safe, as their web-facing behavior will be
-// equivalent to "public".
-IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       CommitsClientSecurityStateForDataURL) {
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest, ClientSecurityStateForDataURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,foo")));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -563,8 +594,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_EQ("public", EvalJs(root_frame_host(), "document.addressSpace"));
 }
 
-IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       CommitsClientSecurityStateForFileURL) {
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest, ClientSecurityStateForFileURL) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl("", "empty.html")));
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -578,7 +608,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       CommitsClientSecurityStateForInsecureLocalAddress) {
+                       ClientSecurityStateForInsecureLocalAddress) {
   EXPECT_TRUE(
       NavigateToURL(shell(), InsecureDefaultURL(*embedded_test_server())));
 
@@ -593,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       CommitsClientSecurityStateForSecureLocalAddress) {
+                       ClientSecurityStateForSecureLocalAddress) {
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
@@ -608,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       CommitsClientSecurityStateForTreatAsPublicAddress) {
+                       ClientSecurityStateForTreatAsPublicAddress) {
   EXPECT_TRUE(NavigateToURL(
       shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
 
@@ -623,7 +653,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       CommitsClientSecurityStateForPrivateAddress) {
+                       ClientSecurityStateForPrivateAddress) {
   // Intercept the page load and pretend it came from a public IP.
 
   const GURL url = InsecureDefaultURL(*embedded_test_server());
@@ -645,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       CommitsClientSecurityStateForPublicAddress) {
+                       ClientSecurityStateForPublicAddress) {
   // Intercept the page load and pretend it came from a public IP.
 
   const GURL url = InsecureDefaultURL(*embedded_test_server());
@@ -669,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // This test verifies that the chrome:// scheme is considered local for the
 // purpose of Private Network Access.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       CommitsClientSecurityStateForSpecialSchemeChromeURL) {
+                       ClientSecurityStateForSpecialSchemeChromeURL) {
   // Not all chrome:// hosts are available in content/ but ukm is one of them.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("chrome://ukm")));
   EXPECT_TRUE(
@@ -686,9 +716,8 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // The view-source:// scheme should only ever appear in the display URL. It
 // shouldn't affect the IPAddressSpace computation. This test verifies that we
 // end up with the response IPAddressSpace.
-IN_PROC_BROWSER_TEST_F(
-    CorsRfc1918BrowserTest,
-    CommitsClientSecurityStateForSpecialSchemeViewSourcePublic) {
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       ClientSecurityStateForSpecialSchemeViewSourcePublic) {
   // Intercept the page load and pretend it came from a public IP.
   const GURL url = SecureDefaultURL(*embedded_test_server());
 
@@ -709,9 +738,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Variation of above test with a private address.
-IN_PROC_BROWSER_TEST_F(
-    CorsRfc1918BrowserTest,
-    CommitsClientSecurityStateForSpecialSchemeViewSourcePrivate) {
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       ClientSecurityStateForSpecialSchemeViewSourcePrivate) {
   // Intercept the page load and pretend it came from a private IP.
   const GURL url = SecureDefaultURL(*embedded_test_server());
 
@@ -734,9 +762,8 @@ IN_PROC_BROWSER_TEST_F(
 // The chrome-error:// scheme should only ever appear in origins. It shouldn't
 // affect the IPAddressSpace computation. This test verifies that we end up with
 // the response IPAddressSpace.
-IN_PROC_BROWSER_TEST_F(
-    CorsRfc1918BrowserTest,
-    CommitsClientSecurityStateForSpecialSchemeChromeErrorPublic) {
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       ClientSecurityStateForSpecialSchemeChromeErrorPublic) {
   // Intercept the page load and pretend it came from a public IP.
   const GURL url = SecureDefaultURL(*embedded_test_server());
 
@@ -757,9 +784,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // Variation of above test with a private address.
-IN_PROC_BROWSER_TEST_F(
-    CorsRfc1918BrowserTest,
-    CommitsClientSecurityStateForSpecialSchemeChromeErrorPrivate) {
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       ClientSecurityStateForSpecialSchemeChromeErrorPrivate) {
   // Intercept the page load and pretend it came from a public IP.
   const GURL url = SecureDefaultURL(*embedded_test_server());
 
@@ -987,38 +1013,74 @@ RenderFrameHostImpl* GetMainFrameHostImpl(Shell* shell) {
 // |parent| must not be nullptr.
 RenderFrameHostImpl* OpenWindowFromURL(RenderFrameHostImpl* parent,
                                        const GURL& url) {
-  return GetMainFrameHostImpl(OpenPopup(parent, url, "child"));
+  return GetMainFrameHostImpl(OpenPopup(parent, url, "_blank"));
 }
 
 RenderFrameHostImpl* OpenWindowFromAboutBlank(RenderFrameHostImpl* parent) {
   return OpenWindowFromURL(parent, GURL("about:blank"));
 }
 
-RenderFrameHostImpl* OpenWindowInitialEmptyDoc(RenderFrameHostImpl* parent) {
-  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
-  // a navigation - none will commit.
+// Same as above, but with the "noopener" window feature.
+RenderFrameHostImpl* OpenWindowFromAboutBlankNoOpener(
+    RenderFrameHostImpl* parent) {
+  // Setting the "noopener" window feature makes `window.open()` return `null`.
+  constexpr bool kNoExpectReturnFromWindowOpen = false;
 
+  return GetMainFrameHostImpl(OpenPopup(parent, GURL("about:blank"), "_blank",
+                                        "noopener",
+                                        kNoExpectReturnFromWindowOpen));
+}
+
+RenderFrameHostImpl* OpenWindowFromURLExpectNoCommit(
+    RenderFrameHostImpl* parent,
+    const GURL& url,
+    base::StringPiece features = "") {
   ShellAddedObserver observer;
 
-  EXPECT_TRUE(ExecJs(parent, R"(
-    window.open("/nocontent");
-  )"));
+  base::StringPiece script_template = R"(
+    window.open($1, "_blank", $2);
+  )";
+  EXPECT_TRUE(ExecJs(parent, JsReplace(script_template, url, features)));
 
   return GetMainFrameHostImpl(observer.GetShell());
 }
 
-RenderFrameHostImpl* OpenWindowFromJavascriptURL(RenderFrameHostImpl* parent) {
+RenderFrameHostImpl* OpenWindowInitialEmptyDoc(RenderFrameHostImpl* parent) {
+  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
+  // a navigation - none will commit.
+  return OpenWindowFromURLExpectNoCommit(parent, GURL("/nocontent"));
+}
+
+// Same as above, but with the "noopener" window feature.
+RenderFrameHostImpl* OpenWindowInitialEmptyDocNoOpener(
+    RenderFrameHostImpl* parent) {
+  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
+  // a navigation - none will commit.
+  return OpenWindowFromURLExpectNoCommit(parent, GURL("/nocontent"),
+                                         "noopener");
+}
+
+GURL JavascriptURL(base::StringPiece script) {
+  return GURL(base::StrCat({"javascript:", script}));
+}
+
+RenderFrameHostImpl* OpenWindowFromJavascriptURL(
+    RenderFrameHostImpl* parent,
+    base::StringPiece script = "'foo'") {
   // Note: We do not use OpenWindowFromURL() because we do not want to wait for
   // a navigation, since the `javascript:` URL will not commit (`about:blank`
   // will).
+  return OpenWindowFromURLExpectNoCommit(parent, JavascriptURL(script));
+}
 
-  ShellAddedObserver observer;
-
-  EXPECT_TRUE(ExecJs(parent, R"(
-    window.open("javascript:'foo'");
-  )"));
-
-  return GetMainFrameHostImpl(observer.GetShell());
+// Same as above, but with the "noopener" window feature.
+RenderFrameHostImpl* OpenWindowFromJavascriptURLNoOpener(
+    RenderFrameHostImpl* parent,
+    base::StringPiece script) {
+  // Note: We do not use OpenWindowFromURL() because we do not want to wait for
+  // a navigation - none will commit.
+  return OpenWindowFromURLExpectNoCommit(parent, JavascriptURL(script),
+                                         "noopener");
 }
 
 RenderFrameHostImpl* OpenWindowFromBlob(RenderFrameHostImpl* parent) {
@@ -1096,6 +1158,9 @@ IN_PROC_BROWSER_TEST_F(
             security_state->ip_address_space);
 }
 
+// This test verifies that a newly-opened window targeting `about:blank`
+// inherits its address space from the opener. In this case, the opener's
+// address space is `public`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForAboutBlankFromPublic) {
   EXPECT_TRUE(NavigateToURL(
@@ -1112,12 +1177,37 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
             security_state->ip_address_space);
 }
 
+// This test verifies that a newly-opened window targeting `about:blank`
+// inherits its address space from the opener. In this case, the opener's
+// address space is `local`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForAboutBlankFromLocal) {
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
   RenderFrameHostImpl* window = OpenWindowFromAboutBlank(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+// This test verifies that a newly-opened window targeting `about:blank`,
+// opened with the "noopener" feature, has its address space set to `local`
+// regardless of the address space of the opener.
+//
+// Compare and contrast against the above tests without "noopener".
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       OpeneeNoOpenerAddressSpaceForAboutBlankIsLocal) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window =
+      OpenWindowFromAboutBlankNoOpener(root_frame_host());
   ASSERT_NE(nullptr, window);
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -1196,6 +1286,9 @@ IN_PROC_BROWSER_TEST_F(
             security_state->ip_address_space);
 }
 
+// This test verifies that a newly-opened window containing the initial empty
+// document inherits its address space from the opener. In this case, the
+// opener's address space is `public`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForInitialEmptyDocFromPublic) {
   EXPECT_TRUE(NavigateToURL(
@@ -1212,12 +1305,37 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
             security_state->ip_address_space);
 }
 
+// This test verifies that a newly-opened window containing the initial empty
+// document inherits its address space from the opener. In this case, the
+// opener's address space is `local`.
 IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
                        OpeneeInheritsAddressSpaceForInitialEmptyDocFromLocal) {
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
   RenderFrameHostImpl* window = OpenWindowInitialEmptyDoc(root_frame_host());
+  ASSERT_NE(nullptr, window);
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+// This test verifies that a newly-opened window containing the initial empty
+// document, opened with the "noopener" feature, has its address space set to
+// `local` regardless of the address space of the opener.
+//
+// Compare and contrast against the above tests without "noopener".
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       OpeneeNoOpenerAddressSpaceForInitialEmptyDocIsLocal) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window =
+      OpenWindowInitialEmptyDocNoOpener(root_frame_host());
   ASSERT_NE(nullptr, window);
 
   const network::mojom::ClientSecurityStatePtr security_state =
@@ -1418,8 +1536,34 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), SecureDefaultURL(*embedded_test_server())));
 
-  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(root_frame_host());
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURL(
+      root_frame_host(), "var injectedCodeWasExecuted = true");
   ASSERT_NE(nullptr, window);
+
+  // The Javascript in the URL got executed in the new window.
+  EXPECT_EQ(true, EvalJs(window, "injectedCodeWasExecuted"));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      window->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(network::mojom::IPAddressSpace::kLocal,
+            security_state->ip_address_space);
+}
+
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       OpeneeNoOpenerAddressSpaceForJavascriptURLIsLocal) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), SecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* window = OpenWindowFromJavascriptURLNoOpener(
+      root_frame_host(), "var injectedCodeWasExecuted = true");
+  ASSERT_NE(nullptr, window);
+
+  // The Javascript in the URL was not executed in the new window. This ensures
+  // it is safe to classify the new window as `local` without allowing the
+  // opener to execute arbitrary JS in the `local` address space.
+  EXPECT_EQ("undefined", EvalJs(window, "typeof injectedCodeWasExecuted"));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       window->BuildClientSecurityState();
@@ -2489,28 +2633,6 @@ IN_PROC_BROWSER_TEST_F(
 
   // Check that the iframe cannot load a local resource.
   EXPECT_EQ(false, EvalJs(child_frame, FetchSubresourceScript("image.jpg")));
-}
-
-// This test verifies the initial values of a never committed
-// RenderFrameHostImpl's ClientSecurityState.
-IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
-                       InitialNonCommittedRenderFrameHostClientSecurityState) {
-  // Start a navigation. This forces the RenderFrameHost to initialize its
-  // RenderFrame. The navigation is then cancelled by a HTTP 204 code.
-  // We're left with a RenderFrameHost containing the default
-  // ClientSecurityState values.
-  EXPECT_TRUE(NavigateToURLAndExpectNoCommit(
-      shell(), embedded_test_server()->GetURL("/nocontent")));
-
-  auto client_security_state = root_frame_host()->BuildClientSecurityState();
-  EXPECT_FALSE(client_security_state->is_web_secure_context);
-  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kNone,
-            client_security_state->cross_origin_embedder_policy.value);
-  EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
-            client_security_state->ip_address_space);
-  EXPECT_EQ(network::mojom::PrivateNetworkRequestPolicy::
-                kBlockFromInsecureToMorePrivate,
-            client_security_state->private_network_request_policy);
 }
 
 }  // namespace content

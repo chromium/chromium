@@ -213,6 +213,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
@@ -1137,34 +1138,10 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     }
   }
 
-  // The initial empty document inherits its policy container from its creator.
-  // The creator is either its parent for iframes or its opener for new windows.
-  //
-  // Note 1: For normal document created from a navigation, the policy container
-  // is computed from the NavigationRequest and assigned in
-  // DidCommitNewDocument().
-  //
-  // Note 2: After creating a new frame, blink emits a second IPC
-  // (DidCommitProvisionalLoad) for committing the initial empty
-  // document. However, since the RenderFrameHost has already been created, we
-  // cannot use DidCommitProvisionalLoad to set the policy container, since we
-  // could run into a race condition. Hence we need to set the policy container
-  // immediately when creating the RenderFrameHost here.
   if (lifecycle_state_ != LifecycleStateImpl::kSpeculative) {
     // Creating a RFH in kActive state implies that it is the RFH for a
     // newly-created FTN, which should not have committed a real load yet.
     DCHECK(!frame_tree_node_->has_committed_real_load());
-
-    if (parent_) {
-      SetPolicyContainerHost(parent_->policy_container_host()->Clone());
-    } else if (frame_tree_node_->opener()) {
-      SetPolicyContainerHost(frame_tree_node_->opener()
-                                 ->current_frame_host()
-                                 ->policy_container_host()
-                                 ->Clone());
-    } else {
-      SetPolicyContainerHost(base::MakeRefCounted<PolicyContainerHost>());
-    }
 
     // The initial empty document gets its sandbox flags from either:
     // 1. The parent + iframe.sandbox for <iframe>.
@@ -1174,6 +1151,8 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     // is needed here.
     active_sandbox_flags_ = frame_tree_node_->active_sandbox_flags();
   }
+
+  InitializePolicyContainerHost(renderer_initiated_creation_of_main_frame);
 
   if (!base::FeatureList::IsEnabled(
           features::kBlockInsecurePrivateNetworkRequests)) {
@@ -2203,6 +2182,59 @@ RenderFrameHostImpl::AccessibilityGetWebContentsAccessibility() {
   if (!view)
     return nullptr;
   return view->GetWebContentsAccessibility();
+}
+
+void RenderFrameHostImpl::InitializePolicyContainerHost(
+    bool renderer_initiated_creation_of_main_frame) {
+  // No policy container for speculative frames.
+  if (lifecycle_state_ == LifecycleStateImpl::kSpeculative) {
+    return;
+  }
+
+  // The initial empty document inherits its policy container from its creator.
+  // The creator is either its parent for iframes or its opener for new windows.
+  //
+  // Note 1: For normal document created from a navigation, the policy container
+  // is computed from the NavigationRequest and assigned in
+  // DidCommitNewDocument().
+
+  if (parent_) {
+    SetPolicyContainerHost(parent_->policy_container_host()->Clone());
+    return;
+  }
+
+  if (frame_tree_node_->opener()) {
+    SetPolicyContainerHost(frame_tree_node_->opener()
+                               ->current_frame_host()
+                               ->policy_container_host()
+                               ->Clone());
+    return;
+  }
+
+  auto policies = std::make_unique<PolicyContainerPolicies>();
+
+  // Main frames created by the browser are treated as belonging the `local`
+  // address space, so that they can make requests to any address space
+  // unimpeded. The only way to execute code in such a context is to inject it
+  // via DevTools, WebView APIs, or extensions; it is impossible to do so with
+  // Web Platform means only.
+  //
+  // See also https://crbug.com/1191161.
+  //
+  // We also exclude prerendering from this case manually, since prendering
+  // render frame hosts are unconditionally created with the
+  // `renderer_initiated_creation_of_main_frame` set to false, even though the
+  // frames arguably are renderer-created.
+  //
+  // TODO(https://crbug.com/1194421): Address the prerendering case.
+  if (frame_tree_node_->IsMainFrame() &&
+      !renderer_initiated_creation_of_main_frame &&
+      lifecycle_state_ != LifecycleStateImpl::kPrerendering) {
+    policies->ip_address_space = network::mojom::IPAddressSpace::kLocal;
+  }
+
+  SetPolicyContainerHost(
+      base::MakeRefCounted<PolicyContainerHost>(std::move(policies)));
 }
 
 void RenderFrameHostImpl::SetPolicyContainerHost(

@@ -2778,6 +2778,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return render_frame_state_ == RenderFrameState::kCreated;
   }
 
+  // Initializes |policy_container_host_|. Constructor helper.
+  //
+  // |renderer_initiated_creation_of_main_frame| specifies whether this render
+  // frame host's creation was initiated by the renderer process, and this is
+  // a main frame. See the constructor for more details.
+  void InitializePolicyContainerHost(
+      bool renderer_initiated_creation_of_main_frame);
+
+  // Sets |policy_container_host_| and associates it with the current frame.
+  // |policy_container_host| must not be nullptr.
   void SetPolicyContainerHost(
       scoped_refptr<PolicyContainerHost> policy_container_host);
 
