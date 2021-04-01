@@ -33,6 +33,7 @@
 #include "cc/input/scroll_snap_data.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -6995,12 +6996,8 @@ void LayoutBox::AddVisualEffectOverflow() {
   LayoutRectOutsets outsets = ComputeVisualEffectOverflowOutsets();
   visual_effect_overflow.Expand(outsets);
   AddSelfVisualOverflow(visual_effect_overflow);
-
-  if (VisualOverflowIsSet()) {
-    overflow_->visual_overflow->SetHasSubpixelVisualEffectOutsets(
-        !IsIntegerValue(outsets.Top()) || !IsIntegerValue(outsets.Right()) ||
-        !IsIntegerValue(outsets.Bottom()) || !IsIntegerValue(outsets.Left()));
-  }
+  if (VisualOverflowIsSet())
+    UpdateHasSubpixelVisualEffectOutsets(outsets);
 }
 
 LayoutRectOutsets LayoutBox::ComputeVisualEffectOverflowOutsets() {
@@ -7263,6 +7260,37 @@ void LayoutBox::AddContentsVisualOverflow(const LayoutRect& rect) {
   overflow_->visual_overflow->AddContentsVisualOverflow(rect);
 }
 
+void LayoutBox::UpdateHasSubpixelVisualEffectOutsets(
+    const LayoutRectOutsets& outsets) {
+  DCHECK(VisualOverflowIsSet());
+  overflow_->visual_overflow->SetHasSubpixelVisualEffectOutsets(
+      !IsIntegerValue(outsets.Top()) || !IsIntegerValue(outsets.Right()) ||
+      !IsIntegerValue(outsets.Bottom()) || !IsIntegerValue(outsets.Left()));
+}
+
+void LayoutBox::SetVisualOverflow(const PhysicalRect& self,
+                                  const PhysicalRect& contents) {
+  ClearVisualOverflow();
+  AddSelfVisualOverflow(self);
+  AddContentsVisualOverflow(contents);
+  if (!VisualOverflowIsSet())
+    return;
+
+  const LayoutRectOutsets outsets =
+      overflow_->visual_overflow->SelfVisualOverflowRect().ToOutsets(Size());
+  UpdateHasSubpixelVisualEffectOutsets(outsets);
+
+  // |OutlineMayBeAffectedByDescendants| is set whenever outline style
+  // changes. Update to the actual value here.
+  const ComputedStyle& style = StyleRef();
+  if (style.HasOutline()) {
+    const LayoutUnit outline_extent(style.OutlineOutsetExtent());
+    SetOutlineMayBeAffectedByDescendants(
+        outsets.Top() != outline_extent || outsets.Right() != outline_extent ||
+        outsets.Bottom() != outline_extent || outsets.Left() != outline_extent);
+  }
+}
+
 void LayoutBox::ClearLayoutOverflow() {
   NOT_DESTROYED();
   if (overflow_)
@@ -7277,6 +7305,112 @@ void LayoutBox::ClearVisualOverflow() {
     overflow_->visual_overflow.reset();
   // overflow_ will be reset by MutableForPainting::ClearPreviousOverflowData()
   // if we don't need it to store previous overflow data.
+}
+
+bool LayoutBox::CanUseFragmentsForVisualOverflow() const {
+  NOT_DESTROYED();
+  // TODO(crbug.com/1144203): Block-fragmented objects are not supported yet.
+  if (PhysicalFragmentCount() != 1)
+    return false;
+  const NGPhysicalBoxFragment& fragment = *GetPhysicalFragment(0);
+  if (!fragment.CanUseFragmentsForInkOverflow())
+    return false;
+  return true;
+}
+
+void LayoutBox::RecalcFragmentsVisualOverflow() {
+  NOT_DESTROYED();
+  DCHECK(CanUseFragmentsForVisualOverflow());
+  DCHECK_GT(PhysicalFragmentCount(), 0u);
+  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
+  for (const NGPhysicalBoxFragment& fragment : PhysicalFragments()) {
+    DCHECK(fragment.CanUseFragmentsForInkOverflow());
+    fragment.GetMutableForPainting().RecalcInkOverflow();
+  }
+  CopyVisualOverflowFromFragmentsRecursively();
+}
+
+void LayoutBox::CopyVisualOverflowFromFragmentsRecursively() {
+  NOT_DESTROYED();
+  DCHECK(CanUseFragmentsForVisualOverflow());
+  DCHECK_GT(PhysicalFragmentCount(), 0u);
+  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(*this));
+
+  bool succeeded = CopyVisualOverflowFromFragments();
+  DCHECK(succeeded);
+
+  if (ChildPrePaintBlockedByDisplayLock())
+    return;
+  for (LayoutObject* current = SlowFirstChild(); current;) {
+    if (UNLIKELY(current->HasLayer() &&
+                 To<LayoutBoxModelObject>(current)->HasSelfPaintingLayer())) {
+      current = current->NextInPreOrderAfterChildren(this);
+      continue;
+    }
+
+    if (LayoutBox* box = DynamicTo<LayoutBox>(current)) {
+      if (box->CopyVisualOverflowFromFragments()) {
+        if (UNLIKELY(current->ChildPrePaintBlockedByDisplayLock()))
+          current = current->NextInPreOrderAfterChildren(this);
+        else
+          current = current->NextInPreOrder(this);
+        continue;
+      }
+    } else if (current->IsInline()) {
+      DCHECK(IsA<LayoutText>(current) || IsA<LayoutInline>(current));
+      DCHECK(!current->ChildPrePaintBlockedByDisplayLock());
+      current = current->NextInPreOrder(this);
+      continue;
+    }
+
+    // Legacy objects. Move to next by skipping children because
+    // |RecalcFragmentsVisualOverflow| already recalculated them.
+    current = current->NextInPreOrderAfterChildren(this);
+  }
+}
+
+// Copy visual overflow from |PhysicalFragments()|. Returns whether the copy
+// succeeded or not.
+bool LayoutBox::CopyVisualOverflowFromFragments() {
+  const LayoutRect previous_visual_overflow = VisualOverflowRect();
+  if (!CopyVisualOverflowFromFragmentsWithoutInvalidations()) {
+    DCHECK_EQ(previous_visual_overflow, VisualOverflowRect());
+    return false;
+  }
+  const LayoutRect visual_overflow = VisualOverflowRect();
+  if (visual_overflow == previous_visual_overflow)
+    return true;
+  InvalidateIntersectionObserverCachedRects();
+  SetShouldCheckForPaintInvalidation();
+  GetFrameView()->SetIntersectionObservationState(LocalFrameView::kDesired);
+  return true;
+}
+
+bool LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
+  NOT_DESTROYED();
+  if (UNLIKELY(!CanUseFragmentsForVisualOverflow()))
+    return false;
+  if (UNLIKELY(!PhysicalFragmentCount())) {
+    DCHECK(IsLayoutTableCol());
+    ClearVisualOverflow();
+    return true;
+  }
+
+  if (PhysicalFragmentCount() == 1) {
+    const NGPhysicalBoxFragment& fragment = *GetPhysicalFragment(0);
+    DCHECK(fragment.CanUseFragmentsForInkOverflow());
+    if (!fragment.HasInkOverflow()) {
+      ClearVisualOverflow();
+      return true;
+    }
+    SetVisualOverflow(fragment.SelfInkOverflow(),
+                      fragment.ContentsInkOverflow());
+    return true;
+  }
+
+  // TODO(crbug.com/1144203): Block-fragmented objects not supported yet.
+  NOTREACHED();
+  return false;
 }
 
 bool LayoutBox::PercentageLogicalHeightIsResolvable() const {

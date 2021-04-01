@@ -162,7 +162,7 @@ sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
   const NGLayoutResult* block_results = block_node.Layout(space, nullptr);
   const auto& fragment =
       To<NGPhysicalBoxFragment>(block_results->PhysicalFragment());
-  block->RecalcInlineChildrenVisualOverflow();
+  block->RecalcFragmentsVisualOverflow();
   bounds = FloatRect(block->PhysicalVisualOverflowRect());
 
   PaintController paint_controller(PaintController::Usage::kTransient);

@@ -82,6 +82,7 @@ class CORE_EXPORT NGInkOverflow {
 
   // Get ink overflow of various types.
   PhysicalRect Self(Type type, const PhysicalSize& size) const;
+  PhysicalRect Contents(Type type, const PhysicalSize& size) const;
   PhysicalRect SelfAndContents(Type type, const PhysicalSize& size) const;
 
   // Reset to |kNone|.

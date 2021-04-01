@@ -134,6 +134,9 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsRenderedLegend() const {
     return IsBox() && BoxType() == NGBoxType::kRenderedLegend;
   }
+  bool IsMathML() const {
+    return IsBox() && GetSelfOrContainerLayoutObject()->IsMathML();
+  }
   bool IsMathMLFraction() const { return IsBox() && is_math_fraction_; }
 
   bool IsMathMLOperator() const { return IsBox() && is_math_operator_; }
@@ -445,7 +448,6 @@ class CORE_EXPORT NGPhysicalFragment
   String ToString() const;
 
   void CheckType() const;
-  void CheckCanUpdateInkOverflow() const;
 
   enum DumpFlag {
     DumpHeaderText = 0x1,
@@ -561,7 +563,6 @@ CORE_EXPORT std::ostream& operator<<(std::ostream&, const NGPhysicalFragment&);
 
 #if !DCHECK_IS_ON()
 inline void NGPhysicalFragment::CheckType() const {}
-inline void NGPhysicalFragment::CheckCanUpdateInkOverflow() const {}
 #endif
 
 }  // namespace blink

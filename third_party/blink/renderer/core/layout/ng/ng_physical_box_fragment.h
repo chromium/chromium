@@ -244,16 +244,19 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     return InkOverflowType() != NGInkOverflow::kNone;
   }
 
-  // Compute visual overflow of this box in the local coordinate.
-  PhysicalRect ComputeSelfInkOverflow() const;
-
-  // |InkOverflow| includes self and contents ink overflow, unless it has
-  // clipping, in that case it includes self ink overflow only.
+  // 3 types of ink overflows:
+  // * |SelfInkOverflow| includes box decorations that are outside of the
+  //   border box.
+  //   Returns |LocalRect| when there are no overflow.
+  // * |ContentsInkOverflow| includes anything that would bleed out of the box
+  //   and would be clipped by the overflow clip ('overflow' != visible). This
+  //   corresponds to children that overflows their parent.
+  //   Returns an empty rect when there are no overflow.
+  // * |InkOverflow| includes self and contents ink overflow, unless it has
+  //   clipping, in that case it includes self ink overflow only.
+  //   Returns |LocalRect| when there are no overflow.
   PhysicalRect InkOverflow() const;
-
-  // Contents ink overflow includes anything that would bleed out of the box and
-  // would be clipped by the overflow clip ('overflow' != visible). This
-  // corresponds to children that overflows their parent.
+  PhysicalRect SelfInkOverflow() const;
   PhysicalRect ContentsInkOverflow() const;
 
   // Fast check if |NodeAtPoint| may find a hit.
@@ -329,6 +332,35 @@ class CORE_EXPORT NGPhysicalBoxFragment final
   const NGMathMLPaintInfo& GetMathMLPaintInfo() const {
     return *ComputeRareDataAddress()->mathml_paint_info;
   }
+
+  // Painters can use const methods only, except for these explicitly declared
+  // methods.
+  class MutableForPainting {
+    STACK_ALLOCATED();
+
+   public:
+    void RecalcInkOverflow() { fragment_.RecalcInkOverflow(); }
+    void RecalcInkOverflow(const PhysicalRect& contents) {
+      fragment_.RecalcInkOverflow(contents);
+    }
+
+   private:
+    friend class NGPhysicalBoxFragment;
+    explicit MutableForPainting(const NGPhysicalBoxFragment& fragment)
+        : fragment_(const_cast<NGPhysicalBoxFragment&>(fragment)) {}
+
+    NGPhysicalBoxFragment& fragment_;
+  };
+  MutableForPainting GetMutableForPainting() const {
+    return MutableForPainting(*this);
+  }
+
+  // Returns if this fragment can compute ink overflow.
+  bool CanUseFragmentsForInkOverflow() const;
+  // Recalculates and updates |*InkOverflow|.
+  void RecalcInkOverflow();
+  // |RecalcInkOverflow| using the given contents ink overflow rect.
+  void RecalcInkOverflow(const PhysicalRect& contents);
 
  private:
   static size_t AdditionalByteSize(wtf_size_t num_fragment_items,
@@ -408,6 +440,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     return has_inflow_bounds_ ? reinterpret_cast<RareData*>(address + 1)
                               : reinterpret_cast<RareData*>(address);
   }
+
+  void SetInkOverflow(const PhysicalRect& self, const PhysicalRect& contents);
+  PhysicalRect RecalcContentsInkOverflow();
+  PhysicalRect ComputeSelfInkOverflow() const;
 
   void AddOutlineRects(const PhysicalOffset& additional_offset,
                        NGOutlineType include_block_overflows,

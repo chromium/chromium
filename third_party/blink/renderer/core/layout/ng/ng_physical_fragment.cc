@@ -484,15 +484,6 @@ void NGPhysicalFragment::CheckType() const {
       break;
   }
 }
-
-void NGPhysicalFragment::CheckCanUpdateInkOverflow() const {
-  if (!GetLayoutObject())
-    return;
-  const DocumentLifecycle& lifecycle = GetDocument().Lifecycle();
-  DCHECK(lifecycle.GetState() >= DocumentLifecycle::kLayoutClean &&
-         lifecycle.GetState() < DocumentLifecycle::kCompositingAssignmentsClean)
-      << lifecycle.GetState();
-}
 #endif
 
 PhysicalRect NGPhysicalFragment::ScrollableOverflow(

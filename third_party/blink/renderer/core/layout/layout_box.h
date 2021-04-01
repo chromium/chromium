@@ -691,6 +691,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ClearLayoutOverflow();
   void ClearVisualOverflow();
 
+  bool CanUseFragmentsForVisualOverflow() const;
+  void RecalcFragmentsVisualOverflow();
+
   virtual void UpdateAfterLayout();
 
   DISABLE_CFI_PERF LayoutUnit ContentLeft() const {
@@ -2184,6 +2187,13 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     NOT_DESTROYED();
     return overflow_ && overflow_->visual_overflow;
   }
+
+  void UpdateHasSubpixelVisualEffectOutsets(const LayoutRectOutsets&);
+  void SetVisualOverflow(const PhysicalRect& self,
+                         const PhysicalRect& contents);
+  void CopyVisualOverflowFromFragmentsRecursively();
+  bool CopyVisualOverflowFromFragments();
+  bool CopyVisualOverflowFromFragmentsWithoutInvalidations();
 
   void UpdateShapeOutsideInfoAfterStyleChange(const ComputedStyle&,
                                               const ComputedStyle* old_style);

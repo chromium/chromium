@@ -9,10 +9,11 @@
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='target'",
       "position": [-2, -2],
-      "bounds": [404, 544],
+      "bounds": [204, 204],
       "backfaceVisibility": "hidden",
+      "backgroundColor": "#FFFF00",
       "invalidations": [
-        [0, 0, 404, 544]
+        [0, 0, 204, 204]
       ],
       "transform": 1
     },

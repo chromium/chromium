@@ -402,16 +402,24 @@ inline LayoutBox* NGFragmentItem::MutableInkOverflowOwnerBox() {
 }
 
 PhysicalRect NGFragmentItem::SelfInkOverflow() const {
-  if (const LayoutBox* box = InkOverflowOwnerBox())
-    return box->PhysicalSelfVisualOverflowRect();
+  if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
+    return box_fragment->SelfInkOverflow();
   if (!HasInkOverflow())
     return LocalRect();
   return ink_overflow_.Self(InkOverflowType(), Size());
 }
 
+PhysicalRect NGFragmentItem::ContentsInkOverflow() const {
+  if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
+    return box_fragment->ContentsInkOverflow();
+  if (!HasInkOverflow())
+    return PhysicalRect();
+  return ink_overflow_.Contents(InkOverflowType(), Size());
+}
+
 PhysicalRect NGFragmentItem::InkOverflow() const {
-  if (const LayoutBox* box = InkOverflowOwnerBox())
-    return box->PhysicalVisualOverflowRect();
+  if (const NGPhysicalBoxFragment* box_fragment = BoxFragment())
+    return box_fragment->InkOverflow();
   if (!HasInkOverflow())
     return LocalRect();
   if (!IsContainer() || HasNonVisibleOverflow())
@@ -607,14 +615,22 @@ void NGFragmentItem::RecalcInkOverflow(
     return;
   }
 
-  // If this item has an owner |LayoutBox|, let it compute. It will call back NG
-  // to compute and store the result to |LayoutBox|. Pre-paint requires ink
-  // overflow to be stored in |LayoutBox|.
-  if (LayoutBox* owner_box = MutableInkOverflowOwnerBox()) {
-    DCHECK(!HasChildren());
-    owner_box->RecalcNormalFlowChildVisualOverflowIfNeeded();
-    *self_and_contents_rect_out = owner_box->PhysicalVisualOverflowRect();
-    return;
+  const NGPhysicalBoxFragment* box_fragment = BoxFragment();
+  if (box_fragment) {
+    box_fragment = box_fragment->PostLayout();
+    if (box_fragment && !box_fragment->IsInlineBox()) {
+      DCHECK(!HasChildren());
+      if (box_fragment->CanUseFragmentsForInkOverflow()) {
+        box_fragment->GetMutableForPainting().RecalcInkOverflow();
+        *self_and_contents_rect_out = box_fragment->InkOverflow();
+        return;
+      }
+      LayoutBox* owner_box = MutableInkOverflowOwnerBox();
+      DCHECK(owner_box);
+      owner_box->RecalcNormalFlowChildVisualOverflowIfNeeded();
+      *self_and_contents_rect_out = owner_box->PhysicalVisualOverflowRect();
+      return;
+    }
   }
 
   // Re-compute descendants, then compute the contents ink overflow from them.
@@ -633,13 +649,12 @@ void NGFragmentItem::RecalcInkOverflow(
     return;
   }
 
-  if (const NGPhysicalBoxFragment* box_fragment = BoxFragment()) {
+  if (box_fragment) {
     DCHECK(box_fragment->IsInlineBox());
-    // Compute the self ink overflow.
-    PhysicalRect self_rect = box_fragment->ComputeSelfInkOverflow();
-    *self_and_contents_rect_out = UnionRect(self_rect, contents_rect);
-    ink_overflow_type_ =
-        ink_overflow_.Set(InkOverflowType(), self_rect, contents_rect, Size());
+    DCHECK(box_fragment->Children().empty());
+    DCHECK_EQ(box_fragment->Size(), Size());
+    box_fragment->GetMutableForPainting().RecalcInkOverflow(contents_rect);
+    *self_and_contents_rect_out = box_fragment->InkOverflow();
     return;
   }
 

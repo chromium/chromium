@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
@@ -66,6 +67,22 @@ inline bool IsHitTestCandidate(const NGPhysicalBoxFragment& fragment) {
   return fragment.Size().height &&
          fragment.Style().Visibility() == EVisibility::kVisible &&
          !fragment.IsFloatingOrOutOfFlowPositioned();
+}
+
+// Applies the overflow clip to |result|. For any axis that is clipped, |result|
+// is reset to |no_overflow_rect|. If neither axis is clipped, nothing is
+// changed.
+void ApplyOverflowClip(OverflowClipAxes overflow_clip_axes,
+                       const PhysicalRect& no_overflow_rect,
+                       PhysicalRect* result) {
+  if (overflow_clip_axes & kOverflowClipX) {
+    result->SetX(no_overflow_rect.X());
+    result->SetWidth(no_overflow_rect.Width());
+  }
+  if (overflow_clip_axes & kOverflowClipY) {
+    result->SetY(no_overflow_rect.Y());
+    result->SetHeight(no_overflow_rect.Height());
+  }
 }
 
 }  // namespace
@@ -506,22 +523,88 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   return this;
 }
 
-PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
-  if (const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject()))
-    return owner_box->PhysicalVisualOverflowRect();
-  // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
-  // if needed.
+bool NGPhysicalBoxFragment::CanUseFragmentsForInkOverflow() const {
+  if (IsLegacyLayoutRoot())
+    return false;
+  // TODO(crbug.com/1144203): Following conditions are not supported in NG
+  // visual overflow yet.
+  if (IsTableNGRow() || IsTableNG() || IsRenderedLegend() || IsMathML())
+    return false;
+  if (IsInlineBox()) {
+    return true;
+  }
+  if (const LayoutBox* box = OwnerLayoutBox()) {
+    if (box->PhysicalFragmentCount() > 1)
+      return false;
+    return true;
+  }
   NOTREACHED();
-  return LocalRect();
+  return true;
+}
+
+PhysicalRect NGPhysicalBoxFragment::SelfInkOverflow() const {
+  if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
+    const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
+    return owner_box->PhysicalSelfVisualOverflowRect();
+  }
+  if (!HasInkOverflow())
+    return LocalRect();
+  return ink_overflow_.Self(InkOverflowType(), Size());
 }
 
 PhysicalRect NGPhysicalBoxFragment::ContentsInkOverflow() const {
-  if (const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject()))
+  if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
+    const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
     return owner_box->PhysicalContentsVisualOverflowRect();
-  // TODO(kojii): (!IsCSSBox() || IsInlineBox()) is not supported yet. Implement
-  // if needed.
-  NOTREACHED();
-  return LocalRect();
+  }
+  if (!HasInkOverflow())
+    return LocalRect();
+  return ink_overflow_.Contents(InkOverflowType(), Size());
+}
+
+PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
+  if (UNLIKELY(!CanUseFragmentsForInkOverflow())) {
+    const auto* owner_box = DynamicTo<LayoutBox>(GetLayoutObject());
+    return owner_box->PhysicalVisualOverflowRect();
+  }
+
+  if (!HasInkOverflow())
+    return LocalRect();
+
+  const PhysicalRect self_rect = ink_overflow_.Self(InkOverflowType(), Size());
+  const ComputedStyle& style = Style();
+  if (style.HasMask())
+    return self_rect;
+
+  const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
+  // overflow_clip_margin should only be set if 'overflow' is 'clip' along
+  // both axis.
+  DCHECK(overflow_clip_axes == kOverflowClipBothAxis ||
+         !style.OverflowClipMargin());
+  if (overflow_clip_axes == kNoOverflowClip) {
+    return UnionRect(self_rect,
+                     ink_overflow_.Contents(InkOverflowType(), Size()));
+  }
+
+  if (overflow_clip_axes == kOverflowClipBothAxis) {
+    if (const LayoutUnit overflow_clip_margin = style.OverflowClipMargin()) {
+      const PhysicalRect& contents_rect =
+          ink_overflow_.Contents(InkOverflowType(), Size());
+      if (!contents_rect.IsEmpty()) {
+        PhysicalRect result = LocalRect();
+        result.Inflate(overflow_clip_margin);
+        result.Intersect(contents_rect);
+        result.Unite(self_rect);
+        return result;
+      }
+    }
+    return self_rect;
+  }
+
+  PhysicalRect result = ink_overflow_.Contents(InkOverflowType(), Size());
+  result.Unite(self_rect);
+  ApplyOverflowClip(overflow_clip_axes, self_rect, &result);
+  return result;
 }
 
 PhysicalRect NGPhysicalBoxFragment::OverflowClipRect(
@@ -785,14 +868,88 @@ NGPhysicalBoxFragment::InlineContainerFragmentIfOutlineOwner() const {
   }
 }
 
+void NGPhysicalBoxFragment::SetInkOverflow(const PhysicalRect& self,
+                                           const PhysicalRect& contents) {
+  ink_overflow_type_ =
+      ink_overflow_.Set(InkOverflowType(), self, contents, Size());
+}
+
+void NGPhysicalBoxFragment::RecalcInkOverflow(const PhysicalRect& contents) {
+  const PhysicalRect self_rect = ComputeSelfInkOverflow();
+  SetInkOverflow(self_rect, contents);
+}
+
+void NGPhysicalBoxFragment::RecalcInkOverflow() {
+  DCHECK(CanUseFragmentsForInkOverflow());
+  const LayoutObject* layout_object = GetSelfOrContainerLayoutObject();
+  DCHECK(layout_object);
+  DCHECK(
+      !DisplayLockUtilities::LockedAncestorPreventingPrePaint(*layout_object));
+
+  PhysicalRect contents_rect;
+  if (!layout_object->ChildPrePaintBlockedByDisplayLock())
+    contents_rect = RecalcContentsInkOverflow();
+  RecalcInkOverflow(contents_rect);
+}
+
+// Recalculate ink overflow of children. Returns the contents ink overflow
+// for |this|.
+PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
+  DCHECK(GetSelfOrContainerLayoutObject());
+  DCHECK(!DisplayLockUtilities::LockedAncestorPreventingPrePaint(
+      *GetSelfOrContainerLayoutObject()));
+  DCHECK(
+      !GetSelfOrContainerLayoutObject()->ChildPrePaintBlockedByDisplayLock());
+
+  PhysicalRect contents_rect;
+  if (const NGFragmentItems* items = Items()) {
+    NGInlineCursor cursor(*this, *items);
+    contents_rect = NGFragmentItem::RecalcInkOverflowForCursor(&cursor);
+
+    // Even if this turned out to be an inline formatting context with
+    // fragment items (handled above), we need to handle floating descendants.
+    // If a float is block-fragmented, it is resumed as a regular box fragment
+    // child, rather than becoming a fragment item.
+    if (!HasFloatingDescendantsForPaint())
+      return contents_rect;
+  }
+
+  for (const NGLink& child : Children()) {
+    const auto* child_fragment = DynamicTo<NGPhysicalBoxFragment>(child.get());
+    if (!child_fragment || child_fragment->HasSelfPaintingLayer())
+      continue;
+    DCHECK(!child_fragment->IsOutOfFlowPositioned());
+
+    PhysicalRect child_rect;
+    if (child_fragment->CanUseFragmentsForInkOverflow()) {
+      child_fragment->GetMutableForPainting().RecalcInkOverflow();
+      child_rect = child_fragment->InkOverflow();
+    } else {
+      LayoutBox* child_layout_object = child_fragment->MutableOwnerLayoutBox();
+      DCHECK(child_layout_object);
+      DCHECK(!child_layout_object->CanUseFragmentsForVisualOverflow());
+      child_layout_object->RecalcVisualOverflow();
+      // TODO(crbug.com/1144203): Reconsider this when fragment-based ink
+      // overflow supports block fragmentation. Never allow flow threads to
+      // propagate overflow up to a parent.
+      DCHECK_EQ(child_fragment->IsColumnBox(),
+                child_layout_object->IsLayoutFlowThread());
+      if (child_fragment->IsColumnBox())
+        continue;
+      child_rect = child_layout_object->PhysicalVisualOverflowRect();
+    }
+    child_rect.offset += child.offset;
+    contents_rect.Unite(child_rect);
+  }
+  return contents_rect;
+}
+
 PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
   DCHECK_EQ(PostLayout(), this);
-  CheckCanUpdateInkOverflow();
   const ComputedStyle& style = Style();
   if (!style.HasVisualOverflowingEffect())
     return LocalRect();
 
-  DCHECK(GetLayoutObject());
   PhysicalRect ink_overflow(LocalRect());
   ink_overflow.Expand(style.BoxDecorationOutsets());
   if (style.HasOutline() && IsOutlineOwner()) {

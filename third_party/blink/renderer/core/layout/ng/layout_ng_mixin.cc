@@ -150,6 +150,15 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
   return {layout_overflow_changed, rebuild_fragment_tree};
 }
 
+template <typename Base>
+void LayoutNGMixin<Base>::RecalcVisualOverflow() {
+  if (Base::CanUseFragmentsForVisualOverflow()) {
+    Base::RecalcFragmentsVisualOverflow();
+    return;
+  }
+  Base::RecalcVisualOverflow();
+}
+
 // The current fragment from the last layout cycle for this box.
 // When pre-NG layout calls functions of this block flow, fragment and/or
 // LayoutResult are required to compute the result.

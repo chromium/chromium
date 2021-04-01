@@ -403,6 +403,30 @@ TEST_P(LayoutBoxTest, ControlClip) {
   EXPECT_EQ(PhysicalRect(2, 2, 96, 46), target->ClippingRect(PhysicalOffset()));
 }
 
+TEST_P(LayoutBoxTest, VisualOverflowRectWithBlockChild) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' style='width: 100px; height: 100px; baground: blue'>
+      <div style='width: 300px; height: 300px; background: green'></div>
+    </div>
+  )HTML");
+
+  LayoutBox* target = GetLayoutBoxByElementId("target");
+  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
+  EXPECT_EQ(LayoutRect(0, 0, 300, 300), target->VisualOverflowRect());
+}
+
+TEST_P(LayoutBoxTest, VisualOverflowRectWithLegacyChild) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' style='width: 100px; height: 100px; baground: blue'>
+      <svg height='300' width='300' style='display: block'></svg>
+    </div>
+  )HTML");
+
+  LayoutBox* target = GetLayoutBoxByElementId("target");
+  EXPECT_EQ(LayoutRect(0, 0, 100, 100), target->SelfVisualOverflowRect());
+  EXPECT_EQ(LayoutRect(0, 0, 300, 300), target->VisualOverflowRect());
+}
+
 TEST_P(LayoutBoxTest, VisualOverflowRectWithMask) {
   SetBodyInnerHTML(R"HTML(
     <div id='target' style='-webkit-mask-image: url(#a);
@@ -592,6 +616,19 @@ TEST_P(LayoutBoxTest, LayoutOverflowRectWithOverflowClipMargin) {
             clip3->LayoutOverflowRectForPropagation(clip3->Parent()));
 }
 
+// |NGInkOverflow| stopped storing visual overflow contained by |BorderBoxRect|
+// because they are not useful, and they are inconsistent when fully contained
+// and partially contained.
+// TODO(crbug.com/1144203): Change this to "if (NG)" when NG always use
+// fragment-based ink overflow. Then, remove this when legacy is gone.
+#define EXPECT_CONTENTS_VISUAL_OVERFLOW(rect, layout_box)      \
+  if (layout_box->CanUseFragmentsForVisualOverflow()) {        \
+    EXPECT_EQ(UnionRect(rect, layout_box->BorderBoxRect()),    \
+              layout_box->ContentsVisualOverflowRect());       \
+  } else {                                                     \
+    EXPECT_EQ(rect, layout_box->ContentsVisualOverflowRect()); \
+  }
+
 TEST_P(LayoutBoxTest, ContentsVisualOverflowPropagation) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -615,14 +652,14 @@ TEST_P(LayoutBoxTest, ContentsVisualOverflowPropagation) {
 
   auto* c = GetLayoutBoxByElementId("c");
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), c->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(10, 20, 100, 100), c->ContentsVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 20, 100, 100), c);
   EXPECT_EQ(LayoutRect(0, 0, 110, 120), c->VisualOverflowRect());
   // C and its parent b have the same blocks direction.
   EXPECT_EQ(LayoutRect(0, 0, 110, 120), c->VisualOverflowRectForPropagation());
 
   auto* d = GetLayoutBoxByElementId("d");
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), d->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(10, 20, 100, 100), d->ContentsVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 20, 100, 100), d);
   EXPECT_EQ(LayoutRect(0, 0, 110, 120), d->VisualOverflowRect());
   // D and its parent b have different blocks direction.
   EXPECT_EQ(LayoutRect(-10, 0, 110, 120),
@@ -631,7 +668,7 @@ TEST_P(LayoutBoxTest, ContentsVisualOverflowPropagation) {
   auto* b = GetLayoutBoxByElementId("b");
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), b->SelfVisualOverflowRect());
   // Union of VisualOverflowRectForPropagations offset by locations of c and d.
-  EXPECT_EQ(LayoutRect(30, 40, 200, 120), b->ContentsVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(30, 40, 200, 120), b);
   EXPECT_EQ(LayoutRect(0, 0, 230, 160), b->VisualOverflowRect());
   // B and its parent A have different blocks direction.
   EXPECT_EQ(LayoutRect(-130, 0, 230, 160),
@@ -639,7 +676,7 @@ TEST_P(LayoutBoxTest, ContentsVisualOverflowPropagation) {
 
   auto* a = GetLayoutBoxByElementId("a");
   EXPECT_EQ(LayoutRect(0, 0, 100, 100), a->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(-70, 50, 230, 160), a->ContentsVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(-70, 50, 230, 160), a);
   EXPECT_EQ(LayoutRect(-70, 0, 230, 210), a->VisualOverflowRect());
 }
 
@@ -670,8 +707,7 @@ TEST_P(LayoutBoxTest, OverflowRectsContainPaint) {
   EXPECT_EQ(LayoutRect(10, 10, 300, 400), container->LayoutOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->VisualOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(10, 10, 300, 400),
-            container->ContentsVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 10, 300, 400), container);
   EXPECT_EQ(PhysicalRect(10, 10, 100, 200),
             container->OverflowClipRect(PhysicalOffset()));
 }
@@ -689,8 +725,7 @@ TEST_P(LayoutBoxTest, OverflowRectsOverflowHidden) {
   EXPECT_EQ(LayoutRect(10, 10, 300, 400), container->LayoutOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->VisualOverflowRect());
   EXPECT_EQ(LayoutRect(0, 0, 120, 220), container->SelfVisualOverflowRect());
-  EXPECT_EQ(LayoutRect(10, 10, 300, 400),
-            container->ContentsVisualOverflowRect());
+  EXPECT_CONTENTS_VISUAL_OVERFLOW(LayoutRect(10, 10, 300, 400), container);
   EXPECT_EQ(PhysicalRect(10, 10, 100, 200),
             container->OverflowClipRect(PhysicalOffset()));
 }

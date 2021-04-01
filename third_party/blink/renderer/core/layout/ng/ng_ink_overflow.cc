@@ -132,11 +132,13 @@ PhysicalRect NGInkOverflow::FromOutsets(const PhysicalSize& size) const {
 
 PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
   CheckType(type);
-  DCHECK_NE(type, kNotSet);
   switch (type) {
     case kNotSet:
-      NOTREACHED();
+#if DCHECK_IS_ON()
+      if (!read_unset_as_none_)
+        NOTREACHED();
       FALLTHROUGH;
+#endif
     case kNone:
     case kSmallContents:
     case kContents:
@@ -150,6 +152,33 @@ PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
   }
   NOTREACHED();
   return {PhysicalOffset(), size};
+}
+
+PhysicalRect NGInkOverflow::Contents(Type type,
+                                     const PhysicalSize& size) const {
+  CheckType(type);
+  switch (type) {
+    case kNotSet:
+#if DCHECK_IS_ON()
+      if (!read_unset_as_none_)
+        NOTREACHED();
+      FALLTHROUGH;
+#endif
+    case kNone:
+    case kSmallSelf:
+    case kSelf:
+      return PhysicalRect();
+    case kSmallContents:
+      return FromOutsets(size);
+    case kContents:
+      DCHECK(single_);
+      return single_->ink_overflow;
+    case kSelfAndContents:
+      DCHECK(container_);
+      return container_->contents_ink_overflow;
+  }
+  NOTREACHED();
+  return PhysicalRect();
 }
 
 PhysicalRect NGInkOverflow::SelfAndContents(Type type,
