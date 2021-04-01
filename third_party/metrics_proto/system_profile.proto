@@ -17,7 +17,7 @@ import "extension_install.proto";
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 37
+// Next tag: 38
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   optional int64 build_timestamp = 1;
@@ -90,6 +90,16 @@ message SystemProfileProto {
   // source, to avoid changing those group assignments. New clients only have
   // the new source.
   optional int32 old_low_entropy_source = 32;
+
+  // A pseudo low entropy value. The actual low_entropy_source value is used for
+  // assignment to experiment arms, and this use may cause drift over time (for
+  // example, if a bad experiment arm drives away some users permanently.) This
+  // pseudo low entropy value is generated identically to low_entropy_source,
+  // but it is generated with a different randomization seed and is not used for
+  // experiment randomization. Consequently, it can be used in statistical
+  // validation to answer the question of how our data would be distributed if
+  // we didn't have to worry about low entropy source drift.
+  optional int32 pseudo_low_entropy_source = 37;
 
   // The user's selected application locale, i.e. the user interface language.
   // The locale includes a language code and, possibly, also a country code,

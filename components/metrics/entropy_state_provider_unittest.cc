@@ -25,11 +25,13 @@ class EntropyStateProviderTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
 };
 
-TEST_F(EntropyStateProviderTest, PopulateBothLowEntropySource) {
+TEST_F(EntropyStateProviderTest, PopulateAllLowEntropySources) {
   const int new_low_source = 1234;
   const int old_low_source = 5678;
+  const int pseudo_low_source = 4321;
   prefs_.SetInteger(prefs::kMetricsLowEntropySource, new_low_source);
   prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, old_low_source);
+  prefs_.SetInteger(prefs::kMetricsPseudoLowEntropySource, pseudo_low_source);
 
   EntropyStateProvider provider(&prefs_);
   SystemProfileProto system_profile;
@@ -38,6 +40,7 @@ TEST_F(EntropyStateProviderTest, PopulateBothLowEntropySource) {
 
   EXPECT_EQ(new_low_source, system_profile.low_entropy_source());
   EXPECT_EQ(old_low_source, system_profile.old_low_entropy_source());
+  EXPECT_EQ(pseudo_low_source, system_profile.pseudo_low_entropy_source());
 }
 
 }  // namespace metrics

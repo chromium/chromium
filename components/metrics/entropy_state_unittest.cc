@@ -38,13 +38,28 @@ TEST_F(EntropyStateTest, LowEntropySourceNotReset) {
   EXPECT_EQ(0, entropy_state.GetLowEntropySource());
 }
 
+TEST_F(EntropyStateTest, PseudoLowEntropySourceNotReset) {
+  EntropyState entropy_state(&prefs_);
+  // Get the pseudo low entropy source once, to initialize it.
+  entropy_state.GetPseudoLowEntropySource();
+
+  // Now, set it to 0 and ensure it doesn't get reset.
+  entropy_state.pseudo_low_entropy_source_ = 0;
+  EXPECT_EQ(0, entropy_state.GetPseudoLowEntropySource());
+  // Call it another time, just to make sure.
+  EXPECT_EQ(0, entropy_state.GetPseudoLowEntropySource());
+}
+
 TEST_F(EntropyStateTest, HaveNoLowEntropySource) {
   EntropyState entropy_state(&prefs_);
-  // If we have neither the new nor old low entropy sources in prefs, then the
-  // new source should be created...
+  // If we have none of the new, old, or pseudo low entropy sources in prefs,
+  // then the new source should be created...
   int new_low_source = entropy_state.GetLowEntropySource();
   EXPECT_TRUE(EntropyState::IsValidLowEntropySource(new_low_source))
       << new_low_source;
+  int pseudo_low_source = entropy_state.GetPseudoLowEntropySource();
+  EXPECT_TRUE(EntropyState::IsValidLowEntropySource(pseudo_low_source))
+      << pseudo_low_source;
   // ...but the old source should not...
   EXPECT_EQ(EntropyState::kLowEntropySourceNotSet,
             entropy_state.GetOldLowEntropySource());
@@ -96,18 +111,22 @@ TEST_F(EntropyStateTest, HaveOnlyOldLowEntropySource) {
       << high_source;
 }
 
-TEST_F(EntropyStateTest, HaveBothLowEntropySources) {
-  // If we have the new and old low entropy sources in prefs...
+TEST_F(EntropyStateTest, HaveAllLowEntropySources) {
+  // If we have all three of new, old, and pseudo low entropy sources in
+  // prefs...
   const int new_low_source = 1234;
   const int old_low_source = 5678;
+  const int pseudo_low_source = 4321;
   prefs_.SetInteger(prefs::kMetricsLowEntropySource, new_low_source);
   prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, old_low_source);
+  prefs_.SetInteger(prefs::kMetricsPseudoLowEntropySource, pseudo_low_source);
 
-  // ...then both should be loaded...
+  // ...then all three should be loaded...
   EntropyState entropy_state(&prefs_);
 
   EXPECT_EQ(new_low_source, entropy_state.GetLowEntropySource());
   EXPECT_EQ(old_low_source, entropy_state.GetOldLowEntropySource());
+  EXPECT_EQ(pseudo_low_source, entropy_state.GetPseudoLowEntropySource());
   // ...and the high entropy source should include the *old* low entropy source.
   std::string high_source = entropy_state.GetHighEntropySource(
       "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEF");
@@ -148,11 +167,13 @@ TEST_F(EntropyStateTest, CorruptOldLowEntropySources) {
 TEST_F(EntropyStateTest, ClearPrefs) {
   prefs_.SetInteger(prefs::kMetricsLowEntropySource, 1234);
   prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, 5678);
+  prefs_.SetInteger(prefs::kMetricsPseudoLowEntropySource, 4321);
 
   EntropyState::ClearPrefs(&prefs_);
 
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsLowEntropySource));
   EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsOldLowEntropySource));
+  EXPECT_FALSE(prefs_.HasPrefPath(prefs::kMetricsPseudoLowEntropySource));
 }
 
 }  // namespace metrics

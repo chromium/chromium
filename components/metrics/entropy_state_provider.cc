@@ -18,6 +18,8 @@ void EntropyStateProvider::ProvideSystemProfileMetrics(
   system_profile->set_low_entropy_source(entropy_state_.GetLowEntropySource());
   system_profile->set_old_low_entropy_source(
       entropy_state_.GetOldLowEntropySource());
+  system_profile->set_pseudo_low_entropy_source(
+      entropy_state_.GetPseudoLowEntropySource());
 }
 
 }  // namespace metrics

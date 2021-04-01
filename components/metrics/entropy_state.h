@@ -40,6 +40,11 @@ class EntropyState final {
   // there is none. See the |low_entropy_source_| comment for more info.
   int GetLowEntropySource();
 
+  // Returns the pseudo low entropy source for this client. Generates a new
+  // value if there is none. See the |pseudo_low_entropy_source_| comment
+  // for more info.
+  int GetPseudoLowEntropySource();
+
   // Returns the old low entropy source for this client. Does not generate a new
   // value, but instead returns |kLowEntropySourceNotSet|, if there is none. See
   // the |old_low_entropy_source_| comment for more info.
@@ -47,6 +52,7 @@ class EntropyState final {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, LowEntropySourceNotReset);
+  FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, PseudoLowEntropySourceNotReset);
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, HaveNoLowEntropySource);
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, HaveOnlyNewLowEntropySource);
   FRIEND_TEST_ALL_PREFIXES(EntropyStateTest, HaveOnlyOldLowEntropySource);
@@ -75,8 +81,14 @@ class EntropyState final {
   // requiring low entropy. Clients which already have an "old" value continue
   // incorporating it into the high entropy source, to avoid changing those
   // group assignments. New clients only have the new source.
+  //
+  // The pseudo-low entropy source is not used for experiment diversion, but
+  // only for statistical validation. (Since it's not used for experiment
+  // diversion, it won't be subject to drift over time as experiment effects
+  // accumulate in actual low entropy source buckets.)
   int low_entropy_source_ = kLowEntropySourceNotSet;
   int old_low_entropy_source_ = kLowEntropySourceNotSet;
+  int pseudo_low_entropy_source_ = kLowEntropySourceNotSet;
 };
 
 }  // namespace metrics
