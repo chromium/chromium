@@ -95,24 +95,6 @@ NavigationManager::WebLoadParams& NavigationManager::WebLoadParams::operator=(
   return *this;
 }
 
-/* static */
-NavigationItem* NavigationManagerImpl::GetLastCommittedNonRedirectedItem(
-    const NavigationManager* nav_manager) {
-  if (!nav_manager || !nav_manager->GetItemCount())
-    return nullptr;
-
-  int index = nav_manager->GetLastCommittedItemIndex();
-  while (index >= 0) {
-    NavigationItem* item = nav_manager->GetItemAtIndex(index);
-    // Returns the first non-Redirect item found.
-    if (!ui::PageTransitionIsRedirect(item->GetTransitionType()))
-      return item;
-    --index;
-  }
-
-  return nullptr;
-}
-
 NavigationManagerImpl::NavigationManagerImpl()
     : delegate_(nullptr),
       browser_state_(nullptr),
@@ -916,14 +898,10 @@ void NavigationManagerImpl::ReloadWithUserAgentType(
   if (!item_to_reload ||
       ui::PageTransitionIsRedirect(item_to_reload->GetTransitionType()))
     item_to_reload = GetVisibleItem();
-  if (!item_to_reload ||
-      ui::PageTransitionIsRedirect(item_to_reload->GetTransitionType())) {
-    NavigationItem* last_committed_before_redirect =
-        GetLastCommittedNonRedirectedItem(this);
-    if (last_committed_before_redirect) {
-      // When a tab is opened on a redirect, there is no last committed item
-      // before the redirect. In that case, take the last committed item.
-      item_to_reload = last_committed_before_redirect;
+  if (!item_to_reload) {
+    NavigationItem* last_committed_item = GetLastCommittedItem();
+    if (last_committed_item) {
+      item_to_reload = last_committed_item;
     }
   }
 
@@ -1288,8 +1266,13 @@ NavigationManagerImpl::CreateNavigationItemWithRewriters(
     loaded_url = url;
   }
 
+  GURL original_url = loaded_url;
+  if (ui::PageTransitionIsRedirect(transition) && GetLastCommittedItem()) {
+    original_url = GetLastCommittedItem()->GetURL();
+  }
+
   auto item = std::make_unique<NavigationItemImpl>();
-  item->SetOriginalRequestURL(loaded_url);
+  item->SetOriginalRequestURL(original_url);
   item->SetURL(loaded_url);
   item->SetReferrer(referrer);
   item->SetTransitionType(transition);
