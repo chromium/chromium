@@ -391,12 +391,7 @@ class StackingPolicyPartTwo : public Policy {
   DISALLOW_COPY_AND_ASSIGN(StackingPolicyPartTwo);
 };
 
-// Depending on DCHECK being enabled or not the test may create some output.
-// Therefore explicitly specify the death test to allow some noise.
-BPF_DEATH_TEST_C(SandboxBPF,
-                 StackingPolicy,
-                 DEATH_SUCCESS_ALLOW_NOISE(),
-                 StackingPolicyPartOne) {
+BPF_TEST_C(SandboxBPF, StackingPolicy, StackingPolicyPartOne) {
   errno = 0;
   BPF_ASSERT(syscall(__NR_getppid, 0) > 0);
   BPF_ASSERT(errno == 0);

@@ -386,49 +386,5 @@ TEST_F(StackTraceTest, MAYBE_StackEnd) {
 
 #endif  // BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
-
-#if !defined(ARCH_CPU_ARM_FAMILY)
-// On Arm architecture invalid math operations such as division by zero are not
-// trapped and do not trigger a SIGFPE.
-// Hence disable the test for Arm platforms.
-TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGFPE) {
-  // Values are volatile to prevent reordering of instructions, i.e. for
-  // optimization. Reordering may lead to tests erroneously failing due to
-  // SIGFPE being raised outside of EXPECT_EXIT.
-  volatile int const nominator = 23;
-  volatile int const denominator = 0;
-  volatile int result;
-
-  EXPECT_EXIT(result = nominator / denominator,
-              ::testing::KilledBySignal(SIGFPE), "");
-}
-#endif  // !defined(ARCH_CPU_ARM_FAMILY)
-
-TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGSEGV) {
-  // Pointee and pointer are volatile to prevent reordering of instructions,
-  // i.e. for optimization. Reordering may lead to tests erroneously failing due
-  // to SIGSEGV being raised outside of EXPECT_EXIT.
-  volatile int* const volatile p_int = nullptr;
-
-  EXPECT_EXIT(*p_int = 1234, ::testing::KilledBySignal(SIGSEGV), "");
-}
-
-TEST(CheckExitCodeAfterSignalHandlerDeathTest, CheckSIGILL) {
-  auto const raise_sigill = []() {
-#if defined(ARCH_CPU_X86_FAMILY)
-    asm("ud2");
-#elif defined(ARCH_CPU_ARM_FAMILY)
-    asm("udf 0");
-#else
-#error Unsupported platform!
-#endif
-  };
-
-  EXPECT_EXIT(raise_sigill(), ::testing::KilledBySignal(SIGILL), "");
-}
-
-#endif  // defined(OS_LINUX) || defined(OS_ANDROID)
-
 }  // namespace debug
 }  // namespace base

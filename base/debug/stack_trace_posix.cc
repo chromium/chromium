@@ -420,22 +420,15 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   PrintToStderr("[end of stack trace]\n");
 
 #if defined(OS_MAC)
-  if (::signal(signal, SIG_DFL) == SIG_ERR) {
-    _exit(EXIT_FAILURE);
-  }
-#elif !defined(OS_LINUX)
-  // For all operating systems but Linux we do not reraise the signal that
-  // brought us here but terminate the process immediately.
-  // Otherwise various tests break on different operating systems, see
-  // https://code.google.com/p/chromium/issues/detail?id=551681 amongst others.
-  PrintToStderr(
-      "Calling _exit(EXIT_FAILURE). Core file will not be generated.\n");
-  _exit(EXIT_FAILURE);
-#endif  // !defined(OS_LINUX)
-
-  // After leaving this handler control flow returns to the point where the
-  // signal was raised, raising the current signal once again but executing the
-  // default handler instead of this one.
+  if (::signal(signal, SIG_DFL) == SIG_ERR)
+    _exit(1);
+#else
+  // Non-Mac OSes should probably reraise the signal as well, but the Linux
+  // sandbox tests break on CrOS devices.
+  // https://code.google.com/p/chromium/issues/detail?id=551681
+  PrintToStderr("Calling _exit(1). Core file will not be generated.\n");
+  _exit(1);
+#endif  // defined(OS_MAC)
 }
 
 class PrintBacktraceOutputHandler : public BacktraceOutputHandler {
