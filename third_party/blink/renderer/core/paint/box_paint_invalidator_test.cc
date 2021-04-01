@@ -29,7 +29,6 @@ class BoxPaintInvalidatorTest : public PaintAndRasterInvalidationTest {
   PaintInvalidationReason ComputePaintInvalidationReason(
       LayoutBox& box,
       const PhysicalOffset& old_paint_offset) {
-    FragmentData fragment_data;
     PaintInvalidatorContext context;
     context.old_paint_offset = old_paint_offset;
     fragment_data_->SetPaintOffset(box.FirstFragment().PaintOffset());
