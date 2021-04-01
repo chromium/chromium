@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/common/infobar_modal_interaction_handler.h"
 
+class Browser;
 class InfoBarIOS;
 
 namespace autofill {
@@ -18,12 +19,17 @@ class AutofillSaveAddressProfileDelegateIOS;
 class SaveAddressProfileInfobarModalInteractionHandler
     : public InfobarModalInteractionHandler {
  public:
-  SaveAddressProfileInfobarModalInteractionHandler();
+  SaveAddressProfileInfobarModalInteractionHandler(Browser* browser);
   ~SaveAddressProfileInfobarModalInteractionHandler() override;
 
   // InfobarModalInteractionHandler:
   void PerformMainAction(InfoBarIOS* infobar) override;
   void InfobarVisibilityChanged(InfoBarIOS* infobar, bool visible) override;
+
+  // Instructs the handler that the user has requested the address profile
+  // settings page through |infobar|'s modal UI.  The settings will be presented
+  // after the dismissal of |infobar|'s modal UI.
+  void PresentAddressProfileSettings(InfoBarIOS* infobar);
 
  private:
   // InfobarModalInteractionHandler:
@@ -33,6 +39,9 @@ class SaveAddressProfileInfobarModalInteractionHandler
   // Returns the SaveAddressProfile delegate from |infobar|.
   autofill::AutofillSaveAddressProfileDelegateIOS* GetInfoBarDelegate(
       InfoBarIOS* infobar);
+
+  // The Browser passed on initialization.
+  Browser* browser_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_SAVE_ADDRESS_PROFILE_SAVE_ADDRESS_PROFILE_INFOBAR_MODAL_INTERACTION_HANDLER_H_

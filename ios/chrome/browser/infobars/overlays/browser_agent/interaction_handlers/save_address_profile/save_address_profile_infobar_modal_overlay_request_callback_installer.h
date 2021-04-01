@@ -22,6 +22,16 @@ class SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller
   ~SaveAddressProfileInfobarModalOverlayRequestCallbackInstaller() override;
 
  private:
+  // Used as a callback for OverlayResponses dispatched through |request|'s
+  // callback manager.  The OverlayDispatchCallback is created with an
+  // OverlayResponseSupport that guarantees that |response| is created with a
+  // save_address_profile_infobar_modal_responses::PresentAddressProfileSettings.
+  void PresentAddressProfileSettingsCallback(OverlayRequest* request,
+                                             OverlayResponse* response);
+
+  // OverlayRequestCallbackInstaller:
+  void InstallCallbacksInternal(OverlayRequest* request) override;
+
   // The handler for received responses.
   SaveAddressProfileInfobarModalInteractionHandler* interaction_handler_ =
       nullptr;

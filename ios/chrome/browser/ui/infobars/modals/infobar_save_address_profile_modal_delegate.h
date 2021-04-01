@@ -12,7 +12,9 @@
 // Delegate to handle Save Address Profile Infobar Modal actions.
 @protocol InfobarSaveAddressProfileModalDelegate <InfobarModalDelegate>
 
-// TODO(crbug.com/1167062): Implement method for updating the address profile.
+// Dismisses the InfobarModal with no animation, then presents the Address
+// Profile Settings screen modally.
+- (void)presentAddressProfileSettings;
 
 @end
 

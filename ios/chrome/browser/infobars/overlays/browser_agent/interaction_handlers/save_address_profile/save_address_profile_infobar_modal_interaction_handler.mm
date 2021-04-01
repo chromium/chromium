@@ -14,7 +14,10 @@
 #endif
 
 SaveAddressProfileInfobarModalInteractionHandler::
-    SaveAddressProfileInfobarModalInteractionHandler() = default;
+    SaveAddressProfileInfobarModalInteractionHandler(Browser* browser)
+    : browser_(browser) {
+  DCHECK(browser_);
+}
 
 SaveAddressProfileInfobarModalInteractionHandler::
     ~SaveAddressProfileInfobarModalInteractionHandler() = default;
@@ -34,6 +37,11 @@ void SaveAddressProfileInfobarModalInteractionHandler::InfobarVisibilityChanged(
     GetInfoBarDelegate(infobar)->set_modal_is_dismissed_to_true();
     GetInfoBarDelegate(infobar)->InfoBarDismissed();
   }
+}
+
+void SaveAddressProfileInfobarModalInteractionHandler::
+    PresentAddressProfileSettings(InfoBarIOS* infobar) {
+  // TODO(crbug.com/1167062): Open Address Profile settings.
 }
 
 #pragma mark - Private

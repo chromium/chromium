@@ -107,7 +107,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
                            target:self
                            action:@selector(dismissInfobarModal)];
   cancelButton.accessibilityIdentifier = kInfobarModalCancelButton;
+  UIImage* settingsImage = [[UIImage imageNamed:@"infobar_settings_icon"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  UIBarButtonItem* settingsButton = [[UIBarButtonItem alloc]
+      initWithImage:settingsImage
+              style:UIBarButtonItemStylePlain
+             target:self
+             action:@selector(presentAddressProfileSettings)];
+  // TODO(crbug.com/1167062): Replace with proper localized string.
+  settingsButton.accessibilityLabel = @"Access profile settings";
   self.navigationItem.leftBarButtonItem = cancelButton;
+  self.navigationItem.rightBarButtonItem = settingsButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
 
   [self loadModel];
@@ -276,6 +286,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       base::UserMetricsAction("MobileMessagesModalCancelledTapped"));
   [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
   [self.saveAddressProfileModalDelegate dismissInfobarModal:self];
+}
+
+- (void)presentAddressProfileSettings {
+  base::RecordAction(base::UserMetricsAction("MobileMessagesModalSettings"));
+  [self.saveAddressProfileModalDelegate presentAddressProfileSettings];
 }
 
 #pragma mark - Helpers

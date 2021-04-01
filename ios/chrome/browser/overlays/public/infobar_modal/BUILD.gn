@@ -12,6 +12,8 @@ source_set("infobar_modal") {
     "password_infobar_modal_overlay_responses.mm",
     "save_address_profile_infobar_modal_overlay_request_config.h",
     "save_address_profile_infobar_modal_overlay_request_config.mm",
+    "save_address_profile_infobar_modal_overlay_responses.h",
+    "save_address_profile_infobar_modal_overlay_responses.mm",
     "save_card_infobar_modal_overlay_request_config.h",
     "save_card_infobar_modal_overlay_request_config.mm",
     "save_card_infobar_modal_overlay_responses.h",
