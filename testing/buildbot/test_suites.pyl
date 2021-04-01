@@ -867,6 +867,7 @@
     },
 
     'chromium_gtests_for_linux_only': {
+      'gtk_unittests': {},
       'x11_unittests': {},
     },
 
