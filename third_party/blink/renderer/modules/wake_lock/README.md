@@ -10,7 +10,7 @@ The code required to implement the Wake Lock API is spread across multiple Chrom
 
 ## High level overview
 
-Wake Lock's API surface is fairly small: `Navigator` and `WorkerNavigator` provide a `wakeLock` attribute that exposes the `WakeLock`, an interface with a single method to request a wake lock, and a `WakeLockSentinel` can be used to both release the requested lock and receive an event when it is released. All the parts that actually communicate with platform APIs are implemented elsewhere, so the Blink side only exposes the JavaScript API to script authors, validates API calls and manages [state records].
+Wake Lock's API surface is fairly small: `Navigator` and `WorkerNavigator` provide a `wakeLock` attribute that exposes the `WakeLock`, an interface with a single method to request a wake lock, and a `WakeLockSentinel` can be used to both release the requested lock and receive an event when it is released. All the parts that actually communicate with platform APIs are implemented elsewhere, so the Blink side only exposes the JavaScript API to script authors, validates API calls and manages the [`[[ActiveLocks]]` internal slot](https://w3c.github.io/screen-wake-lock/#dfn-activelocks).
 
 Wake Lock usage in scripts looks like this:
 
@@ -25,7 +25,7 @@ lock.release();
 The three main Blink classes implementing the spec are:
 
 * [`WakeLock`](wake_lock.h): per-`Navigator`/`WorkerNavigator` class that implements the bindings for the `WakeLock` IDL interface. Its responsibilities also include performing permission requests and [Wake Lock management] tasks that apply to documents and/or workers (e.g. page visibility handling). Lock acquisition calls are all forwarded to `WakeLockManager`. Its `managers_` array contains per-wake lock type `WakeLockManager` instances, so all wake lock types are managed independently.
-* [`WakeLockManager`](wake_lock_manager.h): Owned by `WakeLock`. This is an implementation of the [state records] Wake Lock concept in a per-type fashion. Like in the spec, it keeps track of all active locks of a certain type, and it is also responsible for communicating with the `//content` and `//services` layers to request and cancel wake locks.
+* [`WakeLockManager`](wake_lock_manager.h): Owned by `WakeLock`. This is an implementation of the `[[ActiveLocks]]` internal slot added to the `Document` interface. Like in the spec, it keeps track of all active locks of a certain type, and it is also responsible for communicating with the `//content` and `//services` layers to request and cancel wake locks.
 * [`WakeLockSentinel`](wake_lock_sentinel.h): Owned by `WakeLockManager`. This is an implementation of the `WakeLockSentinel` IDL interface that is used to both release a lock requested by `WakeLock.request()` and receive a `release` event when it is released (either by `WakeLockSentinel.release()` or due to a platform event, such as a loss of context, or a page visibility change in the case of screen wake locks). This class is an event target, so it inherits from [`ActiveScriptWrappable`](../../bindings/core/v8/active_script_wrappable.h) to avoid being garbage-collected while there is pending activity.
 
 Furthermore, [`wake_lock.mojom`](../../../public/mojom/wake_lock/wake_lock.mojom) defines the Mojo interface implemented by `//content`'s [`WakeLockServiceImpl`](/content/browser/wake_lock/wake_lock_service_impl.h) that `WakeLockManager` uses to obtain a [`device::mojom::blink::WakeLock`](/services/device/public/mojom/wake_lock.mojom) and request/cancel a wake lock.
@@ -39,7 +39,6 @@ The rest of the implementation is found in the following directories:
 [Mojo interfaces]: ../../../../../services/device/public/mojom/
 [Wake Lock management]: https://w3c.github.io/screen-wake-lock/#managing-wake-locks
 [Wake Lock specification]: https://w3c.github.io/screen-wake-lock/
-[state records]: https://w3c.github.io/screen-wake-lock/#dfn-state-record
 
 ### Testing
 

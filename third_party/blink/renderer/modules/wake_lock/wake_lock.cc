@@ -56,8 +56,10 @@ WakeLock::WakeLock(NavigatorBase& navigator)
 ScriptPromise WakeLock::request(ScriptState* script_state,
                                 const String& type,
                                 ExceptionState& exception_state) {
-  // 4.1. If the document's browsing context is null, reject promise with a
-  //      "NotAllowedError" DOMException and return promise.
+  // https://w3c.github.io/screen-wake-lock/#the-request-method
+
+  // 4. If the document's browsing context is null, reject promise with a
+  //    "NotAllowedError" DOMException and return promise.
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
@@ -65,7 +67,6 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // https://w3c.github.io/screen-wake-lock/#the-request-method
   auto* context = ExecutionContext::From(script_state);
   DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope());
 
@@ -76,15 +77,13 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // 2.1 If type is 'screen' and the document is not allowed to use the
-  //     policy-controlled feature named "screen-wake-lock", reject promise with
-  //     a "NotAllowedError" DOMException and return promise.
+  // 2. If document is not allowed to use the policy-controlled feature named
+  //    "screen-wake-lock", return a promise rejected with a "NotAllowedError"
+  //     DOMException.
+  // TODO: Check permissions policy enabling for System Wake Lock
   // [N.B. Per https://github.com/w3c/webappsec-permissions-policy/issues/207
   // there is no official support for workers in the Permissions Policy spec,
   // but we can perform FP checks in workers in Blink]
-  // 2.2. If the user agent denies the wake lock of this type for document,
-  //      reject promise with a "NotAllowedError" DOMException and return
-  //      promise.
   if (type == "screen" &&
       !context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kScreenWakeLock,
@@ -95,9 +94,9 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  // TODO: Check permissions policy enabling for System Wake Lock
-
   if (context->IsDedicatedWorkerGlobalScope()) {
+    // N.B. The following steps were removed from the spec when System Wake Lock
+    // was spun off into a separate specification.
     // 3. If the current global object is the DedicatedWorkerGlobalScope object:
     // 3.1. If the current global object's owner set is empty, reject promise
     //      with a "NotAllowedError" DOMException and return promise.
@@ -110,20 +109,17 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
       return ScriptPromise();
     }
   } else if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
-    // 2. Let document be the responsible document of the current settings
-    // object.
-
-    // 4. Otherwise, if the current global object is the Window object:
-    // 4.2. If document is not fully active, reject promise with a
-    //      "NotAllowedError" DOMException, and return promise.
+    // 1. Let document be this's relevant settings object's associated
+    //    Document.
+    // 5. If document is not fully active, return a promise rejected with with a
+    //    "NotAllowedError" DOMException.
     if (!window->document()->IsActive()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "The document is not active");
       return ScriptPromise();
     }
-    // 4.3. If type is "screen" and the Document of the top-level browsing
-    //      context is hidden, reject promise with a "NotAllowedError"
-    //      DOMException, and return promise.
+    // 6. If the steps to determine the visibility state return hidden, return a
+    //    promise rejected with "NotAllowedError" DOMException.
     if (type == "screen" && !window->GetFrame()->GetPage()->IsPageVisible()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "The requesting page is not visible");
@@ -131,7 +127,7 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
     }
   }
 
-  // 1. Let promise be a new promise.
+  // 7. Let promise be a new promise.
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
@@ -149,17 +145,17 @@ ScriptPromise WakeLock::request(ScriptState* script_state,
       break;
   }
 
-  // 5. Run the following steps in parallel, but abort when type is "screen" and
-  // document is hidden:
+  // 8. Run the following steps in parallel:
   DoRequest(wake_lock_type, resolver);
 
-  // 7. Return promise.
+  // 9. Return promise.
   return promise;
 }
 
 void WakeLock::DoRequest(WakeLockType type, ScriptPromiseResolver* resolver) {
   // https://w3c.github.io/screen-wake-lock/#the-request-method
-  // 5.1. Let state be the result of awaiting obtain permission steps with type:
+  // 8.1. Let state be the result of invoking obtain permission with
+  //      "screen-wake-lock".
   ObtainPermission(
       type, WTF::Bind(&WakeLock::DidReceivePermissionResponse,
                       WrapPersistent(this), type, WrapPersistent(resolver)));
@@ -172,27 +168,32 @@ void WakeLock::DidReceivePermissionResponse(WakeLockType type,
   DCHECK(status == PermissionStatus::GRANTED ||
          status == PermissionStatus::DENIED);
   DCHECK(resolver);
-  // 5.1.1. If state is "denied", then reject promise with a "NotAllowedError"
-  //        DOMException, and abort these steps.
+  // 8.2. If state is "denied", then:
+  // 8.2.1. Queue a global task on the screen wake lock task source given
+  //        document's relevant global object to reject promise with a
+  //        "NotAllowedError" DOMException.
+  // 8.2.2. Abort these steps.
   if (status != PermissionStatus::GRANTED) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "Wake Lock permission request denied"));
     return;
   }
-  // 6. If aborted, run these steps:
-  // 6.1. Reject promise with a "NotAllowedError" DOMException.
+  // 8.3. Queue a global task on the screen wake lock task source given
+  //      document's relevant global object to run these steps:
   if (type == WakeLockType::kScreen &&
       !(GetPage() && GetPage()->IsPageVisible())) {
+    // 8.3.1. If the steps to determine the visibility state return hidden,
+    //        then:
+    // 8.3.1.1. Reject promise with a "NotAllowedError" DOMException.
+    // 8.3.1.2. Abort these steps.
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
         "The requesting page is not visible"));
     return;
   }
-  // 5.3. Let success be the result of awaiting acquire a wake lock with lock
-  // and type:
-  // 5.3.1. If success is false then reject promise with a "NotAllowedError"
-  //        DOMException, and abort these steps.
+  // Steps 8.3.2 to 8.3.5 are described in AcquireWakeLock() and related
+  // functions.
   WakeLockManager* manager = managers_[static_cast<size_t>(type)];
   DCHECK(manager);
   manager->AcquireWakeLock(resolver);
@@ -200,15 +201,12 @@ void WakeLock::DidReceivePermissionResponse(WakeLockType type,
 
 void WakeLock::ContextDestroyed() {
   // https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-full-activity
-  // 1. Let document be the responsible document of the current settings object.
-  // 2. Let screenRecord be the platform wake lock's state record associated
-  // with document and wake lock type "screen".
-  // 3. For each lock in screenRecord.[[ActiveLocks]]:
-  // 3.1. Run release a wake lock with lock and "screen".
-  // 4. Let systemRecord be the platform wake lock's state record associated
-  // with document and wake lock type "system".
-  // 5. For each lock in systemRecord.[[ActiveLocks]]:
-  // 5.1. Run release a wake lock with lock and "system".
+  // 1. For each lock in document.[[ActiveLocks]]["screen"]:
+  // 1.1. Run release a wake lock with document, lock, and "screen".
+  // N.B. The following steps were removed from the spec when System Wake Lock
+  // was spun off into a separate specification.
+  // 2. For each lock in document.[[ActiveLocks]]["system"]:
+  // 2.1. Run release a wake lock with document, lock, and "system".
   for (WakeLockManager* manager : managers_) {
     if (manager)
       manager->ClearWakeLocks();
@@ -217,14 +215,10 @@ void WakeLock::ContextDestroyed() {
 
 void WakeLock::PageVisibilityChanged() {
   // https://w3c.github.io/screen-wake-lock/#handling-document-loss-of-visibility
-  // 1. Let document be the Document of the top-level browsing context.
-  // 2. If document's visibility state is "visible", abort these steps.
   if (GetPage() && GetPage()->IsPageVisible())
     return;
-  // 3. Let screenRecord be the platform wake lock's state record associated
-  // with wake lock type "screen".
-  // 4. For each lock in screenRecord.[[ActiveLocks]]:
-  // 4.1. Run release a wake lock with lock and "screen".
+  // 1. For each lock in document.[[ActiveLocks]]["screen"]:
+  // 1.1. Run release a wake lock with document, lock, and "screen".
   WakeLockManager* manager =
       managers_[static_cast<size_t>(WakeLockType::kScreen)];
   if (manager)
@@ -237,17 +231,11 @@ void WakeLock::ObtainPermission(
   // https://w3c.github.io/screen-wake-lock/#dfn-obtain-permission
   // Note we actually implement a simplified version of the "obtain permission"
   // algorithm that essentially just calls the "request permission to use"
-  // algorithm from the Permissions spec (i.e. we bypass all the steps covering
-  // calling the "query a permission" algorithm and handling its result).
-  // * Right now, we can do that because there is no way for Chromium's
-  //   permission system to get to the "prompt" state given how
-  //   WakeLockPermissionContext is currently implemented.
-  // * Even if WakeLockPermissionContext changes in the future, this Blink
-  //   implementation is unlikely to change because
-  //   WakeLockPermissionContext::RequestPermission() will take its
-  //   |user_gesture| argument into account to actually implement a slightly
-  //   altered version of "request permission to use", the behavior of which
-  //   will match the definition of "obtain permission" in the Wake Lock spec.
+  // algorithm from the Permissions spec (i.e. we do not take user activation
+  // into account, nor do we consider "prompt" is a valid permission state).
+  // Right now, we can do that because there is no way for Chromium's
+  // permission system to get to the "prompt" state given how
+  // WakeLockPermissionContext is currently implemented.
   mojom::blink::PermissionName permission_name;
   switch (type) {
     case WakeLockType::kScreen:
