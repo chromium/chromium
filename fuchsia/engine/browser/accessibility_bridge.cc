@@ -27,9 +27,9 @@ constexpr float kRectConversionError = 0.5;
 
 // Returns the id of the offset container for |node|, or the root node id if
 // |node| does not specify an offset container.
-int32_t GetOffsetContainerId(const ui::AXTree* tree, const ui::AXNode* node) {
-  int32_t offset_container_id =
-      node->data().relative_bounds.offset_container_id;
+int32_t GetOffsetContainerId(const ui::AXTree* tree,
+                             const ui::AXNodeData& node_data) {
+  int32_t offset_container_id = node_data.relative_bounds.offset_container_id;
   if (offset_container_id == -1)
     return tree->root()->id();
   return offset_container_id;
@@ -61,6 +61,18 @@ AccessibilityBridge::~AccessibilityBridge() {
   ax_trees_.clear();
 }
 
+void AccessibilityBridge::RemoveNodeFromOffsetMapping(
+    ui::AXTree* tree,
+    const ui::AXNodeData& node_data) {
+  auto offset_container_children_it =
+      offset_container_children_.find(std::make_pair(
+          tree->GetAXTreeID(), GetOffsetContainerId(tree, node_data)));
+  if (offset_container_children_it != offset_container_children_.end()) {
+    offset_container_children_it->second.erase(
+        std::make_pair(tree->GetAXTreeID(), node_data.id));
+  }
+}
+
 void AccessibilityBridge::TryCommit() {
   if (commit_inflight_ || (to_delete_.empty() && to_update_.empty()) ||
       ShouldHoldCommit())
@@ -68,12 +80,8 @@ void AccessibilityBridge::TryCommit() {
 
   // Deletions come before updates because first the nodes are deleted, and
   // then we update the parents to no longer point at them.
-  if (!to_delete_.empty()) {
-    for (uint32_t node_id : to_delete_) {
-      RemoveNodeFromOffsetContainerChildren(node_id);
-    }
+  if (!to_delete_.empty())
     semantic_tree_->DeleteSemanticNodes(std::move(to_delete_));
-  }
 
   size_t start = 0;
   while (start < to_update_.size()) {
@@ -257,6 +265,16 @@ void AccessibilityBridge::OnSemanticsModeChanged(
   callback();
 }
 
+void AccessibilityBridge::OnNodeWillBeDeleted(ui::AXTree* tree,
+                                              ui::AXNode* node) {
+  // Remove the node from its offset container's list of children.
+  RemoveNodeFromOffsetMapping(tree, node->data());
+
+  // Also remove the mapping from deleted node to its offset children.
+  offset_container_children_.erase(
+      std::make_pair(tree->GetAXTreeID(), node->data().id));
+}
+
 void AccessibilityBridge::OnNodeDeleted(ui::AXTree* tree, int32_t node_id) {
   to_delete_.push_back(
       id_mapper_->ToFuchsiaNodeID(tree->GetAXTreeID(), node_id, false));
@@ -266,15 +284,38 @@ void AccessibilityBridge::OnNodeDataChanged(
     ui::AXTree* tree,
     const ui::AXNodeData& old_node_data,
     const ui::AXNodeData& new_node_data) {
+  if (!tree)
+    return;
+
+  // If this node's bounds have changed, then we should update its offset
+  // children's transforms to reflect the new bounds.
   auto offset_container_children_it = offset_container_children_.find(
       std::make_pair(tree->GetAXTreeID(), old_node_data.id));
+
   // If any descendants have this node as their offset containers, and this
   // node's bounds have changed, then we need to update those descendants'
   // transforms to reflect the new bounds.
   if (offset_container_children_it != offset_container_children_.end() &&
-      old_node_data.relative_bounds != new_node_data.relative_bounds) {
-    // TODO(https://fxbug.dev/62891): Update children's transforms.
-    ZX_LOG(ERROR, ZX_OK) << "Offset container moved: currently unsupported";
+      old_node_data.relative_bounds.bounds !=
+          new_node_data.relative_bounds.bounds) {
+    for (auto offset_child_id : offset_container_children_it->second) {
+      auto* child_node = tree->GetFromId(offset_child_id.second);
+      if (!child_node) {
+        continue;
+      }
+
+      auto child_node_data = child_node->data();
+      to_update_.push_back(AXNodeDataToSemanticNode(
+          child_node_data, new_node_data, tree->GetAXTreeID(), false,
+          id_mapper_.get()));
+    }
+  }
+
+  // If this node's offset container has changed, then we should remove it from
+  // its old offset container's offset children.
+  if (old_node_data.relative_bounds.offset_container_id !=
+      new_node_data.relative_bounds.offset_container_id) {
+    RemoveNodeFromOffsetMapping(tree, old_node_data);
   }
 }
 
@@ -298,7 +339,8 @@ void AccessibilityBridge::OnAtomicUpdateFinished(
   for (const ui::AXTreeObserver::Change& change : changes) {
     const auto& node = change.node->data();
 
-    int32_t offset_container_id = GetOffsetContainerId(tree, change.node);
+    int32_t offset_container_id =
+        GetOffsetContainerId(tree, change.node->data());
     const auto* container = tree->GetFromId(offset_container_id);
     DCHECK(container);
 
@@ -337,31 +379,6 @@ float AccessibilityBridge::GetDeviceScaleFactor() {
     return *device_scale_factor_override_for_test_;
   }
   return web_contents_->GetRenderWidgetHostView()->GetDeviceScaleFactor();
-}
-
-void AccessibilityBridge::RemoveNodeFromOffsetContainerChildren(
-    uint32_t node_id) {
-  auto ax_id = id_mapper_->ToAXNodeID(node_id);
-  if (!ax_id)
-    return;
-
-  offset_container_children_.erase(ax_id.value());
-
-  auto ax_tree_it = ax_trees_.find(ax_id->first);
-  if (ax_tree_it == ax_trees_.end())
-    return;
-
-  // Remove the mapping from the offset container to this node.
-  ui::AXNode* node = ax_tree_it->second->GetFromId(ax_id->second);
-  if (!node)
-    return;
-
-  int32_t offset_container_id =
-      GetOffsetContainerId(ax_tree_it->second.get(), node);
-  auto offset_container_children_it = offset_container_children_.find(
-      std::make_pair(ax_id->first, offset_container_id));
-  if (offset_container_children_it != offset_container_children_.end())
-    offset_container_children_it->second.erase(*ax_id);
 }
 
 ui::AXSerializableTree* AccessibilityBridge::ax_tree_for_test() {
@@ -415,7 +432,8 @@ void AccessibilityBridge::UpdateTreeConnections() {
     if (kv.second.is_connected)
       continue;  // No work to do, trees connected and present.
 
-    int32_t offset_container_id = GetOffsetContainerId(parent_tree, ax_node);
+    int32_t offset_container_id =
+        GetOffsetContainerId(parent_tree, ax_node->data());
     const auto* container = parent_tree->GetFromId(offset_container_id);
     DCHECK(container);
 

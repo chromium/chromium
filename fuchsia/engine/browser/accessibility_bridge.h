@@ -69,7 +69,11 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   FRIEND_TEST_ALL_PREFIXES(AccessibilityBridgeTest,
                            TreeModificationsAreForwarded);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityBridgeTest,
+                           TransformAccountsForOffsetContainerBounds);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityBridgeTest,
                            UpdateTransformWhenContainerBoundsChange);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityBridgeTest,
+                           OffsetContainerBookkeepingIsUpdated);
 
   using AXNodeID = std::pair<ui::AXTreeID, int32_t>;
 
@@ -115,9 +119,10 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
   // in tests.
   float GetDeviceScaleFactor();
 
-  // Update |offset_container_children_| when node with id |node_id| is
-  // deleted.
-  void RemoveNodeFromOffsetContainerChildren(uint32_t node_id);
+  // Helper method to remove a node id from its offset container's offset
+  // children mapping.
+  void RemoveNodeFromOffsetMapping(ui::AXTree* tree,
+                                   const ui::AXNodeData& node_data);
 
   // content::WebContentsObserver implementation.
   void AccessibilityEventReceived(
@@ -135,6 +140,7 @@ class WEB_ENGINE_EXPORT AccessibilityBridge
                               OnSemanticsModeChangedCallback callback) final;
 
   // ui::AXTreeObserver implementation.
+  void OnNodeWillBeDeleted(ui::AXTree* tree, ui::AXNode* node) override;
   void OnNodeDeleted(ui::AXTree* tree, int32_t node_id) override;
   void OnAtomicUpdateFinished(
       ui::AXTree* tree,
