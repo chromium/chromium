@@ -365,7 +365,11 @@ void MediaNotificationDeviceSelectorView::OnModelUpdated(
         foreground_color_, background_color_, sink);
     device_entry_view->set_tag(next_tag_++);
     device_entry_ui_map_[device_entry_view->tag()] = device_entry_view.get();
-    device_entry_views_container_->AddChildView(std::move(device_entry_view));
+    auto* entry = device_entry_views_container_->AddChildView(
+        std::move(device_entry_view));
+    // After the |device_entry_view| is added, its icon color will change
+    // according to the system theme. So we need to override the system color.
+    entry->OnColorsChanged(foreground_color_, background_color_);
   }
   device_entry_views_container_->Layout();
 

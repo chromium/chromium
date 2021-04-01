@@ -50,6 +50,7 @@ class CastDialogSinkButton : public HoverButton {
       Profile* profile);
 
   static const gfx::VectorIcon* GetVectorIcon(SinkIconType icon_type);
+  static const gfx::VectorIcon* GetVectorIcon(UIMediaSink sink);
 
  private:
   friend class MediaRouterUiForTest;

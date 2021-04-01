@@ -391,6 +391,12 @@ const gfx::VectorIcon* CastDialogSinkButton::GetVectorIcon(
   return vector_icon;
 }
 
+// static
+const gfx::VectorIcon* CastDialogSinkButton::GetVectorIcon(UIMediaSink sink) {
+  return sink.issue ? &::vector_icons::kInfoOutlineIcon
+                    : GetVectorIcon(sink.icon_type);
+}
+
 BEGIN_METADATA(CastDialogSinkButton, HoverButton)
 END_METADATA
 

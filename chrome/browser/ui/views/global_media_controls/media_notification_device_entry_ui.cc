@@ -130,27 +130,11 @@ CastDeviceEntryView::CastDeviceEntryView(
     const media_router::UIMediaSink& sink)
     : DeviceEntryUI(sink.id,
                     base::UTF16ToUTF8(sink.friendly_name),
-                    CastDialogSinkButton::GetVectorIcon(sink.icon_type)),
+                    CastDialogSinkButton::GetVectorIcon(sink)),
       CastDialogSinkButton(
           base::BindRepeating(std::move(callback), base::Unretained(this)),
           sink) {
-  switch (sink.state) {
-    // If the sink state is CONNECTING or DISCONNECTING, a throbber icon will
-    // show up. The icon's color remains unchanged.
-    case media_router::UIMediaSinkState::CONNECTING:
-    case media_router::UIMediaSinkState::DISCONNECTING:
-      ChangeEntryColor(nullptr, title(), subtitle(), nullptr, foreground_color,
-                       background_color);
-      break;
-    case media_router::UIMediaSinkState::CONNECTED:
-    case media_router::UIMediaSinkState::AVAILABLE:
-    case media_router::UIMediaSinkState::UNAVAILABLE:
-      ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                       subtitle(), icon_, foreground_color, background_color);
-      break;
-    default:
-      NOTREACHED();
-  }
+  ChangeCastEntryColor(sink, foreground_color, background_color);
 
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   SetInkDropMode(Button::InkDropMode::ON);
@@ -162,8 +146,7 @@ CastDeviceEntryView::CastDeviceEntryView(
 void CastDeviceEntryView::OnColorsChanged(SkColor foreground_color,
                                           SkColor background_color) {
   SetInkDropBaseColor(foreground_color);
-  ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
-                   subtitle(), icon_, foreground_color, background_color);
+  ChangeCastEntryColor(sink(), foreground_color, background_color);
 }
 
 DeviceEntryUIType CastDeviceEntryView::GetType() const {
@@ -181,6 +164,29 @@ void CastDeviceEntryView::OnFocus() {
   // sink button will automatically stop the sink's connected route and start a
   // new one.
   HoverButton::OnFocus();
+}
+
+void CastDeviceEntryView::ChangeCastEntryColor(
+    const media_router::UIMediaSink& sink,
+    SkColor foreground_color,
+    SkColor background_color) {
+  switch (sink.state) {
+    // If the sink state is CONNECTING or DISCONNECTING, a throbber icon will
+    // show up. The icon's color remains unchanged.
+    case media_router::UIMediaSinkState::CONNECTING:
+    case media_router::UIMediaSinkState::DISCONNECTING:
+      ChangeEntryColor(nullptr, title(), subtitle(), nullptr, foreground_color,
+                       background_color);
+      break;
+    case media_router::UIMediaSinkState::CONNECTED:
+    case media_router::UIMediaSinkState::AVAILABLE:
+    case media_router::UIMediaSinkState::UNAVAILABLE:
+      ChangeEntryColor(static_cast<views::ImageView*>(icon_view()), title(),
+                       subtitle(), icon_, foreground_color, background_color);
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 BEGIN_METADATA(AudioDeviceEntryView, HoverButton)
