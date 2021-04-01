@@ -221,6 +221,14 @@ public class CustomTabActivityTabController implements InflationObserver {
 
         if (mSavedInstanceStateSupplier.get() == null && mConnection.hasWarmUpBeenFinished()) {
             mTabFactory.initializeTabModels();
+
+            // Hidden tabs shouldn't be used in incognito, since they are always created with
+            // regular profile.
+            if (mIntentDataProvider.isIncognito()) {
+                mTabProvider.setInitialTab(createTab(), TabCreationMode.EARLY);
+                return;
+            }
+
             Tab tab = getHiddenTab();
             if (tab == null) {
                 tab = createTab();

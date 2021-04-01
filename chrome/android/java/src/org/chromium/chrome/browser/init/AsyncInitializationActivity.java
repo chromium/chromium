@@ -248,7 +248,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             String url = IntentHandler.getUrlFromIntent(intent);
             if (url == null) return;
             // Blocking pre-connect for all off-the-record profiles.
-            if (!IncognitoUtils.hasAnyIncognitoExtra(intent)) {
+            if (!IncognitoUtils.hasAnyIncognitoExtra(intent.getExtras())) {
                 WarmupManager.getInstance().maybePreconnectUrlAndSubResources(
                         Profile.getLastUsedRegularProfile(), url);
             }

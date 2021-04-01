@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
@@ -27,6 +29,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRule {
     private boolean mRemoveFirstPartyOverride;
+    private boolean mCustomSessionInitiatedForIntent;
 
     @Rule
     private final TestRule mModuleOverridesRule = new ModuleOverridesRule().setOverride(
@@ -63,7 +66,7 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
 
     @Override
     public void startCustomTabActivityWithIntent(Intent intent) {
-        if (isIntentIncognito(intent)) {
+        if (isIntentIncognito(intent) && !mCustomSessionInitiatedForIntent) {
             try {
                 createNewCustomTabSessionForIntent(intent);
             } catch (TimeoutException e) {
@@ -75,6 +78,20 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
 
     public void setRemoveFirstPartyOverride() {
         mRemoveFirstPartyOverride = true;
+    }
+
+    public void setCustomSessionInitiatedForIntent() {
+        mCustomSessionInitiatedForIntent = true;
+    }
+
+    public void buildSessionWithHiddenTab(CustomTabsConnection connection, Intent intent,
+            CustomTabsSessionToken token, String url) {
+        Assert.assertTrue(connection.newSession(token));
+        // Need to set params to reach |CustomTabsConnection#doMayLaunchUrlOnUiThread|.
+        connection.mClientManager.setHideDomainForSession(token, true);
+        connection.setCanUseHiddenTabForSession(token, true);
+        Bundle extras = intent == null ? null : intent.getExtras();
+        Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(url), extras, null));
     }
 
     @Override

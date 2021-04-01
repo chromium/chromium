@@ -136,6 +136,8 @@ public class HiddenTabHolder {
      */
     private static Tab buildDetachedTab() {
         Context context = ContextUtils.getApplicationContext();
+        // TODO(crbug.com/1190971): Set isIncognito flag here if hidden tabs are allowed for
+        // incognito mode.
         Tab tab = new TabBuilder()
                           .setWindow(new WindowAndroid(context))
                           .setLaunchType(TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION)

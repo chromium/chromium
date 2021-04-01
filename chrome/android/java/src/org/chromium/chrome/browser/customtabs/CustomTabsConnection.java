@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.init.ChainedTasks;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
@@ -491,7 +492,11 @@ public class CustomTabsConnection {
         }
 
         if (maySpeculate(session)) {
-            boolean canUseHiddenTab = mClientManager.getCanUseHiddenTab(session);
+            // Hidden tabs are created always with regular profile, so we need to block hidden tab
+            // creation in incognito mode not to have inconsistent modes between tab model and
+            // hidden tab. (crbug.com/1190971)
+            boolean canUseHiddenTab = mClientManager.getCanUseHiddenTab(session)
+                    && !IncognitoUtils.hasAnyIncognitoExtra(extras);
             startSpeculation(session, url, canUseHiddenTab, extras, uid);
         }
         preconnectUrls(otherLikelyBundles);

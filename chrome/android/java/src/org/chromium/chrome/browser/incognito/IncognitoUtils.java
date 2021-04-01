@@ -8,10 +8,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 import android.util.Pair;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -177,16 +176,17 @@ public class IncognitoUtils {
     }
 
     /**
-     * Whether intent has any extra that indicates an incognito tab will be launched.
-     * @param intent A non-null intent
+     * Whether bundle has any extra that indicates an incognito tab will be launched.
+     * @param extras A bundle that carries extras
      * @return True if there is any incognito related extra, otherwise return false.
      */
-    public static boolean hasAnyIncognitoExtra(@NonNull Intent intent) {
-        return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_INCOGNITO_MODE, false)
-                || IntentUtils.safeGetBooleanExtra(
-                        intent, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
-                || IntentUtils.safeGetBooleanExtra(
-                        intent, IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
+    public static boolean hasAnyIncognitoExtra(@Nullable Bundle extras) {
+        if (extras == null) return false;
+        return IntentUtils.safeGetBoolean(extras, IntentHandler.EXTRA_INCOGNITO_MODE, false)
+                || IntentUtils.safeGetBoolean(
+                        extras, IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, false)
+                || IntentUtils.safeGetBoolean(
+                        extras, IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, false);
     }
 
     /**

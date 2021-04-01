@@ -13,6 +13,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule.LONG_TIMEOUT_MS;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.addActionButtonToIntent;
 import static org.chromium.chrome.browser.customtabs.CustomTabsTestUtils.createTestBitmap;
 import static org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider.EXTRA_FORCE_ENABLE_FOR_EXPERIMENT;
@@ -37,9 +38,11 @@ import android.widget.RemoteViews;
 import androidx.annotation.DrawableRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsIntent;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -49,6 +52,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -59,6 +64,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -471,4 +477,51 @@ public class CustomTabActivityIncognitoTest {
         View bottomBarView = mCustomTabActivityTestRule.getActivity().findViewById(R.id.bottom_bar);
         assertTrue(bottomBarView == null);
     }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void ensureHiddenTabIsBlockedForIncognitoWithExtraInConnection() throws Exception {
+        // Creation of hidden tab should be blocked for incognito mode for the same setup as regular
+        // mode above. Currently hidden tabs are created always with regular profile, so we
+        // should block the hidden tab creation. Need to update the test if the hidden tabs are
+        // allowed in incognito. (crbug.com/1190971)
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        final CustomTabsSessionToken token =
+                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        // Passes the launch intent to the connection.
+        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, intent, token, mTestPage);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("Tab was created", connection.getSpeculationParamsForTesting(),
+                    Matchers.nullValue());
+        }, LONG_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
     }
+
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.CCT_INCOGNITO})
+    public void ensureHiddenTabIsBlockedForIncognitoWithoutExtraInConnection() throws Exception {
+        // Creation of hidden tab should be blocked for incognito mode for the same setup as regular
+        // mode above. Currently hidden tabs are created always with regular profile, so we
+        // should block the hidden tab creation. Need to update the test if the hidden tabs are
+        // allowed in incognito. (crbug.com/1190971)
+        Intent intent = createMinimalIncognitoCustomTabIntent();
+        final CustomTabsConnection connection = CustomTabsTestUtils.warmUpAndWait();
+        final CustomTabsSessionToken token =
+                CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        // Passes null intent here to mimic not having incognito extra in intent at the connection.
+        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, null, token, mTestPage);
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("Tab was not created", connection.getSpeculationParamsForTesting(),
+                    Matchers.notNullValue());
+        }, LONG_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        ChromeTabUtils.waitForTabPageLoaded(
+                connection.getSpeculationParamsForTesting().tab, mTestPage);
+        mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        connection.cleanUpSession(token);
+    }
+}
