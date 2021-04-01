@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -80,22 +81,24 @@ bool ShouldSwapBrowsingInstanceForCrossOriginOpenerPolicy(
 }  // namespace
 
 CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
-    FrameTreeNode* frame_tree_node,
-    const base::Optional<url::Origin>& initiator_origin)
-    : frame_tree_node_(frame_tree_node),
-      virtual_browsing_context_group_(frame_tree_node->current_frame_host()
+    NavigationRequest* navigation_request)
+    : navigation_request_(navigation_request),
+      frame_tree_node_(navigation_request->frame_tree_node()),
+      virtual_browsing_context_group_(frame_tree_node_->current_frame_host()
                                           ->virtual_browsing_context_group()),
       is_initial_navigation_(!frame_tree_node_->has_committed_real_load()),
       current_coop_(
-          frame_tree_node->current_frame_host()->cross_origin_opener_policy()),
+          frame_tree_node_->current_frame_host()->cross_origin_opener_policy()),
       current_origin_(
-          frame_tree_node->current_frame_host()->GetLastCommittedOrigin()),
+          frame_tree_node_->current_frame_host()->GetLastCommittedOrigin()),
       current_url_(
-          frame_tree_node->current_frame_host()->GetLastCommittedURL()),
-      is_navigation_source_(initiator_origin.has_value() &&
-                            initiator_origin->IsSameOriginWith(
-                                frame_tree_node->current_frame_host()
-                                    ->GetLastCommittedOrigin())) {
+          frame_tree_node_->current_frame_host()->GetLastCommittedURL()),
+      is_navigation_source_(
+          navigation_request->common_params().initiator_origin.has_value() &&
+          navigation_request->common_params()
+              .initiator_origin->IsSameOriginWith(
+                  frame_tree_node_->current_frame_host()
+                      ->GetLastCommittedOrigin())) {
   // Use the URL of the opener for reporting purposes when doing an initial
   // navigation in a popup.
   // Note: the origin check is there to avoid leaking the URL of an opener that
@@ -114,10 +117,14 @@ CrossOriginOpenerPolicyStatus::~CrossOriginOpenerPolicyStatus() = default;
 base::Optional<network::mojom::BlockedByResponseReason>
 CrossOriginOpenerPolicyStatus::EnforceCOOP(
     network::mojom::URLResponseHead* response_head,
-    const url::Origin& response_origin,
-    const GURL& response_url,
-    const GURL& response_referrer_url,
     const net::NetworkIsolationKey& network_isolation_key) {
+  const GURL& response_url = navigation_request_->common_params().url;
+  const GURL& response_referrer_url =
+      navigation_request_->common_params().referrer->url;
+
+  // TODO(https://crbug.com/1063518): Take sandbox into account.
+  url::Origin response_origin = url::Origin::Create(response_url);
+
   SanitizeCoopHeaders(response_url, response_origin, response_head);
   network::mojom::ParsedHeaders* parsed_headers =
       response_head->parsed_headers.get();
@@ -289,8 +296,18 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
       !frame_tree_node_->IsMainFrame()) {
     coop = network::CrossOriginOpenerPolicy();
 
-    if (!network::IsOriginPotentiallyTrustworthy(response_origin))
-      header_ignored_due_to_insecure_context_ = true;
+    if (!network::IsOriginPotentiallyTrustworthy(response_origin)) {
+      navigation_request_->AddDeferredConsoleMessage(
+          blink::mojom::ConsoleMessageLevel::kError,
+          "The Cross-Origin-Opener-Policy header has been ignored, because the "
+          "origin was untrustworthy. It was defined either in the final "
+          "response or a redirect. Please deliver the response using the HTTPS "
+          "protocol. You can also use the 'localhost' origin instead. See "
+          "https://www.w3.org/TR/powerful-features/"
+          "#potentially-trustworthy-origin and "
+          "https://html.spec.whatwg.org/"
+          "#the-cross-origin-opener-policy-header.");
+    }
     return;
   }
 

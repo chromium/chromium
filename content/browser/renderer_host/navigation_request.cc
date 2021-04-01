@@ -1146,7 +1146,7 @@ NavigationRequest::NavigationRequest(
       initiator_frame_token_(begin_params_->initiator_frame_token),
       initiator_process_id_(initiator_process_id),
       was_opener_suppressed_(was_opener_suppressed),
-      coop_status_(frame_tree_node, common_params_->initiator_origin),
+      coop_status_(this),
       previous_page_ukm_source_id_(
           frame_tree_node_->current_frame_host()->GetPageUkmSourceId()) {
   DCHECK(browser_initiated_ || common_params_->initiator_origin.has_value());
@@ -2144,10 +2144,8 @@ void NavigationRequest::OnRequestRedirected(
   // browser process, we should use the computed origin instead of extracting it
   // from the response URL.
   const base::Optional<network::mojom::BlockedByResponseReason>
-      coop_requires_blocking = coop_status_.EnforceCOOP(
-          response_head_.get(), url::Origin::Create(common_params_->url),
-          common_params_->url, common_params_->referrer->url,
-          network_isolation_key);
+      coop_requires_blocking =
+          coop_status_.EnforceCOOP(response_head_.get(), network_isolation_key);
   if (coop_requires_blocking) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coop_requires_blocking),
@@ -2714,10 +2712,8 @@ void NavigationRequest::OnResponseStarted(
   // browser process, we should use the computed origin instead of extracting it
   // from the response URL.
   const base::Optional<network::mojom::BlockedByResponseReason>
-      coop_requires_blocking = coop_status_.EnforceCOOP(
-          response_head_.get(), url::Origin::Create(common_params_->url),
-          common_params_->url, common_params_->referrer->url,
-          network_isolation_key);
+      coop_requires_blocking =
+          coop_status_.EnforceCOOP(response_head_.get(), network_isolation_key);
   if (coop_requires_blocking) {
     // TODO(https://crbug.com/1172169): Investigate what must be done in case of
     // a download.
@@ -3929,18 +3925,6 @@ void NavigationRequest::CommitNavigation() {
   // if it wasn't done in RenderProcessHostImpl::GetProcessHostForSiteInstance.
   RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
       render_frame_host_->GetSiteInstance()->GetBrowserContext());
-
-  if (coop_status().header_ignored_due_to_insecure_context()) {
-    render_frame_host_->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError,
-        "The Cross-Origin-Opener-Policy header has been ignored, because the "
-        "origin was untrustworthy. It was defined either in the final response "
-        "or a redirect. Please deliver the response using the HTTPS protocol. "
-        "You can also use the 'localhost' origin instead. "
-        "See https://www.w3.org/TR/powerful-features/"
-        "#potentially-trustworthy-origin and "
-        "https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.");
-  }
 
   SendDeferredConsoleMessages();
 }

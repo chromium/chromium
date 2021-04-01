@@ -18,6 +18,7 @@ class NetworkIsolationKey;
 namespace content {
 class CrossOriginOpenerPolicyReporter;
 class FrameTreeNode;
+class NavigationRequest;
 class StoragePartition;
 
 // Groups information used to apply COOP during navigations. This class will be
@@ -25,18 +26,13 @@ class StoragePartition;
 // reporting.
 class CrossOriginOpenerPolicyStatus {
  public:
-  CrossOriginOpenerPolicyStatus(
-      FrameTreeNode* frame_tree_node,
-      const base::Optional<url::Origin>& intiator_origin);
+  explicit CrossOriginOpenerPolicyStatus(NavigationRequest* navigation_request);
   ~CrossOriginOpenerPolicyStatus();
 
   // Called after receiving a network response. Returns a BlockedByResponse
   // reason if the navigation should be blocked, nullopt otherwise.
   base::Optional<network::mojom::BlockedByResponseReason> EnforceCOOP(
       network::mojom::URLResponseHead* response_head,
-      const url::Origin& response_origin,
-      const GURL& response_url,
-      const GURL& response_referrer_url,
       const net::NetworkIsolationKey& network_isolation_key);
 
   // Set to true whenever the Cross-Origin-Opener-Policy spec requires a
@@ -57,12 +53,6 @@ class CrossOriginOpenerPolicyStatus {
   // a browsing context group swap if enforced.
   int virtual_browsing_context_group() const {
     return virtual_browsing_context_group_;
-  }
-
-  // This is used to warn developer a COOP header has been ignored, because
-  // the origin was not trustworthy.
-  bool header_ignored_due_to_insecure_context() const {
-    return header_ignored_due_to_insecure_context_;
   }
 
   // The COOP used when comparing to the COOP and origin of a response. At the
@@ -86,6 +76,9 @@ class CrossOriginOpenerPolicyStatus {
                            const url::Origin& response_origin,
                            network::mojom::URLResponseHead* response_head);
 
+  // The NavigationRequest which owns this object.
+  NavigationRequest* const navigation_request_;
+
   // Tracks the FrameTreeNode in which this navigation is taking place.
   const FrameTreeNode* frame_tree_node_;
 
@@ -95,8 +88,6 @@ class CrossOriginOpenerPolicyStatus {
 
   // Whether this is the first navigation happening in the browsing context.
   const bool is_initial_navigation_;
-
-  bool header_ignored_due_to_insecure_context_ = false;
 
   network::CrossOriginOpenerPolicy current_coop_;
 
