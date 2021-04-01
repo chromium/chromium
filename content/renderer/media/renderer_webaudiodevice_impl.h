@@ -91,6 +91,8 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
  private:
   scoped_refptr<base::SingleThreadTaskRunner> GetSuspenderTaskRunner();
 
+  void SendLogMessage(const std::string& message);
+
   media::AudioParameters sink_params_;
 
   const blink::WebAudioLatencyHint latency_hint_;
@@ -109,7 +111,7 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
   scoped_refptr<media::AudioRendererSink> sink_;
 
   // ID to allow browser to select the correct input device for unified IO.
-  base::UnguessableToken session_id_;
+  const base::UnguessableToken session_id_;
 
   // Used to suspend |sink_| usage when silence has been detected for too long.
   std::unique_ptr<media::SilentSinkSuspender> webaudio_suspender_;
@@ -119,6 +121,10 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   // Allow unit tests to set a custom TaskRunner for |webaudio_suspender_|.
   scoped_refptr<base::SingleThreadTaskRunner> suspender_task_runner_;
+
+  // Used to trigger one single textlog indicating that rendering started as
+  // intended. Set to true once in the first call to the Render callback.
+  bool is_rendering_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(RendererWebAudioDeviceImpl);
 };

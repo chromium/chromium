@@ -34,6 +34,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "media/base/audio_bus.h"
+#include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
@@ -52,6 +53,21 @@ namespace blink {
 // fact, probably too small. There are Android devices out there with a size of
 // 8000 or so.  We might need to make this larger. See: crbug.com/670747
 const size_t kFIFOSize = 96 * 128;
+
+namespace {
+
+const char* DeviceStateToString(AudioDestination::DeviceState state) {
+  switch (state) {
+    case AudioDestination::kRunning:
+      return "running";
+    case AudioDestination::kPaused:
+      return "paused";
+    case AudioDestination::kStopped:
+      return "stopped";
+  }
+}
+
+}  // namespace
 
 scoped_refptr<AudioDestination> AudioDestination::Create(
     AudioIOCallback& callback,
@@ -82,6 +98,10 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
       callback_(callback),
       frames_elapsed_(0),
       device_state_(DeviceState::kStopped) {
+  SendLogMessage(String::Format("%s({output_channels=%u})", __func__,
+                                number_of_output_channels));
+  SendLogMessage(
+      String::Format("%s => (FIFO size=%zu bytes)", __func__, fifo_->length()));
   // Create WebAudioDevice. blink::WebAudioDevice is designed to support the
   // local input (e.g. loopback from OS audio system), but Chromium's media
   // renderer does not support it currently. Thus, we use zero for the number
@@ -91,6 +111,10 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
   DCHECK(web_audio_device_);
 
   callback_buffer_size_ = web_audio_device_->FramesPerBuffer();
+  SendLogMessage(String::Format("%s => (device callback buffer size=%u frames)",
+                                __func__, callback_buffer_size_));
+  SendLogMessage(String::Format("%s => (device sample rate=%.0f Hz)", __func__,
+                                web_audio_device_->SampleRate()));
 
   metric_reporter_.Initialize(
       callback_buffer_size_, web_audio_device_->SampleRate());
@@ -113,6 +137,9 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
       context_sample_rate.value() != web_audio_device_->SampleRate()) {
     scale_factor =
         context_sample_rate.value() / web_audio_device_->SampleRate();
+    SendLogMessage(String::Format("%s => (resampling from %0.f Hz to %0.f Hz)",
+                                  __func__, context_sample_rate.value(),
+                                  web_audio_device_->SampleRate()));
 
     resampler_ = std::make_unique<MediaMultiChannelResampler>(
         number_of_output_channels, scale_factor, render_quantum_frames,
@@ -127,6 +154,9 @@ AudioDestination::AudioDestination(AudioIOCallback& callback,
     context_sample_rate_ = context_sample_rate.value();
   } else {
     context_sample_rate_ = web_audio_device_->SampleRate();
+    SendLogMessage(String::Format(
+        "%s => (no resampling: context sample rate set to %0.f Hz)", __func__,
+        context_sample_rate_));
   }
 
   base::UmaHistogramSparse("WebAudio.AudioContext.HardwareSampleRate",
@@ -223,6 +253,10 @@ void AudioDestination::RequestRender(size_t frames_requested,
 
   metric_reporter_.BeginTrace();
 
+  if (frames_elapsed_ == 0) {
+    SendLogMessage(String::Format("%s => (rendering is now alive)", __func__));
+  }
+
   frames_elapsed_ -= std::min(frames_elapsed_, prior_frames_skipped);
   output_position_.position =
       frames_elapsed_ / static_cast<double>(web_audio_device_->SampleRate()) -
@@ -265,6 +299,7 @@ void AudioDestination::RequestRender(size_t frames_requested,
 void AudioDestination::Start() {
   DCHECK(IsMainThread());
   TRACE_EVENT0("webaudio", "AudioDestination::Start");
+  SendLogMessage(String::Format("%s", __func__));
 
   if (device_state_ != DeviceState::kStopped)
     return;
@@ -277,6 +312,7 @@ void AudioDestination::StartWithWorkletTaskRunner(
   DCHECK(IsMainThread());
   DCHECK_EQ(worklet_task_runner_, nullptr);
   TRACE_EVENT0("webaudio", "AudioDestination::StartWithWorkletTaskRunner");
+  SendLogMessage(String::Format("%s", __func__));
 
   if (device_state_ != DeviceState::kStopped)
     return;
@@ -288,6 +324,7 @@ void AudioDestination::StartWithWorkletTaskRunner(
 void AudioDestination::Stop() {
   DCHECK(IsMainThread());
   TRACE_EVENT0("webaudio", "AudioDestination::Stop");
+  SendLogMessage(String::Format("%s", __func__));
 
   if (device_state_ == DeviceState::kStopped)
     return;
@@ -304,6 +341,7 @@ void AudioDestination::Stop() {
 void AudioDestination::Pause() {
   DCHECK(IsMainThread());
   TRACE_EVENT0("webaudio", "AudioDestination::Pause");
+  SendLogMessage(String::Format("%s", __func__));
 
   if (device_state_ != DeviceState::kRunning)
     return;
@@ -314,6 +352,7 @@ void AudioDestination::Pause() {
 void AudioDestination::Resume() {
   DCHECK(IsMainThread());
   TRACE_EVENT0("webaudio", "AudioDestination::Resume");
+  SendLogMessage(String::Format("%s", __func__));
 
   if (device_state_ != DeviceState::kPaused)
     return;
@@ -377,6 +416,7 @@ void AudioDestination::ProvideResamplerInput(int resampler_frame_delay,
 void AudioDestination::SetDeviceState(DeviceState state) {
   DCHECK(IsMainThread());
   MutexLocker locker(state_change_lock_);
+
   device_state_ = state;
 }
 
@@ -384,8 +424,17 @@ void AudioDestination::SetDetectSilence(bool detect_silence) {
   DCHECK(IsMainThread());
   TRACE_EVENT1("webaudio", "AudioDestination::SetDetectSilence",
                "detect_silence", detect_silence);
+  SendLogMessage(
+      String::Format("%s({detect_silence=%d})", __func__, detect_silence));
 
   web_audio_device_->SetDetectSilence(detect_silence);
+}
+
+void AudioDestination::SendLogMessage(const String& message) {
+  WebRtcLogMessage(String::Format("[WA]AD::%s [state=%s]",
+                                  message.Utf8().c_str(),
+                                  DeviceStateToString(device_state_))
+                       .Utf8());
 }
 
 }  // namespace blink

@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_destination_node.h"
 
+#include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
@@ -65,6 +66,7 @@ MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
       mix_bus_(
           AudioBus::Create(number_of_channels,
                            GetDeferredTaskHandler().RenderQuantumFrames())) {
+  SendLogMessage(String::Format("%s", __func__));
   source_.Lock()->SetAudioFormat(number_of_channels,
                                  node.context()->sampleRate());
   SetInternalChannelCountMode(kExplicit);
@@ -188,6 +190,13 @@ void MediaStreamAudioDestinationHandler::UpdatePullStatusIfNeeded() {
   }
 }
 
+void MediaStreamAudioDestinationHandler::SendLogMessage(const String& message) {
+  WebRtcLogMessage(String::Format("[WA]MSADH::%s [this=0x%" PRIXPTR "]",
+                                  message.Utf8().c_str(),
+                                  reinterpret_cast<uintptr_t>(this))
+                       .Utf8());
+}
+
 // ----------------------------------------------------------------
 
 MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
@@ -208,6 +217,15 @@ MediaStreamAudioDestinationNode::MediaStreamAudioDestinationNode(
   DidCreateMediaStreamAndTracks(stream_->Descriptor());
   SetHandler(
       MediaStreamAudioDestinationHandler::Create(*this, number_of_channels));
+  WebRtcLogMessage(
+      String::Format(
+          "[WA]MSADN::%s({context.state=%s}, {context.sampleRate=%.0f}, "
+          "{number_of_channels=%u}, {handler=0x%" PRIXPTR "}, [this=0x%" PRIXPTR
+          "])",
+          __func__, context.state().Utf8().c_str(), context.sampleRate(),
+          number_of_channels, reinterpret_cast<uintptr_t>(&Handler()),
+          reinterpret_cast<uintptr_t>(this))
+          .Utf8());
 }
 
 MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(

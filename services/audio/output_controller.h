@@ -199,9 +199,7 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // cycle.
   class ErrorStatisticsTracker {
    public:
-    // |handler| must outlive the ErrorStatisticsTracker. See comments for
-    // |OutputController::handler_| why it is safe to use a raw pointer here.
-    ErrorStatisticsTracker(EventHandler* handler);
+    explicit ErrorStatisticsTracker(OutputController* controller);
 
     // Note: the destructor takes care of logging all of the stats.
     ~ErrorStatisticsTracker();
@@ -215,9 +213,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
    private:
     void WedgeCheck();
 
-    // Using a raw pointer is safe since the EventHandler object will outlive
-    // the ErrorStatisticsTracker object.
-    EventHandler* const handler_;
+    // Using a raw pointer is safe since the OutputController object will
+    // outlive the ErrorStatisticsTracker object.
+    OutputController* const controller_;
 
     const base::TimeTicks start_time_;
 

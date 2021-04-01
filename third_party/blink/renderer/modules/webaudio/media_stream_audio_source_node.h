@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
@@ -62,12 +63,18 @@ class MediaStreamAudioSourceHandler final : public AudioHandler {
   // AudioHandler: MediaStreamAudioSourceNode never propagates silence.
   bool PropagatesSilence() const override { return false; }
 
+  void SendLogMessage(const String& message);
+
   std::unique_ptr<AudioSourceProvider> audio_source_provider_;
 
   // Protects |source_number_of_channels_|.
   Mutex process_lock_;
 
   unsigned source_number_of_channels_ = 0;
+
+  // Used to trigger one single textlog indicating that processing started as
+  // intended. Set to true once in the first call to the Process callback.
+  bool is_processing_ = false;
 };
 
 // -----------------------------------------------------------------------------

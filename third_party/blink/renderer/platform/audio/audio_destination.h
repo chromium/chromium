@@ -64,6 +64,14 @@ class PLATFORM_EXPORT AudioDestination
   USING_FAST_MALLOC(AudioDestination);
 
  public:
+  // Represents the current state of the underlying |WebAudioDevice| object
+  // (RendererWebAudioDeviceImpl).
+  enum DeviceState {
+    kRunning,
+    kPaused,
+    kStopped,
+  };
+
   AudioDestination(AudioIOCallback&,
                    unsigned number_of_output_channels,
                    const WebAudioLatencyHint&,
@@ -126,14 +134,6 @@ class PLATFORM_EXPORT AudioDestination
   unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
 
  private:
-  // Represents the current state of the underlying |WebAudioDevice| object
-  // (RendererWebAudioDeviceImpl).
-  enum DeviceState {
-    kRunning,
-    kPaused,
-    kStopped,
-  };
-
   void SetDeviceState(DeviceState);
 
   // Provide input to the resampler (if used).
@@ -143,6 +143,8 @@ class PLATFORM_EXPORT AudioDestination
   bool CheckBufferSize(unsigned render_quantum_frames);
 
   size_t HardwareBufferSize();
+
+  void SendLogMessage(const String& message);
 
   unsigned render_quantum_frames_;
 

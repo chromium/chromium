@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/webaudio/media_stream_audio_source_node.h"
 
 #include <memory>
+#include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_audio_source_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -41,6 +42,7 @@ MediaStreamAudioSourceHandler::MediaStreamAudioSourceHandler(
                    node,
                    node.context()->sampleRate()),
       audio_source_provider_(std::move(audio_source_provider)) {
+  SendLogMessage(String::Format("%s", __func__));
   // Default to stereo. This could change depending on the format of the
   // MediaStream's audio track.
   AddOutput(2);
@@ -63,6 +65,9 @@ MediaStreamAudioSourceHandler::~MediaStreamAudioSourceHandler() {
 void MediaStreamAudioSourceHandler::SetFormat(uint32_t number_of_channels,
                                               float source_sample_rate) {
   DCHECK(IsMainThread());
+  SendLogMessage(
+      String::Format("%s({number_of_channels=%u}, {source_sample_rate=%0.f})",
+                     __func__, number_of_channels, source_sample_rate));
 
   {
     MutexLocker locker(process_lock_);
@@ -79,18 +84,16 @@ void MediaStreamAudioSourceHandler::SetFormat(uint32_t number_of_channels,
     if (number_of_channels == 0 ||
         number_of_channels > BaseAudioContext::MaxNumberOfChannels()) {
       source_number_of_channels_ = 0;
-      DLOG(ERROR) << "MediaStreamAudioSourceHandler::setFormat - "
-                  << "invalid channel count requested ("
-                  << number_of_channels << ")";
+      SendLogMessage(String::Format(
+          "%s => (ERROR: invalid channel count requested)", __func__));
       return;
     }
 
     // Checks for invalid sample rate.
     if (source_sample_rate != Context()->sampleRate()) {
       source_number_of_channels_ = 0;
-      DLOG(ERROR) << "MediaStreamAudioSourceHandler::setFormat - "
-                  << "invalid sample rate requested ("
-                  << source_sample_rate << ")";
+      SendLogMessage(String::Format(
+          "%s => (ERROR: invalid sample rate requested)", __func__));
       return;
     }
 
@@ -115,6 +118,15 @@ void MediaStreamAudioSourceHandler::Process(uint32_t number_of_frames) {
       return;
     }
     audio_source_provider_.get()->ProvideInput(output_bus, number_of_frames);
+    if (!is_processing_) {
+      SendLogMessage(String::Format("%s({number_of_frames=%u})", __func__,
+                                    number_of_frames));
+      SendLogMessage(String::Format(
+          "%s => (audio source is now alive and audio frames are "
+          "sent to the output)",
+          __func__));
+      is_processing_ = true;
+    }
   } else {
     TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                  "MediaStreamAudioSourceHandler::Process TryLock failed");
@@ -122,6 +134,13 @@ void MediaStreamAudioSourceHandler::Process(uint32_t number_of_frames) {
     // output silence.
     output_bus->Zero();
   }
+}
+
+void MediaStreamAudioSourceHandler::SendLogMessage(const String& message) {
+  WebRtcLogMessage(String::Format("[WA]MSASH::%s [this=0x%" PRIXPTR "]",
+                                  message.Utf8().c_str(),
+                                  reinterpret_cast<uintptr_t>(this))
+                       .Utf8());
 }
 
 // -----------------------------------------------------------------------------
@@ -136,6 +155,17 @@ MediaStreamAudioSourceNode::MediaStreamAudioSourceNode(
       media_stream_(media_stream) {
   SetHandler(MediaStreamAudioSourceHandler::Create(
       *this, std::move(audio_source_provider)));
+  WebRtcLogMessage(String::Format("MSASN::%s({audio_track=[kind: %s, id: "
+                                  "%s, label: %s, enabled: "
+                                  "%d, muted: %d]}, {handler=0x%" PRIXPTR
+                                  "}, [this=0x%" PRIXPTR "])",
+                                  __func__, audio_track->kind().Utf8().c_str(),
+                                  audio_track->id().Utf8().c_str(),
+                                  audio_track->label().Utf8().c_str(),
+                                  audio_track->enabled(), audio_track->muted(),
+                                  reinterpret_cast<uintptr_t>(&Handler()),
+                                  reinterpret_cast<uintptr_t>(this))
+                       .Utf8());
 }
 
 MediaStreamAudioSourceNode* MediaStreamAudioSourceNode::Create(

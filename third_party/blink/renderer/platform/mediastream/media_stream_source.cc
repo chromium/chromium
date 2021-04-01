@@ -70,6 +70,20 @@ const char* ReadyStateToString(MediaStreamSource::ReadyState state) {
   return "Invalid";
 }
 
+const char* EchoCancellationModeToString(
+    MediaStreamSource::EchoCancellationMode mode) {
+  switch (mode) {
+    case MediaStreamSource::EchoCancellationMode::kDisabled:
+      return "disabled";
+    case MediaStreamSource::EchoCancellationMode::kBrowser:
+      return "browser";
+    case MediaStreamSource::EchoCancellationMode::kAec3:
+      return "AEC3";
+    case MediaStreamSource::EchoCancellationMode::kSystem:
+      return "system";
+  }
+}
+
 void GetSourceSettings(const blink::WebMediaStreamSource& web_source,
                        MediaStreamTrackPlatform::Settings& settings) {
   auto* const source = blink::MediaStreamAudioSource::From(web_source);
@@ -217,6 +231,13 @@ void MediaStreamSource::SetAudioProcessingProperties(
     EchoCancellationMode echo_cancellation_mode,
     bool auto_gain_control,
     bool noise_supression) {
+  SendLogMessage(
+      String::Format("%s({echo_cancellation_mode=%s}, {auto_gain_control=%d}, "
+                     "{noise_supression=%d})",
+                     __func__,
+                     EchoCancellationModeToString(echo_cancellation_mode),
+                     auto_gain_control, noise_supression)
+          .Utf8());
   echo_cancellation_mode_ = echo_cancellation_mode;
   auto_gain_control_ = auto_gain_control;
   noise_supression_ = noise_supression;
@@ -285,12 +306,12 @@ void MediaStreamSource::SetAudioFormat(size_t number_of_channels,
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "MediaStreamSource::SetAudioFormat");
 
-  SendLogMessage(
-      String::Format(
-          "SetAudioFormat({id=%s}, {number_of_channels=%d}, {sample_rate=%f})",
-          Id().Utf8().c_str(), static_cast<int>(number_of_channels),
-          sample_rate)
-          .Utf8());
+  SendLogMessage(String::Format("SetAudioFormat({id=%s}, "
+                                "{number_of_channels=%d}, {sample_rate=%.0f})",
+                                Id().Utf8().c_str(),
+                                static_cast<int>(number_of_channels),
+                                sample_rate)
+                     .Utf8());
   DCHECK(requires_consumer_);
   MutexLocker locker(audio_consumers_lock_);
   for (AudioDestinationConsumer* consumer : audio_consumers_)

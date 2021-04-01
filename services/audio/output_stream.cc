@@ -299,7 +299,10 @@ void OutputStream::SendLogMessage(const char* format, ...) {
     return;
   va_list args;
   va_start(args, format);
-  log_->OnLogMessage("audio::OS::" + base::StringPrintV(format, args));
+  log_->OnLogMessage(
+      "audio::OS::" + base::StringPrintV(format, args) +
+      base::StringPrintf(" [controller=0x%" PRIXPTR "]",
+                         reinterpret_cast<uintptr_t>(&controller_)));
   va_end(args);
 }
 

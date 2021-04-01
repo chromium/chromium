@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -278,6 +279,8 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
  private:
   void SetNodeType(NodeType);
 
+  void SendLogMessage(const String& message);
+
   bool is_initialized_;
   NodeType node_type_;
 
@@ -300,6 +303,11 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   int connection_ref_count_;
 
   bool is_disabled_;
+
+  // Used to trigger one single textlog indicating that processing started as
+  // intended. Set to true once in the first call to the ProcessIfNecessary
+  // callback.
+  bool is_processing_ = false;
 
 #if DEBUG_AUDIONODE_REFERENCES
   static bool is_node_count_initialized_;
@@ -391,6 +399,8 @@ class MODULES_EXPORT AudioNode : public EventTargetWithInlineData,
                                        unsigned input_index_of_destination);
   // Returns true if the specified AudioParam was connected.
   bool DisconnectFromOutputIfConnected(unsigned output_index, AudioParam&);
+
+  void SendLogMessage(const String& message);
 
   Member<BaseAudioContext> context_;
 
