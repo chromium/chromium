@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/bluetooth/debug_logs_manager_factory.h"
+#include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
 
 #include "base/memory/singleton.h"
+#include "chrome/browser/ash/bluetooth/debug_logs_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/bluetooth/debug_logs_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

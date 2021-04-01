@@ -17,7 +17,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/bluetooth/debug_logs_manager_factory.h"
+#include "chrome/browser/ash/bluetooth/debug_logs_manager_factory.h"
 #endif
 
 BluetoothInternalsUI::BluetoothInternalsUI(content::WebUI* web_ui)
