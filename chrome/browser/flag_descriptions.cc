@@ -2681,6 +2681,10 @@ const char kDrawPredictedPointsDescription[] =
     "experimental web platform features to be enabled.";
 const char kDrawPredictedPointsName[] = "Draw predicted delegated ink points";
 
+const char kSanitizerApiName[] = "Sanitizer API";
+const char kSanitizerApiDescription[] =
+    "Enable the Sanitizer API. See: https://github.com/WICG/sanitizer-api";
+
 // Android ---------------------------------------------------------------------
 
 #if defined(OS_ANDROID)

@@ -1553,6 +1553,9 @@ extern const char kDrawPredictedPointsDefault[];
 extern const char kDrawPredictedPointsDescription[];
 extern const char kDrawPredictedPointsName[];
 
+extern const char kSanitizerApiName[];
+extern const char kSanitizerApiDescription[];
+
 // Android --------------------------------------------------------------------
 
 #if defined(OS_ANDROID)

@@ -7217,6 +7217,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillFixOfferInIncognitoDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillFixOfferInIncognito)},
 
+    {"sanitizer-api", flag_descriptions::kSanitizerApiName,
+     flag_descriptions::kSanitizerApiDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kSanitizerAPI)},
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

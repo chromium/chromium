@@ -4559,6 +4559,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "sanitizer-api",
+    "owners": [ "//third_party/blink/renderer/modules/sanitizer-api/OWNERS" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "scan-app-media-link",
     "owners": [ "gavinwill", "jschettler" ],
     "expiry_milestone": 95

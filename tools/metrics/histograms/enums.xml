@@ -44177,6 +44177,7 @@ from previous Chrome versions.
   <int value="-1809835803" label="LayoutNG:disabled"/>
   <int value="-1809060811" label="EyeDropper:disabled"/>
   <int value="-1808576075" label="SystemTrayUnified:enabled"/>
+  <int value="-1808556124" label="SanitizerAPI:disabled"/>
   <int value="-1808477331" label="MidiManagerCros:disabled"/>
   <int value="-1808445397" label="ShareByDefaultInCCT:disabled"/>
   <int value="-1807797669" label="google-doodle-url"/>
@@ -46546,6 +46547,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-language-detection"/>
   <int value="324522065" label="app-menu-icon"/>
   <int value="324631366" label="enable-drive-search-in-app-launcher"/>
+  <int value="325907076" label="SanitizerAPI:enabled"/>
   <int value="326876883" label="HappinessTrackingSurveysForDesktop:disabled"/>
   <int value="327045548" label="SafeSearchUrlReporting:enabled"/>
   <int value="328722396" label="NTPCondensedLayout:disabled"/>

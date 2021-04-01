@@ -901,5 +901,9 @@ const base::Feature kCLSM90Improvements{"CLSM90Improvements",
 const base::Feature kCompositeAfterPaint{"CompositeAfterPaint",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether the Sanitizer API is available.
+const base::Feature kSanitizerAPI{"SanitizerAPI",
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink
