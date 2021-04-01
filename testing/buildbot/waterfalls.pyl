@@ -2433,6 +2433,7 @@
         'mixins': [
           'lollipop',
           'hammerhead',
+          'enable_resultdb',
         ],
         'test_suites': {
            'gtest_tests': 'chromium_swarm_android_gtests',
@@ -2443,6 +2444,9 @@
         'os_type': 'android',
       },
       'android-marshmallow-arm64-rel-swarming': {
+        'mixins': [
+          'enable_resultdb',
+        ],
         'test_suites': {
            'gtest_tests': 'chromium_swarm_android_gtests',
         },
@@ -2803,6 +2807,7 @@
           'gtest_tests': 'paeverywhere_android_gtests',
         },
         'mixins': [
+          'enable_resultdb',
           'walleye',
         ],
       },
@@ -3856,6 +3861,7 @@
         'mixins': [
           'marshmallow',
           'bullhead',
+          'enable_resultdb',
         ],
         'test_suites': {
           'gtest_tests': 'gpu_angle_gtests',
