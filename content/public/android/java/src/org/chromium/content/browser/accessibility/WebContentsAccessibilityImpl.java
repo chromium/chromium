@@ -1365,7 +1365,13 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
 
     @CalledByNative
     private void handlePageLoaded(int id) {
-        if (!mShouldFocusOnPageLoad) return;
+        // If |mShouldFocusOnPageLoad| is false, that means this is a WebView and we should disable
+        // the image descriptions alt-text hints.
+        if (!mShouldFocusOnPageLoad) {
+            WebContentsAccessibilityImplJni.get().setIsRunningAsWebView(
+                    mNativeObj, WebContentsAccessibilityImpl.this, true);
+            return;
+        }
         if (mUserHasTouchExplored) return;
         moveAccessibilityFocusToIdAndRefocusIfNeeded(id);
     }
@@ -2159,5 +2165,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 WebContentsAccessibilityImpl caller, int maxEvents);
         int getMaxContentChangedEventsToFireForTesting(long nativeWebContentsAccessibilityAndroid);
         void signalEndOfTestForTesting(long nativeWebContentsAccessibilityAndroid);
+        void setIsRunningAsWebView(long nativeWebContentsAccessibilityAndroid,
+                WebContentsAccessibilityImpl caller, boolean isWebView);
     }
 }

@@ -76,6 +76,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
 
+  void SetIsRunningAsWebView(JNIEnv* env,
+                             const base::android::JavaParamRef<jobject>& obj,
+                             jboolean is_webview);
+
   // Tree methods.
   jint GetRootId(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
   jboolean IsNodeValid(JNIEnv* env,

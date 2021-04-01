@@ -437,6 +437,16 @@ void WebContentsAccessibilityAndroid::Enable(JNIEnv* env,
     web_contents_->AddAccessibilityMode(ui::kAXModeComplete);
 }
 
+void WebContentsAccessibilityAndroid::SetIsRunningAsWebView(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    jboolean is_webview) {
+  auto* manager = GetRootBrowserAccessibilityManager();
+  if (manager) {
+    manager->set_is_running_as_webview(is_webview);
+  }
+}
+
 bool WebContentsAccessibilityAndroid::ShouldRespectDisplayedPasswordText() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);

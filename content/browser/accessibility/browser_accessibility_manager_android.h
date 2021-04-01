@@ -49,6 +49,12 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   static ui::AXTreeUpdate GetEmptyDocument();
 
+  // Helper methods to set/check if this is running as part of a WebView.
+  void set_is_running_as_webview(bool is_webview) {
+    is_running_as_webview_ = is_webview;
+  }
+  bool IsRunningAsWebView() { return is_running_as_webview_; }
+
   // By default, the tree is pruned for a better screen reading experience,
   // including:
   //   * If the node has only static text children
@@ -133,6 +139,9 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
 
   // See docs for set_prune_tree_for_screen_reader, above.
   bool prune_tree_for_screen_reader_;
+
+  // Whether this manager is running as part of a WebView.
+  bool is_running_as_webview_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityManagerAndroid);
 };

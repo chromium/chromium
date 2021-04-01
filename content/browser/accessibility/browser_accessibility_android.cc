@@ -603,27 +603,32 @@ std::u16string BrowserAccessibilityAndroid::GetInnerText() const {
   if (ui::IsPlatformDocument(GetRole()))
     return text;
 
-  // Append image description strings to the text.
-  auto status = GetData().GetImageAnnotationStatus();
-  switch (status) {
-    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-      AppendTextToString(GetLocalizedStringForImageAnnotationStatus(status),
-                         &text);
-      break;
+  // Append image description strings to the text, if not running as WebView.
+  auto* manager =
+      static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
+  if (!manager->IsRunningAsWebView()) {
+    auto status = GetData().GetImageAnnotationStatus();
+    switch (status) {
+      case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+        AppendTextToString(GetLocalizedStringForImageAnnotationStatus(status),
+                           &text);
+        break;
 
-    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      text = GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation);
-      break;
+      case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+        text =
+            GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation);
+        break;
 
-    case ax::mojom::ImageAnnotationStatus::kNone:
-    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
-    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
-      break;
+      case ax::mojom::ImageAnnotationStatus::kNone:
+      case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+      case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+      case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+        break;
+    }
   }
 
   // This is called from IsLeaf, so don't call PlatformChildCount
@@ -997,21 +1002,26 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
   }
 
   // If this node is an image, check status and potentially add unlabeled role.
-  auto status = GetData().GetImageAnnotationStatus();
-  switch (status) {
-    case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
-    case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
-      return GetLocalizedRoleDescriptionForUnlabeledImage();
+  // If running inside a WebView, do not change default image role description.
+  auto* manager =
+      static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
+  if (!manager->IsRunningAsWebView()) {
+    auto status = GetData().GetImageAnnotationStatus();
+    switch (status) {
+      case ax::mojom::ImageAnnotationStatus::kEligibleForAnnotation:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationPending:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationEmpty:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
+      case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
+        return GetLocalizedRoleDescriptionForUnlabeledImage();
 
-    case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-    case ax::mojom::ImageAnnotationStatus::kNone:
-    case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
-    case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
-    case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
-      break;
+      case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
+      case ax::mojom::ImageAnnotationStatus::kNone:
+      case ax::mojom::ImageAnnotationStatus::kWillNotAnnotateDueToScheme:
+      case ax::mojom::ImageAnnotationStatus::kIneligibleForAnnotation:
+      case ax::mojom::ImageAnnotationStatus::kSilentlyEligibleForAnnotation:
+        break;
+    }
   }
 
   // For pop up buttons, we want to return property value specific roles.
