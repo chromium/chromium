@@ -2137,16 +2137,6 @@ void AppsGridView::UpdateOpacity(bool restore_opacity) {
   // grid view is fully opaque.
   layer()->SetOpacity(1.0f);
 
-  // Updates the opacity of the apps in current page. The opacity of the app
-  // starting at 0.f when the ceterline of the app is |kAllAppsOpacityStartPx|
-  // above the bottom of work area and transitioning to 1.0f by the time the
-  // centerline reaches |kAllAppsOpacityEndPx| above the work area bottom.
-  AppListView* app_list_view = contents_view_->app_list_view();
-  const int selected_page = pagination_model_.selected_page();
-  CHECK_LT(selected_page, int{view_structure_.pages().size()})
-      << pagination_model_.total_pages();
-  auto current_page = view_structure_.pages()[selected_page];
-
   // First it should prepare the layers for all of the app items in the current
   // page when necessary, or destroy all of the layers when they become
   // unnecessary. Do not dynamically ensure/destroy layers of individual items
@@ -2171,6 +2161,21 @@ void AppsGridView::UpdateOpacity(bool restore_opacity) {
       entry.view->DestroyLayer();
     return;
   }
+
+  // Updates the opacity of the apps in current page. The opacity of the app
+  // starting at 0.f when the centerline of the app is |kAllAppsOpacityStartPx|
+  // above the bottom of work area and transitioning to 1.0f by the time the
+  // centerline reaches |kAllAppsOpacityEndPx| above the work area bottom.
+  AppListView* app_list_view = contents_view_->app_list_view();
+  const int selected_page = pagination_model_.selected_page();
+  // Logging for https://crbug.com/1194639. We suspect |selected_page| is
+  // sometimes off the end of the view structure pages array.
+  if (selected_page >= int{view_structure_.pages().size()}) {
+    // Use concise log so it fits in a crash key.
+    LOG(FATAL) << "crbug.com/1194639 " << pagination_model_.total_pages() << " "
+               << selected_page << " " << int{view_structure_.pages().size()};
+  }
+  auto current_page = view_structure_.pages()[selected_page];
 
   // Ensure layers and update their opacity.
   for (size_t i = 0; i < current_page.size(); ++i)
