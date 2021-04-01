@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/overlay/skip_ad_label_button.h"
 
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
@@ -17,8 +18,8 @@ const int kSkipAdButtonWidth = 72;
 const int kSkipAdButtonHeight = 24;
 const int kSkipAdButtonMarginBottom = 48;
 
-constexpr SkColor kSkipAdButtonTextColor = SK_ColorWHITE;
-constexpr SkColor kSkipAdButtonBorderColor = SK_ColorWHITE;
+constexpr SkColor kSkipAdButtonTextColor = kPipWindowIconColor;
+constexpr SkColor kSkipAdButtonBorderColor = kPipWindowIconColor;
 constexpr SkColor kSkipAdButtonBackgroundColor = gfx::kGoogleGrey700;
 
 }  // namespace

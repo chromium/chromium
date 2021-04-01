@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
 
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -17,8 +17,6 @@ namespace {
 
 constexpr int kCloseButtonMargin = 8;
 constexpr int kCloseButtonSize = 16;
-
-constexpr SkColor kCloseIconColor = SK_ColorWHITE;
 
 }  // namespace
 
@@ -31,7 +29,7 @@ CloseImageButton::CloseImageButton(PressedCallback callback)
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
   SetImage(views::Button::STATE_NORMAL,
            gfx::CreateVectorIcon(views::kIcCloseIcon, kCloseButtonSize,
-                                 kCloseIconColor));
+                                 kPipWindowIconColor));
 
   // Accessibility.
   const std::u16string close_button_label(

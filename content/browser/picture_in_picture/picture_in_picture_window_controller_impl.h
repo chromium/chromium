@@ -71,6 +71,13 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   void SkipAd() override;
   void NextTrack() override;
   void PreviousTrack() override;
+  void ToggleMicrophone() override;
+  void ToggleCamera() override;
+  void HangUp() override;
+
+  // Called by the MediaSessionImpl when the MediaSessionInfo changes.
+  void MediaSessionInfoChanged(
+      const media_session::mojom::MediaSessionInfoPtr& info);
 
   void MediaSessionActionsChanged(
       const std::set<media_session::mojom::MediaSessionAction>& actions);
@@ -154,6 +161,15 @@ class CONTENT_EXPORT PictureInPictureWindowControllerImpl
   bool media_session_action_skip_ad_handled_ = false;
   bool media_session_action_next_track_handled_ = false;
   bool media_session_action_previous_track_handled_ = false;
+  bool media_session_action_toggle_microphone_handled_ = false;
+  bool media_session_action_toggle_camera_handled_ = false;
+  bool media_session_action_hang_up_handled_ = false;
+
+  // Tracks the current microphone state.
+  bool microphone_muted_ = false;
+
+  // Tracks the current camera state.
+  bool camera_turned_on_ = false;
 
   // Used to hide play/pause button if video is a MediaStream or has infinite
   // duration. Play/pause button visibility can be overridden by the Media

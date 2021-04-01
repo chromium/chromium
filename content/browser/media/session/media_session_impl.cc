@@ -1232,10 +1232,18 @@ void MediaSessionImpl::RebuildAndNotifyMediaSessionInfoChanged() {
   if (current_info == session_info_)
     return;
 
+  // Picture-in-Picture window controller needs to be updated on current media
+  // session info.
+  if (auto* pip_window_controller_ =
+          PictureInPictureWindowControllerImpl::FromWebContents(
+              web_contents())) {
+    pip_window_controller_->MediaSessionInfoChanged(current_info);
+  }
+
   for (auto& observer : observers_)
     observer->MediaSessionInfoChanged(current_info.Clone());
 
-  delegate_->MediaSessionInfoChanged(current_info.Clone());
+  delegate_->MediaSessionInfoChanged(current_info);
 
   session_info_ = std::move(current_info);
 }

@@ -20,9 +20,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/overlay/back_to_tab_image_button.h"
 #include "chrome/browser/ui/views/overlay/close_image_button.h"
+#include "chrome/browser/ui/views/overlay/hang_up_button.h"
 #include "chrome/browser/ui/views/overlay/playback_image_button.h"
 #include "chrome/browser/ui/views/overlay/resize_handle_button.h"
 #include "chrome/browser/ui/views/overlay/skip_ad_label_button.h"
+#include "chrome/browser/ui/views/overlay/toggle_camera_button.h"
+#include "chrome/browser/ui/views/overlay/toggle_microphone_button.h"
 #include "chrome/browser/ui/views/overlay/track_image_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -149,7 +152,10 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
          window->GetCloseControlsBounds().Contains(point) ||
          window->GetPlayPauseControlsBounds().Contains(point) ||
          window->GetNextTrackControlsBounds().Contains(point) ||
-         window->GetPreviousTrackControlsBounds().Contains(point))) {
+         window->GetPreviousTrackControlsBounds().Contains(point) ||
+         window->GetToggleMicrophoneButtonBounds().Contains(point) ||
+         window->GetToggleCameraButtonBounds().Contains(point) ||
+         window->GetHangUpButtonBounds().Contains(point))) {
       return window_component;
     }
 
@@ -398,6 +404,27 @@ void OverlayWindowViews::SetUpViews() {
             overlay->RecordButtonPressed(OverlayWindowControl::kSkipAd);
           },
           base::Unretained(this)));
+  auto toggle_microphone_button =
+      std::make_unique<ToggleMicrophoneButton>(base::BindRepeating(
+          [](OverlayWindowViews* overlay) {
+            overlay->controller_->ToggleMicrophone();
+            overlay->RecordButtonPressed(
+                OverlayWindowControl::kToggleMicrophone);
+          },
+          base::Unretained(this)));
+  auto toggle_camera_button =
+      std::make_unique<ToggleCameraButton>(base::BindRepeating(
+          [](OverlayWindowViews* overlay) {
+            overlay->controller_->ToggleCamera();
+            overlay->RecordButtonPressed(OverlayWindowControl::kToggleCamera);
+          },
+          base::Unretained(this)));
+  auto hang_up_button = std::make_unique<HangUpButton>(base::BindRepeating(
+      [](OverlayWindowViews* overlay) {
+        overlay->controller_->HangUp();
+        overlay->RecordButtonPressed(OverlayWindowControl::kHangUp);
+      },
+      base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   auto resize_handle_view = std::make_unique<views::ResizeHandleButton>(
       views::Button::PressedCallback());
@@ -457,6 +484,18 @@ void OverlayWindowViews::SetUpViews() {
   skip_ad_controls_view->layer()->SetFillsBoundsOpaquely(true);
   skip_ad_controls_view->layer()->SetName("SkipAdControlsView");
 
+  toggle_microphone_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+  toggle_microphone_button->layer()->SetFillsBoundsOpaquely(false);
+  toggle_microphone_button->layer()->SetName("ToggleMicrophoneButton");
+
+  toggle_camera_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+  toggle_camera_button->layer()->SetFillsBoundsOpaquely(false);
+  toggle_camera_button->layer()->SetName("ToggleCameraButton");
+
+  hang_up_button->SetPaintToLayer(ui::LAYER_TEXTURED);
+  hang_up_button->layer()->SetFillsBoundsOpaquely(false);
+  hang_up_button->layer()->SetName("HangUpButton");
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // views::View that shows the affordance that the window can be resized. ----
   resize_handle_view->SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -483,6 +522,12 @@ void OverlayWindowViews::SetUpViews() {
       std::move(next_track_controls_view));
   skip_ad_controls_view_ =
       controls_container_view->AddChildView(std::move(skip_ad_controls_view));
+  toggle_microphone_button_ = controls_container_view->AddChildView(
+      std::move(toggle_microphone_button));
+  toggle_camera_button_ =
+      controls_container_view->AddChildView(std::move(toggle_camera_button));
+  hang_up_button_ =
+      controls_container_view->AddChildView(std::move(hang_up_button));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   resize_handle_view_ =
       controls_container_view->AddChildView(std::move(resize_handle_view));
@@ -612,6 +657,15 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
     visible_controls_views.push_back(play_pause_controls_view_);
   if (show_next_track_button_)
     visible_controls_views.push_back(next_track_controls_view_);
+  if (show_toggle_microphone_button_)
+    visible_controls_views.push_back(toggle_microphone_button_);
+  if (show_toggle_camera_button_)
+    visible_controls_views.push_back(toggle_camera_button_);
+  if (show_hang_up_button_)
+    visible_controls_views.push_back(hang_up_button_);
+
+  if (visible_controls_views.size() > 4)
+    visible_controls_views.resize(4);
 
   int mid_window_x = GetBounds().size().width() / 2;
   int primary_control_y = GetBounds().size().height() -
@@ -706,6 +760,9 @@ void OverlayWindowViews::OnUpdateControlsBounds() {
   play_pause_controls_view_->SetVisible(show_play_pause_button_);
   next_track_controls_view_->SetVisible(show_next_track_button_);
   skip_ad_controls_view_->SetVisible(show_skip_ad_button_);
+  toggle_microphone_button_->SetVisible(show_toggle_microphone_button_);
+  toggle_camera_button_->SetVisible(show_toggle_camera_button_);
+  hang_up_button_->SetVisible(show_hang_up_button_);
 }
 
 gfx::Rect OverlayWindowViews::CalculateControlsBounds(int x,
@@ -809,6 +866,38 @@ void OverlayWindowViews::SetPreviousTrackButtonVisibility(bool is_visible) {
     return;
 
   show_previous_track_button_ = is_visible;
+  UpdateControlsBounds();
+}
+
+void OverlayWindowViews::SetMicrophoneMuted(bool muted) {
+  toggle_microphone_button_->SetMutedState(muted);
+}
+
+void OverlayWindowViews::SetCameraState(bool turned_on) {
+  toggle_camera_button_->SetCameraState(turned_on);
+}
+
+void OverlayWindowViews::SetToggleMicrophoneButtonVisibility(bool is_visible) {
+  if (show_toggle_microphone_button_ == is_visible)
+    return;
+
+  show_toggle_microphone_button_ = is_visible;
+  UpdateControlsBounds();
+}
+
+void OverlayWindowViews::SetToggleCameraButtonVisibility(bool is_visible) {
+  if (show_toggle_camera_button_ == is_visible)
+    return;
+
+  show_toggle_camera_button_ = is_visible;
+  UpdateControlsBounds();
+}
+
+void OverlayWindowViews::SetHangUpButtonVisibility(bool is_visible) {
+  if (show_hang_up_button_ == is_visible)
+    return;
+
+  show_hang_up_button_ = is_visible;
   UpdateControlsBounds();
 }
 
@@ -992,6 +1081,18 @@ void OverlayWindowViews::OnGestureEvent(ui::GestureEvent* event) {
     controller_->PreviousTrack();
     RecordTapGesture(OverlayWindowControl::kPreviousTrack);
     event->SetHandled();
+  } else if (GetToggleMicrophoneButtonBounds().Contains(event->location())) {
+    controller_->ToggleMicrophone();
+    RecordTapGesture(OverlayWindowControl::kToggleMicrophone);
+    event->SetHandled();
+  } else if (GetToggleCameraButtonBounds().Contains(event->location())) {
+    controller_->ToggleCamera();
+    RecordTapGesture(OverlayWindowControl::kToggleCamera);
+    event->SetHandled();
+  } else if (GetHangUpButtonBounds().Contains(event->location())) {
+    controller_->HangUp();
+    RecordTapGesture(OverlayWindowControl::kHangUp);
+    event->SetHandled();
   }
 }
 
@@ -1034,6 +1135,18 @@ gfx::Rect OverlayWindowViews::GetNextTrackControlsBounds() {
 
 gfx::Rect OverlayWindowViews::GetPreviousTrackControlsBounds() {
   return previous_track_controls_view_->GetMirroredBounds();
+}
+
+gfx::Rect OverlayWindowViews::GetToggleMicrophoneButtonBounds() {
+  return toggle_microphone_button_->GetMirroredBounds();
+}
+
+gfx::Rect OverlayWindowViews::GetToggleCameraButtonBounds() {
+  return toggle_camera_button_->GetMirroredBounds();
+}
+
+gfx::Rect OverlayWindowViews::GetHangUpButtonBounds() {
+  return hang_up_button_->GetMirroredBounds();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1113,6 +1226,20 @@ OverlayWindowViews::previous_track_controls_view_for_testing() const {
 views::SkipAdLabelButton*
 OverlayWindowViews::skip_ad_controls_view_for_testing() const {
   return skip_ad_controls_view_;
+}
+
+ToggleMicrophoneButton*
+OverlayWindowViews::toggle_microphone_button_for_testing() const {
+  return toggle_microphone_button_;
+}
+
+ToggleCameraButton* OverlayWindowViews::toggle_camera_button_for_testing()
+    const {
+  return toggle_camera_button_;
+}
+
+HangUpButton* OverlayWindowViews::hang_up_button_for_testing() const {
+  return hang_up_button_;
 }
 
 views::View* OverlayWindowViews::back_to_tab_controls_for_testing() const {

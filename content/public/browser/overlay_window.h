@@ -60,6 +60,11 @@ class OverlayWindow {
   virtual void SetSkipAdButtonVisibility(bool is_visible) = 0;
   virtual void SetNextTrackButtonVisibility(bool is_visible) = 0;
   virtual void SetPreviousTrackButtonVisibility(bool is_visible) = 0;
+  virtual void SetMicrophoneMuted(bool muted) = 0;
+  virtual void SetCameraState(bool turned_on) = 0;
+  virtual void SetToggleMicrophoneButtonVisibility(bool is_visible) = 0;
+  virtual void SetToggleCameraButtonVisibility(bool is_visible) = 0;
+  virtual void SetHangUpButtonVisibility(bool is_visible) = 0;
   virtual void SetSurfaceId(const viz::SurfaceId& surface_id) = 0;
   virtual cc::Layer* GetLayerForTesting() = 0;
 

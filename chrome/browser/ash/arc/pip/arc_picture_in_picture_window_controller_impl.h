@@ -44,6 +44,9 @@ class ArcPictureInPictureWindowControllerImpl
   void SkipAd() override;
   void NextTrack() override;
   void PreviousTrack() override;
+  void ToggleMicrophone() override {}
+  void ToggleCamera() override {}
+  void HangUp() override {}
 
  private:
   arc::ArcPipBridge* const arc_pip_bridge_;

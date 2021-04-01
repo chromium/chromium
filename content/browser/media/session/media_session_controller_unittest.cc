@@ -39,7 +39,7 @@ class FakeAudioFocusDelegate : public content::AudioFocusDelegate {
     return audio_focus_type_;
   }
   void MediaSessionInfoChanged(
-      media_session::mojom::MediaSessionInfoPtr) override {}
+      const media_session::mojom::MediaSessionInfoPtr&) override {}
   const base::UnguessableToken& request_id() const override {
     return base::UnguessableToken::Null();
   }

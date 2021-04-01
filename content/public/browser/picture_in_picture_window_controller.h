@@ -61,6 +61,15 @@ class PictureInPictureWindowController {
   // call.
   virtual bool TogglePlayPause() = 0;
 
+  // Called when the user interacts with the "Toggle Microphone" control.
+  virtual void ToggleMicrophone() = 0;
+
+  // Called when the user interacts with the "Toggle Camera" control.
+  virtual void ToggleCamera() = 0;
+
+  // Called when the user interacts with the "Hang Up" control.
+  virtual void HangUp() = 0;
+
  protected:
   // Use PictureInPictureWindowController::GetOrCreateForWebContents() to
   // create an instance.

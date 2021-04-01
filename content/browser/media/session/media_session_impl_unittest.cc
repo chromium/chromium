@@ -54,8 +54,9 @@ class MockAudioFocusDelegate : public AudioFocusDelegate {
     return AudioFocusType::kGain;
   }
 
-  void MediaSessionInfoChanged(MediaSessionInfoPtr session_info) override {
-    session_info_ = std::move(session_info);
+  void MediaSessionInfoChanged(
+      const MediaSessionInfoPtr& session_info) override {
+    session_info_ = session_info.Clone();
   }
 
   MOCK_CONST_METHOD0(request_id, const base::UnguessableToken&());

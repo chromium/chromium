@@ -35,6 +35,9 @@ class TestPictureInPictureWindowController
   void SkipAd() override {}
   void NextTrack() override {}
   void PreviousTrack() override {}
+  void ToggleMicrophone() override {}
+  void ToggleCamera() override {}
+  void HangUp() override {}
 
  private:
   content::WebContents* const web_contents_;

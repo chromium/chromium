@@ -87,6 +87,9 @@ class MockPictureInPictureWindowController
   MOCK_METHOD0(SkipAd, void());
   MOCK_METHOD0(NextTrack, void());
   MOCK_METHOD0(PreviousTrack, void());
+  MOCK_METHOD0(ToggleMicrophone, void());
+  MOCK_METHOD0(ToggleCamera, void());
+  MOCK_METHOD0(HangUp, void());
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockPictureInPictureWindowController);

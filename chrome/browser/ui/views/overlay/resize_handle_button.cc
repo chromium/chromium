@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/views/overlay/resize_handle_button.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/views/overlay/constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
@@ -20,8 +20,6 @@ namespace {
 
 constexpr int kResizeHandleButtonMargin = 4;
 constexpr int kResizeHandleButtonSize = 16;
-
-constexpr SkColor kResizeHandleIconColor = SK_ColorWHITE;
 
 }  // namespace
 
@@ -96,7 +94,7 @@ void ResizeHandleButton::SetImageForQuadrant(
   current_quadrant_ = quadrant;
 
   gfx::ImageSkia icon = gfx::CreateVectorIcon(
-      kResizeHandleIcon, kResizeHandleButtonSize, kResizeHandleIconColor);
+      kResizeHandleIcon, kResizeHandleButtonSize, kPipWindowIconColor);
   switch (quadrant) {
     case OverlayWindowViews::WindowQuadrant::kBottomLeft:
       SetImageHorizontalAlignment(views::ImageButton::ALIGN_RIGHT);

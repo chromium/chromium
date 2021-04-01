@@ -57,7 +57,7 @@ class AudioFocusDelegateAndroid : public AudioFocusDelegate {
 
   // This is not used by this delegate.
   void MediaSessionInfoChanged(
-      media_session::mojom::MediaSessionInfoPtr) override {}
+      const media_session::mojom::MediaSessionInfoPtr&) override {}
 
  private:
   // Weak pointer because |this| is owned by |media_session_|.

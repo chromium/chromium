@@ -68,6 +68,14 @@ void PictureInPictureWindowControllerImpl::Show() {
   media_session_action_previous_track_handled_ =
       media_session->ShouldRouteAction(
           media_session::mojom::MediaSessionAction::kPreviousTrack);
+  media_session_action_toggle_microphone_handled_ =
+      media_session->ShouldRouteAction(
+          media_session::mojom::MediaSessionAction::kToggleMicrophone);
+  media_session_action_toggle_camera_handled_ =
+      media_session->ShouldRouteAction(
+          media_session::mojom::MediaSessionAction::kToggleCamera);
+  media_session_action_hang_up_handled_ = media_session->ShouldRouteAction(
+      media_session::mojom::MediaSessionAction::kHangUp);
 
   UpdatePlayPauseButtonVisibility();
   window_->SetSkipAdButtonVisibility(media_session_action_skip_ad_handled_);
@@ -75,6 +83,13 @@ void PictureInPictureWindowControllerImpl::Show() {
       media_session_action_next_track_handled_);
   window_->SetPreviousTrackButtonVisibility(
       media_session_action_previous_track_handled_);
+  window_->SetMicrophoneMuted(microphone_muted_);
+  window_->SetToggleMicrophoneButtonVisibility(
+      media_session_action_toggle_microphone_handled_);
+  window_->SetCameraState(camera_turned_on_);
+  window_->SetToggleCameraButtonVisibility(
+      media_session_action_toggle_camera_handled_);
+  window_->SetHangUpButtonVisibility(media_session_action_hang_up_handled_);
   window_->ShowInactive();
   GetWebContentsImpl()->SetHasPictureInPictureVideo(true);
 }
@@ -245,6 +260,42 @@ void PictureInPictureWindowControllerImpl::PreviousTrack() {
     MediaSession::Get(web_contents())->PreviousTrack();
 }
 
+void PictureInPictureWindowControllerImpl::ToggleMicrophone() {
+  if (!media_session_action_toggle_microphone_handled_)
+    return;
+
+  MediaSession::Get(web_contents())->ToggleMicrophone();
+}
+
+void PictureInPictureWindowControllerImpl::ToggleCamera() {
+  if (!media_session_action_toggle_camera_handled_)
+    return;
+
+  MediaSession::Get(web_contents())->ToggleCamera();
+}
+
+void PictureInPictureWindowControllerImpl::HangUp() {
+  if (media_session_action_hang_up_handled_)
+    MediaSession::Get(web_contents())->HangUp();
+}
+
+void PictureInPictureWindowControllerImpl::MediaSessionInfoChanged(
+    const media_session::mojom::MediaSessionInfoPtr& info) {
+  if (!info)
+    return;
+
+  microphone_muted_ =
+      info->microphone_state == media_session::mojom::MicrophoneState::kMuted;
+  camera_turned_on_ =
+      info->camera_state == media_session::mojom::CameraState::kTurnedOn;
+
+  if (!window_)
+    return;
+
+  window_->SetMicrophoneMuted(microphone_muted_);
+  window_->SetCameraState(camera_turned_on_);
+}
+
 void PictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
     const std::set<media_session::mojom::MediaSessionAction>& actions) {
   // TODO(crbug.com/919842): Currently, the first Media Session to be created
@@ -267,6 +318,16 @@ void PictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
   media_session_action_previous_track_handled_ =
       actions.find(media_session::mojom::MediaSessionAction::kPreviousTrack) !=
       actions.end();
+  media_session_action_toggle_microphone_handled_ =
+      actions.find(
+          media_session::mojom::MediaSessionAction::kToggleMicrophone) !=
+      actions.end();
+  media_session_action_toggle_camera_handled_ =
+      actions.find(media_session::mojom::MediaSessionAction::kToggleCamera) !=
+      actions.end();
+  media_session_action_hang_up_handled_ =
+      actions.find(media_session::mojom::MediaSessionAction::kHangUp) !=
+      actions.end();
 
   if (!window_)
     return;
@@ -277,6 +338,11 @@ void PictureInPictureWindowControllerImpl::MediaSessionActionsChanged(
       media_session_action_next_track_handled_);
   window_->SetPreviousTrackButtonVisibility(
       media_session_action_previous_track_handled_);
+  window_->SetToggleMicrophoneButtonVisibility(
+      media_session_action_toggle_microphone_handled_);
+  window_->SetToggleCameraButtonVisibility(
+      media_session_action_toggle_camera_handled_);
+  window_->SetHangUpButtonVisibility(media_session_action_hang_up_handled_);
 }
 
 gfx::Size PictureInPictureWindowControllerImpl::GetSize() {

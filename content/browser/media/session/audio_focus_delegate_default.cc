@@ -50,7 +50,7 @@ class AudioFocusDelegateDefault : public AudioFocusDelegate {
   base::Optional<media_session::mojom::AudioFocusType> GetCurrentFocusType()
       const override;
   void MediaSessionInfoChanged(
-      media_session::mojom::MediaSessionInfoPtr) override;
+      const media_session::mojom::MediaSessionInfoPtr&) override;
   const base::UnguessableToken& request_id() const override {
     return request_id_;
   }
@@ -149,13 +149,13 @@ AudioFocusDelegateDefault::GetCurrentFocusType() const {
 }
 
 void AudioFocusDelegateDefault::MediaSessionInfoChanged(
-    media_session::mojom::MediaSessionInfoPtr session_info) {
+    const media_session::mojom::MediaSessionInfoPtr& session_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (request_client_remote_.is_bound())
     request_client_remote_->MediaSessionInfoChanged(session_info.Clone());
 
-  session_info_ = std::move(session_info);
+  session_info_ = session_info.Clone();
 }
 
 void AudioFocusDelegateDefault::FinishAudioFocusRequest(AudioFocusType type,

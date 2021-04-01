@@ -41,7 +41,7 @@ class AudioFocusDelegate {
 
   // |MediaSession| should call this when it's state changes.
   virtual void MediaSessionInfoChanged(
-      media_session::mojom::MediaSessionInfoPtr) = 0;
+      const media_session::mojom::MediaSessionInfoPtr&) = 0;
 
   // Retrieves the current request ID for the associated |MediaSession|.
   virtual const base::UnguessableToken& request_id() const = 0;
