@@ -6678,3 +6678,4 @@ crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gest
 crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-nonscrollable-iframe-in-scrollable-div.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-hover-clear.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/fast/events/mouse-event-from-touch-source-device-event-sender.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-fully-scrolled-iframe-propagates.html [ Pass Failure Timeout Crash ]
