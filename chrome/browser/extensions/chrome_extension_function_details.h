@@ -22,6 +22,8 @@ class ChromeExtensionFunctionDetails {
   explicit ChromeExtensionFunctionDetails(ExtensionFunction* function);
   ~ChromeExtensionFunctionDetails();
 
+  // DEPRECATED. Instead, use Profile::FromBrowserContext() directly.
+  // See https://crbug.com/1194753.
   Profile* GetProfile() const;
 
   // Gets the "current" browser, if any.
