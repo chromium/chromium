@@ -77,4 +77,13 @@ interface ITestWebLayer {
   void addContentCaptureConsumer(in IBrowser browser,
                                  in IObjectWrapper /* Runnable */ onNewEvent,
                                  in IObjectWrapper /* ArrayList<Integer> */ eventsObserved) = 24;
+
+  // Notifies the caller of autofill-related events that occur in |browser|. The caller is notified
+  // via |onNewEvent| when a new event occurs, at which point the list of events that have occurred
+  // since notifyOfAutofillEvents() was first invoked will be available via |eventsObserved|.
+  // Note: Calling this method results in stubbing out the actual system-level integration with
+  // Android Autofill.
+  void notifyOfAutofillEvents(in IBrowser browser,
+                              in IObjectWrapper /* Runnable */ onNewEvent,
+                              in IObjectWrapper /* ArrayList<Integer> */ eventsObserved) = 25;
 }

@@ -181,4 +181,10 @@ public final class TestWebLayer {
         mITestWebLayer.addContentCaptureConsumer(
                 browser.getIBrowser(), ObjectWrapper.wrap(runnable), ObjectWrapper.wrap(callbacks));
     }
+
+    public void notifyOfAutofillEvents(Browser browser, Runnable onNewEvent,
+            ArrayList<Integer> eventsObserved) throws RemoteException {
+        mITestWebLayer.notifyOfAutofillEvents(browser.getIBrowser(), ObjectWrapper.wrap(onNewEvent),
+                ObjectWrapper.wrap(eventsObserved));
+    }
 }

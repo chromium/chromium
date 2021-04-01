@@ -415,6 +415,12 @@ public class AutofillProvider {
         }
     }
 
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public void setAutofillManagerWrapperForTesting(AutofillManagerWrapper manager) {
+        mAutofillManager = manager;
+        mAutofillManager.addInputUIObserver(mInputUIObserver);
+    }
+
     /**
      * Invoked when filling form is need. AutofillProvider shall ask autofill
      * service for the values with which to fill the form.

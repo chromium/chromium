@@ -288,4 +288,20 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
                     new TestContentCaptureConsumer(unwrappedOnNewEvents, unwrappedEventsObserved));
         });
     }
+
+    @Override
+    public void notifyOfAutofillEvents(IBrowser browser, IObjectWrapper /* Runnable */ onNewEvents,
+            IObjectWrapper /* ArrayList<Integer>*/ eventsObserved) {
+        Runnable unwrappedOnNewEvents = ObjectWrapper.unwrap(onNewEvents, Runnable.class);
+        ArrayList<Integer> unwrappedEventsObserved =
+                ObjectWrapper.unwrap(eventsObserved, ArrayList.class);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowserImpl browserImpl = (BrowserImpl) browser;
+            TabImpl tab = browserImpl.getActiveTab();
+            tab.getAutofillProviderForTesting().setAutofillManagerWrapperForTesting(
+                    new TestAutofillManagerWrapper(browserImpl.getContext(), unwrappedOnNewEvents,
+                            unwrappedEventsObserved));
+        });
+    }
 }

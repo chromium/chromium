@@ -318,6 +318,7 @@ android_resources("weblayer_test_resources") {
 android_library("test_java") {
   testonly = true
   sources = [
+    "org/chromium/weblayer_private/test/TestAutofillManagerWrapper.java",
     "org/chromium/weblayer_private/test/TestContentCaptureConsumer.java",
     "org/chromium/weblayer_private/test/TestInfoBar.java",
     "org/chromium/weblayer_private/test/TestWebLayerImpl.java",
@@ -329,6 +330,7 @@ android_library("test_java") {
     ":java",
     ":weblayer_test_resources",
     "//base:base_java",
+    "//components/autofill/android/provider:java",
     "//components/content_capture/android:java",
     "//components/infobars/android:java",
     "//components/location/android:location_java",

@@ -380,6 +380,12 @@ public final class TabImpl extends ITab.Stub {
         }
     }
 
+    @VisibleForTesting
+    public AutofillProvider getAutofillProviderForTesting() {
+        // The test needs to make sure the |mAutofillProvider| is not null.
+        return mAutofillProvider;
+    }
+
     public void updateViewAttachedStateFromBrowser() {
         updateWebContentsVisibility();
         updateDisplayCutoutController();
