@@ -217,8 +217,9 @@ class BinaryUploadService : public KeyedService {
   void SetAuthForTesting(const std::string& dm_token, bool authorized);
 
   // Returns the URL that requests are uploaded to. Scans for enterprise go to a
-  // different URL than scans for Advanced Protection users.
-  static GURL GetUploadUrl(bool is_advanced_protection_request);
+  // different URL than scans for Advanced Protection users and Enhanced
+  // Protection users.
+  static GURL GetUploadUrl(bool is_consumer_scan_eligible);
 
  protected:
   void FinishRequest(Request* request,

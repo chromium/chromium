@@ -123,7 +123,8 @@ class CheckClientDownloadRequestBase {
   // Called when finishing the download, to decide whether to prompt the user
   // for deep scanning or not.
   virtual bool ShouldPromptForDeepScanning(
-      DownloadCheckResultReason reason) const = 0;
+      DownloadCheckResultReason reason,
+      bool server_requests_prompt) const = 0;
 
   // Called when |token_fetcher_| has finished fetching the access token.
   void OnGotAccessToken(const std::string& access_token);

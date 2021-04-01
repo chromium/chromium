@@ -24,6 +24,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
+namespace profile {
+class Profile;
+}
+
 namespace safe_browsing {
 
 class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
@@ -74,12 +78,12 @@ class CheckClientDownloadRequest : public CheckClientDownloadRequestBase,
 
   // Called when finishing the download, to decide whether to prompt the user
   // for deep scanning or not.
-  bool ShouldPromptForDeepScanning(
-      DownloadCheckResultReason reason) const override;
+  bool ShouldPromptForDeepScanning(DownloadCheckResultReason reason,
+                                   bool server_requests_prompt) const override;
 
   bool IsAllowlistedByPolicy() const override;
 
-  bool IsUnderAdvancedProtection() const;
+  bool IsUnderAdvancedProtection(Profile* profile) const;
 
   // The DownloadItem we are checking. Will be NULL if the request has been
   // canceled. Must be accessed only on UI thread.

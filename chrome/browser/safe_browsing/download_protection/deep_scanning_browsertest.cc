@@ -342,15 +342,15 @@ class DownloadDeepScanningBrowserTestBase
 
   void InterceptRequest(const network::ResourceRequest& request) {
     if (request.url ==
-        BinaryUploadService::GetUploadUrl(/*is_advanced_protection=*/true)) {
+        BinaryUploadService::GetUploadUrl(/*is_consumer_scan_eligible=*/true)) {
       ASSERT_TRUE(GetUploadMetadata(network::GetUploadData(request),
                                     &last_app_request_));
       if (waiting_for_app_)
         std::move(waiting_for_upload_closure_).Run();
     }
 
-    if (request.url ==
-        BinaryUploadService::GetUploadUrl(/*is_advanced_protection=*/false)) {
+    if (request.url == BinaryUploadService::GetUploadUrl(
+                           /*is_consumer_scan_eligible=*/false)) {
       ASSERT_TRUE(GetUploadMetadata(network::GetUploadData(request),
                                     &last_enterprise_request_));
       if (waiting_for_enterprise_)

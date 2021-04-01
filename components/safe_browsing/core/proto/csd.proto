@@ -960,6 +960,9 @@ message ClientDownloadResponse {
 
   // Whether the server requests that this binary be uploaded.
   optional bool upload = 5;
+
+  // Whether or not Chrome should prompt the user for deep scanning
+  optional bool request_deep_scan = 6;
 }
 
 // The following protocol buffer holds the feedback report gathered

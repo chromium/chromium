@@ -109,7 +109,8 @@ void CheckFileSystemAccessWriteRequest::UploadBinary(
     enterprise_connectors::AnalysisSettings settings) {}
 
 bool CheckFileSystemAccessWriteRequest::ShouldPromptForDeepScanning(
-    DownloadCheckResultReason reason) const {
+    DownloadCheckResultReason reason,
+    bool server_requests_prompt) const {
   return false;
 }
 

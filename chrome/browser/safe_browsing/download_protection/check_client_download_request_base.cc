@@ -195,11 +195,6 @@ void CheckClientDownloadRequestBase::FinishRequest(
                               reason, REASON_MAX);
   }
 
-  if (ShouldPromptForDeepScanning(reason)) {
-    result = DownloadCheckResult::PROMPT_FOR_SCANNING;
-    reason = DownloadCheckResultReason::REASON_ADVANCED_PROTECTION_PROMPT;
-  }
-
   auto settings = ShouldUploadBinary(reason);
   if (settings.has_value()) {
     UploadBinary(reason, std::move(settings.value()));
@@ -299,7 +294,6 @@ void CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone(
     }
   }
   RecordFileExtensionType(kDownloadExtensionUmaName, target_file_path_);
-
   download_request_maker_->Start(base::BindOnce(
       &CheckClientDownloadRequestBase::OnRequestBuilt, GetWeakPtr()));
 }
@@ -380,7 +374,6 @@ void CheckClientDownloadRequestBase::StartTimeout() {
 void CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone(
     bool is_allowlisted) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   if (!skipped_url_whitelist_ && is_allowlisted) {
     RecordCountOfAllowlistedDownload(SIGNATURE_ALLOWLIST);
     if (ShouldSampleAllowlistedDownload()) {
@@ -403,9 +396,8 @@ void CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone(
 
   if (is_enhanced_protection_ && token_fetcher_ &&
       base::FeatureList::IsEnabled(kDownloadRequestWithToken)) {
-    token_fetcher_->Start(
-        base::BindOnce(&CheckClientDownloadRequestBase::OnGotAccessToken,
-                       GetWeakPtr()));
+    token_fetcher_->Start(base::BindOnce(
+        &CheckClientDownloadRequestBase::OnGotAccessToken, GetWeakPtr()));
     return;
   }
 
@@ -420,7 +412,6 @@ void CheckClientDownloadRequestBase::OnGotAccessToken(
 
 void CheckClientDownloadRequestBase::SendRequest() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   if (IsCancelled()) {
     FinishRequest(DownloadCheckResult::UNKNOWN, REASON_DOWNLOAD_DESTROYED);
     return;
@@ -548,6 +539,7 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
   DownloadCheckResultReason reason = REASON_SERVER_PING_FAILED;
   DownloadCheckResult result = DownloadCheckResult::UNKNOWN;
   std::string token;
+  bool server_requests_prompt = false;
   if (success && net::HTTP_OK == response_code) {
     ClientDownloadResponse response;
     if (!response.ParseFromString(*response_body.get())) {
@@ -609,6 +601,10 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
     MaybeStorePingsForDownload(result, upload_requested,
                                client_download_request_data_,
                                *response_body.get());
+    if (base::FeatureList::IsEnabled(
+            safe_browsing::kPromptEsbForDeepScanning)) {
+      server_requests_prompt = response.request_deep_scan();
+    }
   }
 
   // We don't need the loader anymore.
@@ -618,6 +614,10 @@ void CheckClientDownloadRequestBase::OnURLLoaderComplete(
   UMA_HISTOGRAM_TIMES("SBClientDownload.DownloadRequestNetworkDuration",
                       base::TimeTicks::Now() - request_start_time_);
 
+  if (ShouldPromptForDeepScanning(reason, server_requests_prompt)) {
+    result = DownloadCheckResult::PROMPT_FOR_SCANNING;
+    reason = DownloadCheckResultReason::REASON_ADVANCED_PROTECTION_PROMPT;
+  }
   FinishRequest(result, reason);
 }
 
