@@ -14,6 +14,7 @@ component("cryptohome") {
     "//chromeos/dbus:common",
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/userdataauth:userdataauth",
     "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/login/auth:challenge_response_key",
     "//components/account_id",
@@ -61,6 +62,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/userdataauth:userdataauth",
+    "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/login/auth:challenge_response_key",
     "//testing/gtest:gtest",
   ]

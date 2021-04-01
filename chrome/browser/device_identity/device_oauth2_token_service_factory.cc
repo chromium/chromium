@@ -14,7 +14,6 @@
 #endif
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
-#include "chromeos/cryptohome/system_salt_getter.h"
 #include "components/policy/core/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

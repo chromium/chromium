@@ -40,7 +40,7 @@ class DMTokenStorageBase {
 // management because AD devices lacks DM token in the policies.
 //
 // Note that requests must be made from the UI thread because SystemSaltGetter
-// calls CryptohomeClient which must be called from the UI thread.
+// calls CryptohomeMiscClient which must be called from the UI thread.
 class DMTokenStorage : public DMTokenStorageBase {
  public:
   explicit DMTokenStorage(PrefService* local_state);

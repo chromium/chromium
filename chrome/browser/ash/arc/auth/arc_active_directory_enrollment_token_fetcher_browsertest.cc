@@ -20,7 +20,8 @@
 #include "chrome/browser/chromeos/policy/dm_token_storage.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/arc/arc_util.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/policy_switches.h"
@@ -266,9 +267,9 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   // ArcActiveDirectoryEnrollmentTokenFetcher will succeed to fetch the DM
   // token.
   void StoreCorrectDmToken() {
-    chromeos::FakeCryptohomeClient::Get()->set_system_salt(
-        chromeos::FakeCryptohomeClient::GetStubSystemSalt());
-    chromeos::FakeCryptohomeClient::Get()->SetServiceIsAvailable(true);
+    chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
+        chromeos::FakeCryptohomeMiscClient::GetStubSystemSalt());
+    chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
     // Store a fake DM token.
     base::RunLoop run_loop;
     auto dm_token_storage = std::make_unique<policy::DMTokenStorage>(
@@ -289,9 +290,9 @@ class ArcActiveDirectoryEnrollmentTokenFetcherBrowserTest
   // Does not store a correct DM token.
   // ArcActiveDirectoryEnrollmentTokenFetcher will fail to fetch the DM token.
   void FailDmToken() {
-    chromeos::FakeCryptohomeClient::Get()->set_system_salt(
+    chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
         std::vector<uint8_t>());
-    chromeos::FakeCryptohomeClient::Get()->SetServiceIsAvailable(true);
+    chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   }
 
   void FetchEnrollmentToken(base::RunLoop* run_loop,

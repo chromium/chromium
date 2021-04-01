@@ -21,7 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/invalidation/impl/fake_invalidation_handler.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
 #include "components/invalidation/impl/fcm_invalidation_service.h"
@@ -216,8 +216,8 @@ AffiliatedInvalidationServiceProviderImplTest::
 }
 
 void AffiliatedInvalidationServiceProviderImplTest::SetUp() {
+  chromeos::CryptohomeMiscClient::InitializeFake();
   chromeos::SystemSaltGetter::Initialize();
-  chromeos::CryptohomeClient::InitializeFake();
   ASSERT_TRUE(profile_manager_.SetUp());
 
   DeviceOAuth2TokenServiceFactory::Initialize(
@@ -240,8 +240,8 @@ void AffiliatedInvalidationServiceProviderImplTest::TearDown() {
       ->RegisterTestingFactory(
           BrowserContextKeyedServiceFactory::TestingFactory());
   DeviceOAuth2TokenServiceFactory::Shutdown();
-  chromeos::CryptohomeClient::Shutdown();
   chromeos::SystemSaltGetter::Shutdown();
+  chromeos::CryptohomeMiscClient::Shutdown();
 }
 
 Profile*

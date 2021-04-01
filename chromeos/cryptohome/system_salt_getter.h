@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 
 namespace chromeos {
 
@@ -59,8 +60,9 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
   // Used to implement GetSystemSalt().
   void DidWaitForServiceToBeAvailable(GetSystemSaltCallback callback,
                                       bool service_is_available);
-  void DidGetSystemSalt(GetSystemSaltCallback callback,
-                        base::Optional<std::vector<uint8_t>> system_salt);
+  void DidGetSystemSalt(
+      GetSystemSaltCallback callback,
+      base::Optional<::user_data_auth::GetSystemSaltReply> system_salt_reply);
 
   RawSalt raw_salt_;
   std::string system_salt_;

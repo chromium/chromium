@@ -11,12 +11,12 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::FakeCryptohomeClient;
+using chromeos::FakeCryptohomeMiscClient;
 
 namespace policy {
 
@@ -29,25 +29,25 @@ class DMTokenStorageTest : public testing::Test {
   void SetSaltPending() {
     // Clear the cached salt.
     chromeos::SystemSaltGetter::Shutdown();
-    FakeCryptohomeClient::Get()->set_system_salt(std::vector<uint8_t>());
-    FakeCryptohomeClient::Get()->SetServiceIsAvailable(false);
+    FakeCryptohomeMiscClient::Get()->set_system_salt(std::vector<uint8_t>());
+    FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
     chromeos::SystemSaltGetter::Initialize();
   }
 
   void SetSaltAvailable() {
-    FakeCryptohomeClient::Get()->set_system_salt(
-        FakeCryptohomeClient::GetStubSystemSalt());
-    FakeCryptohomeClient::Get()->SetServiceIsAvailable(true);
+    FakeCryptohomeMiscClient::Get()->set_system_salt(
+        FakeCryptohomeMiscClient::GetStubSystemSalt());
+    FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   }
 
   void SetSaltError() {
-    FakeCryptohomeClient::Get()->set_system_salt(std::vector<uint8_t>());
-    FakeCryptohomeClient::Get()->SetServiceIsAvailable(true);
+    FakeCryptohomeMiscClient::Get()->set_system_salt(std::vector<uint8_t>());
+    FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(true);
   }
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();
-    chromeos::CryptohomeClient::InitializeFake();
+    chromeos::CryptohomeMiscClient::InitializeFake();
     SetSaltAvailable();
 
     chromeos::SystemSaltGetter::Initialize();
@@ -56,6 +56,7 @@ class DMTokenStorageTest : public testing::Test {
   void TearDown() override {
     dm_token_storage_.reset();
     chromeos::SystemSaltGetter::Shutdown();
+    chromeos::CryptohomeMiscClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
     base::RunLoop().RunUntilIdle();
   }

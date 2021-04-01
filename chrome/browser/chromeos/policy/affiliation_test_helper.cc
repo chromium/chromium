@@ -26,9 +26,9 @@
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/authpolicy/fake_authpolicy_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
+#include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
@@ -58,7 +58,7 @@ void SetUserKeys(const policy::UserPolicyBuilder& user_policy) {
   ASSERT_TRUE(base::PathService::Get(chromeos::dbus_paths::DIR_USER_POLICY_KEYS,
                                      &user_keys_dir));
   const std::string sanitized_username =
-      chromeos::CryptohomeClient::GetStubSanitizedUsername(
+      chromeos::UserDataAuthClient::GetStubSanitizedUsername(
           cryptohome::CreateAccountIdentifierFromAccountId(account_id));
   const base::FilePath user_key_file =
       user_keys_dir.AppendASCII(sanitized_username).AppendASCII("policy.pub");
