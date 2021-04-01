@@ -10,6 +10,7 @@ include_rules = [
  "+chrome/browser/ui/android/theme/java",
  "+chrome/browser/ui/android/toolbar/java",
  "+chrome/browser/ui/messages/android/java",
+ "+components/browser_ui/notifications/android",
  "+components/browser_ui/styles/android",
  "+components/browser_ui/widget/android",
  "+components/feature_engagement/public/android/java/src/org/chromium/components/feature_engagement",

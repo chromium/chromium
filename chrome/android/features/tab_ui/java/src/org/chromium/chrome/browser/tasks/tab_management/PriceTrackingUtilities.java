@@ -8,6 +8,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
@@ -30,6 +31,12 @@ public class PriceTrackingUtilities {
     @VisibleForTesting
     public static final String PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT =
             ChromePreferenceKeys.PRICE_TRACKING_PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT;
+    @VisibleForTesting
+    public static final String PRICE_ALERTS_MESSAGE_CARD =
+            ChromePreferenceKeys.PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD;
+    @VisibleForTesting
+    public static final String PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT =
+            ChromePreferenceKeys.PRICE_TRACKING_PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT;
 
     @VisibleForTesting
     public static final SharedPreferencesManager SHARED_PREFERENCES_MANAGER =
@@ -98,6 +105,49 @@ public class PriceTrackingUtilities {
      */
     public static int getPriceWelcomeMessageCardShowCount() {
         return SHARED_PREFERENCES_MANAGER.readInt(PRICE_WELCOME_MESSAGE_CARD_SHOW_COUNT, 0);
+    }
+
+    /**
+     * Forbid showing the PriceAlertsMessageCard any more.
+     */
+    public static void disablePriceAlertsMessageCard() {
+        SHARED_PREFERENCES_MANAGER.writeBoolean(PRICE_ALERTS_MESSAGE_CARD, false);
+    }
+
+    /**
+     * @return Whether the PriceAlertsMessageCard is enabled. We don't show this message card if
+     *         user can already receive price drop notifications, see {@link
+     *         PriceDropNotificationManager#canPostNotification()}.
+     */
+    public static boolean isPriceAlertsMessageCardEnabled() {
+        return isPriceTrackingEligible()
+                && SHARED_PREFERENCES_MANAGER.readBoolean(
+                        PRICE_ALERTS_MESSAGE_CARD, TabUiFeatureUtilities.isPriceTrackingEnabled())
+                && (!(new PriceDropNotificationManager()).canPostNotification());
+    }
+
+    /**
+     * Increase the show count of PriceAlertsMessageCard every time it shows in the tab switcher.
+     */
+    public static void increasePriceAlertsMessageCardShowCount() {
+        SHARED_PREFERENCES_MANAGER.writeInt(
+                PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, getPriceAlertsMessageCardShowCount() + 1);
+    }
+
+    /**
+     * Decrease the show count of PriceAlertsMessageCard. Right now it is used to correct the show
+     * count when PriceAlertsMessageCard is deprioritized by PriceWelcomeMessageCard.
+     */
+    public static void decreasePriceAlertsMessageCardShowCount() {
+        SHARED_PREFERENCES_MANAGER.writeInt(
+                PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, getPriceAlertsMessageCardShowCount() - 1);
+    }
+
+    /**
+     * @return The show count of PriceAlertsMessageCard.
+     */
+    public static int getPriceAlertsMessageCardShowCount() {
+        return SHARED_PREFERENCES_MANAGER.readInt(PRICE_ALERTS_MESSAGE_CARD_SHOW_COUNT, 0);
     }
 
     private static boolean isSignedIn() {
