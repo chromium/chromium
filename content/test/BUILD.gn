@@ -2200,6 +2200,15 @@ test("content_unittests") {
     configs += [ "//build/config/linux/atk" ]
   }
 
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/network_capabilities.test-cmx",
+    ]
+  }
+
   if (is_android) {
     sources += [
       "../browser/accessibility/browser_accessibility_android_unittest.cc",

@@ -700,6 +700,18 @@ test("headless_browsertests") {
     "//third_party/tlslite/",
   ]
 
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/font_capabilities.test-cmx",
+
+      # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/network_capabilities.test-cmx",
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    ]
+  }
+
   if (is_mac) {
     data_deps = [ ":mac_helpers" ]
   }
