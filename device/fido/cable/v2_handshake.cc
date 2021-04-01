@@ -384,6 +384,27 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key) {
 
 }  // namespace qr
 
+namespace sync {
+
+uint32_t IDNow() {
+  const base::Time now = base::Time::Now();
+  time_t utc_time = now.ToTimeT();
+  // The IDs, and thus Sync secret rotation, have a period of two days. Reducing
+  // this increases the bandwidth of the Sync service so check with the Sync
+  // server team first.
+  utc_time /= (86400 * 2);
+  // A uint32_t can span about 23 million years.
+  return static_cast<uint32_t>(utc_time);
+}
+
+bool IDIsValid(uint32_t candidate) {
+  const uint32_t now = IDNow();
+  // Sync secrets are allowed to be, at most, 5 periods (~10 days) old.
+  return candidate <= now && (now - candidate) < 5;
+}
+
+}  // namespace sync
+
 namespace internal {
 
 void Derive(uint8_t* out,
@@ -400,6 +421,17 @@ void Derive(uint8_t* out,
 }
 
 }  // namespace internal
+
+bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret) {
+  std::array<uint8_t, 32> seed;
+  seed = device::cablev2::Derive<EXTENT(seed)>(
+      root_secret, /*nonce=*/base::span<uint8_t>(),
+      device::cablev2::DerivedValueType::kIdentityKeySeed);
+  bssl::UniquePtr<EC_GROUP> p256(
+      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
+  return bssl::UniquePtr<EC_KEY>(
+      EC_KEY_derive_from_secret(p256.get(), seed.data(), seed.size()));
+}
 
 base::Optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map) {

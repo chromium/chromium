@@ -22,6 +22,6 @@ public interface Module {
     public Fragment getFragment();
 
     /** Handle a message from the tunnel service. */
-    public void onCloudMessage(
-            long event, long systemNetworkContext, long registration, String activityClassName);
+    public void onCloudMessage(long event, long systemNetworkContext, long registration,
+            String activityClassName, byte[] secret);
 }

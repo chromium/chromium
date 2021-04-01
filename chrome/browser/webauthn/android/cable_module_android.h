@@ -8,6 +8,8 @@
 #include "base/optional.h"
 #include "components/sync_device_info/device_info.h"
 
+class PrefRegistrySimple;
+
 namespace webauthn {
 namespace authenticator {
 
@@ -24,6 +26,10 @@ void RegisterForCloudMessages();
 // not yet ready.
 base::Optional<syncer::DeviceInfo::PhoneAsASecurityKeyInfo>
 GetSyncDataIfRegistered();
+
+// RegisterLocalState registers prefs with the local-state represented by
+// |registry|.
+void RegisterLocalState(PrefRegistrySimple* registry);
 
 }  // namespace authenticator
 }  // namespace webauthn

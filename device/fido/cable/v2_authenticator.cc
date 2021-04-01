@@ -68,11 +68,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             " significant user action. No background activity occurs."
         })");
 
-// kTunnelServer is the hardcoded tunnel server that phones will use for network
-// communication. This specifies a Google service and the short domain need is
-// necessary to fit within a BLE advert.
-constexpr uint16_t kTunnelServer = 0;
-
 struct MakeCredRequest {
   const std::vector<uint8_t>* client_data_hash;
   const std::string* rp_id;
@@ -710,16 +705,31 @@ class CTAP2Processor : public Transaction {
   base::WeakPtrFactory<CTAP2Processor> weak_factory_{this};
 };
 
-static bssl::UniquePtr<EC_KEY> IdentityKey(
-    base::span<const uint8_t, 32> root_secret) {
-  std::array<uint8_t, 32> seed;
-  seed = device::cablev2::Derive<EXTENT(seed)>(
-      root_secret, /*nonce=*/base::span<uint8_t>(),
-      device::cablev2::DerivedValueType::kIdentityKeySeed);
-  bssl::UniquePtr<EC_GROUP> p256(
-      EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
-  return bssl::UniquePtr<EC_KEY>(
-      EC_KEY_derive_from_secret(p256.get(), seed.data(), seed.size()));
+static std::array<uint8_t, 32> DerivePairedSecret(
+    base::span<const uint8_t, kRootSecretSize> root_secret,
+    const base::Optional<base::span<const uint8_t>>& contact_id,
+    base::span<const uint8_t, kPairingIDSize> pairing_id) {
+  base::span<const uint8_t, kRootSecretSize> secret = root_secret;
+
+  std::array<uint8_t, kRootSecretSize> per_contact_id_secret;
+  if (contact_id) {
+    // The root secret is not used directly to derive the paired secret because
+    // we want the keys to change after an unlink. Unlinking invalidates and
+    // replaces the contact ID therefore we derive paired secrets in two steps:
+    // first using the contact ID to derive a secret from the root secret, and
+    // then using the pairing ID to generate a secret from that.
+    per_contact_id_secret =
+        device::cablev2::Derive<EXTENT(per_contact_id_secret)>(
+            root_secret, *contact_id,
+            device::cablev2::DerivedValueType::kPerContactIDSecret);
+    secret = per_contact_id_secret;
+  }
+
+  std::array<uint8_t, 32> paired_secret;
+  paired_secret = device::cablev2::Derive<EXTENT(paired_secret)>(
+      secret, pairing_id, device::cablev2::DerivedValueType::kPairedSecret);
+
+  return paired_secret;
 }
 
 class PairingDataGenerator {
@@ -749,19 +759,14 @@ class PairingDataGenerator {
       return base::nullopt;
     }
 
+    std::array<uint8_t, kPairingIDSize> pairing_id;
+    crypto::RandBytes(pairing_id);
+    const std::array<uint8_t, 32> paired_secret =
+        DerivePairedSecret(root_secret_, *contact_id_, pairing_id);
+
     cbor::Value::MapValue map;
     map.emplace(1, std::move(*contact_id_));
-
-    std::array<uint8_t, device::cablev2::kNonceSize> pairing_id;
-    crypto::RandBytes(pairing_id);
-
     map.emplace(2, pairing_id);
-
-    std::array<uint8_t, 32> paired_secret;
-    paired_secret = device::cablev2::Derive<EXTENT(paired_secret)>(
-        root_secret_, pairing_id,
-        device::cablev2::DerivedValueType::kPairedSecret);
-
     map.emplace(3, paired_secret);
 
     bssl::UniquePtr<EC_KEY> identity_key(IdentityKey(root_secret_));
@@ -815,7 +820,7 @@ std::unique_ptr<Transaction> TransactFromQRCode(
     base::span<const uint8_t, kP256X962Length> peer_identity,
     base::Optional<std::vector<uint8_t>> contact_id) {
   auto generate_pairing_data = PairingDataGenerator::GetClosure(
-      root_secret, authenticator_name, contact_id);
+      root_secret, authenticator_name, std::move(contact_id));
 
   Platform* const platform_ptr = platform.get();
   return std::make_unique<CTAP2Processor>(
@@ -831,11 +836,11 @@ std::unique_ptr<Transaction> TransactFromFCM(
     base::span<const uint8_t, kRootSecretSize> root_secret,
     std::array<uint8_t, kRoutingIdSize> routing_id,
     base::span<const uint8_t, kTunnelIdSize> tunnel_id,
-    base::span<const uint8_t> pairing_id,
-    base::span<const uint8_t, kClientNonceSize> client_nonce) {
-  std::array<uint8_t, 32> paired_secret;
-  paired_secret = Derive<EXTENT(paired_secret)>(
-      root_secret, pairing_id, DerivedValueType::kPairedSecret);
+    base::span<const uint8_t, kPairingIDSize> pairing_id,
+    base::span<const uint8_t, kClientNonceSize> client_nonce,
+    base::Optional<base::span<const uint8_t>> contact_id) {
+  const std::array<uint8_t, 32> paired_secret =
+      DerivePairedSecret(root_secret, contact_id, pairing_id);
 
   Platform* const platform_ptr = platform.get();
   return std::make_unique<CTAP2Processor>(

@@ -29,9 +29,10 @@ class PendingCloudMessage extends BroadcastReceiver {
     private final long mNetworkContext;
     private final long mRegistration;
     private final String mActivityClassName;
+    private final byte[] mSecret;
 
     PendingCloudMessage(BluetoothAdapter adapter, long event, long systemNetworkContext,
-            long registration, String activityClassName) {
+            long registration, String activityClassName, byte[] secret) {
         super();
 
         mContext = ContextUtils.getApplicationContext();
@@ -39,6 +40,7 @@ class PendingCloudMessage extends BroadcastReceiver {
         mNetworkContext = systemNetworkContext;
         mRegistration = registration;
         mActivityClassName = activityClassName;
+        mSecret = secret;
 
         mContext.registerReceiver(this, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
 
@@ -53,7 +55,7 @@ class PendingCloudMessage extends BroadcastReceiver {
         // and now.
         if (adapter.isEnabled()) {
             CableAuthenticator.onCloudMessage(mEvent, mNetworkContext, mRegistration,
-                    mActivityClassName, /*needToDisableBluetooth=*/false);
+                    mActivityClassName, mSecret, /*needToDisableBluetooth=*/false);
             return;
         }
 
@@ -80,7 +82,8 @@ class PendingCloudMessage extends BroadcastReceiver {
             case BluetoothAdapter.STATE_ON:
                 Log.i(TAG, "Bluetooth enabled. Forwarding cloud message.");
                 CableAuthenticator.onCloudMessage(mEvent, mNetworkContext, mRegistration,
-                        mActivityClassName, /*needToDisableBluetooth=*/true);
+                        mActivityClassName, mSecret,
+                        /*needToDisableBluetooth=*/true);
                 break;
 
             default:

@@ -169,8 +169,9 @@ std::unique_ptr<Transaction> TransactFromFCM(
     base::span<const uint8_t, kRootSecretSize> root_secret,
     std::array<uint8_t, kRoutingIdSize> routing_id,
     base::span<const uint8_t, kTunnelIdSize> tunnel_id,
-    base::span<const uint8_t> pairing_id,
-    base::span<const uint8_t, kClientNonceSize> client_nonce);
+    base::span<const uint8_t, kPairingIDSize> pairing_id,
+    base::span<const uint8_t, kClientNonceSize> client_nonce,
+    base::Optional<base::span<const uint8_t>> contact_id);
 
 }  // namespace authenticator
 }  // namespace cablev2

@@ -6752,7 +6752,7 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
 
   void OnContact(
       base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
-      base::span<const uint8_t> pairing_id,
+      base::span<const uint8_t, device::cablev2::kPairingIDSize> pairing_id,
       base::span<const uint8_t, device::cablev2::kClientNonceSize>
           client_nonce) {
     std::move(contact_callback_).Run(tunnel_id, pairing_id, client_nonce);
@@ -6794,7 +6794,7 @@ class CableV2AuthenticatorImplTest : public AuthenticatorImplTest {
   std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings_;
   base::OnceCallback<void(
       base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
-      base::span<const uint8_t> pairing_id,
+      base::span<const uint8_t, device::cablev2::kPairingIDSize> pairing_id,
       base::span<const uint8_t, device::cablev2::kClientNonceSize>
           client_nonce)>
       contact_callback_;
@@ -6839,13 +6839,13 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
       ->ReplaceDefaultDiscoveryFactoryForTesting(
           std::make_unique<DiscoveryFactory>(std::move(discovery)));
 
+  const std::vector<uint8_t> contact_id = {1, 2, 3};
   std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
       device::cablev2::authenticator::TransactFromQRCode(
           device::cablev2::authenticator::NewMockPlatform(
               std::move(ble_advert_callback_), &virtual_device_),
           network_context_.get(), root_secret_, "Test Authenticator",
-          zero_qr_secret_, peer_identity_x962_,
-          /*contact_id=*/std::vector<uint8_t>({1, 2, 3}));
+          zero_qr_secret_, peer_identity_x962_, contact_id);
 
   EXPECT_EQ(AuthenticatorMakeCredential().status, AuthenticatorStatus::SUCCESS);
   EXPECT_EQ(pairings_.size(), 1u);
@@ -6868,9 +6868,10 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
   // This simulates the tunnel server sending a cloud message to a phone. Given
   // the information from the connection, a transaction can be created.
   contact_callback_ = base::BindLambdaForTesting(
-      [this, &transaction, routing_id, &contact_callback_was_called](
+      [this, &transaction, routing_id, contact_id,
+       &contact_callback_was_called](
           base::span<const uint8_t, device::cablev2::kTunnelIdSize> tunnel_id,
-          base::span<const uint8_t> pairing_id,
+          base::span<const uint8_t, device::cablev2::kPairingIDSize> pairing_id,
           base::span<const uint8_t, device::cablev2::kClientNonceSize>
               client_nonce) -> void {
         contact_callback_was_called = true;
@@ -6878,7 +6879,7 @@ TEST_F(CableV2AuthenticatorImplTest, PairingBased) {
             device::cablev2::authenticator::NewMockPlatform(
                 std::move(ble_advert_callback_), &virtual_device_),
             network_context_.get(), root_secret_, routing_id, tunnel_id,
-            pairing_id, client_nonce);
+            pairing_id, client_nonce, contact_id);
       });
 
   AuthenticatorEnvironmentImpl::GetInstance()

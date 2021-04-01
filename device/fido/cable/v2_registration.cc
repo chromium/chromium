@@ -22,16 +22,22 @@ namespace authenticator {
 namespace {
 
 static const char kFCMAppId[] = "chrome.android.features.cablev2_authenticator";
+static const char kFCMSyncAppId[] =
+    "chrome.android.features.cablev2_authenticator_sync";
 static const char kFCMSenderId[] = "141743603694";
 
 class FCMHandler : public gcm::GCMAppHandler, public Registration {
  public:
   FCMHandler(instance_id::InstanceIDDriver* instance_id_driver,
+             Registration::Type type,
+             base::OnceCallback<void()> on_ready,
              base::RepeatingCallback<void(std::unique_ptr<Registration::Event>)>
                  event_callback)
-      : event_callback_(std::move(event_callback)),
+      : type_(type),
+        ready_callback_(std::move(on_ready)),
+        event_callback_(std::move(event_callback)),
         instance_id_driver_(instance_id_driver),
-        instance_id_(instance_id_driver->GetInstanceID(kFCMAppId)) {
+        instance_id_(instance_id_driver->GetInstanceID(app_id())) {
     // Registering with FCM on platforms other than Android could cause large
     // number of new registrations with the FCM service. Thus this code does not
     // compile on other platforms. Check with //components/gcm_driver owners
@@ -41,21 +47,26 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
 #endif
 
     gcm::GCMDriver* const gcm_driver = instance_id_->gcm_driver();
-    CHECK(gcm_driver->GetAppHandler(kFCMAppId) == nullptr);
-    instance_id_->gcm_driver()->AddAppHandler(kFCMAppId, this);
+    CHECK(gcm_driver->GetAppHandler(app_id()) == nullptr);
+    instance_id_->gcm_driver()->AddAppHandler(app_id(), this);
   }
 
   ~FCMHandler() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    instance_id_->gcm_driver()->RemoveAppHandler(kFCMAppId);
-    instance_id_driver_->RemoveInstanceID(kFCMAppId);
+    instance_id_->gcm_driver()->RemoveAppHandler(app_id());
+    instance_id_driver_->RemoveInstanceID(app_id());
   }
 
   // Registration:
 
   void PrepareContactID() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    if (registration_token_pending_) {
+      return;
+    }
+    registration_token_pending_ = true;
 
     instance_id_->GetToken(
         kFCMSenderId, instance_id::kGCMScope,
@@ -88,16 +99,16 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
   void OnMessage(const std::string& app_id,
                  const gcm::IncomingMessage& message) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK_EQ(app_id, kFCMAppId);
+    DCHECK_EQ(app_id, this->app_id());
     DCHECK_EQ(message.sender_id, kFCMSenderId);
 
-    if (app_id != kFCMAppId || message.sender_id != kFCMSenderId) {
+    if (app_id != this->app_id() || message.sender_id != kFCMSenderId) {
       FIDO_LOG(ERROR) << "Discarding FCM message from " << message.sender_id;
       return;
     }
 
     base::Optional<std::unique_ptr<Registration::Event>> event =
-        MessageToEvent(message.data);
+        MessageToEvent(message.data, type_);
     if (!event) {
       FIDO_LOG(ERROR) << "Failed to decode FCM message. Ignoring.";
       return;
@@ -120,9 +131,20 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
   bool CanHandle(const std::string& app_id) const override { return false; }
 
  private:
+  const char* app_id() const {
+    switch (type_) {
+      case Type::LINKING:
+        return kFCMAppId;
+      case Type::SYNC:
+        return kFCMSyncAppId;
+    }
+  }
+
   void GetTokenComplete(const std::string& token,
                         instance_id::InstanceID::Result result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+    registration_token_pending_ = false;
 
     if (result != instance_id::InstanceID::SUCCESS) {
       FIDO_LOG(ERROR) << "Getting FCM token failed: "
@@ -130,8 +152,11 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
       return;
     }
 
-    FIDO_LOG(ERROR) << __func__ << " " << token;
     registration_token_ = token;
+
+    if (ready_callback_) {
+      std::move(ready_callback_).Run();
+    }
   }
 
   void DeleteTokenComplete(instance_id::InstanceID::Result result) {
@@ -146,8 +171,11 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
   }
 
   static base::Optional<std::unique_ptr<Registration::Event>> MessageToEvent(
-      const gcm::MessageData& data) {
+      const gcm::MessageData& data,
+      Type source) {
     auto event = std::make_unique<Registration::Event>();
+    event->source = source;
+
     gcm::MessageData::const_iterator it = data.find("caBLE.tunnelID");
     if (it == data.end() ||
         !base::HexStringToSpan(it->second, event->tunnel_id)) {
@@ -177,7 +205,12 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
     if (cbor_it == map.end() || !cbor_it->second.is_bytestring()) {
       return base::nullopt;
     }
-    event->pairing_id = cbor_it->second.GetBytestring();
+    const std::vector<uint8_t>& pairing_id = cbor_it->second.GetBytestring();
+    if (pairing_id.size() != event->pairing_id.size()) {
+      return base::nullopt;
+    }
+    memcpy(event->pairing_id.data(), pairing_id.data(),
+           event->pairing_id.size());
 
     if (!fido_parsing_utils::CopyCBORBytestring(&event->client_nonce, map, 2)) {
       return base::nullopt;
@@ -186,10 +219,13 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
     return event;
   }
 
+  const Type type_;
+  base::OnceCallback<void()> ready_callback_;
   base::RepeatingCallback<void(std::unique_ptr<Registration::Event>)>
       event_callback_;
   instance_id::InstanceIDDriver* const instance_id_driver_;
   instance_id::InstanceID* const instance_id_;
+  bool registration_token_pending_ = false;
   base::Optional<std::string> registration_token_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -203,10 +239,12 @@ Registration::Event::~Event() = default;
 
 std::unique_ptr<Registration> Register(
     instance_id::InstanceIDDriver* instance_id_driver,
+    Registration::Type type,
+    base::OnceCallback<void()> on_ready,
     base::RepeatingCallback<void(std::unique_ptr<Registration::Event>)>
         event_callback) {
-  return std::make_unique<FCMHandler>(instance_id_driver,
-                                      std::move(event_callback));
+  return std::make_unique<FCMHandler>(
+      instance_id_driver, type, std::move(on_ready), std::move(event_callback));
 }
 
 }  // namespace authenticator

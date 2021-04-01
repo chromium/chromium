@@ -44,6 +44,8 @@ public class CableAuthenticatorModuleProvider extends Fragment {
             "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName";
     private static final String ACTIVITY_CLASS_NAME =
             "org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity";
+    private static final String SECRET_KEY =
+            "org.chromium.chrome.modules.cablev2_authenticator.Secret";
 
     @Override
     public View onCreateView(
@@ -82,6 +84,7 @@ public class CableAuthenticatorModuleProvider extends Fragment {
         arguments.putLong(
                 REGISTRATION_KEY, CableAuthenticatorModuleProviderJni.get().getRegistration());
         arguments.putString(ACTIVITY_CLASS_NAME_KEY, ACTIVITY_CLASS_NAME);
+        arguments.putByteArray(SECRET_KEY, CableAuthenticatorModuleProviderJni.get().getSecret());
         fragment.setArguments(arguments);
         transaction.replace(getId(), fragment);
         // This fragment is deliberately not added to the back-stack here so
@@ -100,10 +103,11 @@ public class CableAuthenticatorModuleProvider extends Fragment {
         final long networkContext =
                 CableAuthenticatorModuleProviderJni.get().getSystemNetworkContext();
         final long registration = CableAuthenticatorModuleProviderJni.get().getRegistration();
+        final byte[] secret = CableAuthenticatorModuleProviderJni.get().getSecret();
 
         if (Cablev2AuthenticatorModule.isInstalled()) {
             Cablev2AuthenticatorModule.getImpl().onCloudMessage(
-                    event, networkContext, registration, ACTIVITY_CLASS_NAME);
+                    event, networkContext, registration, ACTIVITY_CLASS_NAME, secret);
             return;
         }
 
@@ -113,7 +117,7 @@ public class CableAuthenticatorModuleProvider extends Fragment {
                 return;
             }
             Cablev2AuthenticatorModule.getImpl().onCloudMessage(
-                    event, networkContext, registration, ACTIVITY_CLASS_NAME);
+                    event, networkContext, registration, ACTIVITY_CLASS_NAME, secret);
         });
     }
 
@@ -128,6 +132,9 @@ public class CableAuthenticatorModuleProvider extends Fragment {
         // getRegistration returns a pointer to the global
         // device::cablev2::authenticator::Registration.
         long getRegistration();
+        // getSecret returns a 32-byte secret from which can be derived the
+        // key and shared secret that were advertised via Sync.
+        byte[] getSecret();
         // freeEvent releases resources used by the given event.
         void freeEvent(long event);
     }

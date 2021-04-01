@@ -13,12 +13,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.hardware.usb.UsbAccessory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Base64;
 
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
@@ -77,11 +75,6 @@ class CableAuthenticator {
     private static final int CTAP2_ERR_UNSUPPORTED_OPTION = 0x2D;
     private static final int CTAP2_ERR_OTHER = 0x7F;
 
-    // The filename and key name of the SharedPreferences value that contains
-    // the base64-encoded state from the native code.
-    private static final String STATE_FILE_NAME = "cablev2_authenticator";
-    private static final String STATE_VALUE_NAME = "keys";
-
     private final Context mContext;
     private final CableAuthenticatorUI mUi;
     private final SingleThreadTaskRunner mTaskRunner;
@@ -99,7 +92,7 @@ class CableAuthenticator {
     }
 
     public CableAuthenticator(Context context, CableAuthenticatorUI ui, long networkContext,
-            long registration, String activityClassName, boolean isFcmNotification,
+            long registration, String activityClassName, byte[] secret, boolean isFcmNotification,
             UsbAccessory accessory, byte[] serverLink) {
         mContext = context;
         mUi = ui;
@@ -109,7 +102,7 @@ class CableAuthenticator {
         mTaskRunner = PostTask.createSingleThreadTaskRunner(UiThreadTaskTraits.USER_VISIBLE);
         assert mTaskRunner.belongsToCurrentThread();
 
-        setup(registration, activityClassName, networkContext);
+        CableAuthenticatorJni.get().setup(registration, activityClassName, networkContext, secret);
 
         if (accessory != null) {
             // USB mode can start immediately.
@@ -127,32 +120,6 @@ class CableAuthenticator {
         }
 
         // Otherwise wait for a QR scan.
-    }
-
-    // setup initialises the native code. This is idempotent.
-    private static void setup(long registration, String activityClassName, long networkContext) {
-        // SharedPreferences in Chromium is loaded and cached at startup, and
-        // applying changes is done asynchronously. Thus it's ok to do here, on
-        // the UI thread.
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        byte[] stateBytes;
-        try {
-            stateBytes = Base64.decode(prefs.getString(STATE_VALUE_NAME, ""), Base64.DEFAULT);
-        } catch (IllegalArgumentException e) {
-            Log.w(TAG, "Ignoring corrupt state");
-            stateBytes = new byte[0];
-        }
-
-        byte[] newStateBytes = CableAuthenticatorJni.get().setup(
-                registration, activityClassName, networkContext, stateBytes);
-        if (newStateBytes.length > 0) {
-            Log.i(TAG, "Writing updated state");
-            prefs.edit()
-                    .putString(STATE_VALUE_NAME,
-                            Base64.encodeToString(
-                                    newStateBytes, Base64.NO_WRAP | Base64.NO_PADDING))
-                    .apply();
-        }
     }
 
     // Calls from native code.
@@ -468,12 +435,7 @@ class CableAuthenticator {
 
     void unlinkAllDevices() {
         Log.i(TAG, "Unlinking devices");
-        byte[] newStateBytes = CableAuthenticatorJni.get().unlink();
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        prefs.edit()
-                .putString(STATE_VALUE_NAME,
-                        Base64.encodeToString(newStateBytes, Base64.NO_WRAP | Base64.NO_PADDING))
-                .apply();
+        CableAuthenticatorJni.get().unlink();
     }
 
     void close() {
@@ -493,8 +455,9 @@ class CableAuthenticator {
      * onCloudMessage is called by {@link CableAuthenticatorUI} when a GCM message is received.
      */
     static void onCloudMessage(long event, long systemNetworkContext, long registration,
-            String activityClassName, boolean needToDisableBluetooth) {
-        setup(registration, activityClassName, systemNetworkContext);
+            String activityClassName, byte[] secret, boolean needToDisableBluetooth) {
+        CableAuthenticatorJni.get().setup(
+                registration, activityClassName, systemNetworkContext, secret);
         CableAuthenticatorJni.get().onCloudMessage(event, needToDisableBluetooth);
     }
 
@@ -571,11 +534,9 @@ class CableAuthenticator {
         /**
          * setup is called before any other functions in order for the native code to perform
          * one-time setup operations. It may be called several times, but subsequent calls are
-         * ignored. It returns an empty byte array if the given state is valid, or the new contents
-         * of the persisted state otherwise.
+         * ignored.
          */
-        byte[] setup(long registration, String activityClassName, long networkContext,
-                byte[] stateBytes);
+        void setup(long registration, String activityClassName, long networkContext, byte[] secret);
 
         /**
          * Called to instruct the C++ code to start a new transaction using |usbDevice|. Returns an
@@ -601,12 +562,11 @@ class CableAuthenticator {
         long startServerLink(CableAuthenticator cableAuthenticator, byte[] serverLinkData);
 
         /**
-         * unlink causes the root secret to be rotated and the FCM token to be rotated. This
-         * prevents all previously linked devices from being able to contact this device in the
-         * future -- they'll have to go via the QR-scanning path again. It returns the updated state
-         * which must be persisted.
+         * unlink causes the linking FCM token to be rotated. This prevents all previously linked
+         * devices from being able to contact this device in the future -- they'll have to go via
+         * the QR-scanning path again.
          */
-        byte[] unlink();
+        void unlink();
 
         /**
          * Called after the notification created by {@link showNotification} has been pressed and
@@ -622,10 +582,12 @@ class CableAuthenticator {
         void stop(long handle);
 
         /**
-         * Called when a GCM message is received. The |event| argument is a pointer to a
-         * |device::cablev2::authenticator::Registration::Event| object that the native code takes
-         * ownership of. |needToDisableBluetooth| is true if Bluetooth was enabled for the purposes
-         * of processing this event and thus |disableBluetooth| should be called once complete.
+         * Called when a GCM message is received. The |event| argument is a
+         * pointer to a |device::cablev2::authenticator::Registration::Event|
+         * object that the native code takes ownership of.
+         * |needToDisableBluetooth| is true if Bluetooth was enabled for the
+         * purposes of processing this event and thus |disableBluetooth| should
+         * be called once complete.
          */
         void onCloudMessage(long event, boolean needToDisableBluetooth);
 

@@ -35,7 +35,7 @@ class TestNetworkContext : public network::TestNetworkContext {
  public:
   using ContactCallback = base::RepeatingCallback<void(
       base::span<const uint8_t, kTunnelIdSize> tunnel_id,
-      base::span<const uint8_t> pairing_id,
+      base::span<const uint8_t, kPairingIDSize> pairing_id,
       base::span<const uint8_t, kClientNonceSize> client_nonce)>;
 
   explicit TestNetworkContext(base::Optional<ContactCallback> contact_callback)
@@ -114,15 +114,17 @@ class TestNetworkContext : public network::TestNetworkContext {
           std::make_unique<Connection>(Connection::Type::CONTACT,
                                        std::move(handshake_client)));
 
+      const std::vector<uint8_t>& pairing_id_vec =
+          map.find(cbor::Value(1))->second.GetBytestring();
+      base::span<const uint8_t, kPairingIDSize> pairing_id(
+          pairing_id_vec.data(), pairing_id_vec.size());
+
       const std::vector<uint8_t>& client_nonce_vec =
           map.find(cbor::Value(2))->second.GetBytestring();
       base::span<const uint8_t, kClientNonceSize> client_nonce(
           client_nonce_vec.data(), client_nonce_vec.size());
 
-      contact_callback_->Run(
-          tunnel_id,
-          /*pairing_id=*/map.find(cbor::Value(1))->second.GetBytestring(),
-          client_nonce);
+      contact_callback_->Run(tunnel_id, pairing_id, client_nonce);
     } else {
       CHECK(false) << "unexpected path: " << path;
     }

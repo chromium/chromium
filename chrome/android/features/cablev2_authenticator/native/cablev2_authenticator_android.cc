@@ -91,41 +91,6 @@ void RecordResult(CableV2MobileResult result) {
                                 result);
 }
 
-// ParseState converts the bytes stored by Java into a root secret value.
-base::Optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
-ParseState(base::span<const uint8_t> state_bytes) {
-  base::Optional<cbor::Value> state = cbor::Reader::Read(state_bytes);
-  if (!state || !state->is_map()) {
-    return base::nullopt;
-  }
-
-  const cbor::Value::MapValue& state_map(state->GetMap());
-  std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret;
-  if (!device::fido_parsing_utils::CopyCBORBytestring(&root_secret, state_map,
-                                                      1)) {
-    return base::nullopt;
-  }
-
-  return root_secret;
-}
-
-// NewState creates a fresh root secret and its serialisation.
-std::pair<std::array<uint8_t, device::cablev2::kRootSecretSize>,
-          std::vector<uint8_t>>
-NewState() {
-  std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret;
-  crypto::RandBytes(root_secret);
-
-  cbor::Value::MapValue map;
-  map.emplace(1, cbor::Value(root_secret));
-
-  base::Optional<std::vector<uint8_t>> bytes =
-      cbor::Writer::Write(cbor::Value(std::move(map)));
-  CHECK(bytes.has_value());
-
-  return std::make_tuple(root_secret, std::move(*bytes));
-}
-
 // JavaByteArrayToSpan returns a span that aliases |data|. Be aware that the
 // reference for |data| must outlive the span.
 base::span<const uint8_t> JavaByteArrayToSpan(
@@ -174,7 +139,8 @@ struct GlobalData {
   // reserved so that functions can still return that to indicate an error.
   jlong instance_num = 1;
 
-  std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret;
+  base::Optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
+      root_secret;
   network::mojom::NetworkContext* network_context = nullptr;
 
   // registration is a non-owning pointer to the global |Registration|.
@@ -578,35 +544,33 @@ void OnNeedInteractive(AndroidPlatform::InteractionReadyCallback callback) {
 // These functions are the entry points for CableAuthenticator.java and
 // BLEHandler.java calling into C++.
 
-static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Setup(
+static void JNI_CableAuthenticator_Setup(
     JNIEnv* env,
     jlong registration_long,
     const JavaParamRef<jstring>& activity_class_name,
     jlong network_context_long,
-    const JavaParamRef<jbyteArray>& state_bytes) {
-  std::vector<uint8_t> serialized_state;
-
+    const JavaParamRef<jbyteArray>& secret) {
   GlobalData& global_data = GetGlobalData();
+
+  // The root_secret may not be provided when triggered for server-link. It
+  // won't be used in that case either, but we need to be able to grab it if
+  // setup() is called called for a different type of exchange.
+  base::span<const uint8_t> root_secret = JavaByteArrayToSpan(env, secret);
+  if (!root_secret.empty() && !global_data.root_secret) {
+    global_data.root_secret.emplace();
+    CHECK_EQ(global_data.root_secret->size(), root_secret.size());
+    memcpy(global_data.root_secret->data(), root_secret.data(),
+           global_data.root_secret->size());
+  }
+
   // This function can be called multiple times and must be idempotent. The
-  // |registration| member of |global_data| is used to flag whether setup has
+  // |env| member of |global_data| is used to flag whether setup has
   // already occurred.
-  if (global_data.registration) {
-    // If setup has already occurred then an empty byte[] is returned to
-    // indicate that no update is needed.
-    return ToJavaByteArray(env, serialized_state);
+  if (global_data.env) {
+    return;
   }
 
   RecordEvent(CableV2MobileEvent::kSetup);
-
-  base::Optional<std::array<uint8_t, device::cablev2::kRootSecretSize>>
-      maybe_root_secret = ParseState(JavaByteArrayToSpan(env, state_bytes));
-
-  if (!maybe_root_secret) {
-    std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret;
-    std::tie(root_secret, serialized_state) = NewState();
-    maybe_root_secret = root_secret;
-  }
-  global_data.root_secret = *maybe_root_secret;
 
   global_data.env = env;
   global_data.activity_class_name =
@@ -625,8 +589,6 @@ static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Setup(
 
   global_data.network_context =
       reinterpret_cast<network::mojom::NetworkContext*>(network_context_long);
-
-  return ToJavaByteArray(env, serialized_state);
 }
 
 static jlong JNI_CableAuthenticator_StartUSB(
@@ -678,7 +640,7 @@ static jlong JNI_CableAuthenticator_StartQR(
       device::cablev2::authenticator::TransactFromQRCode(
           std::make_unique<AndroidPlatform>(env, cable_authenticator,
                                             /*is_usb=*/false),
-          global_data.network_context, global_data.root_secret,
+          global_data.network_context, *global_data.root_secret,
           ConvertJavaStringToUTF8(authenticator_name), decoded_qr->secret,
           decoded_qr->peer_identity,
           link ? global_data.registration->contact_id() : base::nullopt);
@@ -720,19 +682,11 @@ static jlong JNI_CableAuthenticator_StartServerLink(
   return ++global_data.instance_num;
 }
 
-static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Unlink(
-    JNIEnv* env) {
+static void JNI_CableAuthenticator_Unlink(JNIEnv* env) {
   RecordEvent(CableV2MobileEvent::kUnlink);
 
-  std::vector<uint8_t> serialized_state;
-  std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret;
-  std::tie(root_secret, serialized_state) = NewState();
-
   GlobalData& global_data = GetGlobalData();
-  global_data.root_secret = root_secret;
   global_data.registration->RotateContactID();
-
-  return ToJavaByteArray(env, serialized_state);
 }
 
 static jlong JNI_CableAuthenticator_OnInteractionReady(
@@ -762,8 +716,18 @@ static void JNI_CableAuthenticator_OnCloudMessage(
   std::unique_ptr<device::cablev2::authenticator::Registration::Event> event(
       reinterpret_cast<device::cablev2::authenticator::Registration::Event*>(
           event_long));
+  DCHECK(event->source ==
+             device::cablev2::authenticator::Registration::Type::SYNC ||
+         base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport));
 
   GlobalData& global_data = GetGlobalData();
+  base::Optional<base::span<const uint8_t>> maybe_contact_id;
+  if (event->source ==
+      device::cablev2::authenticator::Registration::Type::LINKING) {
+    // If the event if from linking then the contact_id must be ready because
+    // the |RegistrationState| will hold the event until it is.
+    maybe_contact_id = *global_data.registration->contact_id();
+  }
 
   // There is deliberately no check for |!global_data.current_transaction|
   // because multiple Cloud messages may come in from different paired devices.
@@ -773,9 +737,9 @@ static void JNI_CableAuthenticator_OnCloudMessage(
           std::make_unique<AndroidPlatform>(env,
                                             base::BindOnce(&OnNeedInteractive),
                                             need_to_disable_bluetooth),
-          global_data.network_context, global_data.root_secret,
+          global_data.network_context, *global_data.root_secret,
           event->routing_id, event->tunnel_id, event->pairing_id,
-          event->client_nonce);
+          event->client_nonce, maybe_contact_id);
 }
 
 static void JNI_CableAuthenticator_OnAuthenticatorAttestationResponse(

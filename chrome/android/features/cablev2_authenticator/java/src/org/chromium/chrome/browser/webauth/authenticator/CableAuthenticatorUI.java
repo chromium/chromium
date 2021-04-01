@@ -61,6 +61,8 @@ public class CableAuthenticatorUI
             "org.chromium.chrome.modules.cablev2_authenticator.NetworkContext";
     private static final String REGISTRATION_EXTRA =
             "org.chromium.chrome.modules.cablev2_authenticator.Registration";
+    private static final String SECRET_EXTRA =
+            "org.chromium.chrome.modules.cablev2_authenticator.Secret";
     private static final String SERVER_LINK_EXTRA =
             "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
 
@@ -109,11 +111,12 @@ public class CableAuthenticatorUI
         final long networkContext = arguments.getLong(NETWORK_CONTEXT_EXTRA);
         final long registration = arguments.getLong(REGISTRATION_EXTRA);
         final String activityClassName = arguments.getString(ACTIVITY_CLASS_NAME_EXTRA);
+        final byte[] secret = arguments.getByteArray(SECRET_EXTRA);
 
         mPermissionDelegate = new ActivityAndroidPermissionDelegate(
                 new WeakReference<Activity>((Activity) context));
         mAuthenticator = new CableAuthenticator(getContext(), this, networkContext, registration,
-                activityClassName, mMode == Mode.FCM, accessory, serverLink);
+                activityClassName, secret, mMode == Mode.FCM, accessory, serverLink);
     }
 
     @Override
@@ -399,16 +402,16 @@ public class CableAuthenticatorUI
      * onCloudMessage is called by {@link CableAuthenticatorModuleProvider} when a GCM message is
      * received.
      */
-    public static void onCloudMessage(
-            long event, long systemNetworkContext, long registration, String activityClassName) {
+    public static void onCloudMessage(long event, long systemNetworkContext, long registration,
+            String activityClassName, byte[] secret) {
         BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
         if (adapter.isEnabled()) {
             CableAuthenticator.onCloudMessage(event, systemNetworkContext, registration,
-                    activityClassName, /*needToDisableBluetooth=*/false);
+                    activityClassName, secret, /*needToDisableBluetooth=*/false);
             return;
         }
 
         new PendingCloudMessage(
-                adapter, event, systemNetworkContext, registration, activityClassName);
+                adapter, event, systemNetworkContext, registration, activityClassName, secret);
     }
 }

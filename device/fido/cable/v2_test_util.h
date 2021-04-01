@@ -25,7 +25,7 @@ namespace cablev2 {
 // server using a cloud messaging solution to wake a device.
 using ContactCallback = base::RepeatingCallback<void(
     base::span<const uint8_t, kTunnelIdSize> tunnel_id,
-    base::span<const uint8_t> pairing_id,
+    base::span<const uint8_t, kPairingIDSize> pairing_id,
     base::span<const uint8_t, kClientNonceSize> client_nonce)>;
 
 // NewMockTunnelServer returns a |NetworkContext| that implements WebSocket

@@ -109,6 +109,19 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key);
 
 }  // namespace qr
 
+namespace sync {
+
+// IDNow returns the current pairing ID for Sync. This is a very rough
+// timestamp.
+COMPONENT_EXPORT(DEVICE_FIDO) uint32_t IDNow();
+
+// IDIsValid returns true iff |candidate| is an acceptable pairing ID. This
+// determination is based on the current time since Sync pairing IDs are
+// timestamps in disguise.
+COMPONENT_EXPORT(DEVICE_FIDO) bool IDIsValid(uint32_t candidate);
+
+}  // namespace sync
+
 // DerivedValueType enumerates the different types of values that might be
 // derived in caBLEv2 from some secret. The values this this enum are protocol
 // constants and thus must not change over time.
@@ -118,6 +131,7 @@ enum class DerivedValueType : uint32_t {
   kPSK = 3,
   kPairedSecret = 4,
   kIdentityKeySeed = 5,
+  kPerContactIDSecret = 6,
 };
 
 namespace internal {
@@ -141,6 +155,10 @@ std::array<uint8_t, N> Derive(base::span<const uint8_t> secret,
   internal::Derive(ret.data(), N, secret, nonce, type);
   return ret;
 }
+
+// IdentityKey returns a P-256 private key derived from |root_secret|.
+COMPONENT_EXPORT(DEVICE_FIDO)
+bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret);
 
 // EncodePaddedCBORMap encodes the given map and pads it to 256 bytes in such a
 // way that |DecodePaddedCBORMap| can decode it. The padding is done on the

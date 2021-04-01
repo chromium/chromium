@@ -29,6 +29,10 @@ extern const base::Feature kWebAuthUseNativeWinApi;
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthCableServerLink;
 
+// Enable synced Android devices to be a 2nd-factor security key.
+COMPONENT_EXPORT(DEVICE_FIDO)
+extern const base::Feature kWebAuthCableSecondFactor;
+
 // Enable using a phone as a generic security key.
 COMPONENT_EXPORT(DEVICE_FIDO)
 extern const base::Feature kWebAuthPhoneSupport;

@@ -22,9 +22,9 @@ public class ModuleImpl implements Module {
     }
 
     @Override
-    public void onCloudMessage(
-            long event, long systemNetworkContext, long registration, String activityClassName) {
+    public void onCloudMessage(long event, long systemNetworkContext, long registration,
+            String activityClassName, byte[] secret) {
         CableAuthenticatorUI.onCloudMessage(
-                event, systemNetworkContext, registration, activityClassName);
+                event, systemNetworkContext, registration, activityClassName, secret);
     }
 }
