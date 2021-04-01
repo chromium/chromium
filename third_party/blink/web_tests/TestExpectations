@@ -6668,3 +6668,9 @@ crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-ta
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-active-state-hidden-iframe.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/http/tests/misc/iframe-script-modify-attr.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification-synchronous_html_parser/external/wpt/dom/events/scrolling/overscroll-event-fired-to-scrolled-element.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-should-not-stop-on-keypress.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-scrolled.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-upwards-propagation-overflow-hidden-body.html [ Pass Failure Timeout Crash ]
+
+
+
