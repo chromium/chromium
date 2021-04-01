@@ -1,11 +1,12 @@
-# Copyright 2013 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""This script tests the installer with test cases specified in the config file.
+"""The primary module for the suite of mini_installer integration tests.
 
-For each test case, it checks that the machine states after the execution of
-each command match the expected machine states. For more details, take a look at
-the design documentation at http://goo.gl/Q0rGM6
+This module houses the InstallerTest class. This is a somewhat special type of
+unittest.TestCase that hosts a dynamic set of test functions created from a
+JSON configuration file. The module is intended to be loaded by a test process
+driven by typ.
 """
 
 import argparse
@@ -17,92 +18,26 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import time
 import traceback
+import typ
 import unittest
 import win32api
 from win32com.shell import shell, shellcon
-import _winreg
 
+from argument_parser import ArgumentParser
 import property_walker
 from variable_expander import VariableExpander
 
-# Use absolute paths
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-SRC_DIR = os.path.join(THIS_DIR, '..', '..', '..')
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+
+# Auto-detect if the tests are not being run on the bots.
 RUNNING_LOCALLY = (os.getenv('SWARMING_HEADLESS') != '1'
                    and os.getenv('CHROME_HEADLESS') != '1')
 
 # The logger configured in this module and used by its dependents.
 LOGGER = logging.getLogger('installer_test')
 
-
-def GetArgumentParser(doc=__doc__):
-    """Gets a parser object with this module's args.
-
-  args:
-    info: The info text to use
-
-  Returns:
-    A filled out ArgumentParser instance.
-  """
-    # TODO(mmeade): Replace --build-dir and --target with a new path
-    # flags and plumb it through.
-    parser = argparse.ArgumentParser(
-        description=doc, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('-q',
-                        '--quiet',
-                        action='store_true',
-                        default=False,
-                        help='Reduce test runner output')
-    parser.add_argument('-v',
-                        '--verbose',
-                        action='store_true',
-                        default=False,
-                        help='Increase test runner output')
-    parser.add_argument('--build-dir',
-                        default='',
-                        help='Path to main build directory (the parent of the '
-                        'Release or Debug directory)')
-    parser.add_argument('--target',
-                        default='',
-                        help='Build target (Release or Debug)')
-    parser.add_argument('--force-clean',
-                        action='store_true',
-                        default=False,
-                        help='Force cleaning existing installations')
-    parser.add_argument('--write-full-results-to',
-                        metavar='FILENAME',
-                        help='Path to write the list of full results to.')
-    parser.add_argument(
-        '--output-dir',
-        metavar='DIR',
-        help='Directory into which crash dumps and other output '
-        ' files are to be written')
-    # Here to satisfy the isolated script test interface. See
-    # //testing/scripts/run_isolated_script_test.py
-    parser.add_argument('--test-list',
-                        metavar='FILENAME',
-                        help='File path containing the list of tests to run.')
-    parser.add_argument('test', nargs='*', help='Name(s) of tests to run.')
-
-    # The following flags will replace the build-dir, target, and filename arg.
-    parser.add_argument('--installer-path',
-                        default='mini_installer.exe',
-                        metavar='FILENAME',
-                        help='The path of the installer.')
-    parser.add_argument('--previous-version-installer-path',
-                        default='previous_version_mini_installer.exe',
-                        metavar='FILENAME',
-                        help='The path of the previous version installer.')
-    parser.add_argument('--chromedriver-path',
-                        default='chromedriver.exe',
-                        help='The path to chromedriver.')
-    parser.add_argument('--config',
-                        default='config.config',
-                        metavar='FILENAME',
-                        help='Path to test configuration file')
-    return parser
+_force_clean = not RUNNING_LOCALLY
 
 
 class Config(object):
@@ -114,35 +49,33 @@ class Config(object):
         actions: A dictionary where each key is an action name and the
             associated value is the action's command.
         tests: An array of test cases.
+        traversals: Maps test names to their traversals.
     """
 
     def __init__(self):
         self.states = {}
         self.actions = {}
         self.tests = []
+        self.traversals = {}
 
 
 class InstallerTest(unittest.TestCase):
     """Tests a test case in the config file."""
 
-    def __init__(self, name, test, config, variable_expander, output_dir):
+    _config = None
+    _output_dir = None
+    _variable_expander = None
+
+    def __init__(self, method_name):
         """Constructor.
 
         Args:
-            name: The name of this test.
-            test: An array of alternating state names and action names, starting
-                and ending with state names.
-            config: The Config object.
-            variable_expander: A VariableExpander object.
-            output_dir: An optional directory into which diagnostics may be
-                written in case of failure.
+            method_name: The name of this test.
         """
-        super(InstallerTest, self).__init__()
-        self._name = name
-        self._test = test
-        self._config = config
-        self._variable_expander = variable_expander
-        self._output_dir = output_dir
+        assert InstallerTest._config, 'module _initialize() not yet called'
+        super(InstallerTest, self).__init__(method_name)
+        self._name = method_name[5:]
+        self._test = InstallerTest._config.traversals[self._name]
         self._clean_on_teardown = True
         self._log_path = None
 
@@ -156,23 +89,15 @@ class InstallerTest(unittest.TestCase):
         """
         return '%s: %s\n' % (self._name, ' -> '.join(self._test))
 
-    def id(self):
-        """Returns the name of the test."""
-        # Overridden from unittest.TestCase so that id() contains the name of
-        # the test case from the config file in place of the name of this
-        # class's test function.
-        return unittest.TestCase.id(self).replace(self._testMethodName,
-                                                  self._name)
-
     def setUp(self):
         # Create a temp file to contain the installer log(s) for this test.
         log_file, self._log_path = tempfile.mkstemp()
         os.close(log_file)
         self.addCleanup(os.remove, self._log_path)
-        self._variable_expander.SetLogFile(self._log_path)
-        self.addCleanup(self._variable_expander.SetLogFile, None)
+        InstallerTest._variable_expander.SetLogFile(self._log_path)
+        self.addCleanup(InstallerTest._variable_expander.SetLogFile, None)
 
-    def runTest(self):
+    def run_test(self):
         """Run the test case."""
         # |test| is an array of alternating state names and action names,
         # starting and ending with state names. Therefore, its length must be
@@ -188,7 +113,8 @@ class InstallerTest(unittest.TestCase):
         for i in range(1, len(self._test), 2):
             action = self._test[i]
             LOGGER.info('Beginning action %s' % action)
-            RunCommand(self._config.actions[action], self._variable_expander)
+            RunCommand(InstallerTest._config.actions[action],
+                       InstallerTest._variable_expander)
             LOGGER.info('Finished action %s' % action)
 
             state = self._test[i + 1]
@@ -204,11 +130,12 @@ class InstallerTest(unittest.TestCase):
             # The last state in the test's traversal is its "clean" state, so
             # use it to drive the cleanup operation.
             clean_state_name = self._test[len(self._test) - 1]
-            RunCleanCommand(True, self._config.states[clean_state_name],
-                            self._variable_expander)
+            RunCleanCommand(True,
+                            InstallerTest._config.states[clean_state_name],
+                            InstallerTest._variable_expander)
             # Either copy the log to isolated outdir or dump it to console.
-            if self._output_dir:
-                target = os.path.join(self._output_dir,
+            if InstallerTest._output_dir:
+                target = os.path.join(InstallerTest._output_dir,
                                       os.path.basename(self._log_path))
                 shutil.copyfile(self._log_path, target)
                 LOGGER.error('Saved installer log to %s', target)
@@ -234,8 +161,8 @@ class InstallerTest(unittest.TestCase):
         """
         LOGGER.info('Verifying state %s' % state)
         try:
-            property_walker.Verify(self._config.states[state],
-                                   self._variable_expander)
+            property_walker.Verify(InstallerTest._config.states[state],
+                                   InstallerTest._variable_expander)
         except AssertionError as e:
             # If an AssertionError occurs, we intercept it and add the state
             # name to the error message so that we know where the test fails.
@@ -318,6 +245,8 @@ def RunCleanCommand(force_clean, clean_state, variable_expander):
             message = traceback.format_exception(*sys.exc_info())
             message.insert(0, 'Error cleaning up an old install with:\n')
             LOGGER.info(''.join(message))
+            if not force_clean:
+                raise
 
     # Once everything is uninstalled, make a pass to delete any stray tidbits on
     # the machine.
@@ -331,7 +260,7 @@ def MergePropertyDictionaries(current_property, new_property):
     This is different from general dictionary merging in that, in case there are
     keys with the same name, we merge values together in the first level, and we
     override earlier values in the second level. For more details, take a look
-    at http://goo.gl/uE0RoR
+    at http://goo.gl/uE0RoR.
 
     Args:
         current_property: The property dictionary to be modified.
@@ -419,6 +348,8 @@ def ParseConfigFile(filename, variable_expander):
             directory, state_property_filenames, variable_expander)
     for action_name, action_command in config_data['actions']:
         config.actions[action_name] = action_command
+    for test in config.tests:
+        config.traversals[test['name']] = test['traversal']
     return config
 
 
@@ -474,7 +405,7 @@ def ConfigureTempOnDrive(drive):
                                 tmp_created)
 
 
-def GetAbsoluteExecutablePath(build_dir, target, path):
+def GetAbsoluteExecutablePath(path):
     """Gets the absolute path to the an executable.
 
     The path can either be an absolute or relative path, as well as the
@@ -483,26 +414,19 @@ def GetAbsoluteExecutablePath(build_dir, target, path):
 
     This method searches for the binary in common locations:
     - path location (when specifying a non-standard location)
-    - build_dir\target\path (explicitly passed via build_dir and target flags,
-        path here is the filename)
     - out\Release\path (local default path, path here is the filename)
     - out\Default\path (alternate local default path)
     - out\Release_x64\path (on waterfall)
 
-    Note: If build_dir and target are empty (default) just the path is used.
-    This allows the user to pass in paths without having to worry about
-    conflicts with the build_dir and target args.
 
     Args:
-        build_dir: The build directory (e.g. out)
-        target: The target directory (e.g. Release)
         path: The path to the file. This can be an absolute or relative path.
 
     Returns:
         Absolute path to installer.
     """
     possible_paths = [
-        os.path.abspath(os.path.join(build_dir, target, path)),
+        os.path.abspath(os.path.join(path)),
         os.path.abspath(os.path.join('out', 'Release', path)),
         os.path.abspath(os.path.join('out', 'Release_x64', path)),
         os.path.abspath(os.path.join('out', 'Default', path)),
@@ -514,35 +438,68 @@ def GetAbsoluteExecutablePath(build_dir, target, path):
 
 
 def GetAbsoluteConfigPath(path):
-    """Gets the absolute path to the config file.
+    """Returns the absolute path to the config file.
 
     Args:
         path: The path to the file.
 
     Returns:
-        Absolute path to config.
+        Absolute path to the config file.
     """
-    if os.path.exists(path):
-        pass
-    else:
-        path = os.path.join(THIS_DIR, 'config', path)
-
-    assert os.path.exists(path), 'Config can\'t be found: %s' % path
+    if not os.path.exists(path):
+        path = os.path.join(CUR_DIR, 'config', path)
+    assert os.path.exists(path), 'Config not found at %s' % path
     LOGGER.info('Config found at %s', path)
     return os.path.abspath(path)
 
 
-def DoMain():
-    parser = GetArgumentParser()
-    args = parser.parse_args()
+# Until we're using Python 3.8 or newer, we must use tearDownModule to restore
+# the tmp dir. It would be cleaner to remove _temp_dir_manager and instead do
+# something along the lines of this after __enter__():
+# unittest.addModuleCleanup(_temp_dir_manager.__exit__, None, None, None)
+_temp_dir_manager = None
 
-    tests_to_run = args.test
-    if args.test_list:
-        if tests_to_run:
-            parser.error('cannot specify both --test-list and |test|')
 
-        with open(args.test_list) as f:
-            tests_to_run = [test.strip() for test in f.readlines()]
+def setUpModule():
+    # Make sure that TMP and Chrome's installation directory are on the same
+    # drive to work around https://crbug.com/700809. (CSIDL_PROGRAM_FILESX86 is
+    # valid for both 32 and 64-bit apps running on 32 or 64-bit Windows.)
+    drive = os.path.splitdrive(
+        shell.SHGetFolderPath(0, shellcon.CSIDL_PROGRAM_FILESX86, None, 0))[0]
+    global _temp_dir_manager
+    _temp_dir_manager = ConfigureTempOnDrive(drive)
+    _temp_dir_manager.__enter__()
+    # Switch to this once we're using Python 3.8 or newer:
+    # unittest.addModuleCleanup(_temp_dir_manager.__exit__, None, None, None)
+
+    # The last state in any test's traversal is the "clean" state, so use it to
+    # drive the initial cleanup operation.
+    a_test = InstallerTest._config.tests[0]['traversal']
+    clean_state_name = a_test[len(a_test) - 1]
+    clean_state = InstallerTest._config.states[clean_state_name]
+    try:
+        RunCleanCommand(_force_clean, clean_state,
+                        InstallerTest._variable_expander)
+    except:
+        _temp_dir_manager.__exit__(None, None, None)
+        _temp_dir_manager = None
+        raise
+
+
+def tearDownModule():
+    global _temp_dir_manager
+    if _temp_dir_manager:
+        _temp_dir_manager.__exit__(None, None, None)
+        _temp_dir_manager = None
+
+
+def _initialize():
+    """Initializes the InstallerTest class.
+
+    This entails setting the class attributes and adding the configured test
+    methods to the class.
+    """
+    args = ArgumentParser().parse_args()
 
     log_level = (logging.ERROR if args.quiet else
                  logging.DEBUG if args.verbose else logging.INFO)
@@ -554,132 +511,33 @@ def DoMain():
             datefmt='%m%d/%H%M%S'))
     LOGGER.addHandler(handler)
 
-    # TODO(mmeade): Fully switch to paths
-    # Use absolute paths.
-    installer_path = GetAbsoluteExecutablePath(args.build_dir, args.target,
-                                               args.installer_path)
+    # Pull args from the parent proc out of the environment block.
+    if os.environ.get('CMI_FORCE_CLEAN', False):
+        global _force_clean
+        _force_clean = True
+    InstallerTest._output_dir = os.environ.get('CMI_OUTPUT_DIR')
+    installer_path = GetAbsoluteExecutablePath(
+        os.environ.get('CMI_INSTALLER_PATH', 'mini_installer.exe'))
     previous_version_installer_path = GetAbsoluteExecutablePath(
-        args.build_dir, args.target, args.previous_version_installer_path)
-    chromedriver_path = GetAbsoluteExecutablePath(args.build_dir, args.target,
-                                                  args.chromedriver_path)
-    config_path = GetAbsoluteConfigPath(args.config)
+        os.environ.get('CMI_PREVIOUS_VERSION_INSTALLER_PATH',
+                       'previous_version_mini_installer.exe'))
+    chromedriver_path = GetAbsoluteExecutablePath(
+        os.environ.get('CMI_CHROMEDRIVER_PATH', 'chromedriver.exe'))
+    config_path = GetAbsoluteConfigPath(
+        os.environ.get('CMI_CONFIG', 'config.config'))
 
-    # Set --force-clean when not running locally
-    if not RUNNING_LOCALLY:
-        LOGGER.info('Setting --force-clean')
-        args.force_clean = True
+    InstallerTest._variable_expander = VariableExpander(
+        installer_path, previous_version_installer_path, chromedriver_path,
+        args.quiet, InstallerTest._output_dir)
+    InstallerTest._config = ParseConfigFile(config_path,
+                                            InstallerTest._variable_expander)
 
-    suite = unittest.TestSuite()
-
-    variable_expander = VariableExpander(installer_path,
-                                         previous_version_installer_path,
-                                         chromedriver_path, args.quiet,
-                                         args.output_dir)
-    config = ParseConfigFile(config_path, variable_expander)
-
-    # The last state in any test's traversal is the "clean" state, so use it to
-    # drive the initial cleanup operation.
-    a_test = config.tests[0]['traversal']
-    clean_state_name = a_test[len(a_test) - 1]
-    RunCleanCommand(args.force_clean, config.states[clean_state_name],
-                    variable_expander)
-
-    for test in config.tests:
-        # If tests were specified via |tests|, their names are formatted like
-        # so:
-        test_name = '%s.%s.%s' % (InstallerTest.__module__,
-                                  InstallerTest.__name__, test['name'])
-        if not tests_to_run or test_name in tests_to_run:
-            suite.addTest(
-                InstallerTest(test['name'], test['traversal'], config,
-                              variable_expander, args.output_dir))
-
-    verbosity = 2 if not args.quiet else 1
-    result = unittest.TextTestRunner(verbosity=verbosity).run(suite)
-    if args.write_full_results_to:
-        with open(args.write_full_results_to, 'w') as fp:
-            json.dump(_FullResults(suite, result, {}), fp, indent=2)
-            fp.write('\n')
-    return 0 if result.wasSuccessful() else 1
+    # Add a test_Foo function to the InstallerTest class for each test in
+    # the config file.
+    run_test_fn = getattr(InstallerTest, 'run_test')
+    for test in InstallerTest._config.tests:
+        setattr(InstallerTest, 'test_' + test['name'], run_test_fn)
 
 
-def main():
-    # Make sure that TMP and Chrome's installation directory are on the same
-    # drive to work around https://crbug.com/700809. (CSIDL_PROGRAM_FILESX86 is
-    # valid for both 32 and 64-bit apps running on 32 or 64-bit Windows.)
-    drive = os.path.splitdrive(
-        shell.SHGetFolderPath(0, shellcon.CSIDL_PROGRAM_FILESX86, None, 0))[0]
-    with ConfigureTempOnDrive(drive):
-        return DoMain()
-
-
-# TODO(dpranke): Find a way for this to be shared with the mojo and other tests.
-TEST_SEPARATOR = '.'
-
-
-def _FullResults(suite, result, metadata):
-    """Convert the unittest results to the Chromium JSON test result format.
-
-    This matches run_web_tests.py (the layout tests) and the flakiness
-    dashboard.
-    """
-
-    full_results = {}
-    full_results['interrupted'] = False
-    full_results['path_delimiter'] = TEST_SEPARATOR
-    full_results['version'] = 3
-    full_results['seconds_since_epoch'] = time.time()
-    for md in metadata:
-        key, val = md.split('=', 1)
-        full_results[key] = val
-
-    all_test_names = _AllTestNames(suite)
-    failed_test_names = _FailedTestNames(result)
-
-    full_results['num_failures_by_type'] = {
-        'FAIL': len(failed_test_names),
-        'PASS': len(all_test_names) - len(failed_test_names),
-    }
-
-    full_results['tests'] = {}
-
-    for test_name in all_test_names:
-        value = {}
-        value['expected'] = 'PASS'
-        if test_name in failed_test_names:
-            value['actual'] = 'FAIL'
-            value['is_unexpected'] = True
-        else:
-            value['actual'] = 'PASS'
-        _AddPathToTrie(full_results['tests'], test_name, value)
-
-    return full_results
-
-
-def _AllTestNames(suite):
-    test_names = []
-    # _tests is protected  pylint: disable=W0212
-    for test in suite._tests:
-        if isinstance(test, unittest.suite.TestSuite):
-            test_names.extend(_AllTestNames(test))
-        else:
-            test_names.append(test.id())
-    return test_names
-
-
-def _FailedTestNames(result):
-    return set(test.id() for test, _ in result.failures + result.errors)
-
-
-def _AddPathToTrie(trie, path, value):
-    if TEST_SEPARATOR not in path:
-        trie[path] = value
-        return
-    directory, rest = path.split(TEST_SEPARATOR, 1)
-    if directory not in trie:
-        trie[directory] = {}
-    _AddPathToTrie(trie[directory], rest, value)
-
-
-if __name__ == '__main__':
-    sys.exit(main())
+_initialize()
+del _initialize

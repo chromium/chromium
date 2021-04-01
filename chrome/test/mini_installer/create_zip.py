@@ -47,6 +47,8 @@ THIS_DIR = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 SRC_DIR = os.path.join(THIS_DIR, '..', '..', '..')
 SELENIUM_PATH = os.path.abspath(
     os.path.join(SRC_DIR, r'third_party', 'webdriver', 'pylib'))
+TYP_PATH = os.path.abspath(
+    os.path.join(SRC_DIR, r'third_party', 'catapult', 'third_party', 'typ'))
 BLACKLIST = ['', '.pyc', '.gn', '.gni', '.txt', '.bat']
 
 
@@ -138,9 +140,11 @@ def main():
         zipf.write(os.path.join(THIS_DIR, 'ZIP_README.txt'),
                    os.path.split('README.txt')[-1])
 
-        # Archive this and the chromedriver code directories
+        # Archive this, chromedriver, and typ.
         logging.debug('Zipping chrome/test/mini_installer')
         ArchiveDirectory(THIS_DIR, zipf)
+        logging.debug('Zipping third_party/catapult/third_party/typ')
+        ArchiveDirectory(TYP_PATH, zipf)
         logging.debug('Zipping third_party/webdriver/pylib')
         ArchiveDirectory(SELENIUM_PATH, zipf)
     logging.debug('Wrote zip to %s', args.output_path)
