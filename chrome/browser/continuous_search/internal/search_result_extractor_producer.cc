@@ -122,7 +122,7 @@ void SearchResultExtractorProducer::OnResultsCallback(
   labels.reserve(results->groups.size());
   group_sizes.reserve(results->groups.size());
 
-  std::vector<std::string> titles;
+  std::vector<std::u16string> titles;
   std::vector<base::android::ScopedJavaLocalRef<jobject>> urls;
   titles.reserve(result_count);
   urls.reserve(result_count);

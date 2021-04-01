@@ -4,6 +4,7 @@
 
 module continuous_search.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 // This module contains data structures and an interface to extract search
@@ -15,7 +16,7 @@ struct SearchResult {
   url.mojom.Url link;
 
   // Title of the result.
-  string title;
+  mojo_base.mojom.String16 title;
 };
 
 // A logically related group of search results with a label. E.g. ads, organic,

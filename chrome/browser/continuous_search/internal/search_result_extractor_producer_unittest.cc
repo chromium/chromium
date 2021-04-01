@@ -41,7 +41,7 @@ mojom::CategoryResultsPtr GenerateValidResults(const GURL& document_url) {
     {
       mojom::SearchResultPtr result = mojom::SearchResult::New();
       result->link = GURL("https://www.bar.com/");
-      result->title = "Bar";
+      result->title = u"Bar";
       result_group->results.push_back(std::move(result));
     }
     expected_results->groups.push_back(std::move(result_group));

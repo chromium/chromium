@@ -80,8 +80,7 @@ void SearchResultExtractorClient::RequestDataCallbackAdapter(
   // Validate all the returned titles (URL already needs to be valid for mojom).
   for (mojom::ResultGroupPtr& group : results->groups) {
     for (mojom::SearchResultPtr& result : group->results) {
-      result->title =
-          base::UTF16ToUTF8(ValidateTitle(base::UTF8ToUTF16(result->title)));
+      result->title = ValidateTitle(result->title);
     }
   }
 

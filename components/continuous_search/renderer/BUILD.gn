@@ -10,6 +10,7 @@ source_set("renderer") {
 
   deps = [
     "//base",
+    "//components/continuous_search/common",
     "//components/continuous_search/common/public/mojom",
     "//content/public/renderer",
     "//mojo/public/cpp/base",
