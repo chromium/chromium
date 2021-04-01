@@ -2398,7 +2398,7 @@
     'chromeos_login': ['alemate+watch@chromium.org',
                        'rsorokin+watch@chromium.org',
                        'tbarzic+watch@chromium.org'],
-    'chromeos_media_app': ['cros-essential-apps-dev+watch@chromium.org'],
+    'chromeos_media_app': ['cros-essential-apps-dev-watch@chromium.org'],
     'chromeos_net': ['azeemarshad+watch-network@chromium.org',
                      'benchan+watch-network@chromium.org',
                      'ejcaruso+watch-network@chromium.org',
