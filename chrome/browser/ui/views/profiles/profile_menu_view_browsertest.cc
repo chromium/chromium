@@ -580,10 +580,17 @@ constexpr ProfileMenuViewBase::ActionableItem
         // there are no other buttons at the end.
         ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
-// This test is disabled due to being flaky. See https://crbug.com/1025493.
+// Flaky (crbug.com/1025493).
+#if defined(OS_LINUX)
+#define MAYBE_ProfileMenuClickTest_SingleProfileWithCustomName \
+  DISABLED_ProfileMenuClickTest_SingleProfileWithCustomName
+#else
+#define MAYBE_ProfileMenuClickTest_SingleProfileWithCustomName \
+  ProfileMenuClickTest_SingleProfileWithCustomName
+#endif
 PROFILE_MENU_CLICK_TEST(
     kActionableItems_SingleProfileWithCustomName,
-    DISABLED_ProfileMenuClickTest_SingleProfileWithCustomName) {
+    MAYBE_ProfileMenuClickTest_SingleProfileWithCustomName) {
   profiles::UpdateProfileName(browser()->profile(), u"Custom name");
   RunTest();
 }
@@ -635,15 +642,8 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncEnabled[] = {
     // there are no other buttons at the end.
     ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
-#if defined(OS_WIN)
-// TODO(crbug.com/1068103): Flaky on Windows
-#define MAYBE_ProfileMenuClickTest_SyncEnabled \
-  DISABLED_ProfileMenuClickTest_SyncEnabled
-#else
-#define MAYBE_ProfileMenuClickTest_SyncEnabled ProfileMenuClickTest_SyncEnabled
-#endif
 PROFILE_MENU_CLICK_TEST(kActionableItems_SyncEnabled,
-                        MAYBE_ProfileMenuClickTest_SyncEnabled) {
+                        ProfileMenuClickTest_SyncEnabled) {
   ASSERT_TRUE(sync_harness()->SetupSync());
   // Check that the sync setup was successful.
   ASSERT_TRUE(
@@ -669,15 +669,8 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncError[] = {
     // there are no other buttons at the end.
     ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
-#if defined(OS_WIN)
-// TODO(crbug.com/1021930): Failure on Windows
-#define MAYBE_ProfileMenuClickTest_SyncError \
-  DISABLED_ProfileMenuClickTest_SyncError
-#else
-#define MAYBE_ProfileMenuClickTest_SyncError ProfileMenuClickTest_SyncError
-#endif
 PROFILE_MENU_CLICK_TEST(kActionableItems_SyncError,
-                        MAYBE_ProfileMenuClickTest_SyncError) {
+                        ProfileMenuClickTest_SyncError) {
   ASSERT_TRUE(sync_harness()->SignInPrimaryAccount());
   // Check that the setup was successful.
   ASSERT_TRUE(
@@ -702,15 +695,8 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncPaused[] = {
     // there are no other buttons at the end.
     ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
-// TODO(https://crbug.com/1079012): Test is flaky on Windows.
-#if defined(OS_WIN)
-#define MAYBE_ProfileMenuClickTest_SyncPaused \
-  DISABLED_ProfileMenuClickTest_SyncPaused
-#else
-#define MAYBE_ProfileMenuClickTest_SyncPaused ProfileMenuClickTest_SyncPaused
-#endif
 PROFILE_MENU_CLICK_TEST(kActionableItems_SyncPaused,
-                        MAYBE_ProfileMenuClickTest_SyncPaused) {
+                        ProfileMenuClickTest_SyncPaused) {
   ASSERT_TRUE(sync_harness()->SetupSync());
   sync_harness()->EnterSyncPausedStateForPrimaryAccount();
   // Check that the setup was successful.
@@ -726,6 +712,7 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SyncPaused,
 // If a new button is added to the menu, it should also be added to this list.
 constexpr ProfileMenuViewBase::ActionableItem
     kActionableItems_SigninDisallowed[] = {
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
         ProfileMenuViewBase::ActionableItem::kPasswordsButton,
         ProfileMenuViewBase::ActionableItem::kCreditCardsButton,
         ProfileMenuViewBase::ActionableItem::kAddressesButton,
@@ -734,11 +721,10 @@ constexpr ProfileMenuViewBase::ActionableItem
         ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
         // The first button is added again to finish the cycle and test that
         // there are no other buttons at the end.
-        ProfileMenuViewBase::ActionableItem::kPasswordsButton};
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
-// This test is disabled due to being flaky. See https://crbug.com/1049014.
 PROFILE_MENU_CLICK_TEST(kActionableItems_SigninDisallowed,
-                        DISABLED_ProfileMenuClickTest_SigninDisallowed) {
+                        ProfileMenuClickTest_SigninDisallowed) {
   // Check that the setup was successful.
   ASSERT_FALSE(
       browser()->profile()->GetPrefs()->GetBoolean(prefs::kSigninAllowed));
@@ -746,9 +732,8 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_SigninDisallowed,
   RunTest();
 }
 
-// Setup for the above test.
-IN_PROC_BROWSER_TEST_P(DISABLED_ProfileMenuClickTest_SigninDisallowed,
-                       DISABLED_PRE_ProfileMenuClickTest_SigninDisallowed) {
+IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninDisallowed,
+                       PRE_ProfileMenuClickTest_SigninDisallowed) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSigninAllowedOnNextStartup, false);
 }
@@ -771,8 +756,8 @@ constexpr ProfileMenuViewBase::ActionableItem
         // there are no other buttons at the end.
         ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
-// TODO(https://crbug.com/1021930) flakey on Linux and Windows.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+// Flaky (crbug.com/1021930).
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_ProfileMenuClickTest_WithUnconsentedPrimaryAccount \
   DISABLED_ProfileMenuClickTest_WithUnconsentedPrimaryAccount
 #else

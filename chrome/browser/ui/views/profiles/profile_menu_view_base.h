@@ -52,6 +52,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kExitProfileButton = 7,
     kSyncErrorButton = 8,
     // DEPRECATED: kCurrentProfileCard = 9,
+    // Note: kSigninButton and kSigninAccountButton should probably be renamed
+    // to kSigninAndEnableSyncButton and kEnableSyncForSignedInAccountButton.
     kSigninButton = 10,
     kSigninAccountButton = 11,
     kSignoutButton = 12,
