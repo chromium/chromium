@@ -45,6 +45,7 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
       'getPayloadPreview',
       'selectShareTarget',
       'startDiscovery',
+      'stopDiscovery',
       'addDiscoveryObserver',
     ]);
 
@@ -89,6 +90,10 @@ export class FakeDiscoveryManagerRemote extends TestBrowserProxy {
   async startDiscovery(listener) {
     this.methodCalled('startDiscovery', listener);
     return {result: this.startDiscoveryResult};
+  }
+
+  async stopDiscovery() {
+    this.methodCalled('stopDiscovery');
   }
 
   /**

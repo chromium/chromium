@@ -50,6 +50,7 @@ class NearbyPerSessionDiscoveryManager
   void StartDiscovery(
       mojo::PendingRemote<nearby_share::mojom::ShareTargetListener> listener,
       StartDiscoveryCallback callback) override;
+  void StopDiscovery(base::OnceClosure callback) override;
   void SelectShareTarget(const base::UnguessableToken& share_target_id,
                          SelectShareTargetCallback callback) override;
   void GetPayloadPreview(GetPayloadPreviewCallback callback) override;
@@ -74,9 +75,6 @@ class NearbyPerSessionDiscoveryManager
     kStartedSend = 6,
     kMaxValue = kStartedSend
   };
-
-  // Unregisters this class from the NearbySharingService.
-  void UnregisterSendSurface();
 
   // Used for metrics. Changes |furthest_progress_| to |progress| if |progress|
   // is further along in the discovery flow than |furthest_progress_|.

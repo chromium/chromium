@@ -102,7 +102,7 @@ NearbyPerSessionDiscoveryManager::NearbyPerSessionDiscoveryManager(
 }
 
 NearbyPerSessionDiscoveryManager::~NearbyPerSessionDiscoveryManager() {
-  UnregisterSendSurface();
+  StopDiscovery(base::DoNothing());
   observers_set_.Clear();
   nearby_sharing_service_->RemoveObserver(this);
   base::UmaHistogramEnumeration(
@@ -257,6 +257,23 @@ void NearbyPerSessionDiscoveryManager::StartDiscovery(
   std::move(callback).Run(nearby_share::mojom::StartDiscoveryResult::kSuccess);
 }
 
+void NearbyPerSessionDiscoveryManager::StopDiscovery(
+    base::OnceClosure callback) {
+  if (registered_as_send_surface_) {
+    NearbySharingService::StatusCodes status =
+        nearby_sharing_service_->UnregisterSendSurface(this, this);
+    base::UmaHistogramEnumeration(
+        "Nearby.Share.Discovery.UnregisterSendSurface", status);
+    if (status != NearbySharingService::StatusCodes::kOk) {
+      NS_LOG(WARNING) << __func__ << ": Failed to unregister send surface";
+    }
+    registered_as_send_surface_ = false;
+  }
+
+  share_target_listener_.reset();
+  std::move(callback).Run();
+}
+
 void NearbyPerSessionDiscoveryManager::SelectShareTarget(
     const base::UnguessableToken& share_target_id,
     SelectShareTargetCallback callback) {
@@ -344,21 +361,6 @@ void NearbyPerSessionDiscoveryManager::GetPayloadPreview(
   }
 
   std::move(callback).Run(std::move(payload_preview));
-}
-
-void NearbyPerSessionDiscoveryManager::UnregisterSendSurface() {
-  if (registered_as_send_surface_) {
-    NearbySharingService::StatusCodes status =
-        nearby_sharing_service_->UnregisterSendSurface(this, this);
-    base::UmaHistogramEnumeration(
-        "Nearby.Share.Discovery.UnregisterSendSurface", status);
-    if (status != NearbySharingService::StatusCodes::kOk) {
-      NS_LOG(WARNING) << __func__ << ": Failed to unregister send surface";
-    }
-    registered_as_send_surface_ = false;
-  }
-
-  share_target_listener_.reset();
 }
 
 void NearbyPerSessionDiscoveryManager::OnNearbyProcessStopped() {

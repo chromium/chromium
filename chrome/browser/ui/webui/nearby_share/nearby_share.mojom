@@ -189,8 +189,13 @@ interface DiscoveryManager {
   // Starts discovering nearby devices. The passed |listener| will be called
   // with any discovered devices. Returns before discovery has actually
   // started; see |DiscoveryObserver.OnStartDiscoveryResult()|.
+  // Ensure StopDiscovery is called before invoking StartDiscovery again.
   StartDiscovery(pending_remote<ShareTargetListener> listener)
       => (StartDiscoveryResult result);
+
+  // Stops the current discovery session. Call StartDiscovery to start
+  // the session again.
+  StopDiscovery() => ();
 
   // Select a previously discovered |share_target_id| to send data to. On
   // success this will return valid ConfirmationManager and

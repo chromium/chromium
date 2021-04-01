@@ -23,6 +23,8 @@ import './strings.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {getDiscoveryManager} from './discovery_manager.js';
+
 /** @implements {nearbyShare.mojom.TransferUpdateListenerInterface} */
 class TransferUpdateListener {
   /**
@@ -204,7 +206,7 @@ Polymer({
         break;
       case nearbyShare.mojom.TransferStatus.kInProgress:
       case nearbyShare.mojom.TransferStatus.kComplete:
-        this.fire('close');
+        getDiscoveryManager().stopDiscovery().then(() => this.fire('close'));
         break;
       case nearbyShare.mojom.TransferStatus.kRejected:
         this.errorTitle_ = this.i18n('nearbyShareErrorCantShare');
