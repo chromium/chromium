@@ -4,8 +4,10 @@
 
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/files/file_util.h"
 #include "base/numerics/checked_math.h"
 #include "base/system/sys_info.h"
@@ -29,7 +31,11 @@ bool IsMemoryAvailable(int64_t required_memory) {
   // This function is not implemented on FUCHSIA, yet. (crbug.com/986608)
   return true;
 #else
-  return base::SysInfo::AmountOfAvailablePhysicalMemory() >= required_memory;
+  int64_t max_allocatable =
+      std::min(base::SysInfo::AmountOfAvailablePhysicalMemory(),
+               static_cast<int64_t>(base::MaxDirectMapped()));
+
+  return max_allocatable >= required_memory;
 #endif
 }
 
