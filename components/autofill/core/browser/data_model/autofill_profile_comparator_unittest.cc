@@ -36,6 +36,7 @@ using autofill::COMPANY_NAME;
 using autofill::EMAIL_ADDRESS;
 using autofill::NAME_FIRST;
 using autofill::NAME_FULL;
+using autofill::NAME_HONORIFIC_PREFIX;
 using autofill::NAME_LAST;
 using autofill::NAME_MIDDLE;
 using autofill::PHONE_HOME_CITY_AND_NUMBER;
@@ -1380,6 +1381,167 @@ TEST_P(AutofillProfileComparatorTest, CheckStatesMergeability) {
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(p3, p1));
   EXPECT_TRUE(comparator_.HaveMergeableAddresses(p1, p4));
   EXPECT_FALSE(comparator_.HaveMergeableAddresses(p2, p4));
+}
+
+// Tests if determining if two profiles have at least one different settings
+// visible value works.
+TEST_P(AutofillProfileComparatorTest,
+       ProfilesHaveDifferentSettingsVisibleValues) {
+  AutofillProfile existing_profile(base::GenerateGUID(),
+                                   "http://www.example.com/");
+  autofill::test::SetProfileInfo(
+      &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
+      "company", "line1", "line2", "city", "state", "zip", "US", "phone");
+
+  // A profile compared with itself cannot have different settings visible
+  // values.
+  EXPECT_FALSE(
+      AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
+          existing_profile, existing_profile));
+
+  // Test for most settings visible types that a change is correctly recognized.
+  for (ServerFieldType changed_type :
+       {NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
+        ADDRESS_HOME_ZIP, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER}) {
+    // Make a fresh copy and test that the function returns false.
+    AutofillProfile new_profile = existing_profile;
+    EXPECT_FALSE(
+        AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
+            existing_profile, new_profile));
+
+    // Change one of the settings visible values and test that the function
+    // returns true.
+    SCOPED_TRACE(changed_type);
+    new_profile.SetRawInfo(
+        changed_type, existing_profile.GetRawInfo(changed_type) + u"_edited");
+    EXPECT_TRUE(
+        AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
+            existing_profile, new_profile));
+  }
+
+  // The rest of the test is only applicable for structured names.
+  if (!StructuredNames())
+    return;
+
+  AutofillProfile new_profile = existing_profile;
+  // Now change the first name which is not visible in the settings to upper
+  // case. Note, the value was converted to upper case to maintain the name
+  // structure in a correct state.
+  new_profile.SetRawInfo(
+      NAME_FIRST, base::ToUpperASCII(existing_profile.GetRawInfo(NAME_FIRST)));
+  EXPECT_FALSE(
+      AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
+          existing_profile, new_profile));
+}
+
+TEST_P(AutofillProfileComparatorTest, IsMergeCandidate) {
+  AutofillProfile existing_profile(base::GenerateGUID(),
+                                   "http://www.example.com/");
+  autofill::test::SetProfileInfo(
+      &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
+      "company", "line1", "line2", "the city", "state", "zip", "US", "phone");
+
+  // Explicitly set the full name if the structured name feature is not enabled.
+  if (!StructuredNames()) {
+    existing_profile.SetRawInfo(NAME_FULL, u"fistName middleName lastName");
+  }
+
+  AutofillProfileComparator comparator("en_US");
+
+  // A profile is not a merge candidate to itself.
+  EXPECT_FALSE(
+      comparator.IsMergeCandidate(existing_profile, existing_profile, "en_US"));
+
+  // A profile that is mergeable but only by changing a value is a merge
+  // candidate.
+  AutofillProfile mergeable_profile = existing_profile;
+  // This is a superset of the existing city name and should result in a merge
+  // and change of the stored value.
+  mergeable_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_CITY, u"the real City",
+      autofill::structured_address::VerificationStatus::kObserved);
+  EXPECT_TRUE(comparator.IsMergeCandidate(existing_profile, mergeable_profile,
+                                          "en_US"));
+
+  // A profile that is mergeable but without changing a value is not a merge
+  // candidate.
+  AutofillProfile updateable_profile = existing_profile;
+  // This is a subset of the existing city name and should result in a merge but
+  // without changing the stored value.
+  mergeable_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_CITY, u"City",
+      autofill::structured_address::VerificationStatus::kObserved);
+  EXPECT_FALSE(comparator.IsMergeCandidate(existing_profile, updateable_profile,
+                                           "en_US"));
+
+  // A profile that is not mergeable is not a merge candidate.
+  AutofillProfile unmergeable_profile = existing_profile;
+  // This is a different city name and therefore should not result in a merge.
+  mergeable_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_CITY, u"Village",
+      autofill::structured_address::VerificationStatus::kObserved);
+  EXPECT_FALSE(comparator.IsMergeCandidate(existing_profile,
+                                           unmergeable_profile, "en_US"));
+}
+
+// Test the correct determination of a merge candidate.
+TEST_P(AutofillProfileComparatorTest, GetMergeCandidate) {
+  AutofillProfile existing_profile(base::GenerateGUID(),
+                                   "http://www.example.com/");
+  autofill::test::SetProfileInfo(
+      &existing_profile, "firstName", "middleName", "lastName", "mail@mail.com",
+      "company", "line1", "line2", "city", "state", "zip", "US", "phone");
+
+  // Explicitly set the full name if the structured name feature is not enabled.
+  if (!StructuredNames()) {
+    existing_profile.SetRawInfo(NAME_FULL, u"fistName middleName lastName");
+  }
+
+  // A profile should never be a merge candidate to itself because all values
+  // are the same.
+  EXPECT_EQ(AutofillProfileComparator::GetAutofillProfileMergeCandidate(
+                existing_profile, {&existing_profile}, "en_US"),
+            base::nullopt);
+
+  // Create a new profile that is not mergeable because it has a completely
+  // different name.
+  AutofillProfile new_profile = existing_profile;
+  new_profile.SetRawInfo(NAME_FULL, u"JustAnotherName");
+  EXPECT_EQ(AutofillProfileComparator::GetAutofillProfileMergeCandidate(
+                new_profile, {&existing_profile}, "en_US"),
+            base::nullopt);
+
+  // Use a city name that is a superset of the existing city name. It should be
+  // mergeable and the profile should be updated to the new value.
+  new_profile = existing_profile;
+  new_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_CITY, u"the City",
+      autofill::structured_address::VerificationStatus::kObserved);
+  base::Optional<AutofillProfile> optional_merge_candidate =
+      AutofillProfileComparator::GetAutofillProfileMergeCandidate(
+          new_profile, {&existing_profile}, "en_US");
+  ASSERT_TRUE(optional_merge_candidate.has_value());
+  EXPECT_EQ(optional_merge_candidate.value(), existing_profile);
+
+  // Now create a second existing profile that is the same as the first one, but
+  // was used more often. By this, this profile should become the merge
+  // candidate.
+  AutofillProfile second_existing_profile = existing_profile;
+  second_existing_profile.set_use_count(second_existing_profile.use_count() +
+                                        10);
+  optional_merge_candidate =
+      AutofillProfileComparator::GetAutofillProfileMergeCandidate(
+          new_profile, {&existing_profile, &second_existing_profile}, "en_US");
+  ASSERT_TRUE(optional_merge_candidate.has_value());
+  EXPECT_EQ(optional_merge_candidate.value(), second_existing_profile);
+
+  // Make sure the result is independent of the initial ordering of the
+  // profiles.
+  optional_merge_candidate =
+      AutofillProfileComparator::GetAutofillProfileMergeCandidate(
+          new_profile, {&second_existing_profile, &existing_profile}, "en_US");
+  ASSERT_TRUE(optional_merge_candidate.has_value());
+  EXPECT_EQ(optional_merge_candidate.value(), second_existing_profile);
 }
 
 // Tests that the profiles are merged when they have common states.

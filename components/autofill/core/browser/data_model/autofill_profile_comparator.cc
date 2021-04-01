@@ -208,6 +208,16 @@ void CopyAddressLineInformationFromProfile(const AutofillProfile& source,
     target->SetRawInfo(type, source.GetRawInfo(type));
 }
 
+// Sorts |profiles| by frecency.
+void SortProfilesByFrecency(std::vector<AutofillProfile*>* profiles) {
+  base::Time comparison_time = AutofillClock::Now();
+  std::sort(
+      profiles->begin(), profiles->end(),
+      [comparison_time](const AutofillProfile* a, const AutofillProfile* b) {
+        return a->HasGreaterFrecencyThan(b, comparison_time);
+      });
+}
+
 }  // namespace
 
 AutofillProfileComparator::AutofillProfileComparator(
@@ -901,6 +911,72 @@ bool AutofillProfileComparator::MergeAddresses(const AutofillProfile& p1,
     }
   }
   return true;
+}
+
+bool AutofillProfileComparator::ProfilesHaveDifferentSettingsVisibleValues(
+    const AutofillProfile& p1,
+    const AutofillProfile& p2) {
+  // The values corresponding to those types are visible in the settings.
+  static const ServerFieldTypeSet kUserVisibleTypes = {
+      NAME_FULL,         NAME_HONORIFIC_PREFIX,  ADDRESS_HOME_STREET_ADDRESS,
+      ADDRESS_HOME_CITY, ADDRESS_HOME_ZIP,       ADDRESS_HOME_COUNTRY,
+      EMAIL_ADDRESS,     PHONE_HOME_WHOLE_NUMBER};
+
+  // Return true if at least one value corresponding to the settings visible
+  // types is different between the two profiles.
+  return base::ranges::any_of(kUserVisibleTypes, [&](const auto type) {
+    return p1.GetRawInfo(type) != p2.GetRawInfo(type);
+  });
+}
+
+bool AutofillProfileComparator::IsMergeCandidate(
+    const AutofillProfile& existing_profile,
+    const AutofillProfile& new_profile,
+    const std::string& app_locale) {
+  // If the existing profile is not mergeable with the new profile, it is
+  // certainly not a merge candidate.
+  if (!AreMergeable(existing_profile, new_profile)) {
+    return false;
+  }
+
+  // Merge the two profiles. The return value from |MergeDataFrom()| indicates
+  // if the existing profile was modified during the merge.
+  AutofillProfile merged_profile = existing_profile;
+  if (!merged_profile.MergeDataFrom(new_profile, app_locale)) {
+    return false;
+  }
+
+  // If the two profiles have at least one settings-visible value that is
+  // different, |existing_profile| is a merge candidate.
+  return ProfilesHaveDifferentSettingsVisibleValues(merged_profile,
+                                                    existing_profile);
+}
+
+// static
+base::Optional<AutofillProfile>
+AutofillProfileComparator::GetAutofillProfileMergeCandidate(
+    const AutofillProfile& new_profile,
+    const std::vector<AutofillProfile*>& existing_profiles,
+    const std::string& app_locale) {
+  // Make a copy of the existing profiles for this function to have no side
+  // effects.
+  std::vector<AutofillProfile*> existing_profiles_copies = existing_profiles;
+
+  // Sort the profiles by frecency.
+  SortProfilesByFrecency(&existing_profiles_copies);
+
+  // Find and return the first profile that classifies as a merge candidate. If
+  // not profile classifies, return |base::nullopt|.
+  AutofillProfileComparator comparator(app_locale);
+  auto merge_candidate = base::ranges::find_if(
+      existing_profiles_copies, [&](const AutofillProfile* existing_profile) {
+        return comparator.IsMergeCandidate(*existing_profile, new_profile,
+                                           app_locale);
+      });
+
+  return merge_candidate != existing_profiles_copies.end()
+             ? base::make_optional(**merge_candidate)
+             : base::nullopt;
 }
 
 // static
