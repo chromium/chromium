@@ -113,9 +113,11 @@ ArCoreGlInitializeResult::ArCoreGlInitializeResult(
     ArCoreGlInitializeResult&& other) = default;
 ArCoreGlInitializeResult::~ArCoreGlInitializeResult() = default;
 
+// The ArCompositor is currently only supported if we're using shared buffers.
 ArCoreGl::ArCoreGl(std::unique_ptr<ArImageTransport> ar_image_transport)
     : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       ar_image_transport_(std::move(ar_image_transport)),
+      use_ar_compositor_(ArImageTransport::UseSharedBuffer()),
       webxr_(std::make_unique<WebXrPresentationState>()),
       average_camera_frametime_(kSampleWindowSize),
       average_animate_time_(kSampleWindowSize),
@@ -167,13 +169,11 @@ void ArCoreGl::Initialize(
   camera_image_size_ = frame_size;
   display_rotation_ = display_rotation;
   should_update_display_geometry_ = true;
-  // The ArCompositor is currently only supported if we're using shared buffers.
-  bool use_ar_compositor = ArImageTransport::UseSharedBuffer();
 
   // If we're using the ArCompositor, we need to initialize GL without the
   // drawing_widget. (Since the ArCompositor accesses the surface through a
   // different mechanism than the drawing_widget it's okay to set it null here).
-  if (use_ar_compositor) {
+  if (use_ar_compositor_) {
     drawing_widget = gfx::kNullAcceleratedWidget;
   }
   if (!InitializeGl(drawing_widget)) {
@@ -221,7 +221,7 @@ void ArCoreGl::Initialize(
       webxr_.get(), base::BindOnce(&ArCoreGl::OnArImageTransportReady,
                                    weak_ptr_factory_.GetWeakPtr()));
 
-  if (use_ar_compositor) {
+  if (use_ar_compositor_) {
     InitializeArCompositor(surface_handle, root_window, xr_frame_sink_client);
     webxr_->SetStateMachineType(
         WebXrPresentationState::StateMachineType::kVizComposited);
@@ -287,7 +287,8 @@ void ArCoreGl::OnArImageTransportReady() {
 void ArCoreGl::OnInitialized() {
   DVLOG(1) << __func__;
   if (!is_image_transport_ready_ ||
-      (ar_compositor_ && !ar_compositor_->IsInitialized()))
+      (use_ar_compositor_ &&
+       !(ar_compositor_ && ar_compositor_->IsInitialized())))
     return;
 
   // Assert that if we're using SharedBuffer transport, we've got an

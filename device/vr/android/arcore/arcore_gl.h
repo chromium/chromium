@@ -254,6 +254,7 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   std::unique_ptr<ArImageTransport> ar_image_transport_;
 
   std::unique_ptr<ArCompositorFrameSink> ar_compositor_;
+  const bool use_ar_compositor_;
 
   // This class uses the same overall presentation state logic
   // as GvrGraphicsDelegate, with some difference due to drawing

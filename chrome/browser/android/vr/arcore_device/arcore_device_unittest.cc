@@ -25,12 +25,6 @@
 
 namespace device {
 
-namespace {
-std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory() {
-  return nullptr;
-}
-}  // namespace
-
 class StubArImageTransport : public ArImageTransport {
  public:
   explicit StubArImageTransport(
@@ -49,6 +43,12 @@ class StubArImageTransport : public ArImageTransport {
   // by GetCameraTextureId() is at the time it is called and returns
   // a gpu::MailboxHolder with that texture copied to a shared buffer.
   gpu::MailboxHolder TransferFrame(
+      WebXrPresentationState*,
+      const gfx::Size& frame_size,
+      const gfx::Transform& uv_transform) override {
+    return gpu::MailboxHolder();
+  }
+  gpu::MailboxHolder TransferCameraImageFrame(
       WebXrPresentationState*,
       const gfx::Size& frame_size,
       const gfx::Transform& uv_transform) override {
@@ -127,6 +127,133 @@ class StubArCoreSessionUtils : public ArCoreSessionUtils {
     return base::android::ScopedJavaLocalRef<jobject>(env, context);
   }
 };
+
+// Note that this must be created and destroyed on the same thread as the mojo
+// bindings were originally opened on. If we don't allow UnassociatedUsage of
+// the AssociatedReceiver's, we get a DCHECK in the product code that the
+// Receiver's still have a pending association. However, it appears that once we
+// call EnableUnassociatedUsage, both ends of the pipe must be destroyed on the
+// thread that EnableUnassociatedUsage was called on.
+class StubCompositorFrameSink
+    : public viz::mojom::DisplayPrivate,
+      public viz::mojom::CompositorFrameSink,
+      public viz::mojom::ExternalBeginFrameController {
+ public:
+  StubCompositorFrameSink(
+      viz::mojom::RootCompositorFrameSinkParamsPtr root_params)
+      : sink_client_(std::move(root_params->compositor_frame_sink_client)),
+        display_client_(std::move(root_params->display_client)),
+        task_runner_(base::ThreadTaskRunnerHandle::Get()) {
+    root_params->compositor_frame_sink.EnableUnassociatedUsage();
+    root_params->display_private.EnableUnassociatedUsage();
+    root_params->external_begin_frame_controller.EnableUnassociatedUsage();
+
+    frame_sink_.Bind(std::move(root_params->compositor_frame_sink));
+    display_private_.Bind(std::move(root_params->display_private));
+    frame_controller_.Bind(
+        std::move(root_params->external_begin_frame_controller));
+  }
+  ~StubCompositorFrameSink() override {
+    // See class comment for explanation.
+    DCHECK(task_runner_->BelongsToCurrentThread());
+  }
+
+  // mojom::DisplayPrivate:
+  void SetDisplayVisible(bool visible) override {}
+  void Resize(const gfx::Size& size) override {}
+  void SetDisplayColorMatrix(const gfx::Transform& color_matrix) override {}
+  void SetDisplayColorSpaces(
+      const gfx::DisplayColorSpaces& display_color_spaces) override {}
+  void SetOutputIsSecure(bool secure) override {}
+  void SetDisplayVSyncParameters(base::TimeTicks timebase,
+                                 base::TimeDelta interval) override {}
+  void ForceImmediateDrawAndSwapIfPossible() override {}
+  void SetVSyncPaused(bool paused) override {}
+  void UpdateRefreshRate(float refresh_rate) override {}
+  void SetSupportedRefreshRates(
+      const std::vector<float>& supported_refresh_rates) override {}
+  void PreserveChildSurfaceControls() override {}
+  void AddVSyncParameterObserver(
+      mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer)
+      override {}
+  void SetDelegatedInkPointRenderer(
+      mojo::PendingReceiver<viz::mojom::DelegatedInkPointRenderer> receiver)
+      override {}
+
+  // mojom::CompositorFrameSink:
+  void SetNeedsBeginFrame(bool needs_begin_frame) override {}
+  void SetWantsAnimateOnlyBeginFrames() override {}
+  void SubmitCompositorFrame(
+      const viz::LocalSurfaceId& local_surface_id,
+      viz::CompositorFrame frame,
+      base::Optional<viz::HitTestRegionList> hit_test_region_list,
+      uint64_t submit_time) override {}
+  void DidNotProduceFrame(const viz::BeginFrameAck& begin_frame_ack) override {}
+  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
+                               const viz::SharedBitmapId& id) override {}
+  void DidDeleteSharedBitmap(const viz::SharedBitmapId& id) override {}
+  void SubmitCompositorFrameSync(
+      const viz::LocalSurfaceId& local_surface_id,
+      viz::CompositorFrame frame,
+      base::Optional<viz::HitTestRegionList> hit_test_region_list,
+      uint64_t submit_time,
+      SubmitCompositorFrameSyncCallback callback) override {}
+  void InitializeCompositorFrameSinkType(
+      viz::mojom::CompositorFrameSinkType type) override {}
+
+  // mojom::ExternalBeginFrameController implementation.
+  void IssueExternalBeginFrame(
+      const viz::BeginFrameArgs& args,
+      bool force,
+      base::OnceCallback<void(const viz::BeginFrameAck&)> callback) override {
+    std::move(callback).Run({args, false});
+  }
+
+ private:
+  mojo::Remote<viz::mojom::CompositorFrameSinkClient> sink_client_;
+  mojo::Remote<viz::mojom::DisplayClient> display_client_;
+  mojo::AssociatedReceiver<viz::mojom::CompositorFrameSink> frame_sink_{this};
+  mojo::AssociatedReceiver<viz::mojom::DisplayPrivate> display_private_{this};
+  mojo::AssociatedReceiver<viz::mojom::ExternalBeginFrameController>
+      frame_controller_{this};
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+};
+
+class StubXrFrameSinkClient : public XrFrameSinkClient {
+ public:
+  StubXrFrameSinkClient() = default;
+  ~StubXrFrameSinkClient() override {
+    if (mojo_thread_task_runner_) {
+      mojo_thread_task_runner_->DeleteSoon(FROM_HERE,
+                                           std::move(compositor_frame_sink_));
+    }
+  }
+
+  // device::XrFrameSinkClient
+  void InitializeRootCompositorFrameSink(
+      viz::mojom::RootCompositorFrameSinkParamsPtr root_params,
+      base::OnceClosure on_initialized) override {
+    // The StubCompositorFrameSink must be created/destroyed on the same thread
+    // as the mojo bindings in RootCompositorFrameSinkParamsPtr were on. Since
+    // this call comes from the ArCompositorFrameSink, which only runs on the Gl
+    // thread, we know that the mojo bindings were opened on this thread. So,
+    // we make this the thread to create/destroy the StubCompositorFrameSink on.
+    mojo_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+    compositor_frame_sink_ =
+        std::make_unique<StubCompositorFrameSink>(std::move(root_params));
+    std::move(on_initialized).Run();
+  }
+  void SurfaceDestroyed() override {}
+
+ private:
+  std::unique_ptr<StubCompositorFrameSink> compositor_frame_sink_;
+  scoped_refptr<base::SingleThreadTaskRunner> mojo_thread_task_runner_;
+};
+
+std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory() {
+  return std::make_unique<StubXrFrameSinkClient>();
+}
 
 class ArCoreDeviceTest : public testing::Test {
  public:

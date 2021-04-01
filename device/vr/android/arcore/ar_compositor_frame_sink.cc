@@ -22,7 +22,8 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
   explicit ArCoreHostDisplayClient(ui::WindowAndroid* root_window)
       : HostDisplayClient(gfx::kNullAcceleratedWidget),
         root_window_(root_window) {
-    DCHECK(root_window_);
+    // TODO(https://crbug.com/1194775): Ideally, we'd DCHECK here, but the UTs
+    // don't create a root_window.
   }
 
   ~ArCoreHostDisplayClient() override = default;
@@ -32,11 +33,15 @@ class ArCoreHostDisplayClient : public viz::HostDisplayClient {
   void OnContextCreationResult(gpu::ContextResult context_result) override {}
 
   void SetWideColorEnabled(bool enabled) override {
-    root_window_->SetWideColorEnabled(enabled);
+    if (root_window_) {
+      root_window_->SetWideColorEnabled(enabled);
+    }
   }
 
   void SetPreferredRefreshRate(float refresh_rate) override {
-    root_window_->SetPreferredRefreshRate(refresh_rate);
+    if (root_window_) {
+      root_window_->SetPreferredRefreshRate(refresh_rate);
+    }
   }
 
  private:
@@ -61,7 +66,10 @@ ArCompositorFrameSink::ArCompositorFrameSink(
   DCHECK(gl_thread_task_runner_);
 }
 
-ArCompositorFrameSink::~ArCompositorFrameSink() = default;
+ArCompositorFrameSink::~ArCompositorFrameSink() {
+  DCHECK(IsOnGlThread());
+  CloseBindingsIfOpen();
+}
 
 bool ArCompositorFrameSink::IsOnGlThread() const {
   return gl_thread_task_runner_->BelongsToCurrentThread();
