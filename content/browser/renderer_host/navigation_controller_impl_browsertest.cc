@@ -16229,6 +16229,87 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ReloadFrame) {
   EXPECT_EQ(document_sequence_number_1, document_sequence_number_2);
 }
 
+// A history navigation only navigates the iframe that should be changed to
+// update history. A grandchild iframe on the initial about:blank document will
+// not commit any navigation and should not be modified by a history navigation
+// in another frame.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       HistoryNavigationDoesntMoveFrameWithoutCommit) {
+  WebContents* wc = shell()->web_contents();
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(wc->GetController());
+
+  GURL main_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(a,a)");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  RenderFrameHostImpl* main_frame =
+      static_cast<RenderFrameHostImpl*>(wc->GetMainFrame());
+  FrameTreeNode* b_frame = main_frame->child_at(0);
+  FrameTreeNode* c_frame = main_frame->child_at(1);
+  ASSERT_TRUE(b_frame);
+  ASSERT_TRUE(c_frame);
+
+  {
+    LoadCommittedCapturer capturer(wc);
+    EXPECT_TRUE(ExecJs(c_frame, kAddEmptyFrameScript));
+    capturer.Wait();
+  }
+
+  FrameTreeNode* cc_frame = c_frame->current_frame_host()->child_at(0);
+  ASSERT_TRUE(cc_frame);
+
+  const char set_status_on_beforeunload[] = R"(
+      window.top.testStatus = "STARTED";
+      window.addEventListener(
+        "beforeunload",
+        () => { window.top.testStatus = "UNLOAD" },
+        false);
+      window.top.testStatus;
+      )";
+  EXPECT_EQ("STARTED",
+            EvalJs(cc_frame, set_status_on_beforeunload).ExtractString());
+
+  // Navigate frame 'b' creating a new history entry.
+  GURL url2 = embedded_test_server()->GetURL("a.com", "/title2.html");
+  EXPECT_TRUE(NavigateToURLFromRenderer(b_frame, url2));
+
+  // Frame 'cc' is a grandchild frame left at the initial about:blank document.
+  // This results in it not being committed.
+  EXPECT_FALSE(cc_frame->current_frame_host()->has_committed_any_navigation());
+
+  FrameNavigationEntry* b_entry =
+      controller.GetLastCommittedEntry()->GetFrameEntry(b_frame);
+  int64_t b_isn = b_entry->item_sequence_number();
+
+  // Go back.
+  FrameNavigateParamsCapturer capturer(b_frame);
+  controller.GoBack();
+  capturer.Wait();
+
+  FrameNavigationEntry* b2_entry =
+      controller.GetLastCommittedEntry()->GetFrameEntry(b_frame);
+  int64_t b2_isn = b2_entry->item_sequence_number();
+
+  // Frame 'b' should have been navigated back.
+  EXPECT_NE(b_isn, b2_isn);
+  // Frame 'c' should not have committed due to 'b' navigating.
+  EXPECT_FALSE(cc_frame->current_frame_host()->has_committed_any_navigation());
+
+  // We bounce through frame 'cc' in order to avoid races with beforeunload.
+  //
+  // If frame 'b' navigating caused the un-committed about:blank frame to do a
+  // navigation, then it would have to finish its commit and fire beforeunload,
+  // which would result in getting "UNLOAD" here. This comes from the original
+  // repro at https://crbug.com/1192709.
+  const char set_status_done[] = R"(
+      if (window.top.testStatus == "STARTED")
+        window.top.testStatus = "DONE";
+      window.top.testStatus;
+      )";
+  EXPECT_EQ("DONE", EvalJs(cc_frame, set_status_done).ExtractString());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          NavigationControllerAlertDialogBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()),

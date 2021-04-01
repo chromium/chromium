@@ -3031,17 +3031,21 @@ NavigationControllerImpl::DetermineActionForHistoryNavigation(
     return HistoryNavigationAction::kDifferentDocument;
 
   // Schedule a different-document load if the current RenderFrameHost is not
-  // live or has no committed document in the renderer. This case can happen for
-  // Ctrl+Back or after a renderer crash, or simply by going Back while the
-  // reload after a crash is still in flight. Starting a navigation after a
-  // crash early-promotes the speculative RenderFrameHost. At that point this
-  // history has not updated to reflect this change until it commits, and
-  // performing a same document navigation would be invalid since there is no
-  // document committed to be navigated.
-  if (!frame->current_frame_host()->has_committed_any_navigation())
+  // live. This case can happen for Ctrl+Back or after a renderer crash. Note
+  // that we do this even if the history navigation would not be modifying this
+  // frame were it live.
+  if (!frame->current_frame_host()->IsRenderFrameLive())
     return HistoryNavigationAction::kDifferentDocument;
 
   if (new_item->item_sequence_number() != old_item->item_sequence_number()) {
+    // Starting a navigation after a crash early-promotes the speculative
+    // RenderFrameHost. Then we have a RenderFrameHost with no document in it
+    // committed yet, so we can not possibly perform a same-document history
+    // navigation. The frame would need to be reloaded with a cross-document
+    // navigation.
+    if (!frame->current_frame_host()->has_committed_any_navigation())
+      return HistoryNavigationAction::kDifferentDocument;
+
     // Same document loads happen if the previous item has the same document
     // sequence number but different item sequence number.
     if (new_item->document_sequence_number() ==
