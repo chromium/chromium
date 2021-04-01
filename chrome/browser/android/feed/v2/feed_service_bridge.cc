@@ -15,8 +15,10 @@
 #include "chrome/browser/android/feed/v2/feed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/feed/core/shared_prefs/pref_names.h"
 #include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/public/feed_service.h"
+#include "components/prefs/pref_service.h"
 
 namespace feed {
 namespace {
@@ -61,6 +63,17 @@ JNI_FeedServiceBridge_GetClientInstanceId(JNIEnv* env) {
     instance_id = service->GetStream()->GetClientInstanceId();
   }
   return base::android::ConvertUTF8ToJavaString(env, instance_id);
+}
+
+static int JNI_FeedServiceBridge_GetVideoPreviewsTypePreference(JNIEnv* env) {
+  PrefService* pref_service = ProfileManager::GetLastUsedProfile()->GetPrefs();
+  return pref_service->GetInteger(feed::prefs::kVideoPreviewsType);
+}
+
+static void JNI_FeedServiceBridge_SetVideoPreviewsTypePreference(JNIEnv* env,
+                                                                 jint setting) {
+  PrefService* pref_service = ProfileManager::GetLastUsedProfile()->GetPrefs();
+  pref_service->SetInteger(feed::prefs::kVideoPreviewsType, setting);
 }
 
 std::string FeedServiceBridge::GetLanguageTag() {

@@ -26,6 +26,9 @@ feed_java_sources = [
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/HeaderIphScrollListener.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/NtpStreamLifecycleManager.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/StreamLifecycleManager.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/VideoPreviewsType.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragment.java",
+  "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedFeatures.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceDelegate.java",
   "//chrome/android/feed/core/java/src/org/chromium/chrome/browser/feed/shared/FeedSurfaceProvider.java",
@@ -60,6 +63,7 @@ feed_junit_test_java_sources = [
 
 feed_test_java_sources = [
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/HeaderIphScrollListenerTest.java",
+  "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedProcessScopeDependencyProviderNativeTest.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedV2NewTabPageTest.java",
   "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedV2TestHelper.java",

@@ -2762,6 +2762,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_NTP_MANAGE_REACTIONS" desc="Content description to manage feed reactions from the feed header overflow menu.">
         Manage reactions
       </message>
+      <message name="IDS_NTP_MANAGE_AUTOPLAY" desc="Content description to manage feed autoplay from the feed header overflow menu.">
+        Manage autoplay
+      </message>
       <message name="IDS_NTP_MANAGE_FEED" desc="Menu item to manage feed settings from the feed header overflow menu.">
         Manage
       </message>
@@ -3550,6 +3553,26 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       </message>
       <message name="IDS_FEED_CARD_MENU_CLOSED" desc="Accessibility string read when the feed card menu bottom sheet is closed.">
         Feed card menu is closed
+      </message>
+
+      <!-- Feed Autoplay Preferences  -->
+      <message name="IDS_FEED_AUTOPLAY_TITLE" desc="Title for feed autoplay preference.">
+        Autoplay
+      </message>
+      <message name="IDS_VIDEO_PREVIEWS_TITLE" desc="Title for setting video previews preference.">
+        Video previews
+      </message>
+      <message name="IDS_VIDEO_PREVIEWS_SUMMARY" desc="Summary for setting video previews preference.">
+        Choose how video previews will automatically play on the Chrome homepage.
+      </message>
+      <message name="IDS_VIDEO_PREVIEWS_OPTION_NEVER" desc="Option in video previews preference. Users can click this option to disable video previews.">
+        Never
+      </message>
+      <message name="IDS_VIDEO_PREVIEWS_OPTION_WIFI" desc="Option in video previews preference. Users can click this option to allow video previews on Wi-Fi only.">
+        Only on Wi-Fi
+      </message>
+      <message name="IDS_VIDEO_PREVIEWS_OPTION_WIFI_AND_MOBILE_DATA" desc="Option in video previews preference. Users can click this option to allow video previews on both Wi-Fi and mobile data.">
+        Only Wi-Fi &amp; mobile data
       </message>
 
       <!-- WebFeed -->

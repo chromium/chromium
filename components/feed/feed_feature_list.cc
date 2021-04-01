@@ -18,6 +18,9 @@ const base::Feature kInterestFeedContentSuggestions{
 const base::Feature kInterestFeedV2{"InterestFeedV2",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kInterestFeedV2Autoplay{"InterestFeedV2Autoplay",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kInterestFeedV2Hearts{"InterestFeedV2Hearts",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 

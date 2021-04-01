@@ -30,6 +30,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.feed.VideoPreviewsType;
 import org.chromium.chrome.browser.feed.shared.ScrollTracker;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -55,6 +56,7 @@ import org.chromium.chrome.browser.xsurface.ProcessScope;
 import org.chromium.chrome.browser.xsurface.SurfaceActionsHandler;
 import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
+import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider.AutoplayPreference;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
@@ -307,6 +309,22 @@ public class FeedStreamSurface
             assert ThreadUtils.runningOnUiThread();
             return FeedStreamSurfaceJni.get().getSessionId(
                     mNativeFeedStreamSurface, FeedStreamSurface.this);
+        }
+
+        @Override
+        public AutoplayPreference getAutoplayPreference() {
+            assert ThreadUtils.runningOnUiThread();
+            @VideoPreviewsType
+            int videoPreviewsType = FeedServiceBridge.getVideoPreviewsTypePreference();
+            switch (videoPreviewsType) {
+                case VideoPreviewsType.NEVER:
+                    return AutoplayPreference.AUTOPLAY_DISABLED;
+                case VideoPreviewsType.WIFI_AND_MOBILE_DATA:
+                    return AutoplayPreference.AUTOPLAY_ON_WIFI_AND_MOBILE_DATA;
+                case VideoPreviewsType.WIFI:
+                default:
+                    return AutoplayPreference.AUTOPLAY_ON_WIFI_ONLY;
+            }
         }
     }
 

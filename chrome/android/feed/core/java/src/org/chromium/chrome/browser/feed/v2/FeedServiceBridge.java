@@ -14,6 +14,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.AppHooks;
+import org.chromium.chrome.browser.feed.VideoPreviewsType;
 import org.chromium.chrome.browser.xsurface.ImagePrefetcher;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 
@@ -93,6 +94,14 @@ public final class FeedServiceBridge {
         FeedServiceBridgeJni.get().reportOpenVisitComplete(visitTimeMs);
     }
 
+    public static @VideoPreviewsType int getVideoPreviewsTypePreference() {
+        return FeedServiceBridgeJni.get().getVideoPreviewsTypePreference();
+    }
+
+    public static void setVideoPreviewsTypePreference(@VideoPreviewsType int videoPreviewsType) {
+        FeedServiceBridgeJni.get().setVideoPreviewsTypePreference(videoPreviewsType);
+    }
+
     @NativeMethods
     interface Natives {
         boolean isEnabled();
@@ -100,5 +109,7 @@ public final class FeedServiceBridge {
         int getLoadMoreTriggerLookahead();
         String getClientInstanceId();
         void reportOpenVisitComplete(long visitTimeMs);
+        int getVideoPreviewsTypePreference();
+        void setVideoPreviewsTypePreference(int videoPreviewsType);
     }
 }

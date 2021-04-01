@@ -32165,6 +32165,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Clicked on Learn more"/>
   <int value="3" label="Toggled the feed"/>
   <int value="4" label="Clicked on the feed menu button"/>
+  <int value="5" label="Clicked on autoplay"/>
 </enum>
 
 <enum name="FeedEngagementType">
@@ -32345,6 +32346,12 @@ Called by update_permissions_policy_enum.py.-->
 
 <enum name="FeedUserCommandType">
   <int value="0" label="Enum placerholder. See crbug/1179826"/>
+</enum>
+
+<enum name="FeedVideoPreviewsPreferenceUserActions">
+  <int value="0" label="Clicked on Never"/>
+  <int value="1" label="Clicked on Wi-Fi"/>
+  <int value="2" label="Clicked on Wi-Fi and mobile data"/>
 </enum>
 
 <enum name="FeedZeroStateShowReason">
@@ -43978,6 +43985,7 @@ from previous Chrome versions.
   <int value="-1962588488" label="SpeculativePreconnect:disabled"/>
   <int value="-1961931929" label="ContextualSuggestionsBottomSheet:enabled"/>
   <int value="-1961648833" label="show_summary"/>
+  <int value="-1961071650" label="InterestFeedV2Autoplay:disabled"/>
   <int value="-1961062505" label="VrBrowsingInCustomTab:disabled"/>
   <int value="-1960567385" label="KeepPrefetchedContentSuggestions:enabled"/>
   <int value="-1959563554" label="ChromeOSAccountManager:enabled"/>
@@ -45306,6 +45314,7 @@ from previous Chrome versions.
   <int value="-844786349" label="ClipboardHistoryNudgeSessionReset:enabled"/>
   <int value="-844537521" label="HttpFormWarning:disabled"/>
   <int value="-844381918" label="ArcNativeBridgeExperiment:disabled"/>
+  <int value="-844067635" label="InterestFeedV2Autoplay:enabled"/>
   <int value="-843496368" label="AutofillRejectCompanyBirthyear:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>

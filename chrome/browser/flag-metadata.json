@@ -2831,6 +2831,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "feed-v2-autoplay",
+    "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
+    "expiry_milestone": 97
+  },
+  {
     "name": "feed-v2-hearts",
     "owners": [ "//chrome/android/feed/OWNERS", "feed@chromium.org" ],
     "expiry_milestone": 96
