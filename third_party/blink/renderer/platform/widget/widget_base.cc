@@ -1150,11 +1150,12 @@ void WidgetBase::UpdateSelectionBounds() {
     if (!frame_widget)
       return;
     if (frame_widget->GetSelectionBoundsInWindow(
-            &selection_focus_rect_, &selection_anchor_rect_, &focus_dir,
-            &anchor_dir, &is_anchor_first)) {
-      widget_host_->SelectionBoundsChanged(selection_anchor_rect_, anchor_dir,
-                                           selection_focus_rect_, focus_dir,
-                                           is_anchor_first);
+            &selection_focus_rect_, &selection_anchor_rect_,
+            &selection_bounding_box_, &focus_dir, &anchor_dir,
+            &is_anchor_first)) {
+      widget_host_->SelectionBoundsChanged(
+          selection_anchor_rect_, anchor_dir, selection_focus_rect_, focus_dir,
+          selection_bounding_box_, is_anchor_first);
     }
   }
   UpdateCompositionInfo(false /* not an immediate request */);

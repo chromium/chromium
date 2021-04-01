@@ -396,6 +396,7 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
   // Stores the current selection bounds.
   gfx::Rect selection_focus_rect_;
   gfx::Rect selection_anchor_rect_;
+  gfx::Rect selection_bounding_box_;
 
   // Stores the current composition character bounds.
   Vector<gfx::Rect> composition_character_bounds_;

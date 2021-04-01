@@ -162,6 +162,7 @@ class PLATFORM_EXPORT FrameWidget {
   // bounds returned were different than the passed in focus and anchor bounds.
   virtual bool GetSelectionBoundsInWindow(gfx::Rect* focus,
                                           gfx::Rect* anchor,
+                                          gfx::Rect* bounding_box,
                                           base::i18n::TextDirection* focus_dir,
                                           base::i18n::TextDirection* anchor_dir,
                                           bool* is_anchor_first) = 0;

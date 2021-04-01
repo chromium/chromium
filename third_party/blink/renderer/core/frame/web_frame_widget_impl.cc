@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
@@ -3013,6 +3014,7 @@ void WebFrameWidgetImpl::ResetVirtualKeyboardVisibilityRequest() {
 bool WebFrameWidgetImpl::GetSelectionBoundsInWindow(
     gfx::Rect* focus,
     gfx::Rect* anchor,
+    gfx::Rect* bounding_box,
     base::i18n::TextDirection* focus_dir,
     base::i18n::TextDirection* anchor_dir,
     bool* is_anchor_first) {
@@ -3031,17 +3033,22 @@ bool WebFrameWidgetImpl::GetSelectionBoundsInWindow(
   }
   gfx::Rect focus_root_frame;
   gfx::Rect anchor_root_frame;
-  CalculateSelectionBounds(focus_root_frame, anchor_root_frame);
+  gfx::Rect bounding_box_root_frame;
+  CalculateSelectionBounds(focus_root_frame, anchor_root_frame,
+                           &bounding_box_root_frame);
   gfx::Rect focus_rect_in_dips =
       widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(focus_root_frame));
   gfx::Rect anchor_rect_in_dips =
       widget_base_->BlinkSpaceToEnclosedDIPs(gfx::Rect(anchor_root_frame));
+  gfx::Rect bounding_box_in_dips = widget_base_->BlinkSpaceToEnclosedDIPs(
+      gfx::Rect(bounding_box_root_frame));
 
   // if the bounds are the same return false.
   if (focus_rect_in_dips == *focus && anchor_rect_in_dips == *anchor)
     return false;
   *focus = focus_rect_in_dips;
   *anchor = anchor_rect_in_dips;
+  *bounding_box = bounding_box_in_dips;
 
   WebLocalFrame* focused_frame = FocusedWebLocalFrameInWidget();
   if (!focused_frame)
@@ -3606,15 +3613,18 @@ void WebFrameWidgetImpl::ForEachRemoteFrameControlledByWidget(
                                                callback);
 }
 
-void WebFrameWidgetImpl::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
-                                                  gfx::Rect& focus_root_frame) {
+void WebFrameWidgetImpl::CalculateSelectionBounds(
+    gfx::Rect& anchor_root_frame,
+    gfx::Rect& focus_root_frame,
+    gfx::Rect* bounding_box_in_root_frame) {
   const LocalFrame* local_frame = FocusedLocalFrameInWidget();
   if (!local_frame)
     return;
 
   IntRect anchor;
   IntRect focus;
-  if (!local_frame->Selection().ComputeAbsoluteBounds(anchor, focus))
+  auto& selection = local_frame->Selection();
+  if (!selection.ComputeAbsoluteBounds(anchor, focus))
     return;
 
   // Apply the visual viewport for main frames this will apply the page scale.
@@ -3625,6 +3635,15 @@ void WebFrameWidgetImpl::CalculateSelectionBounds(gfx::Rect& anchor_root_frame,
       local_frame->View()->ConvertToRootFrame(anchor));
   focus_root_frame = visual_viewport.RootFrameToViewport(
       local_frame->View()->ConvertToRootFrame(focus));
+
+  // Calculate the bounding box of the selection area.
+  if (bounding_box_in_root_frame) {
+    const IntRect bounding_box = EnclosingIntRect(
+        CreateRange(selection.GetSelectionInDOMTree().ComputeRange())
+            ->BoundingRect());
+    *bounding_box_in_root_frame = visual_viewport.RootFrameToViewport(
+        local_frame->View()->ConvertToRootFrame(bounding_box));
+  }
 }
 
 void WebFrameWidgetImpl::BatterySavingsChanged(BatterySavingsFlags savings) {

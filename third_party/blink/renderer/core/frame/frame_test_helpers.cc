@@ -869,6 +869,7 @@ void TestWebFrameWidgetHost::SelectionBoundsChanged(
     base::i18n::TextDirection anchor_dir,
     const gfx::Rect& focus_rect,
     base::i18n::TextDirection focus_dir,
+    const gfx::Rect& bounding_box,
     bool is_anchor_first) {}
 
 void TestWebFrameWidgetHost::CreateFrameSink(

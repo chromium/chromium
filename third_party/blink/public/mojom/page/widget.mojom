@@ -254,6 +254,7 @@ interface WidgetHost {
              mojo_base.mojom.TextDirection anchor_dir,
              gfx.mojom.Rect focus_rect,
              mojo_base.mojom.TextDirection focus_dir,
+             gfx.mojom.Rect bounding_box_rect,
              bool is_anchor_first);
 
   // Create a CompositorFrameSink that is associated with this widget.

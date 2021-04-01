@@ -229,6 +229,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void ResetVirtualKeyboardVisibilityRequest() override;
   bool GetSelectionBoundsInWindow(gfx::Rect* focus,
                                   gfx::Rect* anchor,
+                                  gfx::Rect* bounding_box,
                                   base::i18n::TextDirection* focus_dir,
                                   base::i18n::TextDirection* anchor_dir,
                                   bool* is_anchor_first) override;
@@ -538,8 +539,10 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Calculates the selection bounds in the root frame. Returns bounds unchanged
   // when there is no focused frame or no selection.
-  void CalculateSelectionBounds(gfx::Rect& anchor_in_root_frame,
-                                gfx::Rect& focus_in_root_frame);
+  void CalculateSelectionBounds(
+      gfx::Rect& anchor_in_root_frame,
+      gfx::Rect& focus_in_root_frame,
+      gfx::Rect* bounding_box_in_root_frame = nullptr);
 
   // Returns if auto resize mode is enabled.
   bool AutoResizeMode();
