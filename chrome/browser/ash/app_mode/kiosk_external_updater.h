@@ -17,7 +17,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"
 // TODO(https://crbug.com/1164001): use forward declaration when moved to
 // chrome/browser/ash/.
-#include "chrome/browser/chromeos/ui/kiosk_external_update_notification.h"
+#include "chrome/browser/ash/notifications/kiosk_external_update_notification.h"
 #include "chromeos/disks/disk_mount_manager.h"
 
 namespace ash {

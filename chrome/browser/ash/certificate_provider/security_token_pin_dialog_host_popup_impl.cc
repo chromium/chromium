@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/chromeos/ui/request_pin_view.h"
+#include "chrome/browser/ash/notifications/request_pin_view.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

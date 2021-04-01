@@ -9,7 +9,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/ui/screen_capture_notification_ui_chromeos.h"
+#include "chrome/browser/ash/notifications/screen_capture_notification_ui_chromeos.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/arc/mojom/screen_capture.mojom.h"

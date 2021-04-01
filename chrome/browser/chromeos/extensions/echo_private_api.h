@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "chrome/browser/chromeos/ui/echo_dialog_listener.h"
+#include "chrome/browser/ash/notifications/echo_dialog_listener.h"
 #include "extensions/browser/extension_function.h"
 
 class PrefRegistrySimple;

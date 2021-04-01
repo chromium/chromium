@@ -12,7 +12,7 @@
 #include "base/timer/timer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration when migrated to
 // chrome/browser/ash/.
-#include "chrome/browser/chromeos/ui/idle_app_name_notification_view.h"
+#include "chrome/browser/ash/notifications/idle_app_name_notification_view.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/base/user_activity/user_activity_observer.h"
 

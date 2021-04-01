@@ -29,7 +29,7 @@
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
 #include "chrome/browser/ash/certificate_provider/test_certificate_provider_extension.h"
-#include "chrome/browser/chromeos/ui/request_pin_view.h"
+#include "chrome/browser/ash/notifications/request_pin_view.h"
 #include "chrome/browser/extensions/api/certificate_provider/certificate_provider_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"

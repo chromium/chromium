@@ -13,7 +13,7 @@
 #include "base/task_runner_util.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/ui/kiosk_external_update_notification.h"
+#include "chrome/browser/ash/notifications/kiosk_external_update_notification.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"

@@ -11,7 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 // TODO(https://crbug.com/1164001): forward declare when moved to ash.
-#include "chrome/browser/chromeos/ui/request_pin_view.h"
+#include "chrome/browser/ash/notifications/request_pin_view.h"
 
 namespace views {
 class Widget;
