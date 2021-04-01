@@ -72,13 +72,13 @@ struct WaylandBufferManagerHost::Frame {
   void PendingActionComplete() {
     DCHECK(base::CurrentUIThread::IsSet());
     CHECK_GT(pending_actions, 0u);
-    if (!--pending_actions)
-      if (!std::move(frame_commit_cb).Run()) {
-        buffer_manager_->error_message_ =
-            base::StrCat({"Buffer with ", NumberToString(buffer_id),
-                          " id does not exist or failed to be created."});
-        buffer_manager_->TerminateGpuProcess();
-      }
+    if (!--pending_actions && !frame_commit_cb.is_null() &&
+        !std::move(frame_commit_cb).Run()) {
+      buffer_manager_->error_message_ =
+          base::StrCat({"Buffer with ", NumberToString(buffer_id),
+                        " id does not exist or failed to be created."});
+      buffer_manager_->TerminateGpuProcess();
+    }
   }
 
   // |root_surface| and |buffer_id| are saved so this Frame can be destroyed to
@@ -98,7 +98,8 @@ struct WaylandBufferManagerHost::Frame {
 
   // This runs WaylandBufferManagerHost::Surface::CommitBuffer() of
   // |root_surface| with |buffer_id|.
-  base::OnceCallback<bool()> frame_commit_cb;
+  base::OnceCallback<bool()> frame_commit_cb =
+      base::BindOnce([] { return true; });
   base::WeakPtrFactory<WaylandBufferManagerHost::Frame> weak_factory;
 };
 
@@ -204,15 +205,11 @@ class WaylandBufferManagerHost::Surface {
 
   void ClearState() {
     buffers_.clear();
-    wl_frame_callback_.reset();
-    feedback_queue_ = PresentationFeedbackQueue();
 
     ResetSurfaceContents();
 
+    feedback_queue_.clear();
     submitted_buffers_.clear();
-    for (auto& pending_commit : pending_commits_)
-      std::move(pending_commit.post_commit_cb).Run();
-    pending_commits_.clear();
 
     connection_->ScheduleFlush();
   }
@@ -223,7 +220,33 @@ class WaylandBufferManagerHost::Surface {
 
     wayland_surface_->AttachBuffer(nullptr);
     wayland_surface_->Commit();
-    wl_frame_callback_.reset(nullptr);
+    wl_frame_callback_.reset();
+
+    for (auto& pending_commit : pending_commits_) {
+      std::move(pending_commit.post_commit_cb).Run();
+      if (!pending_commit.buffer)
+        continue;
+
+      submitted_buffers_.push_back(
+          SubmissionInfo{pending_commit.buffer->buffer_id, /*acked=*/false});
+      if (connection_->presentation()) {
+        feedback_queue_.push_back(
+            {wl::Object<struct wp_presentation_feedback>(),
+             pending_commit.buffer->buffer_id,
+             gfx::PresentationFeedback::Failure(),
+             /*submission_completed=*/false});
+      }
+    }
+    pending_commits_.clear();
+    // Mutter sometimes does not call buffer.release if wl_surface role is
+    // destroyed, causing graphics freeze. Manually release them and trigger
+    // OnSubmission callbacks.
+    for (auto& buffer : submitted_buffers_) {
+      auto* buff = GetBuffer(buffer.buffer_id);
+      if (buff)
+        buff->released = true;
+    }
+    MaybeProcessSubmittedBuffers();
 
     // ResetSurfaceContents happens upon WaylandWindow::Hide call, which
     // destroys xdg_surface, xdg_popup, etc. They are going to be reinitialized
@@ -301,9 +324,11 @@ class WaylandBufferManagerHost::Surface {
     // received OnSubmission for that buffer, just damage the buffer and
     // commit the surface again. However, if the buffer is released, it's safe
     // to reattach the buffer.
-    if (submitted_buffers_.empty() ||
+    bool should_attach_buffer =
+        submitted_buffers_.empty() ||
         submitted_buffers_.back().buffer_id != buffer->buffer_id ||
-        buffer->released) {
+        buffer->released;
+    if (should_attach_buffer) {
       // Once the BufferRelease is called, the buffer will be released.
       DCHECK(buffer->released);
       buffer->released = false;
@@ -317,8 +342,13 @@ class WaylandBufferManagerHost::Surface {
 
     DamageBuffer(buffer);
 
-    if (wait_for_callback)
+    // On Mutter, we don't receive frame.callback acks if we don't attach a new
+    // wl_buffer. This is more likely to happen with overlay single-on-top
+    // strategy, which leads to graphics freeze. So only setup frame_callback
+    // when we're attaching a different buffer.
+    if (should_attach_buffer && wait_for_callback)
       SetupFrameCallback();
+
     SetupPresentationFeedback(buffer->buffer_id);
 
     CommitSurface();
@@ -427,9 +457,11 @@ class WaylandBufferManagerHost::Surface {
         break;
       }
     }
-    DCHECK(buffer);
-    DCHECK(!buffer->released);
-    buffer->released = true;
+    // It's possible to be unable to find the released buffer in
+    // |submitted_buffers_| due to the manual releasing in
+    // ResetSurfaceContents().
+    if (buffer)
+      buffer->released = true;
 
     // A release means we may be able to send OnSubmission for previously
     // submitted buffers.
@@ -777,11 +809,11 @@ WaylandBufferManagerHost::BindInterface() {
 }
 
 void WaylandBufferManagerHost::OnChannelDestroyed() {
-  buffer_manager_gpu_associated_.reset();
-  receiver_.reset();
-
   for (auto& surface_pair : surfaces_)
     surface_pair.second->ClearState();
+
+  buffer_manager_gpu_associated_.reset();
+  receiver_.reset();
 
   anonymous_buffers_.clear();
   pending_frames_.clear();
@@ -945,7 +977,6 @@ bool WaylandBufferManagerHost::CommitBufferInternal(
   base::OnceClosure subsurface_committed_cb = base::DoNothing();
   if (!pending_frames_.empty() && commit_synced_subsurface) {
     pending_frames_.back()->IncrementPendingActions();
-    subsurface_committed_cb.Reset();
     subsurface_committed_cb =
         base::BindOnce(&WaylandBufferManagerHost::Frame::PendingActionComplete,
                        pending_frames_.back()->weak_factory.GetWeakPtr());
@@ -1071,6 +1102,11 @@ void WaylandBufferManagerHost::ResetSurfaceContents(
     WaylandSurface* wayland_surface) {
   auto* surface = GetSurface(wayland_surface);
   DCHECK(surface);
+  for (auto& pending_frame : pending_frames_) {
+    if (pending_frame->root_surface == wayland_surface) {
+      pending_frame->frame_commit_cb = base::BindOnce([] { return true; });
+    }
+  }
   surface->ResetSurfaceContents();
 }
 
