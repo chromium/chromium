@@ -31,6 +31,9 @@ class TestWebContentsHandler
                       WindowOpenDisposition disposition,
                       const gfx::Rect& initial_rect,
                       bool user_gesture) override;
+  void RunFileChooser(content::RenderFrameHost* render_frame_host,
+                      scoped_refptr<content::FileSelectListener> listener,
+                      const blink::mojom::FileChooserParams& params) override;
 
   DISALLOW_COPY_AND_ASSIGN(TestWebContentsHandler);
 };

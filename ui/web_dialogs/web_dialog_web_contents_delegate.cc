@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 
@@ -62,4 +63,10 @@ bool WebDialogWebContentsDelegate::PreHandleGestureEvent(
   return blink::WebInputEvent::IsPinchGestureEventType(event.GetType());
 }
 
+void WebDialogWebContentsDelegate::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  handler_->RunFileChooser(render_frame_host, listener, params);
+}
 }  // namespace ui

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents.h"
 
 using content::BrowserContext;
@@ -113,4 +115,12 @@ void ChromeWebContentsHandler::AddNewContents(
   // Close the browser if chrome::Navigate created a new one.
   if (browser_created && (browser != params.browser))
     browser->window()->Close();
+}
+
+void ChromeWebContentsHandler::RunFileChooser(
+    content::RenderFrameHost* render_frame_host,
+    scoped_refptr<content::FileSelectListener> listener,
+    const blink::mojom::FileChooserParams& params) {
+  FileSelectHelper::RunFileChooser(render_frame_host, std::move(listener),
+                                   params);
 }
