@@ -4489,7 +4489,7 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
   std::string sanitized_blocked_url =
       GetRedirectChain().front().GetOrigin().spec();
   if (allow_csp_from && allow_csp_from->is_error_message()) {
-    GetParentFrame()->AddMessageToConsole(
+    AddDeferredConsoleMessage(
         blink::mojom::ConsoleMessageLevel::kError,
         base::StringPrintf("The value of the 'Allow-CSP-From' response header "
                            "returned by %s is invalid: %s",
@@ -4502,7 +4502,7 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
     return CSPEmbeddedEnforcementResult::ALLOW_RESPONSE;
   }
 
-  GetParentFrame()->AddMessageToConsole(
+  AddDeferredConsoleMessage(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(
           "Refused to display '%s' in a frame. The embedder requires it to "
