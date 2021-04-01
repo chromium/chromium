@@ -55,6 +55,7 @@ source_set("components") {
     "web_app_icon_generator.cc",
     "web_app_icon_generator.h",
     "web_app_id.h",
+    "web_app_id_constants.cc",
     "web_app_id_constants.h",
     "web_app_install_utils.cc",
     "web_app_install_utils.h",
