@@ -83,15 +83,18 @@ bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
   // https://nvd.nist.gov/vuln/detail/CVE-2010-2568). .local files are used by
   // Windows to determine which DLLs to load for an application.
   if ((extension_lower == FILE_PATH_LITERAL("local")) ||
-      (extension_lower == FILE_PATH_LITERAL("lnk")))
+      (extension_lower == FILE_PATH_LITERAL("lnk"))) {
     return true;
+  }
 
   // Setting a file's extension to a CLSID may conceal its actual file type on
   // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
   if (!extension_lower.empty() &&
       (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
-      (extension_lower.back() == FILE_PATH_LITERAL('}')))
+      (extension_lower.back() == FILE_PATH_LITERAL('}'))) {
     return true;
+  }
+
   return false;
 }
 
@@ -99,7 +102,7 @@ bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
 // subset of invalid extensions in the event the renderer is compromised.
 bool IsInvalidExtension(base::FilePath::StringType& extension) {
   std::string component8 = base::FilePath(extension).AsUTF8Unsafe();
-  auto extension16 = base::UTF8ToUTF16(component8.c_str());
+  auto extension16 = base::UTF8ToUTF16(component8);
 
   return !base::i18n::IsFilenameLegal(extension16) ||
          IsShellIntegratedExtension(GetLastExtension(extension));
@@ -265,6 +268,7 @@ void FileSystemChooser::CreateAndShow(
     ResultCallback callback,
     base::ScopedClosureRunner fullscreen_block) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // `listener` deletes itself.
   auto* listener = new FileSystemChooser(options.type(), std::move(callback),
                                          std::move(fullscreen_block));
   listener->dialog_ = ui::SelectFileDialog::Create(
