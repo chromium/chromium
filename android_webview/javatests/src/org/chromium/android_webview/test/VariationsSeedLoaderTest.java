@@ -96,9 +96,10 @@ public class VariationsSeedLoaderTest {
         }
 
         @Override
-        protected void requestSeedFromService(long oldSeedDate) {
-            super.requestSeedFromService(oldSeedDate);
+        protected boolean requestSeedFromService(long oldSeedDate) {
+            boolean result = super.requestSeedFromService(oldSeedDate);
             mResult.markSeedRequested();
+            return result;
         }
 
         @Override

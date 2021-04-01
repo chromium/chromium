@@ -2530,6 +2530,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records ClearProxyOverride calls.</summary>
 </histogram>
 
+<histogram name="Android.WebView.ConnectedToVariationService" enum="Boolean"
+    expires_after="M93">
+  <owner>hazems@chromium.org</owner>
+  <owner>webview-team@google.com</owner>
+  <summary>
+    Reports if an embedded WebView attempts to connect to the VariationService
+    during WebView startup or not. This should help to get an estimate of how
+    often &quot;:webview_service&quot; nonembedded process is launched during
+    WebView startup. There are other services that WebView connects to during
+    startup such as CrashReceiverService and MetricsBridgeService but
+    VariationService is the most dominant one. This is only recorded once during
+    WebView startup.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.CookieManager.SameSiteAttributeValue"
     enum="CookieSameSiteString" expires_after="M90">
   <obsolete>

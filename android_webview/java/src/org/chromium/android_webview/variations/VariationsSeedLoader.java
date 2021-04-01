@@ -213,12 +213,16 @@ public class VariationsSeedLoader {
                 VariationsUtils.replaceOldWithNewSeed();
             }
 
+            boolean connectedToVariationsService = false;
             if (mNeedNewSeed) {
                 // The new seed will arrive asynchronously; the new seed file is written by the
                 // service, and may complete after this app process has died.
-                requestSeedFromService(mCurrentSeedDate);
+                connectedToVariationsService = requestSeedFromService(mCurrentSeedDate);
                 VariationsUtils.updateStampTime();
             }
+
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.WebView.ConnectedToVariationService", connectedToVariationsService);
 
             onBackgroundWorkFinished();
         }
@@ -327,13 +331,14 @@ public class VariationsSeedLoader {
     }
 
     @VisibleForTesting
-    protected void requestSeedFromService(long oldSeedDate) {
+    // Returns false if it didn't connect to the service.
+    protected boolean requestSeedFromService(long oldSeedDate) {
         File newSeedFile = VariationsUtils.getNewSeedFile();
         try {
             newSeedFile.createNewFile(); // Silently returns false if already exists.
         } catch (IOException e) {
             Log.e(TAG, "Failed to create seed file " + newSeedFile);
-            return;
+            return false;
         }
         ParcelFileDescriptor newSeedFd = null;
         try {
@@ -341,12 +346,14 @@ public class VariationsSeedLoader {
                     ParcelFileDescriptor.open(newSeedFile, ParcelFileDescriptor.MODE_WRITE_ONLY);
         } catch (FileNotFoundException e) {
             Log.e(TAG, "Failed to open seed file " + newSeedFile);
-            return;
+            return false;
         }
 
         VariationsUtils.debugLog("Requesting new seed from IVariationsSeedServer");
         SeedServerConnection connection = new SeedServerConnection(newSeedFd, oldSeedDate);
         connection.start();
+
+        return true;
     }
 
     // Begin asynchronously loading the variations seed. ContextUtils.getApplicationContext() and
