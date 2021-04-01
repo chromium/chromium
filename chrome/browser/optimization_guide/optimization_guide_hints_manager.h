@@ -169,13 +169,6 @@ class OptimizationGuideHintsManager
       optimization_guide::proto::OptimizationType optimization_type,
       const base::Optional<optimization_guide::OptimizationMetadata>& metadata);
 
-  // Override the decision returned by |ShouldTargetNavigation|
-  // for |optimization_target|. For testing purposes only.
-  void OverrideTargetDecisionForTesting(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      optimization_guide::OptimizationGuideDecision
-          optimization_guide_decision);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerTest, IsGoogleURL);
   FRIEND_TEST_ALL_PREFIXES(OptimizationGuideHintsManagerFetchingTest,

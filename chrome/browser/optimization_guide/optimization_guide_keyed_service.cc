@@ -336,13 +336,6 @@ void OptimizationGuideKeyedService::UpdateSessionFCP(base::TimeDelta fcp) {
     prediction_manager_->UpdateFCPSessionStatistics(fcp);
 }
 
-void OptimizationGuideKeyedService::OverrideTargetDecisionForTesting(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    optimization_guide::OptimizationGuideDecision optimization_guide_decision) {
-    prediction_manager_->OverrideTargetDecisionForTesting(
-        optimization_target, optimization_guide_decision);
-}
-
 void OptimizationGuideKeyedService::OverrideTargetModelFileForTesting(
     optimization_guide::proto::OptimizationTarget optimization_target,
     const base::Optional<optimization_guide::proto::Any>& model_metadata,

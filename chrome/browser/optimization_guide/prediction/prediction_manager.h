@@ -162,12 +162,6 @@ class PredictionManager
   // from the models and features store.
   void ClearHostModelFeatures();
 
-  // Override the decision returned by |ShouldTargetNavigation|
-  // for |optimization_target|. For testing purposes only.
-  void OverrideTargetDecisionForTesting(
-      proto::OptimizationTarget optimization_target,
-      OptimizationGuideDecision optimization_guide_decision);
-
   // Override the model file returned to observers for |optimization_target|.
   // For testing purposes only.
   void OverrideTargetModelFileForTesting(

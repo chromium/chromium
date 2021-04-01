@@ -1512,28 +1512,3 @@ void OptimizationGuideHintsManager::AddHintForTesting(
   hint_cache_->AddHintForTesting(url, std::move(hint));
   PrepareToInvokeRegisteredCallbacks(url);
 }
-
-void OptimizationGuideHintsManager::OverrideTargetDecisionForTesting(
-    optimization_guide::proto::OptimizationTarget optimization_target,
-    optimization_guide::OptimizationGuideDecision optimization_guide_decision) {
-  if (optimization_target !=
-      optimization_guide::proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD) {
-    return;
-  }
-
-  // Manipulate ECTs to effectively change the target decision.
-  switch (optimization_guide_decision) {
-    case optimization_guide::OptimizationGuideDecision::kTrue:
-      current_effective_connection_type_ =
-          net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_SLOW_2G;
-      break;
-    case optimization_guide::OptimizationGuideDecision::kFalse:
-      current_effective_connection_type_ =
-          net::EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_4G;
-      break;
-    case optimization_guide::OptimizationGuideDecision::kUnknown:
-      // No way to override for |kUnknown|. Should not be used in tests.
-      NOTREACHED();
-      break;
-  }
-}

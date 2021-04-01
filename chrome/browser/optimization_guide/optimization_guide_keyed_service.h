@@ -94,13 +94,6 @@ class OptimizationGuideKeyedService
       optimization_guide::proto::OptimizationType optimization_type,
       const base::Optional<optimization_guide::OptimizationMetadata>& metadata);
 
-  // Override the decision returned by |ShouldTargetNavigation|
-  // for |optimization_target|. For testing purposes only.
-  void OverrideTargetDecisionForTesting(
-      optimization_guide::proto::OptimizationTarget optimization_target,
-      optimization_guide::OptimizationGuideDecision
-          optimization_guide_decision);
-
   // Override the model file sent to observers of |optimization_target|. For
   // testing purposes only.
   void OverrideTargetModelFileForTesting(
