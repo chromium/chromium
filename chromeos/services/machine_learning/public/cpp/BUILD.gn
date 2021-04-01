@@ -8,8 +8,6 @@ source_set("cpp") {
   sources = [
     "handwriting_model_loader.cc",
     "handwriting_model_loader.h",
-    "handwriting_recognizer_manager.cc",
-    "handwriting_recognizer_manager.h",
     "service_connection.cc",
     "service_connection.h",
   ]

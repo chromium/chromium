@@ -9,7 +9,6 @@ mojom("mojom") {
     "grammar_checker.mojom",
     "graph_executor.mojom",
     "handwriting_recognizer.mojom",
-    "handwriting_recognizer_requestor.mojom",
     "machine_learning_service.mojom",
     "model.mojom",
     "soda.mojom",
