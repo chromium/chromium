@@ -136,7 +136,7 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
   void OnInvalidate(const TopicInvalidationMap& invalidation_map) override {
     TopicSet topics = invalidation_map.GetTopics();
     for (const auto& topic : topics) {
-      const SingleObjectInvalidationSet& incoming =
+      const SingleTopicInvalidationSet& incoming =
           invalidation_map.ForTopic(topic);
       List& list = invalidations_[topic];
       list.insert(list.end(), incoming.begin(), incoming.end());

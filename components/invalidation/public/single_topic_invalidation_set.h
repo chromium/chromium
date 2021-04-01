@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_INVALIDATION_PUBLIC_SINGLE_OBJECT_INVALIDATION_SET_H_
-#define COMPONENTS_INVALIDATION_PUBLIC_SINGLE_OBJECT_INVALIDATION_SET_H_
+#ifndef COMPONENTS_INVALIDATION_PUBLIC_SINGLE_TOPIC_INVALIDATION_SET_H_
+#define COMPONENTS_INVALIDATION_PUBLIC_SINGLE_TOPIC_INVALIDATION_SET_H_
 
 #include <stddef.h>
 
@@ -25,20 +25,20 @@ namespace invalidation {
 // The list is kept sorted by version to make it easier to perform common
 // operations, like checking for an unknown version invalidation or fetching the
 // highest invalidation with the highest version number.
-class INVALIDATION_EXPORT SingleObjectInvalidationSet {
+class INVALIDATION_EXPORT SingleTopicInvalidationSet {
  public:
   typedef std::set<Invalidation, InvalidationVersionLessThan> InvalidationsSet;
   typedef InvalidationsSet::const_iterator const_iterator;
   typedef InvalidationsSet::const_reverse_iterator const_reverse_iterator;
 
-  SingleObjectInvalidationSet();
-  SingleObjectInvalidationSet(const SingleObjectInvalidationSet& other);
-  SingleObjectInvalidationSet& operator=(
-      const SingleObjectInvalidationSet& other);
-  ~SingleObjectInvalidationSet();
+  SingleTopicInvalidationSet();
+  SingleTopicInvalidationSet(const SingleTopicInvalidationSet& other);
+  SingleTopicInvalidationSet& operator=(
+      const SingleTopicInvalidationSet& other);
+  ~SingleTopicInvalidationSet();
 
   void Insert(const Invalidation& invalidation);
-  void InsertAll(const SingleObjectInvalidationSet& other);
+  void InsertAll(const SingleTopicInvalidationSet& other);
   void Clear();
   void Erase(const_iterator it);
 
@@ -49,7 +49,7 @@ class INVALIDATION_EXPORT SingleObjectInvalidationSet {
   bool StartsWithUnknownVersion() const;
   size_t GetSize() const;
   bool IsEmpty() const;
-  bool operator==(const SingleObjectInvalidationSet& other) const;
+  bool operator==(const SingleTopicInvalidationSet& other) const;
 
   const_iterator begin() const;
   const_iterator end() const;
@@ -65,4 +65,4 @@ class INVALIDATION_EXPORT SingleObjectInvalidationSet {
 
 }  // namespace invalidation
 
-#endif  // COMPONENTS_INVALIDATION_PUBLIC_SINGLE_OBJECT_INVALIDATION_SET_H_
+#endif  // COMPONENTS_INVALIDATION_PUBLIC_SINGLE_TOPIC_INVALIDATION_SET_H_

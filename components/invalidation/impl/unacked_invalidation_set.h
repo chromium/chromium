@@ -18,7 +18,7 @@
 
 namespace invalidation {
 
-class SingleObjectInvalidationSet;
+class SingleTopicInvalidationSet;
 class TopicInvalidationMap;
 class AckHandle;
 class UnackedInvalidationSet;
@@ -43,7 +43,7 @@ class INVALIDATION_EXPORT UnackedInvalidationSet {
   void Add(const Invalidation& invalidation);
 
   // Adds many new invalidations to the set awaiting acknowledgement.
-  void AddSet(const SingleObjectInvalidationSet& invalidations);
+  void AddSet(const SingleTopicInvalidationSet& invalidations);
 
   // Exports the set of invalidations awaiting acknowledgement as an
   // TopicInvalidationMap. Each of these invalidations will be associated

@@ -67,7 +67,7 @@ void DataTypeTracker::RecordRemoteInvalidation(
   //
   // We won't use STL algorithms here because our concept of equality doesn't
   // quite fit the expectations of set_intersection.  In particular, two
-  // invalidations can be equal according to the SingleObjectInvalidationSet's
+  // invalidations can be equal according to the SingleTopicInvalidationSet's
   // rules (ie. have equal versions), but still have different AckHandle values
   // and need to be acknowledged separately.
   //

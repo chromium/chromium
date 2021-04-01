@@ -26,7 +26,7 @@ const Topic& UnackedInvalidationSet::topic() const {
 
 void UnackedInvalidationSet::Add(
     const Invalidation& invalidation) {
-  SingleObjectInvalidationSet set;
+  SingleTopicInvalidationSet set;
   set.Insert(invalidation);
   AddSet(set);
   if (!registered_)
@@ -34,7 +34,7 @@ void UnackedInvalidationSet::Add(
 }
 
 void UnackedInvalidationSet::AddSet(
-    const SingleObjectInvalidationSet& invalidations) {
+    const SingleTopicInvalidationSet& invalidations) {
   invalidations_.insert(invalidations.begin(), invalidations.end());
   if (!registered_)
     Truncate(kMaxBufferedInvalidations);
@@ -84,7 +84,7 @@ void UnackedInvalidationSet::Acknowledge(const AckHandle& handle) {
 // the beginning of the list.  If an unknown version invalidation currently
 // exists, it is replaced.
 void UnackedInvalidationSet::Drop(const AckHandle& handle) {
-  SingleObjectInvalidationSet::const_iterator it;
+  SingleTopicInvalidationSet::const_iterator it;
   for (it = invalidations_.begin(); it != invalidations_.end(); ++it) {
     if (it->ack_handle().Equals(handle)) {
       break;

@@ -11,7 +11,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/invalidation/public/single_object_invalidation_set.h"
+#include "components/invalidation/public/single_topic_invalidation_set.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,14 +21,14 @@ class UnackedInvalidationSetTest : public testing::Test {
  public:
   UnackedInvalidationSetTest() : unacked_invalidations_(kTopic) {}
 
-  SingleObjectInvalidationSet GetStoredInvalidations() {
+  SingleTopicInvalidationSet GetStoredInvalidations() {
     TopicInvalidationMap map;
     unacked_invalidations_.ExportInvalidations(
         base::WeakPtr<AckHandler>(),
         scoped_refptr<base::SingleThreadTaskRunner>(),
         &map);
     if (map.Empty()) {
-      return SingleObjectInvalidationSet();
+      return SingleTopicInvalidationSet();
     } else {
       return map.ForTopic(kTopic);
     }
@@ -50,7 +50,7 @@ TEST_F(UnackedInvalidationSetTest, OneInvalidation) {
   Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
   unacked_invalidations_.Add(inv1);
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(1U, set.GetSize());
   EXPECT_FALSE(set.StartsWithUnknownVersion());
 }
@@ -73,7 +73,7 @@ TEST_F(UnackedInvalidationSetTest, UnknownVersions) {
   unacked_invalidations_.Add(inv2);
   unacked_invalidations_.Add(inv3);
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(2U, set.GetSize());
   EXPECT_TRUE(set.StartsWithUnknownVersion());
 }
@@ -87,7 +87,7 @@ TEST_F(UnackedInvalidationSetTest, NoTruncation) {
     unacked_invalidations_.Add(inv);
   }
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(kMax, set.GetSize());
   EXPECT_FALSE(set.StartsWithUnknownVersion());
   EXPECT_EQ(0, set.begin()->version());
@@ -103,7 +103,7 @@ TEST_F(UnackedInvalidationSetTest, Truncation) {
     unacked_invalidations_.Add(inv);
   }
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(kMax, set.GetSize());
   EXPECT_TRUE(set.StartsWithUnknownVersion());
   EXPECT_TRUE(set.begin()->is_unknown_version());
@@ -121,7 +121,7 @@ TEST_F(UnackedInvalidationSetTest, RegistrationAndTruncation) {
     unacked_invalidations_.Add(inv);
   }
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(kMax+1, set.GetSize());
   EXPECT_FALSE(set.StartsWithUnknownVersion());
   EXPECT_EQ(0, set.begin()->version());
@@ -129,7 +129,7 @@ TEST_F(UnackedInvalidationSetTest, RegistrationAndTruncation) {
 
   // Unregistering should re-enable truncation.
   unacked_invalidations_.SetHandlerIsUnregistered();
-  SingleObjectInvalidationSet set2 = GetStoredInvalidations();
+  SingleTopicInvalidationSet set2 = GetStoredInvalidations();
   ASSERT_EQ(kMax, set2.GetSize());
   EXPECT_TRUE(set2.StartsWithUnknownVersion());
   EXPECT_TRUE(set2.begin()->is_unknown_version());
@@ -154,7 +154,7 @@ TEST_F(UnackedInvalidationSetTest, Acknowledge) {
 
   unacked_invalidations_.Acknowledge(inv1_handle);
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   EXPECT_EQ(1U, set.GetSize());
   EXPECT_TRUE(set.StartsWithUnknownVersion());
 }
@@ -177,7 +177,7 @@ TEST_F(UnackedInvalidationSetTest, Drop) {
 
   unacked_invalidations_.Drop(inv1_handle);
 
-  SingleObjectInvalidationSet set = GetStoredInvalidations();
+  SingleTopicInvalidationSet set = GetStoredInvalidations();
   ASSERT_EQ(2U, set.GetSize());
   EXPECT_TRUE(set.StartsWithUnknownVersion());
   EXPECT_EQ(15, set.rbegin()->version());

@@ -266,7 +266,7 @@ void CloudPolicyInvalidator::OnIncomingInvalidation(
     const invalidation::TopicInvalidationMap& invalidation_map) {
   DCHECK(state_ == STARTED);
   DCHECK(thread_checker_.CalledOnValidThread());
-  const invalidation::SingleObjectInvalidationSet& list =
+  const invalidation::SingleTopicInvalidationSet& list =
       invalidation_map.ForTopic(topic_);
   if (list.IsEmpty()) {
     NOTREACHED();

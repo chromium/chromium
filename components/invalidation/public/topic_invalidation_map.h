@@ -12,7 +12,7 @@
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidation_export.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/single_object_invalidation_set.h"
+#include "components/invalidation/public/single_topic_invalidation_set.h"
 
 namespace base {
 class ListValue;
@@ -52,7 +52,7 @@ class INVALIDATION_EXPORT TopicInvalidationMap {
   TopicInvalidationMap GetSubsetWithTopics(const TopicSet& topics) const;
 
   // Returns the subset of invalidations with Topic matching |topic|.
-  const SingleObjectInvalidationSet& ForTopic(Topic topic) const;
+  const SingleTopicInvalidationSet& ForTopic(Topic topic) const;
 
   // Returns the contents of this map in a single vector.
   void GetAllInvalidations(std::vector<Invalidation>* out) const;
@@ -66,9 +66,9 @@ class INVALIDATION_EXPORT TopicInvalidationMap {
 
  private:
   explicit TopicInvalidationMap(
-      const std::map<Topic, SingleObjectInvalidationSet>& map);
+      const std::map<Topic, SingleTopicInvalidationSet>& map);
 
-  std::map<Topic, SingleObjectInvalidationSet> map_;
+  std::map<Topic, SingleTopicInvalidationSet> map_;
 };
 
 }  // namespace invalidation

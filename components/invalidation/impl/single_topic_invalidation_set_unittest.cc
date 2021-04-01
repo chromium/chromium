@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/invalidation/public/single_object_invalidation_set.h"
+#include "components/invalidation/public/single_topic_invalidation_set.h"
 
 #include <memory>
 
@@ -13,17 +13,17 @@ namespace invalidation {
 
 namespace {
 
-class SingleObjectInvalidationSetTest : public testing::Test {
+class SingleTopicInvalidationSetTest : public testing::Test {
  public:
-  SingleObjectInvalidationSetTest() = default;
+  SingleTopicInvalidationSetTest() = default;
 
  protected:
   const Topic kTopic = "one";
 };
 
-TEST_F(SingleObjectInvalidationSetTest, InsertionAndOrdering) {
-  SingleObjectInvalidationSet l1;
-  SingleObjectInvalidationSet l2;
+TEST_F(SingleTopicInvalidationSetTest, InsertionAndOrdering) {
+  SingleTopicInvalidationSet l1;
+  SingleTopicInvalidationSet l2;
 
   Invalidation inv0 = Invalidation::InitUnknownVersion(kTopic);
   Invalidation inv1 = Invalidation::Init(kTopic, 1, "one");
@@ -58,8 +58,8 @@ TEST_F(SingleObjectInvalidationSetTest, InsertionAndOrdering) {
   EXPECT_TRUE(it2 == l2.end());
 }
 
-TEST_F(SingleObjectInvalidationSetTest, StartWithUnknownVersion) {
-  SingleObjectInvalidationSet list;
+TEST_F(SingleTopicInvalidationSetTest, StartWithUnknownVersion) {
+  SingleTopicInvalidationSet list;
   EXPECT_FALSE(list.StartsWithUnknownVersion());
 
   list.Insert(Invalidation::Init(kTopic, 1, "one"));

@@ -13,7 +13,7 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/single_object_invalidation_set.h"
+#include "components/invalidation/public/single_topic_invalidation_set.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 
@@ -86,7 +86,7 @@ void RemoteCommandsInvalidator::OnIncomingInvalidation(
   if (!invalidation_service_enabled_)
     LOG(WARNING) << "Unexpected invalidation received.";
 
-  const invalidation::SingleObjectInvalidationSet& list =
+  const invalidation::SingleTopicInvalidationSet& list =
       invalidation_map.ForTopic(topic_);
   if (list.IsEmpty()) {
     NOTREACHED();

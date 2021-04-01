@@ -133,7 +133,7 @@ void CertProvisioningInvalidationHandler::OnIncomingInvalidation(
     LOG(WARNING) << "Unexpected invalidation received.";
   }
 
-  const invalidation::SingleObjectInvalidationSet& list =
+  const invalidation::SingleTopicInvalidationSet& list =
       invalidation_map.ForTopic(topic_);
   if (list.IsEmpty()) {
     NOTREACHED() << "Incoming invlaidation does not contain invalidation"

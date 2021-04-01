@@ -225,7 +225,7 @@ void SyncEngineBackend::DoOnIncomingInvalidation(
     } else {
       UMA_HISTOGRAM_ENUMERATION("Sync.InvalidationPerModelType",
                                 ModelTypeHistogramValue(type));
-      invalidation::SingleObjectInvalidationSet invalidation_set =
+      invalidation::SingleTopicInvalidationSet invalidation_set =
           invalidation_map.ForTopic(topic);
       for (invalidation::Invalidation invalidation : invalidation_set) {
         if (ShouldIgnoreRedundantInvalidation(invalidation, type)) {
