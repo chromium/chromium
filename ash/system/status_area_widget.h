@@ -10,6 +10,7 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/shelf/shelf_component.h"
+#include "ash/system/model/clock_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -40,7 +41,8 @@ class VirtualKeyboardTray;
 // the bottom-right of the screen. Exists separately from ShelfView/ShelfWidget
 // so that it can be shown in cases where the rest of the shelf is hidden (e.g.
 // on secondary monitors at the login screen).
-class ASH_EXPORT StatusAreaWidget : public SessionObserver,
+class ASH_EXPORT StatusAreaWidget : public ClockObserver,
+                                    public SessionObserver,
                                     public ShelfComponent,
                                     public views::Widget {
  public:
@@ -80,6 +82,12 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Logs the number of visible status area item pods. Called after the a pod
   // changes visibility.
   void LogVisiblePodCountMetric();
+
+  // ClockObserver:
+  void OnDateFormatChanged() override;
+  void OnSystemClockTimeUpdated() override;
+  void OnSystemClockCanSetTimeChanged(bool can_set_time) override {}
+  void Refresh() override {}
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
