@@ -1610,6 +1610,7 @@ enum HistogramValue {
   AUTOTESTPRIVATE_INSTALLBOREALIS = 1547,
   LANGUAGESETTINGSPRIVATE_SETTRANSLATETARGETLANGUAGE = 1548,
   LANGUAGESETTINGSPRIVATE_GETNEVERTRANSLATELANGUAGES = 1549,
+  ACTION_GETUSERSETTINGS = 1550,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

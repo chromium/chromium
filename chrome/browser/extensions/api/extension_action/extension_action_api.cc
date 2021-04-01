@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/notification_service.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
@@ -545,6 +546,34 @@ ExtensionActionGetBadgeBackgroundColorFunction::RunExtensionAction() {
   list->AppendInteger(static_cast<int>(SkColorGetA(color)));
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(list))));
+}
+
+ActionGetUserSettingsFunction::ActionGetUserSettingsFunction() = default;
+ActionGetUserSettingsFunction::~ActionGetUserSettingsFunction() = default;
+
+ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
+  DCHECK(extension());
+  ExtensionActionManager* const action_manager =
+      ExtensionActionManager::Get(browser_context());
+  ExtensionAction* const action =
+      action_manager->GetExtensionAction(*extension());
+
+  // This API is only available to extensions with the "action" key in the
+  // manifest, so they should always have an action.
+  DCHECK(action);
+  DCHECK_EQ(ActionInfo::TYPE_ACTION, action->action_type());
+
+  const bool is_pinned =
+      ToolbarActionsModel::Get(Profile::FromBrowserContext(browser_context()))
+          ->IsActionPinned(extension_id());
+
+  // TODO(devlin): Today, no action APIs are compiled. Unfortunately, this
+  // means we miss out on the compiled types, which would be rather helpful
+  // here.
+  base::Value ui_settings(base::Value::Type::DICTIONARY);
+  ui_settings.SetBoolKey("onToolbar", is_pinned);
+
+  return RespondNow(OneArgument(std::move(ui_settings)));
 }
 
 BrowserActionOpenPopupFunction::BrowserActionOpenPopupFunction() = default;

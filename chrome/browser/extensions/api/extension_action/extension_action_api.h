@@ -338,6 +338,21 @@ class ActionDisableFunction : public ExtensionActionHideFunction {
   ~ActionDisableFunction() override {}
 };
 
+class ActionGetUserSettingsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("action.getUserSettings", ACTION_GETUSERSETTINGS)
+
+  ActionGetUserSettingsFunction();
+  ActionGetUserSettingsFunction(const ActionGetUserSettingsFunction&) = delete;
+  ActionGetUserSettingsFunction& operator=(
+      const ActionGetUserSettingsFunction&) = delete;
+
+  ResponseAction Run() override;
+
+ protected:
+  ~ActionGetUserSettingsFunction() override;
+};
+
 //
 // browserAction.* aliases for supported browserAction APIs.
 //

@@ -16,6 +16,17 @@
         "properties": {
           "tabId": { "type": "integer", "optional": true, "minimum": 0, "description": "The ID of the tab to query state for. If no tab is specified, the non-tab-specific state is returned." }
         }
+      },
+      {
+        "id": "UserSettings",
+        "type": "object",
+        "properties": {
+          "onToolbar": {
+            "type": "boolean",
+            "description": "Whether the extension's action icon is visible on browser windows' top-level toolbar (i.e., whether the extension has been 'pinned' by the user)."
+          }
+        },
+        "description": "The collection of user-specified settings relating to an extension's action."
       }
     ],
     "functions": [{
@@ -257,6 +268,18 @@
         "name": "callback",
         "parameters": [],
         "optional": true
+      }
+    }, {
+      "name": "getUserSettings",
+      "type": "function",
+      "description": "Returns the user-specified settings relating to an extension's action.",
+      "parameters": [],
+      "returns_async": {
+        "name": "callback",
+        "parameters": [{
+          "name": "userSettings",
+          "$ref": "UserSettings"
+        }]
       }
     }],
     "events": [{
