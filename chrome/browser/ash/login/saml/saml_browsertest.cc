@@ -72,14 +72,13 @@
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/saml_password_attributes.h"
 #include "chromeos/settings/cros_settings_names.h"
@@ -175,31 +174,36 @@ constexpr char kTestRefreshToken[] = "fake-refresh-token";
 
 constexpr char kAffiliationID[] = "some-affiliation-id";
 
-// A FakeUserDataAuthClient that stores the salted and hashed secret passed to
-// MountEx().
-class SecretInterceptingFakeUserDataAuthClient : public FakeUserDataAuthClient {
- public:
-  SecretInterceptingFakeUserDataAuthClient();
 
-  void Mount(const ::user_data_auth::MountRequest& request,
-             MountCallback callback) override;
+// A FakeCryptohomeClient that stores the salted and hashed secret passed to
+// MountEx().
+class SecretInterceptingFakeCryptohomeClient : public FakeCryptohomeClient {
+ public:
+  SecretInterceptingFakeCryptohomeClient();
+
+  void MountEx(const cryptohome::AccountIdentifier& id,
+               const cryptohome::AuthorizationRequest& auth,
+               const cryptohome::MountRequest& request,
+               DBusMethodCallback<cryptohome::BaseReply> callback) override;
 
   const std::string& salted_hashed_secret() { return salted_hashed_secret_; }
 
  private:
   std::string salted_hashed_secret_;
 
-  DISALLOW_COPY_AND_ASSIGN(SecretInterceptingFakeUserDataAuthClient);
+  DISALLOW_COPY_AND_ASSIGN(SecretInterceptingFakeCryptohomeClient);
 };
 
-SecretInterceptingFakeUserDataAuthClient::
-    SecretInterceptingFakeUserDataAuthClient() {}
+SecretInterceptingFakeCryptohomeClient::
+    SecretInterceptingFakeCryptohomeClient() {}
 
-void SecretInterceptingFakeUserDataAuthClient::Mount(
-    const ::user_data_auth::MountRequest& request,
-    MountCallback callback) {
-  salted_hashed_secret_ = request.authorization().key().secret();
-  FakeUserDataAuthClient::Mount(request, std::move(callback));
+void SecretInterceptingFakeCryptohomeClient::MountEx(
+    const cryptohome::AccountIdentifier& id,
+    const cryptohome::AuthorizationRequest& auth,
+    const cryptohome::MountRequest& request,
+    DBusMethodCallback<cryptohome::BaseReply> callback) {
+  salted_hashed_secret_ = auth.key().secret();
+  FakeCryptohomeClient::MountEx(id, auth, request, std::move(callback));
 }
 
 }  // namespace
@@ -226,8 +230,8 @@ class SamlTest : public OobeBaseTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    // Creates a fake UserDataAuthClient. Will be destroyed in browser shutdown.
-    cryptohome_client_ = new SecretInterceptingFakeUserDataAuthClient();
+    // Creates a fake CryptohomeClient. Will be destroyed in browser shutdown.
+    cryptohome_client_ = new SecretInterceptingFakeCryptohomeClient();
 
     OobeBaseTest::SetUpInProcessBrowserTestFixture();
   }
@@ -327,7 +331,8 @@ class SamlTest : public OobeBaseTest {
   FakeSamlIdpMixin* fake_saml_idp() { return &fake_saml_idp_mixin_; }
 
  protected:
-  SecretInterceptingFakeUserDataAuthClient* cryptohome_client_;
+
+  SecretInterceptingFakeCryptohomeClient* cryptohome_client_;
 
   FakeGaiaMixin fake_gaia_{&mixin_host_, embedded_test_server()};
 
@@ -458,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, CredentialPassingAPI) {
   Key key("actual_password");
   key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
                 SystemSaltGetter::ConvertRawSaltToHexString(
-                    FakeCryptohomeMiscClient::GetStubSystemSalt()));
+                    FakeCryptohomeClient::GetStubSystemSalt()));
   EXPECT_EQ(key.GetSecret(), cryptohome_client_->salted_hashed_secret());
 
   EXPECT_TRUE(user_manager::known_user::GetIsUsingSAMLPrincipalsAPI(
@@ -494,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, CredentialPassingAPIWithoutConfirm) {
   Key key("last_password");
   key.Transform(Key::KEY_TYPE_SALTED_SHA256_TOP_HALF,
                 SystemSaltGetter::ConvertRawSaltToHexString(
-                    FakeCryptohomeMiscClient::GetStubSystemSalt()));
+                    FakeCryptohomeClient::GetStubSystemSalt()));
   EXPECT_EQ(key.GetSecret(), cryptohome_client_->salted_hashed_secret());
 
   EXPECT_TRUE(user_manager::known_user::GetIsUsingSAMLPrincipalsAPI(

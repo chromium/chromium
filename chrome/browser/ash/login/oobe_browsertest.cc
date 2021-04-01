@@ -27,9 +27,9 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/known_user.h"
@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {
 
   // Make the MountEx cryptohome call fail iff the `create` field is missing,
   // which simulates the real cryptohomed's behavior for the new user mount.
-  FakeUserDataAuthClient::Get()->set_mount_create_required(true);
+  FakeCryptohomeClient::Get()->set_mount_create_required(true);
   LoginDisplayHost::default_host()
       ->GetOobeUI()
       ->GetView<GaiaScreenHandler>()
@@ -103,13 +103,13 @@ IN_PROC_BROWSER_TEST_F(OobeTest, NewUser) {
 
   // Verify the parameters that were passed to the latest MountEx call.
   const cryptohome::AuthorizationRequest& cryptohome_auth =
-      FakeUserDataAuthClient::Get()->get_last_mount_authentication();
+      FakeCryptohomeClient::Get()->get_last_mount_authentication();
   EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
             cryptohome_auth.key().data().type());
   EXPECT_TRUE(cryptohome_auth.key().data().label().empty());
   EXPECT_FALSE(cryptohome_auth.key().secret().empty());
-  const ::user_data_auth::MountRequest& last_mount_request =
-      FakeUserDataAuthClient::Get()->get_last_mount_request();
+  const cryptohome::MountRequest& last_mount_request =
+      FakeCryptohomeClient::Get()->get_last_mount_request();
   ASSERT_TRUE(last_mount_request.has_create());
   ASSERT_EQ(1, last_mount_request.create().keys_size());
   EXPECT_EQ(cryptohome::KeyData::KEY_TYPE_PASSWORD,
