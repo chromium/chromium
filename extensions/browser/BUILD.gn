@@ -647,6 +647,7 @@ source_set("unit_tests") {
     "api/socket/mojo_data_pump_unittest.cc",
     "api/sockets_tcp/sockets_tcp_api_unittest.cc",
     "api/sockets_udp/sockets_udp_api_unittest.cc",
+    "api/storage/session_storage_manager_unittest.cc",
     "api/storage/settings_quota_unittest.cc",
     "api/storage/storage_api_unittest.cc",
     "api/storage/storage_frontend_unittest.cc",
