@@ -13,6 +13,7 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/x_frame_options.mojom-forward.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
 namespace net {
 class HttpResponseHeaders;
@@ -52,6 +53,8 @@ class CONTENT_EXPORT AncestorThrottle : public NavigationThrottle {
   void ConsoleErrorXFrameOptions(
       network::mojom::XFrameOptionsValue disposition);
   void ConsoleErrorEmbeddingRequiresOptIn();
+  void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                           std::string message);
   CheckResult EvaluateXFrameOptions(LoggingDisposition logging);
   CheckResult EvaluateFrameAncestors(
       const std::vector<network::mojom::ContentSecurityPolicyPtr>&

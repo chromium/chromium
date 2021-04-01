@@ -28,6 +28,7 @@
 #include "content/public/common/content_features.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
@@ -189,8 +190,6 @@ void AncestorThrottle::ParseXFrameOptionsError(
   DCHECK(disposition == network::mojom::XFrameOptionsValue::kConflict ||
          disposition == network::mojom::XFrameOptionsValue::kInvalid);
   DCHECK(headers);
-  if (!navigation_handle()->GetRenderFrameHost())
-    return;  // Some responses won't have a RFH (i.e. 204/205s or downloads).
 
   std::string value;
   headers->GetNormalizedHeader("X-Frame-Options", &value);
@@ -217,20 +216,12 @@ void AncestorThrottle::ParseXFrameOptionsError(
         value.c_str());
   }
 
-  // Log a console error in the parent of the current RenderFrameHost (as
-  // the current RenderFrameHost itself doesn't yet have a document).
-  auto* frame = static_cast<RenderFrameHostImpl*>(
-      navigation_handle()->GetRenderFrameHost());
-  ParentOrOuterDelegate(frame)->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError, message);
+  AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                      std::move(message));
 }
 
 void AncestorThrottle::ConsoleErrorEmbeddingRequiresOptIn() {
   DCHECK(base::FeatureList::IsEnabled(features::kEmbeddingRequiresOptIn));
-
-  if (!navigation_handle()->GetRenderFrameHost())
-    return;  // Some responses won't have a RFH (i.e. 204/205s or downloads).
-
   std::string message = base::StringPrintf(
       "Refused to display '%s' in a frame: It did not opt-into cross-origin "
       "embedding by setting either an 'X-Frame-Options' header, or a "
@@ -241,26 +232,14 @@ void AncestorThrottle::ConsoleErrorEmbeddingRequiresOptIn() {
           .spec()
           .c_str());
 
-  // Log a console error in the parent of the current RenderFrameHost (as
-  // the current RenderFrameHost itself doesn't yet have a document).
-  //
-  // TODO(https://crbug.com/1146651): We should not leak any information at all
-  // to the parent frame. Send a message directly to Devtools instead (without
-  // passing through a renderer): that can also contain more information (like
-  // the full blocked url).
-  auto* frame = static_cast<RenderFrameHostImpl*>(
-      navigation_handle()->GetRenderFrameHost());
-  ParentOrOuterDelegate(frame)->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError, message);
+  AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                      std::move(message));
 }
 
 void AncestorThrottle::ConsoleErrorXFrameOptions(
     network::mojom::XFrameOptionsValue disposition) {
   DCHECK(disposition == network::mojom::XFrameOptionsValue::kDeny ||
          disposition == network::mojom::XFrameOptionsValue::kSameOrigin);
-  if (!navigation_handle()->GetRenderFrameHost())
-    return;  // Some responses won't have a RFH (i.e. 204/205s or downloads).
-
   std::string message = base::StringPrintf(
       "Refused to display '%s' in a frame because it set 'X-Frame-Options' "
       "to '%s'.",
@@ -271,17 +250,15 @@ void AncestorThrottle::ConsoleErrorXFrameOptions(
       disposition == network::mojom::XFrameOptionsValue::kDeny ? "deny"
                                                                : "sameorigin");
 
-  // Log a console error in the parent of the current RenderFrameHost (as
-  // the current RenderFrameHost itself doesn't yet have a document).
-  //
-  // TODO(https://crbug.com/1146651): We should not leak any information at all
-  // to the parent frame. Send a message directly to Devtools instead (without
-  // passing through a renderer): that can also contain more information (like
-  // the full blocked url).
-  auto* frame = static_cast<RenderFrameHostImpl*>(
-      navigation_handle()->GetRenderFrameHost());
-  ParentOrOuterDelegate(frame)->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kError, message);
+  AddMessageToConsole(blink::mojom::ConsoleMessageLevel::kError,
+                      std::move(message));
+}
+
+void AncestorThrottle::AddMessageToConsole(
+    blink::mojom::ConsoleMessageLevel level,
+    std::string message) {
+  NavigationRequest::From(navigation_handle())
+      ->AddDeferredConsoleMessage(level, std::move(message));
 }
 
 AncestorThrottle::CheckResult AncestorThrottle::EvaluateXFrameOptions(

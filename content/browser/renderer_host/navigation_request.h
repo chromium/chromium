@@ -842,8 +842,21 @@ class CONTENT_EXPORT NavigationRequest
 
   std::unique_ptr<NavigationEntryImpl> TakePrerenderNavigationEntry();
 
+  // Store a console message, which will be sent to the final RenderFrameHost
+  // immediately after requesting the navigation to commit.
+  //
+  // /!\ WARNING /!\: Beware of not leaking cross-origin information to a
+  // potentially compromised renderer when using this method.
+  void AddDeferredConsoleMessage(blink::mojom::ConsoleMessageLevel level,
+                                 std::string message);
+
  private:
   friend class NavigationRequestTest;
+
+  struct ConsoleMessage {
+    blink::mojom::ConsoleMessageLevel level;
+    std::string message;
+  };
 
   NavigationRequest(
       FrameTreeNode* frame_tree_node,
@@ -1256,6 +1269,10 @@ class CONTENT_EXPORT NavigationRequest
   // In that case, the caller must immediately return.
   bool MaybeCancelFailedNavigation();
 
+  // Called just after a navigation commits (also in case of error): it
+  // sends all console messages to the final RenderFrameHost.
+  void SendDeferredConsoleMessages();
+
   // Never null. The pointee node owns this navigation request instance.
   FrameTreeNode* const frame_tree_node_;
 
@@ -1661,6 +1678,10 @@ class CONTENT_EXPORT NavigationRequest
   network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
       network::mojom::PrivateNetworkRequestPolicy::
           kWarnFromInsecureToMorePrivate;
+
+  // Messages to be printed on the console in the target RenderFrameHost of this
+  // NavigationRequest.
+  std::vector<ConsoleMessage> console_messages_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 

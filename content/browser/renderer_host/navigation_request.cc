@@ -3686,6 +3686,8 @@ void NavigationRequest::CommitErrorPage(
   render_frame_host_->FailedNavigation(
       this, *common_params_, *commit_params_, has_stale_copy_in_cache_,
       net_error_, extended_error_code_, error_page_content);
+
+  SendDeferredConsoleMessages();
 }
 
 void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
@@ -3919,6 +3921,8 @@ void NavigationRequest::CommitNavigation() {
         "#potentially-trustworthy-origin and "
         "https://html.spec.whatwg.org/#the-cross-origin-opener-policy-header.");
   }
+
+  SendDeferredConsoleMessages();
 }
 
 void NavigationRequest::CommitPageActivation() {
@@ -6182,6 +6186,23 @@ NavigationRequest::TakePrerenderNavigationEntry() {
 
 bool NavigationRequest::IsWaitingForBeforeUnload() {
   return state_ < WILL_START_NAVIGATION;
+}
+
+void NavigationRequest::AddDeferredConsoleMessage(
+    blink::mojom::ConsoleMessageLevel level,
+    std::string message) {
+  DCHECK_LE(state_, READY_TO_COMMIT);
+  console_messages_.push_back(ConsoleMessage{level, std::move(message)});
+}
+
+void NavigationRequest::SendDeferredConsoleMessages() {
+  for (auto& message : console_messages_) {
+    // TODO(https://crbug.com/721329): We should have a way of sending console
+    // messaged to devtools without going through the renderer.
+    render_frame_host_->AddMessageToConsole(message.level,
+                                            std::move(message.message));
+  }
+  console_messages_.clear();
 }
 
 }  // namespace content
