@@ -784,8 +784,7 @@ TEST_F(CrostiniAppTest, EnableAndDisableCrostini) {
   EXPECT_THAT(GetAllApps(), testing::IsEmpty());
 }
 
-// TODO(https://crbug.com/1194138) Disabled due to flakiness.
-TEST_F(CrostiniAppTest, DISABLED_AppInstallation) {
+TEST_F(CrostiniAppTest, AppInstallation) {
   // Terminal app.
   EXPECT_EQ(1u, GetModelItemCount());
 
