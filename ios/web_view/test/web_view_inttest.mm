@@ -35,6 +35,16 @@ class WebViewTest : public ios_web_view::WebViewInttestBase {
         &WebViewTest::CaptureRequestHandler, base::Unretained(this)));
   }
 
+  void SetUp() override {
+    ios_web_view::WebViewInttestBase::SetUp();
+    CWVWebView.customUserAgent = nil;
+  }
+
+  void TearDown() override {
+    ios_web_view::WebViewInttestBase::TearDown();
+    CWVWebView.customUserAgent = nil;
+  }
+
   std::unique_ptr<net::test_server::HttpResponse> CaptureRequestHandler(
       const net::test_server::HttpRequest& request) {
     if (request.relative_url == "/CaptureRequest") {
