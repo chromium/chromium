@@ -157,17 +157,6 @@ void PaintedScrollbarLayerImpl::AppendQuads(
   }
 }
 
-gfx::Rect PaintedScrollbarLayerImpl::GetVisibleDrawableContentBounds() const {
-  if (internal_content_bounds_.IsEmpty())
-    return gfx::Rect();
-  return ScrollbarLayerImplBase::GetVisibleDrawableContentBounds();
-}
-
-float PaintedScrollbarLayerImpl::LayerToContentScale() const {
-  DCHECK_GT(internal_contents_scale_, 0.f);
-  return internal_contents_scale_;
-}
-
 gfx::Rect PaintedScrollbarLayerImpl::GetEnclosingRectInTargetSpace() const {
   if (internal_content_bounds_.IsEmpty())
     return gfx::Rect();

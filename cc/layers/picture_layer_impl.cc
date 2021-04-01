@@ -986,10 +986,6 @@ bool PictureLayerImpl::IsDirectlyCompositedImage() const {
   return directly_composited_image_size_.has_value();
 }
 
-float PictureLayerImpl::LayerToContentScale() const {
-  return MaximumTilingContentsScale();
-}
-
 gfx::Rect PictureLayerImpl::GetEnclosingRectInTargetSpace() const {
   return GetScaledEnclosingRectInTargetSpace(MaximumTilingContentsScale());
 }

@@ -65,7 +65,6 @@ class CC_EXPORT PictureLayerImpl
   void ReleaseTileResources() override;
   void RecreateTileResources() override;
   Region GetInvalidationRegionForDebugging() override;
-  float LayerToContentScale() const override;
   gfx::Rect GetEnclosingRectInTargetSpace() const override;
   gfx::ContentColorUsage GetContentColorUsage() const override;
 

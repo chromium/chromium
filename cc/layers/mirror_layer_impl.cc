@@ -74,12 +74,6 @@ gfx::Rect MirrorLayerImpl::GetDamageRect() const {
   return gfx::Rect(bounds());
 }
 
-float MirrorLayerImpl::LayerToContentScale() const {
-  const LayerImpl* mirrored_layer =
-      layer_tree_impl()->LayerById(mirrored_layer_id_);
-  return mirrored_layer->GetIdealContentsScale();
-}
-
 gfx::Rect MirrorLayerImpl::GetEnclosingRectInTargetSpace() const {
   const LayerImpl* mirrored_layer =
       layer_tree_impl()->LayerById(mirrored_layer_id_);
