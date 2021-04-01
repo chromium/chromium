@@ -199,10 +199,12 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
           static_cast<int>(blink::mojom::ResourceType::kScript);
     }
   } else {
-    // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-module-worker-script-tree
-    // Set the "Service-Worker" header for the service worker script request:
-    // https://w3c.github.io/ServiceWorker/#service-worker-script-request
-    request.headers.SetHeader("Service-Worker", "script");
+    if (is_main_script) {
+      // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-module-worker-script-tree
+      // Set the "Service-Worker" header for the service worker script request:
+      // https://w3c.github.io/ServiceWorker/#service-worker-script-request
+      request.headers.SetHeader("Service-Worker", "script");
+    }
 
     // The "Fetch a module worker script graph" uses "cors" as mode and "omit"
     // as credentials mode.
