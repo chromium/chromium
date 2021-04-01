@@ -351,10 +351,9 @@ void TranslateManager::InitiateManualTranslation(bool auto_translate,
   // Translate the page if it has not been translated and manual translate
   // should trigger translation automatically. Otherwise, only show the infobar.
   if (auto_translate && !language_state_.IsPageTranslated()) {
-    TranslatePage(source_code, target_lang, triggered_from_menu,
-                  GetLanguageState()->InTranslateNavigation()
-                      ? TranslationType::kAutomaticTranslationByLink
-                      : TranslationType::kAutomaticTranslationByPref);
+    TranslatePage(
+        source_code, target_lang, triggered_from_menu,
+        GetActiveTranslateMetricsLogger()->GetNextManualTranslationType());
     return;
   }
 
