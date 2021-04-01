@@ -22,14 +22,13 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 
-ContextImpl::ContextImpl(content::BrowserContext* browser_context,
-                         WebEngineDevToolsController* devtools_controller)
-    : browser_context_(browser_context),
+ContextImpl::ContextImpl(
+    std::unique_ptr<content::BrowserContext> browser_context,
+    WebEngineDevToolsController* devtools_controller)
+    : browser_context_(std::move(browser_context)),
       devtools_controller_(devtools_controller),
-      cookie_manager_(base::BindRepeating(
-          &content::StoragePartition::GetNetworkContext,
-          base::Unretained(content::BrowserContext::GetDefaultStoragePartition(
-              browser_context_)))) {
+      cookie_manager_(base::BindRepeating(&ContextImpl::GetNetworkContext,
+                                          base::Unretained(this))) {
   DCHECK(browser_context_);
   DCHECK(devtools_controller_);
   devtools_controller_->OnContextCreated();
@@ -73,7 +72,8 @@ void ContextImpl::CreateFrameWithParams(
   }
 
   // Create a WebContents to host the new Frame.
-  content::WebContents::CreateParams create_params(browser_context_, nullptr);
+  content::WebContents::CreateParams create_params(browser_context_.get(),
+                                                   nullptr);
   create_params.initially_hidden = true;
   auto web_contents = content::WebContents::Create(create_params);
 
@@ -211,6 +211,7 @@ FrameImpl* ContextImpl::GetFrameImplForTest(
 
 network::mojom::NetworkContext* ContextImpl::GetNetworkContext() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return content::BrowserContext::GetDefaultStoragePartition(browser_context_)
+  return content::BrowserContext::GetDefaultStoragePartition(
+             browser_context_.get())
       ->GetNetworkContext();
 }

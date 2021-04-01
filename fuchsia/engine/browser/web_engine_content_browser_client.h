@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "content/public/browser/content_browser_client.h"
 #include "fuchsia/engine/browser/content_directory_loader_factory.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
@@ -26,7 +25,9 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
       fidl::InterfaceRequest<fuchsia::web::Context> request);
   ~WebEngineContentBrowserClient() final;
 
-  WebEngineBrowserMainParts* main_parts_for_test() const { return main_parts_; }
+  WebEngineContentBrowserClient(const WebEngineContentBrowserClient&) = delete;
+  WebEngineContentBrowserClient& operator=(
+      const WebEngineContentBrowserClient&) = delete;
 
   // ContentBrowserClient overrides.
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
@@ -76,6 +77,8 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
           cert_verifier_creation_params) final;
   std::vector<url::Origin> GetOriginsRequiringDedicatedProcess() final;
 
+  WebEngineBrowserMainParts* main_parts_for_test() const { return main_parts_; }
+
  private:
   fidl::InterfaceRequest<fuchsia::web::Context> request_;
 
@@ -84,8 +87,6 @@ class WebEngineContentBrowserClient : public content::ContentBrowserClient {
 
   // Owned by content::BrowserMainLoop.
   WebEngineBrowserMainParts* main_parts_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineContentBrowserClient);
 };
 
 #endif  // FUCHSIA_ENGINE_BROWSER_WEB_ENGINE_CONTENT_BROWSER_CLIENT_H_

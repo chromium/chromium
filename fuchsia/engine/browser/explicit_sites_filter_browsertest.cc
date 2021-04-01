@@ -50,7 +50,7 @@ class ExplicitSitesFilterTest : public FrameImplTestBaseWithServer {
     FrameImplTestBaseWithServer::SetUpOnMainThread();
 
     SafeSearchFactory::GetInstance()
-        ->GetForBrowserContext(context_impl()->browser_context_for_test())
+        ->GetForBrowserContext(context_impl()->browser_context())
         ->SetSafeSearchURLCheckerForTest(
             stub_url_checker_.BuildURLChecker(kUrlCheckerCacheSize));
   }

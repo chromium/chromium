@@ -14,6 +14,7 @@
 #include "components/policy/content/safe_sites_navigation_throttle.h"
 #include "components/site_isolation/features.h"
 #include "components/site_isolation/preloaded_isolated_origins.h"
+#include "components/strings/grit/components_locale_settings.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "content/public/browser/devtools_manager_delegate.h"
@@ -37,32 +38,35 @@
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 class DevToolsManagerDelegate : public content::DevToolsManagerDelegate {
  public:
-  DevToolsManagerDelegate(content::BrowserContext* browser_context,
-                          WebEngineDevToolsController* controller)
-      : browser_context_(browser_context), controller_(controller) {
-    DCHECK(browser_context_);
-    DCHECK(controller_);
+  explicit DevToolsManagerDelegate(WebEngineBrowserMainParts* main_parts)
+      : main_parts_(main_parts) {
+    DCHECK(main_parts_);
   }
   ~DevToolsManagerDelegate() final = default;
 
+  DevToolsManagerDelegate(const DevToolsManagerDelegate&) = delete;
+  DevToolsManagerDelegate& operator=(const DevToolsManagerDelegate&) = delete;
+
   // content::DevToolsManagerDelegate implementation.
+  std::vector<content::BrowserContext*> GetBrowserContexts() final {
+    return main_parts_->browser_contexts();
+  }
   content::BrowserContext* GetDefaultBrowserContext() final {
-    return browser_context_;
+    std::vector<content::BrowserContext*> contexts = GetBrowserContexts();
+    return contexts.empty() ? nullptr : contexts.front();
   }
   content::DevToolsAgentHost::List RemoteDebuggingTargets() final {
-    return controller_->RemoteDebuggingTargets();
+    return main_parts_->devtools_controller()->RemoteDebuggingTargets();
   }
 
  private:
-  content::BrowserContext* const browser_context_;
-  WebEngineDevToolsController* const controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsManagerDelegate);
+  WebEngineBrowserMainParts* const main_parts_;
 };
 
 std::vector<std::string> GetCorsExemptHeaders() {
@@ -88,7 +92,7 @@ WebEngineContentBrowserClient::CreateBrowserMainParts(
     const content::MainFunctionParams& parameters) {
   DCHECK(request_);
   auto browser_main_parts = std::make_unique<WebEngineBrowserMainParts>(
-      parameters, std::move(request_));
+      this, parameters, std::move(request_));
 
   main_parts_ = browser_main_parts.get();
 
@@ -98,8 +102,7 @@ WebEngineContentBrowserClient::CreateBrowserMainParts(
 content::DevToolsManagerDelegate*
 WebEngineContentBrowserClient::GetDevToolsManagerDelegate() {
   DCHECK(main_parts_);
-  return new DevToolsManagerDelegate(main_parts_->browser_context(),
-                                     main_parts_->devtools_controller());
+  return new DevToolsManagerDelegate(main_parts_);
 }
 
 std::string WebEngineContentBrowserClient::GetProduct() {
@@ -197,9 +200,11 @@ std::string WebEngineContentBrowserClient::GetApplicationLocale() {
 
 std::string WebEngineContentBrowserClient::GetAcceptLangs(
     content::BrowserContext* context) {
-  DCHECK_EQ(main_parts_->browser_context(), context);
-  return static_cast<WebEngineBrowserContext*>(context)
-      ->GetPreferredLanguages();
+  // Returns a comma-separated list of language codes, in preference order.
+  // This is suitable for direct use setting the "sec-ch-lang" header, or
+  // passed to net::HttpUtil::GenerateAcceptLanguageHeader() to generate a
+  // legacy "accept-language" header value.
+  return l10n_util::GetStringUTF8(IDS_ACCEPT_LANGUAGES);
 }
 
 base::OnceClosure WebEngineContentBrowserClient::SelectClientCertificate(
@@ -266,9 +271,8 @@ void WebEngineContentBrowserClient::ConfigureNetworkContextParams(
     cert_verifier::mojom::CertVerifierCreationParams*
         cert_verifier_creation_params) {
   network_context_params->user_agent = GetUserAgent();
-  network_context_params
-      ->accept_language = net::HttpUtil::GenerateAcceptLanguageHeader(
-      static_cast<WebEngineBrowserContext*>(context)->GetPreferredLanguages());
+  network_context_params->accept_language =
+      net::HttpUtil::GenerateAcceptLanguageHeader(GetAcceptLangs(context));
 
   // Set the list of cors_exempt_headers which may be specified in a URLRequest,
   // starting with the headers passed in via

@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_main_parts.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
+#include "fuchsia/engine/web_engine_export.h"
 
 namespace base {
 class FuchsiaIntlProfileWatcher;
@@ -25,6 +26,7 @@ class Screen;
 }
 
 namespace content {
+class ContentBrowserClient;
 struct MainFunctionParams;
 }
 
@@ -34,16 +36,16 @@ class LegacyMetricsClient;
 
 class MediaResourceProviderService;
 
-class WebEngineBrowserMainParts : public content::BrowserMainParts {
+class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
+    : public content::BrowserMainParts {
  public:
   explicit WebEngineBrowserMainParts(
+      content::ContentBrowserClient* browser_client,
       const content::MainFunctionParams& parameters,
       fidl::InterfaceRequest<fuchsia::web::Context> request);
   ~WebEngineBrowserMainParts() override;
 
-  content::BrowserContext* browser_context() const {
-    return browser_context_.get();
-  }
+  std::vector<content::BrowserContext*> browser_contexts() const;
   WebEngineDevToolsController* devtools_controller() const {
     return devtools_controller_.get();
   }
@@ -58,19 +60,19 @@ class WebEngineBrowserMainParts : public content::BrowserMainParts {
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
 
-  ContextImpl* context_for_test() const { return context_service_.get(); }
+  ContextImpl* context_for_test() const;
 
  private:
   void OnIntlProfileChanged(const fuchsia::intl::Profile& profile);
 
+  content::ContentBrowserClient* const browser_client_;
   const content::MainFunctionParams& parameters_;
 
   fidl::InterfaceRequest<fuchsia::web::Context> request_;
 
   std::unique_ptr<display::Screen> screen_;
-  std::unique_ptr<WebEngineBrowserContext> browser_context_;
-  std::unique_ptr<ContextImpl> context_service_;
-  std::unique_ptr<fidl::Binding<fuchsia::web::Context>> context_binding_;
+  fidl::BindingSet<fuchsia::web::Context, std::unique_ptr<ContextImpl>>
+      context_bindings_;
   std::unique_ptr<WebEngineDevToolsController> devtools_controller_;
   std::unique_ptr<cr_fuchsia::LegacyMetricsClient> legacy_metrics_client_;
   std::unique_ptr<MediaResourceProviderService>

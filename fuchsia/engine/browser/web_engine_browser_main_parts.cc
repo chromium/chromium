@@ -15,6 +15,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/histogram_fetcher.h"
 #include "content/public/browser/render_frame_host.h"
@@ -57,14 +58,26 @@ void FetchHistogramsFromChildProcesses(
 }  // namespace
 
 WebEngineBrowserMainParts::WebEngineBrowserMainParts(
+    content::ContentBrowserClient* browser_client,
     const content::MainFunctionParams& parameters,
     fidl::InterfaceRequest<fuchsia::web::Context> request)
-    : parameters_(parameters), request_(std::move(request)) {
+    : browser_client_(browser_client),
+      parameters_(parameters),
+      request_(std::move(request)) {
   DCHECK(request_);
 }
 
 WebEngineBrowserMainParts::~WebEngineBrowserMainParts() {
   display::Screen::SetScreenInstance(nullptr);
+}
+
+std::vector<content::BrowserContext*>
+WebEngineBrowserMainParts::browser_contexts() const {
+  std::vector<content::BrowserContext*> contexts;
+  contexts.reserve(context_bindings_.size());
+  for (auto& binding : context_bindings_.bindings())
+    contexts.push_back(binding->impl()->browser_context());
+  return contexts;
 }
 
 void WebEngineBrowserMainParts::PostEarlyInitialization() {
@@ -93,16 +106,27 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
     gpu_data_manager->DisableHardwareAcceleration();
   }
 
-  DCHECK(!browser_context_);
-  browser_context_ = std::make_unique<WebEngineBrowserContext>(
+  DCHECK_EQ(context_bindings_.size(), 0u);
+  auto browser_context = std::make_unique<WebEngineBrowserContext>(
       base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIncognito));
 
   devtools_controller_ = WebEngineDevToolsController::CreateFromCommandLine(
       *base::CommandLine::ForCurrentProcess());
-  context_service_ = std::make_unique<ContextImpl>(browser_context_.get(),
-                                                   devtools_controller_.get());
-  context_binding_ = std::make_unique<fidl::Binding<fuchsia::web::Context>>(
-      context_service_.get(), std::move(request_));
+
+  // TODO(crbug.com/1163073): Instead of creating a single ContextImpl instance
+  // the code below should public fuchsia.web.Context to the outgoing directory.
+  // Also it shouldn't quit main loop after Context disconnects.
+  context_bindings_.AddBinding(
+      std::make_unique<ContextImpl>(std::move(browser_context),
+                                    devtools_controller_.get()),
+      std::move(request_), /* dispatcher */ nullptr,
+      // Quit the browser main loop when the Context connection is dropped.
+      [this](zx_status_t status) {
+        ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
+            << " Context disconnected.";
+        // context_service_.reset();
+        std::move(quit_closure_).Run();
+      });
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kUseLegacyMetricsService)) {
@@ -123,22 +147,13 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
   media_resource_provider_service_ =
       std::make_unique<MediaResourceProviderService>();
 
-  // Quit the browser main loop when the Context connection is dropped.
-  context_binding_->set_error_handler([this](zx_status_t status) {
-    ZX_LOG_IF(ERROR, status != ZX_ERR_PEER_CLOSED, status)
-        << " Context disconnected.";
-    context_service_.reset();
-    std::move(quit_closure_).Run();
-  });
-
   // Disable RenderFrameHost's Javascript injection restrictions so that the
   // Context and Frames can implement their own JS injection policy at a higher
   // level.
   content::RenderFrameHost::AllowInjectingJavaScript();
 
   if (parameters_.ui_task) {
-    // Since the main loop won't run, there is nothing to quit in the
-    // |context_binding_| error handler.
+    // Since the main loop won't run, there is nothing to quit.
     quit_closure_ = base::DoNothing::Once();
 
     std::move(*parameters_.ui_task).Run();
@@ -161,21 +176,22 @@ void WebEngineBrowserMainParts::WillRunMainMessageLoop(
 }
 
 void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
-  // The service and its binding should have already been released by the error
-  // handler.
-  DCHECK(!context_service_);
-  DCHECK(!context_binding_->is_bound());
+  // Main loop should quit only after all Context instances have been destroyed.
+  DCHECK_EQ(context_bindings_.size(), 0u);
 
   // These resources must be freed while a MessageLoop is still available, so
   // that they may post cleanup tasks during teardown.
-  // NOTE: Please destroy objects in the reverse order of their creation.
+  // NOTE: Objects are destroyed in the reverse order of their creation.
   legacy_metrics_client_.reset();
-  context_binding_.reset();
-  browser_context_.reset();
   screen_.reset();
   intl_profile_watcher_.reset();
 
   base::ImportantFileWriterCleaner::GetInstance().Stop();
+}
+
+ContextImpl* WebEngineBrowserMainParts::context_for_test() const {
+  DCHECK_EQ(context_bindings_.size(), 1u);
+  return context_bindings_.bindings().front()->impl().get();
 }
 
 void WebEngineBrowserMainParts::OnIntlProfileChanged(
@@ -191,9 +207,14 @@ void WebEngineBrowserMainParts::OnIntlProfileChanged(
           base::i18n::GetConfiguredLocale());
   VLOG(1) << "Reloaded locale resources: " << loaded_locale;
 
-  // Reconfigure the network process.
-  content::BrowserContext::GetDefaultStoragePartition(browser_context_.get())
-      ->GetNetworkContext()
-      ->SetAcceptLanguage(net::HttpUtil::GenerateAcceptLanguageHeader(
-          browser_context_->GetPreferredLanguages()));
+  // Reconfigure each web.Context's NetworkContext with the new setting.
+  for (auto& binding : context_bindings_.bindings()) {
+    content::BrowserContext* const browser_context =
+        binding->impl()->browser_context();
+    std::string accept_language = net::HttpUtil::GenerateAcceptLanguageHeader(
+        browser_client_->GetAcceptLangs(browser_context));
+    content::BrowserContext::GetDefaultStoragePartition(browser_context)
+        ->GetNetworkContext()
+        ->SetAcceptLanguage(accept_language);
+  }
 }

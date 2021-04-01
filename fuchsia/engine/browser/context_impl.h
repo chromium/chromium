@@ -34,8 +34,8 @@ class WebEngineDevToolsController;
 // All created Frames are owned by this object.
 class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
  public:
-  // |browser_context| and |devtools_controller| must outlive ContextImpl.
-  ContextImpl(content::BrowserContext* browser_context,
+  // |devtools_controller| must outlive ContextImpl.
+  ContextImpl(std::unique_ptr<content::BrowserContext> browser_context,
               WebEngineDevToolsController* devtools_controller);
 
   // Tears down the Context, destroying any active Frames in the process.
@@ -76,8 +76,8 @@ class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
   // |frame_ptr| client.
   FrameImpl* GetFrameImplForTest(fuchsia::web::FramePtr* frame_ptr) const;
 
-  content::BrowserContext* browser_context_for_test() const {
-    return browser_context_;
+  content::BrowserContext* browser_context() const {
+    return browser_context_.get();
   }
 
  private:
@@ -85,7 +85,7 @@ class WEB_ENGINE_EXPORT ContextImpl : public fuchsia::web::Context {
   network::mojom::NetworkContext* GetNetworkContext();
 
   // Reference to the browser implementation for this Context.
-  content::BrowserContext* const browser_context_;
+  std::unique_ptr<content::BrowserContext> const browser_context_;
 
   // Reference to the class managing the DevTools remote debugging service.
   WebEngineDevToolsController* const devtools_controller_;
