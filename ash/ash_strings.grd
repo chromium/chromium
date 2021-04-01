@@ -1572,6 +1572,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE" desc="The label used in quick settings to indicate an unactivated cellular network that can be clicked to launch activation through setup flow. [CHAR_LIMIT=29]">
         Click to activate
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_UNLOCK" desc="The label used in quick settings to indicate a cellular network is locked and clicking on it will open unlock dialog in chrome OS settings. [CHAR_LIMIT=29]">
+        Click to unlock
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SIGN_IN_TO_UNLOCK" desc="The label used in quick settings to indicate a cellular network is locked, after signing in the user can unlock the network. [CHAR_LIMIT=29]">
+        Sign in to unlock
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_STATUS_SECURED" desc="a11y label used when a Wi-Fi network is secured. [CHAR_LIMIT=14]">
         Secured
       </message>

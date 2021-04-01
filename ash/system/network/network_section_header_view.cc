@@ -217,7 +217,8 @@ int MobileSectionHeaderView::UpdateToggleAndGetStatusMessage(
       return IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLING;
     }
 
-    if (cellular_device->sim_lock_status &&
+    if (!chromeos::features::IsCellularActivationUiEnabled() &&
+        cellular_device->sim_lock_status &&
         !cellular_device->sim_lock_status->lock_type.empty()) {
       return IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED;
     }

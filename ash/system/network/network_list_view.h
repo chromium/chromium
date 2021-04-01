@@ -83,12 +83,6 @@ class NetworkListView : public NetworkStateListDetailedView,
   // not managed by policy.
   views::View* CreatePolicyView(const NetworkInfo& info);
 
-  // Adds a custom sub label using |sub_text| to the |view| with warning color
-  // and updates accessibility label. Used when cellular network is not
-  // activiated.
-  void SetupUnactivatedCellularNetworkListItem(HoverHighlightView* view,
-                                               const std::u16string& sub_text);
-
   // Adds or updates child views representing the network connections when
   // |is_wifi| is matching the attribute of a network connection starting at
   // |child_index|. Returns a set of guids for the added network
