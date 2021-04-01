@@ -86,7 +86,7 @@ class BASE_EXPORT ThreadCacheRegistry {
   static constexpr TimeDelta kMinPurgeInterval = TimeDelta::FromSeconds(1);
   static constexpr TimeDelta kMaxPurgeInterval = TimeDelta::FromMinutes(1);
   static constexpr TimeDelta kDefaultPurgeInterval = 2 * kMinPurgeInterval;
-  static constexpr int kMinMainThreadAllocationsForPurging = 1000;
+  static constexpr int kMinAllocationsForPurging = 10000;
 
  private:
   void PeriodicPurge();
@@ -300,6 +300,7 @@ class BASE_EXPORT ThreadCache {
   static uint16_t largest_active_bucket_index_;
 
   Bucket buckets_[kBucketCount];
+  uint64_t allocations_ = 0;
   std::atomic<bool> should_purge_;
   ThreadCacheStats stats_;
   PartitionRoot<ThreadSafe>* const root_;
@@ -365,6 +366,7 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
 
 ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
                                               size_t* slot_size) {
+  allocations_++;
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
   stats_.allocs_per_bucket_[bucket_index]++;
 #endif

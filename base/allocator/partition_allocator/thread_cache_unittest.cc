@@ -485,15 +485,14 @@ TEST_F(ThreadCacheTest, PeriodicPurge) {
             registry.purge_interval_for_testing());
 
   FillThreadCacheAndReturnIndex(
-      kSmallSize,
-      2 * ThreadCacheRegistry::kMinMainThreadAllocationsForPurging + 1);
+      kSmallSize, 2 * ThreadCacheRegistry::kMinAllocationsForPurging + 1);
   task_env_.FastForwardBy(registry.purge_interval_for_testing());
   EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval / 2,
             registry.purge_interval_for_testing());
 
   // Enough allocations, interval doesn't change.
-  FillThreadCacheAndReturnIndex(
-      kSmallSize, ThreadCacheRegistry::kMinMainThreadAllocationsForPurging);
+  FillThreadCacheAndReturnIndex(kSmallSize,
+                                ThreadCacheRegistry::kMinAllocationsForPurging);
   task_env_.FastForwardBy(registry.purge_interval_for_testing());
   EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval / 2,
             registry.purge_interval_for_testing());
@@ -505,11 +504,67 @@ TEST_F(ThreadCacheTest, PeriodicPurge) {
 
   // Many allocations, directly go to the default interval.
   FillThreadCacheAndReturnIndex(
-      kSmallSize,
-      10 * ThreadCacheRegistry::kMinMainThreadAllocationsForPurging + 1);
+      kSmallSize, 10 * ThreadCacheRegistry::kMinAllocationsForPurging + 1);
   task_env_.FastForwardBy(registry.purge_interval_for_testing());
   EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
             registry.purge_interval_for_testing());
+}
+
+TEST_F(ThreadCacheTest, PeriodicPurgeSumsOverAllThreads) {
+  auto& registry = ThreadCacheRegistry::Instance();
+  registry.StartPeriodicPurge();
+  EXPECT_EQ(1u, task_env_.GetPendingMainThreadTaskCount());
+  EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
+            registry.purge_interval_for_testing());
+
+  // No allocations, the period gets longer.
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(2 * ThreadCacheRegistry::kDefaultPurgeInterval,
+            registry.purge_interval_for_testing());
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(4 * ThreadCacheRegistry::kDefaultPurgeInterval,
+            registry.purge_interval_for_testing());
+
+  // Check that the purge interval is clamped at the maximum value.
+  while (registry.purge_interval_for_testing() <
+         ThreadCacheRegistry::kMaxPurgeInterval) {
+    task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  }
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  // There is still a task, even though there are no allocations.
+  EXPECT_EQ(1u, task_env_.GetPendingMainThreadTaskCount());
+
+  // Not enough allocations on this thread to decrease the interval.
+  FillThreadCacheAndReturnIndex(kSmallSize, 1);
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
+            registry.purge_interval_for_testing());
+
+  std::atomic<bool> allocations_done{false};
+  std::atomic<bool> can_finish{false};
+  LambdaThreadDelegate delegate{BindLambdaForTesting([&]() {
+    FillThreadCacheAndReturnIndex(
+        kSmallSize, 10 * ThreadCacheRegistry::kMinAllocationsForPurging + 1);
+    allocations_done.store(true, std::memory_order_release);
+
+    // This thread needs to be alive when the next periodic purge task runs.
+    while (!can_finish.load(std::memory_order_acquire)) {
+    }
+  })};
+
+  PlatformThreadHandle thread_handle;
+  PlatformThread::Create(0, &delegate, &thread_handle);
+
+  while (!allocations_done.load(std::memory_order_acquire)) {
+  }
+
+  // Many allocations on the other thread.
+  task_env_.FastForwardBy(registry.purge_interval_for_testing());
+  EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
+            registry.purge_interval_for_testing());
+
+  can_finish.store(true, std::memory_order_release);
+  PlatformThread::Join(thread_handle);
 }
 
 TEST_F(ThreadCacheTest, DynamicCountPerBucket) {
