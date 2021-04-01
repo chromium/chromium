@@ -25,7 +25,6 @@ import {Tab, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 import {TitleItem} from './title_item.js';
 
-
 // The minimum number of list items we allow viewing regardless of browser
 // height. Includes a half row that hints to the user the capability to scroll.
 /** @type {number} */
@@ -104,6 +103,13 @@ export class TabSearchAppElement extends PolymerElement {
       moveActiveTabToBottom_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('moveActiveTabToBottom'),
+      },
+
+      recentlyClosedDefaultItemDisplayCount_: {
+        type: Number,
+        value: () =>
+            /** @type {number} */ (
+                loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount')),
       },
 
       /** @private */
@@ -597,8 +603,12 @@ export class TabSearchAppElement extends PolymerElement {
 
     this.filteredOpenTabs_ =
         fuzzySearch(this.searchText_, openTabs, this.fuzzySearchOptions_);
-    this.filteredRecentlyClosedTabs_ = fuzzySearch(
+    const filteredRecentlyClosedTabs = fuzzySearch(
         this.searchText_, recentlyClosedTabs, this.fuzzySearchOptions_);
+    this.filteredRecentlyClosedTabs_ = this.searchText_.length ?
+        filteredRecentlyClosedTabs :
+        filteredRecentlyClosedTabs.slice(
+            0, this.recentlyClosedDefaultItemDisplayCount_);
     this.searchResultText_ = this.getA11ySearchResultText_();
   }
 

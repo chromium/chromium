@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/l10n/time_format.h"
@@ -35,7 +36,6 @@
 namespace {
 constexpr base::TimeDelta kTabsChangeDelay =
     base::TimeDelta::FromMilliseconds(50);
-constexpr int kMaxRecentlyClosedTabCount = 100;
 
 std::string GetLastActiveElapsedText(
     const base::TimeTicks& last_active_time_ticks) {
@@ -201,8 +201,10 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
   }
 
   CreateRecentlyClosedTabs(profile_data->recently_closed_tabs, tab_urls);
+  DCHECK(features::kTabSearchRecentlyClosedMaxEntries.Get() >= 0);
   DCHECK(profile_data->recently_closed_tabs.size() <=
-         kMaxRecentlyClosedTabCount);
+         static_cast<unsigned int>(
+             features::kTabSearchRecentlyClosedMaxEntries.Get()));
   return profile_data;
 }
 
@@ -212,6 +214,8 @@ void TabSearchPageHandler::CreateRecentlyClosedTabs(
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
   // TabRestoreService is only available for non off the record profiles.
+  unsigned int maxRecentlyClosedTabCount = static_cast<unsigned int>(
+      features::kTabSearchRecentlyClosedMaxEntries.Get());
   if (tab_restore_service) {
     GURL new_tab_page_url = GURL(chrome::kChromeUINewTabPageURL);
     // Flatten tab restore service entries into tabs. Ignore any entries that
@@ -233,7 +237,7 @@ void TabSearchPageHandler::CreateRecentlyClosedTabs(
             continue;
           tab_urls.insert(recently_closed_tab->url);
           recently_closed_tabs.push_back(std::move(recently_closed_tab));
-          if (recently_closed_tabs.size() >= kMaxRecentlyClosedTabCount)
+          if (recently_closed_tabs.size() >= maxRecentlyClosedTabCount)
             return;
         }
       } else if (entry->type == sessions::TabRestoreService::Type::TAB) {
@@ -247,7 +251,7 @@ void TabSearchPageHandler::CreateRecentlyClosedTabs(
           continue;
         tab_urls.insert(recently_closed_tab->url);
         recently_closed_tabs.push_back(std::move(recently_closed_tab));
-        if (recently_closed_tabs.size() >= kMaxRecentlyClosedTabCount)
+        if (recently_closed_tabs.size() >= maxRecentlyClosedTabCount)
           return;
       }
     }

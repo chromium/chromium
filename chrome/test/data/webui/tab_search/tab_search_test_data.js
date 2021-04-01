@@ -103,18 +103,24 @@ export function sampleSiteNames(count) {
 /**
  * Generates sample tabs based on some given site names.
  * @param {!Array<string>} siteNames
- * @return {!Array}
+ * @param {boolean} hasIndex Whether the items have an index property.
+ * @return {!Array<!Tab>}
  */
-export function generateSampleTabsFromSiteNames(siteNames) {
+export function generateSampleTabsFromSiteNames(siteNames, hasIndex = true) {
   return siteNames.map((siteName, i) => {
-    return {
-      index: i,
+    const tab = /** @type {Tab} */ ({
       tabId: i + 1,
       title: siteName,
       url: 'https://www.' + siteName.toLowerCase() + '.com',
       lastActiveTimeTicks: {internalValue: BigInt(siteNames.length - i)},
       lastActiveElapsedText: '',
-    };
+    });
+
+    if (hasIndex) {
+      tab.index = i;
+    }
+
+    return tab;
   });
 }
 

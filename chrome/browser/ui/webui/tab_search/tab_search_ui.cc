@@ -65,6 +65,10 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
                      features::kTabSearchMoveActiveTabToBottom.Get());
   source->AddLocalizedString("close", IDS_CLOSE);
 
+  source->AddInteger(
+      "recentlyClosedDefaultItemDisplayCount",
+      features::kTabSearchRecentlyClosedDefaultItemDisplayCount.Get());
+
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);
   source->AddString("shortcutText", accelerator.GetShortcutText());

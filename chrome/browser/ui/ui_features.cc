@@ -142,6 +142,10 @@ const base::Feature kTabSearchFuzzySearch{"kTabSearchFuzzySearch",
 const base::Feature kTabSearchFeedback{"TabSearchFeedback",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls feature parameters for Tab Search's `Recently Closed` entries.
+const base::Feature kTabSearchRecentlyClosed{"TabSearchRecentlyClosed",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::FeatureParam<bool> kTabSearchSearchIgnoreLocation{
     &kTabSearchFuzzySearch, "TabSearchSearchIgnoreLocation", true};
 
@@ -156,6 +160,13 @@ const base::FeatureParam<double> kTabSearchTitleToHostnameWeightRatio{
 
 const base::FeatureParam<bool> kTabSearchMoveActiveTabToBottom{
     &kTabSearchFuzzySearch, "TabSearchMoveActiveTabToBottom", true};
+
+const base::FeatureParam<int> kTabSearchRecentlyClosedDefaultItemDisplayCount{
+    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedDefaultItemDisplayCount",
+    8};
+
+const base::FeatureParam<int> kTabSearchRecentlyClosedMaxEntries{
+    &kTabSearchRecentlyClosed, "TabSearchRecentlyClosedMaxEntries", 100};
 
 const base::Feature kToolbarUseHardwareBitmapDraw{
     "ToolbarUseHardwareBitmapDraw", base::FEATURE_DISABLED_BY_DEFAULT};

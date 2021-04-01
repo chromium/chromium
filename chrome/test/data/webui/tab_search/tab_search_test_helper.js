@@ -69,6 +69,10 @@ export function initLoadTimeDataWithDefaults(loadTimeOverriddenData) {
   if (!loadTimeOverriddenData.hasOwnProperty('shortcutText')) {
     loadTimeOverriddenData.shortcutText = '';
   }
+  if (!loadTimeOverriddenData.hasOwnProperty(
+          'recentlyClosedDefaultItemDisplayCount')) {
+    loadTimeOverriddenData.recentlyClosedDefaultItemDisplayCount = 5;
+  }
 
   loadTimeData.overrideValues(loadTimeOverriddenData);
 }
