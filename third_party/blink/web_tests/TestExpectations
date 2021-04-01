@@ -6671,6 +6671,8 @@ crbug.com/476553 virtual/scroll-unification-synchronous_html_parser/external/wpt
 crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-should-not-stop-on-keypress.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-scrolled.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-upwards-propagation-overflow-hidden-body.html [ Pass Failure Timeout Crash ]
-
+crbug.com/476553 virtual/scroll-unification/fast/events/frame-scroll-fake-mouse-move.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-fling-with-page-scale.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/fast/events/autoscroll-nonscrollable-iframe-in-scrollable-div.html [ Pass Failure Timeout Crash ]
 
 
