@@ -101,6 +101,7 @@ source_set("chromeos") {
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
     "//chrome/browser/nearby_sharing/logging",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator:tab_metrics_event_proto",
     "//chrome/browser/resources/settings:resources_grit",

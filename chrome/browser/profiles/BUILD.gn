@@ -5,6 +5,22 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
+# This target should be the default place for adding public interface things
+# (ie, non-factory, non-impl). There will likely need to be a :factory or :impl
+# target (maybe both) for those eventually.
+source_set("profiles") {
+  sources = [
+    "incognito_helpers.cc",
+    "incognito_helpers.h",
+  ]
+
+  # Cannot depend on //chrome/browser:browser.
+  deps = [ ":profile" ]
+}
+
+# This target should be very minimal, likely no new sources should be added
+# here. It should not depend on anything besides flags/constants in
+# //chrome/browser/* because almost everything else depends on it.
 source_set("profile") {
   sources = [
     "profile.cc",

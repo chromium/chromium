@@ -44,6 +44,7 @@ static_library("router") {
     ":media_router_feature",
     "//base",
     "//chrome:strings",
+    "//chrome/browser/profiles",
     "//chrome/common:constants",
     "//components/cast_channel",
     "//components/keyed_service/content",

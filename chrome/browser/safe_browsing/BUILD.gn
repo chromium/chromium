@@ -21,6 +21,7 @@ static_library("safe_browsing") {
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chrome/common:constants",
@@ -356,6 +357,7 @@ source_set("verdict_cache_manager_factory") {
 
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//components/content_settings/core/browser",
@@ -376,6 +378,7 @@ static_library("advanced_protection") {
   ]
 
   deps = [
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/content",
     "//components/prefs",
