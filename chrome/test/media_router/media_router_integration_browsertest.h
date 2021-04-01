@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/media/router/providers/test/test_media_route_provider.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/test/media_router/media_router_base_browsertest.h"
 #include "chrome/test/media_router/media_router_ui_for_test.h"
@@ -68,13 +69,13 @@ class MediaRouterIntegrationBrowserTest : public MediaRouterBaseBrowserTest {
   // Opens "basic_test.html," waits for sinks to be available, starts a
   // presentation, and chooses a sink with the name |kTestSinkName|. Also checks
   // that the presentation has successfully started if |should_succeed| is true.
-  content::WebContents* StartSessionWithTestPageAndChooseSink();
+  virtual content::WebContents* StartSessionWithTestPageAndChooseSink();
 
   // Opens the MR dialog and clicks through the motions of casting a file. Sets
   // up the route provider to succeed or otherwise based on |route_success|.
   // Note: The system dialog portion has to be mocked out as it cannot be
   // simulated.
-  void OpenDialogAndCastFile(bool route_success = true);
+  void OpenDialogAndCastFile();
 
   // Opens the MR dialog and clicks through the motions of choosing to cast
   // file, file returns an issue. Note: The system dialog portion has to be
@@ -118,6 +119,10 @@ class MediaRouterIntegrationBrowserTest : public MediaRouterBaseBrowserTest {
   // another tab.
   void RunReconnectSessionTest();
 
+  // Runs a test in which we start a presentation and failed to reconnect it
+  // from another tab.
+  void RunFailedReconnectSessionTest();
+
   // Runs a test in which we start a presentation and reconnect to it from the
   // same tab.
   void RunReconnectSessionSameTabTest();
@@ -133,6 +138,8 @@ class MediaRouterIntegrationBrowserTest : public MediaRouterBaseBrowserTest {
 
   // Name of the test receiver to use.
   std::string receiver_;
+
+  std::unique_ptr<TestMediaRouteProvider> test_provider_;
 
  private:
   // Get the full path of the resource file.

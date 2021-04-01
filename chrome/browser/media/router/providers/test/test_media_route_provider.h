@@ -11,8 +11,10 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
+#include "content/public/test/browser_test_utils.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -74,28 +76,59 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider {
       CreateMediaRouteControllerCallback callback) override;
   void GetState(GetStateCallback callback) override;
 
- private:
   void set_close_route_error_on_send() {
     close_route_with_error_on_send_ = true;
   }
-  void set_delay_ms(int delay_ms) { delay_ms_ = delay_ms; }
+
   void set_route_error_message(std::string error_message) {
     route_error_message_ = error_message;
   }
+
+  void set_empty_sink_list() { sinks_ = {}; }
+
+  void set_unsupported_media_sources_list() {
+    unsupported_media_sources_ = {"urn:x-org.chromium.media:source:tab:0",
+                                  "urn:x-org.chromium.media:source:tab:*",
+                                  "urn:x-org.chromium.media:source:desktop",
+                                  "https://www.example.com/presentation.html"};
+  }
+
+  void set_delay(base::TimeDelta delay) { delay_ = delay; }
+
+  std::vector<std::string> get_presentation_ids() {
+    std::vector<std::string> presentation_ids;
+    for (auto& element : presentation_ids_to_routes_)
+      presentation_ids.push_back(element.first);
+    return presentation_ids;
+  }
+
+  void CaptureOffScreenTab(content::WebContents* web_contents,
+                           GURL source_urn,
+                           std::string& presentation_id);
+
+ private:
+  base::WeakPtr<TestMediaRouteProvider> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   std::vector<MediaRoute> GetMediaRoutes();
   void SetSinks();
+  void CreateRouteTimeOut(CreateRouteCallback callback);
 
   bool close_route_with_error_on_send_ = false;
-  int delay_ms_ = 0;
+  base::TimeDelta delay_ = base::TimeDelta::FromSeconds(0);
   std::string route_error_message_;
   std::map<std::string, MediaRoute> presentation_ids_to_routes_;
   std::map<MediaRoute::Id, MediaRoute> routes_;
   std::vector<MediaSinkInternal> sinks_;
+  std::vector<std::string> unsupported_media_sources_;
 
   // Binds |this| to the Mojo receiver passed into the ctor.
   mojo::Receiver<mojom::MediaRouteProvider> receiver_;
   // Mojo remote to the Media Router.
   mojo::Remote<mojom::MediaRouter> media_router_;
+
+  base::WeakPtrFactory<TestMediaRouteProvider> weak_ptr_factory_{this};
 };
 
 }  // namespace media_router
