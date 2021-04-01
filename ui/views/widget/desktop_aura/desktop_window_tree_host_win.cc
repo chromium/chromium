@@ -195,15 +195,16 @@ DesktopWindowTreeHostWin::CreateDragDropClient() {
 }
 
 void DesktopWindowTreeHostWin::Close() {
+  // Calling Hide() can detach the content window's layer, so store it
+  // beforehand so we can access it below.
+  auto* window_layer = content_window()->layer();
+
   content_window()->Hide();
   // TODO(beng): Move this entire branch to DNWA so it can be shared with X11.
   if (should_animate_window_close_) {
     pending_close_ = true;
-    const bool is_animating =
-        content_window()->layer()->GetAnimator()->IsAnimatingProperty(
-            ui::LayerAnimationElement::VISIBILITY);
     // Animation may not start for a number of reasons.
-    if (!is_animating)
+    if (!window_layer->GetAnimator()->is_animating())
       message_handler_->Close();
     // else case, OnWindowHidingAnimationCompleted does the actual Close.
   } else {
