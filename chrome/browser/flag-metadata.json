@@ -3130,7 +3130,7 @@
   {
     "name": "hardware-media-key-handling",
     "owners": [ "steimel", "media-dev" ],
-    "expiry_milestone": 90
+    "expiry_milestone": 100
   },
   {
     "name": "heavy-ad-privacy-mitigations",
