@@ -203,6 +203,7 @@ void HTMLDialogElement::showModal(ExceptionState& exception_state) {
 void HTMLDialogElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
   InertSubtreesChanged(GetDocument());
+  SetIsModal(false);
 }
 
 void HTMLDialogElement::DefaultEventHandler(Event& event) {
