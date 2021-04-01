@@ -60,6 +60,11 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderMac
   bool HasURL(FilenameToURLPolicy policy) const override;
   bool HasFile() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
+  void SetFileContents(const base::FilePath& filename,
+                       const std::string& file_contents) override;
+  bool GetFileContents(base::FilePath* filename,
+                       std::string* file_contents) const override;
+  bool HasFileContents() const override;
   void SetDragImage(const gfx::ImageSkia& image,
                     const gfx::Vector2d& cursor_offset) override;
   gfx::ImageSkia GetDragImage() const override;

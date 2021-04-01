@@ -22,6 +22,9 @@ const char kTestString[] = "Hello World!";
 const char kUrl[] = "https://example.com";
 const char kUrlTitle[] = "example";
 const char kFileName[] = "file.pdf";
+const base::FilePath::CharType kFileContentsFileName[] =
+    FILE_PATH_LITERAL("file.jpg");
+const char kFileContents[] = "test data";
 const char kHtml[] = "<h1>Random Title</h1>";
 const char kBaseUrl[] = "www.example2.com";
 }  // namespace
@@ -38,6 +41,8 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   original_pickle.WriteString16(base::UTF8ToUTF16(kTestString));
   original.SetPickledData(ClipboardFormatType::GetPlainTextType(),
                           original_pickle);
+  original.SetFileContents(base::FilePath(kFileContentsFileName),
+                           std::string(kFileContents));
   original.SetHtml(base::UTF8ToUTF16(kHtml), GURL(kBaseUrl));
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   original.MarkOriginatedFromRenderer();
@@ -63,6 +68,12 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   std::u16string copy_pickle_string;
   EXPECT_TRUE(pickle_itr.ReadString16(&copy_pickle_string));
   EXPECT_EQ(base::UTF8ToUTF16(kTestString), copy_pickle_string);
+
+  base::FilePath copy_file_contents_filename;
+  std::string copy_file_contents;
+  copy->GetFileContents(&copy_file_contents_filename, &copy_file_contents);
+  EXPECT_EQ(base::FilePath(kFileContentsFileName), copy_file_contents_filename);
+  EXPECT_EQ(std::string(kFileContents), copy_file_contents);
 
   std::u16string copy_html;
   GURL copy_base_url;

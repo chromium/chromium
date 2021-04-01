@@ -72,14 +72,12 @@ class COMPONENT_EXPORT(UI_BASE_DATA_EXCHANGE) OSExchangeDataProvider {
   virtual bool HasFile() const = 0;
   virtual bool HasCustomFormat(const ClipboardFormatType& format) const = 0;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
   virtual void SetFileContents(const base::FilePath& filename,
                                const std::string& file_contents) = 0;
-#endif
-#if defined(OS_WIN)
   virtual bool GetFileContents(base::FilePath* filename,
                                std::string* file_contents) const = 0;
   virtual bool HasFileContents() const = 0;
+#if defined(OS_WIN)
   virtual bool HasVirtualFilenames() const = 0;
   virtual bool GetVirtualFilenames(std::vector<FileInfo>* file_names) const = 0;
   virtual bool GetVirtualFilesAsTempFiles(

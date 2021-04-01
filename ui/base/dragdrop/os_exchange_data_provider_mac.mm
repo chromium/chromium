@@ -287,6 +287,24 @@ bool OSExchangeDataProviderMac::HasCustomFormat(
   return [[GetPasteboard() types] containsObject:format.ToNSString()];
 }
 
+void OSExchangeDataProviderMac::SetFileContents(
+    const base::FilePath& filename,
+    const std::string& file_contents) {
+  NOTIMPLEMENTED();
+}
+
+bool OSExchangeDataProviderMac::GetFileContents(
+    base::FilePath* filename,
+    std::string* file_contents) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool OSExchangeDataProviderMac::HasFileContents() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void OSExchangeDataProviderMac::SetDragImage(
     const gfx::ImageSkia& image,
     const gfx::Vector2d& cursor_offset) {

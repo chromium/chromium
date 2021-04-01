@@ -264,6 +264,26 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
     return;
   }
 
+  base::FilePath file_contents_filename;
+  std::string file_contents;
+  if (data.provider().HasFileContents() &&
+      data.provider().GetFileContents(&file_contents_filename,
+                                      &file_contents)) {
+    std::string filename = file_contents_filename.value();
+    base::ReplaceChars(filename, "\\", "\\\\", &filename);
+    base::ReplaceChars(filename, "\"", "\\\"", &filename);
+    const std::string mime_type =
+        base::StrCat({"application/octet-stream;name=\"", filename, "\""});
+    auto callback = base::BindOnce(
+        [](scoped_refptr<base::RefCountedString> contents,
+           DataOffer::SendDataCallback callback) {
+          std::move(callback).Run(std::move(contents));
+        },
+        base::RefCountedString::TakeString(&file_contents));
+    data_callbacks_.emplace(mime_type, std::move(callback));
+    delegate_->OnOffer(mime_type);
+  }
+
   std::u16string string_content;
   if (data.HasString() && data.GetString(&string_content)) {
     const std::string utf8_mime_type = std::string(ui::kMimeTypeTextUtf8);

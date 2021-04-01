@@ -61,10 +61,11 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   bool HasURL(FilenameToURLPolicy policy) const override;
   bool HasFile() const override;
   bool HasCustomFormat(const ClipboardFormatType& format) const override;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   void SetFileContents(const base::FilePath& filename,
                        const std::string& file_contents) override;
-#endif
+  bool GetFileContents(base::FilePath* filename,
+                       std::string* file_contents) const override;
+  bool HasFileContents() const override;
 
   void SetHtml(const std::u16string& html, const GURL& base_url) override;
   bool GetHtml(std::u16string* html, GURL* base_url) const override;
@@ -106,6 +107,10 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   // Drag image and offset data.
   gfx::ImageSkia drag_image_;
   gfx::Vector2d drag_image_offset_;
+
+  // For file contents.
+  base::FilePath file_contents_filename_;
+  std::string file_contents_;
 
   // For HTML format
   std::u16string html_;

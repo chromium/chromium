@@ -35,6 +35,8 @@ std::unique_ptr<OSExchangeDataProvider> OSExchangeDataProviderNonBacked::Clone()
   clone->filenames_ = filenames_;
   clone->pickle_data_ = pickle_data_;
   // We skip copying the drag images.
+  clone->file_contents_filename_ = file_contents_filename_;
+  clone->file_contents_ = file_contents_;
   clone->html_ = html_;
   clone->base_url_ = base_url_;
   clone->source_ =
@@ -184,13 +186,27 @@ bool OSExchangeDataProviderNonBacked::HasCustomFormat(
   return base::Contains(pickle_data_, format);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 void OSExchangeDataProviderNonBacked::SetFileContents(
     const base::FilePath& filename,
     const std::string& file_contents) {
-  NOTIMPLEMENTED();
+  file_contents_filename_ = filename;
+  file_contents_ = file_contents;
 }
-#endif
+
+bool OSExchangeDataProviderNonBacked::GetFileContents(
+    base::FilePath* filename,
+    std::string* file_contents) const {
+  if (file_contents_filename_.empty()) {
+    return false;
+  }
+  *filename = file_contents_filename_;
+  *file_contents = file_contents_;
+  return true;
+}
+
+bool OSExchangeDataProviderNonBacked::HasFileContents() const {
+  return !file_contents_filename_.empty();
+}
 
 void OSExchangeDataProviderNonBacked::SetHtml(const std::u16string& html,
                                               const GURL& base_url) {

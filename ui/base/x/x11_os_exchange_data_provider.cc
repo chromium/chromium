@@ -399,6 +399,18 @@ void XOSExchangeDataProvider::SetFileContents(
                  base::RefCountedString::TakeString(&file_contents_copy)));
 }
 
+bool XOSExchangeDataProvider::GetFileContents(
+    base::FilePath* filename,
+    std::string* file_contents) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool XOSExchangeDataProvider::HasFileContents() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void XOSExchangeDataProvider::SetHtml(const std::u16string& html,
                                       const GURL& base_url) {
   std::vector<unsigned char> bytes;

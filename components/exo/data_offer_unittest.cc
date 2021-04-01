@@ -242,6 +242,21 @@ TEST_F(DataOfferTest, SetPickleDropData) {
   EXPECT_EQ(1u, delegate.mime_types().count("text/uri-list"));
 }
 
+TEST_F(DataOfferTest, SetFileContentsDropData) {
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  ui::OSExchangeData data;
+  data.provider().SetFileContents(base::FilePath("\"test file\".jpg"),
+                                  std::string("test data"));
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
+
+  EXPECT_EQ(1u, delegate.mime_types().size());
+  EXPECT_EQ(1u, delegate.mime_types().count(
+                    "application/octet-stream;name=\"\\\"test file\\\".jpg\""));
+}
+
 TEST_F(DataOfferTest, ReceiveString) {
   TestDataOfferDelegate delegate;
   DataOffer data_offer(&delegate);
@@ -397,6 +412,27 @@ TEST_F(DataOfferTest,
   std::u16string result;
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result));
   EXPECT_EQ(u"", result);
+}
+
+TEST_F(DataOfferTest, ReceiveFileContentsDropData) {
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  ui::OSExchangeData data;
+  const std::string expected = "test data";
+  data.provider().SetFileContents(base::FilePath("test.jpg"), expected);
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+
+  data_offer.Receive("application/octet-stream;name=\"test.jpg\"",
+                     std::move(write_pipe));
+  std::string result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &result));
+  EXPECT_EQ(expected, result);
 }
 
 TEST_F(DataOfferTest, SetClipboardDataPlainText) {
