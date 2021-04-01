@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "components/exo/key_state.h"
 
 namespace ui {
 enum class DomCode;
@@ -29,7 +30,7 @@ class KeyboardDelegate {
   // Called when keyboard focus enters a new valid target surface.
   virtual void OnKeyboardEnter(
       Surface* surface,
-      const base::flat_map<ui::DomCode, ui::DomCode>& pressed_keys) = 0;
+      const base::flat_map<ui::DomCode, KeyState>& pressed_keys) = 0;
 
   // Called when keyboard focus leaves a valid target surface.
   virtual void OnKeyboardLeave(Surface* surface) = 0;

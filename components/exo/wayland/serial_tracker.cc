@@ -85,5 +85,15 @@ void SerialTracker::ResetTouchDownSerial() {
   touch_down_serial_ = base::nullopt;
 }
 
+uint32_t SerialTracker::MaybeNextKeySerial() {
+  if (!key_serial_.has_value())
+    key_serial_ = GetNextSerial(OTHER_EVENT);
+  return key_serial_.value();
+}
+
+void SerialTracker::ResetKeySerial() {
+  key_serial_ = base::nullopt;
+}
+
 }  // namespace wayland
 }  // namespace exo

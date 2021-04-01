@@ -321,8 +321,9 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
   if (physical_code_for_currently_processing_event_ != ui::DomCode::NONE) {
     switch (event->type()) {
       case ui::ET_KEY_PRESSED:
-        pressed_keys_.insert(
-            {physical_code_for_currently_processing_event_, event->code()});
+        pressed_keys_.emplace(
+            physical_code_for_currently_processing_event_,
+            KeyState{event->code(), /*consumed_by_ime=*/false});
         break;
       case ui::ET_KEY_RELEASED:
         pressed_keys_.erase(physical_code_for_currently_processing_event_);
