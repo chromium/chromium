@@ -297,4 +297,30 @@ TEST_F(AndroidTelemetryServiceTest, GetReport_ValidateAllFields) {
   EXPECT_EQ(kItemTargetFilePath, report->download_item_info().file_basename());
 }
 
+// Regression test for https://crbug.com/1173145#c17.
+TEST_F(AndroidTelemetryServiceTest,
+       OnDownloadUpdated_ObserverNotRemovedIfDownloadIsNotCompleted) {
+  // Disable Safe Browsing so we can log the telemetry outcome metric.
+  profile()->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, false);
+  download_item_->AddObserver(telemetry_service_.get());
+
+  // Simulate APK download. The file name is not populated yet but the MIME type
+  // is APK.
+  ON_CALL(*download_item_, GetFileNameToReportUser())
+      .WillByDefault(testing::Return(base::FilePath(FILE_PATH_LITERAL(""))));
+  ON_CALL(*download_item_, GetMimeType())
+      .WillByDefault(
+          testing::Return("application/vnd.android.package-archive"));
+
+  // This should trigger OnDownloadUpdated.
+  download_item_->NotifyObserversDownloadUpdated();
+  get_histograms()->ExpectTotalCount(kApkDownloadTelemetryOutcomeMetric, 1);
+
+  // OnDownloadUpdated should still be called.
+  download_item_->NotifyObserversDownloadUpdated();
+  get_histograms()->ExpectTotalCount(kApkDownloadTelemetryOutcomeMetric, 2);
+
+  download_item_->RemoveObserver(telemetry_service_.get());
+}
+
 }  // namespace safe_browsing

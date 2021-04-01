@@ -109,9 +109,6 @@ void AndroidTelemetryService::OnDownloadUpdated(download::DownloadItem* item) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!CanSendPing(item)) {
-    // No longer interested in this |DownloadItem| since the download is
-    // not APK.
-    item->RemoveObserver(this);
     return;
   }
 
