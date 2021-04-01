@@ -318,19 +318,6 @@ class BlinkScrollbarPartAnimationTimer {
 
   void SetDuration(CFTimeInterval duration) { duration_ = duration; }
 
-  // This is a speculative fix for crbug.com/1183276.
-  // In BlinkScrollbarPainterDelegate::setUpAlphaAnimation we are
-  // deallocating BlinkScrollbarPartAnimation and create a new one.
-  // The problem seems to be with BlinkScrollbarPartAnimation, passing a
-  // pointer to itself to BlinkScrollbarPartAnimationTimer.
-  // BlinkScrollbarPartAnimationTimer uses a TaskRunnerTimer to schedule
-  // the animation to run 60 times second.
-  // When we deallocate BlinkScrollbarPartAnimation,
-  // BlinkScrollbarPartAnimationTimer fires again, I believe because it
-  // uses PostTaskDelayed to schedule the next animation.
-  // Ideally the timer won't fire again.
-  void CancelAnimation() { animation_ = nullptr; }
-
  private:
   void TimerFired(TimerBase*) {
     double current_time = base::Time::Now().ToDoubleT();
@@ -338,13 +325,15 @@ class BlinkScrollbarPartAnimationTimer {
 
     if (delta >= duration_)
       timer_.Stop();
-    // This is a speculative fix for crbug.com/1183276.
-    if (!animation_)
-      return;
 
     double fraction = delta / duration_;
     fraction = clampTo(fraction, 0.0, 1.0);
     double progress = timing_function_->Evaluate(fraction);
+    // In some scenarios, animation_ gets released during the call to
+    // setCurrentProgress. Because BlinkScrollbarPartAnimationTimer is a
+    // member variable of BlinkScrollbarPartAnimation animation_ the timer
+    // gets freed at the same time with animation_. In that case, it will
+    // not be safe to call any other code after animation_ setCurrentProgress.
     [animation_ setCurrentProgress:progress];
   }
 
@@ -422,6 +411,10 @@ class BlinkScrollbarPartAnimationTimer {
 
 - (void)setCurrentProgress:(NSAnimationProgress)progress {
   DCHECK(_scrollbar);
+  // In some scenarios, BlinkScrollbarPartAnimation is released in the middle
+  // of this method by _scrollbarPainter. This is why we have to retain the self
+  // pointer when we run this method.
+  [self retain];
 
   CGFloat currentValue;
   if (_startValue > _endValue)
@@ -448,7 +441,13 @@ class BlinkScrollbarPartAnimationTimer {
       break;
   }
 
-  _scrollbar->SetNeedsPaintInvalidation(invalidParts);
+  // Before BlinkScrollbarPartAnimation is released by _scrollbarPainter,
+  // invalidate is called and _scrollbar is set to nullptr. Check to see
+  // if _scrollbar is non-null before calling SetNeedsPaintInvalidation.
+  if (_scrollbar)
+    _scrollbar->SetNeedsPaintInvalidation(invalidParts);
+
+  [self release];
 }
 
 - (void)invalidate {
@@ -456,7 +455,6 @@ class BlinkScrollbarPartAnimationTimer {
   [self stopAnimation];
   END_BLOCK_OBJC_EXCEPTIONS;
   _scrollbar = 0;
-  _timer->CancelAnimation();
 }
 
 @end
