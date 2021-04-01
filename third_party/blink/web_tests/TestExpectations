@@ -6666,3 +6666,4 @@ crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-ta
 # Sheriff 2021-04-01
 # More failing tests because of enabling scroll unification flag
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/gesture-tap-active-state-hidden-iframe.html [ Pass Failure Timeout Crash ]
+crbug.com/476553 virtual/scroll-unification/http/tests/misc/iframe-script-modify-attr.html [ Pass Failure Timeout Crash ]
