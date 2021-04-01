@@ -178,6 +178,8 @@ Polymer({
         return this.i18n('siteSettingsFontAccessMidSentence');
       case ContentSettingsTypes.IDLE_DETECTION:
         return this.i18n('siteSettingsIdleDetectionMidSentence');
+      case ContentSettingsTypes.FILE_HANDLING:
+        return this.i18n('siteSettingsFileHandlingMidSentence');
       default:
         return '';
     }

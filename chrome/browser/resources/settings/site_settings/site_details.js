@@ -109,6 +109,14 @@ Polymer({
       value: () =>
           loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
     },
+
+    /** @private */
+    enableFileHandlingContentSetting_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('enableFileHandlingContentSetting');
+      }
+    },
   },
 
   /** @private {string} */

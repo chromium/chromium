@@ -229,6 +229,8 @@ const SiteSettingsBehaviorImpl = {
         'enableExperimentalWebPlatformFeatures');
     addOrRemoveSettingWithFlag(
         ContentSettingsTypes.FONT_ACCESS, 'enableFontAccessContentSetting');
+    addOrRemoveSettingWithFlag(
+        ContentSettingsTypes.FILE_HANDLING, 'enableFileHandlingContentSetting');
     return this.contentTypes_.slice(0);
   },
 

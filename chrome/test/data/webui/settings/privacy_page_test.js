@@ -62,6 +62,7 @@ const notRedesignedPages = [
   // routes.SITE_SETTINGS_BLUETOOTH_DEVICES,
   // routes.SITE_SETTINGS_WINDOW_PLACEMENT,
   // routes.SITE_SETTINGS_FONT_ACCESS,
+  // routes.SITE_SETTINGS_FILE_HANDLING,
 ];
 
 suite('PrivacyPage', function() {

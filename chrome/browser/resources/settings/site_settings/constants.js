@@ -20,6 +20,7 @@ export const ContentSettingsTypes = {
   CAMERA: 'media-stream-camera',
   CLIPBOARD: 'clipboard',
   COOKIES: 'cookies',
+  FILE_HANDLING: 'file-handling',
   FILE_SYSTEM_WRITE: 'file-system-write',
   FONT_ACCESS: 'font-access',
   GEOLOCATION: 'location',

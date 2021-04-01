@@ -84,6 +84,9 @@ function addPrivacyChildRoutes(r) {
   if (loadTimeData.getBoolean('enableFontAccessContentSetting')) {
     r.SITE_SETTINGS_FONT_ACCESS = r.SITE_SETTINGS.createChild('fontAccess');
   }
+  if (loadTimeData.getBoolean('enableFileHandlingContentSetting')) {
+    r.SITE_SETTINGS_FILE_HANDLING = r.SITE_SETTINGS.createChild('fileHandlers');
+  }
 }
 
 /**

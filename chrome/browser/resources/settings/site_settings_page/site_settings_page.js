@@ -215,6 +215,16 @@ function getCategoryItemMap() {
       disabledLabel: 'siteSettingsInsecureContentBlock',
     },
     {
+      route: routes.SITE_SETTINGS_FILE_HANDLING,
+      id: Id.FILE_HANDLING,
+      label: 'siteSettingsFileHandling',
+      icon: 'settings:file-handling',
+      enabledLabel: 'siteSettingsFileHandlingAsk',
+      disabledLabel: 'siteSettingsFileHandlingBlock',
+      shouldShow: () =>
+          loadTimeData.getBoolean('enableFileHandlingContentSetting'),
+    },
+    {
       route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
       id: Id.FILE_SYSTEM_WRITE,
       label: 'siteSettingsFileSystemWrite',
@@ -427,6 +437,7 @@ Polymer({
             Id.IDLE_DETECTION,
             Id.WINDOW_PLACEMENT,
             Id.FONT_ACCESS,
+            Id.FILE_HANDLING,
           ]),
           contentBasic: buildItemListFromIds([
             Id.COOKIES,

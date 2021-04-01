@@ -111,6 +111,7 @@ Polymer({
       case ContentSettingsTypes.AR:
       case ContentSettingsTypes.WINDOW_PLACEMENT:
       case ContentSettingsTypes.FONT_ACCESS:
+      case ContentSettingsTypes.FILE_HANDLING:
         // "Ask" vs "Blocked".
         return ContentSetting.ASK;
       default:

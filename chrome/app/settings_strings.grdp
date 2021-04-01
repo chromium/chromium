@@ -1884,6 +1884,21 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_DEVICE_USE_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the device use content setting.">
     Not allowed to know when you're actively using your device
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_DESCRIPTION" desc="Description of the file handling content setting.">
+    Web apps typically ask to open certain types of files so you can work on those files where you want, like opening documents in your preferred word processor
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_ALLOWED" desc="Label for the enabled option of the file handling content setting.">
+    Web apps can ask to open types of files from your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_BLOCKED" desc="Label for the disabled option of the file handling content setting.">
+    Don't allow web apps to open types of files from your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_ALLOWED_EXCEPTIONS" desc="Label for the allowed exceptions site list of the file handling content setting.">
+    Allowed to open types of files
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_BLOCKED_EXCEPTIONS" desc="Label for the blocked exceptions site list of the file handling content setting.">
+    Not allowed to open types of files
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_SYSTEM_WRITE_DESCRIPTION" desc="Description of the file system write content setting.">
     Sites usually access files and folders on your device for features like automatically saving your work
   </message>
@@ -2681,6 +2696,18 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_BLOCK" desc="The block label for the idle detection site settings.">
     Block sites from knowing when you're actively using this device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING" desc="Label for the file handling site settings.">
+    File handlers
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_MID_SENTENCE" desc="Label for the file handling site setting when used mid-sentence.">
+    file handlers
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_ASK" desc="The ask label for the file handling site settings.">
+    Ask when a web app wants to open types of files on your device
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FILE_HANDLING_BLOCK" desc="The block label for the file handling site settings.">
+    Block web apps from opening types of files on your device
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ALLOWED" desc="A generic Allowed label to show in Site Settings when Allow is NOT the recommended option.">
     Allowed

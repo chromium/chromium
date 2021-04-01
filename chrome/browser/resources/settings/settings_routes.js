@@ -56,6 +56,7 @@ import {Route} from './router.js';
  *   SITE_SETTINGS_COOKIES: !Route,
  *   SITE_SETTINGS_DATA_DETAILS: !Route,
  *   SITE_SETTINGS_FONT_ACCESS: !Route,
+ *   SITE_SETTINGS_FILE_HANDLING: !Route,
  *   SITE_SETTINGS_HANDLERS: !Route,
  *   SITE_SETTINGS_HID_DEVICES: !Route,
  *   SITE_SETTINGS_IDLE_DETECTION: !Route,

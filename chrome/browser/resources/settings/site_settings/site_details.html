@@ -232,8 +232,17 @@
         </site-details-permission>
       </template>
       <template is="dom-if" if="[[enableFontAccessContentSetting_]]">
-        <site-details-permission category="[[ContentSettingsTypes.FONT_ACCESS]]"
-            icon="settings:font-access" label="$i18n{fonts}">
+        <site-details-permission
+            category="[[ContentSettingsTypes.FONT_ACCESS]]"
+            icon="settings:font-access"
+            label="$i18n{fonts}">
+        </site-details-permission>
+      </template>
+      <template is="dom-if" if="[[enableFileHandlingContentSetting_]]">
+        <site-details-permission
+            category="[[ContentSettingsTypes.FILE_HANDLING]]"
+            icon="settings:file-handling"
+            label="$i18n{siteSettingsFileHandling}">
         </site-details-permission>
       </template>
     </div>
