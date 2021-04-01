@@ -103,6 +103,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // allows the user to select which flow they wish to enter (pSIM or eSIM).
   virtual void ShowSettingsCellularSetup(bool show_psim_flow) = 0;
 
+  // Opens SIM unlock dialog in OS Settings.
+  virtual void ShowSettingsSimUnlock() = 0;
+
   // Shows the "add network" UI to create a third-party extension-backed VPN
   // connection (e.g. Cisco AnyConnect).
   virtual void ShowThirdPartyVpnCreate(const std::string& extension_id) = 0;

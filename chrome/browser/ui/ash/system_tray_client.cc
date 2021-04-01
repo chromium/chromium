@@ -520,6 +520,16 @@ void SystemTrayClient::ShowArcVpnCreate(const std::string& app_id) {
       app_id, ui::EF_NONE, apps::mojom::LaunchSource::kFromParentalControls);
 }
 
+void SystemTrayClient::ShowSettingsSimUnlock() {
+  // TODO(https://crbug.com/1093185) Add metrics action recorder.
+  SessionManager* const session_manager = SessionManager::Get();
+  DCHECK(session_manager->IsSessionStarted());
+  DCHECK(!session_manager->IsInSecondaryLoginScreen());
+  std::string page = chromeos::settings::mojom::kCellularNetworksSubpagePath;
+  page += "&showSimLockDialog=true";
+  ShowSettingsSubPageForActiveUser(page);
+}
+
 void SystemTrayClient::ShowNetworkSettings(const std::string& network_id) {
   ShowNetworkSettingsHelper(network_id, false /* show_configure */);
 }
