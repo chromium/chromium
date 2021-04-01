@@ -3655,19 +3655,6 @@
       ]
     },
     {
-      "id": 366,
-      "cr_bugs": [1179557],
-      "description": "The hardware video encoder on the SC7180 SoC has poor quality.",
-      "os": {
-        "type": "chromeos"
-      },
-      "gl_vendor": "freedreno",
-      "features": [
-          "disable_accelerated_h264_encode",
-          "disable_accelerated_vp8_encode"
-        ]
-    },
-    {
       "id": 367,
       "cr_bugs": [1180962],
       "description": "ANGLE cannot recover from context lost",
