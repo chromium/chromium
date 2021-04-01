@@ -57,3 +57,6 @@
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testRendererCrashOnSuspendedTab
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabUnsuspendedInBackground
+
+# crbug.com/1195097
+-org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeDownload
