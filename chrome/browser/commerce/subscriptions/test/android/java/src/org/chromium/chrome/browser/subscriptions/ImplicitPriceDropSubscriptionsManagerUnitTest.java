@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.subscriptions;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -32,6 +33,9 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription.TrackingIdType;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
@@ -41,6 +45,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -88,6 +95,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     private TabImpl mTab1;
     private TabImpl mTab2;
+    private CommerceSubscription mSubscription1;
+    private CommerceSubscription mSubscription2;
     private ImplicitPriceDropSubscriptionsManager mImplicitSubscriptionsManager;
     private SharedPreferencesManager mSharedPreferencesManager;
 
@@ -107,6 +116,12 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
                 + TimeUnit.DAYS.toMillis(7);
         doReturn(fakeTimestamp).when(mCriticalPersistedTabData1).getTimestampMillis();
         doReturn(fakeTimestamp).when(mCriticalPersistedTabData2).getTimestampMillis();
+        mSubscription1 = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
+                ShoppingPersistedTabData.from(mTab1).getOfferId(),
+                SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
+        mSubscription2 = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
+                ShoppingPersistedTabData.from(mTab2).getOfferId(),
+                SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
         doNothing().when(mTabModel).addObserver(mTabModelObserverCaptor.capture());
@@ -143,11 +158,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
         mImplicitSubscriptionsManager.initializeSubscriptions();
 
-        verify(mSubscriptionsManager, times(2)).subscribe(mSubscriptionCaptor.capture());
-        assertThat(mSubscriptionCaptor.getAllValues().get(0).getTrackingId(),
-                equalTo(String.valueOf(OFFER1_ID)));
-        assertThat(mSubscriptionCaptor.getAllValues().get(1).getTrackingId(),
-                equalTo(String.valueOf(OFFER2_ID)));
+        verify(mSubscriptionsManager)
+                .subscribe(eq(new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2))));
     }
 
     @Test
@@ -159,9 +171,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
         mImplicitSubscriptionsManager.initializeSubscriptions();
 
-        verify(mSubscriptionsManager, times(1)).subscribe(mSubscriptionCaptor.capture());
-        assertThat(mSubscriptionCaptor.getAllValues().get(0).getTrackingId(),
-                equalTo(String.valueOf(OFFER2_ID)));
+        verify(mSubscriptionsManager).subscribe(eq(new ArrayList<>(Arrays.asList(mSubscription2))));
     }
 
     @Test
@@ -170,9 +180,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
         mImplicitSubscriptionsManager.initializeSubscriptions();
 
-        verify(mSubscriptionsManager, times(1)).subscribe(mSubscriptionCaptor.capture());
-        assertThat(mSubscriptionCaptor.getAllValues().get(0).getTrackingId(),
-                equalTo(String.valueOf(OFFER2_ID)));
+        verify(mSubscriptionsManager).subscribe(eq(new ArrayList<>(Arrays.asList(mSubscription2))));
     }
 
     @Test
@@ -186,9 +194,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
         mImplicitSubscriptionsManager.initializeSubscriptions();
 
-        verify(mSubscriptionsManager, times(1)).subscribe(mSubscriptionCaptor.capture());
-        assertThat(mSubscriptionCaptor.getAllValues().get(0).getTrackingId(),
-                equalTo(String.valueOf(OFFER2_ID)));
+        verify(mSubscriptionsManager).subscribe(eq(new ArrayList<>(Arrays.asList(mSubscription2))));
     }
 
     @Test
@@ -197,9 +203,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
         mImplicitSubscriptionsManager.initializeSubscriptions();
 
-        verify(mSubscriptionsManager, times(1)).subscribe(mSubscriptionCaptor.capture());
-        assertThat(mSubscriptionCaptor.getAllValues().get(0).getTrackingId(),
-                equalTo(String.valueOf(OFFER2_ID)));
+        verify(mSubscriptionsManager).subscribe(eq(new ArrayList<>(Arrays.asList(mSubscription2))));
     }
 
     @Test
@@ -210,18 +214,15 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
         mImplicitSubscriptionsManager.initializeSubscriptions();
 
-        verify(mSubscriptionsManager, times(0)).subscribe(mSubscriptionCaptor.capture());
+        verify(mSubscriptionsManager, times(0)).subscribe(any(List.class));
     }
 
     @Test
     public void testInitialSubscription_OnResume() {
         mPauseResumeWithNativeObserverCaptor.getValue().onResumeWithNative();
 
-        verify(mSubscriptionsManager, times(2)).subscribe(mSubscriptionCaptor.capture());
-        assertThat(mSubscriptionCaptor.getAllValues().get(0).getTrackingId(),
-                equalTo(String.valueOf(OFFER1_ID)));
-        assertThat(mSubscriptionCaptor.getAllValues().get(1).getTrackingId(),
-                equalTo(String.valueOf(OFFER2_ID)));
+        verify(mSubscriptionsManager)
+                .subscribe(eq(new ArrayList<>(Arrays.asList(mSubscription1, mSubscription2))));
     }
 
     @Test

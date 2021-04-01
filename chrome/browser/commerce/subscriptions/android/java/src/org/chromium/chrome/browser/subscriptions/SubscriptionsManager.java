@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.subscriptions;
 
+import org.chromium.base.Callback;
+
+import java.util.List;
+
 /**
  * Interface for exposing {@link CommerceSubscription} management.
  */
@@ -13,6 +17,12 @@ public interface SubscriptionsManager {
      * @param subscription The {@link CommerceSubscription} to add.
      */
     void subscribe(CommerceSubscription subscription);
+
+    /**
+     * Creates new subscriptions in batch if needed.
+     * @param subscriptions The list of {@link CommerceSubscription} to add.
+     */
+    void subscribe(List<CommerceSubscription> subscriptions);
 
     /**
      * Destroys a subscription on the server if needed.
@@ -25,5 +35,6 @@ public interface SubscriptionsManager {
      * @param type The {@link CommerceSubscription.CommerceSubscriptionType} to query.
      * @param forceFetch Whether to fetch from server.
      */
-    void getSubscriptions(CommerceSubscription.CommerceSubscriptionType type, boolean forceFetch);
+    void getSubscriptions(@CommerceSubscription.CommerceSubscriptionType String type,
+            boolean forceFetch, Callback<List<CommerceSubscription>> callback);
 }

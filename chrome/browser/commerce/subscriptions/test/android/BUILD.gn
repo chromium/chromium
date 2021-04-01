@@ -38,7 +38,11 @@ java_library("junit") {
 android_library("javatests") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorageTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorageTest.java",
+    "java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsLoadCallbackHelper.java",
+    "java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsManagerImplTest.java",
+  ]
 
   deps = [
     "//base:base_java",

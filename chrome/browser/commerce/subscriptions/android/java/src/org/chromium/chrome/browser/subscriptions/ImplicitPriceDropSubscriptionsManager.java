@@ -23,7 +23,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -110,13 +112,15 @@ public class ImplicitPriceDropSubscriptionsManager {
             }
             urlTabMapping.put(tab.getOriginalUrl().getSpec(), tab);
         }
+        List<CommerceSubscription> subscriptions = new ArrayList<>();
         for (Tab tab : urlTabMapping.values()) {
             CommerceSubscription subscription =
                     new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
                             ShoppingPersistedTabData.from(tab).getOfferId(),
                             SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
-            mSubscriptionManager.subscribe(subscription);
+            subscriptions.add(subscription);
         }
+        mSubscriptionManager.subscribe(subscriptions);
     }
 
     private void unsubscribe(Tab tab) {
@@ -132,7 +136,8 @@ public class ImplicitPriceDropSubscriptionsManager {
     }
 
     private boolean hasOfferId(Tab tab) {
-        return !ShoppingPersistedTabData.from(tab).getOfferId().isEmpty();
+        return ShoppingPersistedTabData.from(tab) != null
+                && !ShoppingPersistedTabData.from(tab).getOfferId().isEmpty();
     }
 
     // TODO(crbug.com/1186450): Extract this method to a utility class. Also, make the one-day time

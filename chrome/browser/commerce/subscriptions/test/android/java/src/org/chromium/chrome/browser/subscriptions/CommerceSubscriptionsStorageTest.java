@@ -49,32 +49,6 @@ public class CommerceSubscriptionsStorageTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    /**
-     * Helper class for load operations to get load results.
-     */
-    class LoadCallbackHelper extends CallbackHelper {
-        private CommerceSubscription mSingleResult;
-        private List<CommerceSubscription> mResultList;
-
-        void notifyCalled(CommerceSubscription subscription) {
-            mSingleResult = subscription;
-            notifyCalled();
-        }
-
-        void notifyCalled(List<CommerceSubscription> subscriptions) {
-            mResultList = subscriptions;
-            notifyCalled();
-        }
-
-        CommerceSubscription getSingleResult() {
-            return mSingleResult;
-        }
-
-        List<CommerceSubscription> getResultList() {
-            return mResultList;
-        }
-    }
-
     private static final String OFFER_ID_1 = "offer_id_1";
     private static final String OFFER_ID_2 = "offer_id_2";
     private static final String OFFER_ID_3 = "offer_id_3";
@@ -109,7 +83,10 @@ public class CommerceSubscriptionsStorageTest {
 
     @After
     public void tearDown() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mStorage.destroy(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mStorage.deleteAll();
+            mStorage.destroy();
+        });
     }
 
     @SmallTest
@@ -215,7 +192,7 @@ public class CommerceSubscriptionsStorageTest {
 
     private void loadSingleAndCheckResult(String key, CommerceSubscription expected)
             throws TimeoutException {
-        LoadCallbackHelper ch = new LoadCallbackHelper();
+        SubscriptionsLoadCallbackHelper ch = new SubscriptionsLoadCallbackHelper();
         int chCount = ch.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(() -> mStorage.load(key, (res) -> ch.notifyCalled(res)));
         ch.waitForCallback(chCount);
@@ -230,7 +207,7 @@ public class CommerceSubscriptionsStorageTest {
 
     private void loadPrefixAndCheckResult(String prefix, List<CommerceSubscription> expected)
             throws TimeoutException {
-        LoadCallbackHelper ch = new LoadCallbackHelper();
+        SubscriptionsLoadCallbackHelper ch = new SubscriptionsLoadCallbackHelper();
         int chCount = ch.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mStorage.loadWithPrefix(prefix, (res) -> ch.notifyCalled(res)));
