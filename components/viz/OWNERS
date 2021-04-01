@@ -6,7 +6,6 @@
 # ask for informal reviews.
 
 # display / resources / quads / passes
-danakj@chromium.org
 vmpstr@chromium.org
 weiliangc@chromium.org
 
@@ -30,7 +29,6 @@ jonross@chromium.org
 per-file client_frame_sink_video_capturer*=ilnik@chromium.org
 
 # gpu
-danakj@chromium.org
 sadrul@chromium.org
 kylechar@chromium.org
 
@@ -51,6 +49,5 @@ petermcneeley@chromium.org
 sunnyps@chromium.org
 
 # general
-danakj@chromium.org
 vmpstr@chromium.org
 kylechar@chromium.org
