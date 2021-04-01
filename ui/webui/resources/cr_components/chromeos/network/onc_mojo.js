@@ -1188,6 +1188,31 @@
   }
 
   /**
+   * Returns true if the SIMInfos match.
+   * @param {?Array<chromeos.networkConfig.mojom.SIMInfo>|undefined} a
+   * @param {?Array<chromeos.networkConfig.mojom.SIMInfo>|undefined} b
+   */
+  static simInfosMatch(a, b) {
+    if (!a || !b) {
+      return !!a === !!b;
+    }
+    if (a.length !== b.length) {
+      return false;
+    }
+    for (let i = 0; i < a.length; i++) {
+      const acurrent = a[i];
+      const bcurrent = b[i];
+      if (acurrent.slotId !== bcurrent.slotId ||
+          acurrent.eid !== bcurrent.eid ||
+          acurrent.iccid !== bcurrent.iccid ||
+          acurrent.isPrimary !== bcurrent.isPrimary) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
    * Returns true if the APN properties match.
    * @param {chromeos.networkConfig.mojom.ApnProperties} a
    * @param {chromeos.networkConfig.mojom.ApnProperties} b

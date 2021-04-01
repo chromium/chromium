@@ -106,26 +106,26 @@
         <cr-button id="forgetButton" on-click="onForgetTap_"
             hidden$="[[!showForget_(managedProperties_)]]"
             disabled="[[disableForget_(managedProperties_,
-                prefs.vpn_config_allowed, disabled)]]">
+                prefs.vpn_config_allowed, disabled_)]]">
           $i18n{networkButtonForget}
         </cr-button>
         <cr-button id="viewAccountButton"
             on-click="onViewAccountTap_"
             hidden$="[[!showViewAccount_(managedProperties_)]]"
-            disabled="[[disabled]]">
+            disabled="[[disabled_]]">
           $i18n{networkButtonViewAccount}
         </cr-button>
         <cr-button id="activateButton"
             on-click="onActivateTap_"
             hidden$="[[!showActivate_(managedProperties_)]]"
-            disabled="[[disabled]]">
+            disabled="[[disabled_]]">
           $i18n{networkButtonActivate}
         </cr-button>
         <cr-button id="configureButton" on-click="onConfigureTap_"
             hidden$="[[!showConfigure_(managedProperties_, globalPolicy,
                 managedNetworkAvailable)]]"
             disabled="[[disableConfigure_(managedProperties_,
-                prefs.vpn_config_allowed, disabled)]]"
+                prefs.vpn_config_allowed, disabled_)]]"
             deep-link-focus-id$="[[Setting.kConfigureEthernet]]">
           $i18n{networkButtonConfigure}
         </cr-button>
@@ -139,7 +139,7 @@
             disabled="[[shouldConnectDisconnectButtonBeDisabled_(
                 managedProperties_, defaultNetwork, propertiesReceived_,
                 outOfRange_, globalPolicy, managedNetworkAvailable,
-                deviceState_, disabled)]]"
+                deviceState_, disabled_)]]"
             label="[[getConnectDisconnectButtonLabel_(managedProperties_,
                 globalPolicy,managedNetworkAvailable, deviceState_)]]"
             pref="[[getFakeVpnConfigPrefForEnforcement_(managedProperties_,
@@ -224,7 +224,7 @@
             </cr-policy-network-indicator-mojo>
             <cr-toggle id="preferNetworkToggle" checked="{{preferNetwork_}}"
                 disabled="[[shouldPreferNetworkToggleBeDisabled_(
-                    managedProperties_.priority, disabled)]]"
+                    managedProperties_.priority, disabled_)]]"
                 aria-labelledby="preferNetworkToggleLabel"
                 deep-link-focus-id$="[[Setting.kPreferWifiNetwork]]">
             </cr-toggle>
@@ -252,7 +252,7 @@
               label="[[getAutoConnectToggleLabel_(managedProperties_)]]"
               deep-link-focus-id$="[[Setting.kWifiAutoConnectToNetwork]]
                   [[Setting.kCellularAutoConnectToNetwork]]"
-              disabled="[[disabled]]">
+              disabled="[[disabled_]]">
           </settings-toggle-button>
           <!-- Hidden Network Warning -->
           <template is="dom-if"
@@ -271,7 +271,7 @@
           <settings-toggle-button id="alwaysOnVpnToggle" class="hr"
               pref="{{alwaysOnVpn_}}"
               label="$i18n{networkAlwaysOnVpn}"
-              disabled="[[disabled]]">
+              disabled="[[disabled_]]">
           </settings-toggle-button>
         </template>
         <!-- Data roaming (Cellular only). -->
@@ -281,7 +281,7 @@
               label="$i18n{networkAllowDataRoaming}"
               sub-label="[[getRoamingDetails_(managedProperties_)]]"
               deep-link-focus-id$="[[Setting.kCellularRoaming]]"
-              disabled="[[disabled]]">
+              disabled="[[disabled_]]">
           </settings-toggle-button>
         </template>
         <!-- SIM Info (Cellular only). -->
@@ -293,12 +293,12 @@
             <network-siminfo id="cellularSimInfo"
                 network-state="[[getNetworkState_(managedProperties_)]]"
                 device-state="[[deviceState_]]"
-                disabled="[[disabled]]">
+                disabled="[[disabled_]]">
             </network-siminfo>
           </div>
         </template>
         <!-- IP Address. -->
-        <div 
+        <div
           class="settings-box two-line single-column stretch settings-box-text"
           hidden$="[[!showIpAddress_(ipAddress_, managedProperties_)]]">
           <div>$i18n{networkIPAddress}</div>
@@ -313,7 +313,7 @@
                   managedProperties_)]]"
                 property-dict="[[managedProperties_]]"
                 on-property-change="onNetworkPropertyChange_"
-                disabled="[[disabled]]">
+                disabled="[[disabled_]]">
             </network-property-list-mojo>
           </div>
         </template>
@@ -338,7 +338,7 @@
                 <network-siminfo id="cellularSimInfoAdvanced"
                     network-state="[[getNetworkState_(managedProperties_)]]"
                     device-state="[[deviceState_]]"
-                    disabled="[[disabled]]">
+                    disabled="[[disabled_]]">
                 </network-siminfo>
               </div>
             </template>
@@ -353,7 +353,7 @@
                   on-checked-changed="meteredChanged_"
                   deep-link-focus-id$="[[Setting.kWifiMetered]]
                       [[Setting.kCellularMetered]]"
-                  disabled="[[disabled]]">
+                  disabled="[[disabled_]]">
               </network-config-toggle>
             </template>
             <!-- Advanced properties -->
@@ -362,7 +362,7 @@
               <network-property-list-mojo id="advancedFields"
                   fields="[[getAdvancedFields_(managedProperties_)]]"
                   property-dict="[[managedProperties_]]"
-                  disabled="[[disabled]]">
+                  disabled="[[disabled_]]">
               </network-property-list-mojo>
             </template>
             <!-- Device properties -->
@@ -370,7 +370,7 @@
               <network-property-list-mojo id="deviceFields"
                   fields="[[getDeviceFields_(managedProperties_)]]"
                   property-dict="[[managedProperties_]]"
-                  disabled="[[disabled]]">
+                  disabled="[[disabled_]]">
               </network-property-list-mojo>
             </template>
           </div>
@@ -403,7 +403,7 @@
                   if="[[showCellularChooseNetwork_(managedProperties_)]]">
                 <network-choose-mobile device-state="[[deviceState_]]"
                     managed-properties="[[managedProperties_]]"
-                    disabled="[[disabled]]">
+                    disabled="[[disabled_]]">
                 </network-choose-mobile>
               </template>
 
@@ -411,7 +411,7 @@
               <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
                 <network-apnlist on-apn-change="onApnChange_"
                     managed-properties="[[managedProperties_]]"
-                    disabled="[[disabled]]">
+                    disabled="[[disabled_]]">
                 </network-apnlist>
               </template>
 
@@ -420,11 +420,11 @@
                   if="[[isRememberedOrConnected_(managedProperties_)]]">
                 <network-ip-config on-ip-change="onIPConfigChange_"
                     managed-properties="[[managedProperties_]]"
-                    disabled="[[disabled]]">
+                    disabled="[[disabled_]]">
                 </network-ip-config>
                 <network-nameservers on-nameservers-change="onIPConfigChange_"
                     managed-properties="[[managedProperties_]]"
-                    disabled="[[disabled]]">
+                    disabled="[[disabled_]]">
                 </network-nameservers>
               </template>
             </div>
@@ -453,7 +453,7 @@
             <network-proxy-section prefs="{{prefs}}"
                 on-proxy-change="onProxyChange_"
                 managed-properties="[[managedProperties_]]"
-                disabled="[[disabled]]">
+                disabled="[[disabled_]]">
             </network-proxy-section>
           </iron-collapse>
         </template>
