@@ -50,13 +50,7 @@ void PowerMonitorTestSource::GenerateThermalThrottlingEvent(
   RunLoop().RunUntilIdle();
 }
 
-PowerMonitorTestObserver::PowerMonitorTestObserver()
-    : last_power_state_(false),
-      power_state_changes_(0),
-      suspends_(0),
-      resumes_(0) {
-}
-
+PowerMonitorTestObserver::PowerMonitorTestObserver() = default;
 PowerMonitorTestObserver::~PowerMonitorTestObserver() = default;
 
 void PowerMonitorTestObserver::OnPowerStateChange(bool on_battery_power) {
@@ -74,6 +68,7 @@ void PowerMonitorTestObserver::OnResume() {
 
 void PowerMonitorTestObserver::OnThermalStateChange(
     PowerThermalObserver::DeviceThermalState new_state) {
+  thermal_state_changes_++;
   last_thermal_state_ = new_state;
 }
 

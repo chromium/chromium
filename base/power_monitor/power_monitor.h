@@ -112,6 +112,11 @@ class BASE_EXPORT PowerMonitor {
   bool on_battery_power_ GUARDED_BY(on_battery_power_lock_) = false;
   Lock on_battery_power_lock_;
 
+  PowerThermalObserver::DeviceThermalState power_thermal_state_
+      GUARDED_BY(power_thermal_state_lock_) =
+          PowerThermalObserver::DeviceThermalState::kUnknown;
+  Lock power_thermal_state_lock_;
+
   scoped_refptr<ObserverListThreadSafe<PowerStateObserver>>
       power_state_observers_;
   scoped_refptr<ObserverListThreadSafe<PowerSuspendObserver>>

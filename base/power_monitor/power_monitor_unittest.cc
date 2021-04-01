@@ -43,6 +43,7 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   for (auto& index : observers) {
     PowerMonitor::AddPowerSuspendObserver(&index);
     PowerMonitor::AddPowerStateObserver(&index);
+    PowerMonitor::AddPowerThermalObserver(&index);
   }
 
   // Sending resume when not suspended should have no effect.
@@ -85,9 +86,31 @@ TEST_F(PowerMonitorTest, PowerNotifications) {
   source()->GeneratePowerStateEvent(false);
   EXPECT_EQ(observers[0].power_state_changes(), 2);
 
+  EXPECT_EQ(observers[0].thermal_state_changes(), 0);
+
+  // Send a power thermal change notification.
+  source()->GenerateThermalThrottlingEvent(
+      PowerThermalObserver::DeviceThermalState::kNominal);
+  EXPECT_EQ(observers[0].thermal_state_changes(), 1);
+  EXPECT_EQ(observers[0].last_thermal_state(),
+            PowerThermalObserver::DeviceThermalState::kNominal);
+
+  // Send a duplicate power thermal notification.  This should be suppressed.
+  source()->GenerateThermalThrottlingEvent(
+      PowerThermalObserver::DeviceThermalState::kNominal);
+  EXPECT_EQ(observers[0].thermal_state_changes(), 1);
+
+  // Send a different power thermal change notification.
+  source()->GenerateThermalThrottlingEvent(
+      PowerThermalObserver::DeviceThermalState::kFair);
+  EXPECT_EQ(observers[0].thermal_state_changes(), 2);
+  EXPECT_EQ(observers[0].last_thermal_state(),
+            PowerThermalObserver::DeviceThermalState::kFair);
+
   for (auto& index : observers) {
     PowerMonitor::RemovePowerSuspendObserver(&index);
     PowerMonitor::RemovePowerStateObserver(&index);
+    PowerMonitor::RemovePowerThermalObserver(&index);
   }
 }
 

@@ -46,20 +46,31 @@ class PowerMonitorTestObserver : public PowerSuspendObserver,
       PowerThermalObserver::DeviceThermalState new_state) override;
 
   // Test status counts.
-  bool last_power_state() const { return last_power_state_; }
   int power_state_changes() const { return power_state_changes_; }
   int suspends() const { return suspends_; }
   int resumes() const { return resumes_; }
+  int thermal_state_changes() const { return thermal_state_changes_; }
+
+  bool last_power_state() const { return last_power_state_; }
   PowerThermalObserver::DeviceThermalState last_thermal_state() const {
     return last_thermal_state_;
   }
 
  private:
-  bool last_power_state_;    // Last power state we were notified of.
-  int power_state_changes_;  // Count of OnPowerStateChange notifications.
-  int suspends_;             // Count of OnSuspend notifications.
-  int resumes_;              // Count of OnResume notifications.
-  PowerThermalObserver::DeviceThermalState last_thermal_state_;
+  // Count of OnPowerStateChange notifications.
+  int power_state_changes_ = 0;
+  // Count of OnSuspend notifications.
+  int suspends_ = 0;
+  // Count of OnResume notifications.
+  int resumes_ = 0;
+  // Count of OnThermalStateChange notifications.
+  int thermal_state_changes_ = 0;
+
+  // Last power state we were notified of.
+  bool last_power_state_ = false;
+  // Last power thermal we were notified of.
+  PowerThermalObserver::DeviceThermalState last_thermal_state_ =
+      PowerThermalObserver::DeviceThermalState::kUnknown;
 };
 
 }  // namespace base

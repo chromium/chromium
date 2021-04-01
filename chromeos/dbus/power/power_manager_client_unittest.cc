@@ -656,9 +656,6 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
     base::PowerThermalObserver::DeviceThermalState expected_state;
   } ThermalDBusTestType;
   ThermalDBusTestType thermal_states[] = {
-      {.dbus_state = power_manager::ThermalEvent_ThermalState_UNKNOWN,
-       .expected_state =
-           base::PowerThermalObserver::DeviceThermalState::kUnknown},
       {.dbus_state = power_manager::ThermalEvent_ThermalState_NOMINAL,
        .expected_state =
            base::PowerThermalObserver::DeviceThermalState::kNominal},
@@ -670,6 +667,12 @@ TEST_F(PowerManagerClientTest, ChangeThermalState) {
       {.dbus_state = power_manager::ThermalEvent_ThermalState_CRITICAL,
        .expected_state =
            base::PowerThermalObserver::DeviceThermalState::kCritical},
+      // Testing of power thermal state 'Unknown' cannot be the first one
+      // since the initial state in the PowerMonitor is 'Unknown' and the
+      // notifications are deduplicated and not sent if unchanged.
+      {.dbus_state = power_manager::ThermalEvent_ThermalState_UNKNOWN,
+       .expected_state =
+           base::PowerThermalObserver::DeviceThermalState::kUnknown},
   };
 
   for (const auto& p : thermal_states) {
