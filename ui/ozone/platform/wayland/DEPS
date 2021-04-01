@@ -3,6 +3,7 @@ include_rules = [
   "+ui/base/hit_test.h", # UI hit test doesn't bring in all of ui/base.
   "+ui/base/ui_base_features.h",
   "+ui/gtk/gtk_ui_delegate.h",
+  "+ui/gtk/wayland/gtk_ui_delegate_wayland_base.h",
   "+mojo/public",
   "+third_party/wayland",
   "+ui/base/clipboard/clipboard_constants.h",

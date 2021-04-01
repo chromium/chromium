@@ -1,0 +1,21 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ozone.gni")
+
+assert(ozone_platform_wayland)
+
+component("wayland") {
+  output_name = "ui_gtk_wayland"
+  sources = [
+    "gtk_ui_delegate_wayland_base.cc",
+    "gtk_ui_delegate_wayland_base.h",
+  ]
+  deps = [
+    "//base",
+    "//build/config/linux/gtk",
+  ]
+  public_deps = [ "//ui/gtk:gtk_ui_delegate" ]
+  defines = [ "IS_GTK_WAYLAND_IMPL" ]
+}

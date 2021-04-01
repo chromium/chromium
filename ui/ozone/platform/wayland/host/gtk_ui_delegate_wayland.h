@@ -5,41 +5,27 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_UI_DELEGATE_WAYLAND_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_GTK_UI_DELEGATE_WAYLAND_H_
 
-#include <string>
-
-#include "base/memory/weak_ptr.h"
-#include "ui/gfx/native_widget_types.h"
-#include "ui/gtk/gtk_ui_delegate.h"
+#include "ui/gtk/wayland/gtk_ui_delegate_wayland_base.h"
 
 namespace ui {
 
 class WaylandConnection;
 
-class GtkUiDelegateWayland : public GtkUiDelegate {
+class GtkUiDelegateWayland : public GtkUiDelegateWaylandBase {
  public:
   explicit GtkUiDelegateWayland(WaylandConnection* connection);
-  GtkUiDelegateWayland(const GtkUiDelegateWayland&) = delete;
-  GtkUiDelegateWayland& operator=(const GtkUiDelegateWayland&) = delete;
   ~GtkUiDelegateWayland() override;
 
+  // GtkUiDelegateWaylandBase:
+  bool SetGtkWidgetTransientForImpl(
+      gfx::AcceleratedWidget parent,
+      base::OnceCallback<void(const std::string&)> callback) override;
+
   // GtkUiDelegate:
-  void OnInitialized(GtkWidget* widget) override;
-  GdkKeymap* GetGdkKeymap() override;
-  GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
-  bool SetGtkWidgetTransientFor(GtkWidget* widget,
-                                gfx::AcceleratedWidget parent) override;
-  void ClearTransientFor(gfx::AcceleratedWidget parent) override;
-  void ShowGtkWindow(GtkWindow* window) override;
   int GetGdkKeyState() override;
 
  private:
-  // Called when xdg-foreign exports a parent window passed in
-  // SetGtkWidgetTransientFor.
-  void OnHandle(GtkWidget* widget, const std::string& handle);
-
   WaylandConnection* const connection_;
-
-  base::WeakPtrFactory<GtkUiDelegateWayland> weak_factory_{this};
 };
 
 }  // namespace ui

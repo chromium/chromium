@@ -30,10 +30,8 @@ group("gtk") {
   visibility = [
     # These are the only directories that should depend on GTK.
     "//ui/gtk:*",
+    "//ui/gtk/wayland",
     "//ui/gtk/x",
-
-    # This should probably be moved into //ui/gtk.
-    "//ui/ozone/platform/wayland",
 
     # These are all for WebRTC.
     "//examples:peerconnection_client",

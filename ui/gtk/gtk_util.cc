@@ -277,7 +277,9 @@ GtkCssContext& GtkCssContext::operator=(GtkCssContext&&) = default;
 GtkCssContext::~GtkCssContext() = default;
 
 GtkCssContext::operator GtkStyleContext*() {
-  return GtkCheckVersion(4) ? gtk_widget_get_style_context(widget_) : context_;
+  if (GtkCheckVersion(4))
+    return widget_ ? gtk_widget_get_style_context(widget_) : nullptr;
+  return context_;
 }
 
 GtkCssContext GtkCssContext::GetParent() {

@@ -224,8 +224,8 @@ source_set("wayland") {
       "host/gtk_ui_delegate_wayland.h",
     ]
     deps += [
-      "//build/config/linux/gtk",
       "//ui/gtk:gtk_ui_delegate",
+      "//ui/gtk/wayland",
     ]
   }
 
