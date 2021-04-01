@@ -11,6 +11,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/field_trial.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -385,8 +386,7 @@ NET_EXPORT base::Value GetNetInfo(URLRequestContext* context) {
     status_dict.SetBoolKey("enable_http2",
                            http_network_session->params().enable_http2);
 
-    NextProtoVector alpn_protos;
-    http_network_session->GetAlpnProtos(&alpn_protos);
+    const NextProtoVector& alpn_protos = http_network_session->GetAlpnProtos();
     if (!alpn_protos.empty()) {
       std::string next_protos_string;
       for (NextProto proto : alpn_protos) {
@@ -395,6 +395,19 @@ NET_EXPORT base::Value GetNetInfo(URLRequestContext* context) {
         next_protos_string.append(NextProtoToString(proto));
       }
       status_dict.SetStringKey("alpn_protos", next_protos_string);
+    }
+
+    const SSLConfig::ApplicationSettings& application_settings =
+        http_network_session->GetApplicationSettings();
+    if (!application_settings.empty()) {
+      base::Value application_settings_dict(base::Value::Type::DICTIONARY);
+      for (const auto& setting : application_settings) {
+        application_settings_dict.SetStringKey(
+            NextProtoToString(setting.first),
+            base::HexEncode(setting.second.data(), setting.second.size()));
+      }
+      status_dict.SetKey("application_settings",
+                         std::move(application_settings_dict));
     }
 
     net_info_dict.SetKey(kNetInfoSpdyStatus, std::move(status_dict));

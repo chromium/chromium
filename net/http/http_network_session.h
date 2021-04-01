@@ -265,8 +265,14 @@ class NET_EXPORT HttpNetworkSession {
 
   void SetServerPushDelegate(std::unique_ptr<ServerPushDelegate> push_delegate);
 
-  // Populates |*alpn_protos| with protocols to be used with ALPN.
-  void GetAlpnProtos(NextProtoVector* alpn_protos) const;
+  // Returns protocols to be used with ALPN.
+  const NextProtoVector& GetAlpnProtos() const { return next_protos_; }
+
+  // Returns ALPS data to be sent to server for each NextProto.
+  // Data might be empty.
+  const SSLConfig::ApplicationSettings& GetApplicationSettings() const {
+    return application_settings_;
+  }
 
   // Populates |server_config| and |proxy_config| based on this session.
   void GetSSLConfig(SSLConfig* server_config, SSLConfig* proxy_config) const;
@@ -327,6 +333,7 @@ class NET_EXPORT HttpNetworkSession {
   std::map<HttpResponseBodyDrainer*, std::unique_ptr<HttpResponseBodyDrainer>>
       response_drainers_;
   NextProtoVector next_protos_;
+  SSLConfig::ApplicationSettings application_settings_;
 
   Params params_;
   Context context_;

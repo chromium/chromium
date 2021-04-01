@@ -114,7 +114,8 @@ BidirectionalStream::BidirectionalStream(
   }
 
   SSLConfig ssl_config;
-  session->GetAlpnProtos(&ssl_config.alpn_protos);
+  ssl_config.alpn_protos = session->GetAlpnProtos();
+  ssl_config.application_settings = session->GetApplicationSettings();
 
   StartRequest(ssl_config);
 }

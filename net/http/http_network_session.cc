@@ -204,8 +204,13 @@ HttpNetworkSession::HttpNetworkSession(const Params& params,
           CreateCommonConnectJobParams(true /* for_websockets */),
           WEBSOCKET_SOCKET_POOL);
 
-  if (params_.enable_http2)
+  if (params_.enable_http2) {
     next_protos_.push_back(kProtoHTTP2);
+    if (base::FeatureList::IsEnabled(features::kAlpsForHttp2)) {
+      // Enable ALPS for HTTP/2 with empty data.
+      application_settings_[kProtoHTTP2] = {};
+    }
+  }
 
   next_protos_.push_back(kProtoHTTP11);
 
@@ -357,13 +362,10 @@ void HttpNetworkSession::SetServerPushDelegate(
   quic_stream_factory_.set_server_push_delegate(push_delegate_.get());
 }
 
-void HttpNetworkSession::GetAlpnProtos(NextProtoVector* alpn_protos) const {
-  *alpn_protos = next_protos_;
-}
-
 void HttpNetworkSession::GetSSLConfig(SSLConfig* server_config,
                                       SSLConfig* proxy_config) const {
-  GetAlpnProtos(&server_config->alpn_protos);
+  server_config->alpn_protos = GetAlpnProtos();
+  server_config->application_settings = GetApplicationSettings();
   server_config->ignore_certificate_errors = params_.ignore_certificate_errors;
   *proxy_config = *server_config;
   server_config->early_data_enabled = params_.enable_early_data;
