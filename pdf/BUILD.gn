@@ -172,6 +172,7 @@ if (enable_pdf) {
       "//third_party/pdfium",
       "//ui/base",
       "//ui/base/cursor/mojom:cursor_type",
+      "//ui/gfx/codec",
       "//ui/gfx/range",
     ]
 
