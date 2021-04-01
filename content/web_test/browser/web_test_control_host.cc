@@ -39,6 +39,7 @@
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/child_process_termination_info.h"
@@ -98,6 +99,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
+#include "url/url_constants.h"
 
 #if defined(OS_MAC)
 #include "base/mac/foundation_util.h"
@@ -106,6 +108,9 @@
 namespace content {
 
 namespace {
+
+// The URL used in between two web tests.
+const char kAboutBlankResetWebTest[] = "about:blank?reset-web-test";
 
 std::string DumpFrameState(const blink::ExplodedFrameState& frame_state,
                            size_t indent,
@@ -1241,7 +1246,7 @@ void WebTestControlHost::OnTestFinished() {
       ShellContentBrowserClient::Get()->browser_context();
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      2, base::BindOnce(&WebTestControlHost::ResetRendererAfterWebTest,
+      2, base::BindOnce(&WebTestControlHost::PrepareRendererForNextWebTest,
                         weak_factory_.GetWeakPtr()));
 
   StoragePartition* storage_partition =
@@ -1773,26 +1778,53 @@ void WebTestControlHost::CheckForLeakedWindows() {
   check_for_leaked_windows_ = true;
 }
 
-void WebTestControlHost::ResetRendererAfterWebTest() {
-  if (main_window_) {
-    main_window_->web_contents()->Stop();
-
-    RenderProcessHost* main_frame_process = main_window_->web_contents()
-                                                ->GetMainFrame()
-                                                ->GetRenderViewHost()
-                                                ->GetProcess();
-    GetWebTestRenderThreadRemote(main_frame_process)
-        ->ResetRendererAfterWebTest(
-            base::BindOnce(&WebTestControlHost::ResetRendererAfterWebTestDone,
-                           weak_factory_.GetWeakPtr()));
-  } else {
-    // If the window is gone, due to crashes or whatever, we need to make
-    // progress.
-    ResetRendererAfterWebTestDone();
+void WebTestControlHost::PrepareRendererForNextWebTest() {
+  // If the window is gone, due to crashes or whatever, we need to make
+  // progress.
+  if (!main_window_) {
+    PrepareRendererForNextWebTestDone();
+    return;
   }
+
+  content::WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(main_window_->web_contents());
+
+  // TODO(arthursonzogni): Not sure if this line is needed. It cancels pending
+  // navigations and pending subresources requests. I guess it increases the
+  // odds of transitionning from one test to another with no side effects.
+  // Consider removing it to understand what happens without.
+  web_contents->Stop();
+
+  // Navigate to about:blank in between two consecutive web tests.
+  //
+  // Note: this navigation might happen in a new process, depending on the
+  // COOP policy of the previous document.
+  NavigationController::LoadURLParams params((GURL(kAboutBlankResetWebTest)));
+  params.transition_type = ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED);
+  params.should_clear_history_list = true;
+  params.initiator_origin = url::Origin();  // Opaque initiator.
+  web_contents->GetController().LoadURLWithParams(params);
+
+  // The navigation might have to wait for before unload handler to execute. The
+  // remaining of the logic continues in:
+  // |WebTestControlHost::DidFinishNavigation|.
 }
 
-void WebTestControlHost::ResetRendererAfterWebTestDone() {
+void WebTestControlHost::DidFinishNavigation(NavigationHandle* navigation) {
+  if (navigation->GetURL() != GURL(kAboutBlankResetWebTest))
+    return;
+
+  // Request additional web test specific cleanup in the renderer process:
+  content::WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(main_window_->web_contents());
+  RenderProcessHost* main_rfh_process =
+      web_contents->GetMainFrame()->GetProcess();
+  GetWebTestRenderThreadRemote(main_rfh_process)->ResetRendererAfterWebTest();
+
+  PrepareRendererForNextWebTestDone();
+}
+
+void WebTestControlHost::PrepareRendererForNextWebTestDone() {
   if (leak_detector_ && main_window_) {
     // When doing leak detection, we don't want to count opened windows as
     // leaks, unless the test specifies that it expects to have closed them

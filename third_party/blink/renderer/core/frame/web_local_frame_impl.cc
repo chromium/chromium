@@ -1072,19 +1072,10 @@ void WebLocalFrameImpl::ReloadImage(const WebNode& web_node) {
     image_element->ForceReload();
 }
 
-void WebLocalFrameImpl::ResetForTesting() {
+void WebLocalFrameImpl::ClearActiveFindMatchForTesting() {
   DCHECK(GetFrame());
   if (GetTextFinder())
     GetTextFinder()->ClearActiveFindMatch();
-  ResourceRequest resource_request(url::kAboutBlankURL);
-  resource_request.SetMode(network::mojom::RequestMode::kNavigate);
-  resource_request.SetRedirectMode(network::mojom::RedirectMode::kManual);
-  resource_request.SetRequestContext(
-      mojom::blink::RequestContextType::INTERNAL);
-  resource_request.SetRequestorOrigin(
-      blink::WebSecurityOrigin::CreateUniqueOpaque());
-  FrameLoadRequest request(nullptr, resource_request);
-  GetFrame()->Loader().StartNavigation(request, WebFrameLoadType::kStandard);
 }
 
 WebDocumentLoader* WebLocalFrameImpl::GetDocumentLoader() const {

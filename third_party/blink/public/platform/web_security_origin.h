@@ -59,7 +59,6 @@ class WebSecurityOrigin {
   BLINK_PLATFORM_EXPORT static WebSecurityOrigin CreateFromString(
       const WebString&);
   BLINK_PLATFORM_EXPORT static WebSecurityOrigin Create(const WebURL&);
-  BLINK_PLATFORM_EXPORT static WebSecurityOrigin CreateUniqueOpaque();
 
   BLINK_PLATFORM_EXPORT void Reset();
   BLINK_PLATFORM_EXPORT void Assign(const WebSecurityOrigin&);

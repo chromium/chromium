@@ -75,9 +75,8 @@ void WebTestRenderThreadObserver::TestFinishedFromSecondaryRenderer() {
   test_runner_->TestFinishedFromSecondaryRenderer();
 }
 
-void WebTestRenderThreadObserver::ResetRendererAfterWebTest(
-    base::OnceClosure done_callback) {
-  test_runner_->ResetRendererAfterWebTest(std::move(done_callback));
+void WebTestRenderThreadObserver::ResetRendererAfterWebTest() {
+  test_runner_->ResetRendererAfterWebTest();
 }
 
 void WebTestRenderThreadObserver::ProcessWorkItem(

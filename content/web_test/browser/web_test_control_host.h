@@ -187,6 +187,7 @@ class WebTestControlHost : public WebContentsObserver,
                              RenderViewHost* new_host) override;
   void RenderViewDeleted(RenderViewHost* render_view_host) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(NavigationHandle* navigation) override;
 
   // RenderProcessHostObserver implementation.
   void RenderProcessHostDestroyed(
@@ -271,11 +272,15 @@ class WebTestControlHost : public WebContentsObserver,
   void OnLeakDetectionDone(int pid,
                            const LeakDetector::LeakDetectionReport& report);
 
-  // At the end of the test, once browser-side cleanup is done, commence reset
-  // of the renderer process that will stick around.
-  void ResetRendererAfterWebTest();
-  // Callback for when the renderer completes its reset at the end of the test.
-  void ResetRendererAfterWebTestDone();
+  // In between two tests, do some cleanup. Navigate to about:blank and
+  // request blink to reset states.
+  //
+  // Note: If the current document had COOP:same-origin defined, the navigation
+  // to about:blank will have to happen in a different browsing context group.
+  // The process used might be a different one.
+  void PrepareRendererForNextWebTest();
+  void PrepareRendererForNextWebTestDone();
+
   void OnPixelDumpCaptured(const SkBitmap& snapshot);
   void ReportResults();
   void EnqueueSurfaceCopyRequest();

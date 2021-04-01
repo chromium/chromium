@@ -837,8 +837,8 @@ class WebLocalFrame : public WebFrame {
   virtual void UpdateCurrentHistoryItem() = 0;
   virtual PageState CurrentHistoryItemToPageState() = 0;
   virtual const WebHistoryItem& GetCurrentHistoryItem() const = 0;
-  // Reset TextFinder state and loads about:blank.
-  virtual void ResetForTesting() = 0;
+  // Reset TextFinder state for the web test runner in between two tests.
+  virtual void ClearActiveFindMatchForTesting() = 0;
 
  protected:
   explicit WebLocalFrame(mojom::TreeScopeType scope,

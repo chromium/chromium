@@ -133,7 +133,7 @@ class CORE_EXPORT WebLocalFrameImpl final
       const override;
   void SendPings(const WebURL& destination_url) override;
   void StartReload(WebFrameLoadType) override;
-  void ResetForTesting() override;
+  void ClearActiveFindMatchForTesting() override;
   void EnableViewSourceMode(bool enable) override;
   bool IsViewSourceModeEnabled() const override;
   WebDocumentLoader* GetDocumentLoader() const override;

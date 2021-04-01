@@ -140,11 +140,16 @@ interface WebTestRenderThread {
   // conclude the test. Used to bounce this request from another renderer.
   TestFinishedFromSecondaryRenderer();
 
-  // Tells the renderer to navigate the main window's main frame to about:blank
-  // and reset all state in preparation for the next test. This happens before
+  // Reset all state in preparation for the next test. This happens before
   // leak detection in order for the test harness to drop anything that tests
   // passed in and which could cause a leak otherwise.
-  ResetRendererAfterWebTest() => ();
+  // The flow is:
+  // - browser process detects test is finished
+  // - browser process initiates navigation to about:blank and waits for the
+  //   document to commit.
+  // - browser process calls ResetRendererAfterWebTest() for the renderer
+  //   process that about:blank committed in.
+  ResetRendererAfterWebTest();
 
   // Processes a work item. This is called for the process with the main
   // window's main frame.

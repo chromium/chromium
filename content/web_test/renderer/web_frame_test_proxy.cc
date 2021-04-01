@@ -164,14 +164,9 @@ class TestRenderFrameObserver : public RenderFrameObserver {
       test_runner_->PrintMessage(description + " - didCommitLoadForFrame\n");
     }
 
-    if (render_frame()->IsMainFrame()) {
-      // Track main frames once they are swapped in, if they started
-      // provisional.
+    // Track main frames once they are swapped in, if they started provisional.
+    if (render_frame()->IsMainFrame())
       test_runner_->AddMainFrame(frame_proxy());
-
-      // Looking for navigations to about:blank after a test completes.
-      test_runner_->DidCommitNavigationInMainFrame(frame_proxy());
-    }
   }
 
   void DidFinishSameDocumentNavigation() override {
@@ -270,6 +265,7 @@ void WebFrameTestProxy::Reset() {
   CHECK(IsMainFrame());
 
   if (IsMainFrame()) {
+    GetWebFrame()->ClearActiveFindMatchForTesting();
     GetWebFrame()->SetName(blink::WebString());
     GetWebFrame()->ClearOpener();
 
