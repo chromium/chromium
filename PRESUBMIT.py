@@ -5448,9 +5448,20 @@ def CheckInclusiveLanguage(input_api, output_api):
         warnings.extend(problems)
 
   excluded_paths = []
-  f = input_api.ReadFile(
-      input_api.os_path.join(input_api.change.RepositoryRoot(), 'infra',
-                             'inclusive_language_presubmit_exempt_dirs.txt'))
+
+  try:
+    dirs_file_path = input_api.os_path.join(
+        input_api.change.RepositoryRoot(), 'infra',
+        'inclusive_language_presubmit_exempt_dirs.txt')
+    f = input_api.ReadFile(dirs_file_path)
+  except Exception as e:
+    input_api.logging.info(
+      'Failed to load inclusive language exempt dirs file:\n'
+      '\t%s\n'
+      'Skipping this check as a failsafe.'
+      'Stack:\n%s' % (dirs_file_path, str(e)))
+    return []
+
   for line in f.split('\n'):
     path = line.split(' ')[0]
     if len(path) > 0:

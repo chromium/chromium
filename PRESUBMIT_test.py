@@ -3940,6 +3940,14 @@ class CheckDeprecationOfPreferencesTest(unittest.TestCase):
 
 
 class InclusiveLanguageCheckTest(unittest.TestCase):
+  def testMissingExemptFile(self):
+    input_api = MockInputApi()
+    input_api.change.RepositoryRoot = lambda: ''
+
+    input_api.files = []
+    errors = PRESUBMIT.CheckInclusiveLanguage(input_api, MockOutputApi())
+    self.assertEqual(0, len(errors))
+
   def testBlockedTerms(self):
     input_api = MockInputApi()
     input_api.change.RepositoryRoot = lambda: ''

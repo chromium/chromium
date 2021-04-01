@@ -5,6 +5,7 @@
 from collections import defaultdict
 import fnmatch
 import json
+import logging
 import os
 import re
 import subprocess
@@ -77,6 +78,7 @@ class MockInputApi(object):
     self.is_committing = False
     self.change = MockChange([])
     self.presubmit_local_path = os.path.dirname(__file__)
+    self.logging = logging.getLogger('PRESUBMIT')
 
   def CreateMockFileInPath(self, f_list):
     self.os_path.exists = lambda x: x in f_list
