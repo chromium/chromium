@@ -217,7 +217,6 @@ component("base") {
     "atomicops.h",
     "atomicops_internals_atomicword_compat.h",
     "atomicops_internals_portable.h",
-    "atomicops_internals_x86_msvc.h",
     "auto_reset.h",
     "barrier_closure.cc",
     "barrier_closure.h",

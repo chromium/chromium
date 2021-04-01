@@ -129,13 +129,7 @@ Atomic64 Acquire_Load(volatile const Atomic64* ptr);
 }  // namespace subtle
 }  // namespace base
 
-#if defined(OS_WIN) && defined(ARCH_CPU_X86_FAMILY)
-// TODO(jfb): Try to use base/atomicops_internals_portable.h everywhere.
-// https://crbug.com/559247.
-#  include "base/atomicops_internals_x86_msvc.h"
-#else
-#  include "base/atomicops_internals_portable.h"
-#endif
+#include "base/atomicops_internals_portable.h"
 
 // On some platforms we need additional declarations to make
 // AtomicWord compatible with our other Atomic* types.
