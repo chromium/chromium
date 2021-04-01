@@ -69,7 +69,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.MeasurementInterval" units="minutes"
-    expires_after="2021-04-04">
+    expires_after="M95">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Offline.Measurements.TimeBetweenChecks" units="minutes"
-    expires_after="2021-04-04">
+    expires_after="M95">
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
