@@ -70,14 +70,14 @@ As a LSC Requestor, you can split your CLs across these boundaries.
 
   | Number of child CLs | Action                                                                                                                     |
   |---------------------|----------------------------------------------------------------------------------------------------------------------------|
-  | >= 30               | Follow the [Chrome LSC Workflow](lsc_workflow.md) (i.e. create an LSC doc, file a bug, wait for approval). |
+  | >= 30               | Follow the [Chrome LSC Workflow](lsc_workflow.md) (i.e. create an LSC doc, get domain approval, email lsc-review@, wait for approval). |
   | < 29                | No requirements                                                                                                            |
 
   * If you would like to request global owners approval for safe or trivial changes of any size, please also follow this process and wait for the LSC committee to respond to your document.
   * If all sub-CLs affect the same OWNERS, you do not need to follow the LSC process and instead can talk to an area owner for how to proceed with your change.
 * **What do I have to do?** Follow the steps at [Chrome LSC Workflow](lsc_workflow.md).
 * **How long will this process take?** You should expect an initial response from a cleanup approver within two days.
-* **I'm in a hurry; Is there a fast track?** Eng Review may fast-track low-risk changes, with a response estimated between a few hours to one business day. If you'd like to request fast tracking, email [lsc-review](https://groups.google.com/a/chromium.org/d/forum/lsc-review) with a link to the bug you filed at the end of [Chrome LSC Workflow](lsc_workflow.md) and we'll get to it as quickly as we can.
+* **I'm in a hurry; Is there a fast track?** Eng Review may fast-track low-risk changes, with a response estimated between a few hours to one business day. If you'd like to request fast tracking, email [lsc-review](https://groups.google.com/a/chromium.org/d/forum/lsc-review) with a link to the doc that you created end of [Chrome LSC Workflow](lsc_workflow.md) and we'll get to it as quickly as we can.
 * **Why this process?** Changes that operate broadly across the codebase affect many engineers and teams and these changes may generate discussion on the change or the best way to roll it out. This process is in place to make sure that these changes are useful, well-communicated, and to minimize the risk of having to attempt difficult rollbacks.
 * **I have an idea for a change, but I’m not sure who to ask about it?** Definitely email the lsc-review@chromium.org list. We should be able to give you at least a vague idea of whether your idea has merit and who to approach as a domain expert to move ahead.
 * **My LSC touches third_party, do I have to do anything special?** These changes are likely to be rare. If it does occur, please obey the normal rules for third_party changes. Be aware that some parts of third_party have an external codebase as their source-of-truth, and so are mechanically generated (e.g. by Copybara [[external](https://opensource.google/projects/copybara), [internal, Googlers only](http://go/copybara)]). This means that your changes will be overwritten by the next import.
