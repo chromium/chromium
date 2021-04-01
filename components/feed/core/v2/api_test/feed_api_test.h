@@ -178,19 +178,23 @@ class TestFeedNetwork : public FeedNetwork {
     InjectApiRawResponse<API>(std::move(response));
   }
 
-  void InjectFollowResponse(
+  void InjectResponse(
       const feedwire::webfeed::FollowWebFeedResponse& response) {
     InjectApiResponse<FollowWebFeedDiscoverApi>(response);
   }
   void InjectFollowResponse(const FeedNetwork::RawResponse& response) {
     InjectApiRawResponse<FollowWebFeedDiscoverApi>(response);
   }
-  void InjectUnfollowResponse(
+  void InjectResponse(
       const feedwire::webfeed::UnfollowWebFeedResponse& response) {
     InjectApiResponse<UnfollowWebFeedDiscoverApi>(response);
   }
   void InjectUnfollowResponse(const FeedNetwork::RawResponse& response) {
     InjectApiRawResponse<UnfollowWebFeedDiscoverApi>(response);
+  }
+  void InjectResponse(
+      feedwire::webfeed::ListRecommendedWebFeedsResponse response) {
+    InjectApiResponse<ListRecommendedWebFeedDiscoverApi>(std::move(response));
   }
   void InjectEmptyActionRequestResult();
 
@@ -224,6 +228,9 @@ class TestFeedNetwork : public FeedNetwork {
   }
   int GetUnfollowRequestCount() const {
     return GetApiRequestCount<UnfollowWebFeedDiscoverApi>();
+  }
+  int GetListRecommendedWebFeedsRequestCount() const {
+    return GetApiRequestCount<ListRecommendedWebFeedDiscoverApi>();
   }
 
   void ClearTestData();

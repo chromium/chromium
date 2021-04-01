@@ -12,6 +12,7 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
+#include "components/feed/core/v2/web_feed_subscriptions/fetch_recommended_web_feeds_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/subscribe_to_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/unsubscribe_from_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
@@ -35,6 +36,9 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       const WebFeedSubscriptionCoordinator&) = delete;
 
   void Populate(const FeedStore::WebFeedStartupData& startup_data);
+  // Called after a FeedStream::ClearAll operation completes. Clears any state
+  // owned by this.
+  void ClearAllFinished();
 
   // WebFeedSubscriptions implementation.
 
@@ -72,9 +76,17 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
 
   WebFeedIndex& index() { return index_; }
 
+  bool is_loading_model_for_testing() const { return loading_model_; }
+
  private:
   using WebFeedSubscriptionModel = internal::WebFeedSubscriptionModel;
   using InFlightChange = internal::InFlightChange;
+  base::WeakPtr<WebFeedSubscriptionCoordinator> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  bool IsSignedInAndWebFeedsEnabled() const;
+
   void FindWebFeedInfoForPageStart(
       const WebFeedPageInformation& page_info,
       base::OnceCallback<void(WebFeedMetadata)> callback);
@@ -88,6 +100,11 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void LookupWebFeedDataAndRespond(
       const std::string& web_feed_id,
       const WebFeedPageInformation* maybe_page_info,
+      base::OnceCallback<void(WebFeedMetadata)> callback);
+
+  void LookupWebFeedDataAndRespond(
+      const WebFeedIndex::Entry& entry,
+      WebFeedSubscriptionStatus subscription_status,
       base::OnceCallback<void(WebFeedMetadata)> callback);
 
   void FindWebFeedInfoForWebFeedIdStart(
@@ -124,6 +141,11 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
       const WebFeedPageInformation* maybe_page_info);
   void DequeueInflightChange();
 
+  void FetchRecommendedWebFeedsIfStale();
+  void FetchRecommendedWebFeedsStart();
+  void FetchRecommendedWebFeedsComplete(
+      FetchRecommendedWebFeedsTask::Result result);
+
   FeedStream* feed_stream_;  // Always non-null, it owns this.
   WebFeedIndex index_;
   // A model of subscriptions. In memory only while needed.
@@ -139,6 +161,9 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   // Chrome process goes down.
   std::vector<feedstore::WebFeedInfo> recent_unsubscribed_;
   std::vector<base::OnceClosure> when_model_loads_;
+  bool fetching_recommended_web_feeds_ = false;
+
+  base::WeakPtrFactory<WebFeedSubscriptionCoordinator> weak_ptr_factory_{this};
 };
 
 }  // namespace feed

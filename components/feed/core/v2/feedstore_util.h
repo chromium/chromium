@@ -23,6 +23,8 @@ base::StringPiece StreamId(const feed::StreamType& stream_type);
 ///////////////////////////////////////////////////
 // Functions that operate on feedstore proto types.
 
+int64_t ToTimestampMillis(base::Time t);
+base::Time FromTimestampMillis(int64_t millis);
 void SetLastAddedTime(base::Time t, feedstore::StreamData& data);
 
 base::Time GetLastAddedTime(const feedstore::StreamData& data);

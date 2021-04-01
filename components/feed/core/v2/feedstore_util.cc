@@ -11,20 +11,19 @@ namespace feedstore {
 using feed::LocalActionId;
 using feed::StreamType;
 
-namespace {
-int64_t ToTimestampMillis(base::Time t) {
-  return (t - base::Time::UnixEpoch()).InMilliseconds();
-}
-base::Time FromTimestampMillis(int64_t millis) {
-  return base::Time::UnixEpoch() + base::TimeDelta::FromMilliseconds(millis);
-}
-}  // namespace
-
 base::StringPiece StreamId(const StreamType& stream_type) {
   if (stream_type.IsForYou())
     return kForYouStreamId;
   DCHECK(stream_type.IsWebFeed());
   return kFollowStreamId;
+}
+
+int64_t ToTimestampMillis(base::Time t) {
+  return (t - base::Time::UnixEpoch()).InMilliseconds();
+}
+
+base::Time FromTimestampMillis(int64_t millis) {
+  return base::Time::UnixEpoch() + base::TimeDelta::FromMilliseconds(millis);
 }
 
 void SetLastAddedTime(base::Time t, feedstore::StreamData& data) {

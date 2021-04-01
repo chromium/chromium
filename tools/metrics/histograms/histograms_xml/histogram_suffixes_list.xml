@@ -6707,6 +6707,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="FollowWebFeed" label="Requests to follow a web feed"/>
   <suffix name="ListFollowedWebFeeds"
       label="Requests to list followed web feeds"/>
+  <suffix name="ListRecommendedWebFeeds"
+      label="Requests to list recommended web feeds"/>
   <suffix name="NextPage" label="Requests to fetch the next page of the feed"/>
   <suffix name="UnfollowWebFeed" label="Requests to unfollow a web feed"/>
   <suffix name="UploadActions" label="Requests to upload user action data"/>

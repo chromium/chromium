@@ -5,14 +5,18 @@
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 
+#include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
+#include "components/feed/feed_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
 namespace test {
 namespace {
+using testing::PrintToString;
 constexpr int64_t kFollowerCount = 123;
 
 WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url) {
@@ -65,6 +69,11 @@ void WriteRecommendedFeeds(
 
 class FeedApiSubscriptionsTest : public FeedApiTest {
  public:
+  void SetUp() override {
+    subscription_feature_list_.InitAndEnableFeature(kWebFeed);
+    FeedApiTest::SetUp();
+  }
+
   // Get all subscriptions, and check that stored subscriptions match.
   std::vector<WebFeedMetadata> CheckAllSubscriptions() {
     // Get subscriptions stored in memory.
@@ -77,20 +86,59 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
     subscriptions().GetAllSubscriptions(all_subscriptions2.Bind());
     std::vector<WebFeedMetadata> result2 = all_subscriptions2.RunAndGetResult();
     // Check that they match.
-    ([&]() {
-      ASSERT_EQ(testing::PrintToString(result),
-                testing::PrintToString(result2));
-    })();
+    ([&]() { ASSERT_EQ(PrintToString(result), PrintToString(result2)); })();
     return result;
+  }
+
+  // Get all recommended web feeds.
+  std::vector<WebFeedMetadata> GetRecommendedFeeds() {
+    std::vector<WebFeedIndex::Entry> index_entries =
+        subscriptions().index().GetRecommendedEntriesForTesting();
+
+    std::vector<WebFeedMetadata> result;
+    for (const WebFeedIndex::Entry& entry : index_entries) {
+      CallbackReceiver<WebFeedMetadata> metadata;
+      subscriptions().FindWebFeedInfoForWebFeedId(entry.web_feed_id,
+                                                  metadata.Bind());
+      result.push_back(metadata.RunAndGetResult());
+    }
+    return result;
+  }
+
+  // Get all recommended web feeds, and check that stored ones match.
+  std::vector<WebFeedMetadata> CheckRecommendedFeeds() {
+    std::vector<WebFeedMetadata> recommended_feeds = GetRecommendedFeeds();
+    CreateStream();
+    std::vector<WebFeedMetadata> recommended_after_reload =
+        GetRecommendedFeeds();
+
+    // Make sure entries didn't change.
+    ([&]() {
+      ASSERT_EQ(PrintToString(recommended_after_reload),
+                PrintToString(recommended_feeds));
+    })();
+    return recommended_feeds;
+  }
+
+  void InjectRecommendedWebFeedsResponse(
+      std::vector<feedwire::webfeed::WebFeed> web_feeds) {
+    feedwire::webfeed::ListRecommendedWebFeedsResponse response;
+    for (const auto& feed : web_feeds) {
+      *response.add_recommended_web_feeds() = feed;
+    }
+    network_.InjectResponse(response);
   }
 
   WebFeedSubscriptionCoordinator& subscriptions() {
     return stream_->subscriptions();
   }
+
+ private:
+  base::test::ScopedFeatureList subscription_feature_list_;
 };
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
 
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
@@ -101,26 +149,26 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
   EXPECT_EQ(
       "WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed }",
-      testing::PrintToString(callback.RunAndGetResult().web_feed_metadata));
+      PrintToString(callback.RunAndGetResult().web_feed_metadata));
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {
   WriteRecommendedFeeds(*store_, {MakeWebFeedInfo("catfood")});
   CreateStream();
-  network_.InjectFollowResponse(SuccessfulFollowResponse("catfood"));
+  network_.InjectResponse(SuccessfulFollowResponse("catfood"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
   subscriptions().FollowWebFeed("id_catfood", callback.Bind());
   EXPECT_EQ(
       "WebFeedMetadata{ id=id_catfood is_recommended title=Title catfood "
       "publisher_url=https://catfood.com/ status=kSubscribed }",
-      testing::PrintToString(callback.RunAndGetResult().web_feed_metadata));
+      PrintToString(callback.RunAndGetResult().web_feed_metadata));
 }
 
 // Make two Follow attempts for the same page. Both appear successful, but only
 // one network request is made.
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedTwiceAtOnce) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback2;
 
@@ -137,13 +185,13 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedTwiceAtOnce) {
   EXPECT_EQ(
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
-      testing::PrintToString(CheckAllSubscriptions()));
+      PrintToString(CheckAllSubscriptions()));
 }
 
 // Follow two different pages which resolve to the same web feed server-side.
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedTwiceFromDifferentUrls) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback2;
 
@@ -160,12 +208,12 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedTwiceFromDifferentUrls) {
   EXPECT_EQ(
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
-      testing::PrintToString(CheckAllSubscriptions()));
+      PrintToString(CheckAllSubscriptions()));
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowTwoWebFeedsAtOnce) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
-  network_.InjectFollowResponse(SuccessfulFollowResponse("dogs"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("dogs"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback2;
 
@@ -183,12 +231,12 @@ TEST_F(FeedApiSubscriptionsTest, FollowTwoWebFeedsAtOnce) {
       "publisher_url=https://cats.com/ status=kSubscribed }, "
       "WebFeedMetadata{ id=id_dogs title=Title dogs "
       "publisher_url=https://dogs.com/ status=kSubscribed } }",
-      testing::PrintToString(CheckAllSubscriptions()));
+      PrintToString(CheckAllSubscriptions()));
 }
 
 TEST_F(FeedApiSubscriptionsTest, CantFollowWebFeedWhileOffline) {
   is_offline_ = true;
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
 
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
@@ -197,7 +245,7 @@ TEST_F(FeedApiSubscriptionsTest, CantFollowWebFeedWhileOffline) {
   EXPECT_EQ(0, network_.GetFollowRequestCount());
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kFailedOffline,
             callback.RunAndGetResult().request_status);
-  EXPECT_EQ("{}", testing::PrintToString(CheckAllSubscriptions()));
+  EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedNetworkError) {
@@ -209,12 +257,12 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedNetworkError) {
 
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kFailedUnknownError,
             callback.RunAndGetResult().request_status);
-  EXPECT_EQ("{}", testing::PrintToString(CheckAllSubscriptions()));
+  EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
 }
 
 // Follow and then unfollow a web feed successfully.
 TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 follow_callback.Bind());
@@ -222,7 +270,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
 
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
-  network_.InjectUnfollowResponse(SuccessfulUnfollowResponse());
+  network_.InjectResponse(SuccessfulUnfollowResponse());
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
       unfollow_callback.Bind());
@@ -231,11 +279,11 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeed) {
   EXPECT_EQ(1, network_.GetUnfollowRequestCount());
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             unfollow_callback.GetResult()->request_status);
-  EXPECT_EQ("{}", testing::PrintToString(CheckAllSubscriptions()));
+  EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
 }
 
 TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeedTwiceAtOnce) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 follow_callback.Bind());
@@ -245,7 +293,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeedTwiceAtOnce) {
       unfollow_callback1;
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback2;
-  network_.InjectUnfollowResponse(SuccessfulUnfollowResponse());
+  network_.InjectResponse(SuccessfulUnfollowResponse());
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
       unfollow_callback1.Bind());
@@ -260,11 +308,11 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowAFollowedWebFeedTwiceAtOnce) {
             unfollow_callback1.GetResult()->request_status);
   EXPECT_EQ(WebFeedSubscriptionRequestStatus::kSuccess,
             unfollow_callback2.GetResult()->request_status);
-  EXPECT_EQ("{}", testing::PrintToString(CheckAllSubscriptions()));
+  EXPECT_EQ("{}", PrintToString(CheckAllSubscriptions()));
 }
 
 TEST_F(FeedApiSubscriptionsTest, UnfollowNetworkFailure) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 follow_callback.Bind());
@@ -284,11 +332,11 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowNetworkFailure) {
   EXPECT_EQ(
       "{ WebFeedMetadata{ id=id_cats title=Title cats "
       "publisher_url=https://cats.com/ status=kSubscribed } }",
-      testing::PrintToString(CheckAllSubscriptions()));
+      PrintToString(CheckAllSubscriptions()));
 }
 
 TEST_F(FeedApiSubscriptionsTest, UnfollowWhileOffline) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 follow_callback.Bind());
@@ -314,7 +362,7 @@ TEST_F(FeedApiSubscriptionsTest, UnfollowWhileOffline) {
 TEST_F(FeedApiSubscriptionsTest, UnfollowAnUnfollowedWebFeed) {
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
-  network_.InjectUnfollowResponse(SuccessfulUnfollowResponse());
+  network_.InjectResponse(SuccessfulUnfollowResponse());
   subscriptions().UnfollowWebFeed("notfollowed", unfollow_callback.Bind());
 
   unfollow_callback.RunUntilCalled();
@@ -329,7 +377,7 @@ TEST_F(FeedApiSubscriptionsTest, FindWebFeedInfoForPageNotSubscribed) {
       MakeWebFeedPageInformation("https://catfood.com"), metadata.Bind());
 
   EXPECT_EQ("WebFeedMetadata{ status=kNotSubscribed }",
-            testing::PrintToString(metadata.RunAndGetResult()));
+            PrintToString(metadata.RunAndGetResult()));
 }
 
 TEST_F(FeedApiSubscriptionsTest, FindWebFeedInfoForWebFeedIdNotSubscribed) {
@@ -337,7 +385,7 @@ TEST_F(FeedApiSubscriptionsTest, FindWebFeedInfoForWebFeedIdNotSubscribed) {
   subscriptions().FindWebFeedInfoForWebFeedId("id_cats", metadata.Bind());
 
   EXPECT_EQ("WebFeedMetadata{ id=id_cats status=kNotSubscribed }",
-            testing::PrintToString(metadata.RunAndGetResult()));
+            PrintToString(metadata.RunAndGetResult()));
 }
 
 TEST_F(FeedApiSubscriptionsTest,
@@ -349,7 +397,7 @@ TEST_F(FeedApiSubscriptionsTest,
   EXPECT_EQ(
       "WebFeedMetadata{ id=id_cats is_recommended title=Title cats "
       "publisher_url=https://cats.com/ status=kNotSubscribed }",
-      testing::PrintToString(metadata.RunAndGetResult()));
+      PrintToString(metadata.RunAndGetResult()));
 }
 
 // Call FindWebFeedInfoForPage for a web feed which is unknown, but after a
@@ -357,7 +405,7 @@ TEST_F(FeedApiSubscriptionsTest,
 // model is loaded.
 TEST_F(FeedApiSubscriptionsTest,
        FindWebFeedInfoForPageNotSubscribedAfterSubscribe) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 follow_callback.Bind());
@@ -368,7 +416,7 @@ TEST_F(FeedApiSubscriptionsTest,
       MakeWebFeedPageInformation("https://www.catfood.com"), metadata.Bind());
 
   EXPECT_EQ("WebFeedMetadata{ status=kNotSubscribed }",
-            testing::PrintToString(metadata.RunAndGetResult()));
+            PrintToString(metadata.RunAndGetResult()));
 }
 
 TEST_F(FeedApiSubscriptionsTest,
@@ -384,13 +432,13 @@ TEST_F(FeedApiSubscriptionsTest,
   EXPECT_EQ(
       "WebFeedMetadata{ id=id_catfood is_recommended title=Title catfood "
       "publisher_url=https://catfood.com/ status=kNotSubscribed }",
-      testing::PrintToString(metadata.RunAndGetResult()));
+      PrintToString(metadata.RunAndGetResult()));
 }
 
 TEST_F(FeedApiSubscriptionsTest,
        FindWebFeedInfoForPageRecommendedSubscribeInProgress) {
   network_.SendResponsesOnCommand(true);
-  network_.InjectFollowResponse(SuccessfulFollowResponse("catfood"));
+  network_.InjectResponse(SuccessfulFollowResponse("catfood"));
   WriteRecommendedFeeds(*store_, {MakeWebFeedInfo("catfood")});
   CreateStream();
   WebFeedPageInformation page_info;
@@ -405,7 +453,7 @@ TEST_F(FeedApiSubscriptionsTest,
   EXPECT_EQ(
       "WebFeedMetadata{ id=id_catfood is_recommended title=Title catfood "
       "publisher_url=https://catfood.com/ status=kSubscribeInProgress }",
-      testing::PrintToString(metadata.RunAndGetResult()));
+      PrintToString(metadata.RunAndGetResult()));
 }
 
 // Check FindWebFeedInfo*() for a web feed which is currently in the process of
@@ -413,7 +461,7 @@ TEST_F(FeedApiSubscriptionsTest,
 TEST_F(FeedApiSubscriptionsTest,
        FindWebFeedInfoForPageNonRecommendedSubscribeInProgress) {
   network_.SendResponsesOnCommand(true);
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   WebFeedPageInformation page_info =
       MakeWebFeedPageInformation("https://cats.com");
 
@@ -425,7 +473,7 @@ TEST_F(FeedApiSubscriptionsTest,
     subscriptions().FindWebFeedInfoForPage(page_info, metadata.Bind());
 
     EXPECT_EQ("WebFeedMetadata{ status=kSubscribeInProgress }",
-              testing::PrintToString(metadata.RunAndGetResult()));
+              PrintToString(metadata.RunAndGetResult()));
   }
 
   // Complete subscription and check status.
@@ -439,7 +487,7 @@ TEST_F(FeedApiSubscriptionsTest,
     EXPECT_EQ(
         "WebFeedMetadata{ id=id_cats title=Title cats "
         "publisher_url=https://cats.com/ status=kSubscribed }",
-        testing::PrintToString(metadata.RunAndGetResult()));
+        PrintToString(metadata.RunAndGetResult()));
   }
   // Check status with WebFeedId.
   {
@@ -448,7 +496,7 @@ TEST_F(FeedApiSubscriptionsTest,
     EXPECT_EQ(
         "WebFeedMetadata{ id=id_cats title=Title cats "
         "publisher_url=https://cats.com/ status=kSubscribed }",
-        testing::PrintToString(metadata.RunAndGetResult()));
+        PrintToString(metadata.RunAndGetResult()));
   }
 }
 
@@ -456,7 +504,7 @@ TEST_F(FeedApiSubscriptionsTest,
 // which is currently in the process of being unsubscribed.
 TEST_F(FeedApiSubscriptionsTest,
        FindWebFeedInfoForWebFeedIdUnsubscribeInProgress) {
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 follow_callback.Bind());
@@ -465,7 +513,7 @@ TEST_F(FeedApiSubscriptionsTest,
   network_.SendResponsesOnCommand(true);
   CallbackReceiver<WebFeedSubscriptions::UnfollowWebFeedResult>
       unfollow_callback;
-  network_.InjectUnfollowResponse(SuccessfulUnfollowResponse());
+  network_.InjectResponse(SuccessfulUnfollowResponse());
   subscriptions().UnfollowWebFeed(
       follow_callback.GetResult()->web_feed_metadata.web_feed_id,
       unfollow_callback.Bind());
@@ -477,7 +525,7 @@ TEST_F(FeedApiSubscriptionsTest,
     EXPECT_EQ(
         "WebFeedMetadata{ id=id_cats title=Title cats "
         "publisher_url=https://cats.com/ status=kUnsubscribeInProgress }",
-        testing::PrintToString(metadata.RunAndGetResult()));
+        PrintToString(metadata.RunAndGetResult()));
   }
 
   // Allow the unsubscribe request to complete, and check that the new status is
@@ -491,7 +539,7 @@ TEST_F(FeedApiSubscriptionsTest,
     EXPECT_EQ(
         "WebFeedMetadata{ id=id_cats title=Title cats "
         "publisher_url=https://cats.com/ status=kNotSubscribed }",
-        testing::PrintToString(metadata.RunAndGetResult()));
+        PrintToString(metadata.RunAndGetResult()));
   }
 }
 
@@ -499,16 +547,16 @@ TEST_F(FeedApiSubscriptionsTest, GetAllSubscriptionsWithNoSubscriptions) {
   CallbackReceiver<std::vector<WebFeedMetadata>> all_subscriptions;
   subscriptions().GetAllSubscriptions(all_subscriptions.Bind());
 
-  EXPECT_EQ("{}", testing::PrintToString(all_subscriptions.RunAndGetResult()));
+  EXPECT_EQ("{}", PrintToString(all_subscriptions.RunAndGetResult()));
 }
 
 TEST_F(FeedApiSubscriptionsTest, GetAllSubscriptionsWithSomeSubscriptions) {
   // Set up two subscriptions, begin unsubscribing from one, and subscribing to
   // a third. Only subscribed web feeds are returned by GetAllSubscriptions.
-  network_.InjectFollowResponse(SuccessfulFollowResponse("cats"));
-  network_.InjectFollowResponse(SuccessfulFollowResponse("dogs"));
-  network_.InjectFollowResponse(SuccessfulFollowResponse("mice"));
-  network_.InjectUnfollowResponse(SuccessfulUnfollowResponse());
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  network_.InjectResponse(SuccessfulFollowResponse("dogs"));
+  network_.InjectResponse(SuccessfulFollowResponse("mice"));
+  network_.InjectResponse(SuccessfulUnfollowResponse());
   subscriptions().FollowWebFeed(MakeWebFeedPageInformation("http://cats.com"),
                                 base::DoNothing());
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
@@ -531,7 +579,163 @@ TEST_F(FeedApiSubscriptionsTest, GetAllSubscriptionsWithSomeSubscriptions) {
       "publisher_url=https://cats.com/ status=kSubscribed }, "
       "WebFeedMetadata{ id=id_dogs title=Title dogs "
       "publisher_url=https://dogs.com/ status=kUnsubscribeInProgress } }",
-      testing::PrintToString(all_subscriptions.RunAndGetResult()));
+      PrintToString(all_subscriptions.RunAndGetResult()));
+}
+
+TEST_F(FeedApiSubscriptionsTest,
+       RecommendedWebFeedsAreNotFetchedAfterStartupWhenFeatureIsDisabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeed);
+
+  // The test fixture disables the delayed fetch after startup. Use the default
+  // config instead.
+  SetFeedConfigForTesting(Config());
+  CreateStream();
+
+  // Wait until the delayed task would normally run, verify no request is made.
+  task_environment_.FastForwardBy(
+      GetFeedConfig().fetch_recommended_web_feeds_delay +
+      base::TimeDelta::FromSeconds(1));
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(0, network_.GetListRecommendedWebFeedsRequestCount());
+}
+
+TEST_F(FeedApiSubscriptionsTest, RecommendedWebFeedsAreFetchedAfterStartup) {
+  // The test fixture disables the delayed fetch after startup. Use the default
+  // config instead.
+  SetFeedConfigForTesting(Config());
+  CreateStream();
+  InjectRecommendedWebFeedsResponse({MakeWireWebFeed("cats")});
+
+  // Wait until the delayed task runs, and verify the network request was sent.
+  task_environment_.FastForwardBy(
+      GetFeedConfig().fetch_recommended_web_feeds_delay +
+      base::TimeDelta::FromSeconds(1));
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
+
+  // Ensure the new recommended feed information is immediately available.
+  CallbackReceiver<WebFeedMetadata> metadata;
+  subscriptions().FindWebFeedInfoForPage(
+      MakeWebFeedPageInformation("https://cats.com"), metadata.Bind());
+  EXPECT_EQ(
+      "WebFeedMetadata{ id=id_cats is_recommended title=Title cats "
+      "publisher_url=https://cats.com/ status=kNotSubscribed }",
+      PrintToString(metadata.RunAndGetResult()));
+  // Check that recommended feeds are exactly as expected, and persisted.
+  EXPECT_EQ(
+      "{ WebFeedMetadata{ id=id_cats is_recommended title=Title cats "
+      "publisher_url=https://cats.com/ status=kNotSubscribed } }",
+      PrintToString(CheckRecommendedFeeds()));
+}
+
+TEST_F(FeedApiSubscriptionsTest, RecommendedWebFeedsAreClearedOnSignOut) {
+  // 1. Populate web feeds at startup for a signed-in users.
+  {
+    SetFeedConfigForTesting(Config());
+    CreateStream();
+    InjectRecommendedWebFeedsResponse({MakeWireWebFeed("cats")});
+
+    // Wait until the delayed task runs, and verify the network request was
+    // sent.
+    task_environment_.FastForwardBy(
+        GetFeedConfig().fetch_recommended_web_feeds_delay +
+        base::TimeDelta::FromSeconds(1));
+    WaitForIdleTaskQueue();
+    ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
+    ASSERT_EQ(
+        "{ WebFeedMetadata{ id=id_cats is_recommended title=Title cats "
+        "publisher_url=https://cats.com/ status=kNotSubscribed } }",
+        PrintToString(GetRecommendedFeeds()));
+  }
+
+  // Sign out, and verify recommended web feeds are cleared.
+  is_signed_in_ = false;
+  stream_->OnSignedOut();
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
+  EXPECT_EQ("{}", PrintToString(CheckRecommendedFeeds()));
+}
+
+TEST_F(FeedApiSubscriptionsTest,
+       RecommendedWebFeedsAreFetchedAfterSignInButNotSignOut) {
+  // The test fixture disables the delayed fetch after startup. Use the default
+  // config instead.
+  SetFeedConfigForTesting(Config());
+  CreateStream();
+  InjectRecommendedWebFeedsResponse({MakeWireWebFeed("cats")});
+  InjectRecommendedWebFeedsResponse({MakeWireWebFeed("dogs")});
+
+  // Wait until the delayed task runs, and verify the network request was sent.
+  task_environment_.FastForwardBy(
+      GetFeedConfig().fetch_recommended_web_feeds_delay +
+      base::TimeDelta::FromSeconds(1));
+  WaitForIdleTaskQueue();
+  ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
+
+  // Sign out, this clears recommended Web Feeds.
+  is_signed_in_ = false;
+  stream_->OnSignedOut();
+  WaitForIdleTaskQueue();
+
+  // Sign in, and verify web feeds are fetched and stored.
+  is_signed_in_ = true;
+  stream_->OnSignedIn();
+  WaitForIdleTaskQueue();
+
+  ASSERT_EQ(2, network_.GetListRecommendedWebFeedsRequestCount());
+  EXPECT_EQ(
+      "{ WebFeedMetadata{ id=id_dogs is_recommended title=Title dogs "
+      "publisher_url=https://dogs.com/ status=kNotSubscribed } }",
+      PrintToString(CheckRecommendedFeeds()));
+}
+
+TEST_F(FeedApiSubscriptionsTest,
+       RecommendedWebFeedsAreNotFetchedAfterStartupWhenDataIsFresh) {
+  // 1. First, fetch recommended web feeds at startup, same as
+  // RecommendedWebFeedsAreFetchedAfterStartup.
+  {
+    SetFeedConfigForTesting(Config());
+    CreateStream();
+    InjectRecommendedWebFeedsResponse({MakeWireWebFeed("cats")});
+
+    task_environment_.FastForwardBy(
+        GetFeedConfig().fetch_recommended_web_feeds_delay +
+        base::TimeDelta::FromSeconds(1));
+    WaitForIdleTaskQueue();
+    ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
+  }
+
+  // 2. Recreate FeedStream, and verify recommended web feeds are not fetched
+  // again.
+  {
+    CreateStream();
+
+    task_environment_.FastForwardBy(
+        GetFeedConfig().fetch_recommended_web_feeds_delay +
+        base::TimeDelta::FromSeconds(1));
+    WaitForIdleTaskQueue();
+    ASSERT_EQ(1, network_.GetListRecommendedWebFeedsRequestCount());
+  }
+
+  // 3. Wait until the data is stale, and then verify the recommended web feeds
+  // are fetched again.
+  {
+    task_environment_.FastForwardBy(
+        GetFeedConfig().recommended_feeds_staleness_threshold);
+    InjectRecommendedWebFeedsResponse({MakeWireWebFeed("catsv2")});
+    CreateStream();
+
+    task_environment_.FastForwardBy(
+        GetFeedConfig().fetch_recommended_web_feeds_delay +
+        base::TimeDelta::FromSeconds(1));
+    WaitForIdleTaskQueue();
+    ASSERT_EQ(2, network_.GetListRecommendedWebFeedsRequestCount());
+    EXPECT_EQ(
+        "{ WebFeedMetadata{ id=id_catsv2 is_recommended title=Title catsv2 "
+        "publisher_url=https://catsv2.com/ status=kNotSubscribed } }",
+        PrintToString(CheckRecommendedFeeds()));
+  }
 }
 
 }  // namespace

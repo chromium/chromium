@@ -4,11 +4,15 @@
 
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 
+#include <ostream>
+
 #include "base/strings/string_piece.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "url/gurl.h"
 
 namespace feed {
+
 namespace {
 using Entry = WebFeedIndex::Entry;
 void AddEntries(
@@ -24,6 +28,7 @@ void AddEntries(
       domain_list.emplace_back(matcher.domain_match(), index);
   }
 }
+
 }  // namespace
 
 WebFeedIndex::EntrySet::EntrySet() = default;
@@ -36,6 +41,13 @@ WebFeedIndex::~WebFeedIndex() = default;
 
 void WebFeedIndex::Populate(
     const feedstore::RecommendedWebFeedIndex& recommended_feed_index) {
+  int64_t update_time_millis = recommended_feed_index.update_time_millis();
+  if (update_time_millis <= 0) {
+    recommended_feeds_update_time_ = base::Time();
+  } else {
+    recommended_feeds_update_time_ =
+        feedstore::FromTimestampMillis(update_time_millis);
+  }
   recommended_ = {};
   std::vector<std::pair<std::string, int>> domain_list;
 
@@ -119,6 +131,20 @@ bool WebFeedIndex::IsRecommended(const std::string& web_feed_id) const {
       return true;
   }
   return false;
+}
+
+std::vector<WebFeedIndex::Entry> WebFeedIndex::GetRecommendedEntriesForTesting()
+    const {
+  return recommended_.entries;
+}
+
+std::ostream& operator<<(std::ostream& os, const WebFeedIndex::Entry& entry) {
+  if (entry) {
+    return os << "Entry{" << entry.web_feed_id << " "
+              << (entry.recommended() ? "recommended" : "subscribed") << "}";
+  } else {
+    return os << "Entry{}";
+  }
 }
 
 }  // namespace feed

@@ -30,6 +30,7 @@
 #include "components/feed/core/v2/test/callback_receiver.h"
 #include "components/feed/core/v2/test/proto_printer.h"
 #include "components/feed/core/v2/test/stream_builder.h"
+#include "components/feed/core/v2/test/test_util.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
@@ -552,7 +553,11 @@ void FeedApiTest::SetUp() {
   kTestTimeEpoch = base::Time::Now();
 
   // Reset to default config, since tests can change it.
-  SetFeedConfigForTesting(Config());
+  Config config;
+  // Disable fetching of recommended web feeds at startup to
+  // avoid a delayed task in tests that don't need it.
+  config.fetch_recommended_web_feeds_delay = base::TimeDelta();
+  SetFeedConfigForTesting(config);
 
   feed::prefs::RegisterFeedSharedProfilePrefs(profile_prefs_.registry());
   feed::RegisterProfilePrefs(profile_prefs_.registry());
@@ -627,13 +632,10 @@ bool FeedApiTest::IsTaskQueueIdle() const {
 }
 
 void FeedApiTest::WaitForIdleTaskQueue() {
-  if (IsTaskQueueIdle())
-    return;
-  base::test::ScopedRunLoopTimeout run_timeout(FROM_HERE,
-                                               base::TimeDelta::FromSeconds(1));
-  base::RunLoop run_loop;
-  stream_->SetIdleCallbackForTesting(run_loop.QuitClosure());
-  run_loop.Run();
+  RunLoopUntil(base::BindLambdaForTesting([&]() {
+    return IsTaskQueueIdle() &&
+           !stream_->subscriptions().is_loading_model_for_testing();
+  }));
 }
 
 void FeedApiTest::UnloadModel(const StreamType& stream_type) {

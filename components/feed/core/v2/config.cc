@@ -44,6 +44,16 @@ void OverrideWithFinch(Config* config) {
           kInterestFeedV2, "max_action_upload_requests_per_day",
           config->max_action_upload_requests_per_day);
 
+  config->max_list_recommended_web_feeds_requests_per_day =
+      base::GetFieldTrialParamByFeatureAsInt(
+          kWebFeed, "max_list_recommended_web_feeds_requests_per_day",
+          config->max_list_recommended_web_feeds_requests_per_day);
+
+  config->max_list_web_feeds_requests_per_day =
+      base::GetFieldTrialParamByFeatureAsInt(
+          kWebFeed, "max_list_web_feeds_requests_per_day",
+          config->max_list_web_feeds_requests_per_day);
+
   config->stale_content_threshold =
       base::TimeDelta::FromSecondsD(base::GetFieldTrialParamByFeatureAsDouble(
           kInterestFeedV2, "stale_content_threshold_seconds",

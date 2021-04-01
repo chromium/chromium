@@ -6,11 +6,19 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/optional.h"
+#include "base/task/post_task.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/v2/config.h"
 #include "components/feed/core/v2/feed_stream.h"
+#include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/metrics_reporter.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/web_feed_subscriptions/subscribe_to_web_feed_task.h"
+#include "components/feed/feed_feature_list.h"
 #include "components/offline_pages/task/closure_task.h"
 
 namespace feed {
@@ -130,6 +138,24 @@ class WebFeedSubscriptionModel {
     store_->WriteSubscribedFeeds(std::move(state), base::DoNothing());
   }
 
+  // Updates recommended web feeds in both index and store.
+  void UpdateRecommendedFeeds(
+      std::vector<feedstore::WebFeedInfo> recommended_web_feeds) {
+    feedstore::RecommendedWebFeedIndex store_index;
+    store_index.set_update_time_millis(
+        feedstore::ToTimestampMillis(base::Time::Now()));
+    for (const feedstore::WebFeedInfo& info : recommended_web_feeds) {
+      feedstore::RecommendedWebFeedIndex::Entry& entry =
+          *store_index.add_entries();
+      entry.set_web_feed_id(info.web_feed_id());
+      *entry.mutable_matchers() = info.uri_matchers();
+    }
+    index_->Populate(store_index);
+    store_->WriteRecommendedFeeds(std::move(store_index),
+                                  std::move(recommended_web_feeds),
+                                  base::DoNothing());
+  }
+
   const std::vector<feedstore::WebFeedInfo>& subscriptions() const {
     return subscriptions_;
   }
@@ -152,7 +178,21 @@ class WebFeedSubscriptionModel {
 
 WebFeedSubscriptionCoordinator::WebFeedSubscriptionCoordinator(
     FeedStream* feed_stream)
-    : feed_stream_(feed_stream) {}
+    : feed_stream_(feed_stream) {
+  base::TimeDelta delay = GetFeedConfig().fetch_recommended_web_feeds_delay;
+  if (IsSignedInAndWebFeedsEnabled() && !delay.is_zero()) {
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            &WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsIfStale,
+            GetWeakPtr()),
+        delay);
+  }
+}
+
+bool WebFeedSubscriptionCoordinator::IsSignedInAndWebFeedsEnabled() const {
+  return base::FeatureList::IsEnabled(kWebFeed) && feed_stream_->IsSignedIn();
+}
 
 WebFeedSubscriptionCoordinator::~WebFeedSubscriptionCoordinator() = default;
 
@@ -160,6 +200,13 @@ void WebFeedSubscriptionCoordinator::Populate(
     const FeedStore::WebFeedStartupData& startup_data) {
   index_.Populate(startup_data.recommended_feed_index);
   index_.Populate(startup_data.subscribed_web_feeds);
+}
+
+void WebFeedSubscriptionCoordinator::ClearAllFinished() {
+  index_.Populate(feedstore::RecommendedWebFeedIndex{});
+  model_.reset();
+  // TODO(harringtond): Clear and fetch subscribed feeds.
+  FetchRecommendedWebFeedsIfStale();
 }
 
 void WebFeedSubscriptionCoordinator::FollowWebFeed(
@@ -516,6 +563,43 @@ SubscriptionInfo WebFeedSubscriptionCoordinator::FindSubscriptionInfoById(
     const std::string& web_feed_id) {
   DCHECK(model_);
   return model_->GetSubscriptionInfo(web_feed_id);
+}
+
+void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsIfStale() {
+  if (!IsSignedInAndWebFeedsEnabled())
+    return;
+
+  base::TimeDelta staleness =
+      base::Time::Now() - index_.GetRecommendedFeedsUpdateTime();
+  if (staleness > GetFeedConfig().recommended_feeds_staleness_threshold ||
+      staleness < -base::TimeDelta::FromHours(1)) {
+    WithModel(base::BindOnce(
+        &WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsStart,
+        base::Unretained(this)));
+  }
+}
+
+void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsStart() {
+  DCHECK(model_);
+  if (fetching_recommended_web_feeds_)
+    return;
+  fetching_recommended_web_feeds_ = true;
+  feed_stream_->GetTaskQueue().AddTask(
+      std::make_unique<FetchRecommendedWebFeedsTask>(
+          feed_stream_,
+          base::BindOnce(
+              &WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsComplete,
+              base::Unretained(this))));
+}
+
+void WebFeedSubscriptionCoordinator::FetchRecommendedWebFeedsComplete(
+    FetchRecommendedWebFeedsTask::Result result) {
+  DCHECK(model_);
+  fetching_recommended_web_feeds_ = false;
+  feed_stream_->GetMetricsReporter().RefreshRecommendedWebFeedsAttempted(
+      result.status, result.recommended_web_feeds.size());
+  if (result.status == RecommendedWebFeedRefreshStatus::kSuccess)
+    model_->UpdateRecommendedFeeds(std::move(result.recommended_web_feeds));
 }
 
 }  // namespace feed

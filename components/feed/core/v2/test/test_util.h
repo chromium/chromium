@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_TEST_TEST_UTIL_H_
 #define COMPONENTS_FEED_CORE_V2_TEST_TEST_UTIL_H_
 
+#include "base/callback.h"
 #include "base/time/time.h"
 
 // Some functionality shared among feed tests.
@@ -30,6 +31,9 @@ const base::TimeDelta kEpsilon = base::TimeDelta::FromMilliseconds(5);
                                << want___ << "\nBut got:\n" \
                                << got___;                   \
   }
+
+// Execute a runloop until `criteria` is true.
+void RunLoopUntil(base::RepeatingCallback<bool()> criteria);
 
 }  // namespace feed
 

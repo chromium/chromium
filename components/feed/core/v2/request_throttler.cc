@@ -16,15 +16,18 @@ namespace {
 // Returns the maximum number of requests per day for this request type.
 // -1 indicates there is no limit.
 int GetMaxRequestsPerDay(NetworkRequestType request_type) {
+  const Config& config = GetFeedConfig();
   switch (request_type) {
     case NetworkRequestType::kFeedQuery:
-      return GetFeedConfig().max_feed_query_requests_per_day;
+      return config.max_feed_query_requests_per_day;
     case NetworkRequestType::kUploadActions:
-      return GetFeedConfig().max_action_upload_requests_per_day;
+      return config.max_action_upload_requests_per_day;
     case NetworkRequestType::kNextPage:
-      return GetFeedConfig().max_next_page_requests_per_day;
+      return config.max_next_page_requests_per_day;
     case NetworkRequestType::kListWebFeeds:
-      return -1;
+      return config.max_list_web_feeds_requests_per_day;
+    case NetworkRequestType::kListRecommendedWebFeeds:
+      return config.max_list_recommended_web_feeds_requests_per_day;
     case NetworkRequestType::kUnfollowWebFeed:
     case NetworkRequestType::kFollowWebFeed:
       return -1;

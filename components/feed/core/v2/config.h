@@ -19,6 +19,8 @@ struct Config {
   int max_feed_query_requests_per_day = 20;
   int max_next_page_requests_per_day = 20;
   int max_action_upload_requests_per_day = 20;
+  int max_list_recommended_web_feeds_requests_per_day = 20;
+  int max_list_web_feeds_requests_per_day = 20;
   // We'll always attempt to refresh content older than this.
   base::TimeDelta stale_content_threshold = base::TimeDelta::FromHours(4);
   // Content older than this threshold will not be shown to the user.
@@ -52,6 +54,17 @@ struct Config {
   base::TimeDelta session_id_max_age = base::TimeDelta::FromDays(30);
   // Maximum number of images prefetched per refresh.
   int max_prefetch_image_requests_per_refresh = 50;
+
+  // Configuration for Web Feeds.
+
+  // TimeDelta after startup to fetch recommended feeds if they are stale. If
+  // zero, no fetching is done.
+  base::TimeDelta fetch_recommended_web_feeds_delay =
+      base::TimeDelta::FromSeconds(40);
+  // How long before cached recommended feed data on the device is considered
+  // stale and refetched.
+  base::TimeDelta recommended_feeds_staleness_threshold =
+      base::TimeDelta::FromDays(7);
 
   // Configuration for `PersistentKeyValueStore`.
 

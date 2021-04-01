@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_WEB_FEED_INDEX_H_
 #define COMPONENTS_FEED_CORE_V2_WEB_FEED_SUBSCRIPTIONS_WEB_FEED_INDEX_H_
 
+#include <iosfwd>
+
 #include "base/containers/flat_map.h"
 #include "base/strings/string_piece_forward.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -49,7 +51,15 @@ class WebFeedIndex {
   Entry FindWebFeed(const std::string& id);
   bool IsRecommended(const std::string& web_feed_id) const;
 
+  base::Time GetRecommendedFeedsUpdateTime() const {
+    return recommended_feeds_update_time_;
+  }
+
+  std::vector<Entry> GetRecommendedEntriesForTesting() const;
+
  private:
+  // TODO(crbug/1152592): This code is temporary, we will need to have
+  // additional matching criteria. Plan to use url_matcher.h instead.
   struct EntrySet {
     EntrySet();
     ~EntrySet();
@@ -65,13 +75,14 @@ class WebFeedIndex {
   const Entry& FindWebFeedForDomain(const EntrySet& entry_set,
                                     base::StringPiece domain);
 
-  // TODO(crbug/1152592): This code is temporary, we will need to have
-  // additional matching criteria. Plan to use url_matcher.h instead.
-
+  base::Time recommended_feeds_update_time_;
   EntrySet subscribed_;
   EntrySet recommended_;
   Entry empty_entry_;
 };
+
+// For tests.
+std::ostream& operator<<(std::ostream& os, const WebFeedIndex::Entry& entry);
 
 }  // namespace feed
 

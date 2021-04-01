@@ -45,6 +45,15 @@ struct ListFollowedWebFeedDiscoverApi {
   static base::StringPiece RequestPath() { return "v1/webFeeds"; }
 };
 
+struct ListRecommendedWebFeedDiscoverApi {
+  using Request = feedwire::webfeed::ListRecommendedWebFeedsRequest;
+  using Response = feedwire::webfeed::ListRecommendedWebFeedsResponse;
+  static const NetworkRequestType kRequestType =
+      NetworkRequestType::kListRecommendedWebFeeds;
+  static base::StringPiece Method() { return "GET"; }
+  static base::StringPiece RequestPath() { return "v1/recommendedWebFeeds"; }
+};
+
 struct FollowWebFeedDiscoverApi {
   using Request = feedwire::webfeed::FollowWebFeedRequest;
   using Response = feedwire::webfeed::FollowWebFeedResponse;

@@ -485,6 +485,12 @@ void MetricsReporter::NetworkRequestComplete(NetworkRequestType type,
           "ContentSuggestions.Feed.Network.ResponseStatus.FollowWebFeed",
           http_status_code);
       return;
+    case NetworkRequestType::kListRecommendedWebFeeds:
+      base::UmaHistogramSparse(
+          "ContentSuggestions.Feed.Network.ResponseStatus."
+          "ListRecommendedWebFeeds",
+          http_status_code);
+      return;
   }
 }
 
@@ -646,6 +652,13 @@ void MetricsReporter::OnUnfollowAttempt(
     const WebFeedSubscriptions::UnfollowWebFeedResult& result) {
   DVLOG(1) << "OnUnfollowAttempt status=" << result.request_status;
   // TODO(crbug/1152592): Add UMA.
+}
+
+void MetricsReporter::RefreshRecommendedWebFeedsAttempted(
+    RecommendedWebFeedRefreshStatus status,
+    int recommended_web_feed_count) {
+  DVLOG(1) << "RefreshRecommendedWebFeedsAttempted status=" << status
+           << " count=" << recommended_web_feed_count;
 }
 
 }  // namespace feed

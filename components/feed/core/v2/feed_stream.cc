@@ -878,6 +878,7 @@ void FeedStream::FinishClearAll() {
       TriggerStreamLoad(item.second.type);
     }
   }
+  web_feed_subscription_coordinator_->ClearAllFinished();
 }
 
 ImageFetchId FeedStream::FetchImage(

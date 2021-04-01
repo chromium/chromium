@@ -17,6 +17,7 @@ enum class NetworkRequestType : int {
   kListWebFeeds = 3,
   kUnfollowWebFeed = 4,
   kFollowWebFeed = 5,
+  kListRecommendedWebFeeds = 6,
 };
 
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.
@@ -90,6 +91,15 @@ enum class UploadActionsBatchStatus {
 
 std::ostream& operator<<(std::ostream& out, UploadActionsStatus value);
 std::ostream& operator<<(std::ostream& out, UploadActionsBatchStatus value);
+
+enum class RecommendedWebFeedRefreshStatus {
+  kNoStatus = 0,
+  kSuccess = 1,
+  kNetworkFailure = 2,
+  kNetworkRequestThrottled = 3,
+};
+std::ostream& operator<<(std::ostream& out,
+                         RecommendedWebFeedRefreshStatus value);
 
 }  // namespace feed
 
