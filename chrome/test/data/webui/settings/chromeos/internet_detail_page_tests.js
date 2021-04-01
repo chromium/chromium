@@ -558,6 +558,7 @@ suite('InternetDetailPage', function() {
           mojoApi_.setDeviceStateForTest({
             type: mojom.NetworkType.kCellular,
             deviceState: mojom.DeviceStateType.kEnabled,
+            inhibitReason: mojom.InhibitReason.kNotInhibited,
             simInfos: [{
               iccid: test_iccid,
               isPrimary: true,
@@ -592,6 +593,7 @@ suite('InternetDetailPage', function() {
           mojoApi_.setDeviceStateForTest({
             type: mojom.NetworkType.kCellular,
             deviceState: mojom.DeviceStateType.kEnabled,
+            inhibitReason: mojom.InhibitReason.kNotInhibited,
             simInfos: [{
               iccid: test_iccid,
               isPrimary: true,
@@ -625,6 +627,7 @@ suite('InternetDetailPage', function() {
       mojoApi_.setDeviceStateForTest({
         type: mojom.NetworkType.kCellular,
         deviceState: mojom.DeviceStateType.kEnabled,
+        inhibitReason: mojom.InhibitReason.kNotInhibited,
         simInfos: [{
           iccid: test_iccid,
           isPrimary: false,
@@ -637,6 +640,7 @@ suite('InternetDetailPage', function() {
       mojoApi_.setDeviceStateForTest({
         type: mojom.NetworkType.kCellular,
         deviceState: mojom.DeviceStateType.kEnabled,
+        inhibitReason: mojom.InhibitReason.kNotInhibited,
         simInfos: [{
           iccid: test_iccid,
           isPrimary: true,
@@ -649,6 +653,7 @@ suite('InternetDetailPage', function() {
       mojoApi_.setDeviceStateForTest({
         type: mojom.NetworkType.kCellular,
         deviceState: mojom.DeviceStateType.kEnabled,
+        inhibitReason: mojom.InhibitReason.kNotInhibited,
         simInfos: [{
           iccid: test_iccid,
           isPrimary: false,
@@ -722,6 +727,7 @@ suite('InternetDetailPage', function() {
       assertFalse(networkIpConfig.disabled);
       assertFalse(networkNameservers.disabled);
       assertFalse(networkProxySection.disabled);
+      assertFalse(!!internetDetailPage.$$('cellular-banner'));
 
       // Mock device being inhibited.
       mojoApi_.setDeviceStateForTest({
@@ -746,6 +752,7 @@ suite('InternetDetailPage', function() {
       assertTrue(networkIpConfig.disabled);
       assertTrue(networkNameservers.disabled);
       assertTrue(networkProxySection.disabled);
+      assertTrue(!!internetDetailPage.$$('cellular-banner'));
 
       // Uninhibit.
       mojoApi_.setDeviceStateForTest({
@@ -770,6 +777,7 @@ suite('InternetDetailPage', function() {
       assertFalse(networkIpConfig.disabled);
       assertFalse(networkNameservers.disabled);
       assertFalse(networkProxySection.disabled);
+      assertFalse(!!internetDetailPage.$$('cellular-banner'));
     });
   });
 

@@ -35,6 +35,7 @@
 <link rel="import" href="../metrics_recorder.html">
 <link rel="import" href="../os_people_page/os_sync_browser_proxy.html">
 <link rel="import" href="../os_route.html">
+<link rel="import" href="cellular_banner.html">
 <link rel="import" href="internet_page_browser_proxy.html">
 <link rel="import" href="internet_shared_css.html">
 <link rel="import" href="network_proxy_section.html">
@@ -81,6 +82,9 @@
         border-top: none;
       }
     </style>
+    <template is="dom-if" if="[[disabled_]]" restamp>
+      <cellular-banner device-state="[[deviceState_]]"></cellular-banner>
+    </template>
     <!-- Title section: Icon + name + connection state. -->
     <div id="titleDiv" class="settings-box first">
       <div class="start layout horizontal center">
