@@ -2973,15 +2973,6 @@ ci.fyi_builder(
 )
 
 ci.fyi_builder(
-    name = "fuchsia-fyi-arm64-size",
-    console_view_entry = consoles.console_view_entry(
-        category = "fuchsia|a64",
-        short_name = "size",
-    ),
-    notifies = ["cr-fuchsia"],
-)
-
-ci.fyi_builder(
     name = "fuchsia-fyi-x64-dbg",
     console_view_entry = consoles.console_view_entry(
         category = "fuchsia|x64",
