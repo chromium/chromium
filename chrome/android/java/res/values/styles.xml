@@ -384,9 +384,7 @@
     <style name="LocationBarActionButton" parent="LocationBarButton">
         <item name="android:layout_width">@dimen/location_bar_action_icon_width</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:paddingStart">4dp</item>
-        <item name="android:scaleType">center</item>
-        <item name="android:layout_gravity">end</item>
+        <item name="android:scaleType">centerInside</item>
         <item name="tint">@color/default_icon_color_tint_list</item>
     </style>
     <style name="ModernToolbar" parent="Widget.AppCompat.Toolbar">

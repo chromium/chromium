@@ -56,32 +56,19 @@
          TODO(b/182195615): only keep one Lens button after the experiment. -->
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/lens_camera_button_start"
-        android:layout_width="48dp"
-        android:layout_height="match_parent"
+        style="@style/LocationBarActionButton"
         android:contentDescription="@string/accessibility_btn_lens_camera"
         android:src="@drawable/lens_camera_icon"
-        android:scaleType="centerInside"
-        android:visibility="gone"
-        app:tint="@color/default_icon_color_tint_list" />
-    <!-- Padding start is applied so that microphone icon appears in the same location as it
-        does in the main url bar. The microphone button in the url bar is 48dp wide with 4dp
-        start padding. -->
+        android:visibility="gone" />
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/voice_search_button"
-        android:layout_width="48dp"
-        android:layout_height="match_parent"
-        android:paddingStart="4dp"
+        style="@style/LocationBarActionButton"
         android:contentDescription="@string/accessibility_toolbar_btn_mic"
-        android:src="@drawable/btn_mic"
-        android:scaleType="centerInside"
-        app:tint="@color/default_icon_color_tint_list" />
+        android:src="@drawable/btn_mic" />
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/lens_camera_button_end"
-        android:layout_width="48dp"
-        android:layout_height="match_parent"
+        style="@style/LocationBarActionButton"
         android:contentDescription="@string/accessibility_btn_lens_camera"
         android:src="@drawable/lens_camera_icon"
-        android:scaleType="centerInside"
-        android:visibility="gone"
-        app:tint="@color/default_icon_color_tint_list" />
+        android:visibility="gone" />
 </view>

@@ -2860,7 +2860,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     private int getAdditionalOffsetForNTP() {
-        return getResources().getDimensionPixelSize(R.dimen.sei_search_box_lateral_padding)
+        return getResources().getDimensionPixelSize(R.dimen.location_bar_lateral_padding)
                 - getResources().getDimensionPixelSize(R.dimen.sei_location_bar_lateral_padding);
     }
 }

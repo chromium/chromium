@@ -36,7 +36,6 @@ import org.chromium.chrome.browser.cryptids.ProbabilisticCryptidRenderer;
 import org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesSection;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
-import org.chromium.chrome.browser.lens.LensFeature;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp.LogoBridge.Logo;
@@ -44,7 +43,6 @@ import org.chromium.chrome.browser.ntp.LogoBridge.LogoObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage.OnSearchBoxScrollListener;
 import org.chromium.chrome.browser.ntp.search.SearchBoxCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
-import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.query_tiles.QueryTileSection;
 import org.chromium.chrome.browser.query_tiles.QueryTileUtils;
@@ -200,15 +198,6 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             exploreStub.setLayoutResource(R.layout.experimental_explore_sites_section);
             mExploreSectionView = exploreStub.inflate();
         }
-
-        View searchBoxContainerView = findViewById(R.id.search_box);
-        if (SearchEngineLogoUtils.getInstance().isSearchEngineLogoEnabled()) {
-            int lateral_padding =
-                    getResources().getDimensionPixelOffset(R.dimen.sei_search_box_lateral_padding);
-            searchBoxContainerView.setPaddingRelative(lateral_padding,
-                    searchBoxContainerView.getPaddingTop(), lateral_padding,
-                    searchBoxContainerView.getPaddingBottom());
-        }
     }
 
     /**
@@ -340,40 +329,18 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         TraceEvent.begin(TAG + ".initializeVoiceSearchButton()");
         mSearchBoxCoordinator.addVoiceSearchButtonClickListener(
                 v -> mManager.focusSearchBox(true, null, false));
-        if (SearchEngineLogoUtils.getInstance().isSearchEngineLogoEnabled()) {
-            // View is 48dp, image is 24dp. Increasing the padding from 4dp -> 8dp will split the
-            // remaining 16dp evenly between start/end resulting in a paddingEnd of 8dp.
-            int paddingStart = getResources().getDimensionPixelSize(
-                    R.dimen.sei_ntp_fakebox_button_start_padding);
-            ImageView voiceSearchButton = findViewById(R.id.voice_search_button);
-            voiceSearchButton.setPaddingRelative(paddingStart, voiceSearchButton.getPaddingTop(),
-                    getPaddingEnd(), voiceSearchButton.getPaddingBottom());
-        }
-
+        updateActionButtonVisibility();
         TraceEvent.end(TAG + ".initializeVoiceSearchButton()");
     }
 
     private void initializeLensButton() {
         TraceEvent.begin(TAG + ".initializeLensButton()");
-        updateLensButtonVisibility();
         // TODO(b/181067692): Report user action for this click.
         mSearchBoxCoordinator.addLensButtonClickListener(v -> {
             mSearchBoxCoordinator.startLens(LensEntryPoint.NEW_TAB_PAGE);
             RecordUserAction.record("NewTabPage.SearchBox.Lens");
         });
-        if (SearchEngineLogoUtils.getInstance().isSearchEngineLogoEnabled()) {
-            // View is 48dp, image is 24dp. Increasing the padding from 4dp -> 8dp will split the
-            // remaining 16dp evenly between start/end resulting in a paddingEnd of 8dp.
-            int paddingStart = getResources().getDimensionPixelSize(
-                    R.dimen.sei_ntp_fakebox_button_start_padding);
-            ImageView lensButton =
-                    LensFeature.SEARCH_BOX_START_VARIANT_LENS_CAMERA_ASSISTED_SEARCH.getValue()
-                    ? findViewById(R.id.lens_camera_button_start)
-                    : findViewById(R.id.lens_camera_button_end);
-            lensButton.setPaddingRelative(paddingStart, lensButton.getPaddingTop(), getPaddingEnd(),
-                    lensButton.getPaddingBottom());
-        }
-
+        updateActionButtonVisibility();
         TraceEvent.end(TAG + ".initializeLensButton()");
     }
 
@@ -766,44 +733,11 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         }
     }
 
-    /**
-     * Update the visibility of the voice search button based on whether the feature is currently
-     * enabled.
-     */
-    void updateVoiceSearchButtonVisibility() {
-        if (mSearchBoxEndPadding == UNSET_RESOURCE_FLAG) {
-            mSearchBoxEndPadding = SearchEngineLogoUtils.getInstance().isSearchEngineLogoEnabled()
-                    ? getResources().getDimensionPixelSize(R.dimen.sei_search_box_lateral_padding)
-                    : getResources().getDimensionPixelSize(R.dimen.location_bar_lateral_padding);
-        }
+    /** Update the visibility of the action buttons. */
+    void updateActionButtonVisibility() {
         mSearchBoxCoordinator.setVoiceSearchButtonVisibility(mManager.isVoiceSearchEnabled());
-        View searchBoxContainerView = mSearchBoxCoordinator.getView();
-        searchBoxContainerView.setPadding(searchBoxContainerView.getPaddingStart(),
-                searchBoxContainerView.getPaddingTop(),
-                mManager.isVoiceSearchEnabled()
-                                || mSearchBoxCoordinator.isLensEnabled(LensEntryPoint.NEW_TAB_PAGE)
-                        ? 0
-                        : mSearchBoxEndPadding,
-                searchBoxContainerView.getPaddingBottom());
-    }
-
-    /**
-     * Update the visibility of the Lens button based on whether the feature is currently
-     * enabled.
-     */
-    void updateLensButtonVisibility() {
-        if (mSearchBoxEndPadding == UNSET_RESOURCE_FLAG) {
-            mSearchBoxEndPadding = SearchEngineLogoUtils.getInstance().isSearchEngineLogoEnabled()
-                    ? getResources().getDimensionPixelSize(R.dimen.sei_search_box_lateral_padding)
-                    : getResources().getDimensionPixelSize(R.dimen.location_bar_lateral_padding);
-        }
-        boolean isLensEnabled = mSearchBoxCoordinator.isLensEnabled(LensEntryPoint.NEW_TAB_PAGE);
-        mSearchBoxCoordinator.setLensButtonVisibility(isLensEnabled);
-        View searchBoxContainerView = mSearchBoxCoordinator.getView();
-        searchBoxContainerView.setPadding(searchBoxContainerView.getPaddingStart(),
-                searchBoxContainerView.getPaddingTop(),
-                isLensEnabled || mManager.isVoiceSearchEnabled() ? 0 : mSearchBoxEndPadding,
-                searchBoxContainerView.getPaddingBottom());
+        mSearchBoxCoordinator.setLensButtonVisibility(
+                mSearchBoxCoordinator.isLensEnabled(LensEntryPoint.NEW_TAB_PAGE));
     }
 
     @Override
@@ -818,8 +752,7 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
         mUiConfig.updateDisplayStyle();
 
         if (visibility == VISIBLE) {
-            updateVoiceSearchButtonVisibility();
-            updateLensButtonVisibility();
+            updateActionButtonVisibility();
             maybeShowVideoTutorialTryNowIPH();
         }
     }

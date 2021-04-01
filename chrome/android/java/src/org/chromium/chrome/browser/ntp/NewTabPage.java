@@ -645,13 +645,13 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mVoiceRecognitionHandler = mOmniboxStub.getVoiceRecognitionHandler();
         if (mVoiceRecognitionHandler != null) {
             mVoiceRecognitionHandler.addObserver(this);
-            mNewTabPageLayout.updateVoiceSearchButtonVisibility();
+            mNewTabPageLayout.updateActionButtonVisibility();
         }
     }
 
     @Override
     public void onVoiceAvailabilityImpacted() {
-        mNewTabPageLayout.updateVoiceSearchButtonVisibility();
+        mNewTabPageLayout.updateActionButtonVisibility();
     }
 
     /** Adds an observer to be notified on most visited tile clicks. */
