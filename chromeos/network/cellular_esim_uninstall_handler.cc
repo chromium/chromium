@@ -7,6 +7,7 @@
 #include "base/optional.h"
 #include "chromeos/dbus/hermes/hermes_euicc_client.h"
 #include "chromeos/dbus/hermes/hermes_profile_client.h"
+#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
@@ -35,10 +36,12 @@ CellularESimUninstallHandler::~CellularESimUninstallHandler() = default;
 
 void CellularESimUninstallHandler::Init(
     CellularInhibitor* cellular_inhibitor,
+    CellularESimProfileHandler* cellular_esim_profile_handler,
     NetworkConfigurationHandler* network_configuration_handler,
     NetworkConnectionHandler* network_connection_handler,
     NetworkStateHandler* network_state_handler) {
   cellular_inhibitor_ = cellular_inhibitor;
+  cellular_esim_profile_handler_ = cellular_esim_profile_handler;
   network_configuration_handler_ = network_configuration_handler;
   network_connection_handler_ = network_connection_handler;
   network_state_handler_ = network_state_handler;
@@ -154,12 +157,23 @@ void CellularESimUninstallHandler::OnShillInhibit(
 }
 
 void CellularESimUninstallHandler::AttemptRequestInstalledProfiles() {
-  HermesEuiccClient::Get()->RequestInstalledProfiles(
+  cellular_esim_profile_handler_->RefreshProfileList(
       uninstall_requests_.front()->euicc_path,
-      base::BindOnce(&CellularESimUninstallHandler::
-                         TransitionUninstallStateOnHermesSuccess,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     UninstallState::kDisablingProfile));
+      base::BindOnce(&CellularESimUninstallHandler::OnRefreshProfileListResult,
+                     weak_ptr_factory_.GetWeakPtr()),
+      std::move(uninstall_requests_.front()->inhibit_lock));
+}
+
+void CellularESimUninstallHandler::OnRefreshProfileListResult(
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  if (!inhibit_lock) {
+    NET_LOG(ERROR) << "Error refreshing profile list; state=" << state_;
+    TransitionToUninstallState(UninstallState::kFailure);
+    return;
+  }
+
+  uninstall_requests_.front()->inhibit_lock = std::move(inhibit_lock);
+  TransitionToUninstallState(UninstallState::kDisablingProfile);
 }
 
 void CellularESimUninstallHandler::AttemptDisableProfileIfRequired() {

@@ -21,6 +21,7 @@
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -65,18 +66,23 @@ class CellularESimUninstallHandlerTest : public testing::Test {
     cellular_inhibitor_ = std::make_unique<CellularInhibitor>();
     cellular_inhibitor_->Init(network_state_handler_.get(),
                               network_device_handler_.get());
+    cellular_esim_profile_handler_ =
+        std::make_unique<TestCellularESimProfileHandler>();
+    cellular_esim_profile_handler_->Init(cellular_inhibitor_.get());
 
     cellular_esim_uninstall_handler_ =
         std::make_unique<CellularESimUninstallHandler>();
     cellular_esim_uninstall_handler_->Init(
-        cellular_inhibitor_.get(), network_configuration_handler_.get(),
-        network_connection_handler_.get(), network_state_handler_.get());
+        cellular_inhibitor_.get(), cellular_esim_profile_handler_.get(),
+        network_configuration_handler_.get(), network_connection_handler_.get(),
+        network_state_handler_.get());
 
     SetupNetwork();
   }
 
   void TearDown() override {
     cellular_inhibitor_.reset();
+    cellular_esim_profile_handler_.reset();
     network_device_handler_.reset();
     network_state_handler_.reset();
     network_configuration_handler_.reset();
@@ -151,6 +157,8 @@ class CellularESimUninstallHandlerTest : public testing::Test {
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<CellularInhibitor> cellular_inhibitor_;
+  std::unique_ptr<TestCellularESimProfileHandler>
+      cellular_esim_profile_handler_;
   std::unique_ptr<NetworkConfigurationHandler> network_configuration_handler_;
   std::unique_ptr<FakeNetworkConnectionHandler> network_connection_handler_;
   std::unique_ptr<CellularESimUninstallHandler>

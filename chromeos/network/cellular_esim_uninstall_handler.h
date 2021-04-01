@@ -16,6 +16,7 @@
 
 namespace chromeos {
 
+class CellularESimProfileHandler;
 class CellularInhibitor;
 class NetworkState;
 class NetworkConfigurationHandler;
@@ -44,6 +45,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler {
   ~CellularESimUninstallHandler();
 
   void Init(CellularInhibitor* cellular_inhibitor,
+            CellularESimProfileHandler* cellular_esim_profile_handler,
             NetworkConfigurationHandler* network_configuration_handler,
             NetworkConnectionHandler* network_connection_handler,
             NetworkStateHandler* network_state_handler);
@@ -97,6 +99,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler {
   void OnShillInhibit(
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void AttemptRequestInstalledProfiles();
+  void OnRefreshProfileListResult(
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
   void AttemptDisableProfileIfRequired();
   void AttemptUninstallProfile();
   void AttemptRemoveShillService();
@@ -113,6 +117,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimUninstallHandler {
   base::queue<std::unique_ptr<UninstallRequest>> uninstall_requests_;
 
   CellularInhibitor* cellular_inhibitor_ = nullptr;
+  CellularESimProfileHandler* cellular_esim_profile_handler_ = nullptr;
   NetworkConfigurationHandler* network_configuration_handler_ = nullptr;
   NetworkConnectionHandler* network_connection_handler_ = nullptr;
   NetworkStateHandler* network_state_handler_ = nullptr;
