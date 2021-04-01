@@ -131,14 +131,14 @@
 // ABSL_ATTRIBUTE_WEAK
 //
 // Tags a function as weak for the purposes of compilation and linking.
-// Weak attributes currently do not work properly in LLVM's Windows backend,
-// so disable them there. See https://bugs.llvm.org/show_bug.cgi?id=37598
+// Weak attributes did not work properly in LLVM's Windows backend before
+// 9.0.0, so disable them there. See https://bugs.llvm.org/show_bug.cgi?id=37598
 // for further information.
 // The MinGW compiler doesn't complain about the weak attribute until the link
 // step, presumably because Windows doesn't use ELF binaries.
 #if (ABSL_HAVE_ATTRIBUTE(weak) ||                   \
      (defined(__GNUC__) && !defined(__clang__))) && \
-    !(defined(__llvm__) && defined(_WIN32)) && !defined(__MINGW32__)
+    (!defined(_WIN32) || __clang_major__ < 9) && !defined(__MINGW32__)
 #undef ABSL_ATTRIBUTE_WEAK
 #define ABSL_ATTRIBUTE_WEAK __attribute__((weak))
 #define ABSL_HAVE_ATTRIBUTE_WEAK 1
@@ -524,6 +524,13 @@
 // ABSL_ATTRIBUTE_UNUSED
 //
 // Prevents the compiler from complaining about variables that appear unused.
+//
+// For code or headers that are assured to only build with C++17 and up, prefer
+// just using the standard '[[maybe_unused]]' directly over this macro.
+//
+// Due to differences in positioning requirements between the old, compiler
+// specific __attribute__ syntax and the now standard [[maybe_unused]], this
+// macro does not attempt to take advantage of '[[maybe_unused]]'.
 #if ABSL_HAVE_ATTRIBUTE(unused) || (defined(__GNUC__) && !defined(__clang__))
 #undef ABSL_ATTRIBUTE_UNUSED
 #define ABSL_ATTRIBUTE_UNUSED __attribute__((__unused__))

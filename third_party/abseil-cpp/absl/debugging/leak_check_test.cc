@@ -23,8 +23,10 @@ namespace {
 TEST(LeakCheckTest, DetectLeakSanitizer) {
 #ifdef ABSL_EXPECT_LEAK_SANITIZER
   EXPECT_TRUE(absl::HaveLeakSanitizer());
+  EXPECT_TRUE(absl::LeakCheckerIsActive());
 #else
   EXPECT_FALSE(absl::HaveLeakSanitizer());
+  EXPECT_FALSE(absl::LeakCheckerIsActive());
 #endif
 }
 

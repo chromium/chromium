@@ -1920,6 +1920,8 @@ EXPORTS
     ?IsDataLoss@absl@@YA_NABVStatus@1@@Z
     ?IsDeadlineExceeded@absl@@YA_NABVStatus@1@@Z
     ?IsFailedPrecondition@absl@@YA_NABVStatus@1@@Z
+    ?IsFlat@CordRepRing@cord_internal@absl@@QBE_NIIPAVstring_view@3@@Z
+    ?IsFlat@CordRepRing@cord_internal@absl@@QBE_NPAVstring_view@3@@Z
     ?IsImmortal@Refcount@cord_internal@absl@@QBE_NXZ
     ?IsInfiniteDuration@time_internal@absl@@YA_NVDuration@2@@Z
     ?IsInlined@Status@absl@@CA_NI@Z

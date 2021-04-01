@@ -108,11 +108,16 @@ def main(argv):
           'project(absl LANGUAGES CXX)':
               'project(absl LANGUAGES CXX VERSION {})'.format(datestamp)
       })
-  # Set the SOVERSION to YYYYMMDD.0.0 - The first 0 means we only have
-  # ABI compatible changes, and the second 0 means we can increment it
-  # to mark changes as ABI-compatible, for patch releases.
-  ReplaceStringsInFile('CMake/AbseilHelpers.cmake',
-                       {'SOVERSION 0': 'SOVERSION "{}.0.0"'.format(datestamp)})
+  # Set the SOVERSION to YYMM.0.0 - The first 0 means we only have ABI
+  # compatible changes, and the second 0 means we can increment it to
+  # mark changes as ABI-compatible, for patch releases.  Note that we
+  # only use the last two digits of the year and the month because the
+  # MacOS linker requires the first part of the SOVERSION to fit into
+  # 16 bits.
+  # https://www.sicpers.info/2013/03/how-to-version-a-mach-o-library/
+  ReplaceStringsInFile(
+      'CMake/AbseilHelpers.cmake',
+      {'SOVERSION 0': 'SOVERSION "{}.0.0"'.format(datestamp[2:6])})
   StripContentBetweenTags('CMakeLists.txt', '# absl:lts-remove-begin',
                           '# absl:lts-remove-end')
 

@@ -455,6 +455,7 @@ EXPORTS
     ?IsDataLoss@absl@@YA_NAEBVStatus@1@@Z
     ?IsDeadlineExceeded@absl@@YA_NAEBVStatus@1@@Z
     ?IsFailedPrecondition@absl@@YA_NAEBVStatus@1@@Z
+    ?IsFlat@CordRepRing@cord_internal@absl@@QEBA_N_K0PEAVstring_view@3@@Z
     ?IsInternal@absl@@YA_NAEBVStatus@1@@Z
     ?IsInvalidArgument@absl@@YA_NAEBVStatus@1@@Z
     ?IsNotFound@absl@@YA_NAEBVStatus@1@@Z

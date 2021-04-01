@@ -41,6 +41,11 @@ if (POLICY CMP0077)
   cmake_policy(SET CMP0077 NEW)
 endif (POLICY CMP0077)
 
+# Allow the user to specify the MSVC runtime
+if (POLICY CMP0091)
+  cmake_policy(SET CMP0091 NEW)
+endif (POLICY CMP0091)
+
 # Set BUILD_TESTING to OFF by default.
 # This must come before the project() and include(CTest) lines.
 OPTION(BUILD_TESTING "Build tests" OFF)

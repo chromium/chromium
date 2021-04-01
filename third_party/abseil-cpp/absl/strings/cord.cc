@@ -1688,6 +1688,8 @@ absl::string_view Cord::FlattenSlowPath() {
   } else if (rep->tag == EXTERNAL) {
     *fragment = absl::string_view(rep->external()->base, rep->length);
     return true;
+  } else if (rep->tag == RING) {
+    return rep->ring()->IsFlat(fragment);
   } else if (rep->tag == SUBSTRING) {
     CordRep* child = rep->substring()->child;
     if (child->tag >= FLAT) {
@@ -1698,6 +1700,9 @@ absl::string_view Cord::FlattenSlowPath() {
       *fragment = absl::string_view(
           child->external()->base + rep->substring()->start, rep->length);
       return true;
+    } else if (child->tag == RING) {
+      return child->ring()->IsFlat(rep->substring()->start, rep->length,
+                                   fragment);
     }
   }
   return false;

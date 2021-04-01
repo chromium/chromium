@@ -1926,6 +1926,8 @@ EXPORTS
     ?IsDataLoss@absl@@YA_NAEBVStatus@1@@Z
     ?IsDeadlineExceeded@absl@@YA_NAEBVStatus@1@@Z
     ?IsFailedPrecondition@absl@@YA_NAEBVStatus@1@@Z
+    ?IsFlat@CordRepRing@cord_internal@absl@@QEBA_NPEAVstring_view@3@@Z
+    ?IsFlat@CordRepRing@cord_internal@absl@@QEBA_N_K0PEAVstring_view@3@@Z
     ?IsImmortal@Refcount@cord_internal@absl@@QEBA_NXZ
     ?IsInfiniteDuration@time_internal@absl@@YA_NVDuration@2@@Z
     ?IsInlined@Status@absl@@CA_N_K@Z

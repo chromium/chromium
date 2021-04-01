@@ -260,6 +260,7 @@ cc_library(
     visibility = ["//visibility:private"],
     deps = [
         "//absl/base:config",
+        "//absl/base:core_headers",
     ],
 )
 
@@ -273,6 +274,7 @@ cc_library(
     visibility = ["//visibility:private"],
     deps = [
         "//absl/base:config",
+        "//absl/base:core_headers",
     ],
 )
 

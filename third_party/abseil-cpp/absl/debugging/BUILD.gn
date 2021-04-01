@@ -137,7 +137,10 @@ if (is_lsan) {
     sources = [ "leak_check.cc" ]
     public = [ "leak_check.h" ]
     visibility = [ ":*" ]
-    deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+    deps = [
+      "//third_party/abseil-cpp/absl/base:config",
+      "//third_party/abseil-cpp/absl/base:core_headers",
+    ]
   }
 } else {
   absl_source_set("leak_check_api_disabled_for_testing") {
@@ -145,7 +148,10 @@ if (is_lsan) {
     sources = [ "leak_check.cc" ]
     public = [ "leak_check.h" ]
     visibility = [ ":*" ]
-    deps = [ "//third_party/abseil-cpp/absl/base:config" ]
+    deps = [
+      "//third_party/abseil-cpp/absl/base:config",
+      "//third_party/abseil-cpp/absl/base:core_headers",
+    ]
   }
 }
 

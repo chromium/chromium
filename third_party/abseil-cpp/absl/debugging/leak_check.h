@@ -43,6 +43,12 @@ ABSL_NAMESPACE_BEGIN
 // currently built into this target.
 bool HaveLeakSanitizer();
 
+// LeakCheckerIsActive()
+//
+// Returns true if a leak-checking sanitizer (either ASan or standalone LSan) is
+// currently built into this target and is turned on.
+bool LeakCheckerIsActive();
+
 // DoIgnoreLeak()
 //
 // Implements `IgnoreLeak()` below. This function should usually

@@ -16,6 +16,7 @@
 
 add_subdirectory(base)
 add_subdirectory(algorithm)
+add_subdirectory(cleanup)
 add_subdirectory(container)
 add_subdirectory(debugging)
 add_subdirectory(flags)

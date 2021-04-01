@@ -237,6 +237,18 @@ class CordRepRing : public CordRep {
   // Returns the character at `offset`. Requires that `offset < length`.
   char GetCharacter(size_t offset) const;
 
+  // Returns true if this instance manages a single contiguous buffer, in which
+  // case the (optional) output parameter `fragment` is set. Otherwise, the
+  // function returns false, and `fragment` is left unchanged.
+  bool IsFlat(absl::string_view* fragment) const;
+
+  // Returns true if the data starting at `offset` with length `length` is
+  // managed by this instance inside a single contiguous buffer, in which case
+  // the (optional) output parameter `fragment` is set to the contiguous memory
+  // starting at offset `offset` with length `length`. Otherwise, the function
+  // returns false, and `fragment` is left unchanged.
+  bool IsFlat(size_t offset, size_t length, absl::string_view* fragment) const;
+
   // Testing only: set capacity to requested capacity.
   void SetCapacityForTesting(size_t capacity);
 
@@ -574,6 +586,25 @@ inline CordRepRing* CordRep::ring() {
 inline const CordRepRing* CordRep::ring() const {
   assert(tag == RING);
   return static_cast<const CordRepRing*>(this);
+}
+
+inline bool CordRepRing::IsFlat(absl::string_view* fragment) const {
+  if (entries() == 1) {
+    if (fragment) *fragment = entry_data(head());
+    return true;
+  }
+  return false;
+}
+
+inline bool CordRepRing::IsFlat(size_t offset, size_t length,
+                                absl::string_view* fragment) const {
+  const Position pos = Find(offset);
+  const absl::string_view data = entry_data(pos.index);
+  if (data.length() >= length && data.length() - length >= pos.offset) {
+    if (fragment) *fragment = data.substr(pos.offset, length);
+    return true;
+  }
+  return false;
 }
 
 std::ostream& operator<<(std::ostream& s, const CordRepRing& rep);

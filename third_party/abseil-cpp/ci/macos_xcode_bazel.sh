@@ -24,7 +24,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 # If we are running on Kokoro, check for a versioned Bazel binary.
-KOKORO_GFILE_BAZEL_BIN="bazel-2.0.0-darwin-x86_64"
+KOKORO_GFILE_BAZEL_BIN="bazel-3.7.0-darwin-x86_64"
 if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -f ${KOKORO_GFILE_DIR}/${KOKORO_GFILE_BAZEL_BIN} ]]; then
   BAZEL_BIN="${KOKORO_GFILE_DIR}/${KOKORO_GFILE_BAZEL_BIN}"
   chmod +x ${BAZEL_BIN}
