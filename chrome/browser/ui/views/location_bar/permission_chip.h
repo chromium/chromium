@@ -45,7 +45,7 @@ class PermissionChip : public views::AccessiblePaneView,
   bool GetActiveRequest() const;
 
   views::Button* button() { return chip_button_; }
-  bool is_fully_collapsed() const { return chip_button_->GetFullyCollapsed(); }
+  bool is_fully_collapsed() const { return chip_button_->is_fully_collapsed(); }
 
   // views::View:
   void OnMouseEntered(const ui::MouseEvent& event) override;
@@ -64,13 +64,15 @@ class PermissionChip : public views::AccessiblePaneView,
   bool ShouldBubbleStartOpen() const;
 
   void Show(bool always_open_bubble);
-  void ChipButtonPressed();
-  void Collapse();
   void ExpandAnimationEnded();
+  void ChipButtonPressed();
+  void RestartTimersOnInteraction();
   void StartCollapseTimer();
+  void Collapse(bool allow_restart);
+  void StartDismissTimer();
+  void Dismiss();
   std::u16string GetPermissionMessage() const;
   const gfx::VectorIcon& GetPermissionIconId() const;
-  void AnnouncePermissionRequested();
 
   void AnimateCollapse();
   void AnimateExpand();
@@ -80,9 +82,11 @@ class PermissionChip : public views::AccessiblePaneView,
   PermissionPromptBubbleView* prompt_bubble_ = nullptr;
 
   // A timer used to collapse the chip after a delay.
-  base::OneShotTimer timer_;
+  base::OneShotTimer collapse_timer_;
 
-  base::OneShotTimer announce_timer_;
+  // A timer used to dismiss the permission request after it's been collapsed
+  // for a while.
+  base::OneShotTimer dismiss_timer_;
 
   // The button that displays the icon and text.
   OmniboxChipButton* chip_button_ = nullptr;

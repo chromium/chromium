@@ -388,6 +388,9 @@ are declared in tools/grit/grit_rule.gni.
           Permission requested, press F6 to respond
         </message>
       </if>
+      <message name="IDS_PERMISSIONS_EXPIRED_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers that a pending permission request has timed out and is no longer shown in the UI.">
+          Permission request expired
+      </message>
       <message name="IDS_PERMISSIONS_BUBBLE_PROMPT" desc="The label that is used to introduce permission request details to the user in a popup.">
         <ph name="SITE_NAME">$1<ex>google.com</ex></ph> wants to
       </message>

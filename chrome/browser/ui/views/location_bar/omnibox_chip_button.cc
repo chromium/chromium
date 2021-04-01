@@ -62,10 +62,6 @@ void OmniboxChipButton::SetExpandAnimationEndedCallback(
   expand_animation_ended_callback_ = callback;
 }
 
-bool OmniboxChipButton::GetFullyCollapsed() const {
-  return fully_collapsed_;
-}
-
 gfx::Size OmniboxChipButton::CalculatePreferredSize() const {
   const int fixed_width = GetIconSize() + GetInsets().width();
   const int collapsable_width =
@@ -114,6 +110,5 @@ void OmniboxChipButton::UpdateIconAndTextColor() {
 }
 
 BEGIN_METADATA(OmniboxChipButton, views::MdTextButton)
-ADD_READONLY_PROPERTY_METADATA(bool, FullyCollapsed)
 ADD_READONLY_PROPERTY_METADATA(int, IconSize)
 END_METADATA

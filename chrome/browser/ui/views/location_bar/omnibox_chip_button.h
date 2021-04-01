@@ -29,7 +29,8 @@ class OmniboxChipButton : public views::MdTextButton {
   void SetExpandAnimationEndedCallback(
       base::RepeatingCallback<void()> callback);
 
-  bool GetFullyCollapsed() const;
+  bool is_fully_collapsed() const { return fully_collapsed_; }
+  bool is_animating() const { return animation_->is_animating(); }
 
   // views::AnimationDelegateViews:
   void AnimationEnded(const gfx::Animation* animation) override;
