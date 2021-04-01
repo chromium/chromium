@@ -32,6 +32,8 @@ static_library("enterprise") {
       "browser/reporting/policy_info.h",
       "browser/reporting/profile_report_generator.cc",
       "browser/reporting/profile_report_generator.h",
+      "browser/reporting/real_time_uploader.cc",
+      "browser/reporting/real_time_uploader.h",
       "browser/reporting/report_generator.cc",
       "browser/reporting/report_generator.h",
       "browser/reporting/report_request_definition.h",
@@ -49,6 +51,7 @@ static_library("enterprise") {
       "//base/util/timer",
       "//components/policy/core/browser",
       "//components/policy/proto",
+      "//components/reporting/client:report_queue_provider",
       "//components/strings",
       "//components/version_info",
       "//net",
@@ -90,11 +93,15 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    sources += [ "browser/reporting/report_uploader_unittest.cc" ]
+    sources += [
+      "browser/reporting/real_time_uploader_unittest.cc",
+      "browser/reporting/report_uploader_unittest.cc",
+    ]
 
     deps += [
       "//build:chromeos_buildflags",
       "//components/policy/core/common:test_support",
+      "//components/reporting/client:test_support",
     ]
   }
 }
