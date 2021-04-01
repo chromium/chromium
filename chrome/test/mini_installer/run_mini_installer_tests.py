@@ -64,8 +64,7 @@ def main(args):
     runner.parse_args(
         parser=parser,
         argv=args,
-        isolate=['test_installer.*'],  # InstallerTest must be serialized.
-        suffixes=['test_installer.py'],
+        isolate=['installer_test.*'],  # InstallerTest must be serialized.
         top_level_dir=CUR_DIR)
     if parser.exit_status is not None:
         return parser.exit_status
