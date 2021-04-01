@@ -548,12 +548,18 @@ void AccessibilityNodeInfoDataWrapper::GetChildren(
     std::vector<AccessibilityInfoDataWrapper*>* children) const {
   if (!node_ptr_->int_list_properties)
     return;
-  auto it =
+  const auto& it =
       node_ptr_->int_list_properties->find(AXIntListProperty::CHILD_NODE_IDS);
   if (it == node_ptr_->int_list_properties->end())
     return;
-  for (int32_t id : it->second)
-    children->push_back(tree_source_->GetFromId(id));
+  for (const int32_t id : it->second) {
+    auto* child = tree_source_->GetFromId(id);
+    if (child != nullptr) {
+      children->push_back(child);
+    } else {
+      LOG(WARNING) << "Unexpected nullptr found while GetChildren";
+    }
+  }
 }
 
 int32_t AccessibilityNodeInfoDataWrapper::GetWindowId() const {

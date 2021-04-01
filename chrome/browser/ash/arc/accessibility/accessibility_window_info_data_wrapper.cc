@@ -160,16 +160,29 @@ void AccessibilityWindowInfoDataWrapper::GetChildren(
   // Populate the children vector by combining the child window IDs with the
   // root node ID.
   if (window_ptr_->int_list_properties) {
-    auto it = window_ptr_->int_list_properties->find(
+    const auto& it = window_ptr_->int_list_properties->find(
         mojom::AccessibilityWindowIntListProperty::CHILD_WINDOW_IDS);
     if (it != window_ptr_->int_list_properties->end()) {
-      for (int32_t id : it->second)
-        children->push_back(tree_source_->GetFromId(id));
+      for (const int32_t id : it->second) {
+        auto* child = tree_source_->GetFromId(id);
+        if (child != nullptr) {
+          children->push_back(child);
+        } else {
+          LOG(WARNING) << "Unexpected nullptr found while GetChildren";
+        }
+      }
     }
   }
 
-  if (window_ptr_->root_node_id)
-    children->push_back(tree_source_->GetFromId(window_ptr_->root_node_id));
+  if (window_ptr_->root_node_id) {
+    auto* child_node = tree_source_->GetFromId(window_ptr_->root_node_id);
+    if (child_node != nullptr) {
+      children->push_back(child_node);
+    } else {
+      LOG(WARNING) << "Unexpected nullptr found while populating root node for "
+                      "GetChildren";
+    }
+  }
 }
 
 int32_t AccessibilityWindowInfoDataWrapper::GetWindowId() const {

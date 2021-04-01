@@ -532,6 +532,7 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, SelectedState) {
 
 TEST_F(AccessibilityNodeInfoDataWrapperTest, EditTextRole) {
   AXNodeInfoData node;
+  node.id = 1;
   AccessibilityNodeInfoDataWrapper wrapper(tree_source(), &node);
 
   // Editable node is textField.
@@ -554,8 +555,9 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, EditTextRole) {
   SetProperty(node, AXIntListProperty::CHILD_NODE_IDS, std::vector<int>({2}));
   AXNodeInfoData child;
   child.id = 2;
-  AccessibilityNodeInfoDataWrapper child_wrapper(tree_source(), &node);
+  AccessibilityNodeInfoDataWrapper child_wrapper(tree_source(), &child);
   SetIdToWrapper(&child_wrapper);
+  SetParentId(child.id, node.id);
 
   data = CallSerialize(wrapper);
   EXPECT_EQ(ax::mojom::Role::kGenericContainer, data.role);
