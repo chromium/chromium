@@ -486,6 +486,7 @@ void LoginScreenController::OnLockScreenDestroyed() {
 
   // Still handle it to avoid crashes during Login/Lock/Unlock flows.
   authentication_stage_ = AuthenticationStage::kIdle;
+  SetSystemTrayVisibility(SystemTrayVisibility::kAll);
 }
 
 void LoginScreenController::NotifyLoginScreenShown() {
