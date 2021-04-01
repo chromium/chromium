@@ -166,11 +166,15 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url,
     bool started_in_foreground) {
-  navigation_id_ = navigation_handle->GetNavigationId();
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   is_portal_ = web_contents->IsPortal();
-
   browser_context_ = web_contents->GetBrowserContext();
+  navigation_id_ = navigation_handle->GetNavigationId();
+  if (auto* clusters_helper =
+          HistoryClustersTabHelper::FromWebContents(web_contents)) {
+    clusters_helper->TagNavigationAsExpectingUkmNavigationComplete(
+        navigation_id_);
+  }
 
   start_url_is_default_search_ =
       IsDefaultSearchEngine(browser_context_, navigation_handle->GetURL());
@@ -1026,14 +1030,8 @@ void UkmPageLoadMetricsObserver::RecordMemoriesMetrics(
       HistoryClustersTabHelper::FromWebContents(web_contents);
   if (!clusters_helper)
     return;
-  base::Optional<memories::MemoriesVisit> visit =
-      clusters_helper->UpdatePageEndReasonAndGetVisitForUkm(navigation_id_,
-                                                            page_end_reason);
-  if (!visit)
-    return;
-  const memories::VisitContextSignals& memories_signals =
-      visit->context_signals;
-
+  const memories::VisitContextSignals memories_signals =
+      clusters_helper->OnUkmNavigationComplete(navigation_id_, page_end_reason);
   // Send ALL Memories signals to UKM at page end. This is to harmonize with
   // the fact that they may only be recorded into History at page end, when
   // we can be sure that the visit row already exists.
