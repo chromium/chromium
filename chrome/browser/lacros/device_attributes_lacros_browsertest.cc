@@ -21,7 +21,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest,
   crosapi::mojom::DeviceAttributesStringResultPtr result;
   crosapi::mojom::DeviceAttributesAsyncWaiter async_waiter(
       chromeos::LacrosChromeServiceImpl::Get()
-          ->device_attributes_remote()
+          ->GetRemote<crosapi::mojom::DeviceAttributes>()
           .get());
   async_waiter.GetDirectoryDeviceId(&result);
 
@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest,
   crosapi::mojom::DeviceAttributesStringResultPtr result;
   crosapi::mojom::DeviceAttributesAsyncWaiter async_waiter(
       chromeos::LacrosChromeServiceImpl::Get()
-          ->device_attributes_remote()
+          ->GetRemote<crosapi::mojom::DeviceAttributes>()
           .get());
   async_waiter.GetDeviceSerialNumber(&result);
 
@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest, GetDeviceAssetId) {
   crosapi::mojom::DeviceAttributesStringResultPtr result;
   crosapi::mojom::DeviceAttributesAsyncWaiter async_waiter(
       chromeos::LacrosChromeServiceImpl::Get()
-          ->device_attributes_remote()
+          ->GetRemote<crosapi::mojom::DeviceAttributes>()
           .get());
   async_waiter.GetDeviceAssetId(&result);
 
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest,
   crosapi::mojom::DeviceAttributesStringResultPtr result;
   crosapi::mojom::DeviceAttributesAsyncWaiter async_waiter(
       chromeos::LacrosChromeServiceImpl::Get()
-          ->device_attributes_remote()
+          ->GetRemote<crosapi::mojom::DeviceAttributes>()
           .get());
   async_waiter.GetDeviceAnnotatedLocation(&result);
 
@@ -75,7 +75,7 @@ IN_PROC_BROWSER_TEST_F(DeviceAttributesLacrosBrowserTest, GetDeviceHostname) {
   crosapi::mojom::DeviceAttributesStringResultPtr result;
   crosapi::mojom::DeviceAttributesAsyncWaiter async_waiter(
       chromeos::LacrosChromeServiceImpl::Get()
-          ->device_attributes_remote()
+          ->GetRemote<crosapi::mojom::DeviceAttributes>()
           .get());
   async_waiter.GetDeviceHostname(&result);
 

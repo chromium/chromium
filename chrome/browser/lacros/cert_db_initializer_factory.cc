@@ -41,7 +41,9 @@ KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  if (!chromeos::LacrosChromeServiceImpl::Get()->IsCertDbAvailable()) {
+  if (!chromeos::LacrosChromeServiceImpl::Get() ||
+      !chromeos::LacrosChromeServiceImpl::Get()
+           ->IsAvailable<crosapi::mojom::CertDatabase>()) {
     return nullptr;
   }
 

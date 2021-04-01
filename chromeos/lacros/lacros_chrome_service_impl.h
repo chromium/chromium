@@ -111,10 +111,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // Keep these in alphabetical order.
   // Most use-cases of these methods can be replaced by IsAvailable(). See
   // crosapi::mojom::Clipboard for an example.
-  bool IsAutomationAvailable() const;
   bool IsAccountManagerAvailable() const;
-  bool IsCertDbAvailable() const;
-  bool IsDeviceAttributesAvailable() const;
   bool IsFeedbackAvailable() const;
   bool IsFileManagerAvailable() const;
   bool IsHidManagerAvailable() const;
@@ -171,27 +168,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // helpers that expose pre-established Remotes that can only be used from the
   // affine sequence (main thread).
   // --------------------------------------------------------------------------
-  // This must be called on the affine sequence.
-  mojo::Remote<crosapi::mojom::Automation>& automation_remote() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    DCHECK(IsAutomationAvailable());
-    return automation_remote_;
-  }
-
-  // This must be called on the affine sequence.
-  mojo::Remote<crosapi::mojom::CertDatabase>& cert_database_remote() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    DCHECK(IsCertDbAvailable());
-    return cert_database_remote_;
-  }
-
-  // This must be called on the affine sequence. It exposes a remote that can
-  // be used to interface with DeviceAttributes.
-  mojo::Remote<crosapi::mojom::DeviceAttributes>& device_attributes_remote() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(affine_sequence_checker_);
-    DCHECK(IsDeviceAttributesAvailable());
-    return device_attributes_remote_;
-  }
 
   // This must be called on the affine sequence.
   mojo::Remote<crosapi::mojom::Feedback>& feedback_remote() {
@@ -474,9 +450,6 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) LacrosChromeServiceImpl {
   // the constructor and are immediately available for use.
   // DEPRECATED. Do not add more instances of these methods. Instead, use
   // ConstructRemote. See crosapi::mojom::Clipboard for an example.
-  mojo::Remote<crosapi::mojom::Automation> automation_remote_;
-  mojo::Remote<crosapi::mojom::CertDatabase> cert_database_remote_;
-  mojo::Remote<crosapi::mojom::DeviceAttributes> device_attributes_remote_;
   mojo::Remote<crosapi::mojom::Feedback> feedback_remote_;
   mojo::Remote<crosapi::mojom::FileManager> file_manager_remote_;
   mojo::Remote<device::mojom::HidManager> hid_manager_remote_;

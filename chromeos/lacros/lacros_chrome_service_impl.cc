@@ -171,8 +171,15 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
       base::BindOnce(&LacrosChromeServiceImplNeverBlockingState::BindCrosapi,
                      weak_sequenced_state_));
 
+  ConstructRemote<crosapi::mojom::Automation, &Crosapi::BindAutomation,
+                  Crosapi::MethodMinVersions::kBindAutomationMinVersion>();
+  ConstructRemote<crosapi::mojom::CertDatabase, &Crosapi::BindCertDatabase,
+                  Crosapi::MethodMinVersions::kBindCertDatabaseMinVersion>();
   ConstructRemote<crosapi::mojom::Clipboard, &Crosapi::BindClipboard,
                   Crosapi::MethodMinVersions::kBindClipboardMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::DeviceAttributes, &Crosapi::BindDeviceAttributes,
+      Crosapi::MethodMinVersions::kBindDeviceAttributesMinVersion>();
 
   DCHECK(!g_instance);
   g_instance = this;
@@ -238,24 +245,6 @@ void LacrosChromeServiceImpl::BindReceiver(
     for (auto& entry : interfaces_) {
       entry.second->MaybeBind(*CrosapiVersion(), this);
     }
-  }
-
-  if (IsAutomationAvailable()) {
-    InitializeAndBindRemote<crosapi::mojom::Automation,
-                            &crosapi::mojom::Crosapi::BindAutomation>(
-        &automation_remote_);
-  }
-
-  if (IsCertDbAvailable()) {
-    InitializeAndBindRemote<crosapi::mojom::CertDatabase,
-                            &crosapi::mojom::Crosapi::BindCertDatabase>(
-        &cert_database_remote_);
-  }
-
-  if (IsDeviceAttributesAvailable()) {
-    InitializeAndBindRemote<crosapi::mojom::DeviceAttributes,
-                            &crosapi::mojom::Crosapi::BindDeviceAttributes>(
-        &device_attributes_remote_);
   }
 
   if (IsFeedbackAvailable()) {
@@ -342,30 +331,11 @@ void LacrosChromeServiceImpl::DisableCrosapiForTests() {
   g_disable_all_crosapi_for_tests = true;
 }
 
-bool LacrosChromeServiceImpl::IsAutomationAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
-  return version && version.value() >=
-                        Crosapi::MethodMinVersions::kBindAutomationMinVersion;
-}
-
 bool LacrosChromeServiceImpl::IsAccountManagerAvailable() const {
   base::Optional<uint32_t> version = CrosapiVersion();
   return version &&
          version.value() >=
              Crosapi::MethodMinVersions::kBindAccountManagerMinVersion;
-}
-
-bool LacrosChromeServiceImpl::IsCertDbAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
-  return version && version.value() >=
-                        Crosapi::MethodMinVersions::kBindCertDatabaseMinVersion;
-}
-
-bool LacrosChromeServiceImpl::IsDeviceAttributesAvailable() const {
-  base::Optional<uint32_t> version = CrosapiVersion();
-  return version &&
-         version.value() >=
-             Crosapi::MethodMinVersions::kBindDeviceAttributesMinVersion;
 }
 
 bool LacrosChromeServiceImpl::IsFeedbackAvailable() const {

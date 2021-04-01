@@ -57,7 +57,7 @@ void GetDirectoryId(DeviceAPIService::GetDirectoryIdCallback callback) {
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDirectoryDeviceId(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms
@@ -79,7 +79,7 @@ void GetHostname(DeviceAPIService::GetHostnameCallback callback) {
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceHostname(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms
@@ -100,7 +100,7 @@ void GetSerialNumber(DeviceAPIService::GetSerialNumberCallback callback) {
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceSerialNumber(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms
@@ -122,7 +122,7 @@ void GetAnnotatedAssetId(
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceAssetId(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms
@@ -144,7 +144,7 @@ void GetAnnotatedLocation(
     std::move(callback).Run(Result::NewAttribute(attribute));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   chromeos::LacrosChromeServiceImpl::Get()
-      ->device_attributes_remote()
+      ->GetRemote<crosapi::mojom::DeviceAttributes>()
       ->GetDeviceAnnotatedLocation(
           base::BindOnce(AdaptLacrosResult, std::move(callback)));
 #else  // Other platforms

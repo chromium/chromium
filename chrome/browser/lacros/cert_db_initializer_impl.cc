@@ -97,7 +97,8 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
 
 CertDbInitializerImpl::CertDbInitializerImpl(Profile* profile)
     : profile_(profile) {
-  DCHECK(chromeos::LacrosChromeServiceImpl::Get()->IsCertDbAvailable());
+  DCHECK(chromeos::LacrosChromeServiceImpl::Get()
+             ->IsAvailable<crosapi::mojom::CertDatabase>());
 }
 
 CertDbInitializerImpl::~CertDbInitializerImpl() {
@@ -153,7 +154,7 @@ void CertDbInitializerImpl::WaitForCertDbReady() {
   }
 
   chromeos::LacrosChromeServiceImpl::Get()
-      ->cert_database_remote()
+      ->GetRemote<crosapi::mojom::CertDatabase>()
       ->GetCertDatabaseInfo(
           base::BindOnce(&CertDbInitializerImpl::OnCertDbInfoReceived,
                          weak_factory_.GetWeakPtr()));

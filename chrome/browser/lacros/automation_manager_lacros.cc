@@ -22,10 +22,10 @@
 AutomationManagerLacros::AutomationManagerLacros() {
   chromeos::LacrosChromeServiceImpl* impl =
       chromeos::LacrosChromeServiceImpl::Get();
-  if (!impl->IsAutomationAvailable())
+  if (!impl->IsAvailable<crosapi::mojom::Automation>())
     return;
   id_ = base::UnguessableToken::Create();
-  impl->automation_remote()->RegisterAutomationClient(
+  impl->GetRemote<crosapi::mojom::Automation>()->RegisterAutomationClient(
       receiver_.BindNewPipeAndPassRemote(), id_);
 
   extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(this);
@@ -34,7 +34,7 @@ AutomationManagerLacros::AutomationManagerLacros() {
 AutomationManagerLacros::~AutomationManagerLacros() {
   chromeos::LacrosChromeServiceImpl* impl =
       chromeos::LacrosChromeServiceImpl::Get();
-  if (!impl->IsAutomationAvailable())
+  if (!impl->IsAvailable<crosapi::mojom::Automation>())
     return;
 
   extensions::AutomationEventRouter::GetInstance()->RegisterRemoteRouter(
@@ -80,7 +80,7 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
       &pickle, event_bundle);
   std::string result(static_cast<const char*>(pickle.data()), pickle.size());
   chromeos::LacrosChromeServiceImpl::Get()
-      ->automation_remote()
+      ->GetRemote<crosapi::mojom::Automation>()
       ->ReceiveEventPrototype(std::move(result), is_root, id_, window_id);
 }
 
