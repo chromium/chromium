@@ -166,8 +166,8 @@ class AutomationWebContentsObserver
   void DidStartNavigation(content::NavigationHandle* navigation) override {
     content::RenderFrameHost* previous_rfh = content::RenderFrameHost::FromID(
         navigation->GetPreviousRenderFrameHostId());
-    DCHECK(previous_rfh);
-    g_old_ax_tree.Get()[navigation] = previous_rfh->GetAXTreeID();
+    if (previous_rfh)
+      g_old_ax_tree.Get()[navigation] = previous_rfh->GetAXTreeID();
   }
 
   void DidFinishNavigation(content::NavigationHandle* navigation) override {
