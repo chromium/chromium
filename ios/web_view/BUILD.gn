@@ -134,7 +134,6 @@ source_set("web_view_sources") {
     "internal/cwv_html_element_internal.h",
     "internal/cwv_navigation_action.mm",
     "internal/cwv_navigation_action_internal.h",
-    "internal/cwv_navigation_delegate.mm",
     "internal/cwv_navigation_type.mm",
     "internal/cwv_navigation_type_internal.h",
     "internal/cwv_preferences.mm",
