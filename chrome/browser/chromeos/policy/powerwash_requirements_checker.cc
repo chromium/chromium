@@ -22,8 +22,8 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
+#include "chromeos/dbus/userdataauth/cryptohome_misc_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -76,13 +76,13 @@ void OnNotificationClickedCloseIt(Profile* profile,
       kNotificationHandlerType, notification_id);
 }
 
-void OnCryptohomeCheckHealth(base::OnceClosure on_initialized_callback,
-                             base::Optional<cryptohome::BaseReply> reply) {
-  if (!reply || !reply->HasExtension(cryptohome::CheckHealthReply::reply)) {
+void OnCryptohomeCheckHealth(
+    base::OnceClosure on_initialized_callback,
+    base::Optional<user_data_auth::CheckHealthReply> reply) {
+  if (!reply) {
     LOG(ERROR) << "Cryptohome failed to send health state";
   } else {
-    const bool state = reply->GetExtension(cryptohome::CheckHealthReply::reply)
-                           .requires_powerwash();
+    const bool state = reply->requires_powerwash();
     g_cached_cryptohome_powerwash_state =
         state ? PowerwashRequirementsChecker::State::kRequired
               : PowerwashRequirementsChecker::State::kNotRequired;
@@ -101,8 +101,8 @@ void OnCryptohomeAvailability(base::OnceClosure on_initialized_callback,
       std::move(on_initialized_callback).Run();
     return;
   }
-  chromeos::CryptohomeClient::Get()->CheckHealth(
-      cryptohome::CheckHealthRequest(),
+  chromeos::CryptohomeMiscClient::Get()->CheckHealth(
+      user_data_auth::CheckHealthRequest(),
       base::BindOnce(OnCryptohomeCheckHealth,
                      std::move(on_initialized_callback)));
 }
@@ -111,14 +111,14 @@ void OnCryptohomeAvailability(base::OnceClosure on_initialized_callback,
 
 // static
 void PowerwashRequirementsChecker::Initialize() {
-  chromeos::CryptohomeClient::Get()->WaitForServiceToBeAvailable(
+  chromeos::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(OnCryptohomeAvailability, base::OnceClosure{}));
 }
 
 // static
 void PowerwashRequirementsChecker::InitializeSynchronouslyForTesting() {
   base::RunLoop run_loop;
-  chromeos::CryptohomeClient::Get()->WaitForServiceToBeAvailable(
+  chromeos::CryptohomeMiscClient::Get()->WaitForServiceToBeAvailable(
       base::BindOnce(OnCryptohomeAvailability, run_loop.QuitClosure()));
   run_loop.Run();
 }

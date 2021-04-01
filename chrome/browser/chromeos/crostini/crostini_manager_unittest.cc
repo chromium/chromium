@@ -36,13 +36,13 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/dbus/fake_anomaly_detector_client.h"
 #include "chromeos/dbus/fake_cicerone_client.h"
 #include "chromeos/dbus/fake_concierge_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
+#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -232,13 +232,13 @@ class CrostiniManagerTest : public testing::Test {
     g_browser_process->platform_part()
         ->InitializeSchedulerConfigurationManager();
 
-    chromeos::CryptohomeClient::InitializeFake();
-    chromeos::FakeCryptohomeClient::Get()->set_requires_powerwash(false);
+    chromeos::CryptohomeMiscClient::InitializeFake();
+    chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(false);
     policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
   }
 
   void TearDown() override {
-    chromeos::CryptohomeClient::Shutdown();
+    chromeos::CryptohomeMiscClient::Shutdown();
     g_browser_process->platform_part()->ShutdownSchedulerConfigurationManager();
     scoped_user_manager_.reset();
     crostini_manager_->Shutdown();
@@ -391,7 +391,7 @@ TEST_F(CrostiniManagerTest, StartTerminaVmPowerwashRequestError) {
       enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
 
   // Set cryptohome requiring powerwash.
-  chromeos::FakeCryptohomeClient::Get()->set_requires_powerwash(true);
+  chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(true);
   policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
 
   NotificationDisplayServiceTester notification_service(profile());
@@ -427,9 +427,9 @@ TEST_F(CrostiniManagerTest,
 
   // Reset cryptohome state to undefined and make cryptohome unavailable.
   policy::PowerwashRequirementsChecker::ResetForTesting();
-  chromeos::FakeCryptohomeClient::Get()->SetServiceIsAvailable(false);
+  chromeos::FakeCryptohomeMiscClient::Get()->SetServiceIsAvailable(false);
   policy::PowerwashRequirementsChecker::Initialize();
-  chromeos::FakeCryptohomeClient::Get()->ReportServiceIsNotAvailable();
+  chromeos::FakeCryptohomeMiscClient::Get()->ReportServiceIsNotAvailable();
 
   NotificationDisplayServiceTester notification_service(profile());
 

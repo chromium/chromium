@@ -46,11 +46,11 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
+#include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
@@ -359,8 +359,8 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
     GetFakeUserManager()->AddUser(account_id);
     GetFakeUserManager()->LoginUser(account_id);
 
-    chromeos::CryptohomeClient::InitializeFake();
-    chromeos::FakeCryptohomeClient::Get()->set_requires_powerwash(false);
+    chromeos::CryptohomeMiscClient::InitializeFake();
+    chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(false);
     policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
 
     ASSERT_EQ(ArcSessionManager::State::NOT_INITIALIZED,
@@ -368,7 +368,7 @@ class ArcSessionManagerTest : public ArcSessionManagerTestBase {
   }
 
   void TearDown() override {
-    chromeos::CryptohomeClient::Shutdown();
+    chromeos::CryptohomeMiscClient::Shutdown();
     ArcSessionManagerTestBase::TearDown();
   }
 
@@ -2147,11 +2147,11 @@ class ArcSessionManagerPowerwashTest : public ArcSessionManagerTestBase {
 
   void SetUp() override {
     ArcSessionManagerTestBase::SetUp();
-    chromeos::CryptohomeClient::InitializeFake();
+    chromeos::CryptohomeMiscClient::InitializeFake();
   }
 
   void TearDown() override {
-    chromeos::CryptohomeClient::Shutdown();
+    chromeos::CryptohomeMiscClient::Shutdown();
     ArcSessionManagerTestBase::TearDown();
   }
 };
@@ -2181,7 +2181,7 @@ TEST_F(ArcSessionManagerPowerwashTest, PowerwashRequestBlocksArcStart) {
       enterprise_management::DeviceRebootOnUserSignoutProto::ALWAYS);
 
   // Initialize cryptohome to require powerwash.
-  chromeos::FakeCryptohomeClient::Get()->set_requires_powerwash(true);
+  chromeos::FakeCryptohomeMiscClient::Get()->set_requires_powerwash(true);
   policy::PowerwashRequirementsChecker::InitializeSynchronouslyForTesting();
 
   arc_session_manager()->SetProfile(profile());
