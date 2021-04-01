@@ -23,6 +23,17 @@
 namespace ios_web_view {
 
 class CWVWebViewTest : public TestWithLocaleAndResources {
+ public:
+  void SetUp() override {
+    TestWithLocaleAndResources::SetUp();
+    CWVWebView.customUserAgent = nil;
+  }
+
+  void TearDown() override {
+    TestWithLocaleAndResources::TearDown();
+    CWVWebView.customUserAgent = nil;
+  }
+
  protected:
   CWVWebViewTest() : web_client_(std::make_unique<web::WebClient>()) {}
 

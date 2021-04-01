@@ -33,6 +33,16 @@ class WebViewWebClientTest : public web::WebTest {
     ui::ResourceBundle::CleanupSharedInstance();
   }
 
+  void SetUp() override {
+    web::WebTest::SetUp();
+    CWVWebView.customUserAgent = nil;
+  }
+
+  void TearDown() override {
+    web::WebTest::TearDown();
+    CWVWebView.customUserAgent = nil;
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(WebViewWebClientTest);
 };
