@@ -7,6 +7,8 @@ frontend: {"id":<number>,"method":"Debugger.setAsyncCallStackDepth","params":{"m
 frontend: {"id":<number>,"method":"Overlay.disable","params":{}}
 frontend: {"id":<number>,"method":"Target.setAutoAttach","params":{"autoAttach":true,"waitForDebuggerOnStart":false,"flatten":true}}
 frontend: {"id":<number>,"method":"Overlay.setShowGridOverlays","params":{"gridNodeHighlightConfigs":[]}}
+frontend: {"id":<number>,"method":"Overlay.setShowFlexOverlays","params":{"flexNodeHighlightConfigs":[]}}
+frontend: {"id":<number>,"method":"Overlay.setShowScrollSnapOverlays","params":{"scrollSnapHighlightConfigs":[]}}
 frontend: {"id":<number>,"method":"Debugger.disable","params":{}}
 
 --> SDK.targetManager.resumeAllTargets();
