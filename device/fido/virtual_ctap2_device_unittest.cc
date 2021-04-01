@@ -197,7 +197,7 @@ TEST_F(VirtualCtap2DeviceTest, AttestationCertificateIsValid) {
       base::StringPiece("\x55\x1d\x13"), &present, &critical, &contents));
   EXPECT_TRUE(present);
   EXPECT_TRUE(critical);
-  EXPECT_EQ(base::StringPiece("\x30\x03\x01\x01\x00", 5), contents);
+  EXPECT_EQ(base::StringPiece("\x30\x00", 2), contents);
 }
 
 }  // namespace device

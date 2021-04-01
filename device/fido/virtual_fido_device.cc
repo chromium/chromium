@@ -546,15 +546,14 @@ VirtualFidoDevice::GenerateAttestationCertificate(
       0b10000000 >> transport_bit,  // transport
   };
 
-  // https://www.w3.org/TR/webauthn/#packed-attestation-cert-requirements
+  // https://www.w3.org/TR/webauthn/#sctn-packed-attestation-cert-requirements
   // The Basic Constraints extension MUST have the CA component set to false.
+  // Since that is the default value, DER requires omitting it. Simply include
+  // an empty sequence.
   static constexpr uint8_t kBasicContraintsOID[] = {0x55, 0x1d, 0x13};
   static constexpr uint8_t kBasicContraintsContents[] = {
       0x30,  // SEQUENCE
-      0x03,  // three bytes long
-      0x01,  // BOOLEAN
-      0x01,  // one byte long
-      0x00,  // false
+      0x00,  // zero bytes long
   };
 
   const std::vector<net::x509_util::Extension> extensions = {
