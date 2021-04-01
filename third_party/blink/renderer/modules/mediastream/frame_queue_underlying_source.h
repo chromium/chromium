@@ -15,7 +15,10 @@ namespace blink {
 class AudioFrameSerializationData;
 
 template <typename NativeFrameType>
-class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
+class FrameQueueUnderlyingSource
+    : public UnderlyingSourceBase,
+      public ActiveScriptWrappable<
+          FrameQueueUnderlyingSource<NativeFrameType>> {
  public:
   using TransferFramesCB = CrossThreadFunction<void(NativeFrameType)>;
 
@@ -30,6 +33,9 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   ScriptPromise pull(ScriptState*) override;
   ScriptPromise Start(ScriptState*) override;
   ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
+
+  // ScriptWrappable interface
+  bool HasPendingActivity() const final;
 
   // ExecutionLifecycleObserver
   void ContextDestroyed() override;

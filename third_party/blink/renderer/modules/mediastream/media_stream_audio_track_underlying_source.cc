@@ -13,8 +13,10 @@ namespace blink {
 MediaStreamAudioTrackUnderlyingSource::MediaStreamAudioTrackUnderlyingSource(
     ScriptState* script_state,
     MediaStreamComponent* track,
+    ScriptWrappable* media_stream_track_processor,
     wtf_size_t max_queue_size)
     : AudioFrameQueueUnderlyingSource(script_state, max_queue_size),
+      media_stream_track_processor_(media_stream_track_processor),
       track_(track) {
   DCHECK(track_);
 }
@@ -41,6 +43,7 @@ void MediaStreamAudioTrackUnderlyingSource::DisconnectFromTrack() {
 }
 
 void MediaStreamAudioTrackUnderlyingSource::Trace(Visitor* visitor) const {
+  visitor->Trace(media_stream_track_processor_);
   visitor->Trace(track_);
   AudioFrameQueueUnderlyingSource::Trace(visitor);
 }

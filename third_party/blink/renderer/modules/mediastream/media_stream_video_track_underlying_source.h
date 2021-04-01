@@ -24,9 +24,11 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
   using CrossThreadFrameQueueSource =
       CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource>;
 
-  explicit MediaStreamVideoTrackUnderlyingSource(ScriptState*,
-                                                 MediaStreamComponent*,
-                                                 wtf_size_t queue_size);
+  explicit MediaStreamVideoTrackUnderlyingSource(
+      ScriptState*,
+      MediaStreamComponent*,
+      ScriptWrappable* media_stream_track_processor,
+      wtf_size_t queue_size);
   MediaStreamVideoTrackUnderlyingSource(
       const MediaStreamVideoTrackUnderlyingSource&) = delete;
   MediaStreamVideoTrackUnderlyingSource& operator=(
@@ -59,6 +61,10 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
 
   // Only accessed on the IO runner.
   bool was_transferred_ = false;
+
+  // Only used to prevent the gargabe collector from reclaiming the media
+  // stream track processor that created |this|.
+  const Member<ScriptWrappable> media_stream_track_processor_;
 
   const Member<MediaStreamComponent> track_;
 

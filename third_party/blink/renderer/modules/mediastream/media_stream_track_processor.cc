@@ -85,9 +85,7 @@ MediaStreamTrackProcessor::MediaStreamTrackProcessor(
     ScriptState* script_state,
     MediaStreamTrack* input_track,
     uint16_t buffer_size)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
-      input_track_(input_track),
-      buffer_size_(buffer_size) {
+    : input_track_(input_track), buffer_size_(buffer_size) {
   DCHECK(input_track_);
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kMediaStreamTrackProcessor);
@@ -130,7 +128,7 @@ void MediaStreamTrackProcessor::CreateVideoSourceStream(
   DCHECK(!source_stream_);
   video_underlying_source_ =
       MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSource>(
-          script_state, input_track_->Component(), buffer_size_);
+          script_state, input_track_->Component(), this, buffer_size_);
   source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, video_underlying_source_,
       /*high_water_mark=*/0,
@@ -142,7 +140,7 @@ void MediaStreamTrackProcessor::CreateAudioSourceStream(
   DCHECK(!source_stream_);
   audio_underlying_source_ =
       MakeGarbageCollected<MediaStreamAudioTrackUnderlyingSource>(
-          script_state, input_track_->Component(), buffer_size_);
+          script_state, input_track_->Component(), this, buffer_size_);
   source_stream_ = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, audio_underlying_source_, /*high_water_mark=*/0);
 }
@@ -227,15 +225,6 @@ void MediaStreamTrackProcessor::CloseSources() {
   }
 }
 
-void MediaStreamTrackProcessor::ContextDestroyed() {
-  CloseSources();
-}
-
-bool MediaStreamTrackProcessor::HasPendingActivity() const {
-  return (audio_underlying_source_ && !audio_underlying_source_->IsClosed()) ||
-         (video_underlying_source_ && !video_underlying_source_->IsClosed());
-}
-
 void MediaStreamTrackProcessor::Trace(Visitor* visitor) const {
   visitor->Trace(input_track_);
   visitor->Trace(audio_underlying_source_);
@@ -245,7 +234,6 @@ void MediaStreamTrackProcessor::Trace(Visitor* visitor) const {
   visitor->Trace(control_stream_);
   visitor->Trace(source_closer_);
   ScriptWrappable::Trace(visitor);
-  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink

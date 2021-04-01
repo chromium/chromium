@@ -316,18 +316,11 @@ TEST_F(MediaStreamTrackProcessorTest, CanceledReadableDisconnects) {
   auto* readable = track_processor->readable(script_state);
   EXPECT_EQ(video_track->CountSinks(), 2u);
 
-  // The processor should not be garbage collected now that its readable has
-  // active sources.
-  EXPECT_TRUE(track_processor->HasPendingActivity());
-
   ScriptPromiseTester cancel_tester(
       script_state, readable->cancel(script_state, exception_state));
   cancel_tester.WaitUntilSettled();
   EXPECT_FALSE(exception_state.HadException());
   EXPECT_EQ(video_track->CountSinks(), 1u);
-
-  // The processor can be garbage collected now that the source has been closed.
-  EXPECT_FALSE(track_processor->HasPendingActivity());
 
   // Cancelling the readable does not stop the track.
   // Push a frame and expect delivery to the mock sink.

@@ -20,9 +20,11 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
     : public AudioFrameQueueUnderlyingSource,
       public WebMediaStreamAudioSink {
  public:
-  explicit MediaStreamAudioTrackUnderlyingSource(ScriptState*,
-                                                 MediaStreamComponent*,
-                                                 wtf_size_t queue_size);
+  explicit MediaStreamAudioTrackUnderlyingSource(
+      ScriptState*,
+      MediaStreamComponent*,
+      ScriptWrappable* media_stream_track_processor,
+      wtf_size_t queue_size);
   MediaStreamAudioTrackUnderlyingSource(
       const MediaStreamAudioTrackUnderlyingSource&) = delete;
   MediaStreamAudioTrackUnderlyingSource& operator=(
@@ -44,6 +46,10 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   void DisconnectFromTrack();
 
   void OnDataOnMainThread(std::unique_ptr<AudioFrameSerializationData> data);
+
+  // Only used to prevent the gargabe collector from reclaiming the media
+  // stream track processor that created |this|.
+  const Member<ScriptWrappable> media_stream_track_processor_;
 
   Member<MediaStreamComponent> track_;
 

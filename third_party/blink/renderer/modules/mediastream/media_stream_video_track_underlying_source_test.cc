@@ -57,7 +57,7 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
                                                       MediaStreamTrack* track,
                                                       wtf_size_t buffer_size) {
     return MakeGarbageCollected<MediaStreamVideoTrackUnderlyingSource>(
-        script_state, track->Component(), buffer_size);
+        script_state, track->Component(), nullptr, buffer_size);
   }
 
   MediaStreamVideoTrackUnderlyingSource* CreateSource(ScriptState* script_state,
@@ -215,6 +215,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   EXPECT_TRUE(source->QueueForTesting().empty());
   EXPECT_EQ(source->DesiredSizeForTesting(), 0);
   EXPECT_TRUE(source->IsPendingPullForTesting());
+  EXPECT_TRUE(source->HasPendingActivity());
 
   push_frame_sync();
   // Since a pull was pending, the frame is put directly in the stream
@@ -222,6 +223,7 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
   EXPECT_TRUE(source->QueueForTesting().empty());
   EXPECT_EQ(source->DesiredSizeForTesting(), -1);
   EXPECT_FALSE(source->IsPendingPullForTesting());
+  EXPECT_FALSE(source->HasPendingActivity());
 
   source->Close();
   track->stopTrack(v8_scope.GetExecutionContext());

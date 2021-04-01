@@ -41,7 +41,7 @@ class TransferredFrameQueueUnderlyingSource
 
  private:
   scoped_refptr<base::SequencedTaskRunner> host_runner_;
-  CrossThreadWeakPersistent<FrameQueueHost> host_;
+  CrossThreadPersistent<FrameQueueHost> host_;
 };
 
 extern template class MODULES_EXTERN_TEMPLATE_EXPORT

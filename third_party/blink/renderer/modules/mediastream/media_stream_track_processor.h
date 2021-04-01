@@ -23,10 +23,7 @@ class ScriptState;
 class UnderlyingSinkBase;
 class WritableStream;
 
-class MODULES_EXPORT MediaStreamTrackProcessor
-    : public ScriptWrappable,
-      public ActiveScriptWrappable<MediaStreamTrackProcessor>,
-      public ExecutionContextLifecycleObserver {
+class MODULES_EXPORT MediaStreamTrackProcessor : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -50,12 +47,6 @@ class MODULES_EXPORT MediaStreamTrackProcessor
   // MediaStreamTrackProcessor interface
   ReadableStream* readable(ScriptState* script_state);
   WritableStream* writableControl(ScriptState* script_state);
-
-  // ScriptWrappable interface
-  bool HasPendingActivity() const final;
-
-  // ExecutionContextLifecycleObserver interface
-  void ContextDestroyed() override;
 
   // Closes |audio_underlying_source_| and |video_underlying_source_| if they
   // exist.

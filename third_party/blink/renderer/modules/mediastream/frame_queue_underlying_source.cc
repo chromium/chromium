@@ -88,8 +88,14 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
   pending_transfer_queue_.clear();
   transfer_frames_cb_.Reset();
   transfer_done_cb_.Reset();
+  is_pending_pull_ = false;
 
   is_closed_ = true;
+}
+
+template <typename NativeFrameType>
+bool FrameQueueUnderlyingSource<NativeFrameType>::HasPendingActivity() const {
+  return is_pending_pull_ && Controller();
 }
 
 template <typename NativeFrameType>
@@ -229,6 +235,9 @@ void FrameQueueUnderlyingSource<
 
   // We can now start queueing frames directly on the transferred source.
   CloseController();
+
+  // Unset this flag, as to not keep |this| alive through HasPendingActivity().
+  is_pending_pull_ = false;
 
   PostCrossThreadTask(
       *transfer_task_runner_.get(), FROM_HERE,

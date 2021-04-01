@@ -25,29 +25,24 @@ TransferredFrameQueueUnderlyingSource<NativeFrameType>::
 template <typename NativeFrameType>
 bool TransferredFrameQueueUnderlyingSource<
     NativeFrameType>::StartFrameDelivery() {
-  if (auto cross_tread_persistent_host = host_.Lock()) {
-    // PostCrossThreadTask needs a closure, so we have to ignore
-    // StartFrameDelivery()'s return type.
-    auto start_frame_delivery_cb = [](FrameQueueHost* host) {
-      host->StartFrameDelivery();
-    };
+  // PostCrossThreadTask needs a closure, so we have to ignore
+  // StartFrameDelivery()'s return type.
+  auto start_frame_delivery_cb = [](FrameQueueHost* host) {
+    host->StartFrameDelivery();
+  };
 
-    PostCrossThreadTask(*host_runner_.get(), FROM_HERE,
-                        CrossThreadBindOnce(start_frame_delivery_cb,
-                                            cross_tread_persistent_host));
-    return true;
-  }
+  PostCrossThreadTask(*host_runner_.get(), FROM_HERE,
+                      CrossThreadBindOnce(start_frame_delivery_cb, host_));
 
-  return false;
+  // This could fail on the host side, but for now we don't do an async check.
+  return true;
 }
 
 template <typename NativeFrameType>
 void TransferredFrameQueueUnderlyingSource<
     NativeFrameType>::StopFrameDelivery() {
-  if (auto host = host_.Lock()) {
-    PostCrossThreadTask(*host_runner_.get(), FROM_HERE,
-                        CrossThreadBindOnce(&FrameQueueHost::Close, host));
-  }
+  PostCrossThreadTask(*host_runner_.get(), FROM_HERE,
+                      CrossThreadBindOnce(&FrameQueueHost::Close, host_));
 }
 
 template <typename NativeFrameType>

@@ -35,13 +35,17 @@ void PostFrameToTransferredSource(
 MediaStreamVideoTrackUnderlyingSource::MediaStreamVideoTrackUnderlyingSource(
     ScriptState* script_state,
     MediaStreamComponent* track,
+    ScriptWrappable* media_stream_track_processor,
     wtf_size_t max_queue_size)
-    : FrameQueueUnderlyingSource(script_state, max_queue_size), track_(track) {
+    : FrameQueueUnderlyingSource(script_state, max_queue_size),
+      media_stream_track_processor_(media_stream_track_processor),
+      track_(track) {
   DCHECK(track_);
 }
 
 void MediaStreamVideoTrackUnderlyingSource::Trace(Visitor* visitor) const {
   FrameQueueUnderlyingSource::Trace(visitor);
+  visitor->Trace(media_stream_track_processor_);
   visitor->Trace(track_);
 }
 
