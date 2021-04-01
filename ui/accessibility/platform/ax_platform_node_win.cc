@@ -6390,7 +6390,7 @@ std::wstring AXPlatformNodeWin::UIAAriaRole() {
       return L"listitem";
 
     case ax::mojom::Role::kTitleBar:
-      return L"document";
+      return L"group";
 
     case ax::mojom::Role::kToggleButton:
       return L"button";
@@ -7053,7 +7053,7 @@ LONG AXPlatformNodeWin::ComputeUIAControlType() {  // NOLINT(runtime/int)
       return UIA_ListItemControlTypeId;
 
     case ax::mojom::Role::kTitleBar:
-      return UIA_DocumentControlTypeId;
+      return UIA_TitleBarControlTypeId;
 
     case ax::mojom::Role::kToggleButton:
       return UIA_ButtonControlTypeId;

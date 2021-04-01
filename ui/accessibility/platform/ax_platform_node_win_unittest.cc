@@ -5270,7 +5270,13 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   child4.role = ax::mojom::Role::kSearchBox;
   root.child_ids.push_back(child4_id);
 
-  Init(root, child1, child2, child3, child4);
+  AXNodeData child5;
+  AXNodeID child5_id = 6;
+  child5.id = child5_id;
+  child5.role = ax::mojom::Role::kTitleBar;
+  root.child_ids.push_back(child5_id);
+
+  Init(root, child1, child2, child3, child4, child5);
 
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child1_id),
@@ -5284,6 +5290,9 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   EXPECT_UIA_INT_EQ(
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(child4_id),
       UIA_ControlTypePropertyId, int{UIA_EditControlTypeId});
+  EXPECT_UIA_INT_EQ(
+      QueryInterfaceFromNodeId<IRawElementProviderSimple>(child5_id),
+      UIA_ControlTypePropertyId, int{UIA_TitleBarControlTypeId});
 }
 
 TEST_F(AXPlatformNodeWinTest, UIALandmarkType) {
