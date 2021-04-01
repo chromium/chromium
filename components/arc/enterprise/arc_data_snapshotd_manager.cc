@@ -76,10 +76,13 @@ void EnableHeadlessMode() {
 }
 
 // Disables D-Bus clients:
+// * BIOD
 // * CrosDisks
 // Should be called while in BlockedUi state.
 void DisableDBusClients() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
+  // Disable BIOD input.
+  command_line->AppendSwitch(chromeos::switches::kBiodFake);
   // Disable USB input.
   command_line->AppendSwitch(chromeos::switches::kCrosDisksFake);
 }

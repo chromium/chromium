@@ -11,11 +11,13 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/dbus/biod/fake_biod_client.h"
 #include "chromeos/dbus/biod/messages.pb.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -422,8 +424,12 @@ BiodClient::~BiodClient() {
 
 // static
 void BiodClient::Initialize(dbus::Bus* bus) {
-  DCHECK(bus);
-  (new BiodClientImpl())->Init(bus);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kBiodFake)) {
+    BiodClient::InitializeFake();
+  } else {
+    DCHECK(bus);
+    (new BiodClientImpl())->Init(bus);
+  }
 }
 
 // static
