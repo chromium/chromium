@@ -62,6 +62,10 @@ class BASE_EXPORT PowerMonitor {
   // Returns true if the system is on-battery.
   static bool AddPowerStateObserverAndReturnOnBatteryState(
       PowerStateObserver* observer);
+  // Returns the power thermal state.
+  static PowerThermalObserver::DeviceThermalState
+  AddPowerStateObserverAndReturnPowerThermalState(
+      PowerThermalObserver* observer);
 
   // Is the computer currently on battery power. May only be called if the
   // PowerMonitor has been initialized.

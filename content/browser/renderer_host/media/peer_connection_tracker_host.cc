@@ -76,12 +76,12 @@ PeerConnectionTrackerHost::PeerConnectionTrackerHost(RenderFrameHost* frame)
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RegisterHost(this);
   base::PowerMonitor::AddPowerSuspendObserver(this);
-  base::PowerMonitor::AddPowerThermalObserver(this);
-  frame->GetRemoteInterfaces()->GetInterface(
-      tracker_.BindNewPipeAndPassReceiver());
   // Ensure that the initial thermal state is known by the |tracker_|.
   base::PowerThermalObserver::DeviceThermalState initial_thermal_state =
-      base::PowerMonitor::GetCurrentThermalState();
+      base::PowerMonitor::AddPowerStateObserverAndReturnPowerThermalState(this);
+
+  frame->GetRemoteInterfaces()->GetInterface(
+      tracker_.BindNewPipeAndPassReceiver());
   if (initial_thermal_state !=
       base::PowerThermalObserver::DeviceThermalState::kUnknown) {
     OnThermalStateChange(initial_thermal_state);

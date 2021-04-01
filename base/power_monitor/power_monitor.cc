@@ -79,6 +79,16 @@ bool PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(
   return power_monitor->on_battery_power_;
 }
 
+// static
+PowerThermalObserver::DeviceThermalState
+PowerMonitor::AddPowerStateObserverAndReturnPowerThermalState(
+    PowerThermalObserver* obs) {
+  PowerMonitor* power_monitor = GetInstance();
+  AutoLock auto_lock(power_monitor->power_thermal_state_lock_);
+  power_monitor->thermal_state_observers_->AddObserver(obs);
+  return power_monitor->power_thermal_state_;
+}
+
 PowerMonitorSource* PowerMonitor::Source() {
   return GetInstance()->source_.get();
 }
