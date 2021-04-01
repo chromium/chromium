@@ -174,7 +174,7 @@ void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   // frame-scoped, as the resulting banner event is dispatched to
   // frame()->document().
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &AppBannerController::BindMojoRequest, WrapWeakPersistent(&frame)));
+      &AppBannerController::BindReceiver, WrapWeakPersistent(&frame)));
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &TextSuggestionBackendImpl::Bind, WrapWeakPersistent(&frame)));
 #if defined(OS_ANDROID)
