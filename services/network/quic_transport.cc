@@ -84,11 +84,11 @@ class QuicTransport::Stream final {
 
   // Bidirectional
   Stream(QuicTransport* transport,
-         quic::QuicTransportStream* stream,
+         quic::WebTransportStream* stream,
          mojo::ScopedDataPipeConsumerHandle readable,
          mojo::ScopedDataPipeProducerHandle writable)
       : transport_(transport),
-        id_(stream->id()),
+        id_(stream->GetStreamId()),
         outgoing_(stream),
         incoming_(stream),
         readable_(std::move(readable)),
@@ -104,10 +104,10 @@ class QuicTransport::Stream final {
 
   // Unidirectional: outgoing
   Stream(QuicTransport* transport,
-         quic::QuicTransportStream* outgoing,
+         quic::WebTransportStream* outgoing,
          mojo::ScopedDataPipeConsumerHandle readable)
       : transport_(transport),
-        id_(outgoing->id()),
+        id_(outgoing->GetStreamId()),
         outgoing_(outgoing),
         readable_(std::move(readable)),
         readable_watcher_(FROM_HERE, ArmingPolicy::MANUAL),
@@ -119,10 +119,10 @@ class QuicTransport::Stream final {
 
   // Unidirectional: incoming
   Stream(QuicTransport* transport,
-         quic::QuicTransportStream* incoming,
+         quic::WebTransportStream* incoming,
          mojo::ScopedDataPipeProducerHandle writable)
       : transport_(transport),
-        id_(incoming->id()),
+        id_(incoming->GetStreamId()),
         incoming_(incoming),
         writable_(std::move(writable)),
         readable_watcher_(FROM_HERE, ArmingPolicy::MANUAL),
@@ -142,7 +142,7 @@ class QuicTransport::Stream final {
     if (!stream) {
       return;
     }
-    stream->Reset(code);
+    stream->ResetWithUserCode(code);
     incoming_ = nullptr;
     outgoing_ = nullptr;
     readable_watcher_.Cancel();
@@ -155,7 +155,7 @@ class QuicTransport::Stream final {
     if (!stream) {
       return;
     }
-    stream->Reset(quic::QuicRstStreamErrorCode::QUIC_STREAM_CANCELLED);
+    stream->MaybeResetDueToStreamObjectGone();
   }
 
  private:
@@ -267,7 +267,7 @@ class QuicTransport::Stream final {
       writable_->EndWriteData(num_read_bytes);
       if (!incoming_) {
         // |incoming_| can be null here, because OnFinRead can be called in
-        // QuicTransportStream::Read.
+        // WebTransportStream::Read.
         writable_watcher_.Cancel();
         writable_.reset();
         MayDisposeLater();
@@ -306,8 +306,8 @@ class QuicTransport::Stream final {
   // bidirectional stream. They are owned by |transport_| (via
   // quic::QuicSession), and the properties will be null-set when the streams
   // are gone (via StreamVisitor).
-  quic::QuicTransportStream* outgoing_ = nullptr;
-  quic::QuicTransportStream* incoming_ = nullptr;
+  quic::WebTransportStream* outgoing_ = nullptr;
+  quic::WebTransportStream* incoming_ = nullptr;
   mojo::ScopedDataPipeConsumerHandle readable_;  // for |outgoing|
   mojo::ScopedDataPipeProducerHandle writable_;  // for |incoming|
 
@@ -385,14 +385,14 @@ void QuicTransport::CreateStream(
       std::move(callback).Run(false, 0);
       return;
     }
-    quic::QuicTransportStream* const stream =
+    quic::WebTransportStream* const stream =
         session->OpenOutgoingBidirectionalStream();
     DCHECK(stream);
     streams_.insert(std::make_pair(
-        stream->id(),
+        stream->GetStreamId(),
         std::make_unique<Stream>(this, stream, std::move(readable),
                                  std::move(writable))));
-    std::move(callback).Run(true, stream->id());
+    std::move(callback).Run(true, stream->GetStreamId());
     return;
   }
 
@@ -404,13 +404,13 @@ void QuicTransport::CreateStream(
     return;
   }
 
-  quic::QuicTransportStream* const stream =
+  quic::WebTransportStream* const stream =
       session->OpenOutgoingUnidirectionalStream();
   DCHECK(stream);
   streams_.insert(std::make_pair(
-      stream->id(),
+      stream->GetStreamId(),
       std::make_unique<Stream>(this, stream, std::move(readable))));
-  std::move(callback).Run(true, stream->id());
+  std::move(callback).Run(true, stream->GetStreamId());
 }
 
 void QuicTransport::AcceptBidirectionalStream(
@@ -512,7 +512,7 @@ void QuicTransport::OnIncomingBidirectionalStreamAvailable() {
   DCHECK(client_);
 
   while (!bidirectional_stream_acceptances_.empty()) {
-    quic::QuicTransportStream* const stream =
+    quic::WebTransportStream* const stream =
         transport_->session()->AcceptIncomingBidirectionalStream();
     if (!stream) {
       return;
@@ -528,23 +528,23 @@ void QuicTransport::OnIncomingBidirectionalStreamAvailable() {
         sizeof(options), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 256 * 1024};
     if (mojo::CreateDataPipe(&options, writable_for_outgoing,
                              readable_for_outgoing) != MOJO_RESULT_OK) {
-      stream->Reset(quic::QuicRstStreamErrorCode::QUIC_STREAM_CANCELLED);
+      stream->ResetDueToInternalError();
       // TODO(yhirano): Error the entire connection.
       return;
     }
     if (mojo::CreateDataPipe(&options, writable_for_incoming,
                              readable_for_incoming) != MOJO_RESULT_OK) {
-      stream->Reset(quic::QuicRstStreamErrorCode::QUIC_STREAM_CANCELLED);
+      stream->ResetDueToInternalError();
       // TODO(yhirano): Error the entire connection.
       return;
     }
 
     streams_.insert(std::make_pair(
-        stream->id(),
+        stream->GetStreamId(),
         std::make_unique<Stream>(this, stream, std::move(readable_for_outgoing),
                                  std::move(writable_for_incoming))));
     std::move(acceptance)
-        .Run(stream->id(), std::move(readable_for_incoming),
+        .Run(stream->GetStreamId(), std::move(readable_for_incoming),
              std::move(writable_for_outgoing));
   }
 }
@@ -554,7 +554,7 @@ void QuicTransport::OnIncomingUnidirectionalStreamAvailable() {
   DCHECK(client_);
 
   while (!unidirectional_stream_acceptances_.empty()) {
-    quic::QuicTransportStream* const stream =
+    quic::WebTransportStream* const stream =
         transport_->session()->AcceptIncomingUnidirectionalStream();
 
     if (!stream) {
@@ -569,15 +569,17 @@ void QuicTransport::OnIncomingUnidirectionalStreamAvailable() {
         sizeof(options), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1, 256 * 1024};
     if (mojo::CreateDataPipe(&options, writable_for_incoming,
                              readable_for_incoming) != MOJO_RESULT_OK) {
-      stream->Reset(quic::QuicRstStreamErrorCode::QUIC_STREAM_CANCELLED);
+      stream->ResetDueToInternalError();
       // TODO(yhirano): Error the entire connection.
       return;
     }
 
-    streams_.insert(std::make_pair(
-        stream->id(), std::make_unique<Stream>(
-                          this, stream, std::move(writable_for_incoming))));
-    std::move(acceptance).Run(stream->id(), std::move(readable_for_incoming));
+    streams_.insert(
+        std::make_pair(stream->GetStreamId(),
+                       std::make_unique<Stream>(
+                           this, stream, std::move(writable_for_incoming))));
+    std::move(acceptance)
+        .Run(stream->GetStreamId(), std::move(readable_for_incoming));
   }
 }
 
