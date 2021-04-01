@@ -264,15 +264,15 @@ void ESimProfile::EnsureProfileExistsOnEuicc(
 
   if (!ProfileExistsOnEuicc()) {
     if (IsProfileInstalled()) {
-      HermesEuiccClient::Get()->RequestInstalledProfiles(
+      esim_manager_->cellular_esim_profile_handler()->RefreshProfileList(
           euicc_->path(),
-          base::BindOnce(&ESimProfile::OnRequestProfiles,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                         std::move(inhibit_lock)));
+          base::BindOnce(&ESimProfile::OnRequestInstalledProfiles,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+          std::move(inhibit_lock));
     } else {
       HermesEuiccClient::Get()->RequestPendingProfiles(
           euicc_->path(), /*root_smds=*/std::string(),
-          base::BindOnce(&ESimProfile::OnRequestProfiles,
+          base::BindOnce(&ESimProfile::OnRequestPendingProfiles,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                          std::move(inhibit_lock)));
     }
@@ -283,14 +283,34 @@ void ESimProfile::EnsureProfileExistsOnEuicc(
                           std::move(inhibit_lock));
 }
 
-void ESimProfile::OnRequestProfiles(
+void ESimProfile::OnRequestInstalledProfiles(
+    EnsureProfileExistsOnEuiccCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
+  bool success = inhibit_lock != nullptr;
+  if (!success) {
+    NET_LOG(ERROR) << "Error requesting installed profiles to ensure profile "
+                   << "exists on Euicc";
+  }
+  OnRequestProfiles(std::move(callback), std::move(inhibit_lock), success);
+}
+
+void ESimProfile::OnRequestPendingProfiles(
     EnsureProfileExistsOnEuiccCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     HermesResponseStatus status) {
-  if (status != HermesResponseStatus::kSuccess) {
-    NET_LOG(ERROR) << "Error requesting profiles to ensure profile exists on "
-                      "Euicc. status="
-                   << static_cast<int>(status);
+  bool success = status == HermesResponseStatus::kSuccess;
+  if (!success) {
+    NET_LOG(ERROR) << "Error requesting pending profiles to ensure profile "
+                   << "exists on Euicc; status: " << static_cast<int>(status);
+  }
+  OnRequestProfiles(std::move(callback), std::move(inhibit_lock), success);
+}
+
+void ESimProfile::OnRequestProfiles(
+    EnsureProfileExistsOnEuiccCallback callback,
+    std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+    bool success) {
+  if (!success) {
     std::move(callback).Run(/*request_profile_success=*/false,
                             std::move(inhibit_lock));
     return;

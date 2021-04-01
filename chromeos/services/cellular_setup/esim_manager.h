@@ -76,6 +76,10 @@ class ESimManager : public mojom::ESimManager,
   // Notifies observers of changes to ESimProfile Lists.
   void NotifyESimProfileListChanged(Euicc* euicc);
 
+  CellularESimProfileHandler* cellular_esim_profile_handler() {
+    return cellular_esim_profile_handler_;
+  }
+
   CellularESimConnectionHandler* cellular_esim_connection_handler() {
     return cellular_esim_connection_handler_;
   }

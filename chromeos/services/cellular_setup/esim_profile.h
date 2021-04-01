@@ -78,10 +78,17 @@ class ESimProfile : public mojom::ESimProfile {
   void EnsureProfileExistsOnEuicc(
       EnsureProfileExistsOnEuiccCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
-  void OnRequestProfiles(
+  void OnRequestInstalledProfiles(
+      EnsureProfileExistsOnEuiccCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnRequestPendingProfiles(
       EnsureProfileExistsOnEuiccCallback callback,
       std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
       HermesResponseStatus status);
+  void OnRequestProfiles(
+      EnsureProfileExistsOnEuiccCallback callback,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      bool success);
   void PerformInstallProfile(
       const std::string& confirmation_code,
       bool request_profile_success,
