@@ -213,6 +213,9 @@ media::VideoModeSwitcher* CastContentBrowserClient::GetVideoModeSwitcher() {
 
 void CastContentBrowserClient::InitializeURLLoaderThrottleDelegate() {}
 
+void CastContentBrowserClient::SetPersistentCookieAccessSettings(
+    PrefService* pref_service) {}
+
 scoped_refptr<base::SingleThreadTaskRunner>
 CastContentBrowserClient::GetMediaTaskRunner() {
   if (!media_thread_) {

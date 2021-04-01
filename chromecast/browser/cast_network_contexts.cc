@@ -9,7 +9,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
+#include "base/time/time.h"
+#include "base/values.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/browser/cast_browser_context.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -27,12 +30,26 @@
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace chromecast {
 namespace shell {
 
 namespace {
+
 constexpr char kCookieStoreFile[] = "Cookies";
+
+ContentSettingPatternSource CreateContentSetting(
+    const std::string& primary_pattern,
+    const std::string& secondary_pattern,
+    ContentSetting setting) {
+  return ContentSettingPatternSource(
+      ContentSettingsPattern::FromString(primary_pattern),
+      ContentSettingsPattern::FromString(secondary_pattern),
+      base::Value(setting), std::string(), /*incognito=*/false,
+      /*expiration=*/base::Time());
+}
+
 }  // namespace
 
 // SharedURLLoaderFactory backed by a CastNetworkContexts and its system
@@ -144,6 +161,13 @@ CastNetworkContexts::GetSystemSharedURLLoaderFactory() {
   return system_shared_url_loader_factory_;
 }
 
+void CastNetworkContexts::SetAllowedDomainsForPersistentCookies(
+    std::vector<std::string> allowed_domains_list) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  allowed_domains_for_persistent_cookies_ = std::move(allowed_domains_list);
+}
+
 void CastNetworkContexts::ConfigureNetworkContextParams(
     content::BrowserContext* context,
     bool in_memory,
@@ -204,6 +228,7 @@ void CastNetworkContexts::ConfigureDefaultNetworkContextParams(
       browser_context->GetPath().Append(kCookieStoreFile);
   network_context_params->restore_old_session_cookies = false;
   network_context_params->persist_session_cookies = true;
+  network_context_params->cookie_manager_params = CreateCookieManagerParams();
 
   // Disable idle sockets close on memory pressure, if instructed by DCS. On
   // memory constrained devices:
@@ -233,6 +258,43 @@ CastNetworkContexts::CreateSystemNetworkContextParams() {
       cert_verifier::mojom::CertVerifierCreationParams::New());
 
   return network_context_params;
+}
+
+network::mojom::CookieManagerParamsPtr
+CastNetworkContexts::CreateCookieManagerParams() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto params = network::mojom::CookieManagerParams::New();
+  if (allowed_domains_for_persistent_cookies_.empty()) {
+    // Don't restrict persistent cookie access if no allowlist is set.
+    return params;
+  }
+
+  ContentSettingsForOneType settings;
+  ContentSettingsForOneType settings_for_storage_access;
+
+  // Grant cookie and storage access to domains in the allowlist.
+  for (const auto& domain : allowed_domains_for_persistent_cookies_) {
+    auto allow_setting = CreateContentSetting(
+        /*primary_pattern=*/base::StrCat({"[*.]", domain}),
+        /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_ALLOW);
+    settings.push_back(allow_setting);
+    settings_for_storage_access.push_back(std::move(allow_setting));
+  }
+
+  // Restrict cookie access to session only and block storage access for
+  // domains not in the allowlist.
+  // Note: storage access control depends on the feature |kStorageAccessAPI|
+  // which has not been enabled by default in chromium.
+  settings.push_back(CreateContentSetting(
+      /*primary_pattern=*/"*",
+      /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_SESSION_ONLY));
+  settings_for_storage_access.push_back(CreateContentSetting(
+      /*primary_pattern=*/"*",
+      /*secondary_pattern=*/"*", ContentSetting::CONTENT_SETTING_BLOCK));
+  params->settings = std::move(settings);
+  params->settings_for_storage_access = std::move(settings_for_storage_access);
+  return params;
 }
 
 void CastNetworkContexts::AddProxyToNetworkContextParams(

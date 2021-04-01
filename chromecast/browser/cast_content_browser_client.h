@@ -116,6 +116,8 @@ class CastContentBrowserClient
 
   virtual void InitializeURLLoaderThrottleDelegate();
 
+  virtual void SetPersistentCookieAccessSettings(PrefService* pref_service);
+
   // Returns the task runner that must be used for media IO.
   scoped_refptr<base::SingleThreadTaskRunner> GetMediaTaskRunner();
 

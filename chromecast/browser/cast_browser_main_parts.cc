@@ -537,6 +537,9 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
       base::Unretained(cast_browser_process_->browser_client())));
 #endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 
+  cast_content_browser_client_->SetPersistentCookieAccessSettings(
+      cast_browser_process_->pref_service());
+
 #if defined(OS_ANDROID)
   crash_reporter_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
