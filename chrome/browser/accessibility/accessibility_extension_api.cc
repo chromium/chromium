@@ -17,7 +17,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -224,7 +223,6 @@ AccessibilityPrivateSetHighlightsFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AccessibilityPrivateSetKeyboardListenerFunction::Run() {
-  ChromeExtensionFunctionDetails details(this);
   CHECK(extension());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -240,7 +238,8 @@ AccessibilityPrivateSetKeyboardListenerFunction::Run() {
     return RespondNow(Error("Existing keyboard listener registered."));
 
   manager->SetKeyboardListenerExtensionId(
-      enabled ? extension()->id() : std::string(), details.GetProfile());
+      enabled ? extension()->id() : std::string(),
+      Profile::FromBrowserContext(browser_context()));
 
   ash::EventRewriterController::Get()->CaptureAllKeysForSpokenFeedback(
       enabled && capture);
@@ -271,10 +270,9 @@ AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::Run() {
           SetNativeChromeVoxArcSupportForCurrentApp::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ChromeExtensionFunctionDetails details(this);
   arc::ArcAccessibilityHelperBridge* bridge =
       arc::ArcAccessibilityHelperBridge::GetForBrowserContext(
-          details.GetProfile());
+          browser_context());
   if (bridge) {
     bool enabled;
     EXTENSION_FUNCTION_VALIDATE(args_->GetBoolean(0, &enabled));
