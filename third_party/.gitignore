@@ -113,6 +113,7 @@
 /guava/lib/
 /hamcrest/lib/
 /harfbuzz-ng/src
+/highway/src
 /hunspell_dictionaries
 /icu
 /icu4j/lib/
@@ -140,6 +141,7 @@
 /libipp/libipp
 /libjingle/source
 /libjpeg_turbo
+/libjxl/src
 /liblouis/src
 /libphonenumber/dist
 /libsrtp
