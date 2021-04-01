@@ -35,6 +35,7 @@
 
 namespace autofill {
 class AutofillProfile;
+class ContentAutofillDriver;
 class CreditCard;
 struct FormData;
 struct FormFieldData;
@@ -390,31 +391,42 @@ class WebController {
                            ElementFinder::Callback callback,
                            const ClientStatus& status,
                            std::unique_ptr<ElementFinder::Result> result);
-  void OnFindElementForFillingForm(
-      std::unique_ptr<FillFormInputData> data_to_autofill,
-      const Selector& selector,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      const ClientStatus& status,
-      std::unique_ptr<ElementFinder::Result> element_result);
-  void OnGetFormAndFieldDataForFillingForm(
-      std::unique_ptr<FillFormInputData> data_to_autofill,
-      base::OnceCallback<void(const ClientStatus&)> callback,
-      content::RenderFrameHost* container_frame_host,
-      const autofill::FormData& form_data,
-      const autofill::FormFieldData& form_field);
-  void OnFindElementToRetrieveFormAndFieldData(
+  void GetElementFormAndFieldData(
       const Selector& selector,
       base::OnceCallback<void(const ClientStatus&,
-                              const autofill::FormData& form_data,
-                              const autofill::FormFieldData& form_field)>
-          callback,
-      const ClientStatus& status,
+                              autofill::ContentAutofillDriver* driver,
+                              const autofill::FormData&,
+                              const autofill::FormFieldData&)> callback);
+  void OnFindElementForGetFormAndFieldData(
+      const Selector& selector,
+      base::OnceCallback<void(const ClientStatus&,
+                              autofill::ContentAutofillDriver* driver,
+                              const autofill::FormData&,
+                              const autofill::FormFieldData&)> callback,
+      const ClientStatus& element_status,
       std::unique_ptr<ElementFinder::Result> element_result);
+  void OnGetFormAndFieldData(
+      base::OnceCallback<void(const ClientStatus&,
+                              autofill::ContentAutofillDriver* driver,
+                              const autofill::FormData&,
+                              const autofill::FormFieldData&)> callback,
+      autofill::ContentAutofillDriver* driver,
+      const autofill::FormData& form_data,
+      const autofill::FormFieldData& form_field);
+  void OnGetFormAndFieldDataForFilling(
+      std::unique_ptr<FillFormInputData> data_to_autofill,
+      base::OnceCallback<void(const ClientStatus&)> callback,
+      const ClientStatus& form_status,
+      autofill::ContentAutofillDriver* driver,
+      const autofill::FormData& form_data,
+      const autofill::FormFieldData& form_field);
   void OnGetFormAndFieldDataForRetrieving(
       base::OnceCallback<void(const ClientStatus&,
                               const autofill::FormData& form_data,
-                              const autofill::FormFieldData& form_field)>
+                              const autofill::FormFieldData& field_data)>
           callback,
+      const ClientStatus& form_status,
+      autofill::ContentAutofillDriver* driver,
       const autofill::FormData& form_data,
       const autofill::FormFieldData& form_field);
   void OnSelectOption(base::OnceCallback<void(const ClientStatus&)> callback,

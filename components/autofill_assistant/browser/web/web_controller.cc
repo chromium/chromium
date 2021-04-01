@@ -764,12 +764,11 @@ void WebController::FillAddressForm(
   VLOG(3) << __func__ << " " << selector;
   auto data_to_autofill = std::make_unique<FillFormInputData>();
   data_to_autofill->profile = MakeUniqueFromProfile(*profile);
-  FindElement(selector,
-              /* strict_mode= */ true,
-              base::BindOnce(&WebController::OnFindElementForFillingForm,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             std::move(data_to_autofill), selector,
-                             std::move(callback)));
+  GetElementFormAndFieldData(
+      selector,
+      base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(data_to_autofill), std::move(callback)));
 }
 
 void WebController::FillCardForm(
@@ -781,23 +780,52 @@ void WebController::FillCardForm(
   auto data_to_autofill = std::make_unique<FillFormInputData>();
   data_to_autofill->card = std::move(card);
   data_to_autofill->cvc = cvc;
-  FindElement(selector,
-              /* strict_mode= */ true,
-              base::BindOnce(&WebController::OnFindElementForFillingForm,
-                             weak_ptr_factory_.GetWeakPtr(),
-                             std::move(data_to_autofill), selector,
-                             std::move(callback)));
+  GetElementFormAndFieldData(
+      selector,
+      base::BindOnce(&WebController::OnGetFormAndFieldDataForFilling,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(data_to_autofill), std::move(callback)));
 }
 
-void WebController::OnFindElementForFillingForm(
-    std::unique_ptr<FillFormInputData> data_to_autofill,
+void WebController::RetrieveElementFormAndFieldData(
     const Selector& selector,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    const ClientStatus& status,
+    base::OnceCallback<void(const ClientStatus&,
+                            const autofill::FormData& form_data,
+                            const autofill::FormFieldData& field_data)>
+        callback) {
+  DVLOG(3) << __func__ << " " << selector;
+  GetElementFormAndFieldData(
+      selector,
+      base::BindOnce(&WebController::OnGetFormAndFieldDataForRetrieving,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void WebController::GetElementFormAndFieldData(
+    const Selector& selector,
+    base::OnceCallback<void(const ClientStatus&,
+                            ContentAutofillDriver* driver,
+                            const autofill::FormData&,
+                            const autofill::FormFieldData&)> callback) {
+  FindElement(
+      selector, /* strict_mode= */ true,
+      base::BindOnce(&WebController::OnFindElementForGetFormAndFieldData,
+                     weak_ptr_factory_.GetWeakPtr(), selector,
+                     std::move(callback)));
+}
+
+void WebController::OnFindElementForGetFormAndFieldData(
+    const Selector& selector,
+    base::OnceCallback<void(const ClientStatus&,
+                            ContentAutofillDriver* driver,
+                            const autofill::FormData&,
+                            const autofill::FormFieldData&)> callback,
+    const ClientStatus& element_status,
     std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!status.ok()) {
-    VLOG(1) << __func__ << " Failed to find the element for filling the form.";
-    std::move(callback).Run(FillAutofillErrorStatus(status));
+  if (!element_status.ok()) {
+    VLOG(1) << __func__
+            << " Failed to find the element for getting Autofill data.";
+    std::move(callback).Run(FillAutofillErrorStatus(element_status), nullptr,
+                            autofill::FormData(), autofill::FormFieldData());
     return;
   }
 
@@ -806,44 +834,53 @@ void WebController::OnFindElementForFillingForm(
   if (driver == nullptr) {
     VLOG(1) << __func__ << " Failed to get the autofill driver.";
     std::move(callback).Run(
-        FillAutofillErrorStatus(UnexpectedErrorStatus(__FILE__, __LINE__)));
+        FillAutofillErrorStatus(UnexpectedErrorStatus(__FILE__, __LINE__)),
+        nullptr, autofill::FormData(), autofill::FormFieldData());
     return;
   }
 
   base::Optional<std::string> css_selector =
       selector.ExtractSingleCssSelectorForAutofill();
   if (!css_selector) {
-    std::move(callback).Run(ClientStatus(INVALID_SELECTOR));
+    std::move(callback).Run(
+        FillAutofillErrorStatus(ClientStatus(INVALID_SELECTOR)), nullptr,
+        autofill::FormData(), autofill::FormFieldData());
     return;
   }
 
   driver->GetAutofillAgent()->GetElementFormAndFieldData(
-      {*css_selector},
-      base::BindOnce(&WebController::OnGetFormAndFieldDataForFillingForm,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(data_to_autofill), std::move(callback),
-                     element_result->container_frame_host));
+      {*css_selector}, base::BindOnce(&WebController::OnGetFormAndFieldData,
+                                      weak_ptr_factory_.GetWeakPtr(),
+                                      std::move(callback), driver));
 }
 
-void WebController::OnGetFormAndFieldDataForFillingForm(
-    std::unique_ptr<FillFormInputData> data_to_autofill,
-    base::OnceCallback<void(const ClientStatus&)> callback,
-    content::RenderFrameHost* container_frame_host,
+void WebController::OnGetFormAndFieldData(
+    base::OnceCallback<void(const ClientStatus&,
+                            ContentAutofillDriver* driver,
+                            const autofill::FormData&,
+                            const autofill::FormFieldData&)> callback,
+    ContentAutofillDriver* driver,
     const autofill::FormData& form_data,
-    const autofill::FormFieldData& form_field) {
+    const autofill::FormFieldData& form_field_data) {
   if (form_data.fields.empty()) {
     VLOG(1) << __func__ << " Failed to get form data to fill form.";
     std::move(callback).Run(
-        FillAutofillErrorStatus(UnexpectedErrorStatus(__FILE__, __LINE__)));
+        FillAutofillErrorStatus(UnexpectedErrorStatus(__FILE__, __LINE__)),
+        driver, autofill::FormData(), autofill::FormFieldData());
     return;
   }
+  std::move(callback).Run(OkClientStatus(), driver, form_data, form_field_data);
+}
 
-  ContentAutofillDriver* driver =
-      ContentAutofillDriver::GetForRenderFrameHost(container_frame_host);
-  if (driver == nullptr) {
-    VLOG(1) << __func__ << " Failed to get the autofill driver.";
-    std::move(callback).Run(
-        FillAutofillErrorStatus(UnexpectedErrorStatus(__FILE__, __LINE__)));
+void WebController::OnGetFormAndFieldDataForFilling(
+    std::unique_ptr<FillFormInputData> data_to_autofill,
+    base::OnceCallback<void(const ClientStatus&)> callback,
+    const ClientStatus& form_status,
+    ContentAutofillDriver* driver,
+    const autofill::FormData& form_data,
+    const autofill::FormFieldData& form_field) {
+  if (!form_status.ok()) {
+    std::move(callback).Run(form_status);
     return;
   }
 
@@ -859,73 +896,16 @@ void WebController::OnGetFormAndFieldDataForFillingForm(
   std::move(callback).Run(OkClientStatus());
 }
 
-void WebController::RetrieveElementFormAndFieldData(
-    const Selector& selector,
-    base::OnceCallback<void(const ClientStatus&,
-                            const autofill::FormData& form_data,
-                            const autofill::FormFieldData& field_data)>
-        callback) {
-  DVLOG(3) << __func__ << " " << selector;
-  FindElement(
-      selector, /* strict_mode= */ true,
-      base::BindOnce(&WebController::OnFindElementToRetrieveFormAndFieldData,
-                     weak_ptr_factory_.GetWeakPtr(), selector,
-                     std::move(callback)));
-}
-
-void WebController::OnFindElementToRetrieveFormAndFieldData(
-    const Selector& selector,
-    base::OnceCallback<void(const ClientStatus&,
-                            const autofill::FormData& form_data,
-                            const autofill::FormFieldData& field_data)>
-        callback,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element_result) {
-  if (!status.ok()) {
-    DVLOG(1) << __func__
-             << " Failed to find the element to retrieve form and field data.";
-    std::move(callback).Run(status, autofill::FormData(),
-                            autofill::FormFieldData());
-    return;
-  }
-  ContentAutofillDriver* driver = ContentAutofillDriver::GetForRenderFrameHost(
-      element_result->container_frame_host);
-  if (driver == nullptr) {
-    DVLOG(1) << __func__ << " Failed to get the autofill driver.";
-    std::move(callback).Run(
-        FillAutofillErrorStatus(UnexpectedErrorStatus(__FILE__, __LINE__)),
-        autofill::FormData(), autofill::FormFieldData());
-    return;
-  }
-  base::Optional<std::string> css_selector =
-      selector.ExtractSingleCssSelectorForAutofill();
-  if (!css_selector) {
-    std::move(callback).Run(ClientStatus(INVALID_SELECTOR),
-                            autofill::FormData(), autofill::FormFieldData());
-    return;
-  }
-
-  driver->GetAutofillAgent()->GetElementFormAndFieldData(
-      {*css_selector},
-      base::BindOnce(&WebController::OnGetFormAndFieldDataForRetrieving,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
 void WebController::OnGetFormAndFieldDataForRetrieving(
     base::OnceCallback<void(const ClientStatus&,
                             const autofill::FormData& form_data,
                             const autofill::FormFieldData& field_data)>
         callback,
+    const ClientStatus& form_status,
+    ContentAutofillDriver* driver,
     const autofill::FormData& form_data,
-    const autofill::FormFieldData& field_data) {
-  if (form_data.fields.empty()) {
-    DVLOG(1) << __func__
-             << " Failed to get form and field data for retrieving.";
-    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__),
-                            autofill::FormData(), autofill::FormFieldData());
-    return;
-  }
-  std::move(callback).Run(OkClientStatus(), form_data, field_data);
+    const autofill::FormFieldData& form_field) {
+  std::move(callback).Run(form_status, form_data, form_field);
 }
 
 void WebController::SelectOption(
