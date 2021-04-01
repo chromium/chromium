@@ -151,6 +151,8 @@ bool HostnameContainsKeyword(const GURL& url,
     return false;
   }
 
+  // TODO(jdeblasio): This should use GetETLDPlusOne() from Lookalike Utils to
+  // benefit from de-facto-private registries.
   size_t registry_length = net::registry_controlled_domains::GetRegistryLength(
       url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
       net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);

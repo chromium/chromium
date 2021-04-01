@@ -79,6 +79,11 @@ const char* kDomainsPermittedInEndEmbeddings[] = {"office.com", "medium.com",
 // e.g. www-google.com.example.com uses "-" (www-google) and "." (google.com).
 const char kTargetEmbeddingSeparators[] = "-.";
 
+// A small subset of private registries on the PSL that act like public
+// registries AND are a common source of false positives in lookalike checks. We
+// treat them as public for the purposes of lookalike checks.
+const char* kPrivateRegistriesTreatedAsPublic[] = {"com.de", "com.se"};
+
 bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,
                     const url_formatter::Skeletons& skeletons2) {
   DCHECK(!skeletons1.empty());
@@ -445,8 +450,24 @@ DomainInfo GetDomainInfo(const GURL& url) {
 }
 
 std::string GetETLDPlusOne(const std::string& hostname) {
-  return net::registry_controlled_domains::GetDomainAndRegistry(
+  auto pub = net::registry_controlled_domains::GetDomainAndRegistry(
       hostname, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+  auto priv = net::registry_controlled_domains::GetDomainAndRegistry(
+      hostname, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  // If there is no difference in eTLD+1 with/without private registries, then
+  // the domain uses a public registry and we can return the eTLD+1 safely.
+  if (pub == priv) {
+    return pub;
+  }
+  // Otherwise, the domain uses a private registry and |pub| is that private
+  // registry. If it's a de-facto-public registry, return the private eTLD+1.
+  for (auto* private_registry : kPrivateRegistriesTreatedAsPublic) {
+    if (private_registry == pub) {
+      return priv;
+    }
+  }
+  // Otherwise, ignore the normal private registry and return the public eTLD+1.
+  return pub;
 }
 
 bool IsEditDistanceAtMostOne(const std::u16string& str1,

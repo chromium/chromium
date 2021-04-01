@@ -327,3 +327,27 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
     }
   }
 }
+
+struct GetETLDPlusOneTestCase {
+  const std::string hostname;
+  const std::string expected_etldp1;
+};
+
+TEST(LookalikeUrlUtilTest, GetETLDPlusOneHandlesSpecialRegistries) {
+  const std::vector<GetETLDPlusOneTestCase> kTestCases = {
+      // Trivial test cases for public registries.
+      {"google.com", "google.com"},
+      {"www.google.com", "google.com"},
+      {"www.google.co.uk", "google.co.uk"},
+
+      // .com.de is a de-facto public registry.
+      {"www.google.com.de", "google.com.de"},
+
+      // .cloud.goog is a private registry.
+      {"www.example.cloud.goog", "cloud.goog"},
+  };
+
+  for (auto& test_case : kTestCases) {
+    EXPECT_EQ(GetETLDPlusOne(test_case.hostname), test_case.expected_etldp1);
+  }
+}
