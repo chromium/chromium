@@ -140,14 +140,7 @@ PasswordBubbleViewBase::PasswordBubbleViewBase(
   SetShowCloseButton(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
-  // The |mouse_handler| closes the bubble if a keyboard or mouse
-  // interactions happens outside of the bubble. By this the bubble becomes
-  // 'easily-dismissable' and this behavior can be enforced by the
-  // corresponding flag.
-  if (easily_dismissable) {
-    mouse_handler_ =
-        std::make_unique<WebContentMouseHandler>(this, web_contents);
-  }
+  set_close_on_deactivate(easily_dismissable);
 }
 
 PasswordBubbleViewBase::~PasswordBubbleViewBase() {

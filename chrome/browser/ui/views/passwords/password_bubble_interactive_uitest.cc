@@ -277,6 +277,34 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnNavigation) {
   EXPECT_TRUE(IsBubbleShowing());
 }
 
+// crbug.com/1194950.
+// Test that the automatic save bubble ignores the browser activation and
+// deactivation events.
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
+                       DontCloseOnDeactivation) {
+  SetupPendingPassword();
+  EXPECT_TRUE(IsBubbleShowing());
+
+  browser()->window()->Deactivate();
+  EXPECT_TRUE(IsBubbleShowing());
+
+  browser()->window()->Activate();
+  EXPECT_TRUE(IsBubbleShowing());
+}
+
+// crbug.com/1194950.
+// Test that the automatic save bubble ignores the focus lost event.
+IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest, DontCloseOnLostFocus) {
+  SetupPendingPassword();
+  EXPECT_TRUE(IsBubbleShowing());
+  PasswordBubbleViewBase::manage_password_bubble()
+      ->GetOkButton()
+      ->RequestFocus();
+
+  browser()->window()->Deactivate();
+  EXPECT_TRUE(IsBubbleShowing());
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordBubbleInteractiveUiTest,
                        TwoTabsWithBubbleSwitch) {
   // Set up the first tab with the bubble.
