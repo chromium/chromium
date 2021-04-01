@@ -57,6 +57,9 @@ crbug.com/591099 external/wpt/css/CSS2/normal-flow/min-height-separates-margin.h
 ### external/wpt/css/CSS2/text/
 crbug.com/591099 external/wpt/css/CSS2/text/white-space-mixed-003.xht [ Failure ]
 
+### external/wpt/css/css-backgrounds/
+crbug.com/1194738 external/wpt/css/css-backgrounds/linear-gradient-currentcolor-first-line.html [ Failure ]
+
 ### external/wpt/css/css-flexbox/
 crbug.com/591099 external/wpt/css/css-flexbox/aspect-ratio-intrinsic-size-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/aspect-ratio-intrinsic-size-002.html [ Failure ]

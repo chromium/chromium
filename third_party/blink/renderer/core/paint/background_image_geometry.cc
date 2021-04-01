@@ -1023,10 +1023,11 @@ const Document& BackgroundImageGeometry::ImageDocument() const {
   return box_->GetDocument();
 }
 
-const ComputedStyle& BackgroundImageGeometry::ImageStyle() const {
-  const bool use_style_from_positioning_box =
-      painting_view_ || cell_using_container_background_;
-  return (use_style_from_positioning_box ? positioning_box_ : box_)->StyleRef();
+const ComputedStyle& BackgroundImageGeometry::ImageStyle(
+    const ComputedStyle& fragment_style) const {
+  if (painting_view_ || cell_using_container_background_)
+    return positioning_box_->StyleRef();
+  return fragment_style;
 }
 
 InterpolationQuality BackgroundImageGeometry::ImageInterpolationQuality()
