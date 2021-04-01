@@ -31,7 +31,7 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
                            public arc::ArcSessionManagerObserver {
  public:
   explicit AndroidAppsHandler(Profile* profile,
-                              apps::AppServiceProxy* app_service_proxy);
+                              apps::AppServiceProxyChromeOs* app_service_proxy);
   ~AndroidAppsHandler() override;
 
   // SettingsPageUIHandler
@@ -63,7 +63,7 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
                           arc::ArcSessionManagerObserver>
       arc_session_manager_observation_{this};
   Profile* profile_;  // unowned
-  apps::AppServiceProxy* app_service_proxy_;
+  apps::AppServiceProxyChromeOs* app_service_proxy_;
   base::WeakPtrFactory<AndroidAppsHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidAppsHandler);

@@ -104,19 +104,16 @@ void IntentPickerTabHelper::LoadAppIcon(
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-
   constexpr bool allow_placeholder_icon = false;
   auto icon_type =
       (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
           ? apps::mojom::IconType::kStandard
           : apps::mojom::IconType::kUncompressed;
-  proxy->LoadIcon(app_type, app_id, icon_type, gfx::kFaviconSize,
-                  allow_placeholder_icon,
-                  base::BindOnce(&IntentPickerTabHelper::OnAppIconLoaded,
-                                 weak_factory_.GetWeakPtr(), std::move(apps),
-                                 std::move(callback), index));
+  apps::AppServiceProxyFactory::GetForProfile(profile)->LoadIcon(
+      app_type, app_id, icon_type, gfx::kFaviconSize, allow_placeholder_icon,
+      base::BindOnce(&IntentPickerTabHelper::OnAppIconLoaded,
+                     weak_factory_.GetWeakPtr(), std::move(apps),
+                     std::move(callback), index));
 }
 
 void IntentPickerTabHelper::DidFinishNavigation(

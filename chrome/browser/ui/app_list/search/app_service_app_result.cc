@@ -43,11 +43,9 @@ AppServiceAppResult::AppServiceAppResult(Profile* profile,
       app_type_(apps::mojom::AppType::kUnknown),
       is_platform_app_(false),
       show_in_launcher_(false) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-
-  proxy->AppRegistryCache().ForOneApp(
-      app_id, [this](const apps::AppUpdate& update) {
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [this](const apps::AppUpdate& update) {
         app_type_ = update.AppType();
         is_platform_app_ =
             update.IsPlatformApp() == apps::mojom::OptionalBool::kTrue;
@@ -164,7 +162,7 @@ void AppServiceAppResult::Launch(int event_flags,
     return;
   }
 
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
 
   // For Chrome apps or Web apps, if it is non-platform app, it could be

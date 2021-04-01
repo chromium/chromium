@@ -28,8 +28,7 @@ namespace {
 
 bool AccessingCamera(Profile* profile, const std::string& app_id) {
   auto accessing_camera = apps::mojom::OptionalBool::kUnknown;
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->FlushMojoCallsForTesting();
   proxy->AppCapabilityAccessCache().ForOneApp(
       app_id, [&accessing_camera](const apps::CapabilityAccessUpdate& update) {
@@ -40,8 +39,7 @@ bool AccessingCamera(Profile* profile, const std::string& app_id) {
 
 bool AccessingMicrophone(Profile* profile, const std::string& app_id) {
   auto accessing_microphone = apps::mojom::OptionalBool::kUnknown;
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->FlushMojoCallsForTesting();
   proxy->AppCapabilityAccessCache().ForOneApp(
       app_id,
@@ -120,8 +118,7 @@ class MediaAccessExtensionAppsTest : public extensions::PlatformAppBrowserTest {
   }
 
   void UninstallApp(const std::string& app_id) {
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile());
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
     proxy->UninstallSilently(app_id, apps::mojom::UninstallSource::kUser);
     proxy->FlushMojoCallsForTesting();
   }

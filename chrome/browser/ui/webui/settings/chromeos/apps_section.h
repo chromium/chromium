@@ -29,7 +29,7 @@ class AppsSection : public OsSettingsSection, public ArcAppListPrefs::Observer {
               SearchTagRegistry* search_tag_registry,
               PrefService* pref_service,
               ArcAppListPrefs* arc_app_list_prefs,
-              apps::AppServiceProxy* app_service_proxy);
+              apps::AppServiceProxyChromeOs* app_service_proxy);
   ~AppsSection() override;
 
  private:
@@ -54,7 +54,7 @@ class AppsSection : public OsSettingsSection, public ArcAppListPrefs::Observer {
 
   PrefService* pref_service_;
   ArcAppListPrefs* arc_app_list_prefs_;
-  apps::AppServiceProxy* app_service_proxy_;
+  apps::AppServiceProxyChromeOs* app_service_proxy_;
   PrefChangeRegistrar pref_change_registrar_;
 };
 

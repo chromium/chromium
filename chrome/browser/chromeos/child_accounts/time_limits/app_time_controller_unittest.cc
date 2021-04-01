@@ -177,9 +177,8 @@ void AppTimeControllerTest::SetUp() {
   task_environment_.FastForwardBy(forward_by);
 
   app_service_test_.SetUp(&profile_);
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(&profile_);
-  proxy->OverrideInnerIconLoaderForTesting(&icon_loader_);
+  apps::AppServiceProxyFactory::GetForProfile(&profile_)
+      ->OverrideInnerIconLoaderForTesting(&icon_loader_);
 
   arc_test_.SetUp(&profile_);
   arc_test_.app_instance()->set_icon_response_type(

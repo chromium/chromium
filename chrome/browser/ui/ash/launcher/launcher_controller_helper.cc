@@ -164,12 +164,12 @@ std::u16string LauncherControllerHelper::GetAppTitle(
     return base::UTF8ToUTF16(app_info->name);
   }
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-
   std::string name;
-  proxy->AppRegistryCache().ForOneApp(
-      app_id, [&name](const apps::AppUpdate& update) { name = update.Name(); });
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&name](const apps::AppUpdate& update) {
+        name = update.Name();
+      });
   if (!name.empty())
     return base::UTF8ToUTF16(name);
 
@@ -251,7 +251,7 @@ void LauncherControllerHelper::LaunchApp(const ash::ShelfID& id,
   }
 
   const std::string& app_id = id.app_id;
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   // Launch apps with AppServiceProxy.Launch.
@@ -349,12 +349,10 @@ bool LauncherControllerHelper::IsValidIDFromAppService(
     return true;
   }
 
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile_);
-
   bool is_valid = false;
-  proxy->AppRegistryCache().ForOneApp(
-      app_id, [&is_valid](const apps::AppUpdate& update) {
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [&is_valid](const apps::AppUpdate& update) {
         if (update.AppType() != apps::mojom::AppType::kArc &&
             update.AppType() != apps::mojom::AppType::kUnknown &&
             update.Readiness() != apps::mojom::Readiness::kUnknown &&

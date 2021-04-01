@@ -62,7 +62,7 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
     const base::ListValue* args) {
   DCHECK(args->empty());
 
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   apps::AppRegistryCache& registry = proxy->AppRegistryCache();

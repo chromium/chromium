@@ -94,11 +94,10 @@ class FamilyUserChromeActivityMetricsTest
     app->app_type = app_time::GetChromeAppId().app_type();
     deltas.push_back(std::move(app));
 
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->AppRegistryCache().OnApps(std::move(deltas),
-                                     app_time::GetChromeAppId().app_type(),
-                                     false /* should_notify_initialized */);
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->AppRegistryCache()
+        .OnApps(std::move(deltas), app_time::GetChromeAppId().app_type(),
+                false /* should_notify_initialized */);
   }
 
   void SetActiveSessionStartTime(base::Time time) {
@@ -115,9 +114,9 @@ class FamilyUserChromeActivityMetricsTest
     std::vector<std::unique_ptr<apps::Instance>> deltas;
     deltas.push_back(std::move(instance));
 
-    apps::AppServiceProxy* proxy =
-        apps::AppServiceProxyFactory::GetForProfile(profile());
-    proxy->InstanceRegistry().OnInstances(deltas);
+    apps::AppServiceProxyFactory::GetForProfile(profile())
+        ->InstanceRegistry()
+        .OnInstances(deltas);
   }
 
   std::unique_ptr<Browser> CreateBrowserWithAuraWindow() {

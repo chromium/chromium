@@ -182,7 +182,7 @@ void LaunchSystemWebAppAsync(Profile* profile,
   if (!app_id)
     return;
 
-  apps::AppServiceProxy* app_service =
+  auto* app_service =
       apps::AppServiceProxyFactory::GetForProfile(profile_for_launch);
   DCHECK(app_service);
 

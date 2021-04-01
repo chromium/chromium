@@ -35,7 +35,7 @@
 
 namespace {
 
-apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
+apps::AppServiceProxyChromeOs* GetAppServiceProxy(Profile* profile) {
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
   return apps::AppServiceProxyFactory::GetForProfile(profile);

@@ -43,7 +43,7 @@ OsSettingsSections::OsSettingsSections(
     signin::IdentityManager* identity_manager,
     android_sms::AndroidSmsService* android_sms_service,
     CupsPrintersManager* printers_manager,
-    apps::AppServiceProxy* app_service_proxy) {
+    apps::AppServiceProxyChromeOs* app_service_proxy) {
   // Special case: Main section does not have an associated enum value.
   sections_.push_back(
       std::make_unique<MainSection>(profile, search_tag_registry));

@@ -64,9 +64,8 @@ AppServiceAppIconLoader::AppServiceAppIconLoader(
     int resource_size_in_dip,
     AppIconLoaderDelegate* delegate)
     : AppIconLoader(profile, resource_size_in_dip, delegate) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  Observe(&proxy->AppRegistryCache());
+  Observe(&apps::AppServiceProxyFactory::GetForProfile(profile)
+               ->AppRegistryCache());
 }
 
 AppServiceAppIconLoader::~AppServiceAppIconLoader() = default;
@@ -133,7 +132,7 @@ void AppServiceAppIconLoader::OnAppRegistryCacheWillBeDestroyed(
 
 void AppServiceAppIconLoader::CallLoadIcon(const std::string& app_id,
                                            bool allow_placeholder_icon) {
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
 
   auto icon_type =

@@ -16,7 +16,7 @@
 class Profile;
 
 namespace apps {
-class AppServiceProxy;
+class AppServiceProxyChromeOs;
 }  // namespace apps
 
 namespace gfx {
@@ -66,7 +66,7 @@ class HelpAppProvider : public SearchProvider,
   void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
   void LoadIcon();
 
-  apps::AppServiceProxy* app_service_proxy_;
+  apps::AppServiceProxyChromeOs* app_service_proxy_;
   gfx::ImageSkia icon_;
   Profile* const profile_;
   base::WeakPtrFactory<HelpAppProvider> weak_factory_{this};

@@ -112,11 +112,10 @@ void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
 void LaunchReleaseNotesImpl(Profile* profile,
                             apps::mojom::LaunchSource source) {
   base::RecordAction(UserMetricsAction("ReleaseNotes.ShowReleaseNotes"));
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
-  proxy->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
-                          GURL("chrome://help-app/updates"), source,
-                          apps::MakeWindowInfo(display::kDefaultDisplayId));
+  apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile)
+      ->LaunchAppWithUrl(web_app::kHelpAppId, ui::EventFlags::EF_NONE,
+                         GURL("chrome://help-app/updates"), source,
+                         apps::MakeWindowInfo(display::kDefaultDisplayId));
 }
 
 #endif
@@ -143,10 +142,9 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
     default:
       NOTREACHED() << "Unhandled help source" << source;
   }
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile);
-  proxy->Launch(web_app::kHelpAppId, ui::EventFlags::EF_NONE, app_launch_source,
-                apps::MakeWindowInfo(display::kDefaultDisplayId));
+  apps::AppServiceProxyFactory::GetForProfileRedirectInIncognito(profile)
+      ->Launch(web_app::kHelpAppId, ui::EventFlags::EF_NONE, app_launch_source,
+               apps::MakeWindowInfo(display::kDefaultDisplayId));
 #else
   GURL url;
   switch (source) {

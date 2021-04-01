@@ -398,7 +398,7 @@ MATCHER_P(ArcPackageInfoIs, package, "") {
 void RemoveNonArcApps(Profile* profile,
                       FakeAppListModelUpdater* model_updater,
                       bool flush) {
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
   if (flush)
     proxy->FlushMojoCallsForTesting();
@@ -720,9 +720,8 @@ class ArcAppModelBuilderTest : public extensions::ExtensionServiceTestBase,
 
   // Flush mojo calls to allow AppService async callbacks to run.
   void FlushMojoCallsForAppService() {
-    apps::AppServiceProxy* app_service_proxy_ =
-        apps::AppServiceProxyFactory::GetForProfile(profile_.get());
-    app_service_proxy_->FlushMojoCallsForTesting();
+    apps::AppServiceProxyFactory::GetForProfile(profile_.get())
+        ->FlushMojoCallsForTesting();
   }
 
   void AddPackage(const arc::mojom::ArcPackageInfoPtr& package) {
@@ -2575,7 +2574,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderWithBadIcon) {
   // could load the icon by calling ArcAppIcon, so override the icon loader
   // temporarily to avoid calling ArcAppIcon. Otherwise, it might affect
   // the test result when calling AppServiceAppIconLoader to load the icon.
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_.get());
   apps::StubIconLoader stub_icon_loader;
   apps::IconLoader* old_icon_loader =
@@ -2788,7 +2787,7 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderCompressed) {
   base::RepeatingClosure quit = run_loop.QuitClosure();
 
   if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-    apps::AppServiceProxy* proxy =
+    apps::AppServiceProxyChromeOs* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile_.get());
     ASSERT_NE(nullptr, proxy);
 

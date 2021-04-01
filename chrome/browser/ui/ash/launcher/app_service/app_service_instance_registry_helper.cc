@@ -206,7 +206,7 @@ void AppServiceInstanceRegistryHelper::OnInstances(const std::string& app_id,
   // current active user, so search all proxies. If the instance is found from a
   // proxy, still save to that proxy, otherwise, save to the current active user
   // profile's proxy.
-  apps::AppServiceProxy* proxy = proxy_;
+  apps::AppServiceProxyChromeOs* proxy = proxy_;
   for (auto* profile : controller_->GetProfileList()) {
     auto* proxy_for_profile =
         apps::AppServiceProxyFactory::GetForProfile(profile);

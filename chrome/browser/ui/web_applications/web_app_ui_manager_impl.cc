@@ -45,7 +45,7 @@ namespace web_app {
 
 namespace {
 
-bool IsAppInstalled(apps::AppServiceProxy* proxy, const AppId& app_id) {
+bool IsAppInstalled(apps::AppServiceProxyBase* proxy, const AppId& app_id) {
   bool installed = false;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&installed](const apps::AppUpdate& update) {
@@ -162,7 +162,7 @@ bool WebAppUiManagerImpl::UninstallAndReplaceIfExists(
   bool has_migrated = false;
   bool did_uninstall = false;
   for (const AppId& from_app : from_apps) {
-    apps::AppServiceProxy* proxy =
+    apps::AppServiceProxyBase* proxy =
         apps::AppServiceProxyFactory::GetForProfile(profile_);
     if (!IsAppInstalled(proxy, from_app))
       continue;

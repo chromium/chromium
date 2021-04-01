@@ -93,7 +93,7 @@ void AppIconSource::StartDataRequest(
     return;
   }
 
-  apps::AppServiceProxy* app_service_proxy =
+  auto* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   const apps::mojom::AppType app_type =

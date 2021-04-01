@@ -891,7 +891,7 @@ bool ChromeLauncherController::CanDoShowAppInfoFlow(
 
 void ChromeLauncherController::DoShowAppInfoFlow(Profile* profile,
                                                  const std::string& app_id) {
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
   // Apps that are not in the App Service may call this function.
@@ -1013,7 +1013,7 @@ void ChromeLauncherController::OnAppUninstalledPrepared(
   if (IsAppPinned(app_id) && profile == this->profile()) {
     bool show_in_shelf_changed = false;
     bool is_app_disabled = false;
-    apps::AppServiceProxy* proxy =
+    apps::AppServiceProxyChromeOs* proxy =
         apps::AppServiceProxyFactory::GetForProfile(this->profile());
     proxy->AppRegistryCache().ForOneApp(
         app_id, [&show_in_shelf_changed,
@@ -1204,7 +1204,7 @@ void ChromeLauncherController::UpdateAppLaunchersFromSync() {
   // cyclically trigger sync changes (eg. ShelfItemAdded calls SyncPinPosition).
   ScopedPinSyncDisabler scoped_pin_sync_disabler = GetScopedPinSyncDisabler();
 
-  apps::AppServiceProxy* proxy =
+  apps::AppServiceProxyChromeOs* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
 
   const std::vector<ash::ShelfID> pinned_apps =

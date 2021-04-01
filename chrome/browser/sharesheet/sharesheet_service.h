@@ -23,7 +23,7 @@ class Profile;
 
 namespace apps {
 struct IntentLaunchInfo;
-class AppServiceProxy;
+class AppServiceProxyBase;
 }
 
 namespace views {
@@ -127,7 +127,7 @@ class SharesheetService : public KeyedService {
 
   Profile* profile_;
   std::unique_ptr<SharesheetActionCache> sharesheet_action_cache_;
-  apps::AppServiceProxy* app_service_proxy_;
+  apps::AppServiceProxyBase* app_service_proxy_;
 
   // Record of all active SharesheetServiceDelegates. These can be retrieved
   // by ShareActions and used as SharesheetControllers to make bubble changes.
