@@ -2176,8 +2176,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationReportingAndNelBrowserTest,
 }
 
 // Instantiates tests with a prefix indicating which NetworkContext is being
-// tested, and a suffix of "/0" if the network service is disabled, "/1" if it's
-// enabled, and "/2" if it's enabled and restarted.
+// tested, and a suffix of "/0" if the network service is enabled, "/1" if it's
+// enabled and restarted.
 #define TEST_CASES(network_context_type)                           \
   TestCase({NetworkServiceState::kEnabled, network_context_type}), \
       TestCase({NetworkServiceState::kRestarted, network_context_type})
