@@ -72,7 +72,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Signin.AccountEquality" enum="SigninAccountEquality"
-    expires_after="2021-03-06">
+    expires_after="2021-09-06">
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
@@ -647,7 +647,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram base="true" name="Signin.IsShared" enum="BooleanIsShared"
-    expires_after="2021-03-06">
+    expires_after="2021-09-06">
   <owner>droger@chromium.org</owner>
   <owner>skym@chromium.org</owner>
   <summary>
