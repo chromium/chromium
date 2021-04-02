@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <atomic>
 
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/yield_processor.h"
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
@@ -16,14 +17,6 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
-#endif
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-#define PA_HAS_LINUX_KERNEL
-#endif
-
-#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN)
-#define PA_HAS_SPINNING_MUTEX
 #endif
 
 #if defined(PA_HAS_SPINNING_MUTEX)

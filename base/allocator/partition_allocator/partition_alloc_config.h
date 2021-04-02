@@ -1,0 +1,78 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
+#define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
+
+#include "base/allocator/buildflags.h"
+#include "base/partition_alloc_buildflags.h"
+#include "build/build_config.h"
+
+// ARCH_CPU_64_BITS implies 64-bit instruction set, but not necessarily 64-bit
+// address space. The only known case where address space is 32-bit is NaCl, so
+// eliminate it explicitly. static_assert below ensures that others won't slip
+// through.
+#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
+#define PA_HAS_64_BITS_POINTERS
+static_assert(sizeof(void*) == 8, "");
+#else
+static_assert(sizeof(void*) != 8, "");
+#endif
+
+// BackupRefPtr and PCScan are incompatible, and due to its conservative nature,
+// it is 64 bits only.
+#if defined(PA_HAS_64_BITS_POINTERS) && !BUILDFLAG(USE_BACKUP_REF_PTR)
+#define PA_ALLOW_PCSCAN 1
+#else
+#define PA_ALLOW_PCSCAN 0
+#endif
+
+// POSIX is not only UNIX, e.g. macOS and other OSes. We do use Linux-specific
+// features such as futex(2).
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#define PA_HAS_LINUX_KERNEL
+#endif
+
+// SpinningMutex uses either futex(2) on Linux, or a fast userspace "try"
+// operation, which is available on Windows.
+#if defined(PA_HAS_LINUX_KERNEL) || defined(OS_WIN)
+#define PA_HAS_SPINNING_MUTEX
+#endif
+
+// If set to 1, enables zeroing memory on Free() with roughly 1% probability.
+// This applies only to normal buckets, as direct-map allocations are always
+// decommitted.
+// TODO(bartekn): Re-enable once PartitionAlloc-Everywhere evaluation is done.
+#define PA_ZERO_RANDOMLY_ON_FREE 0
+
+// Need TLS support.
+#if defined(OS_POSIX) || defined(OS_WIN)
+#define PA_THREAD_CACHE_SUPPORTED
+#endif
+
+// Too expensive for official builds, as it adds cache misses to all
+// allocations. On the other hand, we want wide metrics coverage to get
+// realistic profiles.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !defined(OFFICIAL_BUILD)
+#define PA_THREAD_CACHE_ALLOC_STATS
+#endif
+
+// Optional statistics collection. Lightweight, contrary to the ones above,
+// hence enabled by default.
+#define PA_THREAD_CACHE_ENABLE_STATISTICS
+
+// Enable free list hardening as much as possible.
+//
+// Disabled on ARM64 Macs, as this crashes very early (crbug.com/1172236).
+// TODO(lizeb): Enable in as many configurations as possible.
+//
+// Disabled when putting refcount in the previous slot, which is what
+// REF_COUNT_AT_END_OF_ALLOCATION does. In this case the refcount overlaps with
+// the next pointer shadow for the smallest bucket.
+#if !(defined(OS_MAC) && defined(ARCH_CPU_ARM64)) && \
+    !BUILDFLAG(REF_COUNT_AT_END_OF_ALLOCATION)
+#define PA_HAS_FREELIST_HARDENING
+#endif
+
+#endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_

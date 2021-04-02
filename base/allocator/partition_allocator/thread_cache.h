@@ -8,6 +8,7 @@
 #include <atomic>
 #include <memory>
 
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_freelist_entry.h"
@@ -18,15 +19,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"
-#include "base/partition_alloc_buildflags.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-
-// Need TLS support.
-#if defined(OS_POSIX) || defined(OS_WIN)
-#define PA_THREAD_CACHE_SUPPORTED
-#endif
 
 namespace base {
 
@@ -102,10 +97,7 @@ class BASE_EXPORT ThreadCacheRegistry {
 
 constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
 
-// Optional statistics collection.
-#define PA_ENABLE_THREAD_CACHE_STATISTICS 1
-
-#if defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
+#if defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
 #define INCREMENT_COUNTER(counter) ++counter
 #define GET_COUNTER(counter) counter
 #else
@@ -113,7 +105,7 @@ constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
   do {                             \
   } while (0)
 #define GET_COUNTER(counter) 0
-#endif  // defined(PA_ENABLE_THREAD_CACHE_STATISTICS)
+#endif  // defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
 
 ALWAYS_INLINE static constexpr int ConstexprLog2(size_t n) {
   return n < 1 ? -1 : (n < 2 ? 0 : (1 + ConstexprLog2(n >> 1)));

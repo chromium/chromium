@@ -9,6 +9,7 @@
 #include <atomic>
 #include <bitset>
 
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/synchronization/lock.h"

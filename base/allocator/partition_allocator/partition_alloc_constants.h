@@ -18,25 +18,7 @@
 #include <mach/vm_page_size.h>
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !defined(OFFICIAL_BUILD)
-// Too expensive for official builds, as it adds cache misses to all
-// allocations. On the other hand, we want wide metrics coverage to get
-// realistic profiles.
-#define PA_THREAD_CACHE_ALLOC_STATS
-#endif
-
 namespace base {
-
-// ARCH_CPU_64_BITS implies 64-bit instruction set, but not necessarily 64-bit
-// address space. The only known case where address space is 32-bit is NaCl, so
-// eliminate it explicitly. static_assert below ensures that other won't slip
-// through.
-#if defined(ARCH_CPU_64_BITS) && !defined(OS_NACL)
-#define PA_HAS_64_BITS_POINTERS
-static_assert(sizeof(void*) == 8, "");
-#else
-static_assert(sizeof(void*) != 8, "");
-#endif
 
 // Underlying partition storage pages (`PartitionPage`s) are a power-of-2 size.
 // It is typical for a `PartitionPage` to be based on multiple system pages.

@@ -1872,6 +1872,7 @@ component("base") {
         "allocator/partition_allocator/partition_alloc.cc",
         "allocator/partition_allocator/partition_alloc.h",
         "allocator/partition_allocator/partition_alloc_check.h",
+        "allocator/partition_allocator/partition_alloc_config.h",
         "allocator/partition_allocator/partition_alloc_constants.h",
         "allocator/partition_allocator/partition_alloc_features.cc",
         "allocator/partition_allocator/partition_alloc_features.h",
