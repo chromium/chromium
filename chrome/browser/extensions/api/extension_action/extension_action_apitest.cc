@@ -1345,12 +1345,12 @@ IN_PROC_BROWSER_TEST_F(ActionAPITest, TestGetUserSettings) {
     return listener.message();
   };
 
-  EXPECT_EQ(R"({"onToolbar":false})", get_response());
+  EXPECT_EQ(R"({"isOnToolbar":false})", get_response());
 
   toolbar_model->SetActionVisibility(extension->id(), true);
   EXPECT_TRUE(toolbar_model->IsActionPinned(extension->id()));
 
-  EXPECT_EQ(R"({"onToolbar":true})", get_response());
+  EXPECT_EQ(R"({"isOnToolbar":true})", get_response());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

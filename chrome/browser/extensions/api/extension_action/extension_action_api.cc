@@ -571,7 +571,7 @@ ExtensionFunction::ResponseAction ActionGetUserSettingsFunction::Run() {
   // means we miss out on the compiled types, which would be rather helpful
   // here.
   base::Value ui_settings(base::Value::Type::DICTIONARY);
-  ui_settings.SetBoolKey("onToolbar", is_pinned);
+  ui_settings.SetBoolKey("isOnToolbar", is_pinned);
 
   return RespondNow(OneArgument(std::move(ui_settings)));
 }
