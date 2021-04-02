@@ -325,7 +325,7 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
 
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action) {
+    crosapi::mojom::InitialBrowserAction initial_browser_action) {
   auto params = mojom::BrowserInitParams::New();
   params->crosapi_version = crosapi::mojom::Crosapi::Version_;
   params->deprecated_ash_metrics_enabled_has_value = true;
@@ -352,16 +352,20 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
   params->idle_info = IdleServiceAsh::ReadIdleInfoFromSystem();
 
-  params->is_incognito =
-      initial_browser_action == InitialBrowserAction::kOpenIncognitoWindow;
-  params->restore_last_session =
-      initial_browser_action == InitialBrowserAction::kRestoreLastSession;
+  params->is_incognito_deprecated =
+      initial_browser_action ==
+      crosapi::mojom::InitialBrowserAction::kOpenIncognitoWindow;
+  params->restore_last_session_deprecated =
+      initial_browser_action ==
+      crosapi::mojom::InitialBrowserAction::kRestoreLastSession;
+  params->initial_browser_action = initial_browser_action;
 
   return params;
 }
 
-base::ScopedFD CreateStartupData(EnvironmentProvider* environment_provider,
-                                 InitialBrowserAction initial_browser_action) {
+base::ScopedFD CreateStartupData(
+    EnvironmentProvider* environment_provider,
+    crosapi::mojom::InitialBrowserAction initial_browser_action) {
   auto data =
       GetBrowserInitParams(environment_provider, initial_browser_action);
   std::vector<uint8_t> serialized =

@@ -103,17 +103,11 @@ bool IsLacrosWindow(const aura::Window* window);
 // Returns the UUID and version for all tracked interfaces. Exposed for testing.
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
 
-enum class InitialBrowserAction {
-  kOpenWindow,
-  kOpenIncognitoWindow,
-  kRestoreLastSession,
-};
-
 // Returns the initial parameter to be passed to Crosapi client,
 // such as lacros-chrome.
 mojom::BrowserInitParamsPtr GetBrowserInitParams(
     EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action);
+    crosapi::mojom::InitialBrowserAction initial_browser_action);
 
 // Invite the lacros-chrome to the mojo universe.
 // Queue messages to establish the mojo connection, so that the passed IPC is
@@ -129,7 +123,7 @@ mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
 // and returns its FD.
 base::ScopedFD CreateStartupData(
     ::crosapi::EnvironmentProvider* environment_provider,
-    InitialBrowserAction initial_browser_action);
+    crosapi::mojom::InitialBrowserAction initial_browser_action);
 
 }  // namespace browser_util
 }  // namespace crosapi

@@ -172,7 +172,7 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // Posts CreateLogFile() and StartWithLogFile() to the thread pool.
   // Virtual for tests.
-  virtual void Start(browser_util::InitialBrowserAction initial_browser_action);
+  virtual void Start(mojom::InitialBrowserAction initial_browser_action);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BrowserManagerTest, LacrosKeepAlive);
@@ -233,13 +233,12 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Otherwise, i.e., lacros is already running, kRunning is returned.
   // |extra_args| will be passed to the argument to launch lacros.
   MaybeStartResult MaybeStart(
-      browser_util::InitialBrowserAction initial_browser_action);
+      mojom::InitialBrowserAction initial_browser_action);
 
   // Starts the lacros-chrome process and redirects stdout/err to file pointed
   // by logfd.
-  void StartWithLogFile(
-      browser_util::InitialBrowserAction initial_browser_action,
-      base::ScopedFD logfd);
+  void StartWithLogFile(mojom::InitialBrowserAction initial_browser_action,
+                        base::ScopedFD logfd);
 
   // BrowserServiceHostObserver:
   void OnBrowserServiceConnected(CrosapiId id,

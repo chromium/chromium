@@ -241,8 +241,8 @@ void BrowserManager::SetLoadCompleteCallback(LoadCompleteCallback callback) {
 
 void BrowserManager::NewWindow(bool incognito) {
   auto result = MaybeStart(
-      incognito ? browser_util::InitialBrowserAction::kOpenIncognitoWindow
-                : browser_util::InitialBrowserAction::kOpenWindow);
+      incognito ? mojom::InitialBrowserAction::kOpenIncognitoWindow
+                : mojom::InitialBrowserAction::kUseStartupPreference);
   if (result != MaybeStartResult::kRunning)
     return;
 
@@ -254,7 +254,7 @@ void BrowserManager::NewWindow(bool incognito) {
 }
 
 void BrowserManager::NewTab() {
-  auto result = MaybeStart(browser_util::InitialBrowserAction::kOpenWindow);
+  auto result = MaybeStart(mojom::InitialBrowserAction::kUseStartupPreference);
   if (result != MaybeStartResult::kRunning)
     return;
 
@@ -266,8 +266,7 @@ void BrowserManager::NewTab() {
 }
 
 void BrowserManager::RestoreTab() {
-  auto result =
-      MaybeStart(browser_util::InitialBrowserAction::kRestoreLastSession);
+  auto result = MaybeStart(mojom::InitialBrowserAction::kRestoreLastSession);
   if (result != MaybeStartResult::kRunning)
     return;
 
@@ -363,7 +362,7 @@ BrowserManager::BrowserServiceInfo::operator=(const BrowserServiceInfo&) =
 BrowserManager::BrowserServiceInfo::~BrowserServiceInfo() = default;
 
 BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
-    browser_util::InitialBrowserAction initial_browser_action) {
+    mojom::InitialBrowserAction initial_browser_action) {
   if (!browser_util::IsLacrosEnabled())
     return MaybeStartResult::kNotStarted;
 
@@ -415,8 +414,7 @@ BrowserManager::MaybeStartResult BrowserManager::MaybeStart(
   return MaybeStartResult::kRunning;
 }
 
-void BrowserManager::Start(
-    browser_util::InitialBrowserAction initial_browser_action) {
+void BrowserManager::Start(mojom::InitialBrowserAction initial_browser_action) {
   DCHECK_EQ(state_, State::STOPPED);
   DCHECK(!lacros_path_.empty());
   // Ensure we're not trying to open a window before the shelf is initialized.
@@ -431,7 +429,7 @@ void BrowserManager::Start(
 }
 
 void BrowserManager::StartWithLogFile(
-    browser_util::InitialBrowserAction initial_browser_action,
+    mojom::InitialBrowserAction initial_browser_action,
     base::ScopedFD logfd) {
   DCHECK_EQ(state_, State::CREATING_LOG_FILE);
 
@@ -688,7 +686,7 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path) {
   }
 
   if (state_ == State::STOPPED && GetLaunchOnLoginPref())
-    Start(browser_util::InitialBrowserAction::kOpenWindow);
+    Start(mojom::InitialBrowserAction::kUseStartupPreference);
 }
 
 void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {
@@ -719,7 +717,7 @@ void BrowserManager::LaunchForKeepAliveIfNecessary() {
     // TODO(https://crbug.com/1194187): Call start with a different initial
     // browser action. We need this even though UnlauchForKeepAlive is not
     // implemented for unit testing.
-    Start(browser_util::InitialBrowserAction::kOpenIncognitoWindow);
+    Start(mojom::InitialBrowserAction::kOpenIncognitoWindow);
   }
 }
 

@@ -76,8 +76,12 @@ bool IncognitoModePrefs::ShouldLaunchIncognito(
       GetAvailabilityInternal(prefs, DONT_CHECK_PARENTAL_CONTROLS) ==
           IncognitoModePrefs::FORCED;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* init_params = chromeos::LacrosChromeServiceImpl::Get()->init_params();
+  // TODO(https://crbug.com/1194304): Remove in M93.
+  should_use_incognito |= init_params->is_incognito_deprecated;
   should_use_incognito |=
-      chromeos::LacrosChromeServiceImpl::Get()->init_params()->is_incognito;
+      init_params->initial_browser_action ==
+      crosapi::mojom::InitialBrowserAction::kOpenIncognitoWindow;
 #endif
   return should_use_incognito &&
          GetAvailabilityInternal(prefs, CHECK_PARENTAL_CONTROLS) !=

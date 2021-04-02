@@ -263,6 +263,23 @@ enum ExoImeSupport {
   [MinVersion=1] kSupported = 2,
 };
 
+
+// Which windows and tabs to show, if any, when first launching lacros.
+// This values overrides the built-in chrome preference, with the exception of
+// kUseStartupPreference.
+[Stable, Extensible]
+enum InitialBrowserAction {
+  // Uses the Lacros preference SessionStartupPref.
+  [Default] kUseStartupPreference = 0,
+
+  // TODO(hidehiko): This should be kOpenNTPIncognitoWindow
+  kOpenIncognitoWindow = 1,
+
+  // TODO(hidehiko): This should be kRestoreLastTab.
+  kRestoreLastSession = 2,
+};
+
+
 // BrowserInitParams is a set of parameters for initialization of browsers
 // (such as lacros-chrome), which is passed from ash-chrome to a browser.
 // Since ash-chrome and browsers may have different versions, the browsers must
@@ -280,7 +297,7 @@ enum ExoImeSupport {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 15
+// Next version: 16
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -362,13 +379,19 @@ struct BrowserInitParams {
 
   // Launches an incognito window.
   // Added in M91.
+  // TODO(https://crbug.com/1194304): Remove in M93.
   [MinVersion=13]
-  bool is_incognito@13;
+  bool is_incognito_deprecated@13;
 
   // Restores tabs from the last session.
   // Added in M91.
+  // TODO(https://crbug.com/1194304): Remove in M93.
   [MinVersion=14]
-  bool restore_last_session@14;
+  bool restore_last_session_deprecated@14;
+
+  // Defines which windows or tabs to restore on launch.
+  [MinVersion=15]
+  InitialBrowserAction initial_browser_action@15;
 };
 
 // BrowserService defines the APIs that live in a browser (such as
