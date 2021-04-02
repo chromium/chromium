@@ -12125,6 +12125,34 @@ TEST_F(WebFrameSimTest, FindInPageSelectNextMatch) {
       << "]";
 }
 
+// Check that removing an element whilst focusing it does not cause a null
+// pointer deference. This test passes if it does not crash.
+// https://crbug.com/1184546
+TEST_F(WebFrameSimTest, FocusOnBlurRemoveBubblingCrash) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+      <script>
+      window.onload = function (){
+        document.getElementById('id0').onblur=function() {
+          var o=document.getElementById('id6');
+          var n=document.createElement(undefined);
+          o.parentNode.replaceChild(n,o);
+        };
+        var o=document.getElementById('id7');
+        o.focus();
+      }
+      </script>
+      <body id='id0'>
+      <strong id='id6'>
+      <iframe id='id7'src=''></iframe>
+      <textarea id='id35' autofocus='false'>
+  )HTML");
+
+  Compositor().BeginFrame();
+  RunPendingTasks();
+}
+
 // Test bubbling a document (End key) scroll from an inner iframe. This test
 // passes if it does not crash. https://crbug.com/904247.
 TEST_F(WebFrameSimTest, ScrollToEndBubblingCrash) {
