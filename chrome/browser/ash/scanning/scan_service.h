@@ -32,11 +32,10 @@ namespace ash {
 
 class LorgnetteScannerManager;
 
-// Implementation of the chromeos::scanning::mojom::ScanService interface. Used
+// Implementation of the ash::scanning::mojom::ScanService interface. Used
 // by the scanning WebUI (chrome://scanning) to get connected scanners, obtain
 // scanner capabilities, and perform scans.
-class ScanService : public chromeos::scanning::mojom::ScanService,
-                    public KeyedService {
+class ScanService : public scanning::mojom::ScanService, public KeyedService {
  public:
   ScanService(LorgnetteScannerManager* lorgnette_scanner_manager,
               base::FilePath my_files_path,
@@ -50,17 +49,15 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   void GetScanners(GetScannersCallback callback) override;
   void GetScannerCapabilities(const base::UnguessableToken& scanner_id,
                               GetScannerCapabilitiesCallback callback) override;
-  void StartScan(
-      const base::UnguessableToken& scanner_id,
-      chromeos::scanning::mojom::ScanSettingsPtr settings,
-      mojo::PendingRemote<chromeos::scanning::mojom::ScanJobObserver> observer,
-      StartScanCallback callback) override;
+  void StartScan(const base::UnguessableToken& scanner_id,
+                 scanning::mojom::ScanSettingsPtr settings,
+                 mojo::PendingRemote<scanning::mojom::ScanJobObserver> observer,
+                 StartScanCallback callback) override;
   void CancelScan() override;
 
   // Binds receiver_ by consuming |pending_receiver|.
   void BindInterface(
-      mojo::PendingReceiver<chromeos::scanning::mojom::ScanService>
-          pending_receiver);
+      mojo::PendingReceiver<scanning::mojom::ScanService> pending_receiver);
 
   // Sets |google_drive_path_| for tests.
   void SetGoogleDrivePathForTesting(const base::FilePath& google_drive_path);
@@ -92,7 +89,7 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   // saved, and |file_type| specifies the file type to use when saving scanned
   // images.
   void OnPageReceived(const base::FilePath& scan_to_path,
-                      const chromeos::scanning::mojom::FileType file_type,
+                      const scanning::mojom::FileType file_type,
                       std::string scanned_image,
                       uint32_t page_number);
 
@@ -130,12 +127,12 @@ class ScanService : public chromeos::scanning::mojom::ScanService,
   base::flat_map<base::UnguessableToken, std::string> scanner_names_;
 
   // Receives and dispatches method calls to this implementation of the
-  // chromeos::scanning::mojom::ScanService interface.
-  mojo::Receiver<chromeos::scanning::mojom::ScanService> receiver_{this};
+  // ash::scanning::mojom::ScanService interface.
+  mojo::Receiver<scanning::mojom::ScanService> receiver_{this};
 
   // Used to send scan job events to an observer. The remote is bound when a
   // scan job is started and is disconnected when the scan job is complete.
-  mojo::Remote<chromeos::scanning::mojom::ScanJobObserver> scan_job_observer_;
+  mojo::Remote<scanning::mojom::ScanJobObserver> scan_job_observer_;
 
   // Unowned. Used to get scanner information and perform scans.
   LorgnetteScannerManager* lorgnette_scanner_manager_;

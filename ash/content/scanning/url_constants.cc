@@ -4,9 +4,9 @@
 
 #include "ash/content/scanning/url_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const char kChromeUIScanningAppHost[] = "scanning";
 const char kChromeUIScanningAppUrl[] = "chrome://scanning";
 
-}  // namespace chromeos
+}  // namespace ash

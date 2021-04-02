@@ -807,8 +807,8 @@ void PopulateChromeWebUIFrameBinders(
       chromeos::diagnostics::mojom::SystemRoutineController,
       chromeos::DiagnosticsDialogUI>(map);
 
-  RegisterWebUIControllerInterfaceBinder<chromeos::scanning::mojom::ScanService,
-                                         chromeos::ScanningUI>(map);
+  RegisterWebUIControllerInterfaceBinder<ash::scanning::mojom::ScanService,
+                                         ash::ScanningUI>(map);
 
   if (base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
     RegisterWebUIControllerInterfaceBinder<

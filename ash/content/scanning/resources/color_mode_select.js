@@ -13,8 +13,8 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {alphabeticalCompare, getColorModeString} from './scanning_app_util.js';
 import {SelectBehavior} from './select_behavior.js';
 
-/** @type {chromeos.scanning.mojom.ColorMode} */
-const DEFAULT_COLOR_MODE = chromeos.scanning.mojom.ColorMode.kColor;
+/** @type {ash.scanning.mojom.ColorMode} */
+const DEFAULT_COLOR_MODE = ash.scanning.mojom.ColorMode.kColor;
 
 /**
  * @fileoverview
@@ -38,7 +38,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.scanning.mojom.ColorMode} mojoColorMode
+   * @param {!ash.scanning.mojom.ColorMode} mojoColorMode
    * @return {string}
    * @private
    */
@@ -53,7 +53,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.scanning.mojom.ColorMode} option
+   * @param {!ash.scanning.mojom.ColorMode} option
    * @return {boolean}
    */
   isDefaultOption(option) {

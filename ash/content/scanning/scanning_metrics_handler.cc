@@ -12,7 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -100,4 +100,4 @@ void ScanningMetricsHandler::HandleRecordScanJobSettings(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

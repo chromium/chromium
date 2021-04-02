@@ -31,6 +31,6 @@ export const ScanCompleteAction = {
 };
 
 /**
- * @typedef {!Array<!chromeos.scanning.mojom.Scanner>}
+ * @typedef {!Array<!ash.scanning.mojom.Scanner>}
  */
 export let ScannerArr;

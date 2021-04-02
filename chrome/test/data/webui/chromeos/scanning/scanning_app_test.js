@@ -19,27 +19,27 @@ import {TestScanningBrowserProxy} from './test_scanning_browser_proxy.js';
 const MY_FILES_PATH = '/home/chronos/user/MyFiles';
 
 const ColorMode = {
-  BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
-  GRAYSCALE: chromeos.scanning.mojom.ColorMode.kGrayscale,
-  COLOR: chromeos.scanning.mojom.ColorMode.kColor,
+  BLACK_AND_WHITE: ash.scanning.mojom.ColorMode.kBlackAndWhite,
+  GRAYSCALE: ash.scanning.mojom.ColorMode.kGrayscale,
+  COLOR: ash.scanning.mojom.ColorMode.kColor,
 };
 
 const FileType = {
-  JPG: chromeos.scanning.mojom.FileType.kJpg,
-  PDF: chromeos.scanning.mojom.FileType.kPdf,
-  PNG: chromeos.scanning.mojom.FileType.kPng,
+  JPG: ash.scanning.mojom.FileType.kJpg,
+  PDF: ash.scanning.mojom.FileType.kPdf,
+  PNG: ash.scanning.mojom.FileType.kPng,
 };
 
 const PageSize = {
-  A4: chromeos.scanning.mojom.PageSize.kIsoA4,
-  Letter: chromeos.scanning.mojom.PageSize.kNaLetter,
-  Max: chromeos.scanning.mojom.PageSize.kMax,
+  A4: ash.scanning.mojom.PageSize.kIsoA4,
+  Letter: ash.scanning.mojom.PageSize.kNaLetter,
+  Max: ash.scanning.mojom.PageSize.kMax,
 };
 
 const SourceType = {
-  FLATBED: chromeos.scanning.mojom.SourceType.kFlatbed,
-  ADF_SIMPLEX: chromeos.scanning.mojom.SourceType.kAdfSimplex,
-  ADF_DUPLEX: chromeos.scanning.mojom.SourceType.kAdfDuplex,
+  FLATBED: ash.scanning.mojom.SourceType.kFlatbed,
+  ADF_SIMPLEX: ash.scanning.mojom.SourceType.kAdfSimplex,
+  ADF_DUPLEX: ash.scanning.mojom.SourceType.kAdfDuplex,
 };
 
 const pageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
@@ -68,7 +68,7 @@ const secondCapabilities = {
   resolutions: [150, 600]
 };
 
-/** @implements {chromeos.scanning.mojom.ScanServiceInterface} */
+/** @implements {ash.scanning.mojom.ScanServiceInterface} */
 class FakeScanService {
   constructor() {
     /** @private {!Map<string, !PromiseResolver>} */
@@ -79,11 +79,11 @@ class FakeScanService {
 
     /**
      * @private {!Map<!mojoBase.mojom.UnguessableToken,
-     *     !chromeos.scanning.mojom.ScannerCapabilities>}
+     *     !ash.scanning.mojom.ScannerCapabilities>}
      */
     this.capabilities_ = new Map();
 
-    /** @private {?chromeos.scanning.mojom.ScanJobObserverRemote} */
+    /** @private {?ash.scanning.mojom.ScanJobObserverRemote} */
     this.scanJobObserverRemote_ = null;
 
     /** @private {boolean} */
@@ -138,14 +138,14 @@ class FakeScanService {
     this.scanners_ = scanners;
   }
 
-  /** @param {chromeos.scanning.mojom.Scanner} scanner */
+  /** @param {ash.scanning.mojom.Scanner} scanner */
   addScanner(scanner) {
     this.scanners_ = this.scanners_.concat(scanner);
   }
 
   /**
    * @param {!Map<!mojoBase.mojom.UnguessableToken,
-   *     !chromeos.scanning.mojom.ScannerCapabilities>} capabilities
+   *     !ash.scanning.mojom.ScannerCapabilities>} capabilities
    */
   setCapabilities(capabilities) {
     this.capabilities_ = capabilities;
@@ -209,7 +209,7 @@ class FakeScanService {
   /**
    * @param {!mojoBase.mojom.UnguessableToken} scanner_id
    * @return {!Promise<{capabilities:
-   *    !chromeos.scanning.mojom.ScannerCapabilities}>}
+   *    !ash.scanning.mojom.ScannerCapabilities}>}
    */
   getScannerCapabilities(scanner_id) {
     return new Promise(resolve => {
@@ -220,8 +220,8 @@ class FakeScanService {
 
   /**
    * @param {!mojoBase.mojom.UnguessableToken} scanner_id
-   * @param {!chromeos.scanning.mojom.ScanSettings} settings
-   * @param {!chromeos.scanning.mojom.ScanJobObserverRemote} remote
+   * @param {!ash.scanning.mojom.ScanSettings} settings
+   * @param {!ash.scanning.mojom.ScanJobObserverRemote} remote
    * @return {!Promise<{success: boolean}>}
    */
   startScan(scanner_id, settings, remote) {
@@ -291,7 +291,7 @@ export function scanningAppTest() {
 
   /**
    * @type {!Map<!mojoBase.mojom.UnguessableToken,
-   *     !chromeos.scanning.mojom.ScannerCapabilities>}
+   *     !ash.scanning.mojom.ScannerCapabilities>}
    */
   const capabilities = new Map();
   capabilities.set(firstScannerId, firstCapabilities);
@@ -338,7 +338,7 @@ export function scanningAppTest() {
   /**
    * @param {!ScannerArr} scanners
    * @param {!Map<!mojoBase.mojom.UnguessableToken,
-   *     !chromeos.scanning.mojom.ScannerCapabilities>} capabilities
+   *     !ash.scanning.mojom.ScannerCapabilities>} capabilities
    * @return {!Promise}
    */
   function initializeScanningApp(scanners, capabilities) {

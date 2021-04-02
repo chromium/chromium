@@ -13,8 +13,8 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {alphabeticalCompare, getSourceTypeString} from './scanning_app_util.js';
 import {SelectBehavior} from './select_behavior.js';
 
-/** @type {chromeos.scanning.mojom.SourceType} */
-const DEFAULT_SOURCE_TYPE = chromeos.scanning.mojom.SourceType.kFlatbed;
+/** @type {ash.scanning.mojom.SourceType} */
+const DEFAULT_SOURCE_TYPE = ash.scanning.mojom.SourceType.kFlatbed;
 
 /**
  * @fileoverview
@@ -38,7 +38,7 @@ Polymer({
   },
 
   /**
-   * @param {chromeos.scanning.mojom.SourceType} mojoSourceType
+   * @param {ash.scanning.mojom.SourceType} mojoSourceType
    * @return {string}
    * @private
    */
@@ -54,7 +54,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.scanning.mojom.ScanSource} option
+   * @param {!ash.scanning.mojom.ScanSource} option
    * @return {boolean}
    */
   isDefaultOption(option) {

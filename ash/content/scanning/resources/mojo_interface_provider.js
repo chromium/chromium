@@ -8,20 +8,20 @@ import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
 import './scanning.mojom-lite.js';
 
-/** @type {?chromeos.scanning.mojom.ScanServiceInterface} */
+/** @type {?ash.scanning.mojom.ScanServiceInterface} */
 let scanService = null;
 
-/** @param {!chromeos.scanning.mojom.ScanServiceInterface} testScanService */
+/** @param {!ash.scanning.mojom.ScanServiceInterface} testScanService */
 export function setScanServiceForTesting(testScanService) {
   scanService = testScanService;
 }
 
-/** @return {!chromeos.scanning.mojom.ScanServiceInterface} */
+/** @return {!ash.scanning.mojom.ScanServiceInterface} */
 export function getScanService() {
   if (scanService) {
     return scanService;
   }
 
-  scanService = chromeos.scanning.mojom.ScanService.getRemote();
+  scanService = ash.scanning.mojom.ScanService.getRemote();
   return scanService;
 }

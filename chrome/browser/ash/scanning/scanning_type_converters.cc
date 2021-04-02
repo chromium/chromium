@@ -11,7 +11,7 @@ namespace mojo {
 
 namespace {
 
-namespace mojo_ipc = chromeos::scanning::mojom;
+namespace mojo_ipc = ash::scanning::mojom;
 
 // The margin allowed when comparing a scannable area dimension to a page size
 // dimension. Accounts for differences due to rounding.

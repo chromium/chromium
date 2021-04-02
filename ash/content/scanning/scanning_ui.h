@@ -17,7 +17,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class ScanningAppDelegate;
 
@@ -28,7 +28,7 @@ class ScanningUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<scanning::mojom::ScanService>)>;
 
   // |callback| should bind the pending receiver to an implementation of
-  // chromeos::scanning::mojom::ScanService.
+  // ash::scanning::mojom::ScanService.
   ScanningUI(content::WebUI* web_ui,
              BindScanServiceCallback callback,
              std::unique_ptr<ScanningAppDelegate> scanning_app_delegate);
@@ -37,7 +37,7 @@ class ScanningUI : public ui::MojoWebUIController {
   ScanningUI(const ScanningUI&) = delete;
   ScanningUI& operator=(const ScanningUI&) = delete;
 
-  // Instantiates the implementor of the chromeos::scanning::mojom::ScanService
+  // Instantiates the implementor of the ash::scanning::mojom::ScanService
   // Mojo interface by passing the pending receiver that will be internally
   // bound.
   void BindInterface(
@@ -49,6 +49,6 @@ class ScanningUI : public ui::MojoWebUIController {
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_CONTENT_SCANNING_SCANNING_UI_H_

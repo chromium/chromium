@@ -24,7 +24,7 @@ export function assertOrderedAlphabetically(arr, conversionFn = (val) => val) {
 /**
  * @param {!mojoBase.mojom.UnguessableToken} id
  * @param {string} displayName
- * @return {!chromeos.scanning.mojom.Scanner}
+ * @return {!ash.scanning.mojom.Scanner}
  */
 export function createScanner(id, displayName) {
   return {id, 'displayName': strToMojoString16(displayName)};
@@ -33,11 +33,11 @@ export function createScanner(id, displayName) {
 /**
  * @param {number} type
  * @param {string} name
- * @param {!Array<chromeos.scanning.mojom.PageSize>} pageSizes
- * @return {!chromeos.scanning.mojom.ScanSource}
+ * @param {!Array<ash.scanning.mojom.PageSize>} pageSizes
+ * @return {!ash.scanning.mojom.ScanSource}
  */
 export function createScannerSource(type, name, pageSizes) {
-  return /** @type {!chromeos.scanning.mojom.ScanSource} */ (
+  return /** @type {!ash.scanning.mojom.ScanSource} */ (
       {type, name, pageSizes});
 }
 

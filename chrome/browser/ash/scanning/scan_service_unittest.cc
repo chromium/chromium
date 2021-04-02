@@ -35,7 +35,7 @@ namespace ash {
 
 namespace {
 
-namespace mojo_ipc = chromeos::scanning::mojom;
+namespace mojo_ipc = scanning::mojom;
 
 // Path to the user's "My files" folder.
 constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";

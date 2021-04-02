@@ -20,7 +20,7 @@ namespace ui {
 class SelectFilePolicy;
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
 
 class ChromeScanningAppDelegate : public ScanningAppDelegate {
  public:
@@ -53,6 +53,6 @@ class ChromeScanningAppDelegate : public ScanningAppDelegate {
   base::FilePath my_files_path_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_SCANNING_CHROME_SCANNING_APP_DELEGATE_H_

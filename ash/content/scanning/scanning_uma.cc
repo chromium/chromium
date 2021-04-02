@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 
-namespace chromeos {
+namespace ash {
 namespace scanning {
 
 ScanJobSettingsResolution GetResolutionEnumValue(const int resolution) {
@@ -30,4 +30,4 @@ ScanJobSettingsResolution GetResolutionEnumValue(const int resolution) {
 }
 
 }  // namespace scanning
-}  // namespace chromeos
+}  // namespace ash

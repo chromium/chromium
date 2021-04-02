@@ -159,7 +159,7 @@ Polymer({
   computeShowEditButton_() {
     return this.scanAppMediaLinkEnabled_ &&
         this.selectedFileType !==
-        chromeos.scanning.mojom.FileType.kPdf.toString();
+        ash.scanning.mojom.FileType.kPdf.toString();
   },
 
   /** @private */

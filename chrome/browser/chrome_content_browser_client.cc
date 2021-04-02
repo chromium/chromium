@@ -4754,7 +4754,7 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
     return true;
   }
 
-  if (url.DomainIs(chromeos::kChromeUIScanningAppHost) &&
+  if (url.DomainIs(ash::kChromeUIScanningAppHost) &&
       IsSystemFeatureDisabled(policy::SystemFeature::kScanning)) {
     return true;
   }

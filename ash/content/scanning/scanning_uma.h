@@ -5,7 +5,7 @@
 #ifndef ASH_CONTENT_SCANNING_SCANNING_UMA_H_
 #define ASH_CONTENT_SCANNING_SCANNING_UMA_H_
 
-namespace chromeos {
+namespace ash {
 namespace scanning {
 
 // The enums below are used in histograms, do not remove/renumber entries. If
@@ -41,14 +41,6 @@ enum class ScanJobSettingsResolution {
 // Converts resolution integer value to a ScanJobSettingsResolution enum value.
 ScanJobSettingsResolution GetResolutionEnumValue(const int resolution);
 
-}  // namespace scanning
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when //ash/content/scanning
-// moved to ash
-namespace ash {
-namespace scanning {
-using ::chromeos::scanning::ScanJobFailureReason;
 }  // namespace scanning
 }  // namespace ash
 

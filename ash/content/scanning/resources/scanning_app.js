@@ -55,11 +55,11 @@ Polymer({
 
   /**
    * Receives scan job notifications.
-   * @private {?chromeos.scanning.mojom.ScanJobObserverReceiver}
+   * @private {?ash.scanning.mojom.ScanJobObserverReceiver}
    */
   scanJobObserverReceiver_: null,
 
-  /** @private {?chromeos.scanning.mojom.ScanServiceInterface} */
+  /** @private {?ash.scanning.mojom.ScanServiceInterface} */
   scanService_: null,
 
   /** @private {!Map<string, !mojoBase.mojom.UnguessableToken>} */
@@ -81,7 +81,7 @@ Polymer({
       observer: 'onSelectedScannerIdChange_',
     },
 
-    /** @private {?chromeos.scanning.mojom.ScannerCapabilities} */
+    /** @private {?ash.scanning.mojom.ScannerCapabilities} */
     capabilities_: Object,
 
     /** @type {string} */
@@ -111,7 +111,7 @@ Polymer({
     /**
      * Map of a ScanSource's name to its corresponding SourceType. Used for
      * fetching the SourceType setting for scan job metrics.
-     * @private {!Map<string, !chromeos.scanning.mojom.SourceType>}
+     * @private {!Map<string, !ash.scanning.mojom.SourceType>}
      */
     sourceTypeMap_: {
       type: Object,
@@ -158,7 +158,7 @@ Polymer({
       value: 0,
     },
 
-    /** @private {!Array<chromeos.scanning.mojom.PageSize>} */
+    /** @private {!Array<ash.scanning.mojom.PageSize>} */
     selectedSourcePageSizes_: {
       type: Array,
       value: () => [],
@@ -295,7 +295,7 @@ Polymer({
   },
 
   /**
-   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
+   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
    * @param {number} pageNumber
    * @param {number} progressPercent
    */
@@ -308,7 +308,7 @@ Polymer({
   },
 
   /**
-   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
+   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
    * @param {!Array<number>} pageData
    */
   onPageComplete(pageData) {
@@ -320,7 +320,7 @@ Polymer({
   },
 
   /**
-   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
+   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
    * @param {boolean} success
    * @param {!Array<!mojoBase.mojom.FilePath>} scannedFilePaths
    */
@@ -335,7 +335,7 @@ Polymer({
   },
 
   /**
-   * Overrides chromeos.scanning.mojom.ScanJobObserverInterface.
+   * Overrides ash.scanning.mojom.ScanJobObserverInterface.
    * @param {boolean} success
    */
   onCancelComplete(success) {
@@ -352,7 +352,7 @@ Polymer({
 
   /**
    * @param {string} selectedSource
-   * @return {!Array<chromeos.scanning.mojom.PageSize>}
+   * @return {!Array<ash.scanning.mojom.PageSize>}
    * @private
    */
   computePageSizes_(selectedSource) {
@@ -366,7 +366,7 @@ Polymer({
   },
 
   /**
-   * @param {!{capabilities: !chromeos.scanning.mojom.ScannerCapabilities}}
+   * @param {!{capabilities: !ash.scanning.mojom.ScannerCapabilities}}
    *     response
    * @private
    */
@@ -374,7 +374,7 @@ Polymer({
     this.capabilities_ = response.capabilities;
     this.capabilities_.sources.forEach(
         (source) => this.sourceTypeMap_.set(source.name, source.type));
-    this.selectedFileType = chromeos.scanning.mojom.FileType.kPdf.toString();
+    this.selectedFileType = ash.scanning.mojom.FileType.kPdf.toString();
     this.setAppState_(AppState.READY);
   },
 
@@ -411,7 +411,7 @@ Polymer({
         .getScannerCapabilities(this.scannerIds_.get(this.selectedScannerId))
         .then(
             /*@type {!{capabilities:
-                   !chromeos.scanning.mojom.ScannerCapabilities}}*/
+                   !ash.scanning.mojom.ScannerCapabilities}}*/
             (response) => {
               this.onCapabilitiesReceived_(response);
             });
@@ -446,9 +446,9 @@ Polymer({
 
     if (!this.scanJobObserverReceiver_) {
       this.scanJobObserverReceiver_ =
-          new chromeos.scanning.mojom.ScanJobObserverReceiver(
+          new ash.scanning.mojom.ScanJobObserverReceiver(
               /**
-               * @type {!chromeos.scanning.mojom.ScanJobObserverInterface}
+               * @type {!ash.scanning.mojom.ScanJobObserverInterface}
                */
               (this));
     }
@@ -649,7 +649,7 @@ Polymer({
    */
   getNumFilesSaved_() {
     return this.selectedFileType ===
-            chromeos.scanning.mojom.FileType.kPdf.toString() ?
+            ash.scanning.mojom.FileType.kPdf.toString() ?
         1 :
         this.pageNumber_;
   },

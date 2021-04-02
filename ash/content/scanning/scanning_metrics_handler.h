@@ -11,7 +11,7 @@ namespace base {
 class ListValue;
 }  // namespace base
 
-namespace chromeos {
+namespace ash {
 
 // ChromeOS Scan app metrics handler for recording metrics from the UI.
 class ScanningMetricsHandler : public content::WebUIMessageHandler {
@@ -36,6 +36,6 @@ class ScanningMetricsHandler : public content::WebUIMessageHandler {
   void HandleRecordScanJobSettings(const base::ListValue* args);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_CONTENT_SCANNING_SCANNING_METRICS_HANDLER_H_

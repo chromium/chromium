@@ -133,7 +133,7 @@ export function scanDoneSectionTest() {
     scanningBrowserProxy.setFilePaths(
         scannedFilePaths.map(filePath => filePath.path));
     scanDoneSection.selectedFileType =
-        chromeos.scanning.mojom.FileType.kJpg.toString();
+        ash.scanning.mojom.FileType.kJpg.toString();
 
     // After click, TestScanningBrowserProxy asserts that the array of file
     // paths sent from |scanDoneSection| matches the expected array of file
@@ -145,11 +145,11 @@ export function scanDoneSectionTest() {
     const editButton =
         /** @type {!HTMLElement} */ (scanDoneSection.$$('#editButton'));
     scanDoneSection.selectedFileType =
-        chromeos.scanning.mojom.FileType.kPng.toString();
+        ash.scanning.mojom.FileType.kPng.toString();
     assertTrue(isVisible(editButton));
 
     scanDoneSection.selectedFileType =
-        chromeos.scanning.mojom.FileType.kPdf.toString();
+        ash.scanning.mojom.FileType.kPdf.toString();
     assertFalse(isVisible(editButton));
   });
 

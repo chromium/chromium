@@ -13,8 +13,8 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 import {alphabeticalCompare, getPageSizeString} from './scanning_app_util.js';
 import {SelectBehavior} from './select_behavior.js';
 
-/** @type {chromeos.scanning.mojom.PageSize} */
-const DEFAULT_PAGE_SIZE = chromeos.scanning.mojom.PageSize.kNaLetter;
+/** @type {ash.scanning.mojom.PageSize} */
+const DEFAULT_PAGE_SIZE = ash.scanning.mojom.PageSize.kNaLetter;
 
 /**
  * @fileoverview
@@ -38,7 +38,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.scanning.mojom.PageSize} pageSize
+   * @param {!ash.scanning.mojom.PageSize} pageSize
    * @return {string}
    * @private
    */
@@ -54,7 +54,7 @@ Polymer({
     // If the fit to scan area option exists, move it to the end of the page
     // sizes array.
     const fitToScanAreaIndex = this.options.findIndex((pageSize) => {
-      return pageSize === chromeos.scanning.mojom.PageSize.kMax;
+      return pageSize === ash.scanning.mojom.PageSize.kMax;
     });
 
 
@@ -64,7 +64,7 @@ Polymer({
   },
 
   /**
-   * @param {!chromeos.scanning.mojom.PageSize} option
+   * @param {!ash.scanning.mojom.PageSize} option
    * @return {boolean}
    */
   isDefaultOption(option) {

@@ -24,7 +24,7 @@ using ScanningAppIntegrationTest = SystemWebAppIntegrationTest;
 // Test that the Scanning App installs and launches correctly by running some
 // spot checks on the manifest.
 IN_PROC_BROWSER_TEST_P(ScanningAppIntegrationTest, ScanningAppInLauncher) {
-  const GURL url(chromeos::kChromeUIScanningAppUrl);
+  const GURL url(ash::kChromeUIScanningAppUrl);
   EXPECT_NO_FATAL_FAILURE(
       ExpectSystemWebAppValid(web_app::SystemAppType::SCANNING, url, "Scan"));
 }

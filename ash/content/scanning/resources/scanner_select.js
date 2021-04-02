@@ -46,7 +46,7 @@ Polymer({
   observers: ['onScannersChange_(scanners.*)'],
 
   /**
-   * @param {!chromeos.scanning.mojom.Scanner} scanner
+   * @param {!ash.scanning.mojom.Scanner} scanner
    * @return {string}
    * @private
    */
@@ -57,7 +57,7 @@ Polymer({
   /**
    * Converts an unguessable token to a string so it can be used as the value of
    * an option.
-   * @param {!chromeos.scanning.mojom.Scanner} scanner
+   * @param {!ash.scanning.mojom.Scanner} scanner
    * @return {string}
    * @private
    */

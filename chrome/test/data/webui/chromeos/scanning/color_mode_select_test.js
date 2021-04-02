@@ -12,9 +12,9 @@ import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {assertOrderedAlphabetically, changeSelect} from './scanning_app_test_utils.js';
 
 const ColorMode = {
-  BLACK_AND_WHITE: chromeos.scanning.mojom.ColorMode.kBlackAndWhite,
-  GRAYSCALE: chromeos.scanning.mojom.ColorMode.kGrayscale,
-  COLOR: chromeos.scanning.mojom.ColorMode.kColor,
+  BLACK_AND_WHITE: ash.scanning.mojom.ColorMode.kBlackAndWhite,
+  GRAYSCALE: ash.scanning.mojom.ColorMode.kGrayscale,
+  COLOR: ash.scanning.mojom.ColorMode.kColor,
 };
 
 export function colorModeSelectTest() {

@@ -17,7 +17,7 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -139,4 +139,4 @@ TEST_F(ChromeScanningAppDelegateTest, ShowFilesAppReferencesNotSupported) {
       my_files_path_.Append("../MyFiles/test_file.png")));
 }
 
-}  // namespace chromeos.
+}  // namespace ash

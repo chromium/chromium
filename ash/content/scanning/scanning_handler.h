@@ -22,7 +22,7 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-namespace chromeos {
+namespace ash {
 
 class ScanningAppDelegate;
 
@@ -86,6 +86,6 @@ class ScanningHandler : public content::WebUIMessageHandler,
   std::map<std::string, int> string_id_map_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_CONTENT_SCANNING_SCANNING_HANDLER_H_

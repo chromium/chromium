@@ -511,7 +511,7 @@ TEST_F(ChromeContentSettingsRedirectTest, RedirectSettingsURL) {
 
 TEST_F(ChromeContentSettingsRedirectTest, RedirectScanningAppURL) {
   TestChromeContentBrowserClient test_content_browser_client;
-  const GURL scanning_app_url(chromeos::kChromeUIScanningAppUrl);
+  const GURL scanning_app_url(ash::kChromeUIScanningAppUrl);
   GURL dest_url = scanning_app_url;
   test_content_browser_client.HandleWebUI(&dest_url, &profile_);
   EXPECT_EQ(scanning_app_url, dest_url);

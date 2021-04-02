@@ -5,11 +5,11 @@
 #ifndef ASH_CONTENT_SCANNING_URL_CONSTANTS_H_
 #define ASH_CONTENT_SCANNING_URL_CONSTANTS_H_
 
-namespace chromeos {
+namespace ash {
 
 extern const char kChromeUIScanningAppHost[];
 extern const char kChromeUIScanningAppUrl[];
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_CONTENT_SCANNING_URL_CONSTANTS_H_

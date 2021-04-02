@@ -27,7 +27,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -131,4 +131,4 @@ void ChromeScanningAppDelegate::SetMyFilesPathForTesting(
   my_files_path_ = my_files_path;
 }
 
-}  // namespace chromeos
+}  // namespace ash

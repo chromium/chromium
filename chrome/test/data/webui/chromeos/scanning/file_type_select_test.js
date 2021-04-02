@@ -11,9 +11,9 @@ import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {changeSelect} from './scanning_app_test_utils.js';
 
 const FileType = {
-  JPG: chromeos.scanning.mojom.FileType.kJpg,
-  PDF: chromeos.scanning.mojom.FileType.kPdf,
-  PNG: chromeos.scanning.mojom.FileType.kPng,
+  JPG: ash.scanning.mojom.FileType.kJpg,
+  PDF: ash.scanning.mojom.FileType.kPdf,
+  PNG: ash.scanning.mojom.FileType.kPng,
 };
 
 export function fileTypeSelectTest() {

@@ -25,7 +25,7 @@
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -154,7 +154,7 @@ class ScanningHandlerTest : public testing::Test {
   ~ScanningHandlerTest() override = default;
 
   void SetUp() override {
-    auto delegate = std::make_unique<chromeos::FakeScanningAppDelegate>();
+    auto delegate = std::make_unique<FakeScanningAppDelegate>();
     fake_scanning_app_delegate_ = delegate.get();
     scanning_handler_ = std::make_unique<ScanningHandler>(std::move(delegate));
     scanning_handler_->SetWebUIForTest(&web_ui_);
@@ -163,8 +163,7 @@ class ScanningHandlerTest : public testing::Test {
     base::ListValue args;
     web_ui_.HandleReceivedMessage("initialize", &args);
 
-    scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kScanAppMediaLink}, {});
+    scoped_feature_list_.InitWithFeatures({features::kScanAppMediaLink}, {});
   }
 
   void TearDown() override { ui::SelectFileDialog::SetFactory(nullptr); }
@@ -189,7 +188,7 @@ class ScanningHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestWebUI web_ui_;
   std::unique_ptr<ScanningHandler> scanning_handler_;
-  chromeos::FakeScanningAppDelegate* fake_scanning_app_delegate_;
+  FakeScanningAppDelegate* fake_scanning_app_delegate_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -282,4 +281,4 @@ TEST_F(ScanningHandlerTest, OpenFilesInMediaApp) {
   EXPECT_EQ(expected_file_paths, fake_scanning_app_delegate_->file_paths());
 }
 
-}  // namespace chromeos.
+}  // namespace ash

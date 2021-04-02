@@ -15,7 +15,7 @@ namespace ui {
 class SelectFilePolicy;
 }  // namespace ui
 
-namespace chromeos {
+namespace ash {
 
 // A delegate which exposes browser functionality from //chrome to the Scan app
 // UI.
@@ -44,6 +44,6 @@ class ScanningAppDelegate {
   virtual bool ShowFileInFilesApp(const base::FilePath& path_to_file) = 0;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_CONTENT_SCANNING_SCANNING_APP_DELEGATE_H_

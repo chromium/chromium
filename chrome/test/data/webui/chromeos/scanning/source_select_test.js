@@ -12,21 +12,21 @@ import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {assertOrderedAlphabetically, createScannerSource} from './scanning_app_test_utils.js';
 
 const FileType = {
-  JPG: chromeos.scanning.mojom.FileType.kJpg,
-  PDF: chromeos.scanning.mojom.FileType.kPdf,
-  PNG: chromeos.scanning.mojom.FileType.kPng,
+  JPG: ash.scanning.mojom.FileType.kJpg,
+  PDF: ash.scanning.mojom.FileType.kPdf,
+  PNG: ash.scanning.mojom.FileType.kPng,
 };
 
 const PageSize = {
-  A4: chromeos.scanning.mojom.PageSize.kIsoA4,
-  Letter: chromeos.scanning.mojom.PageSize.kNaLetter,
-  Max: chromeos.scanning.mojom.PageSize.kMax,
+  A4: ash.scanning.mojom.PageSize.kIsoA4,
+  Letter: ash.scanning.mojom.PageSize.kNaLetter,
+  Max: ash.scanning.mojom.PageSize.kMax,
 };
 
 const SourceType = {
-  FLATBED: chromeos.scanning.mojom.SourceType.kFlatbed,
-  ADF_SIMPLEX: chromeos.scanning.mojom.SourceType.kAdfSimplex,
-  ADF_DUPLEX: chromeos.scanning.mojom.SourceType.kAdfDuplex,
+  FLATBED: ash.scanning.mojom.SourceType.kFlatbed,
+  ADF_SIMPLEX: ash.scanning.mojom.SourceType.kAdfSimplex,
+  ADF_DUPLEX: ash.scanning.mojom.SourceType.kAdfDuplex,
 };
 
 const pageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];

@@ -6,58 +6,58 @@ import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 
 /**
- * Converts a chromeos.scanning.mojom.ColorMode string to the corresponding enum
+ * Converts a ash.scanning.mojom.ColorMode string to the corresponding enum
  * value.
  * @param {string} colorModeString
- * @return {chromeos.scanning.mojom.ColorMode}
+ * @return {ash.scanning.mojom.ColorMode}
  */
 export function colorModeFromString(colorModeString) {
   switch (colorModeString) {
-    case chromeos.scanning.mojom.ColorMode.kBlackAndWhite.toString():
-      return chromeos.scanning.mojom.ColorMode.kBlackAndWhite;
-    case chromeos.scanning.mojom.ColorMode.kGrayscale.toString():
-      return chromeos.scanning.mojom.ColorMode.kGrayscale;
-    case chromeos.scanning.mojom.ColorMode.kColor.toString():
-      return chromeos.scanning.mojom.ColorMode.kColor;
+    case ash.scanning.mojom.ColorMode.kBlackAndWhite.toString():
+      return ash.scanning.mojom.ColorMode.kBlackAndWhite;
+    case ash.scanning.mojom.ColorMode.kGrayscale.toString():
+      return ash.scanning.mojom.ColorMode.kGrayscale;
+    case ash.scanning.mojom.ColorMode.kColor.toString():
+      return ash.scanning.mojom.ColorMode.kColor;
     default:
       assertNotReached();
-      return chromeos.scanning.mojom.ColorMode.kColor;
+      return ash.scanning.mojom.ColorMode.kColor;
   }
 }
 
 /**
- * Converts a chromeos.scanning.mojom.FileType string to the corresponding
+ * Converts a ash.scanning.mojom.FileType string to the corresponding
  * enum value.
  * @param {string} fileTypeString
- * @return {chromeos.scanning.mojom.FileType}
+ * @return {ash.scanning.mojom.FileType}
  */
 export function fileTypeFromString(fileTypeString) {
   switch (fileTypeString) {
-    case chromeos.scanning.mojom.FileType.kJpg.toString():
-      return chromeos.scanning.mojom.FileType.kJpg;
-    case chromeos.scanning.mojom.FileType.kPdf.toString():
-      return chromeos.scanning.mojom.FileType.kPdf;
-    case chromeos.scanning.mojom.FileType.kPng.toString():
-      return chromeos.scanning.mojom.FileType.kPng;
+    case ash.scanning.mojom.FileType.kJpg.toString():
+      return ash.scanning.mojom.FileType.kJpg;
+    case ash.scanning.mojom.FileType.kPdf.toString():
+      return ash.scanning.mojom.FileType.kPdf;
+    case ash.scanning.mojom.FileType.kPng.toString():
+      return ash.scanning.mojom.FileType.kPng;
     default:
       assertNotReached();
-      return chromeos.scanning.mojom.FileType.kPdf;
+      return ash.scanning.mojom.FileType.kPdf;
   }
 }
 
 /**
- * Converts a chromeos.scanning.mojom.ColorMode to a string that can be
+ * Converts a ash.scanning.mojom.ColorMode to a string that can be
  * displayed in the color mode dropdown.
- * @param {chromeos.scanning.mojom.ColorMode} mojoColorMode
+ * @param {ash.scanning.mojom.ColorMode} mojoColorMode
  * @return {string}
  */
 export function getColorModeString(mojoColorMode) {
   switch (mojoColorMode) {
-    case chromeos.scanning.mojom.ColorMode.kBlackAndWhite:
+    case ash.scanning.mojom.ColorMode.kBlackAndWhite:
       return loadTimeData.getString('blackAndWhiteOptionText');
-    case chromeos.scanning.mojom.ColorMode.kGrayscale:
+    case ash.scanning.mojom.ColorMode.kGrayscale:
       return loadTimeData.getString('grayscaleOptionText');
-    case chromeos.scanning.mojom.ColorMode.kColor:
+    case ash.scanning.mojom.ColorMode.kColor:
       return loadTimeData.getString('colorOptionText');
     default:
       assertNotReached();
@@ -66,18 +66,18 @@ export function getColorModeString(mojoColorMode) {
 }
 
 /**
- * Converts a chromeos.scanning.mojom.PageSize to a string that can be
+ * Converts a ash.scanning.mojom.PageSize to a string that can be
  * displayed in the page size dropdown.
- * @param {chromeos.scanning.mojom.PageSize} pageSize
+ * @param {ash.scanning.mojom.PageSize} pageSize
  * @return {string}
  */
 export function getPageSizeString(pageSize) {
   switch (pageSize) {
-    case chromeos.scanning.mojom.PageSize.kIsoA4:
+    case ash.scanning.mojom.PageSize.kIsoA4:
       return loadTimeData.getString('a4OptionText');
-    case chromeos.scanning.mojom.PageSize.kNaLetter:
+    case ash.scanning.mojom.PageSize.kNaLetter:
       return loadTimeData.getString('letterOptionText');
-    case chromeos.scanning.mojom.PageSize.kMax:
+    case ash.scanning.mojom.PageSize.kMax:
       return loadTimeData.getString('fitToScanAreaOptionText');
     default:
       assertNotReached();
@@ -86,22 +86,22 @@ export function getPageSizeString(pageSize) {
 }
 
 /**
- * Converts a chromeos.scanning.mojom.SourceType to a string that can be
+ * Converts a ash.scanning.mojom.SourceType to a string that can be
  * displayed in the source dropdown.
- * @param {chromeos.scanning.mojom.SourceType} mojoSourceType
+ * @param {ash.scanning.mojom.SourceType} mojoSourceType
  * @return {string}
  */
 export function getSourceTypeString(mojoSourceType) {
   switch (mojoSourceType) {
-    case chromeos.scanning.mojom.SourceType.kFlatbed:
+    case ash.scanning.mojom.SourceType.kFlatbed:
       return loadTimeData.getString('flatbedOptionText');
-    case chromeos.scanning.mojom.SourceType.kAdfSimplex:
+    case ash.scanning.mojom.SourceType.kAdfSimplex:
       return loadTimeData.getString('oneSidedDocFeederOptionText');
-    case chromeos.scanning.mojom.SourceType.kAdfDuplex:
+    case ash.scanning.mojom.SourceType.kAdfDuplex:
       return loadTimeData.getString('twoSidedDocFeederOptionText');
-    case chromeos.scanning.mojom.SourceType.kDefault:
+    case ash.scanning.mojom.SourceType.kDefault:
       return loadTimeData.getString('defaultSourceOptionText');
-    case chromeos.scanning.mojom.SourceType.kUnknown:
+    case ash.scanning.mojom.SourceType.kUnknown:
     default:
       assertNotReached();
       return loadTimeData.getString('defaultSourceOptionText');
@@ -109,28 +109,28 @@ export function getSourceTypeString(mojoSourceType) {
 }
 
 /**
- * Converts a chromeos.scanning.mojom.PageSize string to the corresponding enum
+ * Converts a ash.scanning.mojom.PageSize string to the corresponding enum
  * value.
  * @param {string} pageSizeString
- * @return {chromeos.scanning.mojom.PageSize}
+ * @return {ash.scanning.mojom.PageSize}
  */
 export function pageSizeFromString(pageSizeString) {
   switch (pageSizeString) {
-    case chromeos.scanning.mojom.PageSize.kIsoA4.toString():
-      return chromeos.scanning.mojom.PageSize.kIsoA4;
-    case chromeos.scanning.mojom.PageSize.kNaLetter.toString():
-      return chromeos.scanning.mojom.PageSize.kNaLetter;
-    case chromeos.scanning.mojom.PageSize.kMax.toString():
-      return chromeos.scanning.mojom.PageSize.kMax;
+    case ash.scanning.mojom.PageSize.kIsoA4.toString():
+      return ash.scanning.mojom.PageSize.kIsoA4;
+    case ash.scanning.mojom.PageSize.kNaLetter.toString():
+      return ash.scanning.mojom.PageSize.kNaLetter;
+    case ash.scanning.mojom.PageSize.kMax.toString():
+      return ash.scanning.mojom.PageSize.kMax;
     default:
       assertNotReached();
-      return chromeos.scanning.mojom.PageSize.kNaLetter;
+      return ash.scanning.mojom.PageSize.kNaLetter;
   }
 }
 
 /**
  * Converts a scanner's display name from UTF-16 to a displayable string.
- * @param {!chromeos.scanning.mojom.Scanner} scanner
+ * @param {!ash.scanning.mojom.Scanner} scanner
  * @return {string}
  */
 export function getScannerDisplayName(scanner) {

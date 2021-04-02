@@ -38,7 +38,7 @@ namespace ash {
 
 namespace {
 
-namespace mojo_ipc = chromeos::scanning::mojom;
+namespace mojo_ipc = scanning::mojom;
 
 // The conversion quality when converting from PNG to JPG.
 constexpr int kJpgQuality = 100;

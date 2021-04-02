@@ -403,8 +403,7 @@ WebUIController* NewWebUI<chromeos::eche_app::EcheAppUI>(WebUI* web_ui,
 
 void BindScanService(
     Profile* profile,
-    mojo::PendingReceiver<chromeos::scanning::mojom::ScanService>
-        pending_receiver) {
+    mojo::PendingReceiver<ash::scanning::mojom::ScanService> pending_receiver) {
   ash::ScanService* service =
       ash::ScanServiceFactory::GetForBrowserContext(profile);
   if (service)
@@ -417,12 +416,11 @@ std::unique_ptr<ui::SelectFilePolicy> CreateChromeSelectFilePolicy(
 }
 
 template <>
-WebUIController* NewWebUI<chromeos::ScanningUI>(WebUI* web_ui,
-                                                const GURL& url) {
+WebUIController* NewWebUI<ash::ScanningUI>(WebUI* web_ui, const GURL& url) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  return new chromeos::ScanningUI(
+  return new ash::ScanningUI(
       web_ui, base::BindRepeating(&BindScanService, profile),
-      std::make_unique<chromeos::ChromeScanningAppDelegate>(web_ui));
+      std::make_unique<ash::ChromeScanningAppDelegate>(web_ui));
 }
 
 template <>
@@ -770,8 +768,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == chromeos::kChromeUIPrintManagementHost)
     return &NewWebUI<chromeos::printing::printing_manager::PrintManagementUI>;
-  if (url.host_piece() == chromeos::kChromeUIScanningAppHost)
-    return &NewWebUI<chromeos::ScanningUI>;
+  if (url.host_piece() == ash::kChromeUIScanningAppHost)
+    return &NewWebUI<ash::ScanningUI>;
   if (base::FeatureList::IsEnabled(chromeos::features::kMediaApp)) {
     if (url.host_piece() == chromeos::kChromeUIMediaAppHost)
       return &NewComponentUI<chromeos::MediaAppUI, ChromeMediaAppUIDelegate>;

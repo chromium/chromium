@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview A helper object used by the Scanning App UI in chromeos/ to
+ * @fileoverview A helper object used by the Scanning App UI in ash/ to
  * provide access to the ScanningHandler which invokes functions that only exist
  * in chrome/.
  */
@@ -22,10 +22,10 @@ export let SelectedPath;
 
 /**
  * @typedef {{
- *   sourceType: chromeos.scanning.mojom.SourceType,
- *   fileType: chromeos.scanning.mojom.FileType,
- *   colorMode: chromeos.scanning.mojom.ColorMode,
- *   pageSize: chromeos.scanning.mojom.PageSize,
+ *   sourceType: ash.scanning.mojom.SourceType,
+ *   fileType: ash.scanning.mojom.FileType,
+ *   colorMode: ash.scanning.mojom.ColorMode,
+ *   pageSize: ash.scanning.mojom.PageSize,
  *   resolution: number,
  * }}
  */

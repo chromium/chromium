@@ -15,7 +15,7 @@ namespace {
 
 using ::testing::ElementsAreArray;
 
-namespace mojo_ipc = chromeos::scanning::mojom;
+namespace mojo_ipc = scanning::mojom;
 
 // POD struct for ScannerCapabilitiesTest.
 struct ScannerCapabilitiesTestParams {

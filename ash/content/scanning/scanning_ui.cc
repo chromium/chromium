@@ -27,7 +27,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -169,4 +169,4 @@ void ScanningUI::BindInterface(
 
 WEB_UI_CONTROLLER_TYPE_IMPL(ScanningUI)
 
-}  // namespace chromeos
+}  // namespace ash

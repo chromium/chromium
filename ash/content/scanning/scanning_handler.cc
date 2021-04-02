@@ -23,7 +23,7 @@ constexpr char kFilePath[] = "filePath";
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 ScanningHandler::ScanningHandler(
     std::unique_ptr<ScanningAppDelegate> scanning_app_delegate)
@@ -182,4 +182,4 @@ void ScanningHandler::HandleGetMyFilesPath(const base::ListValue* args) {
                             base::Value(my_files_path.value()));
 }
 
-}  // namespace chromeos
+}  // namespace ash
