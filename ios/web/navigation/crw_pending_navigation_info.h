@@ -13,8 +13,7 @@
 // A container object for any navigation information that is only available
 // during pre-commit delegate callbacks, and thus must be held until the
 // navigation commits and the information can be used.
-@interface CRWPendingNavigationInfo : NSObject {
-}
+@interface CRWPendingNavigationInfo : NSObject
 // The referrer for the page.
 @property(nonatomic, copy) NSString* referrer;
 // The MIME type for the page.
@@ -35,6 +34,8 @@
 @property(nonatomic, copy) NSError* cancellationError;
 // Whether the navigation was initiated by a user gesture.
 @property(nonatomic, assign) BOOL hasUserGesture;
+// Whether the navigation had a server redirect.
+@property(nonatomic, assign) BOOL unsafeRedirect;
 
 @end
 

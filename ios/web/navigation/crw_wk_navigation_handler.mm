@@ -13,6 +13,7 @@
 #include "base/timer/timer.h"
 #import "ios/net/http_response_headers_util.h"
 #import "ios/net/protocol_handler_util.h"
+#import "ios/net/url_scheme_util.h"
 #include "ios/web/common/features.h"
 #import "ios/web/common/url_scheme_util.h"
 #import "ios/web/js_messaging/crw_js_injector.h"
@@ -521,6 +522,16 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
     return;
   }
 
+  if (self.pendingNavigationInfo.unsafeRedirect) {
+    self.pendingNavigationInfo.cancelled = YES;
+    self.pendingNavigationInfo.cancellationError =
+        [NSError errorWithDomain:net::kNSErrorDomain
+                            code:net::ERR_UNSAFE_REDIRECT
+                        userInfo:nil];
+    handler(WKNavigationResponsePolicyCancel);
+    return;
+  }
+
   scoped_refptr<net::HttpResponseHeaders> headers;
   if ([WKResponse.response isKindOfClass:[NSHTTPURLResponse class]]) {
     headers = net::CreateHeadersFromNSHTTPURLResponse(
@@ -725,7 +736,12 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   if (!context)
     return;
 
-  context->SetUrl(webViewURL);
+  if (webViewURL.SchemeIs(url::kDataScheme)) {
+    // Redirecting to a data url is always unsafe.
+    self.pendingNavigationInfo.unsafeRedirect = YES;
+  } else {
+    context->SetUrl(webViewURL);
+  }
   web::NavigationItemImpl* item =
       web::GetItemWithUniqueID(self.navigationManagerImpl, context);
 
@@ -733,7 +749,8 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   // navigation. WKWebView allows multiple provisional navigations, while
   // Navigation Manager has only one pending navigation.
   if (item) {
-    if (!IsWKInternalUrl(webViewURL)) {
+    if (!IsWKInternalUrl(webViewURL) &&
+        !self.pendingNavigationInfo.unsafeRedirect) {
       item->SetVirtualURL(webViewURL);
       item->SetURL(webViewURL);
     }
@@ -751,6 +768,9 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
                        withError:(NSError*)error {
   [self didReceiveWKNavigationDelegateCallback];
 
+  BOOL wasRedirected = [self.navigationStates stateForNavigation:navigation] ==
+                       web::WKNavigationState::REDIRECTED;
+
   [self.navigationStates setState:web::WKNavigationState::PROVISIONALY_FAILED
                     forNavigation:navigation];
 
@@ -759,6 +779,19 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
   // load but before the load has been committed.
   if (![[self.navigationStates lastAddedNavigation] isEqual:navigation]) {
     return;
+  }
+
+  web::NavigationContextImpl* navigationContext =
+      [self.navigationStates contextForNavigation:navigation];
+  if (wasRedirected && navigationContext) {
+    // If there was a redirect, change the URL to have the URL of the first
+    // page.
+    NSMutableDictionary* userInfo = [error.userInfo mutableCopy];
+    userInfo[NSURLErrorFailingURLStringErrorKey] =
+        base::SysUTF8ToNSString(navigationContext->GetUrl().spec());
+    error = [NSError errorWithDomain:error.domain
+                                code:error.code
+                            userInfo:userInfo];
   }
 
   // Handle load cancellation for directly cancelled navigations without
