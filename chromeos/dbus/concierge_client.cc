@@ -21,8 +21,7 @@ namespace concierge = vm_tools::concierge;
 namespace {
 
 // TODO(nverne): revert to TIMEOUT_USE_DEFAULT when StartVm no longer requires
-// unnecessary long running crypto calculations _and_ b/143499148 is fixed.
-// TODO(yusukes): Fix b/143499148.
+// unnecessary long running crypto calculations.
 constexpr int kConciergeDBusTimeoutMs = 160 * 1000;
 
 }  // namespace
