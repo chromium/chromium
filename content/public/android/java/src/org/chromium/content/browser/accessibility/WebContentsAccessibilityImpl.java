@@ -631,10 +631,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
                 viewRoot.setClassName("");
                 viewRoot.setHint(mProductVersion);
 
-                if (mDelegate.getWebContents() != null) {
+                WebContents webContents = mDelegate.getWebContents();
+                if (webContents != null && !webContents.isDestroyed()) {
                     Bundle extras = viewRoot.getExtras();
-                    extras.putCharSequence(
-                            "url", mDelegate.getWebContents().getVisibleUrl().getSpec());
+                    extras.putCharSequence("url", webContents.getVisibleUrl().getSpec());
                 }
 
                 if (root == null) {
