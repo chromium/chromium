@@ -121,6 +121,7 @@ public class TabAttributeCache {
             public void onTabStateInitialized() {
                 // TODO(wychen): after this cache is enabled by default, we only need to populate it
                 //  once.
+                getSharedPreferences().edit().clear().apply();
                 TabModelFilter filter =
                         mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
                 for (int i = 0; i < filter.getCount(); i++) {
