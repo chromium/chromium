@@ -89,6 +89,18 @@ dependencies {
     androidTestCompile "androidx.test.uiautomator:uiautomator:2.2.0"
 }
 
+// The snapshot repository only has the latest version of each dependency.  When
+// building the dependency tree, gradle attempts to resolve dependency versions
+// specified in .pom files. However, that version might not live in neither the
+// current snapshot repo (eg: it lives in an older snapshot repo instead) nor in
+// the google maven repo (eg: it is too new thus has yet to be released in the
+// google maven repo). Override the version for androidx dependencies with the
+// version provided in the current snapshot repo so that gradle can find the
+// dependency.
+ext {
+  {{version_overrides}}
+}
+
 task setUpRepository(type: BuildConfigGenerator) {
     // Paths are relative to the chromium source root.
     repositoryPath 'third_party/androidx'

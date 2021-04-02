@@ -75,7 +75,8 @@ def _compute_replacement(dependency_version_map, androidx_repository_url,
                          line):
     """Computes output line for build.gradle from build.gradle.template line.
 
-    Replaces {{android_repository_url}} and {{androidx_dependency_version}}.
+    Replaces {{android_repository_url}}, {{androidx_dependency_version}} and
+      {{version_overrides}}.
 
     Args:
       dependency_version_map: An "dependency_group:dependency_name"->dependency_version mapping.
@@ -83,6 +84,12 @@ def _compute_replacement(dependency_version_map, androidx_repository_url,
       line: Input line from the build.gradle.template.
     """
     line = line.replace('{{androidx_repository_url}}', androidx_repository_url)
+
+    if line.strip() == '{{version_overrides}}':
+        lines = ['versionOverrideMap = [:]']
+        for dependency, version in dependency_version_map.items():
+            lines.append(f'versionOverrideMap["{dependency}"] = "{version}"')
+        return '\n'.join(lines)
 
     match = re.search(r'"(\S+):{{androidx_dependency_version}}"', line)
     if not match:

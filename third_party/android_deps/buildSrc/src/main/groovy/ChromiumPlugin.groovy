@@ -4,6 +4,7 @@
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.DependencyResolveDetails
 
 /**
  * Plugin designed to define the configuration names to be used in the Gradle files to describe
@@ -38,5 +39,18 @@ class ChromiumPlugin implements Plugin<Project> {
             /** Libraries that are used for testing only and support android. */
             androidTestCompile
         }
-    }
+
+      project.configurations.all {
+        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+           if (project.ext.hasProperty("versionOverrideMap") &&
+                   project.ext.versionOverrideMap != null) {
+             def module = details.requested.group + ":" + details.requested.name
+             def version = project.ext.versionOverrideMap[module]
+             if (version != null) {
+               details.useVersion version
+             }
+          }
+        }
+      }
+  }
 }
