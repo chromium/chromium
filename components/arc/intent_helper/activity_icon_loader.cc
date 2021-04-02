@@ -182,6 +182,8 @@ ActivityIconLoader::ActivityName::ActivityName(const std::string& package_name,
                                                const std::string& activity_name)
     : package_name(package_name), activity_name(activity_name) {}
 
+ActivityIconLoader::ActivityName::~ActivityName() = default;
+
 bool ActivityIconLoader::ActivityName::operator<(
     const ActivityName& other) const {
   return std::tie(package_name, activity_name) <
