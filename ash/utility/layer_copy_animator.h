@@ -46,8 +46,8 @@ class ASH_EXPORT LayerCopyAnimator : public aura::WindowObserver,
                            AnimationCallback callback);
 
   // Called when a layer is copied. This is public to deal with the shutdown
-  // scenario.
-  void OnLayerCopied(std::unique_ptr<ui::Layer> new_layer);
+  // scenario. This is virtual for testing purpose.
+  virtual void OnLayerCopied(std::unique_ptr<ui::Layer> new_layer);
 
   // ui::LayerAnimationObserver:
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override;

@@ -24,6 +24,35 @@
 namespace ash {
 namespace {
 
+class TestLayerCopyAnimator final : public LayerCopyAnimator {
+ public:
+  explicit TestLayerCopyAnimator(aura::Window* window)
+      : LayerCopyAnimator(window) {}
+  TestLayerCopyAnimator(const TestLayerCopyAnimator& animator) = delete;
+  TestLayerCopyAnimator& operator=(const TestLayerCopyAnimator& animator) =
+      delete;
+  ~TestLayerCopyAnimator() final = default;
+
+  // LayerCopyAnimator:
+  void OnLayerCopied(std::unique_ptr<ui::Layer> new_layer) override {
+    DCHECK(!copied_);
+    LayerCopyAnimator::OnLayerCopied(std::move(new_layer));
+    copied_ = true;
+    if (run_loop_.running())
+      run_loop_.Quit();
+  }
+
+  ui::Layer* WaitForCopy() {
+    if (!copied_)
+      run_loop_.Run();
+    return copied_layer_for_test();
+  }
+
+ private:
+  base::RunLoop run_loop_;
+  bool copied_ = false;
+};
+
 class LayerCopyAnimatorTest : public testing::Test {
  public:
   LayerCopyAnimatorTest() = default;
@@ -96,25 +125,23 @@ class LayerCopyAnimatorTest : public testing::Test {
 
 TEST_F(LayerCopyAnimatorTest, Basic) {
   ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
-  auto* animator = new LayerCopyAnimator(anim_root());
+  auto* animator = new TestLayerCopyAnimator(anim_root());
   EXPECT_FALSE(animator->animation_requested());
   EXPECT_EQ(2u, anim_layer->children().size());
   EXPECT_EQ(1u, root_layer->children().size());
 
   GenerateOneFrame();
-  Advance(base::TimeDelta::FromMilliseconds(32));
+  auto* copied_layer = animator->WaitForCopy();
+  EXPECT_TRUE(copied_layer);
 
-  auto* copied_layer = animator->copied_layer_for_test();
-  ASSERT_TRUE(copied_layer);
   EXPECT_EQ(ui::LAYER_SOLID_COLOR, copied_layer->type());
   EXPECT_EQ(gfx::Size(100, 100), copied_layer->size());
 
   ui::TestLayerAnimationObserver observer;
-
   animator->MaybeStartAnimation(
       &observer, base::BindOnce([](ui::Layer* layer,
                                    ui::LayerAnimationObserver* observer) {
@@ -135,8 +162,7 @@ TEST_F(LayerCopyAnimatorTest, Basic) {
   EXPECT_TRUE(copied_layer->GetAnimator()->is_animating());
   EXPECT_EQ(0.f, anim_layer->GetTargetOpacity());
 
-  Advance(base::TimeDelta::FromMilliseconds(32));
-
+  Advance(base::TimeDelta::FromMilliseconds(1000));
   EXPECT_EQ(3, observer.last_ended_sequence_epoch());
   EXPECT_EQ(1u, root_layer->children().size());
   EXPECT_EQ(1.f, anim_layer->GetTargetOpacity());
@@ -148,7 +174,7 @@ TEST_F(LayerCopyAnimatorTest, CopyAfterAnimationRequest) {
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
-  auto* animator = new LayerCopyAnimator(anim_root());
+  auto* animator = new TestLayerCopyAnimator(anim_root());
   EXPECT_FALSE(animator->animation_requested());
   EXPECT_EQ(2u, anim_layer->children().size());
   EXPECT_EQ(1u, root_layer->children().size());
@@ -175,10 +201,9 @@ TEST_F(LayerCopyAnimatorTest, CopyAfterAnimationRequest) {
   EXPECT_FALSE(animator->copied_layer_for_test());
 
   GenerateOneFrame();
-  Advance(base::TimeDelta::FromMilliseconds(32));
-
-  auto* copied_layer = animator->copied_layer_for_test();
+  auto* copied_layer = animator->WaitForCopy();
   ASSERT_TRUE(copied_layer);
+
   EXPECT_EQ(ui::LAYER_SOLID_COLOR, copied_layer->type());
   EXPECT_EQ(gfx::Size(100, 100), copied_layer->size());
   ASSERT_EQ(2u, root_layer->children().size());
@@ -186,7 +211,7 @@ TEST_F(LayerCopyAnimatorTest, CopyAfterAnimationRequest) {
   EXPECT_TRUE(copied_layer->GetAnimator()->is_animating());
   EXPECT_EQ(0.f, anim_layer->GetTargetOpacity());
 
-  Advance(base::TimeDelta::FromMilliseconds(100));
+  Advance(base::TimeDelta::FromMilliseconds(1000));
 
   // When animation starts before copy, it registers the observer to fake
   // sequecne, hence become 6.
@@ -197,20 +222,19 @@ TEST_F(LayerCopyAnimatorTest, CopyAfterAnimationRequest) {
 
 TEST_F(LayerCopyAnimatorTest, CancelByResize) {
   ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
-  auto* animator = new LayerCopyAnimator(anim_root());
+  auto* animator = new TestLayerCopyAnimator(anim_root());
   EXPECT_FALSE(animator->animation_requested());
   EXPECT_EQ(2u, anim_layer->children().size());
   EXPECT_EQ(1u, root_layer->children().size());
 
   anim_layer->SetBounds(gfx::Rect(210, 210));
   GenerateOneFrame();
-  Advance(base::TimeDelta::FromMilliseconds(32));
-
-  EXPECT_FALSE(animator->copied_layer_for_test());
+  auto* copied_layer = animator->WaitForCopy();
+  ASSERT_FALSE(copied_layer);
 
   ui::TestLayerAnimationObserver observer;
   EXPECT_EQ(-1, observer.last_aborted_sequence_epoch());
@@ -225,7 +249,7 @@ TEST_F(LayerCopyAnimatorTest, CancelByResize) {
 
 TEST_F(LayerCopyAnimatorTest, CancelByDelete) {
   ui::ScopedAnimationDurationScaleMode non_zero(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
@@ -244,16 +268,15 @@ TEST_F(LayerCopyAnimatorTest, CancelByStop) {
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
-  auto* animator = new LayerCopyAnimator(anim_root());
+  auto* animator = new TestLayerCopyAnimator(anim_root());
   EXPECT_FALSE(animator->animation_requested());
   EXPECT_EQ(2u, anim_layer->children().size());
   EXPECT_EQ(1u, root_layer->children().size());
 
   GenerateOneFrame();
-  Advance(base::TimeDelta::FromMilliseconds(32));
-
-  auto* copied_layer = animator->copied_layer_for_test();
+  auto* copied_layer = animator->WaitForCopy();
   ASSERT_TRUE(copied_layer);
+
   EXPECT_EQ(ui::LAYER_SOLID_COLOR, copied_layer->type());
   EXPECT_EQ(gfx::Size(100, 100), copied_layer->size());
 
@@ -280,7 +303,7 @@ TEST_F(LayerCopyAnimatorTest, CancelByStop) {
   EXPECT_EQ(0.f, anim_layer->GetTargetOpacity());
   copied_layer->GetAnimator()->StopAnimating();
 
-  Advance(base::TimeDelta::FromMilliseconds(32));
+  Advance(base::TimeDelta::FromMilliseconds(1000));
 
   EXPECT_EQ(3, observer.last_ended_sequence_epoch());
   EXPECT_EQ(1u, root_layer->children().size());
@@ -293,16 +316,15 @@ TEST_F(LayerCopyAnimatorTest, NoAnimationStopImmediately) {
   auto* root_layer = root()->layer();
   auto* anim_layer = anim_root()->layer();
 
-  auto* animator = new LayerCopyAnimator(anim_root());
+  auto* animator = new TestLayerCopyAnimator(anim_root());
   EXPECT_FALSE(animator->animation_requested());
   EXPECT_EQ(2u, anim_layer->children().size());
   EXPECT_EQ(1u, root_layer->children().size());
 
   GenerateOneFrame();
-  Advance(base::TimeDelta::FromMilliseconds(32));
-
-  auto* copied_layer = animator->copied_layer_for_test();
+  auto* copied_layer = animator->WaitForCopy();
   ASSERT_TRUE(copied_layer);
+
   EXPECT_EQ(ui::LAYER_SOLID_COLOR, copied_layer->type());
   EXPECT_EQ(gfx::Size(100, 100), copied_layer->size());
 
