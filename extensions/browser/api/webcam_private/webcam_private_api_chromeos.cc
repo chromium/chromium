@@ -262,9 +262,31 @@ ExtensionFunction::ResponseAction WebcamPrivateSetFunction::Run() {
   if (params->config.tilt_speed)
     tilt_speed = *(params->config.tilt_speed);
 
+  // Count all of the requests we will send before potentially sending any.
   pending_num_set_webcam_param_requests_ = 0;
   if (params->config.pan) {
     ++pending_num_set_webcam_param_requests_;
+  }
+  if (params->config.pan_direction) {
+    ++pending_num_set_webcam_param_requests_;
+  }
+  if (params->config.tilt) {
+    ++pending_num_set_webcam_param_requests_;
+  }
+  if (params->config.tilt_direction) {
+    ++pending_num_set_webcam_param_requests_;
+  }
+  if (params->config.zoom) {
+    ++pending_num_set_webcam_param_requests_;
+  }
+  if (params->config.autofocus_state) {
+    ++pending_num_set_webcam_param_requests_;
+  }
+  if (params->config.focus) {
+    ++pending_num_set_webcam_param_requests_;
+  }
+
+  if (params->config.pan) {
     webcam->SetPan(
         *(params->config.pan), pan_speed,
         base::Bind(&WebcamPrivateSetFunction::OnSetWebcamParameters, this));
@@ -286,14 +308,12 @@ ExtensionFunction::ResponseAction WebcamPrivateSetFunction::Run() {
         direction = Webcam::PAN_LEFT;
         break;
     }
-    ++pending_num_set_webcam_param_requests_;
     webcam->SetPanDirection(
         direction, pan_speed,
         base::Bind(&WebcamPrivateSetFunction::OnSetWebcamParameters, this));
   }
 
   if (params->config.tilt) {
-    ++pending_num_set_webcam_param_requests_;
     webcam->SetTilt(
         *(params->config.tilt), tilt_speed,
         base::Bind(&WebcamPrivateSetFunction::OnSetWebcamParameters, this));
@@ -315,14 +335,12 @@ ExtensionFunction::ResponseAction WebcamPrivateSetFunction::Run() {
         direction = Webcam::TILT_DOWN;
         break;
     }
-    ++pending_num_set_webcam_param_requests_;
     webcam->SetTiltDirection(
         direction, tilt_speed,
         base::Bind(&WebcamPrivateSetFunction::OnSetWebcamParameters, this));
   }
 
   if (params->config.zoom) {
-    ++pending_num_set_webcam_param_requests_;
     webcam->SetZoom(
         *(params->config.zoom),
         base::Bind(&WebcamPrivateSetFunction::OnSetWebcamParameters, this));
@@ -340,14 +358,12 @@ ExtensionFunction::ResponseAction WebcamPrivateSetFunction::Run() {
         state = Webcam::AUTOFOCUS_ON;
         break;
     }
-    ++pending_num_set_webcam_param_requests_;
     webcam->SetAutofocusState(
         state,
         base::Bind(&WebcamPrivateSetFunction::OnSetWebcamParameters, this));
   }
 
   if (params->config.focus) {
-    ++pending_num_set_webcam_param_requests_;
     webcam->SetFocus(
         *(params->config.focus),
         base::Bind(&WebcamPrivateSetFunction::OnSetWebcamParameters, this));
