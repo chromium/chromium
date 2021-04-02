@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.flags;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -182,5 +183,14 @@ public class CachedFeatureFlagsUnitTest {
         } finally {
             CachedFeatureFlags.swapDefaultsForTesting(previousDefaults);
         }
+    }
+
+    @Test
+    public void testGetLastCachedMinimalBrowserFlagsTimeMillis() {
+        // Initial time is 0.
+        assertEquals(0, CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis());
+        final long timeMillis = System.currentTimeMillis();
+        CachedFeatureFlags.cacheMinimalBrowserFlagsTimeFromNativeTime();
+        assertTrue(CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis() >= timeMillis);
     }
 }

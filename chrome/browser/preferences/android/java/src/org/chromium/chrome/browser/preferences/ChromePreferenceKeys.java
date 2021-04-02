@@ -439,6 +439,10 @@ public final class ChromePreferenceKeys {
     public static final String FLAGS_CACHED_TAB_GROUPS_ANDROID_ENABLED =
             "tab_group_android_enabled";
 
+    /** See CachedFeatureFlags.getLastCachedMinimalBrowserFlagsTimeMillis(). */
+    public static final String FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS =
+            "Chrome.Flags.LastCachedMinimalBrowserFlagsTimeMillis";
+
     public static final String FONT_USER_FONT_SCALE_FACTOR = "user_font_scale_factor";
     public static final String FONT_USER_SET_FORCE_ENABLE_ZOOM = "user_set_force_enable_zoom";
 
@@ -915,6 +919,7 @@ public final class ChromePreferenceKeys {
                 FIRST_RUN_SKIPPED_BY_POLICY,
                 FLAGS_CACHED.pattern(),
                 FLAGS_FIELD_TRIAL_PARAM_CACHED.pattern(),
+                FLAGS_LAST_CACHED_MINIMAL_BROWSER_FLAGS_TIME_MILLIS,
                 HOMEPAGE_LOCATION_POLICY,
                 HOMEPAGE_USE_CHROME_NTP,
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,

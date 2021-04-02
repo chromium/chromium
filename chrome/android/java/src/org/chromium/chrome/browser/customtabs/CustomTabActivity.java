@@ -39,6 +39,8 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
+import org.chromium.chrome.browser.flags.AllCachedFieldTrialParameters;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -57,6 +59,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     private CustomTabsSessionToken mSession;
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
+
+    /**
+     * Contains all the parameters of the EXPERIMENTS_FOR_AGSA feature.
+     */
+    public static final AllCachedFieldTrialParameters EXPERIMENTS_FOR_AGSA_PARAMS =
+            new AllCachedFieldTrialParameters(ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
 
     private CustomTabActivityTabProvider.Observer mTabChangeObserver =
             new CustomTabActivityTabProvider.Observer() {
