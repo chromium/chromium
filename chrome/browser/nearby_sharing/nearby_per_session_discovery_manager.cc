@@ -214,7 +214,9 @@ void NearbyPerSessionDiscoveryManager::OnShareTargetLost(
 void NearbyPerSessionDiscoveryManager::StartDiscovery(
     mojo::PendingRemote<nearby_share::mojom::ShareTargetListener> listener,
     StartDiscoveryCallback callback) {
-  if (nearby_sharing_service_->IsTransferring()) {
+  if (nearby_sharing_service_->IsTransferring() ||
+      nearby_sharing_service_->IsScanning() ||
+      nearby_sharing_service_->IsConnecting()) {
     // Is there is currently a file transfer ongoing, return early with the
     // corresponding error code.
     std::move(callback).Run(nearby_share::mojom::StartDiscoveryResult::

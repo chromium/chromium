@@ -115,9 +115,25 @@ class NearbyPerSessionDiscoveryManagerTest : public testing::Test {
       NearbyPerSessionDiscoveryManager::StartDiscoveryCallback>;
   using MockGetPayloadPreviewCallback = base::MockCallback<
       nearby_share::mojom::DiscoveryManager::GetPayloadPreviewCallback>;
+  enum SharingServiceState { None, Transferring, Connecting, Scanning };
 
   NearbyPerSessionDiscoveryManagerTest() = default;
   ~NearbyPerSessionDiscoveryManagerTest() override = default;
+
+  void SetUp() override {
+    EXPECT_CALL(sharing_service(), IsTransferring())
+        .WillRepeatedly(testing::ReturnPointee(&is_transferring_));
+    EXPECT_CALL(sharing_service(), IsConnecting())
+        .WillRepeatedly(testing::ReturnPointee(&is_connecting_));
+    EXPECT_CALL(sharing_service(), IsScanning())
+        .WillRepeatedly(testing::ReturnPointee(&is_scanning_));
+  }
+
+  void SetSharingServiceState(SharingServiceState state) {
+    is_transferring_ = state == SharingServiceState::Transferring;
+    is_connecting_ = state == SharingServiceState::Connecting;
+    is_scanning_ = state == SharingServiceState::Scanning;
+  }
 
   MockNearbySharingService& sharing_service() { return sharing_service_; }
 
@@ -128,6 +144,9 @@ class NearbyPerSessionDiscoveryManagerTest : public testing::Test {
   MockNearbySharingService sharing_service_;
   NearbyPerSessionDiscoveryManager manager_{&sharing_service_,
                                             CreateTextAttachments()};
+  bool is_transferring_ = false;
+  bool is_scanning_ = false;
+  bool is_connecting_ = false;
 };
 
 }  // namespace
@@ -184,16 +203,33 @@ TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_Success) {
 
 TEST_F(NearbyPerSessionDiscoveryManagerTest, StartDiscovery_ErrorInProgress) {
   MockStartDiscoveryCallback callback;
+  MockShareTargetListener listener;
+
   EXPECT_CALL(callback,
               Run(/*result=*/nearby_share::mojom::StartDiscoveryResult::
                       kErrorInProgressTransferring));
+  SetSharingServiceState(SharingServiceState::Transferring);
+  manager().StartDiscovery(listener.Bind(), callback.Get());
 
-  // Expect that "IsTransfering()" gets called once but mock it to return true
-  // to simulate another file transfer is in progress.
-  EXPECT_CALL(sharing_service(), IsTransferring())
-      .WillOnce(testing::Return(/*is_transferring=*/true));
+  listener.reset();
+  EXPECT_CALL(callback,
+              Run(/*result=*/nearby_share::mojom::StartDiscoveryResult::
+                      kErrorInProgressTransferring));
+  SetSharingServiceState(SharingServiceState::Connecting);
+  manager().StartDiscovery(listener.Bind(), callback.Get());
 
-  MockShareTargetListener listener;
+  listener.reset();
+  EXPECT_CALL(callback,
+              Run(/*result=*/nearby_share::mojom::StartDiscoveryResult::
+                      kErrorInProgressTransferring));
+  SetSharingServiceState(SharingServiceState::Scanning);
+  manager().StartDiscovery(listener.Bind(), callback.Get());
+
+  listener.reset();
+  EXPECT_CALL(
+      callback,
+      Run(/*result=*/nearby_share::mojom::StartDiscoveryResult::kSuccess));
+  SetSharingServiceState(SharingServiceState::None);
   manager().StartDiscovery(listener.Bind(), callback.Get());
 }
 
