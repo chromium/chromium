@@ -45,3 +45,22 @@ android_library("junit_tests") {
     "//third_party/mockito:mockito_java",
   ]
 }
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetObserverTest.java" ]
+
+  deps = [
+    ":java",
+    "../:java",
+    "../test:java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
+  ]
+}

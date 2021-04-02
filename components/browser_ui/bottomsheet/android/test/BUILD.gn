@@ -5,12 +5,20 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  sources = [ "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetTestSupport.java" ]
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetTestSupport.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/TestBottomSheetContent.java",
+  ]
 
   deps = [
     "..:java",
     "..:manager_java",
     "../internal:java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

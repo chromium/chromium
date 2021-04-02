@@ -631,9 +631,7 @@ chrome_test_java_sources = [
   "javatests/src/org/chromium/chrome/browser/webauth/Fido2HelperTest.java",
   "javatests/src/org/chromium/chrome/browser/webshare/WebShareTest.java",
   "javatests/src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetControllerTest.java",
-  "javatests/src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetObserverTest.java",
   "javatests/src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetTest.java",
-  "javatests/src/org/chromium/chrome/browser/widget/bottomsheet/TestBottomSheetContent.java",
   "javatests/src/org/chromium/chrome/test/crash/IntentionalCrashTest.java",
 ]
 

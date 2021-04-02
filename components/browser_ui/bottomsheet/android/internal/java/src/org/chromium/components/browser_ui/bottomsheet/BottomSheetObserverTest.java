@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.widget.bottomsheet;
+package org.chromium.components.browser_ui.bottomsheet;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
-import static org.chromium.chrome.browser.flags.ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE;
-
+import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -17,30 +16,27 @@ import android.widget.FrameLayout;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
 
 /** This class tests the functionality of the {@link BottomSheetObserver}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(BaseJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // Bottom sheet is only used on phones.
-@CommandLineFlags.Add({DISABLE_FIRST_RUN_EXPERIENCE})
 public class BottomSheetObserverTest {
     /** An observer used to record events that occur with respect to the bottom sheet. */
     public static class TestSheetObserver extends EmptyBottomSheetObserver {
@@ -101,8 +97,9 @@ public class BottomSheetObserverTest {
         }
     }
 
-    @Rule
-    public ChromeTabbedActivityTestRule mTestRule = new ChromeTabbedActivityTestRule();
+    @ClassRule
+    public static BaseActivityTestRule<DummyUiActivity> mTestRule =
+            new BaseActivityTestRule<>(DummyUiActivity.class);
     private TestSheetObserver mObserver;
     private TestBottomSheetContent mSheetContent;
     private BottomSheetController mBottomSheetController;
@@ -110,10 +107,28 @@ public class BottomSheetObserverTest {
 
     @Before
     public void setUp() throws Exception {
+        mTestRule.launchActivity(null);
+
         BottomSheetTestSupport.setSmallScreen(false);
-        mTestRule.startMainActivityOnBlankPage();
-        mBottomSheetController =
-                mTestRule.getActivity().getRootUiCoordinatorForTesting().getBottomSheetController();
+
+        ViewGroup rootView = mTestRule.getActivity().findViewById(android.R.id.content);
+        ScrimCoordinator scrim = new ScrimCoordinator(
+                mTestRule.getActivity(), new ScrimCoordinator.SystemUiScrimDelegate() {
+                    @Override
+                    public void setStatusBarScrimFraction(float scrimFraction) {
+                        // Intentional noop
+                    }
+
+                    @Override
+                    public void setNavigationBarScrimFraction(float scrimFraction) {
+                        // Intentional noop
+                    }
+                }, rootView, Color.WHITE);
+
+        mBottomSheetController = new BottomSheetControllerImpl(() -> scrim, (v) -> {},
+                mTestRule.getActivity().getWindow(), KeyboardVisibilityDelegate.getInstance(),
+                () -> rootView);
+
         mTestSupport = new BottomSheetTestSupport(mBottomSheetController);
         ThreadUtils.runOnUiThreadBlocking(() -> {
             mSheetContent = new TestBottomSheetContent(
@@ -192,8 +207,8 @@ public class BottomSheetObserverTest {
         }
 
         assertEquals(initialOpenedCount, mObserver.mOpenedCallbackHelper.getCallCount());
-        assertEquals("Close event should have only been called once.",
-                closedCallbackCount + 1, closedCallbackHelper.getCallCount());
+        assertEquals("Close event should have only been called once.", closedCallbackCount + 1,
+                closedCallbackHelper.getCallCount());
     }
 
     /** Test that the onSheetOpened event is triggered if the sheet is opened without animation. */
@@ -265,8 +280,8 @@ public class BottomSheetObserverTest {
         openedCallbackHelper.waitForCallback(openedCallbackCount, 1);
         fullCallbackHelper.waitForCallback(initialFullCount, 1);
 
-        assertEquals("Open event should have only been called once.",
-                openedCallbackCount + 1, openedCallbackHelper.getCallCount());
+        assertEquals("Open event should have only been called once.", openedCallbackCount + 1,
+                openedCallbackHelper.getCallCount());
 
         assertEquals(initialClosedCount, closedCallbackHelper.getCallCount());
     }
@@ -321,35 +336,31 @@ public class BottomSheetObserverTest {
         // Show content that should be wrapped.
         CallbackHelper callbackHelper = mObserver.mContentChangedCallbackHelper;
         int callCount = callbackHelper.getCallCount();
+
         ThreadUtils.runOnUiThreadBlocking(() -> {
-            mTestSupport.showContent(
-                    new TestBottomSheetContent(mTestRule.getActivity(),
-                            BottomSheetContent.ContentPriority.HIGH, false) {
-                        private final ViewGroup mContentView;
+            // We wrap the View in a FrameLayout as we need something to read the
+            // hard coded height in the layout params. There is no way to create a
+            // View with a specific height on its own as View::onMeasure will by
+            // default set its height/width to be the minimum height/width of its
+            // background (if any) or expand as much as it can.
+            final ViewGroup contentView = new FrameLayout(mTestRule.getActivity());
+            View child = new View(mTestRule.getActivity());
+            child.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, wrappedContentHeight));
+            contentView.addView(child);
 
-                        {
-                            // We wrap the View in a FrameLayout as we need something to read the
-                            // hard coded height in the layout params. There is no way to create a
-                            // View with a specific height on its own as View::onMeasure will by
-                            // default set its height/width to be the minimum height/width of its
-                            // background (if any) or expand as much as it can.
-                            mContentView = new FrameLayout(mTestRule.getActivity());
-                            View child = new View(mTestRule.getActivity());
-                            child.setLayoutParams(new ViewGroup.LayoutParams(
-                                    ViewGroup.LayoutParams.MATCH_PARENT, wrappedContentHeight));
-                            mContentView.addView(child);
-                        }
+            mTestSupport.showContent(new TestBottomSheetContent(
+                    mTestRule.getActivity(), BottomSheetContent.ContentPriority.HIGH, false) {
+                @Override
+                public View getContentView() {
+                    return contentView;
+                }
 
-                        @Override
-                        public View getContentView() {
-                            return mContentView;
-                        }
-
-                        @Override
-                        public float getFullHeightRatio() {
-                            return HeightMode.WRAP_CONTENT;
-                        }
-                    });
+                @Override
+                public float getFullHeightRatio() {
+                    return HeightMode.WRAP_CONTENT;
+                }
+            });
         });
         callbackHelper.waitForCallback(callCount);
 
