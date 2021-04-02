@@ -44,6 +44,7 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_producer.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/system_producer.h"
+#include "services/tracing/public/cpp/perfetto/trace_string_lookup.h"
 #include "services/tracing/public/cpp/perfetto/trace_time.h"
 #include "services/tracing/public/cpp/perfetto/traced_value_proto_writer.h"
 #include "services/tracing/public/cpp/perfetto/track_event_thread_local_event_sink.h"
@@ -84,25 +85,6 @@ namespace tracing {
 namespace {
 
 TraceEventMetadataSource* g_trace_event_metadata_source_for_testing = nullptr;
-
-ChromeProcessDescriptor::ProcessType GetProcessType(const std::string& name) {
-  if (name == "Browser") {
-    return ChromeProcessDescriptor::PROCESS_BROWSER;
-  } else if (name == "Renderer") {
-    return ChromeProcessDescriptor::PROCESS_RENDERER;
-  } else if (name == "GPU Process") {
-    return ChromeProcessDescriptor::PROCESS_GPU;
-  } else if (base::MatchPattern(name, "Service:*")) {
-    return ChromeProcessDescriptor::PROCESS_UTILITY;
-  } else if (name == "HeadlessBrowser") {
-    return ChromeProcessDescriptor::PROCESS_BROWSER;
-  } else if (name == "PPAPI Process") {
-    return ChromeProcessDescriptor::PROCESS_PPAPI_PLUGIN;
-  } else if (name == "PPAPI Broker Process") {
-    return ChromeProcessDescriptor::PROCESS_PPAPI_BROKER;
-  }
-  return ChromeProcessDescriptor::PROCESS_UNSPECIFIED;
-}
 
 void EmitRecurringUpdates(ChromeProcessDescriptor::ProcessType process_type) {
 #if defined(OS_ANDROID)
