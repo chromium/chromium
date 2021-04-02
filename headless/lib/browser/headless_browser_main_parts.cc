@@ -73,8 +73,16 @@ void HeadlessBrowserMainParts::PostMainMessageLoopRun() {
     devtools_http_handler_started_ = false;
   }
 #if defined(HEADLESS_USE_PREFS)
-  if (local_state_)
+  if (local_state_) {
     local_state_->CommitPendingWrite();
+    local_state_.reset(nullptr);
+  }
+#endif
+#if defined(HEADLESS_USE_POLICY)
+  if (policy_connector_) {
+    policy_connector_->Shutdown();
+    policy_connector_.reset(nullptr);
+  }
 #endif
 }
 
