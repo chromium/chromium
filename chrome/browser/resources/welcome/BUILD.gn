@@ -161,7 +161,7 @@ js_library("welcome_app") {
     "./shared:bookmark_proxy",
     "./shared:nux_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
     "//ui/webui/resources/js:load_time_data.m",
   ]
 }

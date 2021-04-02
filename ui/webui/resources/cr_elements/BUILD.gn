@@ -110,8 +110,6 @@ preprocess_if_expr("preprocess_polymer2") {
     "cr_toast/cr_toast_manager.js",
     "cr_toggle/cr_toggle.html",
     "cr_toggle/cr_toggle.js",
-    "cr_view_manager/cr_view_manager.html",
-    "cr_view_manager/cr_view_manager.js",
     "hidden_style_css.html",
     "icons.html",
     "md_select_css.html",
@@ -194,7 +192,7 @@ preprocess_if_expr("preprocess_generated") {
     "cr_toolbar/cr_toolbar.js",
     "cr_toolbar/cr_toolbar_search_field.js",
     "cr_toolbar/cr_toolbar_selection_overlay.js",
-    "cr_view_manager/cr_view_manager.m.js",
+    "cr_view_manager/cr_view_manager.js",
     "hidden_style_css.m.js",
     "icons.m.js",
     "md_select_css.m.js",
@@ -246,7 +244,6 @@ group("closure_compile") {
     "cr_splitter:closure_compile",
     "cr_toast:closure_compile",
     "cr_toggle:closure_compile",
-    "cr_view_manager:closure_compile",
     "policy:closure_compile",
 
     # Targets for auto-generated Polymer 3 JS Modules
@@ -410,7 +407,7 @@ group("polymer3_elements") {
     "cr_toast:polymer3_elements",
     "cr_toggle:cr_toggle_module",
     "cr_toolbar:web_components",
-    "cr_view_manager:cr_view_manager_module",
+    "cr_view_manager:web_components",
     "policy:polymer3_elements",
   ]
 

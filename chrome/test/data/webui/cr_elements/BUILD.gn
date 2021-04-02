@@ -368,7 +368,7 @@ js_library("cr_view_manager_test") {
   deps = [
     "..:chai_assert",
     "..:test_util.m",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

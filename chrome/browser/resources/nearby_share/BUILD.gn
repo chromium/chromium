@@ -135,7 +135,7 @@ js_library("app") {
     "./shared:nearby_share_settings_behavior.m",
     "./shared:nearby_visibility_page.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager.m",
+    "//ui/webui/resources/cr_elements/cr_view_manager:cr_view_manager",
   ]
   extra_deps = [ "./shared:modulize" ]
 }

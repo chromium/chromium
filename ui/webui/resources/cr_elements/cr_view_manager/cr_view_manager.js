@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-(function() {
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assert} from '../../js/assert.m.js';
+
 /**
  * TODO(dpapad): shim for not having Animation.finished implemented. Can
  * replace with Animation.finished if Chrome implements it (see:
@@ -50,6 +53,8 @@ viewAnimations.set('fade-out', element => {
 
 Polymer({
   is: 'cr-view-manager',
+
+  _template: html`{__html_template__}`,
 
   /**
    * @param {!Element} element
@@ -114,5 +119,3 @@ Polymer({
     return Promise.all(promises);
   },
 });
-/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');
-})();
