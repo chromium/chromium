@@ -201,6 +201,8 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
     {"itemAllowOnFollowingSites", IDS_EXTENSIONS_ALLOW_ON_FOLLOWING_SITES},
     {"itemCollectErrors", IDS_EXTENSIONS_ENABLE_ERROR_COLLECTION},
     {"itemCorruptInstall", IDS_EXTENSIONS_CORRUPTED_EXTENSION},
+    {"itemAllowlistWarning",
+     IDS_EXTENSIONS_SAFE_BROWSING_CRX_ALLOWLIST_WARNING},
     {"itemRepair", IDS_EXTENSIONS_REPAIR_CORRUPTED},
     {"itemReload", IDS_EXTENSIONS_RELOAD_TERMINATED},
     {"loadErrorCouldNotLoadManifest",
@@ -289,6 +291,9 @@ content::WebUIDataSource* CreateMdExtensionsSource(Profile* profile,
                              GURL(chrome::kRemoveNonCWSExtensionURL),
                              g_browser_process->GetApplicationLocale())
                              .spec()));
+  source->AddString(
+      "enhancedSafeBrowsingWarningHelpUrl",
+      base::ASCIIToUTF16(chrome::kCwsEnhancedSafeBrowsingLearnMoreURL));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   source->AddString(
       "kioskDisableBailoutWarningBody",

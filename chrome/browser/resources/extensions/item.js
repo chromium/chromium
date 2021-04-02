@@ -432,17 +432,31 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  hasWarnings_() {
+  hasSevereWarnings_() {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
         this.data.runtimeWarnings.length > 0 || !!this.data.blacklistText;
   },
 
   /**
-   * @return {string}
+   * @return {boolean}
    * @private
    */
-  computeWarningsClasses_() {
-    return this.data.blacklistText ? 'severe' : 'mild';
+  showDescription_() {
+    return !this.hasSevereWarnings_() &&
+        !this.data.showSafeBrowsingAllowlistWarning;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showAllowlistWarning_() {
+    // Only show the allowlist warning if there are no other warnings. The item
+    // card has a fixed height and the content might get cropped if too many
+    // warnings are displayed. This should be a rare edge case and the allowlist
+    // warning will still be shown in the item detail view.
+    return this.data.showSafeBrowsingAllowlistWarning &&
+        !this.hasSevereWarnings_();
   },
 });

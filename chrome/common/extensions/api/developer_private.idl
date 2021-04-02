@@ -253,6 +253,7 @@ namespace developerPrivate {
     DOMString version;
     ExtensionView[] views;
     DOMString webStoreUrl;
+    boolean showSafeBrowsingAllowlistWarning;
   };
 
   dictionary ProfileInfo {

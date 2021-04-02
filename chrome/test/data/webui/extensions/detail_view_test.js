@@ -399,7 +399,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
 
-    item.set('data.blacklistText', 'This item is blacklisted');
+    item.set('data.blacklistText', 'This item is blocklisted');
     flush();
     testWarningVisible('#runtime-warnings', true);
     testWarningVisible('#corrupted-warning', true);
@@ -433,5 +433,35 @@ suite(extension_detail_view_tests.suiteName, function() {
     testWarningVisible('#suspicious-warning', false);
     testWarningVisible('#blacklisted-warning', false);
     testWarningVisible('#update-required-warning', false);
+
+    item.set('data.showSafeBrowsingAllowlistWarning', true);
+    flush();
+    testWarningVisible('#runtime-warnings', false);
+    testWarningVisible('#corrupted-warning', false);
+    testWarningVisible('#suspicious-warning', false);
+    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#allowlist-warning', true);
+
+    item.set('data.disableReasons.suspiciousInstall', true);
+    flush();
+    testWarningVisible('#runtime-warnings', false);
+    testWarningVisible('#corrupted-warning', false);
+    testWarningVisible('#suspicious-warning', true);
+    testWarningVisible('#blacklisted-warning', false);
+    testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#allowlist-warning', true);
+
+    // Test that the allowlist warning is not shown when there is already a
+    // blocklist message. It would be redundant since all blocklisted extension
+    // are necessarily not included in the Safe Browsing allowlist.
+    item.set('data.blacklistText', 'This item is blocklisted');
+    flush();
+    testWarningVisible('#runtime-warnings', false);
+    testWarningVisible('#corrupted-warning', false);
+    testWarningVisible('#suspicious-warning', true);
+    testWarningVisible('#blacklisted-warning', true);
+    testWarningVisible('#update-required-warning', false);
+    testWarningVisible('#allowlist-warning', false);
   });
 });

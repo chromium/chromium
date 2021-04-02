@@ -89,6 +89,14 @@
     width: 18px;
   }
 
+  #allowlist-warning {
+    flex: 1;
+  }
+
+  #allowlist-warning .warning-icon {
+    --iron-icon-fill-color: var(--warning-color);
+  }
+
   ul {
     margin: 0;
     padding-inline-start: 20px;
@@ -173,7 +181,7 @@
         </cr-toggle>
       </div>
     </div>
-    <div id="warnings" hidden$="[[!hasWarnings_(data.*)]]">
+    <div id="warnings" hidden$="[[!hasSevereWarnings_(data.*)]]">
       <div id="runtime-warnings" hidden$="[[!data.runtimeWarnings.length]]"
           class="cr-row continuation warning control-line">
         <iron-icon class="warning-icon" icon="cr:error"></iron-icon>
@@ -219,6 +227,18 @@
         <iron-icon class="warning-icon" icon="cr:warning"></iron-icon>
         <span>$i18n{updateRequiredByPolicy}</span>
       </div>
+    </div>
+    <div id="allowlist-warning" class="cr-row continuation"
+        hidden$="[[!showAllowlistWarning_(data.*)]]">
+      <iron-icon class="warning-icon"
+          icon="extensions-icons:safebrowsing_warning">
+      </iron-icon>
+      <span class="cr-secondary-text">
+        $i18n{itemAllowlistWarning}
+        <a href="$i18n{enhancedSafeBrowsingWarningHelpUrl}" target="_blank">
+          $i18n{learnMore}
+        </a>
+      </span>
     </div>
     <div class="section">
       <div class="section-title" role="heading" aria-level="2">

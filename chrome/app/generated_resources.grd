@@ -7315,6 +7315,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Disabled by Chrome. This extension may be unsafe.
         </message>
 
+        <!-- Enhanced Safe Browsing CRX allowlist warning -->
+        <message name="IDS_EXTENSIONS_SAFE_BROWSING_CRX_ALLOWLIST_WARNING" desc="A warning shown in 'chrome://extensions' when the extension is not included in the Enhanced Safe Browsing CRX allowlist.">
+           This extension is not trusted by Enhanced Safe Browsing.
+        </message>
+
         <!-- Reset Profile Settings strings -->
         <message name="IDS_RESET_PROFILE_SETTINGS_EXPLANATION" desc="A label describing the consequences of the 'reset profile settings' feature">
           This will reset your startup page, new tab page, search engine, and pinned tabs. It will also disable all extensions and clear temporary data like cookies. Your bookmarks, history and saved passwords will not be cleared.

@@ -156,7 +156,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  hasWarnings_() {
+  hasSevereWarnings_() {
     return this.data.disableReasons.corruptInstall ||
         this.data.disableReasons.suspiciousInstall ||
         this.data.disableReasons.updateRequired || !!this.data.blacklistText ||
@@ -377,5 +377,17 @@ Polymer({
     // detail view, because the repair button appears just beneath it.
     return enableControl === EnableControl.ENABLE_TOGGLE ||
         enableControl === EnableControl.REPAIR;
+  },
+
+  /**
+   * @return {boolean} Whether the allowlist warning should be shown.
+   * @private
+   */
+  showAllowlistWarning_() {
+    // Only show the allowlist warning if there is no blocklist warning. It
+    // would be redundant since all blocklisted items are necessarily not
+    // included in the Safe Browsing allowlist.
+    return this.data.showSafeBrowsingAllowlistWarning &&
+        !this.data.blacklistText;
   },
 });

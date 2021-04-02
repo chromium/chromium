@@ -32,7 +32,6 @@
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chrome/grit/google_chrome_strings.h"
 #include "content/public/browser/render_frame_host.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_icon_placeholder.h"
@@ -507,11 +506,6 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
       blocklist_text = IDS_EXTENSIONS_BLOCKLISTED_POTENTIALLY_UNWANTED;
       break;
     default:
-      if (extension_system_->extension_service()
-              ->allowlist()
-              ->ShouldDisplayWarning(extension.id())) {
-        blocklist_text = IDS_EXTENSIONS_BLOCKLISTED_NOT_ALLOWLISTED;
-      }
       break;
   }
   if (blocklist_text != -1) {
@@ -519,6 +513,10 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
         new std::string(l10n_util::GetStringUTF8(blocklist_text)));
   }
 
+  if (extension_system_->extension_service()->allowlist()->ShouldDisplayWarning(
+          extension.id())) {
+    info->show_safe_browsing_allowlist_warning = true;
+  }
   ExtensionManagement* extension_management =
       ExtensionManagementFactory::GetForBrowserContext(browser_context_);
   Profile* profile = Profile::FromBrowserContext(browser_context_);

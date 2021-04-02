@@ -586,9 +586,6 @@ Chromium is unable to recover your settings.
       <message name="IDS_EXTENSIONS_SHORTCUT_SCOPE_IN_CHROME" desc="The label to indicate that a shortcut will be triggerable only from within the Chrome application.">
         In Chromium
       </message>
-      <message name="IDS_EXTENSIONS_BLOCKLISTED_NOT_ALLOWLISTED" desc="The text explaining the reason for disabling extension or app. The extension in question is not included in the Safe Browsing allowlist.">
-        Chromium recommends disabling this extension because it does not currently meet Enhanced Safe Browsing standards.
-      </message>
 
       <if expr="enable_extensions">
         <message name="IDS_EXTENSIONS_MULTIPLE_UNSUPPORTED_DISABLED_BODY" desc="Body of the dialog shown when multiple unsupported extensions have been disabled.">
