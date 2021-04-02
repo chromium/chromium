@@ -380,7 +380,11 @@ std::string BrowserContext::CreateRandomMediaDeviceIDSalt() {
 
 void BrowserContext::WriteIntoTracedValue(perfetto::TracedValue context) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("id", impl()->UniqueId());
+
+  // `impl()` is destroyed by the destuctor of BrowserContext and might not
+  // exist when producing traces from underneath the destructor.
+  if (impl())
+    dict.Add("id", impl()->UniqueId());
 }
 
 //////////////////////////////////////////////////////////////////////////////

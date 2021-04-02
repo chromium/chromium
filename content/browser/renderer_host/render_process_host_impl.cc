@@ -1708,12 +1708,10 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
   if (cleanup_network_service_plugin_exceptions_upon_destruction_)
     RemoveNetworkServicePluginExceptions(GetID());
 
-  TRACE_EVENT_NESTABLE_ASYNC_END2("shutdown", "Cleanup in progress", this,
-                                  "render_process_host", this,
-                                  "browser_context", browser_context_);
-  TRACE_EVENT_NESTABLE_ASYNC_END2("shutdown", "Browser.RenderProcessHostImpl",
-                                  this, "render_process_host", this,
-                                  "browser_context", browser_context_);
+  TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Cleanup in progress", this,
+                                  "render_process_host", this);
+  TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Browser.RenderProcessHostImpl",
+                                  this, "render_process_host", this);
 }
 
 bool RenderProcessHostImpl::Init() {
