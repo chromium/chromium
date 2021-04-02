@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
@@ -111,8 +110,8 @@ class MediaGalleriesPermissionsTest : public extensions::ExtensionPrefsTest {
 
   void Verify() override {
     struct TestData {
-      CheckedPtr<std::string> id;
-      CheckedPtr<std::vector<MediaGalleryPermission>> expectation;
+      std::string* id;
+      std::vector<MediaGalleryPermission>* expectation;
     };
 
     const TestData test_data[] = {{&extension1_id_, &extension1_expectation_},

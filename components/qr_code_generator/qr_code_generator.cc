@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/notreached.h"
 
 // kMaxVersionWithSmallLengths is the maximum QR version that uses the smaller
@@ -390,7 +389,7 @@ class BitPacker {
   void AppendTerminator() { AppendBits(0, 4); }
 
  private:
-  const CheckedPtr<std::vector<uint8_t>> out_;
+  std::vector<uint8_t>* const out_;
   int bits_remaining_in_final_byte_ = 0;
 };
 

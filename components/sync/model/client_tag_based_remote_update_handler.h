@@ -10,7 +10,6 @@
 #include <unordered_set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -78,11 +77,11 @@ class ClientTagBasedRemoteUpdateHandler {
   const ModelType type_;
 
   // ModelTypeSyncBridge linked to associated processor.
-  const CheckedPtr<ModelTypeSyncBridge> bridge_;
+  ModelTypeSyncBridge* const bridge_;
 
   // A map of client tag hash to sync entities known to the processor.
   // Should be replaced with new interface.
-  const CheckedPtr<ProcessorEntityTracker> entity_tracker_;
+  ProcessorEntityTracker* const entity_tracker_;
 };
 
 }  // namespace syncer

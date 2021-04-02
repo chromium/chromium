@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -214,7 +213,7 @@ class BinaryUploadServiceTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   std::unique_ptr<BinaryUploadService> service_;
-  CheckedPtr<MockBinaryFCMService> fcm_service_;
+  MockBinaryFCMService* fcm_service_;
   FakeMultipartUploadRequestFactory fake_factory_;
 };
 

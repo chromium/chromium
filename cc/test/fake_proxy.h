@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/proxy.h"
@@ -57,7 +56,7 @@ class FakeProxy : public Proxy {
       bool enable_frame_rate_throttling) override {}
 
  private:
-  CheckedPtr<LayerTreeHost> layer_tree_host_;
+  LayerTreeHost* layer_tree_host_;
 };
 
 }  // namespace cc

@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -376,7 +375,7 @@ class PasswordSaveManagerImplTest : public testing::Test,
   // needs to outlive the latter.
   std::unique_ptr<FakeFormFetcher> fetcher_;
   std::unique_ptr<PasswordSaveManagerImpl> password_save_manager_impl_;
-  CheckedPtr<NiceMock<MockFormSaver>> mock_form_saver_;
+  NiceMock<MockFormSaver>* mock_form_saver_;
   NiceMock<MockAutofillDownloadManager> mock_autofill_download_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(PasswordSaveManagerImplTest);

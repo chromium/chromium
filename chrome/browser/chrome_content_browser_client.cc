@@ -21,7 +21,6 @@
 #include "base/i18n/base_i18n_switches.h"
 #include "base/i18n/character_encoding.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -1028,7 +1027,7 @@ class CertificateReportingServiceCertReporter : public SSLCertReporter {
   }
 
  private:
-  CheckedPtr<CertificateReportingService> service_;
+  CertificateReportingService* service_;
 
   DISALLOW_COPY_AND_ASSIGN(CertificateReportingServiceCertReporter);
 };
@@ -3985,7 +3984,7 @@ void ChromeContentBrowserClient::OpenURL(
   nav_params.FillNavigateParamsFromOpenURLParams(params);
 
   Navigate(&nav_params);
-  std::move(callback).Run(nav_params.navigated_or_inserted_contents.get());
+  std::move(callback).Run(nav_params.navigated_or_inserted_contents);
 #endif
 }
 
@@ -4474,7 +4473,7 @@ class ProtocolHandlerThrottle : public blink::URLLoaderThrottle {
       *url = translated_url;
   }
 
-  CheckedPtr<ProtocolHandlerRegistry> protocol_handler_registry_;
+  ProtocolHandlerRegistry* protocol_handler_registry_;
 };
 }  // namespace
 

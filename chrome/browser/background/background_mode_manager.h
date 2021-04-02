@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/sequenced_task_runner.h"
@@ -226,7 +225,7 @@ class BackgroundModeManager : public content::NotificationObserver,
     void OnProfileWillBeDestroyed(Profile* profile) override;
 
    private:
-    const CheckedPtr<BackgroundModeManager> manager_;
+    BackgroundModeManager* const manager_;
 
     ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
     ScopedObserver<extensions::ForceInstalledTracker,
@@ -240,7 +239,7 @@ class BackgroundModeManager : public content::NotificationObserver,
     std::u16string name_;
 
     // The profile associated with this background app data.
-    CheckedPtr<Profile> profile_;
+    Profile* profile_;
 
     // Prevents |profile_| from being deleted. Created or reset by
     // UpdateProfileKeepAlive().
@@ -248,7 +247,7 @@ class BackgroundModeManager : public content::NotificationObserver,
 
     // Weak ref vector owned by BackgroundModeManager where the indices
     // correspond to Command IDs and values correspond to their handlers.
-    const CheckedPtr<CommandIdHandlerVector> command_id_handler_vector_;
+    CommandIdHandlerVector* const command_id_handler_vector_;
 
     // The list of notified extensions for this profile. We track this to ensure
     // that we never notify the user about the same extension twice in a single

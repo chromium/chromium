@@ -106,7 +106,7 @@ ChromeCleanerDialog::ChromeCleanerDialog(
     logs_permission_checkbox_->SetState(views::Checkbox::STATE_DISABLED);
 
   AddChildView(label);
-  AddChildView(logs_permission_checkbox_.get());
+  AddChildView(logs_permission_checkbox_);
 }
 
 ChromeCleanerDialog::~ChromeCleanerDialog() {

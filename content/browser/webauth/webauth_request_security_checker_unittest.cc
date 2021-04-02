@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "content/browser/webauth/webauth_request_security_checker.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -91,8 +90,7 @@ class WebAuthRequestSecurityCheckerTest
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
-  CheckedPtr<content::WebContents>
-      web_contents_;  // Owned by `web_contents_factory_`.
+  content::WebContents* web_contents_;  // Owned by `web_contents_factory_`.
   base::test::ScopedFeatureList features_;
 };
 

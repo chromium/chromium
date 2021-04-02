@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/metrics/metrics_provider.h"
 
@@ -44,7 +43,7 @@ class BackgroundTracingMetricsProvider : public metrics::MetricsProvider {
       system_profile_providers_;
 #if defined(OS_WIN)
   // owned by |system_profile_providers_|.
-  CheckedPtr<MetricsProvider> av_metrics_provider_ = nullptr;
+  MetricsProvider* av_metrics_provider_ = nullptr;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundTracingMetricsProvider);

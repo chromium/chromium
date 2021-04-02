@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/win/scoped_handle.h"
 
 namespace installer {
@@ -83,7 +82,7 @@ class ExperimentStorage {
 
     explicit Lock(ExperimentStorage* storage);
 
-    CheckedPtr<ExperimentStorage> storage_;
+    ExperimentStorage* storage_;
 
     DISALLOW_COPY_AND_ASSIGN(Lock);
   };

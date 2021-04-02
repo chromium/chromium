@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
@@ -159,7 +158,7 @@ class CertVerifierServiceTest : public PlatformTest {
   CertVerifierServiceTest()
       : dummy_cv_(new DummyCertVerifier),
         cv_service_(new internal::CertVerifierServiceImpl(
-            base::WrapUnique(dummy_cv_.get()),
+            base::WrapUnique(dummy_cv_),
             cv_service_remote_.BindNewPipeAndPassReceiver(),
             /*cert_net_fetcher=*/nullptr)) {}
 
@@ -229,8 +228,8 @@ class CertVerifierServiceTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 
   mojo::Remote<mojom::CertVerifierService> cv_service_remote_;
-  CheckedPtr<DummyCertVerifier> dummy_cv_;
-  CheckedPtr<internal::CertVerifierServiceImpl> cv_service_;
+  DummyCertVerifier* dummy_cv_;
+  internal::CertVerifierServiceImpl* cv_service_;
 };
 }  // namespace
 

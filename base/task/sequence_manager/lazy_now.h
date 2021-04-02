@@ -6,7 +6,6 @@
 #define BASE_TASK_SEQUENCE_MANAGER_LAZY_NOW_H_
 
 #include "base/base_export.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 
@@ -34,7 +33,7 @@ class BASE_EXPORT LazyNow {
   bool has_value() const { return !!now_; }
 
  private:
-  CheckedPtr<const TickClock> tick_clock_;  // Not owned.
+  const TickClock* tick_clock_;  // Not owned.
   Optional<TimeTicks> now_;
 };
 

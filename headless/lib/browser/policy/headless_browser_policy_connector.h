@@ -5,7 +5,6 @@
 #ifndef HEADLESS_LIB_BROWSER_POLICY_HEADLESS_BROWSER_POLICY_CONNECTOR_H_
 #define HEADLESS_LIB_BROWSER_POLICY_HEADLESS_BROWSER_POLICY_CONNECTOR_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
@@ -49,7 +48,7 @@ class HeadlessBrowserPolicyConnector : public BrowserPolicyConnector {
   std::unique_ptr<ConfigurationPolicyProvider> CreatePlatformProvider();
 
   // Owned by the base class.
-  CheckedPtr<ConfigurationPolicyProvider> platform_provider_ = nullptr;
+  ConfigurationPolicyProvider* platform_provider_ = nullptr;
 };
 
 }  // namespace policy

@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -131,7 +130,7 @@ class CodecAllocatorTest : public testing::Test {
 
   // Allocators that we own. They are not unique_ptrs because the destructor is
   // private and they need to be destructed on the right thread.
-  CheckedPtr<CodecAllocator> allocator_ = nullptr;
+  CodecAllocator* allocator_ = nullptr;
 
   std::unique_ptr<MockMediaCodecBridge> last_created_codec_;
 

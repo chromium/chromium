@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/optional.h"
 
@@ -54,8 +53,8 @@ class PDFiumAPIStringBufferAdapter {
   }
 
  private:
-  const CheckedPtr<StringType> str_;
-  const CheckedPtr<void> data_;
+  StringType* const str_;
+  void* const data_;
   const size_t expected_size_;
   const bool check_expected_size_;
   bool is_closed_;

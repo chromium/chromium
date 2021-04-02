@@ -9,7 +9,6 @@
 #include <limits>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
@@ -57,7 +56,7 @@ class Transaction {
               Operation op, int list);
   ~Transaction();
  private:
-  CheckedPtr<volatile disk_cache::LruData> data_;
+  volatile disk_cache::LruData* data_;
   DISALLOW_COPY_AND_ASSIGN(Transaction);
 };
 

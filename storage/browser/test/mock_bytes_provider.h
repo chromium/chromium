@@ -5,7 +5,6 @@
 #ifndef STORAGE_BROWSER_TEST_MOCK_BYTES_PROVIDER_H_
 #define STORAGE_BROWSER_TEST_MOCK_BYTES_PROVIDER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 #include "third_party/blink/public/mojom/blob/data_element.mojom.h"
 
@@ -35,9 +34,9 @@ class MockBytesProvider : public blink::mojom::BytesProvider {
 
  private:
   std::vector<uint8_t> data_;
-  CheckedPtr<size_t> reply_request_count_;
-  CheckedPtr<size_t> stream_request_count_;
-  CheckedPtr<size_t> file_request_count_;
+  size_t* reply_request_count_;
+  size_t* stream_request_count_;
+  size_t* file_request_count_;
   base::Optional<base::Time> file_modification_time_;
 };
 

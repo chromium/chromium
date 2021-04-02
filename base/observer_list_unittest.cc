@@ -13,7 +13,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
@@ -93,14 +92,14 @@ class DisrupterT : public Foo {
     if (remove_self_)
       list_->RemoveObserver(this);
     if (doomed_)
-      list_->RemoveObserver(doomed_.get());
+      list_->RemoveObserver(doomed_);
   }
 
   void SetDoomed(Foo* doomed) { doomed_ = doomed; }
 
  private:
-  CheckedPtr<ObserverListType> list_;
-  CheckedPtr<Foo> doomed_;
+  ObserverListType* list_;
+  Foo* doomed_;
   bool remove_self_;
 };
 
@@ -115,13 +114,13 @@ class AddInObserve : public Foo {
 
   void Observe(int x) override {
     if (to_add_) {
-      observer_list->AddObserver(to_add_.get());
+      observer_list->AddObserver(to_add_);
       to_add_ = nullptr;
     }
   }
 
-  CheckedPtr<ObserverListType> observer_list;
-  CheckedPtr<Foo> to_add_;
+  ObserverListType* observer_list;
+  Foo* to_add_;
 };
 
 template <class ObserverListType>
@@ -518,7 +517,7 @@ class AddInClearObserve : public Foo {
   const AdderT<Foo>& adder() const { return adder_; }
 
  private:
-  const CheckedPtr<ObserverListType> list_;
+  ObserverListType* const list_;
 
   bool added_;
   AdderT<Foo> adder_;
@@ -562,7 +561,7 @@ class ListDestructor : public Foo {
   void Observe(int x) override { delete list_; }
 
  private:
-  CheckedPtr<ObserverListType> list_;
+  ObserverListType* list_;
 };
 
 TYPED_TEST(ObserverListTest, IteratorOutlivesList) {
@@ -964,7 +963,7 @@ class TestCheckedObserver : public CheckedObserver {
   void Observe() { ++(*count_); }
 
  private:
-  CheckedPtr<int> count_;
+  int* count_;
 };
 
 // A second, identical observer, used to test multiple inheritance.
@@ -977,7 +976,7 @@ class TestCheckedObserver2 : public CheckedObserver {
   void Observe() { ++(*count_); }
 
  private:
-  CheckedPtr<int> count_;
+  int* count_;
 };
 
 using CheckedObserverListTest = ::testing::Test;

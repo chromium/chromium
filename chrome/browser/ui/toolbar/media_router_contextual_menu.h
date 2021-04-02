@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_TOOLBAR_MEDIA_ROUTER_CONTEXTUAL_MENU_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/models/simple_menu_model.h"
 
@@ -72,8 +71,8 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   // Opens feedback page loaded from the media router extension.
   void ReportIssue();
 
-  const CheckedPtr<Browser> browser_;
-  const CheckedPtr<Observer> observer_;
+  Browser* const browser_;
+  Observer* const observer_;
 
   // Whether the Cast toolbar icon this context menu is shown for is shown by
   // the administrator policy.

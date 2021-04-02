@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ALLOWLIST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_ALLOWLIST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/allowlist_state.h"
@@ -115,10 +114,10 @@ class ExtensionAllowlist : private ExtensionPrefsObserver {
 
   base::ObserverList<Observer> observers_;
 
-  CheckedPtr<Profile> profile_ = nullptr;
-  CheckedPtr<ExtensionPrefs> extension_prefs_ = nullptr;
-  CheckedPtr<ExtensionService> extension_service_ = nullptr;
-  CheckedPtr<ExtensionRegistry> registry_ = nullptr;
+  Profile* profile_ = nullptr;
+  ExtensionPrefs* extension_prefs_ = nullptr;
+  ExtensionService* extension_service_ = nullptr;
+  ExtensionRegistry* registry_ = nullptr;
 
   bool init_done_ = false;
 

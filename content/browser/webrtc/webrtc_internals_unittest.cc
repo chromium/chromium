@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "content/browser/webrtc/webrtc_internals_connections_observer.h"
@@ -57,7 +56,7 @@ class MockWebRtcInternalsProxy : public WebRTCInternalsUIObserver {
 
   std::string event_name_;
   std::unique_ptr<base::Value> event_data_;
-  CheckedPtr<base::RunLoop> loop_{nullptr};
+  base::RunLoop* loop_{nullptr};
 };
 
 class MockWakeLock : public device::mojom::WakeLock {

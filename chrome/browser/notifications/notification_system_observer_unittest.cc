@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_system_observer.h"
 #include "chrome/browser/notifications/notification_test_util.h"
@@ -48,7 +47,7 @@ class NotificationSystemObserverTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  CheckedPtr<TestingProfile> profile_ = nullptr;
+  TestingProfile* profile_ = nullptr;
   std::unique_ptr<StubNotificationUIManager> ui_manager_;
   std::unique_ptr<NotificationSystemObserver> notification_observer_;
 };

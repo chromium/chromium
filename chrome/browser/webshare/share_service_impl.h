@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -57,7 +56,7 @@ class ShareServiceImpl : public blink::mojom::ShareService,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   webshare::SharesheetClient sharesheet_client_;
 #endif
-  CheckedPtr<content::RenderFrameHost> render_frame_host_;
+  content::RenderFrameHost* render_frame_host_;
 };
 
 #endif  // CHROME_BROWSER_WEBSHARE_SHARE_SERVICE_IMPL_H_

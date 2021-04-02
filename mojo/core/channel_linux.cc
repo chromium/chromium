@@ -12,8 +12,6 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-#include "base/memory/checked_ptr.h"
-
 #if defined(OS_ANDROID)
 #include <sys/utsname.h>
 #endif
@@ -581,27 +579,27 @@ class ChannelLinux::SharedBuffer {
 
   std::atomic_flag& write_flag() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->write_flag;
+    return reinterpret_cast<ControlStructure*>(base_ptr_)->write_flag;
   }
 
   std::atomic_flag& read_flag() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->read_flag;
+    return reinterpret_cast<ControlStructure*>(base_ptr_)->read_flag;
   }
 
   std::atomic_uint32_t& read_pos() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->read_pos;
+    return reinterpret_cast<ControlStructure*>(base_ptr_)->read_pos;
   }
 
   std::atomic_uint32_t& write_pos() {
     DCHECK(is_valid());
-    return reinterpret_cast<ControlStructure*>(base_ptr_.get())->write_pos;
+    return reinterpret_cast<ControlStructure*>(base_ptr_)->write_pos;
   }
 
   SharedBuffer(uint8_t* ptr, size_t len) : base_ptr_(ptr), len_(len) {}
 
-  CheckedPtr<uint8_t> base_ptr_ = nullptr;
+  uint8_t* base_ptr_ = nullptr;
   size_t len_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(SharedBuffer);

@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller_impl.h"
 
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
@@ -32,7 +31,7 @@ class SaveUPIBubbleControllerImplTest : public DialogBrowserTest {
   }
 
  private:
-  CheckedPtr<SaveUPIBubbleControllerImpl> controller_ = nullptr;
+  SaveUPIBubbleControllerImpl* controller_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SaveUPIBubbleControllerImplTest);
 };

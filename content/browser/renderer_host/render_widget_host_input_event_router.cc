@@ -10,7 +10,6 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -90,8 +89,8 @@ class TouchEventAckQueue {
   enum class TouchEventSource { SystemTouchEvent, EmulatedTouchEvent };
   struct AckData {
     TouchEventWithLatencyInfo touch_event;
-    CheckedPtr<RenderWidgetHostViewBase> target_view;
-    CheckedPtr<RenderWidgetHostViewBase> root_view;
+    RenderWidgetHostViewBase* target_view;
+    RenderWidgetHostViewBase* root_view;
     TouchEventSource touch_event_source;
     TouchEventAckStatus touch_event_ack_status;
     blink::mojom::InputEventResultState ack_result;
@@ -126,7 +125,7 @@ class TouchEventAckQueue {
   void ProcessAckedTouchEvents();
 
   std::deque<AckData> ack_queue_;
-  CheckedPtr<RenderWidgetHostInputEventRouter> client_;
+  RenderWidgetHostInputEventRouter* client_;
 };
 
 void TouchEventAckQueue::Add(const TouchEventWithLatencyInfo& touch_event,
@@ -1917,7 +1916,7 @@ void RenderWidgetHostInputEventRouter::ForwardEmulatedTouchEvent(
   // TODO(wjmaclean): Why doesn't this class just track its root view?
   DCHECK(IsViewInMap(static_cast<RenderWidgetHostViewBase*>(target)));
   last_emulated_event_root_view_ =
-      last_mouse_move_root_view_ ? last_mouse_move_root_view_.get() : target;
+      last_mouse_move_root_view_ ? last_mouse_move_root_view_ : target;
 
   if (event.GetType() == blink::WebInputEvent::Type::kTouchStart)
     active_touches_ += CountChangedTouchPoints(event);

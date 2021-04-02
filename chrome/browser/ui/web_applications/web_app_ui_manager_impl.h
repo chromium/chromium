@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -85,9 +84,9 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
 
   std::unique_ptr<WebAppDialogManager> dialog_manager_;
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
-  CheckedPtr<AppRegistryController> app_registry_controller_ = nullptr;
+  AppRegistryController* app_registry_controller_ = nullptr;
 
   std::map<AppId, std::vector<base::OnceClosure>> windows_closed_requests_map_;
   std::map<AppId, size_t> num_windows_for_apps_map_;

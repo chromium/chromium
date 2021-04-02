@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "headless/public/headless_browser.h"
@@ -59,7 +58,7 @@ class HeadlessBrowserContextOptions {
 
   explicit HeadlessBrowserContextOptions(HeadlessBrowser::Options*);
 
-  CheckedPtr<HeadlessBrowser::Options> browser_options_;
+  HeadlessBrowser::Options* browser_options_;
 
   base::Optional<std::string> product_name_and_version_;
   base::Optional<std::string> accept_language_;

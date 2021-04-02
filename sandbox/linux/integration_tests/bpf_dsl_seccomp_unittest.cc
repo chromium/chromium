@@ -18,8 +18,6 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
-#include "base/memory/checked_ptr.h"
-
 #if defined(ANDROID)
 // Work-around for buggy headers in Android's NDK
 #define __user
@@ -110,7 +108,7 @@ class VerboseAPITestingPolicy : public Policy {
   }
 
  private:
-  CheckedPtr<int> counter_ptr_;
+  int* counter_ptr_;
 
   DISALLOW_COPY_AND_ASSIGN(VerboseAPITestingPolicy);
 };
@@ -243,7 +241,7 @@ class DenylistNanosleepTrapPolicy : public Policy {
   }
 
  private:
-  CheckedPtr<int> aux_;
+  int* aux_;
 
   DISALLOW_COPY_AND_ASSIGN(DenylistNanosleepTrapPolicy);
 };
@@ -547,7 +545,7 @@ class GreyListedPolicy : public Policy {
   }
 
  private:
-  CheckedPtr<int> aux_;
+  int* aux_;
 
   DISALLOW_COPY_AND_ASSIGN(GreyListedPolicy);
 };
@@ -900,12 +898,10 @@ class EqualityStressTest {
     struct Tests {
       uint32_t k_value;            // Value to compare syscall arg against.
       int err;                     // If non-zero, errno value to return.
-      CheckedPtr<struct ArgValue>
-          arg_value;  // Otherwise, more args needs inspecting.
+      struct ArgValue* arg_value;  // Otherwise, more args needs inspecting.
     }* tests;
     int err;                     // If none of the tests passed, this is what
-    CheckedPtr<struct ArgValue>
-        arg_value;  // we'll return (this is the "else" branch).
+    struct ArgValue* arg_value;  // we'll return (this is the "else" branch).
   };
 
   bool IsReservedSyscall(int sysno) {
@@ -1129,7 +1125,7 @@ class EqualityStressTestPolicy : public Policy {
   }
 
  private:
-  CheckedPtr<EqualityStressTest> aux_;
+  EqualityStressTest* aux_;
 
   DISALLOW_COPY_AND_ASSIGN(EqualityStressTestPolicy);
 };

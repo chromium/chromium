@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -119,7 +118,7 @@ class CancelStreamCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  CheckedPtr<SpdyHttpStream> stream_;
+  SpdyHttpStream* stream_;
 };
 
 }  // namespace

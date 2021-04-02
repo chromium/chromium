@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
-#include "base/memory/checked_ptr.h"
 
 #include <memory>
 
@@ -178,7 +177,7 @@ class OverlayWindowFrameView : public views::NonClientFrameView {
   void SizeConstraintsChanged() override {}
 
  private:
-  CheckedPtr<views::Widget> widget_;
+  views::Widget* widget_;
 
   DISALLOW_COPY_AND_ASSIGN(OverlayWindowFrameView);
 };

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 class FindBarController;
 
@@ -28,7 +27,7 @@ class FindBarPlatformHelper {
   explicit FindBarPlatformHelper(FindBarController* find_bar_controller);
 
   // Owns FindBarPlatformHelper.
-  const CheckedPtr<FindBarController> find_bar_controller_;
+  FindBarController* const find_bar_controller_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(FindBarPlatformHelper);

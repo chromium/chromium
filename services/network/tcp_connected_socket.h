@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -105,9 +104,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPConnectedSocket
 
   const mojo::Remote<mojom::SocketObserver> observer_;
 
-  const CheckedPtr<net::NetLog> net_log_;
-  const CheckedPtr<net::ClientSocketFactory> client_socket_factory_;
-  CheckedPtr<TLSSocketFactory> tls_socket_factory_;
+  net::NetLog* const net_log_;
+  net::ClientSocketFactory* const client_socket_factory_;
+  TLSSocketFactory* tls_socket_factory_;
 
   std::unique_ptr<net::TransportClientSocket> socket_;
 

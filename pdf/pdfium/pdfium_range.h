@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdfium/pdfium_page.h"
 #include "ui/gfx/geometry/point.h"
@@ -49,7 +48,7 @@ class PDFiumRange {
   std::u16string GetText() const;
 
  private:
-  CheckedPtr<PDFiumPage> page_;
+  PDFiumPage* page_;
   // Index of first character.
   int char_index_;
   // How many characters are part of this range (negative if backwards).

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -81,7 +80,7 @@ class CrossOriginOpenerPolicyStatus {
   NavigationRequest* const navigation_request_;
 
   // Tracks the FrameTreeNode in which this navigation is taking place.
-  CheckedPtr<const FrameTreeNode> frame_tree_node_;
+  const FrameTreeNode* frame_tree_node_;
 
   bool require_browsing_instance_swap_ = false;
 

@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/web_modal/modal_dialog_host.h"
 #include "components/web_modal/single_web_contents_dialog_manager.h"
 #include "ui/gfx/native_widget_types.h"
@@ -72,10 +71,9 @@ class NativeWebContentsModalDialogManagerViews
  private:
   void WidgetClosing(views::Widget* widget);
 
-  CheckedPtr<web_modal::SingleWebContentsDialogManagerDelegate>
-      native_delegate_;
+  web_modal::SingleWebContentsDialogManagerDelegate* native_delegate_;
   gfx::NativeWindow dialog_;
-  CheckedPtr<web_modal::WebContentsModalDialogHost> host_;
+  web_modal::WebContentsModalDialogHost* host_;
   bool host_destroying_;
   std::set<views::Widget*> observed_widgets_;
   std::set<views::Widget*> shown_widgets_;

@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegate.h"
 
@@ -38,7 +37,7 @@ class SyncedWindowDelegateAndroid : public sync_sessions::SyncedWindowDelegate {
   bool ShouldSync() const override;
 
  private:
-  CheckedPtr<TabModel> tab_model_;
+  TabModel* tab_model_;
   const bool is_tabbed_activity_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(SyncedWindowDelegateAndroid);

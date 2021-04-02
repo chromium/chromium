@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -343,8 +342,7 @@ class TestPrefetchService : public offline_pages::StubPrefetchService {
   int NewSuggestionsAvailableCallCount() const;
 
  private:
-  CheckedPtr<offline_pages::SuggestionsProvider> suggestions_provider_ =
-      nullptr;
+  offline_pages::SuggestionsProvider* suggestions_provider_ = nullptr;
   int new_suggestions_available_call_count_ = 0;
 };
 

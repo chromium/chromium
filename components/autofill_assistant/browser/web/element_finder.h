@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "components/autofill_assistant/browser/action_value.pb.h"
@@ -61,7 +60,7 @@ class ElementFinder : public WebControllerWorker {
     DomObjectFrameStack dom_object;
 
     // The render frame host contains the element.
-    CheckedPtr<content::RenderFrameHost> container_frame_host = nullptr;
+    content::RenderFrameHost* container_frame_host = nullptr;
 
     const std::string& object_id() const {
       return dom_object.object_data.object_id;

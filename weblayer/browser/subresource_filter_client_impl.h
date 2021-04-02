@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
@@ -60,7 +59,7 @@ class SubresourceFilterClientImpl
   // This member is only used on Android, so it's necessary to ifdef it to avoid
   // a compiler error on other platforms.
 #if defined(OS_ANDROID)
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 #endif
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;

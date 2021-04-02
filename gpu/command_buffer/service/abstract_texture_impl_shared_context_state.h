@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_SERVICE_ABSTRACT_TEXTURE_IMPL_SHARED_CONTEXT_STATE_H_
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/gpu_gles2_export.h"
@@ -49,7 +48,7 @@ class GPU_GLES2_EXPORT AbstractTextureImplOnSharedContext
   void OnContextLost() override;
 
  private:
-  CheckedPtr<Texture> texture_;
+  Texture* texture_;
   scoped_refptr<SharedContextState> shared_context_state_;
   CleanupCallback cleanup_cb_;
 };

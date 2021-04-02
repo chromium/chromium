@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/notifications/proto/client_state.pb.h"
 #include "chrome/browser/notifications/scheduler/internal/impression_types.h"
@@ -98,7 +97,7 @@ class ImpressionStoreTest : public testing::Test {
   bool load_result_;
   Entries loaded_entries_;
 
-  CheckedPtr<FakeDB<proto::ClientState, ClientState>> db_;
+  FakeDB<proto::ClientState, ClientState>* db_;
   std::unique_ptr<CollectionStore<ClientState>> store_;
 };
 

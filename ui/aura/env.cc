@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
@@ -83,8 +82,8 @@ class EventObserverAdapter : public ui::EventHandler,
   }
 
  private:
-  CheckedPtr<ui::EventObserver> observer_;
-  CheckedPtr<ui::EventTarget> target_;
+  ui::EventObserver* observer_;
+  ui::EventTarget* target_;
   const std::set<ui::EventType> types_;
 
   DISALLOW_COPY_AND_ASSIGN(EventObserverAdapter);

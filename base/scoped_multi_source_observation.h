@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/memory/checked_ptr.h"
 #include "base/ranges/algorithm.h"
 
 namespace base {
@@ -95,7 +94,7 @@ class ScopedMultiSourceObservation {
   size_t GetSourcesCount() const { return sources_.size(); }
 
  private:
-  const CheckedPtr<Observer> observer_;
+  Observer* const observer_;
 
   std::vector<Source*> sources_;
 };

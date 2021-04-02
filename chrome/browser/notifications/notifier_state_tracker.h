@@ -8,7 +8,6 @@
 #include <set>
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_member.h"
 #include "extensions/buildflags/buildflags.h"
@@ -71,7 +70,7 @@ class NotifierStateTracker : public KeyedService
 #endif
 
   // The profile which owns this object.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Prefs listener for disabled_extension_id.
   StringListPrefMember disabled_extension_id_pref_;

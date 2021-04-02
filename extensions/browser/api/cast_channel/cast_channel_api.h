@@ -10,7 +10,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "components/cast_channel/cast_channel_enum.h"
@@ -104,7 +103,7 @@ class CastChannelAPI : public BrowserContextKeyedAPI,
     EventDispatchCallback const ui_dispatch_cb_;
 
     // The CastSocketService to observe.
-    const CheckedPtr<cast_channel::CastSocketService> cast_socket_service_;
+    cast_channel::CastSocketService* const cast_socket_service_;
 
     SEQUENCE_CHECKER(sequence_checker_);
 
@@ -159,7 +158,7 @@ class CastChannelAsyncApiFunction : public AsyncApiFunction {
 
   // Raw pointer of leaky singleton CastSocketService, which manages creating
   // and removing Cast sockets.
-  CheckedPtr<cast_channel::CastSocketService> cast_socket_service_;
+  cast_channel::CastSocketService* cast_socket_service_;
 
  private:
   // Sets the function result from |channel_info|.
@@ -192,7 +191,7 @@ class CastChannelOpenFunction : public CastChannelAsyncApiFunction {
   void OnOpen(cast_channel::CastSocket* socket);
 
   std::unique_ptr<api::cast_channel::Open::Params> params_;
-  CheckedPtr<CastChannelAPI> api_;
+  CastChannelAPI* api_;
   std::unique_ptr<net::IPEndPoint> ip_endpoint_;
   base::TimeDelta liveness_timeout_;
   base::TimeDelta ping_interval_;

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/corewm/tooltip.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -71,11 +70,11 @@ class VIEWS_EXPORT TooltipAura : public Tooltip, public WidgetObserver {
   void OnWidgetDestroying(Widget* widget) override;
 
   // The widget containing the tooltip. May be NULL.
-  CheckedPtr<TooltipWidget> widget_ = nullptr;
+  TooltipWidget* widget_ = nullptr;
 
   // The window we're showing the tooltip for. Never NULL and valid while
   // showing.
-  CheckedPtr<aura::Window> tooltip_window_ = nullptr;
+  aura::Window* tooltip_window_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TooltipAura);
 };

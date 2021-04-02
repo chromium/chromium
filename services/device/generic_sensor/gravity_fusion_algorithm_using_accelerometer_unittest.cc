@@ -4,7 +4,6 @@
 
 #include "services/device/generic_sensor/gravity_fusion_algorithm_using_accelerometer.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "services/device/generic_sensor/fake_platform_sensor_fusion.h"
@@ -102,7 +101,7 @@ class GravityFusionAlgorithmUsingAccelerometerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<FakePlatformSensorFusion> fake_fusion_sensor_;
-  CheckedPtr<GravityFusionAlgorithmUsingAccelerometer> fusion_algorithm_;
+  GravityFusionAlgorithmUsingAccelerometer* fusion_algorithm_;
 };
 
 }  // namespace

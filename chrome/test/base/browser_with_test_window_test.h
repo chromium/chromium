@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -224,7 +223,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   ash::ScopedTestUserManager test_user_manager_;
 #endif
 
-  CheckedPtr<TestingProfile> profile_;
+  TestingProfile* profile_;
 
   // test_url_loader_factory_ is declared before profile_manager_
   // to guarantee it outlives any profiles that might use it.

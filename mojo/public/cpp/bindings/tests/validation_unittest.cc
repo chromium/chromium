@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -288,13 +287,13 @@ class ValidationIntegrationTest : public ValidationTest {
     }
 
    public:
-    CheckedPtr<ValidationIntegrationTest> owner_;
+    ValidationIntegrationTest* owner_;
     mojo::Connector connector_;
   };
 
   void PumpMessages() { base::RunLoop().RunUntilIdle(); }
 
-  CheckedPtr<TestMessageReceiver> test_message_receiver_;
+  TestMessageReceiver* test_message_receiver_;
   ScopedMessagePipeHandle testee_endpoint_;
 };
 

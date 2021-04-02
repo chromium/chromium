@@ -162,8 +162,7 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateFromExisting(
     const EventMetrics* existing) {
   std::unique_ptr<EventMetrics> metrics = CreateInternal(
       type, scroll_update_type, scroll_input_type, base::TimeTicks(),
-      existing ? existing->tick_clock_.get()
-               : base::DefaultTickClock::GetInstance());
+      existing ? existing->tick_clock_ : base::DefaultTickClock::GetInstance());
   if (!metrics)
     return nullptr;
 
