@@ -5,12 +5,15 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_SHARED_VA_SURFACE_H_
 #define MEDIA_GPU_VAAPI_TEST_SHARED_VA_SURFACE_H_
 
+#include <va/va.h>
+
 #include "base/memory/ref_counted.h"
-#include "media/gpu/vaapi/test/vaapi_device.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 namespace vaapi_test {
+
+class VaapiDevice;
 
 constexpr unsigned int kInvalidVaRtFormat = 0u;
 
@@ -41,7 +44,7 @@ class SharedVASurface : public base::RefCounted<SharedVASurface> {
 
   // Saves this surface into a png at the given |path|, retrieving the image
   // as specified by |fetch_policy|.
-  void SaveAsPNG(FetchPolicy fetch_policy, const std::string& path);
+  void SaveAsPNG(FetchPolicy fetch_policy, const std::string& path) const;
 
   // Computes the MD5 sum of this surface and returns it as a human-readable hex
   // string.

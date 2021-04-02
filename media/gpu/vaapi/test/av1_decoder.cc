@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/vaapi/test/av1_decoder.h"
+
 #include <va/va.h>
 #include <va/va_dec_av1.h>
 
@@ -10,10 +12,11 @@
 #include "base/notreached.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/macros.h"
-#include "media/gpu/vaapi/test/av1_decoder.h"
 #include "media/gpu/vaapi/test/macros.h"
+#include "media/gpu/vaapi/test/scoped_va_config.h"
 #include "media/gpu/vaapi/test/scoped_va_context.h"
-#include "media/gpu/vaapi/test/video_decoder.h"
+#include "media/gpu/vaapi/test/shared_va_surface.h"
+#include "media/gpu/vaapi/test/vaapi_device.h"
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
@@ -526,9 +529,11 @@ unsigned int GetFormatForColorConfig(libgav1::ColorConfig color_config) {
 }  // namespace
 
 Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
-                       const VaapiDevice& va_device)
-    : ivf_parser_(std::move(ivf_parser)),
-      va_device_(va_device),
+                       const VaapiDevice& va_device,
+                       SharedVASurface::FetchPolicy fetch_policy)
+    : VideoDecoder::VideoDecoder(std::move(ivf_parser),
+                                 va_device,
+                                 fetch_policy),
       buffer_pool_(std::make_unique<libgav1::BufferPool>(
           /*on_frame_buffer_size_changed=*/nullptr,
           /*get_frame_buffer=*/nullptr,
@@ -899,26 +904,6 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame() {
   buffers.clear();
 
   return VideoDecoder::kOk;
-}
-
-void Av1Decoder::LastDecodedFrameToPNG(const std::string& path) {
-  last_decoded_surface_->SaveAsPNG(fetch_policy_, path);
-}
-
-std::string Av1Decoder::LastDecodedFrameMD5Sum() {
-  return last_decoded_surface_->GetMD5Sum(fetch_policy_);
-}
-
-bool Av1Decoder::LastDecodedFrameVisible() {
-  return last_decoded_frame_visible_;
-}
-
-SharedVASurface::FetchPolicy Av1Decoder::fetch_policy() const {
-  return fetch_policy_;
-}
-
-void Av1Decoder::set_fetch_policy(SharedVASurface::FetchPolicy fetch_policy) {
-  fetch_policy_ = fetch_policy;
 }
 
 }  // namespace vaapi_test

@@ -355,6 +355,7 @@ executable("decode_test") {
     "test/shared_va_surface.h",
     "test/vaapi_device.cc",
     "test/vaapi_device.h",
+    "test/video_decoder.cc",
     "test/video_decoder.h",
     "test/vp9_decoder.cc",
     "test/vp9_decoder.h",

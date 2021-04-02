@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <va/va.h>
+#include "media/gpu/vaapi/test/shared_va_surface.h"
 
 #include "base/files/file_util.h"
 #include "base/hash/md5.h"
 #include "media/base/video_types.h"
 #include "media/gpu/vaapi/test/macros.h"
-#include "media/gpu/vaapi/test/shared_va_surface.h"
+#include "media/gpu/vaapi/test/vaapi_device.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -148,7 +148,7 @@ void SharedVASurface::FetchData(FetchPolicy fetch_policy,
 }
 
 void SharedVASurface::SaveAsPNG(FetchPolicy fetch_policy,
-                                const std::string& path) {
+                                const std::string& path) const {
   VAImage image;
   uint8_t* image_data;
   FetchData(fetch_policy, GetImageFormat(va_rt_format_), &image, &image_data);

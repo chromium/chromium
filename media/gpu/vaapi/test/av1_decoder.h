@@ -6,10 +6,6 @@
 #define MEDIA_GPU_VAAPI_TEST_AV1_DECODER_H_
 
 #include "media/filters/ivf_parser.h"
-#include "media/gpu/vaapi/test/scoped_va_config.h"
-#include "media/gpu/vaapi/test/scoped_va_context.h"
-#include "media/gpu/vaapi/test/shared_va_surface.h"
-#include "media/gpu/vaapi/test/vaapi_device.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
 // For libgav1::ObuSequenceHeader. base::Optional demands ObuSequenceHeader to
 // fulfill std::is_trivially_constructible if it is forward-declared. But
@@ -19,24 +15,25 @@
 namespace media {
 namespace vaapi_test {
 
+class ScopedVAConfig;
+class ScopedVAContext;
+class SharedVASurface;
+class VaapiDevice;
+
 constexpr size_t kAv1NumRefFrames = libgav1::kNumReferenceFrameTypes;
 
 // An Av1Decoder decodes AV1-encoded IVF streams using direct libva calls.
 class Av1Decoder : public VideoDecoder {
  public:
   Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
-             const VaapiDevice& va_device);
+             const VaapiDevice& va_device,
+             SharedVASurface::FetchPolicy fetch_policy);
   Av1Decoder(const Av1Decoder&) = delete;
   Av1Decoder& operator=(const Av1Decoder&) = delete;
   ~Av1Decoder() override;
 
   // VideoDecoder implementation.
   VideoDecoder::Result DecodeNextFrame() override;
-  void LastDecodedFrameToPNG(const std::string& path) override;
-  std::string LastDecodedFrameMD5Sum() override;
-  bool LastDecodedFrameVisible() override;
-  SharedVASurface::FetchPolicy fetch_policy() const override;
-  void set_fetch_policy(SharedVASurface::FetchPolicy fetch_policy) override;
 
  private:
   enum class ParsingResult {
@@ -62,17 +59,12 @@ class Av1Decoder : public VideoDecoder {
                              libgav1::RefCountedBufferPtr current_frame,
                              scoped_refptr<SharedVASurface> display_surface);
 
-  // Parser for the IVF stream to decode.
-  const std::unique_ptr<IvfParser> ivf_parser_;
-
   IvfFrameHeader ivf_frame_header_{};
   const uint8_t* ivf_frame_data_ = nullptr;
 
   // VA handles.
-  const VaapiDevice& va_device_;
   std::unique_ptr<ScopedVAConfig> va_config_;
   std::unique_ptr<ScopedVAContext> va_context_;
-  scoped_refptr<SharedVASurface> last_decoded_surface_;
 
   // AV1-specific data.
   std::unique_ptr<libgav1::ObuParser> obu_parser_;
@@ -83,13 +75,6 @@ class Av1Decoder : public VideoDecoder {
   // If film grain is applied, the film grain surface is stored in
   // |display_surfaces_|. Otherwise, matches |ref_frames_|.
   std::vector<scoped_refptr<SharedVASurface>> display_surfaces_;
-
-  // Whether the last decoded frame was visible.
-  bool last_decoded_frame_visible_ = false;
-
-  // How to fetch image data from VASurfaces decoded into by this decoder.
-  SharedVASurface::FetchPolicy fetch_policy_ =
-      SharedVASurface::FetchPolicy::kAny;
 };
 
 }  // namespace vaapi_test

@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/gpu/vaapi/test/vp9_decoder.h"
+
 #include <va/va.h>
 
+#include "media/filters/ivf_parser.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/test/macros.h"
-#include "media/gpu/vaapi/test/vp9_decoder.h"
+#include "media/gpu/vaapi/test/scoped_va_config.h"
+#include "media/gpu/vaapi/test/scoped_va_context.h"
+#include "media/gpu/vaapi/test/shared_va_surface.h"
+#include "media/gpu/vaapi/test/vaapi_device.h"
 
 namespace media {
 namespace vaapi_test {
@@ -45,9 +51,11 @@ unsigned int GetFormatForProfile(VAProfile profile) {
 }  // namespace
 
 Vp9Decoder::Vp9Decoder(std::unique_ptr<IvfParser> ivf_parser,
-                       const VaapiDevice& va_device)
-    : ivf_parser_(std::move(ivf_parser)),
-      va_device_(va_device),
+                       const VaapiDevice& va_device,
+                       SharedVASurface::FetchPolicy fetch_policy)
+    : VideoDecoder::VideoDecoder(std::move(ivf_parser),
+                                 va_device,
+                                 fetch_policy),
       vp9_parser_(
           std::make_unique<Vp9Parser>(/*parsing_compressed_header=*/false)),
       ref_frames_(kVp9NumRefFrames) {}
@@ -274,26 +282,6 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   buffers.clear();
 
   return VideoDecoder::kOk;
-}
-
-void Vp9Decoder::LastDecodedFrameToPNG(const std::string& path) {
-  last_decoded_surface_->SaveAsPNG(fetch_policy_, path);
-}
-
-std::string Vp9Decoder::LastDecodedFrameMD5Sum() {
-  return last_decoded_surface_->GetMD5Sum(fetch_policy_);
-}
-
-bool Vp9Decoder::LastDecodedFrameVisible() {
-  return last_decoded_frame_visible_;
-}
-
-SharedVASurface::FetchPolicy Vp9Decoder::fetch_policy() const {
-  return fetch_policy_;
-}
-
-void Vp9Decoder::set_fetch_policy(SharedVASurface::FetchPolicy fetch_policy) {
-  fetch_policy_ = fetch_policy;
 }
 
 }  // namespace vaapi_test

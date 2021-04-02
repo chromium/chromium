@@ -110,9 +110,11 @@ std::string FourccStr(uint32_t fourcc) {
 // Creates the appropriate decoder for |stream_data| which is expected to point
 // to IVF data of length |stream_len|. The decoder will use |va_device| to issue
 // VAAPI calls. Returns nullptr on failure.
-std::unique_ptr<VideoDecoder> CreateDecoder(const VaapiDevice& va_device,
-                                            const uint8_t* stream_data,
-                                            size_t stream_len) {
+std::unique_ptr<VideoDecoder> CreateDecoder(
+    const VaapiDevice& va_device,
+    SharedVASurface::FetchPolicy fetch_policy,
+    const uint8_t* stream_data,
+    size_t stream_len) {
   // Set up video parser.
   auto ivf_parser = std::make_unique<media::IvfParser>();
   media::IvfFileHeader file_header{};
@@ -125,9 +127,11 @@ std::unique_ptr<VideoDecoder> CreateDecoder(const VaapiDevice& va_device,
   VLOG(1) << "Creating decoder with codec " << FourccStr(file_header.fourcc);
   // When adding a new format, keep fourccs alphabetical.
   if (file_header.fourcc == fourcc('A', 'V', '0', '1')) {
-    return std::make_unique<Av1Decoder>(std::move(ivf_parser), va_device);
+    return std::make_unique<Av1Decoder>(std::move(ivf_parser), va_device,
+                                        fetch_policy);
   } else if (file_header.fourcc == fourcc('V', 'P', '9', '0')) {
-    return std::make_unique<Vp9Decoder>(std::move(ivf_parser), va_device);
+    return std::make_unique<Vp9Decoder>(std::move(ivf_parser), va_device,
+                                        fetch_policy);
   }
 
   LOG(ERROR) << "Codec " << FourccStr(file_header.fourcc) << " not supported.\n"
@@ -215,12 +219,11 @@ int main(int argc, char** argv) {
 
   do {
     const std::unique_ptr<VideoDecoder> dec =
-        CreateDecoder(va_device, stream.data(), stream.length());
+        CreateDecoder(va_device, *fetch_policy, stream.data(), stream.length());
     if (!dec) {
       LOG(ERROR) << "Failed to create decoder for file: " << video_path;
       return EXIT_FAILURE;
     }
-    dec->set_fetch_policy(*fetch_policy);
 
     for (int i = 0; i < n_frames || n_frames == 0; i++) {
       LOG(INFO) << "Frame " << i << "...";

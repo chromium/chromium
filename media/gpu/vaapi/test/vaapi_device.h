@@ -5,6 +5,8 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_VAAPI_DEVICE_H_
 #define MEDIA_GPU_VAAPI_TEST_VAAPI_DEVICE_H_
 
+#include <va/va.h>
+
 #include "base/files/file.h"
 
 namespace media {
