@@ -203,15 +203,13 @@ public final class ReturnToChromeExperimentsUtil {
     /**
      * Check if we should handle the navigation. If so, create a new tab and load the URL.
      *
-     * @param url The URL to load.
-     * @param transition The page transition type.
+     * @param params The LoadUrlParams to load.
      * @param incognito Whether to load URL in an incognito Tab.
      * @param parentTab  The parent tab used to create a new tab if needed.
      * @return Current tab created if we have handled the navigation, null otherwise.
      */
-    public static Tab handleLoadUrlFromStartSurface(String url, @PageTransition int transition,
-            @Nullable Boolean incognito, @Nullable Tab parentTab) {
-        LoadUrlParams params = new LoadUrlParams(url, transition);
+    public static Tab handleLoadUrlFromStartSurface(
+            LoadUrlParams params, @Nullable Boolean incognito, @Nullable Tab parentTab) {
         return handleLoadUrlWithPostDataFromStartSurface(
                 params, null, null, incognito, parentTab, false, false, null, null);
     }
@@ -309,9 +307,13 @@ public final class ReturnToChromeExperimentsUtil {
         }
 
         if (params.getTransitionType() == PageTransition.AUTO_BOOKMARK) {
-            RecordUserAction.record("Suggestions.Tile.Tapped.GridTabSwitcher");
+            if (params.getReferrer() == null) {
+                RecordUserAction.record("Suggestions.Tile.Tapped.StartSurface");
+            }
+        } else if (url == null) {
+            RecordUserAction.record("MobileMenuNewTab.StartSurfaceFinale");
         } else {
-            RecordUserAction.record("MobileOmniboxUse.GridTabSwitcher");
+            RecordUserAction.record("MobileOmniboxUse.StartSurface");
 
             // These are duplicated here but would have been recorded by LocationBarLayout#loadUrl.
             RecordUserAction.record("MobileOmniboxUse");
