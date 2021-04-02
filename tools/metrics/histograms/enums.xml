@@ -2375,6 +2375,19 @@ Unknown properties are collapsed to zero. -->
   <int value="2" label="RemoteException"/>
 </enum>
 
+<enum name="AndroidWebViewInitType">
+  <int value="0" label="Synchronous">
+    Initialization is called from UI thread.
+  </int>
+  <int value="1" label="Asynchronous">
+    Initialization is called from background thread.
+  </int>
+  <int value="2" label="Already started">
+    Initialization is called from the UI thread, but had previously been
+    requested by a background thread.
+  </int>
+</enum>
+
 <enum name="AndroidWebViewNonEmbeddedMetricsParsingLogResult">
   <int value="0" label="Success"/>
   <int value="1" label="Malformed protobuf"/>

@@ -3125,6 +3125,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.InitType"
+    enum="AndroidWebViewInitType" expires_after="2021-07-01">
+  <owner>torne@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records which thread WebView initialization started from. The metric is
+    recorded during the first startChromiumLocked call.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.SupportLibrary.ClientIsCompat"
     enum="WebViewClientTypeEnum" expires_after="2021-05-05">
   <owner>laisminchillo@chromium.org</owner>
