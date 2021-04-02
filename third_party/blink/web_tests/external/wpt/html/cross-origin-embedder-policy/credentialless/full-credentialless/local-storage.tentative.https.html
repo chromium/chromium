@@ -2,6 +2,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/get-host-info.sub.js"></script>
 <script src="/common/utils.js"></script>
+<script src="./resources/common.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/dispatcher.js"></script>
 <script>
@@ -31,30 +32,25 @@ promise_test_parallel(async test => {
     w.close();
   }
 
-  let credentialless_window = newCredentiallessWindow(same_origin);
-
   promise_test_parallel(async test => {
-    let iframe = newCredentiallessIframe(credentialless_window, same_origin);
-    let reply_token = token();
-    send(iframe, `
-      let value = localStorage.getItem("${local_storage_key}");
-      send("${reply_token}", value);
-    `)
-    assert_equals(
-      await receive(reply_token),
-      local_storage_same_origin
-    );
-  }, "same_origin iframe can access the localStorage");
-
-  promise_test_parallel(async test => {
-    let iframe = newCredentiallessIframe(credentialless_window, cross_origin);
+    let iframe = newAnonymousIframe(same_origin);
     let reply_token = token();
     send(iframe, `
       let value = localStorage.getItem("${local_storage_key}");
       send("${reply_token}", value);
     `)
     assert_equals(await receive(reply_token), "")
-  }, "cross_origin iframe can't access the localStorage");
+  }, "same_origin anonymous iframe can't access the localStorage");
+
+  promise_test_parallel(async test => {
+    let iframe = newAnonymousIframe(cross_origin);
+    let reply_token = token();
+    send(iframe, `
+      let value = localStorage.getItem("${local_storage_key}");
+      send("${reply_token}", value);
+    `)
+    assert_equals(await receive(reply_token), "")
+  }, "cross_origin anonymous iframe can't access the localStorage");
 
 }, "Setup")
 
