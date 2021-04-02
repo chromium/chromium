@@ -56,6 +56,7 @@
             external>
         </cr-link-row>
       </div>
+<if expr="not chromeos">
       <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
         <template is="dom-if" route-path="/captions">
           <settings-subpage
@@ -65,4 +66,5 @@
           </settings-subpage>
         </template>
       </template>
+</if>
     </settings-animated-pages>
