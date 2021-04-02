@@ -10,9 +10,9 @@
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
-#include "base/power_monitor/test/fake_power_monitor_source.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/power_monitor_test_base.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/scoped_gdi_object.h"
@@ -174,7 +174,7 @@ class DirectCompositionSurfaceTest : public testing::Test {
   HWND parent_window_;
   scoped_refptr<DirectCompositionSurfaceWin> surface_;
   scoped_refptr<GLContext> context_;
-  base::test::ScopedFakePowerMonitorSource fake_power_monitor_source_;
+  base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
 };
 
 TEST_F(DirectCompositionSurfaceTest, TestMakeCurrent) {

@@ -7,8 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/power_monitor/test/fake_power_monitor_source.h"
 #include "base/test/mock_callback.h"
+#include "base/test/power_monitor_test_base.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -37,7 +37,7 @@ class WallClockTimerTest : public ::testing::Test {
     }
   }
 
-  base::test::ScopedFakePowerMonitorSource fake_power_monitor_source_;
+  base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::SimpleTestClock clock_;

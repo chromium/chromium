@@ -9,7 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/power_monitor/test/fake_power_monitor_source.h"
+#include "base/test/power_monitor_test_base.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
@@ -351,7 +351,7 @@ class DeviceOffHoursControllerFakeClockTest
 
  private:
   base::SimpleTestClock test_clock_;
-  base::test::ScopedFakePowerMonitorSource fake_power_monitor_source_;
+  base::test::ScopedPowerMonitorTestSource fake_power_monitor_source_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceOffHoursControllerFakeClockTest);
 };

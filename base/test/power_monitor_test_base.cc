@@ -10,12 +10,33 @@
 #include "base/task/current_thread.h"
 
 namespace base {
+namespace test {
 
-PowerMonitorTestSource::PowerMonitorTestSource() {
-  DCHECK(CurrentThread::Get())
-      << "PowerMonitorTestSource requires a MessageLoop.";
+ScopedPowerMonitorTestSource::ScopedPowerMonitorTestSource() {
+  auto power_monitor_test_source = std::make_unique<PowerMonitorTestSource>();
+  power_monitor_test_source_ = power_monitor_test_source.get();
+  base::PowerMonitor::Initialize(std::move(power_monitor_test_source));
 }
 
+ScopedPowerMonitorTestSource::~ScopedPowerMonitorTestSource() {
+  base::PowerMonitor::ShutdownForTesting();
+}
+
+void ScopedPowerMonitorTestSource::Suspend() {
+  power_monitor_test_source_->Suspend();
+}
+
+void ScopedPowerMonitorTestSource::Resume() {
+  power_monitor_test_source_->Resume();
+}
+
+void ScopedPowerMonitorTestSource::SetOnBatteryPower(bool on_battery_power) {
+  power_monitor_test_source_->SetOnBatteryPower(on_battery_power);
+}
+
+}  // namespace test
+
+PowerMonitorTestSource::PowerMonitorTestSource() = default;
 PowerMonitorTestSource::~PowerMonitorTestSource() = default;
 
 PowerThermalObserver::DeviceThermalState
@@ -23,19 +44,31 @@ PowerMonitorTestSource::GetCurrentThermalState() {
   return current_thermal_state_;
 }
 
-void PowerMonitorTestSource::GeneratePowerStateEvent(bool on_battery_power) {
+void PowerMonitorTestSource::Suspend() {
+  ProcessPowerEvent(SUSPEND_EVENT);
+}
+
+void PowerMonitorTestSource::Resume() {
+  ProcessPowerEvent(RESUME_EVENT);
+}
+
+void PowerMonitorTestSource::SetOnBatteryPower(bool on_battery_power) {
   test_on_battery_power_ = on_battery_power;
   ProcessPowerEvent(POWER_STATE_EVENT);
+}
+
+void PowerMonitorTestSource::GeneratePowerStateEvent(bool on_battery_power) {
+  SetOnBatteryPower(on_battery_power);
   RunLoop().RunUntilIdle();
 }
 
 void PowerMonitorTestSource::GenerateSuspendEvent() {
-  ProcessPowerEvent(SUSPEND_EVENT);
+  Suspend();
   RunLoop().RunUntilIdle();
 }
 
 void PowerMonitorTestSource::GenerateResumeEvent() {
-  ProcessPowerEvent(RESUME_EVENT);
+  Resume();
   RunLoop().RunUntilIdle();
 }
 
