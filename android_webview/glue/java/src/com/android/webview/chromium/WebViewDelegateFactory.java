@@ -76,6 +76,9 @@ class WebViewDelegateFactory {
 
         /** @see android.webkit.WebViewDelegate#getDataDirectorySuffix */
         String getDataDirectorySuffix();
+
+        /** @see android.webkit.WebViewDelegate#getTimestamps */
+        public long[] getTimestamps();
     }
 
     /**
@@ -191,6 +194,11 @@ class WebViewDelegateFactory {
         @Override
         public void drawWebViewFunctor(Canvas canvas, int functor) {
             mDelegate.drawWebViewFunctor(canvas, functor);
+        }
+
+        @Override
+        public long[] getTimestamps() {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -359,6 +367,11 @@ class WebViewDelegateFactory {
         @Override
         public void drawWebViewFunctor(Canvas canvas, int functor) {
             throw new RuntimeException();
+        }
+
+        @Override
+        public long[] getTimestamps() {
+            throw new UnsupportedOperationException();
         }
     }
 }

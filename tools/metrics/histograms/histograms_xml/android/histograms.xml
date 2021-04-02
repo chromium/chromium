@@ -3077,6 +3077,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.Startup.CreationTime.StartChromiumLocked"
+    units="ms" expires_after="2022-02-26">
+  <owner>amalova@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>How long it takes to run startChromiumLocked.</summary>
+</histogram>
+
+<histogram name="Android.WebView.Startup.CreationTime.TotalFactoryInitTime"
+    units="ms" expires_after="2022-02-26">
+  <owner>amalova@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    The total time to initialize WebViewChromiumFactoryProvider.
+
+    This measurement is different from Stage1.FactoryInit as it takes into
+    accout time spent in framework.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.DataDirLockAttempts" units="attempts"
     expires_after="2020-12-10">
   <obsolete>

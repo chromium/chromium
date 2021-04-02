@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Looper;
 import android.os.Process;
+import android.os.SystemClock;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.GeolocationPermissions;
@@ -128,6 +129,7 @@ public class WebViewChromiumAwInit {
     private static final int DIR_RESOURCE_PAKS_ANDROID = 3003;
 
     protected void startChromiumLocked() {
+        long startTime = SystemClock.elapsedRealtime();
         try (ScopedSysTraceEvent event =
                         ScopedSysTraceEvent.scoped("WebViewChromiumAwInit.startChromiumLocked")) {
             assert Thread.holdsLock(mLock) && ThreadUtils.runningOnUiThread();
@@ -208,6 +210,9 @@ public class WebViewChromiumAwInit {
                 logCommandLineAndActiveTrials();
             }
         }
+        RecordHistogram.recordTimesHistogram(
+                "Android.WebView.Startup.CreationTime.StartChromiumLocked",
+                SystemClock.elapsedRealtime() - startTime);
     }
 
     /**

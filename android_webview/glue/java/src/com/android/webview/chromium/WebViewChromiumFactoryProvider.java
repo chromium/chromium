@@ -405,6 +405,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.CreationTime.Stage1.FactoryInit",
                 SystemClock.elapsedRealtime() - startTime);
+
+        if (BuildInfo.isAtLeastS()) {
+            // TODO: Use the framework constants as indices in timestamps array.
+            startTime = mWebViewDelegate.getTimestamps()[0];
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.TotalFactoryInitTime",
+                    SystemClock.elapsedRealtime() - startTime);
+        }
     }
 
     /* package */ static void checkStorageIsNotDeviceProtected(Context context) {
