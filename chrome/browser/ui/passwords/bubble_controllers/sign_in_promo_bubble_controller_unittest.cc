@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/sign_in_promo_bubble_controller.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
@@ -63,8 +65,8 @@ void SignInPromoBubbleControllerTest::Init() {
   EXPECT_CALL(*delegate(), GetWebContents())
       .WillRepeatedly(Return(test_web_contents_.get()));
 
-  controller_.reset(
-      new SignInPromoBubbleController(mock_delegate_->AsWeakPtr()));
+  controller_ = std::make_unique<SignInPromoBubbleController>(
+      mock_delegate_->AsWeakPtr());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

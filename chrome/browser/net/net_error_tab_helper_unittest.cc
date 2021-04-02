@@ -4,6 +4,8 @@
 
 #include "chrome/browser/net/net_error_tab_helper.h"
 
+#include <memory>
+
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/error_page/common/net_error_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -125,7 +127,7 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
     subframe_ = content::RenderFrameHostTester::For(main_rfh())
                     ->AppendChild("subframe");
 
-    tab_helper_.reset(new TestNetErrorTabHelper(web_contents()));
+    tab_helper_ = std::make_unique<TestNetErrorTabHelper>(web_contents());
     NetErrorTabHelper::set_state_for_testing(
         NetErrorTabHelper::TESTING_FORCE_ENABLED);
   }

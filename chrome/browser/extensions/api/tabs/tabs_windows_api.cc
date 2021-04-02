@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 
+#include <memory>
+
 #include "base/lazy_instance.h"
 #include "chrome/browser/extensions/api/tabs/tabs_event_router.h"
 #include "chrome/browser/extensions/api/tabs/windows_event_router.h"
@@ -56,9 +58,10 @@ TabsWindowsAPI* TabsWindowsAPI::Get(content::BrowserContext* context) {
 }
 
 TabsEventRouter* TabsWindowsAPI::tabs_event_router() {
-  if (!tabs_event_router_.get())
-    tabs_event_router_.reset(
-        new TabsEventRouter(Profile::FromBrowserContext(browser_context_)));
+  if (!tabs_event_router_.get()) {
+    tabs_event_router_ = std::make_unique<TabsEventRouter>(
+        Profile::FromBrowserContext(browser_context_));
+  }
   return tabs_event_router_.get();
 }
 

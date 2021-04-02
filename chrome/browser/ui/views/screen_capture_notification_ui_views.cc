@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/scoped_multi_source_observation.h"
 #include "build/build_config.h"
@@ -259,9 +261,8 @@ ScreenCaptureNotificationUIViews::CreateNonClientFrameView(
       std::make_unique<views::BubbleFrameView>(gfx::Insets(), kPadding);
   SkColor color = widget->GetNativeTheme()->GetSystemColor(
       ui::NativeTheme::kColorId_DialogBackground);
-  frame->SetBubbleBorder(std::unique_ptr<views::BubbleBorder>(
-      new views::BubbleBorder(views::BubbleBorder::NONE,
-                              views::BubbleBorder::STANDARD_SHADOW, color)));
+  frame->SetBubbleBorder(std::make_unique<views::BubbleBorder>(
+      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW, color));
   return frame;
 }
 

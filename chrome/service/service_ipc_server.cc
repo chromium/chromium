@@ -5,6 +5,7 @@
 #include "chrome/service/service_ipc_server.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/metrics/histogram_delta_serialization.h"
@@ -62,8 +63,8 @@ void ServiceIPCServer::Hello(HelloCallback callback) {
 
 void ServiceIPCServer::GetHistograms(GetHistogramsCallback callback) {
   if (!histogram_delta_serializer_) {
-    histogram_delta_serializer_.reset(
-        new base::HistogramDeltaSerialization("ServiceProcess"));
+    histogram_delta_serializer_ =
+        std::make_unique<base::HistogramDeltaSerialization>("ServiceProcess");
   }
   std::vector<std::string> deltas;
   // "false" to PerpareAndSerializeDeltas() indicates to *not* include

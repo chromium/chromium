@@ -4,6 +4,8 @@
 
 #include "chrome/test/chromedriver/alert_commands.h"
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
@@ -43,8 +45,8 @@ Status ExecuteGetAlert(Session* session,
                        WebView* web_view,
                        const base::DictionaryValue& params,
                        std::unique_ptr<base::Value>* value) {
-  value->reset(
-      new base::Value(web_view->GetJavaScriptDialogManager()->IsDialogOpen()));
+  *value = std::make_unique<base::Value>(
+      web_view->GetJavaScriptDialogManager()->IsDialogOpen());
   return Status(kOk);
 }
 
@@ -57,7 +59,7 @@ Status ExecuteGetAlertText(Session* session,
       web_view->GetJavaScriptDialogManager()->GetDialogMessage(&message);
   if (status.IsError())
     return status;
-  value->reset(new base::Value(message));
+  *value = std::make_unique<base::Value>(message);
   return Status(kOk);
 }
 
@@ -81,7 +83,7 @@ Status ExecuteSetAlertText(Session* session,
     return status;
 
   if (type == "prompt")
-    session->prompt_text.reset(new std::string(text));
+    session->prompt_text = std::make_unique<std::string>(text);
   else if (type == "alert" || type == "confirm")
     return Status(kElementNotInteractable,
                   "User dialog does not have a text box input field.");

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "content/public/common/content_switches.h"
@@ -23,8 +25,8 @@ class SpeechRecognitionTest : public extensions::PlatformAppBrowserTest {
     // For SpeechRecognitionTest.SpeechFromBackgroundPage test, we need to
     // fake the speech input to make tests run OK in bots.
     if (!strcmp(test_info->name(), "SpeechFromBackgroundPage")) {
-      fake_speech_recognition_manager_.reset(
-          new content::FakeSpeechRecognitionManager());
+      fake_speech_recognition_manager_ =
+          std::make_unique<content::FakeSpeechRecognitionManager>();
       fake_speech_recognition_manager_->set_should_send_fake_response(true);
       // Inject the fake manager factory so that the test result is returned to
       // the web page.

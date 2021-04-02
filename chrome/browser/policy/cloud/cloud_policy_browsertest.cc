@@ -191,7 +191,7 @@ class CloudPolicyTest : public InProcessBrowserTest,
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_NO_FATAL_FAILURE(SetServerPolicy(GetEmptyPolicy()));
 
-    test_server_.reset(new LocalPolicyTestServer(policy_file_path()));
+    test_server_ = std::make_unique<LocalPolicyTestServer>(policy_file_path());
     ASSERT_TRUE(test_server_->Start());
 
     std::string url = test_server_->GetServiceURL().spec();

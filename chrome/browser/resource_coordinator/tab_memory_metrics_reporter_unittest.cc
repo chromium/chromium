@@ -4,6 +4,8 @@
 
 #include "chrome/browser/resource_coordinator/tab_memory_metrics_reporter.h"
 
+#include <memory>
+
 #include "base/task/post_task.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -78,13 +80,14 @@ class TabMemoryMetricsReporterTest : public testing::Test {
  public:
   TabMemoryMetricsReporterTest()
       : task_runner_(new base::TestMockTimeTaskRunner()) {
-    observer_.reset(
-        new TestTabMemoryMetricsReporter(task_runner_->GetMockTickClock()));
+    observer_ = std::make_unique<TestTabMemoryMetricsReporter>(
+        task_runner_->GetMockTickClock());
     observer_->InstallTaskRunner(task_runner_);
   }
 
   void SetUp() override {
-    test_web_contents_factory_.reset(new content::TestWebContentsFactory);
+    test_web_contents_factory_ =
+        std::make_unique<content::TestWebContentsFactory>();
 
     contents1_ =
         test_web_contents_factory_->CreateWebContents(&testing_profile_);

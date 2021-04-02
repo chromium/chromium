@@ -133,8 +133,8 @@ class ExtensionDataCollectionTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();

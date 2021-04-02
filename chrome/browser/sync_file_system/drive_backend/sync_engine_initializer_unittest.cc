@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -57,15 +59,15 @@ class SyncEngineInitializerTest : public testing::Test {
         new drive::FakeDriveService);
     fake_drive_service_ = fake_drive_service.get();
 
-    sync_context_.reset(new SyncEngineContext(
+    sync_context_ = std::make_unique<SyncEngineContext>(
         std::move(fake_drive_service),
         std::unique_ptr<drive::DriveUploaderInterface>(),
         nullptr /* task_logger */, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
 
-    sync_task_manager_.reset(new SyncTaskManager(
+    sync_task_manager_ = std::make_unique<SyncTaskManager>(
         base::WeakPtr<SyncTaskManager::Client>(), 1 /* maximum_parallel_task */,
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
     sync_task_manager_->Initialize(SYNC_STATUS_OK);
   }
 

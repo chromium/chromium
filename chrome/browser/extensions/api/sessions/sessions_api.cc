@@ -89,15 +89,15 @@ api::tabs::Tab CreateTabModelHelper(
   const GURL& url = current_navigation.virtual_url();
   std::string title = base::UTF16ToUTF8(current_navigation.title());
 
-  tab_struct.session_id.reset(new std::string(session_id));
-  tab_struct.url.reset(new std::string(url.spec()));
-  tab_struct.fav_icon_url.reset(
-      new std::string(current_navigation.favicon_url().spec()));
+  tab_struct.session_id = std::make_unique<std::string>(session_id);
+  tab_struct.url = std::make_unique<std::string>(url.spec());
+  tab_struct.fav_icon_url =
+      std::make_unique<std::string>(current_navigation.favicon_url().spec());
   if (!title.empty()) {
-    tab_struct.title.reset(new std::string(title));
+    tab_struct.title = std::make_unique<std::string>(title);
   } else {
-    tab_struct.title.reset(new std::string(
-        base::UTF16ToUTF8(url_formatter::FormatUrl(url))));
+    tab_struct.title = std::make_unique<std::string>(
+        base::UTF16ToUTF8(url_formatter::FormatUrl(url)));
   }
   tab_struct.index = index;
   tab_struct.pinned = pinned;
@@ -117,7 +117,7 @@ std::unique_ptr<api::windows::Window> CreateWindowModelHelper(
     const api::windows::WindowState& state) {
   std::unique_ptr<api::windows::Window> window_struct(new api::windows::Window);
   window_struct->tabs = std::move(tabs);
-  window_struct->session_id.reset(new std::string(session_id));
+  window_struct->session_id = std::make_unique<std::string>(session_id);
   window_struct->incognito = false;
   window_struct->always_on_top = false;
   window_struct->focused = false;
@@ -192,8 +192,8 @@ SessionsGetRecentlyClosedFunction::CreateSessionModel(
   std::unique_ptr<api::tab_groups::TabGroup> group;
   switch (entry.type) {
     case sessions::TabRestoreService::TAB:
-      tab.reset(new api::tabs::Tab(CreateTabModel(
-          static_cast<const sessions::TabRestoreService::Tab&>(entry), false)));
+      tab = std::make_unique<api::tabs::Tab>(CreateTabModel(
+          static_cast<const sessions::TabRestoreService::Tab&>(entry), false));
       break;
     case sessions::TabRestoreService::WINDOW:
       window = CreateWindowModel(
@@ -343,10 +343,10 @@ SessionsGetDevicesFunction::CreateWindowModel(
       CreateWindowModelHelper(std::move(tabs), session_id, type, state));
   // TODO(dwankri): Dig deeper to resolve bounds not being optional, so closed
   // windows in GetRecentlyClosed can have set values in Window helper.
-  window_struct->left.reset(new int(window.bounds.x()));
-  window_struct->top.reset(new int(window.bounds.y()));
-  window_struct->width.reset(new int(window.bounds.width()));
-  window_struct->height.reset(new int(window.bounds.height()));
+  window_struct->left = std::make_unique<int>(window.bounds.x());
+  window_struct->top = std::make_unique<int>(window.bounds.y());
+  window_struct->width = std::make_unique<int>(window.bounds.width());
+  window_struct->height = std::make_unique<int>(window.bounds.height());
 
   return window_struct;
 }
@@ -657,8 +657,8 @@ SessionsAPI::GetFactoryInstance() {
 }
 
 void SessionsAPI::OnListenerAdded(const EventListenerInfo& details) {
-  sessions_event_router_.reset(
-      new SessionsEventRouter(Profile::FromBrowserContext(browser_context_)));
+  sessions_event_router_ = std::make_unique<SessionsEventRouter>(
+      Profile::FromBrowserContext(browser_context_));
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
 }
 

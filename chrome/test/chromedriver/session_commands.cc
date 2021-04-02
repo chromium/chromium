@@ -5,6 +5,7 @@
 #include "chrome/test/chromedriver/session_commands.h"
 
 #include <list>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -349,8 +350,8 @@ Status ConfigureSession(Session* session,
                         const base::DictionaryValue** desired_caps,
                         base::DictionaryValue* merged_caps,
                         Capabilities* capabilities) {
-  session->driver_log.reset(
-      new WebDriverLog(WebDriverLog::kDriverType, Log::kAll));
+  session->driver_log =
+      std::make_unique<WebDriverLog>(WebDriverLog::kDriverType, Log::kAll);
 
   session->w3c_compliant = GetW3CSetting(params);
   if (session->w3c_compliant) {
@@ -659,7 +660,8 @@ Status ExecuteGetCurrentWindowHandle(Session* session,
   status = web_view->ConnectIfNecessary();
   if (status.IsError())
     return status;
-  value->reset(new base::Value(WebViewIdToWindowHandle(web_view->GetId())));
+  *value =
+      std::make_unique<base::Value>(WebViewIdToWindowHandle(web_view->GetId()));
   return Status(kOk);
 }
 
@@ -727,7 +729,7 @@ Status ExecuteClose(Session* session,
     session->quit = true;
     status = session->chrome->Quit();
     if (status.IsOk())
-      value->reset(new base::ListValue());
+      *value = std::make_unique<base::ListValue>();
   }
 
   return status;
@@ -981,7 +983,7 @@ Status ExecuteIsLoading(Session* session,
   status = web_view->IsPendingNavigation(nullptr, &is_pending);
   if (status.IsError())
     return status;
-  value->reset(new base::Value(is_pending));
+  *value = std::make_unique<base::Value>(is_pending);
   return Status(kOk);
 }
 
@@ -1016,7 +1018,7 @@ Status ExecuteGetNetworkConnection(Session* session,
   int connection_type = 0;
   connection_type = desktop->GetNetworkConnection();
 
-  value->reset(new base::Value(connection_type));
+  *value = std::make_unique<base::Value>(connection_type);
   return Status(kOk);
 }
 
@@ -1109,7 +1111,7 @@ Status ExecuteSetNetworkConnection(Session* session,
       *session->overridden_network_conditions);
   }
 
-  value->reset(new base::Value(connection_type));
+  *value = std::make_unique<base::Value>(connection_type);
   return Status(kOk);
 }
 

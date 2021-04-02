@@ -119,10 +119,10 @@ class PolicyValueStoreTest : public testing::Test {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     observers_ = new SettingsObserverList();
     observers_->AddObserver(&observer_);
-    store_.reset(new PolicyValueStore(
+    store_ = std::make_unique<PolicyValueStore>(
         kTestExtensionId, observers_,
         std::make_unique<LeveldbValueStore>(kDatabaseUMAClientName,
-                                            scoped_temp_dir_.GetPath())));
+                                            scoped_temp_dir_.GetPath()));
   }
 
   void TearDown() override {

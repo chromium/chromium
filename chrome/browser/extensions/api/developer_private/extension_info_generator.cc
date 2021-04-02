@@ -124,8 +124,8 @@ developer::ManifestError ConstructManifestError(const ManifestError& error) {
   PopulateErrorBase(error, &result);
   result.manifest_key = base::UTF16ToUTF8(error.manifest_key());
   if (!error.manifest_specific().empty()) {
-    result.manifest_specific.reset(
-        new std::string(base::UTF16ToUTF8(error.manifest_specific())));
+    result.manifest_specific = std::make_unique<std::string>(
+        base::UTF16ToUTF8(error.manifest_specific()));
   }
   return result;
 }
@@ -509,8 +509,8 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
       break;
   }
   if (blocklist_text != -1) {
-    info->blacklist_text.reset(
-        new std::string(l10n_util::GetStringUTF8(blocklist_text)));
+    info->blacklist_text =
+        std::make_unique<std::string>(l10n_util::GetStringUTF8(blocklist_text));
   }
 
   if (extension_system_->extension_service()->allowlist()->ShouldDisplayWarning(
@@ -628,8 +628,8 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
   // Launch url.
   if (extension.is_app()) {
-    info->launch_url.reset(
-        new std::string(AppLaunchInfo::GetFullLaunchURL(&extension).spec()));
+    info->launch_url = std::make_unique<std::string>(
+        AppLaunchInfo::GetFullLaunchURL(&extension).spec());
   }
 
   // Location.
@@ -654,8 +654,8 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
   else if (extension.is_shared_module())
     location_text = IDS_EXTENSIONS_INSTALL_LOCATION_SHARED_MODULE;
   if (location_text != -1) {
-    info->location_text.reset(
-        new std::string(l10n_util::GetStringUTF8(location_text)));
+    info->location_text =
+        std::make_unique<std::string>(l10n_util::GetStringUTF8(location_text));
   }
 
   // Runtime/Manifest errors.
@@ -691,7 +691,7 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
   // Options page.
   if (OptionsPageInfo::HasOptionsPage(&extension)) {
-    info->options_page.reset(new developer::OptionsPage());
+    info->options_page = std::make_unique<developer::OptionsPage>();
     info->options_page->open_in_tab =
         OptionsPageInfo::ShouldOpenInTab(&extension);
     info->options_page->url =
@@ -700,9 +700,9 @@ void ExtensionInfoGenerator::CreateExtensionInfoHelper(
 
   // Path.
   if (Manifest::IsUnpackedLocation(extension.location())) {
-    info->path.reset(new std::string(extension.path().AsUTF8Unsafe()));
-    info->prettified_path.reset(new std::string(
-      extensions::path_util::PrettifyPath(extension.path()).AsUTF8Unsafe()));
+    info->path = std::make_unique<std::string>(extension.path().AsUTF8Unsafe());
+    info->prettified_path = std::make_unique<std::string>(
+        extensions::path_util::PrettifyPath(extension.path()).AsUTF8Unsafe());
   }
 
   AddPermissionsInfo(browser_context_, extension, &info->permissions);

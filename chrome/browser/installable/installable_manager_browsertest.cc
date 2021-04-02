@@ -4,6 +4,7 @@
 
 #include "components/webapps/browser/installable/installable_manager.h"
 
+#include <memory>
 #include <string>
 #include <tuple>
 
@@ -140,11 +141,11 @@ class CallbackTester {
     manifest_ = data.manifest;
     primary_icon_url_ = data.primary_icon_url;
     if (data.primary_icon)
-      primary_icon_.reset(new SkBitmap(*data.primary_icon));
+      primary_icon_ = std::make_unique<SkBitmap>(*data.primary_icon);
     has_maskable_primary_icon_ = data.has_maskable_primary_icon;
     splash_icon_url_ = data.splash_icon_url;
     if (data.splash_icon)
-      splash_icon_.reset(new SkBitmap(*data.splash_icon));
+      splash_icon_ = std::make_unique<SkBitmap>(*data.splash_icon);
     valid_manifest_ = data.valid_manifest;
     has_worker_ = data.has_worker;
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE, quit_closure_);
@@ -196,7 +197,7 @@ class NestedCallbackTester {
     manifest_ = data.manifest;
     primary_icon_url_ = data.primary_icon_url;
     if (data.primary_icon)
-      primary_icon_.reset(new SkBitmap(*data.primary_icon));
+      primary_icon_ = std::make_unique<SkBitmap>(*data.primary_icon);
     valid_manifest_ = data.valid_manifest;
     has_worker_ = data.has_worker;
 

@@ -4,6 +4,8 @@
 
 #include "chrome/test/chromedriver/chrome/geolocation_override_manager.h"
 
+#include <memory>
+
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_client.h"
 #include "chrome/test/chromedriver/chrome/geoposition.h"
@@ -19,7 +21,7 @@ GeolocationOverrideManager::~GeolocationOverrideManager() {
 
 Status GeolocationOverrideManager::OverrideGeolocation(
     const Geoposition& geoposition) {
-  overridden_geoposition_.reset(new Geoposition(geoposition));
+  overridden_geoposition_ = std::make_unique<Geoposition>(geoposition);
   return ApplyOverrideIfNeeded();
 }
 

@@ -72,15 +72,16 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
     const base::FilePath& install_directory,
     bool autoupdate_enabled,
     bool extensions_enabled) {
-  management_policy_.reset(new ManagementPolicy());
+  management_policy_ = std::make_unique<ManagementPolicy>();
   management_policy_->RegisterProviders(
       ExtensionManagementFactory::GetForBrowserContext(profile_)
           ->GetProviders());
-  runtime_data_.reset(new RuntimeData(ExtensionRegistry::Get(profile_)));
-  extension_service_.reset(new ExtensionService(
+  runtime_data_ =
+      std::make_unique<RuntimeData>(ExtensionRegistry::Get(profile_));
+  extension_service_ = std::make_unique<ExtensionService>(
       profile_, command_line, install_directory, ExtensionPrefs::Get(profile_),
       Blocklist::Get(profile_), autoupdate_enabled, extensions_enabled,
-      &ready_));
+      &ready_);
 
   unzip::SetUnzipperLaunchOverrideForTesting(
       base::BindRepeating(&unzip::LaunchInProcessUnzipper));
@@ -193,7 +194,7 @@ std::unique_ptr<KeyedService> TestExtensionSystem::Build(
 }
 
 void TestExtensionSystem::RecreateAppSorting() {
-  app_sorting_.reset(new ChromeAppSorting(profile_));
+  app_sorting_ = std::make_unique<ChromeAppSorting>(profile_);
 }
 
 }  // namespace extensions

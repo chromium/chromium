@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/extensions/extension_message_bubble_factory.h"
 
+#include <memory>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/no_destructor.h"
@@ -112,11 +114,9 @@ ExtensionMessageBubbleFactory::GetController() {
   // the dev mode extensions on the next startup/next window that opens. That
   // way, we're not too spammy with the bubbles.
   if (EnableSuspiciousExtensionsBubble()) {
-    controller.reset(
-        new extensions::ExtensionMessageBubbleController(
-            new extensions::SuspiciousExtensionBubbleDelegate(
-                browser_->profile()),
-            browser_));
+    controller = std::make_unique<extensions::ExtensionMessageBubbleController>(
+        new extensions::SuspiciousExtensionBubbleDelegate(browser_->profile()),
+        browser_);
     if (controller->ShouldShow())
       return controller;
   }
@@ -137,21 +137,16 @@ ExtensionMessageBubbleFactory::GetController() {
   }
 
   if (EnableProxyOverrideBubble()) {
-    controller.reset(
-        new extensions::ExtensionMessageBubbleController(
-            new extensions::ProxyOverriddenBubbleDelegate(
-                browser_->profile()),
-            browser_));
+    controller = std::make_unique<extensions::ExtensionMessageBubbleController>(
+        new extensions::ProxyOverriddenBubbleDelegate(browser_->profile()),
+        browser_);
     if (controller->ShouldShow())
       return controller;
   }
 
   if (EnableDevModeBubble()) {
-    controller.reset(
-        new extensions::ExtensionMessageBubbleController(
-            new extensions::DevModeBubbleDelegate(
-                browser_->profile()),
-            browser_));
+    controller = std::make_unique<extensions::ExtensionMessageBubbleController>(
+        new extensions::DevModeBubbleDelegate(browser_->profile()), browser_);
     if (controller->ShouldShow())
       return controller;
   }

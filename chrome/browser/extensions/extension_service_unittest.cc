@@ -314,7 +314,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       : ids_found_(0),
         fake_base_path_(fake_base_path),
         expected_creation_flags_(Extension::NO_FLAGS) {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
   }
 
   MockProviderVisitor(base::FilePath fake_base_path,
@@ -322,7 +322,7 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
       : ids_found_(0),
         fake_base_path_(fake_base_path),
         expected_creation_flags_(expected_creation_flags) {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
   }
 
   int Visit(const std::string& json_data) {
@@ -335,9 +335,9 @@ class MockProviderVisitor : public ExternalProviderInterface::VisitorInterface {
             ManifestLocation download_location) {
     crx_location_ = crx_location;
     // Give the test json file to the provider for parsing.
-    provider_.reset(new ExternalProviderImpl(
+    provider_ = std::make_unique<ExternalProviderImpl>(
         this, new ExternalTestingLoader(json_data, fake_base_path_),
-        profile_.get(), crx_location, download_location, Extension::NO_FLAGS));
+        profile_.get(), crx_location, download_location, Extension::NO_FLAGS);
     if (crx_location == ManifestLocation::kExternalRegistry)
       provider_->set_allow_updates(true);
 
@@ -2109,7 +2109,7 @@ TEST_F(ExtensionServiceTest, PackExtension) {
   InstallCRX(crx_path, INSTALL_NEW);
 
   // Try packing with invalid paths.
-  creator.reset(new ExtensionCreator());
+  creator = std::make_unique<ExtensionCreator>();
   ASSERT_FALSE(
       creator->Run(base::FilePath(), base::FilePath(), base::FilePath(),
                    base::FilePath(), ExtensionCreator::kOverwriteCRX));
@@ -2118,7 +2118,7 @@ TEST_F(ExtensionServiceTest, PackExtension) {
   // not a valid extension.
   base::ScopedTempDir temp_dir2;
   ASSERT_TRUE(temp_dir2.CreateUniqueTempDir());
-  creator.reset(new ExtensionCreator());
+  creator = std::make_unique<ExtensionCreator>();
   ASSERT_FALSE(creator->Run(temp_dir2.GetPath(), crx_path, privkey_path,
                             base::FilePath(), ExtensionCreator::kOverwriteCRX));
 
@@ -2128,7 +2128,7 @@ TEST_F(ExtensionServiceTest, PackExtension) {
             base::WriteFile(temp_dir2.GetPath().Append(kManifestFilename),
                             invalid_manifest_content.c_str(),
                             invalid_manifest_content.size()));
-  creator.reset(new ExtensionCreator());
+  creator = std::make_unique<ExtensionCreator>();
   ASSERT_FALSE(creator->Run(temp_dir2.GetPath(), crx_path, privkey_path,
                             base::FilePath(), ExtensionCreator::kOverwriteCRX));
 
@@ -6150,7 +6150,8 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
         profile->GetPath().AppendASCII(kInstallDirectoryName);
 
     // By default, we are enabled.
-    command_line.reset(new base::CommandLine(base::CommandLine::NO_PROGRAM));
+    command_line =
+        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);
@@ -6211,7 +6212,8 @@ TEST_F(ExtensionServiceTestSimple, Enabledness) {
     base::FilePath install_dir =
         profile->GetPath().AppendASCII(kInstallDirectoryName);
     profile->GetPrefs()->SetBoolean(prefs::kDisableExtensions, true);
-    command_line.reset(new base::CommandLine(base::CommandLine::NO_PROGRAM));
+    command_line =
+        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     ExtensionService* service =
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile.get()))
             ->CreateExtensionService(command_line.get(), install_dir, false);

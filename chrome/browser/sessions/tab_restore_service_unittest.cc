@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -109,9 +110,9 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::SetUp();
     live_tab_ = base::WrapUnique(new sessions::ContentLiveTab(web_contents()));
     time_factory_ = new TabRestoreTimeFactory();
-    service_.reset(new sessions::TabRestoreServiceImpl(
+    service_ = std::make_unique<sessions::TabRestoreServiceImpl>(
         std::make_unique<ChromeTabRestoreServiceClient>(profile()),
-        profile()->GetPrefs(), time_factory_));
+        profile()->GetPrefs(), time_factory_);
   }
 
   void TearDown() override {
@@ -147,9 +148,9 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
     service_->Shutdown();
     content::RunAllTasksUntilIdle();
     service_.reset();
-    service_.reset(new sessions::TabRestoreServiceImpl(
+    service_ = std::make_unique<sessions::TabRestoreServiceImpl>(
         std::make_unique<ChromeTabRestoreServiceClient>(profile()),
-        profile()->GetPrefs(), time_factory_));
+        profile()->GetPrefs(), time_factory_);
     SynchronousLoadTabsFromLastSession();
   }
 

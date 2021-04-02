@@ -4,6 +4,8 @@
 
 #include "chrome/browser/usb/frame_usb_services.h"
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "content/public/common/content_features.h"
@@ -41,11 +43,10 @@ FrameUsbServices::~FrameUsbServices() = default;
 
 void FrameUsbServices::InitializeWebUsbChooser() {
   if (!usb_chooser_) {
-    usb_chooser_.reset(
 #if defined(OS_ANDROID)
-        new WebUsbChooserAndroid(render_frame_host_));
+    usb_chooser_ = std::make_unique<WebUsbChooserAndroid>(render_frame_host_);
 #else
-        new WebUsbChooserDesktop(render_frame_host_));
+    usb_chooser_ = std::make_unique<WebUsbChooserDesktop>(render_frame_host_);
 #endif  // defined(OS_ANDROID)
   }
 }
@@ -59,8 +60,8 @@ void FrameUsbServices::InitializeWebUsbService(
 
   InitializeWebUsbChooser();
   if (!web_usb_service_) {
-    web_usb_service_.reset(
-        new WebUsbServiceImpl(render_frame_host_, usb_chooser_->GetWeakPtr()));
+    web_usb_service_ = std::make_unique<WebUsbServiceImpl>(
+        render_frame_host_, usb_chooser_->GetWeakPtr());
   }
   web_usb_service_->BindReceiver(std::move(receiver));
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/generation_confirmation_bubble_controller.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
@@ -45,9 +47,9 @@ class GenerationConfirmationBubbleControllerTest : public ::testing::Test {
 
 void GenerationConfirmationBubbleControllerTest::Init() {
   EXPECT_CALL(*delegate(), OnBubbleShown());
-  controller_.reset(new GenerationConfirmationBubbleController(
+  controller_ = std::make_unique<GenerationConfirmationBubbleController>(
       mock_delegate_->AsWeakPtr(),
-      PasswordBubbleControllerBase::DisplayReason::kAutomatic));
+      PasswordBubbleControllerBase::DisplayReason::kAutomatic);
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
 }
 

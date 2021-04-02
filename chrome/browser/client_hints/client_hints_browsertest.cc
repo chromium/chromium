@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cctype>
+#include <memory>
 
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -489,7 +490,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
       return nullptr;
 
     std::unique_ptr<net::test_server::BasicHttpResponse> response;
-    response.reset(new net::test_server::BasicHttpResponse);
+    response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_FOUND);
     response->AddCustomHeader("Location",
                               without_accept_ch_without_lifetime_url().spec());

@@ -110,7 +110,7 @@ class Waiter {
 
   // Waits until the asynchronous operation finishes.
   void WaitUntilCompleted() {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -257,8 +257,8 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     // Allow extension update to unpack crx in process.
-    in_process_utility_thread_helper_.reset(
-        new content::InProcessUtilityThreadHelper);
+    in_process_utility_thread_helper_ =
+        std::make_unique<content::InProcessUtilityThreadHelper>();
 
     // This is needed to create extension service under CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -288,7 +288,8 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
                        &ExtensionGCMAppHandlerTest::BuildGCMProfileService));
 
     // Create a fake version of ExtensionGCMAppHandler.
-    gcm_app_handler_.reset(new FakeExtensionGCMAppHandler(profile(), &waiter_));
+    gcm_app_handler_ =
+        std::make_unique<FakeExtensionGCMAppHandler>(profile(), &waiter_);
   }
 
   void TearDown() override {

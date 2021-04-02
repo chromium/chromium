@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -198,9 +199,9 @@ void UserPolicySigninService::RegisterCloudPolicyService() {
 
   // Start the process of registering the CloudPolicyClient. Once it completes,
   // policy fetch will automatically happen.
-  registration_helper_.reset(new CloudPolicyClientRegistrationHelper(
+  registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
       policy_manager()->core()->client(),
-      enterprise_management::DeviceRegisterRequest::BROWSER));
+      enterprise_management::DeviceRegisterRequest::BROWSER);
   registration_helper_->StartRegistration(
       identity_manager(),
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSync),

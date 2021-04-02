@@ -691,8 +691,8 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
     // should be lower priority than any actual onDeterminingFilename listeners.
 
     // Ensure that the callback is called within a time limit.
-    weak_ptr_factory_.reset(
-        new base::WeakPtrFactory<ExtensionDownloadsEventRouterData>(this));
+    weak_ptr_factory_ = std::make_unique<
+        base::WeakPtrFactory<ExtensionDownloadsEventRouterData>>(this);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -862,8 +862,8 @@ class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {
     // kTooManyListeners. After a few seconds, DetermineFilename will return
     // kUnexpectedDeterminer instead of kTooManyListeners so that determiners_
     // doesn't keep hogging memory.
-    weak_ptr_factory_.reset(
-        new base::WeakPtrFactory<ExtensionDownloadsEventRouterData>(this));
+    weak_ptr_factory_ = std::make_unique<
+        base::WeakPtrFactory<ExtensionDownloadsEventRouterData>>(this);
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(
@@ -1109,8 +1109,7 @@ void DownloadsDownloadFunction::OnStarted(
           ExtensionDownloadsEventRouterData::Get(item);
       if (!data) {
         data = new ExtensionDownloadsEventRouterData(
-            item, std::unique_ptr<base::DictionaryValue>(
-                      new base::DictionaryValue()));
+            item, std::make_unique<base::DictionaryValue>());
       }
       data->CreatorSuggestedFilename(
           creator_suggested_filename, creator_conflict_action);
@@ -1870,8 +1869,7 @@ void ExtensionDownloadsEventRouter::OnDownloadUpdated(
     // The download_item probably transitioned from temporary to not temporary,
     // or else an event listener was added.
     data = new ExtensionDownloadsEventRouterData(
-        download_item,
-        std::unique_ptr<base::DictionaryValue>(new base::DictionaryValue()));
+        download_item, std::make_unique<base::DictionaryValue>());
   }
   std::unique_ptr<base::DictionaryValue> new_json;
   std::unique_ptr<base::DictionaryValue> delta(new base::DictionaryValue());

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -61,7 +62,7 @@ class CookiesTreeModelTest : public testing::Test {
   }
 
   void SetUp() override {
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     mock_browsing_data_cookie_helper_ =
         new browsing_data::MockCookieHelper(profile_.get());
     mock_browsing_data_database_helper_ =

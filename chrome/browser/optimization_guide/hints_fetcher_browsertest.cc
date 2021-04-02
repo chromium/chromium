@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -143,8 +144,8 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUp() override {
-    origin_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    origin_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     origin_server_->ServeFilesFromSourceDirectory("chrome/test/data/previews");
 
     ASSERT_TRUE(origin_server_->Start());
@@ -159,8 +160,8 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
                 google_util::IsGoogleHostname(search_results_page_url_.host(),
                                               google_util::DISALLOW_SUBDOMAIN));
 
-    hints_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    hints_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     hints_server_->ServeFilesFromSourceDirectory("chrome/test/data/previews");
     hints_server_->RegisterRequestHandler(base::BindRepeating(
         &HintsFetcherDisabledBrowserTest::HandleGetHintsRequest,
@@ -372,7 +373,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
       const net::test_server::HttpRequest& request) {
     EXPECT_EQ(request.method, net::test_server::METHOD_GET);
     std::unique_ptr<net::test_server::BasicHttpResponse> response;
-    response.reset(new net::test_server::BasicHttpResponse);
+    response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
 
     return std::move(response);
@@ -385,7 +386,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
     ++count_hints_requests_received_;
     std::unique_ptr<net::test_server::BasicHttpResponse> response;
 
-    response.reset(new net::test_server::BasicHttpResponse);
+    response = std::make_unique<net::test_server::BasicHttpResponse>();
     // If the request is a GET, it corresponds to a navigation so return a
     // normal response.
     EXPECT_EQ(request.method, net::test_server::METHOD_POST);

@@ -5,6 +5,8 @@
 #include "chrome/browser/sync_file_system/drive_backend/sync_task_manager.h"
 
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -55,9 +57,9 @@ class TaskManagerClient
         task_scheduled_count_(0),
         idle_task_scheduled_count_(0),
         last_operation_status_(SYNC_STATUS_OK) {
-    task_manager_.reset(
-        new SyncTaskManager(AsWeakPtr(), maximum_background_task,
-                            base::ThreadTaskRunnerHandle::Get()));
+    task_manager_ =
+        std::make_unique<SyncTaskManager>(AsWeakPtr(), maximum_background_task,
+                                          base::ThreadTaskRunnerHandle::Get());
     task_manager_->Initialize(SYNC_STATUS_OK);
     base::RunLoop().RunUntilIdle();
     maybe_schedule_next_task_count_ = 0;

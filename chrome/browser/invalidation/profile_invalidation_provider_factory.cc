@@ -133,8 +133,8 @@ KeyedService* ProfileInvalidationProviderFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   if (!identity_provider) {
-    identity_provider.reset(new ProfileIdentityProvider(
-        IdentityManagerFactory::GetForProfile(profile)));
+    identity_provider = std::make_unique<ProfileIdentityProvider>(
+        IdentityManagerFactory::GetForProfile(profile));
   }
   auto service =
       CreateInvalidationServiceForSenderId(profile, identity_provider.get(),

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/state_store.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
@@ -93,8 +94,8 @@ void StateStore::Transaction::ClearAll() {
 
 base::DictionaryValue* StateStore::Transaction::GetPrefDict() {
   if (!pref_update_) {
-    pref_update_.reset(new DictionaryPrefUpdate(
-        store_->profile_->GetPrefs(), prefs::kSafeBrowsingIncidentsSent));
+    pref_update_ = std::make_unique<DictionaryPrefUpdate>(
+        store_->profile_->GetPrefs(), prefs::kSafeBrowsingIncidentsSent);
     // Getting the dict will cause it to be created if it doesn't exist.
     // Unconditionally refresh the store's read-only view on the preference so
     // that it will always be correct.

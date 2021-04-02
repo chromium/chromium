@@ -210,7 +210,7 @@ TEST_F(NativeMessagingTest, SingleSendMessageRead) {
   native_message_host_->Start(this);
 
   ASSERT_TRUE(native_message_host_);
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   EXPECT_EQ(kTestMessage, last_message_);
@@ -285,7 +285,7 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
@@ -303,7 +303,7 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   EXPECT_EQ(expected_url, url);
 
   native_message_host_->OnMessage("{\"foo\": \"bar\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   EXPECT_TRUE(last_message_parsed_->GetInteger("id", &id));
   EXPECT_EQ(2, id);
@@ -346,7 +346,7 @@ TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
@@ -400,7 +400,7 @@ TEST_F(NativeMessagingTest, ReconnectArgs_Disabled) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
@@ -428,7 +428,7 @@ TEST_F(NativeMessagingTest, ReconnectArgsIfNativeConnectionDisallowed) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
@@ -454,7 +454,7 @@ TEST_F(NativeMessagingTest, UserLevel) {
   ASSERT_TRUE(native_message_host_);
 
   native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   ASSERT_FALSE(last_message_.empty());
   ASSERT_TRUE(last_message_parsed_);
@@ -470,7 +470,7 @@ TEST_F(NativeMessagingTest, DisallowUserLevel) {
       ScopedTestNativeMessagingHost::kHostName, false, &error_message);
   native_message_host_->Start(this);
   ASSERT_TRUE(native_message_host_);
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   // The host should fail to start.

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
 
+#include <memory>
+
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -333,10 +335,10 @@ bool BookmarkMenuDelegate::ShowContextMenu(MenuItemView* source,
   DCHECK(menu_id_to_node_map_.find(id) != menu_id_to_node_map_.end());
   const BookmarkNode* node = menu_id_to_node_map_[id];
   std::vector<const BookmarkNode*> nodes(1, node);
-  context_menu_.reset(
-      new BookmarkContextMenu(parent_, browser_, profile_, get_navigator_,
-                              BOOKMARK_LAUNCH_LOCATION_APP_MENU, node->parent(),
-                              nodes, ShouldCloseOnRemove(node)));
+  context_menu_ = std::make_unique<BookmarkContextMenu>(
+      parent_, browser_, profile_, get_navigator_,
+      BOOKMARK_LAUNCH_LOCATION_APP_MENU, node->parent(), nodes,
+      ShouldCloseOnRemove(node));
   context_menu_->set_observer(this);
   context_menu_->RunMenuAt(p, source_type);
   return true;

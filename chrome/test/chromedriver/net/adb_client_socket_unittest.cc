@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/net/adb_client_socket.h"
+
+#include <memory>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
@@ -133,7 +136,7 @@ class AdbClientSocketTest : public testing::Test {
                                 std::string expected_result) {
     // 3 is an arbitrary meaningless number in the following call.
     AdbClientSocket adb_socket(3);
-    adb_socket.socket_.reset(new MockSocket(chunks, number_chunks));
+    adb_socket.socket_ = std::make_unique<MockSocket>(chunks, number_chunks);
 
     base::MockCallback<AdbClientSocket::ParserCallback> parse_callback;
     EXPECT_CALL(parse_callback, Run(expected_result.c_str())).Times(1);

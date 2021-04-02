@@ -655,17 +655,21 @@ class DownloadProtectionServiceTestBase
 
   void OnClientDownloadRequest(download::DownloadItem* download,
                                const ClientDownloadRequest* request) {
-    if (request)
-      last_client_download_request_.reset(new ClientDownloadRequest(*request));
-    else
+    if (request) {
+      last_client_download_request_ =
+          std::make_unique<ClientDownloadRequest>(*request);
+    } else {
       last_client_download_request_.reset();
+    }
   }
 
   void OnPPAPIDownloadRequest(const ClientDownloadRequest* request) {
-    if (request)
-      last_client_download_request_.reset(new ClientDownloadRequest(*request));
-    else
+    if (request) {
+      last_client_download_request_ =
+          std::make_unique<ClientDownloadRequest>(*request);
+    } else {
       last_client_download_request_.reset();
+    }
   }
 
  public:

@@ -4,6 +4,7 @@
 
 #include "chrome/service/cloud_print/cloud_print_auth.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -97,8 +98,8 @@ void CloudPrintAuth::AuthenticateWithRobotAuthCode(
 
   robot_email_ = robot_email;
   // Now that we have an auth code we need to get the refresh and access tokens.
-  oauth_client_.reset(
-      new gaia::GaiaOAuthClient(client_->GetURLLoaderFactory()));
+  oauth_client_ =
+      std::make_unique<gaia::GaiaOAuthClient>(client_->GetURLLoaderFactory());
   oauth_client_->GetTokensFromAuthCode(oauth_client_info_,
                                        robot_oauth_auth_code,
                                        kCloudPrintAuthMaxRetryCount,
@@ -108,8 +109,8 @@ void CloudPrintAuth::AuthenticateWithRobotAuthCode(
 void CloudPrintAuth::RefreshAccessToken() {
   UMA_HISTOGRAM_ENUMERATION("CloudPrint.AuthEvent", AUTH_EVENT_REFRESH_REQUEST,
                             AUTH_EVENT_MAX);
-  oauth_client_.reset(
-      new gaia::GaiaOAuthClient(client_->GetURLLoaderFactory()));
+  oauth_client_ =
+      std::make_unique<gaia::GaiaOAuthClient>(client_->GetURLLoaderFactory());
   std::vector<std::string> empty_scope_list;  // (Use scope from refresh token.)
   oauth_client_->RefreshToken(oauth_client_info_,
                               refresh_token_,

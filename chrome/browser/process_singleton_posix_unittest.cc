@@ -119,7 +119,7 @@ class ProcessSingletonPosixTest : public testing::Test {
 
   void CreateProcessSingletonOnThread() {
     ASSERT_FALSE(worker_thread_.get());
-    worker_thread_.reset(new base::Thread("BlockingThread"));
+    worker_thread_ = std::make_unique<base::Thread>("BlockingThread");
     worker_thread_->Start();
 
     worker_thread_->task_runner()->PostTask(

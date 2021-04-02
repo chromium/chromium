@@ -4,6 +4,8 @@
 
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -46,7 +48,7 @@ class TrackingTestURLRequestContextGetter
 
   net::TestURLRequestContext* GetURLRequestContext() override {
     if (!context_.get()) {
-      context_.reset(new net::TestURLRequestContext(true));
+      context_ = std::make_unique<net::TestURLRequestContext>(true);
       context_->set_throttler_manager(throttler_manager_);
       context_->Init();
     }

@@ -659,7 +659,7 @@ std::unique_ptr<Profile> Profile::CreateOffTheRecordProfile(
     profile.reset(new GuestSessionProfile(parent));
 #endif
   if (!profile)
-    profile.reset(new OffTheRecordProfileImpl(parent, otr_profile_id));
+    profile = std::make_unique<OffTheRecordProfileImpl>(parent, otr_profile_id);
   profile->Init();
   return std::move(profile);
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -106,7 +107,7 @@ class SyncWorkerTest : public testing::Test,
     ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
     in_memory_env_ = leveldb_chrome::NewMemEnv("SyncWorkerTest");
 
-    extension_service_.reset(new MockExtensionService);
+    extension_service_ = std::make_unique<MockExtensionService>();
     std::unique_ptr<drive::DriveServiceInterface> fake_drive_service(
         new drive::FakeDriveService);
 
@@ -117,9 +118,9 @@ class SyncWorkerTest : public testing::Test,
             base::ThreadTaskRunnerHandle::Get() /* ui_task_runner */,
             base::ThreadTaskRunnerHandle::Get() /* worker_task_runner */));
 
-    sync_worker_.reset(
-        new SyncWorker(profile_dir_.GetPath(), extension_service_->AsWeakPtr(),
-                       &extension_service_->registry(), in_memory_env_.get()));
+    sync_worker_ = std::make_unique<SyncWorker>(
+        profile_dir_.GetPath(), extension_service_->AsWeakPtr(),
+        &extension_service_->registry(), in_memory_env_.get());
     sync_worker_->Initialize(std::move(sync_engine_context));
 
     sync_worker_->SetSyncEnabled(true);

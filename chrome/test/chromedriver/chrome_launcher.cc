@@ -241,15 +241,17 @@ Status WaitForDevToolsAndCheckVersion(
     ChromeType ct,
     std::string fp = "") {
   std::unique_ptr<DeviceMetrics> device_metrics;
-  if (capabilities && capabilities->device_metrics)
-    device_metrics.reset(new DeviceMetrics(*capabilities->device_metrics));
+  if (capabilities && capabilities->device_metrics) {
+    device_metrics =
+        std::make_unique<DeviceMetrics>(*capabilities->device_metrics);
+  }
 
   std::unique_ptr<std::set<WebViewInfo::Type>> window_types;
   if (capabilities && !capabilities->window_types.empty()) {
-    window_types.reset(
-        new std::set<WebViewInfo::Type>(capabilities->window_types));
+    window_types = std::make_unique<std::set<WebViewInfo::Type>>(
+        capabilities->window_types);
   } else {
-    window_types.reset(new std::set<WebViewInfo::Type>());
+    window_types = std::make_unique<std::set<WebViewInfo::Type>>();
   }
 
   std::unique_ptr<DevToolsHttpClient> client;
@@ -258,14 +260,14 @@ Status WaitForDevToolsAndCheckVersion(
     base::CommandLine::StringType log_path =
         cmd_line->GetSwitchValueNative("devtools-replay");
     base::FilePath log_file_path(log_path);
-    client.reset(
-        new ReplayHttpClient(endpoint, factory, socket_factory,
-                             std::move(device_metrics), std::move(window_types),
-                             capabilities->page_load_strategy, log_file_path));
-  } else {
-    client.reset(new DevToolsHttpClient(
+    client = std::make_unique<ReplayHttpClient>(
         endpoint, factory, socket_factory, std::move(device_metrics),
-        std::move(window_types), capabilities->page_load_strategy));
+        std::move(window_types), capabilities->page_load_strategy,
+        log_file_path);
+  } else {
+    client = std::make_unique<DevToolsHttpClient>(
+        endpoint, factory, socket_factory, std::move(device_metrics),
+        std::move(window_types), capabilities->page_load_strategy);
   }
 
   const base::TimeTicks initial = base::TimeTicks::Now();
@@ -406,9 +408,9 @@ Status LaunchRemoteChromeSession(
                  << status.message();
   }
 
-  chrome->reset(new ChromeRemoteImpl(
+  *chrome = std::make_unique<ChromeRemoteImpl>(
       std::move(devtools_http_client), std::move(devtools_websocket_client),
-      std::move(devtools_event_listeners), capabilities.page_load_strategy));
+      std::move(devtools_event_listeners), capabilities.page_load_strategy);
   return Status(kOk);
 }
 
@@ -748,10 +750,10 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
                  << status.message();
   }
 
-  chrome->reset(new ChromeAndroidImpl(
+  *chrome = std::make_unique<ChromeAndroidImpl>(
       std::move(devtools_http_client), std::move(devtools_websocket_client),
       std::move(devtools_event_listeners), capabilities.page_load_strategy,
-      std::move(device)));
+      std::move(device));
   return Status(kOk);
 }
 

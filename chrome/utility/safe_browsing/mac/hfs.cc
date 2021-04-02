@@ -9,6 +9,7 @@
 #include <sys/stat.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -326,8 +327,9 @@ bool HFSIterator::SeekToBlock(uint64_t block) {
 }
 
 bool HFSIterator::ReadCatalogFile() {
-  catalog_file_.reset(new HFSForkReadStream(this, volume_header_.catalogFile));
-  catalog_.reset(new HFSBTreeIterator());
+  catalog_file_ =
+      std::make_unique<HFSForkReadStream>(this, volume_header_.catalogFile);
+  catalog_ = std::make_unique<HFSBTreeIterator>();
   return catalog_->Init(catalog_file_.get());
 }
 

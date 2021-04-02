@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -66,8 +67,8 @@ class AvailabilityProberBrowserTest : public InProcessBrowserTest {
   ~AvailabilityProberBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
-    https_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->RegisterRequestHandler(base::BindRepeating(
         &AvailabilityProberBrowserTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(https_server_->Start());

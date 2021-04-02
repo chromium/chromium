@@ -313,7 +313,7 @@ class AppShimManagerTest : public testing::Test {
 
     std::unique_ptr<MockDelegate> delegate = std::make_unique<MockDelegate>();
     delegate_ = delegate.get();
-    manager_.reset(new TestingAppShimManager(std::move(delegate)));
+    manager_ = std::make_unique<TestingAppShimManager>(std::move(delegate));
     AppShimHostBootstrap::SetClient(manager_.get());
     bootstrap_aa_ = (new TestingAppShimHostBootstrap(
                          profile_path_a_, kTestAppIdA,

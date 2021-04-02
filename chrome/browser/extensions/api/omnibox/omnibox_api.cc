@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -55,7 +56,7 @@ std::unique_ptr<omnibox::SuggestResult> GetOmniboxDefaultSuggestion(
   if (prefs && prefs->ReadPrefAsDictionary(extension_id,
                                            kOmniboxDefaultSuggestion,
                                            &dict)) {
-    suggestion.reset(new omnibox::SuggestResult);
+    suggestion = std::make_unique<omnibox::SuggestResult>();
     omnibox::SuggestResult::Populate(*dict, suggestion.get());
   }
   return suggestion;

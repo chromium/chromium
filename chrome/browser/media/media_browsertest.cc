@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/media_browsertest.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,7 +64,7 @@ void MediaBrowserTest::RunMediaTestPage(const std::string& html_page,
   if (http) {
     DVLOG(0) << base::TimeFormatTimeOfDayWithMilliseconds(base::Time::Now())
              << " Starting HTTP server";
-    http_test_server.reset(new net::EmbeddedTestServer);
+    http_test_server = std::make_unique<net::EmbeddedTestServer>();
     http_test_server->ServeFilesFromSourceDirectory(media::GetTestDataPath());
     CHECK(http_test_server->Start());
     gurl = http_test_server->GetURL("/" + html_page + "?" + query);

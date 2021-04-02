@@ -10,6 +10,8 @@
 
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -91,7 +93,7 @@ class CacheCounterTest : public InProcessBrowserTest {
   void WaitForCountingResult() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   // Callback from the counter.

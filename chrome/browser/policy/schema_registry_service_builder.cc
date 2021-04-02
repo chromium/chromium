@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/schema_registry_service_builder.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -81,7 +82,7 @@ std::unique_ptr<SchemaRegistryService> BuildSchemaRegistryServiceForProfile(
 #endif
 
   if (!registry)
-    registry.reset(new SchemaRegistry);
+    registry = std::make_unique<SchemaRegistry>();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   Profile* const profile = Profile::FromBrowserContext(context);

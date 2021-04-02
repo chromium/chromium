@@ -32,7 +32,7 @@ PluginInstallerTest::PluginInstallerTest() {
 
 void PluginInstallerTest::SetUp() {
   content::RenderViewHostTestHarness::SetUp();
-  installer_.reset(new PluginInstaller());
+  installer_ = std::make_unique<PluginInstaller>();
 }
 
 void PluginInstallerTest::TearDown() {

@@ -66,14 +66,14 @@ api::developer_private::ItemInfo MangleExtensionInfo(
       info.state == api::developer_private::EXTENSION_STATE_TERMINATED;
 
   if (info.path)
-    result.path.reset(new std::string(*info.path));
+    result.path = std::make_unique<std::string>(*info.path);
   if (info.options_page)
-    result.options_url.reset(new std::string(info.options_page->url));
+    result.options_url = std::make_unique<std::string>(info.options_page->url);
   if (info.launch_url)
-    result.app_launch_url.reset(new std::string(*info.launch_url));
+    result.app_launch_url = std::make_unique<std::string>(*info.launch_url);
   if (!info.home_page.url.empty())
-    result.homepage_url.reset(new std::string(info.home_page.url));
-  result.update_url.reset(new std::string(info.update_url));
+    result.homepage_url = std::make_unique<std::string>(info.home_page.url);
+  result.update_url = std::make_unique<std::string>(info.update_url);
   for (const std::string& str_warning : info.install_warnings) {
     api::developer_private::InstallWarning warning;
     warning.message = str_warning;

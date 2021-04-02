@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/at_exit.h"
@@ -202,8 +203,7 @@ MockPromptProxy::MockPromptProxy(
 MockPromptProxy::~MockPromptProxy() = default;
 
 std::unique_ptr<ExtensionInstallPrompt> MockPromptProxy::CreatePrompt() {
-  return std::unique_ptr<MockInstallPrompt>(
-      new MockInstallPrompt(web_contents_, this));
+  return std::make_unique<MockInstallPrompt>(web_contents_, this);
 }
 
 std::unique_ptr<MockPromptProxy> CreateMockPromptProxyForBrowserWithConfirmMode(

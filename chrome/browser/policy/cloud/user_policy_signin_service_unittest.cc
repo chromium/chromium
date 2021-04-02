@@ -121,7 +121,7 @@ class UserPolicySigninServiceTest : public testing::Test {
     UserPolicySigninServiceFactory::SetDeviceManagementServiceForTesting(
         &device_management_service_);
 
-    local_state_.reset(new TestingPrefServiceSimple);
+    local_state_ = std::make_unique<TestingPrefServiceSimple>();
     RegisterLocalState(local_state_->registry());
     TestingBrowserProcess::GetGlobal()->SetLocalState(local_state_.get());
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
@@ -488,7 +488,7 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
   ASSERT_FALSE(manager_->IsClientRegistered());
   ASSERT_FALSE(IsRequestActive());
 
-  mock_store_->policy_.reset(new enterprise_management::PolicyData());
+  mock_store_->policy_ = std::make_unique<enterprise_management::PolicyData>();
   mock_store_->policy_->set_request_token("fake token");
   mock_store_->policy_->set_device_id("fake client id");
 

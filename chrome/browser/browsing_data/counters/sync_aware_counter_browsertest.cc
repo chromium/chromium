@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -43,7 +45,7 @@ class SyncAwareCounterTest : public SyncTest {
   void SetUpOnMainThread() override {
     fake_web_history_service_ =
         std::make_unique<history::FakeWebHistoryService>();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     SyncTest::SetUpOnMainThread();
   }
 
@@ -59,7 +61,7 @@ class SyncAwareCounterTest : public SyncTest {
 
   void WaitForCounting() {
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     finished_ = false;
   }
 

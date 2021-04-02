@@ -69,13 +69,13 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   ~ChromeUnitTestSuiteInitializer() override = default;
 
   void OnTestStart(const testing::TestInfo& test_info) override {
-    content_client_.reset(new ChromeContentClient);
+    content_client_ = std::make_unique<ChromeContentClient>();
     content::SetContentClient(content_client_.get());
 
-    browser_content_client_.reset(
-        new ChromeContentBrowserClientWithoutNetworkServiceInitialization());
+    browser_content_client_ = std::make_unique<
+        ChromeContentBrowserClientWithoutNetworkServiceInitialization>();
     content::SetBrowserClientForTesting(browser_content_client_.get());
-    utility_content_client_.reset(new ChromeContentUtilityClient());
+    utility_content_client_ = std::make_unique<ChromeContentUtilityClient>();
     content::SetUtilityClientForTesting(utility_content_client_.get());
 
     TestingBrowserProcess::CreateInstance();

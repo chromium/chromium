@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -148,9 +149,10 @@ TabManager::TabManager(TabLoadTracker* tab_load_tracker)
   delegate_.reset(new TabManagerDelegate(weak_ptr_factory_.GetWeakPtr()));
 #endif
   browser_tab_strip_tracker_.Init();
-  session_restore_observer_.reset(new TabManagerSessionRestoreObserver(this));
+  session_restore_observer_ =
+      std::make_unique<TabManagerSessionRestoreObserver>(this);
 
-  stats_collector_.reset(new TabManagerStatsCollector());
+  stats_collector_ = std::make_unique<TabManagerStatsCollector>();
   tab_load_tracker_->AddObserver(this);
 }
 

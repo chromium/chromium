@@ -49,8 +49,8 @@ class PreferenceValidationDelegateTest : public testing::Test {
         new NiceMock<safe_browsing::MockIncidentReceiver>());
     ON_CALL(*receiver, DoAddIncidentForProfile(IsNull(), _))
         .WillByDefault(WithArg<1>(TakeIncidentToVector(&incidents_)));
-    instance_.reset(new safe_browsing::PreferenceValidationDelegate(
-        nullptr, std::move(receiver)));
+    instance_ = std::make_unique<safe_browsing::PreferenceValidationDelegate>(
+        nullptr, std::move(receiver));
   }
 
   static void ExpectValueStatesEquate(

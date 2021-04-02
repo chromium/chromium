@@ -241,7 +241,7 @@ const Extension* ExtensionBrowserTest::GetExtensionByPath(
 }
 
 void ExtensionBrowserTest::SetUp() {
-  test_extension_cache_.reset(new ExtensionCacheFake());
+  test_extension_cache_ = std::make_unique<ExtensionCacheFake>();
   InProcessBrowserTest::SetUp();
 }
 
@@ -254,13 +254,13 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
       ExtensionMessageBubbleFactory::OVERRIDE_DISABLED);
 
   if (!ShouldEnableContentVerification()) {
-    ignore_content_verification_.reset(
-        new ScopedIgnoreContentVerifierForTest());
+    ignore_content_verification_ =
+        std::make_unique<ScopedIgnoreContentVerifierForTest>();
   }
 
   if (!ShouldEnableInstallVerification()) {
-    ignore_install_verification_.reset(
-        new ScopedInstallVerifierBypassForTest());
+    ignore_install_verification_ =
+        std::make_unique<ScopedInstallVerifierBypassForTest>();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -276,7 +276,8 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void ExtensionBrowserTest::SetUpOnMainThread() {
-  observer_.reset(new ChromeExtensionTestNotificationObserver(browser()));
+  observer_ =
+      std::make_unique<ChromeExtensionTestNotificationObserver>(browser());
   if (extension_service()->updater()) {
     extension_service()->updater()->SetExtensionCacheForTesting(
         test_extension_cache_.get());
@@ -673,14 +674,14 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
   {
     std::unique_ptr<ScopedTestDialogAutoConfirm> prompt_auto_confirm;
     if (ui_type == INSTALL_UI_TYPE_CANCEL) {
-      prompt_auto_confirm.reset(new ScopedTestDialogAutoConfirm(
-          ScopedTestDialogAutoConfirm::CANCEL));
+      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
+          ScopedTestDialogAutoConfirm::CANCEL);
     } else if (ui_type == INSTALL_UI_TYPE_NORMAL) {
-      prompt_auto_confirm.reset(new ScopedTestDialogAutoConfirm(
-          ScopedTestDialogAutoConfirm::NONE));
+      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
+          ScopedTestDialogAutoConfirm::NONE);
     } else if (ui_type == INSTALL_UI_TYPE_AUTO_CONFIRM) {
-      prompt_auto_confirm.reset(new ScopedTestDialogAutoConfirm(
-          ScopedTestDialogAutoConfirm::ACCEPT));
+      prompt_auto_confirm = std::make_unique<ScopedTestDialogAutoConfirm>(
+          ScopedTestDialogAutoConfirm::ACCEPT);
     }
 
     // TODO(tessamac): Update callers to always pass an unpacked extension
@@ -701,8 +702,8 @@ const Extension* ExtensionBrowserTest::InstallOrUpdateExtension(
 
     std::unique_ptr<ExtensionInstallPrompt> install_ui;
     if (prompt_auto_confirm) {
-      install_ui.reset(new ExtensionInstallPrompt(
-         browser->tab_strip_model()->GetActiveWebContents()));
+      install_ui = std::make_unique<ExtensionInstallPrompt>(
+          browser->tab_strip_model()->GetActiveWebContents());
     }
     scoped_refptr<CrxInstaller> installer(
         CrxInstaller::Create(extension_service(), std::move(install_ui)));

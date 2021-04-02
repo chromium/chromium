@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/settings_private/settings_private_delegate.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/values.h"
@@ -23,7 +24,7 @@ namespace extensions {
 
 SettingsPrivateDelegate::SettingsPrivateDelegate(Profile* profile)
     : profile_(profile) {
-  prefs_util_.reset(new PrefsUtil(profile));
+  prefs_util_ = std::make_unique<PrefsUtil>(profile);
 }
 
 SettingsPrivateDelegate::~SettingsPrivateDelegate() {

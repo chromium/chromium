@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/webstore_installer_test.h"
+
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
@@ -137,12 +140,14 @@ void WebstoreInstallerTest::ProcessServerRequest(const HttpRequest& request) {}
 
 void WebstoreInstallerTest::AutoAcceptInstall() {
   install_auto_confirm_.reset();  // Destroy any old override first.
-  install_auto_confirm_.reset(new extensions::ScopedTestDialogAutoConfirm(
-      extensions::ScopedTestDialogAutoConfirm::ACCEPT));
+  install_auto_confirm_ =
+      std::make_unique<extensions::ScopedTestDialogAutoConfirm>(
+          extensions::ScopedTestDialogAutoConfirm::ACCEPT);
 }
 
 void WebstoreInstallerTest::AutoCancelInstall() {
   install_auto_confirm_.reset();  // Destroy any old override first.
-  install_auto_confirm_.reset(new extensions::ScopedTestDialogAutoConfirm(
-      extensions::ScopedTestDialogAutoConfirm::CANCEL));
+  install_auto_confirm_ =
+      std::make_unique<extensions::ScopedTestDialogAutoConfirm>(
+          extensions::ScopedTestDialogAutoConfirm::CANCEL);
 }

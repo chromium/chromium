@@ -83,8 +83,8 @@ class WebSocketBrowserTest : public InProcessBrowserTest {
 
   // Prepare the title watcher.
   void SetUpOnMainThread() override {
-    watcher_.reset(new content::TitleWatcher(
-        browser()->tab_strip_model()->GetActiveWebContents(), u"PASS"));
+    watcher_ = std::make_unique<content::TitleWatcher>(
+        browser()->tab_strip_model()->GetActiveWebContents(), u"PASS");
     watcher_->AlsoWaitForTitle(u"FAIL");
   }
 

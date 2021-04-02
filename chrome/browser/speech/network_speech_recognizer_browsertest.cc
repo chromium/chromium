@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -60,12 +62,12 @@ class NetworkSpeechRecognizerBrowserTest : public InProcessBrowserTest {
       const NetworkSpeechRecognizerBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
-    fake_speech_recognition_manager_.reset(
-        new content::FakeSpeechRecognitionManager());
+    fake_speech_recognition_manager_ =
+        std::make_unique<content::FakeSpeechRecognitionManager>();
     fake_speech_recognition_manager_->set_should_send_fake_response(false);
     content::SpeechRecognitionManager::SetManagerForTesting(
         fake_speech_recognition_manager_.get());
-    mock_speech_delegate_.reset(new MockSpeechRecognizerDelegate());
+    mock_speech_delegate_ = std::make_unique<MockSpeechRecognizerDelegate>();
   }
 
   void TearDownOnMainThread() override {

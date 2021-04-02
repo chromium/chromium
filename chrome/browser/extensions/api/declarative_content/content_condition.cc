@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/declarative_content/content_condition.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -76,8 +77,7 @@ std::unique_ptr<ContentCondition> CreateContentCondition(
       return std::unique_ptr<ContentCondition>();
   }
 
-  return std::unique_ptr<ContentCondition>(
-      new ContentCondition(std::move(predicates)));
+  return std::make_unique<ContentCondition>(std::move(predicates));
 }
 
 }  // namespace extensions

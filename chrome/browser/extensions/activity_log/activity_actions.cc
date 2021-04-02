@@ -84,7 +84,7 @@ void Action::set_args(std::unique_ptr<base::ListValue> args) {
 
 base::ListValue* Action::mutable_args() {
   if (!args_.get()) {
-    args_.reset(new base::ListValue());
+    args_ = std::make_unique<base::ListValue>();
   }
   return args_.get();
 }
@@ -103,7 +103,7 @@ void Action::set_other(std::unique_ptr<base::DictionaryValue> other) {
 
 base::DictionaryValue* Action::mutable_other() {
   if (!other_.get()) {
-    other_.reset(new base::DictionaryValue());
+    other_ = std::make_unique<base::DictionaryValue>();
   }
   return other_.get();
 }
@@ -169,21 +169,21 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
       break;
   }
 
-  result.extension_id.reset(new std::string(extension_id()));
-  result.time.reset(new double(time().ToJsTime()));
-  result.count.reset(new double(count()));
-  result.api_call.reset(new std::string(api_name()));
-  result.args.reset(new std::string(Serialize(args())));
+  result.extension_id = std::make_unique<std::string>(extension_id());
+  result.time = std::make_unique<double>(time().ToJsTime());
+  result.count = std::make_unique<double>(count());
+  result.api_call = std::make_unique<std::string>(api_name());
+  result.args = std::make_unique<std::string>(Serialize(args()));
   if (action_id() != -1)
-    result.activity_id.reset(
-        new std::string(base::StringPrintf("%" PRId64, action_id())));
+    result.activity_id = std::make_unique<std::string>(
+        base::StringPrintf("%" PRId64, action_id()));
   if (page_url().is_valid()) {
     if (!page_title().empty())
-      result.page_title.reset(new std::string(page_title()));
-    result.page_url.reset(new std::string(SerializePageUrl()));
+      result.page_title = std::make_unique<std::string>(page_title());
+    result.page_url = std::make_unique<std::string>(SerializePageUrl());
   }
   if (arg_url().is_valid())
-    result.arg_url.reset(new std::string(SerializeArgUrl()));
+    result.arg_url = std::make_unique<std::string>(SerializeArgUrl());
 
   if (other()) {
     std::unique_ptr<ExtensionActivity::Other> other_field(
@@ -191,17 +191,17 @@ ExtensionActivity Action::ConvertToExtensionActivity() {
     bool prerender;
     if (other()->GetBooleanWithoutPathExpansion(constants::kActionPrerender,
                                                 &prerender)) {
-      other_field->prerender.reset(new bool(prerender));
+      other_field->prerender = std::make_unique<bool>(prerender);
     }
     const base::DictionaryValue* web_request;
     if (other()->GetDictionaryWithoutPathExpansion(constants::kActionWebRequest,
                                                    &web_request)) {
-      other_field->web_request.reset(new std::string(
-          ActivityLogPolicy::Util::Serialize(web_request)));
+      other_field->web_request = std::make_unique<std::string>(
+          ActivityLogPolicy::Util::Serialize(web_request));
     }
     std::string extra;
     if (other()->GetStringWithoutPathExpansion(constants::kActionExtra, &extra))
-      other_field->extra.reset(new std::string(extra));
+      other_field->extra = std::make_unique<std::string>(extra);
     int dom_verb;
     if (other()->GetIntegerWithoutPathExpansion(constants::kActionDomVerb,
                                                 &dom_verb)) {

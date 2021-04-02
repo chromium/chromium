@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/identity/gaia_remote_consent_flow.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/run_loop.h"
@@ -102,9 +103,8 @@ class IdentityGaiaRemoteConsentFlowTest : public testing::Test {
                                 std::set<std::string>());
     RemoteConsentResolutionData resolution_data;
     resolution_data.url = GURL("https://example.com/auth/");
-    return std::unique_ptr<TestGaiaRemoteConsentFlow>(
-        new TestGaiaRemoteConsentFlow(delegate, token_key, resolution_data,
-                                      window_key));
+    return std::make_unique<TestGaiaRemoteConsentFlow>(
+        delegate, token_key, resolution_data, window_key);
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }

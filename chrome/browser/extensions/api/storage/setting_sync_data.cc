@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/storage/setting_sync_data.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -58,7 +59,7 @@ void SettingSyncData::ExtractSyncData(const syncer::SyncData& sync_data) {
   if (!value_) {
     LOG(WARNING) << "Specifics for " << extension_id_ << "/" << key_
                  << " had bad JSON for value: " << extension_specifics.value();
-    value_.reset(new base::DictionaryValue());
+    value_ = std::make_unique<base::DictionaryValue>();
   }
 }
 

@@ -129,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(LiveTabCountPageLoadMetricsBrowserTest,
 
     auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(tab);
     EXPECT_TRUE(web_contents);
-    waiter.reset(new PageLoadMetricsTestWaiter(web_contents));
+    waiter = std::make_unique<PageLoadMetricsTestWaiter>(web_contents);
     waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
 
     waiter->Wait();

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <set>
 
 #include "base/bind.h"
@@ -1106,8 +1107,9 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
 
       case IDC_RECENT_TABS_MENU:
         DCHECK(!recent_tabs_menu_model_delegate_.get());
-        recent_tabs_menu_model_delegate_.reset(new RecentTabsMenuModelDelegate(
-            this, model->GetSubmenuModelAt(i), item));
+        recent_tabs_menu_model_delegate_ =
+            std::make_unique<RecentTabsMenuModelDelegate>(
+                this, model->GetSubmenuModelAt(i), item);
         break;
 
       default:
@@ -1187,12 +1189,12 @@ void AppMenu::CreateBookmarkMenu() {
   // TODO(oshima): Replace with views only API.
   views::Widget* parent = views::Widget::GetWidgetForNativeWindow(
       browser_->window()->GetNativeWindow());
-  bookmark_menu_delegate_.reset(new BookmarkMenuDelegate(
+  bookmark_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
       browser_,
       base::BindRepeating(
           [](content::PageNavigator* navigator) { return navigator; },
           browser_),
-      parent));
+      parent);
   bookmark_menu_delegate_->Init(this, bookmark_menu_,
                                 model->bookmark_bar_node(), 0,
                                 BookmarkMenuDelegate::SHOW_PERMANENT_FOLDERS,

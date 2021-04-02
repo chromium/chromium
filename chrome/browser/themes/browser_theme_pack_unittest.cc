@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
@@ -139,8 +141,8 @@ BrowserThemePackTest::BrowserThemePackTest()
   std::vector<ui::ScaleFactor> scale_factors;
   scale_factors.push_back(ui::SCALE_FACTOR_100P);
   scale_factors.push_back(ui::SCALE_FACTOR_200P);
-  scoped_set_supported_scale_factors_.reset(
-      new ui::test::ScopedSetSupportedScaleFactors(scale_factors));
+  scoped_set_supported_scale_factors_ =
+      std::make_unique<ui::test::ScopedSetSupportedScaleFactors>(scale_factors);
   theme_pack_->InitEmptyPack();
 }
 

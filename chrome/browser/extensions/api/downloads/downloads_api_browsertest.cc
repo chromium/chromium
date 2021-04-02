@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -212,7 +213,8 @@ class DownloadsEventsListener : public EventRouter::TestObserver {
                const std::string& event_name,
                const std::string& json_args) {
     base::Value args = base::JSONReader::Read(json_args).value();
-    waiting_for_.reset(new Event(profile, event_name, args, base::Time()));
+    waiting_for_ =
+        std::make_unique<Event>(profile, event_name, args, base::Time());
     for (const auto& event : events_) {
       if (event->Satisfies(*waiting_for_))
         return true;

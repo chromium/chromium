@@ -3225,9 +3225,8 @@ void BrowserView::UpdateDevToolsForContents(
       !devtools_focus_tracker_.get()) {
     // Install devtools focus tracker when dev tools window is shown for the
     // first time.
-    devtools_focus_tracker_.reset(
-        new views::ExternalFocusTracker(devtools_web_view_,
-                                        GetFocusManager()));
+    devtools_focus_tracker_ = std::make_unique<views::ExternalFocusTracker>(
+        devtools_web_view_, GetFocusManager());
   }
 
   // Restore focus to the last focused view when hiding devtools window.

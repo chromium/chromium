@@ -363,7 +363,7 @@ class WebRtcEventLogManagerTestBase : public ::testing::Test {
 
   void WaitForReply() {
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop);  // Allow re-blocking.
+    run_loop_ = std::make_unique<base::RunLoop>();  // Allow re-blocking.
   }
 
   void Reply() { run_loop_->QuitWhenIdle(); }

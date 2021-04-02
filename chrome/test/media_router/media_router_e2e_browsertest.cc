@@ -4,6 +4,7 @@
 
 #include "chrome/test/media_router/media_router_e2e_browsertest.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -76,7 +77,8 @@ void MediaRouterE2EBrowserTest::CreateMediaRoute(
     const url::Origin& origin,
     content::WebContents* web_contents) {
   DCHECK(media_router_);
-  observer_.reset(new TestMediaSinksObserver(media_router_, source, origin));
+  observer_ =
+      std::make_unique<TestMediaSinksObserver>(media_router_, source, origin);
   observer_->Init();
 
   DVLOG(1) << "Receiver name: " << receiver_;

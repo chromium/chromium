@@ -5,6 +5,7 @@
 #include "chrome/browser/media/webrtc/webrtc_text_log_handler.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -205,9 +206,9 @@ bool WebRtcTextLogHandler::StartLogging(WebRtcLogUploader* log_uploader,
   logging_state_ = STARTING;
 
   DCHECK(!log_buffer_);
-  log_buffer_.reset(new WebRtcLogBuffer());
+  log_buffer_ = std::make_unique<WebRtcLogBuffer>();
   if (!meta_data_)
-    meta_data_.reset(new WebRtcLogMetaDataMap());
+    meta_data_ = std::make_unique<WebRtcLogMetaDataMap>();
 
   content::GetNetworkService()->GetNetworkList(
       net::EXCLUDE_HOST_SCOPE_VIRTUAL_INTERFACES,

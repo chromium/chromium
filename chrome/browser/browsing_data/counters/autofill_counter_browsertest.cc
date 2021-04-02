@@ -4,6 +4,8 @@
 
 #include "components/browsing_data/core/counters/autofill_counter.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/macros.h"
@@ -140,7 +142,7 @@ class AutofillCounterTest : public InProcessBrowserTest {
   // Callback and result retrieval ---------------------------------------------
 
   void WaitForCounting() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

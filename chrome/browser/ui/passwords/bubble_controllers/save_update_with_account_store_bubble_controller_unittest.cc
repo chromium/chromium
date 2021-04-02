@@ -169,8 +169,8 @@ void SaveUpdateWithAccountStoreBubbleControllerTest::SetUpWithState(
   EXPECT_CALL(*delegate(), GetState()).WillRepeatedly(Return(state));
   EXPECT_CALL(*delegate(), GetWebContents())
       .WillRepeatedly(Return(test_web_contents_.get()));
-  controller_.reset(new SaveUpdateWithAccountStoreBubbleController(
-      mock_delegate_->AsWeakPtr(), reason));
+  controller_ = std::make_unique<SaveUpdateWithAccountStoreBubbleController>(
+      mock_delegate_->AsWeakPtr(), reason);
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
   EXPECT_CALL(*delegate(), GetWebContents())
       .WillRepeatedly(Return(test_web_contents_.get()));

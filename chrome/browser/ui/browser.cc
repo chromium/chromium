@@ -515,8 +515,8 @@ Browser::Browser(const CreateParams& params)
     app_controller_->UpdateCustomTabBarVisibility(false);
 
   // Create the extension window controller before sending notifications.
-  extension_window_controller_.reset(
-      new extensions::BrowserExtensionWindowController(this));
+  extension_window_controller_ =
+      std::make_unique<extensions::BrowserExtensionWindowController>(this);
 
   SessionService* session_service =
       SessionServiceFactory::GetForProfileForSessionRestore(profile_);
@@ -532,8 +532,8 @@ Browser::Browser(const CreateParams& params)
 #endif  // defined(OS_WIN)
   }
 
-  exclusive_access_manager_.reset(
-      new ExclusiveAccessManager(window_->GetExclusiveAccessContext()));
+  exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
+      window_->GetExclusiveAccessContext());
 
   BrowserList::AddBrowser(this);
 

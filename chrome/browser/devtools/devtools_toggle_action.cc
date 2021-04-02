@@ -4,6 +4,8 @@
 
 #include "chrome/browser/devtools/devtools_toggle_action.h"
 
+#include <memory>
+
 DevToolsToggleAction::RevealParams::RevealParams(const std::u16string& url,
                                                  size_t line_number,
                                                  size_t column_number)
@@ -27,7 +29,7 @@ DevToolsToggleAction::DevToolsToggleAction(const DevToolsToggleAction& rhs)
 void DevToolsToggleAction::operator=(const DevToolsToggleAction& rhs) {
   type_ = rhs.type_;
   if (rhs.params_.get())
-    params_.reset(new RevealParams(*rhs.params_));
+    params_ = std::make_unique<RevealParams>(*rhs.params_);
 }
 
 DevToolsToggleAction::~DevToolsToggleAction() {

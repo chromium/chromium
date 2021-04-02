@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_management.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -431,9 +432,9 @@ void ExtensionManagement::Refresh() {
       prefs::kCloudExtensionRequestEnabled, false, base::Value::Type::BOOLEAN);
 
   // Reset all settings.
-  global_settings_.reset(new internal::GlobalSettings());
+  global_settings_ = std::make_unique<internal::GlobalSettings>();
   settings_by_id_.clear();
-  default_settings_.reset(new internal::IndividualSettings());
+  default_settings_ = std::make_unique<internal::IndividualSettings>();
 
   // Parse default settings.
   const base::Value wildcard("*");

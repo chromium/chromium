@@ -22,7 +22,7 @@ ExtensionFunction::ResponseAction BrowserOpenTabFunction::Run() {
 
   extensions::ExtensionTabUtil::OpenTabParams options;
   options.create_browser_if_needed = true;
-  options.url.reset(new std::string(params->options.url));
+  options.url = std::make_unique<std::string>(params->options.url);
 
   std::string error;
   std::unique_ptr<base::DictionaryValue> result(

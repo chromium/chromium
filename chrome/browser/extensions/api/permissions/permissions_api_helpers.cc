@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -234,7 +236,7 @@ UnpackPermissionSetResult::~UnpackPermissionSetResult() = default;
 std::unique_ptr<Permissions> PackPermissionSet(const PermissionSet& set) {
   std::unique_ptr<Permissions> permissions(new Permissions());
 
-  permissions->permissions.reset(new std::vector<std::string>());
+  permissions->permissions = std::make_unique<std::vector<std::string>>();
   for (const APIPermission* api : set.apis()) {
     std::unique_ptr<base::Value> value(api->ToValue());
     if (!value) {
@@ -250,7 +252,7 @@ std::unique_ptr<Permissions> PackPermissionSet(const PermissionSet& set) {
   // TODO(rpaquay): We currently don't expose manifest permissions
   // to apps/extensions via the permissions API.
 
-  permissions->origins.reset(new std::vector<std::string>());
+  permissions->origins = std::make_unique<std::vector<std::string>>();
   for (const URLPattern& pattern : set.effective_hosts())
     permissions->origins->push_back(pattern.GetAsString());
 

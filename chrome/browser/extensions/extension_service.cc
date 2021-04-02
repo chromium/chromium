@@ -444,12 +444,12 @@ ExtensionService::ExtensionService(Profile* profile,
 
   // Set up the ExtensionUpdater.
   if (autoupdate_enabled) {
-    updater_.reset(new ExtensionUpdater(
+    updater_ = std::make_unique<ExtensionUpdater>(
         this, extension_prefs, profile->GetPrefs(), profile,
         kDefaultUpdateFrequencySeconds,
         ExtensionsBrowserClient::Get()->GetExtensionCache(),
         base::BindRepeating(ChromeExtensionDownloaderFactory::CreateForProfile,
-                            profile)));
+                            profile));
   }
 
   component_loader_ = std::make_unique<ComponentLoader>(system_, profile);
@@ -463,13 +463,13 @@ ExtensionService::ExtensionService(Profile* profile,
   // if required.
   is_first_run_ = !extension_prefs_->SetAlertSystemFirstRun();
 
-  error_controller_.reset(
-      new ExtensionErrorController(profile_, is_first_run_));
-  external_install_manager_.reset(
-      new ExternalInstallManager(profile_, is_first_run_));
+  error_controller_ =
+      std::make_unique<ExtensionErrorController>(profile_, is_first_run_);
+  external_install_manager_ =
+      std::make_unique<ExternalInstallManager>(profile_, is_first_run_);
 
-  extension_action_storage_manager_.reset(
-      new ExtensionActionStorageManager(profile_));
+  extension_action_storage_manager_ =
+      std::make_unique<ExtensionActionStorageManager>(profile_);
 
   // How long is the path to the Extensions directory?
   UMA_HISTOGRAM_CUSTOM_COUNTS("Extensions.ExtensionRootPathLength",

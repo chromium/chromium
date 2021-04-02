@@ -4,6 +4,7 @@
 
 #include "chrome/browser/usb/usb_policy_allowed_devices.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -195,7 +196,7 @@ TEST_F(UsbPolicyAllowedDevicesTest,
   EXPECT_TRUE(base::Contains(third_urls, kYoutubeOrigin));
 
   // Ensure that the allowed devices can be removed dynamically.
-  pref_value.reset(new base::Value(base::Value::Type::LIST));
+  pref_value = std::make_unique<base::Value>(base::Value::Type::LIST);
   SetWebUsbAllowDevicesForUrlsPrefValue(*pref_value);
 
   EXPECT_TRUE(usb_policy_allowed_devices->map().empty());

@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/chrome/mobile_device.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -64,8 +65,8 @@ Status FindMobileDevice(std::string device_name,
     return Status(kUnknownError,
                   "malformed mobile: should be a bool");
   }
-  tmp_mobile_device->device_metrics.reset(
-      new DeviceMetrics(width, height, device_scale_factor, touch, mobile));
+  tmp_mobile_device->device_metrics = std::make_unique<DeviceMetrics>(
+      width, height, device_scale_factor, touch, mobile);
 
   *mobile_device = std::move(tmp_mobile_device);
   return Status(kOk);

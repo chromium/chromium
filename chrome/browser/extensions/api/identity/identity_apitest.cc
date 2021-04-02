@@ -133,7 +133,8 @@ class AsyncFunctionRunner {
   void RunFunctionAsync(ExtensionFunction* function,
                         const std::string& args,
                         content::BrowserContext* browser_context) {
-    response_delegate_.reset(new api_test_utils::SendResponseHelper(function));
+    response_delegate_ =
+        std::make_unique<api_test_utils::SendResponseHelper>(function);
     std::unique_ptr<base::ListValue> parsed_args(utils::ParseList(args));
     ASSERT_TRUE(parsed_args.get())
         << "Could not parse extension function arguments: " << args;

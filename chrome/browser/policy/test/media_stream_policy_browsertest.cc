@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/ui/browser.h"
@@ -48,8 +50,8 @@ class MediaStreamDevicesControllerBrowserTest
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents());
-    prompt_factory_.reset(
-        new permissions::MockPermissionPromptFactory(manager));
+    prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
     prompt_factory_->set_response_type(
         permissions::PermissionRequestManager::ACCEPT_ALL);
   }

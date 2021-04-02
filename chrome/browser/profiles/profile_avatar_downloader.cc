@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile_avatar_downloader.h"
 
+#include <memory>
 #include <string>
 
 #include "base/callback.h"
@@ -50,7 +51,7 @@ ProfileAvatarDownloader::ProfileAvatarDownloader(size_t icon_index,
             "No content is being uploaded or saved; this request merely "
             "downloads a publicly available PNG file."
         })");
-  fetcher_.reset(new BitmapFetcher(url, this, traffic_annotation));
+  fetcher_ = std::make_unique<BitmapFetcher>(url, this, traffic_annotation);
 }
 
 ProfileAvatarDownloader::~ProfileAvatarDownloader() {

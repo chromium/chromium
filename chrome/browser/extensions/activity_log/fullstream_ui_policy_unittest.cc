@@ -51,7 +51,7 @@ class FullStreamUIPolicyTest : public testing::Test {
     test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();
 #endif
     base::CommandLine no_program_command_line(base::CommandLine::NO_PROGRAM);
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kEnableExtensionActivityLogging);
     command_line->AppendSwitch(switches::kEnableExtensionActivityLogTesting);

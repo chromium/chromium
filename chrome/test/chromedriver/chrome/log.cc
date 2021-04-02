@@ -72,7 +72,7 @@ std::unique_ptr<base::Value> SmartDeepCopy(const base::Value* value) {
     return std::move(list_copy);
   } else if (value->GetAsString(&data)) {
     TruncateString(&data);
-    return std::unique_ptr<base::Value>(new base::Value(data));
+    return std::make_unique<base::Value>(data);
   }
   return std::unique_ptr<base::Value>(value->DeepCopy());
 }
@@ -106,6 +106,6 @@ std::string FormatValueForDisplay(const base::Value& value) {
 std::string FormatJsonForDisplay(const std::string& json) {
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(json);
   if (!value)
-    value.reset(new base::Value(json));
+    value = std::make_unique<base::Value>(json);
   return FormatValueForDisplay(*value);
 }

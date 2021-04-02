@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync_file_system/drive_backend/local_to_remote_syncer.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -685,10 +686,9 @@ void LocalToRemoteSyncer::CreateRemoteFolder(
   sync_action_ = SYNC_ACTION_ADDED;
 
   DCHECK(!folder_creator_);
-  folder_creator_.reset(new FolderCreator(
+  folder_creator_ = std::make_unique<FolderCreator>(
       drive_service(), metadata_database(),
-      remote_parent_folder_tracker_->file_id(),
-      title.AsUTF8Unsafe()));
+      remote_parent_folder_tracker_->file_id(), title.AsUTF8Unsafe());
   folder_creator_->Run(
       base::BindOnce(&LocalToRemoteSyncer::DidCreateRemoteFolder,
                      weak_ptr_factory_.GetWeakPtr(), std::move(token)));

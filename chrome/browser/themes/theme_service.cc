@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -285,7 +286,8 @@ void ThemeService::Init() {
       FROM_HERE, base::BindOnce(&ThemeService::OnExtensionServiceReady,
                                 weak_ptr_factory_.GetWeakPtr()));
 #endif
-  theme_syncable_service_.reset(new ThemeSyncableService(profile_, this));
+  theme_syncable_service_ =
+      std::make_unique<ThemeSyncableService>(profile_, this);
 
   // TODO(gayane): Temporary entry point for Chrome Colors. Remove once UI is
   // there.

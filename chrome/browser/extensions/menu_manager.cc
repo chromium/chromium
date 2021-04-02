@@ -191,7 +191,7 @@ bool MenuItem::SetChecked(bool checked) {
 }
 
 void MenuItem::AddChild(std::unique_ptr<MenuItem> item) {
-  item->parent_id_.reset(new Id(id_));
+  item->parent_id_ = std::make_unique<Id>(id_);
   children_.push_back(std::move(item));
 }
 

@@ -119,8 +119,10 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
   void OnInfoGenerated(std::unique_ptr<developer::ExtensionInfo>* info_out,
                        ExtensionInfoGenerator::ExtensionInfoList list) {
     EXPECT_EQ(1u, list.size());
-    if (!list.empty())
-      info_out->reset(new developer::ExtensionInfo(std::move(list[0])));
+    if (!list.empty()) {
+      *info_out =
+          std::make_unique<developer::ExtensionInfo>(std::move(list[0]));
+    }
     std::move(quit_closure_).Run();
   }
 

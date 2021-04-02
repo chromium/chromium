@@ -100,8 +100,8 @@ class DownloadsListTrackerTest : public testing::Test {
   }
 
   void CreateTracker() {
-    tracker_.reset(
-        new TestDownloadsListTracker(manager(), page_.BindAndGetRemote()));
+    tracker_ = std::make_unique<TestDownloadsListTracker>(
+        manager(), page_.BindAndGetRemote());
   }
 
   TestingProfile* profile() { return &profile_; }

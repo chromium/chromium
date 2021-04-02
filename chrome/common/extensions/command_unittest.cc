@@ -73,7 +73,7 @@ void CheckParse(const ConstCommandsTestData& data,
       return;
     }
 
-    input.reset(new base::DictionaryValue);
+    input = std::make_unique<base::DictionaryValue>();
     auto key_dict = std::make_unique<base::DictionaryValue>();
 
     for (size_t j = 0; j < platforms.size(); ++j)

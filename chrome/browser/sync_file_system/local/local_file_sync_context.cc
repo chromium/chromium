@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync_file_system/local/local_file_sync_context.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -664,11 +665,10 @@ void LocalFileSyncContext::InitializeFileSystemContextOnIOThread(
   if (!operation_runner_) {
     DCHECK(!sync_status_);
     DCHECK(!timer_on_io_);
-    sync_status_.reset(new LocalFileSyncStatus);
-    timer_on_io_.reset(new base::OneShotTimer);
-    operation_runner_.reset(new SyncableFileOperationRunner(
-            kMaxConcurrentSyncableOperation,
-            sync_status_.get()));
+    sync_status_ = std::make_unique<LocalFileSyncStatus>();
+    timer_on_io_ = std::make_unique<base::OneShotTimer>();
+    operation_runner_ = std::make_unique<SyncableFileOperationRunner>(
+        kMaxConcurrentSyncableOperation, sync_status_.get());
     sync_status_->AddObserver(this);
   }
   backend->set_sync_context(this);
@@ -683,10 +683,9 @@ SyncStatusCode LocalFileSyncContext::InitializeChangeTrackerOnFileThread(
   DCHECK(file_system_context);
   DCHECK(tracker_ptr);
   DCHECK(origins_with_changes);
-  tracker_ptr->reset(new LocalFileChangeTracker(
-          file_system_context->partition_path(),
-          env_override_,
-          file_system_context->default_file_task_runner()));
+  *tracker_ptr = std::make_unique<LocalFileChangeTracker>(
+      file_system_context->partition_path(), env_override_,
+      file_system_context->default_file_task_runner());
   const SyncStatusCode status = (*tracker_ptr)->Initialize(file_system_context);
   if (status != SYNC_STATUS_OK)
     return status;

@@ -5,6 +5,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 
 #include <algorithm>
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -1027,8 +1028,8 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
 
   // There is no inspected_web_contents in case of various workers.
   if (inspected_web_contents)
-    inspected_contents_observer_.reset(
-        new ObserverWithAccessor(inspected_web_contents));
+    inspected_contents_observer_ =
+        std::make_unique<ObserverWithAccessor>(inspected_web_contents);
 
   // Initialize docked page to be of the right size.
   if (can_dock_ && inspected_web_contents) {
@@ -1040,7 +1041,7 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
     }
   }
 
-  event_forwarder_.reset(new DevToolsEventForwarder(this));
+  event_forwarder_ = std::make_unique<DevToolsEventForwarder>(this);
 
   // Tag the DevTools main WebContents with its TaskManager specific UserData
   // so that it shows up in the task manager.

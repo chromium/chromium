@@ -53,7 +53,7 @@ class CountingPolicyTest : public testing::Test {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     test_user_manager_ = std::make_unique<ash::ScopedTestUserManager>();
 #endif
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     base::CommandLine::ForCurrentProcess()->
         AppendSwitch(switches::kEnableExtensionActivityLogging);
     base::CommandLine no_program_command_line(base::CommandLine::NO_PROGRAM);

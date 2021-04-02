@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/profile_policy_connector.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -273,7 +274,7 @@ void ProfilePolicyConnector::InitForTesting(
 }
 
 void ProfilePolicyConnector::OverrideIsManagedForTesting(bool is_managed) {
-  is_managed_override_.reset(new bool(is_managed));
+  is_managed_override_ = std::make_unique<bool>(is_managed);
 }
 
 void ProfilePolicyConnector::SetPlatformPolicyProviderForTesting(

@@ -5,6 +5,7 @@
 #include "chrome/browser/sync_file_system/drive_backend/remote_to_local_syncer.h"
 
 #include <map>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -64,23 +65,21 @@ class RemoteToLocalSyncerTest : public testing::Test {
         new drive::DriveUploader(fake_drive_service.get(),
                                  base::ThreadTaskRunnerHandle::Get().get(),
                                  mojo::NullRemote()));
-    fake_drive_helper_.reset(
-        new FakeDriveServiceHelper(fake_drive_service.get(),
-                                   drive_uploader.get(),
-                                   kSyncRootFolderTitle));
-    remote_change_processor_.reset(new FakeRemoteChangeProcessor);
+    fake_drive_helper_ = std::make_unique<FakeDriveServiceHelper>(
+        fake_drive_service.get(), drive_uploader.get(), kSyncRootFolderTitle);
+    remote_change_processor_ = std::make_unique<FakeRemoteChangeProcessor>();
 
-    context_.reset(new SyncEngineContext(
+    context_ = std::make_unique<SyncEngineContext>(
         std::move(fake_drive_service), std::move(drive_uploader),
         nullptr /* task_logger */, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
     context_->SetRemoteChangeProcessor(remote_change_processor_.get());
 
     RegisterSyncableFileSystem();
 
-    sync_task_manager_.reset(new SyncTaskManager(
+    sync_task_manager_ = std::make_unique<SyncTaskManager>(
         base::WeakPtr<SyncTaskManager::Client>(), 10 /* max_parallel_task */,
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
     sync_task_manager_->Initialize(SYNC_STATUS_OK);
   }
 

@@ -28,7 +28,7 @@ class SiteDataCountingHelperTest : public testing::Test {
   const int64_t kTimeoutMs = 10;
 
   void SetUp() override {
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     // Let the storage system finish setting up, to avoid test flakiness caused
     // by the quota storage system shutting down at test end, while still being
     // set up. TODO(crbug.com/1182630) Remove when crbug.com/1182630 is fixed.

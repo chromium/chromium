@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -68,11 +70,11 @@ class BookmarkMenuDelegateTest : public BrowserWithTestWindowTest {
   void NewDelegate() {
     DestroyDelegate();
 
-    bookmark_menu_delegate_.reset(new BookmarkMenuDelegate(
+    bookmark_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
         browser(), base::BindRepeating([]() {
           return static_cast<content::PageNavigator*>(nullptr);
         }),
-        nullptr));
+        nullptr);
   }
 
   void NewAndInitDelegateForPermanent() {

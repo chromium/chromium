@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -116,7 +118,7 @@ void TabsApiUnitTest::SetUp() {
   ExtensionServiceTestBase::SetUp();
   InitializeEmptyExtensionService();
 
-  browser_window_.reset(new TestBrowserWindow());
+  browser_window_ = std::make_unique<TestBrowserWindow>();
   Browser::CreateParams params(profile(), true);
   params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();

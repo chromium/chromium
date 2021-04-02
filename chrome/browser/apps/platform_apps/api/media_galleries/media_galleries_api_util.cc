@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/platform_apps/api/media_galleries/media_galleries_api_util.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "chrome/common/apps/platform_apps/api/media_galleries.h"
 
@@ -22,7 +24,7 @@ void SetValueScopedPtr(std::string value,
                        std::unique_ptr<std::string>* destination) {
   DCHECK(destination);
   if (!value.empty())
-    destination->reset(new std::string(std::move(value)));
+    *destination = std::make_unique<std::string>(std::move(value));
 }
 
 std::unique_ptr<base::DictionaryValue> SerializeMediaMetadata(
@@ -31,8 +33,8 @@ std::unique_ptr<base::DictionaryValue> SerializeMediaMetadata(
   media_galleries::MediaMetadata extension_metadata;
   extension_metadata.mime_type = std::move(metadata->mime_type);
   if (metadata->height >= 0 && metadata->width >= 0) {
-    extension_metadata.height.reset(new int(metadata->height));
-    extension_metadata.width.reset(new int(metadata->width));
+    extension_metadata.height = std::make_unique<int>(metadata->height);
+    extension_metadata.width = std::make_unique<int>(metadata->width);
   }
 
   SetValueScopedPtr(metadata->duration, &extension_metadata.duration);

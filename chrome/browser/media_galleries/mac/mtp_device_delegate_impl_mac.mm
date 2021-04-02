@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
@@ -137,7 +138,7 @@ MTPDeviceDelegateImplMac::MTPDeviceDelegateImplMac(
   file_paths_.push_back(root_path_);
   file_info_[root_path_.value()] = info;
 
-  camera_interface_.reset(new DeviceListener(this));
+  camera_interface_ = std::make_unique<DeviceListener>(this);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&DeviceListener::OpenCameraSession,

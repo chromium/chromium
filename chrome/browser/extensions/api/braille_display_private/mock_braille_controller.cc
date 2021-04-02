@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/braille_display_private/mock_braille_controller.h"
 
+#include <memory>
+
 namespace extensions {
 namespace api {
 namespace braille_display_private {
@@ -15,8 +17,8 @@ std::unique_ptr<DisplayState> MockBrailleController::GetDisplayState() {
   std::unique_ptr<DisplayState> state(new DisplayState());
   state->available = available_;
   if (available_) {
-    state->text_column_count.reset(new int(18));
-    state->text_row_count.reset(new int(18));
+    state->text_column_count = std::make_unique<int>(18);
+    state->text_row_count = std::make_unique<int>(18);
   }
   return state;
 }

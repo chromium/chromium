@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browsing_data/counters/downloads_counter.h"
 
+#include <memory>
 #include <set>
 
 #include "base/bind.h"
@@ -186,7 +187,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
       return;
 
     DCHECK(!run_loop_ || !run_loop_->running());
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

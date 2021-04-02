@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/download_core_service_impl.h"
 
+#include <memory>
+
 #include "base/callback.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -54,13 +56,15 @@ DownloadCoreServiceImpl::GetDownloadManagerDelegate() {
   // In case the delegate has already been set by
   // SetDownloadManagerDelegateForTesting.
   if (!manager_delegate_.get())
-    manager_delegate_.reset(new ChromeDownloadManagerDelegate(profile_));
+    manager_delegate_ =
+        std::make_unique<ChromeDownloadManagerDelegate>(profile_);
 
   manager_delegate_->SetDownloadManager(manager);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  extension_event_router_.reset(
-      new extensions::ExtensionDownloadsEventRouter(profile_, manager));
+  extension_event_router_ =
+      std::make_unique<extensions::ExtensionDownloadsEventRouter>(profile_,
+                                                                  manager);
 #endif
 
   if (!profile_->IsOffTheRecord()) {
@@ -68,18 +72,18 @@ DownloadCoreServiceImpl::GetDownloadManagerDelegate() {
         profile_, ServiceAccessType::EXPLICIT_ACCESS);
     history->GetNextDownloadId(
         manager_delegate_->GetDownloadIdReceiverCallback());
-    download_history_.reset(new DownloadHistory(
-        manager, std::unique_ptr<DownloadHistory::HistoryAdapter>(
-                     new DownloadHistory::HistoryAdapter(history))));
+    download_history_ = std::make_unique<DownloadHistory>(
+        manager, std::make_unique<DownloadHistory::HistoryAdapter>(history));
   }
 
   // Pass an empty delegate when constructing the DownloadUIController. The
   // default delegate does all the notifications we need.
-  download_ui_.reset(new DownloadUIController(
-      manager, std::unique_ptr<DownloadUIController::Delegate>()));
+  download_ui_ = std::make_unique<DownloadUIController>(
+      manager, std::unique_ptr<DownloadUIController::Delegate>());
 
 #if !defined(OS_ANDROID)
-  download_shelf_controller_.reset(new DownloadShelfController(profile_));
+  download_shelf_controller_ =
+      std::make_unique<DownloadShelfController>(profile_);
 #endif
 
   // Include this download manager in the set monitored by the

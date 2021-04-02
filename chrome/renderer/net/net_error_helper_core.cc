@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -157,7 +159,8 @@ void NetErrorHelperCore::PrepareErrorPage(FrameType frame_type,
                                           bool is_failed_post,
                                           std::string* error_html) {
   if (frame_type == MAIN_FRAME) {
-    pending_error_page_info_.reset(new ErrorPageInfo(error, is_failed_post));
+    pending_error_page_info_ =
+        std::make_unique<ErrorPageInfo>(error, is_failed_post);
     PrepareErrorPageForMainFrame(pending_error_page_info_.get(), error_html);
   } else if (error_html) {
     delegate_->GenerateLocalizedErrorPage(

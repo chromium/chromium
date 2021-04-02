@@ -116,9 +116,9 @@ class TestContentBrowserClient : public ChromeContentBrowserClient {
       ChromeContentBrowserClient::CreateWebUsbService(render_frame_host,
                                                       std::move(receiver));
     } else {
-      usb_chooser_.reset(new FakeUsbChooser(render_frame_host));
-      web_usb_service_.reset(
-          new WebUsbServiceImpl(render_frame_host, usb_chooser_->GetWeakPtr()));
+      usb_chooser_ = std::make_unique<FakeUsbChooser>(render_frame_host);
+      web_usb_service_ = std::make_unique<WebUsbServiceImpl>(
+          render_frame_host, usb_chooser_->GetWeakPtr());
       web_usb_service_->BindReceiver(std::move(receiver));
     }
   }

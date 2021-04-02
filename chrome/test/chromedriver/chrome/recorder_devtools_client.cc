@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/chrome/recorder_devtools_client.h"
+
+#include <memory>
+
 #include "chrome/test/chromedriver/chrome/status.h"
 
 RecorderDevToolsClient::RecorderDevToolsClient() {}
@@ -18,7 +21,7 @@ Status RecorderDevToolsClient::SendCommandAndGetResult(
   // For any tests that directly call SendCommandAndGetResults, we'll just
   // always return { "result": true }. Currently only used when testing
   // "canEmulateNetworkConditions".
-  (*result).reset(new base::DictionaryValue);
+  (*result) = std::make_unique<base::DictionaryValue>();
   (*result)->SetBoolean("result", true);
   return Status(kOk);
 }

@@ -63,7 +63,7 @@ void BookmarkBubbleSignInDelegateTest::ReplaceBlank(Browser* browser) {
 
 void BookmarkBubbleSignInDelegateTest::SignInBrowser(Browser* browser) {
   std::unique_ptr<BubbleSyncPromoDelegate> delegate;
-  delegate.reset(new BookmarkBubbleSignInDelegate(browser));
+  delegate = std::make_unique<BookmarkBubbleSignInDelegate>(browser);
   delegate->OnEnableSync(AccountInfo());
 }
 

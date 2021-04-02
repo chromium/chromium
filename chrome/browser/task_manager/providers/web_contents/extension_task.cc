@@ -4,6 +4,8 @@
 
 #include "chrome/browser/task_manager/providers/web_contents/extension_task.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -121,13 +123,10 @@ void ExtensionTask::LoadExtensionIcon(const extensions::Extension* extension) {
   if (!extension)
     return;
 
-  extension_icon_.reset(
-      new extensions::IconImage(web_contents()->GetBrowserContext(),
-                                extension,
-                                extensions::IconsInfo::GetIcons(extension),
-                                extension_misc::EXTENSION_ICON_SMALL,
-                                icon(),
-                                this));
+  extension_icon_ = std::make_unique<extensions::IconImage>(
+      web_contents()->GetBrowserContext(), extension,
+      extensions::IconsInfo::GetIcons(extension),
+      extension_misc::EXTENSION_ICON_SMALL, icon(), this);
 
   // Triggers actual image loading with 1x resources.
   extension_icon_->image_skia().GetRepresentation(1.0f);

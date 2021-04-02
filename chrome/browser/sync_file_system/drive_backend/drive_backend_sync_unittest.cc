@@ -4,7 +4,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -110,9 +112,8 @@ class DriveBackendSyncTest : public testing::Test,
         new drive::DriveUploader(drive_service.get(), file_task_runner_.get(),
                                  mojo::NullRemote()));
 
-    fake_drive_service_helper_.reset(new FakeDriveServiceHelper(
-        drive_service.get(), uploader.get(),
-        kSyncRootFolderTitle));
+    fake_drive_service_helper_ = std::make_unique<FakeDriveServiceHelper>(
+        drive_service.get(), uploader.get(), kSyncRootFolderTitle);
 
     remote_sync_service_.reset(new SyncEngine(
         base::ThreadTaskRunnerHandle::Get(),  // ui_task_runner

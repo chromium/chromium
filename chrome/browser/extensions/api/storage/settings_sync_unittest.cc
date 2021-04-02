@@ -181,7 +181,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    profile_.reset(new TestingProfile(temp_dir_.GetPath()));
+    profile_ = std::make_unique<TestingProfile>(temp_dir_.GetPath());
     content::RunAllTasksUntilIdle();
 
     storage_factory_->Reset();
@@ -243,7 +243,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
       std::unique_ptr<SettingSyncDataList>& list_for_extension =
           as_map[sync_data->extension_id()];
       if (!list_for_extension)
-        list_for_extension.reset(new SettingSyncDataList());
+        list_for_extension = std::make_unique<SettingSyncDataList>();
       list_for_extension->push_back(std::move(sync_data));
     }
     return as_map;
@@ -852,8 +852,9 @@ TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
     // Restarting sync should make bad start syncing again.
     sync_processor_->ClearChanges();
     GetSyncableService(model_type)->StopSyncing(model_type);
-    sync_processor_wrapper_.reset(
-        new syncer::SyncChangeProcessorWrapperForTest(sync_processor_.get()));
+    sync_processor_wrapper_ =
+        std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+            sync_processor_.get());
     GetSyncableService(model_type)
         ->MergeDataAndStartSyncing(
             model_type, syncer::SyncDataList(),
@@ -1121,8 +1122,9 @@ TEST_F(ExtensionSettingsSyncTest, FailureToReadChangesToPushDisablesSync) {
     // to be pushed to sync successfully, as should future changes to bad.
     sync_processor_->ClearChanges();
     GetSyncableService(model_type)->StopSyncing(model_type);
-    sync_processor_wrapper_.reset(
-        new syncer::SyncChangeProcessorWrapperForTest(sync_processor_.get()));
+    sync_processor_wrapper_ =
+        std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+            sync_processor_.get());
     GetSyncableService(model_type)
         ->MergeDataAndStartSyncing(
             model_type, syncer::SyncDataList(),
@@ -1208,8 +1210,9 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalStateDisablesSync) {
     // Restarting sync makes everything work again.
     sync_processor_->ClearChanges();
     GetSyncableService(model_type)->StopSyncing(model_type);
-    sync_processor_wrapper_.reset(
-        new syncer::SyncChangeProcessorWrapperForTest(sync_processor_.get()));
+    sync_processor_wrapper_ =
+        std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+            sync_processor_.get());
     GetSyncableService(model_type)
         ->MergeDataAndStartSyncing(
             model_type, syncer::SyncDataList(),
@@ -1298,8 +1301,9 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalChangeDisablesSync) {
     // Restarting sync makes everything work again.
     sync_processor_->ClearChanges();
     GetSyncableService(model_type)->StopSyncing(model_type);
-    sync_processor_wrapper_.reset(
-        new syncer::SyncChangeProcessorWrapperForTest(sync_processor_.get()));
+    sync_processor_wrapper_ =
+        std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+            sync_processor_.get());
     GetSyncableService(model_type)
         ->MergeDataAndStartSyncing(
             model_type, syncer::SyncDataList(),

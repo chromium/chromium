@@ -62,7 +62,7 @@ class BackgroundApplicationListModelTest
   // extensions::ExtensionServiceTestBase:
   void SetUp() override {
     InitializeEmptyExtensionService();
-    model_.reset(new BackgroundApplicationListModel(profile_.get()));
+    model_ = std::make_unique<BackgroundApplicationListModel>(profile_.get());
   }
 
   bool IsBackgroundApp(const Extension& app) {

@@ -316,7 +316,7 @@ class ThreadWatcherTest : public ::testing::Test {
     // Make sure UI and IO threads are started and ready.
     task_environment_.RunIOThreadUntilIdle();
 
-    watchdog_thread_.reset(new WatchDogThread());
+    watchdog_thread_ = std::make_unique<WatchDogThread>();
     watchdog_thread_->StartAndWaitForTesting();
 
     WatchDogThread::PostTask(

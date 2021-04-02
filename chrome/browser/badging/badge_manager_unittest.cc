@@ -67,7 +67,7 @@ class BadgeManagerUnittest : public ::testing::Test {
   ~BadgeManagerUnittest() override = default;
 
   void SetUp() override {
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
 
     StartTestWebAppProvider(profile(), updated_apps_);
 

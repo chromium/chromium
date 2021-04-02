@@ -258,7 +258,7 @@ void TestPrerender::WaitForLoads(int expected_number_of_loads) {
   DCHECK(!load_waiter_);
   DCHECK(!expected_number_of_loads_);
   if (number_of_loads_ < expected_number_of_loads) {
-    load_waiter_.reset(new base::RunLoop);
+    load_waiter_ = std::make_unique<base::RunLoop>();
     expected_number_of_loads_ = expected_number_of_loads;
     load_waiter_->Run();
     load_waiter_.reset();
@@ -507,8 +507,8 @@ void PrerenderInProcessBrowserTest::SetUpOnMainThread() {
 void PrerenderInProcessBrowserTest::UseHttpsSrcServer() {
   if (https_src_server_)
     return;
-  https_src_server_.reset(
-      new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+  https_src_server_ = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
   https_src_server_->ServeFilesFromSourceDirectory("chrome/test/data");
   https_src_server_->RegisterRequestMonitor(base::BindRepeating(
       &PrerenderInProcessBrowserTest::MonitorResourceRequest,

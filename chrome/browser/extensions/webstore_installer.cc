@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <limits>
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -465,7 +467,8 @@ void WebstoreInstaller::OnDownloadStarted(
     const base::Version version_required(info.minimum_version);
 
     if (version_required.IsValid()) {
-      approval->minimum_version.reset(new base::Version(version_required));
+      approval->minimum_version =
+          std::make_unique<base::Version>(version_required);
     }
     download_item_->SetUserData(kApprovalKey, std::move(approval));
   } else {

@@ -4,6 +4,8 @@
 //
 // MediaGalleries gallery watch API browser tests.
 
+#include <memory>
+
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -88,7 +90,8 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
   }
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
-    ensure_media_directories_exists_.reset(new EnsureMediaDirectoriesExists);
+    ensure_media_directories_exists_ =
+        std::make_unique<EnsureMediaDirectoriesExists>();
     extension_ = LoadExtension(test_data_dir_.AppendASCII(kTestExtensionPath));
     GetBackgroundHostForTestExtension();
     CreateTestGallery();

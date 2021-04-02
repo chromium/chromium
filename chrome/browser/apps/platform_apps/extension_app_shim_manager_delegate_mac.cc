@@ -64,7 +64,8 @@ class EnableViaPrompt : public ExtensionEnableFlowDelegate {
   EnableViaPrompt& operator=(const EnableViaPrompt&) = delete;
 
   void Run() {
-    flow_.reset(new ExtensionEnableFlow(profile_, extension_id_, this));
+    flow_ =
+        std::make_unique<ExtensionEnableFlow>(profile_, extension_id_, this);
     flow_->Start();
   }
 

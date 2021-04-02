@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -330,7 +331,7 @@ void ExtensionContextMenuModelTest::InitializeAndAddExtension(
 Browser* ExtensionContextMenuModelTest::GetBrowser() {
   if (!browser_) {
     Browser::CreateParams params(profile(), true);
-    test_window_.reset(new TestBrowserWindow());
+    test_window_ = std::make_unique<TestBrowserWindow>();
     params.window = test_window_.get();
     browser_.reset(Browser::Create(params));
   }

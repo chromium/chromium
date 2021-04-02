@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lifetime/browser_close_manager.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -1201,10 +1202,10 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerWithBackgroundModeBrowserTest,
   std::unique_ptr<ScopedProfileKeepAlive> tmp_profile_keep_alive;
   Profile* profile = browser()->profile();
   {
-    tmp_keep_alive.reset(new ScopedKeepAlive(KeepAliveOrigin::PANEL_VIEW,
-                                             KeepAliveRestartOption::DISABLED));
-    tmp_profile_keep_alive.reset(new ScopedProfileKeepAlive(
-        profile, ProfileKeepAliveOrigin::kBrowserWindow));
+    tmp_keep_alive = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::PANEL_VIEW, KeepAliveRestartOption::DISABLED);
+    tmp_profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow);
     chrome::CloseAllBrowsers();
     ui_test_utils::WaitForBrowserToClose();
   }

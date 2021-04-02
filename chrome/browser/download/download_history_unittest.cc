@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -276,9 +278,8 @@ class DownloadHistoryTest : public testing::Test {
     history_ = new FakeHistoryAdapter();
     history_->ExpectWillQueryDownloads(std::move(rows));
     EXPECT_CALL(manager(), GetAllDownloads(_)).WillRepeatedly(Return());
-    download_history_.reset(new DownloadHistory(
-        &manager(),
-        std::unique_ptr<DownloadHistory::HistoryAdapter>(history_)));
+    download_history_ = std::make_unique<DownloadHistory>(
+        &manager(), std::unique_ptr<DownloadHistory::HistoryAdapter>(history_));
     content::RunAllPendingInMessageLoop(content::BrowserThread::UI);
     history_->ExpectQueryDownloadsDone();
   }

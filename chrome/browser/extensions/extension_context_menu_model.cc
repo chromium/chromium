@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -379,9 +381,9 @@ void ExtensionContextMenuModel::InitMenu(const Extension* extension,
   if (extension_action_)
     action_type = extension_action_->action_type();
 
-  extension_items_.reset(new ContextMenuMatcher(
+  extension_items_ = std::make_unique<ContextMenuMatcher>(
       profile_, this, this,
-      base::BindRepeating(MenuItemMatchesAction, action_type)));
+      base::BindRepeating(MenuItemMatchesAction, action_type));
 
   std::string extension_name = extension->name();
   // Ampersands need to be escaped to avoid being treated like

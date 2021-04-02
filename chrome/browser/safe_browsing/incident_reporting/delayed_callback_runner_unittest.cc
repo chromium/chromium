@@ -50,8 +50,8 @@ class DelayedCallbackRunnerTest : public testing::Test {
   DelayedCallbackRunnerTest() {}
 
   void SetUp() override {
-    instance_.reset(new safe_browsing::DelayedCallbackRunner(
-        base::TimeDelta(), base::ThreadTaskRunnerHandle::Get()));
+    instance_ = std::make_unique<safe_browsing::DelayedCallbackRunner>(
+        base::TimeDelta(), base::ThreadTaskRunnerHandle::Get());
   }
 
   void TearDown() override { instance_.reset(); }

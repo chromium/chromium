@@ -901,7 +901,7 @@ int ChromeBrowserMainParts::PreCreateThreadsImpl() {
 
   // These members must be initialized before returning from this function.
   // Android doesn't use StartupBrowserCreator.
-  browser_creator_.reset(new StartupBrowserCreator);
+  browser_creator_ = std::make_unique<StartupBrowserCreator>();
   // TODO(yfriedman): Refactor Android to re-use UMABrowsingActivityObserver
   chrome::UMABrowsingActivityObserver::Init();
 #endif  // !defined(OS_ANDROID)
@@ -1125,7 +1125,7 @@ void ChromeBrowserMainParts::PostBrowserStart() {
 
 #if !defined(OS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kWebUsb)) {
-    web_usb_detector_.reset(new WebUsbDetector());
+    web_usb_detector_ = std::make_unique<WebUsbDetector>();
     content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
         ->PostTask(FROM_HERE,
                    base::BindOnce(&WebUsbDetector::Initialize,

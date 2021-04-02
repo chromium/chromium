@@ -219,9 +219,11 @@ void GcmJsEventRouter::OnMessage(const std::string& app_id,
   api::gcm::OnMessage::Message message_arg;
   message_arg.data.additional_properties = message.data;
   if (!message.sender_id.empty())
-    message_arg.from.reset(new std::string(message.sender_id));
-  if (!message.collapse_key.empty())
-    message_arg.collapse_key.reset(new std::string(message.collapse_key));
+    message_arg.from = std::make_unique<std::string>(message.sender_id);
+  if (!message.collapse_key.empty()) {
+    message_arg.collapse_key =
+        std::make_unique<std::string>(message.collapse_key);
+  }
 
   std::unique_ptr<Event> event(
       new Event(events::GCM_ON_MESSAGE, api::gcm::OnMessage::kEventName,
@@ -242,7 +244,8 @@ void GcmJsEventRouter::OnSendError(
     const std::string& app_id,
     const gcm::GCMClient::SendErrorDetails& send_error_details) {
   api::gcm::OnSendError::Error error;
-  error.message_id.reset(new std::string(send_error_details.message_id));
+  error.message_id =
+      std::make_unique<std::string>(send_error_details.message_id);
   error.error_message = GcmResultToError(send_error_details.result);
   error.details.additional_properties = send_error_details.additional_data;
 

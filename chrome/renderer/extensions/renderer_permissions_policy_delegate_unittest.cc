@@ -31,13 +31,13 @@ class RendererPermissionsPolicyDelegateTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    render_thread_.reset(new content::MockRenderThread());
-    renderer_client_.reset(new TestExtensionsRendererClient);
+    render_thread_ = std::make_unique<content::MockRenderThread>();
+    renderer_client_ = std::make_unique<TestExtensionsRendererClient>();
     ExtensionsRendererClient::Set(renderer_client_.get());
     extension_dispatcher_ = std::make_unique<Dispatcher>(
         std::make_unique<ChromeExtensionsDispatcherDelegate>());
-    policy_delegate_.reset(
-        new RendererPermissionsPolicyDelegate(extension_dispatcher_.get()));
+    policy_delegate_ = std::make_unique<RendererPermissionsPolicyDelegate>(
+        extension_dispatcher_.get());
   }
 
  protected:

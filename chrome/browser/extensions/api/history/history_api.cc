@@ -66,12 +66,13 @@ HistoryItem GetHistoryItem(const history::URLRow& row) {
   HistoryItem history_item;
 
   history_item.id = base::NumberToString(row.id());
-  history_item.url.reset(new std::string(row.url().spec()));
-  history_item.title.reset(new std::string(base::UTF16ToUTF8(row.title())));
-  history_item.last_visit_time.reset(
-      new double(MilliSecondsFromTime(row.last_visit())));
-  history_item.typed_count.reset(new int(row.typed_count()));
-  history_item.visit_count.reset(new int(row.visit_count()));
+  history_item.url = std::make_unique<std::string>(row.url().spec());
+  history_item.title =
+      std::make_unique<std::string>(base::UTF16ToUTF8(row.title()));
+  history_item.last_visit_time =
+      std::make_unique<double>(MilliSecondsFromTime(row.last_visit()));
+  history_item.typed_count = std::make_unique<int>(row.typed_count());
+  history_item.visit_count = std::make_unique<int>(row.visit_count());
 
   return history_item;
 }
@@ -81,7 +82,8 @@ VisitItem GetVisitItem(const history::VisitRow& row) {
 
   visit_item.id = base::NumberToString(row.url_id);
   visit_item.visit_id = base::NumberToString(row.visit_id);
-  visit_item.visit_time.reset(new double(MilliSecondsFromTime(row.visit_time)));
+  visit_item.visit_time =
+      std::make_unique<double>(MilliSecondsFromTime(row.visit_time));
   visit_item.referring_visit_id = base::NumberToString(row.referring_visit);
 
   api::history::TransitionType transition = api::history::TRANSITION_TYPE_LINK;
@@ -212,9 +214,9 @@ void BrowserContextKeyedAPIFactory<HistoryAPI>::DeclareFactoryDependencies() {
 
 void HistoryAPI::OnListenerAdded(const EventListenerInfo& details) {
   Profile* profile = Profile::FromBrowserContext(browser_context_);
-  history_event_router_.reset(new HistoryEventRouter(
+  history_event_router_ = std::make_unique<HistoryEventRouter>(
       profile, HistoryServiceFactory::GetForProfile(
-                   profile, ServiceAccessType::EXPLICIT_ACCESS)));
+                   profile, ServiceAccessType::EXPLICIT_ACCESS));
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
 }
 

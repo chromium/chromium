@@ -29,6 +29,7 @@
 
 #include "chrome/browser/download/download_history.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -117,7 +118,7 @@ class DownloadHistoryData : public base::SupportsUserData::Data {
   history::DownloadRow* info() { return info_.get(); }
   void set_info(const history::DownloadRow& i) {
     // TODO(qinmin): avoid creating a new copy each time.
-    info_.reset(new history::DownloadRow(i));
+    info_ = std::make_unique<history::DownloadRow>(i);
   }
   void clear_info() {
     info_.reset();

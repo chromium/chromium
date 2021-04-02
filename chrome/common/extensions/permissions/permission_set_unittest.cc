@@ -360,12 +360,12 @@ TEST(PermissionsTest, CreateUnion) {
   AddPattern(&expected_explicit_hosts, "http://*.google.com/*");
   AddPattern(&effective_hosts, "http://*.google.com/*");
 
-  set1.reset(new PermissionSet(apis1.Clone(), manifest_permissions.Clone(),
-                               explicit_hosts1.Clone(),
-                               scriptable_hosts1.Clone()));
-  set2.reset(new PermissionSet(apis2.Clone(), manifest_permissions.Clone(),
-                               explicit_hosts2.Clone(),
-                               scriptable_hosts2.Clone()));
+  set1 = std::make_unique<PermissionSet>(
+      apis1.Clone(), manifest_permissions.Clone(), explicit_hosts1.Clone(),
+      scriptable_hosts1.Clone());
+  set2 = std::make_unique<PermissionSet>(
+      apis2.Clone(), manifest_permissions.Clone(), explicit_hosts2.Clone(),
+      scriptable_hosts2.Clone());
   union_set = PermissionSet::CreateUnion(*set1, *set2);
   EXPECT_TRUE(set1->Contains(*set2));
   EXPECT_TRUE(set1->Contains(*union_set));
@@ -417,9 +417,9 @@ TEST(PermissionsTest, CreateUnion) {
   effective_hosts =
       URLPatternSet::CreateUnion(explicit_hosts2, scriptable_hosts2);
 
-  set2.reset(new PermissionSet(apis2.Clone(), manifest_permissions.Clone(),
-                               explicit_hosts2.Clone(),
-                               scriptable_hosts2.Clone()));
+  set2 = std::make_unique<PermissionSet>(
+      apis2.Clone(), manifest_permissions.Clone(), explicit_hosts2.Clone(),
+      scriptable_hosts2.Clone());
   union_set = PermissionSet::CreateUnion(*set1, *set2);
 
   EXPECT_FALSE(set1->Contains(*set2));
@@ -476,12 +476,12 @@ TEST(PermissionsTest, CreateIntersection) {
   AddPattern(&explicit_hosts1, "http://*.google.com/*");
   AddPattern(&scriptable_hosts1, "http://www.reddit.com/*");
 
-  set1.reset(new PermissionSet(apis1.Clone(), manifest_permissions.Clone(),
-                               explicit_hosts1.Clone(),
-                               scriptable_hosts1.Clone()));
-  set2.reset(new PermissionSet(apis2.Clone(), manifest_permissions.Clone(),
-                               explicit_hosts2.Clone(),
-                               scriptable_hosts2.Clone()));
+  set1 = std::make_unique<PermissionSet>(
+      apis1.Clone(), manifest_permissions.Clone(), explicit_hosts1.Clone(),
+      scriptable_hosts1.Clone());
+  set2 = std::make_unique<PermissionSet>(
+      apis2.Clone(), manifest_permissions.Clone(), explicit_hosts2.Clone(),
+      scriptable_hosts2.Clone());
   new_set = PermissionSet::CreateIntersection(*set1, *set2);
   EXPECT_TRUE(set1->Contains(*new_set));
   EXPECT_TRUE(set2->Contains(*new_set));
@@ -528,9 +528,9 @@ TEST(PermissionsTest, CreateIntersection) {
   effective_hosts.ClearPatterns();
   AddPattern(&effective_hosts, "http://*.google.com/*");
 
-  set2.reset(new PermissionSet(apis2.Clone(), manifest_permissions.Clone(),
-                               explicit_hosts2.Clone(),
-                               scriptable_hosts2.Clone()));
+  set2 = std::make_unique<PermissionSet>(
+      apis2.Clone(), manifest_permissions.Clone(), explicit_hosts2.Clone(),
+      scriptable_hosts2.Clone());
   new_set = PermissionSet::CreateIntersection(*set1, *set2);
 
   EXPECT_TRUE(set1->Contains(*new_set));
@@ -587,12 +587,12 @@ TEST(PermissionsTest, CreateDifference) {
   AddPattern(&explicit_hosts1, "http://*.google.com/*");
   AddPattern(&scriptable_hosts1, "http://www.reddit.com/*");
 
-  set1.reset(new PermissionSet(apis1.Clone(), manifest_permissions.Clone(),
-                               explicit_hosts1.Clone(),
-                               scriptable_hosts1.Clone()));
-  set2.reset(new PermissionSet(apis2.Clone(), manifest_permissions.Clone(),
-                               explicit_hosts2.Clone(),
-                               scriptable_hosts2.Clone()));
+  set1 = std::make_unique<PermissionSet>(
+      apis1.Clone(), manifest_permissions.Clone(), explicit_hosts1.Clone(),
+      scriptable_hosts1.Clone());
+  set2 = std::make_unique<PermissionSet>(
+      apis2.Clone(), manifest_permissions.Clone(), explicit_hosts2.Clone(),
+      scriptable_hosts2.Clone());
   new_set = PermissionSet::CreateDifference(*set1, *set2);
   EXPECT_EQ(*set1, *new_set);
 
@@ -627,9 +627,9 @@ TEST(PermissionsTest, CreateDifference) {
   effective_hosts.ClearPatterns();
   AddPattern(&effective_hosts, "http://www.reddit.com/*");
 
-  set2.reset(new PermissionSet(apis2.Clone(), manifest_permissions.Clone(),
-                               explicit_hosts2.Clone(),
-                               scriptable_hosts2.Clone()));
+  set2 = std::make_unique<PermissionSet>(
+      apis2.Clone(), manifest_permissions.Clone(), explicit_hosts2.Clone(),
+      scriptable_hosts2.Clone());
   new_set = PermissionSet::CreateDifference(*set1, *set2);
 
   EXPECT_TRUE(set1->Contains(*new_set));
@@ -1725,27 +1725,30 @@ TEST(PermissionsTest, IsEmpty) {
   EXPECT_TRUE(empty->IsEmpty());
   std::unique_ptr<const PermissionSet> perm_set;
 
-  perm_set.reset(new PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                                   URLPatternSet(), URLPatternSet()));
+  perm_set = std::make_unique<PermissionSet>(APIPermissionSet(),
+                                             ManifestPermissionSet(),
+                                             URLPatternSet(), URLPatternSet());
   EXPECT_TRUE(perm_set->IsEmpty());
 
   APIPermissionSet non_empty_apis;
   non_empty_apis.insert(APIPermissionID::kBackground);
-  perm_set.reset(new PermissionSet(std::move(non_empty_apis),
-                                   ManifestPermissionSet(), URLPatternSet(),
-                                   URLPatternSet()));
+  perm_set = std::make_unique<PermissionSet>(std::move(non_empty_apis),
+                                             ManifestPermissionSet(),
+                                             URLPatternSet(), URLPatternSet());
   EXPECT_FALSE(perm_set->IsEmpty());
 
   // Try non standard host
   URLPatternSet non_empty_extent;
   AddPattern(&non_empty_extent, "http://www.google.com/*");
 
-  perm_set.reset(new PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                                   non_empty_extent.Clone(), URLPatternSet()));
+  perm_set = std::make_unique<PermissionSet>(
+      APIPermissionSet(), ManifestPermissionSet(), non_empty_extent.Clone(),
+      URLPatternSet());
   EXPECT_FALSE(perm_set->IsEmpty());
 
-  perm_set.reset(new PermissionSet(APIPermissionSet(), ManifestPermissionSet(),
-                                   URLPatternSet(), non_empty_extent.Clone()));
+  perm_set = std::make_unique<PermissionSet>(
+      APIPermissionSet(), ManifestPermissionSet(), URLPatternSet(),
+      non_empty_extent.Clone());
   EXPECT_FALSE(perm_set->IsEmpty());
 }
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
@@ -57,8 +59,8 @@ void AutoSignInBubbleControllerTest::Init() {
   EXPECT_CALL(*delegate(), GetPendingPassword())
       .WillOnce(ReturnRef(pending_password()));
   EXPECT_CALL(*delegate(), OnBubbleShown());
-  controller_.reset(
-      new AutoSignInBubbleController(mock_delegate_->AsWeakPtr()));
+  controller_ =
+      std::make_unique<AutoSignInBubbleController>(mock_delegate_->AsWeakPtr());
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
 }
 

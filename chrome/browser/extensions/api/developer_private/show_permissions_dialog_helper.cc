@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/developer_private/show_permissions_dialog_helper.h"
 
+#include <memory>
 #include <utility>
 
 #include "apps/saved_files_service.h"
@@ -51,7 +52,7 @@ void ShowPermissionsDialogHelper::ShowPermissionsDialog(
     content::WebContents* web_contents,
     const Extension* extension) {
   extension_id_ = extension->id();
-  prompt_.reset(new ExtensionInstallPrompt(web_contents));
+  prompt_ = std::make_unique<ExtensionInstallPrompt>(web_contents);
   std::vector<base::FilePath> retained_file_paths;
   if (extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kFileSystem)) {

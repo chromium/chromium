@@ -145,7 +145,7 @@ void FillProcessData(
     task_info.title = base::UTF16ToUTF8(task_manager->GetTitle(task_id));
     const SessionID tab_id = task_manager->GetTabId(task_id);
     if (tab_id.is_valid())
-      task_info.tab_id.reset(new int(tab_id.id()));
+      task_info.tab_id = std::make_unique<int>(tab_id.id());
 
     out_process->tasks.push_back(std::move(task_info));
   }
@@ -450,7 +450,8 @@ void ProcessesAPI::OnListenerRemoved(const EventListenerInfo& details) {
 
 ProcessesEventRouter* ProcessesAPI::processes_event_router() {
   if (!processes_event_router_.get())
-    processes_event_router_.reset(new ProcessesEventRouter(browser_context_));
+    processes_event_router_ =
+        std::make_unique<ProcessesEventRouter>(browser_context_);
   return processes_event_router_.get();
 }
 

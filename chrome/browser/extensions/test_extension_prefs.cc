@@ -116,7 +116,7 @@ void TestExtensionPrefs::RecreateExtensionPrefs() {
     run_loop.Run();
   }
 
-  extension_pref_value_map_.reset(new ExtensionPrefValueMap);
+  extension_pref_value_map_ = std::make_unique<ExtensionPrefValueMap>();
   sync_preferences::PrefServiceMockFactory factory;
   factory.SetUserPrefsFile(preferences_file_, task_runner_.get());
   factory.set_extension_prefs(

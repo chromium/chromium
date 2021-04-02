@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -147,7 +149,7 @@ class TabDesktopMediaListTest : public testing::Test {
   }
 
   void SetUp() override {
-    rvh_test_enabler_.reset(new content::RenderViewHostTestEnabler());
+    rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
     // Create a new temporary directory, and store the path.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
@@ -192,7 +194,7 @@ class TabDesktopMediaListTest : public testing::Test {
   }
 
   void CreateDefaultList() {
-    list_.reset(new TabDesktopMediaList());
+    list_ = std::make_unique<TabDesktopMediaList>();
     list_->SetThumbnailSize(gfx::Size(kThumbnailSize, kThumbnailSize));
 
     // Set update period to reduce the time it takes to run tests.

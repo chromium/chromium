@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <list>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -975,7 +976,7 @@ Status ExecuteGetCurrentUrl(Session* session,
     if (status.IsError())
       return status;
   }
-  value->reset(new base::Value(url));
+  *value = std::make_unique<base::Value>(url);
   return Status(kOk);
 }
 
@@ -2116,7 +2117,7 @@ Status ExecuteScreenshot(Session* session,
   if (status.IsError())
     return status;
 
-  value->reset(new base::Value(screenshot));
+  *value = std::make_unique<base::Value>(screenshot);
   return Status(kOk);
 }
 
@@ -2467,8 +2468,10 @@ Status ExecuteSetLocation(Session* session,
   }
 
   Status status = web_view->OverrideGeolocation(geoposition);
-  if (status.IsOk())
-    session->overridden_geoposition.reset(new Geoposition(geoposition));
+  if (status.IsOk()) {
+    session->overridden_geoposition =
+        std::make_unique<Geoposition>(geoposition);
+  }
   return status;
 }
 

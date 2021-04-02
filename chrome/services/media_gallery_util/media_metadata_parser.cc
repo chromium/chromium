@@ -4,6 +4,7 @@
 
 #include "chrome/services/media_gallery_util/media_metadata_parser.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -121,7 +122,7 @@ void MediaMetadataParser::Start(MetadataCallback callback) {
 
   auto* images = new std::vector<metadata::AttachedImage>();
 
-  media_thread_.reset(new base::Thread("media_thread"));
+  media_thread_ = std::make_unique<base::Thread>("media_thread");
   CHECK(media_thread_->Start());
 
   base::PostTaskAndReplyWithResult(

@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
@@ -111,8 +113,8 @@ class HFSFileReadTest : public testing::TestWithParam<const char*> {
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(test::GetTestFile(GetParam(), &hfs_file_));
 
-    hfs_stream_.reset(new FileReadStream(hfs_file_.GetPlatformFile()));
-    hfs_reader_.reset(new HFSIterator(hfs_stream_.get()));
+    hfs_stream_ = std::make_unique<FileReadStream>(hfs_file_.GetPlatformFile());
+    hfs_reader_ = std::make_unique<HFSIterator>(hfs_stream_.get());
     ASSERT_TRUE(hfs_reader_->Open());
   }
 

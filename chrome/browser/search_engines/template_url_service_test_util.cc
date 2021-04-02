@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search_engines/template_url_service_test_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
@@ -94,7 +95,7 @@ std::unique_ptr<TemplateURL> CreateTestTemplateURL(
 TemplateURLServiceTestUtil::TemplateURLServiceTestUtil() {
   // Make unique temp directory.
   EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
-  profile_.reset(new TestingProfile(temp_dir_.GetPath()));
+  profile_ = std::make_unique<TestingProfile>(temp_dir_.GetPath());
 
   scoped_refptr<WebDatabaseService> web_database_service =
       new WebDatabaseService(temp_dir_.GetPath().AppendASCII("webdata"),
@@ -157,7 +158,7 @@ void TemplateURLServiceTestUtil::ClearModel() {
 void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
   if (model_)
     ClearModel();
-  model_.reset(new TemplateURLService(
+  model_ = std::make_unique<TemplateURLService>(
       profile()->GetPrefs(),
       std::make_unique<TestingSearchTermsData>("http://www.google.com/"),
       web_data_service_.get(),
@@ -166,8 +167,7 @@ void TemplateURLServiceTestUtil::ResetModel(bool verify_load) {
               HistoryServiceFactory::GetForProfileIfExists(
                   profile(), ServiceAccessType::EXPLICIT_ACCESS),
               &search_term_)),
-      base::BindLambdaForTesting(
-          [&] { ++dsp_set_to_google_callback_count_; })));
+      base::BindLambdaForTesting([&] { ++dsp_set_to_google_callback_count_; }));
   model()->AddObserver(this);
   changed_count_ = 0;
   if (verify_load)

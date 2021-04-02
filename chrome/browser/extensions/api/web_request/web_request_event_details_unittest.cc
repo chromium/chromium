@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/web_request/web_request_event_details.h"
 
+#include <memory>
+
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "extensions/browser/api/web_request/web_request_api_constants.h"
@@ -29,9 +31,9 @@ TEST(WebRequestEventDetailsTest, WhitelistedCopyForPublicSession) {
   orig->render_process_id_ = 1;
   orig->extra_info_spec_ = 3;
 
-  orig->request_body_.reset(new base::DictionaryValue);
-  orig->request_headers_.reset(new base::ListValue);
-  orig->response_headers_.reset(new base::ListValue);
+  orig->request_body_ = std::make_unique<base::DictionaryValue>();
+  orig->request_headers_ = std::make_unique<base::ListValue>();
+  orig->response_headers_ = std::make_unique<base::ListValue>();
 
   for (const char* safe_attr : safe_attributes) {
     orig->dict_.SetString(safe_attr, safe_attr);

@@ -95,7 +95,8 @@ class MockTranslateBubbleFactory : public TranslateBubbleFactory {
         new translate::TranslateUIDelegate(
             chrome_translate_client->GetTranslateManager()->GetWeakPtr(),
             source_language, target_language));
-    model_.reset(new TranslateBubbleModelImpl(step, std::move(ui_delegate)));
+    model_ = std::make_unique<TranslateBubbleModelImpl>(step,
+                                                        std::move(ui_delegate));
     return ShowTranslateBubbleResult::SUCCESS;
   }
 

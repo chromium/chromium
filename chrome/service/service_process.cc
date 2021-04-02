@@ -5,6 +5,7 @@
 #include "chrome/service/service_process.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -176,7 +177,7 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
   // Initialize the IO and FILE threads.
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  io_thread_.reset(new ServiceIOThread("ServiceProcess_IO"));
+  io_thread_ = std::make_unique<ServiceIOThread>("ServiceProcess_IO");
   if (!io_thread_->StartWithOptions(options)) {
     NOTREACHED();
     Teardown();
@@ -185,9 +186,9 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
 
   // Initialize Mojo early so things can use it.
   mojo::core::Init();
-  mojo_ipc_support_.reset(new mojo::core::ScopedIPCSupport(
+  mojo_ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
       io_thread_->task_runner(),
-      mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST));
+      mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
 
   request_context_getter_ = new ServiceURLRequestContextGetter();
 
@@ -235,8 +236,8 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
 
   VLOG(1) << "Starting Service Process IPC Server";
 
-  ipc_server_.reset(new ServiceIPCServer(this /* client */, io_task_runner(),
-                                         &shutdown_event_));
+  ipc_server_ = std::make_unique<ServiceIPCServer>(
+      this /* client */, io_task_runner(), &shutdown_event_);
   ipc_server_->binder_registry().AddInterface(base::BindRepeating(
       &cloud_print::CloudPrintMessageHandler::Create, this));
   ipc_server_->Init();
@@ -366,7 +367,7 @@ mojo::ScopedMessagePipeHandle ServiceProcess::CreateChannelMessagePipe() {
 
 cloud_print::CloudPrintProxy* ServiceProcess::GetCloudPrintProxy() {
   if (!cloud_print_proxy_.get()) {
-    cloud_print_proxy_.reset(new cloud_print::CloudPrintProxy());
+    cloud_print_proxy_ = std::make_unique<cloud_print::CloudPrintProxy>();
     cloud_print_proxy_->Initialize(service_prefs_.get(), this,
                                    network_connection_tracker_.get());
   }

@@ -25,8 +25,7 @@ void DummyCommand(
     const base::DictionaryValue& params,
     const std::string& session_id,
     const CommandCallback& callback) {
-  callback.Run(status, std::unique_ptr<base::Value>(new base::Value(1)),
-               "session_id", false);
+  callback.Run(status, std::make_unique<base::Value>(1), "session_id", false);
 }
 
 void OnResponse(net::HttpServerResponseInfo* response_to_set,
@@ -59,7 +58,7 @@ TEST(HttpHandlerTest, HandleUnknownCommand) {
 
 TEST(HttpHandlerTest, HandleNewSession) {
   HttpHandler handler("/base/");
-  handler.command_map_.reset(new HttpHandler::CommandMap());
+  handler.command_map_ = std::make_unique<HttpHandler::CommandMap>();
   handler.command_map_->push_back(
       CommandMapping(kPost, internal::kNewSessionPathPattern,
                      base::BindRepeating(&DummyCommand, Status(kOk))));

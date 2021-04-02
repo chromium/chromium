@@ -45,7 +45,7 @@ std::unique_ptr<std::string> ReadOnFileThread(const base::FilePath& path) {
     return result;
   }
 
-  result.reset(new std::string);
+  result = std::make_unique<std::string>();
   result->resize(file_info.size);
   if (file.Read(0, base::data(*result), file_info.size) != file_info.size) {
     result.reset();

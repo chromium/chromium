@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/storage/managed_value_store_cache.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -239,7 +240,8 @@ ManagedValueStoreCache::ManagedValueStoreCache(
 
   policy_service_->AddObserver(policy_domain_, this);
 
-  extension_tracker_.reset(new ExtensionTracker(profile_, policy_domain_));
+  extension_tracker_ =
+      std::make_unique<ExtensionTracker>(profile_, policy_domain_);
 
   if (policy_service_->IsInitializationComplete(policy_domain_))
     OnPolicyServiceInitialized(policy_domain_);

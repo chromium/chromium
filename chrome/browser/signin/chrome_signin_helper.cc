@@ -104,8 +104,8 @@ class AccountReconcilorLockWrapper
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     AccountReconcilor* account_reconcilor =
         AccountReconcilorFactory::GetForProfile(profile);
-    account_reconcilor_lock_.reset(
-        new AccountReconcilor::Lock(account_reconcilor));
+    account_reconcilor_lock_ =
+        std::make_unique<AccountReconcilor::Lock>(account_reconcilor);
   }
 
   void DestroyAfterDelay() {

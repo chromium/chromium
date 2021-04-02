@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -315,8 +316,9 @@ NativeDesktopMediaList::NativeDesktopMediaList(
 #endif
   thread_.StartWithOptions(base::Thread::Options(thread_type, 0));
 
-  worker_.reset(new Worker(thread_.task_runner(), weak_factory_.GetWeakPtr(),
-                           type, std::move(capturer)));
+  worker_ = std::make_unique<Worker>(thread_.task_runner(),
+                                     weak_factory_.GetWeakPtr(), type,
+                                     std::move(capturer));
 
   thread_.task_runner()->PostTask(
       FROM_HERE,

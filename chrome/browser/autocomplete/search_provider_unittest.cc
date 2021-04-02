@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -405,8 +406,8 @@ void BaseSearchProviderTest::CustomizableSetUp(
       &profile_,
       base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
 
-  client_.reset(
-      new TestAutocompleteProviderClient(&profile_, &test_url_loader_factory_));
+  client_ = std::make_unique<TestAutocompleteProviderClient>(
+      &profile_, &test_url_loader_factory_);
   provider_ = new SearchProviderForTest(client_.get(), this, &profile_);
   OmniboxFieldTrial::kDefaultMinimumTimeBetweenSuggestQueriesMs = 0;
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/certificate_reporting_service_test_utils.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
@@ -81,7 +83,7 @@ void RequestObserver::Wait(unsigned int num_events_to_wait_for) {
 
   if (num_received_events_ < num_events_to_wait_for) {
     num_events_to_wait_for_ = num_events_to_wait_for;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset(nullptr);
     EXPECT_EQ(0u, num_received_events_);
@@ -209,7 +211,7 @@ void CertificateReportingServiceObserver::WaitForReset() {
   DCHECK(!run_loop_);
   if (did_reset_)
     return;
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   run_loop_.reset();
 }

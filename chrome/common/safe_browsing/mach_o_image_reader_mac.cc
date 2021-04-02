@@ -8,6 +8,8 @@
 #include <mach-o/fat.h>
 #include <mach-o/loader.h>
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/numerics/safe_math.h"
 
@@ -97,7 +99,7 @@ bool MachOImageReader::Initialize(const uint8_t* image, size_t image_size) {
   if (!image)
     return false;
 
-  data_.reset(new ByteSlice(image, image_size));
+  data_ = std::make_unique<ByteSlice>(image, image_size);
 
   const uint32_t* magic = data_->GetPointerAt<uint32_t>(0);
   if (!magic)

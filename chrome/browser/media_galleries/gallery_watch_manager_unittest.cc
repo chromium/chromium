@@ -91,7 +91,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
         chrome_apps::MediaGalleriesPermission::kReadPermission);
     extension_ = AddMediaGalleriesApp("read", read_permissions, profile_.get());
 
-    manager_.reset(new GalleryWatchManager);
+    manager_ = std::make_unique<GalleryWatchManager>();
     manager_->AddObserver(profile_.get(), this);
   }
 

@@ -90,10 +90,10 @@ void ScopedTestNativeMessagingHost::RegisterTestHost(bool user_level) {
   HKEY root_key = user_level ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
   ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(root_key));
 #else
-  path_override_.reset(new base::ScopedPathOverride(
+  path_override_ = std::make_unique<base::ScopedPathOverride>(
       user_level ? chrome::DIR_USER_NATIVE_MESSAGING
                  : chrome::DIR_NATIVE_MESSAGING,
-      temp_dir_.GetPath()));
+      temp_dir_.GetPath());
 #endif
 
   base::CopyFile(test_user_data_dir.AppendASCII("echo.py"),

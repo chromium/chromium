@@ -149,9 +149,9 @@ void CommandsHandler::MaybeSetBrowserActionDefault(const Extension* extension,
   // TODO(devlin): Synthesize a command for the "action" key, too?
   if (extension->manifest()->HasKey(keys::kBrowserAction) &&
       !info->browser_action_command.get()) {
-    info->browser_action_command.reset(
-        new Command(manifest_values::kBrowserActionCommandEvent,
-                    std::u16string(), std::string(), false));
+    info->browser_action_command =
+        std::make_unique<Command>(manifest_values::kBrowserActionCommandEvent,
+                                  std::u16string(), std::string(), false);
   }
 }
 

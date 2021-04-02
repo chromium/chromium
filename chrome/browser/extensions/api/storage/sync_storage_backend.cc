@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/storage/sync_storage_backend.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -278,8 +279,8 @@ std::unique_ptr<SettingsSyncProcessor>
 SyncStorageBackend::CreateSettingsSyncProcessor(
     const std::string& extension_id) const {
   CHECK(sync_processor_.get());
-  return std::unique_ptr<SettingsSyncProcessor>(new SettingsSyncProcessor(
-      extension_id, sync_type_, sync_processor_.get()));
+  return std::make_unique<SettingsSyncProcessor>(extension_id, sync_type_,
+                                                 sync_processor_.get());
 }
 
 }  // namespace extensions

@@ -72,7 +72,8 @@ class BackgroundContentsServiceTest : public testing::Test {
   ~BackgroundContentsServiceTest() override = default;
 
   void SetUp() override {
-    command_line_.reset(new base::CommandLine(base::CommandLine::NO_PROGRAM));
+    command_line_ =
+        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     BackgroundContentsService::DisableCloseBalloonForTesting(true);
   }
 

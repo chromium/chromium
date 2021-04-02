@@ -288,8 +288,8 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   void SetUpRegistry(bool initialize) {
     auto delegate = std::make_unique<FakeDelegate>();
     delegate_ = delegate.get();
-    registry_.reset(
-        new ProtocolHandlerRegistry(profile(), std::move(delegate)));
+    registry_ = std::make_unique<ProtocolHandlerRegistry>(profile(),
+                                                          std::move(delegate));
     if (initialize) registry_->InitProtocolSettings();
   }
 
@@ -300,7 +300,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   }
 
   void SetUp() override {
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     CHECK(profile_->GetPrefs());
     SetUpRegistry(true);
     test_protocol_handler_ =

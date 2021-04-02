@@ -51,8 +51,8 @@ class MediaRouterUIServiceFactoryUnitTest : public testing::Test {
 
   static std::unique_ptr<KeyedService> BuildFakeToolBarActionsModel(
       content::BrowserContext* context) {
-    return std::unique_ptr<ToolbarActionsModel>(
-        new ToolbarActionsModel(static_cast<Profile*>(context), nullptr));
+    return std::make_unique<ToolbarActionsModel>(static_cast<Profile*>(context),
+                                                 nullptr);
   }
 
  protected:

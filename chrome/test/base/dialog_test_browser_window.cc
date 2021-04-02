@@ -4,6 +4,7 @@
 
 #include "chrome/test/base/dialog_test_browser_window.h"
 
+#include <memory>
 #include <utility>
 
 #include "build/build_config.h"
@@ -21,7 +22,7 @@ DialogTestBrowserWindow::DialogTestBrowserWindow() {
   // Create a dummy Widget on Mac for parenting dialogs. On Aura, just parent
   // using the WebContents since creating a Widget here requires an Aura
   // RootWindow for context and it's tricky to get one here.
-  host_window_.reset(new views::Widget);
+  host_window_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   host_window_->Init(std::move(params));

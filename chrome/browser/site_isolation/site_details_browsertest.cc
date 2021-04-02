@@ -58,7 +58,7 @@ class TestMemoryDetails : public MetricsMemoryDetails {
   TestMemoryDetails() : MetricsMemoryDetails(base::DoNothing()) {}
 
   void StartFetchAndWait() {
-    uma_.reset(new base::HistogramTester());
+    uma_ = std::make_unique<base::HistogramTester>();
     StartFetch();
     content::RunMessageLoop();
   }

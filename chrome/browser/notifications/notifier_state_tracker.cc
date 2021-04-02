@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -121,7 +122,7 @@ void NotifierStateTracker::SetNotifierEnabled(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       pref_name = prefs::kMessageCenterDisabledExtensionIds;
       add_new_item = !enabled;
-      id.reset(new base::Value(notifier_id.id));
+      id = std::make_unique<base::Value>(notifier_id.id);
       FirePermissionLevelChangedEvent(notifier_id, enabled);
 #else
       NOTREACHED();

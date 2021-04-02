@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <set>
 #include <string>
 
@@ -49,17 +50,17 @@ class MockExternalPolicyProviderVisitor
   // exactly the extensions specified in |expected_extensions|.
   void Visit(const base::DictionaryValue& policy_forcelist,
              const std::set<std::string>& expected_extensions) {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     profile_->GetTestingPrefService()->SetManagedPref(
         pref_names::kInstallForceList, policy_forcelist.CreateDeepCopy());
-    provider_.reset(new ExternalProviderImpl(
+    provider_ = std::make_unique<ExternalProviderImpl>(
         this,
         new ExternalPolicyLoader(
             profile_.get(),
             ExtensionManagementFactory::GetForBrowserContext(profile_.get()),
             ExternalPolicyLoader::FORCED),
         profile_.get(), ManifestLocation::kInvalidLocation,
-        ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS));
+        ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
 
     // Extensions will be removed from this list as they visited,
     // so it should be emptied by the end.

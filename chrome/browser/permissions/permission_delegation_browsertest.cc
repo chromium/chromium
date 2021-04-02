@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,11 +31,11 @@ class PermissionDelegationBrowserTest : public InProcessBrowserTest {
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(
             GetWebContents());
-    mock_permission_prompt_factory_.reset(
-        new permissions::MockPermissionPromptFactory(manager));
+    mock_permission_prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
 
-    https_embedded_test_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     https_embedded_test_server_->ServeFilesFromSourceDirectory(
         GetChromeTestDataDir());
     host_resolver()->AddRule("*", "127.0.0.1");

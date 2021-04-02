@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/stl_util.h"
@@ -610,8 +611,8 @@ TEST_F(StackedTabStripLayoutTest, MoveTab) {
 TEST_F(StackedTabStripLayoutTest, IsStacked) {
   // A single tab with enough space should never be stacked.
   PrepareChildViews(1);
-  layout_.reset(
-      new StackedTabStripLayout(gfx::Size(100, 10), 10, 2, 4, &view_model_));
+  layout_ = std::make_unique<StackedTabStripLayout>(gfx::Size(100, 10), 10, 2,
+                                                    4, &view_model_);
   Reset(layout_.get(), 0, 400, 0, 0);
   EXPECT_FALSE(layout_->IsStacked(0));
 
@@ -631,8 +632,8 @@ TEST_F(StackedTabStripLayoutTest, IsStacked) {
 TEST_F(StackedTabStripLayoutTest, SetXAndPinnedCount) {
   // Verifies we don't crash when transitioning to all pinned tabs.
   PrepareChildViews(1);
-  layout_.reset(
-      new StackedTabStripLayout(gfx::Size(100, 10), 10, 2, 4, &view_model_));
+  layout_ = std::make_unique<StackedTabStripLayout>(gfx::Size(100, 10), 10, 2,
+                                                    4, &view_model_);
   Reset(layout_.get(), 0, 400, 0, 0);
   layout_->SetXAndPinnedCount(0, 1);
 }

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/native_window_tracker.h"
@@ -50,8 +52,8 @@ ExtensionInstallPromptShowParams::ExtensionInstallPromptShowParams(
       parent_web_contents_destroyed_(false),
       parent_window_(NativeWindowForWebContents(contents)) {
   if (contents) {
-    web_contents_destruction_observer_.reset(
-        new WebContentsDestructionObserver(this));
+    web_contents_destruction_observer_ =
+        std::make_unique<WebContentsDestructionObserver>(this);
   }
   if (parent_window_)
     native_window_tracker_ = NativeWindowTracker::Create(parent_window_);

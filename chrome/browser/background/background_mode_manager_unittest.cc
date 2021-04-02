@@ -199,7 +199,8 @@ class BackgroundModeManagerTest : public testing::Test {
   ~BackgroundModeManagerTest() override {}
 
   void SetUp() override {
-    command_line_.reset(new base::CommandLine(base::CommandLine::NO_PROGRAM));
+    command_line_ =
+        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
 
     auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
         std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
@@ -229,17 +230,18 @@ class BackgroundModeManagerWithExtensionsTest : public testing::Test {
   ~BackgroundModeManagerWithExtensionsTest() override {}
 
   void SetUp() override {
-    command_line_.reset(new base::CommandLine(base::CommandLine::NO_PROGRAM));
+    command_line_ =
+        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     profile_manager_ = CreateTestingProfileManager();
     profile_ = profile_manager_->CreateTestingProfile("p1");
 
-    test_keep_alive_.reset(
-        new ScopedKeepAlive(KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
-                            KeepAliveRestartOption::DISABLED));
+    test_keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BACKGROUND_MODE_MANAGER,
+        KeepAliveRestartOption::DISABLED);
 
     // Create our test BackgroundModeManager.
-    manager_.reset(new TestBackgroundModeManager(
-        *command_line_, profile_manager_->profile_attributes_storage()));
+    manager_ = std::make_unique<TestBackgroundModeManager>(
+        *command_line_, profile_manager_->profile_attributes_storage());
     manager_->RegisterProfile(profile_);
   }
 

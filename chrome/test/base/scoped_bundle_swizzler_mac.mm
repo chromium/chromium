@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
@@ -56,8 +58,8 @@ ScopedBundleSwizzlerMac::ScopedBundleSwizzlerMac() {
   g_swizzled_main_bundle =
       [[TestBundle alloc] initWithRealBundle:original_main_bundle];
 
-  class_swizzler_.reset(new base::mac::ScopedObjCClassSwizzler(
-      [NSBundle class], [TestBundle class], @selector(mainBundle)));
+  class_swizzler_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+      [NSBundle class], [TestBundle class], @selector(mainBundle));
 }
 
 ScopedBundleSwizzlerMac::~ScopedBundleSwizzlerMac() {

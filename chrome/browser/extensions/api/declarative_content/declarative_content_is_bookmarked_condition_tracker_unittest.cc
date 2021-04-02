@@ -101,9 +101,8 @@ class DeclarativeContentIsBookmarkedConditionTrackerTest
     bookmarks::test::WaitForBookmarkModelToLoad(
         BookmarkModelFactory::GetForBrowserContext(profile()));
     bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(profile());
-    tracker_.reset(new DeclarativeContentIsBookmarkedConditionTracker(
-        profile(),
-        &delegate_));
+    tracker_ = std::make_unique<DeclarativeContentIsBookmarkedConditionTracker>(
+        profile(), &delegate_);
     extension_ = CreateExtensionWithBookmarksPermission(true);
     is_bookmarked_predicate_ = CreatePredicate(tracker_.get(), extension_.get(),
                                                true);

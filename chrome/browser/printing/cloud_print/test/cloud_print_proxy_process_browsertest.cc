@@ -140,7 +140,7 @@ bool TestServiceProcess::Initialize(
   service_process_state_ = std::move(state);
 
   base::Thread::Options options(base::MessagePumpType::IO, 0);
-  io_thread_.reset(new base::Thread("TestServiceProcess_IO"));
+  io_thread_ = std::make_unique<base::Thread>("TestServiceProcess_IO");
   return io_thread_->StartWithOptions(options);
 }
 
@@ -367,9 +367,9 @@ CloudPrintProxyPolicyStartupTest::~CloudPrintProxyPolicyStartupTest() {
 }
 
 void CloudPrintProxyPolicyStartupTest::SetUp() {
-  content_client_.reset(new ChromeContentClient);
+  content_client_ = std::make_unique<ChromeContentClient>();
   content::SetContentClient(content_client_.get());
-  browser_content_client_.reset(new ChromeContentBrowserClient());
+  browser_content_client_ = std::make_unique<ChromeContentBrowserClient>();
   content::SetBrowserClientForTesting(browser_content_client_.get());
 
   TestingBrowserProcess::CreateInstance();
@@ -396,11 +396,11 @@ void CloudPrintProxyPolicyStartupTest::SetUp() {
   EXPECT_TRUE(MockLaunchd::MakeABundle(temp_dir_.GetPath(),
                                        "CloudPrintProxyTest", &bundle_path_,
                                        &executable_path_));
-  mock_launchd_.reset(new MockLaunchd(executable_path_,
-                                      base::ThreadTaskRunnerHandle::Get(),
-                                      base::DoNothing(), false));
-  scoped_launchd_instance_.reset(
-      new Launchd::ScopedInstance(mock_launchd_.get()));
+  mock_launchd_ = std::make_unique<MockLaunchd>(
+      executable_path_, base::ThreadTaskRunnerHandle::Get(), base::DoNothing(),
+      false);
+  scoped_launchd_instance_ =
+      std::make_unique<Launchd::ScopedInstance>(mock_launchd_.get());
 #endif
 }
 

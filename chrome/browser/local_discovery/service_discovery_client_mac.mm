@@ -10,6 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
 #include "base/message_loop/message_pump_type.h"
@@ -204,8 +206,8 @@ ServiceDiscoveryClientMac::CreateLocalDomainResolver(
 
 void ServiceDiscoveryClientMac::StartThreadIfNotStarted() {
   if (!service_discovery_thread_) {
-    service_discovery_thread_.reset(
-        new base::Thread(kServiceDiscoveryThreadName));
+    service_discovery_thread_ =
+        std::make_unique<base::Thread>(kServiceDiscoveryThreadName);
     // Only TYPE_UI uses an NSRunLoop.
     base::Thread::Options options(base::MessagePumpType::UI, 0);
     service_discovery_thread_->StartWithOptions(options);

@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/auto_reset.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
@@ -77,7 +79,8 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
 
   void SetUpOnMainThread() override {
     PlatformAppBrowserTest::SetUpOnMainThread();
-    ensure_media_directories_exists_.reset(new EnsureMediaDirectoriesExists);
+    ensure_media_directories_exists_ =
+        std::make_unique<EnsureMediaDirectoriesExists>();
     // Prevent the ProcessManager from suspending the chrome-test app. Needed
     // because the writer.onerror and writer.onwriteend events do not qualify as
     // pending callbacks, so the app looks dormant.

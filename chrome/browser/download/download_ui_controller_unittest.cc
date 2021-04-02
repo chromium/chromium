@@ -173,7 +173,7 @@ DownloadUIControllerTest::DownloadUIControllerTest()
 void DownloadUIControllerTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
 
-  manager_.reset(new testing::StrictMock<MockDownloadManager>());
+  manager_ = std::make_unique<testing::StrictMock<MockDownloadManager>>();
   EXPECT_CALL(*manager_, IsManagerInitialized()).Times(AnyNumber());
   EXPECT_CALL(*manager_, AddObserver(_))
       .WillOnce(SaveArg<0>(&download_history_manager_observer_));

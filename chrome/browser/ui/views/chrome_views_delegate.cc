@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 
+#include <memory>
+
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -145,9 +147,9 @@ bool ChromeViewsDelegate::IsShuttingDown() const {
 
 void ChromeViewsDelegate::AddRef() {
   if (ref_count_ == 0u) {
-    keep_alive_.reset(
-        new ScopedKeepAlive(KeepAliveOrigin::CHROME_VIEWS_DELEGATE,
-                            KeepAliveRestartOption::DISABLED));
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::CHROME_VIEWS_DELEGATE,
+        KeepAliveRestartOption::DISABLED);
   }
 
   // There's no easy way to know which Profile caused this menu to open, so

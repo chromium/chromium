@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_list.h"
@@ -277,7 +278,7 @@ void Blocklist::RequestExtensionsBlocklistState(
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!state_fetcher_)
-    state_fetcher_.reset(new BlocklistStateFetcher());
+    state_fetcher_ = std::make_unique<BlocklistStateFetcher>();
 
   state_requests_.emplace_back(std::vector<std::string>(ids.begin(), ids.end()),
                                std::move(callback));

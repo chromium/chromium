@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/webstore_install_helper.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/values.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
@@ -77,7 +79,8 @@ void WebstoreInstallHelper::Start(
               "Not implemented, considered not useful."
           })");
 
-    icon_fetcher_.reset(new BitmapFetcher(icon_url_, this, traffic_annotation));
+    icon_fetcher_ =
+        std::make_unique<BitmapFetcher>(icon_url_, this, traffic_annotation);
     icon_fetcher_->Init(
         std::string(),
         net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,

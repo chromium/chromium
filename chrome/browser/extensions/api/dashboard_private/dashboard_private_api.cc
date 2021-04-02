@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/dashboard_private/dashboard_private_api.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -134,7 +135,7 @@ void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
           ExtensionInstallPrompt::DELEGATED_PERMISSIONS_PROMPT));
   prompt->set_delegated_username(details().delegated_user);
 
-  install_prompt_.reset(new ExtensionInstallPrompt(web_contents));
+  install_prompt_ = std::make_unique<ExtensionInstallPrompt>(web_contents);
   install_prompt_->ShowDialog(
       base::BindOnce(
           &DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/extensions/extension_message_bubble_browsertest.h"
 
+#include <memory>
+
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -41,10 +43,9 @@ void ExtensionMessageBubbleBrowserTest::SetUpCommandLine(
   ExtensionBrowserTest::SetUpCommandLine(command_line);
   // The dev mode warning bubble is an easy one to trigger, so we use that for
   // our testing purposes.
-  dev_mode_bubble_override_.reset(
-      new extensions::FeatureSwitch::ScopedOverride(
-          extensions::FeatureSwitch::force_dev_mode_highlighting(),
-          true));
+  dev_mode_bubble_override_ =
+      std::make_unique<extensions::FeatureSwitch::ScopedOverride>(
+          extensions::FeatureSwitch::force_dev_mode_highlighting(), true);
   ExtensionMessageBubbleFactory::set_override_for_tests(
       ExtensionMessageBubbleFactory::OVERRIDE_ENABLED);
 }

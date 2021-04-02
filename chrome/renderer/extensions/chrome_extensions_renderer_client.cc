@@ -141,13 +141,15 @@ void ChromeExtensionsRendererClient::RenderThreadStarted() {
         std::make_unique<ChromeExtensionsDispatcherDelegate>());
   }
   extension_dispatcher_->OnRenderThreadStarted(thread);
-  permissions_policy_delegate_.reset(
-      new extensions::RendererPermissionsPolicyDelegate(
-          extension_dispatcher_.get()));
-  resource_request_policy_.reset(
-      new extensions::ResourceRequestPolicy(extension_dispatcher_.get()));
-  guest_view_container_dispatcher_.reset(
-      new extensions::ExtensionsGuestViewContainerDispatcher());
+  permissions_policy_delegate_ =
+      std::make_unique<extensions::RendererPermissionsPolicyDelegate>(
+
+          extension_dispatcher_.get());
+  resource_request_policy_ =
+      std::make_unique<extensions::ResourceRequestPolicy>(
+          extension_dispatcher_.get());
+  guest_view_container_dispatcher_ =
+      std::make_unique<extensions::ExtensionsGuestViewContainerDispatcher>();
 
   thread->AddObserver(extension_dispatcher_.get());
   thread->AddObserver(guest_view_container_dispatcher_.get());
@@ -298,9 +300,10 @@ void ChromeExtensionsRendererClient::WillSendRequest(
 void ChromeExtensionsRendererClient::SetExtensionDispatcherForTest(
     std::unique_ptr<extensions::Dispatcher> extension_dispatcher) {
   extension_dispatcher_ = std::move(extension_dispatcher);
-  permissions_policy_delegate_.reset(
-      new extensions::RendererPermissionsPolicyDelegate(
-          extension_dispatcher_.get()));
+  permissions_policy_delegate_ =
+      std::make_unique<extensions::RendererPermissionsPolicyDelegate>(
+
+          extension_dispatcher_.get());
 }
 
 extensions::Dispatcher*

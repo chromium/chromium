@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -91,7 +93,7 @@ TEST(TabCaptureCaptureOffscreenTabTest, DetermineInitialSize) {
                 options));
 
   // Use specified mandatory maximum size.
-  options.video_constraints.reset(new MediaStreamConstraint());
+  options.video_constraints = std::make_unique<MediaStreamConstraint>();
   base::DictionaryValue* properties =
       &options.video_constraints->mandatory.additional_properties;
   properties->SetInteger("maxWidth", 123);
@@ -102,7 +104,7 @@ TEST(TabCaptureCaptureOffscreenTabTest, DetermineInitialSize) {
 
   // Use default size if larger than mandatory minimum size.  Else, use
   // mandatory minimum size.
-  options.video_constraints.reset(new MediaStreamConstraint());
+  options.video_constraints = std::make_unique<MediaStreamConstraint>();
   properties = &options.video_constraints->mandatory.additional_properties;
   properties->SetInteger("minWidth", 123);
   properties->SetInteger("minHeight", 456);
@@ -116,9 +118,9 @@ TEST(TabCaptureCaptureOffscreenTabTest, DetermineInitialSize) {
                 options));
 
   // Use specified optional maximum size, if no mandatory size was specified.
-  options.video_constraints.reset(new MediaStreamConstraint());
-  options.video_constraints->optional.reset(
-      new MediaStreamConstraint::Optional());
+  options.video_constraints = std::make_unique<MediaStreamConstraint>();
+  options.video_constraints->optional =
+      std::make_unique<MediaStreamConstraint::Optional>();
   properties = &options.video_constraints->optional->additional_properties;
   properties->SetInteger("maxWidth", 456);
   properties->SetInteger("maxHeight", 123);
@@ -136,9 +138,9 @@ TEST(TabCaptureCaptureOffscreenTabTest, DetermineInitialSize) {
 
   // Use default size if larger than optional minimum size.  Else, use optional
   // minimum size.
-  options.video_constraints.reset(new MediaStreamConstraint());
-  options.video_constraints->optional.reset(
-      new MediaStreamConstraint::Optional());
+  options.video_constraints = std::make_unique<MediaStreamConstraint>();
+  options.video_constraints->optional =
+      std::make_unique<MediaStreamConstraint::Optional>();
   properties = &options.video_constraints->optional->additional_properties;
   properties->SetInteger("minWidth", 9999);
   properties->SetInteger("minHeight", 8888);

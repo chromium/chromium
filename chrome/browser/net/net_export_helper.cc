@@ -4,6 +4,8 @@
 
 #include "chrome/browser/net/net_export_helper.h"
 
+#include <memory>
+
 #include "base/values.h"
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,7 +35,7 @@ std::unique_ptr<base::DictionaryValue> GetPrerenderInfo(Profile* profile) {
   if (no_state_prefetch_manager) {
     value = no_state_prefetch_manager->CopyAsValue();
   } else {
-    value.reset(new base::DictionaryValue());
+    value = std::make_unique<base::DictionaryValue>();
     value->SetBoolean("enabled", false);
     value->SetBoolean("omnibox_enabled", false);
   }

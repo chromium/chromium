@@ -565,8 +565,8 @@ WebNavigationAPI::GetFactoryInstance() {
 }
 
 void WebNavigationAPI::OnListenerAdded(const EventListenerInfo& details) {
-  web_navigation_event_router_.reset(new WebNavigationEventRouter(
-      Profile::FromBrowserContext(browser_context_)));
+  web_navigation_event_router_ = std::make_unique<WebNavigationEventRouter>(
+      Profile::FromBrowserContext(browser_context_));
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
 }
 

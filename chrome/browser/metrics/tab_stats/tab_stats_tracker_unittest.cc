@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -159,7 +160,7 @@ class TabStatsTrackerTest : public ChromeRenderViewHostTestHarness {
 
     // The tab stats tracker has to be created after the power monitor as it's
     // using it.
-    tab_stats_tracker_.reset(new TestTabStatsTracker(&pref_service_));
+    tab_stats_tracker_ = std::make_unique<TestTabStatsTracker>(&pref_service_);
   }
 
   void TearDown() override {

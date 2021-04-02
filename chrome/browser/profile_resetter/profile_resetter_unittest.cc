@@ -158,7 +158,7 @@ void ProfileResetterTest::SetUp() {
   profile()->CreateWebDataService();
   TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&CreateTemplateURLServiceForTesting));
-  resetter_.reset(new ProfileResetter(profile()));
+  resetter_ = std::make_unique<ProfileResetter>(profile());
 }
 
 // PinnedTabsResetTest --------------------------------------------------------
@@ -173,7 +173,7 @@ class PinnedTabsResetTest : public BrowserWithTestWindowTest,
 
 void PinnedTabsResetTest::SetUp() {
   BrowserWithTestWindowTest::SetUp();
-  resetter_.reset(new ProfileResetter(profile()));
+  resetter_ = std::make_unique<ProfileResetter>(profile());
 }
 
 std::unique_ptr<content::WebContents> PinnedTabsResetTest::CreateWebContents() {

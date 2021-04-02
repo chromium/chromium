@@ -254,9 +254,9 @@ void CloudPolicyInvalidatorTestBase::StartInvalidator(
     bool initialize,
     bool start_refresh_scheduler,
     int64_t highest_handled_invalidation_version) {
-  invalidator_.reset(new CloudPolicyInvalidator(
+  invalidator_ = std::make_unique<CloudPolicyInvalidator>(
       GetPolicyInvalidationScope(), &core_, task_runner_, &clock_,
-      highest_handled_invalidation_version, account_id_));
+      highest_handled_invalidation_version, account_id_);
   if (start_refresh_scheduler) {
     ConnectCore();
     StartRefreshScheduler();

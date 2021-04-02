@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -499,8 +500,8 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
   void SetUp() override {
     if (UsesFakeSpeech()) {
       // SpeechRecognition test specific SetUp.
-      fake_speech_recognition_manager_.reset(
-          new content::FakeSpeechRecognitionManager());
+      fake_speech_recognition_manager_ =
+          std::make_unique<content::FakeSpeechRecognitionManager>();
       fake_speech_recognition_manager_->set_should_send_fake_response(true);
       // Inject the fake manager factory so that the test result is returned to
       // the web page.
@@ -794,7 +795,8 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
                                  const std::string& wait_message) {
     std::unique_ptr<ExtensionTestMessageListener> listener;
     if (!wait_message.empty()) {
-      listener.reset(new ExtensionTestMessageListener(wait_message, false));
+      listener =
+          std::make_unique<ExtensionTestMessageListener>(wait_message, false);
     }
 
     EXPECT_TRUE(
@@ -2958,7 +2960,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleDownloadRequestWithCookie(
   // Return a 403 if there's no cookie or if the cookie doesn't match.
   if (cookie_header_it == request.headers.end() ||
       cookie_header_it->second != cookie_to_expect) {
-    response.reset(new net::test_server::BasicHttpResponse);
+    response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_FORBIDDEN);
     response->set_content_type("text/plain");
     response->set_content("Forbidden");
@@ -2966,7 +2968,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleDownloadRequestWithCookie(
   }
 
   // We have a cookie. Send some content along with the next status code.
-  response.reset(new net::test_server::BasicHttpResponse);
+  response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_code(net::HTTP_OK);
   response->set_content_type("application/octet-stream");
   response->set_content(cookie_to_expect);

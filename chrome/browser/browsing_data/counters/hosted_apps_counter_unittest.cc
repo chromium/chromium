@@ -31,7 +31,7 @@ using extensions::ListBuilder;
 class HostedAppsCounterTest : public testing::Test {
  public:
   void SetUp() override {
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     extension_registry_ = extensions::ExtensionRegistry::Get(profile_.get());
 
     SetHostedAppsDeletionPref(true);

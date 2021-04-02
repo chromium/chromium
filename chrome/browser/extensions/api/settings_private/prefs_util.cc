@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -865,7 +867,7 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
     pref = pref_service->FindPreference(name);
     if (!pref)
       return nullptr;
-    pref_object.reset(new settings_api::PrefObject());
+    pref_object = std::make_unique<settings_api::PrefObject>();
     pref_object->key = pref->name();
     pref_object->type = GetType(name, pref->GetType());
     pref_object->value.reset(pref->GetValue()->DeepCopy());
@@ -954,12 +956,14 @@ std::unique_ptr<settings_api::PrefObject> PrefsUtil::GetPref(
     pref_object->controlled_by =
         settings_api::ControlledBy::CONTROLLED_BY_EXTENSION;
     pref_object->enforcement = settings_api::Enforcement::ENFORCEMENT_ENFORCED;
-    pref_object->extension_id.reset(new std::string(extension->id()));
-    pref_object->controlled_by_name.reset(new std::string(extension->name()));
+    pref_object->extension_id = std::make_unique<std::string>(extension->id());
+    pref_object->controlled_by_name =
+        std::make_unique<std::string>(extension->name());
     bool can_be_disabled =
         !ExtensionSystem::Get(profile_)->management_policy()->MustRemainEnabled(
             extension, nullptr);
-    pref_object->extension_can_be_disabled.reset(new bool(can_be_disabled));
+    pref_object->extension_can_be_disabled =
+        std::make_unique<bool>(can_be_disabled);
     return pref_object;
   }
 

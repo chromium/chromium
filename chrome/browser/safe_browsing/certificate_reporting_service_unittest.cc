@@ -166,7 +166,7 @@ class CertificateReportingServiceReporterOnIOThreadTest
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    event_histogram_tester_.reset(new EventHistogramTester());
+    event_histogram_tester_ = std::make_unique<EventHistogramTester>();
   }
 
   void TearDown() override {
@@ -377,18 +377,18 @@ class CertificateReportingServiceTest : public ::testing::Test {
     test_helper_ =
         base::MakeRefCounted<CertificateReportingServiceTestHelper>();
 
-    clock_.reset(new base::SimpleTestClock());
-    service_.reset(new CertificateReportingService(
+    clock_ = std::make_unique<base::SimpleTestClock>();
+    service_ = std::make_unique<CertificateReportingService>(
         sb_service_.get(), test_helper_, &profile_,
         test_helper_->server_public_key(),
         test_helper_->server_public_key_version(), kMaxReportCountInQueue,
         base::TimeDelta::FromHours(24), clock_.get(),
         base::BindRepeating(
             &CertificateReportingServiceObserver::OnServiceReset,
-            base::Unretained(&service_observer_))));
+            base::Unretained(&service_observer_)));
     service_observer_.WaitForReset();
 
-    event_histogram_tester_.reset(new EventHistogramTester());
+    event_histogram_tester_ = std::make_unique<EventHistogramTester>();
   }
 
   void TearDown() override {

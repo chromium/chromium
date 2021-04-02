@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/check.h"
@@ -82,7 +83,7 @@ class LevelDBWrapperTest : public testing::Test {
         options, database_dir_.GetPath().AsUTF8Unsafe(), &db);
     ASSERT_TRUE(status.ok());
 
-    db_.reset(new LevelDBWrapper(std::move(db)));
+    db_ = std::make_unique<LevelDBWrapper>(std::move(db));
   }
 
   base::ScopedTempDir database_dir_;

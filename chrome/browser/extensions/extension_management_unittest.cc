@@ -304,8 +304,8 @@ class ExtensionAdminPolicyTest : public ExtensionManagementServiceTest {
   ~ExtensionAdminPolicyTest() override {}
 
   void SetUpPolicyProvider() {
-    provider_.reset(
-        new StandardManagementPolicyProvider(extension_management_.get()));
+    provider_ = std::make_unique<StandardManagementPolicyProvider>(
+        extension_management_.get());
   }
 
   void CreateExtension(ManifestLocation location) {

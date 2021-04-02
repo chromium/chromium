@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/chrome_render_view_test.h"
 
+#include <memory>
+
 #include "base/debug/leak_annotations.h"
 #include "base/run_loop.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -75,7 +77,7 @@ class MockAutofillAgent : public AutofillAgent {
 
   void WaitForAutofillDidAssociateFormControl() {
     DCHECK(run_loop_ == nullptr);
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset();
   }

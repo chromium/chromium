@@ -5,6 +5,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -66,7 +68,7 @@ ExtensionApiTest::~ExtensionApiTest() = default;
 void ExtensionApiTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
   DCHECK(!test_config_.get()) << "Previous test did not clear config state.";
-  test_config_.reset(new base::DictionaryValue());
+  test_config_ = std::make_unique<base::DictionaryValue>();
   test_config_->SetString(kTestDataDirectory,
                           net::FilePathToFileURL(test_data_dir_).spec());
 
@@ -322,8 +324,8 @@ void ExtensionApiTest::EmbeddedTestServerAcceptConnections() {
 bool ExtensionApiTest::StartWebSocketServer(
     const base::FilePath& root_directory,
     bool enable_basic_auth) {
-  websocket_server_.reset(new net::SpawnedTestServer(
-      net::SpawnedTestServer::TYPE_WS, root_directory));
+  websocket_server_ = std::make_unique<net::SpawnedTestServer>(
+      net::SpawnedTestServer::TYPE_WS, root_directory);
   websocket_server_->set_websocket_basic_auth(enable_basic_auth);
 
   if (!websocket_server_->Start())
@@ -336,8 +338,8 @@ bool ExtensionApiTest::StartWebSocketServer(
 }
 
 bool ExtensionApiTest::StartFTPServer(const base::FilePath& root_directory) {
-  ftp_server_.reset(new net::SpawnedTestServer(net::SpawnedTestServer::TYPE_FTP,
-                                               root_directory));
+  ftp_server_ = std::make_unique<net::SpawnedTestServer>(
+      net::SpawnedTestServer::TYPE_FTP, root_directory);
 
   if (!ftp_server_->Start())
     return false;

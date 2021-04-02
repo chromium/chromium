@@ -11,6 +11,8 @@
 #include <stddef.h>
 #include <sys/socket.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
@@ -52,7 +54,7 @@ bool ImageWriter::IsValidDevice() {
 
 void ImageWriter::UnmountVolumes(base::OnceClosure continuation) {
   if (!unmounter_)
-    unmounter_.reset(new DiskUnmounterMac());
+    unmounter_ = std::make_unique<DiskUnmounterMac>();
 
   unmounter_->Unmount(
       device_path_.value(), std::move(continuation),

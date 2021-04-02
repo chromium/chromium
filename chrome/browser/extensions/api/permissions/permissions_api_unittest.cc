@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/permissions/permissions_api.h"
 
+#include <memory>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
@@ -138,7 +140,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
     ExtensionServiceTestWithInstall::SetUp();
     PermissionsRequestFunction::SetAutoConfirmForTests(true);
     InitializeEmptyExtensionService();
-    browser_window_.reset(new TestBrowserWindow());
+    browser_window_ = std::make_unique<TestBrowserWindow>();
     Browser::CreateParams params(profile(), true);
     params.type = Browser::TYPE_NORMAL;
     params.window = browser_window_.get();

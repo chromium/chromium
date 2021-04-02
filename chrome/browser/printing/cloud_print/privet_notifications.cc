@@ -86,7 +86,7 @@ void PrivetNotificationsListener::DeviceChanged(
   }
 
   std::unique_ptr<DeviceContext>& device_context = devices_seen_[name];
-  device_context.reset(new DeviceContext);
+  device_context = std::make_unique<DeviceContext>();
   device_context->notification_may_be_active = false;
   device_context->registered = !description.id.empty();
 
@@ -322,8 +322,8 @@ void PrivetNotificationService::OnNotificationsEnabledChanged() {
 void PrivetNotificationService::StartLister() {
   service_discovery_client_ =
       local_discovery::ServiceDiscoverySharedClient::GetInstance();
-  device_lister_.reset(
-      new PrivetDeviceListerImpl(service_discovery_client_.get(), this));
+  device_lister_ = std::make_unique<PrivetDeviceListerImpl>(
+      service_discovery_client_.get(), this);
   device_lister_->Start();
   device_lister_->DiscoverNewDevices();
 
@@ -332,8 +332,9 @@ void PrivetNotificationService::StartLister() {
           content::BrowserContext::GetDefaultStoragePartition(profile_)
               ->GetURLLoaderFactoryForBrowserProcess()));
 
-  privet_notifications_listener_.reset(
-      new PrivetNotificationsListener(std::move(http_factory), this));
+  privet_notifications_listener_ =
+      std::make_unique<PrivetNotificationsListener>(std::move(http_factory),
+                                                    this);
 }
 
 PrivetNotificationDelegate*

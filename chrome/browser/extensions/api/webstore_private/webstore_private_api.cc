@@ -5,6 +5,8 @@
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -390,7 +392,8 @@ WebstorePrivateBeginInstallWithManifest3Function::Run() {
         kAlreadyInstalledError));
   }
   ActiveInstallData install_data(details().id);
-  scoped_active_install_.reset(new ScopedActiveInstall(tracker, install_data));
+  scoped_active_install_ =
+      std::make_unique<ScopedActiveInstall>(tracker, install_data);
 
   network::mojom::URLLoaderFactory* loader_factory = nullptr;
   if (!icon_url.is_empty()) {
@@ -873,8 +876,8 @@ WebstorePrivateCompleteInstallFunction::Run() {
         Error(function_constants::kCouldNotFindSenderWebContents));
   }
 
-  scoped_active_install_.reset(new ScopedActiveInstall(
-      InstallTracker::Get(browser_context()), params->expected_id));
+  scoped_active_install_ = std::make_unique<ScopedActiveInstall>(
+      InstallTracker::Get(browser_context()), params->expected_id);
 
   // Balanced in OnExtensionInstallSuccess() or OnExtensionInstallFailure().
   AddRef();

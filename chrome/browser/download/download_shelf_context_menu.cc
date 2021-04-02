@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/download_shelf_context_menu.h"
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_commands.h"
@@ -205,7 +207,8 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetInProgressMenuModel(
   if (in_progress_download_menu_model_)
     return in_progress_download_menu_model_.get();
 
-  in_progress_download_menu_model_.reset(new ui::SimpleMenuModel(this));
+  in_progress_download_menu_model_ =
+      std::make_unique<ui::SimpleMenuModel>(this);
 
   if (is_download) {
     in_progress_download_menu_model_->AddCheckItem(
@@ -236,7 +239,8 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetInProgressPausedMenuModel(
   if (in_progress_download_paused_menu_model_)
     return in_progress_download_paused_menu_model_.get();
 
-  in_progress_download_paused_menu_model_.reset(new ui::SimpleMenuModel(this));
+  in_progress_download_paused_menu_model_ =
+      std::make_unique<ui::SimpleMenuModel>(this);
 
   if (is_download) {
     in_progress_download_paused_menu_model_->AddCheckItem(
@@ -267,7 +271,7 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetFinishedMenuModel(
   if (finished_download_menu_model_)
     return finished_download_menu_model_.get();
 
-  finished_download_menu_model_.reset(new ui::SimpleMenuModel(this));
+  finished_download_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
 
   if (is_download) {
     finished_download_menu_model_->AddItem(
@@ -302,7 +306,8 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetInterruptedMenuModel(
   if (interrupted_download_menu_model_)
     return interrupted_download_menu_model_.get();
 
-  interrupted_download_menu_model_.reset(new ui::SimpleMenuModel(this));
+  interrupted_download_menu_model_ =
+      std::make_unique<ui::SimpleMenuModel>(this);
 
   interrupted_download_menu_model_->AddItem(
       DownloadCommands::RESUME, GetLabelForCommandId(DownloadCommands::RESUME));
@@ -326,7 +331,8 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetMaybeMaliciousMenuModel(
   if (maybe_malicious_download_menu_model_)
     return maybe_malicious_download_menu_model_.get();
 
-  maybe_malicious_download_menu_model_.reset(new ui::SimpleMenuModel(this));
+  maybe_malicious_download_menu_model_ =
+      std::make_unique<ui::SimpleMenuModel>(this);
 
   maybe_malicious_download_menu_model_->AddItem(
       DownloadCommands::KEEP, GetLabelForCommandId(DownloadCommands::KEEP));
@@ -342,7 +348,7 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetMaliciousMenuModel(
   if (malicious_download_menu_model_)
     return malicious_download_menu_model_.get();
 
-  malicious_download_menu_model_.reset(new ui::SimpleMenuModel(this));
+  malicious_download_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   malicious_download_menu_model_->AddItem(
       DownloadCommands::LEARN_MORE_SCANNING,
       GetLabelForCommandId(DownloadCommands::LEARN_MORE_SCANNING));
@@ -355,7 +361,7 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetDeepScanningMenuModel(
   if (deep_scanning_menu_model_)
     return deep_scanning_menu_model_.get();
 
-  deep_scanning_menu_model_.reset(new ui::SimpleMenuModel(this));
+  deep_scanning_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   deep_scanning_menu_model_->AddItem(
       DownloadCommands::DEEP_SCAN,
       GetLabelForCommandId(DownloadCommands::DEEP_SCAN));
@@ -388,7 +394,8 @@ DownloadShelfContextMenu::GetMixedContentDownloadMenuModel() {
   if (mixed_content_download_menu_model_)
     return mixed_content_download_menu_model_.get();
 
-  mixed_content_download_menu_model_.reset(new ui::SimpleMenuModel(this));
+  mixed_content_download_menu_model_ =
+      std::make_unique<ui::SimpleMenuModel>(this);
 
   if (download_->GetMixedContentStatus() == MixedContentStatus::WARN) {
     mixed_content_download_menu_model_->AddItem(

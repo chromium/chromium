@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/net/net_util.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -75,7 +76,7 @@ class FetchUrlTest : public testing::Test,
     std::unique_ptr<net::ServerSocket> server_socket(
         new net::TCPServerSocket(NULL, net::NetLogSource()));
     server_socket->ListenWithAddressAndPort("127.0.0.1", 0, 1);
-    server_.reset(new net::HttpServer(std::move(server_socket), this));
+    server_ = std::make_unique<net::HttpServer>(std::move(server_socket), this);
     net::IPEndPoint address;
     CHECK_EQ(net::OK, server_->GetLocalAddress(&address));
     server_url_ = base::StringPrintf("http://127.0.0.1:%d", address.port());

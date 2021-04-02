@@ -4,6 +4,7 @@
 
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -74,9 +75,9 @@ void SyncWorker::Initialize(std::unique_ptr<SyncEngineContext> context) {
 
   context_ = std::move(context);
 
-  task_manager_.reset(new SyncTaskManager(weak_ptr_factory_.GetWeakPtr(),
-                                          0 /* maximum_background_task */,
-                                          context_->GetWorkerTaskRunner()));
+  task_manager_ = std::make_unique<SyncTaskManager>(
+      weak_ptr_factory_.GetWeakPtr(), 0 /* maximum_background_task */,
+      context_->GetWorkerTaskRunner());
   task_manager_->Initialize(SYNC_STATUS_OK);
 
   PostInitializeTask();

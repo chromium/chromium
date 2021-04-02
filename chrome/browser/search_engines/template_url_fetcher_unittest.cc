@@ -74,10 +74,10 @@ class TemplateURLFetcherTest : public testing::Test {
   TemplateURLFetcherTest();
 
   void SetUp() override {
-    template_url_fetcher_.reset(new TestTemplateUrlFetcher(
+    template_url_fetcher_ = std::make_unique<TestTemplateUrlFetcher>(
         test_util_.model(),
         base::BindRepeating(&TemplateURLFetcherTest::RequestCompletedCallback,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
   }
 
   // Called when a request completes.

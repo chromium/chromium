@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -72,7 +73,7 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   autofill_private::AddressEntry address;
 
   // Add all address fields to the entry.
-  address.guid.reset(new std::string(profile.guid()));
+  address.guid = std::make_unique<std::string>(profile.guid());
   address.full_names = GetValueList(profile, autofill::NAME_FULL);
   address.honorific =
       GetStringFromProfile(profile, autofill::NAME_HONORIFIC_PREFIX);
@@ -94,7 +95,8 @@ autofill_private::AddressEntry ProfileToAddressEntry(
   address.phone_numbers =
       GetValueList(profile, autofill::PHONE_HOME_WHOLE_NUMBER);
   address.email_addresses = GetValueList(profile, autofill::EMAIL_ADDRESS);
-  address.language_code.reset(new std::string(profile.language_code()));
+  address.language_code =
+      std::make_unique<std::string>(profile.language_code());
 
   // Parse |label| so that it can be used to create address metadata.
   std::u16string separator =
@@ -120,8 +122,9 @@ autofill_private::CountryEntry CountryToCountryEntry(
   // A null |country| means "insert a space here", so we add a country w/o a
   // |name| or |country_code| to the list and let the UI handle it.
   if (country) {
-    entry.name.reset(new std::string(base::UTF16ToUTF8(country->name())));
-    entry.country_code.reset(new std::string(country->country_code()));
+    entry.name =
+        std::make_unique<std::string>(base::UTF16ToUTF8(country->name()));
+    entry.country_code = std::make_unique<std::string>(country->country_code());
   }
 
   return entry;
@@ -133,18 +136,18 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   autofill_private::CreditCardEntry card;
 
   // Add all credit card fields to the entry.
-  card.guid.reset(new std::string(credit_card.guid()));
-  card.name.reset(new std::string(base::UTF16ToUTF8(
-      credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL))));
-  card.card_number.reset(new std::string(
-      base::UTF16ToUTF8(credit_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER))));
-  card.expiration_month.reset(new std::string(base::UTF16ToUTF8(
-      credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_MONTH))));
-  card.expiration_year.reset(new std::string(base::UTF16ToUTF8(
-      credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR))));
+  card.guid = std::make_unique<std::string>(credit_card.guid());
+  card.name = std::make_unique<std::string>(base::UTF16ToUTF8(
+      credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL)));
+  card.card_number = std::make_unique<std::string>(
+      base::UTF16ToUTF8(credit_card.GetRawInfo(autofill::CREDIT_CARD_NUMBER)));
+  card.expiration_month = std::make_unique<std::string>(base::UTF16ToUTF8(
+      credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_MONTH)));
+  card.expiration_year = std::make_unique<std::string>(base::UTF16ToUTF8(
+      credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR)));
   if (!credit_card.nickname().empty()) {
-    card.nickname.reset(
-        new std::string(base::UTF16ToUTF8(credit_card.nickname())));
+    card.nickname = std::make_unique<std::string>(
+        base::UTF16ToUTF8(credit_card.nickname()));
   }
 
   // Create card metadata and add it to |card|.
@@ -162,8 +165,8 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   // IsValid() checks if both card number and expiration date are valid.
   // IsServerCard() checks whether there is a duplicated server card in
   // |personal_data|.
-  metadata->is_migratable.reset(new bool(
-      credit_card.IsValid() && !personal_data.IsServerCard(&credit_card)));
+  metadata->is_migratable = std::make_unique<bool>(
+      credit_card.IsValid() && !personal_data.IsServerCard(&credit_card));
   card.metadata = std::move(metadata);
 
   return card;

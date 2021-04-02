@@ -129,7 +129,7 @@ void DevToolsFileWatcher::SharedFileWatcher::AddWatch(
     return;
   if (!base::FilePathWatcher::RecursiveWatchAvailable())
     return;
-  watchers_[path].reset(new base::FilePathWatcher());
+  watchers_[path] = std::make_unique<base::FilePathWatcher>();
   bool success = watchers_[path]->Watch(
       path, base::FilePathWatcher::Type::kRecursive,
       base::BindRepeating(&SharedFileWatcher::DirectoryChanged,

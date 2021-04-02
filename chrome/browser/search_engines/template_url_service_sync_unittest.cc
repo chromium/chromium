@@ -253,14 +253,14 @@ TemplateURLServiceSyncTest::TemplateURLServiceSyncTest()
 
 void TemplateURLServiceSyncTest::SetUp() {
   DefaultSearchManager::SetFallbackSearchEnginesDisabledForTesting(true);
-  test_util_a_.reset(new TemplateURLServiceTestUtil);
+  test_util_a_ = std::make_unique<TemplateURLServiceTestUtil>();
   // Use ChangeToLoadState() instead of VerifyLoad() so we don't actually pull
   // in the prepopulate data, which the sync tests don't care about (and would
   // just foul them up).
   test_util_a_->ChangeModelToLoadState();
   test_util_a_->ResetObserverCount();
 
-  test_util_b_.reset(new TemplateURLServiceTestUtil);
+  test_util_b_ = std::make_unique<TemplateURLServiceTestUtil>();
   test_util_b_->VerifyLoad();
 }
 
@@ -1221,7 +1221,7 @@ TEST_F(TemplateURLServiceSyncTest, MergeTwiceWithSameSyncData) {
   std::unique_ptr<TemplateURL> temp_turl(Deserialize(initial_data[0]));
   TemplateURLData data(temp_turl->data());
   data.SetShortName(u"SomethingDifferent");
-  temp_turl.reset(new TemplateURL(data));
+  temp_turl = std::make_unique<TemplateURL>(data);
   initial_data.clear();
   initial_data.push_back(
       TemplateURLService::CreateSyncDataFromTemplateURL(*temp_turl));
@@ -1229,8 +1229,9 @@ TEST_F(TemplateURLServiceSyncTest, MergeTwiceWithSameSyncData) {
   // Remerge the data again. This simulates shutting down and syncing again
   // at a different time, but the cloud data has not changed.
   model()->StopSyncing(syncer::SEARCH_ENGINES);
-  sync_processor_wrapper_.reset(
-      new syncer::SyncChangeProcessorWrapperForTest(sync_processor_.get()));
+  sync_processor_wrapper_ =
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          sync_processor_.get());
   error = MergeAndExpectNotify(initial_data, 0);
   ASSERT_FALSE(error.has_value());
 
@@ -2139,8 +2140,9 @@ TEST_F(TemplateURLServiceSyncTest, MergeConflictingPrepopulatedEngine) {
   // Reset the state of the service.
   model()->Remove(result_turl);
   model()->StopSyncing(syncer::SEARCH_ENGINES);
-  sync_processor_wrapper_.reset(
-      new syncer::SyncChangeProcessorWrapperForTest(sync_processor_.get()));
+  sync_processor_wrapper_ =
+      std::make_unique<syncer::SyncChangeProcessorWrapperForTest>(
+          sync_processor_.get());
 
   // Now test that a remote TemplateURL can override the attributes of the local
   // default search provider.

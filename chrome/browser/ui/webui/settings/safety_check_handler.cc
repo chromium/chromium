@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/safety_check_handler.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -279,7 +280,7 @@ void SafetyCheckHandler::SendSafetyCheckStartedWebUiUpdates() {
 void SafetyCheckHandler::PerformSafetyCheck() {
   // Checks common to desktop, Android, and iOS are handled by
   // safety_check::SafetyCheck.
-  safety_check_.reset(new safety_check::SafetyCheck(this));
+  safety_check_ = std::make_unique<safety_check::SafetyCheck>(this);
   safety_check_->CheckSafeBrowsing(Profile::FromWebUI(web_ui())->GetPrefs());
 
   if (!version_updater_) {
@@ -287,10 +288,10 @@ void SafetyCheckHandler::PerformSafetyCheck() {
   }
   DCHECK(version_updater_);
   if (!update_helper_) {
-    update_helper_.reset(new safety_check::UpdateCheckHelper(
+    update_helper_ = std::make_unique<safety_check::UpdateCheckHelper>(
         content::BrowserContext::GetDefaultStoragePartition(
             Profile::FromWebUI(web_ui()))
-            ->GetURLLoaderFactoryForBrowserProcess()));
+            ->GetURLLoaderFactoryForBrowserProcess());
   }
   DCHECK(update_helper_);
   CheckUpdates();

@@ -316,8 +316,8 @@ ExtensionFunction::ResponseAction PermissionsRequestFunction::Run() {
     return did_respond() ? AlreadyResponded() : RespondLater();
   }
 
-  install_ui_.reset(new ExtensionInstallPrompt(
-      Profile::FromBrowserContext(browser_context()), native_window));
+  install_ui_ = std::make_unique<ExtensionInstallPrompt>(
+      Profile::FromBrowserContext(browser_context()), native_window);
   install_ui_->ShowDialog(
       base::BindOnce(&PermissionsRequestFunction::OnInstallPromptDone,
                      base::RetainedRef(this)),

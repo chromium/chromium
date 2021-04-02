@@ -338,7 +338,7 @@ void BookmarkEventRouter::BookmarkNodeChanged(BookmarkModel* model,
   api::bookmarks::OnChanged::ChangeInfo change_info;
   change_info.title = base::UTF16ToUTF8(node->GetTitle());
   if (node->is_url())
-    change_info.url.reset(new std::string(node->url().spec()));
+    change_info.url = std::make_unique<std::string>(node->url().spec());
 
   DispatchEvent(events::BOOKMARKS_ON_CHANGED,
                 api::bookmarks::OnChanged::kEventName,
@@ -409,8 +409,8 @@ BookmarksAPI::GetFactoryInstance() {
 }
 
 void BookmarksAPI::OnListenerAdded(const EventListenerInfo& details) {
-  bookmark_event_router_.reset(
-      new BookmarkEventRouter(Profile::FromBrowserContext(browser_context_)));
+  bookmark_event_router_ = std::make_unique<BookmarkEventRouter>(
+      Profile::FromBrowserContext(browser_context_));
   EventRouter::Get(browser_context_)->UnregisterObserver(this);
 }
 
@@ -526,8 +526,8 @@ ExtensionFunction::ResponseValue BookmarksSearchFunction::RunOnReady() {
   std::vector<const BookmarkNode*> nodes;
   if (params->query.as_string) {
     bookmarks::QueryFields query;
-    query.word_phrase_query.reset(
-        new std::u16string(base::UTF8ToUTF16(*params->query.as_string)));
+    query.word_phrase_query = std::make_unique<std::u16string>(
+        base::UTF8ToUTF16(*params->query.as_string));
     bookmarks::GetBookmarksMatchingProperties(
         BookmarkModelFactory::GetForBrowserContext(GetProfile()), query,
         std::numeric_limits<int>::max(), &nodes);
@@ -537,13 +537,15 @@ ExtensionFunction::ResponseValue BookmarksSearchFunction::RunOnReady() {
         *params->query.as_object;
     bookmarks::QueryFields query;
     if (object.query) {
-      query.word_phrase_query.reset(
-          new std::u16string(base::UTF8ToUTF16(*object.query)));
+      query.word_phrase_query =
+          std::make_unique<std::u16string>(base::UTF8ToUTF16(*object.query));
     }
     if (object.url)
-      query.url.reset(new std::u16string(base::UTF8ToUTF16(*object.url)));
+      query.url =
+          std::make_unique<std::u16string>(base::UTF8ToUTF16(*object.url));
     if (object.title)
-      query.title.reset(new std::u16string(base::UTF8ToUTF16(*object.title)));
+      query.title =
+          std::make_unique<std::u16string>(base::UTF8ToUTF16(*object.title));
     bookmarks::GetBookmarksMatchingProperties(
         BookmarkModelFactory::GetForBrowserContext(GetProfile()), query,
         std::numeric_limits<int>::max(), &nodes);

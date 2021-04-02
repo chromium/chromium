@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -138,7 +140,7 @@ class ExtensionContextMenuVisibilityApiTest
     params.page_url = frame->GetLastCommittedURL();
 
     // Create context menu.
-    menu_.reset(new TestRenderViewContextMenu(frame, params));
+    menu_ = std::make_unique<TestRenderViewContextMenu>(frame, params);
     menu_->Init();
 
     // Get menu model.

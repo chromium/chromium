@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <tuple>
 
 #include "base/bind.h"
@@ -75,7 +76,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
     // forms array for main frame, but we're interested in only the first time
     // call.
     if (!forms_)
-      forms_.reset(new std::vector<FormData>(forms));
+      forms_ = std::make_unique<std::vector<FormData>>(forms);
   }
 
   void FormSubmitted(const FormData& form,

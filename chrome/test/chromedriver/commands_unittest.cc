@@ -364,7 +364,7 @@ class FindElementWebView : public StubWebView {
         if (only_one_)
           result_ = std::make_unique<base::Value>();
         else
-          result_.reset(new base::ListValue());
+          result_ = std::make_unique<base::ListValue>();
         break;
       }
     }
@@ -399,7 +399,7 @@ class FindElementWebView : public StubWebView {
         if (only_one_)
           *result = std::make_unique<base::Value>();
         else
-          result->reset(new base::ListValue());
+          *result = std::make_unique<base::ListValue>();
     } else {
       switch (scenario_) {
         case kElementExistsQueryOnce:

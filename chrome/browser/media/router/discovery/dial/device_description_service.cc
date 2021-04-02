@@ -6,6 +6,7 @@
 #include "base/bind.h"
 
 #include <map>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -115,7 +116,7 @@ void DeviceDescriptionService::GetDeviceDescriptions(
 
   // Start a clean up timer.
   if (!clean_up_timer_) {
-    clean_up_timer_.reset(new base::RepeatingTimer());
+    clean_up_timer_ = std::make_unique<base::RepeatingTimer>();
     clean_up_timer_->Start(
         FROM_HERE, base::TimeDelta::FromMinutes(kCacheCleanUpTimeoutMins), this,
         &DeviceDescriptionService::CleanUpCacheEntries);

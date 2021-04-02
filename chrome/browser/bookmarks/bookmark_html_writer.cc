@@ -240,7 +240,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // Opens the file, returning true on success.
   bool OpenFile() {
     int flags = base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE;
-    file_.reset(new base::File(path_, flags));
+    file_ = std::make_unique<base::File>(path_, flags);
     if (!file_->IsValid()) {
       PLOG(ERROR) << "Could not create " << path_;
       return false;
@@ -468,7 +468,7 @@ BookmarkFaviconFetcher::BookmarkFaviconFetcher(
       path_(path),
       observer_(observer) {
   DCHECK(!profile->IsOffTheRecord());
-  favicons_map_.reset(new URLFaviconMap());
+  favicons_map_ = std::make_unique<URLFaviconMap>();
 }
 
 void BookmarkFaviconFetcher::ExportBookmarks() {

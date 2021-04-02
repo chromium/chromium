@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -86,7 +87,7 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
     if (did_receive_rect_)
       return;
 
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -519,7 +520,7 @@ class WebViewImeInteractiveTest : public WebViewInteractiveTest {
           last_composition_range_length_.value() == length)
         return;
       expected_length_ = length;
-      run_loop_.reset(new base::RunLoop());
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
 

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -91,7 +93,7 @@ class CertificateReportingServiceBrowserTest : public InProcessBrowserTest {
     CertificateReportingServiceFactory::GetInstance()
         ->SetURLLoaderFactoryForTesting(test_helper_);
 
-    event_histogram_tester_.reset(new EventHistogramTester());
+    event_histogram_tester_ = std::make_unique<EventHistogramTester>();
     InProcessBrowserTest::SetUpOnMainThread();
   }
 

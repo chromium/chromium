@@ -4,6 +4,7 @@
 
 #include "chrome/browser/download/download_ui_controller.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/callback.h"
@@ -129,8 +130,8 @@ DownloadUIController::DownloadUIController(content::DownloadManager* manager,
   }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!delegate_) {
-    delegate_.reset(new DownloadShelfUIControllerDelegate(
-        Profile::FromBrowserContext(manager->GetBrowserContext())));
+    delegate_ = std::make_unique<DownloadShelfUIControllerDelegate>(
+        Profile::FromBrowserContext(manager->GetBrowserContext()));
   }
 #endif  // defined(OS_ANDROID)
 }

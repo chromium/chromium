@@ -93,7 +93,7 @@ void InitializeTestMetaData(base::ListValue* parameters) {
   meta_data_entry->SetString("value", kTestLoggingSessionIdValue);
   std::unique_ptr<base::ListValue> meta_data(new base::ListValue());
   meta_data->Append(std::move(meta_data_entry));
-  meta_data_entry.reset(new base::DictionaryValue());
+  meta_data_entry = std::make_unique<base::DictionaryValue>();
   meta_data_entry->SetString("key", "url");
   meta_data_entry->SetString("value", kTestLoggingUrl);
   meta_data->Append(std::move(meta_data_entry));

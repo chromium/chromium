@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -1384,8 +1385,7 @@ void GetExtensionAllowedTypesMap(
         extensions::schema_constants::kAllowedTypesMap[index];
     result->push_back(
         std::make_unique<StringMappingListPolicyHandler::MappingEntry>(
-            entry.name, std::unique_ptr<base::Value>(
-                            new base::Value(entry.manifest_type))));
+            entry.name, std::make_unique<base::Value>(entry.manifest_type)));
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

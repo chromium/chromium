@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_action_icon_factory.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -132,7 +133,7 @@ class ExtensionActionIconFactoryTest
 
   // testing::Test overrides:
   void SetUp() override {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
     extension_service_ = static_cast<extensions::TestExtensionSystem*>(
         extensions::ExtensionSystem::Get(profile_.get()))->

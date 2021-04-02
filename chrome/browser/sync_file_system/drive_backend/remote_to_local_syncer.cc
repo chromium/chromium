@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -766,8 +767,8 @@ void RemoteToLocalSyncer::DidPrepare(SyncStatusCallback callback,
   }
   prepared_ = true;
 
-  local_metadata_.reset(new SyncFileMetadata(local_metadata));
-  local_changes_.reset(new FileChangeList(local_changes));
+  local_metadata_ = std::make_unique<SyncFileMetadata>(local_metadata);
+  local_changes_ = std::make_unique<FileChangeList>(local_changes);
 
   std::move(callback).Run(status);
 }

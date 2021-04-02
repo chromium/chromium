@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -85,10 +86,10 @@ class GAIAInfoUpdateServiceTestBase : public testing::Test {
     if (service_)
       service_->Shutdown();
 
-    service_.reset(new GAIAInfoUpdateService(
+    service_ = std::make_unique<GAIAInfoUpdateService>(
         identity_test_env_.identity_manager(),
         testing_profile_manager_.profile_attributes_storage(),
-        profile()->GetPath()));
+        profile()->GetPath());
   }
 
   void TearDown() override {

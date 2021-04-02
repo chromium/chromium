@@ -4,6 +4,8 @@
 
 #include "chrome/test/chromedriver/net/sync_websocket_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/json/json_reader.h"
@@ -169,7 +171,7 @@ void SyncWebSocketImpl::Core::ConnectOnIO(
   // stale memory, so don't use either parameters before returning.
   if (socket_ && is_connected_)
     return;
-  socket_.reset(new WebSocket(url, this));
+  socket_ = std::make_unique<WebSocket>(url, this);
   socket_->Connect(base::BindOnce(
       &SyncWebSocketImpl::Core::OnConnectCompletedOnIO, this, success, event));
 }

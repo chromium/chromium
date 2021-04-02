@@ -101,7 +101,7 @@ class WindowedAppShimLaunchObserver : public apps::AppShimManager {
     if (observed_)
       return;
 
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -162,7 +162,7 @@ class HostedAppBrowserListObserver : public BrowserListObserver {
     if (observed_add_)
       return;
 
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -170,7 +170,7 @@ class HostedAppBrowserListObserver : public BrowserListObserver {
     if (observed_removed_)
       return;
 
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

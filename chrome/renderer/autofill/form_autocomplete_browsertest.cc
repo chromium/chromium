@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <tuple>
 
 #include "base/bind.h"
@@ -74,7 +75,7 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
   void FormSubmitted(const FormData& form,
                      bool known_success,
                      SubmissionSource source) override {
-    form_submitted_.reset(new FormData(form));
+    form_submitted_ = std::make_unique<FormData>(form);
     known_success_ = known_success;
     submission_source_ = source;
   }

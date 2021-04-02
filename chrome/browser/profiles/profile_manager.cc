@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <numeric>
 #include <set>
 #include <string>
@@ -962,8 +963,8 @@ base::FilePath ProfileManager::GenerateNextProfileDirectoryPath() {
 ProfileInfoCache& ProfileManager::GetProfileInfoCache() {
   TRACE_EVENT0("browser", "ProfileManager::GetProfileInfoCache");
   if (!profile_info_cache_) {
-    profile_info_cache_.reset(new ProfileInfoCache(
-        g_browser_process->local_state(), user_data_dir_));
+    profile_info_cache_ = std::make_unique<ProfileInfoCache>(
+        g_browser_process->local_state(), user_data_dir_);
   }
   return *profile_info_cache_.get();
 }

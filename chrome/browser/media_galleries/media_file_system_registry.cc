@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -594,7 +595,7 @@ MediaGalleriesPreferences* MediaFileSystemRegistry::GetPreferences(
 
 GalleryWatchManager* MediaFileSystemRegistry::gallery_watch_manager() {
   if (!gallery_watch_manager_)
-    gallery_watch_manager_.reset(new GalleryWatchManager);
+    gallery_watch_manager_ = std::make_unique<GalleryWatchManager>();
   return gallery_watch_manager_.get();
 }
 

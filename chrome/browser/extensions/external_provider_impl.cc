@@ -539,7 +539,7 @@ bool ExternalProviderImpl::GetExtensionDetails(
       return false;
 
     if (version)
-      version->reset(new base::Version(external_version));
+      *version = std::make_unique<base::Version>(external_version);
 
   } else {
     NOTREACHED();  // Chrome should not allow prefs to get into this state.

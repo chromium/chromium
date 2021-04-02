@@ -63,7 +63,7 @@ class TestNetworkQualityObserver
       return;
     ASSERT_NE(net::EFFECTIVE_CONNECTION_TYPE_UNKNOWN,
               run_loop_wait_effective_connection_type);
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_wait_effective_connection_type_ =
         run_loop_wait_effective_connection_type;
     run_loop_->Run();

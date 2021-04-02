@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/tab_helper.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
@@ -88,9 +90,9 @@ TabHelper::TabHelper(content::WebContents* web_contents)
   // The Unretained() is safe because ForEachFrame() is synchronous.
   web_contents->ForEachFrame(
       base::BindRepeating(&TabHelper::SetTabId, base::Unretained(this)));
-  active_tab_permission_granter_.reset(new ActiveTabPermissionGranter(
+  active_tab_permission_granter_ = std::make_unique<ActiveTabPermissionGranter>(
       web_contents, sessions::SessionTabHelper::IdForTab(web_contents).id(),
-      profile_));
+      profile_);
 
   ActivityLog::GetInstance(profile_)->ObserveScripts(script_executor_.get());
 

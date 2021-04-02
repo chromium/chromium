@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -84,8 +85,9 @@ class AppBannerManagerTest : public AppBannerManager {
   void Stop(InstallableStatusCode code) override {
     AppBannerManager::Stop(code);
     ASSERT_FALSE(banner_shown_.get());
-    banner_shown_.reset(new bool(false));
-    install_source_.reset(new WebappInstallSource(WebappInstallSource::COUNT));
+    banner_shown_ = std::make_unique<bool>(false);
+    install_source_ =
+        std::make_unique<WebappInstallSource>(WebappInstallSource::COUNT);
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(on_done_));
   }
@@ -97,8 +99,8 @@ class AppBannerManagerTest : public AppBannerManager {
     RecordDidShowBanner();
 
     ASSERT_FALSE(banner_shown_.get());
-    banner_shown_.reset(new bool(true));
-    install_source_.reset(new WebappInstallSource(install_source));
+    banner_shown_ = std::make_unique<bool>(true);
+    install_source_ = std::make_unique<WebappInstallSource>(install_source);
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   std::move(on_done_));
   }

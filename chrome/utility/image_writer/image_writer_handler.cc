@@ -4,6 +4,7 @@
 
 #include "chrome/utility/image_writer/image_writer_handler.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -45,7 +46,7 @@ void ImageWriterHandler::Write(
     target_device = MakeTestDevicePath(image);
 
   if (ShouldResetImageWriter(image, target_device))
-    image_writer_.reset(new ImageWriter(this, image, target_device));
+    image_writer_ = std::make_unique<ImageWriter>(this, image, target_device);
 
   if (image_writer_->IsRunning()) {
     SendFailed(error::kOperationAlreadyInProgress);
@@ -80,7 +81,7 @@ void ImageWriterHandler::Verify(
     target_device = MakeTestDevicePath(image);
 
   if (ShouldResetImageWriter(image, target_device))
-    image_writer_.reset(new ImageWriter(this, image, target_device));
+    image_writer_ = std::make_unique<ImageWriter>(this, image, target_device);
 
   if (image_writer_->IsRunning()) {
     SendFailed(error::kOperationAlreadyInProgress);

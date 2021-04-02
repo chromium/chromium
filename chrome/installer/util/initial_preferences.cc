@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
@@ -200,7 +202,7 @@ bool InitialPreferences::InitializeFromString(const std::string& json_data) {
 
   bool data_is_valid = true;
   if (!initial_dictionary_.get()) {
-    initial_dictionary_.reset(new base::DictionaryValue());
+    initial_dictionary_ = std::make_unique<base::DictionaryValue>();
     data_is_valid = false;
   } else {
     // Cache a pointer to the distribution dictionary.

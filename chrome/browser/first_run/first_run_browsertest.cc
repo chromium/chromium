@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/base_switches.h"
@@ -104,7 +105,7 @@ class FirstRunMasterPrefsBrowserTestBase : public InProcessBrowserTest {
 #endif
 
   void SetInitialPreferencesForTest(const char text[]) {
-    text_.reset(new std::string(text));
+    text_ = std::make_unique<std::string>(text);
   }
 
  private:

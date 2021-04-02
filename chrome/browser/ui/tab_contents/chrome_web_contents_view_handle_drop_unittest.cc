@@ -75,7 +75,7 @@ class ChromeWebContentsViewDelegateHandleOnPerformDrop : public testing::Test {
           profile_->GetPrefs(), enterprise_connectors::BULK_DATA_ENTRY);
     }
 
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
 
     using FakeDelegate = enterprise_connectors::FakeContentAnalysisDelegate;
     auto is_encrypted_callback =

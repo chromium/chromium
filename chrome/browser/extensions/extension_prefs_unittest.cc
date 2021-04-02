@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/files/scoped_temp_dir.h"
@@ -357,9 +358,9 @@ class ExtensionPrefsActivePermissions : public ExtensionPrefsTest {
       AddPattern(&shosts, "https://*.google.com/*");
       AddPattern(&shosts, "http://reddit.com/r/test/*");
 
-      active_perms_.reset(
-          new PermissionSet(std::move(api_perms), ManifestPermissionSet(),
-                            std::move(ehosts), std::move(shosts)));
+      active_perms_ = std::make_unique<PermissionSet>(
+          std::move(api_perms), ManifestPermissionSet(), std::move(ehosts),
+          std::move(shosts));
     }
 
     // Make sure the active permissions start empty.
@@ -959,9 +960,9 @@ class ExtensionPrefsComponentExtension : public ExtensionPrefsTest {
     URLPatternSet shosts;
     AddPattern(&shosts, "chrome://print/*");
 
-    active_perms_.reset(new PermissionSet(std::move(api_perms),
-                                          ManifestPermissionSet(),
-                                          URLPatternSet(), std::move(shosts)));
+    active_perms_ = std::make_unique<PermissionSet>(
+        std::move(api_perms), ManifestPermissionSet(), URLPatternSet(),
+        std::move(shosts));
     // Set the active permissions.
     prefs()->SetActivePermissions(component_extension_->id(), *active_perms_);
     prefs()->SetActivePermissions(no_component_extension_->id(),

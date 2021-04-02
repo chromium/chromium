@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -222,7 +223,7 @@ class IncidentReportingServiceTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(
         safe_browsing::kIncidentReportingEnableUpload);
 
-    instance_.reset(new TestIncidentReportingService(
+    instance_ = std::make_unique<TestIncidentReportingService>(
         base::ThreadTaskRunnerHandle::Get(),
         base::BindRepeating(&IncidentReportingServiceTest::PreProfileAdd,
                             base::Unretained(this)),
@@ -232,7 +233,7 @@ class IncidentReportingServiceTest : public testing::Test {
         base::BindRepeating(&IncidentReportingServiceTest::CreateDownloadFinder,
                             base::Unretained(this)),
         base::BindRepeating(&IncidentReportingServiceTest::StartUpload,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
   }
 
   // Sets the action to be taken by the test fixture when the service creates a
@@ -530,16 +531,16 @@ class IncidentReportingServiceTest : public testing::Test {
             ON_CREATE_DOWNLOAD_FINDER_DOWNLOADS_FOUND ||
         on_create_download_finder_action_ ==
             ON_CREATE_DOWNLOAD_FINDER_BINARY_DOWNLOAD_FOUND) {
-      binary_download.reset(
-          new safe_browsing::ClientIncidentReport_DownloadDetails);
+      binary_download = std::make_unique<
+          safe_browsing::ClientIncidentReport_DownloadDetails>();
       binary_download->set_token(kFakeDownloadToken);
     }
     if (on_create_download_finder_action_ ==
             ON_CREATE_DOWNLOAD_FINDER_DOWNLOADS_FOUND ||
         on_create_download_finder_action_ ==
             ON_CREATE_DOWNLOAD_FINDER_NON_BINARY_DOWNLOAD_FOUND) {
-      non_binary_download.reset(
-          new safe_browsing::ClientIncidentReport_NonBinaryDownloadDetails);
+      non_binary_download = std::make_unique<
+          safe_browsing::ClientIncidentReport_NonBinaryDownloadDetails>();
       non_binary_download->set_host(kFakeDownloadHost);
     }
 
@@ -557,7 +558,8 @@ class IncidentReportingServiceTest : public testing::Test {
       safe_browsing::IncidentReportUploader::OnResultCallback callback,
       const safe_browsing::ClientIncidentReport& report) {
     // Remember the report that is being uploaded.
-    uploaded_report_.reset(new safe_browsing::ClientIncidentReport(report));
+    uploaded_report_ =
+        std::make_unique<safe_browsing::ClientIncidentReport>(report);
     // Run and clear the OnStartUpload callback, if provided.
     if (!on_start_upload_callback_.is_null()) {
       std::move(on_start_upload_callback_).Run();

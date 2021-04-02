@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
 #include <algorithm>
+#include <memory>
 #include <unordered_set>
 #include <utility>
 
@@ -510,10 +511,10 @@ void ProfileAttributesStorage::DownloadHighResAvatar(
   // completes, or if that never happens, when the storage is destroyed.
   std::unique_ptr<ProfileAvatarDownloader>& current_downloader =
       avatar_images_downloads_in_progress_[file_name];
-  current_downloader.reset(new ProfileAvatarDownloader(
+  current_downloader = std::make_unique<ProfileAvatarDownloader>(
       icon_index,
       base::BindOnce(&ProfileAttributesStorage::SaveAvatarImageAtPathNoCallback,
-                     AsWeakPtr(), profile_path)));
+                     AsWeakPtr(), profile_path));
 
   current_downloader->Start();
 #endif

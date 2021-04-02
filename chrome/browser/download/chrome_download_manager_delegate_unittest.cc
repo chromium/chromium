@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -1359,8 +1360,8 @@ class ChromeDownloadManagerDelegateTestWithSafeBrowsing
 
 void ChromeDownloadManagerDelegateTestWithSafeBrowsing::SetUp() {
   ChromeDownloadManagerDelegateTest::SetUp();
-  test_download_protection_service_.reset(
-      new ::testing::StrictMock<TestDownloadProtectionService>);
+  test_download_protection_service_ =
+      std::make_unique<::testing::StrictMock<TestDownloadProtectionService>>();
   ON_CALL(*delegate(), GetDownloadProtectionService())
       .WillByDefault(Return(test_download_protection_service_.get()));
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -378,8 +379,9 @@ void PasswordsPrivateDelegateImpl::SetPasswordList(
                                         password_manager::IgnoreStore(true)));
 
     if (!form->federation_origin.opaque()) {
-      entry.federation_text.reset(new std::string(l10n_util::GetStringFUTF8(
-          IDS_PASSWORDS_VIA_FEDERATION, GetDisplayFederation(*form))));
+      entry.federation_text =
+          std::make_unique<std::string>(l10n_util::GetStringFUTF8(
+              IDS_PASSWORDS_VIA_FEDERATION, GetDisplayFederation(*form)));
     }
 
     entry.from_account_store = form->IsUsingAccountStore();

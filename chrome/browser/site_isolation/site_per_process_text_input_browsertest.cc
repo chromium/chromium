@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -451,9 +452,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       content::GetRegisteredViewsCountFromTextInputManager(active_contents()));
 
   // Now crash the second <iframe> which has an active view.
-  destruction_observer.reset(
-      new content::TestRenderWidgetHostViewDestructionObserver(
-          frames[1]->GetView()));
+  destruction_observer =
+      std::make_unique<content::TestRenderWidgetHostViewDestructionObserver>(
+
+          frames[1]->GetView());
   {
     content::ScopedAllowRendererCrashes allow_renderer_crashes(frames[1]);
     frames[1]->GetProcess()->Shutdown(0);
@@ -1226,7 +1228,7 @@ class ShowDefinitionForWordObserver
     if (did_receive_string_)
       return word_;
 
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     return word_;
   }

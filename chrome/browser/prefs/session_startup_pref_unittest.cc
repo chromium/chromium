@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -13,7 +15,8 @@
 class SessionStartupPrefTest : public testing::Test {
  public:
   void SetUp() override {
-    pref_service_.reset(new sync_preferences::TestingPrefServiceSyncable);
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     SessionStartupPref::RegisterProfilePrefs(registry());
     registry()->RegisterBooleanPref(prefs::kHomePageIsNewTabPage, true);
   }

@@ -644,8 +644,9 @@ class DownloadTest : public InProcessBrowserTest {
     DownloadManager* manager = DownloadManagerForBrowser(browser());
     DownloadPrefs::FromDownloadManager(manager)->ResetAutoOpenByUser();
 
-    file_activity_observer_.reset(
-        new DownloadTestFileActivityObserver(browser()->profile()));
+    file_activity_observer_ =
+        std::make_unique<DownloadTestFileActivityObserver>(
+            browser()->profile());
 
     return true;
   }
@@ -1039,13 +1040,13 @@ class DownloadTest : public InProcessBrowserTest {
 
     std::unique_ptr<content::DownloadTestObserver> observer;
     if (download_info.reason == download::DOWNLOAD_INTERRUPT_REASON_NONE) {
-      observer.reset(new content::DownloadTestObserverTerminal(
+      observer = std::make_unique<content::DownloadTestObserverTerminal>(
           download_manager, 1,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
     } else {
-      observer.reset(new content::DownloadTestObserverInterrupted(
+      observer = std::make_unique<content::DownloadTestObserverInterrupted>(
           download_manager, 1,
-          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+          content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
     }
 
     if (download_info.download_method == DOWNLOAD_DIRECT) {
@@ -3168,7 +3169,7 @@ FilterPostOnlyURLsHandler(const net::test_server::HttpRequest& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
   if (request.relative_url.find("?allow-post-only") != std::string::npos &&
       request.method != net::test_server::METHOD_POST) {
-    response.reset(new net::test_server::BasicHttpResponse());
+    response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_NOT_FOUND);
   }
   return std::move(response);

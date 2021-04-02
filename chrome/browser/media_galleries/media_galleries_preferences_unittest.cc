@@ -159,7 +159,8 @@ class MediaGalleriesPreferencesTest : public testing::Test {
   }
 
   void ReinitPrefsAndExpectations() {
-    gallery_prefs_.reset(new MediaGalleriesPreferences(profile_.get()));
+    gallery_prefs_ =
+        std::make_unique<MediaGalleriesPreferences>(profile_.get());
     base::RunLoop loop;
     gallery_prefs_->EnsureInitialized(loop.QuitClosure());
     loop.Run();

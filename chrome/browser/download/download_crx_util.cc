@@ -6,6 +6,8 @@
 
 #include "chrome/browser/download/download_crx_util.h"
 
+#include <memory>
+
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -59,8 +61,7 @@ std::unique_ptr<ExtensionInstallPrompt> CreateExtensionInstallPrompt(
       }
       web_contents = browser->tab_strip_model()->GetActiveWebContents();
     }
-    return std::unique_ptr<ExtensionInstallPrompt>(
-        new ExtensionInstallPrompt(web_contents));
+    return std::make_unique<ExtensionInstallPrompt>(web_contents);
   }
 }
 

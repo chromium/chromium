@@ -145,8 +145,10 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
     EXPECT_EQ(ERROR_SUCCESS,
               external_extension_key_.WriteValue(L"version", L"1"));
 #else
-    external_externsions_overrides_.reset(new base::ScopedPathOverride(
-        chrome::DIR_EXTERNAL_EXTENSIONS, data_dir().AppendASCII("external")));
+    external_externsions_overrides_ =
+        std::make_unique<base::ScopedPathOverride>(
+            chrome::DIR_EXTERNAL_EXTENSIONS,
+            data_dir().AppendASCII("external"));
 #endif
   }
 
@@ -176,7 +178,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
         &ExternalProviderImplTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_->Start());
 
-    test_extension_cache_.reset(new ExtensionCacheFake());
+    test_extension_cache_ = std::make_unique<ExtensionCacheFake>();
 
     extension_test_util::SetGalleryUpdateURL(
         test_server_->GetURL(kInAppPaymentsApp.update_path));

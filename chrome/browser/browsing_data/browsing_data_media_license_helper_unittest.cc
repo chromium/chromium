@@ -101,7 +101,7 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
  public:
   BrowsingDataMediaLicenseHelperTest() {
     now_ = base::Time::Now();
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     filesystem_context_ =
         BrowserContext::GetDefaultStoragePartition(profile_.get())
             ->GetFileSystemContext();
@@ -131,9 +131,10 @@ class BrowsingDataMediaLicenseHelperTest : public testing::Test {
       base::OnceClosure done_cb,
       const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>&
           media_license_info_list) {
-    media_license_info_list_.reset(
-        new std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>(
-            media_license_info_list));
+    media_license_info_list_ = std::make_unique<
+        std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>>(
+
+        media_license_info_list);
     std::move(done_cb).Run();
   }
 

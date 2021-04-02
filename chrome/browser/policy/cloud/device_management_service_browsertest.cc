@@ -165,9 +165,9 @@ class DeviceManagementServiceIntegrationTest
 
   void SetUpOnMainThread() override {
     std::string service_url((this->*(GetParam()))());
-    service_.reset(new DeviceManagementService(
+    service_ = std::make_unique<DeviceManagementService>(
         std::unique_ptr<DeviceManagementService::Configuration>(
-            new MockDeviceManagementServiceConfiguration(service_url))));
+            new MockDeviceManagementServiceConfiguration(service_url)));
     service_->ScheduleInitialization(0);
   }
 
@@ -177,9 +177,9 @@ class DeviceManagementServiceIntegrationTest
   }
 
   void StartTestServer() {
-    test_server_.reset(new LocalPolicyTestServer(
+    test_server_ = std::make_unique<LocalPolicyTestServer>(
         "chrome/test/data/policy/"
-        "policy_device_management_service_browsertest.json"));
+        "policy_device_management_service_browsertest.json");
     ASSERT_TRUE(test_server_->Start());
   }
 

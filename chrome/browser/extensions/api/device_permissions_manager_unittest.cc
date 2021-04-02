@@ -42,7 +42,7 @@ class DevicePermissionsManagerTest : public testing::Test {
  protected:
   void SetUp() override {
     testing::Test::SetUp();
-    env_.reset(new extensions::TestExtensionEnvironment());
+    env_ = std::make_unique<extensions::TestExtensionEnvironment>();
     extension_ = env_->MakeExtension(*base::test::ParseJsonDeprecated(
         "{"
         "  \"app\": {"

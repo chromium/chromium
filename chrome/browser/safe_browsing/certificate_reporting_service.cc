@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -261,18 +263,17 @@ void CertificateReportingService::Reset(bool enabled) {
   }
   std::unique_ptr<CertificateErrorReporter> error_reporter;
   if (server_public_key_) {
-    error_reporter.reset(new CertificateErrorReporter(
+    error_reporter = std::make_unique<CertificateErrorReporter>(
         url_loader_factory_, GURL(kExtendedReportingUploadUrl),
-        server_public_key_, server_public_key_version_));
+        server_public_key_, server_public_key_version_);
   } else {
-    error_reporter.reset(new CertificateErrorReporter(
-        url_loader_factory_, GURL(kExtendedReportingUploadUrl)));
+    error_reporter = std::make_unique<CertificateErrorReporter>(
+        url_loader_factory_, GURL(kExtendedReportingUploadUrl));
   }
-  reporter_.reset(
-      new Reporter(std::move(error_reporter),
-                   std::unique_ptr<BoundedReportList>(
-                       new BoundedReportList(max_queued_report_count_)),
-                   clock_, max_report_age_, true /* retries_enabled */));
+  reporter_ = std::make_unique<Reporter>(
+      std::move(error_reporter),
+      std::make_unique<BoundedReportList>(max_queued_report_count_), clock_,
+      max_report_age_, true /* retries_enabled */);
 }
 
 void CertificateReportingService::OnPreferenceChanged() {

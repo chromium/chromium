@@ -4,6 +4,8 @@
 
 #include "chrome/browser/metrics/desktop_session_duration/audible_contents_tracker.h"
 
+#include <memory>
+
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -41,8 +43,8 @@ class AudibleContentsTrackerTest : public InProcessBrowserTest {
   AudibleContentsTrackerTest() {}
 
   void SetUp() override {
-    observer_.reset(new MockAudibleContentsObserver());
-    tracker_.reset(new metrics::AudibleContentsTracker(observer()));
+    observer_ = std::make_unique<MockAudibleContentsObserver>();
+    tracker_ = std::make_unique<metrics::AudibleContentsTracker>(observer());
     InProcessBrowserTest::SetUp();
   }
 

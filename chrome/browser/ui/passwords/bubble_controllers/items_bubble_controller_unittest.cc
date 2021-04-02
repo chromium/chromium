@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/items_bubble_controller.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
@@ -88,7 +90,8 @@ void ItemsBubbleControllerTest::Init() {
       .WillRepeatedly(Return(test_web_contents_.get()));
 
   EXPECT_CALL(*delegate(), OnBubbleShown());
-  controller_.reset(new ItemsBubbleController(mock_delegate_->AsWeakPtr()));
+  controller_ =
+      std::make_unique<ItemsBubbleController>(mock_delegate_->AsWeakPtr());
   ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(delegate()));
 
   EXPECT_CALL(*delegate(), GetWebContents())

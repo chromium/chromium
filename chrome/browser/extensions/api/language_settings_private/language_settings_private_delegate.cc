@@ -90,9 +90,9 @@ LanguageSettingsPrivateDelegate::GetHunspellDictionaryStatuses() {
     status.is_ready = dictionary->IsReady();
     if (!status.is_ready) {
       if (dictionary->IsDownloadInProgress())
-        status.is_downloading.reset(new bool(true));
+        status.is_downloading = std::make_unique<bool>(true);
       if (dictionary->IsDownloadFailure())
-        status.download_failed.reset(new bool(true));
+        status.download_failed = std::make_unique<bool>(true);
     }
     statuses.push_back(std::move(status));
   }

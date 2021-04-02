@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/permissions_updater.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
@@ -140,9 +141,9 @@ class PermissionsUpdaterTestDelegate : public PermissionsUpdater::Delegate {
     APIPermissionSet api_permission_set =
         (*granted_permissions)->apis().Clone();
     api_permission_set.erase(APIPermissionID::kCookie);
-    granted_permissions->reset(new PermissionSet(
+    *granted_permissions = std::make_unique<PermissionSet>(
         std::move(api_permission_set), ManifestPermissionSet(), URLPatternSet(),
-        URLPatternSet()));
+        URLPatternSet());
   }
 
  private:

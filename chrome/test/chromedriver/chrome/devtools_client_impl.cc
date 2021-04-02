@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/chrome/devtools_client_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -675,7 +676,7 @@ bool ParseInspectorMessage(const std::string& message,
     if (params)
       event->params.reset(params->DeepCopy());
     else
-      event->params.reset(new base::DictionaryValue());
+      event->params = std::make_unique<base::DictionaryValue>();
     return true;
   } else if (message_dict->GetInteger("id", &id)) {
     base::DictionaryValue* unscoped_error = nullptr;
@@ -692,7 +693,7 @@ bool ParseInspectorMessage(const std::string& message,
     else if (message_dict->GetDictionary("error", &unscoped_error))
       base::JSONWriter::Write(*unscoped_error, &command_response->error);
     else
-      command_response->result.reset(new base::DictionaryValue());
+      command_response->result = std::make_unique<base::DictionaryValue>();
     return true;
   }
   return false;

@@ -972,7 +972,8 @@ HttpHandler::HttpHandler(
           WrapToCommand("SendCommandFromWebSocket",
                         base::BindRepeating(&ExecuteSendCommandFromWebSocket))),
   };
-  command_map_.reset(new CommandMap(commands, commands + base::size(commands)));
+  command_map_ =
+      std::make_unique<CommandMap>(commands, commands + base::size(commands));
 }
 
 HttpHandler::~HttpHandler() {}
@@ -1166,109 +1167,125 @@ HttpHandler::PrepareStandardResponse(
   std::unique_ptr<net::HttpServerResponseInfo> response;
   switch (status.code()) {
     case kOk:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_OK));
+      response = std::make_unique<net::HttpServerResponseInfo>(net::HTTP_OK);
       break;
     // error codes
     case kElementClickIntercepted:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kElementNotInteractable:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidArgument:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidCookieDomain:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidElementState:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidSelector:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kInvalidSessionId:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kJavaScriptError:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kMoveTargetOutOfBounds:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kNoSuchAlert:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchCookie:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchElement:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchFrame:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kNoSuchWindow:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kScriptTimeout:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kSessionNotCreated:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kStaleElementReference:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kTimeout:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnableToSetCookie:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnexpectedAlertOpen:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnknownCommand:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
     case kUnknownError:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kUnsupportedOperation:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
     case kTargetDetached:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_NOT_FOUND));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_NOT_FOUND);
       break;
 
     // TODO(kereliuk): evaluate the usage of these as they relate to the spec
     case kElementNotVisible:
     case kXPathLookupError:
     case kNoSuchExecutionContext:
-      response.reset(new net::HttpServerResponseInfo(net::HTTP_BAD_REQUEST));
+      response =
+          std::make_unique<net::HttpServerResponseInfo>(net::HTTP_BAD_REQUEST);
       break;
     case kChromeNotReachable:
     case kDisconnected:
     case kForbidden:
     case kTabCrashed:
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
 
     default:
       DCHECK(false);
-      response.reset(
-          new net::HttpServerResponseInfo(net::HTTP_INTERNAL_SERVER_ERROR));
+      response = std::make_unique<net::HttpServerResponseInfo>(
+          net::HTTP_INTERNAL_SERVER_ERROR);
       break;
   }
 

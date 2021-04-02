@@ -582,8 +582,8 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
   event_data.event_type = event_type;
   event_data.item_id = extension_id;
   if (!infos.empty()) {
-    event_data.extension_info.reset(
-        new developer::ExtensionInfo(std::move(infos[0])));
+    event_data.extension_info =
+        std::make_unique<developer::ExtensionInfo>(std::move(infos[0]));
   }
 
   std::unique_ptr<base::ListValue> args(new base::ListValue());
@@ -672,8 +672,8 @@ void DeveloperPrivateAPI::Shutdown() {}
 void DeveloperPrivateAPI::OnListenerAdded(
     const EventListenerInfo& details) {
   if (!developer_private_event_router_) {
-    developer_private_event_router_.reset(
-        new DeveloperPrivateEventRouter(profile_));
+    developer_private_event_router_ =
+        std::make_unique<DeveloperPrivateEventRouter>(profile_);
   }
 
   developer_private_event_router_->AddExtensionId(details.extension_id);
@@ -750,7 +750,7 @@ DeveloperPrivateGetExtensionsInfoFunction::Run() {
       include_terminated = *params->options->include_terminated;
   }
 
-  info_generator_.reset(new ExtensionInfoGenerator(browser_context()));
+  info_generator_ = std::make_unique<ExtensionInfoGenerator>(browser_context());
   info_generator_->CreateExtensionsInfo(
       include_disabled, include_terminated,
       base::BindOnce(
@@ -779,7 +779,7 @@ DeveloperPrivateGetExtensionInfoFunction::Run() {
       developer::GetExtensionInfo::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  info_generator_.reset(new ExtensionInfoGenerator(browser_context()));
+  info_generator_ = std::make_unique<ExtensionInfoGenerator>(browser_context());
   info_generator_->CreateExtensionInfo(
       params->id,
       base::BindOnce(
@@ -835,7 +835,7 @@ ExtensionFunction::ResponseAction DeveloperPrivateGetItemsInfoFunction::Run() {
       developer::GetItemsInfo::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  info_generator_.reset(new ExtensionInfoGenerator(browser_context()));
+  info_generator_ = std::make_unique<ExtensionInfoGenerator>(browser_context());
   info_generator_->CreateExtensionsInfo(
       params->include_disabled, params->include_terminated,
       base::BindOnce(&DeveloperPrivateGetItemsInfoFunction::OnInfosGenerated,
@@ -1745,15 +1745,13 @@ void DeveloperPrivateRequestFileSourceFunction::Finish(
 
   std::unique_ptr<FileHighlighter> highlighter;
   if (properties.path_suffix == kManifestFile) {
-    highlighter.reset(new ManifestHighlighter(
-        file_contents,
-        *properties.manifest_key,
-        properties.manifest_specific ?
-            *properties.manifest_specific : std::string()));
+    highlighter = std::make_unique<ManifestHighlighter>(
+        file_contents, *properties.manifest_key,
+        properties.manifest_specific ? *properties.manifest_specific
+                                     : std::string());
   } else {
-    highlighter.reset(new SourceHighlighter(
-        file_contents,
-        properties.line_number ? *properties.line_number : 0));
+    highlighter = std::make_unique<SourceHighlighter>(
+        file_contents, properties.line_number ? *properties.line_number : 0);
   }
 
   response.before_highlight = highlighter->GetBeforeFeature();

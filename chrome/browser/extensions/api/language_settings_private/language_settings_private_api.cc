@@ -252,15 +252,15 @@ LanguageSettingsPrivateGetLanguageListFunction::Run() {
 
     // Set optional fields only if they differ from the default.
     if (base::Contains(spellcheck_language_set, entry.code)) {
-      language.supports_spellcheck.reset(new bool(true));
+      language.supports_spellcheck = std::make_unique<bool>(true);
     }
     if (entry.supports_translate) {
-      language.supports_translate.reset(new bool(true));
+      language.supports_translate = std::make_unique<bool>(true);
     }
 
     std::string temp_locale = entry.code;
     if (language::ConvertToActualUILocale(&temp_locale)) {
-      language.supports_ui.reset(new bool(true));
+      language.supports_ui = std::make_unique<bool>(true);
     }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (!allowed_ui_locales.empty() &&

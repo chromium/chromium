@@ -95,8 +95,8 @@ class PermissionRequestManagerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     permissions::PermissionRequestManager* manager =
         GetPermissionRequestManager();
-    mock_permission_prompt_factory_.reset(
-        new permissions::MockPermissionPromptFactory(manager));
+    mock_permission_prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
 
     host_resolver()->AddRule("*", "127.0.0.1");
   }

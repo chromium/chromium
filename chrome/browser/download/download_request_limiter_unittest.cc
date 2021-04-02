@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/download_request_limiter.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -52,8 +54,8 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
     permissions::PermissionRequestManager::CreateForWebContents(web_contents());
     permissions::PermissionRequestManager* manager =
         permissions::PermissionRequestManager::FromWebContents(web_contents());
-    mock_permission_prompt_factory_.reset(
-        new permissions::MockPermissionPromptFactory(manager));
+    mock_permission_prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
 
     UpdateExpectations(ACCEPT);
     cancel_count_ = continue_count_ = 0;

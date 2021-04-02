@@ -133,8 +133,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetString(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
-    rule.id.reset(new std::string(kRuleId1));
-    rule.priority.reset(new int(100));
+    rule.id = std::make_unique<std::string>(kRuleId1);
+    rule.priority = std::make_unique<int>(100);
     rule.actions.push_back(action_dict.CreateDeepCopy());
     http_condition_dict->Set(keys2::kSchemesKey, std::move(scheme_http));
     http_condition_url_filter.Set(keys::kUrlKey,
@@ -153,8 +153,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetString(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
-    rule.id.reset(new std::string(kRuleId2));
-    rule.priority.reset(new int(100));
+    rule.id = std::make_unique<std::string>(kRuleId2);
+    rule.priority = std::make_unique<int>(100);
     rule.actions.push_back(action_dict.CreateDeepCopy());
     rule.conditions.push_back(condition_dict.CreateDeepCopy());
     return rule;
@@ -169,8 +169,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetString(keys::kRedirectUrlKey, destination);
 
     api::events::Rule rule;
-    rule.id.reset(new std::string(kRuleId3));
-    rule.priority.reset(new int(100));
+    rule.id = std::make_unique<std::string>(kRuleId3);
+    rule.priority = std::make_unique<int>(100);
     rule.actions.push_back(action_dict.CreateDeepCopy());
     rule.conditions.push_back(condition_dict.CreateDeepCopy());
     return rule;
@@ -190,8 +190,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetInteger(keys::kLowerPriorityThanKey, 150);
 
     api::events::Rule rule;
-    rule.id.reset(new std::string(kRuleId4));
-    rule.priority.reset(new int(200));
+    rule.id = std::make_unique<std::string>(kRuleId4);
+    rule.priority = std::make_unique<int>(200);
     rule.actions.push_back(action_dict.CreateDeepCopy());
     rule.conditions.push_back(condition_dict.CreateDeepCopy());
     return rule;
@@ -219,8 +219,8 @@ class WebRequestRulesRegistryTest : public testing::Test {
     action_dict.SetString(keys::kInstanceTypeKey, keys::kCancelRequestType);
 
     api::events::Rule rule;
-    rule.id.reset(new std::string(rule_id));
-    rule.priority.reset(new int(1));
+    rule.id = std::make_unique<std::string>(rule_id);
+    rule.priority = std::make_unique<int>(1);
     rule.actions.push_back(action_dict.CreateDeepCopy());
     for (auto it = attributes.cbegin(); it != attributes.cend(); ++it)
       rule.conditions.push_back(CreateCondition(**it));

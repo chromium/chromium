@@ -4,6 +4,7 @@
 
 #include "chrome/utility/importer/profile_import_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -44,7 +45,7 @@ void ProfileImportImpl::StartImport(
   items_to_import_ = items;
 
   // Create worker thread in which importer runs.
-  import_thread_.reset(new base::Thread("import_thread"));
+  import_thread_ = std::make_unique<base::Thread>("import_thread");
 #if defined(OS_WIN)
   import_thread_->init_com_with_mta(false);
 #endif

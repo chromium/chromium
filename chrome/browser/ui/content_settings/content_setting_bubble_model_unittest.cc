@@ -549,8 +549,9 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
                                                std::string(),
                                                std::string(),
                                                std::string());
-  content_setting_bubble_model.reset(
-      new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
+  content_setting_bubble_model =
+      std::make_unique<ContentSettingMediaStreamBubbleModel>(nullptr,
+                                                             web_contents());
   const ContentSettingBubbleModel::BubbleContent& new_bubble_content =
       content_setting_bubble_model->bubble_content();
   EXPECT_EQ(new_bubble_content.title,
@@ -622,8 +623,9 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
                                                GetDefaultVideoDevice(),
                                                std::string(),
                                                std::string());
-  content_setting_bubble_model.reset(
-      new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
+  content_setting_bubble_model =
+      std::make_unique<ContentSettingMediaStreamBubbleModel>(nullptr,
+                                                             web_contents());
   const ContentSettingBubbleModel::BubbleContent& new_bubble_content =
       content_setting_bubble_model->bubble_content();
   EXPECT_EQ(new_bubble_content.title,
@@ -696,8 +698,9 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
                                                std::string(),
                                                std::string());
 
-  content_setting_bubble_model.reset(
-      new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
+  content_setting_bubble_model =
+      std::make_unique<ContentSettingMediaStreamBubbleModel>(nullptr,
+                                                             web_contents());
   const ContentSettingBubbleModel::BubbleContent& new_bubble_content =
       content_setting_bubble_model->bubble_content();
   EXPECT_EQ(new_bubble_content.title,

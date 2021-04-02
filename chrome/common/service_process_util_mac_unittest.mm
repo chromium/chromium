@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -50,11 +52,11 @@ class ServiceProcessStateFileManipulationTest : public ::testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(MockLaunchd::MakeABundle(GetTempDirPath(), "Test",
                                          &bundle_path_, &executable_path_));
-    mock_launchd_.reset(new MockLaunchd(
+    mock_launchd_ = std::make_unique<MockLaunchd>(
         executable_path_, task_environment_.GetMainThreadTaskRunner(),
-        run_loop_.QuitClosure(), true));
-    scoped_launchd_instance_.reset(
-        new Launchd::ScopedInstance(mock_launchd_.get()));
+        run_loop_.QuitClosure(), true);
+    scoped_launchd_instance_ =
+        std::make_unique<Launchd::ScopedInstance>(mock_launchd_.get());
     ASSERT_TRUE(service_process_state_.Initialize());
     ASSERT_TRUE(service_process_state_.SignalReady(
         io_thread_.task_runner().get(), base::OnceClosure()));

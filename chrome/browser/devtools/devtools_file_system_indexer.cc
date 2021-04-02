@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <iterator>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -301,16 +302,16 @@ void DevToolsFileSystemIndexer::FileSystemIndexingJob::CollectFilesToIndex() {
   if (stopped_)
     return;
   if (!file_enumerator_) {
-    file_enumerator_.reset(new FileEnumerator(
+    file_enumerator_ = std::make_unique<FileEnumerator>(
         pending_folders_.back(), false,
-        FileEnumerator::FILES | FileEnumerator::DIRECTORIES));
+        FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
     pending_folders_.pop_back();
   }
   FilePath file_path = file_enumerator_->Next();
   if (file_path.empty() && !pending_folders_.empty()) {
-    file_enumerator_.reset(new FileEnumerator(
+    file_enumerator_ = std::make_unique<FileEnumerator>(
         pending_folders_.back(), false,
-        FileEnumerator::FILES | FileEnumerator::DIRECTORIES));
+        FileEnumerator::FILES | FileEnumerator::DIRECTORIES);
     pending_folders_.pop_back();
     impl_task_runner()->PostTask(
         FROM_HERE, BindOnce(&FileSystemIndexingJob::CollectFilesToIndex, this));

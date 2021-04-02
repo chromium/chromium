@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -154,8 +155,8 @@ class ExtensionWebstorePrivateApiTest : public MixinBasedExtensionApiTest {
     ASSERT_TRUE(StartEmbeddedTestServer());
     extensions::ExtensionInstallUI::set_disable_ui_for_tests();
 
-    auto_confirm_install_.reset(
-        new ScopedTestDialogAutoConfirm(ScopedTestDialogAutoConfirm::ACCEPT));
+    auto_confirm_install_ = std::make_unique<ScopedTestDialogAutoConfirm>(
+        ScopedTestDialogAutoConfirm::ACCEPT);
 
     ASSERT_TRUE(webstore_install_dir_.CreateUniqueTempDir());
     webstore_install_dir_copy_ = webstore_install_dir_.GetPath();

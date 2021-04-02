@@ -5,7 +5,9 @@
 #include "chrome/browser/background/background_mode_manager.h"
 
 #include <stddef.h>
+
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -320,13 +322,14 @@ BackgroundModeManager::BackgroundModeManager(
   // extensions, at which point we should either run in background mode (if
   // there are background apps) or exit if there are none.
   if (command_line.HasSwitch(switches::kNoStartupWindow)) {
-    keep_alive_for_startup_.reset(
-        new ScopedKeepAlive(KeepAliveOrigin::BACKGROUND_MODE_MANAGER_STARTUP,
-                            KeepAliveRestartOption::DISABLED));
+    keep_alive_for_startup_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BACKGROUND_MODE_MANAGER_STARTUP,
+        KeepAliveRestartOption::DISABLED);
     // Wait for force-installed extensions to install, as well.
-    keep_alive_for_force_installed_extensions_.reset(new ScopedKeepAlive(
-        KeepAliveOrigin::BACKGROUND_MODE_MANAGER_FORCE_INSTALLED_EXTENSIONS,
-        KeepAliveRestartOption::DISABLED));
+    keep_alive_for_force_installed_extensions_ =
+        std::make_unique<ScopedKeepAlive>(
+            KeepAliveOrigin::BACKGROUND_MODE_MANAGER_FORCE_INSTALLED_EXTENSIONS,
+            KeepAliveRestartOption::DISABLED);
   } else {
     // Otherwise, start with background mode suspended in case we're launching
     // in a mode that doesn't open a browser window. It will be resumed when the

@@ -696,9 +696,11 @@ DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
       devices_updates_enabled_(false),
       frontend_loaded_(false) {
   g_devtools_ui_bindings_instances.Get().push_back(this);
-  frontend_contents_observer_.reset(new FrontendWebContentsObserver(this));
+  frontend_contents_observer_ =
+      std::make_unique<FrontendWebContentsObserver>(this);
 
-  file_helper_.reset(new DevToolsFileHelper(web_contents_, profile_, this));
+  file_helper_ =
+      std::make_unique<DevToolsFileHelper>(web_contents_, profile_, this);
   file_system_indexer_ = new DevToolsFileSystemIndexer();
   extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
       web_contents_);

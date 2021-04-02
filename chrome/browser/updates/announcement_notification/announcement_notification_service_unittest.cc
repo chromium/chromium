@@ -119,8 +119,8 @@ class AnnouncementNotificationServiceTest : public testing::Test {
                                                        disabled_features);
 
     // Setup sign in status.
-    test_profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    test_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(test_profile_manager_->SetUp());
 
     // Build the testing profile.

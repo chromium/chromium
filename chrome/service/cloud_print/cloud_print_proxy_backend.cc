@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -598,7 +599,7 @@ void CloudPrintProxyBackend::Core::CheckXmppPingStatus() {
 CloudPrintTokenStore* CloudPrintProxyBackend::Core::GetTokenStore() {
   DCHECK(CurrentlyOnCoreThread());
   if (!token_store_.get())
-    token_store_.reset(new CloudPrintTokenStore);
+    token_store_ = std::make_unique<CloudPrintTokenStore>();
   return token_store_.get();
 }
 

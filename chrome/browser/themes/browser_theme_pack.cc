@@ -735,8 +735,7 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
   pack->set_extension_id(expected_id);
   // Scale factor parameter is moot as data pack has image resources for all
   // supported scale factors.
-  pack->data_pack_.reset(
-      new ui::DataPack(ui::SCALE_FACTOR_NONE));
+  pack->data_pack_ = std::make_unique<ui::DataPack>(ui::SCALE_FACTOR_NONE);
 
   if (!pack->data_pack_->LoadFromPath(path)) {
     LOG(ERROR) << "Failed to load theme data pack.";

@@ -358,7 +358,8 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    command_line_.reset(new base::CommandLine(base::CommandLine::NO_PROGRAM));
+    command_line_ =
+        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     ExtensionMessageBubbleController::set_should_ignore_learn_more_for_testing(
         true);
   }
@@ -506,10 +507,8 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
 
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new SuspiciousExtensionBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   controller->delegate()->ClearProfileSetForTesting();
   EXPECT_TRUE(controller->ShouldShow());
@@ -532,10 +531,8 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
 
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new SuspiciousExtensionBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   controller->delegate()->ClearProfileSetForTesting();
   EXPECT_TRUE(controller->ShouldShow());
@@ -597,10 +594,8 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
   // Do it again, but now press different button (Disable).
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new DevModeBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new DevModeBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   // Most bubbles would want to show again as long as the extensions weren't
   // acknowledged and the bubble wasn't dismissed due to deactivation. Since dev
@@ -627,10 +622,8 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
   service_->DisableExtension(kId1, disable_reason::DISABLE_USER_ACTION);
   service_->DisableExtension(kId2, disable_reason::DISABLE_USER_ACTION);
 
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new DevModeBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new DevModeBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   controller->delegate()->ClearProfileSetForTesting();
   EXPECT_FALSE(controller->ShouldShow());
@@ -796,10 +789,8 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
     // Simulate clicking the learn more link to dismiss it.
     bubble.set_action_on_show(
         FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
-    controller.reset(
-        new TestExtensionMessageBubbleController(
-            new SettingsApiBubbleDelegate(browser()->profile(), type),
-            browser()));
+    controller = std::make_unique<TestExtensionMessageBubbleController>(
+        new SettingsApiBubbleDelegate(browser()->profile(), type), browser());
     controller->SetIsActiveBubble();
     bubble.set_controller(controller.get());
     bubble.Show();
@@ -820,10 +811,8 @@ TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
     // Do it again, but now opt to disable the extension.
     bubble.set_action_on_show(
         FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
-    controller.reset(
-        new TestExtensionMessageBubbleController(
-            new SettingsApiBubbleDelegate(browser()->profile(), type),
-            browser()));
+    controller = std::make_unique<TestExtensionMessageBubbleController>(
+        new SettingsApiBubbleDelegate(browser()->profile(), type), browser());
     controller->SetIsActiveBubble();
     EXPECT_TRUE(controller->ShouldShow());
     override_extensions = controller->GetExtensionList();
@@ -924,8 +913,8 @@ TEST_F(ExtensionMessageBubbleTest,
 
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  controller.reset(new TestExtensionMessageBubbleController(
-      new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   controller->delegate()->ClearProfileSetForTesting();
   EXPECT_TRUE(controller->ShouldShow());
@@ -1080,10 +1069,8 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   // Simulate clicking the learn more link to dismiss it.
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new ProxyOverriddenBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new ProxyOverriddenBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   bubble.set_controller(controller.get());
@@ -1105,10 +1092,8 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   // Do it again, but now opt to disable the extension.
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new ProxyOverriddenBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new ProxyOverriddenBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   override_extensions = controller->GetExtensionList();

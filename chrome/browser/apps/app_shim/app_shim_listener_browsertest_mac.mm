@@ -6,6 +6,8 @@
 
 #include <unistd.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -188,7 +190,7 @@ void AppShimListenerBrowserTest::OnShimProcessConnected(
 
 // Test regular launch, which would ask Chrome to launch the app.
 IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchNormal) {
-  test_client_.reset(new TestShimClient());
+  test_client_ = std::make_unique<TestShimClient>();
   auto app_shim_info = chrome::mojom::AppShimInfo::New();
   app_shim_info->profile_path = browser()->profile()->GetPath();
   app_shim_info->app_id = kTestAppMode;
@@ -204,7 +206,7 @@ IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchNormal) {
 
 // Test register-only launch, used when Chrome has already launched the app.
 IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, LaunchRegisterOnly) {
-  test_client_.reset(new TestShimClient());
+  test_client_ = std::make_unique<TestShimClient>();
   auto app_shim_info = chrome::mojom::AppShimInfo::New();
   app_shim_info->profile_path = browser()->profile()->GetPath();
   app_shim_info->app_id = kTestAppMode;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -536,7 +537,7 @@ void WebRtcLoggingController::CreateRtpDumpHandlerAndStart(
   // GetLogDirectoryAndEnsureExists returns on the FILE thread for a previous
   // StartRtpDump.
   if (!rtp_dump_handler_)
-    rtp_dump_handler_.reset(new WebRtcRtpDumpHandler(dump_dir));
+    rtp_dump_handler_ = std::make_unique<WebRtcRtpDumpHandler>(dump_dir);
 
   DoStartRtpDump(type, std::move(callback));
 }

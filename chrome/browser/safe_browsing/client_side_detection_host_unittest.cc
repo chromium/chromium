@@ -283,7 +283,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     InitTestApi();
 
     // Inject service classes.
-    csd_service_.reset(new StrictMock<MockClientSideDetectionService>());
+    csd_service_ =
+        std::make_unique<StrictMock<MockClientSideDetectionService>>();
     database_manager_ = new StrictMock<MockSafeBrowsingDatabaseManager>();
     ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>(
         // TODO(crbug/925153): Port consumers of the SafeBrowsingService to

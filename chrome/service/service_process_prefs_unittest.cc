@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
@@ -18,9 +19,9 @@ class ServiceProcessPrefsTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    prefs_.reset(new ServiceProcessPrefs(
+    prefs_ = std::make_unique<ServiceProcessPrefs>(
         temp_dir_.GetPath().AppendASCII("service_process_prefs.txt"),
-        base::ThreadTaskRunnerHandle::Get().get()));
+        base::ThreadTaskRunnerHandle::Get().get());
   }
 
   void TearDown() override { prefs_.reset(); }

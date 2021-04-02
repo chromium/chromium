@@ -87,7 +87,7 @@ TEST_F(DataReductionProxyChromeSettingsTest, MigrateBadlyFormedProxyPref) {
 
   for (const auto& test : test_cases) {
     base::HistogramTester histogram_tester;
-    dict_.reset(new base::DictionaryValue());
+    dict_ = std::make_unique<base::DictionaryValue>();
     if (test.proxy_mode_string)
       dict_->SetString("mode", test.proxy_mode_string);
     if (test.proxy_server_string)
@@ -148,7 +148,7 @@ TEST_F(DataReductionProxyChromeSettingsTest,
 
   for (const std::string& test_server : kTestServers) {
     base::HistogramTester histogram_tester;
-    dict_.reset(new base::DictionaryValue());
+    dict_ = std::make_unique<base::DictionaryValue>();
     // The proxy pref is set to a Data Reduction Proxy that doesn't match the
     // currently configured DRP, but the pref should still be cleared.
     dict_->SetString("mode", "fixed_servers");
@@ -257,7 +257,7 @@ TEST_F(DataReductionProxyChromeSettingsTest,
 
   for (const auto& test : test_cases) {
     base::HistogramTester histogram_tester;
-    dict_.reset(new base::DictionaryValue());
+    dict_ = std::make_unique<base::DictionaryValue>();
     dict_->SetString("mode", "pac_script");
     dict_->SetString("pac_url", test.pac_url);
     test_context_->pref_service()->Set(proxy_config::prefs::kProxy,
@@ -300,7 +300,7 @@ TEST_F(DataReductionProxyChromeSettingsTest, MigrateIgnoreOtherProxy) {
 
   for (const std::string& test_server : kTestServers) {
     base::HistogramTester histogram_tester;
-    dict_.reset(new base::DictionaryValue());
+    dict_ = std::make_unique<base::DictionaryValue>();
     dict_->SetString("mode", "fixed_servers");
     dict_->SetString("server", test_server);
     test_context_->pref_service()->Set(proxy_config::prefs::kProxy,

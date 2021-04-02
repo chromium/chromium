@@ -4,6 +4,7 @@
 
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -110,8 +111,8 @@ ChromeDevToolsManagerDelegate::ChromeDevToolsManagerDelegate() {
     // we are controlled entirely by the automation process.
     // Keep the application running until explicit close through DevTools
     // protocol.
-    keep_alive_.reset(new ScopedKeepAlive(KeepAliveOrigin::REMOTE_DEBUGGING,
-                                          KeepAliveRestartOption::DISABLED));
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::REMOTE_DEBUGGING, KeepAliveRestartOption::DISABLED);
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }

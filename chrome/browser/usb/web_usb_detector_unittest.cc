@@ -84,7 +84,7 @@ class WebUsbDetectorTest : public BrowserWithTestWindowTest {
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         nullptr /* profile */);
 
-    web_usb_detector_.reset(new WebUsbDetector());
+    web_usb_detector_ = std::make_unique<WebUsbDetector>();
     // Set a fake USB device manager before Initialize().
     mojo::PendingRemote<device::mojom::UsbDeviceManager> device_manager;
     device_manager_.AddReceiver(

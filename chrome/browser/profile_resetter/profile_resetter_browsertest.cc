@@ -4,6 +4,8 @@
 
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "chrome/browser/profile_resetter/profile_resetter_test_base.h"
@@ -143,7 +145,7 @@ class ProfileResetTest : public InProcessBrowserTest,
                          public ProfileResetterTestBase {
  protected:
   void SetUpOnMainThread() override {
-    resetter_.reset(new ProfileResetter(browser()->profile()));
+    resetter_ = std::make_unique<ProfileResetter>(browser()->profile());
   }
 };
 

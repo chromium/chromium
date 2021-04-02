@@ -103,8 +103,8 @@ ExtensionHost* CreateHost(Profile* profile, const Extension* app) {
 class UpdateInstallGateTest : public testing::Test {
  public:
   UpdateInstallGateTest() {
-    profile_manager_.reset(
-        new TestingProfileManager(TestingBrowserProcess::GetGlobal()));
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
   }
 
   // testing::Test
@@ -138,7 +138,7 @@ class UpdateInstallGateTest : public testing::Test {
         EventRouterFactory::GetInstance()->SetTestingFactoryAndUse(
             profile_, base::BindRepeating(&BuildEventRouter)));
 
-    delayer_.reset(new UpdateInstallGate(profile_));
+    delayer_ = std::make_unique<UpdateInstallGate>(profile_);
 
     new_app_ = CreateApp(kAppId, "2.0");
     new_persistent_ = CreateExtension(kPersistentExtensionId, "2.0", true);

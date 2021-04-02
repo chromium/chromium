@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
@@ -240,8 +242,8 @@ void CloudPrintProxy::OnUnregisterPrinters(
               "policy regarding Cloud Print."
             data: "OAuth2 token and list of printer ids to unregister."
           })");
-  wipeout_.reset(new CloudPrintWipeout(this, settings.server_url(),
-                                       partial_traffic_annotation));
+  wipeout_ = std::make_unique<CloudPrintWipeout>(this, settings.server_url(),
+                                                 partial_traffic_annotation);
   wipeout_->UnregisterPrinters(auth_token, printer_ids);
 }
 

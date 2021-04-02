@@ -4,6 +4,8 @@
 
 #include "components/browsing_data/core/counters/history_counter.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -68,7 +70,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
   }
 
   void WaitForCounting() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

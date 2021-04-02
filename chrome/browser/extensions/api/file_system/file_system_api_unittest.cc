@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -41,16 +42,18 @@ AcceptOption BuildAcceptOption(const std::string& description,
   AcceptOption option;
 
   if (!description.empty())
-    option.description.reset(new std::string(description));
+    option.description = std::make_unique<std::string>(description);
 
   if (!mime_types.empty()) {
-    option.mime_types.reset(new std::vector<std::string>(base::SplitString(
-        mime_types, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)));
+    option.mime_types =
+        std::make_unique<std::vector<std::string>>(base::SplitString(
+            mime_types, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
   }
 
   if (!extensions.empty()) {
-    option.extensions.reset(new std::vector<std::string>(base::SplitString(
-        extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)));
+    option.extensions =
+        std::make_unique<std::vector<std::string>>(base::SplitString(
+            extensions, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL));
   }
 
   return option;

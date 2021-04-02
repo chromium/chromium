@@ -77,7 +77,7 @@ class RulesRegistryWithCacheTest : public testing::Test {
                       TestRulesRegistry* registry) {
     std::vector<api::events::Rule> add_rules;
     add_rules.emplace_back();
-    add_rules[0].id.reset(new std::string(rule_id));
+    add_rules[0].id = std::make_unique<std::string>(rule_id);
     return registry->AddRules(extension_id, std::move(add_rules));
   }
 

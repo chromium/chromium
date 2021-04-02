@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/testing_browser_process.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -325,7 +327,7 @@ bool TestingBrowserProcess::IsShuttingDown() {
 printing::PrintJobManager* TestingBrowserProcess::print_job_manager() {
 #if BUILDFLAG(ENABLE_PRINTING)
   if (!print_job_manager_.get())
-    print_job_manager_.reset(new printing::PrintJobManager());
+    print_job_manager_ = std::make_unique<printing::PrintJobManager>();
   return print_job_manager_.get();
 #else
   NOTIMPLEMENTED();
@@ -350,8 +352,8 @@ printing::BackgroundPrintingManager*
 TestingBrowserProcess::background_printing_manager() {
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   if (!background_printing_manager_.get()) {
-    background_printing_manager_.reset(
-        new printing::BackgroundPrintingManager());
+    background_printing_manager_ =
+        std::make_unique<printing::BackgroundPrintingManager>();
   }
   return background_printing_manager_.get();
 #else
@@ -390,7 +392,7 @@ MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
   return nullptr;
 #else
   if (!media_file_system_registry_)
-    media_file_system_registry_.reset(new MediaFileSystemRegistry());
+    media_file_system_registry_ = std::make_unique<MediaFileSystemRegistry>();
   return media_file_system_registry_.get();
 #endif
 }
@@ -405,10 +407,10 @@ TestingBrowserProcess::network_time_tracker() {
     if (!local_state_)
       return nullptr;
 
-    network_time_tracker_.reset(new network_time::NetworkTimeTracker(
+    network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
         std::unique_ptr<base::Clock>(new base::DefaultClock()),
         std::unique_ptr<base::TickClock>(new base::DefaultTickClock()),
-        local_state_, nullptr));
+        local_state_, nullptr);
   }
   return network_time_tracker_.get();
 }

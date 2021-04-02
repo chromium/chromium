@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <list>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -538,7 +539,7 @@ void DownloadMetadataManager::ManagerContext::CommitRequest(
     ClearPendingItems();
   }
   // Take the request.
-  download_metadata_.reset(new DownloadMetadata);
+  download_metadata_ = std::make_unique<DownloadMetadata>();
   download_metadata_->set_download_id(item->GetId());
   download_metadata_->mutable_download()->set_allocated_download(
       request.release());

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/page_info/permission_selector_row.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/macros.h"
@@ -265,8 +267,8 @@ void PermissionSelectorRow::InitializeComboboxView(
     const PageInfo::PermissionInfo& permission) {
   bool button_enabled =
       permission.source == content_settings::SETTING_SOURCE_USER;
-  combobox_model_adapter_.reset(
-      new internal::ComboboxModelAdapter(menu_model_.get()));
+  combobox_model_adapter_ =
+      std::make_unique<internal::ComboboxModelAdapter>(menu_model_.get());
   auto combobox = std::make_unique<internal::PermissionCombobox>(
       combobox_model_adapter_.get(), button_enabled, true);
   combobox->SetEnabled(button_enabled);

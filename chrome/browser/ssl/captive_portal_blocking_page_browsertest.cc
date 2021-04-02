@@ -4,6 +4,7 @@
 
 #include "components/security_interstitials/content/captive_portal_blocking_page.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -238,9 +239,9 @@ void CaptivePortalBlockingPageTest::TestInterstitial(
       browser()->tab_strip_model()->GetActiveWebContents();
   DCHECK(contents);
 
-  testing_throttle_installer_.reset(new TestingThrottleInstaller(
+  testing_throttle_installer_ = std::make_unique<TestingThrottleInstaller>(
       contents, login_url, std::move(ssl_cert_reporter), is_wifi_connection,
-      wifi_ssid));
+      wifi_ssid);
   // We cancel the navigation with ERR_BLOCKED_BY_CLIENT so it doesn't get
   // handled by the normal SSLErrorNavigationThrotttle since this test only
   // checks the behavior of the Blocking Page, not the integration with that

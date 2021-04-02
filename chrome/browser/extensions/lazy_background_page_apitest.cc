@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
@@ -85,9 +87,9 @@ class LoadedIncognitoObserver : public ExtensionRegistryObserver {
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override {
-    original_complete_.reset(new LazyBackgroundObserver(profile_));
-    incognito_complete_.reset(
-        new LazyBackgroundObserver(profile_->GetPrimaryOTRProfile()));
+    original_complete_ = std::make_unique<LazyBackgroundObserver>(profile_);
+    incognito_complete_ = std::make_unique<LazyBackgroundObserver>(
+        profile_->GetPrimaryOTRProfile());
   }
 
   Profile* profile_;

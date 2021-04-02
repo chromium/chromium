@@ -59,8 +59,9 @@ class MediaGalleriesPermissionsTest : public extensions::ExtensionPrefsTest {
 
   void Initialize() override {
     ASSERT_TRUE(storage_monitor::TestStorageMonitor::CreateAndInstall());
-    profile_.reset(new TestingProfile);
-    gallery_prefs_.reset(new MediaGalleriesPreferences(profile_.get()));
+    profile_ = std::make_unique<TestingProfile>();
+    gallery_prefs_ =
+        std::make_unique<MediaGalleriesPreferences>(profile_.get());
     base::RunLoop loop;
     gallery_prefs_->EnsureInitialized(loop.QuitClosure());
     loop.Run();

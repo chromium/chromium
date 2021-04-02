@@ -4,6 +4,8 @@
 
 #include "chrome/test/chromedriver/chrome/stub_devtools_client.h"
 
+#include <memory>
+
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/status.h"
 
@@ -60,7 +62,7 @@ Status StubDevToolsClient::SendCommandAndGetResult(
     const std::string& method,
     const base::DictionaryValue& params,
     std::unique_ptr<base::DictionaryValue>* result) {
-  result->reset(new base::DictionaryValue());
+  *result = std::make_unique<base::DictionaryValue>();
   return Status(kOk);
 }
 

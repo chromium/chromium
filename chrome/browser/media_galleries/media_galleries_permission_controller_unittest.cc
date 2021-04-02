@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media_galleries/media_galleries_permission_controller.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -65,7 +66,8 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
 
-    gallery_prefs_.reset(new MediaGalleriesPreferences(profile_.get()));
+    gallery_prefs_ =
+        std::make_unique<MediaGalleriesPreferences>(profile_.get());
     base::RunLoop loop;
     gallery_prefs_->EnsureInitialized(loop.QuitClosure());
     loop.Run();

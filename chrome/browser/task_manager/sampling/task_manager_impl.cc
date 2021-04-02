@@ -465,10 +465,10 @@ void TaskManagerImpl::TaskAdded(Task* task) {
 
   std::unique_ptr<TaskGroup>& task_group = task_group_map[proc_id];
   if (!task_group) {
-    task_group.reset(new TaskGroup(task->process_handle(), proc_id,
-                                   is_running_in_vm,
-                                   on_background_data_ready_callback_,
-                                   shared_sampler_, blocking_pool_runner_));
+    task_group = std::make_unique<TaskGroup>(
+        task->process_handle(), proc_id, is_running_in_vm,
+        on_background_data_ready_callback_, shared_sampler_,
+        blocking_pool_runner_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (task->GetType() == Task::ARC)
       task_group->SetArcSampler(arc_shared_sampler_.get());

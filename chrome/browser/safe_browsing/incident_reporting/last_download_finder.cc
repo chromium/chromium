@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -384,15 +385,16 @@ void LastDownloadFinder::ReportResults() {
       non_binary_details = nullptr;
 
   if (details_) {
-    binary_details.reset(new ClientIncidentReport_DownloadDetails(*details_));
+    binary_details =
+        std::make_unique<ClientIncidentReport_DownloadDetails>(*details_);
   } else if (!most_recent_binary_row_.end_time.is_null()) {
-    binary_details.reset(new ClientIncidentReport_DownloadDetails());
+    binary_details = std::make_unique<ClientIncidentReport_DownloadDetails>();
     PopulateDetailsFromRow(most_recent_binary_row_, binary_details.get());
   }
 
   if (!most_recent_non_binary_row_.end_time.is_null()) {
-    non_binary_details.reset(
-        new ClientIncidentReport_NonBinaryDownloadDetails());
+    non_binary_details =
+        std::make_unique<ClientIncidentReport_NonBinaryDownloadDetails>();
     PopulateNonBinaryDetailsFromRow(most_recent_non_binary_row_,
                                     non_binary_details.get());
   }

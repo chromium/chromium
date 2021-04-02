@@ -136,9 +136,7 @@ class MockRequestPeer : public blink::WebRequestPeer {
 
 class ExtensionLocalizationPeerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    sender_.reset(new MockIpcMessageSender());
-  }
+  void SetUp() override { sender_ = std::make_unique<MockIpcMessageSender>(); }
 
   void SetUpExtensionLocalizationPeer(const std::string& mime_type,
                                       const GURL& request_url) {

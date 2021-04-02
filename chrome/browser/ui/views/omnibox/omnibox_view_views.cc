@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -427,8 +428,8 @@ void OmniboxViewViews::Init() {
 
   if (location_bar_view_) {
     // Initialize the popup view using the same font.
-    popup_view_.reset(
-        new OmniboxPopupContentsView(this, model(), location_bar_view_));
+    popup_view_ = std::make_unique<OmniboxPopupContentsView>(
+        this, model(), location_bar_view_);
     if (OmniboxFieldTrial::ShouldHidePathQueryRefOnInteraction() &&
         !model()->ShouldPreventElision()) {
       Observe(location_bar_view_->GetWebContents());

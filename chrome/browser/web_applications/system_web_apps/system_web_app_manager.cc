@@ -514,8 +514,8 @@ void SystemWebAppManager::Start() {
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
-  on_apps_synchronized_.reset(new base::OneShotEvent());
-  on_tasks_started_.reset(new base::OneShotEvent());
+  on_apps_synchronized_ = std::make_unique<base::OneShotEvent>();
+  on_tasks_started_ = std::make_unique<base::OneShotEvent>();
   system_app_infos_ = CreateSystemWebApps(profile_);
   Start();
 

@@ -201,7 +201,7 @@ WebDriverLog::~WebDriverLog() {
 std::unique_ptr<base::ListValue> WebDriverLog::GetAndClearEntries() {
   std::unique_ptr<base::ListValue> ret;
   if (batches_of_entries_.empty()) {
-    ret.reset(new base::ListValue());
+    ret = std::make_unique<base::ListValue>();
     emptied_ = true;
   } else {
     ret = std::move(batches_of_entries_.front());

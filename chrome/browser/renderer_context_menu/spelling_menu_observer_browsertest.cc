@@ -4,6 +4,8 @@
 
 #include "chrome/browser/renderer_context_menu/spelling_menu_observer.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -101,8 +103,8 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
 
   void Reset(bool incognito) {
     observer_.reset();
-    menu_.reset(new MockRenderViewContextMenu(incognito));
-    observer_.reset(new SpellingMenuObserver(menu_.get()));
+    menu_ = std::make_unique<MockRenderViewContextMenu>(incognito);
+    observer_ = std::make_unique<SpellingMenuObserver>(menu_.get());
     menu_->SetObserver(observer_.get());
   }
 

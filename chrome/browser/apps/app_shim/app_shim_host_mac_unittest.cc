@@ -198,7 +198,7 @@ class AppShimHostTest : public testing::Test,
  private:
   void SetUp() override {
     testing::Test::SetUp();
-    shim_.reset(new TestingAppShim());
+    shim_ = std::make_unique<TestingAppShim>();
   }
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/task_manager/task_manager_tester.h"
 
+#include <memory>
+
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -74,8 +76,8 @@ TaskManagerTester::TaskManagerTester(
   // Eavesdrop the model->view conversation, since the model only supports
   // single observation.
   if (!on_resource_change.is_null()) {
-    interceptor_.reset(new ScopedInterceptTableModelObserver(
-        model_, model_->table_model_observer_, on_resource_change));
+    interceptor_ = std::make_unique<ScopedInterceptTableModelObserver>(
+        model_, model_->table_model_observer_, on_resource_change);
   }
 }
 

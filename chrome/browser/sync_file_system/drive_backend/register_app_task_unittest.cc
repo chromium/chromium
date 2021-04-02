@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -60,14 +61,13 @@ class RegisterAppTaskTest : public testing::Test {
                                  base::ThreadTaskRunnerHandle::Get(),
                                  mojo::NullRemote()));
 
-    fake_drive_service_helper_.reset(new FakeDriveServiceHelper(
-        fake_drive_service.get(), drive_uploader.get(),
-        kSyncRootFolderTitle));
+    fake_drive_service_helper_ = std::make_unique<FakeDriveServiceHelper>(
+        fake_drive_service.get(), drive_uploader.get(), kSyncRootFolderTitle);
 
-    context_.reset(new SyncEngineContext(
+    context_ = std::make_unique<SyncEngineContext>(
         std::move(fake_drive_service), std::move(drive_uploader),
         nullptr /* task_logger */, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
 
     ASSERT_EQ(google_apis::HTTP_CREATED,
               fake_drive_service_helper_->AddOrphanedFolder(

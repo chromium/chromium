@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/downloads/downloads_api.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -45,8 +47,8 @@ class TestDownloadCoreService : public DownloadCoreServiceImpl {
 
   ExtensionDownloadsEventRouter* GetExtensionEventRouter() override {
     if (!router_.get()) {
-      router_.reset(new ExtensionDownloadsEventRouter(
-          profile_, content::BrowserContext::GetDownloadManager(profile_)));
+      router_ = std::make_unique<ExtensionDownloadsEventRouter>(
+          profile_, content::BrowserContext::GetDownloadManager(profile_));
     }
     return router_.get();
   }
@@ -68,7 +70,7 @@ class DownloadsApiUnitTest : public ExtensionApiUnittest {
   void SetUp() override {
     ExtensionApiUnittest::SetUp();
 
-    manager_.reset(new testing::StrictMock<MockDownloadManager>());
+    manager_ = std::make_unique<testing::StrictMock<MockDownloadManager>>();
     EXPECT_CALL(*manager_, IsManagerInitialized());
     EXPECT_CALL(*manager_, AddObserver(testing::_))
         .WillOnce(testing::SaveArg<0>(&download_history_manager_observer_));

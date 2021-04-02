@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -450,7 +452,7 @@ void InstallSigner::HandleSignatureResult(const std::string& signature,
 
   std::unique_ptr<InstallSignature> result;
   if (!signature.empty()) {
-    result.reset(new InstallSignature);
+    result = std::make_unique<InstallSignature>();
     result->ids = valid_ids;
     result->invalid_ids = invalid_ids;
     result->salt = salt_;

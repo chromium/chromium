@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/element_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
@@ -395,7 +396,7 @@ Status FindElement(int interval_ms,
         return Status(kNoSuchElement, "Unable to locate element: {\"method\":\""
          + strategy + "\",\"selector\":\"" + target + "\"}");
       } else {
-        value->reset(new base::ListValue());
+        *value = std::make_unique<base::ListValue>();
         return Status(kOk);
       }
     }

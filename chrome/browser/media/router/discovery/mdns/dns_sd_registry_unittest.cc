@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_registry.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_device_lister.h"
@@ -75,7 +77,7 @@ class DnsSdRegistryTest : public testing::Test {
   ~DnsSdRegistryTest() override {}
 
   void SetUp() override {
-    registry_.reset(new TestDnsSdRegistry());
+    registry_ = std::make_unique<TestDnsSdRegistry>();
     registry_->AddObserver(&observer_);
   }
 

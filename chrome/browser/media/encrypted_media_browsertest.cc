@@ -229,7 +229,7 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
         GetServerConfig(key_system);
     if (!config)
       return;
-    license_server_.reset(new TestLicenseServer(std::move(config)));
+    license_server_ = std::make_unique<TestLicenseServer>(std::move(config));
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
       EXPECT_TRUE(license_server_->Start());

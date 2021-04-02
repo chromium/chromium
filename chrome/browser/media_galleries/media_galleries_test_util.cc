@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -107,23 +108,23 @@ void EnsureMediaDirectoriesExists::ChangeMediaPathOverrides() {
   music_override_.reset();
   std::string music_path_string("music");
   music_path_string.append(base::NumberToString(times_overrides_changed_));
-  music_override_.reset(new base::ScopedPathOverride(
+  music_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_MUSIC,
-      fake_dir_.GetPath().AppendASCII(music_path_string)));
+      fake_dir_.GetPath().AppendASCII(music_path_string));
 
   pictures_override_.reset();
   std::string pictures_path_string("pictures");
   pictures_path_string.append(base::NumberToString(times_overrides_changed_));
-  pictures_override_.reset(new base::ScopedPathOverride(
+  pictures_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_PICTURES,
-      fake_dir_.GetPath().AppendASCII(pictures_path_string)));
+      fake_dir_.GetPath().AppendASCII(pictures_path_string));
 
   video_override_.reset();
   std::string videos_path_string("videos");
   videos_path_string.append(base::NumberToString(times_overrides_changed_));
-  video_override_.reset(new base::ScopedPathOverride(
+  video_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_VIDEOS,
-      fake_dir_.GetPath().AppendASCII(videos_path_string)));
+      fake_dir_.GetPath().AppendASCII(videos_path_string));
 
   times_overrides_changed_++;
 
@@ -151,7 +152,7 @@ void EnsureMediaDirectoriesExists::Init() {
   ASSERT_TRUE(fake_dir_.CreateUniqueTempDir());
 
 #if defined(OS_MAC)
-  mac_preferences_.reset(new MockPreferences);
+  mac_preferences_ = std::make_unique<MockPreferences>();
 #endif  // OS_MAC
 
   ChangeMediaPathOverrides();
