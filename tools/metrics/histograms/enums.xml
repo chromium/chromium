@@ -14020,6 +14020,32 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not Secure cookie, source scheme is not cryptographic"/>
 </enum>
 
+<enum name="CookieSourceSchemeName">
+  <int value="0" label="Other Scheme"/>
+  <int value="1" label="About Blank URL"/>
+  <int value="2" label="About Srcdoc URL"/>
+  <int value="3" label="About Blank Path"/>
+  <int value="4" label="About Srcdoc Path"/>
+  <int value="5" label="About Scheme"/>
+  <int value="6" label="Blob Scheme"/>
+  <int value="7" label="Content Scheme"/>
+  <int value="8" label="Content ID Scheme"/>
+  <int value="9" label="Data Scheme"/>
+  <int value="10" label="File Scheme"/>
+  <int value="11" label="File System Scheme"/>
+  <int value="12" label="Ftp Scheme"/>
+  <int value="13" label="Http Scheme"/>
+  <int value="14" label="Https Scheme"/>
+  <int value="15" label="JavaScript Scheme"/>
+  <int value="16" label="MailTo Scheme"/>
+  <int value="17" label="Quic Transport Scheme"/>
+  <int value="18" label="Tel Scheme"/>
+  <int value="19" label="Urn Scheme"/>
+  <int value="20" label="Ws Scheme"/>
+  <int value="21" label="Wss Scheme"/>
+  <int value="22" label="Chrome Extension Scheme"/>
+</enum>
+
 <enum name="CookieStoreMatchType">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Equals"/>

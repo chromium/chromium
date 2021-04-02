@@ -41,6 +41,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster_store_test.h"  // For CookieStore mock
 #include "net/cookies/cookie_store_change_unittest.h"
+#include "net/cookies/cookie_store_test_callbacks.h"
 #include "net/cookies/cookie_store_test_helpers.h"
 #include "net/cookies/cookie_store_unittest.h"
 #include "net/cookies/cookie_util.h"
@@ -4701,6 +4702,68 @@ TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
   histograms.ExpectTotalCount(kHistogramName, 6);
   histograms.ExpectBucketCount(kHistogramName,
                                CookieMonster::CookieSentToSamePort::kYes, 2);
+}
+
+TEST_F(CookieMonsterTest, CookieSourceSchemeNameHistogram) {
+  base::HistogramTester histograms;
+  const char kHistogramName[] = "Cookie.CookieSourceSchemeName";
+
+  scoped_refptr<MockPersistentCookieStore> store(new MockPersistentCookieStore);
+  std::unique_ptr<CookieMonster> cm(new CookieMonster(store.get(), &net_log_));
+
+  histograms.ExpectTotalCount(kHistogramName, 0);
+
+  struct TestCase {
+    CookieSourceSchemeName enum_value;
+    std::string scheme;
+  };
+
+  // Test the usual and a smattering of some other types including a kOther.
+  // It doesn't matter if we add this to the scheme registry or not because we
+  // don't actually need the whole url to parse, we just need GURL to pick up on
+  // the scheme correctly (which it does). What the rest of the cookie code does
+  // with the oddly formed GURL is out of scope of this test (i.e. we don't
+  // care).
+  const TestCase kTestCases[] = {
+      {CookieSourceSchemeName::kHttpsScheme, url::kHttpsScheme},
+      {CookieSourceSchemeName::kHttpScheme, url::kHttpScheme},
+      {CookieSourceSchemeName::kWssScheme, url::kWssScheme},
+      {CookieSourceSchemeName::kWsScheme, url::kWsScheme},
+      {CookieSourceSchemeName::kChromeExtensionScheme, "chrome-extension"},
+      {CookieSourceSchemeName::kFileScheme, url::kFileScheme},
+      {CookieSourceSchemeName::kQuicTransportScheme, url::kQuicTransportScheme},
+      {CookieSourceSchemeName::kOther, "abcd1234"}};
+
+  // Make sure all the schemes are considered cookieable.
+  std::vector<std::string> schemes;
+  for (auto test_case : kTestCases) {
+    schemes.push_back(test_case.scheme);
+  }
+  ResultSavingCookieCallback<bool> cookie_scheme_callback;
+  cm->SetCookieableSchemes(schemes, cookie_scheme_callback.MakeCallback());
+  cookie_scheme_callback.WaitUntilDone();
+  ASSERT_TRUE(cookie_scheme_callback.result());
+
+  const char kUrl[] = "://www.foo.com";
+  int count = 0;
+
+  // Test all the cases.
+  for (auto test_case : kTestCases) {
+    histograms.ExpectBucketCount(kHistogramName, test_case.enum_value, 0);
+
+    EXPECT_TRUE(SetCookie(cm.get(), GURL(test_case.scheme + kUrl), "A=B"));
+
+    histograms.ExpectBucketCount(kHistogramName, test_case.enum_value, 1);
+    histograms.ExpectTotalCount(kHistogramName, ++count);
+  }
+
+  // This metric is only for cookies that are actually set. Make sure the
+  // histogram doesn't increment for cookies that fail to set.
+
+  // Try to set an invalid cookie, for instance: a non-cookieable scheme will be
+  // rejected.
+  EXPECT_FALSE(SetCookie(cm.get(), GURL("invalidscheme://foo.com"), "A=B"));
+  histograms.ExpectTotalCount(kHistogramName, count);
 }
 
 class FirstPartySetEnabledCookieMonsterTest : public CookieMonsterTest {

@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -292,6 +293,60 @@ CookiePort ReducePortRangeForCookieHistogram(const int port) {
     default:
       return CookiePort::kOther;
   }
+}
+
+CookieSourceSchemeName GetSchemeNameEnum(const GURL& url) {
+  // The most likely schemes are first, to improve performance.
+  if (url.SchemeIs(url::kHttpsScheme)) {
+    return CookieSourceSchemeName::kHttpsScheme;
+  } else if (url.SchemeIs(url::kHttpScheme)) {
+    return CookieSourceSchemeName::kHttpScheme;
+  } else if (url.SchemeIs(url::kWssScheme)) {
+    return CookieSourceSchemeName::kWssScheme;
+  } else if (url.SchemeIs(url::kWsScheme)) {
+    return CookieSourceSchemeName::kWsScheme;
+  } else if (url.SchemeIs("chrome-extension")) {
+    return CookieSourceSchemeName::kChromeExtensionScheme;
+  } else if (url.SchemeIs(url::kFileScheme)) {
+    return CookieSourceSchemeName::kFileScheme;
+  }
+  // These all aren't marked as cookieable and so are much less likely to
+  // occur.
+  else if (url.SchemeIs(url::kAboutBlankURL)) {
+    return CookieSourceSchemeName::kAboutBlankURL;
+  } else if (url.SchemeIs(url::kAboutSrcdocURL)) {
+    return CookieSourceSchemeName::kAboutSrcdocURL;
+  } else if (url.SchemeIs(url::kAboutBlankPath)) {
+    return CookieSourceSchemeName::kAboutBlankPath;
+  } else if (url.SchemeIs(url::kAboutSrcdocPath)) {
+    return CookieSourceSchemeName::kAboutSrcdocPath;
+  } else if (url.SchemeIs(url::kAboutScheme)) {
+    return CookieSourceSchemeName::kAboutScheme;
+  } else if (url.SchemeIs(url::kBlobScheme)) {
+    return CookieSourceSchemeName::kBlobScheme;
+  } else if (url.SchemeIs(url::kContentScheme)) {
+    return CookieSourceSchemeName::kContentScheme;
+  } else if (url.SchemeIs(url::kContentIDScheme)) {
+    return CookieSourceSchemeName::kContentIDScheme;
+  } else if (url.SchemeIs(url::kDataScheme)) {
+    return CookieSourceSchemeName::kDataScheme;
+  } else if (url.SchemeIs(url::kFileSystemScheme)) {
+    return CookieSourceSchemeName::kFileSystemScheme;
+  } else if (url.SchemeIs(url::kFtpScheme)) {
+    return CookieSourceSchemeName::kFtpScheme;
+  } else if (url.SchemeIs(url::kJavaScriptScheme)) {
+    return CookieSourceSchemeName::kJavaScriptScheme;
+  } else if (url.SchemeIs(url::kMailToScheme)) {
+    return CookieSourceSchemeName::kMailToScheme;
+  } else if (url.SchemeIs(url::kQuicTransportScheme)) {
+    return CookieSourceSchemeName::kQuicTransportScheme;
+  } else if (url.SchemeIs(url::kTelScheme)) {
+    return CookieSourceSchemeName::kTelScheme;
+  } else if (url.SchemeIs(url::kUrnScheme)) {
+    return CookieSourceSchemeName::kUrnScheme;
+  }
+
+  return CookieSourceSchemeName::kOther;
 }
 
 }  // namespace net
