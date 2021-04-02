@@ -76,8 +76,8 @@ if (is_win) {
     testonly = true
     output_zip_file = "$root_out_dir/mini_installer_tests.zip"
     script = "create_zip.py"
+    inputs = files
     outputs = [ output_zip_file ]
-    data = files + [ "//third_party/catapult/third_party/typ/" ]
     args = [
       "--o",
       rebase_path(output_zip_file, root_build_dir),
