@@ -50,6 +50,14 @@ void LegacyMetricsClient::SetMetricsRecorder(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!auto_connect_);
 
+  auto weak_this = weak_factory_.GetWeakPtr();
+  ResetMetricsRecorderState();
+
+  // ResetMetricsRecorderState() may call |on_flush_complete_closures_|, which
+  // may destroy LegacyMetricsClient.
+  if (!weak_this)
+    return;
+
   SetMetricsRecorderInternal(std::move(metrics_recorder));
 
   if (report_interval_ > base::TimeDelta())
@@ -182,17 +190,7 @@ void LegacyMetricsClient::DrainBuffer() {
 
     if (is_flushing_) {
       metrics_recorder_.Unbind();
-
-      is_flushing_ = false;
-
-      // One of the callbacks may destroy |this|, so move them all to the stack
-      // first.
-      std::vector<base::OnceClosure> on_flush_complete_closures;
-      on_flush_complete_closures.swap(on_flush_complete_closures_);
-      for (auto& closure : on_flush_complete_closures) {
-        std::move(closure).Run();
-      }
-
+      CompleteFlush();
       return;
     }
 
@@ -223,9 +221,6 @@ void LegacyMetricsClient::DrainBuffer() {
 void LegacyMetricsClient::OnMetricsRecorderDisconnected(zx_status_t status) {
   ZX_LOG(ERROR, status) << "MetricsRecorder connection lost.";
 
-  // Stop reporting metric events.
-  report_timer_.AbandonAndStop();
-
   if (auto_connect_ && status == ZX_ERR_PEER_CLOSED) {
     DVLOG(1) << "Scheduling reconnect after " << reconnect_delay_;
 
@@ -238,6 +233,8 @@ void LegacyMetricsClient::OnMetricsRecorderDisconnected(zx_status_t status) {
     reconnect_delay_ = std::min(reconnect_delay_ * kReconnectBackoffFactor,
                                 kMaxReconnectDelay);
   }
+
+  ResetMetricsRecorderState();
 }
 
 void LegacyMetricsClient::ReconnectMetricsRecorder() {
@@ -251,9 +248,9 @@ void LegacyMetricsClient::ReconnectMetricsRecorder() {
 void LegacyMetricsClient::FlushAndDisconnect(
     base::OnceClosure on_flush_complete) {
   DVLOG(1) << __func__ << " called.";
-  DCHECK(on_flush_complete);
 
-  on_flush_complete_closures_.push_back(std::move(on_flush_complete));
+  if (on_flush_complete)
+    on_flush_complete_closures_.push_back(std::move(on_flush_complete));
 
   if (is_flushing_)
     return;
@@ -272,7 +269,31 @@ void LegacyMetricsClient::FlushAndDisconnect(
 }
 
 void LegacyMetricsClient::OnCloseSoon() {
-  FlushAndDisconnect(base::DoNothing::Once());
+  FlushAndDisconnect(base::OnceClosure());
+}
+
+void LegacyMetricsClient::CompleteFlush() {
+  DCHECK(is_flushing_);
+
+  is_flushing_ = false;
+
+  // One of the callbacks may destroy |this|, so move them all to the stack
+  // first.
+  std::vector<base::OnceClosure> on_flush_complete_closures;
+  on_flush_complete_closures.swap(on_flush_complete_closures_);
+  for (auto& closure : on_flush_complete_closures) {
+    std::move(closure).Run();
+  }
+}
+
+void LegacyMetricsClient::ResetMetricsRecorderState() {
+  // Stop reporting metric events.
+  report_timer_.AbandonAndStop();
+
+  record_ack_pending_ = false;
+
+  if (is_flushing_)
+    CompleteFlush();
 }
 
 }  // namespace cr_fuchsia

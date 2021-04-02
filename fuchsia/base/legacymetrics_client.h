@@ -92,6 +92,8 @@ class LegacyMetricsClient {
   void OnMetricsRecorderDisconnected(zx_status_t status);
   void ReconnectMetricsRecorder();
   void OnCloseSoon();
+  void CompleteFlush();
+  void ResetMetricsRecorderState();
 
   // Incrementally sends the contents of |to_send_| to |metrics_recorder_|.
   void DrainBuffer();

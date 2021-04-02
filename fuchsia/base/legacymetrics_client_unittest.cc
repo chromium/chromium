@@ -135,6 +135,13 @@ class LegacyMetricsClientTest : public testing::Test {
     EXPECT_TRUE(service_binding_->has_clients()) << "Expected delay: " << delay;
   }
 
+  void SetMetricsRecorder() {
+    fidl::InterfaceHandle<fuchsia::legacymetrics::MetricsRecorder>
+        metrics_recorder;
+    direct_binding_.Bind(metrics_recorder.NewRequest());
+    client_.SetMetricsRecorder(std::move(metrics_recorder));
+  }
+
  protected:
   base::test::TaskEnvironment task_environment_;
   base::TestComponentContextForProcess test_context_;
@@ -142,6 +149,9 @@ class LegacyMetricsClientTest : public testing::Test {
   std::unique_ptr<base::ScopedSingleClientServiceBinding<
       fuchsia::legacymetrics::MetricsRecorder>>
       service_binding_;
+  fidl::Binding<fuchsia::legacymetrics::MetricsRecorder> direct_binding_{
+      &test_recorder_};
+
   LegacyMetricsClient client_;
 };
 
@@ -267,6 +277,51 @@ TEST_F(LegacyMetricsClientTest, ReconnectAfterServiceDisconnect) {
   EXPECT_FALSE(service_binding_->has_clients());
   task_environment_.FastForwardBy(LegacyMetricsClient::kInitialReconnectDelay);
   EXPECT_TRUE(service_binding_->has_clients());
+
+  base::RecordComputedAction("foo");
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+  test_recorder_.SendAck();
+  EXPECT_FALSE(test_recorder_.IsRecordInFlight());
+}
+
+TEST_F(LegacyMetricsClientTest, ServiceDisconnectWhileRecordPending) {
+  StartClientAndExpectConnection();
+
+  base::RecordComputedAction("foo");
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+
+  DisconnectAndRestartMetricsService();
+  EXPECT_FALSE(service_binding_->has_clients());
+  test_recorder_.DropAck();
+
+  task_environment_.FastForwardBy(LegacyMetricsClient::kInitialReconnectDelay);
+  EXPECT_TRUE(service_binding_->has_clients());
+
+  base::RecordComputedAction("foo");
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+}
+
+TEST_F(LegacyMetricsClientTest, ServiceDisconnectWhileFlushing) {
+  StartClientAndExpectConnection();
+
+  base::RecordComputedAction("foo");
+  client_.FlushAndDisconnect(base::OnceClosure());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+
+  DisconnectAndRestartMetricsService();
+  test_recorder_.DropAck();
+  EXPECT_FALSE(service_binding_->has_clients());
+
+  task_environment_.FastForwardBy(LegacyMetricsClient::kInitialReconnectDelay);
+  EXPECT_TRUE(service_binding_->has_clients());
+
+  base::RecordComputedAction("foo");
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
 }
 
 TEST_F(LegacyMetricsClientTest,
@@ -543,15 +598,8 @@ TEST_F(LegacyMetricsClientTest, ExplicitFlushMultipleBatches) {
 }
 
 TEST_F(LegacyMetricsClientTest, UseInjectedMetricsRecorder) {
-  // Disable auto connect and then connect |client_| to |test_recorder_|
-  // explicitly.
   client_.DisableAutoConnect();
-  fidl::Binding<fuchsia::legacymetrics::MetricsRecorder> binding(
-      &test_recorder_);
-  fidl::InterfaceHandle<fuchsia::legacymetrics::MetricsRecorder>
-      metrics_recorder;
-  binding.Bind(metrics_recorder.NewRequest());
-  client_.SetMetricsRecorder(std::move(metrics_recorder));
+  SetMetricsRecorder();
 
   client_.Start(kReportInterval);
 
@@ -569,22 +617,15 @@ TEST_F(LegacyMetricsClientTest, UseInjectedMetricsRecorder) {
 
   // Verify that LegacyMetricsClient doesn't try to reconnect after
   // MetricsRecorder has been disconnected.
-  binding.Unbind();
+  direct_binding_.Unbind();
   task_environment_.FastForwardBy(LegacyMetricsClient::kInitialReconnectDelay *
                                   2);
   EXPECT_FALSE(service_binding_->has_clients());
 }
 
 TEST_F(LegacyMetricsClientTest, UseInjectedMetricsRecorderReconnect) {
-  // Disable auto connect and then connect |client_| to |test_recorder_|
-  // explicitly.
   client_.DisableAutoConnect();
-  fidl::Binding<fuchsia::legacymetrics::MetricsRecorder> binding(
-      &test_recorder_);
-  fidl::InterfaceHandle<fuchsia::legacymetrics::MetricsRecorder>
-      metrics_recorder;
-  binding.Bind(metrics_recorder.NewRequest());
-  client_.SetMetricsRecorder(std::move(metrics_recorder));
+  SetMetricsRecorder();
 
   client_.Start(kReportInterval);
 
@@ -596,9 +637,8 @@ TEST_F(LegacyMetricsClientTest, UseInjectedMetricsRecorderReconnect) {
 
   EXPECT_TRUE(test_recorder_.IsEmpty());
 
-  // Create a new recorder and verify that it receives metrics now.
-  binding.Bind(metrics_recorder.NewRequest());
-  client_.SetMetricsRecorder(std::move(metrics_recorder));
+  // Set recorder again and verify that it receives metrics now.
+  SetMetricsRecorder();
 
   base::RecordComputedAction("bar");
 
@@ -607,6 +647,60 @@ TEST_F(LegacyMetricsClientTest, UseInjectedMetricsRecorderReconnect) {
 
   auto events = test_recorder_.WaitForEvents();
   EXPECT_EQ(1u, events.size());
+}
+
+TEST_F(LegacyMetricsClientTest, SetMetricsRecorderDuringRecord) {
+  client_.DisableAutoConnect();
+  SetMetricsRecorder();
+
+  client_.Start(kReportInterval);
+
+  base::RecordComputedAction("bar");
+
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+  test_recorder_.DropAck();
+
+  // Set recorder again and verify that it can receive metrics.
+  SetMetricsRecorder();
+
+  base::RecordComputedAction("bar");
+
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+
+  auto events = test_recorder_.WaitForEvents();
+  EXPECT_EQ(2u, events.size());
+}
+
+TEST_F(LegacyMetricsClientTest, SetMetricsRecorderDuringFlush) {
+  client_.DisableAutoConnect();
+  SetMetricsRecorder();
+
+  client_.Start(kReportInterval);
+
+  base::RecordComputedAction("bar");
+
+  bool flush_complete = false;
+  client_.FlushAndDisconnect(
+      base::BindLambdaForTesting([&flush_complete] { flush_complete = true; }));
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+  test_recorder_.DropAck();
+  EXPECT_FALSE(flush_complete);
+
+  // Set recorder again. It's expected to complete the Flush().
+  SetMetricsRecorder();
+  EXPECT_TRUE(flush_complete);
+
+  // Verify that metrics are sent to the new MetricsRecorder instance.
+  base::RecordComputedAction("bar");
+
+  task_environment_.FastForwardBy(kReportInterval);
+  EXPECT_TRUE(test_recorder_.IsRecordInFlight());
+
+  auto events = test_recorder_.WaitForEvents();
+  EXPECT_EQ(2u, events.size());
 }
 
 }  // namespace
