@@ -549,8 +549,17 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
+// Crashes on Mac only. crbug.com/1195257.
+#if defined(OS_MAC)
+#define MAYBE_ConfirmPaymentInCrossOriginIframe \
+  DISABLED_ConfirmPaymentInCrossOriginIframe
+#else
+#define MAYBE_ConfirmPaymentInCrossOriginIframe \
+  ConfirmPaymentInCrossOriginIframe
+#endif
+
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       ConfirmPaymentInCrossOriginIframe) {
+                       MAYBE_ConfirmPaymentInCrossOriginIframe) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
@@ -583,8 +592,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
+// Crashes on Mac only. crbug.com/1195257.
+#if defined(OS_MAC)
+#define MAYBE_ChallengeIsReturned DISABLED_ChallengeIsReturned
+#else
+#define MAYBE_ChallengeIsReturned ChallengeIsReturned
+#endif
+
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       ChallengeIsReturned) {
+                       MAYBE_ChallengeIsReturned) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
@@ -650,8 +666,15 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/true);
 }
 
+// Crashes on Mac only. crbug.com/1195257.
+#if defined(OS_MAC)
+#define MAYBE_UserVerificationFails DISABLED_UserVerificationFails
+#else
+#define MAYBE_UserVerificationFails UserVerificationFails
+#endif
+
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       UserVerificationFails) {
+                       MAYBE_UserVerificationFails) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/true);
@@ -787,8 +810,17 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   ExpectJourneyLoggerEvent(/*spc_confirm_logged=*/false);
 }
 
+// Crashes on Mac only. crbug.com/1195257.
+#if defined(OS_MAC)
+#define MAYBE_UserVerificationFailsThenSucceeds \
+  DISABLED_UserVerificationFailsThenSucceeds
+#else
+#define MAYBE_UserVerificationFailsThenSucceeds \
+  UserVerificationFailsThenSucceeds
+#endif
+
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
-                       UserVerificationFailsThenSucceeds) {
+                       MAYBE_UserVerificationFailsThenSucceeds) {
   NavigateTo("a.com", "/secure_payment_confirmation.html");
   RespondToFutureEnrollments(/*confirm=*/true);
   ReplaceFidoDiscoveryFactory(/*should_succeed=*/false);
