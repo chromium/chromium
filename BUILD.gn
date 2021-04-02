@@ -1237,6 +1237,9 @@ if (!is_ios) {
              rebase_path("//third_party/blink/tools/run_webgpu_cts.py",
                          root_build_dir) + ")" ] + _common_web_test_args -
            [ _common_web_test_args[0] ]
+    if (is_asan) {
+        args += [ "--time-out-ms=30000" ]
+    }
     args += [
       "--webgpu-cts-expectations",
       "@WrappedPath(../../third_party/blink/web_tests/WebGPUExpectations)",
