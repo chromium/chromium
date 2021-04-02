@@ -87,6 +87,7 @@
 
       :host-context([new-layout][screen=oobe]) #header-container,
       :host-context([new-layout][screen=gaia-signin]) #header-container {
+        overflow-y: hidden;
         padding-top: calc(var(--multidevice-setup-dialog-content-padding)
           + 2 * clamp(20px, calc(var(--multidevice-setup-dialog-height)
           * 0.035), 40px) + 34px);

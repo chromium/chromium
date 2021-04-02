@@ -34,8 +34,16 @@
       }
 
       #animation-container {
-        padding-inline-end: 8px;
         padding-top: 16px;
+      }
+
+      :host-context([orientation=horizontal]) #animation-container {
+        height: 172px;
+        transform: translateX(-20px);
+      }
+
+      :host-context([orientation=vertical]) #animation-container {
+        margin-bottom: -20px;
       }
 
       .footnote {
@@ -136,11 +144,18 @@
         }
       }
 
-      @media screen and (max-height: 736px) {
-        :host-context([screen=oobe]) #animation-container,
-        :host-context([screen=gaia-signin]) #animation-container {
-          height: 143px;
-          padding-top: 0;
+      /* Hide the animation when not enough space in vertical mode. */
+      @media screen and (max-height: 1048px) {
+        :host-context([orientation=vertical][screen=oobe])
+            #animation-container {
+          display: none;
+        }
+      }
+
+      @media screen and (max-height: 832px) {
+        :host-context([orientation=vertical][screen=gaia-signin])
+            #animation-container {
+          display: none;
         }
       }
     </style>
