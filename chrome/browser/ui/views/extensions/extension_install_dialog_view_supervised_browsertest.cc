@@ -6,7 +6,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_icon_manager.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -115,15 +114,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, AskAParent) {
 
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt = CreatePrompt();
 
-  // Manipulate the passage of time.
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
-      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  supervised_user_extensions_metrics_recorder()->SetClockForTesting(
-      task_runner->GetMockTickClock());
-  // We need to start at some non-zero point in time or else
-  // DCHECK(!start_time_.is_null()) throws.
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1));
-
   // Launch the extension install dialog.
   ExtensionInstallPrompt install_prompt(profile(), nullptr);
   base::RunLoop run_loop;
@@ -144,11 +134,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, AskAParent) {
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
                        kExtensionInstallDialogOpenedActionName));
-
-  // Simulate the passage of time (11 seconds).
-  base::TimeDelta duration(base::TimeDelta::FromSeconds(11));
-  // Suppose the user spends 11 seconds reading the dialog.
-  task_runner->FastForwardBy(duration);
 
   // Supervised user presses "Ask a parent".
   ExtensionInstallDialogView::SetInstallButtonDelayForTesting(0);
@@ -167,15 +152,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, AskAParent) {
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kExtensionInstallDialogHistogramName,
                                     2);
-  // We should have recorded that the user spent 11 seconds.
-  histogram_tester.ExpectTimeBucketCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kExtensionInstallDialogAskedParentTimeHistogramName,
-      duration, 1);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kExtensionInstallDialogAskedParentTimeHistogramName,
-      1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
                        kExtensionInstallDialogAskedParentActionName));
@@ -189,15 +165,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised,
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::CANCEL);
 
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt = CreatePrompt();
-
-  // Manipulate the passage of time.
-  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
-      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  supervised_user_extensions_metrics_recorder()->SetClockForTesting(
-      task_runner->GetMockTickClock());
-  // We need to start at some non-zero point in time or else
-  // DCHECK(!start_time_.is_null()) throws.
-  task_runner->FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Launch the extension install dialog.
   ExtensionInstallPrompt install_prompt(profile(), nullptr);
@@ -220,11 +187,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised,
                    SupervisedUserExtensionsMetricsRecorder::
                        kExtensionInstallDialogOpenedActionName));
 
-  // Simulate the passage of time (15 seconds);
-  base::TimeDelta duration(base::TimeDelta::FromSeconds(15));
-  // Suppose the user spends 15 seconds reading the dialog.
-  task_runner->FastForwardBy(duration);
-
   // Supervised user presses "Cancel".
   ExtensionInstallDialogView* delegate_view =
       CreateAndShowPrompt(&helper, install_prompt.GetPromptForTesting());
@@ -240,15 +202,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised,
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kExtensionInstallDialogHistogramName,
                                     2);
-  // We should have recorded that the user spent 15 seconds.
-  histogram_tester.ExpectTimeBucketCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kExtensionInstallDialogChildCanceledTimeHistogramName,
-      duration, 1);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kExtensionInstallDialogChildCanceledTimeHistogramName,
-      1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
                        kExtensionInstallDialogChildCanceledActionName));

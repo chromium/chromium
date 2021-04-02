@@ -340,10 +340,6 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kParentPermissionDialogHistogramName,
                                     2);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kParentPermissionDialogParentApprovedTimeHistogramName,
-      1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
                        kParentPermissionDialogOpenedActionName));
@@ -379,10 +375,6 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kParentPermissionDialogHistogramName,
                                     2);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kParentPermissionDialogFailedTimeHistogramName,
-      1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
                        kParentPermissionDialogOpenedActionName));
@@ -415,10 +407,6 @@ IN_PROC_BROWSER_TEST_F(ParentPermissionDialogViewTest,
   histogram_tester.ExpectTotalCount(SupervisedUserExtensionsMetricsRecorder::
                                         kParentPermissionDialogHistogramName,
                                     2);
-  histogram_tester.ExpectTotalCount(
-      SupervisedUserExtensionsMetricsRecorder::
-          kParentPermissionDialogParentCanceledTimeHistogramName,
-      1);
   EXPECT_EQ(1, user_action_tester.GetActionCount(
                    SupervisedUserExtensionsMetricsRecorder::
                        kParentPermissionDialogOpenedActionName));

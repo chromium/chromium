@@ -4,10 +4,8 @@
 
 #include "chrome/browser/supervised_user/supervised_user_extensions_metrics_recorder.h"
 
-#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
-#include "base/time/default_tick_clock.h"
 
 // static
 const char SupervisedUserExtensionsMetricsRecorder::kExtensionsHistogramName[] =
@@ -26,12 +24,6 @@ const char SupervisedUserExtensionsMetricsRecorder::
     kExtensionInstallDialogHistogramName[] =
         "SupervisedUsers.ExtensionInstallDialog";
 const char SupervisedUserExtensionsMetricsRecorder::
-    kExtensionInstallDialogAskedParentTimeHistogramName[] =
-        "SupervisedUsers.ExtensionInstallDialog.AskedParentUserTime";
-const char SupervisedUserExtensionsMetricsRecorder::
-    kExtensionInstallDialogChildCanceledTimeHistogramName[] =
-        "SupervisedUsers.ExtensionInstallDialog.ChildCanceledUserTime";
-const char SupervisedUserExtensionsMetricsRecorder::
     kExtensionInstallDialogOpenedActionName[] =
         "SupervisedUsers_Extensions_ExtensionInstallDialog_Opened";
 const char SupervisedUserExtensionsMetricsRecorder::
@@ -44,15 +36,6 @@ const char SupervisedUserExtensionsMetricsRecorder::
 const char SupervisedUserExtensionsMetricsRecorder::
     kParentPermissionDialogHistogramName[] =
         "SupervisedUsers.ParentPermissionDialog";
-const char SupervisedUserExtensionsMetricsRecorder::
-    kParentPermissionDialogParentApprovedTimeHistogramName[] =
-        "SupervisedUsers.ParentPermissionDialog.ParentApprovedUserTime";
-const char SupervisedUserExtensionsMetricsRecorder::
-    kParentPermissionDialogParentCanceledTimeHistogramName[] =
-        "SupervisedUsers.ParentPermissionDialog.ParentCanceledUserTime";
-const char SupervisedUserExtensionsMetricsRecorder::
-    kParentPermissionDialogFailedTimeHistogramName[] =
-        "SupervisedUsers.ParentPermissionDialog.FailedUserTime";
 const char SupervisedUserExtensionsMetricsRecorder::
     kParentPermissionDialogOpenedActionName[] =
         "SupervisedUsers_Extensions_ParentPermissionDialog_Opened";
@@ -74,8 +57,7 @@ const char
         "SupervisedUsers_Extensions_FailedToEnable";
 
 SupervisedUserExtensionsMetricsRecorder::
-    SupervisedUserExtensionsMetricsRecorder()
-    : clock_(base::DefaultTickClock::GetInstance()) {}
+    SupervisedUserExtensionsMetricsRecorder() = default;
 
 void SupervisedUserExtensionsMetricsRecorder::OnDialogOpened() {
   RecordExtensionInstallDialogUmaMetrics(ExtensionInstallDialogState::kOpened);
@@ -120,17 +102,14 @@ void SupervisedUserExtensionsMetricsRecorder::
     case ExtensionInstallDialogState::kOpened:
       base::RecordAction(
           base::UserMetricsAction(kExtensionInstallDialogOpenedActionName));
-      start_time_ = clock_->NowTicks();
       break;
     case ExtensionInstallDialogState::kAskedParent:
       base::RecordAction(base::UserMetricsAction(
           kExtensionInstallDialogAskedParentActionName));
-      RecordUserTime(kExtensionInstallDialogAskedParentTimeHistogramName);
       break;
     case ExtensionInstallDialogState::kChildCanceled:
       base::RecordAction(base::UserMetricsAction(
           kExtensionInstallDialogChildCanceledActionName));
-      RecordUserTime(kExtensionInstallDialogChildCanceledTimeHistogramName);
       break;
   }
 }
@@ -142,21 +121,16 @@ void SupervisedUserExtensionsMetricsRecorder::
     case ParentPermissionDialogState::kOpened:
       base::RecordAction(
           base::UserMetricsAction(kParentPermissionDialogOpenedActionName));
-      start_time_ = clock_->NowTicks();
       break;
     case ParentPermissionDialogState::kParentApproved:
       base::RecordAction(base::UserMetricsAction(
           kParentPermissionDialogParentApprovedActionName));
-      RecordUserTime(kParentPermissionDialogParentApprovedTimeHistogramName);
       break;
     case ParentPermissionDialogState::kParentCanceled:
       base::RecordAction(base::UserMetricsAction(
           kParentPermissionDialogParentCanceledActionName));
-      RecordUserTime(kParentPermissionDialogParentCanceledTimeHistogramName);
       break;
     case ParentPermissionDialogState::kFailed:
-      RecordUserTime(kParentPermissionDialogFailedTimeHistogramName);
-      break;
     case ParentPermissionDialogState::kNoParentError:
       // Nothing to do here.
       break;
@@ -178,16 +152,4 @@ void SupervisedUserExtensionsMetricsRecorder::RecordEnablementUmaMetrics(
       base::RecordAction(base::UserMetricsAction(kFailedToEnableActionName));
       break;
   }
-}
-
-void SupervisedUserExtensionsMetricsRecorder::SetClockForTesting(
-    const base::TickClock* tick_clock) {
-  clock_ = tick_clock;
-}
-
-void SupervisedUserExtensionsMetricsRecorder::RecordUserTime(
-    const std::string& metric_name) const {
-  DCHECK(!start_time_.is_null()) << "start_time_ has not been initialized.";
-  base::TimeDelta duration = clock_->NowTicks() - start_time_;
-  base::UmaHistogramLongTimes(metric_name, duration);
 }

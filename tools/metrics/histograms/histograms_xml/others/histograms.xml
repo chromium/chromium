@@ -15352,6 +15352,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SupervisedUsers.ExtensionInstallDialog.AskedParentUserTime"
     units="ms" expires_after="2021-09-05">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>danan@chromium.org</owner>
@@ -15364,6 +15367,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SupervisedUsers.ExtensionInstallDialog.ChildCanceledUserTime"
     units="ms" expires_after="2021-09-05">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>danan@chromium.org</owner>
@@ -15375,7 +15381,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SupervisedUsers.Extensions2" enum="SupervisedUserExtension2"
-    expires_after="2021-05-02">
+    expires_after="2022-05-02">
   <owner>tobyhuang@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>danan@chromium.org</owner>
@@ -15432,6 +15438,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SupervisedUsers.ParentPermissionDialog.FailedUserTime"
     units="ms" expires_after="2021-05-02">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>danan@chromium.org</owner>
@@ -15444,6 +15453,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SupervisedUsers.ParentPermissionDialog.ParentApprovedUserTime"
     units="ms" expires_after="2021-05-02">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>danan@chromium.org</owner>
@@ -15456,6 +15468,9 @@ should be kept until we remove incident reporting. -->
 
 <histogram name="SupervisedUsers.ParentPermissionDialog.ParentCanceledUserTime"
     units="ms" expires_after="2021-08-01">
+  <obsolete>
+    Removed in M91.
+  </obsolete>
   <owner>tobyhuang@chromium.org</owner>
   <owner>agawronska@chromium.org</owner>
   <owner>danan@chromium.org</owner>

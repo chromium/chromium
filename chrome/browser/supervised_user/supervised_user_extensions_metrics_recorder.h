@@ -5,12 +5,7 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_EXTENSIONS_METRICS_RECORDER_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_EXTENSIONS_METRICS_RECORDER_H_
 
-#include "base/time/time.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-
-namespace base {
-class TickClock;
-}
 
 // Records UMA metrics for supervised users using extensions.
 class SupervisedUserExtensionsMetricsRecorder
@@ -115,17 +110,12 @@ class SupervisedUserExtensionsMetricsRecorder
 
   // UMA metrics for the Extension Install Dialog.
   static const char kExtensionInstallDialogHistogramName[];
-  static const char kExtensionInstallDialogAskedParentTimeHistogramName[];
-  static const char kExtensionInstallDialogChildCanceledTimeHistogramName[];
   static const char kExtensionInstallDialogOpenedActionName[];
   static const char kExtensionInstallDialogAskedParentActionName[];
   static const char kExtensionInstallDialogChildCanceledActionName[];
 
   // UMA metrics for the Parent Permission Dialog.
   static const char kParentPermissionDialogHistogramName[];
-  static const char kParentPermissionDialogParentApprovedTimeHistogramName[];
-  static const char kParentPermissionDialogParentCanceledTimeHistogramName[];
-  static const char kParentPermissionDialogFailedTimeHistogramName[];
   static const char kParentPermissionDialogOpenedActionName[];
   static const char kParentPermissionDialogParentApprovedActionName[];
   static const char kParentPermissionDialogParentCanceledActionName[];
@@ -161,21 +151,6 @@ class SupervisedUserExtensionsMetricsRecorder
 
   // Records when the supervised user enables or disables an approved extension.
   static void RecordEnablementUmaMetrics(EnablementState state);
-
-  // Set clock used for timing for manipulation during tests.
-  void SetClockForTesting(const base::TickClock* tick_clock);
-
- private:
-  // Records UMA metric of how long the user spends in the Extension Install or
-  // Parent Permission Dialogs in milliseconds.
-  void RecordUserTime(const std::string& metric_name) const;
-
-  // Points to the base::DefaultTickClock by default.
-  const base::TickClock* clock_;
-
-  // Records when the user initiates the Extension Install or Parent Permission
-  // Dialogs.
-  base::TimeTicks start_time_;
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_EXTENSIONS_METRICS_RECORDER_H_
