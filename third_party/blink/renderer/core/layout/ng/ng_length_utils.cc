@@ -518,7 +518,7 @@ LayoutUnit ComputeInlineSizeForFragmentInternal(
   }
 
   const MinMaxSizes min_max_sizes = ComputeMinMaxInlineSizes(
-      space, style, border_padding, MinMaxSizesFunc, &min_length);
+      space, node, border_padding, MinMaxSizesFunc, &min_length);
   return min_max_sizes.ClampSizeToMinAndMax(extent);
 }
 

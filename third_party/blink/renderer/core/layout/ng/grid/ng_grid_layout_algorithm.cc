@@ -34,7 +34,7 @@ NGGridLayoutAlgorithm::NGGridLayoutAlgorithm(
     const LayoutUnit border_scrollbar_padding =
         BorderScrollbarPadding().InlineSum();
     const MinMaxSizes sizes = ComputeMinMaxInlineSizes(
-        ConstraintSpace(), Style(), container_builder_.BorderPadding(),
+        ConstraintSpace(), Node(), container_builder_.BorderPadding(),
         [&border_scrollbar_padding](MinMaxSizesType) -> MinMaxSizesResult {
           // If we've reached here we are inside the ComputeMinMaxSizes pass,
           // and also have something like "min-width: min-content". This is

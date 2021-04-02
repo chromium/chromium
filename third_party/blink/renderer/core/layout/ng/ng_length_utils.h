@@ -12,8 +12,8 @@
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_fragment_geometry.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/ng/ng_layout_input_node.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -23,8 +23,6 @@ namespace blink {
 class ComputedStyle;
 class Length;
 class NGConstraintSpace;
-class NGBlockNode;
-class NGLayoutInputNode;
 
 inline bool NeedMinMaxSize(const ComputedStyle& style) {
   return style.LogicalWidth().IsContentOrIntrinsic() ||
@@ -353,10 +351,11 @@ MinMaxSizes ComputeMinMaxInlineSizesFromAspectRatio(
 
 template <typename MinMaxSizesFunc>
 MinMaxSizes ComputeMinMaxInlineSizes(const NGConstraintSpace& space,
-                                     const ComputedStyle& style,
+                                     const NGBlockNode& node,
                                      const NGBoxStrut& border_padding,
                                      const MinMaxSizesFunc& min_max_sizes_func,
                                      const Length* opt_min_length = nullptr) {
+  const ComputedStyle& style = node.Style();
   const Length& min_length =
       opt_min_length ? *opt_min_length : style.LogicalMinWidth();
   MinMaxSizes sizes = {
@@ -374,6 +373,12 @@ MinMaxSizes ComputeMinMaxInlineSizes(const NGConstraintSpace& space,
     sizes.min_size = std::max(
         sizes.min_size, std::min(transferred_sizes.min_size, sizes.max_size));
     sizes.max_size = std::min(sizes.max_size, transferred_sizes.max_size);
+  }
+
+  if (node.IsTable()) {
+    // Tables can't shrink below their inline min-content size.
+    sizes.Encompass(
+        min_max_sizes_func(MinMaxSizesType::kIntrinsic).sizes.min_size);
   }
 
   sizes.max_size = std::max(sizes.max_size, sizes.min_size);

@@ -126,10 +126,13 @@ LayoutUnit ComputeAssignableTableInlineSize(
   LayoutUnit used_table_inline_size = ComputeUsedInlineSizeForTableFragment(
       space, table, table_border_padding, grid_min_max);
 
-  // Don't allow the inline-size to go below the grid, or caption min-size.
+  // |ComputeUsedInlineSizeForTableFragment| returns a value >= GRIDMIN because
+  // of the |grid_min_max| parameter above.
+  DCHECK_GE(used_table_inline_size, grid_min_max.min_size);
+
+  // Don't allow the inline-size to go below the caption min-size.
   used_table_inline_size =
-      std::max({used_table_inline_size, caption_constraint.min_size,
-                grid_min_max.min_size});
+      std::max(used_table_inline_size, caption_constraint.min_size);
 
   // Standard: The assignable table width is the "used width of the table"
   // minus the total horizontal border spacing.

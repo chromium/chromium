@@ -520,32 +520,19 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     const Length& max_property_in_main_axis = is_horizontal_flow_
                                                   ? child.Style().MaxWidth()
                                                   : child.Style().MaxHeight();
-    const Length& max_property_in_cross_axis = is_horizontal_flow_
-                                                   ? child.Style().MaxHeight()
-                                                   : child.Style().MaxWidth();
-    const Length& min_property_in_cross_axis = is_horizontal_flow_
-                                                   ? child.Style().MinHeight()
-                                                   : child.Style().MinWidth();
     if (MainAxisIsInlineAxis(child)) {
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxInlineLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           MinMaxSizesFunc, max_property_in_main_axis);
-      min_max_sizes_in_cross_axis_direction.max_size = ResolveMaxBlockLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          max_property_in_cross_axis);
-      min_max_sizes_in_cross_axis_direction.min_size = ResolveMinBlockLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          min_property_in_cross_axis);
+      min_max_sizes_in_cross_axis_direction = ComputeMinMaxBlockSizes(
+          flex_basis_space, child_style, border_padding_in_child_writing_mode);
     } else {
       min_max_sizes_in_main_axis_direction.max_size = ResolveMaxBlockLength(
           flex_basis_space, child_style, border_padding_in_child_writing_mode,
           max_property_in_main_axis);
-      min_max_sizes_in_cross_axis_direction.max_size = ResolveMaxInlineLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc, max_property_in_cross_axis);
-      min_max_sizes_in_cross_axis_direction.min_size = ResolveMinInlineLength(
-          flex_basis_space, child_style, border_padding_in_child_writing_mode,
-          MinMaxSizesFunc, min_property_in_cross_axis);
+      min_max_sizes_in_cross_axis_direction = ComputeMinMaxInlineSizes(
+          flex_basis_space, child, border_padding_in_child_writing_mode,
+          MinMaxSizesFunc);
     }
 
     base::Optional<LayoutUnit> calculated_intrinsic_block_size;
