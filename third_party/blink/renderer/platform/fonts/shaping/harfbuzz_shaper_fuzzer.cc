@@ -26,7 +26,7 @@ constexpr size_t kMaxInputLength = 256;
 int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport fuzzer_support = BlinkFuzzerTestSupport();
 
-  if (false) {
+  if ((false)) {  // Add extra parenthesis to disable dead code warning.
     // The fuzzer driver does not pass along command line arguments, so add any
     // useful debugging command line arguments manually here.
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
