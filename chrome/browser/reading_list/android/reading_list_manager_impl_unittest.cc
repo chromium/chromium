@@ -50,6 +50,7 @@ class ReadingListManagerImplTest : public testing::Test {
   ~ReadingListManagerImplTest() override = default;
 
   void SetUp() override {
+    clock_.SetNow(base::Time::Now());
     reading_list_model_ = std::make_unique<ReadingListModelImpl>(
         /*storage_layer=*/nullptr, /*pref_service=*/nullptr, &clock_);
     manager_ =
@@ -109,7 +110,7 @@ TEST_F(ReadingListManagerImplTest, Load) {
   const auto* node = manager()->Get(url);
   EXPECT_TRUE(node);
   EXPECT_EQ(url, node->url());
-  EXPECT_EQ(1u, manager()->size());
+  EXPECT_EQ(clock()->Now(), node->date_added());
   EXPECT_EQ(1u, manager()->unread_size());
 }
 

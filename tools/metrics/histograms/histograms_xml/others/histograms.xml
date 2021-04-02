@@ -1824,6 +1824,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Bookmarks.OpenBookmarkTimeInterval.{BookmarkType}" units="ms"
     expires_after="2022-02-15">
+  <obsolete>
+    Deprecated March 2021
+  </obsolete>
   <owner>dtrainor@chromium.org</owner>
   <owner>xingliu@chromium.org</owner>
   <summary>
@@ -1831,6 +1834,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     bookmark open time based on device local time. Recorded when {BookmarkType}
     is opened. Bookmark folder is not considered. The creation and open can
     happen on different runs of Chrome.
+  </summary>
+  <token key="BookmarkType">
+    <variant name="Normal" summary="a normal bookmark."/>
+    <variant name="Partner" summary="a partner bookmark."/>
+    <variant name="ReadingList" summary="a reading list article."/>
+  </token>
+</histogram>
+
+<histogram name="Bookmarks.OpenBookmarkTimeInterval2.{BookmarkType}" units="ms"
+    expires_after="2022-02-15">
+  <owner>dtrainor@chromium.org</owner>
+  <owner>xingliu@chromium.org</owner>
+  <summary>
+    A new version of Bookmarks.OpenBookmarkTimeInterval.{BookmarkType}, to rule
+    out corrupted data introduced by a timestamp bug.
   </summary>
   <token key="BookmarkType">
     <variant name="Normal" summary="a normal bookmark."/>

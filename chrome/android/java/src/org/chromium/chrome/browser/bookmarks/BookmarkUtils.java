@@ -395,7 +395,7 @@ public class BookmarkUtils {
 
         BookmarkItem bookmarkItem = model.getBookmarkById(bookmarkId);
         assert bookmarkItem != null;
-        RecordHistogram.recordCustomTimesHistogram("Bookmarks.OpenBookmarkTimeInterval."
+        RecordHistogram.recordCustomTimesHistogram("Bookmarks.OpenBookmarkTimeInterval2."
                         + bookmarkTypeToHistogramSuffix(bookmarkId.getType()),
                 System.currentTimeMillis() - bookmarkItem.getDateAdded(), 1,
                 DateUtils.DAY_IN_MILLIS * 30, 50);
