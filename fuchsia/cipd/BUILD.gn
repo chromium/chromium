@@ -58,7 +58,12 @@ template("cipd_archive_internal") {
   }
 
   if (!defined(package_relative_path)) {
-    package_relative_path = package_basename + "-\${targetarch}"
+    if (target_cpu == "x64") {
+      targetarch = "amd64"
+    } else {
+      targetarch = "arm64"
+    }
+    package_relative_path = "${package_basename}-$targetarch"
   }
 
   if (invoker.is_internal) {
