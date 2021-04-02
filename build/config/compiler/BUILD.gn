@@ -522,12 +522,19 @@ config("compiler") {
   if (is_clang && !is_nacl && !use_xcode_clang) {
     cflags += [ "-fcrash-diagnostics-dir=" + clang_diagnostic_dir ]
 
+    # TODO(hans): Remove this once Clang generates better optimized debug info
+    # by default. https://crbug.com/765793
     cflags += [
-      # TODO(hans): Remove this once Clang generates better optimized debug info
-      # by default. https://crbug.com/765793
       "-mllvm",
       "-instcombine-lower-dbg-declare=0",
     ]
+    if (!is_debug && use_thin_lto && is_a_target_toolchain) {
+      if (is_win) {
+        ldflags += [ "-mllvm:instcombine-lower-dbg-declare=0" ]
+      } else {
+        ldflags += [ "-Wl,-mllvm,-instcombine-lower-dbg-declare=0" ]
+      }
+    }
   }
 
   if (llvm_force_head_revision) {
