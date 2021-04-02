@@ -24767,7 +24767,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'int',
       'schema': { 'type': 'integer', 'minimum': 0, 'maximum': 5 },
       'default': 0,
-      'supported_on': ['chrome.*:90-', 'chrome_os:90-'],
+      'supported_on': ['chrome.*:90-', 'chrome_os:91-'],
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,

@@ -8560,7 +8560,7 @@
     ]
   },
   "FetchKeepaliveDurationSecondsOnShutdown": {
-    "os": ["win", "linux", "mac", "chromeos"],
+    "os": ["win", "linux", "mac"],
     "policy_pref_mapping_tests": [
       {
         "policies": {},
