@@ -874,26 +874,20 @@ inline wtf_size_t NGInlineCursor::SpanIndexFromItemIndex(unsigned index) const {
 }
 
 void NGInlineCursor::MoveTo(const NGFragmentItem& fragment_item) {
-  MoveTo(*fragment_item.GetLayoutObject());
-  while (IsNotNull()) {
-    if (CurrentItem() == &fragment_item)
-      return;
-    MoveToNext();
-  }
-  NOTREACHED();
+  DCHECK(HasRoot());
+  // Note: We use address instead of iterator because we can't compare
+  // iterators in different span. See |base::CheckedContiguousIterator<T>|.
+  const ptrdiff_t index = &fragment_item - &*items_.begin();
+  DCHECK_GE(index, 0);
+  DCHECK_LT(static_cast<size_t>(index), items_.size());
+  MoveToItem(items_.begin() + index);
 }
 
 void NGInlineCursor::MoveTo(const NGInlineCursor& cursor) {
   if (cursor.current_.item_) {
     if (!fragment_items_)
       SetRoot(*cursor.root_box_fragment_, *cursor.fragment_items_);
-    // Note: We use address instead of iterator because we can't compare
-    // iterators in different span. See |base::CheckedContiguousIterator<T>|.
-    const ptrdiff_t index = &*cursor.current_.item_iter_ - &*items_.begin();
-    DCHECK_GE(index, 0);
-    DCHECK_LT(static_cast<size_t>(index), items_.size());
-    MoveToItem(items_.begin() + index);
-    return;
+    return MoveTo(*cursor.current_.item_);
   }
   *this = cursor;
 }

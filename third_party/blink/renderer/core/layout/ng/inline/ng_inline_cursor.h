@@ -390,7 +390,8 @@ class CORE_EXPORT NGInlineCursor {
   //
   void MoveTo(const NGInlineCursorPosition& position);
 
-  // Move the current position at |fragment_item|.
+  // Move the current position at |fragment_item|. |this| cursor must have
+  // root.
   void MoveTo(const NGFragmentItem& fragment_item);
 
   // Move the current position at |cursor|. Unlinke copy constrcutr, this

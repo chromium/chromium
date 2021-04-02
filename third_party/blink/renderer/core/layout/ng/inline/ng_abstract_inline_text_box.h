@@ -25,9 +25,7 @@ class CORE_EXPORT NGAbstractInlineTextBox final : public AbstractInlineTextBox {
   friend class LayoutText;
 
  public:
-  NGAbstractInlineTextBox(LineLayoutText line_layout_item,
-                          const NGFragmentItem& fragment);
-
+  explicit NGAbstractInlineTextBox(const NGInlineCursor& cursor);
   ~NGAbstractInlineTextBox() final;
 
  private:
@@ -52,6 +50,8 @@ class CORE_EXPORT NGAbstractInlineTextBox final : public AbstractInlineTextBox {
   bool NeedsTrailingSpace() const final;
 
   const NGFragmentItem* fragment_item_;
+  // |root_box_fragment_| owns |fragment_item_|.
+  Persistent<const NGPhysicalBoxFragment> root_box_fragment_;
 };
 
 }  // namespace blink

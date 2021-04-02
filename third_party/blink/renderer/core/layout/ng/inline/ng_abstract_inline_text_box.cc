@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_abstract_inline_text_box.h"
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/layout/ng//ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_break_token.h"
@@ -20,10 +21,10 @@ namespace {
 class NGAbstractInlineTextBoxCache final {
  public:
   static scoped_refptr<AbstractInlineTextBox> GetOrCreate(
-      const NGFragmentItem& fragment) {
+      const NGInlineCursor& cursor) {
     if (!s_instance_)
       s_instance_ = new NGAbstractInlineTextBoxCache();
-    return s_instance_->GetOrCreateInternal(fragment);
+    return s_instance_->GetOrCreateInternal(cursor);
   }
 
   static void WillDestroy(const NGFragmentItem* fragment) {
@@ -34,15 +35,17 @@ class NGAbstractInlineTextBoxCache final {
 
  private:
   scoped_refptr<AbstractInlineTextBox> GetOrCreateInternal(
-      const NGFragmentItem& fragment) {
+      const NGInlineCursor& cursor) {
+    const NGFragmentItem& fragment = *cursor.CurrentItem();
+    DCHECK(&fragment);
     const auto it = map_.find(&fragment);
     auto* const layout_text = To<LayoutText>(fragment.GetMutableLayoutObject());
     if (it != map_.end()) {
       CHECK(layout_text->HasAbstractInlineTextBox());
       return it->value;
     }
-    scoped_refptr<AbstractInlineTextBox> obj = base::AdoptRef(
-        new NGAbstractInlineTextBox(LineLayoutText(layout_text), fragment));
+    scoped_refptr<AbstractInlineTextBox> obj =
+        base::AdoptRef(new NGAbstractInlineTextBox(cursor));
     map_.Set(&fragment, obj);
     layout_text->SetHasAbstractInlineTextBox();
     return obj;
@@ -68,10 +71,9 @@ NGAbstractInlineTextBoxCache* NGAbstractInlineTextBoxCache::s_instance_ =
 
 scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::GetOrCreate(
     const NGInlineCursor& cursor) {
-  if (const NGFragmentItem* fragment_item = cursor.CurrentItem()) {
-    return NGAbstractInlineTextBoxCache::GetOrCreate(*fragment_item);
-  }
-  return nullptr;
+  if (!cursor)
+    return nullptr;
+  return NGAbstractInlineTextBoxCache::GetOrCreate(cursor);
 }
 
 void NGAbstractInlineTextBox::WillDestroy(const NGInlineCursor& cursor) {
@@ -81,15 +83,17 @@ void NGAbstractInlineTextBox::WillDestroy(const NGInlineCursor& cursor) {
   NOTREACHED();
 }
 
-NGAbstractInlineTextBox::NGAbstractInlineTextBox(
-    LineLayoutText line_layout_item,
-    const NGFragmentItem& fragment_item)
-    : AbstractInlineTextBox(line_layout_item), fragment_item_(&fragment_item) {
+NGAbstractInlineTextBox::NGAbstractInlineTextBox(const NGInlineCursor& cursor)
+    : AbstractInlineTextBox(LineLayoutText(
+          To<LayoutText>(cursor.Current().GetMutableLayoutObject()))),
+      fragment_item_(cursor.CurrentItem()),
+      root_box_fragment_(&cursor.ContainerFragment()) {
   DCHECK(fragment_item_->IsText()) << fragment_item_;
 }
 
 NGAbstractInlineTextBox::~NGAbstractInlineTextBox() {
   DCHECK(!fragment_item_);
+  DCHECK(!root_box_fragment_);
 }
 
 void NGAbstractInlineTextBox::Detach() {
@@ -100,6 +104,7 @@ void NGAbstractInlineTextBox::Detach() {
   DCHECK(!GetLayoutObject());
 
   fragment_item_ = nullptr;
+  root_box_fragment_ = nullptr;
 
   if (cache) {
     prev_layout_object->CheckIsNotDestroyed();
@@ -111,7 +116,7 @@ void NGAbstractInlineTextBox::Detach() {
 NGInlineCursor NGAbstractInlineTextBox::GetCursor() const {
   if (!fragment_item_)
     return NGInlineCursor();
-  NGInlineCursor cursor;
+  NGInlineCursor cursor(*root_box_fragment_);
   cursor.MoveTo(*fragment_item_);
   DCHECK(!cursor.Current().GetLayoutObject()->NeedsLayout());
   return cursor;
