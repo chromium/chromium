@@ -7,6 +7,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
+#include "chrome/browser/lite_video/lite_video_features.h"
+#include "chrome/browser/lite_video/lite_video_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
@@ -46,7 +48,9 @@ DataSaverSiteBreakdownMetricsObserver::OnCommit(
   // called in WebContents destructor.
   browser_context_ = navigation_handle->GetWebContents()->GetBrowserContext();
 
-  // Use Virtual URL instead of actual host.
+  // Use the virtual URL that is meant to be displayed to the user, instead of
+  // actual URL, since certain previews redirect to an optimized page that has
+  // different URL than shown in the titlebar.
   committed_host_ = navigation_handle->GetWebContents()
                         ->GetLastCommittedURL()
                         .HostNoBrackets();
@@ -94,6 +98,12 @@ void DataSaverSiteBreakdownMetricsObserver::OnResourceDataUseObserved(
     if (origin_save_data_savings) {
       data_reduction_proxy_bytes_saved +=
           received_data_length * origin_save_data_savings / 100;
+    }
+    if (auto* lite_video_observer = LiteVideoObserver::FromWebContents(
+            content::WebContents::FromRenderFrameHost(rfh))) {
+      DCHECK(lite_video::features::IsLiteVideoEnabled());
+      data_reduction_proxy_bytes_saved +=
+          lite_video_observer->GetAndClearEstimatedDataSavingBytes();
     }
 
     data_reduction_proxy_settings->data_reduction_proxy_service()

@@ -145,5 +145,17 @@ bool DisableLiteVideoOnMediaPlayerSeek() {
       ::features::kLiteVideo, "disable_on_media_player_seek", false);
 }
 
+double GetThrottledVideoBytesDeflatedRatio() {
+  // The default throttled video bytes deflated ratio is calculated from total
+  // video bytes observed in Control vs Enabled field trial as:
+  //  (Control_video_bytes - Enabled_video_bytes) / Enabled_video_bytes
+  // Enabled_video_bytes is the total throttled video bytes seen for the
+  // pageload. Note that this is slightly different from the notion of data
+  // savings in general which is calculated as:
+  //  (Control_bytes - Enabled_bytes) / Control_bytes
+  return GetFieldTrialParamByFeatureAsDouble(
+      ::features::kLiteVideo, "throttled_video_bytes_deflated_ratio", 0.53);
+}
+
 }  // namespace features
 }  // namespace lite_video

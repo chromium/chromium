@@ -10,8 +10,10 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/lite_video/lite_video_navigation_metrics.h"
 #include "chrome/browser/lite_video/lite_video_user_blocklist.h"
+#include "chrome/common/lite_video_service.mojom.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
@@ -30,11 +32,15 @@ enum class OptimizationGuideDecision;
 
 class LiteVideoObserver
     : public content::WebContentsObserver,
-      public content::WebContentsUserData<LiteVideoObserver> {
+      public content::WebContentsUserData<LiteVideoObserver>,
+      public lite_video::mojom::LiteVideoService {
  public:
   static void MaybeCreateForWebContents(content::WebContents* web_contents);
 
   ~LiteVideoObserver() override;
+
+  // Returns the total bytes estimated to be saved by LiteVideo.
+  uint64_t GetAndClearEstimatedDataSavingBytes();
 
  private:
   friend class content::WebContentsUserData<LiteVideoObserver>;
@@ -45,6 +51,9 @@ class LiteVideoObserver
       content::NavigationHandle* navigation_handle) override;
   void MediaBufferUnderflow(const content::MediaPlayerId& id) override;
   void MediaPlayerSeek(const content::MediaPlayerId& id) override;
+
+  // mojom::LiteVideoService.
+  void NotifyThrottledDataUse(uint64_t response_bytes) override;
 
   // Determines the LiteVideoDecision based on |hint| and the coinflip
   // holdback state.
@@ -92,6 +101,12 @@ class LiteVideoObserver
   // for the decision of whether to throttle media requests that
   // occur within that frame.
   std::set<content::GlobalFrameRoutingId> routing_ids_to_notify_;
+
+  // Current response bytes that have been targeted for LiteVideo throttling.
+  uint64_t current_throttled_video_bytes_ = 0;
+
+  content::WebContentsFrameReceiverSet<lite_video::mojom::LiteVideoService>
+      receivers_;
 
   // Used to get a weak pointer to |this|.
   base::WeakPtrFactory<LiteVideoObserver> weak_ptr_factory_{this};

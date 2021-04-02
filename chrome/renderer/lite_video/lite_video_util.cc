@@ -29,4 +29,13 @@ size_t GetMaxActiveThrottles() {
                                                 "max_active_throttles", 50);
 }
 
+base::Optional<uint64_t> GetContentLength(
+    const network::mojom::URLResponseHead& response_head) {
+  if (response_head.content_length > 0)
+    return static_cast<uint64_t>(response_head.content_length);
+  if (response_head.encoded_body_length > 0)
+    return static_cast<uint64_t>(response_head.encoded_body_length);
+  return base::nullopt;
+}
+
 }  // namespace lite_video

@@ -83,6 +83,10 @@ void LiteVideoURLLoaderThrottle::WillProcessResponse(
   if (!lite_video_hint_agent)
     return;
 
+  auto received_bytes = GetContentLength(*response_head);
+  if (received_bytes)
+    lite_video_hint_agent->NotifyThrottledDataUse(*received_bytes);
+
   auto latency = lite_video_hint_agent->CalculateLatencyForResourceResponse(
       *response_head);
   if (latency.is_zero())

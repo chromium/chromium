@@ -701,6 +701,7 @@ mojom("mojo_bindings") {
     "cache_stats_recorder.mojom",
     "chrome_render_frame.mojom",
     "draggable_regions.mojom",
+    "lite_video_service.mojom",
     "media/webrtc_logging.mojom",
     "metrics.mojom",
     "net/net_error_page_support.mojom",

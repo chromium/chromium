@@ -6,7 +6,9 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/renderer/lite_video/lite_video_util.h"
+#include "content/public/renderer/render_frame.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace lite_video {
 
@@ -47,18 +49,14 @@ base::TimeDelta LiteVideoHintAgent::CalculateLatencyForResourceResponse(
     return base::TimeDelta();
   }
 
-  int64_t recv_bytes = response_head.content_length;
-  if (recv_bytes == -1)
-    recv_bytes = response_head.encoded_body_length;
-  if (recv_bytes == -1 && !ShouldThrottleLiteVideoMissingContentLength()) {
+  auto recv_bytes = GetContentLength(response_head);
+  if (!recv_bytes && !ShouldThrottleLiteVideoMissingContentLength()) {
     return base::TimeDelta();
-  } else if (recv_bytes == -1) {
-    recv_bytes = 0;
   }
 
   if (kilobytes_buffered_before_throttle_ <
       *kilobytes_to_buffer_before_throttle_) {
-    kilobytes_buffered_before_throttle_ += recv_bytes / 1024;
+    kilobytes_buffered_before_throttle_ += recv_bytes.value_or(0) / 1024;
     return base::TimeDelta();
   }
 
@@ -69,7 +67,8 @@ base::TimeDelta LiteVideoHintAgent::CalculateLatencyForResourceResponse(
   // + 1).
   auto delay_for_throttled_response =
       base::TimeDelta::FromSecondsD(
-          recv_bytes / (*target_downlink_bandwidth_kbps_ * 1024.0)) +
+          recv_bytes.value_or(0) /
+          (*target_downlink_bandwidth_kbps_ * 1024.0)) +
       *target_downlink_rtt_latency_;
   auto response_delay =
       response_head.response_time - response_head.request_time;
@@ -106,6 +105,14 @@ void LiteVideoHintAgent::StopThrottlingAndClearHints() {
   kilobytes_to_buffer_before_throttle_.reset();
   target_downlink_rtt_latency_.reset();
   max_throttling_delay_.reset();
+}
+
+void LiteVideoHintAgent::NotifyThrottledDataUse(uint64_t response_bytes) {
+  if (!lite_video_service_remote_) {
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        &lite_video_service_remote_);
+  }
+  lite_video_service_remote_->NotifyThrottledDataUse(response_bytes);
 }
 
 }  // namespace lite_video

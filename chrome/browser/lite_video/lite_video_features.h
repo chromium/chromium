@@ -81,6 +81,11 @@ int GetMaxRebuffersPerFrame();
 
 bool DisableLiteVideoOnMediaPlayerSeek();
 
+// Returns the ratio by how much throttled video bytes were observed to be
+// deflated due to LiteVideo. This is the ratio of expected bytes saved to the
+// total throttled network video bytes.
+double GetThrottledVideoBytesDeflatedRatio();
+
 }  // namespace features
 }  // namespace lite_video
 

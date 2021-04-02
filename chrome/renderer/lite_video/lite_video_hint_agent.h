@@ -7,10 +7,12 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "chrome/common/lite_video_service.mojom.h"
 #include "chrome/common/previews_resource_loading_hints.mojom.h"
 #include "chrome/renderer/lite_video/lite_video_url_loader_throttle.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "url/gurl.h"
 
 namespace lite_video {
@@ -59,6 +61,9 @@ class LiteVideoHintAgent
   // new requests.
   void StopThrottlingAndClearHints();
 
+  // Notifies the response bytes that were throttled by LiteVideo.
+  void NotifyThrottledDataUse(uint64_t response_bytes);
+
  private:
   friend class LiteVideoHintAgentTest;
 
@@ -88,6 +93,8 @@ class LiteVideoHintAgent
   // Set of media requests that are throttled currently. These are maintained
   // here to resume them immediately upon StopThrottling()
   std::set<LiteVideoURLLoaderThrottle*> active_throttles_;
+
+  mojo::AssociatedRemote<mojom::LiteVideoService> lite_video_service_remote_;
 };
 
 }  // namespace lite_video

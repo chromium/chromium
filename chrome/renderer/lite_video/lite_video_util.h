@@ -7,6 +7,9 @@
 
 #include <stddef.h>
 
+#include "base/optional.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+
 namespace lite_video {
 
 // Returns whether LiteVideo is enabled.
@@ -21,6 +24,11 @@ bool ShouldThrottleLiteVideoMissingContentLength();
 
 // Returns the maximum active throttles size.
 size_t GetMaxActiveThrottles();
+
+// Returns the content length of the response received. base::nullopt is
+// returned when content length cannot be retrieved.
+base::Optional<uint64_t> GetContentLength(
+    const network::mojom::URLResponseHead& response_head);
 
 }  // namespace lite_video
 

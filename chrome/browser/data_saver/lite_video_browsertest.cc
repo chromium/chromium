@@ -9,6 +9,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
+#include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/lite_video/lite_video_features.h"
 #include "chrome/browser/lite_video/lite_video_hint.h"
 #include "chrome/browser/lite_video/lite_video_navigation_metrics.h"
@@ -20,7 +22,11 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
+#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
+#include "components/data_reduction_proxy/proto/data_store.pb.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -150,6 +156,10 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
 
   GURL media_url() { return media_url_; }
 
+  std::string http_server_host() const {
+    return http_server_.base_url().HostNoBrackets();
+  }
+
  private:
   bool enable_lite_mode_;  // Whether LiteMode is enabled.
   GURL media_url_;
@@ -163,8 +173,7 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
 // Need to make tests more reliable but feature only targeted
 // for Android. Currently there are potential race conditions
 // on throttle timing and counts
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS) || \
-    defined(OS_LINUX)
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
 #define DISABLE_ON_WIN_MAC_CHROMEOS(x) DISABLED_##x
 #else
 #define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
@@ -500,6 +509,99 @@ IN_PROC_BROWSER_TEST_F(LiteVideoRebuffersAllowedBrowserTest,
       entry, ukm::builders::LiteVideo::kThrottlingResultName,
       static_cast<int>(
           lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
+}
+
+class LiteVideoDataSavingsBrowserTest : public LiteVideoBrowserTest {
+ protected:
+  void SetUpOnMainThread() override {
+    PrefService* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(data_reduction_proxy::prefs::kDataUsageReportingEnabled,
+                      true);
+  }
+
+  // Gets the data usage recorded against the host the embedded server runs on.
+  uint64_t GetDataUsage(const std::string& host) {
+    const auto& data_usage_map =
+        DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
+            browser()->profile())
+            ->data_reduction_proxy_service()
+            ->compression_stats()
+            ->DataUsageMapForTesting();
+    const auto& it = data_usage_map.find(host);
+    if (it != data_usage_map.end())
+      return it->second->data_used();
+    return 0;
+  }
+
+  // Gets the data savings recorded against the host the embedded server runs
+  // on.
+  int64_t GetDataSavings(const std::string& host) {
+    const auto& data_usage_map =
+        DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
+            browser()->profile())
+            ->data_reduction_proxy_service()
+            ->compression_stats()
+            ->DataUsageMapForTesting();
+    const auto& it = data_usage_map.find(host);
+    if (it != data_usage_map.end())
+      return it->second->original_size() - it->second->data_used();
+    return 0;
+  }
+
+  void WaitForDBToInitialize() {
+    base::RunLoop run_loop;
+    DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
+        browser()->profile())
+        ->data_reduction_proxy_service()
+        ->GetDBTaskRunnerForTesting()
+        ->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LiteVideoDataSavingsBrowserTest,
+                       DISABLE_ON_WIN_MAC_CHROMEOS(SimplePlayback)) {
+  WaitForDBToInitialize();
+  uint64_t data_savings_before_navigation = GetDataSavings(http_server_host());
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  TestMSEPlayback("bear-vp9.webm", "2000", "2000", false);
+
+  RetryForHistogramUntilCountReached(histogram_tester(),
+                                     "Media.VideoHeight.Initial.MSE", 1);
+
+  histogram_tester().ExpectUniqueSample("LiteVideo.HintAgent.HasHint", true, 1);
+
+  // Verify that at least 1 request was throttled. There will be 5 requests
+  // made and the hint is available.
+  RetryForHistogramUntilCountReached(histogram_tester(),
+                                     "LiteVideo.URLLoader.ThrottleLatency", 1);
+
+  // Close the tab to flush the UKM metrics.
+  browser()->tab_strip_model()->GetActiveWebContents()->Close();
+  auto entries =
+      ukm_recorder.GetEntriesByName(ukm::builders::LiteVideo::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  auto* entry = entries[0];
+  ukm_recorder.ExpectEntrySourceHasUrl(entry, media_url());
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingStartDecisionName,
+      static_cast<int>(lite_video::LiteVideoDecision::kAllowed));
+  // Blocklist reason is unknown due to force overriding the decision logic
+  // for testing.
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kBlocklistReasonName,
+      static_cast<int>(lite_video::LiteVideoBlocklistReason::kUnknown));
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingResultName,
+      static_cast<int>(
+          lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
+
+  // Expect at least 80KB data savings. The video is ~400KB, and based on the
+  // default parameters from GetThrottledVideoBytesDeflatedRatio(), it could be
+  // up to 116KB of savings.
+  EXPECT_LE(80000u, GetDataSavings(http_server_host()) -
+                        data_savings_before_navigation);
 }
 
 }  // namespace
