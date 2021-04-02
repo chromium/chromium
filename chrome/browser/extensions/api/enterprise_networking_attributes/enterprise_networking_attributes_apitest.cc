@@ -14,6 +14,7 @@
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "url/gurl.h"
 
 namespace {
