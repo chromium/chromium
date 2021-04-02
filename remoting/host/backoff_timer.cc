@@ -5,6 +5,7 @@
 #include "remoting/host/backoff_timer.h"
 #include "base/bind.h"
 
+#include <memory>
 #include <utility>
 
 namespace remoting {
@@ -21,7 +22,7 @@ void BackoffTimer::Start(const base::Location& posted_from,
   backoff_policy_.initial_delay_ms = delay.InMilliseconds();
   backoff_policy_.maximum_backoff_ms = max_delay.InMilliseconds();
   backoff_policy_.entry_lifetime_ms = -1;
-  backoff_entry_.reset(new net::BackoffEntry(&backoff_policy_));
+  backoff_entry_ = std::make_unique<net::BackoffEntry>(&backoff_policy_);
 
   posted_from_ = posted_from;
   user_task_ = user_task;

@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/authenticator_test_base.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -119,8 +120,8 @@ void AuthenticatorTestBase::ContinueAuthExchangeWith(Authenticator* sender,
 }
 
 void AuthenticatorTestBase::RunChannelAuth(bool expected_fail) {
-  client_fake_socket_.reset(new FakeStreamSocket());
-  host_fake_socket_.reset(new FakeStreamSocket());
+  client_fake_socket_ = std::make_unique<FakeStreamSocket>();
+  host_fake_socket_ = std::make_unique<FakeStreamSocket>();
   client_fake_socket_->PairWith(host_fake_socket_.get());
 
   client_auth_->SecureAndAuthenticate(

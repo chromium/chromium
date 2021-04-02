@@ -4,6 +4,8 @@
 
 #include "remoting/test/fake_port_allocator.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/test/fake_network_dispatcher.h"
@@ -70,9 +72,10 @@ cricket::PortAllocatorSession* FakePortAllocator::CreateSessionInternal(
 
 FakePortAllocatorFactory::FakePortAllocatorFactory(
     scoped_refptr<FakeNetworkDispatcher> fake_network_dispatcher) {
-  socket_factory_.reset(
-      new FakePacketSocketFactory(fake_network_dispatcher.get()));
-  network_manager_.reset(new FakeNetworkManager(socket_factory_->GetAddress()));
+  socket_factory_ =
+      std::make_unique<FakePacketSocketFactory>(fake_network_dispatcher.get());
+  network_manager_ =
+      std::make_unique<FakeNetworkManager>(socket_factory_->GetAddress());
 }
 
 FakePortAllocatorFactory::~FakePortAllocatorFactory() = default;

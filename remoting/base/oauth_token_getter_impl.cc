@@ -4,6 +4,7 @@
 
 #include "remoting/base/oauth_token_getter_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -40,7 +41,7 @@ OAuthTokenGetterImpl::OAuthTokenGetterImpl(
       gaia_oauth_client_(new gaia::GaiaOAuthClient(url_loader_factory)),
       credentials_updated_callback_(on_credentials_update) {
   if (auto_refresh) {
-    refresh_timer_.reset(new base::OneShotTimer());
+    refresh_timer_ = std::make_unique<base::OneShotTimer>();
   }
 }
 
@@ -52,7 +53,7 @@ OAuthTokenGetterImpl::OAuthTokenGetterImpl(
       authorization_credentials_(std::move(authorization_credentials)),
       gaia_oauth_client_(new gaia::GaiaOAuthClient(url_loader_factory)) {
   if (auto_refresh) {
-    refresh_timer_.reset(new base::OneShotTimer());
+    refresh_timer_ = std::make_unique<base::OneShotTimer>();
   }
 }
 
@@ -71,10 +72,11 @@ void OAuthTokenGetterImpl::OnGetTokensResponse(const std::string& refresh_token,
   UpdateAccessToken(access_token, expires_seconds);
 
   // Keep the refresh token in the authorization_credentials.
-  authorization_credentials_.reset(
-      new OAuthTokenGetter::OAuthAuthorizationCredentials(
+  authorization_credentials_ =
+      std::make_unique<OAuthTokenGetter::OAuthAuthorizationCredentials>(
+
           std::string(), refresh_token,
-          intermediate_credentials_->is_service_account));
+          intermediate_credentials_->is_service_account);
 
   // Clear out the one time use token.
   intermediate_credentials_.reset();

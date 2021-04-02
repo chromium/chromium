@@ -5,6 +5,7 @@
 #include "remoting/host/security_key/security_key_message_handler.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -37,13 +38,13 @@ void SecurityKeyMessageHandler::Start(
   DCHECK(error_callback_.is_null());
 
   if (!reader_) {
-    reader_.reset(
-        new SecurityKeyMessageReaderImpl(std::move(message_read_stream)));
+    reader_ = std::make_unique<SecurityKeyMessageReaderImpl>(
+        std::move(message_read_stream));
   }
 
   if (!writer_) {
-    writer_.reset(
-        new SecurityKeyMessageWriterImpl(std::move(message_write_stream)));
+    writer_ = std::make_unique<SecurityKeyMessageWriterImpl>(
+        std::move(message_write_stream));
   }
 
   ipc_client_ = std::move(ipc_client);

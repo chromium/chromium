@@ -39,7 +39,7 @@ class TestFrameConsumer : public protocol::FrameConsumer {
   std::unique_ptr<DesktopFrame> WaitForNextFrame(
       base::OnceClosure* out_done_callback) {
     EXPECT_TRUE(thread_checker_.CalledOnValidThread());
-    frame_run_loop_.reset(new base::RunLoop());
+    frame_run_loop_ = std::make_unique<base::RunLoop>();
     frame_run_loop_->Run();
     frame_run_loop_.reset();
     *out_done_callback = std::move(last_frame_done_callback_);
@@ -135,7 +135,7 @@ class SoftwareVideoRendererTest : public ::testing::Test {
  public:
   SoftwareVideoRendererTest() : context_(nullptr) {
     context_.Start();
-    renderer_.reset(new SoftwareVideoRenderer(&frame_consumer_));
+    renderer_ = std::make_unique<SoftwareVideoRenderer>(&frame_consumer_);
     renderer_->Initialize(context_, nullptr);
     renderer_->OnSessionConfig(
         *protocol::SessionConfig::ForTestWithVerbatimVideo());

@@ -301,8 +301,8 @@ void JingleSession::ContinueAcceptIncomingConnection() {
   if (authenticator_->state() == Authenticator::MESSAGE_READY)
     auth_message = authenticator_->GetNextMessage();
 
-  message->description.reset(new ContentDescription(
-      CandidateSessionConfig::CreateFrom(*config_), std::move(auth_message)));
+  message->description = std::make_unique<ContentDescription>(
+      CandidateSessionConfig::CreateFrom(*config_), std::move(auth_message));
   SendMessage(std::move(message));
 
   // Update state.
@@ -816,9 +816,9 @@ void JingleSession::SendSessionInitiateMessage() {
       peer_address_, JingleMessage::SESSION_INITIATE, session_id_));
   message->initiator =
       session_manager_->signal_strategy_->GetLocalAddress().id();
-  message->description.reset(new ContentDescription(
+  message->description = std::make_unique<ContentDescription>(
       session_manager_->protocol_config_->Clone(),
-      authenticator_->GetNextMessage()));
+      authenticator_->GetNextMessage());
   SendMessage(std::move(message));
 }
 

@@ -180,8 +180,8 @@ void SecurityKeyAuthHandlerPosix::CreateSocket() {
   HOST_LOG << "Listening for security key requests on "
            << g_security_key_socket_name.Get().value();
 
-  auth_socket_.reset(
-      new net::UnixDomainServerSocket(base::BindRepeating(MatchUid), false));
+  auth_socket_ = std::make_unique<net::UnixDomainServerSocket>(
+      base::BindRepeating(MatchUid), false);
   int rv = auth_socket_->BindAndListen(g_security_key_socket_name.Get().value(),
                                        /*backlog=*/1);
   if (rv != net::OK) {

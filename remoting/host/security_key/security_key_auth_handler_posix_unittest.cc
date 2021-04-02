@@ -94,7 +94,7 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
     ASSERT_TRUE(file_thread_.task_runner()->PostTaskAndReply(
         FROM_HERE, base::BindOnce(&RunUntilIdle), run_loop_->QuitClosure()));
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
 
     ASSERT_EQ(0u, auth_handler_->GetActiveConnectionCountForTest());
   }
@@ -107,7 +107,7 @@ class SecurityKeyAuthHandlerPosixTest : public testing::Test {
 
   void WaitForSendMessageToClient() {
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   void CheckHostDataMessage(int id) {

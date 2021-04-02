@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -31,12 +32,12 @@ static const int64_t kTestOverrideDelayMilliseconds = 1;
 class MonitoredVideoStubTest : public testing::Test {
  protected:
   void SetUp() override {
-    packet_.reset(new VideoPacket());
-    monitor_.reset(new MonitoredVideoStub(
+    packet_ = std::make_unique<VideoPacket>();
+    monitor_ = std::make_unique<MonitoredVideoStub>(
         &video_stub_,
         base::TimeDelta::FromMilliseconds(kTestOverrideDelayMilliseconds),
         base::BindRepeating(&MonitoredVideoStubTest::OnVideoChannelStatus,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
     EXPECT_CALL(video_stub_, ProcessVideoPacketPtr(_, _)).Times(AnyNumber());
   }
 

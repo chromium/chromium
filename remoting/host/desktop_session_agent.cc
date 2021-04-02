@@ -4,6 +4,7 @@
 
 #include "remoting/host/desktop_session_agent.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -384,8 +385,10 @@ void DesktopSessionAgent::OnStartSessionAgent(
   action_executor_ = desktop_environment_->CreateActionExecutor();
 
   // Hook up the input filter.
-  input_tracker_.reset(new protocol::InputEventTracker(input_injector_.get()));
-  remote_input_filter_.reset(new RemoteInputFilter(input_tracker_.get()));
+  input_tracker_ =
+      std::make_unique<protocol::InputEventTracker>(input_injector_.get());
+  remote_input_filter_ =
+      std::make_unique<RemoteInputFilter>(input_tracker_.get());
 
 #if defined(OS_WIN)
   // LocalInputMonitorWin filters out an echo of the injected input before it

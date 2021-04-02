@@ -7,6 +7,7 @@
 
 #include "remoting/host/policy_watcher.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -415,10 +416,10 @@ std::unique_ptr<PolicyWatcher> PolicyWatcher::CreateWithTaskRunner(
       file_task_runner, L"SOFTWARE\\Policies\\Google\\Chrome"));
 #elif defined(OS_APPLE)
   CFStringRef bundle_id = CFSTR("com.google.Chrome");
-  policy_loader.reset(new policy::PolicyLoaderMac(
+  policy_loader = std::make_unique<policy::PolicyLoaderMac>(
       file_task_runner,
       policy::PolicyLoaderMac::GetManagedPolicyPath(bundle_id),
-      new MacPreferences(), bundle_id));
+      new MacPreferences(), bundle_id);
 #elif defined(OS_POSIX) && !defined(OS_ANDROID)
   policy_loader.reset(new policy::ConfigDirPolicyLoader(
       file_task_runner,

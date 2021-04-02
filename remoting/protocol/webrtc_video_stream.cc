@@ -138,7 +138,7 @@ void WebrtcVideoStream::Start(
 
   webrtc_transport_->OnVideoTransceiverCreated(transceiver);
 
-  scheduler_.reset(new WebrtcFrameSchedulerSimple(session_options_));
+  scheduler_ = std::make_unique<WebrtcFrameSchedulerSimple>(session_options_);
   scheduler_->Start(webrtc_transport_->video_encoder_factory(),
                     base::BindRepeating(&WebrtcVideoStream::CaptureNextFrame,
                                         base::Unretained(this)));
@@ -247,7 +247,7 @@ void WebrtcVideoStream::OnChannelClosed(
 void WebrtcVideoStream::CaptureNextFrame() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  current_frame_stats_.reset(new FrameStats());
+  current_frame_stats_ = std::make_unique<FrameStats>();
   current_frame_stats_->capture_started_time = base::TimeTicks::Now();
   current_frame_stats_->input_event_timestamps =
       event_timestamps_source_->TakeLastEventTimestamps();

@@ -220,7 +220,7 @@ void It2MeHostTest::SetUp() {
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
 #endif
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 
   network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
 
@@ -228,8 +228,8 @@ void It2MeHostTest::SetUp() {
       base::ThreadTaskRunnerHandle::Get(), run_loop_->QuitClosure()));
   network_task_runner_ = host_context_->network_task_runner();
   ui_task_runner_ = host_context_->ui_task_runner();
-  fake_bot_signal_strategy_.reset(
-      new FakeSignalStrategy(SignalingAddress("fake_bot_jid")));
+  fake_bot_signal_strategy_ =
+      std::make_unique<FakeSignalStrategy>(SignalingAddress("fake_bot_jid"));
 }
 
 void It2MeHostTest::TearDown() {

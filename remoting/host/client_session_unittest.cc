@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -208,8 +209,9 @@ void ClientSessionTest::SetUp() {
   task_runner_ = new AutoThreadTaskRunner(
       task_environment_.GetMainThreadTaskRunner(), run_loop_.QuitClosure());
 
-  desktop_environment_factory_.reset(new FakeDesktopEnvironmentFactory(
-      task_environment_.GetMainThreadTaskRunner()));
+  desktop_environment_factory_ =
+      std::make_unique<FakeDesktopEnvironmentFactory>(
+          task_environment_.GetMainThreadTaskRunner());
   desktop_environment_options_ = DesktopEnvironmentOptions::CreateDefault();
 }
 
@@ -238,10 +240,10 @@ void ClientSessionTest::CreateClientSession(
   connection->set_client_stub(&client_stub_);
   connection_ = connection.get();
 
-  client_session_.reset(new ClientSession(
+  client_session_ = std::make_unique<ClientSession>(
       &session_event_handler_, std::move(connection),
       desktop_environment_factory_.get(), desktop_environment_options_,
-      base::TimeDelta(), nullptr, extensions_));
+      base::TimeDelta(), nullptr, extensions_);
 }
 
 void ClientSessionTest::CreateClientSession() {

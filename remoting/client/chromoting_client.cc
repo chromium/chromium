@@ -4,6 +4,7 @@
 
 #include "remoting/client/chromoting_client.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -57,7 +58,8 @@ void ChromotingClient::set_host_experiment_config(
     const std::string& experiment_config) {
   DCHECK(!connection_)
       << "set_host_experiment_config() cannot be called after Start().";
-  host_experiment_sender_.reset(new HostExperimentSender(experiment_config));
+  host_experiment_sender_ =
+      std::make_unique<HostExperimentSender>(experiment_config);
 }
 
 void ChromotingClient::SetConnectionToHostForTests(
@@ -87,11 +89,11 @@ void ChromotingClient::Start(
 #if !defined(ENABLE_WEBRTC_REMOTING_CLIENT)
       LOG(FATAL) << "WebRTC is not supported.";
 #else
-      connection_.reset(new protocol::WebrtcConnectionToHost());
+      connection_ = std::make_unique<protocol::WebrtcConnectionToHost>();
 #endif
     } else {
       DCHECK(protocol_config_->ice_supported());
-      connection_.reset(new protocol::IceConnectionToHost());
+      connection_ = std::make_unique<protocol::IceConnectionToHost>();
     }
   }
   connection_->set_client_stub(this);
@@ -105,7 +107,8 @@ void ChromotingClient::Start(
     protocol_config_->DisableAudioChannel();
   }
 
-  session_manager_.reset(new protocol::JingleSessionManager(signal_strategy));
+  session_manager_ =
+      std::make_unique<protocol::JingleSessionManager>(signal_strategy);
   session_manager_->set_protocol_config(std::move(protocol_config_));
 
   client_auth_config_ = client_auth_config;

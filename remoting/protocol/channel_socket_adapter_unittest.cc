@@ -44,7 +44,7 @@ class TransportChannelSocketAdapterTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    target_.reset(new TransportChannelSocketAdapter(&channel_));
+    target_ = std::make_unique<TransportChannelSocketAdapter>(&channel_);
   }
 
   void Callback(int result) {

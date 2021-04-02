@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/content_description.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -225,7 +226,7 @@ std::unique_ptr<ContentDescription> ContentDescription::ParseXml(
   std::unique_ptr<XmlElement> authenticator_message;
   const XmlElement* child = Authenticator::FindAuthenticatorMessage(element);
   if (child)
-    authenticator_message.reset(new XmlElement(*child));
+    authenticator_message = std::make_unique<XmlElement>(*child);
 
   return base::WrapUnique(new ContentDescription(
       std::move(config), std::move(authenticator_message)));

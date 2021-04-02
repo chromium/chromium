@@ -4,6 +4,8 @@
 
 #include "remoting/host/config_file_watcher.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
@@ -83,8 +85,8 @@ void ConfigFileWatcherTest::SetUp() {
                                  base::MessagePumpType::IO);
 
   // Create an instance of the config watcher.
-  watcher_.reset(
-      new ConfigFileWatcher(task_runner, io_task_runner, config_file_));
+  watcher_ = std::make_unique<ConfigFileWatcher>(task_runner, io_task_runner,
+                                                 config_file_);
 }
 
 void ConfigFileWatcherTest::TearDown() {

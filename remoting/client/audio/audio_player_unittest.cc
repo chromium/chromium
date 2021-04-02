@@ -40,7 +40,7 @@ class FakeAudioPlayer : public AudioPlayer {
 class AudioPlayerTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    audio_.reset(new FakeAudioPlayer());
+    audio_ = std::make_unique<FakeAudioPlayer>();
     buffer_.reset(new char[kAudioFrameBytes + kPaddingBytes]);
   }
 

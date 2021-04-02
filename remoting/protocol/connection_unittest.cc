@@ -283,7 +283,7 @@ class ConnectionTest : public testing::Test,
   void SetUp() override {
     // Create fake sessions.
     host_session_ = new FakeSession();
-    owned_client_session_.reset(new FakeSession());
+    owned_client_session_ = std::make_unique<FakeSession>();
     client_session_ = owned_client_session_.get();
 
     // Create Connection objects.
@@ -291,20 +291,20 @@ class ConnectionTest : public testing::Test,
       // Set the polling interval to zero to prevent hangs from PostDelayedTask.
       WebrtcTransport::SetDataChannelPollingIntervalForTests(base::TimeDelta());
 
-      host_connection_.reset(new WebrtcConnectionToClient(
+      host_connection_ = std::make_unique<WebrtcConnectionToClient>(
           base::WrapUnique(host_session_),
           TransportContext::ForTests(protocol::TransportRole::SERVER),
           task_environment_.GetMainThreadTaskRunner(),
-          task_environment_.GetMainThreadTaskRunner()));
-      client_connection_.reset(new WebrtcConnectionToHost());
+          task_environment_.GetMainThreadTaskRunner());
+      client_connection_ = std::make_unique<WebrtcConnectionToHost>();
 
     } else {
-      host_connection_.reset(new IceConnectionToClient(
+      host_connection_ = std::make_unique<IceConnectionToClient>(
           base::WrapUnique(host_session_),
           TransportContext::ForTests(protocol::TransportRole::SERVER),
           task_environment_.GetMainThreadTaskRunner(),
-          task_environment_.GetMainThreadTaskRunner()));
-      client_connection_.reset(new IceConnectionToHost());
+          task_environment_.GetMainThreadTaskRunner());
+      client_connection_ = std::make_unique<IceConnectionToHost>();
     }
 
     // Setup host side.
@@ -353,7 +353,7 @@ class ConnectionTest : public testing::Test,
         &client_event_handler_);
     client_session_->SimulateConnection(host_session_);
 
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
 
     EXPECT_TRUE(client_connected_);

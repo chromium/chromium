@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -28,8 +29,8 @@ class CaptureSchedulerTest : public testing::Test {
   CaptureSchedulerTest() : capture_called_(false) {}
 
   void InitScheduler() {
-    scheduler_.reset(new CaptureScheduler(base::BindRepeating(
-        &CaptureSchedulerTest::DoCapture, base::Unretained(this))));
+    scheduler_ = std::make_unique<CaptureScheduler>(base::BindRepeating(
+        &CaptureSchedulerTest::DoCapture, base::Unretained(this)));
     scheduler_->set_minimum_interval(
         base::TimeDelta::FromMilliseconds(kMinumumFrameIntervalMs));
     scheduler_->SetTickClockForTest(&tick_clock_);

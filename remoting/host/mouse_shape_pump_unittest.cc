@@ -4,6 +4,7 @@
 
 #include "remoting/host/mouse_shape_pump.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/macros.h"
@@ -99,8 +100,8 @@ TEST_F(MouseShapePumpTest, FirstCursor) {
       .RetiresOnSaturation();
 
   // Start the pump.
-  pump_.reset(new MouseShapePump(base::WrapUnique(new TestMouseCursorMonitor()),
-                                 &client_stub_));
+  pump_ = std::make_unique<MouseShapePump>(
+      base::WrapUnique(new TestMouseCursorMonitor()), &client_stub_);
 
   run_loop_.Run();
 }

@@ -124,8 +124,9 @@ class ProtocolPerfTest
 
     network_change_notifier_ = net::NetworkChangeNotifier::CreateIfNeeded();
 
-    desktop_environment_factory_.reset(
-        new FakeDesktopEnvironmentFactory(capture_thread_.task_runner()));
+    desktop_environment_factory_ =
+        std::make_unique<FakeDesktopEnvironmentFactory>(
+            capture_thread_.task_runner());
   }
 
   virtual ~ProtocolPerfTest() {
@@ -214,7 +215,7 @@ class ProtocolPerfTest
     client_connected_ = false;
     host_connected_ = false;
 
-    connecting_loop_.reset(new base::RunLoop());
+    connecting_loop_ = std::make_unique<base::RunLoop>();
     connecting_loop_->Run();
 
     ASSERT_TRUE(client_connected_ && host_connected_);
@@ -229,7 +230,7 @@ class ProtocolPerfTest
   std::unique_ptr<webrtc::DesktopFrame> ReceiveFrame() {
     last_video_frame_.reset();
 
-    waiting_frames_loop_.reset(new base::RunLoop());
+    waiting_frames_loop_ = std::make_unique<base::RunLoop>();
     on_frame_task_ = waiting_frames_loop_->QuitClosure();
     waiting_frames_loop_->Run();
     waiting_frames_loop_.reset();
@@ -241,7 +242,7 @@ class ProtocolPerfTest
   void WaitFrameStats(int num_frames) {
     num_expected_frame_stats_ = num_frames;
 
-    waiting_frame_stats_loop_.reset(new base::RunLoop());
+    waiting_frame_stats_loop_ = std::make_unique<base::RunLoop>();
     waiting_frame_stats_loop_->Run();
     waiting_frame_stats_loop_.reset();
 
@@ -255,8 +256,8 @@ class ProtocolPerfTest
   void StartHostAndClient(bool use_webrtc) {
     fake_network_dispatcher_ =  new FakeNetworkDispatcher();
 
-    client_signaling_.reset(
-        new FakeSignalStrategy(SignalingAddress(kClientJid)));
+    client_signaling_ =
+        std::make_unique<FakeSignalStrategy>(SignalingAddress(kClientJid));
 
     jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
 
@@ -275,7 +276,8 @@ class ProtocolPerfTest
 
     jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
 
-    host_signaling_.reset(new FakeSignalStrategy(SignalingAddress(kHostJid)));
+    host_signaling_ =
+        std::make_unique<FakeSignalStrategy>(SignalingAddress(kHostJid));
     host_signaling_->set_send_delay(GetParam().signaling_latency);
     host_signaling_->ConnectTo(client_signaling_.get());
 
@@ -300,11 +302,11 @@ class ProtocolPerfTest
 
     // Encoder runs on a separate thread, main thread is used for everything
     // else.
-    host_.reset(new ChromotingHost(
+    host_ = std::make_unique<ChromotingHost>(
         desktop_environment_factory_.get(), std::move(session_manager),
         transport_context, host_thread_.task_runner(),
         encode_thread_.task_runner(),
-        DesktopEnvironmentOptions::CreateDefault()));
+        DesktopEnvironmentOptions::CreateDefault());
 
     base::FilePath certs_dir(net::GetTestCertsDirectory());
 
@@ -344,8 +346,8 @@ class ProtocolPerfTest
         protocol::NetworkSettings::NAT_TRAVERSAL_OUTGOING);
 
     // Initialize client.
-    client_context_.reset(
-        new ClientContext(base::ThreadTaskRunnerHandle::Get()));
+    client_context_ =
+        std::make_unique<ClientContext>(base::ThreadTaskRunnerHandle::Get());
     client_context_->Start();
 
     std::unique_ptr<FakePortAllocatorFactory> port_allocator_factory(
@@ -367,11 +369,11 @@ class ProtocolPerfTest
     client_auth_config.fetch_secret_callback = base::BindRepeating(
         &ProtocolPerfTest::FetchPin, base::Unretained(this));
 
-    video_renderer_.reset(new SoftwareVideoRenderer(this));
+    video_renderer_ = std::make_unique<SoftwareVideoRenderer>(this);
     video_renderer_->Initialize(*client_context_, this);
 
-    client_.reset(new ChromotingClient(client_context_.get(), this,
-                                       video_renderer_.get(), nullptr));
+    client_ = std::make_unique<ChromotingClient>(
+        client_context_.get(), this, video_renderer_.get(), nullptr);
     client_->set_protocol_config(protocol_config_->Clone());
     client_->Start(client_signaling_.get(), client_auth_config,
                    transport_context, kHostJid, std::string());

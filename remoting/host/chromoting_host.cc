@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -235,13 +236,13 @@ void ChromotingHost::OnIncomingSession(
   std::unique_ptr<protocol::ConnectionToClient> connection;
   if (session->config().protocol() ==
       protocol::SessionConfig::Protocol::WEBRTC) {
-    connection.reset(new protocol::WebrtcConnectionToClient(
+    connection = std::make_unique<protocol::WebrtcConnectionToClient>(
         base::WrapUnique(session), transport_context_,
-        video_encode_task_runner_, audio_task_runner_));
+        video_encode_task_runner_, audio_task_runner_);
   } else {
-    connection.reset(new protocol::IceConnectionToClient(
+    connection = std::make_unique<protocol::IceConnectionToClient>(
         base::WrapUnique(session), transport_context_,
-        video_encode_task_runner_, audio_task_runner_));
+        video_encode_task_runner_, audio_task_runner_);
   }
 
   // Create a ClientSession object.

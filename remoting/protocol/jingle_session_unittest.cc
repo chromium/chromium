@@ -196,7 +196,8 @@ class JingleSessionTest : public testing::Test {
     FakeSignalStrategy::Connect(host_signal_strategy_.get(),
                                 client_signal_strategy_.get());
 
-    host_server_.reset(new JingleSessionManager(host_signal_strategy_.get()));
+    host_server_ =
+        std::make_unique<JingleSessionManager>(host_signal_strategy_.get());
     host_server_->AcceptIncoming(
         base::BindRepeating(&MockSessionManagerListener::OnIncomingSession,
                             base::Unretained(&host_server_listener_)));
@@ -205,8 +206,8 @@ class JingleSessionTest : public testing::Test {
         new FakeHostAuthenticatorFactory(messages_till_start, auth_config));
     host_server_->set_authenticator_factory(std::move(factory));
 
-    client_server_.reset(
-        new JingleSessionManager(client_signal_strategy_.get()));
+    client_server_ =
+        std::make_unique<JingleSessionManager>(client_signal_strategy_.get());
   }
 
   void CreateSessionManagers(FakeAuthenticator::Config auth_config) {

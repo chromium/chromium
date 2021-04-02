@@ -66,7 +66,7 @@ class VideoDecoderTester {
         expected_frame_(nullptr) {}
 
   void Reset() {
-    frame_.reset(new BasicDesktopFrame(frame_->size()));
+    frame_ = std::make_unique<BasicDesktopFrame>(frame_->size());
     expected_region_.Clear();
   }
 

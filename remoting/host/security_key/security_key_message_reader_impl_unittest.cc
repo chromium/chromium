@@ -75,7 +75,8 @@ SecurityKeyMessageReaderImplTest::~SecurityKeyMessageReaderImplTest() = default;
 
 void SecurityKeyMessageReaderImplTest::SetUp() {
   ASSERT_TRUE(MakePipe(&read_file_, &write_file_));
-  reader_.reset(new SecurityKeyMessageReaderImpl(std::move(read_file_)));
+  reader_ =
+      std::make_unique<SecurityKeyMessageReaderImpl>(std::move(read_file_));
 
   // base::Unretained is safe since no further tasks can run after
   // RunLoop::Run() returns.
@@ -88,13 +89,13 @@ void SecurityKeyMessageReaderImplTest::SetUp() {
 
 void SecurityKeyMessageReaderImplTest::RunLoop() {
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void SecurityKeyMessageReaderImplTest::CloseWriteFileAndRunLoop() {
   write_file_.Close();
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void SecurityKeyMessageReaderImplTest::OnMessage(

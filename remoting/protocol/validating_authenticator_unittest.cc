@@ -96,11 +96,11 @@ void ValidatingAuthenticatorTest::SetUp() {
   mock_authenticator_ = new testing::NiceMock<MockAuthenticator>();
   std::unique_ptr<Authenticator> authenticator(mock_authenticator_);
 
-  validating_authenticator_.reset(new ValidatingAuthenticator(
+  validating_authenticator_ = std::make_unique<ValidatingAuthenticator>(
       kRemoteTestJid,
       base::BindRepeating(&ValidatingAuthenticatorTest::ValidateCallback,
                           base::Unretained(this)),
-      std::move(authenticator)));
+      std::move(authenticator));
 }
 
 void ValidatingAuthenticatorTest::SendMessageAndWaitForCallback() {

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdlib>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -201,7 +202,7 @@ void FakePacketSocketFactory::SetBandwidth(int bandwidth, int max_buffer) {
   if (bandwidth <= 0) {
     leaky_bucket_.reset();
   } else {
-    leaky_bucket_.reset(new LeakyBucket(max_buffer, bandwidth));
+    leaky_bucket_ = std::make_unique<LeakyBucket>(max_buffer, bandwidth);
   }
 }
 

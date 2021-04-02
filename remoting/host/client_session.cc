@@ -5,6 +5,7 @@
 #include "remoting/host/client_session.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -77,7 +78,8 @@ ClientSession::ClientSession(
   connection_->SetEventHandler(this);
 
   // Create a manager for the configured extensions, if any.
-  extension_manager_.reset(new HostExtensionSessionManager(extensions, this));
+  extension_manager_ =
+      std::make_unique<HostExtensionSessionManager>(extensions, this);
 
 #if defined(OS_WIN)
   // LocalInputMonitorWin filters out an echo of the injected input before it
@@ -450,9 +452,9 @@ void ClientSession::OnConnectionChannelsConnected() {
   SetDisableInputs(false);
 
   // Create MouseShapePump to send mouse cursor shape.
-  mouse_shape_pump_.reset(
-      new MouseShapePump(desktop_environment_->CreateMouseCursorMonitor(),
-                         connection_->client_stub()));
+  mouse_shape_pump_ = std::make_unique<MouseShapePump>(
+      desktop_environment_->CreateMouseCursorMonitor(),
+      connection_->client_stub());
   mouse_shape_pump_->SetMouseCursorMonitorCallback(this);
 
   // Create KeyboardLayoutMonitor to send keyboard layout.
@@ -704,7 +706,8 @@ void ClientSession::OnVideoSizeChanged(protocol::VideoStream* video_stream,
   if (channels_connected_) {
     connection_->client_stub()->SetVideoLayout(layout);
   } else {
-    pending_video_layout_message_.reset(new protocol::VideoLayout(layout));
+    pending_video_layout_message_ =
+        std::make_unique<protocol::VideoLayout>(layout);
   }
 }
 

@@ -4,6 +4,7 @@
 
 #include "remoting/host/host_power_save_blocker.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -29,10 +30,10 @@ HostPowerSaveBlocker::~HostPowerSaveBlocker() {
 }
 
 void HostPowerSaveBlocker::OnClientConnected(const std::string& jid) {
-  blocker_.reset(new device::PowerSaveBlocker(
+  blocker_ = std::make_unique<device::PowerSaveBlocker>(
       device::mojom::WakeLockType::kPreventDisplaySleep,
       device::mojom::WakeLockReason::kOther, "Remoting session is active",
-      ui_task_runner_, file_task_runner_));
+      ui_task_runner_, file_task_runner_);
 }
 
 void HostPowerSaveBlocker::OnClientDisconnected(const std::string& jid) {

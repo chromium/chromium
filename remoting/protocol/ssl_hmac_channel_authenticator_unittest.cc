@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/ssl_hmac_channel_authenticator.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -76,8 +77,8 @@ class SslHmacChannelAuthenticatorTest : public testing::Test {
   }
 
   void RunChannelAuth(int expected_client_error, int expected_host_error) {
-    client_fake_socket_.reset(new FakeStreamSocket());
-    host_fake_socket_.reset(new FakeStreamSocket());
+    client_fake_socket_ = std::make_unique<FakeStreamSocket>();
+    host_fake_socket_ = std::make_unique<FakeStreamSocket>();
     client_fake_socket_->PairWith(host_fake_socket_.get());
 
     client_auth_->SecureAndAuthenticate(

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -132,7 +133,7 @@ DesktopCapturerProxy::DesktopCapturerProxy(
     : capture_task_runner_(capture_task_runner),
       client_session_control_(client_session_control),
       desktop_display_info_(new DesktopDisplayInfo()) {
-  core_.reset(new Core(weak_factory_.GetWeakPtr()));
+  core_ = std::make_unique<Core>(weak_factory_.GetWeakPtr());
 }
 
 DesktopCapturerProxy::~DesktopCapturerProxy() {

@@ -4,6 +4,8 @@
 
 #include "remoting/protocol/fake_session.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/location.h"
@@ -34,14 +36,16 @@ void FakeSession::SimulateConnection(FakeSession* peer) {
   peer->event_handler_->OnSessionStateChange(AUTHENTICATING);
 
   // Initialize transport and authenticator on the client.
-  authenticator_.reset(new FakeAuthenticator(FakeAuthenticator::ACCEPT));
+  authenticator_ =
+      std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
   authenticator_->set_auth_key(kTestAuthKey);
   transport_->Start(authenticator_.get(),
                     base::BindRepeating(&FakeSession::SendTransportInfo,
                                         weak_factory_.GetWeakPtr()));
 
   // Initialize transport and authenticator on the host.
-  peer->authenticator_.reset(new FakeAuthenticator(FakeAuthenticator::ACCEPT));
+  peer->authenticator_ =
+      std::make_unique<FakeAuthenticator>(FakeAuthenticator::ACCEPT);
   peer->authenticator_->set_auth_key(kTestAuthKey);
   peer->transport_->Start(
       peer->authenticator_.get(),

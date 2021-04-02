@@ -704,9 +704,9 @@ void HostProcess::StartOnNetworkThread() {
     OnConfigUpdated(host_config_);
   } else {
     // Start watching the host configuration file.
-    config_watcher_.reset(new ConfigFileWatcher(context_->network_task_runner(),
-                                                context_->file_task_runner(),
-                                                host_config_path_));
+    config_watcher_ = std::make_unique<ConfigFileWatcher>(
+        context_->network_task_runner(), context_->file_task_runner(),
+        host_config_path_);
     config_watcher_->Watch(this);
   }
 #endif  // !defined(REMOTING_MULTI_PROCESS)
@@ -793,7 +793,7 @@ void HostProcess::CreateAuthenticatorFactory() {
 
 #if defined(OS_POSIX)
   // On Linux and Mac, perform a PAM authorization step after authentication.
-  factory.reset(new PamAuthorizationFactory(std::move(factory)));
+  factory = std::make_unique<PamAuthorizationFactory>(std::move(factory));
 #endif
   host_->SetAuthenticatorFactory(std::move(factory));
 }
@@ -1598,9 +1598,9 @@ void HostProcess::StartHost() {
   host_status_logger_ = std::make_unique<HostStatusLogger>(
       host_->status_monitor(), log_to_server_.get());
 
-  power_save_blocker_.reset(new HostPowerSaveBlocker(
+  power_save_blocker_ = std::make_unique<HostPowerSaveBlocker>(
       host_->status_monitor(), context_->ui_task_runner(),
-      context_->file_task_runner()));
+      context_->file_task_runner());
 
   ftl_host_change_notification_listener_ =
       std::make_unique<FtlHostChangeNotificationListener>(

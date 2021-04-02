@@ -5,6 +5,7 @@
 #include "remoting/host/daemon_process.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -263,8 +264,8 @@ void DaemonProcess::CrashNetworkProcess(const base::Location& location) {
 void DaemonProcess::Initialize() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  config_watcher_.reset(new ConfigFileWatcher(
-      caller_task_runner(), io_task_runner(), GetConfigPath()));
+  config_watcher_ = std::make_unique<ConfigFileWatcher>(
+      caller_task_runner(), io_task_runner(), GetConfigPath());
   config_watcher_->Watch(this);
   host_event_logger_ =
       HostEventLogger::Create(status_monitor_, kApplicationName);

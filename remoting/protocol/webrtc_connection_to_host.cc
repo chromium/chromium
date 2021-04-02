@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/webrtc_connection_to_host.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -35,8 +36,8 @@ void WebrtcConnectionToHost::Connect(
   DCHECK(client_stub_);
   DCHECK(clipboard_stub_);
 
-  transport_.reset(new WebrtcTransport(
-      jingle_glue::JingleThreadWrapper::current(), transport_context, this));
+  transport_ = std::make_unique<WebrtcTransport>(
+      jingle_glue::JingleThreadWrapper::current(), transport_context, this);
 
   if (audio_decode_task_runner_)
     transport_->audio_module()->SetAudioTaskRunner(audio_decode_task_runner_);
@@ -118,7 +119,7 @@ void WebrtcConnectionToHost::OnSessionStateChange(Session::State state) {
 }
 
 void WebrtcConnectionToHost::OnWebrtcTransportConnecting() {
-  event_dispatcher_.reset(new ClientEventDispatcher());
+  event_dispatcher_ = std::make_unique<ClientEventDispatcher>();
   event_dispatcher_->Init(
       transport_->CreateOutgoingChannel(event_dispatcher_->channel_name()),
       this);
@@ -137,7 +138,7 @@ void WebrtcConnectionToHost::OnWebrtcTransportIncomingDataChannel(
     const std::string& name,
     std::unique_ptr<MessagePipe> pipe) {
   if (!control_dispatcher_)
-    control_dispatcher_.reset(new ClientControlDispatcher());
+    control_dispatcher_ = std::make_unique<ClientControlDispatcher>();
 
   if (name == control_dispatcher_->channel_name() &&
       !control_dispatcher_->is_connected()) {
@@ -160,7 +161,8 @@ void WebrtcConnectionToHost::OnWebrtcTransportMediaStreamAdded(
   if (stream->GetVideoTracks().size() > 0) {
     GetOrCreateVideoAdapter(stream->id())->SetMediaStream(stream);
   } else if (stream->GetAudioTracks().size() > 0) {
-    audio_adapter_.reset(new WebrtcAudioSinkAdapter(stream, audio_consumer_));
+    audio_adapter_ =
+        std::make_unique<WebrtcAudioSinkAdapter>(stream, audio_consumer_);
   } else {
     LOG(ERROR) << "Received MediaStream with no video or audio tracks.";
   }
@@ -210,8 +212,8 @@ WebrtcVideoRendererAdapter* WebrtcConnectionToHost::GetOrCreateVideoAdapter(
       LOG(WARNING) << "Received multiple media streams. Ignoring all except "
                       "the last one.";
     }
-    video_adapter_.reset(
-        new WebrtcVideoRendererAdapter(label, video_renderer_));
+    video_adapter_ =
+        std::make_unique<WebrtcVideoRendererAdapter>(label, video_renderer_);
   }
   return video_adapter_.get();
 }

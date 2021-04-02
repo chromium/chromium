@@ -276,7 +276,7 @@ void IpcDesktopEnvironmentTest::SetUp() {
   io_task_runner_ = AutoThread::CreateWithType("IPC thread", task_runner_,
                                                base::MessagePumpType::IO);
 
-  setup_run_loop_.reset(new base::RunLoop());
+  setup_run_loop_ = std::make_unique<base::RunLoop>();
 
   // Set expectation that the DaemonProcess will send DesktopAttached message
   // once it is ready.
@@ -313,8 +313,8 @@ void IpcDesktopEnvironmentTest::SetUp() {
       .Times(0);
 
   // Create a desktop environment instance.
-  desktop_environment_factory_.reset(new IpcDesktopEnvironmentFactory(
-      task_runner_, task_runner_, io_task_runner_, &daemon_channel_));
+  desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
+      task_runner_, task_runner_, io_task_runner_, &daemon_channel_);
   desktop_environment_ = desktop_environment_factory_->Create(
       client_session_control_factory_.GetWeakPtr(),
       DesktopEnvironmentOptions());
@@ -434,8 +434,8 @@ void IpcDesktopEnvironmentTest::CreateDesktopProcess() {
       io_task_runner_.get(), base::ThreadTaskRunnerHandle::Get());
 
   // Create and start the desktop process.
-  desktop_process_.reset(new DesktopProcess(
-      task_runner_, io_task_runner_, io_task_runner_, std::move(pipe.handle1)));
+  desktop_process_ = std::make_unique<DesktopProcess>(
+      task_runner_, io_task_runner_, io_task_runner_, std::move(pipe.handle1));
 
   std::unique_ptr<MockDesktopEnvironmentFactory> desktop_environment_factory(
       new MockDesktopEnvironmentFactory());
@@ -560,7 +560,7 @@ TEST_F(IpcDesktopEnvironmentTest, Reattach) {
   setup_run_loop_->Run();
 
   // Create and start a new desktop process object.
-  setup_run_loop_.reset(new base::RunLoop());
+  setup_run_loop_ = std::make_unique<base::RunLoop>();
   DestoyDesktopProcess();
   CreateDesktopProcess();
   setup_run_loop_->Run();

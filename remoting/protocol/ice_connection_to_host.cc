@@ -4,6 +4,7 @@
 
 #include "remoting/protocol/ice_connection_to_host.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -41,7 +42,7 @@ void IceConnectionToHost::Connect(
   DCHECK(clipboard_stub_);
   DCHECK(video_renderer_);
 
-  transport_.reset(new IceTransport(transport_context, this));
+  transport_ = std::make_unique<IceTransport>(transport_context, this);
 
   session_ = std::move(session);
   session_->SetEventHandler(this);
@@ -90,8 +91,8 @@ void IceConnectionToHost::set_video_renderer(VideoRenderer* video_renderer) {
 void IceConnectionToHost::InitializeAudio(
     scoped_refptr<base::SingleThreadTaskRunner> audio_decode_task_runner,
     base::WeakPtr<AudioStub> audio_stub) {
-  audio_decode_scheduler_.reset(
-      new AudioDecodeScheduler(audio_decode_task_runner, audio_stub));
+  audio_decode_scheduler_ = std::make_unique<AudioDecodeScheduler>(
+      audio_decode_task_runner, audio_stub);
 }
 
 void IceConnectionToHost::OnSessionStateChange(Session::State state) {
@@ -111,31 +112,32 @@ void IceConnectionToHost::OnSessionStateChange(Session::State state) {
       SetState(AUTHENTICATED, OK);
 
       // Setup control channel.
-      control_dispatcher_.reset(new ClientControlDispatcher());
+      control_dispatcher_ = std::make_unique<ClientControlDispatcher>();
       control_dispatcher_->Init(transport_->GetMultiplexedChannelFactory(),
                                 this);
       control_dispatcher_->set_client_stub(client_stub_);
       control_dispatcher_->set_clipboard_stub(clipboard_stub_);
 
       // Setup event channel.
-      event_dispatcher_.reset(new ClientEventDispatcher());
+      event_dispatcher_ = std::make_unique<ClientEventDispatcher>();
       event_dispatcher_->Init(transport_->GetMultiplexedChannelFactory(), this);
 
       // Configure video pipeline.
       video_renderer_->OnSessionConfig(session_->config());
-      monitored_video_stub_.reset(new MonitoredVideoStub(
+      monitored_video_stub_ = std::make_unique<MonitoredVideoStub>(
           video_renderer_->GetVideoStub(),
           base::TimeDelta::FromSeconds(
               MonitoredVideoStub::kConnectivityCheckDelaySeconds),
           base::BindRepeating(&IceConnectionToHost::OnVideoChannelStatus,
-                              base::Unretained(this))));
-      video_dispatcher_.reset(
-          new ClientVideoDispatcher(monitored_video_stub_.get(), client_stub_));
+                              base::Unretained(this)));
+      video_dispatcher_ = std::make_unique<ClientVideoDispatcher>(
+          monitored_video_stub_.get(), client_stub_);
       video_dispatcher_->Init(transport_->GetChannelFactory(), this);
 
       // Configure audio pipeline if necessary.
       if (session_->config().is_audio_enabled()) {
-        audio_reader_.reset(new AudioReader(audio_decode_scheduler_.get()));
+        audio_reader_ =
+            std::make_unique<AudioReader>(audio_decode_scheduler_.get());
         audio_reader_->Init(transport_->GetMultiplexedChannelFactory(), this);
         audio_decode_scheduler_->Initialize(session_->config());
       }

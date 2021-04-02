@@ -35,7 +35,7 @@ NativeMessagingWriterTest::~NativeMessagingWriterTest() = default;
 
 void NativeMessagingWriterTest::SetUp() {
   ASSERT_TRUE(MakePipe(&read_file_, &write_file_));
-  writer_.reset(new NativeMessagingWriter(std::move(write_file_)));
+  writer_ = std::make_unique<NativeMessagingWriter>(std::move(write_file_));
 }
 
 TEST_F(NativeMessagingWriterTest, GoodMessage) {

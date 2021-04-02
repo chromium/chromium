@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include <array>
+#include <memory>
 
 #include "base/check.h"
 #include "remoting/client/display/canvas.h"
@@ -54,7 +55,7 @@ void GlCursorFeedback::SetCanvas(base::WeakPtr<Canvas> canvas) {
     layer_.reset();
     return;
   }
-  layer_.reset(new GlRenderLayer(kGlCursorFeedbackTextureId, canvas));
+  layer_ = std::make_unique<GlRenderLayer>(kGlCursorFeedbackTextureId, canvas);
   GlCursorFeedbackTexture* texture = GlCursorFeedbackTexture::GetInstance();
   layer_->SetTexture(texture->GetTexture().data(),
                      GlCursorFeedbackTexture::kTextureWidth,

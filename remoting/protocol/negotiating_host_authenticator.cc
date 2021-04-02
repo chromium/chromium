@@ -5,6 +5,7 @@
 #include "remoting/protocol/negotiating_host_authenticator.h"
 
 #include <algorithm>
+#include <memory>
 #include <sstream>
 #include <utility>
 
@@ -184,20 +185,20 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       break;
 
     case Method::THIRD_PARTY_SPAKE2_P224:
-      current_authenticator_.reset(new ThirdPartyHostAuthenticator(
+      current_authenticator_ = std::make_unique<ThirdPartyHostAuthenticator>(
           base::BindRepeating(&V2Authenticator::CreateForHost, local_cert_,
                               local_key_pair_),
           token_validator_factory_->CreateTokenValidator(local_id_,
-                                                         remote_id_)));
+                                                         remote_id_));
       std::move(resume_callback).Run();
       break;
 
     case Method::THIRD_PARTY_SPAKE2_CURVE25519:
-      current_authenticator_.reset(new ThirdPartyHostAuthenticator(
+      current_authenticator_ = std::make_unique<ThirdPartyHostAuthenticator>(
           base::BindRepeating(&Spake2Authenticator::CreateForHost, local_id_,
                               remote_id_, local_cert_, local_key_pair_),
           token_validator_factory_->CreateTokenValidator(local_id_,
-                                                         remote_id_)));
+                                                         remote_id_));
       std::move(resume_callback).Run();
       break;
 

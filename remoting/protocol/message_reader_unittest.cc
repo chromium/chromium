@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -45,9 +46,7 @@ class MessageReaderTest : public testing::Test {
   void DeleteReader() { reader_.reset(); }
 
  protected:
-  void SetUp() override {
-    reader_.reset(new MessageReader());
-  }
+  void SetUp() override { reader_ = std::make_unique<MessageReader>(); }
 
   void InitReader() {
     reader_->StartReading(&socket_,

@@ -70,10 +70,10 @@ class DualBufferFrameConsumerTest : public testing::Test {
 };
 
 void DualBufferFrameConsumerTest::SetUp() {
-  consumer_.reset(new DualBufferFrameConsumer(
+  consumer_ = std::make_unique<DualBufferFrameConsumer>(
       base::BindRepeating(&DualBufferFrameConsumerTest::OnFrameReceived,
                           base::Unretained(this)),
-      nullptr, protocol::FrameConsumer::FORMAT_RGBA));
+      nullptr, protocol::FrameConsumer::FORMAT_RGBA);
 }
 
 void DualBufferFrameConsumerTest::OnFrameReceived(

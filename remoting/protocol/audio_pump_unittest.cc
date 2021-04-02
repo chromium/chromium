@@ -89,9 +89,9 @@ class AudioPumpTest : public testing::Test, public protocol::AudioStub {
 void AudioPumpTest::SetUp() {
   source_ = new FakeAudioSource();
   encoder_ = new FakeAudioEncoder();
-  pump_.reset(new AudioPump(task_environment_.GetMainThreadTaskRunner(),
-                            base::WrapUnique(source_),
-                            base::WrapUnique(encoder_), this));
+  pump_ = std::make_unique<AudioPump>(
+      task_environment_.GetMainThreadTaskRunner(), base::WrapUnique(source_),
+      base::WrapUnique(encoder_), this);
 }
 
 void AudioPumpTest::TearDown() {

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "remoting/protocol/webrtc_frame_scheduler.h"
 
 #include "base/bind.h"
@@ -30,8 +32,8 @@ class WebrtcFrameSchedulerTest : public ::testing::Test {
                                              base::TimeTicks::Now())),
         task_runner_handle_(task_runner_.get()),
         frame_(DesktopSize(1, 1)) {
-    video_encoder_factory_.reset(new WebrtcDummyVideoEncoderFactory());
-    scheduler_.reset(new WebrtcFrameSchedulerSimple(SessionOptions()));
+    video_encoder_factory_ = std::make_unique<WebrtcDummyVideoEncoderFactory>();
+    scheduler_ = std::make_unique<WebrtcFrameSchedulerSimple>(SessionOptions());
     scheduler_->SetTickClockForTest(task_runner_->GetMockTickClock());
     scheduler_->Start(
         video_encoder_factory_.get(),

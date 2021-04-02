@@ -134,7 +134,7 @@ class GlRendererTest : public testing::Test {
 };
 
 void GlRendererTest::SetUp() {
-  renderer_.reset(new GlRenderer());
+  renderer_ = std::make_unique<GlRenderer>();
   renderer_->SetDelegate(delegate_.GetWeakPtr());
 }
 

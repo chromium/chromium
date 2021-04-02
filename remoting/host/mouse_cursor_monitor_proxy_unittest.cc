@@ -4,6 +4,7 @@
 
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -113,9 +114,9 @@ void MouseCursorMonitorProxyTest::OnMouseCursor(
 
 TEST_F(MouseCursorMonitorProxyTest, CursorShape) {
   // Initialize the proxy.
-  proxy_.reset(new MouseCursorMonitorProxy(
+  proxy_ = std::make_unique<MouseCursorMonitorProxy>(
       capture_thread_.task_runner(),
-      webrtc::DesktopCaptureOptions::CreateDefault()));
+      webrtc::DesktopCaptureOptions::CreateDefault());
   proxy_->SetMouseCursorMonitorForTests(
       std::make_unique<ThreadCheckMouseCursorMonitor>(
           capture_thread_.task_runner()));

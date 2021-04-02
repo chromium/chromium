@@ -5,6 +5,7 @@
 #include "remoting/protocol/ice_transport_channel.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -88,8 +89,8 @@ void IceTransportChannel::Connect(const std::string& name,
 
   // Create P2PTransportChannel, attach signal handlers and connect it.
   // TODO(sergeyu): Specify correct component ID for the channel.
-  channel_.reset(new cricket::P2PTransportChannel(
-      std::string(), 0, port_allocator_.get()));
+  channel_ = std::make_unique<cricket::P2PTransportChannel>(
+      std::string(), 0, port_allocator_.get());
   std::string ice_password = rtc::CreateRandomString(cricket::ICE_PWD_LENGTH);
   channel_->SetIceProtocolType(cricket::ICEPROTO_RFC5245);
   channel_->SetIceRole((transport_context_->role() == TransportRole::CLIENT)

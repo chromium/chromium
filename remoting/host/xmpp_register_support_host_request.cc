@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -70,7 +71,7 @@ void XmppRegisterSupportHostRequest::StartRequest(
   key_pair_ = key_pair;
   callback_ = std::move(callback);
   signal_strategy_->AddListener(this);
-  iq_sender_.reset(new IqSender(signal_strategy_));
+  iq_sender_ = std::make_unique<IqSender>(signal_strategy_);
 }
 
 void XmppRegisterSupportHostRequest::OnSignalStrategyStateChange(

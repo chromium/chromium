@@ -5,6 +5,7 @@
 #include "remoting/protocol/negotiating_client_authenticator.h"
 
 #include <algorithm>
+#include <memory>
 #include <sstream>
 #include <utility>
 
@@ -134,17 +135,17 @@ void NegotiatingClientAuthenticator::CreateAuthenticatorForCurrentMethod(
       break;
 
     case Method::THIRD_PARTY_SPAKE2_P224:
-      current_authenticator_.reset(new ThirdPartyClientAuthenticator(
+      current_authenticator_ = std::make_unique<ThirdPartyClientAuthenticator>(
           base::BindRepeating(&V2Authenticator::CreateForClient),
-          config_.fetch_third_party_token_callback));
+          config_.fetch_third_party_token_callback);
       std::move(resume_callback).Run();
       break;
 
     case Method::THIRD_PARTY_SPAKE2_CURVE25519:
-      current_authenticator_.reset(new ThirdPartyClientAuthenticator(
+      current_authenticator_ = std::make_unique<ThirdPartyClientAuthenticator>(
           base::BindRepeating(&Spake2Authenticator::CreateForClient, local_id_,
                               remote_id_),
-          config_.fetch_third_party_token_callback));
+          config_.fetch_third_party_token_callback);
       std::move(resume_callback).Run();
       break;
 

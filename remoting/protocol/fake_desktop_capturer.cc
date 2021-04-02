@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/macros.h"
@@ -65,12 +67,12 @@ std::unique_ptr<webrtc::DesktopFrame> DefaultFrameGenerator::GenerateFrame(
   std::unique_ptr<webrtc::DesktopFrame> frame;
   if (shared_memory_factory) {
     int buffer_size = kWidth * kHeight * kBytesPerPixel;
-    frame.reset(new webrtc::SharedMemoryDesktopFrame(
+    frame = std::make_unique<webrtc::SharedMemoryDesktopFrame>(
         webrtc::DesktopSize(kWidth, kHeight), kWidth * kBytesPerPixel,
-        shared_memory_factory->CreateSharedMemory(buffer_size).release()));
+        shared_memory_factory->CreateSharedMemory(buffer_size).release());
   } else {
-    frame.reset(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(kWidth, kHeight)));
+    frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(kWidth, kHeight));
   }
 
   // Move the box.

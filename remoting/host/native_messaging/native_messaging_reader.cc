@@ -5,6 +5,7 @@
 #include "remoting/host/native_messaging/native_messaging_reader.h"
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -150,8 +151,9 @@ NativeMessagingReader::NativeMessagingReader(base::File file)
       base::Thread::Options(base::MessagePumpType::IO, /*size=*/0));
 
   read_task_runner_ = reader_thread_.task_runner();
-  core_.reset(new Core(std::move(file), base::ThreadTaskRunnerHandle::Get(),
-                       read_task_runner_, weak_factory_.GetWeakPtr()));
+  core_ = std::make_unique<Core>(std::move(file),
+                                 base::ThreadTaskRunnerHandle::Get(),
+                                 read_task_runner_, weak_factory_.GetWeakPtr());
 }
 
 NativeMessagingReader::~NativeMessagingReader() {

@@ -69,8 +69,8 @@ void SecurityKeyMessageHandlerTest::OperationComplete() {
 }
 
 void SecurityKeyMessageHandlerTest::SetUp() {
-  run_loop_.reset(new base::RunLoop());
-  message_handler_.reset(new SecurityKeyMessageHandler());
+  run_loop_ = std::make_unique<base::RunLoop>();
+  message_handler_ = std::make_unique<SecurityKeyMessageHandler>();
 
   auto ipc_client = std::make_unique<FakeSecurityKeyIpcClient>(
       base::BindRepeating(&SecurityKeyMessageHandlerTest::OperationComplete,
@@ -100,7 +100,7 @@ void SecurityKeyMessageHandlerTest::SetUp() {
 
 void SecurityKeyMessageHandlerTest::WaitForOperationComplete() {
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void SecurityKeyMessageHandlerTest::OnSecurityKeyMessage(

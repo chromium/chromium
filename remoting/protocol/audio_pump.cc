@@ -231,8 +231,9 @@ AudioPump::AudioPump(
     : audio_task_runner_(audio_task_runner), audio_stub_(audio_stub) {
   DCHECK(audio_stub_);
 
-  core_.reset(new Core(weak_factory_.GetWeakPtr(), std::move(audio_source),
-                       std::move(audio_encoder)));
+  core_ =
+      std::make_unique<Core>(weak_factory_.GetWeakPtr(),
+                             std::move(audio_source), std::move(audio_encoder));
 
   audio_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Core::Start, base::Unretained(core_.get())));

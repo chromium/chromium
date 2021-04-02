@@ -4,6 +4,8 @@
 
 #include "remoting/protocol/jingle_messages.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -209,7 +211,7 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
   const XmlElement* attachments_tag =
       jingle_tag->FirstNamed(QName(kChromotingXmlNamespace, "attachments"));
   if (attachments_tag) {
-    attachments.reset(new XmlElement(*attachments_tag));
+    attachments = std::make_unique<XmlElement>(*attachments_tag);
   } else {
     attachments.reset();
   }
@@ -225,7 +227,7 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
     }
     if (child) {
       // session-info is allowed to be empty.
-      info.reset(new XmlElement(*child));
+      info = std::make_unique<XmlElement>(*child);
     } else {
       info.reset();
     }
@@ -271,7 +273,8 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
   const XmlElement* webrtc_transport_tag = content_tag->FirstNamed(
       QName(kWebrtcTransportNamespace, "transport"));
   if (webrtc_transport_tag) {
-    transport_info.reset(new jingle_xmpp::XmlElement(*webrtc_transport_tag));
+    transport_info =
+        std::make_unique<jingle_xmpp::XmlElement>(*webrtc_transport_tag);
   }
 
   description.reset();
@@ -295,7 +298,8 @@ bool JingleMessage::ParseXml(const jingle_xmpp::XmlElement* stanza,
     const XmlElement* ice_transport_tag = content_tag->FirstNamed(
         QName(kIceTransportNamespace, "transport"));
     if (ice_transport_tag) {
-      transport_info.reset(new jingle_xmpp::XmlElement(*ice_transport_tag));
+      transport_info =
+          std::make_unique<jingle_xmpp::XmlElement>(*ice_transport_tag);
     }
   }
 
@@ -380,8 +384,8 @@ std::unique_ptr<jingle_xmpp::XmlElement> JingleMessage::ToXml() const {
 void JingleMessage::AddAttachment(std::unique_ptr<XmlElement> attachment) {
   DCHECK(attachment);
   if (!attachments) {
-    attachments.reset(new XmlElement(
-        QName(kChromotingXmlNamespace, "attachments")));
+    attachments = std::make_unique<XmlElement>(
+        QName(kChromotingXmlNamespace, "attachments"));
   }
   attachments->AddElement(attachment.release());
 }

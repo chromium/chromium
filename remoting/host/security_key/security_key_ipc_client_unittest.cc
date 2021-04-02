@@ -162,7 +162,7 @@ void SecurityKeyIpcClientTest::SendConnectionMessage() {
 
 void SecurityKeyIpcClientTest::WaitForOperationComplete() {
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void SecurityKeyIpcClientTest::RunPendingTasks() {

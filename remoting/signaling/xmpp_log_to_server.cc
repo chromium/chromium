@@ -4,6 +4,7 @@
 
 #include "remoting/signaling/xmpp_log_to_server.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -45,7 +46,7 @@ void XmppLogToServer::OnSignalStrategyStateChange(SignalStrategy::State state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (state == SignalStrategy::CONNECTED) {
-    iq_sender_.reset(new IqSender(signal_strategy_));
+    iq_sender_ = std::make_unique<IqSender>(signal_strategy_);
     SendPendingEntries();
   } else if (state == SignalStrategy::DISCONNECTED) {
     iq_sender_.reset();

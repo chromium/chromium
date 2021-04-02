@@ -140,7 +140,7 @@ void VideoFramePump::OnCaptureResult(
 void VideoFramePump::CaptureNextFrame() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  captured_frame_timestamps_.reset(new FrameTimestamps());
+  captured_frame_timestamps_ = std::make_unique<FrameTimestamps>();
   captured_frame_timestamps_->capture_started_time = base::TimeTicks::Now();
 
   if (event_timestamps_source_) {
@@ -166,7 +166,7 @@ VideoFramePump::EncodeFrame(VideoEncoder* encoder,
   // If |frame| is NULL, or the encoder returned nothing, return an empty
   // packet.
   if (!packet)
-    packet.reset(new VideoPacket());
+    packet = std::make_unique<VideoPacket>();
 
   if (frame)
     packet->set_capture_time_ms(frame->capture_time_ms());

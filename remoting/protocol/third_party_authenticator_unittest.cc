@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -104,14 +105,14 @@ class ThirdPartyAuthenticatorTest : public AuthenticatorTestBase {
  protected:
   void InitAuthenticators() {
     token_validator_ = new FakeTokenValidator();
-    host_.reset(new ThirdPartyHostAuthenticator(
+    host_ = std::make_unique<ThirdPartyHostAuthenticator>(
         base::BindRepeating(&V2Authenticator::CreateForHost, host_cert_,
                             key_pair_),
-        base::WrapUnique(token_validator_)));
-    client_.reset(new ThirdPartyClientAuthenticator(
+        base::WrapUnique(token_validator_));
+    client_ = std::make_unique<ThirdPartyClientAuthenticator>(
         base::BindRepeating(&V2Authenticator::CreateForClient),
         base::BindRepeating(&FakeTokenFetcher::FetchThirdPartyToken,
-                            base::Unretained(&token_fetcher_))));
+                            base::Unretained(&token_fetcher_)));
   }
 
   FakeTokenFetcher token_fetcher_;

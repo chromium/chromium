@@ -5,6 +5,7 @@
 #include "remoting/protocol/webrtc_transport.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -521,9 +522,9 @@ WebrtcTransport::WebrtcTransport(
           transport_context_, weak_factory_.GetWeakPtr());
 
   // Takes ownership of video_encoder_factory_.
-  peer_connection_wrapper_.reset(new PeerConnectionWrapper(
+  peer_connection_wrapper_ = std::make_unique<PeerConnectionWrapper>(
       worker_thread, base::WrapUnique(video_encoder_factory_),
-      std::move(port_allocator), weak_factory_.GetWeakPtr()));
+      std::move(port_allocator), weak_factory_.GetWeakPtr());
 
   StartRtcEventLogging();
 }
@@ -1272,8 +1273,8 @@ void WebrtcTransport::EnsurePendingTransportInfoMessage() {
             transport_info_timer_.IsRunning());
 
   if (!pending_transport_info_message_) {
-    pending_transport_info_message_.reset(
-        new XmlElement(QName(kTransportNamespace, "transport"), true));
+    pending_transport_info_message_ = std::make_unique<XmlElement>(
+        QName(kTransportNamespace, "transport"), true);
 
     // Delay sending the new candidates in case we get more candidates
     // that we can send in one message.

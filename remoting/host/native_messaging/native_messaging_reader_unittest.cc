@@ -61,8 +61,8 @@ NativeMessagingReaderTest::~NativeMessagingReaderTest() = default;
 
 void NativeMessagingReaderTest::SetUp() {
   ASSERT_TRUE(MakePipe(&read_file_, &write_file_));
-  reader_.reset(new NativeMessagingReader(std::move(read_file_)));
-  run_loop_.reset(new base::RunLoop());
+  reader_ = std::make_unique<NativeMessagingReader>(std::move(read_file_));
+  run_loop_ = std::make_unique<base::RunLoop>();
 
   // base::Unretained is safe since no further tasks can run after
   // RunLoop::Run() returns.
@@ -74,7 +74,7 @@ void NativeMessagingReaderTest::SetUp() {
 
 void NativeMessagingReaderTest::RunAndWaitForOperationComplete() {
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void NativeMessagingReaderTest::OnMessage(

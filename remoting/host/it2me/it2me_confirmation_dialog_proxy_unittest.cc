@@ -125,8 +125,8 @@ It2MeConfirmationDialogProxyTest::It2MeConfirmationDialogProxyTest()
   auto dialog =
       std::make_unique<StubIt2MeConfirmationDialog>(dialog_task_runner());
   dialog_ = dialog.get();
-  dialog_proxy_.reset(new It2MeConfirmationDialogProxy(dialog_task_runner(),
-                                                       std::move(dialog)));
+  dialog_proxy_ = std::make_unique<It2MeConfirmationDialogProxy>(
+      dialog_task_runner(), std::move(dialog));
 }
 
 It2MeConfirmationDialogProxyTest::~It2MeConfirmationDialogProxyTest() = default;

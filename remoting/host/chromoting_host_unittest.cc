@@ -68,23 +68,24 @@ class ChromotingHostTest : public testing::Test {
     task_runner_ = new AutoThreadTaskRunner(base::ThreadTaskRunnerHandle::Get(),
                                             base::DoNothing());
 
-    desktop_environment_factory_.reset(
-        new FakeDesktopEnvironmentFactory(base::ThreadTaskRunnerHandle::Get()));
+    desktop_environment_factory_ =
+        std::make_unique<FakeDesktopEnvironmentFactory>(
+            base::ThreadTaskRunnerHandle::Get());
     session_manager_ = new protocol::MockSessionManager();
 
-    host_.reset(new ChromotingHost(
+    host_ = std::make_unique<ChromotingHost>(
         desktop_environment_factory_.get(), base::WrapUnique(session_manager_),
         protocol::TransportContext::ForTests(protocol::TransportRole::SERVER),
         task_runner_,  // Audio
         task_runner_,
-        DesktopEnvironmentOptions::CreateDefault()));  // Video encode
+        DesktopEnvironmentOptions::CreateDefault());  // Video encode
     host_->status_monitor()->AddStatusObserver(&host_status_observer_);
 
     xmpp_login_ = "host@domain";
     session1_ = new MockSession();
     session2_ = new MockSession();
-    session_unowned1_.reset(new MockSession());
-    session_unowned2_.reset(new MockSession());
+    session_unowned1_ = std::make_unique<MockSession>();
+    session_unowned2_ = std::make_unique<MockSession>();
     session_config1_ = SessionConfig::ForTest();
     session_jid1_ = "user@domain/rest-of-jid";
     session_config2_ = SessionConfig::ForTest();
@@ -115,14 +116,14 @@ class ChromotingHostTest : public testing::Test {
     EXPECT_CALL(*session_unowned2_, config())
         .WillRepeatedly(ReturnRef(*session_config2_));
 
-    owned_connection1_.reset(
-        new protocol::FakeConnectionToClient(base::WrapUnique(session1_)));
+    owned_connection1_ = std::make_unique<protocol::FakeConnectionToClient>(
+        base::WrapUnique(session1_));
     owned_connection1_->set_host_stub(&host_stub1_);
     connection1_ = owned_connection1_.get();
     connection1_->set_client_stub(&client_stub1_);
 
-    owned_connection2_.reset(
-        new protocol::FakeConnectionToClient(base::WrapUnique(session2_)));
+    owned_connection2_ = std::make_unique<protocol::FakeConnectionToClient>(
+        base::WrapUnique(session2_));
     owned_connection2_->set_host_stub(&host_stub2_);
     connection2_ = owned_connection2_.get();
     connection2_->set_client_stub(&client_stub2_);

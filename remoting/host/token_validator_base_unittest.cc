@@ -4,6 +4,7 @@
 
 #include "remoting/host/token_validator_base.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
@@ -110,7 +111,7 @@ void TokenValidatorBaseTest::SetUp() {
   config.token_url = GURL(kTokenUrl);
   config.token_validation_url = GURL(kTokenValidationUrl);
   config.token_validation_cert_issuer = kTokenValidationCertIssuer;
-  token_validator_.reset(new TestTokenValidator(config));
+  token_validator_ = std::make_unique<TestTokenValidator>(config);
 }
 
 TEST_F(TokenValidatorBaseTest, TestSelectCertificate) {

@@ -94,7 +94,8 @@ void WebrtcVideoRendererAdapter::SetMediaStream(
 void WebrtcVideoRendererAdapter::SetVideoStatsChannel(
     std::unique_ptr<MessagePipe> message_pipe) {
   // Expect that the host also creates video_stats data channel.
-  video_stats_dispatcher_.reset(new ClientVideoStatsDispatcher(label_, this));
+  video_stats_dispatcher_ =
+      std::make_unique<ClientVideoStatsDispatcher>(label_, this);
   video_stats_dispatcher_->Init(std::move(message_pipe), this);
 }
 

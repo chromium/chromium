@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -100,13 +102,13 @@ class BufferedSocketWriterTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    socket_.reset(new net::MockTCPClientSocket(
-        net::AddressList(), net::NetLog::Get(), &socket_data_provider_));
+    socket_ = std::make_unique<net::MockTCPClientSocket>(
+        net::AddressList(), net::NetLog::Get(), &socket_data_provider_);
     socket_data_provider_.set_connect_data(
         net::MockConnect(net::SYNCHRONOUS, net::OK));
     EXPECT_EQ(net::OK, socket_->Connect(net::CompletionOnceCallback()));
 
-    writer_.reset(new BufferedSocketWriter());
+    writer_ = std::make_unique<BufferedSocketWriter>();
     test_buffer_ = base::MakeRefCounted<net::IOBufferWithSize>(kTestBufferSize);
     test_buffer_2_ =
         base::MakeRefCounted<net::IOBufferWithSize>(kTestBufferSize);

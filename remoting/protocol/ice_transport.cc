@@ -4,6 +4,8 @@
 
 #include "remoting/protocol/ice_transport.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/channel_multiplexer.h"
@@ -41,13 +43,14 @@ void IceTransport::Start(
   DCHECK(!pseudotcp_channel_factory_);
 
   send_transport_info_callback_ = std::move(send_transport_info_callback);
-  pseudotcp_channel_factory_.reset(new PseudoTcpChannelFactory(this));
-  secure_channel_factory_.reset(new SecureChannelFactory(
-      pseudotcp_channel_factory_.get(), authenticator));
-  message_channel_factory_.reset(new StreamMessageChannelFactoryAdapter(
-      secure_channel_factory_.get(),
-      base::BindRepeating(&IceTransport::OnChannelError,
-                          weak_factory_.GetWeakPtr())));
+  pseudotcp_channel_factory_ = std::make_unique<PseudoTcpChannelFactory>(this);
+  secure_channel_factory_ = std::make_unique<SecureChannelFactory>(
+      pseudotcp_channel_factory_.get(), authenticator);
+  message_channel_factory_ =
+      std::make_unique<StreamMessageChannelFactoryAdapter>(
+          secure_channel_factory_.get(),
+          base::BindRepeating(&IceTransport::OnChannelError,
+                              weak_factory_.GetWeakPtr()));
 }
 
 bool IceTransport::ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info_xml) {
@@ -88,12 +91,12 @@ MessageChannelFactory* IceTransport::GetChannelFactory() {
 
 MessageChannelFactory* IceTransport::GetMultiplexedChannelFactory() {
   if (!channel_multiplexer_) {
-    channel_multiplexer_.reset(
-        new ChannelMultiplexer(secure_channel_factory_.get(), kMuxChannelName));
-    mux_channel_factory_.reset(new StreamMessageChannelFactoryAdapter(
+    channel_multiplexer_ = std::make_unique<ChannelMultiplexer>(
+        secure_channel_factory_.get(), kMuxChannelName);
+    mux_channel_factory_ = std::make_unique<StreamMessageChannelFactoryAdapter>(
         channel_multiplexer_.get(),
         base::BindRepeating(&IceTransport::OnChannelError,
-                            weak_factory_.GetWeakPtr())));
+                            weak_factory_.GetWeakPtr()));
   }
   return mux_channel_factory_.get();
 }
@@ -178,7 +181,7 @@ void IceTransport::EnsurePendingTransportInfoMessage() {
             transport_info_timer_.IsRunning());
 
   if (!pending_transport_info_message_) {
-    pending_transport_info_message_.reset(new IceTransportInfo());
+    pending_transport_info_message_ = std::make_unique<IceTransportInfo>();
     // Delay sending the new candidates in case we get more candidates
     // that we can send in one message.
     transport_info_timer_.Start(

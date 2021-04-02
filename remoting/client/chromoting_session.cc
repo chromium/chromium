@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -509,10 +510,10 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
 
   jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
 
-  client_context_.reset(new ClientContext(network_task_runner()));
+  client_context_ = std::make_unique<ClientContext>(network_task_runner());
   client_context_->Start();
 
-  perf_tracker_.reset(new protocol::PerformanceTracker());
+  perf_tracker_ = std::make_unique<protocol::PerformanceTracker>();
 
   session_context_->video_renderer->Initialize(*client_context_,
                                                perf_tracker_.get());
@@ -523,9 +524,9 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
 
   // TODO(yuweih): Ideally we should make ChromotingClient and all its
   // sub-components (e.g. ConnectionToHost) take raw pointer instead of WeakPtr.
-  client_.reset(new ChromotingClient(
+  client_ = std::make_unique<ChromotingClient>(
       client_context_.get(), this, session_context_->video_renderer.get(),
-      session_context_->audio_player_weak_factory->GetWeakPtr()));
+      session_context_->audio_player_weak_factory->GetWeakPtr());
 
   signaling_ = std::make_unique<FtlSignalStrategy>(
       runtime_->CreateOAuthTokenGetter(), runtime_->url_loader_factory(),

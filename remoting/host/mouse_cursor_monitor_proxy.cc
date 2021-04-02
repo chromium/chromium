@@ -4,6 +4,8 @@
 
 #include "remoting/host/mouse_cursor_monitor_proxy.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -116,7 +118,7 @@ MouseCursorMonitorProxy::MouseCursorMonitorProxy(
     scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner,
     const webrtc::DesktopCaptureOptions& options)
     : capture_task_runner_(capture_task_runner) {
-  core_.reset(new Core(weak_factory_.GetWeakPtr()));
+  core_ = std::make_unique<Core>(weak_factory_.GetWeakPtr());
   capture_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&Core::CreateMouseCursorMonitor,
                                 base::Unretained(core_.get()), options));

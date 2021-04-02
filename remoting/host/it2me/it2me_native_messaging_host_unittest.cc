@@ -293,7 +293,7 @@ void It2MeNativeMessagingHostTest::SetUp() {
   test_run_loop_ = std::make_unique<base::RunLoop>();
 
   // Run the host on a dedicated thread.
-  host_thread_.reset(new base::Thread("host_thread"));
+  host_thread_ = std::make_unique<base::Thread>("host_thread");
   host_thread_->Start();
 
   host_task_runner_ = new AutoThreadTaskRunner(
@@ -319,7 +319,7 @@ void It2MeNativeMessagingHostTest::TearDown() {
   input_write_file_.Close();
 
   // Start a new RunLoop and Wait until the host finishes shutting down.
-  test_run_loop_.reset(new base::RunLoop());
+  test_run_loop_ = std::make_unique<base::RunLoop>();
   test_run_loop_->Run();
 
   // Verify there are no more message in the output pipe.
@@ -345,7 +345,7 @@ void It2MeNativeMessagingHostTest::SetPolicies(
                       policy::POLICY_SOURCE_CLOUD);
 
   // Simulate a policy update and wait for it to complete.
-  policy_run_loop_.reset(new base::RunLoop);
+  policy_run_loop_ = std::make_unique<base::RunLoop>();
   policy_loader_->SetPolicies(policy_bundle);
   policy_loader_->PostReloadOnBackgroundThread(true /* force reload asap */);
   policy_run_loop_->Run();
@@ -550,7 +550,7 @@ void It2MeNativeMessagingHostTest::StartHost() {
   ASSERT_TRUE(MakePipe(&input_read_file, &input_write_file_));
   ASSERT_TRUE(MakePipe(&output_read_file_, &output_write_file));
 
-  pipe_.reset(new NativeMessagingPipe());
+  pipe_ = std::make_unique<NativeMessagingPipe>();
 
   std::unique_ptr<extensions::NativeMessagingChannel> channel(
       new PipeMessagingChannel(std::move(input_read_file),

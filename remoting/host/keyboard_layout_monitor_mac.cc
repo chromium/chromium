@@ -8,6 +8,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -91,7 +92,7 @@ KeyboardLayoutMonitorMac::~KeyboardLayoutMonitorMac() {
 
 void KeyboardLayoutMonitorMac::Start() {
   DCHECK(!callback_context_);
-  callback_context_.reset(new CallbackContext{
+  callback_context_ = std::make_unique<CallbackContext>(CallbackContext{
       base::SequencedTaskRunnerHandle::Get(), weak_ptr_factory_.GetWeakPtr()});
   CFNotificationCenterAddObserver(
       CFNotificationCenterGetDistributedCenter(), callback_context_.get(),

@@ -53,7 +53,7 @@ void QueuedTaskPosterTest::SetUp() {
   target_thread_.StartAndWaitForTesting();
   main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
   target_task_runner_ = target_thread_.task_runner();
-  poster_.reset(new QueuedTaskPoster(target_task_runner_));
+  poster_ = std::make_unique<QueuedTaskPoster>(target_task_runner_);
 }
 
 void QueuedTaskPosterTest::TearDown() {
