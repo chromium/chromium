@@ -536,6 +536,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.RequestWithToken" enum="BooleanSent"
+    expires_after="2022-03-30">
+  <owner>bhatiarohit@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records if the phishing request was sent with a GAIA-tied OAuth2 token. This
+    token is sent only for signed-in Enhanced Safe Browsing users.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.ScorerCreationStatus"
     enum="SBClientPhishingScorerCreationStatus" expires_after="M94">
   <owner>drubery@chromium.org</owner>
