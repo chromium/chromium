@@ -12,6 +12,7 @@
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/credit_card_save_manager_test_observer_bridge.h"
 #include "components/autofill/ios/browser/ios_test_event_waiter.h"
@@ -20,6 +21,7 @@
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
@@ -363,6 +365,8 @@ class SaveCardInfobarEGTestHelper
   base::test::ios::TimeUntilCondition(
       nil, conditionBlock, false,
       base::TimeDelta::FromSeconds(base::test::ios::kWaitForActionTimeout));
+
+  autofill::prefs::SetAutofillProfileEnabled(browserState->GetPrefs(), YES);
 }
 
 + (void)saveExampleProfile {
@@ -383,6 +387,10 @@ class SaveCardInfobarEGTestHelper
   for (const auto* creditCard : personalDataManager->GetCreditCards()) {
     personalDataManager->RemoveByGUID(creditCard->guid());
   }
+
+  ChromeBrowserState* browserState =
+      chrome_test_util::GetOriginalBrowserState();
+  autofill::prefs::SetAutofillCreditCardEnabled(browserState->GetPrefs(), YES);
 }
 
 + (NSString*)saveLocalCreditCard {

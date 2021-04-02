@@ -115,7 +115,7 @@ id<GREYMatcher> BottomToolbar() {
 
 // Close the settings.
 - (void)exitSettingsMenu {
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -140,7 +140,7 @@ id<GREYMatcher> BottomToolbar() {
   }
 
   // Go back to the list view page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
 
   [self exitSettingsMenu];
@@ -154,7 +154,7 @@ id<GREYMatcher> BottomToolbar() {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Go back to the list view page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
 
   [self exitSettingsMenu];
@@ -171,7 +171,7 @@ id<GREYMatcher> BottomToolbar() {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Go back to the list view page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
 
   [self exitSettingsMenu];

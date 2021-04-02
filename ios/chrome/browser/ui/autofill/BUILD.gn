@@ -207,6 +207,7 @@ source_set("eg_app_support+eg2") {
     "//components/password_manager/core/browser",
     "//ios/chrome/browser",
     "//ios/chrome/browser/autofill",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser",
