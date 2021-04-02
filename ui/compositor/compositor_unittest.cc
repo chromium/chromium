@@ -283,6 +283,51 @@ TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerOutliveCompositor) {
   tracker.Stop();
 }
 
+TEST_F(CompositorTestWithMessageLoop, ThroughputTrackerCallbackStateChange) {
+  auto root_layer = std::make_unique<Layer>(ui::LAYER_SOLID_COLOR);
+  viz::ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  root_layer->SetBounds(gfx::Rect(10, 10));
+  compositor()->SetRootLayer(root_layer.get());
+  compositor()->SetScaleAndSize(1.0f, gfx::Size(10, 10),
+                                allocator.GetCurrentLocalSurfaceId());
+  ASSERT_TRUE(compositor()->IsVisible());
+
+  ThroughputTracker tracker = compositor()->RequestNewThroughputTracker();
+
+  base::RunLoop run_loop;
+  tracker.Start(base::BindLambdaForTesting(
+      [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
+        // The following Cancel() call should not DCHECK or crash.
+        tracker.Cancel();
+
+        // Starting another tracker should not DCHECK or crash.
+        ThroughputTracker another_tracker =
+            compositor()->RequestNewThroughputTracker();
+        another_tracker.Start(base::DoNothing());
+
+        run_loop.Quit();
+      }));
+
+  // Generates a few frames after tracker starts to have some data collected.
+  for (int i = 0; i < 5; ++i) {
+    compositor()->ScheduleFullRedraw();
+    DrawWaiterForTest::WaitForCompositingEnded(compositor());
+  }
+
+  tracker.Stop();
+
+  // Generates a few frames after tracker stops. Note the number of frames
+  // must be at least two: one to trigger underlying cc::FrameSequenceTracker to
+  // be scheduled for termination and one to report data.
+  for (int i = 0; i < 5; ++i) {
+    compositor()->ScheduleFullRedraw();
+    DrawWaiterForTest::WaitForCompositingEnded(compositor());
+  }
+
+  run_loop.Run();
+}
+
 #if defined(OS_WIN)
 // TODO(crbug.com/608436): Flaky on windows trybots
 #define MAYBE_CreateAndReleaseOutputSurface \

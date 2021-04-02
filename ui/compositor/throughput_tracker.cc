@@ -55,7 +55,10 @@ void ThroughputTracker::Stop() {
 }
 
 void ThroughputTracker::Cancel() {
-  DCHECK(started_);
+  // Some code calls Cancel() indirectly after receiving report. Allow this to
+  // happen and make it a no-op. See https://crbug.com/1193382.
+  if (!started_)
+    return;
 
   started_ = false;
   if (host_)
