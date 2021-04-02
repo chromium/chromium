@@ -43,11 +43,23 @@ roll_cts_to() {
   perl -pi -e "s:gpuweb/cts.git' \+ '\@' \+ '[0-9a-f]{40}',$:gpuweb/cts.git' + '\@' + '${hash}',:" DEPS
   gclient sync --nohooks
 
+
+  pushd third_party/webgpu-cts/src > /dev/null
+
+    npm install --frozen-lockfile
+    npm run wpt  # build third_party/webgpu-cts/src/out-wpt/
+
+  popd > /dev/null
+
   third_party/webgpu-cts/scripts/gen_ts_dep_lists.py
   git add third_party/webgpu-cts/ts_sources.txt
 }
 
 roll_cts_to origin/main
+rsync -au --del \
+  third_party/webgpu-cts/src/out-wpt/{common,webgpu} \
+  third_party/blink/web_tests/wpt_internal/webgpu/
+git add third_party/blink/web_tests/wpt_internal/webgpu/
 
 cat << EOF
 
