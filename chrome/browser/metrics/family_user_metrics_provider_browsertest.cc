@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
 #include "chrome/browser/ash/login/test/guest_session_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -34,22 +35,23 @@ constexpr char kSecondaryEDUEmail[] = "testuser1@managedchrome.com";
 
 // Returns the user type for the primary test account for logging in.
 chromeos::LoggedInUserMixin::LogInType GetPrimaryLogInType(
-    FamilyUserMetricsProvider::LogSegment log_segment) {
+    FamilyUserMetricsProvider::FamilyUserLogSegment log_segment) {
   switch (log_segment) {
-    case FamilyUserMetricsProvider::LogSegment::kSupervisedUser:
-    case FamilyUserMetricsProvider::LogSegment::kSupervisedStudent:
+    case FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedUser:
+    case FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedStudent:
       return chromeos::LoggedInUserMixin::LogInType::kChild;
-    case FamilyUserMetricsProvider::LogSegment::kStudentAtHome:
-    case FamilyUserMetricsProvider::LogSegment::kRegularUser:
-    case FamilyUserMetricsProvider::LogSegment::kOther:
+    case FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome:
+    case FamilyUserMetricsProvider::FamilyUserLogSegment::kRegularUser:
+    case FamilyUserMetricsProvider::FamilyUserLogSegment::kOther:
       return chromeos::LoggedInUserMixin::LogInType::kRegular;
   }
 }
 
 // Returns the account id for the primary test account for logging in.
 base::Optional<AccountId> GetPrimaryAccountId(
-    FamilyUserMetricsProvider::LogSegment log_segment) {
-  if (log_segment == FamilyUserMetricsProvider::LogSegment::kStudentAtHome) {
+    FamilyUserMetricsProvider::FamilyUserLogSegment log_segment) {
+  if (log_segment ==
+      FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome) {
     // To distinguish K-12 EDU users from Enterprise users in ChromeOS, we use a
     // PolicyData field. Fetching policy is skipped for obviously consumer
     // users, who have an @gmail.com e-mail, for example (see comments in
@@ -84,7 +86,7 @@ void ProvideCurrentSessionData() {
 class FamilyUserMetricsProviderTest
     : public MixinBasedInProcessBrowserTest,
       public testing::WithParamInterface<
-          FamilyUserMetricsProvider::LogSegment> {
+          FamilyUserMetricsProvider::FamilyUserLogSegment> {
  public:
   FamilyUserMetricsProviderTest() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -94,8 +96,8 @@ class FamilyUserMetricsProviderTest
   void SetUpInProcessBrowserTestFixture() override {
     MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
 
-    if (GetLogSegment() ==
-        FamilyUserMetricsProvider::LogSegment::kStudentAtHome) {
+    if (GetFamilyUserLogSegment() ==
+        FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome) {
       logged_in_user_mixin_.GetUserPolicyMixin()
           ->RequestPolicyUpdate()
           ->policy_data()
@@ -104,12 +106,16 @@ class FamilyUserMetricsProviderTest
   }
 
  protected:
-  FamilyUserMetricsProvider::LogSegment GetLogSegment() { return GetParam(); }
+  FamilyUserMetricsProvider::FamilyUserLogSegment GetFamilyUserLogSegment()
+      const {
+    return GetParam();
+  }
 
   chromeos::LoggedInUserMixin logged_in_user_mixin_{
-      &mixin_host_, GetPrimaryLogInType(GetLogSegment()),
+      &mixin_host_, GetPrimaryLogInType(GetFamilyUserLogSegment()),
       embedded_test_server(), this,
-      /*should_launch_browser=*/true, GetPrimaryAccountId(GetLogSegment()),
+      /*should_launch_browser=*/true,
+      GetPrimaryAccountId(GetFamilyUserLogSegment()),
       /*include_initial_user=*/true,
       // Don't use LocalPolicyTestServer because it does not support customizing
       // PolicyData.
@@ -128,12 +134,18 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
 
   // No metrics were recorded.
   histogram_tester.ExpectTotalCount(
-      FamilyUserMetricsProvider::GetHistogramNameForTesting(), 0);
+      FamilyUserMetricsProvider::
+          GetFamilyUserLogSegmentHistogramNameForTesting(),
+      0);
+  histogram_tester.ExpectTotalCount(
+      FamilyUserMetricsProvider::
+          GetNumSecondaryAccountsHistogramNameForTesting(),
+      0);
 
   logged_in_user_mixin_.LogInUser();
 
-  if (GetLogSegment() ==
-      FamilyUserMetricsProvider::LogSegment::kSupervisedStudent) {
+  if (GetFamilyUserLogSegment() ==
+      FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedStudent) {
     // Add a secondary EDU account.
     Profile* profile = browser()->profile();
     ASSERT_TRUE(profile);
@@ -149,17 +161,29 @@ IN_PROC_BROWSER_TEST_P(FamilyUserMetricsProviderTest, UserCategory) {
   ProvideCurrentSessionData();
 
   histogram_tester.ExpectUniqueSample(
-      FamilyUserMetricsProvider::GetHistogramNameForTesting(), GetLogSegment(),
-      1);
+      FamilyUserMetricsProvider::
+          GetFamilyUserLogSegmentHistogramNameForTesting(),
+      GetFamilyUserLogSegment(), /*expected_count=*/1);
+
+  int expected_num_secondary_accounts =
+      GetFamilyUserLogSegment() == FamilyUserMetricsProvider::
+                                       FamilyUserLogSegment::kSupervisedStudent
+          ? 1
+          : 0;
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserMetricsProvider::
+          GetNumSecondaryAccountsHistogramNameForTesting(),
+      expected_num_secondary_accounts, /*expected_count=*/1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
     ,
     FamilyUserMetricsProviderTest,
-    testing::Values(FamilyUserMetricsProvider::LogSegment::kSupervisedUser,
-                    FamilyUserMetricsProvider::LogSegment::kSupervisedStudent,
-                    FamilyUserMetricsProvider::LogSegment::kStudentAtHome,
-                    FamilyUserMetricsProvider::LogSegment::kRegularUser));
+    testing::Values(
+        FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedUser,
+        FamilyUserMetricsProvider::FamilyUserLogSegment::kSupervisedStudent,
+        FamilyUserMetricsProvider::FamilyUserLogSegment::kStudentAtHome,
+        FamilyUserMetricsProvider::FamilyUserLogSegment::kRegularUser));
 
 class FamilyUserMetricsProviderGuestModeTest
     : public MixinBasedInProcessBrowserTest {
@@ -175,7 +199,8 @@ class FamilyUserMetricsProviderGuestModeTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Prevents a regression to crbug/1137352.
+// Prevents a regression to crbug/1137352. Also tests secondary account metrics
+// not reported in guest mode.
 IN_PROC_BROWSER_TEST_F(FamilyUserMetricsProviderGuestModeTest,
                        NoCrashInGuestMode) {
   base::HistogramTester histogram_tester;
@@ -183,6 +208,67 @@ IN_PROC_BROWSER_TEST_F(FamilyUserMetricsProviderGuestModeTest,
   ProvideCurrentSessionData();
 
   histogram_tester.ExpectUniqueSample(
-      FamilyUserMetricsProvider::GetHistogramNameForTesting(),
-      FamilyUserMetricsProvider::LogSegment::kOther, 1);
+      FamilyUserMetricsProvider::
+          GetFamilyUserLogSegmentHistogramNameForTesting(),
+      FamilyUserMetricsProvider::FamilyUserLogSegment::kOther,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      FamilyUserMetricsProvider::
+          GetNumSecondaryAccountsHistogramNameForTesting(),
+      /*expected_count=*/0);
+}
+
+class FamilyUserMetricsProviderEphemeralUserTest
+    : public MixinBasedInProcessBrowserTest {
+ protected:
+  FamilyUserMetricsProviderEphemeralUserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        chromeos::kFamilyUserMetricsProvider);
+  }
+
+  // MixinBasedInProcessBrowserTest:
+  void SetUpInProcessBrowserTestFixture() override {
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+    std::unique_ptr<chromeos::ScopedDevicePolicyUpdate> device_policy_update =
+        device_state_.RequestDevicePolicyUpdate();
+    device_policy_update->policy_payload()
+        ->mutable_ephemeral_users_enabled()
+        ->set_ephemeral_users_enabled(true);
+
+    device_policy_update.reset();
+  }
+
+  // MixinBasedInProcessBrowserTest:
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    logged_in_user_mixin_.LogInUser();
+  }
+
+  chromeos::DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  chromeos::LoggedInUserMixin logged_in_user_mixin_{
+      &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kRegular,
+      embedded_test_server(), this};
+};
+
+// Tests that regular ephemeral users report 0 for number of secondary accounts.
+IN_PROC_BROWSER_TEST_F(FamilyUserMetricsProviderEphemeralUserTest,
+                       EphemeralUserZeroSecondaryAccounts) {
+  base::HistogramTester histogram_tester;
+
+  ProvideCurrentSessionData();
+
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserMetricsProvider::
+          GetFamilyUserLogSegmentHistogramNameForTesting(),
+      FamilyUserMetricsProvider::FamilyUserLogSegment::kRegularUser,
+      /*expected_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      FamilyUserMetricsProvider::
+          GetNumSecondaryAccountsHistogramNameForTesting(),
+      /*sample=*/0,
+      /*expected_count=*/1);
 }

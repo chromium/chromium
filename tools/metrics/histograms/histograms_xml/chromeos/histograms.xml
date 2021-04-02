@@ -504,7 +504,20 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     and one or more EDU secondary accounts, which is the only available option
     for a secondary account in that scenario. A Student at Home has a K-12 EDU
     primary account on an unmanaged ChromeOS device, regardless of the secondary
-    account. A Regular User is an unmanaged consumer user on any device.
+    account. A Regular User is an unmanaged consumer user on any device. This
+    metric is logged with every UMA upload in ProvideCurrentSessionData().
+  </summary>
+</histogram>
+
+<histogram name="ChromeOS.FamilyUser.NumSecondaryAccounts" units="accounts"
+    expires_after="2022-03-10">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>cros-families-eng@google.com</owner>
+  <owner>chrome-metrics-team@google.com</owner>
+  <summary>
+    Reports the number of secondary accounts besides the primary user. This
+    metric is logged with every UMA upload in ProvideCurrentSessionData(). This
+    metric is not reported for guest users.
   </summary>
 </histogram>
 
