@@ -64,6 +64,7 @@ source_set("unit_tests") {
   deps = [
     ":tpm",
     "//base/test:test_support",
+    "//chromeos/cryptohome:cryptohome",
     "//chromeos/cryptohome:test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/constants",

@@ -444,6 +444,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//base/util/timer",
     "//chromeos",
+    "//chromeos/cryptohome:cryptohome",
     "//chromeos/cryptohome:test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/permission_broker",

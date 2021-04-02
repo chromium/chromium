@@ -58,10 +58,12 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   deps = [
+    ":cryptohome",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/cryptohome:cryptohome_proto",
     "//chromeos/dbus/userdataauth:userdataauth",
     "//chromeos/dbus/userdataauth:userdataauth_proto",
     "//chromeos/login/auth:challenge_response_key",
