@@ -8,6 +8,8 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
 
+import org.chromium.base.MathUtils;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
 
 /**
@@ -17,19 +19,12 @@ import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
  * behavior of this Class is the same as the RoundedCornerImageView.
  */
 public class TabGridThumbnailView extends RoundedCornerImageView {
-    private static final float DEFAULT_RATIO = 1.0f;
-    private float mRatio = DEFAULT_RATIO;
+    private final float mAspectRatio;
 
     public TabGridThumbnailView(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
-
-    /**
-     * Set width and height aspect ratio.
-     * @param ratio The width and height aspect ratio, width over height.
-     */
-    public void setAspectRatio(float ratio) {
-        mRatio = ratio;
+        mAspectRatio = MathUtils.clamp(
+                (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue(), 0.5f, 2.0f);
     }
 
     @Override
@@ -39,10 +34,13 @@ public class TabGridThumbnailView extends RoundedCornerImageView {
         int measuredWidth = getMeasuredWidth();
         int measureHeight = getMeasuredHeight();
 
-        if (TabUiFeatureUtilities.isLaunchPolishEnabled()
+        int expectedHeight = (int) (measuredWidth * 1.0 / mAspectRatio);
+        if ((TabUiFeatureUtilities.isLaunchPolishEnabled()
+                    || StartSurfaceConfiguration.isStartSurfaceEnabled())
                 && (getDrawable() == null
-                        || (mRatio != DEFAULT_RATIO && getDrawable() instanceof ColorDrawable))) {
-            measureHeight = (int) (measuredWidth * 1.0 / mRatio);
+                        || (measureHeight != expectedHeight
+                                && getDrawable() instanceof ColorDrawable))) {
+            measureHeight = expectedHeight;
         }
 
         setMeasuredDimension(measuredWidth, measureHeight);
