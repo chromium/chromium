@@ -220,7 +220,8 @@
             </div>
           </div>
         </template>
-        <div id="activationCodeContainer" class$="[[computeActivationCodeClass_(cameraCount_)]]">
+        <div id="activationCodeContainer" class$="[[computeActivationCodeClass_(
+              cameraCount_, qrCodeDetector_.*)]]">
           <cr-input id="activationCode"
             label="[[i18n('activationCode')]]"
             value="{{activationCode}}"

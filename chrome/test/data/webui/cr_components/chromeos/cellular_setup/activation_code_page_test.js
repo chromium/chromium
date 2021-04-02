@@ -283,6 +283,9 @@ suite('CrComponentsActivationCodePageTest', function() {
             activationCodePage.$$('#esimQrCodeDetection');
 
         assertTrue(!!qrCodeDetectorContainer);
+        // Activation code input should be at the bottom of the page.
+        assertTrue(activationCodePage.$$('#activationCodeContainer')
+                       .classList.contains('relative'));
 
         FakeBarcodeDetector.setShouldFail(true);
         await activationCodePage.setFakesForTesting(
@@ -292,6 +295,9 @@ suite('CrComponentsActivationCodePageTest', function() {
         qrCodeDetectorContainer = activationCodePage.$$('#esimQrCodeDetection');
 
         assertFalse(!!qrCodeDetectorContainer);
+        // Activation code input should now be in the center of the page.
+        assertTrue(activationCodePage.$$('#activationCodeContainer')
+                       .classList.contains('center'));
       });
 
   test('Event is fired when enter is pressed on input', async function() {
