@@ -167,6 +167,29 @@ GURL RealTimeUrlLookupServiceBase::SanitizeURL(const GURL& url) {
   return url.ReplaceComponents(replacements);
 }
 
+// static
+void RealTimeUrlLookupServiceBase::SanitizeReferrerChainEntries(
+    ReferrerChain* referrer_chain) {
+  for (ReferrerChainEntry& entry : *referrer_chain) {
+    // TODO(crbug.com/1161342): Also set the is_subframe_url_removed field after
+    // is_subframe_url_removed is added in the proto.
+    // If the entry sets main_frame_url, that means the url is triggered in a
+    // subframe. Thus replace the url with the main_frame_url and clear
+    // the main_frame_url field.
+    if (entry.has_main_frame_url()) {
+      entry.set_url(entry.main_frame_url());
+      entry.clear_main_frame_url();
+    }
+    // If the entry sets referrer_main_frame_url, that means the referrer_url is
+    // triggered in a subframe. Thus replace the referrer_url with the
+    // referrer_main_frame_url and clear the referrer_main_frame_url field.
+    if (entry.has_referrer_main_frame_url()) {
+      entry.set_referrer_url(entry.referrer_main_frame_url());
+      entry.clear_referrer_main_frame_url();
+    }
+  }
+}
+
 base::WeakPtr<RealTimeUrlLookupServiceBase>
 RealTimeUrlLookupServiceBase::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -441,8 +464,9 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
     referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
         SanitizeURL(url), /*user_gesture_count_limit=*/2,
         request->mutable_referrer_chain());
-    // TODO(crbug.com/1161342): Sanitize referrer chain. Remove subframe URLs
-    // for non-ESB users.
+    if (!CanCheckSubresourceURL()) {
+      SanitizeReferrerChainEntries(request->mutable_referrer_chain());
+    }
   }
 
   return request;

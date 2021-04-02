@@ -38,6 +38,9 @@ using RTLookupRequestCallback =
 using RTLookupResponseCallback =
     base::OnceCallback<void(bool, bool, std::unique_ptr<RTLookupResponse>)>;
 
+using ReferrerChain =
+    google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>;
+
 class VerdictCacheManager;
 class ReferrerChainProvider;
 
@@ -111,6 +114,9 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
  private:
   using PendingRTLookupRequests =
       base::flat_map<network::SimpleURLLoader*, RTLookupResponseCallback>;
+
+  // Removes non-mainframe URLs due to user consent restriction.
+  static void SanitizeReferrerChainEntries(ReferrerChain* referrer_chain);
 
   // Returns the endpoint that the URL lookup will be sent to.
   virtual GURL GetRealTimeLookupUrl() const = 0;
