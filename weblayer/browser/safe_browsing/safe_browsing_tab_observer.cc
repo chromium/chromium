@@ -11,10 +11,31 @@
 #include "content/public/browser/web_contents.h"
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
+#include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/safe_browsing/client_side_detection_host_delegate.h"
 #include "weblayer/browser/safe_browsing/client_side_detection_service_factory.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_token_fetcher_impl.h"
 
 namespace weblayer {
+
+namespace {
+std::unique_ptr<safe_browsing::ClientSideDetectionHost>
+CreateClientSideDetectionHost(content::WebContents* web_contents,
+                              PrefService* prefs,
+                              BrowserContextImpl* browser_context) {
+  return safe_browsing::ClientSideDetectionHost::Create(
+      web_contents,
+      std::make_unique<ClientSideDetectionHostDelegate>(web_contents), prefs,
+      std::make_unique<SafeBrowsingTokenFetcherImpl>(base::BindRepeating(
+          &ProfileImpl::access_token_fetch_delegate,
+          base::Unretained(ProfileImpl::FromBrowserContext(browser_context)))),
+      static_cast<BrowserContextImpl*>(browser_context)->IsOffTheRecord(),
+      /* account_signed_in_callback= */ base::BindRepeating([]() {
+        return true;
+      }));
+}
+
+}  // namespace
 
 SafeBrowsingTabObserver::SafeBrowsingTabObserver(
     content::WebContents* web_contents)
@@ -37,9 +58,7 @@ SafeBrowsingTabObserver::SafeBrowsingTabObserver(
         BrowserProcess::GetInstance()->GetSafeBrowsingService() &&
         csd_service) {
       safebrowsing_detection_host_ =
-          safe_browsing::ClientSideDetectionHost::Create(
-              web_contents,
-              std::make_unique<ClientSideDetectionHostDelegate>(web_contents));
+          CreateClientSideDetectionHost(web_contents, prefs, browser_context);
       csd_service->AddClientSideDetectionHost(
           safebrowsing_detection_host_.get());
     }
@@ -59,9 +78,7 @@ void SafeBrowsingTabObserver::UpdateSafebrowsingDetectionHost() {
   if (safe_browsing && csd_service) {
     if (!safebrowsing_detection_host_.get()) {
       safebrowsing_detection_host_ =
-          safe_browsing::ClientSideDetectionHost::Create(
-              web_contents_,
-              std::make_unique<ClientSideDetectionHostDelegate>(web_contents_));
+          CreateClientSideDetectionHost(web_contents_, prefs, browser_context);
       csd_service->AddClientSideDetectionHost(
           safebrowsing_detection_host_.get());
     }

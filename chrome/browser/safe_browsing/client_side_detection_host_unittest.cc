@@ -28,6 +28,7 @@
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/db/test_database_manager.h"
@@ -35,6 +36,7 @@
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -89,6 +91,18 @@ std::unique_ptr<content::NavigationSimulator> NavigateAndKeepLoading(
 
 namespace safe_browsing {
 namespace {
+
+class MockSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
+ public:
+  MockSafeBrowsingTokenFetcher() = default;
+  ~MockSafeBrowsingTokenFetcher() override = default;
+
+  MOCK_METHOD1(Start, void(Callback));
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MockSafeBrowsingTokenFetcher);
+};
+
 // This matcher verifies that the client computed verdict
 // (ClientPhishingRequest) which is passed to SendClientReportPhishingRequest
 // has the expected fields set.  Note: we can't simply compare the protocol
@@ -122,9 +136,10 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MockClientSideDetectionService() : ClientSideDetectionService(nullptr) {}
   ~MockClientSideDetectionService() override {}
 
-  MOCK_METHOD2(SendClientReportPhishingRequest,
+  MOCK_METHOD3(SendClientReportPhishingRequest,
                void(std::unique_ptr<ClientPhishingRequest>,
-                    ClientReportPhishingRequestCallback));
+                    ClientReportPhishingRequestCallback,
+                    const std::string&));
   MOCK_CONST_METHOD1(IsPrivateIPAddress, bool(const std::string&));
   MOCK_METHOD2(GetValidCachedResult, bool(const GURL&, bool*));
   MOCK_METHOD1(IsInCache, bool(const GURL&));
@@ -276,11 +291,21 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         static_cast<safe_browsing::SafeBrowsingService*>(
             SafeBrowsingService::CreateSafeBrowsingService()));
 
+    identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com");
+
     csd_host_ = ClientSideDetectionHostDelegate::CreateHost(web_contents());
     csd_host_->set_client_side_detection_service(csd_service_.get());
     csd_host_->set_ui_manager(ui_manager_.get());
     csd_host_->set_database_manager(database_manager_.get());
     csd_host_->set_tick_clock_for_testing(&clock_);
+    csd_host_->set_is_off_the_record_for_testing(is_incognito_);
+    csd_host_->set_account_signed_in_for_testing(
+        base::BindRepeating(&safe_browsing::SyncUtils::IsPrimaryAccountSignedIn,
+                            identity_test_env_.identity_manager()));
+    auto token_fetcher =
+        std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
+    raw_token_fetcher_ = token_fetcher.get();
+    csd_host_->set_token_fetcher_for_testing(std::move(token_fetcher));
   }
 
   void TearDown() override {
@@ -351,14 +376,22 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
   void AdvanceTimeTickClock(base::TimeDelta delta) { clock_.Advance(delta); }
 
+  void SetFeatures(const std::vector<base::Feature>& enabled_features,
+                   const std::vector<base::Feature>& disabled_features) {
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
  protected:
   std::unique_ptr<ClientSideDetectionHost> csd_host_;
   std::unique_ptr<StrictMock<MockClientSideDetectionService>> csd_service_;
   scoped_refptr<StrictMock<MockSafeBrowsingUIManager> > ui_manager_;
   scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager> > database_manager_;
   FakePhishingDetector fake_phishing_detector_;
+  StrictMock<MockSafeBrowsingTokenFetcher>* raw_token_fetcher_ = nullptr;
   base::SimpleTestTickClock clock_;
   const bool is_incognito_;
+  signin::IdentityTestEnvironment identity_test_env_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class ClientSideDetectionHostTest : public ClientSideDetectionHostTestBase {
@@ -377,7 +410,7 @@ class ClientSideDetectionHostIncognitoTest
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneInvalidVerdict) {
   // Case 0: renderer sends an invalid verdict string that we're unable to
   // parse.
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(0);
   PhishingDetectionDone("Invalid Protocol Buffer");
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 }
@@ -392,7 +425,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
   verdict.set_is_phishing(true);
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -415,7 +448,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneDisabled) {
   verdict.set_is_phishing(true);
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -439,7 +472,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   verdict.set_is_phishing(true);
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -481,7 +514,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   verdict.set_is_phishing(true);
 
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -501,7 +534,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   verdict.set_url(other_phishing_url.spec());
   verdict.set_client_score(0.8f);
   EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _))
+                                 PartiallyEqualVerdict(verdict), _, _))
       .WillOnce(MoveArg<1>(&cb_other));
   PhishingDetectionDone(verdict.SerializeAsString());
   base::RunLoop().RunUntilIdle();
@@ -542,7 +575,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
   verdict.set_client_score(0.1f);
   verdict.set_is_phishing(false);
 
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _)).Times(0);
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 }
@@ -633,6 +666,106 @@ TEST_F(
 
   WaitAndCheckPreClassificationChecks();
 
+  PhishingDetectionDone(verdict.SerializeAsString());
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       PhishingDetectionDoneEnhancedProtectionShouldHaveToken) {
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures(
+      /*enable_features*/ {kClientSideDetectionWithToken},
+      /*disable_features*/ {});
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  // Set up mock call to csd service.
+  EXPECT_CALL(*csd_service_,
+              SendClientReportPhishingRequest(PartiallyEqualVerdict(verdict), _,
+                                              "fake_access_token"));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
+
+  // Make the call.
+  PhishingDetectionDone(verdict.SerializeAsString());
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run("fake_access_token");
+}
+
+TEST_F(ClientSideDetectionHostIncognitoTest,
+       PhishingDetectionDoneIncognitoShouldNotHaveToken) {
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures(
+      /*enable_features*/ {kClientSideDetectionWithToken},
+      /*disable_features*/ {});
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  // Set up mock call to csd service.
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _, ""));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
+
+  // Make the call.
+  PhishingDetectionDone(verdict.SerializeAsString());
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       PhishingDetectionDoneNoEnhancedProtectionShouldNotHaveToken) {
+  SetFeatures(/*enable_features*/ {},
+              /*disable_features*/ {kClientSideDetectionWithToken});
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  // Set up mock call to csd service.
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _, ""));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
+
+  // Make the call.
+  PhishingDetectionDone(verdict.SerializeAsString());
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       PhishingDetectionDoneDisabledFeatureShouldNotHaveToken) {
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures(/*enable_features*/ {},
+              /*disable_features*/ {kClientSideDetectionWithToken});
+
+  ClientPhishingRequest verdict;
+  verdict.set_url("http://example.com/");
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+
+  // Set up mock call to csd service.
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _, ""));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_)).Times(0);
+
+  // Make the call.
   PhishingDetectionDone(verdict.SerializeAsString());
 }
 
@@ -887,7 +1020,8 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
 
     base::HistogramTester histogram_tester;
 
-    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+        .Times(0);
     PhishingDetectionDone(verdict.SerializeAsString());
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
@@ -899,7 +1033,8 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
   {
     base::HistogramTester histogram_tester;
 
-    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+        .Times(0);
     PhishingDetectionError(mojom::PhishingDetectorResult::CLASSIFIER_NOT_READY);
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
@@ -911,7 +1046,8 @@ TEST_F(ClientSideDetectionHostTest, RecordsPhishingDetectorResults) {
   {
     base::HistogramTester histogram_tester;
 
-    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _)).Times(0);
+    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+        .Times(0);
     PhishingDetectionError(
         mojom::PhishingDetectorResult::FORWARD_BACK_TRANSITION);
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
@@ -985,7 +1121,7 @@ TEST_F(ClientSideDetectionHostTest, ClearsScreenshotData) {
 
   ClientPhishingRequest request;
 
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _))
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
       .WillOnce(testing::SaveArgPointee<0>(&request));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
@@ -1008,7 +1144,7 @@ TEST_F(ClientSideDetectionHostTest, AllowsScreenshotDataForSBER) {
 
   ClientPhishingRequest request;
 
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _))
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
       .WillOnce(testing::SaveArgPointee<0>(&request));
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));

@@ -44,6 +44,10 @@ extern const base::Feature kClientSideDetectionModelVersion;
 // Enables client side detection referrer chain.
 extern const base::Feature kClientSideDetectionReferrerChain;
 
+// Enables GAIA-keying of client side detection requests for Enhanced Safe
+// Browsing users.
+extern const base::Feature kClientSideDetectionWithToken;
+
 // Enable the addition of access tokens to download pings for enhanced
 // protection users.
 extern const base::Feature kDownloadRequestWithToken;

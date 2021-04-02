@@ -42,6 +42,9 @@ extern const base::Feature kClientSideDetectionModelVersion{
 const base::Feature kClientSideDetectionReferrerChain{
     "ClientSideDetectionReferrerChain", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kClientSideDetectionWithToken{
+    "SafeBrowsingCSDRequestWithToken", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDelayedWarnings{"SafeBrowsingDelayedWarnings",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -142,6 +145,7 @@ constexpr struct {
     {&kAdSamplerTriggerFeature, false},
     {&kCaptureInlineJavascriptForGoogleAds, true},
     {&kClientSideDetectionForAndroid, true},
+    {&kClientSideDetectionWithToken, true},
     {&kDelayedWarnings, true},
     {&kDownloadRequestWithToken, true},
     {&kLimitedListSizeForIOS, true},

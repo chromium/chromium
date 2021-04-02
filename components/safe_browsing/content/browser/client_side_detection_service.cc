@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/strcat.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -25,6 +26,7 @@
 #include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/safe_browsing/core/features.h"
 #include "components/safe_browsing/core/proto/client_model.pb.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -38,6 +40,7 @@
 #include "net/base/escape.h"
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -57,6 +60,8 @@ const int ClientSideDetectionService::kPositiveCacheIntervalMinutes = 30;
 
 const char ClientSideDetectionService::kClientReportPhishingUrl[] =
     "https://sb-ssl.google.com/safebrowsing/clientreport/phishing";
+
+constexpr char kAuthHeaderBearer[] = "Bearer ";
 
 struct ClientSideDetectionService::ClientPhishingReportInfo {
   std::unique_ptr<network::SimpleURLLoader> loader;
@@ -149,13 +154,15 @@ void ClientSideDetectionService::OnPrefsUpdated() {
 
 void ClientSideDetectionService::SendClientReportPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> verdict,
-    ClientReportPhishingRequestCallback callback) {
+    ClientReportPhishingRequestCallback callback,
+    const std::string& access_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &ClientSideDetectionService::StartClientReportPhishingRequest,
-          weak_factory_.GetWeakPtr(), std::move(verdict), std::move(callback)));
+          weak_factory_.GetWeakPtr(), std::move(verdict), std::move(callback),
+          access_token));
 }
 
 bool ClientSideDetectionService::IsPrivateIPAddress(
@@ -205,7 +212,8 @@ void ClientSideDetectionService::SendModelToRenderers() {
 
 void ClientSideDetectionService::StartClientReportPhishingRequest(
     std::unique_ptr<ClientPhishingRequest> request,
-    ClientReportPhishingRequestCallback callback) {
+    ClientReportPhishingRequestCallback callback,
+    const std::string& access_token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!enabled_) {
@@ -257,6 +265,12 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
             }
           })");
   auto resource_request = std::make_unique<network::ResourceRequest>();
+  if (!access_token.empty()) {
+    resource_request->headers.SetHeader(
+        net::HttpRequestHeaders::kAuthorization,
+        base::StrCat({kAuthHeaderBearer, access_token}));
+  }
+
   resource_request->url = GetClientReportUrl(kClientReportPhishingUrl);
   resource_request->method = "POST";
   resource_request->load_flags = net::LOAD_DISABLE_CACHE;

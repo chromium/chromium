@@ -16,10 +16,13 @@
 #include "components/safe_browsing/content/browser/client_side_model_loader.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
+#include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
+
 #include "url/gurl.h"
 
 namespace base {
@@ -37,6 +40,10 @@ class ClientSideDetectionService;
 // TODO(noelutz): move all client-side detection IPCs to this class.
 class ClientSideDetectionHost : public content::WebContentsObserver {
  public:
+  // A callback via which the client of this component indicates whether the
+  // primary account is signed in.
+  using PrimaryAccountSignedIn = base::RepeatingCallback<bool()>;
+
   // Delegate which allows to provide embedder specific implementations.
   class Delegate {
    public:
@@ -56,9 +63,17 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
 
   // The caller keeps ownership of the tab object and is responsible for
   // ensuring that it stays valid until WebContentsDestroyed is called.
+  // The caller also keeps ownership of pref_service. The
+  // ClientSideDetectionHost takes ownership of token_fetcher. is_off_the_record
+  // indicates if the profile is incognito, and account_signed_in_callback is
+  // checked to find out if primary account is signed in.
   static std::unique_ptr<ClientSideDetectionHost> Create(
       content::WebContents* tab,
-      std::unique_ptr<Delegate> delegate);
+      std::unique_ptr<Delegate> delegate,
+      PrefService* pref_service,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      bool is_off_the_record,
+      const PrimaryAccountSignedIn& account_signed_in_callback);
 
   // The caller keeps ownership of the tab object and is responsible for
   // ensuring that it stays valid until WebContentsDestroyed is called.
@@ -74,8 +89,13 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   void SendModelToRenderFrame();
 
  protected:
-  explicit ClientSideDetectionHost(content::WebContents* tab,
-                                   std::unique_ptr<Delegate> delegate);
+  explicit ClientSideDetectionHost(
+      content::WebContents* tab,
+      std::unique_ptr<Delegate> delegate,
+      PrefService* pref_service,
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
+      bool is_off_the_record,
+      const PrimaryAccountSignedIn& account_signed_in_callback);
 
   // From content::WebContentsObserver.
   void WebContentsDestroyed() override;
@@ -119,6 +139,35 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
     tick_clock_ = tick_clock;
   }
 
+  // Sets the token fetcher only for testing.
+  void set_token_fetcher_for_testing(
+      std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher) {
+    token_fetcher_ = std::move(token_fetcher);
+  }
+
+  // Sets the incognito bit only for testing.
+  void set_is_off_the_record_for_testing(bool is_off_the_record) {
+    is_off_the_record_ = is_off_the_record;
+  }
+
+  // Sets the primary account signed in callback for testing.
+  void set_account_signed_in_for_testing(
+      const PrimaryAccountSignedIn& account_signed_in_callback) {
+    account_signed_in_callback_ = account_signed_in_callback;
+  }
+
+  // Check if CSD can get an access Token. Should be enabled only for ESB users,
+  // who are signed in and not in incognito mode.
+  bool CanGetAccessToken();
+
+  // Send the client report to CSD server.
+  void SendRequest(std::unique_ptr<ClientPhishingRequest> verdict,
+                   const std::string& access_token);
+
+  // Called when token_fetcher_ has fetched the token.
+  void OnGotAccessToken(std::unique_ptr<ClientPhishingRequest> verdict,
+                        const std::string& access_token);
+
   // This pointer may be nullptr if client-side phishing detection is disabled.
   ClientSideDetectionService* csd_service_;
   // The WebContents that the class is observing.
@@ -139,6 +188,20 @@ class ClientSideDetectionHost : public content::WebContentsObserver {
   const base::TickClock* tick_clock_;
 
   std::unique_ptr<Delegate> delegate_;
+
+  // Unowned object used for getting preference settings.
+  PrefService* pref_service_;
+
+  // The token fetcher used for getting access token.
+  std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
+
+  // A boolean indicates whether the associated profile associated is an
+  // incognito profile.
+  bool is_off_the_record_;
+
+  // Callback for checking if the user is signed in, before fetching
+  // acces_token.
+  PrimaryAccountSignedIn account_signed_in_callback_;
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 

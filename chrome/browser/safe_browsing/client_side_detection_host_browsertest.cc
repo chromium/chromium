@@ -32,9 +32,11 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
 
   void SendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
-      ClientReportPhishingRequestCallback callback) override {
+      ClientReportPhishingRequestCallback callback,
+      const std::string& access_token) override {
     saved_request_ = *verdict;
     saved_callback_ = std::move(callback);
+    access_token_ = access_token;
     request_callback_.Run();
   }
 
@@ -58,6 +60,7 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
   ClientPhishingRequest saved_request_;
   ClientReportPhishingRequestCallback saved_callback_;
   ClientSideModel model_;
+  std::string access_token_;
   base::RepeatingClosure request_callback_;
 };
 

@@ -94,10 +94,12 @@ class ClientSideDetectionService : public KeyedService {
   // phishing verdict will always be false.  The callback is always called after
   // SendClientReportPhishingRequest() returns and on the same thread as
   // SendClientReportPhishingRequest() was called.  You may set |callback| to
-  // NULL if you don't care about the server verdict.
+  // NULL if you don't care about the server verdict.  If |access_token| is not
+  // empty, it is set in the "Authorization: Bearer" header.
   virtual void SendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
-      ClientReportPhishingRequestCallback callback);
+      ClientReportPhishingRequestCallback callback,
+      const std::string& access_token);
 
   // Returns true if the given IP address string falls within a private
   // (unroutable) network block.  Pages which are hosted on these IP addresses
@@ -178,7 +180,8 @@ class ClientSideDetectionService : public KeyedService {
   // This method takes ownership of both pointers.
   void StartClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> request,
-      ClientReportPhishingRequestCallback callback);
+      ClientReportPhishingRequestCallback callback,
+      const std::string& access_token);
 
   // Called by OnURLFetchComplete to handle the server response from
   // sending the client-side phishing request.

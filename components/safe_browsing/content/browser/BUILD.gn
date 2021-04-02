@@ -102,6 +102,8 @@ source_set("client_side_detection") {
     "//components/safe_browsing/core:client_model_proto",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core:features",
+    "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser/sync:sync",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/db:allowlist_checker_client",

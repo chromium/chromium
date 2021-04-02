@@ -45,6 +45,7 @@ static_library("safe_browsing") {
     "//components/safe_browsing/core:ping_manager",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser/sync",
     "//components/safe_browsing/core/common:interfaces",
     "//components/safe_browsing/core/db:database_manager",
     "//components/safe_browsing/core/db:v4_local_database_manager",

@@ -10,8 +10,11 @@
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/client_side_detection_host.h"
+#include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
+#include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 
 namespace safe_browsing {
@@ -24,8 +27,16 @@ const int kCSDAttributionUserGestureLimitForExtendedReporting = 5;
 // static
 std::unique_ptr<ClientSideDetectionHost>
 ClientSideDetectionHostDelegate::CreateHost(content::WebContents* tab) {
+  content::BrowserContext* browser_context = tab->GetBrowserContext();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
   return ClientSideDetectionHost::Create(
-      tab, std::make_unique<ClientSideDetectionHostDelegate>(tab));
+      tab, std::make_unique<ClientSideDetectionHostDelegate>(tab),
+      profile->GetPrefs(),
+      std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(
+          IdentityManagerFactory::GetForProfile(profile)),
+      profile->IsOffTheRecord(),
+      base::BindRepeating(&safe_browsing::SyncUtils::IsPrimaryAccountSignedIn,
+                          IdentityManagerFactory::GetForProfile(profile)));
 }
 
 ClientSideDetectionHostDelegate::ClientSideDetectionHostDelegate(
