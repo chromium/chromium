@@ -71,22 +71,34 @@ base::WeakPtr<storage::BlobStorageContext> BlobStorageContextGetterForBrowser(
 
 }  // namespace
 
-// static
-void BrowserContext::AsyncObliterateStoragePartition(
-    BrowserContext* self,
-    const std::string& partition_domain,
-    base::OnceClosure on_gc_required) {
-  self->impl()->GetOrCreateStoragePartitionMap()->AsyncObliterate(
-      partition_domain, std::move(on_gc_required));
+BrowserContext::BrowserContext() {
+  TRACE_EVENT("shutdown", "BrowserContext::BrowserContext",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(this));
+              });
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("shutdown", "Browser.BrowserContext", this,
+                                    "browser_context",
+                                    static_cast<void*>(this));
+
+  impl_ = std::make_unique<Impl>(this);
 }
 
-// static
-void BrowserContext::GarbageCollectStoragePartitions(
-    BrowserContext* self,
-    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
-    base::OnceClosure done) {
-  self->impl()->GetOrCreateStoragePartitionMap()->GarbageCollect(
-      std::move(active_paths), std::move(done));
+BrowserContext::~BrowserContext() {
+  TRACE_EVENT("shutdown", "BrowserContext::~BrowserContext",
+              [&](perfetto::EventContext ctx) {
+                auto* event =
+                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+                event->set_chrome_browser_context()->set_ptr(
+                    reinterpret_cast<uint64_t>(this));
+              });
+
+  impl_.reset();
+
+  TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Browser.BrowserContext", this,
+                                  "browser_context", static_cast<void*>(this));
 }
 
 // static
@@ -116,19 +128,18 @@ PermissionController* BrowserContext::GetPermissionController(
 
 // static
 StoragePartition* BrowserContext::GetStoragePartition(
-    BrowserContext* browser_context,
+    BrowserContext* self,
     SiteInstance* site_instance,
     bool can_create) {
   if (site_instance)
-    DCHECK_EQ(browser_context, site_instance->GetBrowserContext());
+    DCHECK_EQ(self, site_instance->GetBrowserContext());
 
   auto* site_instance_impl = static_cast<SiteInstanceImpl*>(site_instance);
   auto partition_config =
       site_instance_impl
-          ? site_instance_impl->GetSiteInfo().GetStoragePartitionConfig(
-                browser_context)
-          : StoragePartitionConfig::CreateDefault(browser_context);
-  return GetStoragePartition(browser_context, partition_config, can_create);
+          ? site_instance_impl->GetSiteInfo().GetStoragePartitionConfig(self)
+          : StoragePartitionConfig::CreateDefault(self);
+  return GetStoragePartition(self, partition_config, can_create);
 }
 
 // static
@@ -145,15 +156,15 @@ StoragePartition* BrowserContext::GetStoragePartition(
       storage_partition_config, can_create);
 }
 
+// static
 StoragePartition* BrowserContext::GetStoragePartitionForUrl(
-    BrowserContext* browser_context,
+    BrowserContext* self,
     const GURL& url,
     bool can_create) {
   auto storage_partition_config = SiteInfo::GetStoragePartitionConfigForUrl(
-      browser_context, url, /*is_site_url=*/false);
+      self, url, /*is_site_url=*/false);
 
-  return GetStoragePartition(browser_context, storage_partition_config,
-                             can_create);
+  return GetStoragePartition(self, storage_partition_config, can_create);
 }
 
 // static
@@ -175,21 +186,39 @@ size_t BrowserContext::GetStoragePartitionCount(BrowserContext* self) {
   return partition_map ? partition_map->size() : 0;
 }
 
-StoragePartition* BrowserContext::GetDefaultStoragePartition(
-    BrowserContext* browser_context) {
-  return GetStoragePartition(
-      browser_context, StoragePartitionConfig::CreateDefault(browser_context));
+// static
+void BrowserContext::AsyncObliterateStoragePartition(
+    BrowserContext* self,
+    const std::string& partition_domain,
+    base::OnceClosure on_gc_required) {
+  self->impl()->GetOrCreateStoragePartitionMap()->AsyncObliterate(
+      partition_domain, std::move(on_gc_required));
 }
 
 // static
-void BrowserContext::CreateMemoryBackedBlob(BrowserContext* browser_context,
+void BrowserContext::GarbageCollectStoragePartitions(
+    BrowserContext* self,
+    std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
+    base::OnceClosure done) {
+  self->impl()->GetOrCreateStoragePartitionMap()->GarbageCollect(
+      std::move(active_paths), std::move(done));
+}
+
+// static
+StoragePartition* BrowserContext::GetDefaultStoragePartition(
+    BrowserContext* self) {
+  return GetStoragePartition(self, StoragePartitionConfig::CreateDefault(self));
+}
+
+// static
+void BrowserContext::CreateMemoryBackedBlob(BrowserContext* self,
                                             base::span<const uint8_t> data,
                                             const std::string& content_type,
                                             BlobCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ChromeBlobStorageContext* blob_context =
-      ChromeBlobStorageContext::GetFor(browser_context);
+      ChromeBlobStorageContext::GetFor(self);
   GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ChromeBlobStorageContext::CreateMemoryBackedBlob,
@@ -199,25 +228,25 @@ void BrowserContext::CreateMemoryBackedBlob(BrowserContext* browser_context,
 
 // static
 BrowserContext::BlobContextGetter BrowserContext::GetBlobStorageContext(
-    BrowserContext* browser_context) {
+    BrowserContext* self) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context =
-      ChromeBlobStorageContext::GetFor(browser_context);
+      ChromeBlobStorageContext::GetFor(self);
   return base::BindRepeating(&BlobStorageContextGetterForBrowser,
                              chrome_blob_context);
 }
 
 // static
 mojo::PendingRemote<blink::mojom::Blob> BrowserContext::GetBlobRemote(
-    BrowserContext* browser_context,
+    BrowserContext* self,
     const std::string& uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ChromeBlobStorageContext::GetBlobRemote(browser_context, uuid);
+  return ChromeBlobStorageContext::GetBlobRemote(self, uuid);
 }
 
 // static
 void BrowserContext::DeliverPushMessage(
-    BrowserContext* browser_context,
+    BrowserContext* self,
     const GURL& origin,
     int64_t service_worker_registration_id,
     const std::string& message_id,
@@ -225,13 +254,13 @@ void BrowserContext::DeliverPushMessage(
     base::OnceCallback<void(blink::mojom::PushEventStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PushMessagingRouter::DeliverMessage(
-      browser_context, origin, service_worker_registration_id, message_id,
+      self, origin, service_worker_registration_id, message_id,
       std::move(payload), std::move(callback));
 }
 
 // static
 void BrowserContext::FirePushSubscriptionChangeEvent(
-    BrowserContext* browser_context,
+    BrowserContext* self,
     const GURL& origin,
     int64_t service_worker_registration_id,
     blink::mojom::PushSubscriptionPtr new_subscription,
@@ -239,9 +268,8 @@ void BrowserContext::FirePushSubscriptionChangeEvent(
     base::OnceCallback<void(blink::mojom::PushEventStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   PushMessagingRouter::FireSubscriptionChangeEvent(
-      browser_context, origin, service_worker_registration_id,
-      std::move(new_subscription), std::move(old_subscription),
-      std::move(callback));
+      self, origin, service_worker_registration_id, std::move(new_subscription),
+      std::move(old_subscription), std::move(callback));
 }
 
 // static
@@ -249,11 +277,8 @@ void BrowserContext::NotifyWillBeDestroyed(BrowserContext* self) {
   self->impl()->NotifyWillBeDestroyed();
 }
 
-bool BrowserContext::ShutdownStarted() {
-  return impl()->ShutdownStarted();
-}
-
-void BrowserContext::EnsureResourceContextInitialized(BrowserContext* context) {
+// static
+void BrowserContext::EnsureResourceContextInitialized(BrowserContext* self) {
   // This will be enough to tickle initialization of BrowserContext if
   // necessary, which initializes ResourceContext. The reason we don't call
   // ResourceContext::InitializeResourceContext() directly here is that
@@ -262,12 +287,13 @@ void BrowserContext::EnsureResourceContextInitialized(BrowserContext* context) {
   // end up rewriting the same value but this still causes a race condition.
   //
   // See http://crbug.com/115678.
-  GetDefaultStoragePartition(context);
+  GetDefaultStoragePartition(self);
 }
 
-void BrowserContext::SaveSessionState(BrowserContext* browser_context) {
+// static
+void BrowserContext::SaveSessionState(BrowserContext* self) {
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      BrowserContext::GetDefaultStoragePartition(self);
 
   storage::DatabaseTracker* database_tracker =
       storage_partition->GetDatabaseTracker();
@@ -322,47 +348,12 @@ SharedCorsOriginAccessList* BrowserContext::GetSharedCorsOriginAccessList(
   return self->impl()->shared_cors_origin_access_list();
 }
 
-BrowserContext::BrowserContext() {
-  TRACE_EVENT("shutdown", "BrowserContext::BrowserContext",
-              [&](perfetto::EventContext ctx) {
-                auto* event =
-                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-                event->set_chrome_browser_context()->set_ptr(
-                    reinterpret_cast<uint64_t>(this));
-              });
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("shutdown", "Browser.BrowserContext", this,
-                                    "browser_context",
-                                    static_cast<void*>(this));
-
-  impl_ = std::make_unique<Impl>(this);
-}
-
-BrowserContext::~BrowserContext() {
-  TRACE_EVENT("shutdown", "BrowserContext::~BrowserContext",
-              [&](perfetto::EventContext ctx) {
-                auto* event =
-                    ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-                event->set_chrome_browser_context()->set_ptr(
-                    reinterpret_cast<uint64_t>(this));
-              });
-
-  impl_.reset();
-
-  TRACE_EVENT_NESTABLE_ASYNC_END1("shutdown", "Browser.BrowserContext", this,
-                                  "browser_context", static_cast<void*>(this));
-}
-
 void BrowserContext::ShutdownStoragePartitions() {
   impl()->ShutdownStoragePartitions();
 }
 
-std::string BrowserContext::GetMediaDeviceIDSalt() {
-  return UniqueId();
-}
-
-// static
-std::string BrowserContext::CreateRandomMediaDeviceIDSalt() {
-  return base::UnguessableToken::Create().ToString();
+bool BrowserContext::ShutdownStarted() {
+  return impl()->ShutdownStarted();
 }
 
 const std::string& BrowserContext::UniqueId() {
@@ -382,6 +373,29 @@ BrowserContext::RetriveInProgressDownloadManager() {
   return nullptr;
 }
 
+// static
+std::string BrowserContext::CreateRandomMediaDeviceIDSalt() {
+  return base::UnguessableToken::Create().ToString();
+}
+
+void BrowserContext::WriteIntoTracedValue(perfetto::TracedValue context) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("id", impl()->UniqueId());
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// The //content embedder can override the methods below to change or extend
+// how the //content layer interacts with a BrowserContext.  The code below
+// provides default implementations where appropriate.
+//
+// TODO(https://crbug.com/1179776): Migrate method definitions from this
+// section into a separate BrowserContextDelegate class and a separate
+// browser_context_delegate.cc source file.
+
+std::string BrowserContext::GetMediaDeviceIDSalt() {
+  return UniqueId();
+}
+
 FileSystemAccessPermissionContext*
 BrowserContext::GetFileSystemAccessPermissionContext() {
   return nullptr;
@@ -397,11 +411,6 @@ bool BrowserContext::CanUseDiskWhenOffTheRecord() {
 
 variations::VariationsClient* BrowserContext::GetVariationsClient() {
   return nullptr;
-}
-
-void BrowserContext::WriteIntoTracedValue(perfetto::TracedValue context) {
-  auto dict = std::move(context).WriteDictionary();
-  dict.Add("id", impl()->UniqueId());
 }
 
 }  // namespace content

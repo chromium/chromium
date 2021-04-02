@@ -90,6 +90,25 @@ class SSLHostStateDelegate;
 // thread.
 class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
  public:
+  //////////////////////////////////////////////////////////////////////////////
+  // The BrowserContext methods below are provided/implemented by the //content
+  // layer (e.g. there is no need to override these methods in layers above
+  // //content).
+  //
+  // The current practice is to make the methods in this section static and have
+  // them take `BrowserContext* self` as the first parameter.  (It is known that
+  // not all the methods below follow this pattern.)
+  //
+  // TODO(https://crbug.com/1179776): Consider converting methods in this
+  // section into non-virtual instance methods (dropping the `BrowserContext*`
+  // parameter along the way).
+  //
+  // TODO(https://crbug.com/1179776): Consider moving these methods to
+  // BrowserContext::Impl or (in the future) BrowserContextImpl class.
+
+  BrowserContext();
+  ~BrowserContext() override;
+
   static DownloadManager* GetDownloadManager(BrowserContext* self);
 
   // Returns BrowserContext specific external mount points. It may return
@@ -108,7 +127,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns a StoragePartition for the given SiteInstance. By default this will
   // create a new StoragePartition if it doesn't exist, unless |can_create| is
   // false.
-  static StoragePartition* GetStoragePartition(BrowserContext* browser_context,
+  static StoragePartition* GetStoragePartition(BrowserContext* self,
                                                SiteInstance* site_instance,
                                                bool can_create = true);
 
@@ -125,10 +144,9 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns a StoragePartition for the given URL. By default this will
   // create a new StoragePartition if it doesn't exist, unless |can_create| is
   // false.
-  static StoragePartition* GetStoragePartitionForUrl(
-      BrowserContext* browser_context,
-      const GURL& url,
-      bool can_create = true);
+  static StoragePartition* GetStoragePartitionForUrl(BrowserContext* self,
+                                                     const GURL& url,
+                                                     bool can_create = true);
 
   using StoragePartitionCallback =
       base::RepeatingCallback<void(StoragePartition*)>;
@@ -149,8 +167,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
       std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
       base::OnceClosure done);
 
-  static StoragePartition* GetDefaultStoragePartition(
-      BrowserContext* browser_context);
+  static StoragePartition* GetDefaultStoragePartition(BrowserContext* self);
 
   using BlobCallback = base::OnceCallback<void(std::unique_ptr<BlobHandle>)>;
   using BlobContextGetter =
@@ -159,14 +176,13 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // This method should be called on UI thread and calls back on UI thread
   // as well. Note that retrieving a blob ptr out of BlobHandle can only be
   // done on IO. |callback| returns a nullptr on failure.
-  static void CreateMemoryBackedBlob(BrowserContext* browser_context,
+  static void CreateMemoryBackedBlob(BrowserContext* self,
                                      base::span<const uint8_t> data,
                                      const std::string& content_type,
                                      BlobCallback callback);
 
   // Get a BlobStorageContext getter that needs to run on IO thread.
-  static BlobContextGetter GetBlobStorageContext(
-      BrowserContext* browser_context);
+  static BlobContextGetter GetBlobStorageContext(BrowserContext* self);
 
   // Returns a mojom::mojo::PendingRemote<blink::mojom::Blob> for a specific
   // blob. If no blob exists with the given UUID, the
@@ -176,13 +192,13 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // eliminate this method in favor of just passing around the
   // mojo::PendingRemote<blink::mojom::Blob> directly.
   static mojo::PendingRemote<blink::mojom::Blob> GetBlobRemote(
-      BrowserContext* browser_context,
+      BrowserContext* self,
       const std::string& uuid);
 
   // Delivers a push message with |data| to the Service Worker identified by
   // |origin| and |service_worker_registration_id|.
   static void DeliverPushMessage(
-      BrowserContext* browser_context,
+      BrowserContext* self,
       const GURL& origin,
       int64_t service_worker_registration_id,
       const std::string& message_id,
@@ -193,7 +209,7 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // |origin| and |service_worker_registration_id| with |new_subscription| and
   // |old_subscription| as event information.
   static void FirePushSubscriptionChangeEvent(
-      BrowserContext* browser_context,
+      BrowserContext* self,
       const GURL& origin,
       int64_t service_worker_registration_id,
       blink::mojom::PushSubscriptionPtr new_subscription,
@@ -207,11 +223,11 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // created, but if the embedder wants to pass the ResourceContext to another
   // thread before they use BrowserContext, they should call this to make sure
   // that the ResourceContext is ready.
-  static void EnsureResourceContextInitialized(BrowserContext* browser_context);
+  static void EnsureResourceContextInitialized(BrowserContext* self);
 
   // Tells the HTML5 objects on this context to persist their session state
   // across the next restart.
-  static void SaveSessionState(BrowserContext* browser_context);
+  static void SaveSessionState(BrowserContext* self);
 
   static void SetDownloadManagerForTesting(
       BrowserContext* self,
@@ -229,10 +245,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   static SharedCorsOriginAccessList* GetSharedCorsOriginAccessList(
       BrowserContext* self);
 
-  BrowserContext();
-
-  ~BrowserContext() override;
-
   // Shuts down the storage partitions associated to this browser context.
   // This must be called before the browser context is actually destroyed
   // and before a clean-up task for its corresponding IO thread residents (e.g.
@@ -244,6 +256,54 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // NotifyWillBeDestroyed() call. This is a signal that the object will be
   // destroyed soon and no new references to this object should be created.
   bool ShutdownStarted();
+
+  // Returns a unique string associated with this browser context.
+  virtual const std::string& UniqueId();
+
+  // Media service for storing/retrieving video decoding performance stats.
+  // Exposed here rather than StoragePartition because all SiteInstances should
+  // have similar decode performance and stats are not exposed to the web
+  // directly, so privacy is not compromised.
+  //
+  // TODO(https://crbug.com/1179776): Split GetVideoDecodePerfHistory method
+  // into 1) CreateVideoDecodePerfHistory (override-able by //content embedders,
+  // although //content will provide default implementation which is currently
+  // in browser_context_impl.cc) and 2) GetVideoDecodePerfHistory (only
+  // implemented in //content, handling lazily creating and storing of the
+  // VideoDecodePerfHistory object).
+  virtual media::VideoDecodePerfHistory* GetVideoDecodePerfHistory();
+
+  // Returns a LearningSession associated with |this|. Used as the central
+  // source from which to retrieve LearningTaskControllers for media machine
+  // learning.
+  // Exposed here rather than StoragePartition because learnings will cover
+  // general media trends rather than SiteInstance specific behavior. The
+  // learnings are not exposed to the web.
+  virtual media::learning::LearningSession* GetLearningSession();
+
+  // Retrieves the InProgressDownloadManager associated with this object if
+  // available
+  virtual download::InProgressDownloadManager*
+  RetriveInProgressDownloadManager();
+
+  // Utility function useful for embedders. Only needs to be called if
+  // 1) The embedder needs to use a new salt, and
+  // 2) The embedder saves its salt across restarts.
+  static std::string CreateRandomMediaDeviceIDSalt();
+
+  // Write a representation of this object into a trace.
+  void WriteIntoTracedValue(perfetto::TracedValue context);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // The //content embedder can override the methods below to change or extend
+  // how the //content layer interacts with a BrowserContext.
+  //
+  // All the methods below should be virtual.  Most of the methods should be
+  // pure (i.e. `= 0`) although it may make sense to provide a default
+  // implementation for some of the methods.
+  //
+  // TODO(https://crbug.com/1179776): Migrate method declarations from this
+  // section into a separate BrowserContextDelegate class.
 
 #if !defined(OS_ANDROID)
   // Creates a delegate to initialize a HostZoomMap and persist its information.
@@ -315,36 +375,9 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // called once per context. It's valid to return nullptr.
   virtual BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate() = 0;
 
-  // Returns a unique string associated with this browser context.
-  virtual const std::string& UniqueId();
-
   // Returns a random salt string that is used for creating media device IDs.
   // Default implementation uses the BrowserContext's UniqueId.
   virtual std::string GetMediaDeviceIDSalt();
-
-  // Utility function useful for embedders. Only needs to be called if
-  // 1) The embedder needs to use a new salt, and
-  // 2) The embedder saves its salt across restarts.
-  static std::string CreateRandomMediaDeviceIDSalt();
-
-  // Media service for storing/retrieving video decoding performance stats.
-  // Exposed here rather than StoragePartition because all SiteInstances should
-  // have similar decode performance and stats are not exposed to the web
-  // directly, so privacy is not compromised.
-  virtual media::VideoDecodePerfHistory* GetVideoDecodePerfHistory();
-
-  // Returns a LearningSession associated with |this|. Used as the central
-  // source from which to retrieve LearningTaskControllers for media machine
-  // learning.
-  // Exposed here rather than StoragePartition because learnings will cover
-  // general media trends rather than SiteInstance specific behavior. The
-  // learnings are not exposed to the web.
-  virtual media::learning::LearningSession* GetLearningSession();
-
-  // Retrieves the InProgressDownloadManager associated with this object if
-  // available
-  virtual download::InProgressDownloadManager*
-  RetriveInProgressDownloadManager();
 
   // Returns the FileSystemAccessPermissionContext associated with this context
   // if any, nullptr otherwise.
@@ -367,9 +400,6 @@ class CONTENT_EXPORT BrowserContext : public base::SupportsUserData {
   // Returns the VariationsClient associated with the context if any, or
   // nullptr if there isn't one.
   virtual variations::VariationsClient* GetVariationsClient();
-
-  // Write a representation of this object into a trace.
-  void WriteIntoTracedValue(perfetto::TracedValue context);
 
  private:
   // Please don't add more fields to BrowserContext.
