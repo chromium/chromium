@@ -610,6 +610,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">L'Assistente Google non è disponibile in una sessione Ospite.</translation>
 <translation id="6137566720514957455">Apri la finestra di dialogo di rimozione per <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Periferica non supportata</translation>
 <translation id="615957422585914272">Mostra tastiera sullo schermo</translation>
 <translation id="6165508094623778733">Ulteriori informazioni</translation>
 <translation id="6179832488876878285">Puoi bloccare qui i tuoi file importanti. Apri l'app File per iniziare.</translation>
@@ -631,7 +632,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="6376931439017688372">Bluetooth attivo.</translation>
 <translation id="6381109794406942707">Per sbloccare il dispositivo, inserisci il PIN.</translation>
 <translation id="639644700271529076">Funzione BLOC MAIUSC non attiva</translation>
-<translation id="6396835948284782440">Tieni premuto [Esc] per uscire.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Cancella tutte le notifiche</translation>

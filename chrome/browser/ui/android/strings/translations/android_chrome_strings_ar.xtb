@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">سجلّ التنقُّل</translation>
 <translation id="1231733316453485619">هل تريد تفعيل المزامنة؟</translation>
 <translation id="123724288017357924">إعادة تحميل الصفحة الحالية مع تجاهل المحتوى المُخزَّن مؤقتًا</translation>
+<translation id="1240288207750131269">جارٍ تحميل <ph name="LANG" /></translation>
 <translation id="124678866338384709">إغلاق علامة التبويب الحالية</translation>
 <translation id="1258753120186372309">‏رسم الشعار المبتكر من Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
+<translation id="1276279242344007853">إدارة المواقع الإلكترونية التي تتابعها</translation>
 <translation id="1283039547216852943">النقر للتوسيع</translation>
 <translation id="1285310382777185058">تغيير اللغة</translation>
 <translation id="1291207594882862231">محو السجل وملفات تعريف الارتباط وبيانات المواقع وذاكرة التخزين المؤقت...</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">إصدار التطبيق</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1450753235335490080">تعذَّرت مشاركة <ph name="CONTENT_TYPE" />.</translation>
+<translation id="1466383950273130737">‏اختيار لغة Chrome</translation>
 <translation id="147113415845704694">جرِب سؤال "ما هي حالة الطقس اليوم؟"</translation>
 <translation id="1477626028522505441">تعذّر تنزيل الملف <ph name="FILE_NAME" /> بسبب مشاكل بالخادم.</translation>
 <translation id="1492417797159476138">سبق لك حفظ اسم المستخدم لهذا الموقع الإلكتروني.</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">التحقُّق من اتصال الإنترنت</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2369533728426058518">علامات التبويب المفتوحة</translation>
+<translation id="2386938421315164605">إخفاء المواضيع وإظهارها</translation>
 <translation id="2387895666653383613">تغيير حجم النص</translation>
 <translation id="2394602618534698961">تظهر الملفات التي نزَّلتها هنا.</translation>
 <translation id="2407481962792080328">‏عند تسجيل الدخول إلى حسابك على Google، يتم تفعيل هذه الميزة.</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">‏بإمكانك عرض كلمات المرور المحفوظة وإدارتها في <ph name="BEGIN_LINK" />حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">للحصول على الإشارات المرجعية على جميع أجهزتك، يُرجى تسجيل الدخول وتفعيل المزامنة.</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2839327205551510876">تم إلغاء متابعة <ph name="SITE_NAME" />.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{تمّ إجراء عملية التحقُّق قبل يوم واحد.}zero{تمّ إجراء عملية التحقُّق قبل # يوم.}two{تمّ إجراء عملية التحقُّق قبل يومَين.}few{تمّ إجراء عملية التحقُّق قبل # أيام.}many{تمّ إجراء عملية التحقُّق قبل # يومًا.}other{تمّ إجراء عملية التحقُّق قبل # يوم.}}</translation>
 <translation id="2842985007712546952">المجلد الرئيسي</translation>
 <translation id="2856503607207334158">تعذَّر تسجيل الدخول.</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">‏النظام الأساسي لإشعارات Google</translation>
 <translation id="2923908459366352541">الاسم غير صحيح</translation>
 <translation id="2932150158123903946">‏مساحة تخزين <ph name="APP_NAME" /> Google</translation>
+<translation id="2932222164150889403">لن يتم تغيير اللغة في لوحة المفاتيح.</translation>
 <translation id="2942036813789421260">علامة تبويب المعاينة مغلقة</translation>
 <translation id="2956410042958133412">تتم إدارة هذا الحساب بواسطة <ph name="PARENT_NAME_1" /> و <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{صفحة واحدة (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) غير مقروءة}zero{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}two{صفحتان (<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />) غير مقروءتَين}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحات غير مقروءة}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">‏واجهة المستخدم الخاصة بالموافقة على استخدام ميزة "البحث الصوتي" في "مساعد Google"</translation>
 <translation id="3034163383943672781">سيبدأ التنزيل بتاريخ <ph name="DATE" /></translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />الحصول على مساعدة<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">الوصول إلى هذا الموقع الإلكتروني بسرعة أكبر في المرة القادمة</translation>
 <translation id="305593374596241526">‏تحديد الموقع الجغرافي متوقف، يمكنك تفعيله من <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">يمكنك تفعيل المزامنة في أي وقت في الإعدادات.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{إشارة مرجعية <ph name="BOOKMARKS_COUNT_ONE" />}zero{<ph name="BOOKMARKS_COUNT_MANY" /> إشارات مرجعية}two{إشارتان مرجعيتان (<ph name="BOOKMARKS_COUNT_MANY" />)}few{<ph name="BOOKMARKS_COUNT_MANY" /> إشارات مرجعية}many{<ph name="BOOKMARKS_COUNT_MANY" /> إشارةً مرجعيةً}other{<ph name="BOOKMARKS_COUNT_MANY" /> إشارة مرجعية}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">‏يتم حاليًا تخصيص إعدادات خدمة Google والمزامنة. لإنهاء تفعيل المزامنة، يُرجى الضغط على زر "التأكيد" بالقرب من أسفل الشاشة. الانتقال إلى أعلى</translation>
 <translation id="3334729583274622784">هل تريد تغيير امتداد الملف؟</translation>
 <translation id="3341058695485821946">الاطّلاع على مقدار البيانات التي وفّرتها</translation>
+<translation id="3341262203274374114">يتعذّر إلغاء متابعة الخلاصة. حدث خطأ.</translation>
 <translation id="3350687908700087792">إغلاق كافة علامات تبويب التصفح المتخفي</translation>
 <translation id="3359667936385849800">استخدام مقدِّم الخدمة الحالي</translation>
 <translation id="3367813778245106622">تسجيل الدخول مرة أخرى لبدء المزامنة</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">الموقع مسموح به</translation>
 <translation id="3988466920954086464">الاطلاع على نتائج البحث الفورية في هذه اللوحة</translation>
 <translation id="4000212216660919741">الصفحة الرئيسية بلا اتصال بالإنترنت</translation>
+<translation id="4016425174436051808">تتعذّر متابعة الخلاصة. حدث خطأ.</translation>
+<translation id="4021916380760361450">‏التحكّم في بيانات حساباتك على Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{ساعة واحدة (#)}zero{# ساعة}two{ساعتان (#)}few{# ساعات}many{# ساعةً}other{# ساعة}}</translation>
 <translation id="4045764304651014138">بيانات الاستخدام</translation>
 <translation id="4056223980640387499">بني داكن</translation>
@@ -598,6 +608,7 @@
 <translation id="5152843274749979095">ليس هناك أي تطبيق مثبّت متوافق</translation>
 <translation id="5161254044473106830">العنوان مطلوب</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{تعذَّر إتمام عملية تنزيل واحدة.}zero{تعذَّر إتمام # عملية تنزيل.}two{تعذَّر إتمام عمليتي تنزيل (#).}few{تعذَّر إتمام # عمليات تنزيل.}many{تعذَّر إتمام # عملية تنزيل.}other{تعذَّر إتمام # عملية تنزيل.}}</translation>
+<translation id="5168824020667180049">تمت متابعة <ph name="SITE_NAME" />.</translation>
 <translation id="5170568018924773124">العرض في المجلد</translation>
 <translation id="5184329579814168207">‏فتح في Chrome</translation>
 <translation id="5188992787241350004">إجراء بحث صوتي</translation>
@@ -717,6 +728,7 @@
 <translation id="5864419784173784555">في انتظار تنزيل آخر…</translation>
 <translation id="5865733239029070421">‏يُرسِل إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا.</translation>
 <translation id="5869522115854928033">كلمات المرور المحفوظة</translation>
+<translation id="5880748256563468367">الانتقال إلى الخلاصة</translation>
 <translation id="5884076754568147479">‏لمساعدتك على إنجاز المهام، ستتلقى Google عناوين URL للمواقع الإلكترونية ومحتواها عند استخدامك "مساعد Google" على تلك المواقع، بالإضافة إلى المعلومات التي يتم إرسالها من خلال "مساعد Google".</translation>
 <translation id="5919204609460789179">تحديث <ph name="PRODUCT_NAME" /> لبدء المزامنة</translation>
 <translation id="5937580074298050696">تم توفير <ph name="AMOUNT" /></translation>
@@ -734,6 +746,7 @@
 <translation id="5979084224081478209">التحقق من كلمات المرور</translation>
 <translation id="5982307838673692400">فتح علامة تبويب في وضع التصفُّح المتخفي</translation>
 <translation id="6000066717592683814">‏الاستمرار في استخدام محرك Google</translation>
+<translation id="6000203700195075278">المتابعة مجدّدًا</translation>
 <translation id="6005538289190791541">كلمة المرور المُقترحَة</translation>
 <translation id="6036057147555329831">وحدة الرعاية المركزية الإضافية</translation>
 <translation id="6039379616847168523">الانتقال السريع إلى علامة التبويب التالية</translation>
@@ -1095,6 +1108,7 @@
 <translation id="834313815369870491">مواقع إلكترونية لا أريد ترجمتها مطلقًا</translation>
 <translation id="8349013245300336738">الترتيب حسب مقدار البيانات المُستخدَمة</translation>
 <translation id="835847953965672673">تمّت استعادة <ph name="NUMBER_OF_DOWNLOADS" /> عملية تنزيل.</translation>
+<translation id="8362134094656482681">إدارة المواضيع التي تحظى باهتمامك</translation>
 <translation id="8364299278605033898">عرض المواقع الإلكترونية الشائعة</translation>
 <translation id="8368027906805972958">جهاز غير معروف أو غير متوافق (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">تم تنزيل حزمة اللغة <ph name="LANG" />.</translation>

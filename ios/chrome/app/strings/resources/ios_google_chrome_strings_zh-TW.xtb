@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">協助改善 Chrome 的功能與效能</translation>
 <translation id="1314663809820920746">你仍然可以在這部裝置上查看自己的所有書籤、歷史記錄、密碼和其他設定，但你所做的變更將不會同步到 Google 帳戶。</translation>
 <translation id="1479202195792305274">如果你使用 Google 帳戶登入，Chrome 可以檢查你的密碼。</translation>
+<translation id="1493827051843127077">將 Chrome 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="1504372625950710826">Chrome 無法檢查更新，請查看網際網路連線狀態。</translation>
 <translation id="1682483655351012182">同步處理你的 Chrome 資料</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome 會與你允許的網站分享位置資訊。</translation>
 <translation id="2347208864470321755">開啟這項功能後，Chrome 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">將 Chrome 設為預設瀏覽器</translation>
+<translation id="2561231791489583059">使用 Chrome 做為預設瀏覽器可保護你免於危險網站的威脅，同時確保你的密碼安全無虞</translation>
 <translation id="2574249610672786438">在你所有的裝置上登入帳戶後，不論從何處使用 Chrome 都能查看你的分頁</translation>
 <translation id="2576431527583832481">Chrome 現在變得更進步了！歡迎你升級使用新版本。</translation>
 <translation id="257708665678654955">下次造訪這個網站時，需要 Google Chrome 為您翻譯其中的<ph name="LANGUAGE_NAME" />網頁嗎？</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome 無法檢查你的密碼</translation>
 <translation id="7265369419224458312">只要在電腦上開啟 Chrome 並前往選單中選取 [登入 Chrome...]，即可直接在這裡使用您在電腦上開啟的所有分頁。</translation>
 <translation id="7272930098487145294">如要儲存圖片，請輕觸 [設定] 並允許 Chrome 新增相片</translation>
+<translation id="7275945473750112644">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chrome 資料</translation>
 <translation id="7400722733683201933">關於 Google Chrome</translation>
 <translation id="7501046334262221972">如要將 Chrome 設為預設瀏覽器，請開啟「設定」，然後輕觸 [預設的瀏覽器應用程式] 並選取 [Chrome]。</translation>
 <translation id="756809126120519699">已清除 Chrome 資料</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">你的密碼因為資料侵害事件遭到外洩。Chrome 建議你立即變更密碼。</translation>
 <translation id="7698568245838009292">Chrome 要求存取你的相機</translation>
 <translation id="7855730255114109580">Google Chrome 目前是最新版本</translation>
+<translation id="8022947259858476807">預設使用 Chrome 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>
 <translation id="8160472928944011082">Chrome 無法更新</translation>
+<translation id="8357607116237445042">選擇是否要清除你在這部裝置上的 Chrome 資料</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. 保留所有權利。</translation>
 <translation id="840168496893712993">部分外掛程式造成 Chrome 當機，請解除安裝這些外掛程式。</translation>
 <translation id="8459495907675268833">系統已將您所選取的資料從 Chrome 和其他同步的裝置中移除。您的 Google 帳戶仍可能保留了其他類型的瀏覽記錄，例如其他 Google 服務中的搜尋和活動記錄 (可前往 history.google.com 查詢)。</translation>
@@ -88,4 +93,5 @@
   2. 輕觸 [預設瀏覽器 App]
   3. 選取 [Chrome]</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">讓 Google Chrome 保障你的安全</translation>
 </translationbundle>

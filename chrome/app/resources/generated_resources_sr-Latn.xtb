@@ -518,6 +518,7 @@
 <translation id="1563702743503072935">Lozinke sa Google naloga biće dostupne i na ovom uređaju dok ste prijavljeni</translation>
 <translation id="1566049601598938765">Veb-sajt</translation>
 <translation id="15662109988763471">Izabrani štampač nije dostupan ili nije pravilno instaliran. Proverite štampač ili izaberite neki drugi.</translation>
+<translation id="1567135437923613642">Omogućite istaknute eksperimente</translation>
 <translation id="1567387640189251553">Neka druga tastatura je povezana otkako ste poslednji put uneli lozinku. Možda pokušava da ukrade vašu kombinaciju tastera.</translation>
 <translation id="1567993339577891801">JavaScript konzola</translation>
 <translation id="1568323446248056064">Otvori podešavanja uređaja za ekran</translation>
@@ -917,6 +918,7 @@
 <translation id="1979095679518582070">Isključivanje ove funkcije ne utiče na mogućnost ovog uređaja da šalje informacije potrebne za osnovne usluge, na primer, ažuriranja sistema i bezbednost.</translation>
 <translation id="1979280758666859181">Prelazite na kanal sa starijom verzijom <ph name="PRODUCT_NAME" />-a. Promena kanala će se primeniti kada se verzija kanala bude podudarala sa verzijom koja je trenutno instalirana na uređaju.</translation>
 <translation id="197989455406964291">KDC ne podržava tip šifrovanja</translation>
+<translation id="1983497378699148207">Da biste završili podešavanje Linux-a, ažurirajte Chrome OS i probajte ponovo.</translation>
 <translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
 <translation id="1987317783729300807">Nalozi</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
@@ -1329,6 +1331,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2450223707519584812">Nećete moći da dodajete korisnike zato što nedostaju šifre za Google API. Potražite detalje na <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Nema aktivnih prikaza</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Sajtovi se obično povezuju sa serijskim portovima za potrebe funkcija za prenos podataka, na primer, pri podešavanju mreže</translation>
 <translation id="2453860139492968684">Završi</translation>
 <translation id="2454247629720664989">Ključna reč</translation>
 <translation id="2454264884354864965">Kamera je isključena</translation>
@@ -1959,6 +1962,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="313205617302240621">Zaboravili ste lozinku?</translation>
 <translation id="3132277757485842847">Nismo uspeli da održimo vezu sa telefonom. Uverite se da je telefon u blizini, da je otključan i da su Bluetooth i WiFi uključeni.</translation>
 <translation id="3132996321662585180">Osvežavaj dnevno</translation>
+<translation id="3134393957315651797">Izaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />. Opis eksperimenta: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Nevažeći PIN. Preostalih pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Preuzima se, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Podrazumevani žuti avatar</translation>
@@ -2843,6 +2847,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="4099874310852108874">Došlo je do greške na mreži.</translation>
 <translation id="4100733287846229632">Prostor na uređaju je izuzetno mali</translation>
 <translation id="4100853287411968461">Novo ograničenje vremena ispred ekrana</translation>
+<translation id="4101352914005291489">Skriveni SSID</translation>
 <translation id="4102906002417106771">Restartujte da biste obavili Powerwash</translation>
 <translation id="4104163789986725820">I&amp;zvezi...</translation>
 <translation id="4107048419833779140">identifikuje i izbacuje memorijske uređaje</translation>
@@ -3912,6 +3917,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5382591305415226340">Upravljaj podržanim linkovima</translation>
 <translation id="5383377866517186886">Kamera je isključena u podešavanjima Mac sistema</translation>
 <translation id="5383740867328871413">Grupa bez naziva – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Smernice za preduzeća su promenjene. Dugme za eksperimente je dodato u traku s alatkama. Kliknite na dugme da biste otvorili dijalog i omogućili eksperimente.</translation>
 <translation id="5388885445722491159">Upareno</translation>
 <translation id="5390100381392048184">Dozvoli sajtovima da puštaju zvuk</translation>
 <translation id="5390112241331447203">Uvrsti datoteku system_logs.txt koja se šalje u izveštajima sa povratnim informacijama.</translation>
@@ -5037,6 +5043,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6659594942844771486">Kartica</translation>
 <translation id="6660413144148052430">lokacija</translation>
 <translation id="666099631117081440">Serveri za štampanje</translation>
+<translation id="6662931079349804328">Smernice za preduzeća su promenjene. Dugme za eksperimente je uklonjeno iz trake s alatkama.</translation>
 <translation id="6663190258859265334">Obavite Powerwash uređaja <ph name="DEVICE_TYPE" /> i vratite se na prethodnu verziju.</translation>
 <translation id="6664237456442406323">Nažalost, računar je konfigurisan pomoću pogrešno napravljenog ID-a hardvera. To sprečava Chrome OS da se ažurira najnovijim bezbednosnim ispravkama i računar je <ph name="BEGIN_BOLD" />možda podložan zlonamernim napadima<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Došlo je do problema pri otvaranju profila. Odjavite se, pa se ponovo prijavite.</translation>
@@ -5393,6 +5400,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7056526158851679338">&amp;Ispitaj uređaje</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Bezbednosna provera je pokrenuta pre 1 minut}one{Bezbednosna provera je pokrenuta pre {NUM_MINS} minut}few{Bezbednosna provera je pokrenuta pre {NUM_MINS} minuta}other{Bezbednosna provera je pokrenuta pre {NUM_MINS} minuta}}</translation>
 <translation id="7057767408836081338">Dobijanje podataka aplikacije nije uspelo. Ipak pokušavamo da pokrenemo aplikaciju...</translation>
+<translation id="7058024590501568315">Skrivena mreža</translation>
 <translation id="7059858479264779982">Podesi na automatsko pokretanje</translation>
 <translation id="7059893117020417984">Da biste pregledali privatno, kliknite na ikonu menija sa tačkama da biste otvorili prozor bez arhiviranja</translation>
 <translation id="7062222374113411376">Dozvoli da nedavno zatvoreni sajtovi završe slanje i primanje podataka (preporučeno)</translation>
@@ -5756,6 +5764,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="7477793887173910789">Kontrolišite muziku, video snimke i drugo</translation>
 <translation id="7478485216301680444">Nije moguće instalirati kiosk aplikaciju.</translation>
 <translation id="7478623944308207463">Aplikacije i podešavanja će se sinhronizovati na svim Chrome OS uređajima na kojima ste prijavljeni pomoću svog Google naloga. Opcije sinhronizacije pregledača pronađite u <ph name="LINK_BEGIN" />podešavanjima Chrome-a<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Ne dozvoljavaj sajtovima da se povezuju sa serijskim portovima</translation>
 <translation id="7479221278376295180">Pregled korišćenja memorijskog prostora</translation>
 <translation id="7481312909269577407">Prosledi</translation>
 <translation id="7481358317100446445">Spremno</translation>
@@ -5907,11 +5916,13 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="765293928828334535">Aplikacije, dodaci i skripte korisnika ne mogu da se dodaju sa ovog veb-sajta</translation>
 <translation id="7652954539215530680">Napravite PIN</translation>
 <translation id="7654941827281939388">Ovaj nalog se već koristi na ovom računaru.</translation>
+<translation id="7655411746932645568">Sajtovi mogu da traže da se povezuju sa serijskim portovima</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7659297516559011665">Lozinke samo na ovom uređaju</translation>
 <translation id="7659584679870740384">Nemate ovlašćenje za korišćenje ovog uređaja. Kontaktirajte administratora da biste dobili dozvolu za prijavljivanje.</translation>
 <translation id="7661259717474717992">Omogućavanje da sajtovi čuvaju i čitaju podatke kolačića</translation>
 <translation id="7661451191293163002">Nismo uspeli da preuzmemo sertifikat za registraciju.</translation>
+<translation id="7661762353058813968">Administrator upravlja ažuriranjima.</translation>
 <translation id="7662283695561029522">Dodirnite da biste konfigurisali</translation>
 <translation id="7663719505383602579">Prijemnik: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Nepodržani Bluetooth uređaj: „<ph name="DEVICE_NAME" />“.</translation>
@@ -6693,6 +6704,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="8539727552378197395">Ne (HttpOnly)</translation>
 <translation id="8539766201049804895">Nadogradi</translation>
 <translation id="8540136935098276800">Unesite ispravno formatiran URL</translation>
+<translation id="8540503336857689453">Ne preporučuje se korišćenje skrivene mreže iz bezbednosnih razloga.</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. mreža od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, detalji</translation>
 <translation id="854071720451629801">Označi kao pročitano</translation>
 <translation id="8541462173655894684">Nije pronađen nijedan štampač sa servera za štampanje</translation>

@@ -609,6 +609,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Hindi available ang Google Assistant sa session ng bisita.</translation>
 <translation id="6137566720514957455">Buksan ang alisin ang dialog para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Hindi sinusuportahan ang peripheral</translation>
 <translation id="615957422585914272">Ipakita ang on-screen na keyboard</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
 <translation id="6179832488876878285">Puwede mong i-pin ang iyong mahahalagang file dito. Buksan ang app na Mga File para magsimula.</translation>
@@ -630,7 +631,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6376931439017688372">Naka-on ang Bluetooth</translation>
 <translation id="6381109794406942707">Para i-unlock ang device, ilagay ang iyong PIN.</translation>
 <translation id="639644700271529076">Naka-off ang CAPS LOCK</translation>
-<translation id="6396835948284782440">Pindutin nang matagal ang [Esc] para lumabas.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">I-clear ang lahat ng notification</translation>

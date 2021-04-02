@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Lys himmelblå</translation>
 <translation id="1303806948938513162">Tryk med fire fingre for at åbne ChromeVox-menuerne</translation>
 <translation id="1313373992684326101">Gå til forrige sektion. Det kan f.eks. være statusbakken eller Appliste.</translation>
+<translation id="1315077335264761176">Retning for berøring</translation>
 <translation id="1325363694295259631">Alternativknappen <ph name="NAME" /> til menupunktet er ikke valgt</translation>
 <translation id="1325946044405407859">Gyldenbrun</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> af <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Velkommen til ChromeVox-selvstudiet. Du kan til enhver tid forlade dette selvstudie ved at trykke på Esc-tasten øverst til venstre på tastaturet. Hold Ctrl og Alt nede, og tryk på Z for at deaktivere ChromeVox. Brug mellemrumstasten til at gå til næste lektion, når du er klar.</translation>
 <translation id="174268867904053074">Næste grafik</translation>
 <translation id="1756785467854861272">Mørk magenta</translation>
+<translation id="1758693804775271377">Stryg til venstre eller højre med én finger for at gennemse lektioner om dette emne</translation>
 <translation id="1765245556747822181">Stryg opad med én finger</translation>
 <translation id="1771761307086386028">Rul til højre</translation>
 <translation id="1781173782405573156">Ignorer-tast</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Række</translation>
 <translation id="2816868829355607410">Øveområde: Hoppekommandoer</translation>
 <translation id="2841013758207633010">Tid</translation>
+<translation id="284171465644749950">Stryg til venstre eller højre med én finger for at gennemse emner</translation>
 <translation id="2843432675592278677">Der er ingen forrige ARIA-orienteringspunkter</translation>
 <translation id="2843814945404750166">Mørk olivengrøn</translation>
 <translation id="2843837985843789981">Forrige gruppe</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox blev opdateret</translation>
 <translation id="93384979447910801">Mørk havgrøn</translation>
 <translation id="948171205378458592">Skru ned for talehastighed</translation>
+<translation id="957570623732056069">Stryg til venstre eller højre med én finger for at navigere rundt i lektionen</translation>
 <translation id="958854023026327378">Stryg nedad med én finger</translation>
 <translation id="962913030769097253">Næste niveau 1-overskrift</translation>
 <translation id="966588271015727539">Vælg en brailleskærm via Bluetooth</translation>

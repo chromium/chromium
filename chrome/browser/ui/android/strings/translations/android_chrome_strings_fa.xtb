@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">سابقه پیمایش</translation>
 <translation id="1231733316453485619">همگام‌سازی روشن شود؟</translation>
 <translation id="123724288017357924">تازه‌سازی صفحه اصلی با نادیده گرفتن محتوای حافظه پنهان</translation>
+<translation id="1240288207750131269">درحال بار کردن <ph name="LANG" /></translation>
 <translation id="124678866338384709">بستن برگه کنونی</translation>
 <translation id="1258753120186372309">‏Google doodle: ‏<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> هم‌رسانی نشد</translation>
+<translation id="1276279242344007853">مدیریت سایت‌هایی که دنبال می‌کنید</translation>
 <translation id="1283039547216852943">برای بزرگ کردن ضربه بزنید</translation>
 <translation id="1285310382777185058">تغییر زبان</translation>
 <translation id="1291207594882862231">پاک کردن سابقه، کوکی‌ها، داده‌های سایت، حافظه پنهان…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">نسخه برنامه</translation>
 <translation id="1430915738399379752">چاپ</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> هم‌رسانی نشد</translation>
+<translation id="1466383950273130737">‏انتخاب زبان Chrome</translation>
 <translation id="147113415845704694">بپرسید «آب‌وهوای امروز چطور است؟»</translation>
 <translation id="1477626028522505441">به‌دلیل مشکلاتی در سرور، بارگیری <ph name="FILE_NAME" /> انجام نشد.</translation>
 <translation id="1492417797159476138">قبلاً این نام کاربری را برای این سایت ذخیره کرده‌اید</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">بررسی اتصال اینترنت</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2369533728426058518">برگه‌های باز</translation>
+<translation id="2386938421315164605">پنهان و آشکار کردن موضوعات</translation>
 <translation id="2387895666653383613">اندازه قلم نوشتار</translation>
 <translation id="2394602618534698961">فایل‌هایی که بارگیری می‌کنید، اینجا نشان داده می‌شود</translation>
 <translation id="2407481962792080328">‏وقتی به «حساب Google» خود وارد می‌شوید، این ویژگی روشن می‌شود</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">‏در <ph name="BEGIN_LINK" />حساب Google<ph name="END_LINK" /> خود گذرواژه‌های ذخیره‌شده را مشاهده و مدیریت کنید</translation>
 <translation id="2818669890320396765">برای اینکه نشانک‌هایتان را در همه دستگاه‌ها داشته باشید، به سیستم وارد شوید و همگام‌سازی را روشن کنید</translation>
 <translation id="2827278682606527653">منوی کارت فید تا نیمه باز شد</translation>
+<translation id="2839327205551510876">دنبال کردن <ph name="SITE_NAME" /> لغو شد</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{آخرین بررسی: ۱ روز قبل}one{آخرین بررسی: # روز قبل}other{آخرین بررسی: # روز قبل}}</translation>
 <translation id="2842985007712546952">پوشه اصلی</translation>
 <translation id="2856503607207334158">ورود به سیستم ناموفق بود</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">‏پلتفورم اعلان‌های Google</translation>
 <translation id="2923908459366352541">نام نامعتبر است</translation>
 <translation id="2932150158123903946">‏فضای ذخیره‌سازی Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">صفحه‌کلیدتان تغییر نخواهد کرد</translation>
 <translation id="2942036813789421260">برگه پیش‌نمایش بسته است</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> و <ph name="PARENT_NAME_2" /> این حساب را مدیریت می‌کنند.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> صفحه خوانده‌نشده}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحه خوانده‌نشده}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحه خوانده‌نشده}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">رابط کاربری رضایت برای جستجوی گفتاری «دستیار»</translation>
 <translation id="3034163383943672781">بارگیری <ph name="DATE" /> شروع خواهد شد.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />دریافت راهنمایی<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">دفعه بعدی سریع‌تر به این سایت دسترسی پیدا کنید</translation>
 <translation id="305593374596241526">‏مکان خاموش است، آن را در <ph name="BEGIN_LINK" />تنظیمات Android<ph name="END_LINK" /> روشن کنید.</translation>
 <translation id="3058498974290601450">هرزمان خواستید می‌توانید همگام‌سازی را در تنظیمات روشن کنید</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> نشانک}one{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}other{<ph name="BOOKMARKS_COUNT_MANY" /> نشانک}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">‏شما درحال سفارشی کردن تنظیمات همگام‌سازی و سرویس‌های Google هستید. برای تکمیل روشن کردن همگام‌سازی، روی دکمه «تأیید» در پایین صفحه ضربه بزنید. پیمایش به بالا</translation>
 <translation id="3334729583274622784">پسوند فایل تغییر کند؟</translation>
 <translation id="3341058695485821946">ببینید چه مقدار داده صرفه‌جویی کرده‌اید</translation>
+<translation id="3341262203274374114">لغو دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
 <translation id="3350687908700087792">بستن همه برگه‌های ناشناس</translation>
 <translation id="3359667936385849800">استفاده از ارائه‌دهنده خدمات کنونی</translation>
 <translation id="3367813778245106622">دوباره به سیستم وارد شوید یا همگام‌سازی را شروع کنید</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">مکان مجاز است</translation>
 <translation id="3988466920954086464">نتایج جستجوی فوری را در این پانل مشاهده کنید</translation>
 <translation id="4000212216660919741">صفحه اصلیِ آفلاین</translation>
+<translation id="4016425174436051808">دنبال کردن ممکن نیست. مشکلی پیش آمد.</translation>
+<translation id="4021916380760361450">‏کنترل داده‌های «حساب‌های Google»</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ساعت}one{# ساعت}other{# ساعت}}</translation>
 <translation id="4045764304651014138">داده‌های استفاده</translation>
 <translation id="4056223980640387499">سپیا</translation>
@@ -598,6 +608,7 @@
 <translation id="5152843274749979095">هیچ برنامه پشتیبانی‌شده‌ای نصب نشده است</translation>
 <translation id="5161254044473106830">عنوان مورد نیاز است</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{۱ بارگیری انجام نشد.}one{# بارگیری انجام نشد.}other{# بارگیری انجام نشد.}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> دنبال شد</translation>
 <translation id="5170568018924773124">نمایش در پوشه</translation>
 <translation id="5184329579814168207">‏باز کردن در Chrome</translation>
 <translation id="5188992787241350004">جستجو با صدای خودتان</translation>
@@ -717,6 +728,7 @@
 <translation id="5864419784173784555">در انتظار بارگیری موردی دیگر…</translation>
 <translation id="5865733239029070421">‏به‌طور خودکار آمار کاربرد و گزارش‌های خرابی را به Google ارسال می‌کند</translation>
 <translation id="5869522115854928033">گذرواژه‌های ذخیره‌شده</translation>
+<translation id="5880748256563468367">رفتن به جارزن</translation>
 <translation id="5884076754568147479">‏برای کمک به انجام کارها، Google نشانی‌های وب و محتوای سایت‌هایی را که در آن‌ها از «دستیار» استفاده می‌کنید، و همچنین اطلاعاتی را که ازطریق «دستیار» ارسال می‌کنید دریافت خواهد کرد</translation>
 <translation id="5919204609460789179">برای شروع همگام‌سازی، <ph name="PRODUCT_NAME" /> را به‌روزرسانی کنید</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> صرفه‌جویی‌شده</translation>
@@ -734,6 +746,7 @@
 <translation id="5979084224081478209">بررسی گذرواژه‌ها</translation>
 <translation id="5982307838673692400">بازکردن برگه ناشناس</translation>
 <translation id="6000066717592683814">‏حفظ Google</translation>
+<translation id="6000203700195075278">دنبال کردن مجدد</translation>
 <translation id="6005538289190791541">گذرواژه پیشنهادی</translation>
 <translation id="6036057147555329831">‏ICU اضافی</translation>
 <translation id="6039379616847168523">رفتن به برگه بعدی</translation>
@@ -1095,6 +1108,7 @@
 <translation id="834313815369870491">سایت‌هایی که هرگز ترجمه نمی‌شوند</translation>
 <translation id="8349013245300336738">به‌ترتیب مقدار داده استفاده‌شده</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> بارگیری بازیابی شد</translation>
+<translation id="8362134094656482681">مدیریت موضوعاتی که به آن‌ها علاقه دارید</translation>
 <translation id="8364299278605033898">مشاهده وب‌سایت‌های پرطرفدار</translation>
 <translation id="8368027906805972958">دستگاه ناشناس یا پشتیبانی‌نشده (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> آماده است.</translation>

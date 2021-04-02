@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Wagwoorde vanuit jou Google-rekening sal ook op hierdie toestel beskikbaar wees terwyl jy aangemeld is</translation>
 <translation id="1566049601598938765">Webwerf</translation>
 <translation id="15662109988763471">Die gekose drukker is nie beskikbaar of reg geïnstalleer nie. Gaan jou drukker na of probeer om 'n ander drukker te kies.</translation>
+<translation id="1567135437923613642">Aktiveer uitstaleksperimente</translation>
 <translation id="1567387640189251553">'n Ander sleutelbord is gekoppel sedert jy jou wagwoord laas ingevoer het. Dit kan dalk probeer om jou sleuteldrukke te steel.</translation>
 <translation id="1567993339577891801">JavaScript-konsole</translation>
 <translation id="1568323446248056064">Maak vertoontoestelinstellings oop</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">As jy hierdie kenmerk afskakel, beïnvloed dit nie hierdie toestel se vermoë om die inligting te stuur wat nodig is vir noodsaaklike dienste soos stelselopdaterings en sekuriteit nie.</translation>
 <translation id="1979280758666859181">Jy verander tans na 'n kanaal met 'n ouer weergawe van <ph name="PRODUCT_NAME" />. Die kanaalverandering sal toegepas word wanneer die kanaalweergawe ooreenstem met die weergawe wat tans op jou toestel geïnstalleer is.</translation>
 <translation id="197989455406964291">KDC steun nie enkripsiesoort nie</translation>
+<translation id="1983497378699148207">Dateer Chrome OS op en probeer weer om Linux klaar op te stel.</translation>
 <translation id="1984417487208496350">Geen beskerming nie (nie aanbeveel nie)</translation>
 <translation id="1987317783729300807">Rekeninge</translation>
 <translation id="1989112275319619282">Blaai deur</translation>
@@ -1330,6 +1332,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2450223707519584812">Jy sal nie gebruikers kan byvoeg nie omdat Google-API-sleutels ontbreek. Sien <ph name="DETAILS_URL" /> vir besonderhede.</translation>
 <translation id="2450849356604136918">Geen aktiewe aansigte nie</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Werwe koppel gewoonlik aan reekspoorte vir dataoordragkenmerke, soos die opstel van jou netwerk</translation>
 <translation id="2453860139492968684">Voltooi</translation>
 <translation id="2454247629720664989">Sleutelwoord</translation>
 <translation id="2454264884354864965">Kamera is af</translation>
@@ -1960,6 +1963,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="313205617302240621">Het jy jou wagwoord vergeet?</translation>
 <translation id="3132277757485842847">Ons kon nie 'n verbinding met jou foon behou nie. Maak seker dat jou foon in die omtrek is en ontsluit is, en dat Bluetooth en wi-fi aangeskakel is.</translation>
 <translation id="3132996321662585180">Herlaai daagliks</translation>
+<translation id="3134393957315651797">Kies eksperimenttoestand vir die <ph name="EXPERIMENT_NAME" />-eksperiment. Eksperimentbeskrywing: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ongeldige PIN. Jy het <ph name="RETRIES" /> pogings oor.</translation>
 <translation id="313963229645891001">Laai nou af: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Verstek- geel avatar</translation>
@@ -2844,6 +2848,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="4099874310852108874">'n Netwerkfout het voorgekom.</translation>
 <translation id="4100733287846229632">Toestelspasie is gevaarlik min</translation>
 <translation id="4100853287411968461">Nuwe skermtydlimiet</translation>
+<translation id="4101352914005291489">Versteekte SSID</translation>
 <translation id="4102906002417106771">Herbegin om Powerwash uit te voer</translation>
 <translation id="4104163789986725820">Voer uit …</translation>
 <translation id="4107048419833779140">Identifiseer en maak bergingtoestelle los</translation>
@@ -3913,6 +3918,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5382591305415226340">Bestuur gesteunde skakels</translation>
 <translation id="5383377866517186886">Kamera is in Mac-stelselvoorkeure afgeskakel</translation>
 <translation id="5383740867328871413">Naamlose groep – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Ondernemingsbeleid het verander. Eksperimente-knoppie is by nutsbalk gevoeg. Klik die knoppie om 'n dialoog oop te maak om eksperimente te aktiveer.</translation>
 <translation id="5388885445722491159">Saamgebind</translation>
 <translation id="5390100381392048184">Laat werwe toe om klank te speel</translation>
 <translation id="5390112241331447203">Sluit die system_logs.txt-lêer in wat in terugvoerverslae gestuur is.</translation>
@@ -5038,6 +5044,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6659594942844771486">Oortjie</translation>
 <translation id="6660413144148052430">ligging</translation>
 <translation id="666099631117081440">Drukbedieners</translation>
+<translation id="6662931079349804328">Ondernemingsbeleid het verander. Eksperimente-knoppie is van nutsbalk verwyder.</translation>
 <translation id="6663190258859265334">Powerwash jou <ph name="DEVICE_TYPE" /> en keer terug na die vorige weergawe.</translation>
 <translation id="6664237456442406323">Ongelukkig is jou rekenaar opgestel met 'n misvormde hardeware-ID. Dit verhinder die Chrome-bedryfstelsel om met die nuutste sekuriteitsoplossings op te dateer en jou rekenaar <ph name="BEGIN_BOLD" />kan dalk blootgestel word aan kwaadwillige aanvalle<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Iets het verkeerd geloop met die oopmaak van jou profiel. Meld asseblief af en meld dan weer aan.</translation>
@@ -5394,6 +5401,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7056526158851679338">Ondersoek toestelle</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Veiligheidskontrole het 1 minuut gelede plaasgevind}other{Veiligheidskontrole het {NUM_MINS} minute gelede plaasgevind}}</translation>
 <translation id="7057767408836081338">Kon nie programdata verkry nie; probeer steeds om die program te laat loop …</translation>
+<translation id="7058024590501568315">Versteekte netwerk</translation>
 <translation id="7059858479264779982">Stel na outo-begin</translation>
 <translation id="7059893117020417984">Klik die kolle-ikoonkieslys om 'n incognitovenster oop te maak as jy privaat wil blaai</translation>
 <translation id="7062222374113411376">Laat werwe wat onlangs toegemaak is toe om data klaar te stuur en te ontvang (aanbeveel)</translation>
@@ -5757,6 +5765,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7477793887173910789">Beheer jou musiek, video's en meer</translation>
 <translation id="7478485216301680444">Kioskprogram kon nie geïnstalleer word nie.</translation>
 <translation id="7478623944308207463">Jou programme en instellings sal gesinkroniseer word op alle Chrome-bedryfstelseltoestelle waarop jy met jou Google-rekening aangemeld is. Gaan na <ph name="LINK_BEGIN" />Chrome-instellings<ph name="LINK_END" /> toe vir blaaiersinkroniseringopsies.</translation>
+<translation id="7478658909253570368">Moenie werwe toelaat om aan reekspoorte te koppel nie</translation>
 <translation id="7479221278376295180">Oorsig van berginggebruik</translation>
 <translation id="7481312909269577407">Vorentoe</translation>
 <translation id="7481358317100446445">Gereed</translation>
@@ -5908,11 +5917,13 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="765293928828334535">Programme, uitbreidings en gebruikerskripte kan nie van hierdie webwerf af bygevoeg word nie</translation>
 <translation id="7652954539215530680">Skep 'n PIN</translation>
 <translation id="7654941827281939388">Hierdie rekening word reeds op hierdie rekenaar gebruik.</translation>
+<translation id="7655411746932645568">Werwe kan vra om aan reekspoorte te koppel</translation>
 <translation id="7658239707568436148">Kanselleer</translation>
 <translation id="7659297516559011665">Wagwoorde wat net op hierdie toestel is</translation>
 <translation id="7659584679870740384">Jy is nie gemagtig om hierdie toestel te gebruik nie. Kontak asseblief die administrateur vir toestemming om aan te meld.</translation>
 <translation id="7661259717474717992">Laat werwe toe om webkoekiedata te stoor en te lees</translation>
 <translation id="7661451191293163002">'n Registrasiesertifikaat kon nie verkry word nie.</translation>
+<translation id="7661762353058813968">Jou administrateur bestuur opdaterings.</translation>
 <translation id="7662283695561029522">Tik om op te stel</translation>
 <translation id="7663719505383602579">Ontvanger: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Ongesteunde Bluetooth-toestel: "<ph name="DEVICE_NAME" />".</translation>
@@ -6693,6 +6704,7 @@ Gebruik Ctrl+Alt+Verlaag Helderheid om uit te zoem.</translation>
 <translation id="8539727552378197395">Nee (NetHttp)</translation>
 <translation id="8539766201049804895">Gradeer op</translation>
 <translation id="8540136935098276800">Voer 'n URL in wat reg geformateer is</translation>
+<translation id="8540503336857689453">Die gebruik van 'n versteekte netwerk word weens sekuriteitsredes nie aanbeveel nie.</translation>
 <translation id="8540608333167683902">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, besonderhede</translation>
 <translation id="854071720451629801">Merk as gelees</translation>
 <translation id="8541462173655894684">Het geen drukkers op die drukbediener gekry nie</translation>

@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Les contrasenyes del Compte de Google també estaran disponibles en aquest dispositiu mentre tinguis la sessió iniciada</translation>
 <translation id="1566049601598938765">Lloc web</translation>
 <translation id="15662109988763471">La impressora seleccionada no està disponible o no s'ha instal·lat correctament. Comprova-la o prova de seleccionar-ne una altra.</translation>
+<translation id="1567135437923613642">Activa els experiments destacats</translation>
 <translation id="1567387640189251553">S'ha connectat un altre teclat des de la darrera vegada que vas introduir la contrasenya. Pot ser que estigui provant de robar-te les combinacions de tecles.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Obre la configuració de la pantalla</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">Si aquesta funció es desactiva, no afectarà la capacitat d'aquest dispositiu d'enviar la informació necessària per rebre serveis bàsics, com ara seguretat i actualitzacions del sistema.</translation>
 <translation id="1979280758666859181">Esteu a punt de canviar a un canal amb una versió més antiga de <ph name="PRODUCT_NAME" />. El canvi de canal s'aplicarà quan la versió del canal coincideixi amb la versió qui hi ha instal·lada actualment en el vostre dispositiu.</translation>
 <translation id="197989455406964291">El Centre de distribució de claus de Kerberos no admet aquest tipus d'encriptació</translation>
+<translation id="1983497378699148207">Per acabar de configurar Linux, actualitza Chrome OS i torna-ho a provar.</translation>
 <translation id="1984417487208496350">Sense protecció (opció no recomanada)</translation>
 <translation id="1987317783729300807">Comptes</translation>
 <translation id="1989112275319619282">Examina</translation>
@@ -1329,6 +1331,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2450223707519584812">No podreu afegir usuaris perquè falten les claus de l'API de Google. Consulteu <ph name="DETAILS_URL" /> per obtenir-ne més informació.</translation>
 <translation id="2450849356604136918">No hi ha cap visualització activa</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Els llocs web solen connectar-se a ports en sèrie per a funcions de transferència de dades, com ara configurar la teva xarxa</translation>
 <translation id="2453860139492968684">Finalitza</translation>
 <translation id="2454247629720664989">Paraula clau</translation>
 <translation id="2454264884354864965">La càmera està desactivada</translation>
@@ -1959,6 +1962,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="313205617302240621">Has oblidat la contrasenya?</translation>
 <translation id="3132277757485842847">No hem pogut mantenir la connexió amb el teu telèfon. Comprova que sigui a prop teu, que estigui desbloquejat i que tingui el Bluetooth i la Wi‑Fi activats.</translation>
 <translation id="3132996321662585180">Actualitza diàriament</translation>
+<translation id="3134393957315651797">Selecciona un estat per a l'experiment <ph name="EXPERIMENT_NAME" />. Descripció de l'experiment: <ph name="EXPERIMENT_DESCRIPTION" />.</translation>
 <translation id="3138624403379688522">El PIN no és vàlid. Et queden <ph name="RETRIES" /> intents.</translation>
 <translation id="313963229645891001">S'està baixant, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar groc predeterminat</translation>
@@ -2842,6 +2846,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4099874310852108874">S'ha produït un error de la xarxa.</translation>
 <translation id="4100733287846229632">Queda molt poc espai al dispositiu</translation>
 <translation id="4100853287411968461">Nou límit de temps de connexió</translation>
+<translation id="4101352914005291489">SSID amagat</translation>
 <translation id="4102906002417106771">Reinicia per fer un Powerwash</translation>
 <translation id="4104163789986725820">E&amp;xporta...</translation>
 <translation id="4107048419833779140">Identificar i expulsar els dispositius d'emmagatzematge</translation>
@@ -3912,6 +3917,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5382591305415226340">Gestiona els enllaços admesos</translation>
 <translation id="5383377866517186886">La càmera està desactivada a les preferències del sistema de Mac</translation>
 <translation id="5383740867328871413">Grup sense nom; <ph name="GROUP_CONTENTS" />; <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">S'ha modificat la política d'Enterprise. S'ha afegit el botó Experiments a la barra d'eines. Fes clic al botó per obrir un diàleg i activar els experiments.</translation>
 <translation id="5388885445722491159">Vinculat</translation>
 <translation id="5390100381392048184">Permet que els llocs web reprodueixin so</translation>
 <translation id="5390112241331447203">Inclou el fitxer system_logs.txt que s'envia en els informes de suggeriments.</translation>
@@ -5037,6 +5043,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6659594942844771486">Pestanya</translation>
 <translation id="6660413144148052430">ubicació</translation>
 <translation id="666099631117081440">Servidors d'impressió</translation>
+<translation id="6662931079349804328">S'ha modificat la política d'Enterprise. El botó Experiments s'ha suprimit de la barra d'eines.</translation>
 <translation id="6663190258859265334">Fes un Powerwash al dispositiu <ph name="DEVICE_TYPE" /> i torna a la versió anterior.</translation>
 <translation id="6664237456442406323">L'ordinador està configurat amb un ID de maquinari amb un format incorrecte. Això impedeix a Chrome OS actualitzar-se amb les darreres correccions de seguretat i <ph name="BEGIN_BOLD" />pot ser que l'ordinador sigui vulnerable a atacs maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">S'ha produït un error en obrir el teu perfil. Tanca la sessió i torna-la a iniciar.</translation>
@@ -5393,6 +5400,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7056526158851679338">&amp;Inspecciona els dispositius</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{S'ha executat una comprovació de seguretat fa 1 minut}other{S'ha executat una comprovació de seguretat fa {NUM_MINS} minuts}}</translation>
 <translation id="7057767408836081338">No s'han pogut obtenir les dades de l'aplicació. S'està provant d'executar-la igualment...</translation>
+<translation id="7058024590501568315">Xarxa amagada</translation>
 <translation id="7059858479264779982">Defineix com a inici automàtic</translation>
 <translation id="7059893117020417984">Per navegar de manera privada, fes clic a la icona dels tres punts per obrir una finestra d'incògnit</translation>
 <translation id="7062222374113411376">Permet que els llocs web tancats recentment acabin d'enviar i de rebre dades (opció recomanada)</translation>
@@ -5756,6 +5764,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7477793887173910789">Controla la música, els vídeos i molt més</translation>
 <translation id="7478485216301680444">No s'ha pogut instal·lar l'aplicació de quiosc.</translation>
 <translation id="7478623944308207463">Les teves aplicacions i opcions de configuració se sincronitzaran en tots els dispositius amb Chrome OS en què tinguis la sessió iniciada amb el teu Compte de Google. Per accedir a les opcions de sincronització del navegador, ves a la <ph name="LINK_BEGIN" />configuració de Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">No permetis que els llocs web es connectin a ports en sèrie</translation>
 <translation id="7479221278376295180">Informació general sobre l'ús de l'emmagatzematge</translation>
 <translation id="7481312909269577407">Endavant</translation>
 <translation id="7481358317100446445">A punt</translation>
@@ -5907,11 +5916,13 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="765293928828334535">No es poden afegir aplicacions, extensions ni scripts d'usuari des d'aquest lloc web</translation>
 <translation id="7652954539215530680">Crea un PIN</translation>
 <translation id="7654941827281939388">Aquest compte ja s'està utilitzant en aquest ordinador.</translation>
+<translation id="7655411746932645568">Els llocs web poden demanar permís per connectar-se a ports en sèrie</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7659297516559011665">Contrasenyes desades només en aquest dispositiu</translation>
 <translation id="7659584679870740384">No teniu autorització per fer servir aquest dispositiu. Contacteu amb l'administrador per obtenir el permís d'inici de sessió.</translation>
 <translation id="7661259717474717992">Permet que els llocs web desin i llegeixin les dades de les galetes</translation>
 <translation id="7661451191293163002">No s'ha pogut obtenir un certificat de registre.</translation>
+<translation id="7661762353058813968">El teu administrador gestiona les actualitzacions.</translation>
 <translation id="7662283695561029522">Toca per configurar</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Dispositiu Bluetooth no compatible: "<ph name="DEVICE_NAME" />".</translation>
@@ -6693,6 +6704,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="8539727552378197395">No (Només HTTP)</translation>
 <translation id="8539766201049804895">Actualitza</translation>
 <translation id="8540136935098276800">Introdueix un URL amb el format correcte</translation>
+<translation id="8540503336857689453">Per motius de seguretat, no es recomana utilitzar una xarxa amagada.</translation>
 <translation id="8540608333167683902">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, detalls</translation>
 <translation id="854071720451629801">Marca com a llegit</translation>
 <translation id="8541462173655894684">No s'ha trobat cap impressora al servidor d'impressió</translation>

@@ -520,6 +520,7 @@
 <translation id="1563702743503072935">Adgangskoder fra din Google-konto kan også bruges på denne enhed, når du er logget ind</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">Den valgte printer er ikke tilgængelig eller ikke installeret korrekt. Tjek din printer, eller vælg en anden printer.</translation>
+<translation id="1567135437923613642">Aktivér fremhævede eksperimenter</translation>
 <translation id="1567387640189251553">Der er tilsluttet et andet tastatur, siden du sidst indtastede din adgangskode. Det forsøger muligvis at stjæle dine indtastninger.</translation>
 <translation id="1567993339577891801">JavaScript-konsol</translation>
 <translation id="1568323446248056064">Åbn enhedens skærmindstillinger</translation>
@@ -919,6 +920,7 @@
 <translation id="1979095679518582070">Deaktivering af denne funktion påvirker ikke denne enheds evne til at sende oplysninger, der skal bruges til vigtige tjenester som f.eks. systemopdateringer og sikkerhed.</translation>
 <translation id="1979280758666859181">Du er ved at skifte til en kanal med en ældre version af <ph name="PRODUCT_NAME" />. Kanalskiftet træder i kraft, når kanalversionen matcher den version, der i øjeblikket er installeret på din enhed.</translation>
 <translation id="197989455406964291">KDC understøtter ikke krypteringstypen</translation>
+<translation id="1983497378699148207">Opdater Chrome OS, og prøv at afslutte konfigurationen af Linux igen.</translation>
 <translation id="1984417487208496350">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="1987317783729300807">Konti</translation>
 <translation id="1989112275319619282">Gennemse</translation>
@@ -1331,6 +1333,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2450223707519584812">Du vil ikke kunne tilføje brugere, da der mangler Google API-nøgler. Se <ph name="DETAILS_URL" /> for at få flere oplysninger.</translation>
 <translation id="2450849356604136918">Ingen aktive visninger</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Websites opretter normalt forbindelse til serieporte for at kunne overføre data, f.eks. ved konfiguration af netværk</translation>
 <translation id="2453860139492968684">Udfør</translation>
 <translation id="2454247629720664989">Søgeord</translation>
 <translation id="2454264884354864965">Kameraet er slukket</translation>
@@ -1961,6 +1964,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="313205617302240621">Har du glemt din adgangskode?</translation>
 <translation id="3132277757485842847">Vi kunne ikke bevare forbindelsen til din telefon. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="3132996321662585180">Opdater dagligt</translation>
+<translation id="3134393957315651797">Vælg eksperimenttilstand for eksperimentet <ph name="EXPERIMENT_NAME" />. Beskrivelse af eksperiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Pinkoden er ugyldig. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="313963229645891001">Downloader – <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gul standardavatar</translation>
@@ -2845,6 +2849,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4099874310852108874">Der opstod en netværksfejl.</translation>
 <translation id="4100733287846229632">Der er næsten ikke mere plads på enheden</translation>
 <translation id="4100853287411968461">Ny grænse for skærmtid</translation>
+<translation id="4101352914005291489">Skjult SSID</translation>
 <translation id="4102906002417106771">Genstart for at udføre powerwash</translation>
 <translation id="4104163789986725820">E&amp;ksporter...</translation>
 <translation id="4107048419833779140">Identificer og fjern lagerenheder</translation>
@@ -3914,6 +3919,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5382591305415226340">Administrer understøttede links</translation>
 <translation id="5383377866517186886">Kameraet er deaktiveret i Systemindstillinger for Mac</translation>
 <translation id="5383740867328871413">Unavngiven gruppe – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Virksomhedspolitikken blev ændret. Knappen Eksperimenter er føjet til værktøjslinjen. Klik på knappen for at åbne en dialogboks og aktivere eksperimenter.</translation>
 <translation id="5388885445722491159">Parret</translation>
 <translation id="5390100381392048184">Tillad, at websites afspiller lyd</translation>
 <translation id="5390112241331447203">Medtag system_logs.txt-filen, der sendes i feedbackrapporterne.</translation>
@@ -5038,6 +5044,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6659594942844771486">Fane</translation>
 <translation id="6660413144148052430">placering</translation>
 <translation id="666099631117081440">Printerservere</translation>
+<translation id="6662931079349804328">Virksomhedspolitikken blev ændret. Knappen Eksperimenter er fjernet fra værktøjslinjen.</translation>
 <translation id="6663190258859265334">Powerwash din <ph name="DEVICE_TYPE" />, og vend tilbage til den forrige version.</translation>
 <translation id="6664237456442406323">Din computer er desværre konfigureret med et hardware-id i forkert format. Dette forhindrer Chrome OS i at opdatere med de nyeste sikkerhedsrettelser, og din computer <ph name="BEGIN_BOLD" />kan være sårbar over for ondartede angreb<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Noget gik galt ved åbningen af din profil. Nogle funktioner er muligvis ikke tilgængelige.</translation>
@@ -5394,6 +5401,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7056526158851679338">&amp;Inspicer enheder</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Sikkerhedstjekket blev udført for 1 minut siden}one{Sikkerhedstjekket blev udført for {NUM_MINS} minut siden}other{Sikkerhedstjekket blev udført for {NUM_MINS} minutter siden}}</translation>
 <translation id="7057767408836081338">Der kunne ikke hentes appdata, men appen forsøges åbnet alligevel...</translation>
+<translation id="7058024590501568315">Skjult netværk</translation>
 <translation id="7059858479264779982">Indstil til automatisk opstart</translation>
 <translation id="7059893117020417984">Hvis du vil bruge nettet privat, skal du klikke på prikmenuen for at åbne et inkognitovindue</translation>
 <translation id="7062222374113411376">Tillad, at nyligt lukkede websites kan sende og modtage data (anbefales)</translation>
@@ -5757,6 +5765,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7477793887173910789">Styr din musik, dine videoer og meget mere</translation>
 <translation id="7478485216301680444">Kioskapplikationen kunne ikke installeres.</translation>
 <translation id="7478623944308207463">Dine apps og indstillinger synkroniseres på tværs af alle de Chrome OS-enheder, hvor du er logget ind med din Google-konto. Du kan se muligheder for synkronisering af browseren i <ph name="LINK_BEGIN" />indstillingerne for Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Tillad ikke, at websites opretter forbindelse til serieporte</translation>
 <translation id="7479221278376295180">Oversigt over brug af lagerplads</translation>
 <translation id="7481312909269577407">Frem</translation>
 <translation id="7481358317100446445">Klar</translation>
@@ -5908,11 +5917,13 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="765293928828334535">Apps, udvidelser og brugerscripts kan ikke tilføjes fra dette website</translation>
 <translation id="7652954539215530680">Opret en pinkode</translation>
 <translation id="7654941827281939388">Denne konto er allerede i brug på denne computer.</translation>
+<translation id="7655411746932645568">Websites kan anmode om tilladelse til at oprette forbindelse til serieporte</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7659297516559011665">Kun adgangskoder på denne enhed</translation>
 <translation id="7659584679870740384">Du har ikke tilladelse til at bruge denne enhed. Kontakt administratoren for at få tilladelse til at logge ind.</translation>
 <translation id="7661259717474717992">Tillad, at websites gemmer og læser cookiedata</translation>
 <translation id="7661451191293163002">Det var ikke muligt at hente et registreringscertifikat.</translation>
+<translation id="7661762353058813968">Opdateringer administreres af din administrator.</translation>
 <translation id="7662283695561029522">Tryk for at konfigurere</translation>
 <translation id="7663719505383602579">Modtager: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Ikke-understøttet Bluetooth-enhed: "<ph name="DEVICE_NAME" />".</translation>
@@ -6693,6 +6704,7 @@ Brug Ctrl+Alt+Lydstyrke ned for at zoome ud.</translation>
 <translation id="8539727552378197395">Nej (HttpOnly)</translation>
 <translation id="8539766201049804895">Opgrader</translation>
 <translation id="8540136935098276800">Angiv en webadresse i korrekt format</translation>
+<translation id="8540503336857689453">Af sikkerhedsmæssige årsager anbefales det ikke at bruge et skjult netværk.</translation>
 <translation id="8540608333167683902">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
 <translation id="854071720451629801">Markér som læst</translation>
 <translation id="8541462173655894684">Der blev ikke fundet nogen printere på printerserveren</translation>

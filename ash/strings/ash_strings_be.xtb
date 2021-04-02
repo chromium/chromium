@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Памочнік Google недаступны ў гасцявым сеансе.</translation>
 <translation id="6137566720514957455">Адкрыць дыялогавае акно выдалення ўліковага запісу <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Перыферыйная прылада не падтрымліваецца</translation>
 <translation id="615957422585914272">Паказаць экранную клавіятуру</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6179832488876878285">Тут можна замацаваць важныя файлы. Каб пачаць, адкрыйце праграму "Файлы".</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">Bluetooth уключаны</translation>
 <translation id="6381109794406942707">Каб разблакіраваць прыладу, увядзіце PIN-код.</translation>
 <translation id="639644700271529076">CAPS LOCK выключаны</translation>
-<translation id="6396835948284782440">Каб выйсці, націсніце і ўтрымлівайце [Esc].</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Выдаліць усе апавяшчэнні</translation>

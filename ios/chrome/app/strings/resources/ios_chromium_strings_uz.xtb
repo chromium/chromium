@@ -14,6 +14,7 @@
 <translation id="1838412507805038478">Chromium ushbu veb-sayt haqiqiyligi <ph name="ISSUER" /> tomonidan tasdiqlanganini aniqladi.</translation>
 <translation id="1843424232666537147">Chromium brauzerida Internet ma’lumotlarini qayta ishlash va sahifalar yuklanishi tezligini boshqarish mumkin. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
+<translation id="2054703085270098503">Chromium bilan himoyalaning</translation>
 <translation id="2075400798887076382">Kompyuteringizdagi ochiq varaqlarni mobil qurilmangizdagilar bilan sinxronlang.
 Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium hisobiga kirish” bandini tanlang.</translation>
 <translation id="2168108852149185974">Ba’zi kengaytmalar Chromium brauzerini ishdan chiqaradi. O‘chirilishi kerak bo‘lgan kengaytmalar:</translation>
@@ -21,9 +22,11 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="2195025571279539885">Chromium har doim bu saytning <ph name="LANGUAGE_NAME" /> tilidagi sahifalarini tarjima qilishni taklif qilsinmi?</translation>
 <translation id="2590893390871230428">Chromium axborotini sinxronlash</translation>
 <translation id="2650312721222849884">Boshqa qurilmalardagi Chromium varaqlarini koʻrish uchun sinxronizatsiyani yoqing</translation>
+<translation id="2684230048001240293">Chromium brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
 <translation id="2730884209570016437">Chromium kamerangizdan foydalana olmaydi, chunki boshqa ilova allaqachon kamerani ishlatmoqda.</translation>
 <translation id="2915596697727466327">Parollaringizga tezkor ruxsat olish uchun Chromium – Face ID tekshiruvini ishlatadi.</translation>
 <translation id="2918709798697875261">Tashkilotingiz Chromium hisobidan chiqishingizni talab qilmoqda.</translation>
+<translation id="2942241131342758843">Havolalarni ochish, vidjetlar orqali qidiruv, boshqa ilovalarda parollar avtomatik kitilishda Chromium birlamchi ilova sifatida ishlatilsin</translation>
 <translation id="2977470724722393594">Siz Chromium brauzerining eng oxirgi versiyasidan foydalanyapsiz.</translation>
 <translation id="3256316712990552818">Chromium’ga nusxalandi</translation>
 <translation id="3344973607274501920">Chromium parollaringizni tekshira olmadi. Internet aloqasini tekshiring.</translation>
@@ -36,6 +39,7 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="4555020257205549924">Agar bu funksiya yoniq bo‘lsa, Chromium sahifalarni Google Tarjimon xizmati yordamida tarjima qilishni taklif qiladi. <ph name="BEGIN_LINK" />Batafsil...<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="4681781466797808448">Chromium skanerini ochish</translation>
+<translation id="4736424910885271643">Hisobingiz <ph name="HOSTED_DOMAIN" /> domenida boshqariladi, shuning uchun bu qurilmadagi Chromium maʼlumotlari tozalanadi</translation>
 <translation id="4787850887676698916">Boshqa qurilmalaringizda ochilgan Chromium sahifalari shu yerda ko‘rsatiladi.</translation>
 <translation id="4828317641996116749">Chromium barcha parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="4985291216379576555">Oflayn, Chromium yangilanishlar chiqqanini tekshira olmadi</translation>
@@ -55,6 +59,7 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 2. Standart brauzer ilovasi ustiga bosing
 3. Chromium brauzerini tanlang.</translation>
 <translation id="6268381023930128611">Chromium’dan chiqmoqchimisiz?</translation>
+<translation id="6337530241089703714">Chromium maʼlumotlari bu qurilmadan tozalanishi yoki saqlanib qolishini tanlang</translation>
 <translation id="6424492062988593837">Chromium ancha yaxshilandi! Yangi versiya mavjud.</translation>
 <translation id="6820823224820483452">Chromium barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
 <translation id="6827294685447036764">Geolokatsiyadan foydalanishga ruxsat bersangiz, Chromium bu maʼlumotlarni siz ruxsat bergan saytlarga yuboradi. Saytlar atrofdagi doʻkonlar yoki yangiliklar kabi axborotlarni chiqarish uchun joylashuvingizni soʻrashi mumkin.</translation>
@@ -71,6 +76,7 @@ Buning uchun kompyuteringizda Chromium brauzerini oching va menyudan “Chromium
 <translation id="766897673682622022">Parolingiz oshkor qilingan. Chromimum parolni hoziroq yangilashni tavsiya qiladi.</translation>
 <translation id="7674213385180944843">Kameradan foydalanishga ruxsat berish uchun “Sozlamalar &gt; Maxfiylik &gt; Kamera &gt; Chromium” bandini oching.</translation>
 <translation id="7746854981345936341">Chromium maslahati. Ba’zi tugmalar endi ekranning quyi qismida. Masalan: Orqaga, Oldinga va Qidiruv tugmalari.</translation>
+<translation id="7763454117143368771">Internetni xavfsiz kezish va parollaringizni himoyalashda Chromium birlamchi brauzer sifatida ishlatilsin</translation>
 <translation id="786327964234957808">Siz <ph name="USER_EMAIL1" /> hisobi ma’lumotlarini <ph name="USER_EMAIL2" /> hisobiga ko‘chirish arafasizdasiz. Mavjud Chromium ma’lumotlaringiz <ph name="DOMAIN" /> domenida boshqariladi. Barcha Chromium ma’lumotlari ushbu qurilmadan o‘chiriladi, lekin <ph name="USER_EMAIL1" /> hisobida saqlanib qoladi.</translation>
 <translation id="7890287942691234100">Chromium skaneridan foydalanish</translation>
 <translation id="7931842119211730154">Chromium yopilganda, Inkognito varaqlar qulflansin</translation>

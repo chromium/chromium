@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + foydalanuvchi sertifikati</translation>
 <translation id="4731797938093519117">Ota-ona kirishi</translation>
 <translation id="4773299976671772492">To‘xtatildi</translation>
+<translation id="4794140124556169553">Protsessorni tekshirish (CPU test) tizim unumdorligiga taʼsir qilishi mumkin</translation>
 <translation id="4808449224298348341">Chop etilishi bekor qilindi: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Ulanish</translation>
 <translation id="4832079907277790330">Fayllar ilovasida jild tanlang...</translation>
@@ -341,6 +342,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8483248364096924578">IP manzil</translation>
 <translation id="8503813439785031346">Foydalanuvchi nomi</translation>
 <translation id="8503836310948963452">Yana bir necha daqiqa kuting…</translation>
+<translation id="8575298406870537639">Aloqa operatoringiz oʻz tarmogʻiga ulanishi uchun bu parametrni talab qilishi mumkin. Tafsilotlar uchun aloqa operatoringizga murojaat qiling.</translation>
 <translation id="8576249514688522074">Faolsizlantirildi</translation>
 <translation id="8620617069779373398">Rouming holati</translation>
 <translation id="8675354002693747642">Umumiy kalit</translation>
@@ -365,7 +367,6 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="8970109610781093811">Qayta tekshirish</translation>
 <translation id="9003704114456258138">Chastotasi</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Joriy faollik</translation>

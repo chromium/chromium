@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">История на навигацията</translation>
 <translation id="1231733316453485619">Да се включи ли синхронизирането?</translation>
 <translation id="123724288017357924">Презареждане на страницата (кешът се пренебрегва)</translation>
+<translation id="1240288207750131269">Зарежда се <ph name="LANG" /></translation>
 <translation id="124678866338384709">Затваряне на текущия раздел</translation>
 <translation id="1258753120186372309">Драскулка на Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Споделянето на <ph name="CONTENT_TYPE" /> не бе възможно</translation>
+<translation id="1276279242344007853">Управление на сайтовете, които следите</translation>
 <translation id="1283039547216852943">Докоснете за разгъване</translation>
 <translation id="1285310382777185058">Промяна на езика</translation>
 <translation id="1291207594882862231">Изчистване на историята, „бисквитките“, данните за сайтове и кеша…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Версия на приложението</translation>
 <translation id="1430915738399379752">Печат</translation>
 <translation id="1450753235335490080">Споделянето на <ph name="CONTENT_TYPE" /> не е възможно</translation>
+<translation id="1466383950273130737">Изберете език за Chrome</translation>
 <translation id="147113415845704694">Попитайте „What’s the weather today?“</translation>
 <translation id="1477626028522505441">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради проблеми в сървъра.</translation>
 <translation id="1492417797159476138">Вече запазихте това потребителско име за този сайт</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">Връзката с интернет се проверява</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2369533728426058518">отваряне на раздели</translation>
+<translation id="2386938421315164605">Скриване и показване на теми</translation>
 <translation id="2387895666653383613">Мащабиране на текста</translation>
 <translation id="2394602618534698961">Изтеглените от вас файлове се показват тук</translation>
 <translation id="2407481962792080328">Когато влезете в профила си в Google, тази функция се включва</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">Преглеждайте и управлявайте запазените пароли в <ph name="BEGIN_LINK" />профила си в Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Влезте в профила си и включете синхронизирането, за да получите отметките си на всичките си устройства</translation>
 <translation id="2827278682606527653">Менюто на картата за емисията се показва на половината височина</translation>
+<translation id="2839327205551510876">Следенето на <ph name="SITE_NAME" /> бе прекратено</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено преди 1 ден}other{Проверено преди # дни}}</translation>
 <translation id="2842985007712546952">Основна папка</translation>
 <translation id="2856503607207334158">Влизането в профила не бе успешно</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2923908459366352541">Името е невалидно</translation>
 <translation id="2932150158123903946">Хранилище на Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Клавиатурата ви няма да се промени</translation>
 <translation id="2942036813789421260">Разделът за визуализация е затворен</translation>
 <translation id="2956410042958133412">Този профил се управлява от <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">Потребителски интерфейс за даване на съгласие за ползване на Асистент при гласови търсения</translation>
 <translation id="3034163383943672781">Изтеглянето ще стартира на <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Получете помощ<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Стигнете до този сайт по-бързо следващия път</translation>
 <translation id="305593374596241526">Местоположението е изключено. Включете го от <ph name="BEGIN_LINK" />настройките на Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Можете по всяко време да включите синхронизирането в настройките</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> отметка}other{<ph name="BOOKMARKS_COUNT_MANY" /> отметки}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">Понастоящем персонализирате настройките си за синхронизиране и за услугите на Google. За да включите синхронизирането, докоснете бутона „Потвърждаване“ в долната част на екрана. Навигиране нагоре</translation>
 <translation id="3334729583274622784">Да се промени ли файловото разширение?</translation>
 <translation id="3341058695485821946">Вижте колко данни сте спестили</translation>
+<translation id="3341262203274374114">Прекратяването на следенето не е възможно. Нещо се обърка.</translation>
 <translation id="3350687908700087792">Затваряне на всички раздели в режим „инкогнито“</translation>
 <translation id="3359667936385849800">Използване на текущия ви доставчик на услуги</translation>
 <translation id="3367813778245106622">Влезте в профила си отново, за да започне синхронизирането</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="3988213473815854515">Местоположението е разрешено</translation>
 <translation id="3988466920954086464">Отворете този панел, за да видите динамичните резултати от търсенето</translation>
 <translation id="4000212216660919741">Начална страница в офлайн режим</translation>
+<translation id="4016425174436051808">Следенето не е възможно. Нещо се обърка.</translation>
+<translation id="4021916380760361450">Управление на данните в профилите ви в Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ч}other{# ч}}</translation>
 <translation id="4045764304651014138">Данни за употребата</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -598,6 +608,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5152843274749979095">Никое от поддържаните приложения не е инсталирано</translation>
 <translation id="5161254044473106830">Изисква се заглавие</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 изтегляне не бе успешно.}other{# изтегляния не бяха успешни.}}</translation>
+<translation id="5168824020667180049">Започнахте да следите <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Показване в папката</translation>
 <translation id="5184329579814168207">Отваряне в Chrome</translation>
 <translation id="5188992787241350004">Търсене чрез гласа ви</translation>
@@ -717,6 +728,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5864419784173784555">Изчаква се друго изтегляне…</translation>
 <translation id="5865733239029070421">Автоматично изпраща до Google статистически данни за използването на Chrome и сигнали за сривове</translation>
 <translation id="5869522115854928033">Запазени пароли</translation>
+<translation id="5880748256563468367">Към емисията</translation>
 <translation id="5884076754568147479">За да ви помага да изпълнявате задачи, Google ще получава URL адресите и съдържанието на сайтовете, в които използвате Асистент, както и данните, които изпращате чрез услугата</translation>
 <translation id="5919204609460789179">Актуализирайте <ph name="PRODUCT_NAME" />, за да стартира синхронизирането</translation>
 <translation id="5937580074298050696">Спестени: <ph name="AMOUNT" /></translation>
@@ -734,6 +746,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="5979084224081478209">Проверка на паролите</translation>
 <translation id="5982307838673692400">Отваряне на раздел в режим „инкогнито“</translation>
 <translation id="6000066717592683814">Запазване на Google</translation>
+<translation id="6000203700195075278">Повторно следене</translation>
 <translation id="6005538289190791541">Предложена парола</translation>
 <translation id="6036057147555329831">допълнителният ICU модул</translation>
 <translation id="6039379616847168523">Преминаване към следващия раздел</translation>
@@ -1095,6 +1108,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="834313815369870491">Сайтове, които никога да не се превеждат</translation>
 <translation id="8349013245300336738">Сортиране по количеството използвани данни</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> изтегляния бяха възстановени</translation>
+<translation id="8362134094656482681">Управлявайте темите, от които се интересувате</translation>
 <translation id="8364299278605033898">Вижте популярните уебсайтове</translation>
 <translation id="8368027906805972958">Неизвестно или неподдържано устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Пакетът за <ph name="LANG" /> е готов.</translation>

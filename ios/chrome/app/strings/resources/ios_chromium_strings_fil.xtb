@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Ang Chromium ay may mga feature na nakakatulong sa iyong pamahalaan ang iyong data sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Hindi matingnan ng Chromium kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
+<translation id="2054703085270098503">Manatiling Ligtas sa Chromium</translation>
 <translation id="2075400798887076382">I-access ang mga tab na nakabukas sa iyong computer, dito mismo. Buksan lang ang Chromium sa iyong computer, pumunta sa menu, at piliin ang “Mag-sign in sa Chromium…”</translation>
 <translation id="2168108852149185974">Nagiging dahilan ng pag-crash ng Chromium ang ilang add-on. Paki-uninstall.</translation>
 <translation id="2178608107313874732">Di magamit ng Chromium ang camera mo ngayon</translation>
 <translation id="2195025571279539885">Gusto mo bang mag-alok ang Chromium na isalin ang mga <ph name="LANGUAGE_NAME" /> page mula sa site na ito sa susunod na pagkakataon?</translation>
 <translation id="2590893390871230428">I-sync ang Iyong Data sa Chromium</translation>
 <translation id="2650312721222849884">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, i-on ang pag-sync</translation>
+<translation id="2684230048001240293">Itakda ang Chromium bilang default para ma-sync ang iyong mga tab, password, at impormasyon sa pagbabayad sa lahat ng device mo</translation>
 <translation id="2730884209570016437">Hindi magamit ng Chromium ang iyong camera ngayon dahil ginagamit ito sa isa pang application</translation>
 <translation id="2915596697727466327">Gumagamit ang Chromium ng Face ID para tiyakin ang awtorisadong pag-access sa iyong mga password.</translation>
 <translation id="2918709798697875261">Hinihiling sa iyo ng organisasyon mo na manatiling naka-sign out sa Chromium.</translation>
+<translation id="2942241131342758843">Gamitin ang Chromium bilang default para magbukas ng mga link, maghanap mula sa mga widget, at mag-autofill ng mga password sa iba pang app</translation>
 <translation id="2977470724722393594">Napapanahon ang Chromium</translation>
 <translation id="3256316712990552818">Kinopya sa Chromium</translation>
 <translation id="3344973607274501920">Hindi masuri ng Chromium ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="4681781466797808448">I-on ang scanner ng Chromium</translation>
+<translation id="4736424910885271643">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chromium sa device na ito</translation>
 <translation id="4787850887676698916">Dito lalabas ang mga nabuksan mong tab sa Chromium sa iba mo pang mga device.</translation>
 <translation id="4828317641996116749">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="4985291216379576555">Naka-offline, hindi matingnan ng Chromium kung may mga update</translation>
@@ -55,6 +59,7 @@
 2. I-tap ang Default Browser App
 3. Piliin ang Chromium.</translation>
 <translation id="6268381023930128611">Mag-sign out sa Chromium?</translation>
+<translation id="6337530241089703714">Piliin kung iki-clear ang iyong data sa Chromium sa device na ito o kung papanatilihin ito</translation>
 <translation id="6424492062988593837">Naging mas mahusay na ang Chromium! Available na ang bagong bersyon.</translation>
 <translation id="6820823224820483452">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="6827294685447036764">Kung papayagan mo ang Chromium na alamin ang iyong lokasyon, ipapadala ito ng Chromium sa anumang site na papayagan mo. Posibleng hingin ng mga site ang iyong lokasyon kapag may lokal na impormasyong ipapakita sa iyo ang mga ito, tulad ng mga shop sa malapit o balita.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Chromium na palitan ang password ngayon.</translation>
 <translation id="7674213385180944843">Buksan ang Settings &gt; Privacy &gt; Camera &gt; Chromium at i-on ang camera.</translation>
 <translation id="7746854981345936341">Tip sa Chromium. Nasa ibaba na ng iyong screen ang ilang button, tulad ng Bumalik, Susunod, at Maghanap.</translation>
+<translation id="7763454117143368771">Gamitin ang Chromium bilang iyong default na browser para manatiling protektado laban sa mga mapanganib na site at mapanatiling ligtas ang mga password mo</translation>
 <translation id="786327964234957808">Pinapalitan mo ang mga sync account mula sa <ph name="USER_EMAIL1" /> patungo sa <ph name="USER_EMAIL2" />. Ang iyong data ng Chromium ay pinamamahalaan ng <ph name="DOMAIN" />. Ide-delete nito ang iyong data mula sa device na ito, ngunit mananatili ang iyong data sa <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Simulang gamitin ang scanner ng Chromium</translation>
 <translation id="7931842119211730154">I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chromium</translation>

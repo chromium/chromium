@@ -519,6 +519,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1563702743503072935">Az eszközön a Google-fiókjában található jelszavak is hozzáférhetők lesznek, miközben be van jelentkezve</translation>
 <translation id="1566049601598938765">Webhely</translation>
 <translation id="15662109988763471">A kiválasztott nyomtató nem áll rendelkezésre, vagy nincs megfelelően telepítve. Ellenőrizze a nyomtatót, vagy válasszon egy másikat.</translation>
+<translation id="1567135437923613642">Kiemelt kísérletek engedélyezése</translation>
 <translation id="1567387640189251553">A jelszó utolsó megadása óta új billentyűzetet csatlakoztattak. Előfordulhat, hogy így kísérlik meg a billentyűleütések rögzítését.</translation>
 <translation id="1567993339577891801">JavaScript-konzol</translation>
 <translation id="1568323446248056064">Megjelenítőeszköz beállításainak megnyitása</translation>
@@ -918,6 +919,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1979095679518582070">A funkció kikapcsolása nem korlátozza ezt az eszközt abban, hogy elküldje az alapvető fontosságú szolgáltatásokkal (pl. a rendszerfrissítésekkel és -biztonsággal) kapcsolatos információkat.</translation>
 <translation id="1979280758666859181">A(z) <ph name="PRODUCT_NAME" /> egy régebbi verziójával vált csatornát. A csatornamódosítás akkor lép érvénybe, amikor a csatorna verziószáma megegyezik az eszközön jelenleg telepített verziószámmal.</translation>
 <translation id="197989455406964291">A KDC nem támogatja a titkosítástípust</translation>
+<translation id="1983497378699148207">A Linux beállításának befejezéséhez frissítse a Chrome OS rendszert, majd próbálkozzon újra.</translation>
 <translation id="1984417487208496350">Nincs védelem (nem javasolt)</translation>
 <translation id="1987317783729300807">Fiókok</translation>
 <translation id="1989112275319619282">Böngészés</translation>
@@ -1330,6 +1332,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2450223707519584812">Nem tud majd hozzáadni felhasználókat, mert hiányoznak a Google API-kulcsok. Részletekért lásd: <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Nincs aktív nézet</translation>
 <translation id="2451298179137331965">2×</translation>
+<translation id="245322989586167203">A webhelyek általában bizonyos adatátviteli funkciók (például hálózat beállításának) biztosítása érdekében csatlakoznak soros portokhoz</translation>
 <translation id="2453860139492968684">Befejezés</translation>
 <translation id="2454247629720664989">Kulcsszó</translation>
 <translation id="2454264884354864965">A kamera ki van kapcsolva</translation>
@@ -1960,6 +1963,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="313205617302240621">Elfelejtette a jelszavát?</translation>
 <translation id="3132277757485842847">Nem tudtuk fenntartani a kapcsolatot a telefonjával. Gondoskodjon arról, hogy telefonja fel legyen oldva, és a közelben legyen, bekapcsolt Bluetooth és Wi-Fi funkcióval.</translation>
 <translation id="3132996321662585180">Frissítés naponta</translation>
+<translation id="3134393957315651797">Válasszon ki kísérleti állapotot a(z) <ph name="EXPERIMENT_NAME" /> kísérlethez. Kísérlet leírása: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Érvénytelen PIN-kód. <ph name="RETRIES" /> próbálkozási lehetősége maradt.</translation>
 <translation id="313963229645891001">Letöltés folyamatban, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Alapértelmezett sárga avatar</translation>
@@ -2843,6 +2847,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4099874310852108874">Hálózati hiba történt.</translation>
 <translation id="4100733287846229632">Az eszköz nagyon kevés szabad tárhellyel rendelkezik</translation>
 <translation id="4100853287411968461">Képernyő előtt tölthető idő frissítve</translation>
+<translation id="4101352914005291489">Rejtett SSID</translation>
 <translation id="4102906002417106771">Újraindítás a powerwash megkezdéséhez</translation>
 <translation id="4104163789986725820">E&amp;xportálás...</translation>
 <translation id="4107048419833779140">Tárolóeszközök azonosítása és kiadása</translation>
@@ -3913,6 +3918,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="5382591305415226340">Támogatott linkek kezelése</translation>
 <translation id="5383377866517186886">A kamera ki van kapcsolva a Mac Rendszerbeállításokban</translation>
 <translation id="5383740867328871413">Név nélküli csoport – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">A vállalati házirend módosult. A Kísérletek gomb bekerült az eszköztárba. A gombra kattintva megnyithatja a párbeszédpanelt a kísérletek engedélyezéséhez.</translation>
 <translation id="5388885445722491159">Párosítva</translation>
 <translation id="5390100381392048184">A webhelyek lejátszhatnak hangokat</translation>
 <translation id="5390112241331447203">A system_logs.txt fájl is kerüljön be a visszajelzési jelentésekbe.</translation>
@@ -5038,6 +5044,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6659594942844771486">Lap</translation>
 <translation id="6660413144148052430">helyadatok</translation>
 <translation id="666099631117081440">Nyomtatószerverek</translation>
+<translation id="6662931079349804328">A vállalati házirend módosult. A Kísérletek gombot a rendszer eltávolította az eszköztárból.</translation>
 <translation id="6663190258859265334">Arra készül, hogy Powerwash műveletet hajt végre <ph name="DEVICE_TYPE" /> eszközén, és visszatér a korábbi verzióhoz.</translation>
 <translation id="6664237456442406323">Sajnos számítógépe nem megfelelő formátumú hardverazonosítóval van konfigurálva. Emiatt a Chrome OS nem tud frissülni a legújabb biztonsági javításokkal, és számítógépét <ph name="BEGIN_BOLD" />rosszindulatú támadások érhetik<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Hiba történt a profil megnyitása során. Jelentkezzen ki, majd jelentkezzen be újra.</translation>
@@ -5394,6 +5401,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7056526158851679338">&amp;Eszközök vizsgálata</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{A biztonsági ellenőrzés 1 perccel ezelőtt futott}other{A biztonsági ellenőrzés {NUM_MINS} perccel ezelőtt futott}}</translation>
 <translation id="7057767408836081338">Az alkalmazásadatok beszerzése sikertelen, de megpróbáljuk futtatni az alkalmazást…</translation>
+<translation id="7058024590501568315">Rejtett hálózat</translation>
 <translation id="7059858479264779982">Beállítás automatikus indításra</translation>
 <translation id="7059893117020417984">Privát böngészéshez kattintson a három pontból álló („Továbbiak”) ikonra, és nyisson inkognitó ablakot.</translation>
 <translation id="7062222374113411376">Annak engedélyezése, hogy a nemrégiben bezárt webhelyek befejezhessék az adatok küldését és fogadását (ajánlott)</translation>
@@ -5757,6 +5765,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7477793887173910789">Zeneszámok, videók és további tartalmak vezérlése</translation>
 <translation id="7478485216301680444">A kiosk-alkalmazást nem sikerült telepíteni.</translation>
 <translation id="7478623944308207463">Az Ön alkalmazásai és beállításai szinkronizálódnak minden olyan Chrome OS-eszközön, amelyen Google-fiókjával van bejelentkezve. A böngésző szinkronizálási beállításait a <ph name="LINK_BEGIN" />Chrome-beállításokban<ph name="LINK_END" /> találja.</translation>
+<translation id="7478658909253570368">A webhelyek nem csatlakozhatnak soros portokhoz</translation>
 <translation id="7479221278376295180">Tárhelyhasználat áttekintése</translation>
 <translation id="7481312909269577407">Előre</translation>
 <translation id="7481358317100446445">Kész</translation>
@@ -5908,11 +5917,13 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="765293928828334535">Erről a webhelyről nem lehet alkalmazásokat, bővítményeket és felhasználói szkripteket hozzáadni</translation>
 <translation id="7652954539215530680">PIN-kód beállítása</translation>
 <translation id="7654941827281939388">Ezt a fiókot már használják ezen a számítógépen.</translation>
+<translation id="7655411746932645568">A webhelyek engedélyt kérhetnek a soros portokhoz való csatlakozásra</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7659297516559011665">Csak az ezen az eszközön található jelszavak</translation>
 <translation id="7659584679870740384">Nem jogosult ennek az eszköznek a használatára. Bejelentkezési engedély kéréséhez vegye fel a kapcsolatot a rendszergazdával.</translation>
 <translation id="7661259717474717992">A webhelyek cookie-adatokat menthetnek el és olvashatnak be</translation>
 <translation id="7661451191293163002">Nem sikerült lekérni egy bejegyzési tanúsítványt.</translation>
+<translation id="7661762353058813968">A frissítéseket a rendszergazdája kezeli.</translation>
 <translation id="7662283695561029522">Koppintson a konfiguráláshoz</translation>
 <translation id="7663719505383602579">Fogadó fél: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Nem támogatott Bluetooth-eszköz: „<ph name="DEVICE_NAME" />”.</translation>
@@ -6694,6 +6705,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűkomb
 <translation id="8539727552378197395">Nem (HttpOnly)</translation>
 <translation id="8539766201049804895">Frissítés</translation>
 <translation id="8540136935098276800">Megfelelő formátumú URL-t adjon meg</translation>
+<translation id="8540503336857689453">Rejtett hálózat használata biztonsági okokból nem javasolt.</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, részletek</translation>
 <translation id="854071720451629801">Megjelölés olvasottként</translation>
 <translation id="8541462173655894684">Nem található nyomtató a nyomtatószerveren</translation>

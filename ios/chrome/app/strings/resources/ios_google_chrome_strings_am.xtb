@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">የChrome ባህሪያት እና አፈጻጸም እንዲሻሻል ያግዙ</translation>
 <translation id="1314663809820920746">አሁንም በዚህ መሣሪያ ላይ ሁሉንም የእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮችን ማየት ይችላሉ። ለውጦችን ካደረጉ ከGoogle መለያዎ ጋር አይሰምርም።</translation>
 <translation id="1479202195792305274">Chrome በእርስዎ የGoogle መለያ በሚገቡበት ጊዜ የእርስዎን የይለፍ ቃላትን ሊፈትሽ ይችላል።</translation>
+<translation id="1493827051843127077">በሁሉም መሣሪያዎችዎ ላይ ትሮችዎን፣ የይለፍ ቃላትዎን እና የክፍያ መረጃዎን ለማስመር Chromeን እንደ ነባሪ ያዘጋጁ</translation>
 <translation id="1504372625950710826">Chrome ዝማኔዎች ካሉ መፈተሽ አልቻለም። የበይነመረብ ግንኙነትዎን ለመፈተሽ ይሞክሩ።</translation>
 <translation id="1682483655351012182">የChrome ውሂብዎን ያስምሩ</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome እርስዎ ከሚፈቅዷቸው ጣቢያዎች ጋር አካባቢዎን ያጋራል።</translation>
 <translation id="2347208864470321755">ይህ ባህሪ ሲበራ Chrome በሌሎች ቋንቋዎች የተጻፉ ገጾች Google ትርጉምን በመጠቀም እንዲተረጎምልዎ ይጠይቀዎታል። <ph name="BEGIN_LINK" />ተጨማሪ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Chromeን የእርስዎ ነባሪ ያድርጉት</translation>
+<translation id="2561231791489583059">ከአደገኛ ጣቢያዎች እንዲጠበቁ እና የይለፍ ቃላትዎን ደህንነት ለመጠበቅ Chromeን እንደ ነባሪ አሳሽዎ ይጠቀሙ</translation>
 <translation id="2574249610672786438">Chromeን ከሚጠቀሙበት የትኛዉም ቦታ ትሮችን ለማየት በሁሉም መሣሪያዎችዎ ላይ ይግቡ</translation>
 <translation id="2576431527583832481">Chrome አሁን ተሻሽሏል! አዲስ ስሪት አለ።</translation>
 <translation id="257708665678654955">Google Chrome በሚቀጥለው ጊዜ ከዚህ ጣቢያ የመጡ የ<ph name="LANGUAGE_NAME" /> ገጾች እንዲተረጎምልዎ ይፈልጋሉ?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
 <translation id="7265369419224458312">በኮምፒውተርዎ ላይ የከፈቷቸውን ትሮች እዚሁ ይድረሱባቸው። በቀላሉ Chromeን በኮምፒውተርዎ ላይ ይክፈቱ፣ ወደ ምናሌ ይሂዱ፣ እና «ወደ Chrome ግባ...»ን ይምረጡ</translation>
 <translation id="7272930098487145294">ምስሎችን ለማስቀመጥ፣ Chrome ወደ የእርስዎ ፎቶዎች ማከል እንዲችል ለማድረግ ቅንብሮች ላይ መታ ያድርጉ</translation>
+<translation id="7275945473750112644">የእርስዎ መለያ በ<ph name="HOSTED_DOMAIN" /> የሚተዳደር ነው፣ ስለሆነም የእርስዎ የChrome ውሂብ ከዚህ መሣሪያ ይጸዳል</translation>
 <translation id="7400722733683201933">ስለ Google Chrome</translation>
 <translation id="7501046334262221972">Chrome ን ነባሪ አሳሽዎ ለማድረግ ቅንብሮችን ይክፈቱ። ነባሪ የአሳሽ መተግበሪያን መታ ያድርጉ፣ እና ከዚያ Chrome ን ይምረጡ።</translation>
 <translation id="756809126120519699">የChrome ውሂብ ጸድቷል</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">የይለፍ ቃልዎ በውሂብ ጥሰት ውስጥ ተጋልጧል። Chrome የይለፍ ቃልን አሁኑኑ እንዲቀይሩ ይመክራል።</translation>
 <translation id="7698568245838009292">Chrome ካሜራውን መድረስ ይፈልጋል</translation>
 <translation id="7855730255114109580">Google Chrome የተዘመነ ነው</translation>
+<translation id="8022947259858476807">አገናኞችን ለመክፈት፣ ከመግብሮች ለመፈለግ እና በሌሎች መተግበሪያዎች ውስጥ የይለፍ ቃሎችን የራስ-ለመሙላት በነባሪነት Chrome ን ይጠቀሙ</translation>
 <translation id="8160472928944011082">Chromeን ማዘመን አልተቻለም</translation>
+<translation id="8357607116237445042">የChrome ውሂብዎን ከዚህ መሣሪያ ይጸዳ ወይም ይቆይ እንደሆነ ይምረጡ</translation>
 <translation id="8370517070665726704">የቅጂ መብት <ph name="YEAR" /> Google LLC. ሁሉም መብቶች በህግ የተጠበቁ ናቸው።</translation>
 <translation id="840168496893712993">አንዳንድ ተጨማሪዎች Chrome እንዲበላሽ ያደርጋሉ። እባክዎ እነሱን ለማራገፍ ይሞክሩ።</translation>
 <translation id="8459495907675268833">የተመረጠው ውሂብ ከChrome እና የሰመሩ መሣሪያዎች ተወግዷል። የGoogle መለያዎ history.google.com ላይ እንደ የሌሎች Google አገልግሎቶች ፍለጋዎች እና እንቅስቃሴ ያለ ሌሎች የአሰሳ ታሪክ ዓይነት ሊኖረው ይችላል።</translation>
@@ -88,4 +93,5 @@
   2. ነባሪ የአሳሽ መተግበሪያን መታ ያድርጉ
   3. Chromeን ይምረጡ።</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">በGoogle Chrome አማካኝነት ደህንነትዎን ይጠብቁ</translation>
 </translationbundle>

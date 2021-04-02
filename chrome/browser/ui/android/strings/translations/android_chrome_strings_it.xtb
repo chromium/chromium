@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Cronologia di navigazione</translation>
 <translation id="1231733316453485619">Attivare la sincronizzazione?</translation>
 <translation id="123724288017357924">Ricarica pag. corr. Ignora i contenuti nella cache</translation>
+<translation id="1240288207750131269">Caricamento della lingua <ph name="LANG" /> in corso…</translation>
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1258753120186372309">Doodle di Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Gestisci i siti che segui</translation>
 <translation id="1283039547216852943">Tocca per espandere</translation>
 <translation id="1285310382777185058">Cambia lingua</translation>
 <translation id="1291207594882862231">Cancella la cronologia, i cookie, i dati dei siti, la cache…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Versione applicazione</translation>
 <translation id="1430915738399379752">Stampa</translation>
 <translation id="1450753235335490080">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Seleziona la lingua di Chrome</translation>
 <translation id="147113415845704694">Prova "Che tempo fa oggi?"</translation>
 <translation id="1477626028522505441">Download di <ph name="FILE_NAME" /> non riuscito a causa di problemi del server.</translation>
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
@@ -205,6 +208,7 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 <translation id="2353636109065292463">Controllare la connessione a Internet</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2369533728426058518">schede aperte</translation>
+<translation id="2386938421315164605">Nascondi e mostra argomenti</translation>
 <translation id="2387895666653383613">Ridimensionamento testo</translation>
 <translation id="2394602618534698961">I file scaricati vengono visualizzati qui</translation>
 <translation id="2407481962792080328">Questa funzionalità viene attivata quando accedi al tuo Account Google</translation>
@@ -265,6 +269,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="281504910091592009">Visualizza e gestisci le password salvate nel tuo <ph name="BEGIN_LINK" />Account Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Accedi e attiva la sincronizzazione per trovare i tuoi preferiti su tutti i dispositivi</translation>
 <translation id="2827278682606527653">Menu scheda feed aperto nella metà inferiore dello schermo</translation>
+<translation id="2839327205551510876">Non segui più <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Eseguito 1 giorno fa}other{Eseguito # giorni fa}}</translation>
 <translation id="2842985007712546952">Cartella principale</translation>
 <translation id="2856503607207334158">Accesso non riuscito</translation>
@@ -281,6 +286,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2909615210195135082">Piattaforma per le notifiche Google</translation>
 <translation id="2923908459366352541">Nome non valido</translation>
 <translation id="2932150158123903946">Spazio di archiviazione di Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">La tua tastiera resterà invariata</translation>
 <translation id="2942036813789421260">La scheda di anteprima è chiusa</translation>
 <translation id="2956410042958133412">Questo account è gestito da <ph name="PARENT_NAME_1" /> e <ph name="PARENT_NAME_2" /></translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagina da leggere}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagine da leggere}}</translation>
@@ -297,6 +303,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3031225630520268969">Interfaccia utente per il consenso all'utilizzo dell'assistente per la ricerca vocale</translation>
 <translation id="3034163383943672781">Il download inizierà il giorno <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Accedi più velocemente a questo sito la prossima volta</translation>
 <translation id="305593374596241526">La geolocalizzazione non è attiva; attivala nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Puoi attivare la sincronizzazione in qualsiasi momento nelle impostazioni</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> preferito}other{<ph name="BOOKMARKS_COUNT_MANY" /> preferiti}}</translation>
@@ -340,6 +347,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3315103659806849044">Stai personalizzando le impostazioni Sincronizzazione e servizi Google. Per terminare l'attivazione della sincronizzazione, tocca il pulsante Conferma nella parte inferiore dello schermo. Torna indietro</translation>
 <translation id="3334729583274622784">Vuoi cambiare l'estensione del file?</translation>
 <translation id="3341058695485821946">Scopri la quantità di dati risparmiata</translation>
+<translation id="3341262203274374114">Non è possibile non seguire più. Si è verificato un errore.</translation>
 <translation id="3350687908700087792">Chiudi tutte le schede di navigazione in incognito</translation>
 <translation id="3359667936385849800">Usa il tuo attuale fornitore di servizi</translation>
 <translation id="3367813778245106622">Accedi nuovamente per avviare la sincronizzazione</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="3988213473815854515">La geolocalizzazione è consentita</translation>
 <translation id="3988466920954086464">Visualizza i risultati della ricerca immediata in questo riquadro</translation>
 <translation id="4000212216660919741">Home page offline</translation>
+<translation id="4016425174436051808">Non è possibile seguire. Si è verificato un errore.</translation>
+<translation id="4021916380760361450">Controlla i dati dei tuoi Account Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ora}other{# ore}}</translation>
 <translation id="4045764304651014138">Dati sull'utilizzo</translation>
 <translation id="4056223980640387499">Seppia</translation>
@@ -598,6 +608,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5152843274749979095">Nessuna app supportata installata</translation>
 <translation id="5161254044473106830">Titolo obbligatorio</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download non riuscito.}other{# download non riusciti.}}</translation>
+<translation id="5168824020667180049">Hai iniziato a seguire <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5184329579814168207">Apri in Chrome</translation>
 <translation id="5188992787241350004">Esegui una ricerca vocale</translation>
@@ -717,6 +728,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5864419784173784555">In attesa di un altro download…</translation>
 <translation id="5865733239029070421">Invia automaticamente a Google statistiche sull'utilizzo e rapporti sugli arresti anomali</translation>
 <translation id="5869522115854928033">Password salvate</translation>
+<translation id="5880748256563468367">Vai al feed</translation>
 <translation id="5884076754568147479">Per aiutarti a completare le attività, Google riceverà gli URL e i contenuti dei siti su cui utilizzi l'assistente, oltre alle informazioni che invii attraverso l'assistente</translation>
 <translation id="5919204609460789179">Aggiorna <ph name="PRODUCT_NAME" /> per avviare la sincronizzazione</translation>
 <translation id="5937580074298050696">Dati risparmiati: <ph name="AMOUNT" /></translation>
@@ -734,6 +746,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5979084224081478209">Controlla password</translation>
 <translation id="5982307838673692400">Apri una scheda di navigazione in incognito</translation>
 <translation id="6000066717592683814">Mantieni Google</translation>
+<translation id="6000203700195075278">Segui di nuovo</translation>
 <translation id="6005538289190791541">Password consigliata</translation>
 <translation id="6036057147555329831">ICU extra</translation>
 <translation id="6039379616847168523">Vai alla scheda successiva</translation>
@@ -1095,6 +1108,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="834313815369870491">Non tradurre mai i siti</translation>
 <translation id="8349013245300336738">Ordina per quantità di dati utilizzati</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> download ripristinati</translation>
+<translation id="8362134094656482681">Gestisci gli argomenti che ti interessano</translation>
 <translation id="8364299278605033898">Scopri i siti web più visitati</translation>
 <translation id="8368027906805972958">Dispositivo sconosciuto o non supportato (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> è pronto.</translation>

@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium bevat functies waarmee je je internetgegevens kunt beheren en kunt bepalen hoe snel je webpagina's kunt laden.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium kan niet checken op updates. Check de internetverbinding.</translation>
+<translation id="2054703085270098503">Blijf veilig met Chromium</translation>
 <translation id="2075400798887076382">Bekijk hier de tabbladen die je op je computer hebt geopend. Open Chromium op je computer, ga naar het menu en selecteer 'Inloggen bij Chromium'.</translation>
 <translation id="2168108852149185974">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder de volgende add-ons:</translation>
 <translation id="2178608107313874732">Chromium kan je camera momenteel niet gebruiken</translation>
 <translation id="2195025571279539885">Wil je dat Chromium de volgende keer aanbiedt om pagina's in het <ph name="LANGUAGE_NAME" /> op deze site te vertalen?</translation>
 <translation id="2590893390871230428">Je Chromium-gegevens synchroniseren</translation>
 <translation id="2650312721222849884">Zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chromium gebruikt</translation>
+<translation id="2684230048001240293">Stel Chromium in als je standaardbrowser om je tabbladen, wachtwoorden en betalingsgegevens op al je apparaten te synchroniseren</translation>
 <translation id="2730884209570016437">Chromium kan je camera niet gebruiken omdat deze wordt gebruikt door een andere app</translation>
 <translation id="2915596697727466327">Chromium gebruikt Face ID om geautoriseerde toegang tot je wachtwoorden mogelijk te maken.</translation>
 <translation id="2918709798697875261">Je organisatie vereist dat je uitgelogd blijft bij Chromium.</translation>
+<translation id="2942241131342758843">Gebruik standaard Chromium om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="2977470724722393594">Chromium is up-to-date</translation>
 <translation id="3256316712990552818">Gekopieerd naar Chromium</translation>
 <translation id="3344973607274501920">Chromium kan je wachtwoorden niet checken. Check de internetverbinding.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Als deze functie aanstaat, biedt Chromium aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Je kunt Chromium nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="4681781466797808448">Chromium-scanner aanzetten</translation>
+<translation id="4736424910885271643">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chromium-gegevens worden verwijderd van dit apparaat</translation>
 <translation id="4787850887676698916">Hier zie je tabbladen die je op andere apparaten in Chromium hebt geopend.</translation>
 <translation id="4828317641996116749">Chromium kan niet alle wachtwoorden checken. Probeer het later opnieuw.</translation>
 <translation id="4985291216379576555">Offline. Chromium kan niet checken op updates</translation>
@@ -55,6 +59,7 @@
 2. Tik op Standaard browser-app.
 3. Selecteer Chromium.</translation>
 <translation id="6268381023930128611">Uitloggen bij Chromium?</translation>
+<translation id="6337530241089703714">Kies of je je Chromium-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
 <translation id="6424492062988593837">Chromium is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
 <translation id="6820823224820483452">Chromium kan niet alle wachtwoorden checken. Probeer het morgen opnieuw.</translation>
 <translation id="6827294685447036764">Als je Chromium toestaat je locatie te gebruiken, stuurt Chromium deze naar sites waarvoor je toestemming geeft. Sites kunnen om je locatie vragen als ze je lokale informatie willen laten zien, zoals winkels in de buurt of lokaal nieuws.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Je wachtwoord is gelekt bij een gegevenslek. Chromium raadt je aan om het wachtwoord nu te wijzigen.</translation>
 <translation id="7674213385180944843">Open Instellingen &gt; Privacy &gt; Camera &gt; Chromium en zet de camera aan.</translation>
 <translation id="7746854981345936341">Chromium-tip. Sommige knoppen zoals Terug, Vooruit en Zoeken zie je nu onderaan het scherm.</translation>
+<translation id="7763454117143368771">Gebruik Chromium als je standaardbrowser voor bescherming tegen gevaarlijke sites en om je wachtwoorden te beveiligen</translation>
 <translation id="786327964234957808">Je wijzigt het synchronisatieaccount van <ph name="USER_EMAIL1" /> in <ph name="USER_EMAIL2" />. Je bestaande Chromium-gegevens worden beheerd door <ph name="DOMAIN" />. Hierdoor worden je gegevens van dit apparaat verwijderd. Je gegevens blijven echter opgeslagen in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Chromium-scanner gebruiken</translation>
 <translation id="7931842119211730154">Incognitotabbladen vergrendelen als je Chromium sluit</translation>

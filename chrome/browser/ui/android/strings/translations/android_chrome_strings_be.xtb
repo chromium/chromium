@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Гісторыя навігацыі</translation>
 <translation id="1231733316453485619">Уключыць сінхранізацыю?</translation>
 <translation id="123724288017357924">Перазагрузіць бягучую старонку, ігнаруючы змесціва кэша</translation>
+<translation id="1240288207750131269">Ідзе загрузка пакета для наступнай мовы: <ph name="LANG" /></translation>
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не ўдалося абагуліць змесціва наступнага тыпу: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Кіруйце сайтамі, на якія вы падпісаліся</translation>
 <translation id="1283039547216852943">Дакраніцеся, каб разгарнуць</translation>
 <translation id="1285310382777185058">Змяніць мову</translation>
 <translation id="1291207594882862231">Ачысціць гісторыю, файлы cookie, даныя сайта, кэш…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Версія праграмы</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1450753235335490080">Не ўдалося абагуліць наступнае змесціва: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Выберыце мову Chrome</translation>
 <translation id="147113415845704694">Паспрабуйце спытаць “What’s the weather today?” ("Якое сёння надвор'е?")</translation>
 <translation id="1477626028522505441">Збой спампоўкі файла "<ph name="FILE_NAME" />" з-за праблем на серверы.</translation>
 <translation id="1492417797159476138">Вы ўжо захавалі гэта імя карыстальніка для гэтага сайта</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">Праверка падключэння да інтэрнэту</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2369533728426058518">адкрыць укладкі</translation>
+<translation id="2386938421315164605">Хавайце і рабіце бачнымі тэмы</translation>
 <translation id="2387895666653383613">Маштаб тэксту</translation>
 <translation id="2394602618534698961">Спампаваныя вамі файлы з'явяцца тут</translation>
 <translation id="2407481962792080328">Гэта функцыя будзе ўключацца пры ўваходзе ва Уліковы запіс Google</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">Праглядайце захаваныя паролі і кіруйце імі праз <ph name="BEGIN_LINK" />Уліковы запіс Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Каб перанесці закладкі на ўсе прылады, увайдзіце ва ўліковы запіс і ўключыце сінхранізацыю</translation>
 <translation id="2827278682606527653">Меню карткі стужкі адкрыта на палову вышыні</translation>
+<translation id="2839327205551510876">Вы адпісаліся ад сайта "<ph name="SITE_NAME" />"</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Праверка праводзілася дзень таму}one{Праверка праводзілася # дзень таму}few{Праверка праводзілася # дні таму}many{Праверка праводзілася # дзён таму}other{Праверка праводзілася # дня таму}}</translation>
 <translation id="2842985007712546952">Бацькоўская папка</translation>
 <translation id="2856503607207334158">Збой уваходу ў сістэму</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Платформа апавяшчэнняў Google</translation>
 <translation id="2923908459366352541">Няправільная назва.</translation>
 <translation id="2932150158123903946">Сховішча Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Мова ўводу з клавіятуры не зменіцца</translation>
 <translation id="2942036813789421260">Укладка перадпрагляду закрыта</translation>
 <translation id="2956410042958133412">Гэтым уліковым запісам кіруюць бацькі <ph name="PARENT_NAME_1" /> і <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрачытаная старонка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаная старонка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаныя старонкі}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаных старонак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытанай старонкі}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">Дыялогавае акно для дачы згоды на выкарыстанне Памочніка для галасавога пошуку</translation>
 <translation id="3034163383943672781">Спампоўванне пачнецца <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Даведка<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">У наступны раз вы зможаце перайсці на гэты сайт хутчэй</translation>
 <translation id="305593374596241526">Вызначэнне месцазнаходжання выключана. Уключыце яго ў <ph name="BEGIN_LINK" />наладах Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Сінхранізацыю можна ўключыць у любы момант у наладах</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладак}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладкі}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">Вы змяняеце налады сэрвісаў Google і сінхранізацыі. Каб завяршыць уключэнне сінхранізацыі, націсніце кнопку "Пацвердзіць" унізе экрана. Перайсці ўверх</translation>
 <translation id="3334729583274622784">Змяніць пашырэнне файла?</translation>
 <translation id="3341058695485821946">Глядзіце, колькі трафіка вы сэканомілі</translation>
+<translation id="3341262203274374114">Адпісацца не ўдалося. Нешта пайшло не так.</translation>
 <translation id="3350687908700087792">Закрыць усе ўкладкі інкогніта</translation>
 <translation id="3359667936385849800">Выкарыстоўваць бягучага пастаўшчыка паслуг</translation>
 <translation id="3367813778245106622">Каб пачаць сінхранізацыю, увайдзіце ва ўліковы запіс зноў</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="3988213473815854515">Вызначэнне месцазнаходжання дазволена</translation>
 <translation id="3988466920954086464">Імгненныя вынікі пошуку будуць паказвацца ў гэтай панэлі</translation>
 <translation id="4000212216660919741">Пазасеткавы рэжым</translation>
+<translation id="4016425174436051808">Падпісацца не ўдалося. Нешта пайшло не так.</translation>
+<translation id="4021916380760361450">Кіруйце данымі сваіх Уліковых запісаў Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# гадз}one{# гадз}few{# гадз}many{# гадз}other{# гадз}}</translation>
 <translation id="4045764304651014138">Даныя пра выкарыстанне</translation>
 <translation id="4056223980640387499">Сепія</translation>
@@ -589,6 +599,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5091249083535528968">Пашыраныя даныя пра выкарыстанне</translation>
 <translation id="509429900233858213">Адбылася памылка.</translation>
 <translation id="510275257476243843">Засталася 1 гадзіна</translation>
+<translation id="5118713593561876160">Інтарэсы</translation>
 <translation id="5123685120097942451">Укладка інкогніта</translation>
 <translation id="5127805178023152808">Сінхранізацыя выключана</translation>
 <translation id="5132942445612118989">Сінхранізуйце паролі, гісторыю і іншыя даныя на ўсіх прыладах</translation>
@@ -597,6 +608,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5152843274749979095">Праграм, якія падтрымліваюцца, не ўсталявана</translation>
 <translation id="5161254044473106830">Патрабуецца назва</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Збой 1 спампоўкі.}one{Збой # спампоўкі.}few{Збой # спамповак.}many{Збой # спамповак.}other{Збой # спампоўкі.}}</translation>
+<translation id="5168824020667180049">Вы падпісаліся на сайт "<ph name="SITE_NAME" />"</translation>
 <translation id="5170568018924773124">Паказаць у папцы</translation>
 <translation id="5184329579814168207">Адкрыць у Chrome</translation>
 <translation id="5188992787241350004">Шукайце з дапамогай голасу</translation>
@@ -716,6 +728,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5864419784173784555">Чаканне іншай спампоўкі…</translation>
 <translation id="5865733239029070421">Аўтаматычна адпраўляе ў Google статыстыку выкарыстання і справаздачы аб збоях</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
+<translation id="5880748256563468367">Перайсці да стужкі</translation>
 <translation id="5884076754568147479">Каб дапамагаць вам выконваць задачы, Google будзе збіраць URL-адрасы і змесціва сайтаў, на якіх вы выкарыстоўваеце Памочніка, а таксама інфармацыю, якую вы перадаяце праз яго</translation>
 <translation id="5919204609460789179">Каб запусціць сінхранізацыю, абнавіце <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696">Эканомія: <ph name="AMOUNT" /></translation>
@@ -733,6 +746,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="5979084224081478209">Праверыць паролі</translation>
 <translation id="5982307838673692400">Адкрыць укладку ў рэжыме інкогніта</translation>
 <translation id="6000066717592683814">Пакінуць Google</translation>
+<translation id="6000203700195075278">Падпісацца зноў</translation>
 <translation id="6005538289190791541">Прапанаваны пароль</translation>
 <translation id="6036057147555329831">Дадатковы модуль ICU</translation>
 <translation id="6039379616847168523">Перайсці на наступную ўкладку</translation>
@@ -1011,6 +1025,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7846296061357476882">Сэрвісы Google</translation>
 <translation id="784934925303690534">Прамежак часу</translation>
 <translation id="7851858861565204677">Іншыя прылады</translation>
+<translation id="7853202427316060426">Дзеянні</translation>
 <translation id="7857691613771368249">Пытацца, калі захоўваць файлы</translation>
 <translation id="7859988229622350291">Ніколі не перакладаць з наступных моў:</translation>
 <translation id="7875915731392087153">Стварыць ліст электроннай пошты</translation>
@@ -1093,6 +1108,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
 <translation id="8349013245300336738">Сартаваць па аб'ёме выкарыстанага трафіка</translation>
 <translation id="835847953965672673">Спамповак адноўлена: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8362134094656482681">Кіруйце цікавымі для вас тэмамі</translation>
 <translation id="8364299278605033898">Праглядайце папулярныя вэб-сайты</translation>
 <translation id="8368027906805972958">Прылада невядомая або не падтрымліваецца (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Моўны пакет (<ph name="LANG" />) спампаваны.</translation>

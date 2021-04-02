@@ -517,6 +517,7 @@
 <translation id="1563702743503072935">ඔබේ Google ගිණුමෙන් මුරපද ඔබ පුරා ඇති අතර මෙම උපාංගයේද ලබා ගත හැකි වනු ඇත</translation>
 <translation id="1566049601598938765">වෙබ් අඩවිය</translation>
 <translation id="15662109988763471">තෝරන ලද මුද්‍රණ යන්ත්‍රය ලද නොහැක, නැති නම් නිවැරදිව ස්ථාපන කර නැත. ඔබේ මුද්‍රණ යන්ත්‍රය පරීක්‍ෂා කරන්න නැති නම් වෙනත් මුද්‍රණ යන්ත්‍රයක් තෝරා උත්සාහ කර බලන්න.</translation>
+<translation id="1567135437923613642">විශේෂාංගගත අත්හදා බැලීම් සබල කරන්න</translation>
 <translation id="1567387640189251553">ඔබ ඔබගේ මුරපදය අවසානයට ඇතුළත් කළ අවස්ථාවෙන් පසු වෙනස් යතුරු පුවරුවක් සම්බන්ධ කර ඇත. එය ඔබගේ යතුරු පහර සොරකම් කිරීමට උත්සාහ ගන්නවා විය හැක.</translation>
 <translation id="1567993339577891801">JavaScript කොන්සෝලය</translation>
 <translation id="1568323446248056064">සංදර්ශක උපාංග සැකසීම් විවෘත කරන්න</translation>
@@ -916,6 +917,7 @@
 <translation id="1979095679518582070">මෙම විශේෂාංගය අක්‍රිය කිරීම මෙම උපාංගයේ පද්ධති යාවත්කාලීන කිරීම සහ ආරක්‍ෂාව වැනි අත්‍යවශ්‍ය සේවාවලට තොරතුරු යැවීමේ හැකියාවට බලපෑමක් නොකරයි.</translation>
 <translation id="1979280758666859181">ඔබ නාලිකාවට මාරු වනුයේ <ph name="PRODUCT_NAME" /> හි පැරණි සංස්කරණයක් මගිනි. නාලිකාවේ සංස්කරණය ඔබේ උපාංගයේ සංස්කරණයත් සමඟ ගැළපෙන විට නාලිකා වෙනස්වීම ඉටුවනු ඇත.</translation>
 <translation id="197989455406964291">KDC සංකේතන වර්ගයට සහය නොදක්වයි</translation>
+<translation id="1983497378699148207">Linux පිහිටුවීම අවසන් කිරීමට, Chrome OS යාවත්කාලීන කර නැවත උත්සාහ කරන්න.</translation>
 <translation id="1984417487208496350">ආරක්‍ෂාවක් නැත (නිර්දේශ නොකෙරේ)</translation>
 <translation id="1987317783729300807">ගිණුම්</translation>
 <translation id="1989112275319619282">බ්‍රවුස් කරන්න</translation>
@@ -1328,6 +1330,7 @@
 <translation id="2450223707519584812">Google API යතුරු අස්ථානගතව ඇති නිසා ඔබට පරිශීලකයන් එක් කළ නොහැකි වනු ඇත. විස්තර සඳහා <ph name="DETAILS_URL" /> බලන්න.</translation>
 <translation id="2450849356604136918">ක්‍රියාකාරී බැලීම් නැත</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">අඩවි සාමාන්‍යයෙන් ඔබගේ ජාලය සැකසීම වැනි, දත්ත මාරු විශේෂාංග සඳහා අනුක්‍රමික තොටවල්වලට සම්බන්ධ වේ</translation>
 <translation id="2453860139492968684">අවසන් කරන්න</translation>
 <translation id="2454247629720664989">මූලපදය</translation>
 <translation id="2454264884354864965">කැමරාව ක්‍රියාවිරහිතයි</translation>
@@ -1958,6 +1961,7 @@
 <translation id="313205617302240621">මුරපදය අමතක ද?</translation>
 <translation id="3132277757485842847">ඔබගේ දුරකථනය සමඟ සම්බන්ධතාවක් පවත්වා ගැනීමට අපට නොහැකි විය. ඔබගේ දුරකථනය අවට, අගුලු හැර, බ්ලූටූත් සහ Wi-Fi ක්‍රියාත්මකව තිබෙන බව සහතික කර ගන්න.</translation>
 <translation id="3132996321662585180">දිනපතා නැවුම් කරන්න</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> අත්හදා බැලීම සඳහා අත්හදා බැලීමේ තත්ත්වය තෝරන්න. අත්හදා බැලීමේ විස්තරය: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">අවලංගු PIN එකකි. ඔබට උත්සාහයන් <ph name="RETRIES" />ක් ඉතිරිව ඇත.</translation>
 <translation id="313963229645891001">බාගනිමින්, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">පෙරනිමි කහ නියුරුව</translation>
@@ -2843,6 +2847,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4099874310852108874">ජාල දෝෂය සිදු විය.</translation>
 <translation id="4100733287846229632">උපාංගයේ ඉඩ බරපතළ ලෙස අඩුය</translation>
 <translation id="4100853287411968461">නව තිර කාල සීමාව</translation>
+<translation id="4101352914005291489">සැඟවුණ SSID</translation>
 <translation id="4102906002417106771">powerwash යළි අරඹන්න</translation>
 <translation id="4104163789986725820">අපනයන (&amp;x)...</translation>
 <translation id="4107048419833779140">ආචයන උපාංග හඳුනා ගෙන බැහැර කරන්න</translation>
@@ -3912,6 +3917,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5382591305415226340">සහාය දක්වන සබැඳි කළමනාකරණය කරන්න</translation>
 <translation id="5383377866517186886">Mac පද්ධති මනාප තුළ කැමරාව අක්‍රිය කෙරේ</translation>
 <translation id="5383740867328871413">නම් නොකළ සමූහය - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">ව්‍යවසාය ප්‍රතිපත්තිය වෙනස් විය. මෙවලම් තීරුවට අත්හදා බැලීම් බොත්තම එක් කරන ලදි. අත්හදා බැලීම් සබල කිරීම සඳහා සංවාදයක් විවෘත කිරීමට බොත්තම ක්ලික් කරන්න.</translation>
 <translation id="5388885445722491159">යුගලිතයි</translation>
 <translation id="5390100381392048184">අඩවිවලට ශබ්දය වාදනය කිරීමට ඉඩ දෙන්න</translation>
 <translation id="5390112241331447203">ප්‍රතිපෝෂණ වාර්තාවල යවන system_logs.txt ගොනුව ඇතුළත් කරන්න</translation>
@@ -5035,6 +5041,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6659594942844771486">ටැබ</translation>
 <translation id="6660413144148052430">ස්ථානය</translation>
 <translation id="666099631117081440">මුද්‍රණ සේවාදායක</translation>
+<translation id="6662931079349804328">ව්‍යවසාය ප්‍රතිපත්තිය වෙනස් විය. අත්හදා බැලීම් බොත්තම මෙවලම් තීරුවෙන් ඉවත් කර ඇත.</translation>
 <translation id="6663190258859265334">ඔබේ <ph name="DEVICE_TYPE" /> Powerwash කර පෙර සංස්කරණයට ආපසු යන්න.</translation>
 <translation id="6664237456442406323">අවාසනාවකට මෙන්, ඔබේ පරිගණකය විකෘති වූ දෘඪාංග ID එකකින් වින්‍යාසගත කර තිබේ. මෙමගින් Chrome OS fනවතම ආරක්ෂණ විසඳුම් මගින් යාවත්කාල වීම වැළකෙන අතර ඔබේ පරිගණකය <ph name="BEGIN_BOLD" />හානිකර ප්‍රහාරවලට ලක් වීමට ඉඩ තිබේ<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">ඔබේ පැතිකඩ විවෘත කරන විට යම් දෙයක් වැරදිණි. වරනය වී නැවත පුරන්න.</translation>
@@ -5391,6 +5398,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7056526158851679338">&amp;උපාංග පරීක්ෂා කරන්න</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{ආරක්‍ෂක පරීක්‍ෂාව 1 විනාඩියකට පෙර ධාවන විය}one{ආරක්‍ෂක පරීක්‍ෂාව විනාඩි {NUM_MINS} කට පෙර ධාවන විය}other{ආරක්‍ෂක පරීක්‍ෂාව විනාඩි {NUM_MINS} කට පෙර ධාවන විය}}</translation>
 <translation id="7057767408836081338">යෙදුම් දත්ත ලබා ගැනීම අසාර්ථක විය, කෙසේ වෙතත් යෙදුම ධාවන කිරීමට උත්සාහ කෙරේ...</translation>
+<translation id="7058024590501568315">සැඟවුණු ජාලය</translation>
 <translation id="7059858479264779982">ස්වයං-දියත්කිරීමට සකසන්න</translation>
 <translation id="7059893117020417984">රහසිගතව බ්‍රවුස් කිරීම සඳහා, අප්‍රසිද්ධ කවුළුවක් විවෘත කිරීම සඳහා තිත් නිරූපක මෙනුව ක්ලික් කරන්න</translation>
 <translation id="7062222374113411376">මෑතකදී වසා දැමූ අඩවි වලට දත්ත යැවීම සහ ලැබීම අවසන් කිරීමට ඉඩ ලබා දෙන්න (නිර්දේශිතයි)</translation>
@@ -5754,6 +5762,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7477793887173910789">ඔබේ සංගීත, වීඩියෝ, සහ තවත් ඒවා පාලන කරන්න</translation>
 <translation id="7478485216301680444">කියෝස්ක් යෙදුම් ස්ථාපනය කළ නොහැක.</translation>
 <translation id="7478623944308207463">ඔබගේ යෙදුම් සහ සැකසීම් ඔබ ඔබගේ Google ගිණුම මඟින් පුරා ඇති සියලුම Chrome OS උපාංග හරහා සමමුහූර්ත වනු ඇත. බ්‍රවුසර සමමුහූර්ත විකල්ප සඳහා, <ph name="LINK_BEGIN" />Chrome සැකසීම්<ph name="LINK_END" /> වෙත යන්න.</translation>
+<translation id="7478658909253570368">අනුක්‍රමික තොටවල්වලට සම්බන්ධ වීමට අඩවිවලට ඉඩ නොදෙන්න</translation>
 <translation id="7479221278376295180">ආචයන භාවිත දළ විශ්ලේෂණය</translation>
 <translation id="7481312909269577407">ඉදිරියට යන්න</translation>
 <translation id="7481358317100446445">සූදානම්</translation>
@@ -5905,11 +5914,13 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="765293928828334535">යෙදුම්, දිගු හා පරිශීලක ස්ක්‍රිප්ට මෙම අඩවියෙන් එක් කළ නොහැක</translation>
 <translation id="7652954539215530680">රහස් අංකයක් සාදන්න</translation>
 <translation id="7654941827281939388">මෙම ගිණුම මෙම පරිගණකයේ දැනටමත් භාවිතා වෙමින් පවතී.</translation>
+<translation id="7655411746932645568">අඩවි අනුක්‍රමික තොටවල් වෙත සම්බන්ධ වීමට ඉල්ලිය හැකිය</translation>
 <translation id="7658239707568436148">අවලංගු කරන්න</translation>
 <translation id="7659297516559011665">මෙම උපාංගයේ මුරපද පමණයි</translation>
 <translation id="7659584679870740384">ඔබට මෙම උපාංගය භාවිතා කිරීමට අවසර නැත. කරුණාකර පුරනය වීමේ අවසර සඳහා පරිපාලක අමතන්න.</translation>
 <translation id="7661259717474717992">කුකී දත්ත සුරැකීමට සහ කියවීමට අඩවිවලට ඉඩ දෙන්න</translation>
 <translation id="7661451191293163002">ලියාපදිංචි කිරීමේ සහතිකයක් ලබා ගත නොහැකි විය.</translation>
+<translation id="7661762353058813968">යාවත්කාලීන කිරීම් කළමනාකරණය කරනු ලබන්නේ ඔබගේ පරිපාලක විසිනි.</translation>
 <translation id="7662283695561029522">වින්‍යාස කිරීමට තට්ටු කරන්න</translation>
 <translation id="7663719505383602579">ලබන්නා: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">සහාය නොදක්වන බ්ලූටූත් උපාංගය: "<ph name="DEVICE_NAME" />".</translation>
@@ -6689,6 +6700,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8539727552378197395">(HttpOnly) නැත</translation>
 <translation id="8539766201049804895">උත්ශ්‍රේණි කරන්න</translation>
 <translation id="8540136935098276800">නිවැරදිව ආකෘති කළ URL එකක් ඇතුළත් කරන්න</translation>
+<translation id="8540503336857689453">ආරක්ෂක හේතු මත සැඟවුණු ජාලයක් භාවිත කිරීම නිර්දේශ නොකෙරේ.</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
 <translation id="854071720451629801">කියවූ ලෙස ලකුණු කරන්න</translation>
 <translation id="8541462173655894684">මුද්‍රණ සේවාදායකයෙන් කිසිම මුද්‍රකයක් සොයා ගත්තේ නැත</translation>

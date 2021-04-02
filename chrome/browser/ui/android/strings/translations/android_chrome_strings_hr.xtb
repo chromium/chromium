@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Povijest navigacije</translation>
 <translation id="1231733316453485619">Želite li uključiti sinkronizaciju?</translation>
 <translation id="123724288017357924">Ponovno učitavanje trenutačne stranice uz zanemarivanje sadržaja iz predmemorije</translation>
+<translation id="1240288207750131269">Učitava se <ph name="LANG" /></translation>
 <translation id="124678866338384709">Zatvaranje trenutačne kartice</translation>
 <translation id="1258753120186372309">Googleov doodle logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nije moguće podijeliti <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Upravljanje web-lokacijama koje pratite</translation>
 <translation id="1283039547216852943">Dodirnite za proširivanje</translation>
 <translation id="1285310382777185058">Promjena jezika</translation>
 <translation id="1291207594882862231">Brisanje povijesti, kolačića, podataka web-lokacija, predmemorije...</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Verzija aplikacije</translation>
 <translation id="1430915738399379752">Ispis</translation>
 <translation id="1450753235335490080">Nije moguće dijeliti <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Odaberite jezik Chromea</translation>
 <translation id="147113415845704694">Pokušajte pitati "What’s the weather today?" (Kakvo će biti vrijeme danas?)</translation>
 <translation id="1477626028522505441">Preuzimanje datoteke <ph name="FILE_NAME" /> nije uspjelo zbog poteškoća s poslužiteljem.</translation>
 <translation id="1492417797159476138">Već ste spremili ovo korisničko ime za ovu web-lokaciju</translation>
@@ -205,6 +208,7 @@ Dodirnite bilo koju riječ da biste pokrenuli pretraživanje. Ako želite preciz
 <translation id="2353636109065292463">Provjera vaše internetske veze</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2369533728426058518">otvorene kartice</translation>
+<translation id="2386938421315164605">Sakrivanje i otkrivanje tema</translation>
 <translation id="2387895666653383613">Skaliranje teksta</translation>
 <translation id="2394602618534698961">Datoteke koje preuzmete prikazat će se ovdje</translation>
 <translation id="2407481962792080328">Kad se prijavite na svoj Google račun, ta je značajka uključena</translation>
@@ -265,6 +269,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="281504910091592009">Spremljene zaporke možete pregledati i upravljati njima na svojem <ph name="BEGIN_LINK" />Google računu<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Da bi se vaše oznake prikazale na svim vašim uređajima, prijavite se i uključite sinkronizaciju</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2839327205551510876">Prestali ste pratiti <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Provjera je izvršena jučer}one{Provjera je izvršena prije # dana}few{Provjera je izvršena prije # dana}other{Provjera je izvršena prije # dana}}</translation>
 <translation id="2842985007712546952">Nadređena mapa</translation>
 <translation id="2856503607207334158">Prijava nije uspjela</translation>
@@ -281,6 +286,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2909615210195135082">Googleova platforma za obavijesti</translation>
 <translation id="2923908459366352541">Naziv nije važeći</translation>
 <translation id="2932150158123903946">Pohrana aplikacije Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Tipkovnica se neće promijeniti</translation>
 <translation id="2942036813789421260">Kartica pregleda je zatvorena</translation>
 <translation id="2956410042958133412">Računom upravljaju <ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> nepročitana stranica}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitana stranica}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitane stranice}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> nepročitanih stranica}}</translation>
@@ -297,6 +303,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3031225630520268969">Korisničko sučelje pristanka za glasovno pretraživanje pomoću Asistenta</translation>
 <translation id="3034163383943672781">Preuzimanje će započeti <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Potražite pomoć<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Sljedeći put brže otvorite ovu web-lokaciju</translation>
 <translation id="305593374596241526">Lokacija je isključena. Uključite je u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Sinkronizaciju možete uključiti u bilo kojem trenutku u postavkama</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> oznaka}one{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}few{<ph name="BOOKMARKS_COUNT_MANY" /> oznake}other{<ph name="BOOKMARKS_COUNT_MANY" /> oznaka}}</translation>
@@ -340,6 +347,7 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="3315103659806849044">Trenutačno prilagođavate postavke sinkronizacije i Googleovih usluga. Da biste dovršili uključivanje sinkronizacije, dodirnite gumb Potvrdi pri dnu zaslona. Natrag</translation>
 <translation id="3334729583274622784">Promijeniti datotečni nastavak?</translation>
 <translation id="3341058695485821946">Pogledajte količinu ušteđenih podataka</translation>
+<translation id="3341262203274374114">Prestanak praćenja nije uspio. Došlo je do pogreške.</translation>
 <translation id="3350687908700087792">Zatvori sve anonimne kartice</translation>
 <translation id="3359667936385849800">Koristi trenutačnog davatelja usluga</translation>
 <translation id="3367813778245106622">Prijavite se ponovo da biste pokrenuli sinkronizaciju</translation>
@@ -433,6 +441,8 @@ Privacy Sandbox još uvijek je u aktivnoj fazi razvoja te je dostupan u određen
 <translation id="3988213473815854515">Lokacija je dopuštena</translation>
 <translation id="3988466920954086464">Na ovoj ploči pogledajte instant rezultate pretraživanja</translation>
 <translation id="4000212216660919741">Početna stranica offline</translation>
+<translation id="4016425174436051808">Praćenje nije uspjelo. Došlo je do pogreške.</translation>
+<translation id="4021916380760361450">Upravljajte podacima svojih Google računa</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}few{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Podaci o upotrebi</translation>
 <translation id="4056223980640387499">Sepija</translation>
@@ -597,6 +607,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5152843274749979095">Nije instalirana nijedna podržana aplikacija</translation>
 <translation id="5161254044473106830">Naslov je obavezan</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 preuzimanje nije uspjelo.}one{# preuzimanje nije uspjelo.}few{# preuzimanja nisu uspjela.}other{# preuzimanja nije uspjelo.}}</translation>
+<translation id="5168824020667180049">Pratite <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Pokaži u mapi</translation>
 <translation id="5184329579814168207">Otvori u Chromeu</translation>
 <translation id="5188992787241350004">Pretražujte upotrebom glasa</translation>
@@ -716,6 +727,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5864419784173784555">Čekanje na još jedno preuzimanje…</translation>
 <translation id="5865733239029070421">Automatski šalje Googleu statistiku upotrebe i izvješća o rušenju</translation>
 <translation id="5869522115854928033">Spremljene zaporke</translation>
+<translation id="5880748256563468367">Otvori feed</translation>
 <translation id="5884076754568147479">Da bi vam pomogao sa zadacima, Google će primati URL-ove i sadržaje web-lokacija na kojima upotrebljavate Asistenta, kao i informacije koje šaljete putem Asistenta</translation>
 <translation id="5919204609460789179">Ažurirajte <ph name="PRODUCT_NAME" /> za pokretanje sinkronizacije</translation>
 <translation id="5937580074298050696">Spremljeno <ph name="AMOUNT" /></translation>
@@ -733,6 +745,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="5979084224081478209">Provjeri zaporke</translation>
 <translation id="5982307838673692400">Otvaranje anonimne kartice</translation>
 <translation id="6000066717592683814">Zadrži Google</translation>
+<translation id="6000203700195075278">Pratite ponovo</translation>
 <translation id="6005538289190791541">Predložena zaporka</translation>
 <translation id="6036057147555329831">Dodatni ICU</translation>
 <translation id="6039379616847168523">Preskakanje na sljedeću karticu</translation>
@@ -1094,6 +1107,7 @@ Podaci iz vaših anonimnih sesija izbrisat će se iz Chromea tek kad <ph name="B
 <translation id="834313815369870491">Nikad ne prevodi web-lokacije</translation>
 <translation id="8349013245300336738">Poredaj po količini potrošenih podataka</translation>
 <translation id="835847953965672673">Vraćen je sljedeći broj preuzimanja: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8362134094656482681">Upravljajte temama koje vas zanimaju</translation>
 <translation id="8364299278605033898">Pogledajte popularne web-lokacije</translation>
 <translation id="8368027906805972958">Nepoznati ili nepodržani uređaj (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> je spreman.</translation>

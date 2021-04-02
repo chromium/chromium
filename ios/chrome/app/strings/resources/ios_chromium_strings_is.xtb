@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Í Chromium eru eiginleikar sem aðstoða þig við að hafa umsjón með gögnum á netinu og hversu fljótlega þú hleður vefsíðum niður.
 <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium gat ekki leitað að uppfærslum. Athugaðu nettenginguna þína.</translation>
+<translation id="2054703085270098503">Öryggi með Chromium</translation>
 <translation id="2075400798887076382">Hér hefurðu aðgang að flipunum sem eru opnir í tölvunni þinni. Opnaðu einfaldlega Chromium í tölvunni, farðu í valmyndina og veldu „Skrá inn í Chromium…“</translation>
 <translation id="2168108852149185974">Einhverjar viðbætur valda því að Chromium hrynur. Fjarlægðu:</translation>
 <translation id="2178608107313874732">Chromium getur ekki notað myndavélina sem stendur</translation>
 <translation id="2195025571279539885">Viltu að Chromium bjóðist næst til að þýða síður á <ph name="LANGUAGE_NAME" /> á þessu vefsvæði?</translation>
 <translation id="2590893390871230428">Samstilla gögnin þín í Chromium</translation>
 <translation id="2650312721222849884">Kveiktu á samstillingu til að sjá flipana þína hvar sem þú notar Chromium</translation>
+<translation id="2684230048001240293">Notaðu Chromium sem sjálfgefinn kost til að samstilla flipa, aðgangsorð og greiðsluupplýsingar í öllum tækjunum þínum</translation>
 <translation id="2730884209570016437">Chromium getur ekki notað myndavélina því að annað forrit er að nota hana</translation>
 <translation id="2915596697727466327">Chromium notar andlitskennsl til að tryggja heimilaðan aðgang að aðgangsorðum þínum.</translation>
 <translation id="2918709798697875261">Fyrirtækið þitt krefst þess að þú skráir þig ekki inn í Chromium.</translation>
+<translation id="2942241131342758843">Notaðu Chromium sem sjálfgefinn valkost til að opna tengla, leita í græjum og til sjálfvirkrar útfyllingar aðgangsorða í öðrum forritum</translation>
 <translation id="2977470724722393594">Chromium er uppfært</translation>
 <translation id="3256316712990552818">Afritað í Chromium</translation>
 <translation id="3344973607274501920">Chromium gat ekki athugað aðgangsorðin þín. Athugaðu nettenginguna þína.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Þegar þessi eiginleiki er virkur mun Chromium bjóðast til að þýða vefsíður sem eru ritaðar á öðru tungumáli með Google Translate. <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Núna geturðu notað Chromium hvenær sem þú ýtir á tengil í skilaboðum, skjölum og öðrum forritum.</translation>
 <translation id="4681781466797808448">Kveiktu á Chromium skanna</translation>
+<translation id="4736424910885271643">Reikningurinn þinn er í umsjón <ph name="HOSTED_DOMAIN" /> og því verður Chromium gögnunum þínum eytt úr þessu tæki</translation>
 <translation id="4787850887676698916">Flipar sem þú hefur opnað í Chromium í öðrum tækjum birtast hér.</translation>
 <translation id="4828317641996116749">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur síðar.</translation>
 <translation id="4985291216379576555">Ótengt, Chromium getur ekki leitað að uppfærslum.</translation>
@@ -55,6 +59,7 @@
 2. Ýttu á „Sjálfgefið vafraforrit“
 3. Veldu Chromium.</translation>
 <translation id="6268381023930128611">Skrá út af Chromium?</translation>
+<translation id="6337530241089703714">Veldu hvort þú vilt hreinsa gögn Chromium úr þessu tæki eða geyma þau</translation>
 <translation id="6424492062988593837">Chromium er nú enn betra! Ný útgáfa er í boði.</translation>
 <translation id="6820823224820483452">Chromium gat ekki athugað öll aðgangsorð. Reyndu aftur á morgun.</translation>
 <translation id="6827294685447036764">Ef þú leyfir Chromium að vita staðsetningu þína sendir Chromium hana til þeirra vefsvæða sem þú leyfir. Vefsvæði kunna að biðja um staðsetningu þína þegar þau búa yfir staðbundum upplýsingum til að birta þér, t.d. um nálægar verslanir eða fréttir.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Aðgangsorðið þitt var afhjúpað vegna öryggisbrots. Chromium mælir með því að þú breytir aðgangsorðinu núna.</translation>
 <translation id="7674213385180944843">Opnaðu Stillingar &gt; Persónuvernd &gt; Myndavél &gt; Chromium og kveiktu á myndavélinni.</translation>
 <translation id="7746854981345936341">Ábending um Chromium. Sumir hnappar, eins og Til baka, Áfram og Leita, eru nú neðst á skjánum.</translation>
+<translation id="7763454117143368771">Notaðu Chromium sem sjálfgefinn vafra til að njóta verndar gegn hættulegum vefsvæðum og tryggja öryggi aðgangsorðanna þinna</translation>
 <translation id="786327964234957808">Þú ert að skipta um samstillingarreikning úr <ph name="USER_EMAIL1" /> yfir í <ph name="USER_EMAIL2" />. Chromium gögnin þín sem eru þegar til staðar eru í umsjón <ph name="DOMAIN" />. Þetta mun eyða gögnum af þessu tæki, en þau verða enn til staðar á <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Byrjaðu að nota Chromium skanna</translation>
 <translation id="7931842119211730154">Læsa huliðsflipum um leið og þú lokar Chromium</translation>

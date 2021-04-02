@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />, <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">게스트 세션에서는 Google 어시스턴트를 사용할 수 없습니다.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> 삭제 대화상자 열기</translation>
+<translation id="6154006699632741460">지원되지 않는 주변기기</translation>
 <translation id="615957422585914272">터치 키보드 표시</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
 <translation id="6179832488876878285">여기에 중요한 파일을 고정할 수 있습니다. 시작하려면 파일 앱을 여세요.</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">블루투스 사용 중</translation>
 <translation id="6381109794406942707">기기의 잠금을 해제하려면 PIN을 입력하세요.</translation>
 <translation id="639644700271529076">CAPS LOCK이 꺼져 있음</translation>
-<translation id="6396835948284782440">나가려면 [Esc]를 길게 누르세요.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">알림 모두 지우기</translation>

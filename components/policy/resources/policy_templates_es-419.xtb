@@ -437,6 +437,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Se quitará esta política en Chrome 93.
 
       Consulta https://www.chromestatus.com/feature/4664843055398912.</translation>
+<translation id="1587585749332985896">No permitir el uso del modo sin interfaz gráfica</translation>
 <translation id="1588240398285670601">Configuración del navegador</translation>
 <translation id="1593245608325508847">Si estableces la política, se activará la función de acceso restringido de Chrome en G Suite, y los usuarios no podrán cambiar esta configuración. Los usuarios solo podrán acceder a las herramientas de Google mediante cuentas de dominios específicos (para permitir cuentas de gmail o googlemail, debes agregar consumer_accounts a la lista de dominios). Esta configuración no permite que los usuarios accedan ni agreguen una cuenta secundaria en un dispositivo administrado que requiera autenticación de Google, en caso de que esa cuenta no pertenezca a uno de los dominios permitidos de forma explícita.
 
@@ -879,6 +880,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2175353308236295184">Objeto de configuración JSON específico de la app con un conjunto de pares clave-valor, p. ej., '"managedConfiguration": { "key1": value1, "key2": value2 }'. Las claves se definen en el manifiesto de la app.</translation>
 <translation id="2176115444876446233">Impide que los usuarios registren el rendimiento de todo el sistema</translation>
 <translation id="2178899310296064282">Aplicar al menos el modo restringido moderado en YouTube</translation>
+<translation id="2180958780733364832">Controlar el uso del modo sin interfaz gráfica</translation>
 <translation id="2182291258410176649">El usuario decide si habilita la copia de seguridad y el restablecimiento</translation>
 <translation id="219297066914002620">Indica a <ph name="PRODUCT_OS_NAME" /> que habilite o inhabilite las herramientas de la consola de administración de máquinas virtuales.
 
@@ -4014,6 +4016,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="647698599569353771">Permite habilitar Compartir con Nearby.</translation>
 <translation id="6478258366184919502">Orígenes de la pantalla de acceso</translation>
 <translation id="6478261301433199402">Si estableces la política, se especificará la imagen de <ph name="PLUGIN_VM_NAME" /> para un usuario. Especifica esta política como una cadena de formato JSON que incluye <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> (establece dónde se descarga la imagen) y <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> (como un hash SHA-256 para verificar la integridad de la descarga).</translation>
+<translation id="6481245670325946423">Permitir el uso del modo sin interfaz gráfica</translation>
 <translation id="6489084406497912050">Determina si los usuarios pueden agregar cuentas de Kerberos.
 
           Si inhabilitas esta política o no la estableces, los usuarios podrán agregar cuentas de Kerberos mediante la configuración de las cuentas de Kerberos en la página de configuración de Kerberos. Los usuarios tendrán control total de las cuentas que agregan y podrán modificarlas o quitarlas.
@@ -5402,6 +5405,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
           Si la acción es la suspensión, se podrá configurar <ph name="PRODUCT_OS_NAME" /> por separado para que la pantalla se bloquee o no antes de la suspensión.</translation>
 <translation id="8214600119442850823">Configura el administrador de contraseñas.</translation>
+<translation id="8217664958939773083">Si estableces esta política como <ph name="ENABLED" /> o no la estableces, se podrá usar el modo sin interfaz gráfica. Si estableces esta política como <ph name="DISABLED" />, no se podrá usar el modo sin interfaz gráfica.</translation>
 <translation id="8220023426952118761">Tasa de descarga deseada en kbit/s.</translation>
 <translation id="8220156281401380422">Configura la lista de mensajería nativa permitida</translation>
 <translation id="8238421250255592181">Función experimental booleana que indica si el teclado en pantalla puede proporcionar la función de autocompletar.</translation>

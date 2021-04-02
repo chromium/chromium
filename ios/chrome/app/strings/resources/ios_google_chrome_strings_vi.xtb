@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Giúp cải thiện hiệu suất và các tính năng của Chrome</translation>
 <translation id="1314663809820920746">Bạn vẫn có thể xem tất cả dấu trang, danh sách trang web đã truy cập, mật khẩu và các chế độ cài đặt khác trên thiết bị này. Nếu bạn thực hiện thay đổi, các thay đổi đó sẽ không đồng bộ hóa với Tài khoản Google của bạn.</translation>
 <translation id="1479202195792305274">Chrome có thể kiểm tra mật khẩu khi bạn đăng nhập bằng Tài khoản Google của mình.</translation>
+<translation id="1493827051843127077">Hãy đặt Chrome làm trình duyệt mặc định để đồng bộ hóa các thẻ, mật khẩu và thông tin thanh toán trên mọi thiết bị của bạn</translation>
 <translation id="1504372625950710826">Chrome không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử kiểm tra kết nối Internet.</translation>
 <translation id="1682483655351012182">Đồng bộ hóa dữ liệu của bạn trên Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome chia sẻ thông tin vị trí của bạn với những trang web mà bạn cho phép.</translation>
 <translation id="2347208864470321755">Khi tính năng này được bật, Chrome sẽ đề xuất sử dụng Google Dịch để dịch các trang viết bằng ngôn ngữ khác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Đặt Chrome làm trình duyệt mặc định</translation>
+<translation id="2561231791489583059">Hãy đặt Chrome làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
 <translation id="2574249610672786438">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy đăng nhập trên tất cả thiết bị.</translation>
 <translation id="2576431527583832481">Chrome được cải tiến hơn! Đã có phiên bản mới.</translation>
 <translation id="257708665678654955">Bạn có muốn Google Chrome đề xuất dịch các trang <ph name="LANGUAGE_NAME" /> của trang web này vào lần tiếp theo không?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome không thể kiểm tra mật khẩu của bạn</translation>
 <translation id="7265369419224458312">Truy cập các thẻ bạn đã mở trên máy tính của mình, ngay tại đây. Bạn chỉ cần mở Chrome trên máy tính của mình, chuyển tới menu và chọn "Đăng nhập vào Chrome…”</translation>
 <translation id="7272930098487145294">Để lưu hình ảnh, hãy nhấn vào Cài đặt để cho phép Chrome thêm vào ảnh của bạn</translation>
+<translation id="7275945473750112644">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý nên dữ liệu của bạn trên Chrome sẽ bị xóa khỏi thiết bị này</translation>
 <translation id="7400722733683201933">Giới thiệu về Google Chrome</translation>
 <translation id="7501046334262221972">Để đặt Chrome làm trình duyệt mặc định, hãy mở phần Cài đặt. Nhấn vào Ứng dụng trình duyệt mặc định rồi chọn Chrome.</translation>
 <translation id="756809126120519699">Đã xóa dữ liệu Chrome</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Chrome khuyên bạn nên đổi ngay mật khẩu.</translation>
 <translation id="7698568245838009292">Chrome muốn truy cập vào máy ảnh</translation>
 <translation id="7855730255114109580">Google Chrome đã được cập nhật</translation>
+<translation id="8022947259858476807">Hãy dùng Chrome theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
 <translation id="8160472928944011082">Chrome không thể cập nhật</translation>
+<translation id="8357607116237445042">Chọn xem bạn muốn xóa dữ liệu của mình trên Chrome khỏi thiết bị này hay giữ lại dữ liệu đó</translation>
 <translation id="8370517070665726704">Bản quyền <ph name="YEAR" /> Google LLC. Mọi quyền được bảo lưu.</translation>
 <translation id="840168496893712993">Một số tiện ích bổ sung khiến Chrome trục trặc. Hãy thử gỡ cài đặt chúng.</translation>
 <translation id="8459495907675268833">Dữ liệu được chọn đã bị xóa khỏi Chrome và các thiết bị được đồng bộ hóa. Tài khoản Google của bạn có thể có các dạng lịch sử duyệt web khác, chẳng hạn như tìm kiếm và hoạt động từ các dịch vụ khác của Google tại history.google.com.</translation>
@@ -88,4 +93,5 @@
   2. Nhấn vào Ứng dụng trình duyệt mặc định
   3. Chọn Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Luôn an toàn khi dùng Google Chrome</translation>
 </translationbundle>

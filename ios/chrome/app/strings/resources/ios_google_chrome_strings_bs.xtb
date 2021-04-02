@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
 <translation id="1314663809820920746">I dalje ćete moći pregledati sve oznake, historiju, lozinke i druge postavke na ovom uređaju. Ako nešto promijenite, te promjene se neće sinhronizirati s vašim Google računom.</translation>
 <translation id="1479202195792305274">Chrome može provjeravati vaše lozinke kada se prijavite pomoću Google računa.</translation>
+<translation id="1493827051843127077">Postavite Chrome kao zadani preglednik da sinhronizirate kartice, lozinke i informacije o plaćanju na svim uređajima</translation>
 <translation id="1504372625950710826">Chrome nije mogao provjeriti ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="1682483655351012182">Sinhroniziraj Chrome podatke</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome dijeli vašu lokaciju s web lokacijama koje vi odobrite.</translation>
 <translation id="2347208864470321755">Kada je ova funkcija uključena, Chrome će za stranice koje su napisane na drugim jezicima ponuditi prijevod pomoću Google Prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Postavite Chrome kao zadani preglednik</translation>
+<translation id="2561231791489583059">Koristite Chrome kao zadani preglednik da se zaštitite od opasnih web lokacija i da zaštitite lozinke</translation>
 <translation id="2574249610672786438">Da vidite kartice s bilo kojeg uređaja na kojem koristite Chrome, prijavite se na svim uređajima</translation>
 <translation id="2576431527583832481">Chrome je postao još bolji! Dostupna je nova verzija.</translation>
 <translation id="257708665678654955">Želite li da Google Chrome sljedeći put ponudi da se stranice s ove web lokacije prevedu na <ph name="LANGUAGE_NAME" /> jezik?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome ne može provjeriti vaše lozinke</translation>
 <translation id="7265369419224458312">Ovdje pristupite karticama koje ste otvorili na računaru. Samo otvorite Chrome na računaru, idite u Meni i odaberite "Prijava na Chrome…”</translation>
 <translation id="7272930098487145294">Da sačuvate slike, dodirnite Postavke da omogućite Chromeu dodavanje u vaše fotografije</translation>
+<translation id="7275945473750112644">Računom upravlja <ph name="HOSTED_DOMAIN" />, stoga će se vaši podaci Chromea obrisati s ovog uređaja</translation>
 <translation id="7400722733683201933">O Google Chromeu</translation>
 <translation id="7501046334262221972">Da postavite Chrome kao zadani preglednik, otvorite Postavke. Dodirnite Zadana aplikacija preglednika, a zatim odaberite Chrome.</translation>
 <translation id="756809126120519699">Chromeovi podaci su obrisani</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Vaša lozinka je bila izložena prilikom narušavanja podataka. Chrome preporučuje da odmah promijenite lozinku.</translation>
 <translation id="7698568245838009292">Chrome želi pristup kameri</translation>
 <translation id="7855730255114109580">Google Chrome je ažuriran</translation>
+<translation id="8022947259858476807">Koristite Chrome prema zadanim postavkama da otvarate linkove, pretražujete iz vidžeta i automatski popunjavate lozinke u drugim aplikacijama</translation>
 <translation id="8160472928944011082">Nije moguće ažurirati Chrome</translation>
+<translation id="8357607116237445042">Odaberite želite li obrisati podatke Chromea s ovog uređaja ili ih želite zadržati</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" /> Google LLC. Sva prava su zadržana.</translation>
 <translation id="840168496893712993">Neki dodaci uzrokuju pad aplikacije Chromea. Pokušajte ih deinstalirati.</translation>
 <translation id="8459495907675268833">Odabrani podaci su uklonjeni iz Chromea i sinhroniziranih uređaja. Vaš Google račun može imati druge oblike historije pregledanja, kao što su pretraživanja i aktivnosti s drugih Googleovih usluga na history.google.com.</translation>
@@ -88,4 +93,5 @@
   2. Dodirnite Zadana aplikacija preglednika
   3. Odaberite Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Ostanite sigurni uz Google Chrome</translation>
 </translationbundle>

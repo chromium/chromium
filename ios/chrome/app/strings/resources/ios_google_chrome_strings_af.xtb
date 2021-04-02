@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Help om Chrome se kenmerke en werkverrigting te verbeter</translation>
 <translation id="1314663809820920746">Jy kan steeds al jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel sien. As jy veranderinge aanbring, sal hulle nie na jou Google-rekening sinkroniseer nie.</translation>
 <translation id="1479202195792305274">Chrome kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
+<translation id="1493827051843127077">Stel Chrome as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
 <translation id="1504372625950710826">Chrome kon nie vir opdaterings kyk nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="1682483655351012182">Sinkroniseer jou Chrome-data</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome deel jou ligging met werwe wat jy toelaat.</translation>
 <translation id="2347208864470321755">Wanneer hierdie kenmerk aangeskakel is, sal Chrome aanbied om bladsye wat in ander tale geskryf is, te vertaal deur Google Vertaal te gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Maak Chrome jou verstekblaaier</translation>
+<translation id="2561231791489583059">Gebruik Chrome as jou verstekblaaier om beskerm te word teen gevaarlike werwe en jou wagwoorde veilig te hou</translation>
 <translation id="2574249610672786438">Meld op al jou toestelle aan om jou oortjies te sien van waar ook al jy Chrome gebruik</translation>
 <translation id="2576431527583832481">Chrome het pas beter geword! 'n Nuwe weergawe is beskikbaar.</translation>
 <translation id="257708665678654955">Wil jy hê dat Google Chrome volgende keer moet aanbied om bladsye in <ph name="LANGUAGE_NAME" /> van hierdie werf af te vertaal?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome kan nie jou wagwoorde nagaan nie</translation>
 <translation id="7265369419224458312">Gaan sommer hier in by die oortjies wat jy op jou rekenaar oop het. Maak net Chrome op jou rekenaar oop, gaan na die kieslys en kies "Meld by Chrome aan …"</translation>
 <translation id="7272930098487145294">Om prente te stoor, moet jy op Instellings tik om Chrome toe te laat om foto's by te voeg</translation>
+<translation id="7275945473750112644">Jou rekening word deur <ph name="HOSTED_DOMAIN" /> bestuur, en daarom sal jou Chrome-data van hierdie toestel af uitgevee word</translation>
 <translation id="7400722733683201933">Meer oor Google Chrome</translation>
 <translation id="7501046334262221972">Maak Instellings oop om Chrome jou verstekblaaier te maak. Tik op Verstekblaaierprogram en kies dan Chrome.</translation>
 <translation id="756809126120519699">Het Chrome-data uitgevee</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Jou wagwoord is in 'n dataskending blootgestel. Chrome beveel aan dat jy die wagwoord nou verander.</translation>
 <translation id="7698568245838009292">Chrome wil toegang tot die kamera hê</translation>
 <translation id="7855730255114109580">Google Chrome is op datum</translation>
+<translation id="8022947259858476807">Gebruik by verstek Chrome om skakels oop te maak, van legstukke af te soek, en wagwoorde outomaties by ander programme in te vul</translation>
 <translation id="8160472928944011082">Chrome kan nie opdateer nie</translation>
+<translation id="8357607116237445042">Kies of jy jou Chrome-data van hierdie toestel wil verwyder, of dit wil hou</translation>
 <translation id="8370517070665726704">Kopiereg <ph name="YEAR" /> Google LLC. Alle regte voorbehou.</translation>
 <translation id="840168496893712993">Sekere byvoegings het veroorsaak dat Chrome omval. Probeer om hulle te deïnstalleer.</translation>
 <translation id="8459495907675268833">Die gekose data is van Chrome en gesinkroniseerde toestelle af verwyder. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en aktiwiteit, vanaf ander Google-dienste by history.google.com.</translation>
@@ -88,4 +93,5 @@
   2. Tik op Verstekblaaierprogram
   3. Kies Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Bly veilig met Google Chrome</translation>
 </translationbundle>

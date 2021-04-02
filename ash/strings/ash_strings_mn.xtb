@@ -610,6 +610,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Зочны сургалтад Google Туслах боломжгүй байна.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" />-н хасах харилцах цонхыг нээнэ үү</translation>
+<translation id="6154006699632741460">Нэмэлтийг дэмждэггүй</translation>
 <translation id="615957422585914272">Дэлгэц дээрх гарыг харуулах</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
 <translation id="6179832488876878285">Та чухал файлуудаа энд бэхлэх боломжтой. Эхлүүлэхийн тулд Файлс аппыг нээнэ үү.</translation>
@@ -631,7 +632,6 @@
 <translation id="6376931439017688372">Bluetooth асаалттай байна</translation>
 <translation id="6381109794406942707">Төхөөрөмжийн түгжээг тайлахын тулд ПИН-ээ оруулна уу.</translation>
 <translation id="639644700271529076">CAPS LOCK идэвхгүй байна</translation>
-<translation id="6396835948284782440">Гарахын тулд [Esc] дээр удаан дарна уу.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Бүх мэдэгдлийг устгах</translation>

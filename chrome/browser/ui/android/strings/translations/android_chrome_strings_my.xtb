@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">လမ်းညွှန်မှု မှတ်တမ်း</translation>
 <translation id="1231733316453485619">စင့်ခ်လုပ်ခြင်းကို ဖွင့်မလား။</translation>
 <translation id="123724288017357924">လက်ရှိစာမျက်နှာကို ပြန်ဖွင့်ပြီး ကက်ရှ်ကို ပယ်ရန်</translation>
+<translation id="1240288207750131269"><ph name="LANG" /> ကို ဖွင့်နေသည်</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
 <translation id="1258753120186372309">Google doodle- <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍မရပါ။</translation>
+<translation id="1276279242344007853">သင်လိုက်ကြည့်နေသော ဝဘ်ဆိုက်များကို စီမံနိုင်သည်</translation>
 <translation id="1283039547216852943">ချဲ့ရန် တို့ပါ</translation>
 <translation id="1285310382777185058">ဘာသာစကား ပြောင်းခြင်း</translation>
 <translation id="1291207594882862231">မှတ်တမ်း၊ ကွတ်ကီး၊ ဆိုက်ဒေတာ၊ ကက်ရှ်များကို ရှင်းလင်းပါ...</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">အပလီကေးရှင်း ဗားရှင်း</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ကို မျှဝေ၍ မရပါ</translation>
+<translation id="1466383950273130737">Chrome ၏ ဘာသာစကား ရွေးပါ</translation>
 <translation id="147113415845704694">ယနေ့မိုးလေဝသအခြေအနေ သိရှိရန် “What’s the weather today?” ဟု မေးကြည့်ပါ</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ အကြောင်း အမျိုးမျိုးကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
 <translation id="1492417797159476138">ယခုဝဘ်ဆိုက်အတွက် ဤအသုံးပြုသူအမည်ကို သိမ်းပြီးဖြစ်သည်</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">သင်၏ အင်တာနက်ချိတ်ဆက်မှုကို စစ်ဆေးခြင်း</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2369533728426058518">တဘ်များကို ဖွင့်ရန်</translation>
+<translation id="2386938421315164605">အကြောင်းအရာများ ဖျောက်ပြီး ပြန်ပြနိုင်သည်</translation>
 <translation id="2387895666653383613">စာသား စကေး</translation>
 <translation id="2394602618534698961">သင်ဒေါင်းလုဒ်လုပ်ထားသော ဖိုင်များကို ဤနေရာတွင် တွေ့ရပါမည်</translation>
 <translation id="2407481962792080328">သင့် Google Account သို့ လက်မှတ်ထိုးဝင်သည့်အခါ ဤဝန်ဆောင်မှုကို ဖွင့်ထားပါသည်</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">သိမ်းဆည်းထားသည့် စကားဝှက်များကို သင်၏ <ph name="BEGIN_LINK" />Google အကောင့်<ph name="END_LINK" /> တွင် ကြည့်ရှုစီမံပါ</translation>
 <translation id="2818669890320396765">သင်၏ဝဘ်လိပ်စာများကို စက်အားလုံးတွင် ရယူနိုင်ရန် လက်မှတ်ထိုးဝင်ပြီး စင့်ခ်လုပ်ခြင်းကို ဖွင့်ပါ</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2839327205551510876"><ph name="SITE_NAME" /> ကို လိုက်မကြည့်တော့ပါ</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{လွန်ခဲ့သော ၁ ရက်က စစ်ဆေးခဲ့သည်}other{လွန်ခဲ့သော # ရက်က စစ်ဆေးခဲ့သည်}}</translation>
 <translation id="2842985007712546952">မူရင်း ဖိုင်တွဲ</translation>
 <translation id="2856503607207334158">လက်မှတ်ထိုးဝင်၍ မရပါ</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Google အကြောင်းကြားချက်များ စနစ်</translation>
 <translation id="2923908459366352541">အမည် မမှန်ကန်ပါ</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> သိုလှောင်ခန်း</translation>
+<translation id="2932222164150889403">သင်၏ကီးဘုတ် ပြောင်းသွားမည် မဟုတ်ပါ</translation>
 <translation id="2942036813789421260">အစမ်းကြည့်ရှုမှုတဘ်ကို ပိတ်ထားသည်</translation>
 <translation id="2956410042958133412">ဤအကောင့်အား <ph name="PARENT_NAME_1" /> နှင့် <ph name="PARENT_NAME_2" /> မှ စီမံ၏။</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> မျက်နှာ}other{မဖတ်ရသေးသော <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> မျက်နှာ}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">Assistant အသံဖြင့်ရှာဖွေခြင်း သဘောတူညီချက် ui</translation>
 <translation id="3034163383943672781"><ph name="DATE" /> တွင် ဒေါင်းလုဒ် စတင်ပါမည်။</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />အကူအညီရယူရန်<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">နောက်တစ်ကြိမ်တွင် ဤဝဘ်ဆိုက်သို့ ပိုမြန်မြန်သွားနိုင်သည်</translation>
 <translation id="305593374596241526">တည်နေရာကို ပိတ်ထားသည်၊ ၎င်းကို <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင် ဖွင့်ပါ။</translation>
 <translation id="3058498974290601450">စင့်ကို ဆက်တင်များထဲတွင် အချိန်မရွေး ဖွင့်နိုင်သည်</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{လိပ်စာ <ph name="BOOKMARKS_COUNT_ONE" /> ခု}other{လိပ်စာ <ph name="BOOKMARKS_COUNT_MANY" /> ခု}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">သင်သည် လောလောဆယ် သင့် 'စင့်ခ်လုပ်ခြင်းနှင့် Google ဝန်ဆောင်မှု' ဆက်တင်များကို စိတ်ကြိုက်ပြုလုပ်နေသည်။ စင့်ခ်ဖွင့်ခြင်း အပြီးသတ်ရန် မျက်နှာပြင်အောက်ခြေနားရှိ 'အတည်ပြုရန်' ခလုတ်ကို တို့ပါ။ အပေါ်သို့ သွားရန်</translation>
 <translation id="3334729583274622784">ဖိုင်နောက်ဆက်တွဲ ပြောင်းမလား။</translation>
 <translation id="3341058695485821946">သင်ချွေတာလိုက်သည့် ဒေတာပမာဏကို ကြည့်ပါ</translation>
+<translation id="3341262203274374114">လိုက်မကြည့်တော့၍ မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
 <translation id="3350687908700087792">ကိုယ်ဖျက် တဲဘ်များ အားလုံးကို ပိတ်ရန်</translation>
 <translation id="3359667936385849800">သင်၏လက်ရှိ ဝန်ဆောင်မှုပေးသူကို သုံးရန်</translation>
 <translation id="3367813778245106622">စင့်ခ်စတင်ပြုလုပ်ရန် ထပ်မံ၍ လက်မှတ်ထိုးဝင်ပါ</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">တည်နေရာအား ခွင့်ပြု၏</translation>
 <translation id="3988466920954086464">ဤအကန့်တွင် လက်ငင်းရှာဖွေမှု ရလဒ်များကို ကြည့်ရန်</translation>
 <translation id="4000212216660919741">အော့ဖ်လိုင်း ပင်မစာမျက်နှာ</translation>
+<translation id="4016425174436051808">လိုက်ကြည့်၍ မရပါ။ တစ်ခုခုမှားသွားသည်။</translation>
+<translation id="4021916380760361450">သင့် Google အကောင့်များ၏ ဒေတာကို ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# နာရီ}other{# နာရီ}}</translation>
 <translation id="4045764304651014138">သုံးစွဲမှုဒေတာ</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -598,6 +608,7 @@
 <translation id="5152843274749979095">ပံ့ပိုးသည့်အက်ပ်များကို ထည့်သွင်းမထားပါ</translation>
 <translation id="5161254044473106830">ခေါင်းစီးလိုအပ်သည်</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{ဒေါင်းလုဒ် ၁ ခု လုပ်၍မရပါ။}other{ဒေါင်းလုဒ် # ခု လုပ်၍မရပါ။}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> ကို လိုက်ကြည့်ထားသည်</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
 <translation id="5184329579814168207">Chrome ထဲတွင် ဖွင့်မည်</translation>
 <translation id="5188992787241350004">အသံဖြင့် ရှာပါ</translation>
@@ -717,6 +728,7 @@
 <translation id="5864419784173784555">အခြားဒေါင်းလုဒ်လုပ်ခြင်းကို စောင့်နေသည်…</translation>
 <translation id="5865733239029070421">သုံးစွဲမှုဆိုင်ရာ အချက်အလက် ကိန်းဂဏန်းများနှင့် ပျက်စီးမှု အစီရင်ခံစာများကို Google သို့ အလိုအလျောက် ပို့သည်</translation>
 <translation id="5869522115854928033">သိမ်းဆည်းထားသည့် စကားဝှက်များ</translation>
+<translation id="5880748256563468367">ဖိဒ်သို့သွားရန်</translation>
 <translation id="5884076754568147479">သင်၏လုပ်ဆောင်စရာများ ပြီးမြောက်အောင် ကူညီရန် Assistant ကို အသုံးပြုထားသည့် ဝဘ်ဆိုက်များ၏ URL နှင့် အကြောင်းအရာများအပြင် Assistant ဖြင့် ပေးပို့ထားသည့် အချက်အလက်များကို Google က ရရှိပါမည်။</translation>
 <translation id="5919204609460789179">စင့်ခ်လုပ်ရန် <ph name="PRODUCT_NAME" /> ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> ကို သိမ်းပြီးပါပြီ</translation>
@@ -734,6 +746,7 @@
 <translation id="5979084224081478209">စကားဝှက်များ စစ်ဆေးရန်</translation>
 <translation id="5982307838673692400">ရုပ်ဖျက်တဘ်တွင် ဖွင့်ရန်</translation>
 <translation id="6000066717592683814">Google ကို ဆက်သုံးရန်</translation>
+<translation id="6000203700195075278">ပြန်လည်လိုက်ကြည့်ရန်</translation>
 <translation id="6005538289190791541">အကြံပြုထားသည့် စကားဝှက်</translation>
 <translation id="6036057147555329831">အပိုဆောင်း ICU</translation>
 <translation id="6039379616847168523">နောက်တဘ်သို့ သွားရန်</translation>
@@ -1011,6 +1024,7 @@
 <translation id="7846296061357476882">Google ဝန်ဆောင်မှုများ</translation>
 <translation id="784934925303690534">အချိန်အကန့်အသတ်</translation>
 <translation id="7851858861565204677">အခြား ကိရိယာများ</translation>
+<translation id="7853202427316060426">လုပ်ဆောင်ချက်</translation>
 <translation id="7857691613771368249">ဖိုင်များသိမ်းမည့်အခါ ခွင့်တောင်းရန်</translation>
 <translation id="7859988229622350291">ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="7875915731392087153">အီးမေးလ်ရေးပါ</translation>
@@ -1093,6 +1107,7 @@
 <translation id="834313815369870491">ဝဘ်ဆိုက်များကို ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="8349013245300336738">အသုံးပြုသည့် ဒေတာပမာဏအလိုက် စီရန်</translation>
 <translation id="835847953965672673">ဒေါင်းလုဒ် <ph name="NUMBER_OF_DOWNLOADS" /> ပြန်ယူပြီးပြီ</translation>
+<translation id="8362134094656482681">သင်စိတ်ဝင်စားသော အကြောင်းအရာများကို စီမံနိုင်သည်</translation>
 <translation id="8364299278605033898">လူကြိုက်များသော ဝဘ်ဆိုက်များ ကြည့်ရန်</translation>
 <translation id="8368027906805972958">အမျိုးအမည်မသိ သို့မဟုတ် ပံ့ပိုးမထားသည့် ကိရိယာ ( <ph name="DEVICE_ID" /> )</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> အသင့်ဖြစ်ပြီ။</translation>

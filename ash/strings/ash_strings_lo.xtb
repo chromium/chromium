@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ຜູ້ຊ່ວຍ Google ບໍ່ສາມາດໃຊ້ໄດ້ໃນເຊດຊັນແຂກ.</translation>
 <translation id="6137566720514957455">ເປີດກ່ອງໂຕ້ຕອບລຶບອອກສຳລັບ <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">ບໍ່ຮອງຮັບອຸປະກອນຕໍ່ພ່ວງ</translation>
 <translation id="615957422585914272">ສະ​ແດງຄີບອດເທິງຫນ້າ​ຈໍ​</translation>
 <translation id="6165508094623778733">ສຶກສາ​ເພີ່ມ​ເຕີມ</translation>
 <translation id="6179832488876878285">ທ່ານສາມາດປັກໝຸດໄຟລ໌ສຳຄັນຂອງທ່ານຢູ່ບ່ອນນີ້. ເປີດແອັບໄຟລ໌ເພື່ອເລີ່ມຕົ້ນ.</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">Bluetooth ເປີດຢູ່</translation>
 <translation id="6381109794406942707">ເພື່ອປົດລັອກອຸປະກອນ, ກະລຸນາປ້ອນ PIN ຂອງທ່ານ.</translation>
 <translation id="639644700271529076">CAPS LOCK ປິດ</translation>
-<translation id="6396835948284782440">ກົດ [Esc] ຄ້າງໄວ້ເພື່ອອອກ.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ລຶບລ້າງການແຈ້ງເຕືອນທັງໝົດ</translation>

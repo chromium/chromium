@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + gebruikersertifikaat</translation>
 <translation id="4731797938093519117">Ouertoegang</translation>
 <translation id="4773299976671772492">Gestop</translation>
+<translation id="4794140124556169553">As jy 'n CPU-toets doen, kan dit jou stelselwerkverrigting affekteer</translation>
 <translation id="4808449224298348341">Gekanselleerde druktaak <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Verbinding</translation>
 <translation id="4832079907277790330">Kies vouer in Lêers-program …</translation>
@@ -341,6 +342,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8503813439785031346">Gebruikernaam</translation>
 <translation id="8503836310948963452">Net 'n paar minute …</translation>
+<translation id="8575298406870537639">Jou selfoonmaatskappy kan hierdie opsie vereis om aan hul netwerk te koppel. Kontak jou selfoonmaatskappy vir besonderhede.</translation>
 <translation id="8576249514688522074">Ongeïnisieer</translation>
 <translation id="8620617069779373398">Swerfstatus</translation>
 <translation id="8675354002693747642">Voorafgedeelde sleutel</translation>
@@ -365,7 +367,6 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8970109610781093811">Laat loop weer</translation>
 <translation id="9003704114456258138">Frekwensie</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Wysig</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Huidige gebruik</translation>

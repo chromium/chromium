@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + uporabniško potrdilo</translation>
 <translation id="4731797938093519117">Starševski dostop</translation>
 <translation id="4773299976671772492">Ustavljeno</translation>
+<translation id="4794140124556169553">Izvajanje preizkusa CPE-ja lahko vpliva na delovanje sistema.</translation>
 <translation id="4808449224298348341">Preklicano tiskalno opravilo za dokument <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Povezava</translation>
 <translation id="4832079907277790330">Izberite mapo v aplikaciji Datoteke ...</translation>
@@ -341,6 +342,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8483248364096924578">Naslov IP</translation>
 <translation id="8503813439785031346">Uporabniško ime</translation>
 <translation id="8503836310948963452">Samo še nekaj minut …</translation>
+<translation id="8575298406870537639">Operater lahko zahteva to možnost za povezovanje z njegovim omrežjem. Za podrobnejše informacije se obrnite na operaterja.</translation>
 <translation id="8576249514688522074">Neinicializirano</translation>
 <translation id="8620617069779373398">Stanje gostovanja</translation>
 <translation id="8675354002693747642">Ključ v predhodni skupni rabi</translation>
@@ -365,7 +367,6 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8970109610781093811">Znova zaženi</translation>
 <translation id="9003704114456258138">Frekvenca</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Uredi</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Trenutna poraba</translation>

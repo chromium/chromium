@@ -521,6 +521,7 @@
 <translation id="1563702743503072935">Když budete přihlášeni, budou hesla z účtu Google k dispozici i na tomto zařízení</translation>
 <translation id="1566049601598938765">Web</translation>
 <translation id="15662109988763471">Zvolená tiskárna není k dispozici nebo není správně nainstalovaná. Zkontrolujte tiskárnu nebo vyberte jinou.</translation>
+<translation id="1567135437923613642">Zapnout vybrané experimentální funkce</translation>
 <translation id="1567387640189251553">Od minulého zadání hesla byla připojena jiná klávesnice. Je možné, že se pokouší odcizit vaše stisknutí kláves.</translation>
 <translation id="1567993339577891801">Konzole JavaScriptu</translation>
 <translation id="1568323446248056064">Otevřít nastavení displeje</translation>
@@ -920,6 +921,7 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1979095679518582070">Vypnutí této funkce nemá vliv na schopnost zařízení odesílat informace, které potřebuje pro základní služby, jako jsou aktualizace systému a zabezpečení.</translation>
 <translation id="1979280758666859181">Přepínáte na kanál s nižší verzí <ph name="PRODUCT_NAME" />. Změna kanálu bude použita, až bude verze v nově zvoleném kanálu odpovídat verzi nainstalované v zařízení.</translation>
 <translation id="197989455406964291">KDC nepodporuje typ šifrování</translation>
+<translation id="1983497378699148207">Pokud nastavení Linuxu chcete dokončit, aktualizujte Chrome OS a zkuste to znovu.</translation>
 <translation id="1984417487208496350">Bez ochrany (nedoporučujeme)</translation>
 <translation id="1987317783729300807">Účty</translation>
 <translation id="1989112275319619282">Procházet</translation>
@@ -1331,6 +1333,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2450223707519584812">Uživatele nebudete moci přidávat, protože chybí klíče rozhraní Google API. Podrobnosti naleznete na adrese <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Žádná aktivní zobrazení</translation>
 <translation id="2451298179137331965">2×</translation>
+<translation id="245322989586167203">Weby se k sériovým portům obvykle připojují kvůli přenosu dat, například při nastavování sítě</translation>
 <translation id="2453860139492968684">Dokončit</translation>
 <translation id="2454247629720664989">Klíčové slovo</translation>
 <translation id="2454264884354864965">Kamera je vypnutá</translation>
@@ -1961,6 +1964,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Zapomněli jste heslo?</translation>
 <translation id="3132277757485842847">Nepodařilo se nám zachovat spojení s telefonem. Zkontrolujte, zda je telefon poblíž, zda je odemknutý a zda na něm je zapnuté rozhraní Bluetooth a Wi-Fi.</translation>
 <translation id="3132996321662585180">Každý den obnovit</translation>
+<translation id="3134393957315651797">Vyberte stav experimentální funkce <ph name="EXPERIMENT_NAME" />. Popis experimentální funkce: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Neplatný kód PIN. Počet zbývajících pokusů: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Stahování: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Výchozí žlutý avatar</translation>
@@ -2844,6 +2848,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4099874310852108874">Došlo k chybě sítě.</translation>
 <translation id="4100733287846229632">V zařízení je kriticky málo místa</translation>
 <translation id="4100853287411968461">Nový limit času stráveného na zařízení</translation>
+<translation id="4101352914005291489">Skryté SSID</translation>
 <translation id="4102906002417106771">Restartovat a provést powerwash</translation>
 <translation id="4104163789986725820">E&amp;xport...</translation>
 <translation id="4107048419833779140">Identifikovat a vysouvat úložná zařízení</translation>
@@ -3913,6 +3918,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5382591305415226340">Spravovat podporované odkazy</translation>
 <translation id="5383377866517186886">Fotoaparát je vypnutý v předvolbách systému Macu</translation>
 <translation id="5383740867328871413">Skupina bez názvu – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Podnikové zásady se změnily. Na lištu bylo přidáno tlačítko experimentálních funkcí. Kliknutím na něj otevřete dialogové okno k aktivaci experimentálních funkcí.</translation>
 <translation id="5388885445722491159">Párováno</translation>
 <translation id="5390100381392048184">Povolit webům přehrávat zvuky</translation>
 <translation id="5390112241331447203">Zahrnout soubor system_logs.txt odesílaný ve zprávách zpětné vazby.</translation>
@@ -5037,6 +5043,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="6660413144148052430">poloha</translation>
 <translation id="666099631117081440">Tiskové servery</translation>
+<translation id="6662931079349804328">Podnikové zásady se změnily. Z lišty bylo odstraněno tlačítko experimentálních funkcí.</translation>
 <translation id="6663190258859265334">Tato akce resetuje zařízení <ph name="DEVICE_TYPE" /> pomocí funkce Powerwash a obnoví předchozí verzi aplikace.</translation>
 <translation id="6664237456442406323">Váš počítač je bohužel nakonfigurován pomocí chybného čísla hardwaru. Systému Chrome OS to zabraňuje získat aktualizace s nejnovějšími bezpečnostními opravami, a počítač tak <ph name="BEGIN_BOLD" />může být zranitelnější vůči škodlivým úrokům<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Při otevírání vašeho profilu se něco pokazilo. Odhlaste se a poté se znovu přihlaste.</translation>
@@ -5393,6 +5400,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7056526158851679338">&amp;Zkontrolovat zařízení</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Bezpečnostní kontrola proběhla před jednou minutou}few{Bezpečnostní kontrola proběhla před {NUM_MINS} minutami}many{Bezpečnostní kontrola proběhla před {NUM_MINS} minuty}other{Bezpečnostní kontrola proběhla před {NUM_MINS} minutami}}</translation>
 <translation id="7057767408836081338">Nepodařilo se získat data aplikace, ale stejně zkusíme aplikaci spustit…</translation>
+<translation id="7058024590501568315">Skrytá síť</translation>
 <translation id="7059858479264779982">Nastavit na automatické spouštění</translation>
 <translation id="7059893117020417984">Chcete-li web procházet v soukromí, klikněte na ikonu se třemi tečkami a otevřete anonymní okno.</translation>
 <translation id="7062222374113411376">Povolit nedávno zavřeným webům dokončit odeslání a příjem dat (doporučeno)</translation>
@@ -5756,6 +5764,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="7477793887173910789">Ovládejte hudbu, videa a další obsah</translation>
 <translation id="7478485216301680444">Aplikaci pro režim veřejného terminálu se nepodařilo nainstalovat.</translation>
 <translation id="7478623944308207463">Vaše aplikace a nastavení se budou synchronizovat do všech zařízení Chrome OS, na kterých jste přihlášeni pomocí svého účtu Google. Možnosti synchronizace prohlížeče naleznete v <ph name="LINK_BEGIN" />nastavení Chromu<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Nepovolovat webům připojení k sériovým portům</translation>
 <translation id="7479221278376295180">Přehled využití úložiště</translation>
 <translation id="7481312909269577407">Vpřed</translation>
 <translation id="7481358317100446445">Připraveno</translation>
@@ -5907,11 +5916,13 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="765293928828334535">Nelze přidávat aplikace, rozšíření a uživatelské skripty z tohoto webu</translation>
 <translation id="7652954539215530680">Vytvoření kódu PIN</translation>
 <translation id="7654941827281939388">Tento účet je v tomto počítači již používán.</translation>
+<translation id="7655411746932645568">Weby mohou žádat o připojení k sériovým portům</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7659297516559011665">Pouze hesla na tomto zařízení</translation>
 <translation id="7659584679870740384">Nemáte oprávnění používat toto zařízení. Kontaktujte administrátora a požádejte jej o oprávnění k přihlášení.</translation>
 <translation id="7661259717474717992">Povolit webům ukládat a číst data souborů cookie</translation>
 <translation id="7661451191293163002">Nepodařilo se získat registrační certifikát.</translation>
+<translation id="7661762353058813968">Aktualizace spravuje administrátor.</translation>
 <translation id="7662283695561029522">Klepnutím zahájíte konfiguraci</translation>
 <translation id="7663719505383602579">Příjemce: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Nepodporované zařízení Bluetooth: <ph name="DEVICE_NAME" />.</translation>
@@ -6692,6 +6703,7 @@ Oddálení provedete stisknutím kláves Ctrl+Alt+Snížit jas.</translation>
 <translation id="8539727552378197395">Ne (HttpOnly)</translation>
 <translation id="8539766201049804895">Upgradovat</translation>
 <translation id="8540136935098276800">Zadejte správně formátovanou adresu URL</translation>
+<translation id="8540503336857689453">Použití skryté sítě z bezpečnostních důvodů nedoporučujeme.</translation>
 <translation id="8540608333167683902">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="854071720451629801">Označit jako přečtené</translation>
 <translation id="8541462173655894684">Na tiskovém serveru nebyly nalezeny žádné tiskárny</translation>

@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium has features that help you manage your Internet data and how quickly you're able to load web pages.
 <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium couldn't check for updates. Try checking your Internet connection.</translation>
+<translation id="2054703085270098503">Stay safe with Chromium</translation>
 <translation id="2075400798887076382">Access the tabs that you have open on your computer, right here. Just open Chromium on your computer, go to the menu and select “Sign in to Chromium…”</translation>
 <translation id="2168108852149185974">Some add-ons cause Chromium to crash. Please uninstall:</translation>
 <translation id="2178608107313874732">Chromium can't use your camera at the moment</translation>
 <translation id="2195025571279539885">Would you like Chromium to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
 <translation id="2590893390871230428">Sync your Chromium data</translation>
 <translation id="2650312721222849884">To see your tabs from wherever you use Chromium, turn on sync</translation>
+<translation id="2684230048001240293">Set Chromium as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="2730884209570016437">Chromium can't use your camera because it's in use by another application</translation>
 <translation id="2915596697727466327">Chromium uses Face ID to ensure authorised access to your passwords.</translation>
 <translation id="2918709798697875261">Your organisation requires you to stay signed out of Chromium.</translation>
+<translation id="2942241131342758843">Use Chromium by default to open links, search from widgets and auto-fill passwords in other apps</translation>
 <translation id="2977470724722393594">Chromium is up to date</translation>
 <translation id="3256316712990552818">Copied to Chromium</translation>
 <translation id="3344973607274501920">Chromium couldn't check your passwords. Try checking your Internet connection.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">When this feature is turned on, Chromium will offer to translate pages written in other languages using Google Translate. <ph name="BEGIN_LINK" />Find out more<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">You can now use Chromium whenever you tap on links in messages, documents and other apps.</translation>
 <translation id="4681781466797808448">Turn on Chromium scanner</translation>
+<translation id="4736424910885271643">Your account is managed by <ph name="HOSTED_DOMAIN" />, so your Chromium data will be cleared from this device</translation>
 <translation id="4787850887676698916">Tabs that you've opened in Chromium on your other devices will appear here.</translation>
 <translation id="4828317641996116749">Chromium couldn't check all passwords. Try again later.</translation>
 <translation id="4985291216379576555">Offline, Chromium can't check for updates</translation>
@@ -55,6 +59,7 @@
 2. Tap the default browser app
 3. Select Chromium.</translation>
 <translation id="6268381023930128611">Sign out of Chromium?</translation>
+<translation id="6337530241089703714">Choose whether to clear your Chromium data from this device or keep it</translation>
 <translation id="6424492062988593837">Chromium just got better! A new version is available.</translation>
 <translation id="6820823224820483452">Chromium couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="6827294685447036764">If you allow Chromium to know your location, Chromium sends it to any sites that you allow. Sites may ask for your location when they have local info to show you, like nearby shops or news.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Your password was exposed in a data breach. Chromium recommends changing the password now.</translation>
 <translation id="7674213385180944843">Open Settings &gt; Privacy &gt; Camera &gt; Chromium and turn on the camera.</translation>
 <translation id="7746854981345936341">Chromium tip. Some buttons are now at the bottom of your screen, such as Back, Forward and Search.</translation>
+<translation id="7763454117143368771">Use Chromium as your default browser to stay protected from dangerous sites and keep your passwords safe</translation>
 <translation id="786327964234957808">You are switching sync accounts from <ph name="USER_EMAIL1" /> to <ph name="USER_EMAIL2" />. Your existing Chromium data is managed by <ph name="DOMAIN" />. This will delete your data from this device, but your data will remain in <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Start using Chromium scanner</translation>
 <translation id="7931842119211730154">Lock incognito tabs when you close Chromium</translation>

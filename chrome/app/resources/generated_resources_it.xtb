@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Le password memorizzate nel tuo Account Google saranno disponibili anche su questo dispositivo dopo aver eseguito l'accesso</translation>
 <translation id="1566049601598938765">Sito web</translation>
 <translation id="15662109988763471">La stampante selezionata non è disponibile o non è installata correttamente. Controlla la stampante o prova a selezionarne un'altra.</translation>
+<translation id="1567135437923613642">Attiva esperimenti in primo piano</translation>
 <translation id="1567387640189251553">È stata collegata una tastiera diversa dall'ultimo inserimento della password. Potrebbe essere un tentativo di rubare i tasti premuti.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
 <translation id="1568323446248056064">Apri le impostazioni dello schermo</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">La disattivazione di questa funzionalità non influisce sulla capacità del dispositivo di inviare le informazioni necessarie per i servizi essenziali, ad esempio gli aggiornamenti di sistema e la sicurezza.</translation>
 <translation id="1979280758666859181">Stai per passare a un canale con una versione precedente di <ph name="PRODUCT_NAME" />. Il cambio di canale verrà applicato quando la versione del canale corrisponderà alla versione attualmente installata sul dispositivo.</translation>
 <translation id="197989455406964291">KDC non supporta il tipo di crittografia</translation>
+<translation id="1983497378699148207">Per completare la configurazione di Linux, aggiorna Chrome OS e riprova.</translation>
 <translation id="1984417487208496350">Nessuna protezione (sconsigliata)</translation>
 <translation id="1987317783729300807">Account</translation>
 <translation id="1989112275319619282">Esplora</translation>
@@ -1329,6 +1331,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2450223707519584812">Non potrai aggiungere utenti perché mancano le chiavi dell'API di Google. Per informazioni dettagliate, visita la pagina <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Nessuna visualizzazione attiva</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">In genere, i siti si connettono a porte seriali per funzionalità di trasferimento di dati come la configurazione della rete</translation>
 <translation id="2453860139492968684">Termina</translation>
 <translation id="2454247629720664989">Parola chiave</translation>
 <translation id="2454264884354864965">La fotocamera è spenta</translation>
@@ -1959,6 +1962,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="313205617302240621">Hai dimenticato la password?</translation>
 <translation id="3132277757485842847">Impossibile mantenere una connessione col telefono. Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
 <translation id="3132996321662585180">Aggiorna ogni giorno</translation>
+<translation id="3134393957315651797">Seleziona lo stato dell'esperimento <ph name="EXPERIMENT_NAME" />. Descrizione dell'esperimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN non valido. Hai ancora <ph name="RETRIES" /> tentativi a disposizione.</translation>
 <translation id="313963229645891001">Download in corso, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar giallo predefinito</translation>
@@ -2843,6 +2847,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4099874310852108874">Si è verificato un errore di rete.</translation>
 <translation id="4100733287846229632">Lo spazio sul dispositivo sta per esaurirsi</translation>
 <translation id="4100853287411968461">Nuovo limite del tempo di utilizzo</translation>
+<translation id="4101352914005291489">SSID nascosto</translation>
 <translation id="4102906002417106771">Riavvia per eseguire il Powerwash</translation>
 <translation id="4104163789986725820">E&amp;sporta...</translation>
 <translation id="4107048419833779140">Identifica ed espelli i dispositivi di archiviazione</translation>
@@ -3912,6 +3917,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5382591305415226340">Gestisci i link supportati</translation>
 <translation id="5383377866517186886">La videocamera è disattivata nelle Preferenze di Sistema del Mac</translation>
 <translation id="5383740867328871413">Gruppo senza nome - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Criterio aziendale modificato. Pulsante Esperimenti aggiunto alla barra degli strumenti. Fai clic sul pulsante per aprire una finestra di dialogo in cui puoi attivare esperimenti.</translation>
 <translation id="5388885445722491159">Accoppiato</translation>
 <translation id="5390100381392048184">Consenti ai siti di riprodurre l'audio</translation>
 <translation id="5390112241331447203">Includi il file system_logs.txt inviato nei rapporti di feedback.</translation>
@@ -5036,6 +5042,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6659594942844771486">Scheda</translation>
 <translation id="6660413144148052430">posizione</translation>
 <translation id="666099631117081440">Server di stampa</translation>
+<translation id="6662931079349804328">Criterio aziendale modificato. Pulsante Esperimenti rimosso dalla barra degli strumenti.</translation>
 <translation id="6663190258859265334">Esegui il Powerwash del tuo dispositivo <ph name="DEVICE_TYPE" /> e torna alla versione precedente.</translation>
 <translation id="6664237456442406323">Purtroppo il tuo computer è configurato con un ID hardware non valido. Ciò impedisce a Chrome OS di aggiornarsi con le ultime correzioni relative alla sicurezza e il tuo computer <ph name="BEGIN_BOLD" />potrebbe essere vulnerabile ad attacchi dannosi<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Si è verificato un problema durante l'apertura del profilo. Esci e accedi di nuovo.</translation>
@@ -5392,6 +5399,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7056526158851679338">&amp;Ispeziona dispositivi</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Il controllo di sicurezza è stato eseguito 1 minuto fa}other{Il controllo di sicurezza è stato eseguito {NUM_MINS} minuti fa}}</translation>
 <translation id="7057767408836081338">Impossibile recuperare i dati dell'app, tentativo di esecuzione dell'app comunque in corso…</translation>
+<translation id="7058024590501568315">Rete nascosta</translation>
 <translation id="7059858479264779982">Imposta avvio automatico</translation>
 <translation id="7059893117020417984">Per navigare in privato, fai clic sul menu con un'icona con tre puntini per aprire una finestra di navigazione in incognito</translation>
 <translation id="7062222374113411376">Consenti ai siti chiusi di recente di terminare l'invio e la ricezione di dati (opzione consigliata)</translation>
@@ -5755,6 +5763,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="7477793887173910789">Gestisci la tua musica, i tuoi video e altro ancora</translation>
 <translation id="7478485216301680444">Impossibile installare l'applicazione kiosk.</translation>
 <translation id="7478623944308207463">Le app e le impostazioni verranno sincronizzate su tutti i dispositivi Chrome OS a cui hai effettuato l'accesso con il tuo Account Google. Per le opzioni di sincronizzazione del browser, vai alle <ph name="LINK_BEGIN" />impostazioni di Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Non consentire ai siti di connettersi alle porte seriali</translation>
 <translation id="7479221278376295180">Panoramica dell'utilizzo dello spazio di archiviazione</translation>
 <translation id="7481312909269577407">Avanti</translation>
 <translation id="7481358317100446445">Pronta</translation>
@@ -5906,11 +5915,13 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="765293928828334535">Non è possibile aggiungere app, estensioni e script utente da questo sito web</translation>
 <translation id="7652954539215530680">Crea un PIN</translation>
 <translation id="7654941827281939388">Questo account è già in uso su questo computer.</translation>
+<translation id="7655411746932645568">I siti possono chiedere di connettersi alle porte seriali</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7659297516559011665">Password memorizzate soltanto su questo dispositivo</translation>
 <translation id="7659584679870740384">Non sei autorizzato a utilizzare questo dispositivo. Per ottenere l'autorizzazione di accesso contatta l'amministratore.</translation>
 <translation id="7661259717474717992">Consenti ai siti di salvare e leggere i dati dei cookie</translation>
 <translation id="7661451191293163002">Impossibile ottenere un certificato di registrazione.</translation>
+<translation id="7661762353058813968">Gli aggiornamenti sono gestiti dall'amministratore.</translation>
 <translation id="7662283695561029522">Tocca per configurare</translation>
 <translation id="7663719505383602579">Ricevitore: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Dispositivo Bluetooth non supportato: "<ph name="DEVICE_NAME" />".</translation>
@@ -6691,6 +6702,7 @@ Premi Ctrl+Alt+Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="8539727552378197395">No (solo Http)</translation>
 <translation id="8539766201049804895">Esegui l'upgrade</translation>
 <translation id="8540136935098276800">Inserisci un URL nel formato corretto</translation>
+<translation id="8540503336857689453">Per motivi di sicurezza non è consigliabile usare una rete nascosta.</translation>
 <translation id="8540608333167683902">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, dettagli</translation>
 <translation id="854071720451629801">Contrassegna come letta</translation>
 <translation id="8541462173655894684">Nessuna stampante trovata sul server di stampa</translation>

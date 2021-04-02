@@ -151,7 +151,7 @@
 <translation id="455835558791489930">Batería de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4562494484721939086">Sin servicio</translation>
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
-<translation id="4593212453765072419">Autenticación de proxy necesaria</translation>
+<translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pulsa Intro para cancelar el trabajo de impresión.</translation>
 <translation id="4646949265910132906">Conexión Wi‑Fi segura</translation>
 <translation id="4652335678334611408">Guardar registro de la sesión</translation>
@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + Certificado de usuario</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4773299976671772492">Detenido</translation>
+<translation id="4794140124556169553">Si ejecutas una prueba de CPU, es posible que el rendimiento del sistema se vea afectado</translation>
 <translation id="4808449224298348341">Trabajo de impresión <ph name="DOCUMENT_TITLE" /> cancelado</translation>
 <translation id="4813345808229079766">Conexión</translation>
 <translation id="4832079907277790330">Seleccionar carpeta en aplicación Files...</translation>
@@ -340,6 +341,7 @@
 <translation id="8483248364096924578">Dirección IP</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8503836310948963452">Solo unos minutos más...</translation>
+<translation id="8575298406870537639">Es posible que tu operador requiera esta opción para conectarte a su red. Ponte en contacto con tu operador para obtener más información al respecto.</translation>
 <translation id="8576249514688522074">No inicializado</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>
 <translation id="8675354002693747642">Clave precompartida</translation>
@@ -364,7 +366,6 @@
 <translation id="8970109610781093811">Volver a ejecutar</translation>
 <translation id="9003704114456258138">Frecuencia</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Editar</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Uso actual</translation>

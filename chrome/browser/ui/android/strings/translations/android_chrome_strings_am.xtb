@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">የዳሰሳ ታሪክ</translation>
 <translation id="1231733316453485619">አስምር ይብራ?</translation>
 <translation id="123724288017357924">የተሸጎጠ ይዘትን ችላ በማለት የአሁኑን ገጽ ዳግም ጫን</translation>
+<translation id="1240288207750131269"><ph name="LANG" />ን በመጫን ላይ</translation>
 <translation id="124678866338384709">የአሁኑን ትር ዝጋ</translation>
 <translation id="1258753120186372309">Google doodle፦ <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ን ማጋራት አልተቻለም።</translation>
+<translation id="1276279242344007853">የሚከተሏቸውን ጣቢያዎች ያስተዳድሩ</translation>
 <translation id="1283039547216852943">ለመዘርጋት መታ ያድርጉ</translation>
 <translation id="1285310382777185058">ቋንቋ ይቀይሩ</translation>
 <translation id="1291207594882862231">ታሪክ፣ ኩኪዎች፣ የጣቢያ ውሂብ፣ መሸጎጫን አጽዳ…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">የመተግበሪያ ስሪት</translation>
 <translation id="1430915738399379752">አትም</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ን ማጋራት አይቻልም</translation>
+<translation id="1466383950273130737">የChromeን ቋንቋ ይምረጡ</translation>
 <translation id="147113415845704694">«What’s the weather today?» ብለው ይሞክሩ</translation>
 <translation id="1477626028522505441">በአገልጋይ ችግሮች ምክንያት <ph name="FILE_NAME" />ን ማውረድ አልተሳካም።</translation>
 <translation id="1492417797159476138">ይህንን የተጠቃሚ ስም ለዚህ ጣቢያ ቀድሞውኑ አስቀምጠዋል</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">የበይነመረብ ግንኙነትዎን ይፈትሹ</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2369533728426058518">ክፍት ትሮች</translation>
+<translation id="2386938421315164605">ርዕሶችን ደብቅ እና አትደብቅ</translation>
 <translation id="2387895666653383613">የጽሑፍ ልኬት</translation>
 <translation id="2394602618534698961">የሚያወርዷቸው ፋይሎች እዚህ ይታያሉ</translation>
 <translation id="2407481962792080328">ወደ የእርስዎ የ Google መለያ ሲገቡ፣ ይህ ባህሪ ይበራል</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">የተቀመጡ የይለፍ ቃላትን በእርስዎ <ph name="BEGIN_LINK" />Google መለያ<ph name="END_LINK" /> ውስጥ ይመልከቱ እና ያስተዳድሩ</translation>
 <translation id="2818669890320396765">የእርስዎን ዕልባቶች በሁሉም መሣሪያዎችዎ ላይ ለማግኘት በመለያ መግባት እና ስምረትን ማብራት ለማግኘት</translation>
 <translation id="2827278682606527653">የምግብ ካርድ ምናሌ በግማሽ ቁመት</translation>
+<translation id="2839327205551510876"><ph name="SITE_NAME" /> መከተል ቆሟል</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{ከ1 ቀን በፊት ተፈትሿል}one{ከ# ቀኖች በፊት ተፈትሿል}other{ከ# ቀኖች በፊት ተፈትሿል}}</translation>
 <translation id="2842985007712546952">ወላጅ አቃፊ</translation>
 <translation id="2856503607207334158">በመለያ መግባት ተሰናክሏል</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">የGoogle ማሳወቂያዎች መሣሪያ ስርዓት</translation>
 <translation id="2923908459366352541">ስም ልክ ያልሆነ ነው</translation>
 <translation id="2932150158123903946">የGoogle <ph name="APP_NAME" /> ማከማቻ</translation>
+<translation id="2932222164150889403">የእርስዎ የቁልፍ ሰሌዳ አይለወጥም</translation>
 <translation id="2942036813789421260">የቅድመ-እይታ ትር ተዘግቷል</translation>
 <translation id="2956410042958133412">ይህ መለያ የሚቀናበረው በ<ph name="PARENT_NAME_1" /> እና <ph name="PARENT_NAME_2" /> ነው።</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ያልተነበበ ገጽ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ያልተነበቡ ገጾች}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ያልተነበቡ ገጾች}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">የረዳት ድምፅ ፍለጋ ስምምነት ዩአይ</translation>
 <translation id="3034163383943672781">ውርድ <ph name="DATE" /> ላይ ይጀመራል።</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />እገዛ ያግኙ<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">በሚቀጥለው ጊዜ በፍጥነት ወደዚህ ጣቢያ ይሂዱ</translation>
 <translation id="305593374596241526">አካባቢ ጠፍቷል፤ በ<ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
 <translation id="3058498974290601450">ስምረትን በማንኛውም ጊዜ በቅንብሮች ውስጥ ማብራት ይችላሉ።</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ዕልባት}one{<ph name="BOOKMARKS_COUNT_MANY" /> ዕልባቶች}other{<ph name="BOOKMARKS_COUNT_MANY" /> ዕልባቶች}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">እርስዎ በአሁኑ ጊዜ የእርስዎን የስምረት እና የGoogle አገልግሎት ቅንብሮችን እያበጁ ነው። ስምረትን ማብራቱን ለመጨረስ ከማያ ገጹ ታችኛው ክፍል አጠገብ ያለውን የአረጋግጥ አዝራር መታ ያድርጉ። ወደ ላይ ያስሱ</translation>
 <translation id="3334729583274622784">የፋይል ቅጥያ ይቀየር?</translation>
 <translation id="3341058695485821946">ምን ያህል ውሂብ እንዳስቀመጡ ይመልከቱ</translation>
+<translation id="3341262203274374114">መከተል አልተቻለም። የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="3350687908700087792">ሁሉንም ማንነት የማያሳውቅ ትሮችን ይዝጉ</translation>
 <translation id="3359667936385849800">የአሁኑ አገልግሎት አቅራቢዎን ይጠቀሙ</translation>
 <translation id="3367813778245106622">ስምረትን ለመጀመር እንደገና ይግቡ</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">መገኛ አካባቢ ተፈቅዷል</translation>
 <translation id="3988466920954086464">በዚህ ፓነል ውስጥ ቅጽበታዊ የፍለጋ ውጤቶችን ይመልከቱ</translation>
 <translation id="4000212216660919741">ከመስመር ውጭ መነሻ</translation>
+<translation id="4016425174436051808">መከተል አልተቻለም የሆነ ችግር ተፈጥሯል።</translation>
+<translation id="4021916380760361450">የእርስዎን የGoogle መለያዎች ውሂብ ይቆጣጠሩ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ሰዓ}one{# ሰዓቶች}other{# ሰዓቶች}}</translation>
 <translation id="4045764304651014138">የአጠቃቀም ውሂብ</translation>
 <translation id="4056223980640387499">ቀይ ቡናማ</translation>
@@ -598,6 +608,7 @@
 <translation id="5152843274749979095">ምንም የሚደገፉ መተግበሪያዎች አልተጫኑም</translation>
 <translation id="5161254044473106830">ርዕስ ያስፈልጋል</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ውርድ አልተሳካም።}one{# ውርዶች አልተሳኩም።}other{# ውርዶች አልተሳኩም።}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" />ን ተከትለዋል</translation>
 <translation id="5170568018924773124">በአቃፊ አሳይ</translation>
 <translation id="5184329579814168207">በChrome ውስጥ ክፈት</translation>
 <translation id="5188992787241350004">በድምጽዎ ይፈልጉ</translation>
@@ -717,6 +728,7 @@
 <translation id="5864419784173784555">ሌላ ውርድን በመጠበቅ ላይ…</translation>
 <translation id="5865733239029070421">የአጠቃቀም ስታስቲክስን እና የብልሽት ሪፖርቶችን በራስ-ሰር ወደ Google ይልካል</translation>
 <translation id="5869522115854928033">የተቀመጡ የይለፍ ቃሎች</translation>
+<translation id="5880748256563468367">ወደ ምግብ ይሂዱ</translation>
 <translation id="5884076754568147479">ተግባራትን እንዲያጠናቅቁ ለማገዝ Google ረዳትን የሚጠቀሙባቸው የጣቢያዎች ዩአርኤሎች እና ይዘቶችና እንዲሁም በረዳት በኩል የሚያስገቡት መረጃን ይቀበላል</translation>
 <translation id="5919204609460789179">ስምረትን ለመጀመር <ph name="PRODUCT_NAME" />ን ያዘምኑ</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> ተቀምጧል</translation>
@@ -734,6 +746,7 @@
 <translation id="5979084224081478209">የይለፍ ቃላትዎን ይፈትሹ</translation>
 <translation id="5982307838673692400">ማንነት የማያሳውቅ ትር ክፈት</translation>
 <translation id="6000066717592683814">Googleን አቆየው</translation>
+<translation id="6000203700195075278">እንደገና ይከተሉ</translation>
 <translation id="6005538289190791541">የተጠቆመ የይለፍ ቃል</translation>
 <translation id="6036057147555329831">ተጨማሪ አይሲዩ</translation>
 <translation id="6039379616847168523">ወደ ቀጣዩ ትር ዝለል</translation>
@@ -1095,6 +1108,7 @@
 <translation id="834313815369870491">ጣቢያዎችን በጭራሽ አይተርጉሙ</translation>
 <translation id="8349013245300336738">ጥቅም ላይ በዋለው የውሂብ መጠን ደርድር</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ውርዶች ወደነበሩበት ተመልሰዋል</translation>
+<translation id="8362134094656482681">የሚፈልጓቸውን ርዕሶች ያቀናብሩ</translation>
 <translation id="8364299278605033898">ታዋቂ ድር ጣቢያዎችን ይመልከቱ</translation>
 <translation id="8368027906805972958">ያልታወቀ ወይም የማይደገፍ መሣሪያ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> ዝግጁ ነው።</translation>

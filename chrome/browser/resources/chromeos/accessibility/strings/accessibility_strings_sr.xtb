@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Светла небескоплава</translation>
 <translation id="1303806948938513162">Додирните са 4 прста да бисте ушли у ChromeVox меније</translation>
 <translation id="1313373992684326101">Пређите на претходни одељак. Примери обухватају Статусну траку и Покретач.</translation>
+<translation id="1315077335264761176">Положај додира</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, поништен је избор дугмета за избор ставке менија</translation>
 <translation id="1325946044405407859">Жутомрка</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> од <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Добро дошли у водич за ChromeVox. Да бисте затворили овај водич у било ком тренутку, притисните тастер Escape у горњем левом углу тастатуре. Да бисте искључили ChromeVox, задржите тастере Control и Alt и притисните тастер Z. Када сте спремни, пређите на следећу лекцију помоћу тастера за размак.</translation>
 <translation id="174268867904053074">Следећа слика</translation>
 <translation id="1756785467854861272">Тамноциклама</translation>
+<translation id="1758693804775271377">Превуците улево или удесно једним прстом да бисте прегледали лекције за ову тему</translation>
 <translation id="1765245556747822181">Превлачите нагоре једним прстом</translation>
 <translation id="1771761307086386028">Помери надесно</translation>
 <translation id="1781173782405573156">Пролазни тастер</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Ред</translation>
 <translation id="2816868829355607410">Област за вежбање: команде за прелазак</translation>
 <translation id="2841013758207633010">Време</translation>
+<translation id="284171465644749950">Превлачите улево или удесно једним прстом да бисте прегледали теме</translation>
 <translation id="2843432675592278677">Нема претходног ARIA обележја</translation>
 <translation id="2843814945404750166">Тамна маслинастозелена</translation>
 <translation id="2843837985843789981">Претходна група</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox је ажуриран</translation>
 <translation id="93384979447910801">Тамна плавозелена</translation>
 <translation id="948171205378458592">Смањивање брзине говора</translation>
+<translation id="957570623732056069">Превуците улево или удесно једним прстом да бисте се кретали кроз лекцију</translation>
 <translation id="958854023026327378">Превлачите надоле једним прстом</translation>
 <translation id="962913030769097253">Следеће заглавље 1. нивоа</translation>
 <translation id="966588271015727539">Изаберите Bluetooth Брајев екран</translation>

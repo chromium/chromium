@@ -520,6 +520,7 @@
 <translation id="1563702743503072935">As senhas da sua Conta do Google também estarão disponíveis neste dispositivo enquanto ela estiver conectada</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">A impressora selecionada não está disponível ou não foi instalada corretamente. Verifique a impressora ou selecione outra.</translation>
+<translation id="1567135437923613642">Ativar experimentos em destaque</translation>
 <translation id="1567387640189251553">Um teclado diferente foi conectado desde a última vez que você inseriu sua senha. Ele pode estar tentando capturar sua digitação.</translation>
 <translation id="1567993339577891801">Console JavaScript</translation>
 <translation id="1568323446248056064">Abrir configurações de exibição do dispositivo</translation>
@@ -919,6 +920,7 @@
 <translation id="1979095679518582070">A desativação desse recurso não afeta a capacidade do dispositivo de enviar as informações necessárias para serviços básicos, como atualizações do sistema e segurança.</translation>
 <translation id="1979280758666859181">Você está mudando para um canal com uma versão mais antiga do <ph name="PRODUCT_NAME" />. A mudança de canal será aplicada quando a versão do canal corresponder à versão instalada atualmente no dispositivo.</translation>
 <translation id="197989455406964291">O KDC não é compatível com esse tipo de criptografia</translation>
+<translation id="1983497378699148207">Para concluir a configuração do Linux, atualize o Chrome OS e tente novamente.</translation>
 <translation id="1984417487208496350">Sem proteção (não recomendado)</translation>
 <translation id="1987317783729300807">Contas</translation>
 <translation id="1989112275319619282">Procurar</translation>
@@ -1331,6 +1333,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2450223707519584812">Não é possível adicionar usuários, porque as chaves da API do Google estão ausentes. Consulte <ph name="DETAILS_URL" /> para ter mais detalhes.</translation>
 <translation id="2450849356604136918">Não há visualizações ativas</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Os sites geralmente se conectam a portas seriais para recursos de transferência de dados, como a configuração da rede</translation>
 <translation id="2453860139492968684">Concluir</translation>
 <translation id="2454247629720664989">Palavra-chave</translation>
 <translation id="2454264884354864965">A câmera está desativada</translation>
@@ -1961,6 +1964,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="313205617302240621">Esqueceu a senha?</translation>
 <translation id="3132277757485842847">Não foi possível manter uma conexão com o smartphone. Verifique se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados.</translation>
 <translation id="3132996321662585180">Atualizar diariamente</translation>
+<translation id="3134393957315651797">Selecione um estado para o experimento <ph name="EXPERIMENT_NAME" />. Descrição do experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN inválido. Você tem <ph name="RETRIES" /> tentativas restantes.</translation>
 <translation id="313963229645891001">Fazendo o download, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarelo padrão</translation>
@@ -2846,6 +2850,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4099874310852108874">Ocorreu um erro de rede.</translation>
 <translation id="4100733287846229632">Espaço em disco do dispositivo criticamente baixo</translation>
 <translation id="4100853287411968461">Novo limite de tempo de uso</translation>
+<translation id="4101352914005291489">SSID oculto</translation>
 <translation id="4102906002417106771">Reiniciar para executar o Powerwash</translation>
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar e ejetar dispositivos de armazenamento</translation>
@@ -3915,6 +3920,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5382591305415226340">Gerenciar links compatíveis</translation>
 <translation id="5383377866517186886">A câmera está desativada nas preferências do sistema do Mac</translation>
 <translation id="5383740867328871413">Grupo sem nome: <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">A política da empresa mudou. O botão "Experimentos" foi adicionado à barra de ferramentas. Clique nele para abrir uma caixa de diálogo e ativar os experimentos.</translation>
 <translation id="5388885445722491159">Emparelhado</translation>
 <translation id="5390100381392048184">Permitir o áudio dos sites</translation>
 <translation id="5390112241331447203">Incluir o arquivo system_logs.txt enviado nos relatórios de feedback.</translation>
@@ -5040,6 +5046,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6659594942844771486">Guia</translation>
 <translation id="6660413144148052430">local</translation>
 <translation id="666099631117081440">Servidores de impressão</translation>
+<translation id="6662931079349804328">A política da empresa mudou. O botão "Experimentos" foi removido da barra de ferramentas.</translation>
 <translation id="6663190258859265334">Use a função Powerwash no <ph name="DEVICE_TYPE" /> e volte para a versão anterior.</translation>
 <translation id="6664237456442406323">Infelizmente, seu computador está configurado com um ID de hardware mal formado. Isso impede que o Chrome OS seja atualizado com as correções de segurança mais recentes e, por isso, seu computador <ph name="BEGIN_BOLD" />pode ficar vulnerável a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Ocorreu um erro ao abrir seu perfil. Saia da conta e faça login novamente.</translation>
@@ -5396,6 +5403,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7056526158851679338">&amp;Inspecionar dispositivos</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{A confirmação de segurança foi executada há 1 minuto}one{A confirmação de segurança foi executada há {NUM_MINS} minuto}other{A confirmação de segurança foi executada há {NUM_MINS} minutos}}</translation>
 <translation id="7057767408836081338">Falha ao acessar os dados do app. Tentando executá-lo mesmo assim…</translation>
+<translation id="7058024590501568315">Rede oculta</translation>
 <translation id="7059858479264779982">Definir para abertura automática</translation>
 <translation id="7059893117020417984">Para navegar com privacidade, clique no menu de ícone de pontos para abrir uma janela anônima</translation>
 <translation id="7062222374113411376">Permitir que sites fechados recentemente concluam o envio e o recebimento de dados (recomendado)</translation>
@@ -5759,6 +5767,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7477793887173910789">Controle suas músicas, seus vídeos e muito mais</translation>
 <translation id="7478485216301680444">Não foi possível instalar o aplicativo de quiosque.</translation>
 <translation id="7478623944308207463">Seus apps e suas configurações serão sincronizados em todos os dispositivos Chrome OS conectados à sua Conta do Google. Para ver as opções de sincronização do navegador, acesse as <ph name="LINK_BEGIN" />configurações do Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Não permitir que os sites se conectem a portas seriais</translation>
 <translation id="7479221278376295180">Visão geral do uso do armazenamento</translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481358317100446445">Pronto</translation>
@@ -5910,11 +5919,13 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="765293928828334535">Apps, extensões e scripts de usuário não podem ser adicionados a partir deste site</translation>
 <translation id="7652954539215530680">Criar um PIN</translation>
 <translation id="7654941827281939388">Esta conta já está sendo utilizada neste computador.</translation>
+<translation id="7655411746932645568">Os sites podem pedir para se conectar a portas seriais</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659297516559011665">Senhas apenas neste dispositivo</translation>
 <translation id="7659584679870740384">Você não tem autorização para usar este dispositivo. Para permissão de login, entre em contato com o administrador.</translation>
 <translation id="7661259717474717992">Permitir que os sites salvem e leiam os dados de arquivos "cookies" - que armazenam temporariamente o que você visitou na rede.</translation>
 <translation id="7661451191293163002">Não foi possível adquirir um certificado de registro.</translation>
+<translation id="7661762353058813968">As atualizações são gerenciadas pelo administrador.</translation>
 <translation id="7662283695561029522">Toque para configurar</translation>
 <translation id="7663719505383602579">Destinatário: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Dispositivo Bluetooth não suportado: "<ph name="DEVICE_NAME" />".</translation>
@@ -6696,6 +6707,7 @@ Usar Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="8539727552378197395">Nenhum (HttpOnly)</translation>
 <translation id="8539766201049804895">Fazer upgrade</translation>
 <translation id="8540136935098276800">Insira um URL formatado corretamente</translation>
+<translation id="8540503336857689453">Por motivos de segurança, não é recomendado usar uma rede oculta.</translation>
 <translation id="8540608333167683902">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, detalhes</translation>
 <translation id="854071720451629801">Marcar como "Lida"</translation>
 <translation id="8541462173655894684">Não foram encontradas impressoras no servidor</translation>

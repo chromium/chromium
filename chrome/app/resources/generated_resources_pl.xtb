@@ -521,6 +521,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1563702743503072935">Gdy się zalogujesz, uzyskasz na tym urządzeniu dostęp także do haseł z Twojego konta Google</translation>
 <translation id="1566049601598938765">Strona internetowa</translation>
 <translation id="15662109988763471">Wybrana drukarka jest niedostępna lub nieprawidłowo zainstalowana. Sprawdź ją lub wybierz inną.</translation>
+<translation id="1567135437923613642">Włącz polecane eksperymenty</translation>
 <translation id="1567387640189251553">Do urządzenia jest podłączona inna klawiatura niż przy ostatnim wpisywaniu hasła. Może ona próbować przechwycić naciskane klawisze.</translation>
 <translation id="1567993339577891801">Konsola JavaScript</translation>
 <translation id="1568323446248056064">Otwórz ustawienia wyświetlacza</translation>
@@ -916,6 +917,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1979095679518582070">Wyłączenie tej funkcji nie ogranicza wysyłania przez to urządzenie informacji potrzebnych do działania kluczowych usług, takich jak aktualizacje systemu czy zabezpieczenia.</translation>
 <translation id="1979280758666859181">Przechodzisz na kanał, w którym <ph name="PRODUCT_NAME" /> jest w starszej wersji. Zmiana nastąpi wtedy, gdy wersja na wybranym kanale będzie zgodna z tą zainstalowaną na Twoim urządzeniu.</translation>
 <translation id="197989455406964291">KDC nie obsługuje tego typu szyfrowania</translation>
+<translation id="1983497378699148207">Aby dokończyć konfigurowanie Linuksa, zaktualizuj Chrome OS i spróbuj ponownie.</translation>
 <translation id="1984417487208496350">Brak ochrony (niezalecane)</translation>
 <translation id="1987317783729300807">Konta</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
@@ -1328,6 +1330,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2450223707519584812">Nie będzie można dodawać użytkowników, ponieważ brakuje kluczy Google API. Więcej szczegółów znajdziesz na <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Brak aktywnych widoków</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Strony zwykle łączą się z portami szeregowymi w celu obsługi funkcji związanych z przesyłaniem danych, na przykład aby skonfigurować sieć</translation>
 <translation id="2453860139492968684">Zakończ</translation>
 <translation id="2454247629720664989">Słowo kluczowe</translation>
 <translation id="2454264884354864965">Kamera jest wyłączona</translation>
@@ -1958,6 +1961,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="313205617302240621">Nie pamiętasz hasła?</translation>
 <translation id="3132277757485842847">Nie udało się utrzymać połączenia z Twoim telefonem. Sprawdź, czy telefon jest w pobliżu, jest odblokowany i ma włączone Bluetooth oraz Wi-Fi.</translation>
 <translation id="3132996321662585180">Odświeżaj codziennie</translation>
+<translation id="3134393957315651797">Wybierz stan eksperymentu <ph name="EXPERIMENT_NAME" />. Opis eksperymentu: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Nieprawidłowy kod PIN. Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Pobieram, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Domyślny żółty awatar</translation>
@@ -2842,6 +2846,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4099874310852108874">Wystąpił błąd sieci.</translation>
 <translation id="4100733287846229632">Na urządzeniu już prawie nie ma miejsca</translation>
 <translation id="4100853287411968461">Nowy limit czasu używania</translation>
+<translation id="4101352914005291489">Ukryty identyfikator SSID</translation>
 <translation id="4102906002417106771">Uruchom ponownie, by wykonać Powerwash</translation>
 <translation id="4104163789986725820">E&amp;ksportuj</translation>
 <translation id="4107048419833779140">Rozpoznawanie i wysuwanie urządzeń pamięci</translation>
@@ -3911,6 +3916,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5382591305415226340">Zarządzaj obsługiwanymi linkami</translation>
 <translation id="5383377866517186886">Kamera jest wyłączona w Preferencjach systemowych Maca</translation>
 <translation id="5383740867328871413">Grupa bez nazwy – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Zmieniono zasady przedsiębiorstwa. Do paska narzędzi został dodany przycisk Eksperymenty. Kliknij go, aby otworzyć okno, w którym można włączyć eksperymenty.</translation>
 <translation id="5388885445722491159">Sparowane</translation>
 <translation id="5390100381392048184">Zezwalaj na odtwarzanie dźwięku na stronach internetowych</translation>
 <translation id="5390112241331447203">Uwzględnij plik system_logs.txt przesłany razem z opiniami.</translation>
@@ -5035,6 +5041,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6659594942844771486">Karta</translation>
 <translation id="6660413144148052430">lokalizacja</translation>
 <translation id="666099631117081440">Serwery druku</translation>
+<translation id="6662931079349804328">Zmieniono zasady przedsiębiorstwa. Z paska narzędzi został usunięty przycisk Eksperymenty.</translation>
 <translation id="6663190258859265334">Wykonaj Powerwash na urządzeniu <ph name="DEVICE_TYPE" /> i przywróć poprzednią wersję.</translation>
 <translation id="6664237456442406323">Twój komputer jest skonfigurowany przy użyciu błędnie sformatowanego identyfikatora sprzętu. Ta sytuacja uniemożliwia zaktualizowanie systemu operacyjnego Chrome za pomocą najnowszych poprawek zabezpieczeń, a komputer <ph name="BEGIN_BOLD" />może być narażony na złośliwe ataki<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Podczas otwierania Twojego profilu coś poszło nie tak. Wyloguj się i ponownie zaloguj.</translation>
@@ -5391,6 +5398,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7056526158851679338">&amp;Sprawdź urządzenia</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Potwierdzenie bezpieczeństwa zostało wykonane 1 minutę temu}few{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_MINS} minuty temu}many{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_MINS} minut temu}other{Potwierdzenie bezpieczeństwa zostało wykonane {NUM_MINS} minuty temu}}</translation>
 <translation id="7057767408836081338">Nie udało się pobrać danych aplikacji. Próbuję ją jednak uruchomić...</translation>
+<translation id="7058024590501568315">Sieć ukryta</translation>
 <translation id="7059858479264779982">Ustaw automatyczne uruchamianie</translation>
 <translation id="7059893117020417984">Aby przeglądać prywatnie, kliknij ikonę menu z kropkami i otwórz okno incognito</translation>
 <translation id="7062222374113411376">Zezwól niedawno zamkniętym stronom na dokończenie wysyłania i odbierania danych (zalecane)</translation>
@@ -5754,6 +5762,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7477793887173910789">Steruj filmami, muzyką i innymi multimediami</translation>
 <translation id="7478485216301680444">Nie można zainstalować aplikacji kiosku.</translation>
 <translation id="7478623944308207463">Twoje aplikacje i ustawienia będą synchronizować się na wszystkich urządzeniach z Chrome OS, na których zalogujesz się na swoje konto Google. Opcje synchronizacji przeglądarki znajdziesz w <ph name="LINK_BEGIN" />ustawieniach Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Nie zezwalaj witrynom na łączenie się z portami szeregowymi</translation>
 <translation id="7479221278376295180">Informacje o użyciu pamięci</translation>
 <translation id="7481312909269577407">Dalej</translation>
 <translation id="7481358317100446445">Gotowa</translation>
@@ -5905,11 +5914,13 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="765293928828334535">Z tej strony nie można dodawać aplikacji, rozszerzeń ani skryptów użytkownika</translation>
 <translation id="7652954539215530680">Tworzenie kodu PIN</translation>
 <translation id="7654941827281939388">To konto jest już używane na tym komputerze.</translation>
+<translation id="7655411746932645568">Strony mogą prosić o zgodę na połączenie z portami szeregowymi</translation>
 <translation id="7658239707568436148">Anuluj</translation>
 <translation id="7659297516559011665">Tylko hasła na tym urządzeniu</translation>
 <translation id="7659584679870740384">Nie masz uprawnień do korzystania z tego urządzenia. Aby uzyskać pozwolenie na logowanie się, skontaktuj się z jego administratorem.</translation>
 <translation id="7661259717474717992">Zezwalaj witrynom na zapis i odczyt danych w plikach cookie</translation>
 <translation id="7661451191293163002">Nie udało się uzyskać certyfikatu rejestracji.</translation>
+<translation id="7661762353058813968">Aktualizacjami zarządza Twój administrator.</translation>
 <translation id="7662283695561029522">Kliknij, by skonfigurować</translation>
 <translation id="7663719505383602579">Odbiorca: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Nieobsługiwane urządzenie Bluetooth: „<ph name="DEVICE_NAME" />”.</translation>
@@ -6691,6 +6702,7 @@ Naciśnij Ctrl+Alt+zmniejsz jasność, aby pomniejszyć.</translation>
 <translation id="8539727552378197395">Nie (HttpOnly)</translation>
 <translation id="8539766201049804895">Uaktualnij</translation>
 <translation id="8540136935098276800">Wpisz poprawnie sformatowany URL</translation>
+<translation id="8540503336857689453">Ze względów bezpieczeństwa używanie ukrytej sieci nie jest zalecane.</translation>
 <translation id="8540608333167683902">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, szczegóły</translation>
 <translation id="854071720451629801">Oznacz jako przeczytane</translation>
 <translation id="8541462173655894684">Nie znaleziono żadnej drukarki na serwerze druku</translation>

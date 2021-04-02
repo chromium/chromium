@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + အသုံးပြုသူ လက်မှတ်</translation>
 <translation id="4731797938093519117">မိဘ သုံးခွင့်</translation>
 <translation id="4773299976671772492">ဆိုင်းငံ့ထား</translation>
+<translation id="4794140124556169553">CPU စစ်ဆေးမှု လုပ်ဆောင်ခြင်းက သင့်စနစ်၏ စွမ်းဆောင်ရည်အပေါ် သက်ရောက်မှုရှိနိုင်သည်</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> ပရင့်ထုတ်ခြင်းကို ပယ်ဖျက်လိုက်သည်။</translation>
 <translation id="4813345808229079766">ချိတ်ဆက်မှု</translation>
 <translation id="4832079907277790330">Files အက်ပ်တွင် ဖိုင်တွဲကိုရွေးရန်...</translation>
@@ -340,6 +341,7 @@
 <translation id="8483248364096924578">အိုင်ပီလိပ်စာ</translation>
 <translation id="8503813439785031346">အသုံးပြုသူအမည်</translation>
 <translation id="8503836310948963452">နောက်ထပ် မိနစ်အနည်းငယ်သာ လိုသည်…</translation>
+<translation id="8575298406870537639">သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီသည် ၎င်း၏ကွန်ရက်သို့ ချိတ်ဆက်ရန် ဤရွေးချယ်စရာကို သတ်မှတ်ထားနိုင်သည်။ အသေးစိတ်အတွက် သင့်မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="8576249514688522074">စတင်မထားပါ</translation>
 <translation id="8620617069779373398">ကွန်ရက်ပြင်ပဒေတာသုံးခြင်း အခြေအနေ</translation>
 <translation id="8675354002693747642">ကြိုတင်မျှဝေထားသည့် ကီး</translation>
@@ -364,7 +366,6 @@
 <translation id="8970109610781093811">ထပ်လုပ်ဆောင်ရန်</translation>
 <translation id="9003704114456258138">ကြိမ်နှုန်း</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">ပြင်ဆင်ရန်</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ဘလူးတုသ်</translation>
 <translation id="9088306295921699330">လက်ရှိ အသုံးပြုမှု</translation>

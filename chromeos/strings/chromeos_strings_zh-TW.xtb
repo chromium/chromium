@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + 使用者憑證</translation>
 <translation id="4731797938093519117">家長存取</translation>
 <translation id="4773299976671772492">已停止</translation>
+<translation id="4794140124556169553">執行 CPU 測試可能會影響系統效能</translation>
 <translation id="4808449224298348341">已取消列印工作「<ph name="DOCUMENT_TITLE" />」</translation>
 <translation id="4813345808229079766">連線</translation>
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
@@ -341,6 +342,7 @@
 <translation id="8483248364096924578">IP 位址</translation>
 <translation id="8503813439785031346">使用者名稱</translation>
 <translation id="8503836310948963452">請稍待幾分鐘…</translation>
+<translation id="8575298406870537639">你的電信業者可能會要求你必須選擇此選項才能連線至他們的網路。如要瞭解詳情，請洽詢你的電信業者。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>
 <translation id="8675354002693747642">預先共用金鑰</translation>
@@ -365,7 +367,6 @@
 <translation id="8970109610781093811">再執行一次</translation>
 <translation id="9003704114456258138">頻率</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">編輯</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9088306295921699330">目前用量</translation>

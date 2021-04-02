@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Help de functies en prestaties van Chrome verbeteren</translation>
 <translation id="1314663809820920746">Je bookmarks, geschiedenis, wachtwoorden en andere instellingen blijven zichtbaar op dit apparaat. Als je wijzigingen aanbrengt, worden deze niet gesynchroniseerd met je Google-account.</translation>
 <translation id="1479202195792305274">Chrome kan je wachtwoorden checken als je inlogt met je Google-account.</translation>
+<translation id="1493827051843127077">Stel Chrome in als je standaardbrowser om je tabbladen, wachtwoorden en betalingsgegevens op al je apparaten te synchroniseren</translation>
 <translation id="1504372625950710826">Chrome kan niet checken op updates. Check de internetverbinding.</translation>
 <translation id="1682483655351012182">Je Chrome-gegevens synchroniseren</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome deelt je locatie met sites die je toestaat.</translation>
 <translation id="2347208864470321755">Als deze functie aanstaat, biedt Chrome aan pagina's die zijn geschreven in andere talen te vertalen met Google Translate. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Chrome instellen als je standaardbrowser</translation>
+<translation id="2561231791489583059">Gebruik Chrome als je standaardbrowser voor bescherming tegen gevaarlijke sites en om je wachtwoorden te beveiligen</translation>
 <translation id="2574249610672786438">Log in op al je apparaten om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="2576431527583832481">Chrome is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
 <translation id="257708665678654955">Wil je dat Google Chrome de volgende keer aanbiedt om pagina's in het <ph name="LANGUAGE_NAME" /> op deze site te vertalen?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome kan je wachtwoorden niet checken</translation>
 <translation id="7265369419224458312">Bekijk hier de tabbladen die je op je computer hebt geopend. Open Chrome op je computer, ga naar het menu en selecteer 'Inloggen bij Chrome'.</translation>
 <translation id="7272930098487145294">Als je afbeeldingen wilt opslaan, tik je op Instellingen om deze door Chrome aan je foto's te laten toevoegen</translation>
+<translation id="7275945473750112644">Je account wordt beheerd door <ph name="HOSTED_DOMAIN" />, dus je Chrome-gegevens worden verwijderd van dit apparaat</translation>
 <translation id="7400722733683201933">Over Google Chrome</translation>
 <translation id="7501046334262221972">Open Instellingen om Chrome in te stellen als standaardbrowser. Tik op 'Standaard browser-app' en selecteer Chrome.</translation>
 <translation id="756809126120519699">Chrome-gegevens gewist</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Je wachtwoord is gelekt bij een gegevenslek. Chrome raadt je aan om het wachtwoord nu te wijzigen.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
 <translation id="7855730255114109580">Google Chrome is up-to-date</translation>
+<translation id="8022947259858476807">Gebruik standaard Chrome om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="8160472928944011082">Chrome kan niet updaten</translation>
+<translation id="8357607116237445042">Kies of je je Chrome-gegevens voor dit apparaat wilt verwijderen of behouden</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="840168496893712993">Sommige add-ons kunnen ervoor zorgen dat Chrome crasht. Verwijder deze add-ons.</translation>
 <translation id="8459495907675268833">De geselecteerde gegevens zijn verwijderd uit Chrome en van gesynchroniseerde apparaten. Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekopdrachten en activiteit uit andere Google-services) beschikbaar zijn via history.google.com.</translation>
@@ -88,4 +93,5 @@
 2. Tik op Standaard browser-app.
 3. Selecteer Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Blijf veilig met Google Chrome</translation>
 </translationbundle>

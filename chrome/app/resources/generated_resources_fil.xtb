@@ -520,6 +520,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1563702743503072935">Magiging available din sa device na ito ang mga password mula sa iyong Google Account habang naka-sign in ka</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">Ang napiling printer ay hindi available o hindi naka-install nang tama. Tingnan ang iyong printer o subukang pumili ng isa pang printer.</translation>
+<translation id="1567135437923613642">I-enable ang mga itinatampok na eksperimento</translation>
 <translation id="1567387640189251553">Nagkonekta ng ibang keyboard mula nang huli mong inilagay ang iyong password. Maaaring sinusubukan nitong nakawin ang iyong mga keystroke.</translation>
 <translation id="1567993339577891801">Console ng JavaScript</translation>
 <translation id="1568323446248056064">Buksan ang mga setting ng display device</translation>
@@ -919,6 +920,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1979095679518582070">Ang pag-off sa feature na ito ay hindi nakakaapekto sa kakayahan ng device na ito na ipadala ang impormasyong kinakailangan para sa mahahalagang serbisyo tulad ng mga pag-update ng system at seguridad.</translation>
 <translation id="1979280758666859181">Lumilipat ka sa isang channel na may lumang bersyon ng <ph name="PRODUCT_NAME" />. Ilalapat ang paglilipat ng channel kapag tumugma ang bersyon ng channel sa bersyong kasalukuyang naka-install sa iyong device.</translation>
 <translation id="197989455406964291">Hindi sinusuportahan ng KDC ang uri ng pag-encrypt</translation>
+<translation id="1983497378699148207">Para tapusin ang pag-set up ng Linux, i-update ang Chrome OS at subukan ulit.</translation>
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
 <translation id="1987317783729300807">Mga Account</translation>
 <translation id="1989112275319619282">Mag-browse</translation>
@@ -1331,6 +1333,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2450223707519584812">Hindi mo magagawang magdagdag ng mga user dahil wala ang mga Google API key. Tingnan ang <ph name="DETAILS_URL" /> para sa mga detalye.</translation>
 <translation id="2450849356604136918">Walang aktibong view</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Karaniwang kumokonekta ang mga site sa mga serial port para sa mga feature sa paglilipat ng data, gaya ng pag-set up ng iyong network</translation>
 <translation id="2453860139492968684">Tapos na</translation>
 <translation id="2454247629720664989">Keyword</translation>
 <translation id="2454264884354864965">Naka-off ang camera</translation>
@@ -1961,6 +1964,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="313205617302240621">Nakalimutan mo ba ang iyong password?</translation>
 <translation id="3132277757485842847">Hindi namin mapanatili ang pagkakakonekta sa iyong telepono. Tiyaking nasa malapit at naka-unlock ang iyong telepono at naka-on ang Bluetooth at Wi-Fi nito.</translation>
 <translation id="3132996321662585180">I-refresh araw-araw</translation>
+<translation id="3134393957315651797">Pumili ng status ng eksperimento para sa eksperimentong <ph name="EXPERIMENT_NAME" />. Paglalarawan ng eksperimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Invalid ang PIN. Mayroon ka na lang <ph name="RETRIES" /> (na) natitirang pagsubok.</translation>
 <translation id="313963229645891001">Nagda-download, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Default na dilaw na avatar</translation>
@@ -2845,6 +2849,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4099874310852108874">Nagkaroon ng error sa network.</translation>
 <translation id="4100733287846229632">Sobrang kaunti na lang ang espasyo ng device</translation>
 <translation id="4100853287411968461">Bagong limitasyon sa tagal ng paggamit</translation>
+<translation id="4101352914005291489">Nakatagong SSID</translation>
 <translation id="4102906002417106771">I-restart para mag-powerwash</translation>
 <translation id="4104163789986725820">I-e&amp;xport...</translation>
 <translation id="4107048419833779140">Kumilala at mag-eject ng mga storage device</translation>
@@ -3914,6 +3919,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5382591305415226340">Pamahalaan ang mga sinusuportahang link</translation>
 <translation id="5383377866517186886">Naka-off ang camera sa System Preferences ng Mac</translation>
 <translation id="5383740867328871413">Grupong walang pangalan - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Binago ang patakaran sa enterprise. Idinagdag ang button ng mga eksperimento sa toolbar. I-click ang button para magbukas ng dialog para i-enable ang mga eksperimento.</translation>
 <translation id="5388885445722491159">Ipinares</translation>
 <translation id="5390100381392048184">Payagan ang mga site na mag-play ng tunog</translation>
 <translation id="5390112241331447203">Isama ang file na system_logs.txt na ipinadala sa mga feedback report.</translation>
@@ -5038,6 +5044,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6660413144148052430">lokasyon</translation>
 <translation id="666099631117081440">Mga server sa pag-print</translation>
+<translation id="6662931079349804328">Binago ang patakaran sa enterprise. Inalis ang button ng mga eksperimento sa toolbar.</translation>
 <translation id="6663190258859265334">I-powerwash ang iyong <ph name="DEVICE_TYPE" /> at bumalik sa nakaraang bersyon.</translation>
 <translation id="6664237456442406323">Sa kasamaang-palad, na-configure ang iyong computer gamit ang isang hardware ID na mali ang pagkakabuo. Pinipigilan nitong mag-update ang Chrome OS upang magkaroon ng mga pinakabagong pag-aayos sa seguridad at <ph name="BEGIN_BOLD" />maaaring mawalan ng proteksyon laban sa mga nakakahamak na pag-atake<ph name="END_BOLD" /> ang iyong computer.</translation>
 <translation id="6664774537677393800">Nagkaproblema sa pagbukas ng iyong profile. Mangyaring mag-sign out at pagkatapos ay muling mag-sign in.</translation>
@@ -5394,6 +5401,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7056526158851679338">&amp;Inspeksyunin ang Mga Device</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Nagpatakbo ng pag-check sa kaligtasan 1 minuto ang nakalipas}one{Nagpatakbo ng pag-check sa kaligtasan {NUM_MINS} minuto ang nakalipas}other{Nagpatakbo ng pag-check sa kaligtasan {NUM_MINS} na minuto ang nakalipas}}</translation>
 <translation id="7057767408836081338">Hindi nakuha ang data ng app, sinusubukan pa ring patakbuhin ang app...</translation>
+<translation id="7058024590501568315">Nakatagong network</translation>
 <translation id="7059858479264779982">Itakdang awtomatikong ilunsad</translation>
 <translation id="7059893117020417984">Upang mag-browse nang pribado, i-click ang menu ng icon na mga tuldok upang magbukas ng incognito window</translation>
 <translation id="7062222374113411376">Payagan ang mga kamakailang isinarang site na tapusin ang pagpapadala at pagtanggap ng data</translation>
@@ -5757,6 +5765,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7477793887173910789">Kontrolin ang iyong musika, mga video, at higit pa</translation>
 <translation id="7478485216301680444">Hindi ma-install ang kiosk application.</translation>
 <translation id="7478623944308207463">Magsi-sync ang iyong mga app at setting sa lahat ng Chrome OS device kung saan ka naka-sign in gamit ang Google account mo. Para sa mga opsyon sa pag-sync ng browser, pumunta sa <ph name="LINK_BEGIN" />mga setting ng Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Huwag payagan ang mga site na kumonekta sa mga serial port</translation>
 <translation id="7479221278376295180">Overview ng Paggamit ng Storage</translation>
 <translation id="7481312909269577407">Sumulong</translation>
 <translation id="7481358317100446445">Handa</translation>
@@ -5908,11 +5917,13 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="765293928828334535">Hindi maidadagdag mula sa website na ito ang mga app, extension, at script ng user</translation>
 <translation id="7652954539215530680">Gumawa ng PIN</translation>
 <translation id="7654941827281939388">Ginagamit na ang account na ito sa computer na ito.</translation>
+<translation id="7655411746932645568">Puwedeng hilingin ng mga site na kumonekta sa mga serial port</translation>
 <translation id="7658239707568436148">Kanselahin</translation>
 <translation id="7659297516559011665">Mga password sa device lang na ito</translation>
 <translation id="7659584679870740384">Wala kang pahintulot na gamitin ang device na ito. Mangyaring makipag-ugnayan sa administrator upang makakuha ng pahintulot sa pag-sign in.</translation>
 <translation id="7661259717474717992">Payagan ang mga site na mag-save at magbasa ng data ng cookie</translation>
 <translation id="7661451191293163002">Walang makuhang certificate ng pagpaparehistro.</translation>
+<translation id="7661762353058813968">Pinapamahalaan ng iyong administrator ang mga update.</translation>
 <translation id="7662283695561029522">I-tap upang i-configure</translation>
 <translation id="7663719505383602579">Tatanggap: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Hindi sinusuportahang Bluetooth device: "<ph name="DEVICE_NAME" />".</translation>
@@ -6695,6 +6706,7 @@ Gamitin ang Ctrl+Alt+Brightness Down para mag-zoom out.</translation>
 <translation id="8539727552378197395">Hindi (HttpOnly)</translation>
 <translation id="8539766201049804895">I-upgrade</translation>
 <translation id="8540136935098276800">Maglagay ng URL na tama ang pag-format</translation>
+<translation id="8540503336857689453">Hindi inirerekomenda ang paggamit ng nakatagong network para sa seguridad.</translation>
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> sa <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />%, Mga Detalye</translation>
 <translation id="854071720451629801">Markahan Bilang Nabasa Na</translation>
 <translation id="8541462173655894684">Walang nakitang anumang printer mula sa server sa pag-print</translation>

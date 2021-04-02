@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Light Sky Blue</translation>
 <translation id="1303806948938513162">Tap with 4 fingers to enter the ChromeVox menus</translation>
 <translation id="1313373992684326101">Move to previous section. Examples include the Status Tray and Launcher.</translation>
+<translation id="1315077335264761176">Touch orientation</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menu item radio button unselected</translation>
 <translation id="1325946044405407859">Tan</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> of <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Welcome to the ChromeVox tutorial. To exit this tutorial at any time, press the escape key on the top-left corner of the keyboard. To turn off ChromeVox, hold Control &amp; Alt, and press Z. When you're ready, use the spacebar to move to the next lesson.</translation>
 <translation id="174268867904053074">Next graphic</translation>
 <translation id="1756785467854861272">Dark magenta</translation>
+<translation id="1758693804775271377">Swipe left or right with one finger to browse lessons for this topic</translation>
 <translation id="1765245556747822181">Swipe one finger up</translation>
 <translation id="1771761307086386028">Scroll right</translation>
 <translation id="1781173782405573156">Pass through key</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Row</translation>
 <translation id="2816868829355607410">Practice area: jump commands</translation>
 <translation id="2841013758207633010">Time</translation>
+<translation id="284171465644749950">Swipe left or right with one finger to browse topics</translation>
 <translation id="2843432675592278677">No previous ARIA landmark</translation>
 <translation id="2843814945404750166">Dark Olive Green</translation>
 <translation id="2843837985843789981">Previous group</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox Updated</translation>
 <translation id="93384979447910801">Dark Sea Green</translation>
 <translation id="948171205378458592">Decrease rate of speech</translation>
+<translation id="957570623732056069">Swipe left or right with one finger to navigate this lesson</translation>
 <translation id="958854023026327378">Swipe one finger down</translation>
 <translation id="962913030769097253">Next level 1 heading</translation>
 <translation id="966588271015727539">Select a Bluetooth braille display</translation>

@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">로그인한 상태라면 이 기기에서도 Google 계정의 비밀번호를 사용할 수 있습니다.</translation>
 <translation id="1566049601598938765">웹사이트</translation>
 <translation id="15662109988763471">선택한 프린터가 사용 불가능하거나 올바르게 설치되어 있지 않습니다. 프린터를 확인하거나 다른 프린터를 선택해 보세요.</translation>
+<translation id="1567135437923613642">추천 실험 기능 사용</translation>
 <translation id="1567387640189251553">마지막으로 비밀번호를 입력한 후 다른 키보드가 연결되었습니다. 키 입력 내용을 도용하려는 시도일 수 있습니다.</translation>
 <translation id="1567993339577891801">자바스크립트 콘솔</translation>
 <translation id="1568323446248056064">디스플레이 기기 설정 열기</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">기능을 사용 중지해도 이 기기에서 시스템 업데이트 및 보안과 같은 필수 서비스에 필요한 정보를 전송하는 데는 영향을 미치지 않습니다.</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" />의 이전 버전으로 채널을 변경하려 합니다. 채널 버전이 현재 기기에 설치되어 있는 버전과 일치할 때 채널 변경이 적용됩니다.</translation>
 <translation id="197989455406964291">KDC가 암호화 유형을 지원하지 않습니다.</translation>
+<translation id="1983497378699148207">Linux 설정을 완료하려면 Chrome OS를 업데이트하고 다시 시도하세요.</translation>
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1987317783729300807">계정</translation>
 <translation id="1989112275319619282">찾아보기</translation>
@@ -1330,6 +1332,7 @@
 <translation id="2450223707519584812">Google API 키가 누락되었으므로 사용자를 추가할 수 없습니다. 자세한 내용은 <ph name="DETAILS_URL" /> 페이지를 참조하세요.</translation>
 <translation id="2450849356604136918">활성화된 뷰 없음</translation>
 <translation id="2451298179137331965">2배</translation>
+<translation id="245322989586167203">사이트에서는 일반적으로 네트워크 설정과 같은 데이터 전송 기능을 사용하기 위해 직렬 포트에 연결합니다.</translation>
 <translation id="2453860139492968684">완료</translation>
 <translation id="2454247629720664989">키워드</translation>
 <translation id="2454264884354864965">카메라 꺼짐</translation>
@@ -1960,6 +1963,7 @@
 <translation id="313205617302240621">비밀번호 찾기</translation>
 <translation id="3132277757485842847">휴대전화와 연결을 유지할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="3132996321662585180">매일 새로고침</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> 실험의 상태를 선택하세요. 실험 설명: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">잘못된 PIN입니다. 기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="313963229645891001">다운로드 중, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">기본 노란색 아바타</translation>
@@ -2842,6 +2846,7 @@
 <translation id="4099874310852108874">네트워크 오류가 발생했습니다.</translation>
 <translation id="4100733287846229632">기기 저장 공간 매우 부족</translation>
 <translation id="4100853287411968461">기기 사용 시간 제한 업데이트</translation>
+<translation id="4101352914005291489">숨겨진 SSID</translation>
 <translation id="4102906002417106771">다시 시작하여 파워워시</translation>
 <translation id="4104163789986725820">내보내기(&amp;X)...</translation>
 <translation id="4107048419833779140">외부 저장장치 식별 및 제거</translation>
@@ -3911,6 +3916,7 @@
 <translation id="5382591305415226340">지원되는 링크 관리</translation>
 <translation id="5383377866517186886">Mac 시스템 환경설정에서 카메라가 사용 중지되었습니다</translation>
 <translation id="5383740867328871413">이름이 지정되지 않은 그룹 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">기업 정책이 변경되었습니다. 툴바에 실험 버튼이 추가되었습니다. 실험 사용 설정 대화상자를 열려면 버튼을 클릭하세요.</translation>
 <translation id="5388885445722491159">페어링됨</translation>
 <translation id="5390100381392048184">사이트에서 소리를 재생하도록 허용</translation>
 <translation id="5390112241331447203">전송된 system_logs.txt 파일을 의견 보고서에 포함합니다.</translation>
@@ -5035,6 +5041,7 @@
 <translation id="6659594942844771486">탭</translation>
 <translation id="6660413144148052430">위치</translation>
 <translation id="666099631117081440">인쇄 서버</translation>
+<translation id="6662931079349804328">기업 정책이 변경되었습니다. 툴바에서 실험 버튼이 삭제되었습니다.</translation>
 <translation id="6663190258859265334"><ph name="DEVICE_TYPE" /> 기기를 파워워시한 다음 이전 버전으로 돌아갑니다.</translation>
 <translation id="6664237456442406323">컴퓨터가 잘못된 형식의 하드웨어 ID로 구성되어 있습니다. 이렇게 하면 Chrome OS가 최신 보안 수정사항을 업데이트할 수 없으며 컴퓨터가<ph name="BEGIN_BOLD" />악의적인 공격에 취약해 집니다<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">프로필을 여는 동안 문제가 발생했습니다. 로그아웃했다가 다시 로그인하세요.</translation>
@@ -5391,6 +5398,7 @@
 <translation id="7056526158851679338">기기 검사(&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{안전 확인이 1분 전에 실행됨}other{안전 확인이 {NUM_MINS}분 전에 실행됨}}</translation>
 <translation id="7057767408836081338">앱 데이터를 가져올 수 없지만 무시하고 앱 실행을 시도 중입니다.</translation>
+<translation id="7058024590501568315">숨겨진 네트워크</translation>
 <translation id="7059858479264779982">자동 실행 설정</translation>
 <translation id="7059893117020417984">비공개로 탐색하려면 점 아이콘 메뉴를 클릭하여 시크릿 창을 여세요.</translation>
 <translation id="7062222374113411376">최근에 닫은 사이트에서 데이터 전송 및 수신을 완료하도록 허용(권장)</translation>
@@ -5754,6 +5762,7 @@
 <translation id="7477793887173910789">음악, 동영상 등의 항목 제어하기</translation>
 <translation id="7478485216301680444">키오스크 애플리케이션을 설치할 수 없습니다.</translation>
 <translation id="7478623944308207463">앱 및 설정은 Google 계정으로 로그인한 모든 Chrome OS 기기와 동기화됩니다. 브라우저 동기화 옵션을 보려면 <ph name="LINK_BEGIN" />Chrome 설정<ph name="LINK_END" />으로 이동하세요.</translation>
+<translation id="7478658909253570368">사이트에서 직렬 포트에 연결하도록 허용하지 않음</translation>
 <translation id="7479221278376295180">저장용량 사용량 개요</translation>
 <translation id="7481312909269577407">앞으로</translation>
 <translation id="7481358317100446445">준비</translation>
@@ -5905,11 +5914,13 @@
 <translation id="765293928828334535">이 웹사이트에서 앱, 확장 프로그램, 사용자 스크립트 등을 추가할 수 없습니다</translation>
 <translation id="7652954539215530680">PIN 만들기</translation>
 <translation id="7654941827281939388">이 계정은 이미 이 컴퓨터에서 사용되고 있습니다.</translation>
+<translation id="7655411746932645568">사이트에서 직렬 포트에 연결하도록 요청할 수 있음</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7659297516559011665">이 기기에만 저장되어 있는 비밀번호</translation>
 <translation id="7659584679870740384">더 이상 이 기기를 사용할 권한이 없습니다. 관리자에게 로그인 권한에 대해 문의하세요.</translation>
 <translation id="7661259717474717992">사이트에서 쿠키 데이터 저장 및 읽기 허용</translation>
 <translation id="7661451191293163002">등록 인증서를 확인할 수 없습니다.</translation>
+<translation id="7661762353058813968">업데이트는 관리자가 관리합니다</translation>
 <translation id="7662283695561029522">설정하려면 탭하세요.</translation>
 <translation id="7663719505383602579">수신기: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">지원되지 않는 블루투스 기기(<ph name="DEVICE_NAME" />)입니다.</translation>
@@ -6691,6 +6702,7 @@ Ctrl+Alt+어둡게 키를 사용하여 축소합니다.</translation>
 <translation id="8539727552378197395">허용 안함(Http만)</translation>
 <translation id="8539766201049804895">업그레이드</translation>
 <translation id="8540136935098276800">올바른 형식의 URL을 입력하세요.</translation>
+<translation id="8540503336857689453">보안상의 이유로 숨겨진 네트워크의 사용은 권장되지 않습니다.</translation>
 <translation id="8540608333167683902">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 세부정보</translation>
 <translation id="854071720451629801">읽음으로 표시</translation>
 <translation id="8541462173655894684">인쇄 서버에서 프린터를 찾을 수 없습니다.</translation>

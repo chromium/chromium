@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Navigeringshistorik</translation>
 <translation id="1231733316453485619">Vill du aktivera synkronisering?</translation>
 <translation id="123724288017357924">Läs in den aktuella sidan igen och ignorera cachelagrat innehåll</translation>
+<translation id="1240288207750131269">Läser in <ph name="LANG" /></translation>
 <translation id="124678866338384709">Stäng den aktuella fliken</translation>
 <translation id="1258753120186372309">Googles doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Hantera webbplatser du följer</translation>
 <translation id="1283039547216852943">Tryck och utöka</translation>
 <translation id="1285310382777185058">Ändra språk</translation>
 <translation id="1291207594882862231">Rensa historiken, cookies, webbplatsdata, cacheminnet …</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Appversion</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1450753235335490080">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Välj språk i Chrome</translation>
 <translation id="147113415845704694">Testa ”Vad är det för väder i dag?”</translation>
 <translation id="1477626028522505441">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av serverfel.</translation>
 <translation id="1492417797159476138">Du har redan sparat användarnamnet för den här webbplatsen</translation>
@@ -205,6 +208,7 @@ Sök genom att trycka på ett ord. Du kan finjustera sökningen genom att trycka
 <translation id="2353636109065292463">Kontrollera internetanslutningen</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2369533728426058518">öppna flikar</translation>
+<translation id="2386938421315164605">Dölj och visa ämnen</translation>
 <translation id="2387895666653383613">Textskalning</translation>
 <translation id="2394602618534698961">Filer som du laddar ned visas här</translation>
 <translation id="2407481962792080328">Den här funktionen är aktiverad när du loggar in på Google-kontot</translation>
@@ -265,6 +269,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="281504910091592009">Visa och hantera sparade lösenord i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Logga in och aktivera synkronisering om du vill ha dina bokmärken tillgängliga på alla enheter</translation>
 <translation id="2827278682606527653">Menyn med flödeskort är öppen och tar upp halva skärmen</translation>
+<translation id="2839327205551510876">Slutade följa <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Genomsöktes för 1 dag sedan}other{Genomsöktes för # dagar sedan}}</translation>
 <translation id="2842985007712546952">Överordnad mapp</translation>
 <translation id="2856503607207334158">Inloggningen misslyckades</translation>
@@ -281,6 +286,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="2909615210195135082">Googles aviseringsplattform</translation>
 <translation id="2923908459366352541">Namnet är ogiltigt</translation>
 <translation id="2932150158123903946">Lagring för Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Tangentbordet ändras inte</translation>
 <translation id="2942036813789421260">Fliken Förhandsgranskning har stängts</translation>
 <translation id="2956410042958133412">Det här kontot hanteras av <ph name="PARENT_NAME_1" /> och <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> oläst sida i listan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olästa sidor i listan}}</translation>
@@ -297,6 +303,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3031225630520268969">Användargränssnitt för samtycke till röstsökning med assistenten</translation>
 <translation id="3034163383943672781">Nedladdningen påbörjas <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjälp<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Besök den här webbplatsen snabbare nästa gång</translation>
 <translation id="305593374596241526">Plats har inaktiverats. Aktivera det i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Du kan när som helst inaktivera synkroniseringen i inställningarna</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
@@ -340,6 +347,7 @@ Sök genom att trycka länge på ett ord. Du kan förfina sökningen genom att v
 <translation id="3315103659806849044">Du anpassar nu dina inställningar för synkronisering och Google-tjänster. Aktivera synkroniseringen genom att trycka på Bekräfta längst ned på skärmen. Navigera uppåt</translation>
 <translation id="3334729583274622784">Vill du ändra filnamnstillägget?</translation>
 <translation id="3341058695485821946">Se hur mycket data du har sparat</translation>
+<translation id="3341262203274374114">Det gick inte att sluta följa flödet på grund av ett fel.</translation>
 <translation id="3350687908700087792">Stäng alla inkognitoflikar</translation>
 <translation id="3359667936385849800">Använd den nuvarande DNS-leverantören</translation>
 <translation id="3367813778245106622">Logga in igen om du vill påbörja synkroniseringen</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox är för närvarande under utveckling och tillgängligt i vissa 
 <translation id="3988213473815854515">Platsen är tillåten</translation>
 <translation id="3988466920954086464">Visa snabba sökresultat i panelen</translation>
 <translation id="4000212216660919741">Startsida offline</translation>
+<translation id="4016425174436051808">Det gick inte att börja följa flödet på grund av ett fel.</translation>
+<translation id="4021916380760361450">Styr data i Google-kontot</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# tim}other{# tim}}</translation>
 <translation id="4045764304651014138">Data om användning</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -598,6 +608,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5152843274749979095">Inga appar som stöds finns installerade</translation>
 <translation id="5161254044473106830">Titel krävs</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 nedladdning misslyckades.}other{# nedladdningar misslyckades.}}</translation>
+<translation id="5168824020667180049">Följer <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Visa i mapp</translation>
 <translation id="5184329579814168207">Öppna i Chrome</translation>
 <translation id="5188992787241350004">Sök med rösten</translation>
@@ -717,6 +728,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5864419784173784555">Väntar på nästa nedladdning …</translation>
 <translation id="5865733239029070421">Skickar användningsstatistik och felrapporter till Google automatiskt</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
+<translation id="5880748256563468367">Visa flödet</translation>
 <translation id="5884076754568147479">Innehållet på en webbplats där du använder Google Assistent, dess webbadress samt information som du skickar via assistenten överförs till Google så att du kan få uppgifterna utförda</translation>
 <translation id="5919204609460789179">Uppdatera <ph name="PRODUCT_NAME" /> för att starta synkronisering</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> har sparats</translation>
@@ -734,6 +746,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5979084224081478209">Kontrollera lösenord</translation>
 <translation id="5982307838673692400">Öppna en inkognitoflik</translation>
 <translation id="6000066717592683814">Behåll Google</translation>
+<translation id="6000203700195075278">Följ på nytt</translation>
 <translation id="6005538289190791541">Föreslaget lösenord</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Hoppa till nästa flik</translation>
@@ -1095,6 +1108,7 @@ Data från inkognitosessionen rensas bara från Chrome om du <ph name="BEGIN_BOL
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
 <translation id="8349013245300336738">Sortera efter dataförbrukning</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har återställts</translation>
+<translation id="8362134094656482681">Hantera ämnen som du är intresserad av</translation>
 <translation id="8364299278605033898">Visa populära webbplatser</translation>
 <translation id="8368027906805972958">Enheten är okänd eller stöds inte (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> är klart.</translation>

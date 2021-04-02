@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Histori navigasi</translation>
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
 <translation id="123724288017357924">Memuat ulang halaman, mengabaikan konten dalam cache</translation>
+<translation id="1240288207750131269">Memuat <ph name="LANG" /></translation>
 <translation id="124678866338384709">Menutup tab aktif</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Tidak dapat membagikan <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Kelola situs yang Anda ikuti</translation>
 <translation id="1283039547216852943">Ketuk untuk meluaskan</translation>
 <translation id="1285310382777185058">Ubah bahasa</translation>
 <translation id="1291207594882862231">Menghapus histori, cookie, data situs, cache...</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Versi aplikasi</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1450753235335490080">Tidak dapat membagikan <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Pilih bahasa Chrome</translation>
 <translation id="147113415845704694">Coba “Bagaimana cuaca hari ini?”</translation>
 <translation id="1477626028522505441">Download <ph name="FILE_NAME" /> gagal karena masalah server.</translation>
 <translation id="1492417797159476138">Anda telah menyimpan nama pengguna ini untuk situs ini</translation>
@@ -205,6 +208,7 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 <translation id="2353636109065292463">Memeriksa koneksi internet Anda</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2369533728426058518">tab terbuka</translation>
+<translation id="2386938421315164605">Sembunyikan dan perlihatkan topik</translation>
 <translation id="2387895666653383613">Ukuran teks</translation>
 <translation id="2394602618534698961">File yang Anda download muncul di sini</translation>
 <translation id="2407481962792080328">Saat login ke Akun Google Anda, fitur ini akan diaktifkan</translation>
@@ -265,6 +269,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="281504910091592009">Lihat dan kelola sandi tersimpan di <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Untuk dapat mengakses bookmark Anda di semua perangkat, login dan aktifkan sinkronisasi</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2839327205551510876">Berhenti mengikuti <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Diperiksa 1 hari yang lalu}other{Diperiksa # hari yang lalu}}</translation>
 <translation id="2842985007712546952">Folder induk</translation>
 <translation id="2856503607207334158">Login gagal</translation>
@@ -281,6 +286,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2909615210195135082">Platform Notifikasi Google</translation>
 <translation id="2923908459366352541">Nama tidak valid</translation>
 <translation id="2932150158123903946">Penyimpanan Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Keyboard Anda tidak akan berubah</translation>
 <translation id="2942036813789421260">Tab pratinjau ditutup</translation>
 <translation id="2956410042958133412">Akun ini dikelola oleh <ph name="PARENT_NAME_1" /> dan <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> halaman belum dibaca}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> halaman belum dibaca}}</translation>
@@ -297,6 +303,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3031225630520268969">UI izin penelusuran suara Asisten</translation>
 <translation id="3034163383943672781">Download akan dimulai pada <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Dapatkan bantuan<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Buka situs ini lebih cepat pada waktu berikutnya</translation>
 <translation id="305593374596241526">Lokasi nonaktif, aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Anda dapat mengaktifkan sinkronisasi kapan saja di setelan</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}}</translation>
@@ -340,6 +347,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="3315103659806849044">Anda sedang menyesuaikan setelan layanan Google dan Sinkronisasi. Untuk menyelesaikan pengaktifan sinkronisasi, ketuk Konfirmasi di dekat bagian bawah layar. Kembali ke atas</translation>
 <translation id="3334729583274622784">Ubah ekstensi file?</translation>
 <translation id="3341058695485821946">Lihat banyaknya kuota yang Anda hemat</translation>
+<translation id="3341262203274374114">Tidak dapat berhenti mengikuti. Terjadi error.</translation>
 <translation id="3350687908700087792">Tutup semua jendela samaran</translation>
 <translation id="3359667936385849800">Gunakan penyedia layanan saat ini</translation>
 <translation id="3367813778245106622">Login lagi untuk memulai sinkronisasi</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox masih dalam pengembangan aktif dan hanya tersedia di wilayah ter
 <translation id="3988213473815854515">Lokasi diaktifkan</translation>
 <translation id="3988466920954086464">Lihat hasil penelusuran instan di panel ini</translation>
 <translation id="4000212216660919741">Beranda Offline</translation>
+<translation id="4016425174436051808">Tidak dapat mengikuti. Terjadi error.</translation>
+<translation id="4021916380760361450">Kontrol data Akun Google Anda</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# jam}other{# jam}}</translation>
 <translation id="4045764304651014138">Data penggunaan</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -598,6 +608,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5152843274749979095">Aplikasi yang didukung tidak terinstal</translation>
 <translation id="5161254044473106830">Perlu judul</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download gagal.}other{# download gagal.}}</translation>
+<translation id="5168824020667180049">Mengikuti <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Tampilkan dalam folder</translation>
 <translation id="5184329579814168207">Buka di Chrome</translation>
 <translation id="5188992787241350004">Telusuri dengan suara Anda</translation>
@@ -717,6 +728,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5864419784173784555">Menunggu proses download lain…</translation>
 <translation id="5865733239029070421">Secara otomatis mengirimkan statistik penggunaan dan laporan kerusakan ke Google</translation>
 <translation id="5869522115854928033">Sandi tersimpan</translation>
+<translation id="5880748256563468367">Buka feed</translation>
 <translation id="5884076754568147479">Untuk membantu Anda menyelesaikan tugas, Google akan menerima URL dan konten situs tempat Anda menggunakan Asisten, serta informasi yang Anda kirimkan melalui Asisten</translation>
 <translation id="5919204609460789179">Perbarui <ph name="PRODUCT_NAME" /> untuk memulai sinkronisasi</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> dihemat</translation>
@@ -734,6 +746,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="5979084224081478209">Periksa sandi</translation>
 <translation id="5982307838673692400">Buka tab Samaran</translation>
 <translation id="6000066717592683814">Tetap menggunakan Google</translation>
+<translation id="6000203700195075278">Ikuti kembali</translation>
 <translation id="6005538289190791541">Sandi yang disarankan</translation>
 <translation id="6036057147555329831">ICU tambahan</translation>
 <translation id="6039379616847168523">Beralih ke tab berikutnya</translation>
@@ -1095,6 +1108,7 @@ Data dari sesi Samaran Anda hanya akan dihapus dari Chrome saat Anda <ph name="B
 <translation id="834313815369870491">Jangan pernah terjemahkan situs</translation>
 <translation id="8349013245300336738">Urutkan menurut jumlah kuota yang digunakan</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> download dipulihkan</translation>
+<translation id="8362134094656482681">Kelola topik yang menarik bagi Anda</translation>
 <translation id="8364299278605033898">Lihat situs yang populer</translation>
 <translation id="8368027906805972958">Perangkat tidak dikenal atau tidak didukung (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Bahasa <ph name="LANG" /> sudah siap.</translation>

@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Բաց երկնագույն</translation>
 <translation id="1303806948938513162">Հպեք 4 մատով՝ ChromeVox-ի ընտրացանկերը բացելու համար</translation>
 <translation id="1313373992684326101">Անցնել նախորդ բաժին (օր․՝ Կարգավիճակի տող, Գործարկիչ և այլ)։</translation>
+<translation id="1315077335264761176">Հպման դիրքը</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ընտրացանկի տարրի կետակոճակն ընտրված չէ</translation>
 <translation id="1325946044405407859">Դեղնաշագանակագույն</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> / <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Բարի գալուստ ChromeVox-ի ուղեցույց։ Դուք ցանկացած պահի կարող եք դուրս գալ ուղեցույցից՝ սեղմելով Esc ստեղնը, որը գտնվում է ստեղնաշարի վերևի ձախ անկյունում։ ChromeVox-ն անջատելու համար սեղմեք Z՝ Ctrl և Alt ստեղները պահած։ Բացատի ստեղնի օգնությամբ կարող եք անցնել հաջորդ դասին։</translation>
 <translation id="174268867904053074">Հաջորդ գծապատկերը</translation>
 <translation id="1756785467854861272">Մուգ ծիրանեգույն</translation>
+<translation id="1758693804775271377">Այս թեմայով դասերը դիտելու համար մատը սահեցրեք ձախ կամ աջ</translation>
 <translation id="1765245556747822181">Մատը սահեցրեք վերև</translation>
 <translation id="1771761307086386028">Ոլորել աջ</translation>
 <translation id="1781173782405573156">Բաց թողնել սեղմումը</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Տող</translation>
 <translation id="2816868829355607410">Գործնական վարժությունների տարածք․ անցման հրամաններ</translation>
 <translation id="2841013758207633010">Ժամանակ</translation>
+<translation id="284171465644749950">Թեմաները դիտելու համար մատը սահեցրեք ձախ կամ աջ</translation>
 <translation id="2843432675592278677">Նախորդ ARIA ուղենիշ չկա</translation>
 <translation id="2843814945404750166">Մուգ ձիթականաչ</translation>
 <translation id="2843837985843789981">Նախորդ խումբը</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox-ը թարմացվել է</translation>
 <translation id="93384979447910801">Մուգ ծովականաչ</translation>
 <translation id="948171205378458592">Դանդաղեցնել խոսքը</translation>
+<translation id="957570623732056069">Այս դասի մեջ տեղաշարժվելու համար մատը սահեցրեք ձախ կամ աջ</translation>
 <translation id="958854023026327378">Մատը սահեցրեք ներքև</translation>
 <translation id="962913030769097253">1-ին մակարդակի հաջորդ վերնագիրը</translation>
 <translation id="966588271015727539">Ընտրեք Bluetooth-ի միջոցով միացվող բրայլյան էկրան</translation>

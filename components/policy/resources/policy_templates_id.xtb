@@ -436,6 +436,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Kebijakan ini akan dihapus di Chrome 93.
 
       Buka https://www.chromestatus.com/feature/4664843055398912.</translation>
+<translation id="1587585749332985896">Jangan izinkan penggunaan Mode Headless</translation>
 <translation id="1588240398285670601">Setelan Browser</translation>
 <translation id="1593245608325508847">Jika kebijakan ditetapkan, fitur login terbatas Chrome di G Suite akan diaktifkan dan pengguna tidak dapat mengubah setelan ini. Pengguna hanya dapat mengakses alat Google menggunakan akun dari domain yang telah ditentukan (untuk mengizinkan akun gmail atau googlemail, tambahkan consumer_accounts ke daftar domain). Setelan ini mencegah pengguna untuk login dan menambahkan Akun Sekunder di perangkat terkelola yang memerlukan autentikasi Google, jika akun tersebut bukan milik salah satu domain yang diizinkan secara eksplisit.
 
@@ -884,6 +885,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2175353308236295184">Objek konfigurasi JSON khusus aplikasi dengan sekumpulan key-value pair, mis. '"managedConfiguration": { "key1": value1, "key2": value2}'. Kunci ditentukan dalam manifes aplikasi.</translation>
 <translation id="2176115444876446233">Cegah pengguna mengumpulkan jejak performa di seluruh sistem.</translation>
 <translation id="2178899310296064282">Terapkan setidaknya Mode Terbatas Menengah di YouTube</translation>
+<translation id="2180958780733364832">Mengontrol penggunaan Mode Headless</translation>
 <translation id="2182291258410176649">Pengguna memutuskan apakah akan mengaktifkan opsi pencadangan dan pemulihan</translation>
 <translation id="219297066914002620">Instruksikan <ph name="PRODUCT_OS_NAME" /> untuk mengaktifkan atau menonaktifkan fitur konsol pengelola mesin virtual.
 
@@ -4031,6 +4033,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="647698599569353771">Mengizinkan pengaktifan Berbagi Langsung.</translation>
 <translation id="6478258366184919502">Asal layar login</translation>
 <translation id="6478261301433199402">Menyetel kebijakan akan menentukan image <ph name="PLUGIN_VM_NAME" /> bagi pengguna. Tentukan kebijakan ini sebagai string berformat JSON, dengan <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> yang menyatakan tempat mendownload image dan <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> sebagai hash SHA-256 yang digunakan untuk memverifikasi integritas download.</translation>
+<translation id="6481245670325946423">Izinkan penggunaan Mode Headless</translation>
 <translation id="6489084406497912050">Mengontrol apakah pengguna dapat menambahkan akun Kerberos.
 
           Jika kebijakan ini diaktifkan atau tidak disetel, pengguna dapat menambahkan akun Kerberos melalui Setelan akun Kerberos di halaman setelan Kerberos. Pengguna dapat sepenuhnya mengontrol akun yang mereka tambahkan serta dapat memodifikasi atau menghapusnya.
@@ -5421,6 +5424,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan,
 
           Jika tindakannya adalah penangguhan, <ph name="PRODUCT_OS_NAME" /> dapat dikonfigurasi secara terpisah untuk mengunci atau tidak mengunci layar sebelum ditangguhkan.</translation>
 <translation id="8214600119442850823">Mengonfigurasi pengelola sandi.</translation>
+<translation id="8217664958939773083">Jika kebijakan ini disetel ke <ph name="ENABLED" /> atau tidak disetel, penggunaan mode headless akan diizinkan. Jika kebijakan ini disetel ke <ph name="DISABLED" />, penggunaan mode headless tidak akan diizinkan.</translation>
 <translation id="8220023426952118761">Kecepatan download yang diinginkan dalam kbit/dtk.</translation>
 <translation id="8220156281401380422">Mengonfigurasi daftar pesan native yang diizinkan</translation>
 <translation id="8238421250255592181">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan pelengkapan otomatis.</translation>

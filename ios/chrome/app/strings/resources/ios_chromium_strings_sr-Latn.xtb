@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium ima funkcije koje vam pomažu da upravljate internet podacima i brzinom učitavanja veb-stranica.
 <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium ne može da traži ažuriranja. Proverite internet vezu.</translation>
+<translation id="2054703085270098503">Ostanite bezbedni uz Chromium</translation>
 <translation id="2075400798887076382">Ovde pristupajte karticama koje ste otvorili na računaru. Samo otvorite Chromium na računaru, idite na meni i izaberite „Prijavi me u Chromium...“</translation>
 <translation id="2168108852149185974">Neki programski dodaci izazivaju otkazivanje Chromium-a. Deinstalirajte:</translation>
 <translation id="2178608107313874732">Chromium trenutno ne može da koristi kameru</translation>
 <translation id="2195025571279539885">Želite li da Chromium sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2590893390871230428">Sinhronizujte Chromium podatke</translation>
 <translation id="2650312721222849884">Da biste videli kartice na bilo kojem uređaju na kom koristite Chromium, uključite sinhronizaciju</translation>
+<translation id="2684230048001240293">Podesite Chromium kao podrazumevanu aplikaciju za sinhronizovanje kartica, lozinki i informacija o plaćanju na svim uređajima</translation>
 <translation id="2730884209570016437">Chromium ne može da koristi kameru zato što je već koristi druga aplikacija</translation>
 <translation id="2915596697727466327">Chromium koristi Face ID da bi lozinkama mogle da pristupaju samo ovlašćene osobe.</translation>
 <translation id="2918709798697875261">Organizacija zahteva da ostanete odjavljeni sa Chromium-a.</translation>
+<translation id="2942241131342758843">Podrazumevano koristite Chromium da biste otvarali linkove, pretraživali iz vidžeta i automatski popunjavali lozinke u drugim aplikacijama</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="3256316712990552818">Kopirana u Chromium</translation>
 <translation id="3344973607274501920">Chromium nije uspeo da vam proveri lozinke. Proverite internet vezu.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Kada je ova funkcija uključena, Chromium će nuditi da prevodi stranice napisane na drugim jezicima pomoću Google prevodioca. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Sada možete da koristite Chromium svaki put kada dodirnete linkove u porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="4681781466797808448">Uključite Chromium skener</translation>
+<translation id="4736424910885271643">Nalogom upravlja <ph name="HOSTED_DOMAIN" />, pa će se Chromium podaci obrisati sa ovog uređaja</translation>
 <translation id="4787850887676698916">Ovde će se prikazati kartice koje ste otvorili u Chromium-u na drugim uređajima.</translation>
 <translation id="4828317641996116749">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo kasnije.</translation>
 <translation id="4985291216379576555">Oflajn ste. Chromium ne može da traži ažuriranja.</translation>
@@ -55,6 +59,7 @@
 2. Dodirnite Podrazumevana aplikacija za pregledanje
 3. Izaberite Chromium.</translation>
 <translation id="6268381023930128611">Želite li da se odjavite iz Chromium-a?</translation>
+<translation id="6337530241089703714">Odaberite da li ćete obrisati Chromium podatke sa ovog uređaja ili ih zadržati</translation>
 <translation id="6424492062988593837">Chromium je upravo postao bolji! Dostupna je nova verzija.</translation>
 <translation id="6820823224820483452">Chromium nije uspeo da proveri sve lozinke. Probajte ponovo sutra.</translation>
 <translation id="6827294685447036764">Ako dozvolite da Chromium sazna lokaciju, Chromium je šalje podrazumevanom pretraživaču i svim sajtovima za koje dozvolite. Sajtovi mogu da zatraže lokaciju kada imaju da vam prikažu lokalne informacije, poput radnji ili vesti u blizini.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Vaša lozinka je otkrivena pri upadu u podatke. Chromium preporučuje da odmah promenite lozinku.</translation>
 <translation id="7674213385180944843">Otvorite Podešavanja &gt; Privatnost &gt; Kamera &gt; Chromium i uključite kameru.</translation>
 <translation id="7746854981345936341">Savet za Chromium. Neka dugmad se sada nalaze u dnu ekrana, poput dugmadi Nazad, Napred i Pretraži.</translation>
+<translation id="7763454117143368771">Koristite Chromium kao podrazumevani pregledač da biste se odbranili od opasnih sajtova i zaštitili lozinke</translation>
 <translation id="786327964234957808">Menjate nalog za sinhronizaciju iz <ph name="USER_EMAIL1" /> u <ph name="USER_EMAIL2" />. Postojećim Chromium podacima upravlja <ph name="DOMAIN" />. Na ovaj način brišete podatke sa ovog uređaja, ali podaci ostaju na <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Počnite da koristite Chromium skener</translation>
 <translation id="7931842119211730154">Zaključajte kartice bez arhiviranja posle zatvaranja Chromium-a</translation>

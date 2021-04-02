@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + käyttäjävarmenne</translation>
 <translation id="4731797938093519117">Avaus vanhemmille</translation>
 <translation id="4773299976671772492">Keskeytetty</translation>
+<translation id="4794140124556169553">CPU-testin suorittaminen voi vaikuttaa järjestelmän suorituskykyyn</translation>
 <translation id="4808449224298348341">Peruutettu tulostustyö: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Yhteys</translation>
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
@@ -341,6 +342,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8483248364096924578">IP-osoite</translation>
 <translation id="8503813439785031346">Käyttäjätunnus</translation>
 <translation id="8503836310948963452">Vielä pari minuuttia…</translation>
+<translation id="8575298406870537639">Operaattorisi saattaa vaatia tätä asetusta operaattorin verkkoon yhdistämistä varten. Lisätietoja saat operaattoriltasi.</translation>
 <translation id="8576249514688522074">Ei ole alustettu</translation>
 <translation id="8620617069779373398">Roaming-tila</translation>
 <translation id="8675354002693747642">Esijaettu avain</translation>
@@ -365,7 +367,6 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8970109610781093811">Suorita uudelleen</translation>
 <translation id="9003704114456258138">Taajuus</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Muokkaa</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Nykyinen käyttö</translation>

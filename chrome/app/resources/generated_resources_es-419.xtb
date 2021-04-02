@@ -516,6 +516,7 @@
 <translation id="1563702743503072935">Las contraseñas de tu Cuenta de Google también estarán disponibles en este dispositivo cuando accedas.</translation>
 <translation id="1566049601598938765">Sitio web</translation>
 <translation id="15662109988763471">La impresora seleccionada no está disponible o no se instaló correctamente. Revisa tu impresora o selecciona otra.</translation>
+<translation id="1567135437923613642">Habilitar los experimentos destacados</translation>
 <translation id="1567387640189251553">Se conectó otro teclado desde la última vez que ingresaste tu contraseña. Es posible que alguien esté intentando determinar qué teclas presionaste.</translation>
 <translation id="1567993339577891801">Consola de JavaScript</translation>
 <translation id="1568323446248056064">Abrir configuración de pantalla</translation>
@@ -915,6 +916,7 @@
 <translation id="1979095679518582070">Aunque esta función esté desactivada, este dispositivo podrá enviar la información necesaria para los servicios esenciales, como seguridad y actualizaciones del sistema.</translation>
 <translation id="1979280758666859181">Estás por cambiar a un canal que tiene una versión anterior de <ph name="PRODUCT_NAME" />. El cambio de canal se aplicará cuando la versión del canal coincida con la versión que esté instalada en ese momento en tu dispositivo.</translation>
 <translation id="197989455406964291">KDC no es compatible con el tipo de encriptación</translation>
+<translation id="1983497378699148207">Para finalizar la configuración de Linux, actualiza Chrome OS y vuelve a intentarlo.</translation>
 <translation id="1984417487208496350">Sin protección (opción no recomendada)</translation>
 <translation id="1987317783729300807">Cuentas</translation>
 <translation id="1989112275319619282">Navegar</translation>
@@ -1327,6 +1329,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2450223707519584812">No podrás agregar usuarios porque faltan las claves de la API de Google. Consulta <ph name="DETAILS_URL" /> para obtener más detalles.</translation>
 <translation id="2450849356604136918">No hay vistas activas</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Por lo general los sitios se conectan a puertos en serie para habilitar funciones de transferencia de datos, como la configuración de la red</translation>
 <translation id="2453860139492968684">Finalizar</translation>
 <translation id="2454247629720664989">Palabra clave</translation>
 <translation id="2454264884354864965">La cámara está desactivada</translation>
@@ -1957,6 +1960,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="313205617302240621">¿Olvidaste la contraseña?</translation>
 <translation id="3132277757485842847">No se pudo mantener la conexión con tu teléfono. Asegúrate de que esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="3132996321662585180">Actualizar todos los días</translation>
+<translation id="3134393957315651797">Selecciona el estado del experimento <ph name="EXPERIMENT_NAME" />. Descripción del experimento: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">El PIN no es válido. Te quedan <ph name="RETRIES" /> intentos.</translation>
 <translation id="313963229645891001">Descargando, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar amarillo predeterminado</translation>
@@ -2841,6 +2845,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4099874310852108874">Se produjo un error de red.</translation>
 <translation id="4100733287846229632">Hay muy poco espacio en el dispositivo</translation>
 <translation id="4100853287411968461">Nuevo límite en el horario de uso</translation>
+<translation id="4101352914005291489">SSID oculto</translation>
 <translation id="4102906002417106771">Reiniciar con Powerwash</translation>
 <translation id="4104163789986725820">E&amp;xportar...</translation>
 <translation id="4107048419833779140">Identificar y expulsar los dispositivos de almacenamiento</translation>
@@ -3910,6 +3915,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5382591305415226340">Administrar los vínculos compatibles</translation>
 <translation id="5383377866517186886">La cámara está desactivada en las Preferencias del Sistema de Mac</translation>
 <translation id="5383740867328871413">Grupo sin nombre - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Se modificó la política empresarial. Se agregó el botón de experimentos a la barra de herramientas. Si haces clic en el botón, se abrirá un diálogo donde podrás habilitar los experimentos.</translation>
 <translation id="5388885445722491159">Vinculado</translation>
 <translation id="5390100381392048184">Permitir que los sitios reproduzcan sonido</translation>
 <translation id="5390112241331447203">Incluye el archivo system_logs.txt que se envía en los informes de comentarios.</translation>
@@ -5034,6 +5040,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6659594942844771486">Pestaña</translation>
 <translation id="6660413144148052430">ubicación</translation>
 <translation id="666099631117081440">Servidores de impresión</translation>
+<translation id="6662931079349804328">Se modificó la política empresarial. Se quitó el botón de experimentos de la barra de herramientas.</translation>
 <translation id="6663190258859265334">Aplica la función Powerwash en tu <ph name="DEVICE_TYPE" /> y regresa a la versión anterior.</translation>
 <translation id="6664237456442406323">Desafortunadamente, la computadora está configurada con un identificador de hardware incorrecto. Esto impide que Chrome OS se actualice con las últimas correcciones de seguridad, y la computadora <ph name="BEGIN_BOLD" />puede quedar vulnerable a ataques maliciosos<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Se produjo un error al abrir tu perfil. Sal de tu cuenta y vuelve a acceder.</translation>
@@ -5390,6 +5397,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7056526158851679338">&amp;Inspeccionar dispositivos</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{La verificación de seguridad se ejecutó hace 1 minuto}other{La verificación de seguridad se ejecutó hace {NUM_MINS} minutos}}</translation>
 <translation id="7057767408836081338">No se pudieron obtener los datos de la app. Se intenta ejecutar la app de todos modos…</translation>
+<translation id="7058024590501568315">Red oculta</translation>
 <translation id="7059858479264779982">Permitir inicio automático</translation>
 <translation id="7059893117020417984">Haz clic en el menú con el ícono de puntos para abrir una ventana de incógnito y navegar de forma privada</translation>
 <translation id="7062222374113411376">Permitir que los sitios cerrados recientemente terminen de enviar y recibir datos (recomendado)</translation>
@@ -5753,6 +5761,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="7477793887173910789">Controla tu música, videos y mucho más</translation>
 <translation id="7478485216301680444">No se pudo instalar la aplicación del kiosco.</translation>
 <translation id="7478623944308207463">Se sincronizarán tus apps y opciones de configuración en todos los dispositivos con Chrome OS a los que hayas accedido con tu Cuenta de Google. Para ver las opciones de sincronización del navegador, ve a la <ph name="LINK_BEGIN" />configuración de Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">No permitir que los sitios se conecten a puertos en serie</translation>
 <translation id="7479221278376295180">Descripción general sobre el uso del almacenamiento</translation>
 <translation id="7481312909269577407">Reenviar</translation>
 <translation id="7481358317100446445">Listo</translation>
@@ -5904,11 +5913,13 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="765293928828334535">Las apps, extensiones y secuencias de comandos de usuario no se pueden agregar desde este sitio web</translation>
 <translation id="7652954539215530680">Crear un PIN</translation>
 <translation id="7654941827281939388">Ya se está utilizando esta cuenta en esta computadora.</translation>
+<translation id="7655411746932645568">Permitir que los sitios soliciten permiso para conectarse a puertos en serie</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7659297516559011665">Solo las contraseñas de este dispositivo</translation>
 <translation id="7659584679870740384">No tienes autorización para utilizar este dispositivo. Para obtener permiso de acceso, comunícate con el administrador.</translation>
 <translation id="7661259717474717992">Permitir que los sitios guarden y lean datos de cookies</translation>
 <translation id="7661451191293163002">No se pudo obtener un certificado de registro.</translation>
+<translation id="7661762353058813968">El administrador gestiona las actualizaciones.</translation>
 <translation id="7662283695561029522">Presiona para configurar</translation>
 <translation id="7663719505383602579">Receptor: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Dispositivo Bluetooth no compatible: "<ph name="DEVICE_NAME" />"</translation>
@@ -6690,6 +6701,7 @@ Usa Ctrl+Alt+Disminuir brillo para alejarte.</translation>
 <translation id="8539727552378197395">No (HttpOnly)</translation>
 <translation id="8539766201049804895">Actualizar</translation>
 <translation id="8540136935098276800">Ingresa una URL con el formato correcto</translation>
+<translation id="8540503336857689453">Por razones de seguridad, no se recomienda el uso de redes ocultas.</translation>
 <translation id="8540608333167683902">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, detalles</translation>
 <translation id="854071720451629801">Marcar como leído</translation>
 <translation id="8541462173655894684">No se encontraron impresoras en el servidor de impresión</translation>

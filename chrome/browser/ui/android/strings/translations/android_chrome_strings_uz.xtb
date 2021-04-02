@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Sahifalar tarixi</translation>
 <translation id="1231733316453485619">Sinxronizatsiya yoqilsinmi?</translation>
 <translation id="123724288017357924">Keshga yuklangan ma’lumotlarsiz sahifani qayta yuklang.</translation>
+<translation id="1240288207750131269"><ph name="LANG" /> yuklanmoqda</translation>
 <translation id="124678866338384709">Joriy varaqni yopish</translation>
 <translation id="1258753120186372309">Google-dudl: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
+<translation id="1276279242344007853">Siz obuna boʻlgan saytlarni boshqarish</translation>
 <translation id="1283039547216852943">Bosib yoyish</translation>
 <translation id="1285310382777185058">Tilni almashtirish</translation>
 <translation id="1291207594882862231">Brauzer tarixi, cookie-fayllar, kesh va boshqa sayt ma’lumotlarini tozalash...</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Ilova versiyasi</translation>
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> yuborilmadi</translation>
+<translation id="1466383950273130737">Chrome tilini tanlang</translation>
 <translation id="147113415845704694">“Bugungi ob-havo qanday?” deb soʻrang</translation>
 <translation id="1477626028522505441">Serverdagi turli muammolar tufayli “<ph name="FILE_NAME" />” fayli yuklab olinmadi.</translation>
 <translation id="1492417797159476138">Bu sayt uchun login allaqachon saqlangan</translation>
@@ -205,6 +208,7 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 <translation id="2353636109065292463">Internet aloqasini tekshirish</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2369533728426058518">ochiq varaqlar</translation>
+<translation id="2386938421315164605">Mavzularni berkitish va chiqarish</translation>
 <translation id="2387895666653383613">Matn o‘lchami</translation>
 <translation id="2394602618534698961">Yuklab olingan fayllar shu yerda chiqadi</translation>
 <translation id="2407481962792080328">Bu funksiya Google hisobingizga kirganingizda yoqiladi</translation>
@@ -265,6 +269,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google hisobingizga<ph name="END_LINK" /> saqlangan parollarni ko‘rish va boshqarish</translation>
 <translation id="2818669890320396765">Xatcho‘plarni barcha qurilmalaringizda sinxronlash uchun hisobingizga kiring va sinxronizatsiyani yoqing</translation>
 <translation id="2827278682606527653">Quyi bildirgi menyu yarim hajmda ochildi</translation>
+<translation id="2839327205551510876"><ph name="SITE_NAME" /> mavzusiga obuna bekor qilindi</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 kun oldin tekshirilgan}other{# kun oldin tekshirilgan}}</translation>
 <translation id="2842985007712546952">Ota jild</translation>
 <translation id="2856503607207334158">Kirish amalga oshmadi</translation>
@@ -281,6 +286,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2909615210195135082">Google bildirishnomalar platformasi</translation>
 <translation id="2923908459366352541">Ism yaroqsiz</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> xotirasi</translation>
+<translation id="2932222164150889403">Klaviatura oʻzgarmaydi</translation>
 <translation id="2942036813789421260">Razm solish sahifasi yopildi</translation>
 <translation id="2956410042958133412">Bu hisob <ph name="PARENT_NAME_1" /> va <ph name="PARENT_NAME_2" /> tomonlaridan boshqariladi.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ta sahifa oʻqilmagan}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ta sahifa oʻqilmagan}}</translation>
@@ -297,6 +303,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3031225630520268969">Assistent ovozli qidiruv paneli interfeysi</translation>
 <translation id="3034163383943672781">Yuklab olish <ph name="DATE" /> sanasida ishga tushadi.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Yordam markazi<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Keyingi safar bu saytga tezroq kirish</translation>
 <translation id="305593374596241526">Joylashuvni aniqlash xizmati yoqilmagan, uni <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali yoqing.</translation>
 <translation id="3058498974290601450">Istalgan vaqt sozlamalar orqali sinxronizatsiyani yoqish mumkin</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ta bukmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> ta bukmark}}</translation>
@@ -340,6 +347,7 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="3315103659806849044">Siz hozir Sync va Google xizmati sozlamalaridasiz. Sinxronizatsiyani yoqish uchun ekranning quyi qismidagi Tasdiqlash tugmasini bosing. Tepaga</translation>
 <translation id="3334729583274622784">Fayl kengaytmasi oʻzgartirilsinmi?</translation>
 <translation id="3341058695485821946">Qancha trafik tejalganini biling</translation>
+<translation id="3341262203274374114">Obuna bekor qilinmadi. Xatolik yuz berdi.</translation>
 <translation id="3350687908700087792">Barcha inkognito varaqlarnini yopish</translation>
 <translation id="3359667936385849800">Joriy xizmat provayderingiz orqali</translation>
 <translation id="3367813778245106622">Yana sinxronlashni boshlash uchun hisobingizga kiring</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox hali ishlab chiqish jarayonida va ayrim mamlakatlarda mavjud. Ho
 <translation id="3988213473815854515">Joylashuvni ishlatishga ruxsat berilgan</translation>
 <translation id="3988466920954086464">Qidiruv natijalari shu panelda paydo bo‘ladi</translation>
 <translation id="4000212216660919741">Uy oflayn</translation>
+<translation id="4016425174436051808">Obuna qilinmadi. Xatolik yuz berdi.</translation>
+<translation id="4021916380760361450">Google hisoblaringiz maʼlumotlarini boshqaring</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# soat}other{# soat}}</translation>
 <translation id="4045764304651014138">Foydalanish statistikasi</translation>
 <translation id="4056223980640387499">Sepiya</translation>
@@ -598,6 +608,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5152843274749979095">Birorta ham qo‘llab-quvvatlanadigan ilova o‘rnatilmagan</translation>
 <translation id="5161254044473106830">Sarlavha kiriting</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ta fayl yuklab olinmadi.}other{# ta fayl yuklab olinmadi.}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> mavzusiga obuna qilindi</translation>
 <translation id="5170568018924773124">&amp;Jildda ko‘rsatish</translation>
 <translation id="5184329579814168207">Chrome brauzerida ochish</translation>
 <translation id="5188992787241350004">Ovoz bilan qidiring</translation>
@@ -717,6 +728,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5864419784173784555">Oldingi yuklanma yakuni kutilmoqda…</translation>
 <translation id="5865733239029070421">Foydalanish statistikasi va ishdan chiqish hisobotlari avtomatik tarzda Google serverlariga yuborilsin</translation>
 <translation id="5869522115854928033">Saqlab olingan parollar</translation>
+<translation id="5880748256563468367">Tasmani ochish</translation>
 <translation id="5884076754568147479">Google internetda ishlashingizni osonlashtirish uchun Assistent orqali kirilgan saytlarning URL manzillari va kontentlarini, shuningdek, soʻrovlarni ham oladi</translation>
 <translation id="5919204609460789179">Sinxronizatsiyani boshlash uchun <ph name="PRODUCT_NAME" /> yangilanishi kerak</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> trafik tejaldi</translation>
@@ -734,6 +746,7 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="5979084224081478209">Parollarni tekshiring</translation>
 <translation id="5982307838673692400">Inkognito rejimida ochish</translation>
 <translation id="6000066717592683814">Google qolaversin</translation>
+<translation id="6000203700195075278">Qayta obuna</translation>
 <translation id="6005538289190791541">Taklif qilingan parol</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Keyingi varaqqa o‘tish</translation>
@@ -1012,6 +1025,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7846296061357476882">Google xizmatlari</translation>
 <translation id="784934925303690534">Vaqt diapazoni</translation>
 <translation id="7851858861565204677">Boshqa qurilmalar</translation>
+<translation id="7853202427316060426">Harakat</translation>
 <translation id="7857691613771368249">Fayllarni saqlash uchun ruxsat soʻralsin</translation>
 <translation id="7859988229622350291">Hech qachon tarjima qilinmasin</translation>
 <translation id="7875915731392087153">Email yaratish</translation>
@@ -1094,6 +1108,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="834313815369870491">Saytlar hech qachon tarjima qilinmasin</translation>
 <translation id="8349013245300336738">Sarflangan trafik asosida saralash</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ta yuklanma tiklandi</translation>
+<translation id="8362134094656482681">Qiziqarli mavzularni boshqarish</translation>
 <translation id="8364299278605033898">Mahalliy ommabop saytlar</translation>
 <translation id="8368027906805972958">Notanish yoki qoʻllab-quvvatlanmaydigan qurilma (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> tayyor.</translation>

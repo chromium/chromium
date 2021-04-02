@@ -437,6 +437,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Dit beleid wordt verwijderd in Chrome 93.
 
       Zie https://www.chromestatus.com/feature/4664843055398912.</translation>
+<translation id="1587585749332985896">Gebruik van de stand zonder interface niet toestaan</translation>
 <translation id="1588240398285670601">Browserinstellingen</translation>
 <translation id="1593245608325508847">Als je dit beleid instelt, wordt de beperkte inlogfunctie van Chrome in G Suite aangezet. Gebruikers kunnen deze instelling niet wijzigen. Gebruikers kunnen Google-tools alleen openen met accounts van de opgegeven domeinen (voeg consumer_accounts toe aan de lijst met domeinen om Gmail- en GoogleMail-accounts toe te staan). Deze instelling voorkomt dat gebruikers inloggen op een secundair account en dit toevoegen aan een beheerd apparaat waarvoor Google-verificatie vereist is, als dit account niet behoort tot één van de expliciet toegestane domeinen.
 
@@ -870,6 +871,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="2175353308236295184">App-specifiek json-configuratieobject met een reeks sleutel-waardeparen, bijvoorbeeld '"managedConfiguration": { "key1": value1, "key2": value2 }'. De sleutels worden gedefinieerd in het app-manifest.</translation>
 <translation id="2176115444876446233">Voorkomen dat gebruikers een prestatietracering voor het hele systeem verzamelen.</translation>
 <translation id="2178899310296064282">Minimaal de gemiddelde 'Beperkte modus' op YouTube afdwingen</translation>
+<translation id="2180958780733364832">Gebruik van de stand zonder interface beheer</translation>
 <translation id="2182291258410176649">De gebruiker beslist of back-up maken en terugzetten moet worden aangezet</translation>
 <translation id="219297066914002620">Geeft <ph name="PRODUCT_OS_NAME" /> de instructie om consoletools voor het beheer van virtuele machines aan te zetten.
 
@@ -3957,6 +3959,7 @@ Als je het beleid instelt, kunnen gebruikers dit niet aanpassen in de browserins
 <translation id="647698599569353771">Sta toe dat Dichtbij delen wordt aangezet.</translation>
 <translation id="6478258366184919502">Herkomsten van login en scherm</translation>
 <translation id="6478261301433199402">Als je het beleid instelt, wordt de <ph name="PLUGIN_VM_NAME" />-image voor een gebruiker opgegeven. Geef dit beleid op als een tekenreeks met json-indeling, waarbij <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> aangeeft waar de image kan worden gedownload en <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> als een SHA-256-hash die wordt gebruikt om de integriteit van de download te verifiëren.</translation>
+<translation id="6481245670325946423">Gebruik van de stand zonder interface toestaan</translation>
 <translation id="6489084406497912050">Bepaalt of gebruikers Kerberos-accounts mogen toevoegen.
 
           Als je dit beleid toepast of niet instelt, mogen gebruikers Kerberos-accounts toevoegen via de instellingen voor Kerberos-accounts op de pagina Kerberos-instellingen. Gebruikers hebben het volledige beheer over accounts die ze hebben toegevoegd en kunnen deze aanpassen of verwijderen.
@@ -5351,6 +5354,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 
           Als de actie 'opschorten' is, kan <ph name="PRODUCT_OS_NAME" /> afzonderlijk worden geconfigureerd om het scherm wel of niet te vergrendelen voordat de opschorting wordt geactiveerd.</translation>
 <translation id="8214600119442850823">Hiermee wordt Wachtwoordmanager geconfigureerd.</translation>
+<translation id="8217664958939773083">Als je het beleid instelt op <ph name="ENABLED" /> of niet instelt, sta je het gebruik van de stand zonder interface toe. Als je het beleid instelt op <ph name="DISABLED" />, sta je het gebruik van de stand zonder interface niet toe.</translation>
 <translation id="8220023426952118761">Gewenste downloadsnelheid in kbits/s.</translation>
 <translation id="8220156281401380422">Toelatingslijst voor systeemeigen berichten configureren</translation>
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>

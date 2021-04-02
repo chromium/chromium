@@ -609,6 +609,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistent er ikke tilgængelig i en gæstesession.</translation>
 <translation id="6137566720514957455">Åbn dialogboksen til fjernelse for <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Den eksterne enhed understøttes ikke</translation>
 <translation id="615957422585914272">Vis skærmtastatur</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6179832488876878285">Du kan fastgøre dine vigtige filer her. Åbn appen Filer for at komme i gang.</translation>
@@ -630,7 +631,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="6376931439017688372">Bluetooth er slået til</translation>
 <translation id="6381109794406942707">Angiv din pinkode for at låse enheden op.</translation>
 <translation id="639644700271529076">CAPS LOCK er deaktiveret</translation>
-<translation id="6396835948284782440">Hold [Esc] nede for at afslutte.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Ryd alle notifikationer</translation>

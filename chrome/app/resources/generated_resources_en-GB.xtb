@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Passwords from your Google Account will also be available on this device while you're signed in</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">The selected printer is not available or not installed correctly. Check your printer or try selecting another printer.</translation>
+<translation id="1567135437923613642">Enable featured experiments</translation>
 <translation id="1567387640189251553">A different keyboard has been connected since you last entered your password. It may be attempting to steal your keystrokes.</translation>
 <translation id="1567993339577891801">JavaScript Console</translation>
 <translation id="1568323446248056064">Open display device settings</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">Turning off this feature doesn't affect this device's ability to send the information needed for essential services such as system updates and security.</translation>
 <translation id="1979280758666859181">You are changing to a channel with an older version of <ph name="PRODUCT_NAME" />. The channel change will be applied when the channel version matches the version currently installed on your device.</translation>
 <translation id="197989455406964291">KDC does not support encryption type</translation>
+<translation id="1983497378699148207">To finish setting up Linux, update Chrome OS and try again.</translation>
 <translation id="1984417487208496350">No protection (not recommended)</translation>
 <translation id="1987317783729300807">Accounts</translation>
 <translation id="1989112275319619282">Browse</translation>
@@ -1330,6 +1332,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2450223707519584812">You will not be able to add users because Google API keys are missing. See <ph name="DETAILS_URL" /> for details.</translation>
 <translation id="2450849356604136918">No active views</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Sites usually connect to serial ports for data transfer features, like setting up your network</translation>
 <translation id="2453860139492968684">Finish</translation>
 <translation id="2454247629720664989">Keyword</translation>
 <translation id="2454264884354864965">Camera is off</translation>
@@ -1960,6 +1963,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="313205617302240621">Forgot password?</translation>
 <translation id="3132277757485842847">We were unable to maintain a connection with your phone. Make sure that your phone is nearby, unlocked and has Bluetooth and Wi-Fi turned on.</translation>
 <translation id="3132996321662585180">Refresh daily</translation>
+<translation id="3134393957315651797">Select experiment state for the <ph name="EXPERIMENT_NAME" /> experiment. Experiment description: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Invalid PIN. You have <ph name="RETRIES" /> remaining attempts.</translation>
 <translation id="313963229645891001">Downloading, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Default yellow avatar</translation>
@@ -2844,6 +2848,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4099874310852108874">Network error occurred.</translation>
 <translation id="4100733287846229632">Device space critically low</translation>
 <translation id="4100853287411968461">New screen time limit</translation>
+<translation id="4101352914005291489">Hidden SSID</translation>
 <translation id="4102906002417106771">Restart to Powerwash</translation>
 <translation id="4104163789986725820">E&amp;xport...</translation>
 <translation id="4107048419833779140">Identify and eject storage devices</translation>
@@ -3913,6 +3918,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5382591305415226340">Manage supported links</translation>
 <translation id="5383377866517186886">Camera is turned off in Mac System Preferences</translation>
 <translation id="5383740867328871413">Unnamed group – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Enterprise policy changed. Experiments button added to toolbar. Click the button to open a dialogue to enable experiments.</translation>
 <translation id="5388885445722491159">Paired</translation>
 <translation id="5390100381392048184">Allow sites to play sound</translation>
 <translation id="5390112241331447203">Include the system_logs.txt file sent in feedback reports.</translation>
@@ -5037,6 +5043,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6660413144148052430">location</translation>
 <translation id="666099631117081440">Print servers</translation>
+<translation id="6662931079349804328">Enterprise policy changed. Experiments button removed from toolbar.</translation>
 <translation id="6663190258859265334">Powerwash your <ph name="DEVICE_TYPE" /> and return to the previous version.</translation>
 <translation id="6664237456442406323">Unfortunately, your computer is configured with a malformed hardware ID. This prevents Chrome OS from updating with the latest security fixes and your computer <ph name="BEGIN_BOLD" />may be vulnerable to malicious attacks<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Something went wrong when opening your profile. Please sign out then sign in again.</translation>
@@ -5393,6 +5400,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7056526158851679338">&amp;Inspect Devices</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Safety check ran 1 minute ago}other{Safety check ran {NUM_MINS} minutes ago}}</translation>
 <translation id="7057767408836081338">Failed to obtain app data. Trying to run the app anyway…</translation>
+<translation id="7058024590501568315">Hidden network</translation>
 <translation id="7059858479264779982">Set to auto-launch</translation>
 <translation id="7059893117020417984">To browse privately, click the dots icon menu to open an incognito window</translation>
 <translation id="7062222374113411376">Allow recently closed sites to finish sending and receiving data (recommended)</translation>
@@ -5756,6 +5764,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7477793887173910789">Control your music, videos and more</translation>
 <translation id="7478485216301680444">Kiosk application could not be installed.</translation>
 <translation id="7478623944308207463">Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google Account. For browser sync options, go to <ph name="LINK_BEGIN" />Chrome settings<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Don't allow sites to connect to serial ports</translation>
 <translation id="7479221278376295180">Storage Usage Overview</translation>
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481358317100446445">Ready</translation>
@@ -5907,11 +5916,13 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="765293928828334535">Apps, extensions and user scripts cannot be added from this website</translation>
 <translation id="7652954539215530680">Create a PIN</translation>
 <translation id="7654941827281939388">This account is already being used on this computer.</translation>
+<translation id="7655411746932645568">Sites can ask to connect to serial ports</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7659297516559011665">Passwords on this device only</translation>
 <translation id="7659584679870740384">You are not authorised to use this device. Please contact the administrator for sign-in permission.</translation>
 <translation id="7661259717474717992">Allow sites to save and read cookie data</translation>
 <translation id="7661451191293163002">A registration certificate could not be obtained.</translation>
+<translation id="7661762353058813968">Updates are managed by your administrator.</translation>
 <translation id="7662283695561029522">Tap to configure</translation>
 <translation id="7663719505383602579">Receiver: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Unsupported Bluetooth device: "<ph name="DEVICE_NAME" />".</translation>
@@ -6693,6 +6704,7 @@ Use Ctrl+Alt+Brightness Down to zoom out.</translation>
 <translation id="8539727552378197395">No (HttpOnly)</translation>
 <translation id="8539766201049804895">Upgrade</translation>
 <translation id="8540136935098276800">Enter a correctly formatted URL</translation>
+<translation id="8540503336857689453">Using a hidden network isn't recommended for security reasons.</translation>
 <translation id="8540608333167683902">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="854071720451629801">Mark as read</translation>
 <translation id="8541462173655894684">Did not find any printers from the print server</translation>

@@ -523,6 +523,7 @@
 <translation id="1563702743503072935">‏ستتوفّر أيضًا كلمات المرور من حسابك على Google على هذا الجهاز طالما أنك مسجّلٌ الدخول إلى الحساب.</translation>
 <translation id="1566049601598938765">موقع إلكتروني</translation>
 <translation id="15662109988763471">لا تتوفر الطابعة المختارة أو لم يتم تثبيتها بشكلٍ صحيح. يُرجى التحقق من الطابعة أو تجربة اختيار طابعة أخرى.</translation>
+<translation id="1567135437923613642">تفعيل التجارب المميَّزة</translation>
 <translation id="1567387640189251553">تم توصيل لوحة مفاتيح مختلفة منذ آخر إدخال لكلمة المرور، وقد يكون ذلك محاولةً لسرقة ضغطات المفاتيح.</translation>
 <translation id="1567993339577891801">‏وحدة تحكم JavaScript</translation>
 <translation id="1568323446248056064">فتح إعدادات الجهاز للعرض</translation>
@@ -922,6 +923,7 @@
 <translation id="1979095679518582070">لن يؤثر إيقاف هذه الميزة في قدرة هذا الجهاز على إرسال المعلومات اللازمة للحصول على خدمات ضرورية مثل تحديثات النظام والأمان.</translation>
 <translation id="1979280758666859181">أنت الآن تُجري تغييرًا إلى قناة ذات إصدار سابق من <ph name="PRODUCT_NAME" />. وسيسري تغيير القناة عند تطابق إصدار القناة مع الإصدار المثبت حاليًا على الجهاز.</translation>
 <translation id="197989455406964291">‏لا يدعم KDC (مركز توزيع المفاتيح) نوع التشفير</translation>
+<translation id="1983497378699148207">‏لإكمال عملية إعداد نظام التشغيل Linux، عليك تحديث "نظام التشغيل Chrome" ثم إعادة المحاولة.</translation>
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="1987317783729300807">حسابات</translation>
 <translation id="1989112275319619282">تصفّح</translation>
@@ -1334,6 +1336,7 @@
 <translation id="2450223707519584812">‏لن تتمكن من إضافة المستخدمين لأن مفاتيح واجهة برمجة تطبيقات Google مفقودة. راجع <ph name="DETAILS_URL" /> للحصول على تفاصيل.</translation>
 <translation id="2450849356604136918">ليس هناك أي عروض نشطة</translation>
 <translation id="2451298179137331965">الضعف</translation>
+<translation id="245322989586167203">تتّصل المواقع الإلكترونية عادةً بمنافذ تسلسلية لإتاحة ميزات نقل البيانات، مثل إعداد الشبكة.</translation>
 <translation id="2453860139492968684">اكتمل</translation>
 <translation id="2454247629720664989">الكلمة المفتاحية</translation>
 <translation id="2454264884354864965">الكاميرا متوقِّفة</translation>
@@ -1965,6 +1968,7 @@
 <translation id="313205617302240621">هل نسيت كلمة المرور؟</translation>
 <translation id="3132277757485842847">‏تعذَّر علينا المحافظة على الاتصال بهاتفك. يُرجى التأكد من أن هاتفك قريب وغير مُقفل وتم تفعيل بلوتوث وWi-Fi فيه.</translation>
 <translation id="3132996321662585180">إعادة التحميل يوميًا</translation>
+<translation id="3134393957315651797">يمكنك اختيار حالة للتجربة <ph name="EXPERIMENT_NAME" />. وصف التجربة: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">رقم التعريف الشخصي غير صحيح. يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="313963229645891001">جارٍ التنزيل، <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">الصورة الرمزية التلقائية الصفراء</translation>
@@ -2847,6 +2851,7 @@
 <translation id="4099874310852108874">حدث خطأ في الشبكة.</translation>
 <translation id="4100733287846229632">المساحة على الجهاز منخفضة للغاية</translation>
 <translation id="4100853287411968461">حد جديد لوقت النظر إلى الشاشة</translation>
+<translation id="4101352914005291489">‏معرّف SSID المخفي</translation>
 <translation id="4102906002417106771">‏إعادة التشغيل لإجراء عملية powerwash</translation>
 <translation id="4104163789986725820">ت&amp;صدير...</translation>
 <translation id="4107048419833779140">تحديد أجهزة التخزين وإخراجها</translation>
@@ -3916,6 +3921,7 @@
 <translation id="5382591305415226340">إدارة الروابط المدعومة</translation>
 <translation id="5383377866517186886">‏تم إيقاف الكاميرا في إعدادات نظام Mac المفضلة</translation>
 <translation id="5383740867328871413">مجموعة لم تتم تسميتها - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">تم تغيير سياسة المؤسسة، وبموجب هذا التغيير، تمت إضافة زر "التجارب" إلى شريط الأدوات. انقر على الزرّ لفتح مربّع حوار لتفعيل التجارب.</translation>
 <translation id="5388885445722491159">مقترن</translation>
 <translation id="5390100381392048184">السماح للمواقع الإلكترونية بتشغيل الصوت</translation>
 <translation id="5390112241331447203">‏إدراج ملف system_logs.txt المُرسَل في تقارير التعليقات</translation>
@@ -5040,6 +5046,7 @@
 <translation id="6659594942844771486">علامة تبويب</translation>
 <translation id="6660413144148052430">الموقع الجغرافي</translation>
 <translation id="666099631117081440">خوادم الطباعة</translation>
+<translation id="6662931079349804328">تم تغيير سياسة المؤسسة، وبموجب هذا التغيير، تمت إزالة زر "التجارب" من شريط الأدوات.</translation>
 <translation id="6663190258859265334">‏يمكنك إجراء Powerwash للجهاز <ph name="DEVICE_TYPE" /> والعودة إلى الإصدار السابق.</translation>
 <translation id="6664237456442406323">‏للأسف، تم إعداد جهاز الكمبيوتر باستخدام معرف جهاز غير صحيح. وهذا يمنع تحديث نظام التشغيل Chrome بأحدث إصلاحات الأمان، وقد يكون جهاز الكمبيوتر <ph name="BEGIN_BOLD" />عرضة للهجمات الضارة<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">حدث خطأ ما أثناء فتح ملفك الشخصي. يُرجى الخروج ثم إعادة تسجيل الدخول.</translation>
@@ -5396,6 +5403,7 @@
 <translation id="7056526158851679338">&amp;فحص الأجهزة</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{تم تفعيل ميزة "تأكيد السلامة" قبل دقيقة واحدة.}zero{تم تفعيل ميزة "تأكيد السلامة" قبل {NUM_MINS} دقيقة.}two{تم تفعيل ميزة "تأكيد السلامة" قبل دقيقتَين ({NUM_MINS}).}few{تم تفعيل ميزة "تأكيد السلامة" قبل {NUM_MINS} دقائق.}many{تم تفعيل ميزة "تأكيد السلامة" قبل {NUM_MINS} دقيقة.}other{تم تفعيل ميزة "تأكيد السلامة" قبل {NUM_MINS} دقيقة.}}</translation>
 <translation id="7057767408836081338">تعذَّر علينا الحصول على بيانات التطبيق، ولكن ما نزال نحاول تشغيل التطبيق.</translation>
+<translation id="7058024590501568315">شبكة مخفية</translation>
 <translation id="7059858479264779982">ضبط على تشغيل تلقائي</translation>
 <translation id="7059893117020417984">للتصفُّح بخصوصية تامّة، انقر على القائمة المشار إليها برمز النقاط لفتح نافذة للتصفُّح المتخفي</translation>
 <translation id="7062222374113411376">السماح للمواقع الإلكترونية التي تم إغلاقها مؤخرًا بإنهاء إرسال البيانات واستلامها (موصى به)</translation>
@@ -5759,6 +5767,7 @@
 <translation id="7477793887173910789">التحكم في الموسيقى والفيديوهات وغير ذلك</translation>
 <translation id="7478485216301680444">‏تعذر تثبيت تطبيق Kiosk.</translation>
 <translation id="7478623944308207463">‏ستتم مزامنة التطبيقات والإعدادات على جميع أجهزة "نظام التشغيل Chrome" التي سجّلت الدخول إليها باستخدام حسابك على Google. وللوصول إلى خيارات مزامنة المتصفّح، انتقِل إلى <ph name="LINK_BEGIN" />إعدادات Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">عدم السماح للمواقع الإلكترونية بالاتصال بمنافذ تسلسلية</translation>
 <translation id="7479221278376295180">نظرة عامة على استخدام مساحة التخزين</translation>
 <translation id="7481312909269577407">إلى الأمام</translation>
 <translation id="7481358317100446445">جاهزة</translation>
@@ -5910,11 +5919,13 @@
 <translation id="765293928828334535">لا يمكن إضافة التطبيقات والإضافات والنصوص البرمجية للمستخدم من الموقع الإلكتروني هذا.</translation>
 <translation id="7652954539215530680">إنشاء رقم التعريف الشخصي</translation>
 <translation id="7654941827281939388">يتم الآن استخدام هذا الحساب فعلاً على هذا الكمبيوتر.</translation>
+<translation id="7655411746932645568">السماح للمواقع الإلكترونية بطلب الاتصال بمنافذ تسلسلية</translation>
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7659297516559011665">كلمات المرور المخزّنة على هذا الجهاز فقط</translation>
 <translation id="7659584679870740384">لا يصرح لك باستخدام هذا الجهاز. يُرجى الاتصال بالمسؤول، للحصول على إذن تسجيل الدخول.</translation>
 <translation id="7661259717474717992">السماح للمواقع الإلكترونية بحفظ بيانات ملفات تعريف الارتباط وقراءتها</translation>
 <translation id="7661451191293163002">تعذّر الحصول على شهادة التسجيل.</translation>
+<translation id="7661762353058813968">يتولى مشرفك إدارة التحديثات.</translation>
 <translation id="7662283695561029522">النقر للإعداد</translation>
 <translation id="7663719505383602579">المتلقي: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">جهاز بلوتوث غير متوافق: "<ph name="DEVICE_NAME" />".</translation>
@@ -6696,6 +6707,7 @@
 <translation id="8539727552378197395">‏لا (HttpOnly)</translation>
 <translation id="8539766201049804895">ترقية</translation>
 <translation id="8540136935098276800">‏يُرجى إدخال عنوان URL بتنسيق صحيح.</translation>
+<translation id="8540503336857689453">لا ننصح باستخدام شبكة مخفية لأسباب تتعلق بالأمان.</translation>
 <translation id="8540608333167683902">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، التفاصيل</translation>
 <translation id="854071720451629801">وضع علامة "مقروءة"</translation>
 <translation id="8541462173655894684">لم يتم العثور على أيّ طابعات من خادم الطباعة.</translation>

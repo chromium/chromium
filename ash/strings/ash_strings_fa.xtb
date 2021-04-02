@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
 <translation id="6137566720514957455">باز کردن کادر گفتگوی برداشتن <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">از دستگاه‌های جانبی پشتیبانی نمی‌شود</translation>
 <translation id="615957422585914272">نمایش صفحه‌کلید مجازی</translation>
 <translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6179832488876878285">‏می‌توانید فایل‌های مهم را اینجا پین کنید. برای شروع کار، برنامه Files را باز کنید.</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">بلوتوث روشن است</translation>
 <translation id="6381109794406942707">برای باز کردن قفل دستگاه، پین را وارد کنید.</translation>
 <translation id="639644700271529076">‏CAPS LOCK خاموش است</translation>
-<translation id="6396835948284782440">برای خروج، [کلید گریز] را فشار دهید و نگه دارید.</translation>
 <translation id="6406704438230478924">دگرساز راست</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">پاک کردن همه اعلان‌ها</translation>

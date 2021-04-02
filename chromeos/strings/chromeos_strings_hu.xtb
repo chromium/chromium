@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + felhasználói tanúsítvány</translation>
 <translation id="4731797938093519117">Szülői hozzáférés</translation>
 <translation id="4773299976671772492">Leállítva</translation>
+<translation id="4794140124556169553">CPU-teszt futtatása befolyásolhatja a rendszer teljesítményét.</translation>
 <translation id="4808449224298348341">Nyomtatási feladat (<ph name="DOCUMENT_TITLE" />) megszakítva</translation>
 <translation id="4813345808229079766">Kapcsolat</translation>
 <translation id="4832079907277790330">Mappa kiválasztása a Fájlok alkalmazásban…</translation>
@@ -341,6 +342,7 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8483248364096924578">IP-cím</translation>
 <translation id="8503813439785031346">Felhasználónév</translation>
 <translation id="8503836310948963452">Már csak néhány perc…</translation>
+<translation id="8575298406870537639">Szolgáltatója előírhatja ennek a beállításnak a használatát a hálózathoz való csatlakozás érdekében. További információért forduljon a szolgáltatójához.</translation>
 <translation id="8576249514688522074">Nincs inicializálva</translation>
 <translation id="8620617069779373398">Roaming állapota</translation>
 <translation id="8675354002693747642">Előre megosztott kulcs</translation>
@@ -365,7 +367,6 @@ Koppintson a mikrofonra, és kérdezzen tőlem.</translation>
 <translation id="8970109610781093811">Futtatás újra</translation>
 <translation id="9003704114456258138">Frekvencia</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Jelenleg felhasznált</translation>

@@ -610,6 +610,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">El Asistente de Google no está disponible en las sesiones de invitado.</translation>
 <translation id="6137566720514957455">Abrir el diálogo para quitar la cuenta <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">El dispositivo periférico no es compatible</translation>
 <translation id="615957422585914272">Mostrar el teclado en pantalla</translation>
 <translation id="6165508094623778733">Más información</translation>
 <translation id="6179832488876878285">Puedes fijar tus archivos importantes aquí. Para comenzar, abre la app de Archivos.</translation>
@@ -631,7 +632,6 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="6376931439017688372">Se activó la conexión Bluetooth</translation>
 <translation id="6381109794406942707">Para desbloquear el dispositivo, ingresa el PIN.</translation>
 <translation id="639644700271529076">El bloqueo de mayúsculas está desactivado.</translation>
-<translation id="6396835948284782440">Mantén presionado [Esc] para salir.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Borra todas las notificaciones</translation>

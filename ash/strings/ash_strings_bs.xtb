@@ -609,6 +609,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Asistent nije dostupan u sesiji gosta.</translation>
 <translation id="6137566720514957455">Otvaranje dijaloškog okvira za uklanjanje korisnika <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="615957422585914272">Prikaži tastaturu na ekranu</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
 <translation id="6179832488876878285">Ovdje možete zakačiti važne fajlove. Otvorite aplikaciju Fajlovi da započnete.</translation>
@@ -630,7 +631,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="6376931439017688372">Bluetooth je uključen</translation>
 <translation id="6381109794406942707">Da otključate uređaj, unesite PIN.</translation>
 <translation id="639644700271529076">Tipka CAPS LOCK je isključena</translation>
-<translation id="6396835948284782440">Pritisnite i držite [Esc] da izađete.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Obrišite sva obavještenja</translation>

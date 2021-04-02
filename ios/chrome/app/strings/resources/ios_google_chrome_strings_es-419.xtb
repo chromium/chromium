@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Ayuda a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="1314663809820920746">Podrás seguir viendo todos tus favoritos, el historial, las contraseñas y otras opciones de configuración en este dispositivo. Si realizas cambios, no se sincronizarán con tu Cuenta de Google.</translation>
 <translation id="1479202195792305274">Chrome puede revisar las contraseñas solo cuando accedes con tu Cuenta de Google.</translation>
+<translation id="1493827051843127077">Establece Chrome como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome comparte tu ubicación con los sitios en donde lo permites.</translation>
 <translation id="2347208864470321755">Cuando esté activada esta función, Chrome ofrecerá traducir páginas escritas en otros idiomas con Google Traductor. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Establece Chrome como tu navegador predeterminado</translation>
+<translation id="2561231791489583059">Usa Chrome como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="2574249610672786438">Para ver tus pestañas donde sea que uses Chrome, accede a tu cuenta en todos los dispositivos</translation>
 <translation id="2576431527583832481">¡Chrome mejoró! Hay una nueva versión disponible.</translation>
 <translation id="257708665678654955">¿Quieres que Google Chrome te ofrezca traducir las páginas de este sitio que estén en <ph name="LANGUAGE_NAME" /> la próxima vez?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome no puede revisar las contraseñas</translation>
 <translation id="7265369419224458312">Accede aquí a las pestañas que abriste en la computadora. Abre Chrome en la computadora, accede al menú y selecciona "Acceder a Chrome…".</translation>
 <translation id="7272930098487145294">Para guardar imágenes, presiona en la Configuración a fin de permitir que Chrome agregue tus fotos</translation>
+<translation id="7275945473750112644"><ph name="HOSTED_DOMAIN" /> administra tu cuenta, por lo que se borrarán los datos de Chrome almacenados en este dispositivo.</translation>
 <translation id="7400722733683201933">Acerca de Google Chrome</translation>
 <translation id="7501046334262221972">Para hacer que Chrome sea tu navegador predeterminado, abre Ajustes. Presiona App del navegador por omisión y, luego, selecciona Chrome.</translation>
 <translation id="756809126120519699">Datos de Chrome borrados</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. Chrome te recomienda cambiarla ahora.</translation>
 <translation id="7698568245838009292">Chrome quiere acceder a la cámara</translation>
 <translation id="7855730255114109580">Google Chrome está actualizado</translation>
+<translation id="8022947259858476807">Usa Chrome como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>
 <translation id="8160472928944011082">No se puede actualizar Chrome</translation>
+<translation id="8357607116237445042">Decidir si quieres borrar o conservar los datos de Chrome que tienes almacenados en este dispositivo</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos los derechos reservados.</translation>
 <translation id="840168496893712993">Algunos complementos causan bloqueos en Chrome. Prueba a desinstalarlos.</translation>
 <translation id="8459495907675268833">Los datos seleccionados se quitaron de Chrome y los dispositivos sincronizados. Es posible que tu cuenta de Google tenga otros formularios del historial de navegación, como las búsquedas y la actividad de otros servicios de Google en history.google.com.</translation>
@@ -88,4 +93,5 @@
   2. Presiona App de navegador predeterminada.
   3. Selecciona Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Aprovecha la seguridad de Google Chrome</translation>
 </translationbundle>

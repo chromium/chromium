@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Các mật khẩu trên Tài khoản Google của bạn cũng sẽ hiển thị trên thiết bị này khi bạn đăng nhập</translation>
 <translation id="1566049601598938765">Trang web</translation>
 <translation id="15662109988763471">Máy in đã chọn không hoạt động hoặc được cài đặt không chính xác. Hãy kiểm tra máy in của bạn hoặc thử chọn một máy in khác.</translation>
+<translation id="1567135437923613642">Bật các quá trình thử nghiệm nổi bật</translation>
 <translation id="1567387640189251553">Một bàn phím khác đã được kết nối kể từ lần gần đây nhất bạn nhập mật khẩu của mình. Bàn phím này có thể đang cố gắng đánh cắp thao tác nhấn phím của bạn.</translation>
 <translation id="1567993339577891801">Bảng điều khiển JavaScript</translation>
 <translation id="1568323446248056064">Mở cài đặt thiết bị hiển thị</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">Việc tắt tính năng này sẽ không ảnh hưởng đến khả năng thiết bị gửi thông tin cần thiết cho các dịch vụ thiết yếu như bảo mật và cập nhật hệ thống.</translation>
 <translation id="1979280758666859181">Bạn đang thay đổi sang kênh có phiên bản <ph name="PRODUCT_NAME" /> cũ hơn. Sẽ áp dụng thay đổi kênh khi phiên bản kênh khớp với phiên bản hiện được cài đặt trên thiết bị của bạn.</translation>
 <translation id="197989455406964291">KDC không hỗ trợ loại mã hóa</translation>
+<translation id="1983497378699148207">Để hoàn tất việc thiết lập Linux, hãy cập nhật Chrome OS rồi thử lại.</translation>
 <translation id="1984417487208496350">Không được bảo vệ (không khuyến nghị)</translation>
 <translation id="1987317783729300807">Tài khoản</translation>
 <translation id="1989112275319619282">Duyệt qua</translation>
@@ -1330,6 +1332,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2450223707519584812">Bạn không thể thêm người dùng vì thiếu khóa Google API. Xem <ph name="DETAILS_URL" /> để biết thông tin chi tiết.</translation>
 <translation id="2450849356604136918">Không có chế độ xem đang hoạt động nào</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Các trang web thường kết nối với cổng nối tiếp để hỗ trợ những tính năng chuyển dữ liệu, chẳng hạn như thiết lập mạng</translation>
 <translation id="2453860139492968684">Kết thúc</translation>
 <translation id="2454247629720664989">Từ khóa</translation>
 <translation id="2454264884354864965">Máy ảnh đang tắt</translation>
@@ -1960,6 +1963,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="313205617302240621">Bạn quên mật khẩu?</translation>
 <translation id="3132277757485842847">Chúng tôi không thể duy trì đường kết nối với điện thoại của bạn. Hãy đảm bảo điện thoại của bạn đang ở gần, mở khóa, đồng thời đã bật Bluetooth và Wi-Fi.</translation>
 <translation id="3132996321662585180">Làm mới hàng ngày</translation>
+<translation id="3134393957315651797">Chọn trạng thái thử nghiệm cho quá trình thử nghiệm <ph name="EXPERIMENT_NAME" />. Phần mô tả thử nghiệm: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Mã PIN không hợp lệ. Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="313963229645891001">Đang tải xuống, còn <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Hình đại diện màu vàng mặc định</translation>
@@ -2844,6 +2848,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4099874310852108874">Đã xảy ra lỗi mạng.</translation>
 <translation id="4100733287846229632">Dung lượng của thiết bị quá thấp</translation>
 <translation id="4100853287411968461">Giới hạn mới về thời gian sử dụng thiết bị</translation>
+<translation id="4101352914005291489">SSID ẩn</translation>
 <translation id="4102906002417106771">Khởi động lại để sử dụng chức năng powerwash</translation>
 <translation id="4104163789986725820">X&amp;uất...</translation>
 <translation id="4107048419833779140">Nhận dạng và ngắt kết nối thiết bị lưu trữ</translation>
@@ -3913,6 +3918,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5382591305415226340">Quản lý liên kết được hỗ trợ</translation>
 <translation id="5383377866517186886">Máy ảnh đã bị tắt trong System Preferences (Tùy chọn hệ thống) trên máy Mac</translation>
 <translation id="5383740867328871413">Nhóm chưa có tên – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Chính sách doanh nghiệp đã thay đổi. Nút thử nghiệm đã được thêm vào thanh công cụ. Hãy nhấp vào nút này để mở hộp thoại cho phép bật thử nghiệm.</translation>
 <translation id="5388885445722491159">Được ghép nối</translation>
 <translation id="5390100381392048184">Cho phép các trang web phát âm thanh</translation>
 <translation id="5390112241331447203">Thêm tệp system_logs.txt được gửi trong báo cáo phản hồi.</translation>
@@ -5037,6 +5043,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6659594942844771486">Thẻ</translation>
 <translation id="6660413144148052430">vị trí</translation>
 <translation id="666099631117081440">Máy chủ máy in</translation>
+<translation id="6662931079349804328">Chính sách doanh nghiệp đã thay đổi. Nút thử nghiệm đã bị xóa khỏi thanh công cụ.</translation>
 <translation id="6663190258859265334">Powerwash <ph name="DEVICE_TYPE" /> của bạn và chuyển lại về phiên bản trước.</translation>
 <translation id="6664237456442406323">Rất tiếc, máy tính của bạn được định cấu hình bằng ID phần cứng không đúng định dạng. Điều này ngăn Chrome OS cập nhật các bản vá bảo mật mới nhất và máy tính của bạn <ph name="BEGIN_BOLD" />có thể bị các cuộc tấn công làm hại<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Đã xảy ra sự cố khi mở hồ sơ của bạn. Vui lòng đăng xuất rồi đăng nhập lại.</translation>
@@ -5393,6 +5400,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7056526158851679338">&amp;Kiểm tra thiết bị</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Tính năng Kiểm tra an toàn đã chạy 1 phút trước}other{Tính năng Kiểm tra an toàn đã chạy {NUM_MINS} phút trước}}</translation>
 <translation id="7057767408836081338">Không lấy được dữ liệu ứng dụng. Hệ thống vẫn đang cố chạy ứng dụng...</translation>
+<translation id="7058024590501568315">Mạng ẩn</translation>
 <translation id="7059858479264779982">Đặt thành tự động chạy</translation>
 <translation id="7059893117020417984">Để duyệt web riêng tư, hãy nhấp vào menu biểu tượng ba dấu chấm để mở cửa sổ ẩn danh</translation>
 <translation id="7062222374113411376">Cho phép các trang web đóng gần đây hoàn tất gửi và nhận dữ liệu (khuyến nghị)</translation>
@@ -5756,6 +5764,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="7477793887173910789">Điều khiển nhạc, video và nhiều nội dung khác</translation>
 <translation id="7478485216301680444">Không thể cài đặt ứng dụng kiosk.</translation>
 <translation id="7478623944308207463">Các ứng dụng và tùy chọn cài đặt của bạn sẽ đồng bộ hóa trên mọi thiết bị Chrome OS mà bạn đã đăng nhập bằng Tài khoản Google của mình. Để biết các tùy chọn đồng bộ hóa trình duyệt, hãy chuyển đến phần <ph name="LINK_BEGIN" />Cài đặt Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Không cho phép trang web kết nối với các cổng nối tiếp</translation>
 <translation id="7479221278376295180">Phần tổng quan về mức sử dụng bộ nhớ</translation>
 <translation id="7481312909269577407">Chuyển tiếp</translation>
 <translation id="7481358317100446445">Sẵn sàng</translation>
@@ -5907,11 +5916,13 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="765293928828334535">Không thể thêm các ứng dụng, tiện ích và tập lệnh của người dùng từ trang web này</translation>
 <translation id="7652954539215530680">Tạo mã PIN</translation>
 <translation id="7654941827281939388">Tài khoản này đã đang được sử dụng trên máy tính này.</translation>
+<translation id="7655411746932645568">Các trang web có thể yêu cầu kết nối với cổng nối tiếp</translation>
 <translation id="7658239707568436148">Hủy</translation>
 <translation id="7659297516559011665">Chỉ mật khẩu trên thiết bị này</translation>
 <translation id="7659584679870740384">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập.</translation>
 <translation id="7661259717474717992">Cho phép trang web lưu và đọc dữ liệu cookie</translation>
 <translation id="7661451191293163002">Không thể lấy chứng chỉ đăng ký.</translation>
+<translation id="7661762353058813968">Quản trị viên của bạn sẽ quản lý các bản cập nhật.</translation>
 <translation id="7662283695561029522">Nhấn để định cấu hình</translation>
 <translation id="7663719505383602579">Bộ thu: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Thiết bị Bluetooth không được hỗ trợ: "<ph name="DEVICE_NAME" />".</translation>
@@ -6693,6 +6704,7 @@ Dùng tổ hợp phím Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation
 <translation id="8539727552378197395">Không (HttpOnly)</translation>
 <translation id="8539766201049804895">Nâng cấp</translation>
 <translation id="8540136935098276800">Nhập URL có định dạng chính xác</translation>
+<translation id="8540503336857689453">Để bảo mật, bạn không nên dùng mạng ẩn.</translation>
 <translation id="8540608333167683902">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Thông tin chi tiết</translation>
 <translation id="854071720451629801">Đánh dấu là đã đọc</translation>
 <translation id="8541462173655894684">Không tìm thấy máy in nào trên máy chủ máy in</translation>

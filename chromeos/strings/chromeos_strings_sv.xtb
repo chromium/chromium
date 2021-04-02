@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + användarcertifikat</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
 <translation id="4773299976671772492">Har stoppats</translation>
+<translation id="4794140124556169553">Systemet kan bli långsammare när du kör ett CPU-test</translation>
 <translation id="4808449224298348341">Utskriftsjobbet <ph name="DOCUMENT_TITLE" /> har avbrutits</translation>
 <translation id="4813345808229079766">Anslutning</translation>
 <translation id="4832079907277790330">Välj en fil i appen Filer</translation>
@@ -341,6 +342,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8483248364096924578">IP-adress</translation>
 <translation id="8503813439785031346">Användarnamn</translation>
 <translation id="8503836310948963452">Bara några minuter kvar …</translation>
+<translation id="8575298406870537639">Det här alternativet kan krävas för att du ska kunna ansluta till operatörens nätverk. Kontakta operatören för mer information.</translation>
 <translation id="8576249514688522074">Inte initierat</translation>
 <translation id="8620617069779373398">Dirigeringsstatus</translation>
 <translation id="8675354002693747642">I förväg delad nyckel</translation>
@@ -365,7 +367,6 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="8970109610781093811">Kör igen</translation>
 <translation id="9003704114456258138">Frekvens</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Redigera</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Nuvarande användning</translation>

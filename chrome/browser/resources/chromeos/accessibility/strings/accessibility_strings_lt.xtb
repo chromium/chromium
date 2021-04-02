@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Šviesi dangaus mėlynumo spalva</translation>
 <translation id="1303806948938513162">Kad pasiektumėte „ChromeVox“ meniu, palieskite keturiais pirštais</translation>
 <translation id="1313373992684326101">Pereiti į ankstesnę skiltį. Pavyzdžiai apima būsenos dėklą ir paleidimo priemonę.</translation>
+<translation id="1315077335264761176">Lietimo orientacija</translation>
 <translation id="1325363694295259631">„<ph name="NAME" />“, meniu elemento akutės pasirinkimas atšauktas</translation>
 <translation id="1325946044405407859">Gelsvai ruda spalva</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> iš <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Sveiki! Tai – „ChromeVox“ mokymo programa. Jei norite bet kuriuo metu išeiti iš šios mokymo programos, paspauskite klavišą „Escape“ viršutiniame kairiajame klaviatūros kampe. Jei norite išjungti „ChromeVox“, laikydami paspaudę klavišus „Control“ ir „Alt“ paspauskite Z. Kai būsite pasiruošę, tarpo klavišu pereikite į kitą pamoką.</translation>
 <translation id="174268867904053074">Kitas grafinis elementas</translation>
 <translation id="1756785467854861272">Tamsiai purpurinė spalva</translation>
+<translation id="1758693804775271377">Jei norite naršyti šios temos pamokas, vienu pirštu perbraukite kairėn arba dešinėn</translation>
 <translation id="1765245556747822181">Perbraukite vienu pirštu aukštyn</translation>
 <translation id="1771761307086386028">Slinkti dešinėn</translation>
 <translation id="1781173782405573156">Praleidimo klavišas</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Eilutė</translation>
 <translation id="2816868829355607410">Praktinių užduočių sritis: perėjimo komandos</translation>
 <translation id="2841013758207633010">Laikas</translation>
+<translation id="284171465644749950">Jei norite naršyti temas, vienu pirštu perbraukite kairėn arba dešinėn</translation>
 <translation id="2843432675592278677">Nėra ankstesnio ARIA orientyro</translation>
 <translation id="2843814945404750166">Tamsi alyvuogių žalumo spalva</translation>
 <translation id="2843837985843789981">Ankstesnė grupė</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">„ChromeVox“ atnaujintas</translation>
 <translation id="93384979447910801">Tamsi jūros žalumo spalva</translation>
 <translation id="948171205378458592">Sumažinti kalbos tempą</translation>
+<translation id="957570623732056069">Jei norite naršyti šią pamoką, vienu pirštu perbraukite kairėn arba dešinėn</translation>
 <translation id="958854023026327378">Perbraukite vienu pirštu žemyn</translation>
 <translation id="962913030769097253">Kita 1 lygio antraštė</translation>
 <translation id="966588271015727539">Pasirinkti „Bluetooth“ Brailio rašmenų ekraną</translation>

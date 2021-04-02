@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Wachtwoorden uit je Google-account zijn ook beschikbaar voor gebruik op dit apparaat als je bent ingelogd</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">De geselecteerde printer is niet beschikbaar of niet correct geïnstalleerd. Controleer de printer of probeer een andere printer te selecteren.</translation>
+<translation id="1567135437923613642">Uitgelichte experimenten aanzetten</translation>
 <translation id="1567387640189251553">Er is een ander toetsenbord aangesloten sinds de laatste keer dat je je wachtwoord hebt ingevoerd. Mogelijk wordt geprobeerd om je toetsaanslagen te stelen.</translation>
 <translation id="1567993339577891801">JavaScript-console</translation>
 <translation id="1568323446248056064">Weergave-instellingen van apparaat openen</translation>
@@ -602,7 +603,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1642494467033190216">Je moet rootfs-beveiliging verwijderen en opnieuw opstarten voordat je andere foutopsporingsfuncties kunt aanzetten.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA-handtekening met SHA-1</translation>
-<translation id="1643921258693943800">Als je 'Dichtbij delen' wilt gebruiken, zet je bluetooth en wifi aan</translation>
+<translation id="1643921258693943800">Als je Dichtbij delen wilt gebruiken, zet je bluetooth en wifi aan</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1645516838734033527">Smart Lock vereist een schermvergrendeling op je telefoon om je <ph name="DEVICE_TYPE" /> te beveiligen.</translation>
 <translation id="1646982517418478057">Geef een wachtwoord op om dit certificaat te versleutelen</translation>
@@ -610,7 +611,7 @@
 <translation id="164936512206786300">Bluetooth-apparaat ontkoppelen</translation>
 <translation id="1650371550981945235">Invoeropties tonen</translation>
 <translation id="1651008383952180276">Je moet twee keer dezelfde wachtwoordzin opgeven</translation>
-<translation id="1652326691684645429">'Dichtbij delen' aanzetten</translation>
+<translation id="1652326691684645429">Dichtbij delen aanzetten</translation>
 <translation id="1653526288038954982">{NUM_PRINTER,plural, =1{Voeg de printer toe aan Google Cloudprinter zodat je overal kunt afdrukken.}other{Voeg # printers toe aan Google Cloudprinter zodat je overal kunt afdrukken.}}</translation>
 <translation id="1656528038316521561">Ondoorzichtigheid van achtergrond</translation>
 <translation id="1657406563541664238">Help <ph name="PRODUCT_NAME" /> beter te maken door automatisch gebruiksstatistieken en crashmeldingen naar Google te verzenden</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">Als je deze functie uitzet, heeft dit geen gevolgen voor de mogelijkheid van dit apparaat om de informatie te sturen die nodig is voor essentiële services zoals systeemupdates en beveiliging.</translation>
 <translation id="1979280758666859181">Je wijzigt naar een kanaal met een oudere versie van <ph name="PRODUCT_NAME" />. De wijziging van kanaal wordt toegepast wanneer de versie van het kanaal overeenkomt met de versie die momenteel op het apparaat is geïnstalleerd.</translation>
 <translation id="197989455406964291">KDC ondersteunt versleutelingstype niet</translation>
+<translation id="1983497378699148207">Als je de installatie van Linux wilt afronden, update je Chrome OS en probeer je het opnieuw.</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="1987317783729300807">Accounts</translation>
 <translation id="1989112275319619282">Browsen</translation>
@@ -1330,6 +1332,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2450223707519584812">Je kunt geen gebruikers toevoegen omdat Google API-sleutels ontbreken. Bekijk <ph name="DETAILS_URL" /> voor details.</translation>
 <translation id="2450849356604136918">Geen actieve weergaven</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Sites maken meestal verbinding met seriële poorten voor functies voor gegevensoverdracht zoals je netwerk instellen</translation>
 <translation id="2453860139492968684">Voltooien</translation>
 <translation id="2454247629720664989">Zoekwoord</translation>
 <translation id="2454264884354864965">Camera staat uit</translation>
@@ -1480,7 +1483,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2612676031748830579">Kaartnummer</translation>
 <translation id="2616366145935564096">Je gegevens lezen en wijzigen op <ph name="WEBSITE_1" /></translation>
 <translation id="2617342710774726426">Simkaart is vergrendeld</translation>
-<translation id="2618797463720777311">'Dichtbij delen' instellen</translation>
+<translation id="2618797463720777311">Dichtbij delen instellen</translation>
 <translation id="2619761439309613843">Dagelijks vernieuwen</translation>
 <translation id="2620215283731032047"><ph name="FILE_NAME" /> kan niet beveiligd worden gedownload.</translation>
 <translation id="2620436844016719705">Systeem</translation>
@@ -1874,7 +1877,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3022978424994383087">Dat heb ik niet verstaan.</translation>
 <translation id="3023464535986383522">Selecteer om uitgesproken te worden</translation>
 <translation id="3024374909719388945">24-uurs klok gebruiken</translation>
-<translation id="3027296729579831126">'Dichtbij delen' aanzetten</translation>
+<translation id="3027296729579831126">Dichtbij delen aanzetten</translation>
 <translation id="3029466929721441205">Stylustools in plank tonen</translation>
 <translation id="3030311804857586740">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> vereist dat je vandaag een update downloadt. De update wordt automatisch gedownload als je verbinding maakt met internet.}other{<ph name="MANAGER" /> vereist dat je vóór de deadline een update downloadt. De update wordt automatisch gedownload als je verbinding maakt met internet.}}</translation>
 <translation id="3031417829280473749">Agente X</translation>
@@ -1960,6 +1963,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="313205617302240621">Wachtwoord vergeten?</translation>
 <translation id="3132277757485842847">We kunnen de verbinding met je telefoon niet in stand houden. Zorg dat je telefoon in de buurt en ontgrendeld is en dat bluetooth en wifi aanstaan.</translation>
 <translation id="3132996321662585180">Dagelijks vernieuwen</translation>
+<translation id="3134393957315651797">Selecteer de experimentstatus voor het experiment <ph name="EXPERIMENT_NAME" />. Beschrijving experiment: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ongeldige pincode. Je hebt nog <ph name="RETRIES" /> pogingen.</translation>
 <translation id="313963229645891001">Downloaden: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Standaard gele avatar</translation>
@@ -2790,7 +2794,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4046123991198612571">Volgend nummer</translation>
 <translation id="4047581153955375979">USB4</translation>
 <translation id="4047726037116394521">Naar startscherm gaan</translation>
-<translation id="4049783682480068824">{COUNT,plural, =1{# contact is niet beschikbaar. Als je 'Dichtbij delen' met deze persoon wilt gebruiken, voeg je het e-mailadres dat bij dit Google-account hoort aan je contacten toe.}other{# contacten zijn niet beschikbaar Als je 'Dichtbij delen' met ze wilt gebruiken, voeg je de e-mailadressen die bij hun Google-accounts horen aan je contacten toe.}}</translation>
+<translation id="4049783682480068824">{COUNT,plural, =1{# contact is niet beschikbaar. Als je Dichtbij delen met deze persoon wilt gebruiken, voeg je het e-mailadres dat bij dit Google-account hoort aan je contacten toe.}other{# contacten zijn niet beschikbaar Als je Dichtbij delen met ze wilt gebruiken, voeg je de e-mailadressen die bij hun Google-accounts horen aan je contacten toe.}}</translation>
 <translation id="4050225813016893843">Verificatiemethode</translation>
 <translation id="4050534976465737778">Zorg dat beide apparaten zijn ontgrendeld, bij elkaar in de buurt zijn en dat bluetooth aanstaat. Als je content deelt met een Chromebook die niet in je contacten staat, zorg je dat 'Dichtbij aan' aanstaat (open het statusgedeelte en selecteer dan Dichtbij aan). <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Heel klein</translation>
@@ -2844,6 +2848,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4099874310852108874">Er is een netwerkfout opgetreden.</translation>
 <translation id="4100733287846229632">Er is zeer weinig ruimte beschikbaar op het apparaat</translation>
 <translation id="4100853287411968461">Nieuwe schermtijdlimiet</translation>
+<translation id="4101352914005291489">SSID verborgen</translation>
 <translation id="4102906002417106771">Opnieuw opstarten om Powerwash uit te voeren</translation>
 <translation id="4104163789986725820">E&amp;xporteren...</translation>
 <translation id="4107048419833779140">Opslagapparaten identificeren en verwijderen</translation>
@@ -3327,7 +3332,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4677772697204437347">GPU-geheugen</translation>
 <translation id="467823995058589466">Camera staat uit</translation>
 <translation id="4680105648806843642">Het geluid is uitgezet op deze pagina</translation>
-<translation id="4681453295291708042">'Dichtbij delen' uitzetten</translation>
+<translation id="4681453295291708042">Dichtbij delen uitzetten</translation>
 <translation id="4681930562518940301">Oorspronkelijke &amp;afbeelding openen op nieuw tabblad</translation>
 <translation id="4682551433947286597">Achtergronden zijn op het inlogscherm zichtbaar.</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (standaard)</translation>
@@ -3905,7 +3910,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5372529912055771682">De geleverde inschrijvingsmodus wordt niet ondersteund door deze versie van het besturingssysteem. Zorg ervoor dat je de nieuwste versie gebruikt en probeer het opnieuw.</translation>
 <translation id="5372579129492968947">Extensie losmaken</translation>
 <translation id="5372632722660566343">Doorgaan zonder account</translation>
-<translation id="5375318608039113175">Als je 'Dichtbij delen' met deze contacten wilt gebruiken, voeg je het e-mailadres dat bij hun Google-account hoort aan je contacten toe.</translation>
+<translation id="5375318608039113175">Als je Dichtbij delen met deze contacten wilt gebruiken, voeg je het e-mailadres dat bij hun Google-account hoort aan je contacten toe.</translation>
 <translation id="5376169624176189338">Klik om terug te gaan en houd ingedrukt om de geschiedenis te zien</translation>
 <translation id="5376931455988532197">Bestand is te groot</translation>
 <translation id="5377721922656071359">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> naar <ph name="DEVICE_NAME" /> gestuurd}other{<ph name="ATTACHMENTS" /> naar <ph name="DEVICE_NAME" /> gestuurd}}</translation>
@@ -3913,6 +3918,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5382591305415226340">Ondersteunde links beheren</translation>
 <translation id="5383377866517186886">Camera staat uit in Systeemvoorkeuren van je Mac</translation>
 <translation id="5383740867328871413">Naamloze groep - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Bedrijfsbeleid gewijzigd. Knop voor experimenten toegevoegd aan de werkbalk. Klik op de knop om een dialoogvenster te openen waarmee je experimenten kunt aanzetten.</translation>
 <translation id="5388885445722491159">Gekoppeld</translation>
 <translation id="5390100381392048184">Toestaan dat sites geluid afspelen</translation>
 <translation id="5390112241331447203">Het bestand system_logs.txt opnemen dat in feedbackrapporten wordt gestuurd.</translation>
@@ -4778,7 +4784,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6363990818884053551">Bevestig dat jij het bent om de synchronisatie te starten</translation>
 <translation id="6365069501305898914">Facebook</translation>
 <translation id="6365411474437319296">Familie en vrienden toevoegen</translation>
-<translation id="6367985768157257101">Ontvangen met 'Dichtbij delen'?</translation>
+<translation id="6367985768157257101">Ontvangen met Dichtbij delen?</translation>
 <translation id="6368276408895187373">Aan: <ph name="VARIATION_NAME" /></translation>
 <translation id="636850387210749493">Aanmelding voor Enterprise</translation>
 <translation id="6370021412472292592">Kan manifest niet laden.</translation>
@@ -5037,6 +5043,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6659594942844771486">Tabblad</translation>
 <translation id="6660413144148052430">locatie</translation>
 <translation id="666099631117081440">Afdrukservers</translation>
+<translation id="6662931079349804328">Bedrijfsbeleid gewijzigd. Knop voor experimenten verwijderd uit werkbalk.</translation>
 <translation id="6663190258859265334">Powerwash je <ph name="DEVICE_TYPE" /> en zet de vorige versie terug.</translation>
 <translation id="6664237456442406323">Je computer is geconfigureerd met een hardware-ID met een onjuiste notatie. Dit zorgt ervoor dat Chrome OS niet kan worden bijgewerkt met de nieuwste beveiligingsoplossingen, waardoor je computer <ph name="BEGIN_BOLD" />kwetsbaar kan zijn voor schadelijke aanvallen<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Er is iets misgegaan bij het openen van je profiel. Log uit en log vervolgens weer in.</translation>
@@ -5307,7 +5314,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6965978654500191972">Apparaat</translation>
 <translation id="696780070563539690">Sites mogen je cookies niet gebruiken om je browse-activiteit op verschillende sites te bekijken, bijvoorbeeld om advertenties te personaliseren</translation>
 <translation id="6968288415730398122">Geef je wachtwoord op om de schermvergrendeling te configureren</translation>
-<translation id="6969047215179982698">'Dichtbij delen' uitzetten</translation>
+<translation id="6969047215179982698">Dichtbij delen uitzetten</translation>
 <translation id="6970480684834282392">Opstarttype</translation>
 <translation id="6970856801391541997">Specifieke pagina's afdrukken</translation>
 <translation id="6972180789171089114">Audio/video</translation>
@@ -5393,6 +5400,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7056526158851679338">Apparaten &amp;inspecteren</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Veiligheidscheck is 1 minuut geleden uitgevoerd}other{Veiligheidscheck is {NUM_MINS} minuten geleden uitgevoerd}}</translation>
 <translation id="7057767408836081338">App-gegevens kunnen niet worden opgehaald. Er wordt toch geprobeerd de app uit te voeren.</translation>
+<translation id="7058024590501568315">Verborgen netwerk</translation>
 <translation id="7059858479264779982">Instellen op automatisch starten</translation>
 <translation id="7059893117020417984">Als je privé wilt browsen, klik je op het menupictogram met de stippen om een incognitovenster te openen</translation>
 <translation id="7062222374113411376">Toestaan dat onlangs gesloten sites het verzenden en ontvangen van gegevens voltooien (aanbevolen)</translation>
@@ -5756,6 +5764,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
 <translation id="7478485216301680444">Kiosk-app kan niet worden geïnstalleerd.</translation>
 <translation id="7478623944308207463">Je apps en instellingen worden gesynchroniseerd voor alle Chrome OS-apparaten waarop je bent ingelogd met je Google-account. Ga naar de <ph name="LINK_BEGIN" />Chrome-instellingen<ph name="LINK_END" /> voor opties voor browsersynchronisatie.</translation>
+<translation id="7478658909253570368">Niet toestaan dat sites verbinding maken met seriële poorten</translation>
 <translation id="7479221278376295180">Gebruikersoverzicht van opslagruimte</translation>
 <translation id="7481312909269577407">Vooruit</translation>
 <translation id="7481358317100446445">Klaar</translation>
@@ -5907,11 +5916,13 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="765293928828334535">Apps, extensies en gebruikersscripts kunnen niet worden toegevoegd vanaf deze website</translation>
 <translation id="7652954539215530680">Een pincode instellen</translation>
 <translation id="7654941827281939388">Dit account wordt al gebruikt op deze computer.</translation>
+<translation id="7655411746932645568">Sites kunnen vragen of ze verbinding mogen maken met seriële poorten</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7659297516559011665">Alleen wachtwoorden op dit apparaat</translation>
 <translation id="7659584679870740384">Je beschikt niet over de rechten om dit apparaat te gebruiken. Neem contact op met de beheerder voor toestemming om in te loggen.</translation>
 <translation id="7661259717474717992">Sites toestaan cookiegegevens op te slaan en te lezen</translation>
 <translation id="7661451191293163002">Er kan geen registratiecertificaat worden opgehaald.</translation>
+<translation id="7661762353058813968">Updates worden beheerd door je beheerder.</translation>
 <translation id="7662283695561029522">Tik om te configureren</translation>
 <translation id="7663719505383602579">Ontvanger: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Niet-ondersteund Bluetooth-apparaat: '<ph name="DEVICE_NAME" />'.</translation>
@@ -6692,6 +6703,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="8539727552378197395">Nee (HttpOnly)</translation>
 <translation id="8539766201049804895">Upgraden</translation>
 <translation id="8540136935098276800">Geef een correct opgemaakte URL op</translation>
+<translation id="8540503336857689453">Het wordt om veiligheidsredenen niet aangeraden om een verborgen netwerk te gebruiken.</translation>
 <translation id="8540608333167683902">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, details</translation>
 <translation id="854071720451629801">Markeren als gelezen</translation>
 <translation id="8541462173655894684">Er zijn geen printers gevonden op de afdrukserver</translation>

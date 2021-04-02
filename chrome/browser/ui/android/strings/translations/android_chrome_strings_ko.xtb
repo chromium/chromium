@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">탐색 기록</translation>
 <translation id="1231733316453485619">동기화를 사용하시겠습니까?</translation>
 <translation id="123724288017357924">캐시된 콘텐츠를 무시하고 현재 페이지 새로고침</translation>
+<translation id="1240288207750131269"><ph name="LANG" /> 로드 중</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
+<translation id="1276279242344007853">팔로우하는 사이트를 관리합니다.</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
 <translation id="1285310382777185058">언어 변경</translation>
 <translation id="1291207594882862231">방문 기록, 쿠키, 사이트 데이터, 캐시 삭제…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">애플리케이션 버전</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
+<translation id="1466383950273130737">Chrome 언어 선택</translation>
 <translation id="147113415845704694">"오늘 날씨 어때?"라고 말해 보세요.</translation>
 <translation id="1477626028522505441">서버 문제로 인해 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
 <translation id="1492417797159476138">이미 사이트에 사용 중인 사용자 이름입니다.</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2359808026110333948">계속</translation>
 <translation id="2369533728426058518">열린 탭</translation>
+<translation id="2386938421315164605">주제 숨기기 및 숨기기 해제</translation>
 <translation id="2387895666653383613">텍스트 크기 조정</translation>
 <translation id="2394602618534698961">다운로드한 파일이 여기 표시됩니다.</translation>
 <translation id="2407481962792080328">Google 계정에 로그인하면 이 기능이 사용 설정됩니다.</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google 계정<ph name="END_LINK" />에서 저장된 비밀번호 보기 및 관리</translation>
 <translation id="2818669890320396765">어느 기기에서나 내 북마크를 사용하려면 로그인하고 동기화를 사용 설정하세요.</translation>
 <translation id="2827278682606527653">피드 카드 메뉴 절반 높이</translation>
+<translation id="2839327205551510876"><ph name="SITE_NAME" /> 팔로우 해제함</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1일 전에 확인됨}other{#일 전에 확인됨}}</translation>
 <translation id="2842985007712546952">상위 폴더</translation>
 <translation id="2856503607207334158">로그인 실패</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Google 알림 플랫폼</translation>
 <translation id="2923908459366352541">잘못된 이름</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 저장공간</translation>
+<translation id="2932222164150889403">키보드는 변경되지 않습니다</translation>
 <translation id="2942036813789421260">미리보기 탭 닫힘</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" />님과 <ph name="PARENT_NAME_2" />님이 관리하는 계정입니다.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />개}other{읽지 않은 페이지 <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />개}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">어시스턴트 음성 검색 동의 UI</translation>
 <translation id="3034163383943672781"><ph name="DATE" />에 다운로드가 시작됩니다.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />도움 받기<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">다음번에 이 사이트로 빠르게 이동합니다.</translation>
 <translation id="305593374596241526">위치가 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="3058498974290601450">언제든지 설정에서 동기화를 사용 설정할 수 있습니다.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">현재 동기화 및 Google 서비스 설정을 맞춤설정 중입니다. 동기화 켜기를 마무리하려면 화면 하단 근처에 있는 확인 버튼을 탭하세요. 위로 이동</translation>
 <translation id="3334729583274622784">파일 확장자를 변경하시겠습니까?</translation>
 <translation id="3341058695485821946">저장한 데이터의 양을 확인해보세요.</translation>
+<translation id="3341262203274374114">팔로우를 해제할 수 없습니다. 문제가 발생했습니다.</translation>
 <translation id="3350687908700087792">모든 시크릿 탭 닫기</translation>
 <translation id="3359667936385849800">현재 서비스 제공업체 사용</translation>
 <translation id="3367813778245106622">다시 로그인하여 동기화 시작</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">위치 허용됨</translation>
 <translation id="3988466920954086464">이 패널에서 순간 검색결과 보기</translation>
 <translation id="4000212216660919741">오프라인 홈</translation>
+<translation id="4016425174436051808">팔로우할 수 없습니다. 문제가 발생했습니다.</translation>
+<translation id="4021916380760361450">Google 계정 데이터를 제어합니다.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{#시간}other{#시간}}</translation>
 <translation id="4045764304651014138">사용 데이터</translation>
 <translation id="4056223980640387499">세피아</translation>
@@ -598,6 +608,7 @@
 <translation id="5152843274749979095">지원되는 앱이 설치되어 있지 않음</translation>
 <translation id="5161254044473106830">제목이 필요합니다.</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{다운로드 1개 실패}other{다운로드 #개 실패}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> 팔로우함</translation>
 <translation id="5170568018924773124">폴더 열기</translation>
 <translation id="5184329579814168207">Chrome에서 열기</translation>
 <translation id="5188992787241350004">음성으로 검색하세요.</translation>
@@ -717,6 +728,7 @@
 <translation id="5864419784173784555">다른 다운로드 대기 중…</translation>
 <translation id="5865733239029070421">사용 통계 및 비정상 종료 보고서를 Google로 자동 전송</translation>
 <translation id="5869522115854928033">저장된 비밀번호</translation>
+<translation id="5880748256563468367">피드로 이동</translation>
 <translation id="5884076754568147479">작업 처리를 돕기 위해 내가 어시스턴트를 통해 제출한 정보뿐만 아니라 어시스턴트를 이용한 사이트의 URL과 콘텐츠가 Google에 전송됩니다.</translation>
 <translation id="5919204609460789179"><ph name="PRODUCT_NAME" />을(를) 업데이트하여 동기화를 시작합니다.</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> 저장됨</translation>
@@ -734,6 +746,7 @@
 <translation id="5979084224081478209">비밀번호 확인</translation>
 <translation id="5982307838673692400">시크릿 탭 열기</translation>
 <translation id="6000066717592683814">계속 Google 사용</translation>
+<translation id="6000203700195075278">다시 팔로우</translation>
 <translation id="6005538289190791541">추천 비밀번호</translation>
 <translation id="6036057147555329831">추가 ICU</translation>
 <translation id="6039379616847168523">다음 탭으로 이동</translation>
@@ -1095,6 +1108,7 @@
 <translation id="834313815369870491">사이트 번역 안 함</translation>
 <translation id="8349013245300336738">사용된 데이터 양에 따라 정렬</translation>
 <translation id="835847953965672673">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 복원됨</translation>
+<translation id="8362134094656482681">관심 주제를 관리합니다.</translation>
 <translation id="8364299278605033898">인기 웹사이트 보기</translation>
 <translation id="8368027906805972958">알 수 없거나 지원되지 않는 기기(<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" />를 사용할 준비가 되었습니다.</translation>

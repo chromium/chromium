@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + сертификат корисника</translation>
 <translation id="4731797938093519117">Родитељски приступ</translation>
 <translation id="4773299976671772492">Заустављено је</translation>
+<translation id="4794140124556169553">Покретање теста процесора може да утиче на учинак система</translation>
 <translation id="4808449224298348341">Отказан је задатак штампања <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Веза</translation>
 <translation id="4832079907277790330">Изаберите фолдер у апликацији Фајлови...</translation>
@@ -341,6 +342,7 @@
 <translation id="8483248364096924578">IP адреса</translation>
 <translation id="8503813439785031346">Корисничко име</translation>
 <translation id="8503836310948963452">Још само пар минута…</translation>
+<translation id="8575298406870537639">Мобилни оператер може да затражи ову опцију ради повезивања на мрежу. Обратите се мобилном оператеру за детаље.</translation>
 <translation id="8576249514688522074">Није покренуто</translation>
 <translation id="8620617069779373398">Статус роминга</translation>
 <translation id="8675354002693747642">Тајни кључ</translation>
@@ -365,7 +367,6 @@
 <translation id="8970109610781093811">Поново покрени</translation>
 <translation id="9003704114456258138">Фреквенција</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Измени</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Тренутна искоришћеност</translation>

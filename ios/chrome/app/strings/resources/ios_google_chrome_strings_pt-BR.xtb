@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Ajudar a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="1314663809820920746">Ainda é possível ver seus favoritos, seu histórico, suas senhas e outras configurações neste dispositivo. Se você fizer mudanças, elas não serão sincronizadas com sua Conta do Google.</translation>
 <translation id="1479202195792305274">O Chrome pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
+<translation id="1493827051843127077">Defina o Chrome como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
 <translation id="1682483655351012182">Sincronizar seus dados do Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">O Chrome compartilha sua localização com os sites aos quais você concede permissão.</translation>
 <translation id="2347208864470321755">Quando este recurso está ativado, o Google Chrome disponibiliza a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Defina o Chrome como seu navegador padrão</translation>
+<translation id="2561231791489583059">Use o Chrome como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
 <translation id="2574249610672786438">Para ver suas guias em qualquer lugar onde você usar o Chrome, faça login em todos os seus dispositivos</translation>
 <translation id="2576431527583832481">O Google Chrome ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="257708665678654955">Quer que na próxima vez o Google Chrome ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Não é possível verificar suas senhas com o Chrome.</translation>
 <translation id="7265369419224458312">Acesse as guias que você abriu no seu computador, bem aqui. Basta abrir o Chrome no computador, ir até o menu e selecionar “Fazer login no Google Chrome…”</translation>
 <translation id="7272930098487145294">Para salvar imagens, toque em "Configurações" e permita que o Chrome as adicione às suas fotos</translation>
+<translation id="7275945473750112644">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chrome serão apagados deste dispositivo</translation>
 <translation id="7400722733683201933">Sobre o Google Chrome</translation>
 <translation id="7501046334262221972">Para definir o Chrome como o navegador padrão, abra as configurações. Toque em "App do navegador padrão" e selecione o Chrome.</translation>
 <translation id="756809126120519699">Dados do Chrome apagados</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Sua senha foi exposta em uma violação de dados. Por recomendação do Chrome, mude a senha imediatamente.</translation>
 <translation id="7698568245838009292">Solicitação do Chrome para acessar a câmera</translation>
 <translation id="7855730255114109580">O Google Chrome está atualizado</translation>
+<translation id="8022947259858476807">Use o Chrome como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
 <translation id="8160472928944011082">Não é possível atualizar o Chrome</translation>
+<translation id="8357607116237445042">Você quer apagar ou manter os dados do Chrome neste dispositivo?</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os direitos reservados.</translation>
 <translation id="840168496893712993">Alguns complementos causam a falha do Google Chrome. Tente desinstalá-los.</translation>
 <translation id="8459495907675268833">Os dados selecionados foram removidos do Chrome e dos dispositivos sincronizados. É possível que sua Conta do Google tenha outras formas de histórico de navegação, como pesquisas e atividades de outros serviços do Google em history.google.com.</translation>
@@ -88,4 +93,5 @@
   2. Toque em "App do navegador padrão".
   3. Selecione o Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Proteja-se com o Google Chrome</translation>
 </translationbundle>

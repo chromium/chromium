@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />። <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">የGoogle ረዳቱ በእንግዳ ክፍለ-ጊዜ ውስጥ አይገኝም።</translation>
 <translation id="6137566720514957455">ለ<ph name="USER_EMAIL_ADDRESS" /> የአስወግድ መገናኛን ክፈት</translation>
+<translation id="6154006699632741460">መለዋወጫ አይደገፍም</translation>
 <translation id="615957422585914272">የማያ ገጽ ላይ ቁልፍ ሰሌዳ አሳይ</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
 <translation id="6179832488876878285">እዚህ አስፈላጊ ፋይሎችዎን መሰካት ይችላሉ። ለመጀመር የፋይሎች መተግበሪያን ይክፈቱ።</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">ብሉቱዝ በርቷል</translation>
 <translation id="6381109794406942707">መሣሪያውን ለመክፈት የእርስዎን ፒን ያስገቡ።</translation>
 <translation id="639644700271529076">CAPS LOCK ጠፍቷል</translation>
-<translation id="6396835948284782440">ለመውጣት [Esc]ን ተጭነው ይያዙ።</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">ሁሉንም ማሳወቂያዎች አጽዳ</translation>

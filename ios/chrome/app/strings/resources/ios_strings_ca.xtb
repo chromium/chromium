@@ -453,6 +453,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5860033963881614850">Desactivat</translation>
 <translation id="5869029295770560994">D'acord</translation>
 <translation id="5871497086027727873">1 element desplaçat</translation>
+<translation id="5896576662943111387">Dissenyat per a iOS</translation>
 <translation id="5897956970858271241">Ves a l'enllaç copiat</translation>
 <translation id="5899314093904173337">Per compartir contingut amb persones del teu entorn, permet-los que escanegin aquest codi QR amb la càmera o l'aplicació d'escaneig QR</translation>
 <translation id="5911030830365207728">Traductor de Google</translation>
@@ -470,6 +471,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5988851877894965432">Obre els URL a Chrome</translation>
 <translation id="6012140227487808125">S'està encriptant…</translation>
 <translation id="6021332621416007159">Obre a...</translation>
+<translation id="6036514205982097558">Totes les pestanyes en un navegador</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />, <ph name="PUBLISHER_INFORMATION" />, <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6042308850641462728">Més</translation>
@@ -583,6 +585,7 @@ Prova d'utilitzar una contrasenya única per a cada lloc web.</translation>
 <translation id="6973630695168034713">Carpetes</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">Gestiona el teu Compte de Google</translation>
+<translation id="6989674195860388998">Canvia a Configuració…</translation>
 <translation id="6995899638241819463">Rep un advertiment si les contrasenyes queden exposades en l'àmbit d'una violació de les dades</translation>
 <translation id="6998989275928107238">Per a</translation>
 <translation id="7004032350256606903">La teva organització requereix que naveguis de manera privada.

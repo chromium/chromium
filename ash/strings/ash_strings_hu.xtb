@@ -610,6 +610,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">A Google Segéd nem áll rendelkezésre Vendég-munkafolyamatban.</translation>
 <translation id="6137566720514957455">Eltávolítási párbeszédpanel megnyitása, <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">A periféria nem támogatott</translation>
 <translation id="615957422585914272">A képernyő-billentyűzet megjelenítése</translation>
 <translation id="6165508094623778733">További információ</translation>
 <translation id="6179832488876878285">Ide kitűzheti a fontos fájlokat. A kezdéshez nyissa meg a Fájlok alkalmazást.</translation>
@@ -631,7 +632,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6376931439017688372">A Bluetooth be van kapcsolva</translation>
 <translation id="6381109794406942707">Az eszköz feloldásához adja meg a PIN-kódot.</translation>
 <translation id="639644700271529076">A CAPS LOCK ki van kapcsolva</translation>
-<translation id="6396835948284782440">A kilépéshez tartsa nyomva az [Esc] gombot.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Az összes értesítés törlése</translation>

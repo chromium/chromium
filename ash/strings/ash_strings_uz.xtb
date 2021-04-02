@@ -609,6 +609,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistent mehmon seansida ishlamaydi.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> hisobini olib tashlash oynasini ochish</translation>
+<translation id="6154006699632741460">Tashqi qurilmalar ishlamaydi</translation>
 <translation id="615957422585914272">Ekran klaviaturasini ko‘rsatish</translation>
 <translation id="6165508094623778733">Batafsil</translation>
 <translation id="6179832488876878285">Bu yerga muhim fayllarni mahkamlash mumkin. Boshlash uchun Files ilovasini oching.</translation>
@@ -630,7 +631,6 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6376931439017688372">Bluetooth yoniq</translation>
 <translation id="6381109794406942707">Qurilmani qulfdan chiqarish uchun PIN kodingizni kiriting.</translation>
 <translation id="639644700271529076">CAPS LOCK o‘chiq</translation>
-<translation id="6396835948284782440">Chiqish uchun [Esc] tugmasini bosib turing</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617">Himoya: <ph name="SECURITY_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Barcha eslatmalarni tozalang</translation>

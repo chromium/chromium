@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + certificat de utilizator</translation>
 <translation id="4731797938093519117">Acces pentru părinți</translation>
 <translation id="4773299976671772492">Oprit</translation>
+<translation id="4794140124556169553">Rularea unui test pentru CPU poate afecta performanța sistemului</translation>
 <translation id="4808449224298348341">S-a anulat sarcina de printare <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Conexiune</translation>
 <translation id="4832079907277790330">Selectează dosarul în aplicația Fișiere...</translation>
@@ -341,6 +342,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8483248364096924578">Adresă IP</translation>
 <translation id="8503813439785031346">Nume utilizator</translation>
 <translation id="8503836310948963452">Mai sunt câteva minute…</translation>
+<translation id="8575298406870537639">Operatorul poate solicita această opțiune ca să te conectezi la rețeaua respectivă. Contactează operatorul pentru detalii.</translation>
 <translation id="8576249514688522074">Neinițializată</translation>
 <translation id="8620617069779373398">Stare roaming</translation>
 <translation id="8675354002693747642">Cheie predistribuită</translation>
@@ -365,7 +367,6 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="8970109610781093811">Rulați din nou</translation>
 <translation id="9003704114456258138">Frecvență</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Editează</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Folosire actuală</translation>

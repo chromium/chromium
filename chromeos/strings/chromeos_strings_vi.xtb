@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + chứng chỉ người dùng</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
 <translation id="4773299976671772492">Đã dừng</translation>
+<translation id="4794140124556169553">Việc chạy quá trình kiểm tra CPU có thể ảnh hưởng đến hiệu suất của hệ thống</translation>
 <translation id="4808449224298348341">Đã hủy lệnh in <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Kết nối</translation>
 <translation id="4832079907277790330">Chọn thư mục trong ứng dụng Files...</translation>
@@ -341,6 +342,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8483248364096924578">Địa chỉ IP</translation>
 <translation id="8503813439785031346">Tên người dùng</translation>
 <translation id="8503836310948963452">Còn một vài phút nữa thôi…</translation>
+<translation id="8575298406870537639">Nhà mạng của bạn có thể yêu cầu bạn bật tùy chọn này để kết nối với mạng của họ. Hãy liên hệ với nhà mạng để biết thông tin chi tiết.</translation>
 <translation id="8576249514688522074">Chưa khởi chạy</translation>
 <translation id="8620617069779373398">Trạng thái chuyển vùng</translation>
 <translation id="8675354002693747642">Khóa được chia sẻ trước</translation>
@@ -365,7 +367,6 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="8970109610781093811">Chạy lại</translation>
 <translation id="9003704114456258138">Tần số</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Chỉnh sửa</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Mức sử dụng hiện tại</translation>

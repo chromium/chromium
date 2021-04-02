@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Albastru deschis ca cerul</translation>
 <translation id="1303806948938513162">Atingeți cu patru degete ca să intrați în meniurile ChromeVox</translation>
 <translation id="1313373992684326101">Treci la secțiunea anterioară. Printre exemple se numără Bara de stare și Lansatorul.</translation>
+<translation id="1315077335264761176">Orientarea pentru gesturile de atingere</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, butonul radio al elementului de meniu este deselectat</translation>
 <translation id="1325946044405407859">Bronz</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> din <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Bun venit la tutorialul ChromeVox! Pentru a închide oricând tutorialul, apasă tasta Escape în colțul din stânga sus al tastaturii. Pentru a dezactiva ChromeVox, ține apăsate tastele Control și Alt și apasă tasta Z. Când ești gata, folosește bara de spațiu pentru a trece la lecția următoare.</translation>
 <translation id="174268867904053074">Graficul următor</translation>
 <translation id="1756785467854861272">Magenta închis</translation>
+<translation id="1758693804775271377">Glisează spre stânga sau spre dreapta cu un deget pentru a răsfoi lecțiile pentru acest subiect</translation>
 <translation id="1765245556747822181">Glisează cu un deget în sus</translation>
 <translation id="1771761307086386028">Derulează la dreapta</translation>
 <translation id="1781173782405573156">Ignoră tasta</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Rând</translation>
 <translation id="2816868829355607410">Zonă pentru exersare: comenzi de navigare</translation>
 <translation id="2841013758207633010">Oră</translation>
+<translation id="284171465644749950">Glisează spre stânga sau spre dreapta cu un deget pentru a răsfoi subiectele</translation>
 <translation id="2843432675592278677">Nu există un reper ARIA anterior</translation>
 <translation id="2843814945404750166">Verde măsliniu închis</translation>
 <translation id="2843837985843789981">Grupul anterior</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox a fost actualizat</translation>
 <translation id="93384979447910801">Verde ca marea închis</translation>
 <translation id="948171205378458592">Scădeți viteza de vorbire</translation>
+<translation id="957570623732056069">Glisează spre stânga sau spre dreapta cu un deget pentru a parcurge această lecție</translation>
 <translation id="958854023026327378">Glisează cu un deget în jos</translation>
 <translation id="962913030769097253">Titlul de nivel 1 următor</translation>
 <translation id="966588271015727539">Selectează un afișaj braille prin Bluetooth</translation>

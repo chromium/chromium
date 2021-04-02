@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Historial de navegació</translation>
 <translation id="1231733316453485619">Vols activar la sincronització?</translation>
 <translation id="123724288017357924">Carrega pàgina actual; ignora contingut en memòria</translation>
+<translation id="1240288207750131269">S'està carregant <ph name="LANG" /></translation>
 <translation id="124678866338384709">Tanca la pestanya actual</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">No s'ha pogut compartir <ph name="CONTENT_TYPE" />.</translation>
+<translation id="1276279242344007853">Gestiona els llocs web que segueixes</translation>
 <translation id="1283039547216852943">Toca per desplegar</translation>
 <translation id="1285310382777185058">Canvia d'idioma</translation>
 <translation id="1291207594882862231">Esborra l'historial, les galetes, les dades dels llocs web, la memòria cau, etc.</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Versió de l'aplicació</translation>
 <translation id="1430915738399379752">Imprimeix</translation>
 <translation id="1450753235335490080">No es pot compartir <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Tria l'idioma de Chrome</translation>
 <translation id="147113415845704694">Prova de dir "Quin temps farà avui?"</translation>
 <translation id="1477626028522505441">No s'ha pogut baixar <ph name="FILE_NAME" /> a causa de problemes amb el servidor.</translation>
 <translation id="1492417797159476138">Ja has desat aquest nom d'usuari per a aquest lloc web</translation>
@@ -205,6 +208,7 @@ Toca qualsevol paraula per cercar. Per definir millor la cerca, mantén premut e
 <translation id="2353636109065292463">S'està comprovant la connexió a Internet</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2369533728426058518">pestanyes obertes</translation>
+<translation id="2386938421315164605">Amaga i deixa d'amagar els temes</translation>
 <translation id="2387895666653383613">Canvia la mida del text</translation>
 <translation id="2394602618534698961">Els fitxers que baixes es mostren aquí</translation>
 <translation id="2407481962792080328">En iniciar la sessió al Compte de Google, aquesta funció està sempre activada</translation>
@@ -265,6 +269,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="281504910091592009">Consulta i gestiona les contrasenyes desades al <ph name="BEGIN_LINK" />Compte de Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Per accedir a les adreces d'interès des de tots els dispositius, inicia la sessió i activa la sincronització</translation>
 <translation id="2827278682606527653">El menú de la targeta del tauler ocupa la meitat inferior de la pantalla</translation>
+<translation id="2839327205551510876">Has deixat de seguir <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{S'ha comprovat fa 1 dia}other{S'ha comprovat fa # dies}}</translation>
 <translation id="2842985007712546952">Carpeta principal</translation>
 <translation id="2856503607207334158">No s'ha pogut iniciar la sessió</translation>
@@ -281,6 +286,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="2909615210195135082">Plataforma de notificacions de Google</translation>
 <translation id="2923908459366352541">El nom no és vàlid</translation>
 <translation id="2932150158123903946">Emmagatzematge de Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">El teclat no canviarà</translation>
 <translation id="2942036813789421260">La pestanya de previsualització està tancada</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> i <ph name="PARENT_NAME_2" /> gestionen aquest compte.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pàgina no llegida}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pàgines no llegides}}</translation>
@@ -297,6 +303,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3031225630520268969">IU de consentiment de la cerca per veu de l'Assistent</translation>
 <translation id="3034163383943672781">La baixada començarà el dia <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obteniu ajuda<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Arriba a aquest lloc web més ràpidament la propera vegada</translation>
 <translation id="305593374596241526">La ubicació està desactivada; activa-la a la <ph name="BEGIN_LINK" />configuració d'Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Pots activar la sincronització en qualsevol moment des de la configuració</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> adreça d'interès}other{<ph name="BOOKMARKS_COUNT_MANY" /> adreces d'interès}}</translation>
@@ -340,6 +347,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3315103659806849044">Estàs personalitzant la configuració de la sincronització i del servei de Google. Per acabar d'activar la sincronització, toca el botó Confirma que hi ha cap a la part inferior de la pantalla. Navega cap amunt</translation>
 <translation id="3334729583274622784">Vols canviar l'extensió del fitxer?</translation>
 <translation id="3341058695485821946">Consulta la quantitat de dades que has estalviat</translation>
+<translation id="3341262203274374114">No es pot deixar de seguir. S'ha produït un error.</translation>
 <translation id="3350687908700087792">Tanca totes les pestanyes d'incògnit</translation>
 <translation id="3359667936385849800">Utilitza el teu proveïdor de serveis actual</translation>
 <translation id="3367813778245106622">Torna a iniciar la sessió per començar la sincronització</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox encara s'està desenvolupant i només està disponible en determ
 <translation id="3988213473815854515">La ubicació es permet</translation>
 <translation id="3988466920954086464">Consulta els resultats de la cerca instantània en aquest tauler</translation>
 <translation id="4000212216660919741">Pàgina d'inici sense connexió</translation>
+<translation id="4016425174436051808">No es pot seguir. S'ha produït un error.</translation>
+<translation id="4021916380760361450">Controla les dades dels teus Comptes de Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Dades d'ús</translation>
 <translation id="4056223980640387499">Sèpia</translation>
@@ -598,6 +608,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5152843274749979095">No hi ha cap aplicació admesa instal·lada</translation>
 <translation id="5161254044473106830">Cal indicar un títol</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{No s'ha pogut completar 1 baixada.}other{No s'han pogut completar # baixades.}}</translation>
+<translation id="5168824020667180049">Segueixes <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Mostra a la carpeta</translation>
 <translation id="5184329579814168207">Obre a Chrome</translation>
 <translation id="5188992787241350004">Fes cerques amb la veu</translation>
@@ -717,6 +728,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5864419784173784555">S'està esperant que finalitzi una altra baixada…</translation>
 <translation id="5865733239029070421">Envia automàticament a Google estadístiques d'ús i informes d'error</translation>
 <translation id="5869522115854928033">Contrasenyes desades</translation>
+<translation id="5880748256563468367">Ves al feed</translation>
 <translation id="5884076754568147479">Per ajudar-te a dur a terme tasques, Google rebrà els URL i el contingut dels llocs web en què facis servir l'Assistent, així com la informació que enviïs amb l'Assistent</translation>
 <translation id="5919204609460789179">Actualitza <ph name="PRODUCT_NAME" /> per iniciar la sincronització</translation>
 <translation id="5937580074298050696">Dades estalviades: <ph name="AMOUNT" /></translation>
@@ -734,6 +746,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="5979084224081478209">Comprova les contrasenyes</translation>
 <translation id="5982307838673692400">Obre una pestanya d'incògnit</translation>
 <translation id="6000066717592683814">Continua amb Google</translation>
+<translation id="6000203700195075278">Torna a seguir</translation>
 <translation id="6005538289190791541">Contrasenya suggerida</translation>
 <translation id="6036057147555329831">ICU addicional</translation>
 <translation id="6039379616847168523">Ves a la pestanya següent</translation>
@@ -1095,6 +1108,7 @@ Les dades de la teva sessió d'incògnit només s'esborraran de Chrome quan <ph 
 <translation id="834313815369870491">No tradueixis mai els llocs web</translation>
 <translation id="8349013245300336738">Ordena per quantitat de dades utilitzades</translation>
 <translation id="835847953965672673">S'han restaurat <ph name="NUMBER_OF_DOWNLOADS" /> baixades</translation>
+<translation id="8362134094656482681">Gestiona els temes que t'interessen</translation>
 <translation id="8364299278605033898">Mostra llocs web populars</translation>
 <translation id="8368027906805972958">Dispositiu desconegut o no admès (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> ja està a punt.</translation>

@@ -609,6 +609,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">Pomočnik Google ni na voljo v gostujoči seji.</translation>
 <translation id="6137566720514957455">Odpri pogovorno okno za odstranjevanje za <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Dodatna oprema ni podprta</translation>
 <translation id="615957422585914272">Pokaži zaslonsko tipkovnico</translation>
 <translation id="6165508094623778733">Več o tem</translation>
 <translation id="6179832488876878285">Tukaj lahko pripnete pomembne datoteke. Če želite začeti, odprite aplikacijo Datoteke.</translation>
@@ -630,7 +631,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="6376931439017688372">Bluetooth je vklopljen</translation>
 <translation id="6381109794406942707">Če želite odkleniti napravo, vnesite kodo PIN.</translation>
 <translation id="639644700271529076">Tipka CAPS LOCK je izklopljena</translation>
-<translation id="6396835948284782440">Pridržite [Esc] za izhod.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Izbris vseh obvestil</translation>

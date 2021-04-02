@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Naršymo istorija</translation>
 <translation id="1231733316453485619">Įjungti sinchronizavimą?</translation>
 <translation id="123724288017357924">Įk. šį puslapį iš naujo, nepais. talp. es. turinio</translation>
+<translation id="1240288207750131269">Įkeliama <ph name="LANG" /></translation>
 <translation id="124678866338384709">Uždaryti dabartinį skirtuką</translation>
 <translation id="1258753120186372309">„Google“ papuoštas logotipas: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Tvarkykite stebimas svetaines</translation>
 <translation id="1283039547216852943">Palieskite ir išskleiskite</translation>
 <translation id="1285310382777185058">Kalbos keitimas</translation>
 <translation id="1291207594882862231">Išvalykite istoriją, slapukus, svetainės duomenis, talpyklą…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Programos versija</translation>
 <translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1450753235335490080">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">„Chrome“ kalbos pasirinkimas</translation>
 <translation id="147113415845704694">Išbandyti „What’s the weather today?“ (Koks šiandien oras?)?</translation>
 <translation id="1477626028522505441">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl serverio problemų.</translation>
 <translation id="1492417797159476138">Jau išsaugojote šį naudotojo vardą šioje svetainėje</translation>
@@ -205,6 +208,7 @@ Norėdami ieškoti, palieskite bet kurį žodį. Jei norite patikslinti paiešk�
 <translation id="2353636109065292463">Tikrinamas interneto ryšys</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2369533728426058518">atidaryti skirtukus</translation>
+<translation id="2386938421315164605">Slėpti temas ir jų nebeslėpti</translation>
 <translation id="2387895666653383613">Teksto mastelio keitimas</translation>
 <translation id="2394602618534698961">Čia rodomi atsisiųsti failai</translation>
 <translation id="2407481962792080328">Prisijungus prie „Google“ paskyros, ši funkcija yra įjungta</translation>
@@ -265,6 +269,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="281504910091592009">Peržiūrėkite ir tvarkykite išsaugotus slaptažodžius <ph name="BEGIN_LINK" />„Google“ paskyroje<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Jei norite pasiekti žymes visuose įrenginiuose, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="2827278682606527653">Sklaidos kanalo kortelės meniu atidarytas iki pusės</translation>
+<translation id="2839327205551510876">Nebestebima „<ph name="SITE_NAME" />“</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Tikrinta prieš 1 dieną}one{Tikrinta prieš # dieną}few{Tikrinta prieš # dienas}many{Tikrinta prieš # dienos}other{Tikrinta prieš # dienų}}</translation>
 <translation id="2842985007712546952">Viršaplankis</translation>
 <translation id="2856503607207334158">Nepavyko prisijungti</translation>
@@ -281,6 +286,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2909615210195135082">„Google“ pranešimų platforma</translation>
 <translation id="2923908459366352541">Netinkamas pavadinimas</translation>
 <translation id="2932150158123903946">„Google <ph name="APP_NAME" />“ saugykla</translation>
+<translation id="2932222164150889403">Klaviatūra nebus pakeista</translation>
 <translation id="2942036813789421260">Peržiūros skirtukas uždarytas</translation>
 <translation id="2956410042958133412">Šią paskyrą tvarko <ph name="PARENT_NAME_1" /> ir <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neskaitytas puslapis}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytas puslapis}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaityti puslapiai}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaityto puslapio}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neskaitytų puslapių}}</translation>
@@ -297,6 +303,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3031225630520268969">Sutikimo atlikti paiešką balsu naudojant Padėjėją NS</translation>
 <translation id="3034163383943672781">Atsisiuntimas bus pradedamas <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Gaukite pagalbos<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Kitą kartą sparčiau pasiekite šią svetainę</translation>
 <translation id="305593374596241526">Vieta išjungta; įjunkite <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Galite bet kada įjungti sinchronizavimą „Nustatymų“ skiltyje</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> žymė}one{<ph name="BOOKMARKS_COUNT_MANY" /> žymė}few{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}many{<ph name="BOOKMARKS_COUNT_MANY" /> žymės}other{<ph name="BOOKMARKS_COUNT_MANY" /> žymių}}</translation>
@@ -340,6 +347,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3315103659806849044">Šiuo metu tinkinate savo sinchronizavimo ir „Google“ paslaugų nustatymus. Jei norite užbaigti sinchronizavimo įjungimo procesą, palieskite mygtuką „Patvirtinti“ netoli ekrano apačios. Eiti į viršų</translation>
 <translation id="3334729583274622784">Pakeisti failo plėtinį?</translation>
 <translation id="3341058695485821946">Žr., kiek duomenų sutaupėte</translation>
+<translation id="3341262203274374114">Negalima nebestebėti. Kažkas ne taip.</translation>
 <translation id="3350687908700087792">Uždaryti visus inkognito skirtukų lapus</translation>
 <translation id="3359667936385849800">Naudokitės dabartinio paslaugos teikėjo paslaugomis</translation>
 <translation id="3367813778245106622">Prisijunkite dar kartą, kad pradėtumėte sinchronizavimą</translation>
@@ -434,6 +442,8 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="3988213473815854515">Vietovės informacija leidžiama</translation>
 <translation id="3988466920954086464">Žiūrėkite tiesioginius paieškos rezultatus šiame skydelyje</translation>
 <translation id="4000212216660919741">„Home“ neprisijungus</translation>
+<translation id="4016425174436051808">Negalima stebėti. Kažkas ne taip.</translation>
+<translation id="4021916380760361450">Valdykite „Google“ paskyrų duomenis</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# val.}one{# val.}few{# val.}many{# val.}other{# val.}}</translation>
 <translation id="4045764304651014138">Naudojimo duomenys</translation>
 <translation id="4056223980640387499">Sepija</translation>
@@ -598,6 +608,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5152843274749979095">Neįdiegta jokių palaikomų programų</translation>
 <translation id="5161254044473106830">Būtina nurodyti pavadinimą</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Nepavyko atlikti 1 atsisiuntimo.}one{Nepavyko atlikti # atsisiuntimo.}few{Nepavyko atlikti # atsisiuntimų.}many{Nepavyko atlikti # atsisiuntimo.}other{Nepavyko atlikti # atsisiuntimų.}}</translation>
+<translation id="5168824020667180049">Stebima „<ph name="SITE_NAME" />“</translation>
 <translation id="5170568018924773124">Rodyti aplanke</translation>
 <translation id="5184329579814168207">Atidaryti naudojant „Chrome“</translation>
 <translation id="5188992787241350004">Ieškokite balsu</translation>
@@ -717,6 +728,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5864419784173784555">Laukiama kito atsisiuntimo…</translation>
 <translation id="5865733239029070421">Automatiškai siunčia naudojimo statistiką ir strigčių ataskaitas „Google“</translation>
 <translation id="5869522115854928033">Išsaugoti slaptažodžiai</translation>
+<translation id="5880748256563468367">Eiti į sklaidos kanalą</translation>
 <translation id="5884076754568147479">Kad padėtų atlikti užduotis, „Google“ gaus svetainių, kuriose naudojate Padėjėją, URL ir turinį bei informaciją, kurią pateikiate naudodami Padėjėją.</translation>
 <translation id="5919204609460789179">Atnaujinkite „<ph name="PRODUCT_NAME" />“, kad galėtumėte pradėti sinchronizuoti</translation>
 <translation id="5937580074298050696">Išsaugota <ph name="AMOUNT" /></translation>
@@ -734,6 +746,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5979084224081478209">Patikrinti slaptažodžius</translation>
 <translation id="5982307838673692400">Atidaryti inkognito skirtuką</translation>
 <translation id="6000066717592683814">Palikti „Google“</translation>
+<translation id="6000203700195075278">Stebėti iš naujo</translation>
 <translation id="6005538289190791541">Siūlomas slaptažodis</translation>
 <translation id="6036057147555329831">Papildomas ICU</translation>
 <translation id="6039379616847168523">Pereiti prie kito skirtuko</translation>
@@ -1095,6 +1108,7 @@ Inkognito režimo seanso duomenys bus išvalyti iš „Chrome“ tik tada, kai <
 <translation id="834313815369870491">Niekada neversti svetainių</translation>
 <translation id="8349013245300336738">Rūšiuoti pagal naudojamų duomenų kiekį</translation>
 <translation id="835847953965672673">Atkurta atsisiuntimų: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8362134094656482681">Tvarkykite jus dominančias temas</translation>
 <translation id="8364299278605033898">Žr. populiarias svetaines</translation>
 <translation id="8368027906805972958">Nežinomas arba nepalaikomas įrenginys (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> paruošta.</translation>

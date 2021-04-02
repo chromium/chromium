@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + 사용자 인증서</translation>
 <translation id="4731797938093519117">부모 액세스</translation>
 <translation id="4773299976671772492">중지됨</translation>
+<translation id="4794140124556169553">CPU 테스트를 실행하면 시스템 성능에 영향을 줄 수 있습니다.</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> 인쇄 작업 취소됨</translation>
 <translation id="4813345808229079766">연결</translation>
 <translation id="4832079907277790330">파일 앱에서 폴더 선택…</translation>
@@ -341,6 +342,7 @@
 <translation id="8483248364096924578">IP 주소</translation>
 <translation id="8503813439785031346">사용자이름</translation>
 <translation id="8503836310948963452">몇 분 정도밖에 남지 않았습니다...</translation>
+<translation id="8575298406870537639">이동통신사에서 네트워크에 연결하기 위해 이 옵션을 요구할 수 있습니다. 자세한 내용은 이동통신사에 문의하세요.</translation>
 <translation id="8576249514688522074">초기화되지 않음</translation>
 <translation id="8620617069779373398">로밍 상태</translation>
 <translation id="8675354002693747642">사전 공유 키:</translation>
@@ -365,7 +367,6 @@
 <translation id="8970109610781093811">다시 실행</translation>
 <translation id="9003704114456258138">주파수</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">수정</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">블루투스</translation>
 <translation id="9088306295921699330">현재 사용량</translation>

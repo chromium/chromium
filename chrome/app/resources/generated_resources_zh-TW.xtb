@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">當你登入帳戶時，也可以在這部裝置上使用 Google 帳戶中的密碼</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">選取的印表機無法使用或未正確安裝。請檢查你的印表機，或改選其他印表機。</translation>
+<translation id="1567135437923613642">啟用精選實驗性功能</translation>
 <translation id="1567387640189251553">自你上次輸入密碼後，裝置已連接其他鍵盤。你的按鍵行為可能會遭到側錄。</translation>
 <translation id="1567993339577891801">JavaScript 控制台</translation>
 <translation id="1568323446248056064">開啟顯示裝置設定</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">即使關閉了這項功能，這部裝置仍然可以傳送基本服務 (例如系統更新和安全性) 所需的資訊。</translation>
 <translation id="1979280758666859181">你即將變更為較舊版本的 <ph name="PRODUCT_NAME" />。該版本的版本號與你電腦上所安裝的版本號必須相符，系統才會套用版本變更。</translation>
 <translation id="197989455406964291">KDC 不支援加密類型</translation>
+<translation id="1983497378699148207">如要完成 Linux 的設定程序，請更新 Chrome 作業系統，然後再試一次。</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
 <translation id="1987317783729300807">帳戶</translation>
 <translation id="1989112275319619282">瀏覽</translation>
@@ -1329,6 +1331,7 @@
 <translation id="2450223707519584812">找不到 Google API 金鑰，因此您無法新增使用者。詳情請參閱 <ph name="DETAILS_URL" />。</translation>
 <translation id="2450849356604136918">沒有運作中的檢視畫面</translation>
 <translation id="2451298179137331965">2 倍</translation>
+<translation id="245322989586167203">網站通常會連線至序列埠，以提供設定網路等資料移轉功能</translation>
 <translation id="2453860139492968684">結束</translation>
 <translation id="2454247629720664989">關鍵字</translation>
 <translation id="2454264884354864965">攝影機已關閉</translation>
@@ -1959,6 +1962,7 @@
 <translation id="313205617302240621">忘記密碼了嗎？</translation>
 <translation id="3132277757485842847">無法與你的手機維持連線狀態。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3132996321662585180">每天重新整理</translation>
+<translation id="3134393957315651797">選取「<ph name="EXPERIMENT_NAME" />」的實驗狀態。實驗說明：<ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN 碼無效，你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="313963229645891001">下載中，<ph name="STATUS" /></translation>
 <translation id="3139925690611372679">預設的黃色顯示圖片</translation>
@@ -2842,6 +2846,7 @@
 <translation id="4099874310852108874">網路發生錯誤。</translation>
 <translation id="4100733287846229632">裝置空間嚴重不足</translation>
 <translation id="4100853287411968461">新的裝置使用時間限制</translation>
+<translation id="4101352914005291489">隱藏的 SSID</translation>
 <translation id="4102906002417106771">重新啟動以執行 Powerwash</translation>
 <translation id="4104163789986725820">匯出(&amp;X)...</translation>
 <translation id="4107048419833779140">識別並退出儲存裝置</translation>
@@ -3911,6 +3916,7 @@
 <translation id="5382591305415226340">管理支援的連結</translation>
 <translation id="5383377866517186886">已關閉 Mac 系統偏好設定中的攝影機</translation>
 <translation id="5383740867328871413">未命名的群組 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">企業政策已變更，已將 [實驗性功能] 按鈕新增至工具列。按一下這個按鈕即可開啟對話方塊並啟用實驗性功能。</translation>
 <translation id="5388885445722491159">已配對</translation>
 <translation id="5390100381392048184">允許網站播放音訊</translation>
 <translation id="5390112241331447203">納入透過使用狀況報告所傳送的 system_logs.txt 檔案。</translation>
@@ -5035,6 +5041,7 @@
 <translation id="6659594942844771486">分頁</translation>
 <translation id="6660413144148052430">位置</translation>
 <translation id="666099631117081440">列印伺服器</translation>
+<translation id="6662931079349804328">企業政策已變更，[實驗性功能] 按鈕已從工具列移除。</translation>
 <translation id="6663190258859265334">在 <ph name="DEVICE_TYPE" /> 上執行 Powerwash 並返回先前的版本。</translation>
 <translation id="6664237456442406323">抱歉，你的電腦是由格式錯誤的硬體 ID 所設定。這樣會防止 Chrome 作業系統更新最新的安全性修復，你的電腦也可能<ph name="BEGIN_BOLD" />容易遭受惡意攻擊<ph name="END_BOLD" />。</translation>
 <translation id="6664774537677393800">開啟你的設定檔時發生錯誤。請先登出，然後再次登入。</translation>
@@ -5391,6 +5398,7 @@
 <translation id="7056526158851679338">檢查裝置 (&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{1 分鐘前已執行安全檢查}other{{NUM_MINS} 分鐘前已執行安全檢查}}</translation>
 <translation id="7057767408836081338">無法取得應用程式資料，正在嘗試繼續執行應用程式...</translation>
+<translation id="7058024590501568315">隱藏的網路</translation>
 <translation id="7059858479264779982">設為自動啟動</translation>
 <translation id="7059893117020417984">如果想要進行私密瀏覽，請按一下三個圓點圖示的選單，然後開啟無痕式視窗</translation>
 <translation id="7062222374113411376">允許最近關閉的網站完成資料收發作業 (建議)</translation>
@@ -5754,6 +5762,7 @@
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
 <translation id="7478485216301680444">無法安裝 Kiosk 應用程式。</translation>
 <translation id="7478623944308207463">當你使用 Google 帳戶登入後，所有 Chrome 作業系統裝置上的應用程式和設定都會保持同步。如要查看瀏覽器同步處理選項，請前往 <ph name="LINK_BEGIN" />Chrome 設定<ph name="LINK_END" />。</translation>
+<translation id="7478658909253570368">禁止網站連線至序列埠</translation>
 <translation id="7479221278376295180">儲存空間使用量總覽</translation>
 <translation id="7481312909269577407">往前</translation>
 <translation id="7481358317100446445">準備就緒</translation>
@@ -5905,11 +5914,13 @@
 <translation id="765293928828334535">無法從這個網站新增應用程式、擴充功能和使用者指令碼</translation>
 <translation id="7652954539215530680">建立 PIN 碼</translation>
 <translation id="7654941827281939388">已有人在這台電腦上使用這個帳戶。</translation>
+<translation id="7655411746932645568">網站可以要求連線至序列埠</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7659297516559011665">只儲存在這部裝置上的密碼</translation>
 <translation id="7659584679870740384">您未獲得授權，無法使用這個裝置。如需登入權限，請與管理員聯絡。</translation>
 <translation id="7661259717474717992">允許網站儲存及讀取 Cookie 資料</translation>
 <translation id="7661451191293163002">無法取得註冊憑證。</translation>
+<translation id="7661762353058813968">更新作業由系統管理員負責管控。</translation>
 <translation id="7662283695561029522">輕觸即可進行設定</translation>
 <translation id="7663719505383602579">接收端：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">不支援的藍牙裝置：「<ph name="DEVICE_NAME" />」。</translation>
@@ -6690,6 +6701,7 @@
 <translation id="8539727552378197395">否 (限 Http)</translation>
 <translation id="8539766201049804895">升級</translation>
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
+<translation id="8540503336857689453">基於安全考量，建議你不要使用隱藏的網路。</translation>
 <translation id="8540608333167683902">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="NETWORK_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，詳細資料</translation>
 <translation id="854071720451629801">標示為已讀取</translation>
 <translation id="8541462173655894684">在列印伺服器上找不到任何印表機</translation>

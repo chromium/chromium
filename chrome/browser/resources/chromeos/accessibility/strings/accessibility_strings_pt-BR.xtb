@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Azul-celeste-claro</translation>
 <translation id="1303806948938513162">Toque com quatro dedos para entrar nos menus do ChromeVox</translation>
 <translation id="1313373992684326101">Mover para a seção anterior. Alguns exemplos são a bandeja de status e o acesso rápido.</translation>
+<translation id="1315077335264761176">Orientação de toque</translation>
 <translation id="1325363694295259631">Botão de opção <ph name="NAME" /> para item de menu desmarcado</translation>
 <translation id="1325946044405407859">Castanho-claro</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> de <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Este é o tutorial do ChromeVox. Para sair do tutorial a qualquer momento, pressione a tecla Esc no canto superior esquerdo do teclado. Para desativar o ChromeVox, mantenha as teclas Control e Alt pressionadas e pressione a tecla Z. Quando quiser, use a barra de espaço para ir até a próxima lição.</translation>
 <translation id="174268867904053074">Próximo gráfico</translation>
 <translation id="1756785467854861272">Magenta-escuro</translation>
+<translation id="1758693804775271377">Deslize com um dedo para a esquerda ou direita para navegar pelas lições sobre esse tema</translation>
 <translation id="1765245556747822181">Deslize para cima usando um dedo</translation>
 <translation id="1771761307086386028">Rolar para a direita</translation>
 <translation id="1781173782405573156">Ignorar a tecla</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Linha</translation>
 <translation id="2816868829355607410">Área para prática: comandos de salto</translation>
 <translation id="2841013758207633010">Tempo</translation>
+<translation id="284171465644749950">Deslize para a esquerda ou direita para navegar pelos temas</translation>
 <translation id="2843432675592278677">Nenhum ponto de referência ARIA anterior</translation>
 <translation id="2843814945404750166">Verde-oliva-escuro</translation>
 <translation id="2843837985843789981">Grupo anterior</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox atualizado</translation>
 <translation id="93384979447910801">Verde-mar-escuro</translation>
 <translation id="948171205378458592">Desacelerar ritmo da voz</translation>
+<translation id="957570623732056069">Deslize com um dedo para a esquerda ou direita para navegar por esta lição</translation>
 <translation id="958854023026327378">Deslize para baixo usando um dedo</translation>
 <translation id="962913030769097253">Próximo cabeçalho de nível 1</translation>
 <translation id="966588271015727539">Selecione uma linha braille com Bluetooth</translation>

@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Lösenorden i Google-kontot blir även tillgängliga på denna enhet när du är inloggad</translation>
 <translation id="1566049601598938765">Webbplats</translation>
 <translation id="15662109988763471">Den valda skrivaren är inte tillgänglig eller har inte installerats korrekt. Kontrollera skrivaren eller välj en annan.</translation>
+<translation id="1567135437923613642">Aktivera utvalda experiment</translation>
 <translation id="1567387640189251553">Ett annat tangentbord har anslutits sedan du senast angav lösenordet. Det kan försöka stjäla dina tangenttryckningar.</translation>
 <translation id="1567993339577891801">JavaScript-konsol</translation>
 <translation id="1568323446248056064">Öppna enhetsinställningarna för skärm</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">Enheten kan fortfarande skicka den information som behövs för viktiga tjänster, som systemuppdateringar och säkerhet, även om du inaktiverar funktionen.</translation>
 <translation id="1979280758666859181">Du byter till en kanal med en äldre version av <ph name="PRODUCT_NAME" />. Kanalen byts när kanalversionen matchar den version som är installerad på din enhet.</translation>
 <translation id="197989455406964291">KDC har inte stöd för krypteringstypen</translation>
+<translation id="1983497378699148207">Du måste uppdatera Chrome OS innan konfigureringen av Linux kan slutföras.</translation>
 <translation id="1984417487208496350">Inget skydd (rekommenderas inte)</translation>
 <translation id="1987317783729300807">Konton</translation>
 <translation id="1989112275319619282">Bläddra</translation>
@@ -1330,6 +1332,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2450223707519584812">Du kan inte lägga till användare eftersom Googles API-nycklar saknas. Du hittar mer information på <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Inga aktiva vyer</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Åtkomst till serieportar brukar kunna behövas för dataöverföring, t.ex. vid konfigurering av ett nätverk</translation>
 <translation id="2453860139492968684">Slutför</translation>
 <translation id="2454247629720664989">Sökord</translation>
 <translation id="2454264884354864965">Kameran är avstängd</translation>
@@ -1960,6 +1963,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="313205617302240621">Glömt lösenordet?</translation>
 <translation id="3132277757485842847">Det gick inte att upprätthålla en anslutning till telefonen. Kontrollera att telefonen finns i närheten, att den är olåst och att Bluetooth och Wi-Fi är aktiverat på den.</translation>
 <translation id="3132996321662585180">Uppdatera dagligen</translation>
+<translation id="3134393957315651797">Välj experimentstatus för experimentet <ph name="EXPERIMENT_NAME" />. Beskrivning av experimentet: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Ogiltig pinkod. Du har <ph name="RETRIES" /> försök kvar.</translation>
 <translation id="313963229645891001">Laddar ned, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Gul standardavatar</translation>
@@ -2844,6 +2848,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4099874310852108874">Ett nätverksfel uppstod.</translation>
 <translation id="4100733287846229632">Mycket ont om utrymme på enheten</translation>
 <translation id="4100853287411968461">Ny gräns för skärmtid</translation>
+<translation id="4101352914005291489">Dolt SSID</translation>
 <translation id="4102906002417106771">Starta om för att powerwash</translation>
 <translation id="4104163789986725820">E&amp;xportera...</translation>
 <translation id="4107048419833779140">Identifiera och mata ut lagringsenheter</translation>
@@ -3913,6 +3918,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5382591305415226340">Hantera länkar som stöds</translation>
 <translation id="5383377866517186886">Kamera har inaktiverats i systeminställningarna för Mac.</translation>
 <translation id="5383740867328871413">Namnlös grupp – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Företagets policy har ändrats. En knapp för experiment har lagts till i verktygsfältet. Om du klickar på den öppnas en dialogruta där du kan aktivera experiment.</translation>
 <translation id="5388885445722491159">Kopplad</translation>
 <translation id="5390100381392048184">Tillåt att ljud spelas upp på webbplatser</translation>
 <translation id="5390112241331447203">Ta med filen system_logs.txt som skickas i feedbackrapporter.</translation>
@@ -5037,6 +5043,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6659594942844771486">Flik</translation>
 <translation id="6660413144148052430">plats</translation>
 <translation id="666099631117081440">Utskriftsservrar</translation>
+<translation id="6662931079349804328">Företagets policy har ändrats. Experimentknappen har tagits bort från verktygsfältet.</translation>
 <translation id="6663190258859265334">Använd Powerwash på din <ph name="DEVICE_TYPE" /> och återgå till föregående version.</translation>
 <translation id="6664237456442406323">Tyvärr är din dator konfigurerad med ett felaktigt maskinvaru-ID. Detta förhindrar att Chrome OS uppdateras med de senaste säkerhetskorrigeringarna och datorn <ph name="BEGIN_BOLD" />kan vara utsatt för skadlig programvara<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Något gick snett när profilen skulle öppnas. Logga ut och sedan in igen.</translation>
@@ -5393,6 +5400,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7056526158851679338">&amp;Inspektera enheter</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Säkerhetskontrollen kördes för 1 minut sedan}other{Säkerhetskontrollen kördes för {NUM_MINS} minuter sedan}}</translation>
 <translation id="7057767408836081338">Det gick inte att hämta appdata. Försöker fortfarande att köra appen …</translation>
+<translation id="7058024590501568315">Dolt nätverk</translation>
 <translation id="7059858479264779982">Inställd på att starta automatiskt</translation>
 <translation id="7059893117020417984">Öppna ett inkognitofönster genom att klicka på menyn med tre punkter om du vill surfa privat</translation>
 <translation id="7062222374113411376">Tillåt webbplatser som nyligen har stängts att slutföra överföringen av data (rekommenderas)</translation>
@@ -5756,6 +5764,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
 <translation id="7478485216301680444">Det gick inte att installera kioskappen.</translation>
 <translation id="7478623944308207463">Appar och inställningar synkroniseras på alla Chrome OS-enheter där du är inloggad på ditt Google-konto. Alternativ för synkronisering av webbläsaren finns i <ph name="LINK_BEGIN" />Chrome-inställningarna<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Tillåt inte att webbplatser ansluter till en serieport</translation>
 <translation id="7479221278376295180">Översikt över användning av lagringsutrymme</translation>
 <translation id="7481312909269577407">Framåt</translation>
 <translation id="7481358317100446445">Redo</translation>
@@ -5907,11 +5916,13 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="765293928828334535">Appar, tillägg och användarskript kan inte läggas till från webbplatsen</translation>
 <translation id="7652954539215530680">Skapa en pinkod</translation>
 <translation id="7654941827281939388">Kontot används redan på den här datorn.</translation>
+<translation id="7655411746932645568">Webbplatser får begära tillstånd att ansluta till en serieport</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7659297516559011665">Endast lösenord på den här enheten</translation>
 <translation id="7659584679870740384">Du har inte behörighet att använda den här enheten. Kontakta administratören om du vill ha behörighet att logga in.</translation>
 <translation id="7661259717474717992">Tillåt att webbplatser sparar och läser data i cookies</translation>
 <translation id="7661451191293163002">Ett registreringscertifikat gick inte att erhålla.</translation>
+<translation id="7661762353058813968">Uppdateringar hanteras av administratören.</translation>
 <translation id="7662283695561029522">Tryck om du vill konfigurera</translation>
 <translation id="7663719505383602579">Mottagare: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Bluetooth-enhet som inte stöds: <ph name="DEVICE_NAME" />.</translation>
@@ -6693,6 +6704,7 @@ Zooma ut med Ctrl + Alt + minska ljusstyrkan.</translation>
 <translation id="8539727552378197395">Nej (HttpOnly)</translation>
 <translation id="8539766201049804895">Uppgradera</translation>
 <translation id="8540136935098276800">Ange en webbadress i rätt format</translation>
+<translation id="8540503336857689453">Att använda ett dolt nätverk rekommenderas inte av säkerhetsskäl.</translation>
 <translation id="8540608333167683902">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="854071720451629801">Markera som läst</translation>
 <translation id="8541462173655894684">Inga skrivare från utskriftsservern hittades</translation>

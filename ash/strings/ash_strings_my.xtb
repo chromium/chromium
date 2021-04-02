@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />။ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">ဧည့်သည်စက်ရှင်တွင် Google Assistant ကို အသုံးပြု၍ မရပါ။</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> အတွက် ဖယ်ရှားမှုဒိုင်ယာလော့ခ် ဖွင့်မည်</translation>
+<translation id="6154006699632741460">ချိတ်ဆက်ပစ္စည်းကို မပံ့ပိုးပါ</translation>
 <translation id="615957422585914272">မျက်နှာပြင် ပေါ်က ကီးဘုတ်ကို ပြရန်</translation>
 <translation id="6165508094623778733">ပိုမိုလေ့လာရန်</translation>
 <translation id="6179832488876878285">သင့်အရေးကြီးဖိုင်များကို ဤနေရာတွင် ပင်ထိုးနိုင်သည်။ စတင်ရန် Files အက်ပ်ကို ဖွင့်ပါ။</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">ဘလူးတုသ်ကို ဖွင့်ထားသည်</translation>
 <translation id="6381109794406942707">ဤစက်ကိုဖွင့်ရန် သင့်ပင်နံပါတ် ထည့်ပါ။</translation>
 <translation id="639644700271529076">စာလုံးကြီးများကို နှိပ်မထား</translation>
-<translation id="6396835948284782440">ထွက်ရန် [Esc] နှိပ်ထားပါ။</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">သတိပေးချက်အားလုံးကို ဖယ်ရှားပါ</translation>

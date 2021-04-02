@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Асистент недоступний під час сеансу в режимі "Гість".</translation>
 <translation id="6137566720514957455">Відкрити вікно видалення облікового запису <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Периферійний пристрій не підтримується</translation>
 <translation id="615957422585914272">Показувати екранну клавіатуру</translation>
 <translation id="6165508094623778733">Докладніше</translation>
 <translation id="6179832488876878285">Тут можна закріпити важливі файли. Щоб почати, відкрийте додаток Файли.</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">Bluetooth увімкнено</translation>
 <translation id="6381109794406942707">Щоб розблокувати пристрій, введіть PIN-код.</translation>
 <translation id="639644700271529076">Режим CAPS LOCK вимкнено</translation>
-<translation id="6396835948284782440">Щоб вийти, утримуйте клавішу [Esc].</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Видаліть усі сповіщення</translation>

@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium are funcții care te ajută să gestionezi datele de internet și viteza cu care poți să încarci paginile web.
 <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium nu a putut căuta actualizări. Verifică-ți conexiunea la internet.</translation>
+<translation id="2054703085270098503">Protejează-te cu Chromium</translation>
 <translation id="2075400798887076382">Accesează chiar aici filele pe care le-ai deschis pe computer. Deschide Chromium pe computer, accesează meniul și selectează „Conectează-te la Chromium…”</translation>
 <translation id="2168108852149185974">Unele suplimente blochează Chromium. Dezinstalează:</translation>
 <translation id="2178608107313874732">Momentan, Chromium nu poate folosi camera foto</translation>
 <translation id="2195025571279539885">Dorești ca data viitoare Chromium să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
 <translation id="2590893390871230428">Sincronizează-ți datele din Chromium</translation>
 <translation id="2650312721222849884">Activează sincronizarea ca să vezi toate filele tale deschise în Chromium</translation>
+<translation id="2684230048001240293">Setează Chromium ca browser prestabilit pentru a sincroniza filele, parolele și informațiile de plată pe toate dispozitivele</translation>
 <translation id="2730884209570016437">Chromium nu poate folosi camera foto, deoarece este folosită de o altă aplicație</translation>
 <translation id="2915596697727466327">Chromium folosește Face ID pentru a asigura accesul autorizat la parolele tale.</translation>
 <translation id="2918709798697875261">Organizația îți solicită să nu te conectezi la Chromium.</translation>
+<translation id="2942241131342758843">Folosește Chromium în mod prestabilit ca să deschizi linkuri, să cauți din widgeturi și să completezi automat parolele în alte aplicații</translation>
 <translation id="2977470724722393594">Chromium este actualizat</translation>
 <translation id="3256316712990552818">Copiat în Chromium</translation>
 <translation id="3344973607274501920">Chromium nu a putut verifica parolele. Verifică-ți conexiunea la internet.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Când această funcție este activată, Chromium se va oferi să traducă paginile scrise în alte limbi utilizând Google Traducere. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Acum poți folosi Chromium oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="4681781466797808448">Activează scanerul din Chromium</translation>
+<translation id="4736424910885271643">Contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, așa că datele Chromium vor fi șterse de pe acest dispozitiv</translation>
 <translation id="4787850887676698916">Filele deschise în Chromium pe alte dispozitive vor apărea aici.</translation>
 <translation id="4828317641996116749">Chromium nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
 <translation id="4985291216379576555">Offline, Chromium nu poate căuta actualizări</translation>
@@ -55,6 +59,7 @@
 2. atinge Aplicația browser prestabilită;
 3. selectează Chromium.</translation>
 <translation id="6268381023930128611">Te deconectezi de la Chromium?</translation>
+<translation id="6337530241089703714">Alege dacă ștergi datele Chromium de pe dispozitiv sau le păstrezi</translation>
 <translation id="6424492062988593837">Chromium a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
 <translation id="6820823224820483452">Chromium nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="6827294685447036764">Dacă permiți accesul Chromium la locație, Chromium trimite informații privind locația la site-urile cărora le acorzi această permisiune. Site-urile pot solicita informații despre locație atunci când au informații locale de afișat, de exemplu, magazine din apropiere sau știri.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Parola a fost expusă în urma încălcării securității datelor. Chromium recomandă să-ți schimbi acum parola.</translation>
 <translation id="7674213385180944843">Deschide Setări &gt; Confidențialitate &gt; Cameră foto &gt; Chromium și activează camera foto.</translation>
 <translation id="7746854981345936341">Sfat pentru Chromium: unele butoane se află acum în partea de jos a ecranului, cum ar fi Înapoi, Înainte și Caută.</translation>
+<translation id="7763454117143368771">Folosește Chromium ca browser prestabilit ca să te protejezi de site-uri periculoase și să păstrezi parolele în siguranță</translation>
 <translation id="786327964234957808">Comuți contul pentru sincronizare de la <ph name="USER_EMAIL1" /> la <ph name="USER_EMAIL2" />. Datele Chromium existente sunt gestionate de <ph name="DOMAIN" />. Astfel, datele vor fi șterse de pe acest dispozitiv, dar vor rămâne în <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Începe să folosești scanerul din Chromium</translation>
 <translation id="7931842119211730154">Blochează filele incognito când închizi Chromium</translation>

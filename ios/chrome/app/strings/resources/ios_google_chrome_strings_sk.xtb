@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Pomoc so zlepšovaním funkcií a výkonu Chromu</translation>
 <translation id="1314663809820920746">Vaše záložky, história, heslá a ďalšie nastavenia zostanú v tomto zariadení zachované. Ak ich zmeníte, tieto zmeny nebudú synchronizované do vášho účtu Google.</translation>
 <translation id="1479202195792305274">Keď sa prihlásite účtom Google, Chrome môže skontrolovať vaše heslá.</translation>
+<translation id="1493827051843127077">Nastavte si Chromium ako predvolený prehliadač na synchronizovanie kariet, hesiel a platobných údajov vo všetkých zariadeniach</translation>
 <translation id="1504372625950710826">Chromu sa nepodarilo skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
 <translation id="1682483655351012182">Synchronizácia údajov Chromu</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome zdieľa vašu s webmi, pre ktoré to povolíte.</translation>
 <translation id="2347208864470321755">Po zapnutí tejto funkcie bude prehliadač Chrome ponúkať preloženie stránok napísaných v inom jazyku pomocou služby Prekladač Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Nastavte si Chrome ako predvolený prehliadač</translation>
+<translation id="2561231791489583059">Používajte Chrome ako svoj predvolený prehliadač, aby ste sa naďalej chránili pred nebezpečnými webmi a zaistili ochranu svojich hesiel</translation>
 <translation id="2574249610672786438">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chrome, prihláste sa v nich</translation>
 <translation id="2576431527583832481">Prehliadač Chrome bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="257708665678654955">Chcete, aby prehliadač Google Chrome nabudúce ponúkol možnosť prekladu stránok tohto webu v jazyku <ph name="LANGUAGE_NAME" />?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome nemôže skontrolovať heslá</translation>
 <translation id="7265369419224458312">Priamo tu môžete pristupovať ku kartám, ktoré máte otvorené na počítači. Stačí otvoriť Chrome na počítači, prejsť do ponuky a vybrať možnosť „Prihlásiť sa do prehliadača Chrome…“.</translation>
 <translation id="7272930098487145294">Ak chcete uložiť obrázky, klepnutím na Nastavenia povoľte Chromu pridávať do vašich fotiek</translation>
+<translation id="7275945473750112644">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje Chromu budú z tohto zariadenia vymazané</translation>
 <translation id="7400722733683201933">O prehliadači Google Chrome</translation>
 <translation id="7501046334262221972">Ak chcete nastaviť Chrome ako predvolený prehliadač, otvorte Nastavenia. Klepnite na Predvolený prehliadač a potom vyberte Chrome.</translation>
 <translation id="756809126120519699">Údaje Chromu boli vymazané</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">V rámci porušenia ochrany údajov bolo prezradené vaše heslo. Chrome vám ho odporúča okamžite zmeniť.</translation>
 <translation id="7698568245838009292">Chrome chce použiť fotoaparát</translation>
 <translation id="7855730255114109580">Google Chrome je aktuálny.</translation>
+<translation id="8022947259858476807">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou Chromu</translation>
 <translation id="8160472928944011082">Chrome sa nedá aktualizovať</translation>
+<translation id="8357607116237445042">Vyberte, či chcete údaje Chromu v tomto zariadení vymazať alebo ponechať</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="840168496893712993">Niektoré doplnky spôsobujú zlyhanie prehliadača Chrome. Skúste ich odinštalovať.</translation>
 <translation id="8459495907675268833">Vybraté údaje boli odstránené z Chromu a synchronizovaných zariadení. Váš účet Google môže mať na adrese history.google.com ďalšie formy histórie prehliadania, ako napríklad vyhľadávania a aktivity v iných službách Google.</translation>
@@ -88,4 +93,5 @@
   2. Klepnite na predvolenú aplikáciu prehliadača.
         3. Vyberte Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Zaistite svoju bezpečnosť s prehliadačom Google Chrome</translation>
 </translationbundle>

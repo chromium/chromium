@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Bidra till att förbättra Chromes funktioner och prestanda</translation>
 <translation id="1314663809820920746">Bokmärken, lösenord, historik och andra inställningar finns fortfarande kvar på enheten. Om du ändrar något synkroniseras inte detta med Google-kontot.</translation>
 <translation id="1479202195792305274">Chrome kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
+<translation id="1493827051843127077">Ställ in Chrome som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
 <translation id="1504372625950710826">Chrome kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="1682483655351012182">Synkronisera data i Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome delar din plats med webbplatser du tillåter.</translation>
 <translation id="2347208864470321755">När den här funktionen har aktiverats visas alternativet i Chrome att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Använd Chrome som standard</translation>
+<translation id="2561231791489583059">Använd Chrome som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="2574249610672786438">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="2576431527583832481">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="257708665678654955">Vill du att Google Chrome ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome kan inte kontrollera dina lösenord</translation>
 <translation id="7265369419224458312">Använd flikar som du öppnar på datorn även här. Du behöver bara öppna Chrome på datorn, öppna menyn och välja Logga in i Chrome …</translation>
 <translation id="7272930098487145294">Om du vill spara bilder trycker du på Inställningar och låter Chrome lägga till dina foton</translation>
+<translation id="7275945473750112644">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chrome från enheten</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
 <translation id="7501046334262221972">Öppna inställningarna för att välja Chrome som standardwebbläsare. Tryck på Standardwebbläsarapp och välj sedan Chrome.</translation>
 <translation id="756809126120519699">Data i Chrome har rensats</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas att ändra lösenordet nu.</translation>
 <translation id="7698568245838009292">Chrome vill ha tillgång till kameran</translation>
 <translation id="7855730255114109580">Google Chrome behöver inte uppdateras</translation>
+<translation id="8022947259858476807">Använd Chrome som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="8160472928944011082">Uppdatering inte möjlig</translation>
+<translation id="8357607116237445042">Välj om din data i Chrome ska raderas från den här enheten eller vara kvar</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="840168496893712993">Några tillägg har fått Chrome att krascha. Testa att avinstallera dem.</translation>
 <translation id="8459495907675268833">Den data som markerades har tagits bort från Chrome och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
@@ -88,4 +93,5 @@
   2. Tryck på Standardwebbläsarapp
   3. Välj Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Surfa säkert med Google Chrome</translation>
 </translationbundle>

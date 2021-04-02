@@ -453,6 +453,7 @@
 <translation id="5860033963881614850">غير مفعّل</translation>
 <translation id="5869029295770560994">حسنًا</translation>
 <translation id="5871497086027727873">تم نقل عنصر واحد</translation>
+<translation id="5896576662943111387">‏مُخصّص لنظام التشغيل iOS</translation>
 <translation id="5897956970858271241">الانتقال إلى الرابط المنسوخ</translation>
 <translation id="5899314093904173337">يمكنك مشاركته مع المستخدمين القريبين من خلال السماح لهم بمسح رمز الاستجابة السريعة ضوئيًا باستخدام الكاميرا أو تطبيق ماسح رمز الاستجابة السريعة.</translation>
 <translation id="5911030830365207728">‏الترجمة من Google</translation>
@@ -470,6 +471,7 @@
 <translation id="5988851877894965432">‏فتح عناوين URL في Chrome</translation>
 <translation id="6012140227487808125">جارٍ التشفير...</translation>
 <translation id="6021332621416007159">فتح في...</translation>
+<translation id="6036514205982097558">جميع علامات التبويب في متصفّح واحد</translation>
 <translation id="6039429417015973673"><ph name="TITLE" />، <ph name="PUBLISHER_INFORMATION" />، <ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">إغلاق</translation>
 <translation id="6042308850641462728">عرض المزيد</translation>
@@ -583,6 +585,7 @@
 <translation id="6973630695168034713">المجلدات</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6988572888918530647">‏إدارة حسابك على Google</translation>
+<translation id="6989674195860388998">تبديل المتصفح التلقائي من خلال "الإعدادات"…</translation>
 <translation id="6995899638241819463">التحذير إذا تم الكشف عن كلمات المرور في عملية اختراق بيانات</translation>
 <translation id="6998989275928107238">إلى</translation>
 <translation id="7004032350256606903">تفرض مؤسستك سياسة التصفُّح بخصوصية تامّة.

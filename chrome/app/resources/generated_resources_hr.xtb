@@ -520,6 +520,7 @@
 <translation id="1563702743503072935">Zaporke s vašeg Google računa bit će dostupne i na ovom uređaju dok ste prijavljeni</translation>
 <translation id="1566049601598938765">Web-lokacija</translation>
 <translation id="15662109988763471">Odabrani pisač nije dostupan ili nije ispravno postavljen. Provjerite svoj pisač ili pokušajte odabrati drugi pisač.</translation>
+<translation id="1567135437923613642">Omogućite istaknute eksperimente</translation>
 <translation id="1567387640189251553">Nakon vašeg posljednjeg unosa zaporke povezana je neka druga tipkovnica. Možda pokušava ukrasti podatke o pritisnutim tipkama.</translation>
 <translation id="1567993339577891801">Konzola JavaScripta</translation>
 <translation id="1568323446248056064">Otvorite postavke zaslona na uređaju</translation>
@@ -919,6 +920,7 @@
 <translation id="1979095679518582070">Isključivanje te značajke ne utječe na mogućnost uređaja da šalje informacije koje su potrebne za ključne usluge kao što su ažuriranja sustava i sigurnost.</translation>
 <translation id="1979280758666859181">Prelazite na kanal sa starijom verzijom usluge <ph name="PRODUCT_NAME" />. Promjena kanala primijenit će se kada se verzija kanala bude podudarala s verzijom koja je trenutačno instalirana na vašem uređaju.</translation>
 <translation id="197989455406964291">KDC ne podržava vrstu enkripcije</translation>
+<translation id="1983497378699148207">Da biste dovršili postavljanje Linuxa, ažurirajte OS Chrome i pokušajte ponovo.</translation>
 <translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
 <translation id="1987317783729300807">Računi</translation>
 <translation id="1989112275319619282">Pregledaj</translation>
@@ -1331,6 +1333,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2450223707519584812">Nećete moći dodati korisnike zato što nedostaju ključevi Google API-ja. Pojedinosti možete saznati na web-lokaciji <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">nema aktivnih prikaza</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Web-lokacije se obično povezuju sa serijski spojenim priključcima za značajke prijenosa podataka poput postavljanja mreže</translation>
 <translation id="2453860139492968684">Završi</translation>
 <translation id="2454247629720664989">Ključna riječ</translation>
 <translation id="2454264884354864965">Kamera je isključena</translation>
@@ -1961,6 +1964,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="313205617302240621">Zaboravili ste zaporku?</translation>
 <translation id="3132277757485842847">Nismo uspjeli održati vezu s vašim telefonom. Provjerite je li telefon u blizini, je li otključan i jesu li na njemu uključeni Bluetooth i Wi-Fi.</translation>
 <translation id="3132996321662585180">Osvježi svaki dan</translation>
+<translation id="3134393957315651797">Odaberite stanje za eksperiment <ph name="EXPERIMENT_NAME" />. Opis eksperimenta: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN nije važeći. Preostao vam je sljedeći broj pokušaja: <ph name="RETRIES" />.</translation>
 <translation id="313963229645891001">Preuzimanje, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Zadani žuti avatar</translation>
@@ -2845,6 +2849,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="4099874310852108874">Pojavila se mrežna pogreška.</translation>
 <translation id="4100733287846229632">Količina prostora na uređaju kritično je mala</translation>
 <translation id="4100853287411968461">Novo ograničenje vremena upotrebe</translation>
+<translation id="4101352914005291489">Skriveni SSID</translation>
 <translation id="4102906002417106771">Pokrenite ponovo da biste izvršili powerwash</translation>
 <translation id="4104163789986725820">I&amp;zvoz...</translation>
 <translation id="4107048419833779140">Prepoznaj i izbaci uređaje za pohranu</translation>
@@ -3914,6 +3919,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5382591305415226340">Upravljanje podržanim vezama</translation>
 <translation id="5383377866517186886">Kamera je isključena u Postavkama sustava na Macu</translation>
 <translation id="5383740867328871413">Neimenovana grupa – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Promijenila su se pravila organizacije. Gumb eksperimenata dodan je na alatnu traku. Kliknite taj gumb da biste otvorili dijaloški okvir za omogućivanje eksperimenata.</translation>
 <translation id="5388885445722491159">Upareno</translation>
 <translation id="5390100381392048184">Dopusti web-lokacijama reprodukciju zvuka</translation>
 <translation id="5390112241331447203">Uključi system_logs.txt datoteku koja se šalje u izvješćima s povratnim informacijama.</translation>
@@ -5038,6 +5044,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="6659594942844771486">Kartica</translation>
 <translation id="6660413144148052430">lokacija</translation>
 <translation id="666099631117081440">Poslužitelji za ispis</translation>
+<translation id="6662931079349804328">Promijenila su se pravila organizacije. Gumb eksperimenata uklonjen je s alatne trake.</translation>
 <translation id="6663190258859265334">Izvršite Powerwash na uređaju <ph name="DEVICE_TYPE" /> i vratite se na prethodnu verziju.</translation>
 <translation id="6664237456442406323">Nažalost, vaše je računalo konfigurirano pogrešno oblikovanim ID-om hardvera. To sprječava ažuriranje OS-a Chrome najnovijim sigurnosnim popravcima pa bi vaše računalo <ph name="BEGIN_BOLD" />moglo biti ranjivo na zlonamjerne napade<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Prilikom otvaranja profila dogodila se pogreška. Odjavite se i ponovo prijavite.</translation>
@@ -5394,6 +5401,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7056526158851679338">&amp;Provjeri uređaje</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Sigurnosna provjera izvršena je prije 1 minute}one{Sigurnosna provjera izvršena je prije {NUM_MINS} minute}few{Sigurnosna provjera izvršena je prije {NUM_MINS} minute}other{Sigurnosna provjera izvršena je prije {NUM_MINS} minuta}}</translation>
 <translation id="7057767408836081338">Dohvaćanje podataka aplikacije nije uspjelo. I dalje pokušavamo pokrenuti aplikaciju...</translation>
+<translation id="7058024590501568315">Skrivena mreža</translation>
 <translation id="7059858479264779982">Postavi na automatsko pokretanje</translation>
 <translation id="7059893117020417984">Da biste pregledavali privatno, kliknite ikonu izbornika s točkama kako biste otvorili anoniman prozor</translation>
 <translation id="7062222374113411376">Dopusti nedavno zatvorenim web-lokacijama dovršetak slanja i primanja podataka</translation>
@@ -5757,6 +5765,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7477793887173910789">Upravljate glazbom, videozapisima i drugim medijima</translation>
 <translation id="7478485216301680444">Nije bilo moguće instalirati aplikaciju kioska.</translation>
 <translation id="7478623944308207463">Vaše aplikacije i postavke sinkronizirat će se na svim uređajima s OS-om Chrome na kojima ste prijavljeni svojim Google računom. Za opcije sinkronizacije preglednika otvorite <ph name="LINK_BEGIN" />postavke Chromea<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Ne dopuštaj web-lokacijama povezivanje sa serijski spojenim priključcima</translation>
 <translation id="7479221278376295180">Pregled korištenja pohrane</translation>
 <translation id="7481312909269577407">Naprijed</translation>
 <translation id="7481358317100446445">Spremno</translation>
@@ -5908,11 +5917,13 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="765293928828334535">Aplikacije, proširenja i korisničke skripte ne mogu se dodavati s ove web-lokacije</translation>
 <translation id="7652954539215530680">Izrada PIN-a</translation>
 <translation id="7654941827281939388">Ovaj se račun već upotrebljava na ovom računalu.</translation>
+<translation id="7655411746932645568">Web-lokacije mogu tražiti dopuštenje za povezivanje sa serijski spojenim priključcima</translation>
 <translation id="7658239707568436148">Odustani</translation>
 <translation id="7659297516559011665">Zaporke samo na ovom uređaju</translation>
 <translation id="7659584679870740384">Niste ovlašteni za upotrebu ovog uređaja. Zamolite administratora da vam dopusti prijavu.</translation>
 <translation id="7661259717474717992">Dopusti web-lokacijama spremanje i čitanje podataka kolačića</translation>
 <translation id="7661451191293163002">Certifikat za registraciju nije dohvaćen.</translation>
+<translation id="7661762353058813968">Ažuriranjima upravlja vaš administrator.</translation>
 <translation id="7662283695561029522">Dodirnite da biste konfigurirali</translation>
 <translation id="7663719505383602579">Prijemnik: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Nepodržani Bluetooth uređaj: "<ph name="DEVICE_NAME" />".</translation>
@@ -6694,6 +6705,7 @@ Upotrijebite Ctrl+Alt+Smanjivanje svjetline za smanjivanje prikaza.</translation
 <translation id="8539727552378197395">Ne (samo http)</translation>
 <translation id="8539766201049804895">Nadogradi</translation>
 <translation id="8540136935098276800">Unesite ispravno oblikovan URL</translation>
+<translation id="8540503336857689453">Upotreba skrivene mreže ne preporučuje se iz sigurnosnih razloga.</translation>
 <translation id="8540608333167683902">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, pojedinosti</translation>
 <translation id="854071720451629801">Označi kao pročitano</translation>
 <translation id="8541462173655894684">Nije pronađen nijedan pisač na poslužitelju za ispis</translation>

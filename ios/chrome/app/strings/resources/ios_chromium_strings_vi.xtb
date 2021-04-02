@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium có tính năng giúp bạn quản lý dữ liệu Internet của mình và tốc độ mà bạn có thể tải trang web.
 <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium không thể kiểm tra xem có bản cập nhật mới nào không. Hãy thử kiểm tra kết nối Internet.</translation>
+<translation id="2054703085270098503">Luôn an toàn khi dùng Chromium</translation>
 <translation id="2075400798887076382">Truy cập các thẻ bạn đã mở trên máy tính của mình, ngay tại đây. Bạn chỉ cần mở Chromium trên máy tính, chuyển tới menu và chọn “Đăng nhập vào Chromium…”</translation>
 <translation id="2168108852149185974">Một số tiện ích bổ sung khiến Chromium trục trặc. Hãy gỡ cài đặt:</translation>
 <translation id="2178608107313874732">Chromium hiện không thể dùng máy ảnh</translation>
 <translation id="2195025571279539885">Bạn có muốn Chromium đề xuất dịch các trang <ph name="LANGUAGE_NAME" /> của trang web này vào lần tiếp theo không?</translation>
 <translation id="2590893390871230428">Đồng bộ hóa dữ liệu của bạn trên Chromium</translation>
 <translation id="2650312721222849884">Để xem các thẻ của bạn trên bất cứ thiết bị nào mà bạn có dùng Chromium, hãy bật tính năng đồng bộ hóa</translation>
+<translation id="2684230048001240293">Hãy đặt Chromium làm trình duyệt mặc định để đồng bộ hóa các thẻ, mật khẩu và thông tin thanh toán trên mọi thiết bị của bạn</translation>
 <translation id="2730884209570016437">Chromium không thể sử dụng máy ảnh của bạn do một ứng dụng khác đang dùng máy ảnh.</translation>
 <translation id="2915596697727466327">Chromium sử dụng Face ID để đảm bảo rằng chỉ những người được ủy quyền mới có thể truy cập vào mật khẩu của bạn.</translation>
 <translation id="2918709798697875261">Tổ chức của bạn yêu cầu bạn duy trì trạng thái đăng xuất khỏi Chromium.</translation>
+<translation id="2942241131342758843">Hãy dùng Chromium theo mặc định để mở đường liên kết, tìm kiếm trong tiện ích và tự động điền mật khẩu trên các ứng dụng khác</translation>
 <translation id="2977470724722393594">Chromium đã được cập nhật</translation>
 <translation id="3256316712990552818">Đã sao chép vào Chromium</translation>
 <translation id="3344973607274501920">Chromium không thể kiểm tra mật khẩu của bạn. Hãy thử kiểm tra kết nối Internet.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Khi tính năng này được bật, Chromium sẽ đề xuất sử dụng Google Dịch để dịch các trang viết bằng ngôn ngữ khác. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Giờ đây, bạn có thể dùng Chromium bất cứ khi nào nhấn vào các đường liên kết trong thư/tin nhắn, tài liệu và các ứng dụng khác.</translation>
 <translation id="4681781466797808448">Bật trình quét của Chromium</translation>
+<translation id="4736424910885271643">Tài khoản của bạn do <ph name="HOSTED_DOMAIN" /> quản lý nên dữ liệu của bạn trên Chromium sẽ bị xóa khỏi thiết bị này</translation>
 <translation id="4787850887676698916">Các thẻ bạn đã mở trong Chromium trên thiết bị khác sẽ xuất hiện tại đây.</translation>
 <translation id="4828317641996116749">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại sau.</translation>
 <translation id="4985291216379576555">Không có kết nối mạng, Chromium không thể kiểm tra xem có bản cập nhật mới nào không</translation>
@@ -55,6 +59,7 @@
 2. Nhấn vào Ứng dụng trình duyệt mặc định
 3. Chọn Chromium.</translation>
 <translation id="6268381023930128611">Đăng xuất khỏi Chromium?</translation>
+<translation id="6337530241089703714">Chọn xem bạn muốn xóa dữ liệu của mình trên Chromium khỏi thiết bị này hay giữ lại dữ liệu đó</translation>
 <translation id="6424492062988593837">Chromium được cải tiến hơn! Đã có phiên bản mới.</translation>
 <translation id="6820823224820483452">Chromium không thể kiểm tra một số mật khẩu. Hãy thử lại vào ngày mai.</translation>
 <translation id="6827294685447036764">Nếu bạn cho Chromium biết vị trí của bạn, thì Chromium sẽ gửi thông tin này đến mọi trang web mà bạn cho phép. Các trang web có thể yêu cầu thông tin vị trí khi có thông tin địa phương để hiển thị cho bạn, chẳng hạn như tin tức hoặc cửa hàng ở gần.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Mật khẩu của bạn đã bị lộ trong một vụ rò rỉ dữ liệu. Chromium khuyên bạn nên đổi ngay mật khẩu.</translation>
 <translation id="7674213385180944843">Mở Cài đặt &gt; Bảo mật &gt; Máy ảnh &gt; Chromium và bật máy ảnh.</translation>
 <translation id="7746854981345936341">Mẹo dành cho Chromium. Một số nút hiện nằm ở cuối màn hình, chẳng hạn như nút Quay lại, Tiến lên và Tìm kiếm.</translation>
+<translation id="7763454117143368771">Hãy đặt Chromium làm trình duyệt mặc định để luôn được bảo vệ khỏi các trang web nguy hiểm và giữ cho mật khẩu của bạn an toàn</translation>
 <translation id="786327964234957808">Bạn đang chuyển các tài khoản đồng bộ hóa từ <ph name="USER_EMAIL1" /> về <ph name="USER_EMAIL2" />. Dữ liệu Chromium hiện có của bạn do <ph name="DOMAIN" /> quản lý. Thao tác này sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu đó sẽ vẫn còn trong <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Bắt đầu dùng trình quét của Chromium</translation>
 <translation id="7931842119211730154">Khóa các thẻ Ẩn danh khi bạn đóng Chromium</translation>

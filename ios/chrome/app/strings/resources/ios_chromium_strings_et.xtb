@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromiumil on funktsioonid, mis aitavad teil hallata oma Interneti-andmeid ja seda, kui kiiresti saate veebilehti laadida.
 <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium ei saanud värskendusi otsida. Kontrollige internetiühendust.</translation>
+<translation id="2054703085270098503">Turvalisus Chromiumiga</translation>
 <translation id="2075400798887076382">Hankige juurdepääs arvutis avatud vahelehtedele siit. Lihtsalt avage arvutis Chromium, minge menüüsse ja valige käsk „Logi Chromiumisse sisse …”</translation>
 <translation id="2168108852149185974">Mõned pistikprogrammid põhjustavad Chromiumi kokkujooksmise. Desinstallige need:</translation>
 <translation id="2178608107313874732">Chromium ei saa praegu kaamerat kasutada</translation>
 <translation id="2195025571279539885">Kas soovite, et Chromium pakuks järgmisel korral sellel saidil <ph name="LANGUAGE_NAME" /> keeles olevate lehtede tõlkimise võimalust?</translation>
 <translation id="2590893390871230428">Chromiumi andmete sünkroonimine</translation>
 <translation id="2650312721222849884">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, lülitage sisse sünkroonimine</translation>
+<translation id="2684230048001240293">Määrake Chromium vaikebrauseriks, et sünkroonida kõikides oma seadetes vahelehti, paroole ja makseteavet</translation>
 <translation id="2730884209570016437">Chromium ei saa kaamerat kasutada, kuna seda kasutab muu rakendus</translation>
 <translation id="2915596697727466327">Chromium kasutab paroolide volitatud juurdepääsu kontrollimiseks Face ID-d.</translation>
 <translation id="2918709798697875261">Teie organisatsioon nõuab, et jääksite Chromiumist väljalogituks.</translation>
+<translation id="2942241131342758843">Kasutage linkide avamiseks, vidinatest otsimiseks ja muudes rakendustes paroolide automaatselt täitmiseks vaikimisi Chromiumi</translation>
 <translation id="2977470724722393594">Chromium on ajakohane</translation>
 <translation id="3256316712990552818">Kopeeritud Chromiumi</translation>
 <translation id="3344973607274501920">Chromiumil ei õnnestunud teie paroole kontrollida. Kontrollige internetiühendust.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Kui see funktsioon on sisse lülitatud, pakub Chromium võimalust tõlkida teistes keeltes kirjutatud lehti Google'i tõlke abil. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Nüüd saate kasutada Chromiumi iga kord, kui puudutate linke sõnumites, dokumentides ja muudes rakendustes.</translation>
 <translation id="4681781466797808448">Lülitage sisse Chromiumi skanner</translation>
+<translation id="4736424910885271643">Teie kontot haldab <ph name="HOSTED_DOMAIN" />, seega kustutatakse teie Chromiumi andmed sellest seadmest</translation>
 <translation id="4787850887676698916">Siin kuvatakse teie teistes seadmetes Chromiumis avatud vahelehed.</translation>
 <translation id="4828317641996116749">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige hiljem uuesti.</translation>
 <translation id="4985291216379576555">Võrguühenduseta, Chromium ei saa värskendusi otsida</translation>
@@ -55,6 +59,7 @@
 2. Puudutage valikut Vaikebrauserirakendus.
 3. Valige Chromium.</translation>
 <translation id="6268381023930128611">Kas logida Chromiumist välja?</translation>
+<translation id="6337530241089703714">Valige, kas soovite oma Chromiumi andmed sellest seadmest kustutada või need säilitada</translation>
 <translation id="6424492062988593837">Chromium muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="6820823224820483452">Chromiumil ei õnnestunud kõiki paroole kontrollida. Proovige homme uuesti.</translation>
 <translation id="6827294685447036764">Kui lubate Chromiumil teada teie asukohateavet, saadab Chromium selle saitidele, mille jaoks loa annate. Saidid võivad teilt küsida asukohateavet, kui neil on teile näidata kohalikku teavet, näiteks lähedalasuvaid poode või uudiseid.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Teie parool oli andmetega seotud rikkumise käigus avalikustatud. Chromium soovitab teil kohe parooli muuta.</translation>
 <translation id="7674213385180944843">Avage menüü Seaded &gt; Privaatsus &gt; Kaamera &gt; Chromium ja lülitage kaamera sisse.</translation>
 <translation id="7746854981345936341">Chromiumi nõuanne. Mõned nupud, näiteks Tagasi, Edasi ja Otsing, asuvad nüüd ekraani alaosas.</translation>
+<translation id="7763454117143368771">Kasutage Chromiumi vaikebrauserina, et ohtlike saitide eest kaitstud olla ja oma paroole turvalisena hoida</translation>
 <translation id="786327964234957808">Vahetate sünkroonitavad kontod aadressilt <ph name="USER_EMAIL1" /> aadressile <ph name="USER_EMAIL2" />. Teie olemasolevaid Chromiumi andmeid haldab domeen <ph name="DOMAIN" />. Teie andmed kustutatakse sellest seadmest, kuid need jäävad alles kontole <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Alustage Chromiumi skanneri kasutamist</translation>
 <translation id="7931842119211730154">Lukusta Chromiumi sulgemisel inkognito vahelehed</translation>

@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Oturum açtığınızda Google Hesabınızdaki şifrelerinize bu cihazdan da erişebilirsiniz</translation>
 <translation id="1566049601598938765">Web sitesi</translation>
 <translation id="15662109988763471">Seçilen yazıcı kullanılamıyor veya doğru yüklenmemiş. Yazıcınızı kontrol edin veya başka yazıcı seçmeyi deneyin.</translation>
+<translation id="1567135437923613642">Öne çıkan denemeleri etkinleştir</translation>
 <translation id="1567387640189251553">Şifrenizi son girdiğinizden bu yana farklı bir klavye bağlandı. Bu klavye, tuş vuruşlarınızı çalmaya çalışıyor olabilir.</translation>
 <translation id="1567993339577891801">JavaScript Konsolu</translation>
 <translation id="1568323446248056064">Ekran cihaz ayarlarını aç</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">Bu özelliğin kapatılması, bu cihazın sistem güncellemeleri ve güvenlik gibi önemli hizmetler için gereken bilgileri gönderme özelliğini etkilemez.</translation>
 <translation id="1979280758666859181"><ph name="PRODUCT_NAME" /> ürününün eski sürümünü destekleyen bir kanala geçiyorsunuz. Kanal değişikliği, kanalın sürümü cihazınızda şu an yüklenmiş olan sürümle eşleştiğinde uygulanacak.</translation>
 <translation id="197989455406964291">KDC, şifreleme türünü desteklemiyor</translation>
+<translation id="1983497378699148207">Linux kurulumunu tamamlamak için Chrome OS'i güncelleyip tekrar deneyin.</translation>
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="1987317783729300807">Hesaplar</translation>
 <translation id="1989112275319619282">Göz at</translation>
@@ -1330,6 +1332,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2450223707519584812">Google API anahtarları eksik olduğundan kullanıcı ekleyemezsiniz. Ayrıntılar için <ph name="DETAILS_URL" /> sayfasına bakın.</translation>
 <translation id="2450849356604136918">Etkin görünüm yok</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Ağınızı ayarlama gibi veri aktarımı özelliklerinin kullanılması için siteler genellikle seri bağlantı noktalarına bağlanır</translation>
 <translation id="2453860139492968684">Tamamlandı</translation>
 <translation id="2454247629720664989">Anahtar kelime</translation>
 <translation id="2454264884354864965">Kamera kapalı</translation>
@@ -1960,6 +1963,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="313205617302240621">Şifrenizi mi unuttunuz?</translation>
 <translation id="3132277757485842847">Telefonunuzla bağlantıyı sürdüremedik. Telefonunuzun yakında bulunduğundan, kilidinin ve Bluetooth ile Kablosuz bağlantının da açık olduğundan emin olun.</translation>
 <translation id="3132996321662585180">Günlük olarak yenile</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> denemesi için deneme durumu seçin. Deneme açıklaması: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">Geçersiz PIN. <ph name="RETRIES" /> deneme hakkınız kaldı.</translation>
 <translation id="313963229645891001">İndiriliyor, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Varsayılan sarı avatar</translation>
@@ -2844,6 +2848,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4099874310852108874">Ağ hatası oluştu.</translation>
 <translation id="4100733287846229632">Cihazda kullanılabilir alan kritik düzeyde az</translation>
 <translation id="4100853287411968461">Ekran başında kalma süresi için yeni sınır</translation>
+<translation id="4101352914005291489">Gizli SSID</translation>
 <translation id="4102906002417106771">Powerwash için yeniden başlat</translation>
 <translation id="4104163789986725820">&amp;Dışa Aktar...</translation>
 <translation id="4107048419833779140">Depolama cihazlarını tanımlama ve çıkarma</translation>
@@ -3913,6 +3918,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5382591305415226340">Desteklenen bağlantıları yönet</translation>
 <translation id="5383377866517186886">Kamera, Mac Sistem Tercihleri'nde kapatıldı</translation>
 <translation id="5383740867328871413">Adsız grup - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Kurumsal politika değişti. Araç çubuğuna denemeler düğmesi eklendi. Denemeleri etkinleştirmek için iletişim kutusunu açmak üzere tıklayın.</translation>
 <translation id="5388885445722491159">Eşleştirilmiş</translation>
 <translation id="5390100381392048184">Sitelerin ses çalmasına izin ver</translation>
 <translation id="5390112241331447203">Geri bildirim raporlarında gönderilen system_logs.txt dosyasını dahil et.</translation>
@@ -5038,6 +5044,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6659594942844771486">Sekme</translation>
 <translation id="6660413144148052430">konum</translation>
 <translation id="666099631117081440">Yazdırma sunucuları</translation>
+<translation id="6662931079349804328">Kurumsal politika değişti. Denemeler düğmesi, araç çubuğundan kaldırıldı.</translation>
 <translation id="6663190258859265334"><ph name="DEVICE_TYPE" /> cihazınızı Powerwash ile silip önceki sürüme geri dönün</translation>
 <translation id="6664237456442406323">Maalesef bilgisayarınız, hatalı oluşturulmuş bir donanım kimliğiyle yapılandırılmış. Bu durum Chrome OS'nin en son güvenlik düzeltmeleriyle güncellenmesini engeller ve bilgisayarınız <ph name="BEGIN_BOLD" />kötü niyetli saldırılara<ph name="END_BOLD" /> açık duruma gelebilir.</translation>
 <translation id="6664774537677393800">Profiliniz açılırken bir sorun oluştu. Lütfen oturumu kapatıp sonra tekrar oturum açın.</translation>
@@ -5394,6 +5401,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7056526158851679338">&amp;Cihazları Denetle</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Güvenlik kontrolü 1 dakika önce çalıştırıldı}other{Güvenlik kontrolü {NUM_MINS} dakika önce çalıştırıldı}}</translation>
 <translation id="7057767408836081338">Uygulama verileri alınamadı, yine de uygulamanın çalışması için uğraşılıyor...</translation>
+<translation id="7058024590501568315">Gizli ağ</translation>
 <translation id="7059858479264779982">Otomatik başlatmaya ayarla</translation>
 <translation id="7059893117020417984">Gizli olarak göz atmak için nokta simgeli menüyü tıklayarak gizli pencere açın</translation>
 <translation id="7062222374113411376">Yeni kapatılan sitelerin veri gönderme ve alma işlemini bitirmesine izin ver (önerilir)</translation>
@@ -5757,6 +5765,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7477793887173910789">Müzik, video ve diğer içeriklerinizi kontrol edin</translation>
 <translation id="7478485216301680444">Kiosk uygulaması yüklenemedi.</translation>
 <translation id="7478623944308207463">Uygulamalarınız ve ayarlarınız, Google hesabınızla oturum açtığınız tüm Chrome OS cihazlarda senkronize edilir. Tarayıcı senkronizasyon seçenekleri için <ph name="LINK_BEGIN" />Chrome ayarlarına<ph name="LINK_END" /> gidin.</translation>
+<translation id="7478658909253570368">Sitelerin seri bağlantı noktalarına bağlanmasına izin verme</translation>
 <translation id="7479221278376295180">Depolama Alanı Kullanımına Genel Bakış</translation>
 <translation id="7481312909269577407">İleri</translation>
 <translation id="7481358317100446445">Hazır</translation>
@@ -5908,11 +5917,13 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="765293928828334535">Bu web sitesinden uygulama, uzantı ve kullanıcı komut dosyaları eklenemez</translation>
 <translation id="7652954539215530680">PIN oluşturun</translation>
 <translation id="7654941827281939388">Bu hesap zaten bu bilgisayarda kullanılıyor.</translation>
+<translation id="7655411746932645568">Siteler seri bağlantı noktalarına bağlanmak isteyebilir</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7659297516559011665">Yalnızca bu cihazdaki şifreler</translation>
 <translation id="7659584679870740384">Bu cihazı kullanma yetkiniz yok. Oturum açma izni almak için lütfen yöneticiyle iletişim kurun.</translation>
 <translation id="7661259717474717992">Sitelere, çerez verilerini kaydetme ve okuma izni ver</translation>
 <translation id="7661451191293163002">Kayıt sertifikası alınamadı.</translation>
+<translation id="7661762353058813968">Güncellemeler yöneticiniz tarafından yönetilmektedir.</translation>
 <translation id="7662283695561029522">Yapılandırmak için dokunun</translation>
 <translation id="7663719505383602579">Alıcı: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Desteklenmeyen Bluetooth cihazı: "<ph name="DEVICE_NAME" />".</translation>
@@ -6693,6 +6704,7 @@ Uzaklaştırmak için Ctrl+Alt+Parlaklığı Azalt tuşlarını kullanın.</tran
 <translation id="8539727552378197395">Hayır (HttpOnly)</translation>
 <translation id="8539766201049804895">Yeni Sürüme Geç</translation>
 <translation id="8540136935098276800">Doğru biçimli bir URL girin</translation>
+<translation id="8540503336857689453">Güvenlik nedeniyle gizli ağ kullanılması önerilmez.</translation>
 <translation id="8540608333167683902">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, Ayrıntılar</translation>
 <translation id="854071720451629801">Okundu Olarak İşaretle</translation>
 <translation id="8541462173655894684">Yazdırma sunucusunda yazıcı bulunamadı</translation>

@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Hjælp med at forbedre Chromes funktioner og effektivitet</translation>
 <translation id="1314663809820920746">Du kan stadig se al din historik samt alle dine bogmærker, adgangskoder og andre indstillinger på din enhed. Hvis du foretager nogen ændringer, bliver de dog ikke synkroniseret med din Google-konto.</translation>
 <translation id="1479202195792305274">Chrome kan tjekke dine adgangskoder, når du er logget ind med din Google-konto.</translation>
+<translation id="1493827051843127077">Angiv Chrome som standardbrowser for at synkronisere faner, adgangskoder og betalingsoplysninger på alle dine enheder</translation>
 <translation id="1504372625950710826">Chrome kunne ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="1682483655351012182">Synkroniser dine Chrome-data</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome deler din placering med godkendte websites.</translation>
 <translation id="2347208864470321755">Når denne funktion er aktiveret, vil Chrome tilbyde at oversætte sider, der er skrevet på andre sprog, ved hjælp af Google Oversæt. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Gør Chrome til din standardbrowser</translation>
+<translation id="2561231791489583059">Brug Chrome som din standardbrowser for at blive beskyttet mod skadelige websites og holde dine adgangskoder private</translation>
 <translation id="2574249610672786438">Log ind på alle de enheder, hvor du bruger Chrome, for at se dine faner på dem</translation>
 <translation id="2576431527583832481">Chrome er lige blevet bedre! Der er en ny tilgængelig version.</translation>
 <translation id="257708665678654955">Skal Google Chrome tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome kan ikke tjekke dine adgangskoder</translation>
 <translation id="7265369419224458312">Få adgang til de faner, der er åbne på din computer, lige her. Du åbner blot Chrome på din computer, går til menuen og vælger "Log ind i Chrome…"</translation>
 <translation id="7272930098487145294">Hvis du vil gemme billeder, kan du trykke på Indstillinger for at give Chrome tilladelse til at tilføje billeder</translation>
+<translation id="7275945473750112644">Da din konto administreres af <ph name="HOSTED_DOMAIN" />, bliver dine Chrome-data ryddet fra denne enhed</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
 <translation id="7501046334262221972">Du kan gøre Chrome til din standardbrowser ved at åbne Indstillinger. Tryk på Standardbrowserapp, og vælg derefter Chrome.</translation>
 <translation id="756809126120519699">Chrome-dataene blev ryddet</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Din adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden. Chrome anbefaler, at du skifter din adgangskode med det samme.</translation>
 <translation id="7698568245838009292">Chrome anmoder om adgang til kameraet</translation>
 <translation id="7855730255114109580">Google Chrome er opdateret</translation>
+<translation id="8022947259858476807">Brug som standard Chrome til at åbne links, søge efter widgets og udfylde adgangskoder automatisk i andre apps</translation>
 <translation id="8160472928944011082">Chrome kan ikke opdateres</translation>
+<translation id="8357607116237445042">Vælg, om du vil rydde dine Chrome-data fra denne enhed eller beholde dem</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="840168496893712993">Nogle tilføjelser får Chrome til at gå ned. Prøv at afinstallere dem.</translation>
 <translation id="8459495907675268833">De valgte data er fjernet fra Chrome og synkroniserede enheder. Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og aktivitet fra andre Google-tjenester, på history.google.com.</translation>
@@ -88,4 +93,5 @@
   2. Tryk på Standardbrowserapp
   3. Vælg Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Sikkerhed i Google Chrome</translation>
 </translationbundle>

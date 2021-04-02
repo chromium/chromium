@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + certificado de usuario</translation>
 <translation id="4731797938093519117">Acceso parental</translation>
 <translation id="4773299976671772492">Detenida</translation>
+<translation id="4794140124556169553">Ejecutar una prueba de CPU puede afectar el rendimiento de tu sistema.</translation>
 <translation id="4808449224298348341">Se canceló el trabajo de impresión <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Conexión</translation>
 <translation id="4832079907277790330">Seleccionar carpeta en la app de Archivos…</translation>
@@ -341,6 +342,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8483248364096924578">Dirección IP</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8503836310948963452">Solo unos minutos más…</translation>
+<translation id="8575298406870537639">Es posible que tu proveedor necesite que esta opción esté habilitada para que puedas conectarte a su red. Comunícate con el proveedor para obtener más detalles.</translation>
 <translation id="8576249514688522074">No se inicializó</translation>
 <translation id="8620617069779373398">Estado de roaming</translation>
 <translation id="8675354002693747642">Clave compartida previamente</translation>
@@ -365,7 +367,6 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8970109610781093811">Volver a ejecutar</translation>
 <translation id="9003704114456258138">Frecuencia</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Editar</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Uso actual</translation>

@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Zgodovina krmarjenja</translation>
 <translation id="1231733316453485619">Želite vklopiti sinhronizacijo?</translation>
 <translation id="123724288017357924">Vnov. nalag. tren. strani s prezrtjem predp. vseb.</translation>
+<translation id="1240288207750131269">Nalaganje: <ph name="LANG" /></translation>
 <translation id="124678866338384709">Zapiranje trenutnega zavihka</translation>
 <translation id="1258753120186372309">Googlov priložnostni logotip: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Ni bilo mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Upravljanje spletnim mest, ki jih spremljate.</translation>
 <translation id="1283039547216852943">Dotaknite se za razširitev</translation>
 <translation id="1285310382777185058">Spreminjanje jezika</translation>
 <translation id="1291207594882862231">Izbris zgodovine, piškotkov, podatkov spletnih mest, predpomnilnika …</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Različica aplikacije</translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1450753235335490080">Ni mogoče deliti tega: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Izbierite Chromov jezik</translation>
 <translation id="147113415845704694">Poskusite »What's the weather today?« (Kakšno bo danes vreme?)</translation>
 <translation id="1477626028522505441">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi težav s strežnikom.</translation>
 <translation id="1492417797159476138">Za to spletno mesto ste že shranili to uporabniško ime.</translation>
@@ -205,6 +208,7 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 <translation id="2353636109065292463">Preverjanje internetne povezave</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2369533728426058518">odpiranje zavihkov</translation>
+<translation id="2386938421315164605">Skrivanje in razkrivanje tem.</translation>
 <translation id="2387895666653383613">Prilagajanje velikosti besedila</translation>
 <translation id="2394602618534698961">Datoteke, ki jih prenesete, so prikazane tu</translation>
 <translation id="2407481962792080328">Ko se prijavite v račun Google, se ta funkcija vklopi</translation>
@@ -265,6 +269,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="281504910091592009">Shranjena gesla si lahko ogledate in jih upravljate v <ph name="BEGIN_LINK" />Google Računu<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Če želite dostopati do zaznamkov v vseh napravah, se prijavite in vklopite sinhronizacijo</translation>
 <translation id="2827278682606527653">Meni kartice vira je odprt pri pol višine</translation>
+<translation id="2839327205551510876">Spremljanje <ph name="SITE_NAME" /> je preklicano.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Preverjeno pred 1 dnevom}one{Preverjeno pred # dnevom}two{Preverjeno pred # dnevoma}few{Preverjeno pred # dnevi}other{Preverjeno pred # dnevi}}</translation>
 <translation id="2842985007712546952">Nadrejena mapa</translation>
 <translation id="2856503607207334158">Prijava ni uspela</translation>
@@ -281,6 +286,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2909615210195135082">Googlovo okolje za obvestila</translation>
 <translation id="2923908459366352541">Ime je neveljavno</translation>
 <translation id="2932150158123903946">Shranjeni podatki aplikacije Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Tipkovnica se ne bo spremenila.</translation>
 <translation id="2942036813789421260">Zavihek za predogled je zaprt</translation>
 <translation id="2956410042958133412">Ta računa upravljata <ph name="PARENT_NAME_1" /> in <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> neprebrana stran}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrana stran}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrani strani}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebrane strani}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> neprebranih strani}}</translation>
@@ -297,6 +303,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3031225630520268969">Uporabniški vmesnik za soglasje za glasovno iskanje v Pomočniku</translation>
 <translation id="3034163383943672781">Prenos se bo začel <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Poiščite pomoč<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Naslednjič hitreje odprite to spletno mesto.</translation>
 <translation id="305593374596241526">Lokacija je izklopljena. Vklopite jo lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Sinhronizacijo lahko kadarkoli vklopite v nastavitvah.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> zaznamek}one{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamek}two{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamka}few{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamki}other{<ph name="BOOKMARKS_COUNT_MANY" /> zaznamkov}}</translation>
@@ -340,6 +347,7 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="3315103659806849044">Trenutno prilagajate nastavitve sinhronizacije in Googlovih storitev. Če želite dokončati vklop sinhronizacije, se dotaknite gumba za potrditev pri dnu zaslona. Pomik navzgor</translation>
 <translation id="3334729583274622784">Želite spremeniti pripono datoteke?</translation>
 <translation id="3341058695485821946">Oglejte si, koliko prenosa podatkov ste prihranili</translation>
+<translation id="3341262203274374114">Spremljanja ni mogoče preklicati. Prišlo je do napake.</translation>
 <translation id="3350687908700087792">Zapri vse anonimne zavihke</translation>
 <translation id="3359667936385849800">Uporaba trenutnega ponudnika storitev</translation>
 <translation id="3367813778245106622">Prijavite se znova, če želite začeti sinhronizacijo</translation>
@@ -434,6 +442,8 @@ Zasebni peskovnik je še vedno v aktivnem razvoju in na voljo le na izbranih obm
 <translation id="3988213473815854515">Lokacija je dovoljena</translation>
 <translation id="3988466920954086464">Ogled rezultatov dinamičnega iskanja v tem podoknu</translation>
 <translation id="4000212216660919741">Začetna stran brez povezave</translation>
+<translation id="4016425174436051808">Ni mogoče spremljati. Prišlo je do napake.</translation>
+<translation id="4021916380760361450">Upravljanje podatkov v računih Google.</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}two{# h}few{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Podatki o uporabi</translation>
 <translation id="4056223980640387499">Sepija</translation>
@@ -598,6 +608,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5152843274749979095">Nameščena ni nobena podprta aplikacija</translation>
 <translation id="5161254044473106830">Naslov je obvezen</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 prenos ni uspel.}one{# prenos ni uspel.}two{# prenosa nista uspela.}few{# prenosi niso uspeli.}other{# prenosov ni uspelo.}}</translation>
+<translation id="5168824020667180049">Spremljati ste začeli <ph name="SITE_NAME" />.</translation>
 <translation id="5170568018924773124">Prikaži v mapi</translation>
 <translation id="5184329579814168207">Odpri v Chromu</translation>
 <translation id="5188992787241350004">Iskanje z glasom</translation>
@@ -717,6 +728,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5864419784173784555">Čakanje na drug prenos …</translation>
 <translation id="5865733239029070421">Samodejno pošilja statistične podatke o uporabi in poročila o zrušitvah Googlu</translation>
 <translation id="5869522115854928033">Shranjena gesla</translation>
+<translation id="5880748256563468367">Na vir</translation>
 <translation id="5884076754568147479">Zaradi zagotavljanja pomoči pri dokončanju opravil bo Google prejel URL-je in vsebino spletnih mest, na katerih uporabljate Pomočnika, ter podatke, ki jih pošljete prek Pomočnika.</translation>
 <translation id="5919204609460789179">Posodobite izdelek <ph name="PRODUCT_NAME" />, če želite začeti sinhronizacijo</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> prihranka pri količini prenesenih podatkov</translation>
@@ -734,6 +746,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5979084224081478209">Preveri gesla</translation>
 <translation id="5982307838673692400">Odpiranje anonimnega zavihka</translation>
 <translation id="6000066717592683814">Ohrani Google</translation>
+<translation id="6000203700195075278">Znova spremljaj</translation>
 <translation id="6005538289190791541">Predlagano geslo</translation>
 <translation id="6036057147555329831">Dodatni modul ICU</translation>
 <translation id="6039379616847168523">Premik na naslednji zavihek</translation>
@@ -1095,6 +1108,7 @@ Podatki anonimne seje se iz Chroma izbrišejo šele, ko <ph name="BEGIN_BOLD2" /
 <translation id="834313815369870491">Nikoli ne prevedi spletnih mest</translation>
 <translation id="8349013245300336738">Razvrsti glede na količino prenesenih podatkov</translation>
 <translation id="835847953965672673">Obnovljenih je bilo toliko prenosov: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8362134094656482681">Upravljanje tem, ki vas zanimajo.</translation>
 <translation id="8364299278605033898">Ogled priljubljenih spletnih mest</translation>
 <translation id="8368027906805972958">Neznana ali nepodprta naprava (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Jezik <ph name="LANG" /> je pripravljen.</translation>

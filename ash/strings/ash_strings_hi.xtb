@@ -610,6 +610,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Assistant की सुविधा मेहमान के तौर पर ब्राउज़ करने के सेशन में उपलब्ध नहीं है.</translation>
 <translation id="6137566720514957455"><ph name="USER_EMAIL_ADDRESS" /> के लिए, खाता हटाएं वाला डायलॉग खोलें</translation>
+<translation id="6154006699632741460">सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं कर रहा</translation>
 <translation id="615957422585914272">ऑन-स्क्रीन कीबोर्ड दिखाएं</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
 <translation id="6179832488876878285">आप अपनी ज़रूरी फ़ाइलों को यहां पिन कर सकते हैं. शुरू करने के लिए, फ़ाइल ऐप्लिकेशन खोलें.</translation>
@@ -631,7 +632,6 @@
 <translation id="6376931439017688372">ब्लूटूथ चालू है</translation>
 <translation id="6381109794406942707">यह डिवाइस अनलॉक करने के लिए, अपना पिन डालें.</translation>
 <translation id="639644700271529076">CAPS LOCK बंद है</translation>
-<translation id="6396835948284782440">एग्ज़िट करने के लिए [Esc] को दबाकर रखें</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">सभी सूचनाएं हटाएं</translation>

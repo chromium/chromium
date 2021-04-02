@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Azul-celeste escuro</translation>
 <translation id="1303806948938513162">Toque com 4 dedos para introduzir os menus do ChromeVox.</translation>
 <translation id="1313373992684326101">Retroceda para a secção anterior. Os exemplos incluem o tabuleiro de estado e o Launcher.</translation>
+<translation id="1315077335264761176">Orientação do toque</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, botão de opção do item de menu desselecionado</translation>
 <translation id="1325946044405407859">Bronzeado</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> de <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Damos-lhe as boas-vindas ao tutorial do ChromeVox. Para sair deste tutorial em qualquer altura, prima a tecla Escape no canto superior esquerdo do teclado. Para desativar o ChromeVox, mantenha premidas as teclas Control e Alt e prima Z. Quando pretender, utilize a barra de espaço para avançar para a aula seguinte.</translation>
 <translation id="174268867904053074">Gráfico seguinte</translation>
 <translation id="1756785467854861272">Magenta-escuro</translation>
+<translation id="1758693804775271377">Deslize rapidamente para a esquerda ou para a direita com um dedo para procurar aulas sobre este tópico</translation>
 <translation id="1765245556747822181">Deslizar rapidamente com um dedo para cima</translation>
 <translation id="1771761307086386028">Deslocar para a direita</translation>
 <translation id="1781173782405573156">Tecla de passagem</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Linha</translation>
 <translation id="2816868829355607410">Área para praticar: comandos de avanço</translation>
 <translation id="2841013758207633010">Tempo</translation>
+<translation id="284171465644749950">Deslize rapidamente para a esquerda ou para a direita com um dedo para procurar tópicos</translation>
 <translation id="2843432675592278677">Não existe nenhum ponto de referência ARIA anterior.</translation>
 <translation id="2843814945404750166">Verde seco escuro</translation>
 <translation id="2843837985843789981">Grupo anterior</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox atualizado</translation>
 <translation id="93384979447910801">Verde marinho escuro</translation>
 <translation id="948171205378458592">Diminuir velocidade de voz</translation>
+<translation id="957570623732056069">Deslize rapidamente para a esquerda ou para a direita com um dedo para navegar nesta aula</translation>
 <translation id="958854023026327378">Deslizar com um dedo para baixo</translation>
 <translation id="962913030769097253">Título de nível 1 seguinte</translation>
 <translation id="966588271015727539">Selecionar um ecrã em braille Bluetooth</translation>

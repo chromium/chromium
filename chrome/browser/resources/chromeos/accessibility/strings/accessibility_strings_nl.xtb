@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Lichthemelsblauw</translation>
 <translation id="1303806948938513162">Tik met vier vingers om de ChromeVox-menu's te openen</translation>
 <translation id="1313373992684326101">Naar vorige sectie. Voorbeelden omvatten het statusvak en de Launcher.</translation>
+<translation id="1315077335264761176">Aanraakoriëntatie</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, keuzerondje van menu-item niet geselecteerd</translation>
 <translation id="1325946044405407859">Geelbruin</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> van <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Welkom bij de ChromeVox-tutorial. Als je deze tutorial wilt afsluiten, kun je op elk moment linksboven op het toetsenbord op de Escape-toets drukken. Als je ChromeVox wilt uitzetten, houd je Ctrl en Alt ingedrukt en druk je op Z. Druk als je klaar bent op de spatiebalk om naar de volgende les te gaan.</translation>
 <translation id="174268867904053074">Volgende afbeelding</translation>
 <translation id="1756785467854861272">Donkermagenta</translation>
+<translation id="1758693804775271377">Swipe met één vinger naar links of rechts om door lessen over dit onderwerp te browsen</translation>
 <translation id="1765245556747822181">Swipe met één vinger omhoog</translation>
 <translation id="1771761307086386028">Naar rechts scrollen</translation>
 <translation id="1781173782405573156">Overslatoets</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Rij</translation>
 <translation id="2816868829355607410">Oefengedeelte: Navigatieopdrachten</translation>
 <translation id="2841013758207633010">Tijd</translation>
+<translation id="284171465644749950">Swipe met één vinger naar links of rechts om door onderwerpen te browsen</translation>
 <translation id="2843432675592278677">Geen vorig ARIA-oriëntatiepunt</translation>
 <translation id="2843814945404750166">Donkerolijfgroen</translation>
 <translation id="2843837985843789981">Vorige groep</translation>
@@ -1120,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox geüpdatet</translation>
 <translation id="93384979447910801">Donker zeegroen</translation>
 <translation id="948171205378458592">Spreeksnelheid verlagen</translation>
+<translation id="957570623732056069">Swipe met één vinger naar links of rechts om in deze les te navigeren</translation>
 <translation id="958854023026327378">Swipe met één vinger omlaag</translation>
 <translation id="962913030769097253">Volgende kop voor niveau 1</translation>
 <translation id="966588271015727539">Een Bluetooth-brailleleesregel selecteren</translation>

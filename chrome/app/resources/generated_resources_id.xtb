@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Sandi dari Akun Google Anda juga akan tersedia di perangkat ini saat Anda login</translation>
 <translation id="1566049601598938765">Situs web</translation>
 <translation id="15662109988763471">Printer yang dipilih tidak tersedia atau tidak diinstal dengan benar. Periksa printer Anda atau coba pilih printer lainnya.</translation>
+<translation id="1567135437923613642">Aktifkan eksperimen unggulan</translation>
 <translation id="1567387640189251553">Keyboard yang berbeda telah terhubung sejak Anda terakhir memasukkan sandi. Keyboard tersebut mungkin mencoba mencuri ketukan tombol Anda.</translation>
 <translation id="1567993339577891801">Konsol JavaScript</translation>
 <translation id="1568323446248056064">Buka setelan perangkat layar</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">Menonaktifkan fitur ini tidak memengaruhi kemampuan perangkat ini dalam mengirimkan informasi yang diperlukan bagi layanan penting seperti keamanan dan update sistem.</translation>
 <translation id="1979280758666859181">Anda mengubah ke saluran dengan versi <ph name="PRODUCT_NAME" /> yang lebih lama. Perubahan saluran ini akan berlaku jika versi saluran cocok dengan versi yang saat ini terpasang pada perangkat Anda.</translation>
 <translation id="197989455406964291">KDC tidak mendukung jenis enkripsi</translation>
+<translation id="1983497378699148207">Untuk menyelesaikan penyiapan Linux, update Chrome OS lalu coba lagi.</translation>
 <translation id="1984417487208496350">Tidak ada perlindungan (tidak direkomendasikan)</translation>
 <translation id="1987317783729300807">Akun</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
@@ -1330,6 +1332,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2450223707519584812">Anda tidak dapat menambahkan pengguna karena kunci API Google tidak ada. Buka <ph name="DETAILS_URL" /> untuk melihat detailnya.</translation>
 <translation id="2450849356604136918">Tidak ada tampilan aktif</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Situs biasanya terhubung ke port serial untuk fitur transfer data, seperti penyiapan jaringan Anda</translation>
 <translation id="2453860139492968684">Selesai</translation>
 <translation id="2454247629720664989">Kata kunci</translation>
 <translation id="2454264884354864965">Kamera nonaktif</translation>
@@ -1960,6 +1963,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="313205617302240621">Lupa sandi?</translation>
 <translation id="3132277757485842847">Kami tidak dapat mempertahankan koneksi dengan ponsel Anda. Pastikan ponsel berada di dekat Anda, tidak terkunci, serta Bluetooth dan Wi-Fi aktif.</translation>
 <translation id="3132996321662585180">Refresh tiap hari</translation>
+<translation id="3134393957315651797">Pilih status eksperimen untuk eksperimen <ph name="EXPERIMENT_NAME" />. Deskripsi eksperimen: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN tidak valid. Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="313963229645891001">Mendownload, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Avatar kuning default</translation>
@@ -2844,6 +2848,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4099874310852108874">Terjadi error jaringan.</translation>
 <translation id="4100733287846229632">Ruang perangkat hampir habis</translation>
 <translation id="4100853287411968461">Batas baru waktu pemakaian perangkat</translation>
+<translation id="4101352914005291489">SSID tersembunyi</translation>
 <translation id="4102906002417106771">Mulai ulang untuk powerwash</translation>
 <translation id="4104163789986725820">E&amp;kspor...</translation>
 <translation id="4107048419833779140">Identifikasi dan keluarkan perangkat penyimpanan</translation>
@@ -3913,6 +3918,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5382591305415226340">Kelola link yang didukung</translation>
 <translation id="5383377866517186886">Kamera dinonaktifkan dalam Preferensi Sistem Mac</translation>
 <translation id="5383740867328871413">Grup tanpa nama - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Kebijakan perusahaan diubah. Tombol eksperimen ditambahkan ke toolbar. Klik tombol untuk membuka dialog guna mengaktifkan eksperimen.</translation>
 <translation id="5388885445722491159">Disandingkan</translation>
 <translation id="5390100381392048184">Izinkan situs untuk memutar suara</translation>
 <translation id="5390112241331447203">Sertakan file system_logs.txt yang dikirimkan di laporan masukan.</translation>
@@ -5037,6 +5043,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6659594942844771486">Tab</translation>
 <translation id="6660413144148052430">lokasi</translation>
 <translation id="666099631117081440">Server pencetakan</translation>
+<translation id="6662931079349804328">Kebijakan perusahaan diubah. Tombol eksperimen dihapus dari toolbar.</translation>
 <translation id="6663190258859265334">Powerwash <ph name="DEVICE_TYPE" /> dan kembalikan ke versi sebelumnya.</translation>
 <translation id="6664237456442406323">Sayangnya, komputer Anda dikonfigurasi dengan ID hardware yang rusak. Hal ini mencegah Chrome OS memperbarui dengan perbaikan keamanan terbaru dan komputer Anda <ph name="BEGIN_BOLD" />mungkin rentan terhadap serangan berbahaya<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Terjadi kesalahan saat membuka profil Anda. Harap keluar, lalu masuk lagi.</translation>
@@ -5393,6 +5400,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7056526158851679338">&amp;Periksa Perangkat</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Pemeriksaan keselamatan berjalan 1 menit lalu}other{Pemeriksaan keselamatan berjalan {NUM_MINS} menit lalu}}</translation>
 <translation id="7057767408836081338">Gagal mendapatkan data aplikasi, masih tetap mencoba menjalankan aplikasi...</translation>
+<translation id="7058024590501568315">Jaringan tersembunyi</translation>
 <translation id="7059858479264779982">Setel ke luncurkan otomatis</translation>
 <translation id="7059893117020417984">Untuk melakukan browsing rahasia, klik menu ikon titik untuk membuka jendela samaran</translation>
 <translation id="7062222374113411376">Izinkan situs yang baru ditutup untuk menyelesaikan pengiriman dan penerimaan data (disarankan)</translation>
@@ -5756,6 +5764,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="7477793887173910789">Kontrol musik, video, dan banyak lagi</translation>
 <translation id="7478485216301680444">Aplikasi kios tidak dapat dipasang.</translation>
 <translation id="7478623944308207463">Aplikasi dan setelan Anda akan disinkronkan di semua perangkat Chrome OS tempat Anda login dengan Akun Google. Untuk opsi sinkronisasi browser, buka <ph name="LINK_BEGIN" />setelan Chrome<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Jangan izinkan situs terhubung ke port serial</translation>
 <translation id="7479221278376295180">Ringkasan Penggunaan Penyimpanan</translation>
 <translation id="7481312909269577407">Maju</translation>
 <translation id="7481358317100446445">Siap</translation>
@@ -5907,11 +5916,13 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="765293928828334535">Aplikasi, ekstensi, dan skrip pengguna tidak dapat ditambahkan dari situs ini</translation>
 <translation id="7652954539215530680">Buat PIN</translation>
 <translation id="7654941827281939388">Akun ini sudah digunakan di komputer ini.</translation>
+<translation id="7655411746932645568">Situs dapat meminta untuk terhubung ke port serial</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7659297516559011665">Sandi di perangkat ini saja</translation>
 <translation id="7659584679870740384">Anda tidak diizinkan untuk menggunakan perangkat ini. Untuk izin masuk, hubungi administrator perangkat.</translation>
 <translation id="7661259717474717992">Izinkan situs menyimpan dan membaca data cookie</translation>
 <translation id="7661451191293163002">Sertifikat pendaftaran tidak dapat diperoleh.</translation>
+<translation id="7661762353058813968">Update dikelola oleh administrator Anda.</translation>
 <translation id="7662283695561029522">Ketuk untuk mengonfigurasi</translation>
 <translation id="7663719505383602579">Penerima: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Perangkat Bluetooth tidak didukung: "<ph name="DEVICE_NAME" />".</translation>
@@ -6693,6 +6704,7 @@ Gunakan Ctrl+Alt+Kurangi Kecerahan untuk memperkecil.</translation>
 <translation id="8539727552378197395">Tidak (HttpOnly)</translation>
 <translation id="8539766201049804895">Upgrade</translation>
 <translation id="8540136935098276800">Masukkan URL dengan format yang benar</translation>
+<translation id="8540503336857689453">Demi keamanan, sebaiknya jangan gunakan jaringan tersembunyi.</translation>
 <translation id="8540608333167683902">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Detail</translation>
 <translation id="854071720451629801">Tandai sebagai Telah Dibaca</translation>
 <translation id="8541462173655894684">Tidak menemukan printer dari server cetak</translation>

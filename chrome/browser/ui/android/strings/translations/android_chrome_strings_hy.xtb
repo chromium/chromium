@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Նավարկման պատմություն</translation>
 <translation id="1231733316453485619">Միացնե՞լ համաժամացումը</translation>
 <translation id="123724288017357924">Վերաբեռնել ընթացիկ էջը` անտեսելով հիշապահեստի բովանդակությունը</translation>
+<translation id="1240288207750131269">Բեռնվում է <ph name="LANG" /> լեզվի փաթեթը</translation>
 <translation id="124678866338384709">Փակել ընթացիկ ներդիրը</translation>
 <translation id="1258753120186372309">Google doodle՝ <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
+<translation id="1276279242344007853">Կառավարեք կայքերը, որոնց բաժանորդագրված եք</translation>
 <translation id="1283039547216852943">Հպեք՝ ընդարձակելու համար</translation>
 <translation id="1285310382777185058">Փոխել լեզուն</translation>
 <translation id="1291207594882862231">Մաքրել պատմությունը, քուքիները, կայքի տվյալները, քեշը…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Ծրագրի տարբերակ</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1450753235335490080">Չհաջողվեց ուղարկել բովանդակությունը (<ph name="CONTENT_TYPE" />)</translation>
+<translation id="1466383950273130737">Ընտրեք Chrome-ի լեզուն</translation>
 <translation id="147113415845704694">Փորձեք հարցնել․ «What’s the weather today?» (Ի՞նչ եղանակ է այսօր)։</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ սերվերի հետ կապված խնդրի պատճառով:</translation>
 <translation id="1492417797159476138">Օգտանունն արդեն պահված է այս կայքի համար</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">Ինտերնետ կապի ստուգում</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2369533728426058518">բաց ներդիրներ</translation>
+<translation id="2386938421315164605">Թաքցրեք և ցուցադրեք թեմաները</translation>
 <translation id="2387895666653383613">Տեքստի չափափոխում</translation>
 <translation id="2394602618534698961">Ձեր ներբեռնած ֆայլերը ցուցադրվում են այստեղ</translation>
 <translation id="2407481962792080328">Այս գործառույթը միանում է, երբ դուք մտնում եք Google հաշիվ</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">Դիտեք և կառավարեք պահված գաղտնաբառերը ձեր <ph name="BEGIN_LINK" />Google հաշվում<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Ձեր էջանիշները բոլոր սարքերում օգտագործելու համար մտեք հաշիվ և միացրեք համաժամացումը</translation>
 <translation id="2827278682606527653">Լրահոսի քարտի ընտրացանկը բացված է կիսով չափ</translation>
+<translation id="2839327205551510876">«<ph name="SITE_NAME" />» կայքի բաժանորդագրությունը չեղարկվեց</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Ստուգվել է 1 օր առաջ}one{Ստուգվել է # օր առաջ}other{Ստուգվել է # օր առաջ}}</translation>
 <translation id="2842985007712546952">Վերադաս պանակ</translation>
 <translation id="2856503607207334158">Չհաջողվեց մուտք գործել</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Google ծանուցումների հարթակ</translation>
 <translation id="2923908459366352541">Անունն անվավեր է:</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-ի օգտագործած տարածքը</translation>
+<translation id="2932222164150889403">Ձեր ստեղնաշարը չի փոխվի</translation>
 <translation id="2942036813789421260">Նախադիտման ներդիրը փակված է</translation>
 <translation id="2956410042958133412">Այս հաշիվը կառավարվում է <ph name="PARENT_NAME_1" /> և <ph name="PARENT_NAME_2" /> հաշիվների կողմից:</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> չկարդացված էջ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> չկարդացված էջ}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">Օգնականի միջոցով ձայնային որոնման համաձայնության միջերես</translation>
 <translation id="3034163383943672781">Ներբեռնումը կսկսվի <ph name="DATE" />-ին։</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Ստացեք օգնություն<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Հաջորդ անգամ ավելի արագ անցեք այս կայք</translation>
 <translation id="305593374596241526">Տեղորոշումն անջատված է: Միացրեք այն <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />:</translation>
 <translation id="3058498974290601450">Համաժամացումը կարող եք ցանկացած ժամանակ միացնել կարգավորումներում:</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> էջանիշ}one{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}other{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">Դուք ներկայումս անհատականացնում եք համաժամացման և Google-ի ծառայությունների կարգավորումները: Անհատականացումն ավարտելու և համաժամացումը միացնելու համար հպեք «Հաստատել» կոճակին էկրանի ներքևի հատվածում: Անցնել վերև</translation>
 <translation id="3334729583274622784">Փոխե՞լ ֆայլի ընդլայնումը</translation>
 <translation id="3341058695485821946">Դիտեք պահված տվյալների ծավալը</translation>
+<translation id="3341262203274374114">Սխալի պատճառով չհաջողվեց չեղարկել բաժանորդագրությունը։</translation>
 <translation id="3350687908700087792">Փակել բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="3359667936385849800">Օգտագործել իմ ընթացիկ մատակարարը</translation>
 <translation id="3367813778245106622">Նորից մուտք գործեք՝ համաժամացումը սկսելու համար</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="3988213473815854515">Տեղադրության որոշումը թույլատրված է</translation>
 <translation id="3988466920954086464">Որոնման արդյունքներն ակնթարթորեն կհայտնվեն այս վահանակում</translation>
 <translation id="4000212216660919741">Home անցանց ռեժիմում</translation>
+<translation id="4016425174436051808">Սխալի պատճառով չհաջողվեց բաժանորդագրվել։</translation>
+<translation id="4021916380760361450">Կառավարեք ձեր Google հաշիվների տվյալները</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ժամ}one{# ժամ}other{# ժամ}}</translation>
 <translation id="4045764304651014138">Օգտագործման տվյալներ</translation>
 <translation id="4056223980640387499">Սեպիա</translation>
@@ -598,6 +608,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5152843274749979095">Աջակցվող հավելվածներ չեն տեղադրվել</translation>
 <translation id="5161254044473106830">Վերնագիրը պարտադիր է</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Չհաջողվեց ներբեռնել 1 ֆայլ։}one{Չհաջողվեց ներբեռնել # ֆայլ։}other{Չհաջողվեց ներբեռնել # ֆայլ։}}</translation>
+<translation id="5168824020667180049">Դուք բաժանորդագրվեցիք «<ph name="SITE_NAME" />» կայքին</translation>
 <translation id="5170568018924773124">Ցույց տալ պանակում</translation>
 <translation id="5184329579814168207">Բացել Chrome-ով</translation>
 <translation id="5188992787241350004">Որոնեք ձայնային հրահանգների միջոցով</translation>
@@ -717,6 +728,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5864419784173784555">Նախորդ ներբեռնումն ավարտվում է…</translation>
 <translation id="5865733239029070421">Ավտոմատ Google-ին է ուղարկում օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները</translation>
 <translation id="5869522115854928033">Պահված գաղտնաբառեր</translation>
+<translation id="5880748256563468367">Անցնել ֆիդին</translation>
 <translation id="5884076754568147479">Ձեր աշխատանքը հեշտացնելու համար Google-ը կստանա կայքերի հասցեներն ու բովանդակությունը, որոնցում օգտվում եք Օգնականից, ինչպես նաև տվյալները, որոնք ուղարկում եք Օգնականի միջոցով։</translation>
 <translation id="5919204609460789179">Թարմացրեք <ph name="PRODUCT_NAME" />-ը՝ համաժամացումը սկսելու համար</translation>
 <translation id="5937580074298050696">Խնայվել է <ph name="AMOUNT" /></translation>
@@ -734,6 +746,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="5979084224081478209">Ստուգել գաղտնաբառերը</translation>
 <translation id="5982307838673692400">Բացել ինկոգնիտո ներդիր</translation>
 <translation id="6000066717592683814">Օգտագործել Google-ը</translation>
+<translation id="6000203700195075278">Նորից բաժանորդագրվել</translation>
 <translation id="6005538289190791541">Առաջարկվող գաղտնաբառ</translation>
 <translation id="6036057147555329831">Լրացուցիչ ICU մոդուլ</translation>
 <translation id="6039379616847168523">Անցնել հաջորդ ներդիր</translation>
@@ -1012,6 +1025,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="7846296061357476882">Google-ի ծառայություններ</translation>
 <translation id="784934925303690534">Ժամանակի սանդղակ</translation>
 <translation id="7851858861565204677">Այլ սարքեր</translation>
+<translation id="7853202427316060426">Գործողություններ</translation>
 <translation id="7857691613771368249">Հարցնել, թե երբ պահել ֆայլերը</translation>
 <translation id="7859988229622350291">Երբեք չթարգմանել</translation>
 <translation id="7875915731392087153">Ստեղծեք նամակ</translation>
@@ -1094,6 +1108,7 @@ Privacy Sandbox-ը դեռևս մշակման փուլում է և հասանել
 <translation id="834313815369870491">Երբեք չթարգմանել կայքերը</translation>
 <translation id="8349013245300336738">Դասավորել ըստ օգտագործված տվյալների ծավալի</translation>
 <translation id="835847953965672673">Վերականգնվել է <ph name="NUMBER_OF_DOWNLOADS" /> ներբեռնում</translation>
+<translation id="8362134094656482681">Կառավարեք ձեզ հետաքրքրող թեմաները</translation>
 <translation id="8364299278605033898">Դիտեք թոփ կայքերը</translation>
 <translation id="8368027906805972958">Անհայտ կամ չաջակցվող սարք (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> լեզուն պատրաստ է։</translation>

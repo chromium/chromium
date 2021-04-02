@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Асистент не се поддържа по време на сесия като гост.</translation>
 <translation id="6137566720514957455">Отваряне на диалоговия прозорец за премахване на профила <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Периферното устройство не се поддържа</translation>
 <translation id="615957422585914272">Показване на екранната клавиатура</translation>
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6179832488876878285">Тук можете да фиксирате важните за вас файлове. Отворете приложението „Файлове“, за да започнете.</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">Функцията за Bluetooth е включена</translation>
 <translation id="6381109794406942707">Въведете ПИН кода си, за да отключите устройството.</translation>
 <translation id="639644700271529076">„CAPS LOCK“ е изключен</translation>
-<translation id="6396835948284782440">Натиснете и задръжте Esc, за да излезете.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, сила на сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Изчистване на всички известия</translation>

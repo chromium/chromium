@@ -4875,7 +4875,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="6474498546677193336">Ezin izan zaio utzi karpeta partekatzeari, aplikazio bat ari delako hura erabiltzen. Linux ixten den hurrengoan utziko zaio karpeta partekatzeari.</translation>
 <translation id="6474884162850599008">Deskonektatu Google Drive-ko kontua</translation>
 <translation id="6475294023568239942">Diskoan tokia egiteko edo Linux-en diskoaren tamaina aldatzeko, joan Ezarpenak atalera</translation>
-<translation id="6476138569087741884">Pantaila osoaren zoom-maila</translation>
+<translation id="6476138569087741884">Pantaila osoko moduaren zoom-maila</translation>
 <translation id="6477822444490674459">Laneko profileko telefonoetan ezin dira sinkronizatu jakinarazpenak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="6478248366783946499">Fitxategi arriskutsua gorde nahi duzu?</translation>
 <translation id="6480327114083866287">Kudeatzailea: <ph name="MANAGER" /></translation>
@@ -6561,7 +6561,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8370294614544004647">Ixtean, ezarri ordenagailu eramangarria inaktibo</translation>
 <translation id="8371695176452482769">Hitz egin</translation>
 <translation id="8371749822919332187">Pantaila handitzeko, erabili Ktrl + Alt + Handitu distira.
-Pantaila txikitzeko, erabili Ktrl + Txikitu distira.</translation>
+Pantaila txikitzeko, erabili Ktrl + Alt + Txikitu distira.</translation>
 <translation id="8371925839118813971">{NUM_TABS,plural, =1{Desaktibatu webguneko audioa}other{Desaktibatu webguneetako audioa}}</translation>
 <translation id="8372369524088641025">WEP gako okerra</translation>
 <translation id="8373652277231415614">Crostini-ko direktorio partekatuak</translation>

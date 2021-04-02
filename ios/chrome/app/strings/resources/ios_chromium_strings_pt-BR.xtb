@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">O Google Chrome possui recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
+<translation id="2054703085270098503">Proteja-se com o Chromium</translation>
 <translation id="2075400798887076382">Acesse aqui as guias abertas no computador. Basta abrir o Chromium no computador, ir para o menu e selecionar "Fazer login no Chromium…”</translation>
 <translation id="2168108852149185974">Alguns complementos causam falhas no Chromium. Desinstale-os:</translation>
 <translation id="2178608107313874732">O Chromium não pode usar a câmera agora</translation>
 <translation id="2195025571279539885">Quer que na próxima vez o Chromium ofereça a tradução de páginas em <ph name="LANGUAGE_NAME" /> deste site?</translation>
 <translation id="2590893390871230428">Sincronizar seus dados do Chromium</translation>
 <translation id="2650312721222849884">Para ver suas guias em qualquer lugar onde você usar o Chromium, ative a sincronização</translation>
+<translation id="2684230048001240293">Defina o Chromium como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="2730884209570016437">O Chromium não pode usar a câmera porque ela está sendo usada por outro app</translation>
 <translation id="2915596697727466327">O Chromium usa o Face ID para garantir o acesso autorizado às suas senhas.</translation>
 <translation id="2918709798697875261">Sua organização exige que a conta permaneça desconectada do Chromium.</translation>
+<translation id="2942241131342758843">Use o Chromium como padrão para abrir links, pesquisar em widgets e preencher senhas automaticamente em outros apps</translation>
 <translation id="2977470724722393594">O Chromium está atualizado</translation>
 <translation id="3256316712990552818">Copiado no Chromium</translation>
 <translation id="3344973607274501920">Não foi possível verificar suas senhas com o Chromium. Verifique sua conexão de Internet.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Agora você poderá usar o Chromium sempre que tocar em links em mensagens, documentos e outros apps.</translation>
 <translation id="4681781466797808448">Ativar o leitor do Chromium</translation>
+<translation id="4736424910885271643">Sua conta é gerenciada por <ph name="HOSTED_DOMAIN" />. Por isso, seus dados do Chromium serão apagados deste dispositivo</translation>
 <translation id="4787850887676698916">As guias abertas no Chromium nos outros dispositivos aparecerão aqui.</translation>
 <translation id="4828317641996116749">Não foi possível verificar todas as senhas com o Chromium. Tente novamente mais tarde.</translation>
 <translation id="4985291216379576555">Off-line. Não é possível verificar se há atualizações</translation>
@@ -55,6 +59,7 @@
 2. Toque em 'App do navegador padrão".
 3. Selecione o Chromium.</translation>
 <translation id="6268381023930128611">Sair do Chromium?</translation>
+<translation id="6337530241089703714">Você quer apagar ou manter os dados do Chromium neste dispositivo?</translation>
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Uma nova versão está disponível.</translation>
 <translation id="6820823224820483452">Não foi possível verificar todas as senhas com o Chromium. Tente novamente amanhã.</translation>
 <translation id="6827294685447036764">Se você permitir que o Chromium saiba sua localização, ele a enviará para os sites autorizados. Os sites podem solicitar sua localização para enviar informações locais para você, como notícias ou lojas próximas.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Sua senha foi exposta em uma violação de dados. Por recomendação do Chromium, mude a senha imediatamente.</translation>
 <translation id="7674213385180944843">Abra Ajustes &gt; Privacidade &gt; Câmera &gt; Chromium e ative a câmera.</translation>
 <translation id="7746854981345936341">Dica do Chromium. Alguns botões agora estão na parte inferior da tela, como "Voltar", "Avançar" e "Pesquisar".</translation>
+<translation id="7763454117143368771">Use o Chromium como navegador padrão para se proteger contra sites perigosos e garantir a segurança das suas senhas</translation>
 <translation id="786327964234957808">Você está trocando a conta de sincronização de <ph name="USER_EMAIL1" /> para <ph name="USER_EMAIL2" />. Os dados do Chromium são gerenciados por <ph name="DOMAIN" />. Eles serão excluídos deste dispositivo, mas permanecerão no <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Começar a usar o leitor do Chromium</translation>
 <translation id="7931842119211730154">Bloquear guias anônimas ao fechar o Chromium</translation>

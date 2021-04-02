@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Jasny błękit</translation>
 <translation id="1303806948938513162">Kliknij czterema palcami, by otworzyć menu ChromeVoxa</translation>
 <translation id="1313373992684326101">Przejdź do poprzedniej sekcji. Przykłady: pasek stanu i Menu z aplikacjami.</translation>
+<translation id="1315077335264761176">Orientacja ekranu dotykowego</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, niewybrany przycisk pozycji menu</translation>
 <translation id="1325946044405407859">Pastelowobrązowy</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> z <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Witamy w samouczku ChromeVox. W każdej chwili możesz zamknąć ten samouczek, naciskając klawisz Esc w lewym górnym rogu klawiatury. Aby wyłączyć ChromeVox, przytrzymaj przyciski Ctrl oraz Alt i naciśnij przycisk Z. Gdy zechcesz przejść do następnej lekcji, użyj klawisza spacji.</translation>
 <translation id="174268867904053074">Następna grafika</translation>
 <translation id="1756785467854861272">Ciemnopurpurowy</translation>
+<translation id="1758693804775271377">Aby przeglądać lekcje na ten temat, przesuwaj palcem w lewo lub w prawo</translation>
 <translation id="1765245556747822181">Przesuń jednym palcem w górę</translation>
 <translation id="1771761307086386028">Przewiń w prawo</translation>
 <translation id="1781173782405573156">Klawisz przejścia</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Wiersz</translation>
 <translation id="2816868829355607410">Obszar ćwiczenia: polecenia nawigacyjne</translation>
 <translation id="2841013758207633010">Godzina</translation>
+<translation id="284171465644749950">Aby przeglądać tematy, przesuwaj palcem w lewo lub w prawo</translation>
 <translation id="2843432675592278677">Nie ma poprzedniego punktu orientacyjnego ARIA</translation>
 <translation id="2843814945404750166">Ciemnooliwkowy</translation>
 <translation id="2843837985843789981">Poprzednia grupa</translation>
@@ -1120,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox został zaktualizowany</translation>
 <translation id="93384979447910801">Ciemny zielony morski</translation>
 <translation id="948171205378458592">Zmniejsz tempo mowy</translation>
+<translation id="957570623732056069">Aby poruszać się po tej lekcji, przesuwaj palcem w lewo lub w prawo</translation>
 <translation id="958854023026327378">Przesuń jednym palcem w dół</translation>
 <translation id="962913030769097253">Następny nagłówek poziomu 1</translation>
 <translation id="966588271015727539">Wybierz monitor brajlowski Bluetooth</translation>

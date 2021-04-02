@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + хэрэглэгчийн гэрчилгээ</translation>
 <translation id="4731797938093519117">Эцэг эхийн хандалт</translation>
 <translation id="4773299976671772492">Зогссон</translation>
+<translation id="4794140124556169553">Төв процессорын нэгжийн туршилтыг ажиллуулах нь таны системийн гүйцэтгэлд нөлөөлж болзошгүй</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> хэвлэх ажлыг цуцалсан</translation>
 <translation id="4813345808229079766">Холболт</translation>
 <translation id="4832079907277790330">Файлс аппаас фолдер сонгох...</translation>
@@ -341,6 +342,7 @@
 <translation id="8483248364096924578">IP хаяг</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="8503836310948963452">Цөөн хэдэн минут хүлээнэ үү...</translation>
+<translation id="8575298406870537639">Та оператор компанийнхаа сүлжээнд холбогдохын тулд тэд танаас энэ сонголтыг шаардаж болзошгүй. Дэлгэрэнгүй мэдээлэл авах бол оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="8576249514688522074">Бэлтгэгдээгүй</translation>
 <translation id="8620617069779373398">Роумингийн төлөв</translation>
 <translation id="8675354002693747642">Урьдчилан хуваалцсан түлхүүр</translation>
@@ -365,7 +367,6 @@
 <translation id="8970109610781093811">Дахин ажиллуулах</translation>
 <translation id="9003704114456258138">Давтамж</translation>
 <translation id="9039663905644212491">PEAP /Хамгаалагдсан өргөжих боломжтой таниулах протокол/</translation>
-<translation id="9065203028668620118">Засварлах</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>

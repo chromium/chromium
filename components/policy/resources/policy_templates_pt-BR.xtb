@@ -433,6 +433,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Esta política será removida no Chrome 93.
 
       Consulte https://www.chromestatus.com/feature/4664843055398912.</translation>
+<translation id="1587585749332985896">Não permitir o uso do modo headless</translation>
 <translation id="1588240398285670601">Configurações do navegador</translation>
 <translation id="1593245608325508847">Se a política for definida, o recurso de login restrito do Chrome será ativado no G Suite e os usuários não poderão mudar essa configuração. Os usuários poderão acessar as ferramentas do Google apenas usando contas dos domínios especificados. Para permitir contas gmail ou googlemail, adicione consumer_accounts à lista de domínios. Essa configuração impede que os usuários façam login e adicionem uma conta secundária em um dispositivo gerenciado que precisa da autenticação do Google se essa conta não pertencer a um dos domínios explicitamente permitidos.
 
@@ -877,6 +878,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="2175353308236295184">Objeto de configuração JSON específico do app com um conjunto de pares de chave-valor, por exemplo, '"managedConfiguration": { "key1": value1, "key2": value2 }'. As chaves são definidas no manifesto do app.</translation>
 <translation id="2176115444876446233">Impede que os usuários coletem o rastreamento de desempenho do sistema.</translation>
 <translation id="2178899310296064282">Aplicar pelo menos o Modo restrito moderado no YouTube</translation>
+<translation id="2180958780733364832">Controlar o uso do modo headless</translation>
 <translation id="2182291258410176649">O usuário decide se quer ativar o backup e a restauração</translation>
 <translation id="219297066914002620">Instrui o <ph name="PRODUCT_OS_NAME" /> para ativar ou desativar as ferramentas do console de administração de máquina virtual.
 
@@ -4003,6 +4005,7 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 <translation id="647698599569353771">Permitir a ativação do recurso "Compartilhar por proximidade"</translation>
 <translation id="6478258366184919502">Origens de login e de tela</translation>
 <translation id="6478261301433199402">A definição da política especifica a imagem do <ph name="PLUGIN_VM_NAME" /> para um usuário. Especifique essa política como uma string de formato JSON, com um <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> informando onde fazer o download da imagem e <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> como um hash SHA-256 usado para verificar a integridade do download.</translation>
+<translation id="6481245670325946423">Permitir o uso do modo headless</translation>
 <translation id="6489084406497912050">Controla se os usuários podem adicionar contas do Kerberos.
 
           Se esta política for ativada ou não for definida, os usuários poderão adicionar contas do Kerberos pela página de configurações de contas dele. Os usuários terão controle total das contas que adicionaram e poderão modificá-las ou removê-las.
@@ -5392,6 +5395,7 @@ Se a política não for definida, a tela de privacidade ficará inicialmente des
 
           Se a ação for de suspender, o <ph name="PRODUCT_OS_NAME" /> poderá ser configurado separadamente para bloquear ou não a tela antes da suspensão.</translation>
 <translation id="8214600119442850823">Configura o gerenciador de senhas.</translation>
+<translation id="8217664958939773083">Se esta política for definida como <ph name="ENABLED" /> ou for deixada sem definição, o modo headless poderá ser usado. Se ela for definida como <ph name="DISABLED" />, o uso do modo headless será negado.</translation>
 <translation id="8220023426952118761">Velocidade de download desejada, em kbits/s.</translation>
 <translation id="8220156281401380422">Configurar a lista de permissões de mensagens nativas</translation>
 <translation id="8238421250255592181">Uma sinalização booleana indicando se o teclado na tela pode oferecer preenchimento automático.</translation>

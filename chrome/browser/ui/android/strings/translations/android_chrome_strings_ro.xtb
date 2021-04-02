@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Istoric de navigare</translation>
 <translation id="1231733316453485619">Activezi sincronizarea?</translation>
 <translation id="123724288017357924">Reîncarcă pagina, ignorând conținutul din cache</translation>
+<translation id="1240288207750131269">Se încarcă <ph name="LANG" /></translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
 <translation id="1258753120186372309">Doodle Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nu s-a trimis <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Gestionează site-urile pe care le urmărești</translation>
 <translation id="1283039547216852943">Atinge pentru a extinde</translation>
 <translation id="1285310382777185058">Schimbă limba</translation>
 <translation id="1291207594882862231">Șterge istoricul, cookie-urile, datele privind site-urile și memoria cache…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Versiunea aplicației</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1450753235335490080">Nu se poate trimite <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Alege limba pentru Chrome</translation>
 <translation id="147113415845704694">Întreabă „Cum este vremea azi?”</translation>
 <translation id="1477626028522505441">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor probleme de server.</translation>
 <translation id="1492417797159476138">Ai salvat deja acest nume de utilizator pentru site</translation>
@@ -205,6 +208,7 @@ Atinge orice cuvânt pentru a-l căuta. Ca să rafinezi căutarea, atinge lung p
 <translation id="2353636109065292463">Se verifică conexiunea la internet</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2369533728426058518">file deschise</translation>
+<translation id="2386938421315164605">Ascunde și reafișează subiecte</translation>
 <translation id="2387895666653383613">Scalarea textului</translation>
 <translation id="2394602618534698961">Fișierele pe care le descarci apar aici</translation>
 <translation id="2407481962792080328">Când te conectezi la Contul Google, această funcție este activată</translation>
@@ -265,6 +269,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="281504910091592009">Vezi și gestionează parolele salvate în <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Pentru a accesa marcajele pe toate dispozitivele, conectează-te și activează sincronizarea</translation>
 <translation id="2827278682606527653">Meniul cardului din feed la jumătate din înălțime</translation>
+<translation id="2839327205551510876">Ai anulat urmărirea pentru <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{A rulat acum o zi}few{A rulat acum # zile}other{A rulat acum # de zile}}</translation>
 <translation id="2842985007712546952">Dosar părinte</translation>
 <translation id="2856503607207334158">Nu te-ai conectat</translation>
@@ -281,6 +286,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2909615210195135082">Platforma de notificări Google</translation>
 <translation id="2923908459366352541">Numele nu este valid</translation>
 <translation id="2932150158123903946">Stocarea Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Tastatura nu se va schimba</translation>
 <translation id="2942036813789421260">Fila de previzualizare este închisă</translation>
 <translation id="2956410042958133412">Acest cont este gestionat de <ph name="PARENT_NAME_1" /> și de <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> pagină necitită}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pagini necitite}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> de pagini necitite}}</translation>
@@ -297,6 +303,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3031225630520268969">IU pentru consimțirea la căutarea vocală cu ajutorul Asistentului</translation>
 <translation id="3034163383943672781">Descărcarea va începe pe <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obține ajutor<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Accesează mai rapid site-ul data viitoare</translation>
 <translation id="305593374596241526">Locația este dezactivată; activeaz-o în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Poți să activezi sincronizarea oricând în setări</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcaj}few{<ph name="BOOKMARKS_COUNT_MANY" /> marcaje}other{<ph name="BOOKMARKS_COUNT_MANY" /> de marcaje}}</translation>
@@ -340,6 +347,7 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="3315103659806849044">Acum personalizezi setările pentru sincronizare și serviciul Google. Pentru a finaliza activarea sincronizării, atinge butonul Confirmă din partea de jos a ecranului. Navighează în sus</translation>
 <translation id="3334729583274622784">Modifici extensia de fișier?</translation>
 <translation id="3341058695485821946">Vezi ce volum de date ai economisit</translation>
+<translation id="3341262203274374114">Nu se poate anula urmărirea. A apărut o eroare.</translation>
 <translation id="3350687908700087792">Închide toate filele incognito</translation>
 <translation id="3359667936385849800">Folosește furnizorul de servicii actual</translation>
 <translation id="3367813778245106622">Conectează-te din nou pentru a începe sincronizarea</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox este încă în dezvoltare și este disponibil în anumite regiu
 <translation id="3988213473815854515">Accesul la locație este permis</translation>
 <translation id="3988466920954086464">Afișează rezultatele căutării instantanee în acest panou</translation>
 <translation id="4000212216660919741">Pagina de pornire offline</translation>
+<translation id="4016425174436051808">Nu se poate urmări. A apărut o eroare.</translation>
+<translation id="4021916380760361450">Gestionează datele din conturile Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{O oră}few{# ore}other{# de ore}}</translation>
 <translation id="4045764304651014138">Date de utilizare</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -598,6 +608,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5152843274749979095">Nu sunt instalate aplicații acceptate</translation>
 <translation id="5161254044473106830">Titlul este obligatoriu</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{O descărcare nu a reușit.}few{# descărcări nu au reușit.}other{# de descărcări nu au reușit.}}</translation>
+<translation id="5168824020667180049">Ai urmărit <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Afișează în dosar</translation>
 <translation id="5184329579814168207">Deschide în Chrome</translation>
 <translation id="5188992787241350004">Caută cu ajutorul vocii</translation>
@@ -717,6 +728,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5864419784173784555">Se așteaptă altă descărcare…</translation>
 <translation id="5865733239029070421">Trimite automat statistici de utilizare și rapoarte de blocare la Google</translation>
 <translation id="5869522115854928033">Parole salvate</translation>
+<translation id="5880748256563468367">Accesează feedul</translation>
 <translation id="5884076754568147479">Pentru a te ajuta să finalizezi sarcini, Google va primi adresele URL și conținutul site-urilor în care folosești Asistentul, precum și informațiile pe care le trimiți cu ajutorul Asistentului</translation>
 <translation id="5919204609460789179">Actualizează <ph name="PRODUCT_NAME" /> pentru a începe sincronizarea</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> salvați</translation>
@@ -734,6 +746,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="5979084224081478209">Verifică parolele</translation>
 <translation id="5982307838673692400">Deschide o filă incognito</translation>
 <translation id="6000066717592683814">Păstrează Google</translation>
+<translation id="6000203700195075278">Urmărește din nou</translation>
 <translation id="6005538289190791541">Parola sugerată</translation>
 <translation id="6036057147555329831">ICU suplimentar</translation>
 <translation id="6039379616847168523">Accesează fila următoare</translation>
@@ -1095,6 +1108,7 @@ Datele din sesiunea incognito vor fi șterse din Chrome numai când <ph name="BE
 <translation id="834313815369870491">Nu traduce niciodată site-uri</translation>
 <translation id="8349013245300336738">Sortează după volumul de date folosite</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> de descărcări au fost restabilite</translation>
+<translation id="8362134094656482681">Gestionează subiectele care te interesează</translation>
 <translation id="8364299278605033898">Vezi site-urile populare</translation>
 <translation id="8368027906805972958">Dispozitiv necunoscut sau neacceptat (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> este gata.</translation>

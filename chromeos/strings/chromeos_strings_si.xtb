@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + භාවිත සහතිකය</translation>
 <translation id="4731797938093519117">මාපිය ප්‍රවේශය</translation>
 <translation id="4773299976671772492">නවත්වන ලදි</translation>
+<translation id="4794140124556169553">CPU පරීක්ෂණයක් ධාවනය කිරීම ඔබගේ පද්ධතියේ කාර්ය සාධනයට බලපායි</translation>
 <translation id="4808449224298348341">මුද්‍රණ කාර්යය <ph name="DOCUMENT_TITLE" /> අවලංගු කරන ලදී</translation>
 <translation id="4813345808229079766">සබඳතාව</translation>
 <translation id="4832079907277790330">ගොනු යෙදුම තුළ ෆෝල්ඩරයක් තෝරන්න...</translation>
@@ -341,6 +342,7 @@
 <translation id="8483248364096924578">IP ලිපිනය</translation>
 <translation id="8503813439785031346">පරිශීලක නාමය</translation>
 <translation id="8503836310948963452">හුදෙක් තව මිනිත්තු කීපයකි...</translation>
+<translation id="8575298406870537639">ඔබගේ වාහකයට ඔවුන්ගේ ජාලයට සම්බන්ධ වීමට මෙම විකල්පය අවශ්‍ය විය හැකිය. විස්තර සඳහා ඔබගේ වාහකය අමතන්න.</translation>
 <translation id="8576249514688522074">දියත් නොකළ</translation>
 <translation id="8620617069779373398">රෝමිං තත්ත්වය</translation>
 <translation id="8675354002693747642">පෙර-බෙදාගත් යතුර</translation>
@@ -365,7 +367,6 @@
 <translation id="8970109610781093811">නැවත ධාවනය කරන්න</translation>
 <translation id="9003704114456258138">සංඛ්‍යාතය</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">සංස්කරණය කරන්න</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">වත්මන් භාවිතය</translation>

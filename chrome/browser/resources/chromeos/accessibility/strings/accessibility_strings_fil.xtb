@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Light Sky Blue</translation>
 <translation id="1303806948938513162">Mag-tap gamit ang 4 na daliri para makapasok sa mga menu ng ChromeVox</translation>
 <translation id="1313373992684326101">Lumipat sa nakaraang seksyon. Kasama sa mga halimbawa ang Status Tray at Launcher.</translation>
+<translation id="1315077335264761176">Oryentasyon ng pagpindot</translation>
 <translation id="1325363694295259631">Na-unselect ang <ph name="NAME" />, isang radio button ng item sa menu</translation>
 <translation id="1325946044405407859">Tan</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> ng <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Welcome sa tutorial sa ChromeVox. Para lumabas sa tutorial na ito anumang oras, pindutin ang Escape key sa kaliwang sulok sa itaas ng keyboard. Para i-off ang ChromeVox, pindutin nang matagal ang Control at Alt, at pindutin ang Z. Kapag handa ka na, gamitin ang spacebar para lumipat sa susunod na aralin.</translation>
 <translation id="174268867904053074">Susunod na graphic</translation>
 <translation id="1756785467854861272">Dark Magenta</translation>
+<translation id="1758693804775271377">Mag-swipe pakaliwa o pakanan gamit ang isang daliri para mag-browse ng mga aralin para sa paksang ito</translation>
 <translation id="1765245556747822181">Mag-swipe pataas gamit ang isang daliri</translation>
 <translation id="1771761307086386028">Mag-scroll pakanan</translation>
 <translation id="1781173782405573156">Ipasa ang susunod na key</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Row</translation>
 <translation id="2816868829355607410">Lugar ng pagsasanay: Mga jump command</translation>
 <translation id="2841013758207633010">Oras</translation>
+<translation id="284171465644749950">Mag-swipe pakaliwa o pakanan gamit ang isang daliri para mag-browse ng mga paksa</translation>
 <translation id="2843432675592278677">Walang nakaraang landmark ng ARIA</translation>
 <translation id="2843814945404750166">Dark Olive Green</translation>
 <translation id="2843837985843789981">Nakaraang Pangkat</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">Na-update ang ChromeVox</translation>
 <translation id="93384979447910801">Dark Sea Green</translation>
 <translation id="948171205378458592">Bawasan ang rate ng speech</translation>
+<translation id="957570623732056069">Mag-swipe pakaliwa o pakanan gamit ang isang daliri para i-navigate ang araling ito</translation>
 <translation id="958854023026327378">Mag-swipe pababa gamit ang isang daliri</translation>
 <translation id="962913030769097253">Susunod na heading sa antas 1</translation>
 <translation id="966588271015727539">Pumili ng bluetooth na braille display</translation>

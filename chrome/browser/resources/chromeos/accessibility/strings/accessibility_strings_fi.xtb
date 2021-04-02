@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Vaalea taivaansininen</translation>
 <translation id="1303806948938513162">Avaa ChromeVox-valikot napauttamalla neljällä sormella</translation>
 <translation id="1313373992684326101">Siirry edelliseen osioon. Näitä ovat esimerkiksi tila-alue ja Käynnistysohjelma.</translation>
+<translation id="1315077335264761176">Kosketussuunta</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, valikkokohteen painikkeen valinta poistettu</translation>
 <translation id="1325946044405407859">Kellanruskea</translation>
 <translation id="1331702245475014624"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Tervetuloa ChromeVoxin ohjeeseen. Voit poistua tästä ohjeesta milloin tahansa painamalla näppäimistön vasemmassa yläkulmassa olevaa Esc-näppäintä. Jos haluat laittaa ChromeVoxin pois päältä, paina pitkään Control- ja Alt-näppäimiä ja paina sitten Z-näppäintä. Kun olet valmis, jatka seuraavaan harjoitukseen painamalla välilyöntiä.</translation>
 <translation id="174268867904053074">Seuraava grafiikka</translation>
 <translation id="1756785467854861272">Tumma purppura</translation>
+<translation id="1758693804775271377">Selaa aiheen harjoituksia pyyhkäisemällä sormella vasemmalle tai oikealle</translation>
 <translation id="1765245556747822181">Pyyhkäise ylös yhdellä sormella</translation>
 <translation id="1771761307086386028">Vieritä oikealle</translation>
 <translation id="1781173782405573156">Ohitusnäppäin</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Rivi</translation>
 <translation id="2816868829355607410">Harjoittelualue: siirtymiskomennot</translation>
 <translation id="2841013758207633010">Aika</translation>
+<translation id="284171465644749950">Selaa aiheita pyyhkäisemällä sormella vasemmalle tai oikealle</translation>
 <translation id="2843432675592278677">Ei edellisiä ARIA-merkkejä</translation>
 <translation id="2843814945404750166">Tumma oliivinvihreä</translation>
 <translation id="2843837985843789981">Edellinen ryhmä</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox päivitetty</translation>
 <translation id="93384979447910801">Tumma merenvihreä</translation>
 <translation id="948171205378458592">Vähennä puhenopeutta</translation>
+<translation id="957570623732056069">Siirry harjoituksessa kohteesta toiseen pyyhkäisemällä sormella vasemmalle tai oikealle</translation>
 <translation id="958854023026327378">Pyyhkäise alas yhdellä sormella</translation>
 <translation id="962913030769097253">Seuraava tason 1 otsikko</translation>
 <translation id="966588271015727539">Valitse Bluetooth-pistekirjoitusnäyttö</translation>

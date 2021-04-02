@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">ፈካ ያለ የሰማይ ሰማያዊ</translation>
 <translation id="1303806948938513162">የChromeVox ምናሌዎችን ለማስገባት በ4 ጣቶች መታ ያድርጉ</translation>
 <translation id="1313373992684326101">ወደ ቀዳሚው ክፍል ውሰድ። ምሳሌዎች የሁኔታ መሳቢያውን እና ማስጀመሪያውን ያካትታሉ።</translation>
+<translation id="1315077335264761176">የንክኪ አቀማመጠ ገፅ</translation>
 <translation id="1325363694295259631"><ph name="NAME" />፣ የምናሌ ንጥል ሬዲዮ አዝራር አልተመረጠም</translation>
 <translation id="1325946044405407859">ቡናማ የሚመስል</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> ከ<ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">እንኳን ወደ የChromeVox አጋዥ ስልጠና በደህና መጡ። በማንኛውም ጊዜ ከዚህ አጋዥ ስልጠና ለመውጣት በቁልፍ ሰሌዳው ከላይ ግራ ጥግ ላይ ያለውን የEscape ቁልፉን ይጫኑ። ChromeVoxን ለማጥፋት Controlን እና Altን ተጭነው ይያዙ፣ ከዚያ Zን ይጫኑ። ዝግጁ ሲሆኑ ወደ ቀጣዩ ትምህርት ለመሄድ የክፍተት አሞሌውን ይጠቀሙ።</translation>
 <translation id="174268867904053074">ቀጣይ ስዕላዊ</translation>
 <translation id="1756785467854861272">ደማቅ ማጄንታ ቀለም</translation>
+<translation id="1758693804775271377">ለዚህ ርዕስ ትምህርቶችን ለማሰስ በአንድ ጣት ወደ ግራ ወይም ወደ ቀኝ ያንሸራትቱ</translation>
 <translation id="1765245556747822181">አንድ ጣት ወደ ላይ ያንሸራትቱ</translation>
 <translation id="1771761307086386028">ወደ ቀኝ ይሸብልሉ</translation>
 <translation id="1781173782405573156">የማለፊያ ቁልፍ</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">ረድፍ</translation>
 <translation id="2816868829355607410">የመለማመጃ ቦታ፦ የዝላይ ትዕዛዞች</translation>
 <translation id="2841013758207633010">ሰዓት</translation>
+<translation id="284171465644749950">ርዕሶችን ለማሰስ በአንድ ጣት ወደ ግራ ወይም ወደ ቀኝ ያንሸራትቱ</translation>
 <translation id="2843432675592278677">ምንም ቀዳሚ የARIA ምልክት የለም</translation>
 <translation id="2843814945404750166">ደማቅ የወይራ አረንጓዴ</translation>
 <translation id="2843837985843789981">ቀዳሚ ቡድን</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox ተዘምኗል</translation>
 <translation id="93384979447910801">ጠቆር ያለ ባሕርማ አረንጓዴ</translation>
 <translation id="948171205378458592">የንግግር ፍጥነት ይቀንሱ</translation>
+<translation id="957570623732056069">ይህንን ትምህርት ለማሰስ በአንድ ጣት ወደ ግራ ወይም ወደ ቀኝ ያንሸራትቱ</translation>
 <translation id="958854023026327378">አንድ ጣት ወደ ታች ያንሸራትቱ</translation>
 <translation id="962913030769097253">ቀጣይ የደረጃ 1 ርዕስ</translation>
 <translation id="966588271015727539">የብሉቱዝ ብሬይል ማሳያ</translation>

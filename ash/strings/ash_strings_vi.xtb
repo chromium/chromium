@@ -609,6 +609,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Bạn không thể dùng Trợ lý Google trong phiên khách.</translation>
 <translation id="6137566720514957455">Mở hộp thoại xóa tài khoản cho <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Không hỗ trợ thiết bị ngoại vi</translation>
 <translation id="615957422585914272">Hiển thị bàn phím ảo</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
 <translation id="6179832488876878285">Bạn có thể ghim các tệp quan trọng của mình ở đây. Hãy mở ứng dụng Files để bắt đầu.</translation>
@@ -630,7 +631,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="6376931439017688372">Bluetooth đang bật</translation>
 <translation id="6381109794406942707">Để mở khóa thiết bị, hãy nhập mã PIN của bạn.</translation>
 <translation id="639644700271529076">CAPS LOCK tắt</translation>
-<translation id="6396835948284782440">Nhấn và giữ phím [Esc] để thoát.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Xóa tất cả thông báo</translation>

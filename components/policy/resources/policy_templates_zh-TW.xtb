@@ -434,6 +434,7 @@
      這項政策將在 Chrome 第 93 版中移除。
 
       請參閱 https://www.chromestatus.com/feature/4664843055398912。</translation>
+<translation id="1587585749332985896">禁止使用無頭模式</translation>
 <translation id="1588240398285670601">瀏覽器設定</translation>
 <translation id="1593245608325508847">設定這項政策會開啟 Chrome 在 G Suite 中的限制登入功能，並防止使用者變更這項設定。使用者只能透過指定網域的帳戶存取 Google 工具，如要允許 gmail 或 googlemail 帳戶，請將 consumer_accounts 新增至網域清單。這項設定可防止使用者在需要 Google 授權的受管理裝置上，使用不屬於明確允許網域的帳戶登入及新增次要帳戶。
 
@@ -865,6 +866,7 @@
 <translation id="2175353308236295184">應用程式專屬的 JSON 設定物件及一個鍵/值組合，例如「"managedConfiguration": { "key1": value1, "key2": value2 }」。應用程式資訊清單會定義這些鍵。</translation>
 <translation id="2176115444876446233">禁止使用者收集整個系統的效能追蹤記錄。</translation>
 <translation id="2178899310296064282">強制執行中度以上的 YouTube 嚴格篩選模式</translation>
+<translation id="2180958780733364832">控管無頭模式的使用權限</translation>
 <translation id="2182291258410176649">使用者可決定是否要啟用備份與還原功能</translation>
 <translation id="219297066914002620">指示 <ph name="PRODUCT_OS_NAME" />啟用或停用虛擬機器管理主控台工具。
 
@@ -3938,6 +3940,7 @@
 <translation id="647698599569353771">允許啟用鄰近分享功能。</translation>
 <translation id="6478258366184919502">登入及螢幕來源</translation>
 <translation id="6478261301433199402">你可以透過這項政策，指定使用者的 <ph name="PLUGIN_VM_NAME" /> 映像檔。請使用 JSON 格式字串指定這項政策，其中 <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> 可指定要下載映像檔的位置，而 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> 可做為 SHA-256 雜湊，用於驗證下載內容的完整性。</translation>
+<translation id="6481245670325946423">允許使用無頭模式</translation>
 <translation id="6489084406497912050">控管使用者是否可以新增 Kerberos 帳戶。
 
           如果將這項政策設為啟用或不設定，使用者可能可以透過 Kerberos 設定頁面中的「Kerberos 帳戶」設定來新增 Kerberos 帳戶。使用者可以完全控管自己新增的帳戶，也可以修改或移除帳戶。
@@ -5322,6 +5325,7 @@
 
          如果將動作設為暫停，你可以另行設定 <ph name="PRODUCT_OS_NAME" />在暫停前是否要鎖定螢幕。</translation>
 <translation id="8214600119442850823">設定密碼管理員</translation>
+<translation id="8217664958939773083">如將這項政策設為「<ph name="ENABLED" />」或不設定，系統就會允許使用無頭模式；如將這項政策設為「<ph name="DISABLED" />」，則系統會禁止使用無頭模式。</translation>
 <translation id="8220023426952118761">理想的下載速率 (kbit/秒)。</translation>
 <translation id="8220156281401380422">設定內建訊息傳遞許可清單</translation>
 <translation id="8238421250255592181">布林值標記，表示螢幕小鍵盤是否能提供自動完成功能。</translation>

@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Ciertas funciones de Chromium te ayudan a administrar los datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
+<translation id="2054703085270098503">Aprovecha la seguridad de Chromium</translation>
 <translation id="2075400798887076382">Aquí puedes acceder a las pestañas que hayas abierto en tu computadora. Abre Chromium en la computadora, ve al menú y selecciona la opción para acceder a Chromium.</translation>
 <translation id="2168108852149185974">Algunos complementos causan fallos en Chromium. Desinstala los siguientes elementos:</translation>
 <translation id="2178608107313874732">Chromium no puede usar tu cámara ahora</translation>
 <translation id="2195025571279539885">¿Quieres que Google Chrome te ofrezca traducir las páginas de este sitio que estén en <ph name="LANGUAGE_NAME" /> la próxima vez?</translation>
 <translation id="2590893390871230428">Sincronizar tus datos de Chromium</translation>
 <translation id="2650312721222849884">Para ver tus pestañas donde sea que uses Chromium, activa la sincronización</translation>
+<translation id="2684230048001240293">Establece Chromium como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="2730884209570016437">Chromium no puede utilizar tu cámara porque la está usando otra aplicación</translation>
 <translation id="2915596697727466327">Chromium usa Face ID para garantizar el acceso autorizado a tus contraseñas.</translation>
 <translation id="2918709798697875261">Tu organización requiere que no accedas a tu cuenta en Chromium.</translation>
+<translation id="2942241131342758843">Usa Chromium como tu navegador predeterminado para abrir vínculos, realizar búsquedas desde widgets y autocompletar contraseñas en otras apps</translation>
 <translation id="2977470724722393594">Chromium está actualizado.</translation>
 <translation id="3256316712990552818">Se copió en Chromium.</translation>
 <translation id="3344973607274501920">Chromium no pudo revisar las contraseñas. Revisa la conexión a Internet.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Si activas esta función, Chromium te preguntará si deseas usar Google Traductor para traducir páginas en otros idiomas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Ahora puedes usar Chromium cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="4681781466797808448">Activar el escáner de Chromium</translation>
+<translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> administra tu cuenta, por lo que se borrarán los datos de Chromium almacenados en este dispositivo.</translation>
 <translation id="4787850887676698916">Aquí se mostrarán las pestañas que hayas abierto en Chromium en tus otros dispositivos.</translation>
 <translation id="4828317641996116749">Chromium no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
 <translation id="4985291216379576555">Sin conexión, Chromium no puede buscar actualizaciones.</translation>
@@ -55,6 +59,7 @@
 2. Presiona App de navegador predeterminada
 3. Selecciona Chromium.</translation>
 <translation id="6268381023930128611">¿Salir de Chromium?</translation>
+<translation id="6337530241089703714">Decidir si quieres borrar o conservar los datos de Chromium que tienes almacenados en este dispositivo</translation>
 <translation id="6424492062988593837">¡Chromium mejoró! Hay una nueva versión disponible.</translation>
 <translation id="6820823224820483452">Chromium no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="6827294685447036764">Si permites que Chromium conozca tu ubicación, la enviará a los sitios que permitas. Es posible que los sitios soliciten tu ubicación cuando tienen información local para mostrarte, como noticias o tiendas cercanas.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. Chromium te recomienda cambiarla ahora.</translation>
 <translation id="7674213385180944843">Abre Configuración &gt; Privacidad &gt; Cámara &gt; Chromium y activa la cámara.</translation>
 <translation id="7746854981345936341">Sugerencia de Chromium: Algunos botones ahora están en la parte inferior de la pantalla, como Retroceder, Avanzar y Buscar.</translation>
+<translation id="7763454117143368771">Usa Chromium como tu navegador predeterminado para protegerte de sitios peligrosos y mantener tus contraseñas seguras</translation>
 <translation id="786327964234957808">La cuenta de sincronización cambiará de <ph name="USER_EMAIL1" /> a <ph name="USER_EMAIL2" />. El dominio <ph name="DOMAIN" /> administra tus datos existentes de Chromium. Esta acción borrará los datos de este dispositivo, pero permanecerán en <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Usar el escáner de Chromium</translation>
 <translation id="7931842119211730154">Bloquear las pestañas de incógnito cuando cierras Chromium</translation>

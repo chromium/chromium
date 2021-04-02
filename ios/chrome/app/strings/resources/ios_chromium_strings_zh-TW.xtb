@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium 的功能可讓你輕鬆管理網際網路數據傳輸和網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請查看網際網路連線狀態。</translation>
+<translation id="2054703085270098503">讓 Chromium 保障你的安全</translation>
 <translation id="2075400798887076382">只要在電腦上開啟 Chromium 並前往選單中選取 [登入 Chromium...]，即可直接從這裡存取你在電腦上開啟的分頁。</translation>
 <translation id="2168108852149185974">部分外掛程式造成 Chromium 當機，請解除安裝這些外掛程式：</translation>
 <translation id="2178608107313874732">Chromium 目前無法使用你的相機</translation>
 <translation id="2195025571279539885">下次造訪這個網站時，需要 Chromium 為您翻譯其中的<ph name="LANGUAGE_NAME" />網頁嗎？</translation>
 <translation id="2590893390871230428">同步處理你的 Chromium 資料</translation>
 <translation id="2650312721222849884">開啟同步功能後，不論從何處使用 Chromium 都能查看你的分頁</translation>
+<translation id="2684230048001240293">將 Chromium 設為預設瀏覽器，即可在你的所有裝置上同步處理分頁、密碼和付款資訊</translation>
 <translation id="2730884209570016437">另一個應用程式正在使用你的相機，因此 Chromium 無法使用</translation>
 <translation id="2915596697727466327">Chromium 會使用 Face ID 來確保只有經過授權的使用者才能存取你的密碼。</translation>
 <translation id="2918709798697875261">貴機構要求你在 Chromium 保持登出狀態。</translation>
+<translation id="2942241131342758843">預設使用 Chromium 來開啟連結、從小工具搜尋，以及自動在其他應用程式中填入密碼</translation>
 <translation id="2977470724722393594">Chromium 目前是最新版本</translation>
 <translation id="3256316712990552818">已複製到 Chromium</translation>
 <translation id="3344973607274501920">Chromium 無法檢查你的密碼，請查看網際網路連線狀態。</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用 Google 翻譯來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chromium 開啟。</translation>
 <translation id="4681781466797808448">開啟 Chromium 掃描器</translation>
+<translation id="4736424910885271643">由於你的帳戶受到 <ph name="HOSTED_DOMAIN" /> 管理，因此系統會在你登出後，清除你在這部裝置上的 Chromium 資料</translation>
 <translation id="4787850887676698916">你在其他裝置上透過 Chromium 開啟的分頁會顯示在這裡。</translation>
 <translation id="4828317641996116749">Chromium 無法檢查所有密碼，請稍後再試。</translation>
 <translation id="4985291216379576555">目前處於離線狀態，因此 Chromium 無法檢查更新</translation>
@@ -55,6 +59,7 @@
 2. 輕觸 [預設瀏覽器 App]
 3. 選取 [Chromium]</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
+<translation id="6337530241089703714">選擇是否要清除你在這部裝置上的 Chromium 資料</translation>
 <translation id="6424492062988593837">Chromium 現在變得更進步了！歡迎你升級使用新版本。</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼，請明天再試。</translation>
 <translation id="6827294685447036764">如果允許 Chromium 取得位置資訊，Chromium 會將這項資訊傳送至你允許存取該資訊的網站。當網站要向你顯示當地資訊時 (例如附近商家或新聞)，可能會要求你提供位置資訊。</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">你的密碼因為資料侵害事件遭到外洩。Chromium 建議你立即變更密碼。</translation>
 <translation id="7674213385180944843">請前往 [設定] &gt; [隱私權] &gt; [相機] &gt; [Chromium]，並開啟相機。</translation>
 <translation id="7746854981345936341">Chromium 提示。部分按鈕 (例如 [返回]、[往前] 和 [搜尋]) 現在位於畫面底部。</translation>
+<translation id="7763454117143368771">使用 Chromium 做為預設瀏覽器可保護你免於危險網站的威脅，同時確保你的密碼安全無虞</translation>
 <translation id="786327964234957808">你設定同步處理的帳戶即將從 <ph name="USER_EMAIL1" /> 改為 <ph name="USER_EMAIL2" />。你現有的 Chrome 資料是由 <ph name="DOMAIN" /> 所管理。系統會將你的資料從這個裝置上刪除，但繼續保留在 <ph name="USER_EMAIL1" /> 中。</translation>
 <translation id="7890287942691234100">開始使用 Chromium 掃描器</translation>
 <translation id="7931842119211730154">關閉 Chromium 時鎖定無痕分頁</translation>

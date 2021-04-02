@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Тод цэнхэр</translation>
 <translation id="1303806948938513162">ChromeVox-н цэсэд орохын тулд 4 хуруугаараа товшино уу</translation>
 <translation id="1313373992684326101">Өмнөх хэсэгт шилжих. Жишээнд Статусын мэдээллийн хэсэг болон Эхлүүлэгч багтана.</translation>
+<translation id="1315077335264761176">Хүрэх чиглэл</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, цэсийн зүйл болох радио товчлуурын сонголтыг болиулсан</translation>
 <translation id="1325946044405407859">Бүдэг бор</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" />-ын <ph name="INDEX" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox-н практик хичээлд тавтай морилно уу. Энэ практик хичээлээс хүссэн үедээ гарахын тулд гарын зүүн дээд буланд байх Escape товчийг дарна уу. ChromeVox-г унтраахын тулд Control болон Alt-г удаан дараад Z-г дарна уу. Та бэлэн болсон үедээ дараагийн хичээл рүү очихын тулд зай авах товчийг ашиглана уу.</translation>
 <translation id="174268867904053074">Дараагийн зураг</translation>
 <translation id="1756785467854861272">Гүн нил ягаан</translation>
+<translation id="1758693804775271377">Энэ сэдвийн хичээлүүдийг үзэхийн тулд нэг хуруугаараа зүүн эсвэл баруун тийш шударна уу</translation>
 <translation id="1765245556747822181">Нэг хурууг дээш шудрах</translation>
 <translation id="1771761307086386028">Баруун тийш гүйлгэх</translation>
 <translation id="1781173782405573156">Түлхүүрийн тусламжтайгаар нэвтрэх</translation>
@@ -180,7 +182,7 @@
 <translation id="2220529011494928058">Асуудлыг мэдэгдэх</translation>
 <translation id="224426591676115802">Хэлд зориулсан дуу алга байна: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Сургалтын горимыг зогсоож байна</translation>
-<translation id="225732394367814946">Дууны хэмжээг нэмэгдүүлэх</translation>
+<translation id="225732394367814946">Дууны түвшинг нэмэгдүүлэх</translation>
 <translation id="2267538686624070261">Алдаатай бичсэн үгийг орхиж байна</translation>
 <translation id="2267945578749931355">Дараагийн тэмдэгт</translation>
 <translation id="2278490101488436824">Гурван хурууг зүүн тийш шудрах</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Мөр</translation>
 <translation id="2816868829355607410">Дадлагын хэсэг: Үсрэх тушаал</translation>
 <translation id="2841013758207633010">Цаг</translation>
+<translation id="284171465644749950">Сэдвүүдийг үзэхийн тулд нэг хуруугаараа зүүн эсвэл баруун тийш шударна уу</translation>
 <translation id="2843432675592278677">Өмнөх ARIA газрын тэмдэглэгээ алга байна</translation>
 <translation id="2843814945404750166">Хар ногоон (Бараан чидун жимсний өнгө)</translation>
 <translation id="2843837985843789981">Өмнөх Бүлэг</translation>
@@ -1121,6 +1124,7 @@
 <translation id="923331726185079994">ChromeVox-г шинэчилсэн</translation>
 <translation id="93384979447910801">Тэнгисийн гүн ногоон</translation>
 <translation id="948171205378458592">Ярианы хувь хэмжээг бууруулах</translation>
+<translation id="957570623732056069">Энэ хичээлийг шилжүүлэхийн тулд нэг хуруугаараа зүүн эсвэл баруун тийш шударна уу</translation>
 <translation id="958854023026327378">Нэг хурууг доош шудрах</translation>
 <translation id="962913030769097253">Дараагийн 1-р түвшний гарчиг</translation>
 <translation id="966588271015727539">Bluetooth брайл дэлгэцийг сонгох</translation>

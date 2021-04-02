@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">История переходов</translation>
 <translation id="1231733316453485619">Включить синхронизацию?</translation>
 <translation id="123724288017357924">Обновить страницу без учета кешированного контента</translation>
+<translation id="1240288207750131269">Выполняется загрузка пакета "<ph name="LANG" />"…</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Не удалось отправить: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Управляйте сайтами, на которые подписаны</translation>
 <translation id="1283039547216852943">Нажмите, чтобы развернуть</translation>
 <translation id="1285310382777185058">Изменить язык</translation>
 <translation id="1291207594882862231">Удалить файлы cookie и данные сайтов, очистить историю и кеш</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Версия приложения</translation>
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1450753235335490080">Не удается отправить: <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Выбор языка для Chrome</translation>
 <translation id="147113415845704694">Скажите, например, "Какая сейчас погода?"</translation>
 <translation id="1477626028522505441">Не удалось скачать файл <ph name="FILE_NAME" /> из-за неполадок на сервере.</translation>
 <translation id="1492417797159476138">Вы уже сохранили это имя пользователя для данного сайта.</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">Проверка подключения к Интернету</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2369533728426058518">открыть вкладки</translation>
+<translation id="2386938421315164605">Скрывайте и показывайте темы</translation>
 <translation id="2387895666653383613">Масштабирование текста</translation>
 <translation id="2394602618534698961">Здесь появляются скачанные файлы.</translation>
 <translation id="2407481962792080328">Эта функция включается, когда вы входите в аккаунт Google.</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">Просматривать сохраненные пароли и управлять ими можно на странице <ph name="BEGIN_LINK" />Аккаунт Google<ph name="END_LINK" />.</translation>
 <translation id="2818669890320396765">Чтобы получить доступ к закладкам на всех устройствах, войдите в аккаунт и включите синхронизацию.</translation>
 <translation id="2827278682606527653">Меню карточки из ленты открыто наполовину</translation>
+<translation id="2839327205551510876">Подписка на "<ph name="SITE_NAME" />" отменена.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Проверено 1 день назад.}one{Проверено # день назад.}few{Проверено # дня назад.}many{Проверено # дней назад.}other{Проверено # дня назад.}}</translation>
 <translation id="2842985007712546952">Родительская папка</translation>
 <translation id="2856503607207334158">Ошибка аутентификации</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Платформа уведомлений Google</translation>
 <translation id="2923908459366352541">Имя недействительно</translation>
 <translation id="2932150158123903946">Хранилище Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Это не повлияет на вашу клавиатуру.</translation>
 <translation id="2942036813789421260">Вкладка предпросмотра закрыта</translation>
 <translation id="2956410042958133412">Этим аккаунтом управляют <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитанная страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанная страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанные страницы}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанных страниц}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанной страницы}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">Окно, где требуется разрешить использование Ассистента для голосового поиска</translation>
 <translation id="3034163383943672781">Скачивание начнется <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Справка<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">В следующий раз вы сможете открыть этот сайт быстрее.</translation>
 <translation id="305593374596241526">Определение местоположения отключено. Включите его в <ph name="BEGIN_LINK" />настройках Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Ее можно включить в настройках в любой момент.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">Сейчас вы находитесь на странице настроек сервисов Google и синхронизации. Чтобы включить синхронизацию, нажмите кнопку "Подтвердить" в нижней части экрана. Перейти вверх</translation>
 <translation id="3334729583274622784">Изменить расширение имени файла?</translation>
 <translation id="3341058695485821946">Узнайте, сколько трафика вы сэкономили.</translation>
+<translation id="3341262203274374114">Не удалось отменить подписку. Что-то пошло не так.</translation>
 <translation id="3350687908700087792">Закрыть все вкладки инкогнито</translation>
 <translation id="3359667936385849800">Использовать текущего поставщика</translation>
 <translation id="3367813778245106622">Чтобы начать синхронизацию, снова войдите в аккаунт</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">Доступ к геоданным разрешен</translation>
 <translation id="3988466920954086464">Результаты поиска появятся на этой панели.</translation>
 <translation id="4000212216660919741">Офлайн</translation>
+<translation id="4016425174436051808">Не удалось подписаться. Что-то пошло не так.</translation>
+<translation id="4021916380760361450">Управляйте данными своих аккаунтов Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# час}one{# час}few{# часа}many{# часов}other{# часа}}</translation>
 <translation id="4045764304651014138">Данные об использовании</translation>
 <translation id="4056223980640387499">Сепия</translation>
@@ -598,6 +608,7 @@
 <translation id="5152843274749979095">Нет поддерживаемых приложений</translation>
 <translation id="5161254044473106830">Введите название</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Не удалось скачать 1 файл.}one{Не удалось скачать # файл.}few{Не удалось скачать # файла.}many{Не удалось скачать # файлов.}other{Не удалось скачать # файла.}}</translation>
+<translation id="5168824020667180049">Подписка на "<ph name="SITE_NAME" />" оформлена.</translation>
 <translation id="5170568018924773124">Показать в папке</translation>
 <translation id="5184329579814168207">Открыть в Chrome</translation>
 <translation id="5188992787241350004">Голосовой поиск</translation>
@@ -717,6 +728,7 @@
 <translation id="5864419784173784555">Завершение предыдущего скачивания…</translation>
 <translation id="5865733239029070421">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="5869522115854928033">Сайты с сохраненными паролями</translation>
+<translation id="5880748256563468367">Перейти к ленте</translation>
 <translation id="5884076754568147479">Выполнять действия в Chrome с помощью Ассистента: отправлять в Google контент и URL сайтов, а также информацию, сообщаемую Ассистенту</translation>
 <translation id="5919204609460789179">Обновите <ph name="PRODUCT_NAME" />, чтобы начать синхронизацию</translation>
 <translation id="5937580074298050696">Сохранено: <ph name="AMOUNT" /></translation>
@@ -734,6 +746,7 @@
 <translation id="5979084224081478209">Проверить пароли</translation>
 <translation id="5982307838673692400">Открыть вкладку инкогнито</translation>
 <translation id="6000066717592683814">Использовать Google</translation>
+<translation id="6000203700195075278">Снова подписаться</translation>
 <translation id="6005538289190791541">Предложенный пароль</translation>
 <translation id="6036057147555329831">Дополнительный модуль ICU</translation>
 <translation id="6039379616847168523">Перейти к следующей вкладке</translation>
@@ -1095,6 +1108,7 @@
 <translation id="834313815369870491">Никогда не переводить сайты</translation>
 <translation id="8349013245300336738">Сортировать по объему использованного трафика</translation>
 <translation id="835847953965672673">Восстановлено объектов: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
+<translation id="8362134094656482681">Настройте темы, которые вас интересуют</translation>
 <translation id="8364299278605033898">Показать популярные сайты</translation>
 <translation id="8368027906805972958">Неизвестное или неподдерживаемое устройство (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Пакет "<ph name="LANG" />" скачан.</translation>

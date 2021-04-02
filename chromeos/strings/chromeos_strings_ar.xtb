@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">‏L2TP/IPSec + شهادة المستخدم</translation>
 <translation id="4731797938093519117">وصول أحد الوالدين</translation>
 <translation id="4773299976671772492">متوقفة</translation>
+<translation id="4794140124556169553">‏إنّ إجراء اختبار لوحدة المعالجة المركزية (CPU) قد يؤثر في أداء نظامك.</translation>
 <translation id="4808449224298348341">تم إلغاء مهمة الطباعة للمستند <ph name="DOCUMENT_TITLE" />.</translation>
 <translation id="4813345808229079766">اتصال</translation>
 <translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
@@ -341,6 +342,7 @@
 <translation id="8483248364096924578">‏عنوان IP</translation>
 <translation id="8503813439785031346">اسم المستخدم</translation>
 <translation id="8503836310948963452">يُرجى الانتظار بضع دقائق فقط…</translation>
+<translation id="8575298406870537639">قد يتطلّب مشغّل شبكة الجوّال تفعيل هذا الخيار للاتصال بالشبكة التابعة له. يُرجى التواصل مع مشغّل شبكة الجوّال للاطّلاع على التفاصيل.</translation>
 <translation id="8576249514688522074">غير مهيأة</translation>
 <translation id="8620617069779373398">حالة التجوال</translation>
 <translation id="8675354002693747642">مفتاح المشاركة المسبقة</translation>
@@ -365,7 +367,6 @@
 <translation id="8970109610781093811">إعادة التشغيل مرة أخرى</translation>
 <translation id="9003704114456258138">التردد</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">تعديل</translation>
 <translation id="9073281213608662541">‏بروتوكول مصادقة كلمات المرور (PAP)</translation>
 <translation id="9074739597929991885">بلوتوث</translation>
 <translation id="9088306295921699330">الاستخدام الحالي</translation>

@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google помоћник није доступан у сесији госта.</translation>
 <translation id="6137566720514957455">Отвара налог за уклањање за корисника <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Периферни уређај није подржан</translation>
 <translation id="615957422585914272">Прикажи тастатуру на екрану</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
 <translation id="6179832488876878285">Овде можете да закачите најважније фајлове. Отворите апликацију Фајлови да бисте започели.</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">Bluetooth је укључен</translation>
 <translation id="6381109794406942707">Да бисте откључали уређај, унесите PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK је искључен</translation>
-<translation id="6396835948284782440">Притисните и задржите [Esc] да бисте изашли.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Обришите сва обавештења</translation>

@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium에는 사용자가 간편하게 인터넷 데이터 및 웹페이지 로드 시간을 관리할 수 있는 기능이 있습니다.
 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인해 보세요.</translation>
+<translation id="2054703085270098503">Chromium으로 안전하게 보호하기</translation>
 <translation id="2075400798887076382">여기에서 컴퓨터에서 열어 놓은 탭에 바로 액세스할 수 있습니다. 컴퓨터에서 Chromium을 열고 메뉴로 이동하여 'Chromium에 로그인...'을 선택하세요.</translation>
 <translation id="2168108852149185974">일부 부가기능이 Chromium의 비정상 종료를 유발합니다. 다음을 제거하세요.</translation>
 <translation id="2178608107313874732">지금 Chromium에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="2195025571279539885">다음에 Chromium에서 이 사이트의 <ph name="LANGUAGE_NAME" /> 페이지를 번역하시겠습니까?</translation>
 <translation id="2590893390871230428">Chromium 데이터 동기화</translation>
 <translation id="2650312721222849884">Chromium을 사용하는 어느 곳에서나 탭을 확인하려면 동기화를 사용 설정하세요.</translation>
+<translation id="2684230048001240293">Chromium을 모든 기기에서 탭, 비밀번호, 결제 정보를 동기화할 기본값으로 설정합니다.</translation>
 <translation id="2730884209570016437">다른 애플리케이션에서 카메라를 사용하고 있으므로 Chromium에서 카메라를 사용할 수 없습니다.</translation>
 <translation id="2915596697727466327">Chromium은 얼굴 ID를 사용하여 승인된 사용자만 비밀번호에 액세스할 수 있도록 합니다.</translation>
 <translation id="2918709798697875261">조직에서 Chromium 로그아웃 상태를 유지할 것을 요청합니다.</translation>
+<translation id="2942241131342758843">Chromium을 다른 앱에서 링크를 열고, 위젯에서 검색하고, 비밀번호를 자동 완성할 기본값으로 사용합니다.</translation>
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
 <translation id="3256316712990552818">Chromium에 복사됨</translation>
 <translation id="3344973607274501920">Chromium에서 비밀번호를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">이 기능을 사용하면 Chromium에서 Google 번역을 사용하여 외국어로 작성된 페이지를 번역합니다. <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">이제 언제든 메시지, 문서 및 다른 앱에서 링크를 탭하여 Chromium을 사용할 수 있습니다.</translation>
 <translation id="4681781466797808448">Chromium 스캐너 사용</translation>
+<translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" />에서 관리하는 계정이므로 이 기기에서 내 Chromium 데이터가 삭제됩니다</translation>
 <translation id="4787850887676698916">다른 기기의 Chromium에서 연 탭이 여기에 표시됩니다.</translation>
 <translation id="4828317641996116749">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="4985291216379576555">오프라인 상태이므로 Chromium에서 업데이트를 확인할 수 없습니다.</translation>
@@ -55,6 +59,7 @@
 2. 기본 브라우저 앱을 탭합니다.
 3. Chromium을 선택합니다.</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
+<translation id="6337530241089703714">이 기기에서 내 Chromium 데이터를 삭제할지 또는 유지할지 선택하세요</translation>
 <translation id="6424492062988593837">한층 개선된 Chromium의 최신 버전이 출시되었습니다.</translation>
 <translation id="6820823224820483452">Chromium에서 일부 비밀번호를 확인할 수 없습니다. 내일 다시 시도해 보세요.</translation>
 <translation id="6827294685447036764">Chromium에서 위치를 알 수 있도록 허용하면 Chromium이 위치 정보를 권한이 부여된 사이트로 전송합니다. 근처 상점 또는 뉴스와 같이 표시할 지역 정보가 있는 경우 사이트에서 위치를 요청할 수 있습니다.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">정보 유출로 인해 비밀번호가 노출되었습니다. 지금 바로 비밀번호를 변경하시기 바랍니다.</translation>
 <translation id="7674213385180944843">설정 &gt; 개인정보 보호 &gt; 카메라 &gt; Chromium을 열고 카메라를 사용 설정하세요.</translation>
 <translation id="7746854981345936341">Chromium 도움말. 뒤로, 앞으로, 검색과 같은 일부 버튼이 화면 하단으로 이동했습니다.</translation>
+<translation id="7763454117143368771">Chromium을 기본 브라우저로 사용하여 위험한 사이트를 차단하고 비밀번호를 안전하게 보호합니다.</translation>
 <translation id="786327964234957808">동기화 계정을 <ph name="USER_EMAIL1" />에서 <ph name="USER_EMAIL2" />(으)로 전환합니다. 기존 Chromium 데이터는 <ph name="DOMAIN" />에서 관리됩니다. 이 기기에서는 데이터가 삭제되지만 <ph name="USER_EMAIL1" />에 계속해서 데이터가 보관됩니다.</translation>
 <translation id="7890287942691234100">Chromium 스캐너 사용 시작</translation>
 <translation id="7931842119211730154">Chromium 종료 시 시크릿 탭 잠금</translation>

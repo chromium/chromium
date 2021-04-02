@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Navigation history</translation>
 <translation id="1231733316453485619">Turn on sync?</translation>
 <translation id="123724288017357924">Reload the current page, ignoring cached content</translation>
+<translation id="1240288207750131269">Loading <ph name="LANG" /></translation>
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Couldn't share <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Manage the sites that you're following</translation>
 <translation id="1283039547216852943">Tap to expand</translation>
 <translation id="1285310382777185058">Change language</translation>
 <translation id="1291207594882862231">Clear history, cookies, site data, cache…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Application version</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1450753235335490080">Can't share <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Pick Chrome’s language</translation>
 <translation id="147113415845704694">Try 'What’s the weather today?'</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> download failed due to server issues.</translation>
 <translation id="1492417797159476138">You already saved this username for this site</translation>
@@ -205,6 +208,7 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 <translation id="2353636109065292463">Checking your Internet connection</translation>
 <translation id="2359808026110333948">Continue</translation>
 <translation id="2369533728426058518">open tabs</translation>
+<translation id="2386938421315164605">Hide and unhide topics</translation>
 <translation id="2387895666653383613">Text scaling</translation>
 <translation id="2394602618534698961">Files that you download appear here</translation>
 <translation id="2407481962792080328">When you sign in to your Google account, this feature is turned on</translation>
@@ -265,6 +269,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="281504910091592009">View and manage saved passwords in your <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">To get your bookmarks on all your devices, sign in and turn on sync</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2839327205551510876">Unfollowed <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Checked 1 day ago}other{Checked # days ago}}</translation>
 <translation id="2842985007712546952">Parent folder</translation>
 <translation id="2856503607207334158">Sign-in failed</translation>
@@ -281,6 +286,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2923908459366352541">Name is invalid</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> storage</translation>
+<translation id="2932222164150889403">Your keyboard won’t change</translation>
 <translation id="2942036813789421260">Preview tab is closed</translation>
 <translation id="2956410042958133412">This account is managed by <ph name="PARENT_NAME_1" /> and <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> unread page}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> unread pages}}</translation>
@@ -297,6 +303,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3031225630520268969">Assistant voice search consent UI</translation>
 <translation id="3034163383943672781">Download will start on <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Get help<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Get to this site quicker next time</translation>
 <translation id="305593374596241526">Location is off; turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">You can turn on sync at any time in settings</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
@@ -340,6 +347,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="3315103659806849044">You are currently customising your Sync and Google service settings. To finish turning on sync, tap the Confirm button near the bottom of the screen. Navigate up</translation>
 <translation id="3334729583274622784">Change file extension?</translation>
 <translation id="3341058695485821946">See how much data you've saved</translation>
+<translation id="3341262203274374114">Can’t unfollow. Something went wrong.</translation>
 <translation id="3350687908700087792">Close all incognito tabs</translation>
 <translation id="3359667936385849800">Use your current service provider</translation>
 <translation id="3367813778245106622">Sign in again to start sync</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox is still in active development and is available in selected regi
 <translation id="3988213473815854515">Location is allowed</translation>
 <translation id="3988466920954086464">See instant search results in this panel</translation>
 <translation id="4000212216660919741">Offline Home</translation>
+<translation id="4016425174436051808">Can’t follow. Something went wrong.</translation>
+<translation id="4021916380760361450">Control your Google Accounts data</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# hr}other{# hrs}}</translation>
 <translation id="4045764304651014138">Usage data</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -598,6 +608,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5152843274749979095">No supported apps installed</translation>
 <translation id="5161254044473106830">Title required</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 download failed.}other{# downloads failed.}}</translation>
+<translation id="5168824020667180049">Followed <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Show in folder</translation>
 <translation id="5184329579814168207">Open in Chrome</translation>
 <translation id="5188992787241350004">Search with your voice</translation>
@@ -717,6 +728,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5864419784173784555">Waiting for another download…</translation>
 <translation id="5865733239029070421">Automatically sends usage statistics and crash reports to Google</translation>
 <translation id="5869522115854928033">Saved passwords</translation>
+<translation id="5880748256563468367">Go to feed</translation>
 <translation id="5884076754568147479">To help you complete tasks, Google will receive the URLs and contents of sites on which you use Assistant, as well as information that you submit through Assistant</translation>
 <translation id="5919204609460789179">Update <ph name="PRODUCT_NAME" /> to start sync</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> saved</translation>
@@ -734,6 +746,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5979084224081478209">Check passwords</translation>
 <translation id="5982307838673692400">Open an Incognito tab</translation>
 <translation id="6000066717592683814">Keep Google</translation>
+<translation id="6000203700195075278">Refollow</translation>
 <translation id="6005538289190791541">Suggested password</translation>
 <translation id="6036057147555329831">Extra ICU</translation>
 <translation id="6039379616847168523">Jump to the next tab</translation>
@@ -1095,6 +1108,7 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="834313815369870491">Never translate sites</translation>
 <translation id="8349013245300336738">Sort by amount of data used</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> downloads restored</translation>
+<translation id="8362134094656482681">Manage the topics that you're interested in</translation>
 <translation id="8364299278605033898">See popular websites</translation>
 <translation id="8368027906805972958">Unknown or unsupported device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> is ready.</translation>

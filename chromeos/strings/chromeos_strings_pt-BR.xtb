@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + certificado de usuário</translation>
 <translation id="4731797938093519117">Acesso de pai/mãe</translation>
 <translation id="4773299976671772492">Interrompida</translation>
+<translation id="4794140124556169553">Um teste de CPU pode afetar o desempenho do sistema</translation>
 <translation id="4808449224298348341">Trabalho de impressão cancelado: <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Conexão</translation>
 <translation id="4832079907277790330">Selecionar a pasta no app Arquivos…</translation>
@@ -341,6 +342,7 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8483248364096924578">Endereço IP</translation>
 <translation id="8503813439785031346">Nome de usuário</translation>
 <translation id="8503836310948963452">Só mais alguns minutos…</translation>
+<translation id="8575298406870537639">Pode ser necessário ativar esta opção para se conectar à rede da sua operadora. Entre em contato com a operadora para mais informações.</translation>
 <translation id="8576249514688522074">Não inicializado</translation>
 <translation id="8620617069779373398">Status do roaming</translation>
 <translation id="8675354002693747642">Chave pré-compartilhada</translation>
@@ -365,7 +367,6 @@ Tente tocar no microfone para me pedir algo.</translation>
 <translation id="8970109610781093811">Executar novamente</translation>
 <translation id="9003704114456258138">Frequência</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Editar</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Uso atual</translation>

@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Navigációs előzmények</translation>
 <translation id="1231733316453485619">Bekapcsolja a szinkronizálást?</translation>
 <translation id="123724288017357924">Oldal újratöltése a gyorsítótárat figyelmen kívül hagyva</translation>
+<translation id="1240288207750131269">Betöltés: <ph name="LANG" /></translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
 <translation id="1258753120186372309">Google ünnepi embléma: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
+<translation id="1276279242344007853">Az Ön által követett webhelyek kezelése</translation>
 <translation id="1283039547216852943">Koppintson a kibontáshoz</translation>
 <translation id="1285310382777185058">Nyelv módosítása</translation>
 <translation id="1291207594882862231">Előzmények, cookie-k, webhelyadatok és a gyorsítótár törlése…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Alkalmazás verziószáma</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1450753235335490080">Nem sikerült a(z) <ph name="CONTENT_TYPE" /> megosztása</translation>
+<translation id="1466383950273130737">Chrome nyelvének kiválasztása</translation>
 <translation id="147113415845704694">Próbálkozzon a következő kérdéssel: „What's the weather today?” (Milyen lesz ma az időjárás?)</translation>
 <translation id="1477626028522505441">A következő fájl letöltése szerverproblémák miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
 <translation id="1492417797159476138">Már elmentette ezt a felhasználónevet ehhez a webhelyhez</translation>
@@ -205,6 +208,7 @@ A kereséshez koppintson a kívánt szóra. A keresés finomításához ujja nyo
 <translation id="2353636109065292463">Az internetkapcsolat ellenőrzése</translation>
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2369533728426058518">megnyitott lapok</translation>
+<translation id="2386938421315164605">Témakörök elrejtése és felfedése</translation>
 <translation id="2387895666653383613">Szöveg nagyítása</translation>
 <translation id="2394602618534698961">Itt találhatja majd a letöltött fájlokat</translation>
 <translation id="2407481962792080328">Amikor bejelentkezik Google-fiókjába, a rendszer bekapcsolja ezt a funkciót</translation>
@@ -265,6 +269,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="281504910091592009">Mentett jelszavait megtekintheti és kezelheti <ph name="BEGIN_LINK" />Google-fiókjában<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Ha az összes eszközén szeretné elérni könyvjelzőit, jelentkezzen be, és kapcsolja be a szinkronizálást</translation>
 <translation id="2827278682606527653">A hírcsatornakártya menüje félmagasságban van megnyitva</translation>
+<translation id="2839327205551510876">Felhagyott a(z) <ph name="SITE_NAME" /> követésével.</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 napja ellenőrizve}other{# napja ellenőrizve}}</translation>
 <translation id="2842985007712546952">Szülőmappa</translation>
 <translation id="2856503607207334158">Sikertelen bejelentkezés</translation>
@@ -281,6 +286,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2923908459366352541">A név érvénytelen</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-tárhely</translation>
+<translation id="2932222164150889403">A billentyűzet ugyanaz marad</translation>
 <translation id="2942036813789421260">Az előnézeti lap zárva van</translation>
 <translation id="2956410042958133412">A fiók kezelői: <ph name="PARENT_NAME_1" /> és <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> olvasatlan oldal}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> olvasatlan oldal}}</translation>
@@ -297,6 +303,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3031225630520268969">A Segéd hangalapú kereséssel kapcsolatos hozzájárulási kezelőfelülete</translation>
 <translation id="3034163383943672781">A letöltés indításának időpontja: <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kérjen segítséget<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Következő alkalommal gyorsabban juthat el erre a webhelyre</translation>
 <translation id="305593374596241526">A Helyadatok szolgáltatás ki van kapcsolva; bekapcsolhatja az <ph name="BEGIN_LINK" />Android-beállításokban<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">A szinkronizálás bármikor bekapcsolható a beállításokban</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> könyvjelző}other{<ph name="BOOKMARKS_COUNT_MANY" /> könyvjelző}}</translation>
@@ -340,6 +347,7 @@ A kereséshez tartsa nyomva a kívánt szót. A keresés finomításához válas
 <translation id="3315103659806849044">Jelenleg a Szinkronizálás és Google beállításait szabja személyre. A szinkronizálás bekapcsolásának véglegesítéséhez koppintson a képernyő alján található Megerősítés gombra. Fel</translation>
 <translation id="3334729583274622784">Módosítja a fájl kiterjesztését?</translation>
 <translation id="3341058695485821946">Megnézheti, mennyi adatot takarított meg</translation>
+<translation id="3341262203274374114">Nem sikerült felhagyni a követéssel. Hiba történt.</translation>
 <translation id="3350687908700087792">Az összes inkognitó lap bezárása</translation>
 <translation id="3359667936385849800">A jelenlegi szolgáltató használata</translation>
 <translation id="3367813778245106622">A szinkronizálás megkezdéséhez jelentkezzen be újra</translation>
@@ -434,6 +442,8 @@ A Privacy Sandbox még mindig aktív fejlesztés alatt áll, és csak egyes rég
 <translation id="3988213473815854515">Hely engedélyezve</translation>
 <translation id="3988466920954086464">Azonnali keresési találatok megtekintése ezen a panelen</translation>
 <translation id="4000212216660919741">Offline kezdőlap</translation>
+<translation id="4016425174436051808">Nem lehet követni. Hiba történt.</translation>
+<translation id="4021916380760361450">Saját Google-fiókadatok kezelése</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# órája}other{# órája}}</translation>
 <translation id="4045764304651014138">Használati adatok</translation>
 <translation id="4056223980640387499">Szépia</translation>
@@ -598,6 +608,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5152843274749979095">Nincs telepítve támogatott alkalmazás</translation>
 <translation id="5161254044473106830">Cím megadása kötelező</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 letöltés nem sikerült.}other{# letöltés nem sikerült.}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> követve</translation>
 <translation id="5170568018924773124">Megjelenítés mappában</translation>
 <translation id="5184329579814168207">Megnyitás Chrome-ban</translation>
 <translation id="5188992787241350004">Hangalapú keresés</translation>
@@ -717,6 +728,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5864419784173784555">Várakozás a másik letöltésre…</translation>
 <translation id="5865733239029070421">Automatikusan elküldi a használati statisztikákat és hibajelentéseket a Google-nak</translation>
 <translation id="5869522115854928033">Mentett jelszavak</translation>
+<translation id="5880748256563468367">Hírcsatorna megnyitása</translation>
 <translation id="5884076754568147479">Annak érdekében, hogy segíteni tudjon a feladatok elvégzésében, a Google megkapja azoknak a webhelyeknek az URL-jeit és tartalmait, amelyeken Ön használta Segédjét, valamint megkapja a Segéden keresztül elküldött információkat</translation>
 <translation id="5919204609460789179">A szinkronizálás megkezdéséhez frissítse a következőt: <ph name="PRODUCT_NAME" /></translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> megtakarított adatmennyiség</translation>
@@ -734,6 +746,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5979084224081478209">Jelszavak ellenőrzése</translation>
 <translation id="5982307838673692400">Inkognitó lap megnyitása</translation>
 <translation id="6000066717592683814">A Google megtartása</translation>
+<translation id="6000203700195075278">Újrakövetés</translation>
 <translation id="6005538289190791541">Javasolt jelszó</translation>
 <translation id="6036057147555329831">További ICU</translation>
 <translation id="6039379616847168523">Ugrás a következő lapra</translation>
@@ -1095,6 +1108,7 @@ Az inkognitó-munkamenet adatai csak <ph name="BEGIN_BOLD2" />az összes inkogni
 <translation id="834313815369870491">Sosem fordított webhelyek</translation>
 <translation id="8349013245300336738">Rendezés a felhasznált adatmennyiség szerint</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> letöltés visszaállítva</translation>
+<translation id="8362134094656482681">Az Önt érdeklő témakörök kezelése</translation>
 <translation id="8364299278605033898">Tekintse meg a népszerű webhelyeket</translation>
 <translation id="8368027906805972958">Ismeretlen vagy nem támogatott eszköz (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">A(z) <ph name="LANG" /> készen áll.</translation>

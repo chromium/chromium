@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">라이트 스카이 블루</translation>
 <translation id="1303806948938513162">ChromeVox 메뉴로 들어가려면 네 손가락으로 탭하세요.</translation>
 <translation id="1313373992684326101">이전 섹션으로 이동합니다. 섹션으로는 상태 표시줄, 런처 등이 있습니다.</translation>
+<translation id="1315077335264761176">터치 방향</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, 메뉴 항목 라디오 버튼 선택 해제됨</translation>
 <translation id="1325946044405407859">탠</translation>
 <translation id="1331702245475014624"><ph name="INDEX" />/<ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox 가이드에 오신 것을 환영합니다. 언제든 이 가이드를 종료하려면 키보드 왼쪽 상단에서 Esc 키를 누르세요. ChromeVox를 사용 중지하려면 Ctrl + Alt + Z 키를 누르세요. 준비가 되면 스페이스바를 눌러 다음 과정으로 이동하세요.</translation>
 <translation id="174268867904053074">다음 그래픽</translation>
 <translation id="1756785467854861272">다크 마젠타</translation>
+<translation id="1758693804775271377">한 손가락을 왼쪽 또는 오른쪽으로 스와이프하여 이 주제에 관한 강의 둘러보기</translation>
 <translation id="1765245556747822181">손가락 한 개를 사용하여 위로 스와이프</translation>
 <translation id="1771761307086386028">오른쪽으로 스크롤</translation>
 <translation id="1781173782405573156">통과 키</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">행</translation>
 <translation id="2816868829355607410">연습 영역: 점프 명령어</translation>
 <translation id="2841013758207633010">시간</translation>
+<translation id="284171465644749950">한 손가락을 왼쪽 또는 오른쪽으로 스와이프하여 주제 둘러보기</translation>
 <translation id="2843432675592278677">이전 ARIA 랜드마크가 없습니다</translation>
 <translation id="2843814945404750166">다크 올리브 그린</translation>
 <translation id="2843837985843789981">이전 그룹</translation>
@@ -1120,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox 업데이트됨</translation>
 <translation id="93384979447910801">다크 씨 그린</translation>
 <translation id="948171205378458592">말하기 속도 줄이기</translation>
+<translation id="957570623732056069">한 손가락을 왼쪽 또는 오른쪽으로 스와이프하여 이 수업으로 이동</translation>
 <translation id="958854023026327378">손가락 한 개를 사용하여 아래로 스와이프</translation>
 <translation id="962913030769097253">다음 수준 1 제목</translation>
 <translation id="966588271015727539">블루투스 점자 디스플레이 선택</translation>

@@ -437,6 +437,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Questo criterio verrà rimosso nella versione 93 di Chrome.
 
       Visita la pagina https://www.chromestatus.com/feature/4664843055398912.</translation>
+<translation id="1587585749332985896">Non è consentito l'uso della modalità headless</translation>
 <translation id="1588240398285670601">Impostazioni del browser</translation>
 <translation id="1593245608325508847">La configurazione del criterio consente di attivare la funzionalità di accesso limitato di Chrome in G Suite e di impedire agli utenti di modificare questa impostazione. Gli utenti possono accedere solo agli strumenti Google utilizzando gli account dei domini specificati (per consentire gli account gmail o googlemail, aggiungi consumer_accounts all'elenco dei domini). Questa impostazione impedisce agli utenti di accedere a un account secondario e di aggiungerne uno su un dispositivo gestito che richiede l'autenticazione di Google, se tale account non appartiene a uno dei domini esplicitamente consentiti.
 
@@ -876,6 +877,7 @@ Questa norma viene rispettata soltanto se la norma "DefaultSearchProviderEnabled
 <translation id="2175353308236295184">Oggetto di configurazione JSON specifico dell'app con una serie di coppie chiave-valore, ad esempio '"managedConfiguration": { "key1": value1, "key2": value2 }'. Le chiavi sono definite nel file manifest dell'app.</translation>
 <translation id="2176115444876446233">Gli utenti non possono raccogliere dati di rilevamento del rendimento a livello di sistema.</translation>
 <translation id="2178899310296064282">Imponi almeno il Livello medio della Modalità con restrizioni su YouTube</translation>
+<translation id="2180958780733364832">Controlla l'uso della modalità headless</translation>
 <translation id="2182291258410176649">L'utente decide se abilitare il backup e il ripristino</translation>
 <translation id="219297066914002620">Indica a <ph name="PRODUCT_OS_NAME" /> di attivare o disattivare gli strumenti della console di gestione delle macchine virtuali.
 
@@ -3983,6 +3985,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="647698599569353771">Consenti l'attivazione di Condivisione nelle vicinanze.</translation>
 <translation id="6478258366184919502">Origini della schermata di accesso</translation>
 <translation id="6478261301433199402">La configurazione del criterio consente di specificare l'immagine <ph name="PLUGIN_VM_NAME" /> per un utente. È necessario specificare il criterio come stringa in formato JSON, con <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> che specifica da dove viene scaricata l'immagine e l'hash SHA-256 <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> utilizzato per verificare l'integrità del download.</translation>
+<translation id="6481245670325946423">È consentito l'uso della modalità headless</translation>
 <translation id="6489084406497912050">Consente di stabilire se gli utenti possono o meno aggiungere account Kerberos.
 
           Se questo criterio viene attivato o se non viene configurato, gli utenti possono aggiungere account Kerberos tramite le impostazioni relative agli account Kerberos nella pagina di impostazioni Kerberos. Gli utenti hanno il controllo completo degli account che hanno aggiunto e possono modificarli o rimuoverli.
@@ -5376,6 +5379,7 @@ Se questo criterio non viene impostato, verrà applicato il comportamento predef
 
           Se l'azione è la sospensione, è possibile configurare separatamente <ph name="PRODUCT_OS_NAME" /> in modo che blocchi o meno lo schermo prima della sospensione.</translation>
 <translation id="8214600119442850823">Consente di configurare Gestione password.</translation>
+<translation id="8217664958939773083">Se questo criterio viene impostato su <ph name="ENABLED" /> o se non viene configurato, è possibile usare la modalità headless. Se questo criterio viene impostato su <ph name="DISABLED" />, non è possibile usare la modalità headless.</translation>
 <translation id="8220023426952118761">La velocità di download desiderata, in kbit/s.</translation>
 <translation id="8220156281401380422">Configura lista consentita di messaggi nativi</translation>
 <translation id="8238421250255592181">Un flag booleano che indica se la tastiera sullo schermo può offrire la funzionalità di completamento automatico.</translation>

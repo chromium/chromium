@@ -521,6 +521,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1563702743503072935">Ja būsiet pierakstījies, jūsu Google konta paroles būs pieejamas arī šajā ierīcē</translation>
 <translation id="1566049601598938765">Vietne</translation>
 <translation id="15662109988763471">Atlasītais printeris nav pieejams vai nav instalēts pareizi. Pārbaudiet printeri vai mēģiniet atlasīt citu printeri.</translation>
+<translation id="1567135437923613642">Iespējot pieejamos eksperimentus</translation>
 <translation id="1567387640189251553">Kopš pēdējās reizes, kad ievadījāt paroli, ir pievienota cita tastatūra. Tā, iespējams, mēģina piesavināties jūsu taustiņsitienus.</translation>
 <translation id="1567993339577891801">JavaScript konsole</translation>
 <translation id="1568323446248056064">Atvērt attēlojuma ierīces iestatījumus</translation>
@@ -920,6 +921,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1979095679518582070">Izslēdzot šo funkciju, netiek ietekmēta ierīces spēja nosūtīt informāciju, kas nepieciešama būtiskiem pakalpojumiem, piemēram, sistēmas atjauninājumiem un drošībai.</translation>
 <translation id="1979280758666859181">Jūs gatavojaties pāriet uz kanālu ar vecāku <ph name="PRODUCT_NAME" /> versiju. Kanāla maiņa tiks piemērota, kad kanāla versija atbildīs versijai, kas pašreiz instalēta jūsu ierīcē.</translation>
 <translation id="197989455406964291">KDC neatbalsta šifrējuma veidu</translation>
+<translation id="1983497378699148207">Lai pabeigtu operētājsistēmas Linux iestatīšanu, atjauniniet Chrome OS versiju un mēģiniet vēlreiz.</translation>
 <translation id="1984417487208496350">Bez aizsardzības (nav ieteicams)</translation>
 <translation id="1987317783729300807">Konti</translation>
 <translation id="1989112275319619282">Pārlūkot</translation>
@@ -1332,6 +1334,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2450223707519584812">Jūs nevarēsiet pievienot lietotājus, jo trūkst Google API atslēgu. Detalizētu informāciju skatiet vietnē <ph name="DETAILS_URL" />.</translation>
 <translation id="2450849356604136918">Nav aktīvu skatījumu</translation>
 <translation id="2451298179137331965">2x</translation>
+<translation id="245322989586167203">Parasti vietnēs savienojums ar seriālajiem portiem tiek veidots, lai nodrošinātu noteiktas datu pārsūtīšanas funkcijas, piemēram, tīkla iestatīšanu.</translation>
 <translation id="2453860139492968684">Pabeigt</translation>
 <translation id="2454247629720664989">Atslēgvārds</translation>
 <translation id="2454264884354864965">Kamera ir izslēgta</translation>
@@ -1962,6 +1965,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="313205617302240621">Vai aizmirsāt paroli?</translation>
 <translation id="3132277757485842847">Nevarēja uzturēt savienojumu ar jūsu tālruni. Tālrunim ir jāatrodas tuvumā, tam jābūt atbloķētam, un tajā ir jābūt ieslēgtam Bluetooth un Wi-Fi savienojumam.</translation>
 <translation id="3132996321662585180">Atsvaidzināt katru dienu</translation>
+<translation id="3134393957315651797">Atlasiet eksperimenta <ph name="EXPERIMENT_NAME" /> statusu. Eksperimenta apraksts: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">PIN nav derīgs. Atlikuši <ph name="RETRIES" /> mēģinājumi.</translation>
 <translation id="313963229645891001">Notiek lejupielāde: <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">Noklusējuma iemiesojums dzeltenā krāsā</translation>
@@ -2846,6 +2850,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="4099874310852108874">Radās tīkla kļūda.</translation>
 <translation id="4100733287846229632">Ierīces diskā gandrīz nav vietas</translation>
 <translation id="4100853287411968461">Jauns izmantošanas ilguma ierobežojums</translation>
+<translation id="4101352914005291489">Slēpts SSID</translation>
 <translation id="4102906002417106771">Restartēt, lai aktivizētu funkciju Powerwash</translation>
 <translation id="4104163789986725820">E&amp;ksportēt...</translation>
 <translation id="4107048419833779140">Identificēt un atvienot atmiņas ierīces</translation>
@@ -3915,6 +3920,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5382591305415226340">Pārvaldīt atbalstītās saites</translation>
 <translation id="5383377866517186886">Kamera ir izslēgta Mac sistēmas preferencēs</translation>
 <translation id="5383740867328871413">Statuss grupai bez nosaukuma (<ph name="GROUP_CONTENTS" />): <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">Uzņēmuma politika tika mainīta. Rīkjoslai tika pievienota eksperimentu poga. Lai atvērtu dialoglodziņu un iespējotu eksperimentus, noklikšķiniet uz pogas.</translation>
 <translation id="5388885445722491159">Sapārots</translation>
 <translation id="5390100381392048184">Atļaut vietnēm atskaņot skaņu</translation>
 <translation id="5390112241331447203">Iekļaut atsauksmju ziņojumos nosūtīto failu system_logs.txt.</translation>
@@ -5039,6 +5045,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6659594942844771486">Cilne</translation>
 <translation id="6660413144148052430">atrašanās vieta</translation>
 <translation id="666099631117081440">Drukas serveri</translation>
+<translation id="6662931079349804328">Uzņēmuma politika tika mainīta. Eksperimentu poga tika noņemta no rīkjoslas.</translation>
 <translation id="6663190258859265334">Aktivizējiet savā <ph name="DEVICE_TYPE" /> ierīcē funkciju Powerwash un atgriezieties iepriekšējā versijā.</translation>
 <translation id="6664237456442406323">Diemžēl jūsu datora konfigurācijā tika izmantots nepareizi veidots aparatūras ID. Šī iemesla dēļ operētājsistēmu Chrome OS nevarēja atjaunināt, izmantojot jaunākos drošības labojumus, un jūsu dators, iespējams, <ph name="BEGIN_BOLD" />nebūs aizsargāts pret ļaunprātīgiem uzbrukumiem<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">Atverot jūsu profilu, radās kļūda. Lūdzu, izrakstieties un vēlreiz pierakstieties.</translation>
@@ -5395,6 +5402,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7056526158851679338">&amp;Pārbaudīt ierīces</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{Drošības pārbaude tika izpildīta pirms 1 minūtes}zero{Drošības pārbaude tika izpildīta pirms {NUM_MINS} minūtēm}one{Drošības pārbaude tika izpildīta pirms {NUM_MINS} minūtes}other{Drošības pārbaude tika izpildīta pirms {NUM_MINS} minūtēm}}</translation>
 <translation id="7057767408836081338">Neizdevās iegūt lietotnes datus, tomēr tiek mēģināts palaist lietotni...</translation>
+<translation id="7058024590501568315">Slēpts tīkls</translation>
 <translation id="7059858479264779982">Iestatīt automātisku palaišanu</translation>
 <translation id="7059893117020417984">Lai pārlūkotu tīmekli privāti, atveriet inkognito režīma logu, noklikšķinot uz punktu ikonas izvēlnes.</translation>
 <translation id="7062222374113411376">Atļaut nesen aizvērtajām vietnēm pabeigt datu sūtīšanu un saņemšanu</translation>
@@ -5758,6 +5766,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7477793887173910789">Pārvaldiet savu mūziku, videoklipus un citu saturu</translation>
 <translation id="7478485216301680444">Kioska lietojumprogrammu nevarēja instalēt.</translation>
 <translation id="7478623944308207463">Jūsu lietotnes un iestatījumi tiks sinhronizēti visās Chrome OS ierīcēs, kurās esat pierakstījies, izmantojot savu Google kontu. Lai skatītu pārlūkprogrammas sinhronizācijas opcijas, pārejiet uz <ph name="LINK_BEGIN" />Chrome iestatījumiem<ph name="LINK_END" />.</translation>
+<translation id="7478658909253570368">Neļaut vietnēm veidot savienojumu ar seriālajiem portiem</translation>
 <translation id="7479221278376295180">Krātuves lietojuma kopsavilkums</translation>
 <translation id="7481312909269577407">Pārsūtīt</translation>
 <translation id="7481358317100446445">Gatavs</translation>
@@ -5909,11 +5918,13 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="765293928828334535">No šīs vietnes nevar pievienot lietotnes, paplašinājumus un lietotāja skriptus.</translation>
 <translation id="7652954539215530680">PIN koda izveide</translation>
 <translation id="7654941827281939388">Šis konts jau tiek izmantots šajā datorā.</translation>
+<translation id="7655411746932645568">Atļaut vietnēm pieprasīt atļauju veidot savienojumu ar seriālajiem portiem</translation>
 <translation id="7658239707568436148">Atcelt</translation>
 <translation id="7659297516559011665">Paroles tikai šajā ierīcē</translation>
 <translation id="7659584679870740384">Jums nav atļaujas izmantot šo ierīci. Lūdzu, sazinieties ar administratoru, lai saņemtu pierakstīšanās atļauju.</translation>
 <translation id="7661259717474717992">Atļaut vietnēm saglabāt un nolasīt sīkfailu datus</translation>
 <translation id="7661451191293163002">Nevarēja iegūt reģistrācijas sertifikātu.</translation>
+<translation id="7661762353058813968">Atjauninājumus pārvalda administrators.</translation>
 <translation id="7662283695561029522">Pieskarieties, lai konfigurētu.</translation>
 <translation id="7663719505383602579">Uztvērējs: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">Neatbalstīta Bluetooth ierīce: <ph name="DEVICE_NAME" />.</translation>
@@ -6694,6 +6705,7 @@ Lai tālinātu, izmantojiet kombināciju Ctrl+Alt+Samazināt spilgtumu.</transla
 <translation id="8539727552378197395">Nē (HttpOnly)</translation>
 <translation id="8539766201049804895">Jaunināt</translation>
 <translation id="8540136935098276800">Ievadiet pareizi formatētu URL.</translation>
+<translation id="8540503336857689453">Drošības apsvērumu dēļ nav ieteicams lietot slēptu tīklu</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, informācija</translation>
 <translation id="854071720451629801">Atzīmēt kā izlasītu</translation>
 <translation id="8541462173655894684">Netika atrasts neviens printeris no drukas servera.</translation>

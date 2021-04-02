@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Pomóż w ulepszaniu funkcji i działania Chrome</translation>
 <translation id="1314663809820920746">Nadal masz dostęp do swoich zakładek, historii, haseł i innych ustawień na tym urządzeniu. Jeśli wprowadzisz zmiany, nie zostaną one zsynchronizowane na Twoim koncie Google.</translation>
 <translation id="1479202195792305274">Chrome może sprawdzić Twoje hasła, gdy zalogujesz się na swoje konto Google.</translation>
+<translation id="1493827051843127077">Ustaw Chrome jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
 <translation id="1504372625950710826">Chrome nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="1682483655351012182">Synchronizuj dane Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome udostępnia Twoją lokalizację witrynom, którym zgadzasz się ją ujawnić.</translation>
 <translation id="2347208864470321755">Gdy ta funkcja jest włączona, Chrome oferuje tłumaczenie stron w innych językach przy użyciu Tłumacza Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Ustaw Chrome jako przeglądarkę domyślną</translation>
+<translation id="2561231791489583059">Używaj Chrome jako przeglądarki domyślnej, aby korzystać z ochrony przed niebezpiecznymi stronami i bezpiecznie przechowywać swoje hasła</translation>
 <translation id="2574249610672786438">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, zaloguj się na wszystkich urządzeniach</translation>
 <translation id="2576431527583832481">Chrome jest teraz jeszcze lepszy! Dostępna jest nowa wersja.</translation>
 <translation id="257708665678654955">Czy następnym razem Google Chrome ma zaproponować Ci tłumaczenie stron tej witryny, których język to <ph name="LANGUAGE_NAME" />?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome nie może sprawdzić Twoich haseł</translation>
 <translation id="7265369419224458312">Tutaj możesz korzystać z kart otwartych na komputerze. Wystarczy uruchomić Chrome na komputerze i w menu wybrać „Zaloguj się w Chrome”.</translation>
 <translation id="7272930098487145294">Aby zapisać obrazy, kliknij Ustawienia i pozwól Chrome na dodanie ich do Twoich zdjęć</translation>
+<translation id="7275945473750112644">Twoim kontem zarządza <ph name="HOSTED_DOMAIN" />, więc Twoje dane z Chrome zostaną usunięte z tego urządzenia</translation>
 <translation id="7400722733683201933">Google Chrome – informacje</translation>
 <translation id="7501046334262221972">Aby ustawić Chrome jako przeglądarkę domyślną, otwórz Ustawienia. Kliknij Domyślna przeglądarka i wybierz Chrome.</translation>
 <translation id="756809126120519699">Wyczyszczono dane Chrome</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Chrome zaleca jego natychmiastową zmianę.</translation>
 <translation id="7698568245838009292">Chrome chce mieć dostęp do kamery</translation>
 <translation id="7855730255114109580">Masz aktualną wersję Google Chrome</translation>
+<translation id="8022947259858476807">Używaj domyślnie Chrome, aby otwierać linki, wyszukiwać z widżetów i korzystać z autouzupełniania haseł w innych aplikacjach</translation>
 <translation id="8160472928944011082">Nie udało się zaktualizować Chrome</translation>
+<translation id="8357607116237445042">Zdecyduj, czy chcesz usunąć swoje dane z Chrome z tego urządzenia czy je na nim zachować</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Wszelkie prawa zastrzeżone.</translation>
 <translation id="840168496893712993">Niektóre dodatki mogą powodować awarie Chrome. Spróbuj je odinstalować.</translation>
 <translation id="8459495907675268833">Wybrane dane zostały usunięte z Chrome i synchronizowanych urządzeń. Inne rodzaje historii przeglądania, takie jak wyszukiwania i aktywność w innych usługach Google, mogą być nadal dostępne na Twoim koncie Google na history.google.com</translation>
@@ -88,4 +93,5 @@
   2. Kliknij Domyślna przeglądarka.
   3. Wybierz Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Dbaj o swoje bezpieczeństwo, używając Google Chrome</translation>
 </translationbundle>

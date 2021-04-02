@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">W Chromium są funkcje, które pomogą Ci zarządzać szybkością wczytywania stron internetowych oraz danymi przesyłanymi przez sieć.
 <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium nie udało się sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
+<translation id="2054703085270098503">Dbaj o swoje bezpieczeństwo, używając Chromium</translation>
 <translation id="2075400798887076382">Tutaj możesz korzystać z kart otwartych na komputerze. Wystarczy uruchomić Chromium na komputerze i w menu wybrać „Zaloguj się w Chromium”.</translation>
 <translation id="2168108852149185974">Niektóre dodatki mogą powodować awarie Chromium. Odinstaluj je.</translation>
 <translation id="2178608107313874732">Chromium nie może teraz użyć aparatu</translation>
 <translation id="2195025571279539885">Czy następnym razem Chromium ma zaproponować Ci tłumaczenie stron tej witryny, których język to <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2590893390871230428">Synchronizuj dane Chromium</translation>
 <translation id="2650312721222849884">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chromium, włącz synchronizację</translation>
+<translation id="2684230048001240293">Ustaw Chromium jako przeglądarkę domyślną, aby synchronizować karty, hasła i dane kart płatniczych na wszystkich urządzeniach</translation>
 <translation id="2730884209570016437">Chromium nie może użyć aparatu, bo używa go już inna aplikacja</translation>
 <translation id="2915596697727466327">Chromium używa Face ID do autoryzacji dostępu do Twoich haseł.</translation>
 <translation id="2918709798697875261">Twoja organizacja nie pozwala Ci zalogować się w Chromium.</translation>
+<translation id="2942241131342758843">Używaj domyślnie Chromium, aby otwierać linki, wyszukiwać z widżetów i korzystać z autouzupełniania haseł w innych aplikacjach</translation>
 <translation id="2977470724722393594">Masz aktualną wersję Chromium</translation>
 <translation id="3256316712990552818">Skopiowana do Chromium</translation>
 <translation id="3344973607274501920">Przeglądarce Chromium nie udało się sprawdzić Twoich haseł. Sprawdź połączenie z internetem.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Gdy ta funkcja jest włączona, Chromium oferuje tłumaczenie stron w innych językach przy użyciu Tłumacza Google. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Teraz możesz używać Chromium za każdym razem, gdy klikniesz link w wiadomościach, dokumentach i w innych aplikacjach.</translation>
 <translation id="4681781466797808448">Włącz skaner Chromium</translation>
+<translation id="4736424910885271643">Twoim kontem zarządza <ph name="HOSTED_DOMAIN" />, więc Twoje dane z Chromium zostaną usunięte z tego urządzenia</translation>
 <translation id="4787850887676698916">Tutaj wyświetlą się karty otwarte w Chromium na innych urządzeniach.</translation>
 <translation id="4828317641996116749">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie później.</translation>
 <translation id="4985291216379576555">Tryb offline. Chromium nie może sprawdzić dostępności aktualizacji.</translation>
@@ -55,6 +59,7 @@
 2. Kliknij Domyślna przeglądarka.
 3. Wybierz Chromium.</translation>
 <translation id="6268381023930128611">Wylogować z Chromium?</translation>
+<translation id="6337530241089703714">Zdecyduj, czy chcesz usunąć swoje dane z Chromium z tego urządzenia czy je na nim zachować</translation>
 <translation id="6424492062988593837">Chromium jest teraz jeszcze lepsze! Dostępna jest nowa wersja.</translation>
 <translation id="6820823224820483452">Przeglądarce Chromium nie udało się sprawdzić wszystkich haseł. Spróbuj ponownie jutro.</translation>
 <translation id="6827294685447036764">Jeśli zezwolisz na dostęp do swojej lokalizacji, Chromium będzie wysyłać ją do witryn, którym przyznasz dostęp. O dostęp do Twojej lokalizacji mogą prosić witryny pokazujące treści lokalne, np. wiadomości z regionu czy informacje o sklepach w pobliżu.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Wskutek naruszenia bezpieczeństwa danych doszło do ujawnienia hasła. Chromium zaleca jego natychmiastową zmianę.</translation>
 <translation id="7674213385180944843">Wybierz Ustawienia &gt; Prywatność &gt; Aparat &gt; Chromium i włącz aparat.</translation>
 <translation id="7746854981345936341">Wskazówka dla użytkowników Chromium. Niektóre przyciski (na przykład Wstecz, Dalej i Szukaj) znajdują się teraz na dole ekranu.</translation>
+<translation id="7763454117143368771">Używaj Chromium jako przeglądarki domyślnej, aby korzystać z ochrony przed niebezpiecznymi stronami i bezpiecznie przechowywać swoje hasła</translation>
 <translation id="786327964234957808">Przełączasz synchronizację kont z <ph name="USER_EMAIL1" /> na <ph name="USER_EMAIL2" />. Twoimi istniejącymi danymi Chromium zarządza <ph name="DOMAIN" />. Dane zostaną usunięte z tego urządzenia, ale pozostaną na koncie <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Zacznij używać skanera Chromium</translation>
 <translation id="7931842119211730154">Blokuj karty incognito po zamknięciu Chromium</translation>

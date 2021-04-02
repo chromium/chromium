@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">I Chromium finns det funktioner som du kan använda för att hantera dina internetuppgifter och inläsningshastigheten för webbsidor.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
+<translation id="2054703085270098503">Surfa säkert med Chromium</translation>
 <translation id="2075400798887076382">Använd flikar som du öppnar på datorn även här. Du behöver bara öppna Chromium på datorn, öppna menyn och välja Logga in i Chromium …</translation>
 <translation id="2168108852149185974">Några tillägg har fått Chromium att krascha. Avinstallera följande:</translation>
 <translation id="2178608107313874732">Chromium kan inte använda kameran just nu</translation>
 <translation id="2195025571279539885">Vill du att Chromium ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
 <translation id="2590893390871230428">Synkronisera data i Chromium</translation>
 <translation id="2650312721222849884">Aktivera synkronisering om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
+<translation id="2684230048001240293">Ställ in Chromium som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
 <translation id="2730884209570016437">Chromium kan inte använda kameran eftersom den används av en annan app</translation>
 <translation id="2915596697727466327">Chromium använder Face ID för att se till att endast behöriga har åtkomst till lösenorden.</translation>
 <translation id="2918709798697875261">Organisationen kräver att du inte loggar in i Chromium.</translation>
+<translation id="2942241131342758843">Använd Chromium som standard när du öppnar länkar och söker med en widget och få lösenord ifyllda i andra appar automatiskt</translation>
 <translation id="2977470724722393594">Chromium är uppdaterat</translation>
 <translation id="3256316712990552818">Kopierat till Chromium</translation>
 <translation id="3344973607274501920">Chromium kunde inte kontrollera dina lösenord. Testa att kontrollera internetanslutningen.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
 <translation id="4681781466797808448">Aktivera Chromium som skanner</translation>
+<translation id="4736424910885271643">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chromium från enheten</translation>
 <translation id="4787850887676698916">Här visas flikar som du har öppnat i Chromium på andra enheter.</translation>
 <translation id="4828317641996116749">Chromium kunde inte kontrollera alla lösenord. Försök igen senare.</translation>
 <translation id="4985291216379576555">Chromium kan inte söka efter uppdateringar offline</translation>
@@ -55,6 +59,7 @@
 2. Tryck på Standardwebbläsarapp
 3. Välj Chromium.</translation>
 <translation id="6268381023930128611">Vill du logga ut från Chromium?</translation>
+<translation id="6337530241089703714">Välj om din data i Chromium ska raderas från den här enheten eller vara kvar</translation>
 <translation id="6424492062988593837">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="6820823224820483452">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
 <translation id="6827294685447036764">När du ger Chromium åtkomst till din plats skickas den från Chromium till alla webbplatser som du ger behörighet. Webbplatser kan fråga efter din plats när det finns lokal information att visa, till exempel butiker i närheten eller nyheter.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas att ändra lösenordet nu.</translation>
 <translation id="7674213385180944843">Öppna Inställningar &gt; Sekretess &gt; Kamera &gt; Chromium och aktivera kameran.</translation>
 <translation id="7746854981345936341">Tips för Chromium. Vissa knappar finns nu längst ned på skärmen, till exempel bakåtknappen, framåtknappen och Sök.</translation>
+<translation id="7763454117143368771">Använd Chromium som standardwebbläsare med skydd mot skadliga webbplatser och skydd av dina lösenord</translation>
 <translation id="786327964234957808">Du håller på att byta synkroniseringskonto från <ph name="USER_EMAIL1" /> till <ph name="USER_EMAIL2" />. Befintlig data i Chromium hanteras av <ph name="DOMAIN" />. Åtgärden raderar din data från den här enheten men den finns kvar på <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Börja använda Chromium som skanner</translation>
 <translation id="7931842119211730154">Lås inkognitoflikar när du stänger Chromium</translation>

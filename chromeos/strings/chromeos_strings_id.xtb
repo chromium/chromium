@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + sertifikat pengguna</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
 <translation id="4773299976671772492">Dihentikan</translation>
+<translation id="4794140124556169553">Menjalankan pengujian CPU dapat memengaruhi performa sistem Anda</translation>
 <translation id="4808449224298348341">Tugas pencetakan <ph name="DOCUMENT_TITLE" /> dibatalkan</translation>
 <translation id="4813345808229079766">Sambungan</translation>
 <translation id="4832079907277790330">Pilih folder di aplikasi File ...</translation>
@@ -341,6 +342,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
+<translation id="8575298406870537639">Operator Anda mungkin memerlukan opsi ini untuk terhubung ke jaringan. Hubungi operator untuk mengetahui detailnya.</translation>
 <translation id="8576249514688522074">Tidak diinisialisasi</translation>
 <translation id="8620617069779373398">Status roaming</translation>
 <translation id="8675354002693747642">Kunci yang dibagikan sebelumnya</translation>
@@ -365,7 +367,6 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8970109610781093811">Jalankan lagi</translation>
 <translation id="9003704114456258138">Frekuensi</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Edit</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Penggunaan saat ini</translation>

@@ -609,6 +609,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Asistent Google v relaci hosta není k dispozici.</translation>
 <translation id="6137566720514957455">Otevřít dialogové okno odstranění účtu <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Periferní zařízení není podporováno</translation>
 <translation id="615957422585914272">Zobrazit softwarovou klávesnici</translation>
 <translation id="6165508094623778733">Další informace</translation>
 <translation id="6179832488876878285">Sem si můžete připnout důležité soubory. Začněte tím, že otevřete aplikaci Soubory.</translation>
@@ -630,7 +631,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6376931439017688372">Rozhraní Bluetooth je zapnuté</translation>
 <translation id="6381109794406942707">Chcete-li zařízení odemknout, zadejte PIN.</translation>
 <translation id="639644700271529076">CAPS LOCK je vypnutý</translation>
-<translation id="6396835948284782440">Režim ukončíte podržením klávesy [Esc].</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Vymazat všechna oznámení</translation>

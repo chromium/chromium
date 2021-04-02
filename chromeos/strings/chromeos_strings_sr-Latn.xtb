@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + sertifikat korisnika</translation>
 <translation id="4731797938093519117">Roditeljski pristup</translation>
 <translation id="4773299976671772492">Zaustavljeno je</translation>
+<translation id="4794140124556169553">Pokretanje testa procesora može da utiče na učinak sistema</translation>
 <translation id="4808449224298348341">Otkazan je zadatak štampanja <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">Veza</translation>
 <translation id="4832079907277790330">Izaberite folder u aplikaciji Fajlovi...</translation>
@@ -341,6 +342,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8483248364096924578">IP adresa</translation>
 <translation id="8503813439785031346">Korisničko ime</translation>
 <translation id="8503836310948963452">Još samo par minuta…</translation>
+<translation id="8575298406870537639">Mobilni operater može da zatraži ovu opciju radi povezivanja na mrežu. Obratite se mobilnom operateru za detalje.</translation>
 <translation id="8576249514688522074">Nije pokrenuto</translation>
 <translation id="8620617069779373398">Status rominga</translation>
 <translation id="8675354002693747642">Tajni ključ</translation>
@@ -365,7 +367,6 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Izmeni</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Trenutna iskorišćenost</translation>

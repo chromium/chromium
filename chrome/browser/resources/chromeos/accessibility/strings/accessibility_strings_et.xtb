@@ -57,6 +57,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="1299774449519412690">Hele taevasinine</translation>
 <translation id="1303806948938513162">ChromeVoxi menüüdesse sisenemiseks puudutage nelja sõrmega</translation>
 <translation id="1313373992684326101">Eelmise jaotise juurde liikumine. Näiteks olekusalv ja käivitaja.</translation>
+<translation id="1315077335264761176">Puudutustega navigeerimine</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menüü-üksuse raadionupp on valimata</translation>
 <translation id="1325946044405407859">Helepruun</translation>
 <translation id="1331702245475014624"><ph name="INDEX" />/<ph name="TOTAL" />-st</translation>
@@ -122,6 +123,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="1730447754326314349">Tere tulemast tutvuma ChromeVoxi õpetustega! Õpetustest väljumiseks võite igal ajal vajutada klaviatuuri vasakus ülanurgas olevat paoklahvi (Esc). ChromeVoxi väljalülitamiseks hoidke all klahve Ctrl ja Alt ning vajutage klahvi Z. Kui olete valmis, vajutage järgmise õppetunni juurde liikumiseks tühikut.</translation>
 <translation id="174268867904053074">Järgmine graafik</translation>
 <translation id="1756785467854861272">Tume magenta</translation>
+<translation id="1758693804775271377">Pühkige selle teema õppetundide sirvimiseks ühe sõrmega vasakule või paremale</translation>
 <translation id="1765245556747822181">Pühkige ühe sõrmega üles</translation>
 <translation id="1771761307086386028">Keri paremale</translation>
 <translation id="1781173782405573156">Läbimisklahv</translation>
@@ -258,6 +260,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="2811204574343810641">Rida</translation>
 <translation id="2816868829355607410">Harjutusala: liikumiskäsud</translation>
 <translation id="2841013758207633010">Aeg</translation>
+<translation id="284171465644749950">Teemade sirvimiseks pühkige ühe sõrmega vasakule või paremale</translation>
 <translation id="2843432675592278677">Eelmist ARIA maamärki ei ole</translation>
 <translation id="2843814945404750166">Tume oliivroheline</translation>
 <translation id="2843837985843789981">Eelmine rühm</translation>
@@ -1121,6 +1124,7 @@ Chrome'i brauseri menüü avamiseks vajutage klahvikombinatsiooni Alt + F.</tran
 <translation id="923331726185079994">ChromeVox on värskendatud</translation>
 <translation id="93384979447910801">Tume mereroheline</translation>
 <translation id="948171205378458592">Vähenda kõne kiirust</translation>
+<translation id="957570623732056069">Pühkige selles õppetunnis navigeerimiseks ühe sõrmega vasakule või paremale</translation>
 <translation id="958854023026327378">Pühkige ühe sõrmega alla</translation>
 <translation id="962913030769097253">Järgmine 1. taseme pealkiri</translation>
 <translation id="966588271015727539">Valige Bluetoothiga Braille' ekraan</translation>

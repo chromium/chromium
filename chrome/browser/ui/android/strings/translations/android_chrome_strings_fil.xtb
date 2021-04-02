@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">History ng pag-navigate</translation>
 <translation id="1231733316453485619">I-on ang pag-sync?</translation>
 <translation id="123724288017357924">I-reload ang page, balewalain ang cached content</translation>
+<translation id="1240288207750131269">Nilo-load ang <ph name="LANG" /></translation>
 <translation id="124678866338384709">Isara ang kasalukuyang tab</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Pamahalaan ang mga site na sinusubaybayan mo</translation>
 <translation id="1283039547216852943">I-tap upang palawakin</translation>
 <translation id="1285310382777185058">Palitan ang wika</translation>
 <translation id="1291207594882862231">I-clear ang history, cookies, site data, cache…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Bersyon ng application</translation>
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1450753235335490080">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Piliin ang wika ng Chrome</translation>
 <translation id="147113415845704694">Subukan ang “Kumusta ang lagay ng panahon ngayon?”</translation>
 <translation id="1477626028522505441">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga isyu sa server.</translation>
 <translation id="1492417797159476138">Na-save mo na ang username na ito para sa site na ito</translation>
@@ -205,6 +208,7 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 <translation id="2353636109065292463">Sinusuri ang iyong koneksyon sa internet</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2369533728426058518">magbukas ng mga tab</translation>
+<translation id="2386938421315164605">Itago at i-unhide ang mga paksa</translation>
 <translation id="2387895666653383613">Pag-scale ng text</translation>
 <translation id="2394602618534698961">Lalabas dito ang mga file na dina-download mo</translation>
 <translation id="2407481962792080328">Kapag nag-sign in ka sa iyong Google Account, mao-on ang feature na ito</translation>
@@ -265,6 +269,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="281504910091592009">Tingnan at pamahalaan ang mga naka-save na password sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Para makuha ang iyong mga bookmark sa lahat ng device mo, mag-sign in at i-on ang pag-sync</translation>
 <translation id="2827278682606527653">Half height ng menu ng feed card</translation>
+<translation id="2839327205551510876">Hindi na sinusubaybayan ang <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Nagsuri 1 araw ang nakalipas}one{Nagsuri # araw ang nakalipas}other{Nagsuri # na araw ang nakalipas}}</translation>
 <translation id="2842985007712546952">Pangunahing folder</translation>
 <translation id="2856503607207334158">Pumalya ang pag-sign in</translation>
@@ -281,6 +286,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2923908459366352541">Di-wasto ang pangalan</translation>
 <translation id="2932150158123903946">Storage ng <ph name="APP_NAME" /> sa Google</translation>
+<translation id="2932222164150889403">Hindi magbabago ang iyong keyboard</translation>
 <translation id="2942036813789421260">Nakasara ang tab na preview</translation>
 <translation id="2956410042958133412">Pinapamahalaan ang account na ito ng <ph name="PARENT_NAME_1" /> at <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page ang hindi pa nababasa}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page ang hindi pa nababasa}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> na page ang hindi pa nababasa}}</translation>
@@ -297,6 +303,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3031225630520268969">UI ng pahintulot ng paghahanap gamit ang boses ng Assistant</translation>
 <translation id="3034163383943672781">Magsisimula ang pag-download sa <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Humingi ng tulong<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Mas mabilis na makapunta sa site na ito sa ibang pagkakataon</translation>
 <translation id="305593374596241526">Naka-off ang lokasyon; i-on ito sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Maaari mong i-on ang pag-sync anumang oras sa mga setting.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}one{<ph name="BOOKMARKS_COUNT_MANY" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> na bookmark}}</translation>
@@ -340,6 +347,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3315103659806849044">Kasalukuyan mong kino-customize ang iyong mga setting ng Pag-sync at serbisyo ng Google. Para tapusin ang pag-on ng pag-sync, i-tap ang button na Kumpirmahin malapit sa ibaba ng screen. Mag-navigate pataas</translation>
 <translation id="3334729583274622784">Baguhin ang file extension?</translation>
 <translation id="3341058695485821946">Tingnan kung gaano karaming data ang iyong natipid</translation>
+<translation id="3341262203274374114">Hindi ma-unfollow. Nagkaproblema.</translation>
 <translation id="3350687908700087792">Isara ang lahat ng incognito na tab</translation>
 <translation id="3359667936385849800">Gamitin ang iyong kasalukuyang service provider</translation>
 <translation id="3367813778245106622">Mag-sign in muli upang simulan ang pag-sync</translation>
@@ -434,6 +442,8 @@ Kasalukuyan pa ring dine-develop ang Privacy Sandbox at available ito sa mga pil
 <translation id="3988213473815854515">Pinapahintulutan ang lokasyon</translation>
 <translation id="3988466920954086464">Tingnan ang mga instant na resulta ng paghahanap sa panel na ito</translation>
 <translation id="4000212216660919741">Offline Home</translation>
+<translation id="4016425174436051808">Hindi masubaybayan. Nagkaproblema.</translation>
+<translation id="4021916380760361450">Kontrolin ang data sa iyong mga Google account</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# oras}one{# oras}other{# na oras}}</translation>
 <translation id="4045764304651014138">Data ng paggamit</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -598,6 +608,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5152843274749979095">Walang naka-install na sinusuportahang app</translation>
 <translation id="5161254044473106830">Kailangan ng pamagat</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ang hindi na-download.}one{# ang hindi na-download.}other{# ang hindi na-download.}}</translation>
+<translation id="5168824020667180049">Sinusubaybayan na ang <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Ipinakita sa folder</translation>
 <translation id="5184329579814168207">Buksan sa Chrome</translation>
 <translation id="5188992787241350004">Maghanap gamit ang iyong boses</translation>
@@ -717,6 +728,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5864419784173784555">Naghihintay ng isa pang download…</translation>
 <translation id="5865733239029070421">Awtomatikong nagpapadala sa Google ng mga istatistika ng paggamit at ulat ng pag-crash</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
+<translation id="5880748256563468367">Pumunta sa feed</translation>
 <translation id="5884076754568147479">Para tulungan kang tapusin ang mga gawain, matatanggap ng Google ang mga URL at content ng mga site kung saan ka gumamit ng Assistant, gayundin ang impormasyong isinumite mo sa pamamagitan ng Assistant</translation>
 <translation id="5919204609460789179">I-update ang <ph name="PRODUCT_NAME" /> upang simulan ang pag-sync</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> ang natipid</translation>
@@ -734,6 +746,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="5979084224081478209">Suriin ang mga password</translation>
 <translation id="5982307838673692400">Magbukas ng tab na Incognito</translation>
 <translation id="6000066717592683814">Panatilihin ang Google</translation>
+<translation id="6000203700195075278">Subaybayan ulit</translation>
 <translation id="6005538289190791541">Iminumungkahing password</translation>
 <translation id="6036057147555329831">Karagdagang ICU</translation>
 <translation id="6039379616847168523">Pumunta sa susunod na tab</translation>
@@ -1095,6 +1108,7 @@ Maki-clear lang sa Chrome ang data sa iyong Incognito na session kapag <ph name=
 <translation id="834313815369870491">Huwag isalin kailanman ang mga site</translation>
 <translation id="8349013245300336738">Pagbukud-bukurin ayon sa dami ng data na nagamit</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> (na) download ang na-restore</translation>
+<translation id="8362134094656482681">Pamahalaan ang mga paksa kung saan ka interesado</translation>
 <translation id="8364299278605033898">Tingnan ang mga sikat na website</translation>
 <translation id="8368027906805972958">Hindi alam o hindi sinusuportahang device (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381">Handa na ang <ph name="LANG" />.</translation>

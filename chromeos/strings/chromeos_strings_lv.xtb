@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + lietotāja sertifikāts</translation>
 <translation id="4731797938093519117">Vecāku piekļuve</translation>
 <translation id="4773299976671772492">Pārtraukts</translation>
+<translation id="4794140124556169553">Centrālā procesora pārbaudes veikšana var ietekmēt jūsu sistēmas veiktspēju</translation>
 <translation id="4808449224298348341">Drukas uzdevums “<ph name="DOCUMENT_TITLE" />” tika atcelts</translation>
 <translation id="4813345808229079766">Savienojums</translation>
 <translation id="4832079907277790330">Atlasīt mapi lietotnē Faili…</translation>
@@ -341,6 +342,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8483248364096924578">IP adrese</translation>
 <translation id="8503813439785031346">Lietotājvārds</translation>
 <translation id="8503836310948963452">Vēl tikai dažas minūtes...</translation>
+<translation id="8575298406870537639">Jūsu mobilo sakaru operators var pieprasīt šīs opcijas izmantošanu, lai varētu izveidot savienojumu ar attiecīgā operatora tīklu. Lai iegūtu detalizētu informāciju, sazinieties ar savu mobilo sakaru operatoru.</translation>
 <translation id="8576249514688522074">Pārbaude nav sākta</translation>
 <translation id="8620617069779373398">Viesabonēšanas statuss</translation>
 <translation id="8675354002693747642">Iepriekš kopīgota atslēga</translation>
@@ -365,7 +367,6 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8970109610781093811">Izpildīt vēlreiz</translation>
 <translation id="9003704114456258138">Frekvence</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Labot</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Pašreizējais lietojums</translation>

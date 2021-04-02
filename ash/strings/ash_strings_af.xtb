@@ -610,6 +610,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Die Google Assistent is nie in 'n gastesessie beskikbaar nie.</translation>
 <translation id="6137566720514957455">Maak verwyderingdialoog oop vir <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">Randtoestel word nie gesteun nie</translation>
 <translation id="615957422585914272">Wys opskerm-sleutelbord</translation>
 <translation id="6165508094623778733">Kom meer te wete</translation>
 <translation id="6179832488876878285">Jy kan jou belangrike lêers hier vasspeld. Maak Lêers-program oop om te begin.</translation>
@@ -631,7 +632,6 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6376931439017688372">Bluetooth is aan</translation>
 <translation id="6381109794406942707">Voer jou PIN in om die toestel te ontsluit.</translation>
 <translation id="639644700271529076">HOOFLETTERSLOT is af</translation>
-<translation id="6396835948284782440">Druk en hou [Esc] om uit te gaan.</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Vee alle kennisgewings uit</translation>

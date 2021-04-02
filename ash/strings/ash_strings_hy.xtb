@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />։ <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">Google Օգնականը հասանելի չէ հյուրի աշխատաշրջանում:</translation>
 <translation id="6137566720514957455">Բացել <ph name="USER_EMAIL_ADDRESS" /> հաշվի հեռացման երկխոսության պատուհանը</translation>
+<translation id="6154006699632741460">Արտաքին սարքերը չեն աջակցվում</translation>
 <translation id="615957422585914272">Ցույց տալ էկրանի ստեղնաշարը</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
 <translation id="6179832488876878285">Դուք կարող եք այստեղ ամրացնել ձեր կարևոր ֆայլերը։ Սկսելու համար բացեք «Ֆայլեր» հավելվածը։</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">Bluetooth-ը միացված է</translation>
 <translation id="6381109794406942707">Սարքն ապակողպելու համար մուտքագրեք ձեր PIN կոդը։</translation>
 <translation id="639644700271529076">CAPS LOCK-ն անջատված է</translation>
-<translation id="6396835948284782440">Սեղմեք և պահեք [Esc] ստեղնը՝ դուրս գալու համար</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">Մաքրել բոլոր ծանուցումները</translation>

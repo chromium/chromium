@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Навигацын түүх</translation>
 <translation id="1231733316453485619">Синк асаах уу?</translation>
 <translation id="123724288017357924">Нөөцөлсөн агуулгыг алгасч одоогийн хуудсыг дахин ачаалах</translation>
+<translation id="1240288207750131269"><ph name="LANG" />-г ачаалж байна</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />-г хуваалцаж чадсангүй</translation>
+<translation id="1276279242344007853">Дагаж буй сайтуудаа удирдана уу</translation>
 <translation id="1283039547216852943">Дэлгэхийн тулд товших</translation>
 <translation id="1285310382777185058">Хэл өөрчлөх</translation>
 <translation id="1291207594882862231">Түүх, күүки, сайтын өгөгдөл, нөөцийг устгах...</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Програмын хувилбар</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />-г хуваалцах боломжгүй байна</translation>
+<translation id="1466383950273130737">Chrome-н хэл сонгоно уу</translation>
 <translation id="147113415845704694">“Өнөөдөр цаг агаар ямар байна вэ?” гэж хэлж үзнэ үү</translation>
 <translation id="1477626028522505441">Серверийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
 <translation id="1492417797159476138">Та энэ сайтад аль хэдийн энэ хэрэглэгчийн нэрийг хадгалсан байна</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">Таны интернэт холболтыг шалгаж байна</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2369533728426058518">таб нээх</translation>
+<translation id="2386938421315164605">Сэдвүүдийг нуух болон ил болгох</translation>
 <translation id="2387895666653383613">Текстийн хэмжээс</translation>
 <translation id="2394602618534698961">Таны татсан файлууд энд харагддаг</translation>
 <translation id="2407481962792080328">Таныг Google Бүртгэлдээ нэвтрэхэд энэ онцлог асна</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" />-дээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
 <translation id="2818669890320396765">Хавчуургаа бүх төхөөрөмждөө авахын тулд нэвтрээд синкийг асаана уу</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
+<translation id="2839327205551510876"><ph name="SITE_NAME" />-г дагахаа больсон</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 хоногийн өмнө шалгасан}other{# хоногийн өмнө шалгасан}}</translation>
 <translation id="2842985007712546952">Толгой хавтас</translation>
 <translation id="2856503607207334158">Нэвтрэлт амжилтгүй</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Google мэдэгдлийн платформ</translation>
 <translation id="2923908459366352541">Нэр буруу байна</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> сан</translation>
+<translation id="2932222164150889403">Таны гар өөрчлөгдөхгүй</translation>
 <translation id="2942036813789421260">Урьдчилан үзэх таб хаалттай байна</translation>
 <translation id="2956410042958133412">Энэ хаягийг <ph name="PARENT_NAME_1" /> болон <ph name="PARENT_NAME_2" /> удирдаж байна.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> хуудас}other{Уншаагүй <ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> хуудас}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">Туслахын дуут хайлтын зөвшөөрлийн ui</translation>
 <translation id="3034163383943672781">Таталтыг <ph name="DATE" />-д эхлүүлнэ.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Тусламж авах<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Дараагийн удаа энэ сайт руу илүү шуурхай очоорой</translation>
 <translation id="305593374596241526">Байршил идэвхгүй, үүнийг <ph name="BEGIN_LINK" />Андройд Тохиргоо<ph name="END_LINK" /> дотроос асаана уу.</translation>
 <translation id="3058498974290601450">Та синкийг хүссэн үедээ тохиргоонд асааж болно</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> хавчуурга}other{<ph name="BOOKMARKS_COUNT_MANY" /> хавчуурга}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">Та одоогоор Синк болон Google-н үйлчилгээний тохиргоогоо өөрчилж байна. Синкийг асааж дуусгахын тулд дэлгэцийн доод хэсгийн ойролцоо байгаа Зөвшөөрөх товчлуурыг товшино уу. Дээш шилжих</translation>
 <translation id="3334729583274622784">Файлын өргөтгөлийг өөрчлөх үү?</translation>
 <translation id="3341058695485821946">Ямар хэмжээний дата хэмнэснээ харах</translation>
+<translation id="3341262203274374114">Дагахаа болих боломжгүй. Алдаа гарлаа.</translation>
 <translation id="3350687908700087792">Бүх incognito цонхийг хаа</translation>
 <translation id="3359667936385849800">Одоогийн үйлчилгээ үзүүлэгчээ ашиглах</translation>
 <translation id="3367813778245106622">Синк эхлүүлэхийн тулд дахин нэвтэрнэ үү</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox нь идэвхтэй хөгжүүлэлтэд байгаа бө
 <translation id="3988213473815854515">Байршил мэдээлэхийг зөвшөөрсөн</translation>
 <translation id="3988466920954086464">Шуурхай хайлтын илэрцийг энэ самбарт харах</translation>
 <translation id="4000212216660919741">Офлайн нүүр</translation>
+<translation id="4016425174436051808">Дагах боломжгүй. Алдаа гарлаа.</translation>
+<translation id="4021916380760361450">Google бүртгэлүүдийнхээ өгөгдлийг хянана уу</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# цаг}other{# цаг}}</translation>
 <translation id="4045764304651014138">Ашиглалтын өгөгдөл</translation>
 <translation id="4056223980640387499">Сепиа</translation>
@@ -597,6 +607,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5152843274749979095">Дэмжсэн аппыг суулгаагүй байна</translation>
 <translation id="5161254044473106830">Гарчиг шаардлагатай</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 таталт амжилтгүй боллоо.}other{# таталт амжилтгүй боллоо.}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" />-г дагасан</translation>
 <translation id="5170568018924773124">Хавтсанд харуул</translation>
 <translation id="5184329579814168207">Chrome-д нээх</translation>
 <translation id="5188992787241350004">Дуу хоолойгоороо хайгаарай</translation>
@@ -716,6 +727,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5864419784173784555">Өөр таталтыг хүлээж байна…</translation>
 <translation id="5865733239029070421">Хэрэглээний статистик мэдээ болон алдааны тайланг Google-д автоматаар илгээдэг</translation>
 <translation id="5869522115854928033">Хадгалагдсан нууц үг</translation>
+<translation id="5880748256563468367">Хангамж руу очих</translation>
 <translation id="5884076754568147479">Google танд ажлуудаа дуусгахад тань туслахын тулд таны Туслахаа ашиглах сайтуудын URL болон контентоос гадна Туслахаар илгээх мэдээллийг хүлээн авна</translation>
 <translation id="5919204609460789179">Синкийг эхлүүлэхийн тулд <ph name="PRODUCT_NAME" />-г шинэчилнэ үү</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" />-г хэмнэсэн</translation>
@@ -733,6 +745,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5979084224081478209">Нууц үгийг шалгах</translation>
 <translation id="5982307838673692400">Нууцлалтай табыг нээх</translation>
 <translation id="6000066717592683814">Google хэвээр байлгах</translation>
+<translation id="6000203700195075278">Дахин дагах</translation>
 <translation id="6005538289190791541">Санал болгосон нууц үг</translation>
 <translation id="6036057147555329831">Нэмэлт ICU</translation>
 <translation id="6039379616847168523">Дараагийн табад очих</translation>
@@ -1011,6 +1024,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7846296061357476882">Google-н үйлчилгээнүүд</translation>
 <translation id="784934925303690534">Цагийн хүрээ</translation>
 <translation id="7851858861565204677">Бусад төхөөрөмж</translation>
+<translation id="7853202427316060426">Үйл ажиллагаа</translation>
 <translation id="7857691613771368249">Файлуудыг хэзээ хадгалахыг асуух</translation>
 <translation id="7859988229622350291">Хэзээ ч бүү орчуул</translation>
 <translation id="7875915731392087153">Имэйл үүсгэх</translation>
@@ -1093,6 +1107,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="834313815369870491">Сайтуудыг хэзээ ч бүү орчуул</translation>
 <translation id="8349013245300336738">Ашигласан өгөгдлийг хэмжээгээр нь эрэмбэлэх</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> татаж авсан файлыг сэргээсэн</translation>
+<translation id="8362134094656482681">Сонирхдог сэдвүүдээ удирдана уу</translation>
 <translation id="8364299278605033898">Түгээмэл хэрэглэгддэг веб сайтыг харах</translation>
 <translation id="8368027906805972958">Үл мэдэгдэх эсвэл дэмжигдээгүй төхөөрөмж (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> бэлэн байна.</translation>

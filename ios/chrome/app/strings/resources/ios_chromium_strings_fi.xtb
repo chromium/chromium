@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium sisältää ominaisuuksia, joiden avulla voit hallita datankäyttöäsi ja verkkosivujen latausnopeutta.
 <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium ei voinut tarkistaa, onko päivityksiä saatavilla. Tarkista internetyhteytesi.</translation>
+<translation id="2054703085270098503">Pysy turvassa Chromiumin avulla</translation>
 <translation id="2075400798887076382">Voit käyttää tietokoneella avoinna olevia välilehtiä myös täällä. Avaa Chromium tietokoneella, siirry valikkoon ja valitse ”Kirjaudu sisään Chromiumiin…”.</translation>
 <translation id="2168108852149185974">Jokin laajennus kaataa Chromiumin. Poista seuraavat:</translation>
 <translation id="2178608107313874732">Chromium ei voi käyttää kameraa tällä hetkellä.</translation>
 <translation id="2195025571279539885">Haluatko Chromiumin ehdottavan sivuston kielellä <ph name="LANGUAGE_NAME" /> kirjoitettujen sivujen kääntämistä seuraavalla kerralla?</translation>
 <translation id="2590893390871230428">Synkronoi Chromium-datasi</translation>
 <translation id="2650312721222849884">Laita synkronointi päälle, niin voit nähdä Chromium-välilehtesi missä tahansa</translation>
+<translation id="2684230048001240293">Aseta Chromium oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="2730884209570016437">Chromium ei voi käyttää kameraa, koska se on toisen sovelluksen käytössä.</translation>
 <translation id="2915596697727466327">Chromium varmistaa Face ID:llä, että sinulla on lupa käyttää salasanoja.</translation>
 <translation id="2918709798697875261">Organisaatiosi edellyttää, että et kirjaudu sisään Chromiumiin.</translation>
+<translation id="2942241131342758843">Käytä Chromiumia oletuksena ja avaa linkkejä, hae widgeteistä sekä täytä salasanoja automaattisesti muissa sovelluksissa</translation>
 <translation id="2977470724722393594">Chromium on ajan tasalla.</translation>
 <translation id="3256316712990552818">Kopioitiin Chromiumiin.</translation>
 <translation id="3344973607274501920">Chromium ei voinut tarkistaa salasanojasi. Tarkista internetyhteytesi.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Kun tämä ominaisuus on käytössä, Chromium tarjoaa vierailla kielillä kirjoitettujen sivujen käännöksiä Google Kääntäjän kautta. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Voit nyt käyttää Chromiumia aina, kun napautat linkkejä viesteissä, dokumenteissa tai muissa sovelluksissa.</translation>
 <translation id="4681781466797808448">Ota käyttöön Chromium-lukija</translation>
+<translation id="4736424910885271643"><ph name="HOSTED_DOMAIN" /> ylläpitää tiliäsi, joten Chromium-datasi poistetaan tältä laitteelta</translation>
 <translation id="4787850887676698916">Muilla laitteilla Chromiumissa avaamasi välilehdet näytetään täällä.</translation>
 <translation id="4828317641996116749">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä myöhemmin uudelleen.</translation>
 <translation id="4985291216379576555">Chromium ei voi tarkistaa, onko päivityksiä saatavilla</translation>
@@ -55,6 +59,7 @@
 2. Valitse Oletusselain
 3. Valitse Chromium.</translation>
 <translation id="6268381023930128611">Kirjaudutaanko ulos?</translation>
+<translation id="6337530241089703714">Valitse, haluatko poistaa Chromium-datasi tältä laitteelta vai säilyttää sen</translation>
 <translation id="6424492062988593837">Chromiumista tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
 <translation id="6820823224820483452">Chromium ei voinut tarkistaa kaikkia salasanoja. Yritä uudelleen huomenna.</translation>
 <translation id="6827294685447036764">Jos Chromium saa nähdä sijaintisi, sijainti lähetetään sivustoille, jotka sallit. Sivustot voivat kysyä sijaintiasi, jos niillä on sinulle paikallisia tietoja, esim. uutisia tai lähistöllä olevia kauppoja.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Salasanasi vaarantui tietosuojaloukkauksessa. Chromium suosittelee salasanan vaihtamista välittömästi.</translation>
 <translation id="7674213385180944843">Avaa Asetukset &gt; Tietosuoja &gt; Kamera &gt; Chromium ja ota kamera käyttöön.</translation>
 <translation id="7746854981345936341">Chromium-vinkki: Takaisin, Seuraava, Haku ja jotkin muut painikkeet löytyvät nyt näytön alareunasta.</translation>
+<translation id="7763454117143368771">Käytä Chromiumia oletusselaimena, niin pysyt turvassa vaarallisilta sivustoilta ja pidät salasanasi turvassa</translation>
 <translation id="786327964234957808">Muutoksen jälkeen synkronointi käyttää tilin <ph name="USER_EMAIL1" /> sijaan tiliä <ph name="USER_EMAIL2" />. <ph name="DOMAIN" /> hallitsee olemassa olevia Chromium-tietojasi. Tiedot poistetaan tältä laitteelta, mutta ne säilyvät tilillä <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Aloita Chromium-lukijan käyttö</translation>
 <translation id="7931842119211730154">Lukitse incognito-välilehdet, kun suljet Chromiumin</translation>

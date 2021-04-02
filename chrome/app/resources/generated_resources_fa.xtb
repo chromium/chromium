@@ -517,6 +517,7 @@
 <translation id="1563702743503072935">‏وقتی به سیستم وارد شده باشید، گذرواژه‌های ذخیره‌شده در «حساب Google» شما در این دستگاه هم دردسترس خواهد بود</translation>
 <translation id="1566049601598938765">وب‌سایت</translation>
 <translation id="15662109988763471">چاپگر انتخابی موجود نیست یا به‌درستی نصب نشده است. چاپگر خود را بررسی کنید یا چاپگر دیگری را انتخاب کنید.</translation>
+<translation id="1567135437923613642">فعال کردن آزمایش‌های ویژه</translation>
 <translation id="1567387640189251553">بعد از آخرین باری که گذرواژه‌تان را وارد کردید، صفحه‌کلید دیگری متصل شده است. ممکن است تلاش کند ضربه‌کلیدهای شما را به سرقت ببرد.</translation>
 <translation id="1567993339577891801">کنسول جاوا اسکریپت</translation>
 <translation id="1568323446248056064">باز کردن تنظیمات نمایشگر دستگاه</translation>
@@ -916,6 +917,7 @@
 <translation id="1979095679518582070">خاموش کردن این ویژگی توانایی این دستگاه را برای ارسال اطلاعات موردنیاز برای سرویس‌های ضروری، مانند امنیت و به‌روزرسانی‌های سیستم تحت‌تأثیر قرار نمی‌دهد.</translation>
 <translation id="1979280758666859181">شما در حال تغییر کانال به نسخه قدیمی‌تر <ph name="PRODUCT_NAME" /> هستید. تغییر کانال زمانی اعمال می‌شود که نسخه کانال با نسخه فعلی نصب شده در دستگاه یکسان باشد.</translation>
 <translation id="197989455406964291">‏KDC از نوع رمزگذاری پشتیبانی نمی‌کند</translation>
+<translation id="1983497378699148207">‏برای تکمیل راه‌اندازی Linux، ‏Chrome OS را به‌روزرسانی کنید و دوباره امتحان کنید.</translation>
 <translation id="1984417487208496350">بدون محافظت (توصیه نمی‌شود)</translation>
 <translation id="1987317783729300807">اشتراک‌ها</translation>
 <translation id="1989112275319619282">مشاهده محتوای موجود در فروشگاه ما</translation>
@@ -1328,6 +1330,7 @@
 <translation id="2450223707519584812">‏نمی‌توانید کاربران را اضافه کنید زیرا کلیدهای Google API موجود نیستند. برای جزئیات به <ph name="DETAILS_URL" /> مراجعه کنید.</translation>
 <translation id="2450849356604136918">هیچ نمای فعالی وجود ندارد</translation>
 <translation id="2451298179137331965">۲ برابر</translation>
+<translation id="245322989586167203">سایت‌ها معمولاً برای ارائه ویژگی‌های انتقال داده، مانند راه‌اندازی شبکه، به درگاه‌های سریال متصل می‌شوند</translation>
 <translation id="2453860139492968684">پایان</translation>
 <translation id="2454247629720664989">کلمه کلیدی</translation>
 <translation id="2454264884354864965">دوربین خاموش است</translation>
@@ -1958,6 +1961,7 @@
 <translation id="313205617302240621">گذرواژه را فراموش کردید؟</translation>
 <translation id="3132277757485842847">‏نتوانستیم اتصال با تلفنتان را حفظ کنیم. مطمئن شوید تلفنتان نزدیک باشد، قفل آن باز، و بلوتوث و Wi-Fi در آن روشن باشد.</translation>
 <translation id="3132996321662585180">بازخوانی روزانه</translation>
+<translation id="3134393957315651797">وضعیت آزمایش را برای آزمایش <ph name="EXPERIMENT_NAME" /> انتخاب کنید. شرح آزمایش: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">پین نامعتبر است. <ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="313963229645891001">درحال بارگیری، <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">چهره‌نمای پیش‌فرض زرد</translation>
@@ -2842,6 +2846,7 @@
 <translation id="4099874310852108874">خطای شبکه رخ داد.</translation>
 <translation id="4100733287846229632">فضای دستگاه خیلی کم است</translation>
 <translation id="4100853287411968461">محدودیت جدید مدت تماشای صفحه</translation>
+<translation id="4101352914005291489">‏SSID پنهان</translation>
 <translation id="4102906002417106771">‏بازراه‌اندازی برای powerwash</translation>
 <translation id="4104163789986725820">&amp;صادر کردن...</translation>
 <translation id="4107048419833779140">شناسایی و خارج کردن دستگاه‌های ذخیره‌سازی</translation>
@@ -3911,6 +3916,7 @@
 <translation id="5382591305415226340">مدیریت پیوندهای پشتیبانی‌شده</translation>
 <translation id="5383377866517186886">‏در «تنظیمات برگزیده سیستم Mac»، دوربین خاموش است</translation>
 <translation id="5383740867328871413">گروه بدون نام - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">خط‌مشی شرکت تغییر کرد. دکمه آزمایش به نوار ابزار اضافه شد. برای فعال کردن آزمایش‌ها، روی دکمه کلیک کنید تا کادر گفتگو را باز کنید.</translation>
 <translation id="5388885445722491159">مرتبط شده</translation>
 <translation id="5390100381392048184">پخش صدا در سایت‌ها مجاز شود</translation>
 <translation id="5390112241331447203">‏فایل system_logs.txt ارسال‌شده در گزارش‌های بازخورد اضافه شود.</translation>
@@ -5035,6 +5041,7 @@
 <translation id="6659594942844771486">برگه</translation>
 <translation id="6660413144148052430">مکان</translation>
 <translation id="666099631117081440">سرورهای چاپ</translation>
+<translation id="6662931079349804328">خط‌مشی شرکت تغییر کرد. دکمه آزمایش‌ها از نوار ابزار برداشته شد.</translation>
 <translation id="6663190258859265334">‏<ph name="DEVICE_TYPE" /> شما Powerwash می‌شود و به نسخه قبلی برمی‌گردد.</translation>
 <translation id="6664237456442406323">‏متأسفانه، رایانه شما با یک شناسه سخت‌افزار ناقص پیکربندی شده است. این موضوح Chrome OS را از به‌روزرسانی با جدیدترین اصلاحات امنیتی باز می‌دارد که <ph name="BEGIN_BOLD" />می‌تواند رایانه شما را در برابر حملات مخرب آسیب‌پذیر نماید<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">هنگام باز کردن نمایه‌تان مشکلی پیش آمد. لطفاً از سیستم خارج شوید و دوباره به آن وارد شوید.</translation>
@@ -5391,6 +5398,7 @@
 <translation id="7056526158851679338">&amp;بازرسی دستگاه‌ها</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{بررسی ایمنی ۱ دقیقه پیش اجرا شده است}one{بررسی ایمنی {NUM_MINS} دقیقه پیش اجرا شده است}other{بررسی ایمنی {NUM_MINS} دقیقه پیش اجرا شده است}}</translation>
 <translation id="7057767408836081338">داده‌های برنامه دریافت نشد، درحال تلاش برای اجرای برنامه…</translation>
+<translation id="7058024590501568315">شبکه مخفی</translation>
 <translation id="7059858479264779982">تنظیم روی اجرای خودکار</translation>
 <translation id="7059893117020417984">برای مرور خصوصی، روی منوی نماد نقطه‌ها کلیک کنید تا پنجره ناشناسی باز شود</translation>
 <translation id="7062222374113411376">به سایت‌های اخیراً بسته‌شده امکان داده شود ارسال و دریافت داده را تکمیل کند (توصیه می‌شود)</translation>
@@ -5754,6 +5762,7 @@
 <translation id="7477793887173910789">کنترل موسیقی، ویدیو و سایر موارد</translation>
 <translation id="7478485216301680444">برنامه کاربردی کیوسک نصب نشد.</translation>
 <translation id="7478623944308207463">‏برنامه‌ها و تنظیماتتان در همه دستگاه‌های «سیستم‌عامل Chrome» که با حساب Google خود در آن‌ها به سیستم وارد شده‌اید همگام‌سازی خواهد شد. برای گزینه‌های همگام‌سازی مرورگر، به <ph name="LINK_BEGIN" />تنظیمات Chrome<ph name="LINK_END" /> بروید.</translation>
+<translation id="7478658909253570368">به سایت‌ها اجازه داده نشود به درگاه‌های سریال متصل شوند</translation>
 <translation id="7479221278376295180">نمای کلی استفاده از حافظه</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
 <translation id="7481358317100446445">آماده</translation>
@@ -5905,11 +5914,13 @@
 <translation id="765293928828334535">برنامه‌ها، افزونه‌ها و اسکریپت‌های کاربر را نمی‌توان از این وب‌سایت اضافه کرد</translation>
 <translation id="7652954539215530680">ایجاد پین</translation>
 <translation id="7654941827281939388">این حساب در حال حاضر در این رایانه در حال استفاده است.</translation>
+<translation id="7655411746932645568">سایت‌ها می‌توانند اتصال به درگاه‌های سریال را درخواست کنند</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7659297516559011665">فقط گذرواژه‌های ذخیره‌شده در این دستگاه</translation>
 <translation id="7659584679870740384">مجاز به استفاده از این دستگاه نیستید. لطفاً برای دریافت اجازه ورود به سیستم با سرپرست تماس بگیرید.</translation>
 <translation id="7661259717474717992">اجازه به سایت‌ها برای ذخیره کردن و خواندن داده‌های کوکی</translation>
 <translation id="7661451191293163002">گواهینامه ثبت بدست نیامد.</translation>
+<translation id="7661762353058813968">سرپرستتان به‌روزرسانی‌ها را مدیریت می‌کند.</translation>
 <translation id="7662283695561029522">برای پیکربندی ضربه بزنید</translation>
 <translation id="7663719505383602579">گیرنده: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">دستگاه بلوتوث پشتیبانی نشده: «<ph name="DEVICE_NAME" />».</translation>
@@ -6691,6 +6702,7 @@
 <translation id="8539727552378197395">‏نه (فقط Http)</translation>
 <translation id="8539766201049804895">ارتقا</translation>
 <translation id="8540136935098276800">نشانی وبی وارد کنید که به‌درستی قالب‌بندی شده باشد</translation>
+<translation id="8540503336857689453">به‌دلایل امنیتی، توصیه می‌شود از شبکه پنهان استفاده نشود.</translation>
 <translation id="8540608333167683902">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="NETWORK_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، جزئیات</translation>
 <translation id="854071720451629801">علامت‌گذاری به‌عنوان خوانده‌شده</translation>
 <translation id="8541462173655894684">هیچ چاپگری از این سرور چاپ پیدا نشد</translation>

@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Prehliadač Chromium obsahuje funkcie, ktoré vám pomôžu spravovať internetové dáta a rýchlosť načítania webových stránok.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
+<translation id="2054703085270098503">Zaistite svoju bezpečnosť s prehliadačom Chromium</translation>
 <translation id="2075400798887076382">Priamo tu môžete pristupovať ku kartám, ktoré máte otvorené na počítači. Stačí otvoriť prehliadač Chromium na počítači, prejsť do ponuky a vybrať možnosť Prihlásiť sa do prehliadača Chromium…</translation>
 <translation id="2168108852149185974">Niektoré doplnky spôsobujú zlyhanie prehliadača Chromium. Odinštalujte ich.</translation>
 <translation id="2178608107313874732">Chromium momentálne nemôže použiť váš fotoaparát</translation>
 <translation id="2195025571279539885">Chcete, aby prehliadač Chromium nabudúce ponúkol možnosť prekladu stránok v jazyku <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2590893390871230428">Synchronizácia údajov prehliadača Chromium</translation>
 <translation id="2650312721222849884">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chromium, zapnite synchronizáciu</translation>
+<translation id="2684230048001240293">Nastavte si Chromium ako predvolený prehliadač na synchronizovanie kariet, hesiel a platobných údajov vo všetkých zariadeniach</translation>
 <translation id="2730884209570016437">Chromium nemôže použiť váš fotoaparát, pretože ho práve používa iná aplikácia</translation>
 <translation id="2915596697727466327">Chromium používa overenie Face ID na zaistenie oprávneného prístupu k heslám.</translation>
 <translation id="2918709798697875261">Vaša organizácia vyžaduje, aby ste sa do prehliadača Chromium neprihlasovali.</translation>
+<translation id="2942241131342758843">Predvolene otvárajte odkazy, vyhľadávajte v miniaplikáciách a automaticky dopĺňajte heslá v iných aplikáciách pomocou prehliadača Chromium</translation>
 <translation id="2977470724722393594">Prehliadač Chromium bol aktualizovaný</translation>
 <translation id="3256316712990552818">Skopírovaná do prehliadača Chromium</translation>
 <translation id="3344973607274501920">Prehliadaču Chromium sa nepodarilo skontrolovať heslá. Skontrolujte internetové pripojenie.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Chromium môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="4681781466797808448">Zapnutie skenera prehliadača Chromium</translation>
+<translation id="4736424910885271643">Váš účet spravuje <ph name="HOSTED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia vymazané</translation>
 <translation id="4787850887676698916">Tu sa zobrazia karty, ktoré ste otvorili v prehliadači Chromium na iných zariadeniach.</translation>
 <translation id="4828317641996116749">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to neskôr.</translation>
 <translation id="4985291216379576555">Offline, Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
@@ -55,6 +59,7 @@
 2. Klepnite na položku Predvolená aplikácia prehliadača.
 3. Vyberte Chromium.</translation>
 <translation id="6268381023930128611">Odhlásiť sa z prehliadača Chromium?</translation>
+<translation id="6337530241089703714">Vyberte, či chcete údaje prehliadača Chromium v tomto zariadení vymazať alebo ponechať</translation>
 <translation id="6424492062988593837">Systém Chromium bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="6820823224820483452">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
 <translation id="6827294685447036764">Ak povolíte prehliadaču Chromium prístup k svojej polohe, bude ju odosielať všetkým webom, ktoré povolíte. Weby vás môžu požiadať o polohu, keď vám chcú zobraziť miestne informácie, napríklad obchody v okolí alebo správy.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">V rámci porušenia ochrany údajov bolo prezradené vaše heslo. Chromium vám ho odporúča okamžite zmeniť.</translation>
 <translation id="7674213385180944843">Otvorte Nastavenia &gt; Súkromie &gt; Fotoaparát &gt; Chromium a zapnite fotoaparát.</translation>
 <translation id="7746854981345936341">Tip pre Chromium: niektoré tlačidlá sa teraz nachádzajú v dolnej časti obrazovky, napríklad Dopredu, Späť a Hľadať.</translation>
+<translation id="7763454117143368771">Používajte Chromium ako svoj predvolený prehliadač, aby ste sa naďalej chránili pred nebezpečnými webmi a zaistili ochranu svojich hesiel</translation>
 <translation id="786327964234957808">Účet na synchronizáciu <ph name="USER_EMAIL1" /> prepínate na <ph name="USER_EMAIL2" />. Vaše existujúce údaje prehliadača Chromium spravuje doména <ph name="DOMAIN" />. Touto akciou odstránite údaje z vášho zariadenia, avšak zostanú naďalej v účte <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Začnite používať skener prehliadača Chromium</translation>
 <translation id="7931842119211730154">Uzamknúť karty inkognito pri zavretí prehliadača Chromium</translation>

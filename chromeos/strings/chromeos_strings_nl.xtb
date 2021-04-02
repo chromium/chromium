@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPsec + gebruikerscertificaat</translation>
 <translation id="4731797938093519117">Toegang door ouders</translation>
 <translation id="4773299976671772492">Beëindigd</translation>
+<translation id="4794140124556169553">Als je een CPU-test uitvoert, kan dit je systeemprestaties beïnvloeden</translation>
 <translation id="4808449224298348341">Afdruktaak <ph name="DOCUMENT_TITLE" /> geannuleerd</translation>
 <translation id="4813345808229079766">Verbinding</translation>
 <translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
@@ -341,6 +342,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8503836310948963452">Nog een paar minuten...</translation>
+<translation id="8575298406870537639">Je provider kan deze optie vereisen om verbinding te maken met hun netwerk. Neem contact op met je provider voor meer informatie.</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
 <translation id="8675354002693747642">Eerder gedeelde sleutel</translation>
@@ -365,7 +367,6 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8970109610781093811">Opnieuw uitvoeren</translation>
 <translation id="9003704114456258138">Frequentie</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9065203028668620118">Bewerken</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Huidig gebruik</translation>

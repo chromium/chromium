@@ -609,6 +609,7 @@
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏لا يتوفر "مساعد Google" في جلسة ضيف.</translation>
 <translation id="6137566720514957455">فتح مربع الحوار لإزالة الحساب <ph name="USER_EMAIL_ADDRESS" /></translation>
+<translation id="6154006699632741460">الجهاز الملحق غير متوافق</translation>
 <translation id="615957422585914272">إظهار لوحة مفاتيح على الشاشة</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
 <translation id="6179832488876878285">يمكنك تثبيت الملفات المهمّة هنا. افتح تطبيق "الملفات" للبدء.</translation>
@@ -630,7 +631,6 @@
 <translation id="6376931439017688372">تم تفعيل البلوتوث</translation>
 <translation id="6381109794406942707">لفتح قفل الجهاز، أدخِل رقم التعريف الشخصي.</translation>
 <translation id="639644700271529076">‏مفتاح CAPS LOCK قيد الإيقاف</translation>
-<translation id="6396835948284782440">‏للخروج من وضع ملء الشاشة، اضغط مع الاستمرار على مفتاح الخروج [Esc].</translation>
 <translation id="6406704438230478924">altgr</translation>
 <translation id="6424520630891723617">حالة الأمان <ph name="SECURITY_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="642644398083277086">محو جميع الإشعارات</translation>
