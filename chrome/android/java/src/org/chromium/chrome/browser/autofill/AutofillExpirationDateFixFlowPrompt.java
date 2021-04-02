@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import android.app.Activity;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -12,8 +13,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils.ErrorType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -108,15 +110,16 @@ public class AutofillExpirationDateFixFlowPrompt
     }
 
     /**
-     * Show the dialog. If activity is null this method will not do anything.
+     * Show the dialog.
+     *
+     * @param activity The current activity, used for context. When null, the method does nothing.
+     * @param modalDialogManager Used to display modal dialogs. When null, the method does nothing.
      */
-    public void show(ChromeActivity activity) {
-        if (activity == null) {
-            return;
-        }
+    public void show(@Nullable Activity activity, @Nullable ModalDialogManager modalDialogManager) {
+        if (activity == null || modalDialogManager == null) return;
 
         mContext = activity;
-        mModalDialogManager = activity.getModalDialogManager();
+        mModalDialogManager = modalDialogManager;
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.APP);
     }
 

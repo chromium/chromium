@@ -10,7 +10,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill.AutofillNameFixFlowPrompt.AutofillNameFixFlowPromptDelegate;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.WindowAndroid;
@@ -76,7 +75,8 @@ final class AutofillNameFixFlowBridge implements AutofillNameFixFlowPromptDelega
                 mActivity, this, mTitle, mInferredName, mConfirmButtonLabel, mIconId);
 
         if (mNameFixFlowPrompt != null) {
-            mNameFixFlowPrompt.show((ChromeActivity) (windowAndroid.getActivity().get()));
+            mNameFixFlowPrompt.show(
+                    windowAndroid.getActivity().get(), windowAndroid.getModalDialogManager());
         }
     }
 
