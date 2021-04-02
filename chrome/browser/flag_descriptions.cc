@@ -3592,6 +3592,12 @@ const char kOmniboxPedalsBatch2Description[] =
     "This flag has no effect unless \"Omnibox Pedal suggestions\" is also "
     "enabled.";
 
+const char kOmniboxPedalsDefaultIconColoredName[] =
+    "Omnibox Pedals Default Icon Colored";
+const char kOmniboxPedalsDefaultIconColoredDescription[] =
+    "Enable a color version of the default icon shown on the button for most "
+    "omnibox Pedals (aka Chrome Actions).";
+
 const char kOmniboxKeywordSearchButtonName[] = "Omnibox keyword search button";
 const char kOmniboxKeywordSearchButtonDescription[] =
     "Enable the omnibox keyword search button which offers a way to search "
