@@ -196,6 +196,11 @@ void UpgradeDetector::NotifyRelaunchOverriddenToRequired(bool override) {
     observer.OnRelaunchOverriddenToRequired(override);
 }
 
+void UpgradeDetector::NotifyUpdateInProgress() {
+  for (auto& observer : observer_list_)
+    observer.OnUpdateInProgress();
+}
+
 void UpgradeDetector::TriggerCriticalUpdate() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const base::TimeDelta idle_timer =

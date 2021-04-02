@@ -75,6 +75,7 @@ class RelaunchNotificationController : public UpgradeObserver {
   // UpgradeObserver:
   void OnUpgradeRecommended() override;
   void OnRelaunchOverriddenToRequired(bool override) override;
+  void OnUpdateInProgress() override;
 
  private:
   enum class NotificationStyle {

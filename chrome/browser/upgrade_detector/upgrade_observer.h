@@ -38,6 +38,9 @@ class UpgradeObserver {
   // required or reset the overridden style is received.
   virtual void OnRelaunchOverriddenToRequired(bool override) {}
 
+  // Triggered when there is an update in progress. Only sent on ChromeOs.
+  virtual void OnUpdateInProgress() {}
+
  protected:
   virtual ~UpgradeObserver() {}
 };

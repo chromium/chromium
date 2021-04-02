@@ -55,7 +55,8 @@ UpgradeDetectorChromeos::UpgradeDetectorChromeos(
     : UpgradeDetector(clock, tick_clock),
       upgrade_notification_timer_(tick_clock),
       initialized_(false),
-      toggled_update_flag_(false) {
+      toggled_update_flag_(false),
+      notify_in_progress_(false) {
   // Not all tests provide a PrefService for local_state().
   PrefService* local_state = g_browser_process->local_state();
   if (local_state) {
@@ -244,7 +245,17 @@ void UpgradeDetectorChromeos::UpdateStatusChanged(
     // Update engine broadcasts this state only when update is available but
     // downloading over cellular connection requires user's agreement.
     NotifyUpdateOverCellularAvailable();
+  } else if (notify_in_progress_ && status.current_operation() ==
+                                        update_engine::Operation::DOWNLOADING) {
+    // Only need to broadcast update in progress once per update after the
+    // first update.
+    notify_in_progress_ = false;
+    NotifyUpdateInProgress();
+  } else if (status.current_operation() == update_engine::UPDATED_NEED_REBOOT) {
+    // Set the progress signal to indicate at least one update is complete.
+    notify_in_progress_ = true;
   }
+
   if (!toggled_update_flag_) {
     // Only send feature flag status one time.
     toggled_update_flag_ = true;

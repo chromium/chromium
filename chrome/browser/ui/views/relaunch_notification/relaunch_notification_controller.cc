@@ -143,6 +143,16 @@ void RelaunchNotificationController::OnRelaunchOverriddenToRequired(
   HandleCurrentStyle();
 }
 
+void RelaunchNotificationController::OnUpdateInProgress() {
+  // No previous notifications to close.
+  if (last_notification_style_ == NotificationStyle::kNone)
+    return;
+
+  // Close relaunch notifications when updating to ensure user is not
+  // prompted to reboot in the middle.
+  CloseRelaunchNotification();
+}
+
 void RelaunchNotificationController::HandleCurrentStyle() {
   NotificationStyle notification_style = NotificationStyle::kNone;
 
