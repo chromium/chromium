@@ -36,6 +36,8 @@ void CopyToNewLayerOnCopyRequestFinished(
     const gfx::Size& layer_size,
     std::unique_ptr<viz::CopyOutputResult> copy_result) {
   if (!copy_result || copy_result->IsEmpty()) {
+    if (!layer_copy_callback.MaybeValid())
+      return;
     std::move(layer_copy_callback).Run(nullptr);
     return;
   }
