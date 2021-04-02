@@ -44,13 +44,13 @@ bool HasStandardMappingOnAndroid(GamepadId gamepad_id,
   // correctly.
   const base::flat_map<GamepadId, base::android::SdkVersion>
       kManualAssessmentResult = {
-          // Xbox One USB
-          {GamepadId::kMicrosoftProduct028e,
-           base::android::SdkVersion::SDK_VERSION_R},
+          // Stadia Controller USB
+          {GamepadId::kGoogleProduct9400,
+           base::android::SdkVersion::SDK_VERSION_OREO},
           // Xbox 360 wireless
           {GamepadId::kMicrosoftProduct02a1,
            base::android::SdkVersion::SDK_VERSION_R},
-          // Xbox One USB
+          // Xbox One USB (2015 firmware)
           {GamepadId::kMicrosoftProduct02dd,
            base::android::SdkVersion::SDK_VERSION_R},
           // Xbox One S USB
@@ -65,6 +65,9 @@ bool HasStandardMappingOnAndroid(GamepadId gamepad_id,
           // Xbox Series X Bluetooth
           {GamepadId::kMicrosoftProduct0b13,
            base::android::SdkVersion::SDK_VERSION_Q},
+          // Switch Pro Controller
+          {GamepadId::kNintendoProduct2009,
+           base::android::SdkVersion::SDK_VERSION_R},
       };
 
   auto find_it = kManualAssessmentResult.find(gamepad_id);
