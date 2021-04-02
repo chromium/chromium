@@ -103,11 +103,14 @@ class CONTENT_EXPORT WebContentsObserver : public IPC::Listener {
   virtual void RenderFrameHostChanged(RenderFrameHost* old_host,
                                       RenderFrameHost* new_host) {}
 
-  // This method is invoked when a subframe associated with a WebContents is
-  // deleted or the WebContents is destroyed and the top-level frame is deleted.
+  // This method is invoked when a frame is destroyed. A subframe is destroyed
+  // when its parent detaches it or navigates to a different document. A main
+  // frame is destroyed when the whole WebContents is going away, or, with
+  // MPArch, when a non-primary frame tree (e.g., prerendered page) is
+  // destroyed.
   // Use |RenderFrameHostChanged| to listen for when a RenderFrameHost object is
   // made the current host for a frame.
-  virtual void FrameDeleted(RenderFrameHost* render_frame_host) {}
+  virtual void FrameDeleted(int frame_tree_node_id) {}
 
   // This method is invoked when the RenderView of the current RenderViewHost
   // is ready, e.g. because we recreated it after a crash.

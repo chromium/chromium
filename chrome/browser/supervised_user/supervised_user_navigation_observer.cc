@@ -120,10 +120,8 @@ void SupervisedUserNavigationObserver::DidFinishNavigation(
   }
 }
 
-void SupervisedUserNavigationObserver::FrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  int frame_id = render_frame_host->GetFrameTreeNodeId();
-  supervised_user_interstitials_.erase(frame_id);
+void SupervisedUserNavigationObserver::FrameDeleted(int frame_tree_node_id) {
+  supervised_user_interstitials_.erase(frame_tree_node_id);
 }
 
 void SupervisedUserNavigationObserver::DidFinishLoad(

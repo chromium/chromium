@@ -7855,9 +7855,9 @@ gfx::Size WebContentsImpl::GetSizeForMainFrame() {
 
 void WebContentsImpl::OnFrameTreeNodeDestroyed(FrameTreeNode* node) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnFrameTreeNodeDestroyed",
-                        "render_frame_host", node->current_frame_host());
+                        "node", node);
   observers_.NotifyObservers(&WebContentsObserver::FrameDeleted,
-                             node->current_frame_host());
+                             node->frame_tree_node_id());
 }
 
 void WebContentsImpl::OnPreferredSizeChanged(const gfx::Size& old_size) {

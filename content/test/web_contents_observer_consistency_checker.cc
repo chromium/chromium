@@ -8,6 +8,8 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/frame_messages.h"
@@ -180,10 +182,23 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
 }
 
 void WebContentsObserverConsistencyChecker::FrameDeleted(
-    RenderFrameHost* render_frame_host) {
+    int frame_tree_node_id) {
   // A frame can be deleted before RenderFrame in the renderer process is
   // created, so there is not much that can be enforced here.
   CHECK(!web_contents_destroyed_);
+
+  RenderFrameHostImpl* render_frame_host =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id)->current_frame_host();
+
+  // Will be nullptr if this is main frame of a non primary FrameTree whose page
+  // was moved out (e.g. due Prerender activation).
+  if (!render_frame_host) {
+    DCHECK_NE(FrameTreeNode::GloballyFindByID(frame_tree_node_id)
+                  ->frame_tree()
+                  ->type(),
+              FrameTree::Type::kPrimary);
+    return;
+  }
 
   EnsureStableParentValue(render_frame_host);
 

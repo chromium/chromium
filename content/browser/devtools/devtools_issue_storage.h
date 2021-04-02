@@ -39,7 +39,7 @@ class DevToolsIssueStorage
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 
   // WebContentsObserver overrides.
-  void FrameDeleted(RenderFrameHost* render_frame_host) override;
+  void FrameDeleted(int frame_tree_node_id) override;
 
   using FrameAssociatedIssue =
       std::pair<int, std::unique_ptr<protocol::Audits::InspectorIssue>>;

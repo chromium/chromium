@@ -133,7 +133,7 @@ class CONTENT_EXPORT RenderFrameDevToolsAgentHost
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void RenderFrameHostChanged(RenderFrameHost* old_host,
                               RenderFrameHost* new_host) override;
-  void FrameDeleted(RenderFrameHost* rfh) override;
+  void FrameDeleted(int frame_tree_node_id) override;
   void RenderFrameDeleted(RenderFrameHost* rfh) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void OnPageScaleFactorChanged(float page_scale_factor) override;

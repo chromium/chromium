@@ -162,7 +162,7 @@ class ContentSubresourceFilterThrottleManager
  protected:
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
-  void FrameDeleted(content::RenderFrameHost* frame_host) override;
+  void FrameDeleted(int frame_tree_node_id) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(

@@ -152,9 +152,7 @@ void ContentSubresourceFilterThrottleManager::RenderFrameDeleted(
 }
 
 void ContentSubresourceFilterThrottleManager::FrameDeleted(
-    content::RenderFrameHost* frame_host) {
-  int frame_tree_node_id = frame_host->GetFrameTreeNodeId();
-
+    int frame_tree_node_id) {
   ad_frames_.erase(frame_tree_node_id);
   navigated_frames_.erase(frame_tree_node_id);
   navigation_load_policies_.erase(frame_tree_node_id);

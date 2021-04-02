@@ -84,7 +84,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
 
   bool did_initiate_recording() { return did_initiate_recording_; }
   void ReadyToCommitNavigation(NavigationRequest* navigation_request);
-  void FrameDeleted(RenderFrameHostImpl* frame_host);
+  void FrameDeleted(int frame_tree_node_id);
 
  private:
   friend class TracingHandlerTest;

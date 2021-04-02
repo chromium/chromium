@@ -51,6 +51,8 @@ static const char* kIframeHost1 = "www.iframe1.com";
 static const char* kIframeHost2 = "www.iframe2.com";
 
 // Class to keep track of iframes created and destroyed.
+// TODO(https://crbug.com/1188721): Can be replaced with
+// WebContents::UnsafeFindFrameByFrameTreeNodeId.
 class RenderFrameTracker : public content::WebContentsObserver {
  public:
   explicit RenderFrameTracker(content::WebContents* web_contents)
@@ -60,7 +62,7 @@ class RenderFrameTracker : public content::WebContentsObserver {
   // content::WebContentsObserver:
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
-  void FrameDeleted(content::RenderFrameHost* host) override;
+  void FrameDeleted(int frame_tree_node_id) override;
 
   content::RenderFrameHost* GetHost(int frame_id) {
     if (!base::Contains(render_frame_hosts_, frame_id))
@@ -78,11 +80,11 @@ void RenderFrameTracker::RenderFrameHostChanged(
   render_frame_hosts_[new_host->GetFrameTreeNodeId()] = new_host;
 }
 
-void RenderFrameTracker::FrameDeleted(content::RenderFrameHost* host) {
-  if (!base::Contains(render_frame_hosts_, host->GetFrameTreeNodeId()))
+void RenderFrameTracker::FrameDeleted(int frame_tree_node_id) {
+  if (!base::Contains(render_frame_hosts_, frame_tree_node_id))
     return;
 
-  render_frame_hosts_.erase(host->GetFrameTreeNodeId());
+  render_frame_hosts_.erase(frame_tree_node_id);
 }
 
 class InnerWebContentsAttachedWaiter : public content::WebContentsObserver {

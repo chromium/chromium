@@ -73,7 +73,7 @@ class SupervisedUserNavigationObserver
   // WebContentsObserver:
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void FrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void FrameDeleted(int frame_tree_node_id) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override;
 

@@ -155,10 +155,13 @@ void MimeHandlerViewEmbedder::RenderFrameCreated(
                      weak_factory_.GetWeakPtr()));
 }
 
-void MimeHandlerViewEmbedder::FrameDeleted(
-    content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host->GetFrameTreeNodeId() == frame_tree_node_id_ ||
-      render_frame_host == outer_contents_rfh_) {
+void MimeHandlerViewEmbedder::FrameDeleted(int frame_tree_node_id) {
+  // TODO(mcnee): RenderFrameDeleted seems like a better fit for the child frame
+  // case (i.e. |outer_contents_rfh_|), though we'd still need FrameDeleted for
+  // |frame_tree_node_id_|.
+  if (frame_tree_node_id == frame_tree_node_id_ ||
+      (outer_contents_rfh_ &&
+       outer_contents_rfh_->GetFrameTreeNodeId() == frame_tree_node_id)) {
     DestroySelf();
   }
 }

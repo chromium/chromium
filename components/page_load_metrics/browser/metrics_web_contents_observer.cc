@@ -137,9 +137,9 @@ void MetricsWebContentsObserver::RenderViewHostChanged(
   RegisterInputEventObserver(new_host);
 }
 
-void MetricsWebContentsObserver::FrameDeleted(content::RenderFrameHost* rfh) {
+void MetricsWebContentsObserver::FrameDeleted(int frame_tree_node_id) {
   if (committed_load_)
-    committed_load_->FrameDeleted(rfh->GetFrameTreeNodeId());
+    committed_load_->FrameDeleted(frame_tree_node_id);
 }
 
 void MetricsWebContentsObserver::RenderFrameDeleted(

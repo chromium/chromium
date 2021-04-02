@@ -1152,13 +1152,13 @@ void TracingHandler::ReadyToCommitNavigation(
   session_->ChangeTraceConfig(trace_config_);
 }
 
-void TracingHandler::FrameDeleted(RenderFrameHostImpl* frame_host) {
+void TracingHandler::FrameDeleted(int frame_tree_node_id) {
   if (!did_initiate_recording_)
     return;
+  FrameTreeNode* node = FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+
   auto data = std::make_unique<base::trace_event::TracedValue>();
-  data->SetString(
-      "frame",
-      frame_host->frame_tree_node()->devtools_frame_token().ToString());
+  data->SetString("frame", node->devtools_frame_token().ToString());
   TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                        "FrameDeletedInBrowser", TRACE_EVENT_SCOPE_THREAD,
                        "data", std::move(data));

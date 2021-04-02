@@ -502,11 +502,10 @@ void RenderFrameDevToolsAgentHost::RenderFrameHostChanged(
   // UpdateFrameHost may destruct |this|.
 }
 
-void RenderFrameDevToolsAgentHost::FrameDeleted(RenderFrameHost* rfh) {
-  RenderFrameHostImpl* host = static_cast<RenderFrameHostImpl*>(rfh);
+void RenderFrameDevToolsAgentHost::FrameDeleted(int frame_tree_node_id) {
   for (auto* tracing : protocol::TracingHandler::ForAgentHost(this))
-    tracing->FrameDeleted(host);
-  if (host->frame_tree_node() == frame_tree_node_) {
+    tracing->FrameDeleted(frame_tree_node_id);
+  if (frame_tree_node_id == frame_tree_node_->frame_tree_node_id()) {
     DestroyOnRenderFrameGone();
     // |this| may be deleted at this point.
   }

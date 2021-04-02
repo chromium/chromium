@@ -49,7 +49,7 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
 
   // content::WebContentsObserver overrides.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void FrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void FrameDeleted(int frame_tree_node_id) override;
   void DidStartNavigation(content::NavigationHandle* handle) override;
   void ReadyToCommitNavigation(content::NavigationHandle* handle) override;
   void DidFinishNavigation(content::NavigationHandle* handle) override;
