@@ -35,9 +35,6 @@
   <message name="IDS_MEDIA_ROUTER_ABOUT" desc="Title of a menu item which, on click, opens a page with product information about Chromecast.">
     About
   </message>
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_TOGGLE" desc="Title of a menu item which, on click, toggles the preference to opt in or out of cloud services.">
-    Enable cloud services
-  </message>
   <message name="IDS_MEDIA_ROUTER_HELP" desc="Title of a menu item which, on click, opens a page to the Chromecast help center.">
     Help
   </message>
@@ -146,20 +143,6 @@ video files, instead of all files.">
   </message>
   <message name="IDS_MEDIA_ROUTER_CAST_TO_MEETING_REMOVED" desc="Used in the Cast dialog to inform the user that starting a presentation from the Cast dialog is not longer supported, and using meet.google.com is the only option.">
     This option is no longer supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
-  </message>
-
-  <!-- Cloud Services Dialog -->
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_TITLE" desc="Title of the dialog asking whether the user wants to enable the feature allowing them to Cast to cloud services (Google Hangouts, Google Meet, Cast for Education extension).">
-    Enable cloud services for Cast?
-  </message>
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_BODY" desc="Body text of the dialog asking whether the user wants to enable the feature allowing them to Cast to cloud services (Google Hangouts, Google Meet, Cast for Education extension).">
-    Use of Hangouts and Cast for Education is governed by the Google Privacy Policy.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_ENABLE" desc="Label for a button in the dialog asking whether the user wants to enable the feature allowing them to Cast to cloud services. When this button is clicked, the preference to enable the feature gets saved.">
-    Enable
-  </message>
-  <message name="IDS_MEDIA_ROUTER_CLOUD_SERVICES_DIALOG_CANCEL" desc="Label for a button in the dialog asking whether the user wants to enable the feature allowing them to Cast to cloud services. No changes are made when this button is clicked.">
-    Cancel
   </message>
 
   <!-- Wired Display Media Route Provider -->

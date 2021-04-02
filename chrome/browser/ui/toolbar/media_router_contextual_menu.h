@@ -60,11 +60,6 @@ class MediaRouterContextualMenu : public ui::SimpleMenuModel::Delegate {
   void OnMenuWillShow(ui::SimpleMenuModel* source) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
 
-  // Toggles the enabled/disabled state of cloud services. This may show a
-  // dialog asking the user to acknowledge the Google Privacy Policy before
-  // enabling the services.
-  void ToggleCloudServices();
-
   // Toggles the preference to enable or disable media remoting.
   void ToggleMediaRemoting();
 
