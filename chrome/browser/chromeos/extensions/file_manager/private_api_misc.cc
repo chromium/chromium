@@ -277,10 +277,9 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
   if (params->parent_url.empty())
     return RespondNow(Error("Empty parent URL."));
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   base::FilePath src_dir = file_manager::util::GetLocalPathFromURL(
-      render_frame_host(), chrome_details.GetProfile(),
-      GURL(params->parent_url));
+      render_frame_host(), profile, GURL(params->parent_url));
   if (src_dir.empty())
     return RespondNow(Error("Invalid source dir."));
 
@@ -291,8 +290,7 @@ FileManagerPrivateInternalZipSelectionFunction::Run() {
   std::vector<base::FilePath> files;
   for (size_t i = 0; i < params->urls.size(); ++i) {
     base::FilePath path = file_manager::util::GetLocalPathFromURL(
-        render_frame_host(), chrome_details.GetProfile(),
-        GURL(params->urls[i]));
+        render_frame_host(), profile, GURL(params->urls[i]));
     if (path.empty())
       return RespondNow(Error("Invalid selected file path."));
     files.push_back(path);
@@ -351,8 +349,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateZoomFunction::Run() {
 }
 
 FileManagerPrivateRequestWebStoreAccessTokenFunction::
-    FileManagerPrivateRequestWebStoreAccessTokenFunction()
-    : chrome_details_(this) {}
+    FileManagerPrivateRequestWebStoreAccessTokenFunction() = default;
 
 FileManagerPrivateRequestWebStoreAccessTokenFunction::
     ~FileManagerPrivateRequestWebStoreAccessTokenFunction() = default;
@@ -362,12 +359,12 @@ FileManagerPrivateRequestWebStoreAccessTokenFunction::Run() {
   std::vector<std::string> scopes;
   scopes.emplace_back(kCWSScope);
 
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(chrome_details_.GetProfile());
+      IdentityManagerFactory::GetForProfile(profile);
 
   if (!identity_manager) {
-    drive::EventLogger* logger =
-        file_manager::util::GetLogger(chrome_details_.GetProfile());
+    drive::EventLogger* logger = file_manager::util::GetLogger(profile);
     if (logger) {
       logger->Log(logging::LOG_ERROR,
                   "CWS Access token fetch failed. IdentityManager can't "
@@ -394,8 +391,8 @@ FileManagerPrivateRequestWebStoreAccessTokenFunction::Run() {
 void FileManagerPrivateRequestWebStoreAccessTokenFunction::OnAccessTokenFetched(
     google_apis::DriveApiErrorCode code,
     const std::string& access_token) {
-  drive::EventLogger* logger =
-      file_manager::util::GetLogger(chrome_details_.GetProfile());
+  drive::EventLogger* logger = file_manager::util::GetLogger(
+      Profile::FromBrowserContext(browser_context()));
 
   if (code == google_apis::HTTP_SUCCESS) {
     DCHECK(auth_service_->HasAccessToken());
@@ -498,16 +495,16 @@ FileManagerPrivateInternalGetMimeTypeFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // Convert file url to local path.
-  const ChromeExtensionFunctionDetails chrome_details(this);
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details.GetProfile(), render_frame_host());
+          profile, render_frame_host());
 
   storage::FileSystemURL file_system_url(
       file_system_context->CrackURL(GURL(params->url)));
 
   app_file_handler_util::GetMimeTypeForLocalPath(
-      chrome_details.GetProfile(), file_system_url.path(),
+      profile, file_system_url.path(),
       base::BindOnce(
           &FileManagerPrivateInternalGetMimeTypeFunction::OnGetMimeType, this));
 
@@ -519,8 +516,8 @@ void FileManagerPrivateInternalGetMimeTypeFunction::OnGetMimeType(
   Respond(OneArgument(base::Value(mimeType)));
 }
 
-FileManagerPrivateGetProvidersFunction::FileManagerPrivateGetProvidersFunction()
-    : chrome_details_(this) {}
+FileManagerPrivateGetProvidersFunction::
+    FileManagerPrivateGetProvidersFunction() = default;
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateGetProvidersFunction::Run() {
@@ -529,7 +526,7 @@ FileManagerPrivateGetProvidersFunction::Run() {
   using chromeos::file_system_provider::ProviderId;
   using chromeos::file_system_provider::ProviderInterface;
   using chromeos::file_system_provider::Service;
-  const Service* const service = Service::Get(chrome_details_.GetProfile());
+  const Service* const service = Service::Get(browser_context());
 
   using api::file_manager_private::Provider;
   std::vector<Provider> result;
@@ -566,9 +563,7 @@ FileManagerPrivateGetProvidersFunction::Run() {
 }
 
 FileManagerPrivateAddProvidedFileSystemFunction::
-    FileManagerPrivateAddProvidedFileSystemFunction()
-    : chrome_details_(this) {
-}
+    FileManagerPrivateAddProvidedFileSystemFunction() = default;
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateAddProvidedFileSystemFunction::Run() {
@@ -579,7 +574,7 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
   using chromeos::file_system_provider::Service;
   using chromeos::file_system_provider::ProvidingExtensionInfo;
   using chromeos::file_system_provider::ProviderId;
-  Service* const service = Service::Get(chrome_details_.GetProfile());
+  Service* const service = Service::Get(browser_context());
 
   if (!service->RequestMount(ProviderId::FromString(params->provider_id)))
     return RespondNow(Error("Failed to request a new mount."));
@@ -588,9 +583,7 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
 }
 
 FileManagerPrivateConfigureVolumeFunction::
-    FileManagerPrivateConfigureVolumeFunction()
-    : chrome_details_(this) {
-}
+    FileManagerPrivateConfigureVolumeFunction() = default;
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateConfigureVolumeFunction::Run() {
@@ -601,7 +594,7 @@ FileManagerPrivateConfigureVolumeFunction::Run() {
   using file_manager::VolumeManager;
   using file_manager::Volume;
   VolumeManager* const volume_manager =
-      VolumeManager::Get(chrome_details_.GetProfile());
+      VolumeManager::Get(Profile::FromBrowserContext(browser_context()));
   base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
   if (!volume.get())
@@ -612,7 +605,7 @@ FileManagerPrivateConfigureVolumeFunction::Run() {
   switch (volume->type()) {
     case file_manager::VOLUME_TYPE_PROVIDED: {
       using chromeos::file_system_provider::Service;
-      Service* const service = Service::Get(chrome_details_.GetProfile());
+      Service* const service = Service::Get(browser_context());
       DCHECK(service);
 
       using chromeos::file_system_provider::ProvidedFileSystemInterface;
@@ -905,8 +898,7 @@ void FileManagerPrivateInternalInstallLinuxPackageFunction::
 }
 
 FileManagerPrivateInternalGetCustomActionsFunction::
-    FileManagerPrivateInternalGetCustomActionsFunction()
-    : chrome_details_(this) {}
+    FileManagerPrivateInternalGetCustomActionsFunction() = default;
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetCustomActionsFunction::Run() {
@@ -917,7 +909,7 @@ FileManagerPrivateInternalGetCustomActionsFunction::Run() {
 
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details_.GetProfile(), render_frame_host());
+          Profile::FromBrowserContext(browser_context()), render_frame_host());
 
   std::vector<base::FilePath> paths;
   chromeos::file_system_provider::ProvidedFileSystemInterface* file_system =
@@ -961,8 +953,7 @@ void FileManagerPrivateInternalGetCustomActionsFunction::OnCompleted(
 }
 
 FileManagerPrivateInternalExecuteCustomActionFunction::
-    FileManagerPrivateInternalExecuteCustomActionFunction()
-    : chrome_details_(this) {}
+    FileManagerPrivateInternalExecuteCustomActionFunction() = default;
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalExecuteCustomActionFunction::Run() {
@@ -973,7 +964,7 @@ FileManagerPrivateInternalExecuteCustomActionFunction::Run() {
 
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details_.GetProfile(), render_frame_host());
+          Profile::FromBrowserContext(browser_context()), render_frame_host());
 
   std::vector<base::FilePath> paths;
   chromeos::file_system_provider::ProvidedFileSystemInterface* file_system =
@@ -1005,8 +996,7 @@ void FileManagerPrivateInternalExecuteCustomActionFunction::OnCompleted(
 }
 
 FileManagerPrivateInternalGetRecentFilesFunction::
-    FileManagerPrivateInternalGetRecentFilesFunction()
-    : chrome_details_(this) {}
+    FileManagerPrivateInternalGetRecentFilesFunction() = default;
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetRecentFilesFunction::Run() {
@@ -1014,12 +1004,12 @@ FileManagerPrivateInternalGetRecentFilesFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   const scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details_.GetProfile(), render_frame_host());
+          profile, render_frame_host());
 
-  chromeos::RecentModel* model =
-      chromeos::RecentModel::GetForProfile(chrome_details_.GetProfile());
+  chromeos::RecentModel* model = chromeos::RecentModel::GetForProfile(profile);
 
   chromeos::RecentModel::FileType file_type;
   switch (params->file_type) {

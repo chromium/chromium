@@ -13,9 +13,10 @@
 #include <vector>
 
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "storage/browser/file_system/file_system_url.h"
+
+class Profile;
 
 namespace base {
 class File;
@@ -69,7 +70,7 @@ class FileManagerPrivateInternalSharesheetHasTargetsFunction
   std::unique_ptr<app_file_handler_util::IsDirectoryCollector>
       is_directory_collector_;
   std::vector<GURL> urls_;
-  const ChromeExtensionFunctionDetails chrome_details_;
+  Profile* profile_ = nullptr;
   std::vector<storage::FileSystemURL> file_system_urls_;
   bool contains_hosted_document_ = false;
 };
@@ -111,7 +112,7 @@ class FileManagerPrivateInternalInvokeSharesheetFunction
   std::unique_ptr<app_file_handler_util::IsDirectoryCollector>
       is_directory_collector_;
   std::vector<GURL> urls_;
-  const ChromeExtensionFunctionDetails chrome_details_;
+  Profile* profile_ = nullptr;
   std::vector<storage::FileSystemURL> file_system_urls_;
   bool contains_hosted_document_ = false;
 };

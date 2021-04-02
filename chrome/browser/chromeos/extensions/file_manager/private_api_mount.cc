@@ -38,16 +38,16 @@ using chromeos::disks::DiskMountManager;
 using content::BrowserThread;
 namespace file_manager_private = extensions::api::file_manager_private;
 
-FileManagerPrivateAddMountFunction::FileManagerPrivateAddMountFunction()
-    : chrome_details_(this) {}
+FileManagerPrivateAddMountFunction::FileManagerPrivateAddMountFunction() =
+    default;
 
 ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
   using file_manager_private::AddMount::Params;
   const std::unique_ptr<Params> params = Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  drive::EventLogger* logger =
-      file_manager::util::GetLogger(chrome_details_.GetProfile());
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
   if (logger) {
     logger->Log(logging::LOG_INFO, "%s[%d] called. (source: '%s')", name(),
                 request_id(),
@@ -56,17 +56,16 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
   set_log_on_completion(true);
 
   const base::FilePath path = file_manager::util::GetLocalPathFromURL(
-      render_frame_host(), chrome_details_.GetProfile(), GURL(params->source));
+      render_frame_host(), profile, GURL(params->source));
 
   if (path.empty())
     return RespondNow(Error("Invalid path"));
 
   if (auto* notifier =
-          file_manager::file_tasks::FileTasksNotifier::GetForProfile(
-              chrome_details_.GetProfile())) {
+          file_manager::file_tasks::FileTasksNotifier::GetForProfile(profile)) {
     const scoped_refptr<storage::FileSystemContext> file_system_context =
         file_manager::util::GetFileSystemContextForRenderFrameHost(
-            chrome_details_.GetProfile(), render_frame_host());
+            profile, render_frame_host());
 
     std::vector<storage::FileSystemURL> urls;
     const storage::FileSystemURL url =
@@ -98,9 +97,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
-  drive::EventLogger* logger =
-      file_manager::util::GetLogger(chrome_details.GetProfile());
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
   if (logger) {
     logger->Log(logging::LOG_INFO, "%s[%d] called. (volume_id: '%s')", name(),
                 request_id(), params->volume_id.c_str());
@@ -109,8 +107,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
 
   using file_manager::Volume;
   using file_manager::VolumeManager;
-  VolumeManager* const volume_manager =
-      VolumeManager::Get(chrome_details.GetProfile());
+  VolumeManager* const volume_manager = VolumeManager::Get(profile);
   DCHECK(volume_manager);
 
   base::WeakPtr<Volume> volume =
@@ -131,8 +128,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
     }
     case file_manager::VOLUME_TYPE_PROVIDED: {
       chromeos::file_system_provider::Service* service =
-          chromeos::file_system_provider::Service::Get(
-              chrome_details.GetProfile());
+          chromeos::file_system_provider::Service::Get(browser_context());
       DCHECK(service);
       // TODO(mtomasz): Pass a more detailed error than just a bool.
       if (!service->RequestUnmount(volume->provider_id(),
@@ -142,12 +138,12 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
       break;
     }
     case file_manager::VOLUME_TYPE_CROSTINI:
-      file_manager::VolumeManager::Get(chrome_details.GetProfile())
-          ->RemoveSshfsCrostiniVolume(volume->mount_path(), base::DoNothing());
+      file_manager::VolumeManager::Get(profile)->RemoveSshfsCrostiniVolume(
+          volume->mount_path(), base::DoNothing());
       break;
     case file_manager::VOLUME_TYPE_SMB:
-      chromeos::smb_client::SmbServiceFactory::Get(chrome_details.GetProfile())
-          ->UnmountSmbFs(volume->mount_path());
+      chromeos::smb_client::SmbServiceFactory::Get(profile)->UnmountSmbFs(
+          volume->mount_path());
       break;
     default:
       // Requested unmounting a device which is not unmountable.
@@ -162,25 +158,23 @@ FileManagerPrivateGetVolumeMetadataListFunction::Run() {
   if (args_->GetSize())
     return RespondNow(Error("Invalid arguments"));
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   const std::vector<base::WeakPtr<file_manager::Volume>>& volume_list =
-      file_manager::VolumeManager::Get(chrome_details.GetProfile())
-          ->GetVolumeList();
+      file_manager::VolumeManager::Get(profile)->GetVolumeList();
 
   std::string log_string;
   std::vector<file_manager_private::VolumeMetadata> result;
   for (const auto& volume : volume_list) {
     file_manager_private::VolumeMetadata volume_metadata;
-    file_manager::util::VolumeToVolumeMetadata(chrome_details.GetProfile(),
-                                               *volume, &volume_metadata);
+    file_manager::util::VolumeToVolumeMetadata(profile, *volume,
+                                               &volume_metadata);
     result.push_back(std::move(volume_metadata));
     if (!log_string.empty())
       log_string += ", ";
     log_string += volume->mount_path().AsUTF8Unsafe();
   }
 
-  drive::EventLogger* logger =
-      file_manager::util::GetLogger(chrome_details.GetProfile());
+  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
   if (logger) {
     logger->Log(logging::LOG_INFO,
                 "%s[%d] succeeded. (results: '[%s]', %" PRIuS " mount points)",

@@ -14,7 +14,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
 
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/file_manager_private_internal.h"
 #include "chrome/services/printing/public/mojom/pdf_thumbnailer.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -34,8 +33,6 @@ class FileManagerPrivateGetThumbnailFunction : public LoggedExtensionFunction {
 
   // Responds with a base64 encoded PNG thumbnail data.
   void SendEncodedThumbnail(std::string thumbnail_data_url);
-
-  const ChromeExtensionFunctionDetails chrome_details_;
 };
 
 class FileManagerPrivateInternalGetDriveThumbnailFunction

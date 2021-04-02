@@ -39,7 +39,6 @@
 #include "chrome/browser/chromeos/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/chromeos/fileapi/file_system_backend.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -328,9 +327,10 @@ void OnSearchDriveFs(
     base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback,
     drive::FileError error,
     base::Optional<std::vector<drivefs::mojom::QueryItemPtr>> items) {
-  const ChromeExtensionFunctionDetails chrome_details(function.get());
+  Profile* const profile =
+      Profile::FromBrowserContext(function->browser_context());
   drive::DriveIntegrationService* integration_service =
-      drive::util::GetIntegrationServiceByProfile(chrome_details.GetProfile());
+      drive::util::GetIntegrationServiceByProfile(profile);
   if (!integration_service) {
     std::move(callback).Run(nullptr);
     return;
@@ -343,7 +343,7 @@ void OnSearchDriveFs(
 
   GURL url;
   file_manager::util::ConvertAbsoluteFilePathToFileSystemUrl(
-      chrome_details.GetProfile(), integration_service->GetMountPointPath(),
+      profile, integration_service->GetMountPointPath(),
       function->extension_id(), &url);
   const auto fs_root = base::StrCat({url.spec(), "/"});
   const auto fs_name =
@@ -376,9 +376,9 @@ drivefs::mojom::QueryParameters::QuerySource SearchDriveFs(
     drivefs::mojom::QueryParametersPtr query,
     bool filter_dirs,
     base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback) {
-  const ChromeExtensionFunctionDetails chrome_details(function.get());
   drive::DriveIntegrationService* const integration_service =
-      drive::util::GetIntegrationServiceByProfile(chrome_details.GetProfile());
+      drive::util::GetIntegrationServiceByProfile(
+          Profile::FromBrowserContext(function->browser_context()));
   auto on_response = base::BindOnce(&OnSearchDriveFs, std::move(function),
                                     filter_dirs, std::move(callback));
   return integration_service->GetDriveFsHost()->PerformSearch(
@@ -439,10 +439,10 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
   scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details.GetProfile(), render_frame_host());
+          profile, render_frame_host());
 
   properties_list_.resize(params->urls.size());
   const std::set<EntryPropertyName> names_as_set(params->names.begin(),
@@ -462,7 +462,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
         break;
       case storage::kFileSystemTypeDriveFs:
         file_manager::util::SingleEntryPropertiesGetterForDriveFs::Start(
-            file_system_url, chrome_details.GetProfile(),
+            file_system_url, profile,
             base::BindOnce(
                 &FileManagerPrivateInternalGetEntryPropertiesFunction::
                     CompleteGetEntryProperties,
@@ -470,7 +470,7 @@ FileManagerPrivateInternalGetEntryPropertiesFunction::Run() {
         break;
       case storage::kFileSystemTypeArcDocumentsProvider:
         SingleEntryPropertiesGetterForDocumentsProvider::Start(
-            file_system_url, chrome_details.GetProfile(),
+            file_system_url, profile,
             base::BindOnce(
                 &FileManagerPrivateInternalGetEntryPropertiesFunction::
                     CompleteGetEntryProperties,
@@ -526,10 +526,9 @@ FileManagerPrivateInternalPinDriveFileFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
   scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details.GetProfile(), render_frame_host());
+          Profile::FromBrowserContext(browser_context()), render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURL(url);
@@ -547,10 +546,9 @@ ExtensionFunction::ResponseAction
 FileManagerPrivateInternalPinDriveFileFunction::RunAsyncForDriveFs(
     const storage::FileSystemURL& file_system_url,
     bool pin) {
-  const ChromeExtensionFunctionDetails chrome_details(this);
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
-          chrome_details.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   base::FilePath path;
   if (!integration_service || !integration_service->GetRelativeDrivePath(
                                   file_system_url.path(), &path)) {
@@ -592,9 +590,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateSearchDriveFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
   if (!drive::util::GetIntegrationServiceByProfile(
-          chrome_details.GetProfile())) {
+          Profile::FromBrowserContext(browser_context()))) {
     // |integration_service| is NULL if Drive is disabled or not mounted.
     return RespondNow(Error("Drive is disabled"));
   }
@@ -648,9 +645,8 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
-  drive::EventLogger* logger =
-      file_manager::util::GetLogger(chrome_details.GetProfile());
+  Profile* const profile = Profile::FromBrowserContext(browser_context());
+  drive::EventLogger* logger = file_manager::util::GetLogger(profile);
   if (logger) {
     logger->Log(
         logging::LOG_INFO, "%s[%d] called. (types: '%s', maxResults: '%d')",
@@ -661,7 +657,7 @@ FileManagerPrivateSearchDriveMetadataFunction::Run() {
   set_log_on_completion(true);
 
   drive::DriveIntegrationService* const integration_service =
-      drive::util::GetIntegrationServiceByProfile(chrome_details.GetProfile());
+      drive::util::GetIntegrationServiceByProfile(profile);
   if (!integration_service) {
     // |integration_service| is NULL if Drive is disabled or not mounted.
     return RespondNow(Error("Drive not available"));
@@ -832,10 +828,9 @@ FileManagerPrivateInternalGetDownloadUrlFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
   scoped_refptr<storage::FileSystemContext> file_system_context =
       file_manager::util::GetFileSystemContextForRenderFrameHost(
-          chrome_details.GetProfile(), render_frame_host());
+          Profile::FromBrowserContext(browser_context()), render_frame_host());
   const GURL url = GURL(params->url);
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURL(url);
@@ -856,9 +851,9 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotDownloadUrl(
     return;
   }
   download_url_ = std::move(download_url);
-  const ChromeExtensionFunctionDetails chrome_details(this);
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(chrome_details.GetProfile());
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context()));
   // This class doesn't care about browser sync consent.
   const CoreAccountId& account_id =
       identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
@@ -866,8 +861,7 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnGotDownloadUrl(
   scopes.emplace_back("https://www.googleapis.com/auth/drive.readonly");
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      content::BrowserContext::GetDefaultStoragePartition(
-          chrome_details.GetProfile())
+      content::BrowserContext::GetDefaultStoragePartition(browser_context())
           ->GetURLLoaderFactoryForBrowserProcess();
   auth_service_ = std::make_unique<google_apis::AuthService>(
       identity_manager, account_id, url_loader_factory, scopes);
@@ -892,10 +886,9 @@ void FileManagerPrivateInternalGetDownloadUrlFunction::OnTokenFetched(
 ExtensionFunction::ResponseAction
 FileManagerPrivateInternalGetDownloadUrlFunction::RunAsyncForDriveFs(
     const storage::FileSystemURL& file_system_url) {
-  const ChromeExtensionFunctionDetails chrome_details(this);
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
-          chrome_details.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   base::FilePath path;
   if (!integration_service || !integration_service->GetRelativeDrivePath(
                                   file_system_url.path(), &path)) {
@@ -928,10 +921,9 @@ FileManagerPrivateNotifyDriveDialogResultFunction::Run() {
   const std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
   file_manager::EventRouter* const event_router =
       file_manager::EventRouterFactory::GetForProfile(
-          chrome_details.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   if (event_router) {
     drivefs::mojom::DialogResult result;
     switch (params->result) {

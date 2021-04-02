@@ -9,7 +9,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/drive/event_logger.h"
 
 namespace extensions {
@@ -34,9 +34,8 @@ LoggedExtensionFunction::~LoggedExtensionFunction() = default;
 void LoggedExtensionFunction::OnResponded() {
   base::TimeDelta elapsed = base::TimeTicks::Now() - start_time_;
 
-  const ChromeExtensionFunctionDetails chrome_details(this);
-  drive::EventLogger* logger =
-      file_manager::util::GetLogger(chrome_details.GetProfile());
+  drive::EventLogger* logger = file_manager::util::GetLogger(
+      Profile::FromBrowserContext(browser_context()));
   if (logger && log_on_completion_) {
     DCHECK(response_type());
     bool success = *response_type() == SUCCEEDED;

@@ -11,7 +11,6 @@
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
 #include "chrome/browser/chromeos/extensions/file_manager/select_file_dialog_extension_user_data.h"
 #include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
@@ -61,9 +60,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFileFunction::Run() {
         file_manager::util::NEED_LOCAL_PATH_FOR_SAVING;
   }
 
-  ChromeExtensionFunctionDetails chrome_details(this);
   file_manager::util::GetSelectedFileInfo(
-      render_frame_host(), chrome_details.GetProfile(), file_paths, option,
+      render_frame_host(), Profile::FromBrowserContext(browser_context()),
+      file_paths, option,
       base::BindOnce(
           &FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse,
           this, params->for_opening, params->index));
@@ -81,10 +80,9 @@ void FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse(
   }
   SelectFileDialogExtension::OnFileSelected(GetFileDialogRoutingID(this),
                                             files[0], index);
-  ChromeExtensionFunctionDetails chrome_details(this);
   if (auto* notifier =
           file_manager::file_tasks::FileTasksNotifier::GetForProfile(
-              chrome_details.GetProfile())) {
+              Profile::FromBrowserContext(browser_context()))) {
     notifier->NotifyFileDialogSelection({files[0]}, for_open);
   }
   Respond(NoArguments());
@@ -99,9 +97,9 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
   for (size_t i = 0; i < params->selected_paths.size(); ++i)
     file_urls.emplace_back(params->selected_paths[i]);
 
-  ChromeExtensionFunctionDetails chrome_details(this);
   file_manager::util::GetSelectedFileInfo(
-      render_frame_host(), chrome_details.GetProfile(), file_urls,
+      render_frame_host(), Profile::FromBrowserContext(browser_context()),
+      file_urls,
       params->should_return_local_path
           ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
           : file_manager::util::NO_LOCAL_PATH_RESOLUTION,
@@ -122,10 +120,9 @@ void FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse(
 
   SelectFileDialogExtension::OnMultiFilesSelected(GetFileDialogRoutingID(this),
                                                   files);
-  ChromeExtensionFunctionDetails chrome_details(this);
   if (auto* notifier =
           file_manager::file_tasks::FileTasksNotifier::GetForProfile(
-              chrome_details.GetProfile())) {
+              Profile::FromBrowserContext(browser_context()))) {
     notifier->NotifyFileDialogSelection(files, for_open);
   }
   Respond(NoArguments());

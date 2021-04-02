@@ -11,7 +11,6 @@
 
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_base.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "components/drive/file_errors.h"
 
 namespace extensions {
@@ -30,9 +29,6 @@ class FileManagerPrivateAddMountFunction : public LoggedExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  const ChromeExtensionFunctionDetails chrome_details_;
 };
 
 // Implements chrome.fileManagerPrivate.removeMount method.
