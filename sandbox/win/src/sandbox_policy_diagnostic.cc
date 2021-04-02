@@ -339,6 +339,20 @@ base::Value GetPolicyRules(const PolicyGlobal* policy_rules) {
   return results;
 }
 
+// HandleMap is just wstrings, nested sets could be empty.
+base::Value GetHandlesToClose(const HandleMap& handle_map) {
+  base::Value results(base::Value::Type::DICTIONARY);
+  for (const auto& kv : handle_map) {
+    base::Value entries(base::Value::Type::LIST);
+    // kv.second may be an empty map.
+    for (const auto& entry : kv.second) {
+      entries.Append(base::AsStringPiece16(entry));
+    }
+    results.SetKey(base::WideToUTF8(kv.first), std::move(entries));
+  }
+  return results;
+}
+
 }  // namespace
 
 // We are a friend of PolicyBase so that we can steal its private members
@@ -395,6 +409,9 @@ PolicyDiagnostic::PolicyDiagnostic(PolicyBase* policy) {
       }
     }
   }
+  is_csrss_connected_ = policy->is_csrss_connected_;
+  handles_to_close_.insert(policy->handle_closer_.handles_to_close_.begin(),
+                           policy->handle_closer_.handles_to_close_.end());
 }
 
 PolicyDiagnostic::~PolicyDiagnostic() = default;
@@ -447,6 +464,11 @@ const char* PolicyDiagnostic::JsonString() {
 
   if (policy_rules_)
     value.SetKey(kPolicyRules, GetPolicyRules(policy_rules_.get()));
+
+  value.SetStringKey(kDisconnectCsrss,
+                     is_csrss_connected_ ? kDisabled : kEnabled);
+  if (!handles_to_close_.empty())
+    value.SetKey(kHandlesToClose, GetHandlesToClose(handles_to_close_));
 
   auto json_string = std::make_unique<std::string>();
   JSONStringValueSerializer to_json(json_string.get());

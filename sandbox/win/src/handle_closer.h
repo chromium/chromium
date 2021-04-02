@@ -56,6 +56,9 @@ class HandleCloser {
   bool InitializeTargetHandles(TargetProcess& target);
 
  private:
+  // Allow PolicyInfo to snapshot HandleCloser for diagnostics.
+  friend class PolicyDiagnostic;
+
   // Calculates the memory needed to copy the serialized handles list (rounded
   // to the nearest machine-word size).
   size_t GetBufferSize();
