@@ -126,6 +126,8 @@ void LayoutNGTableColumn::UpdateFromElement() {
   if (span_ != old_span && Style() && Parent()) {
     SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
         layout_invalidation_reason::kAttributeChanged);
+    if (LayoutNGTable* table = Table())
+      table->GridBordersChanged();
   }
 }
 
