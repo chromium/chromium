@@ -1785,10 +1785,10 @@ DeveloperPrivateOpenDevToolsFunction::Run() {
   const bool is_service_worker =
       properties.is_service_worker && *properties.is_service_worker;
   if (is_service_worker) {
-    if (!BackgroundInfo::IsServiceWorkerBased(extension))
-      return RespondNow(Error(kInvalidLazyBackgroundPageParameter));
     if (!extension)
       return RespondNow(Error(kNoSuchExtensionError));
+    if (!BackgroundInfo::IsServiceWorkerBased(extension))
+      return RespondNow(Error(kInvalidLazyBackgroundPageParameter));
     if (properties.render_process_id == -1) {
       // Start the service worker and open the inspect window.
       devtools_util::InspectInactiveServiceWorkerBackground(extension, profile);
