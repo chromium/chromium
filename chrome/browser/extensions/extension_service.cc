@@ -408,6 +408,9 @@ ExtensionService::ExtensionService(Profile* profile,
       extension_prefs_(extension_prefs),
       blocklist_(blocklist),
       allowlist_(profile_, extension_prefs, this),
+      safe_browsing_verdict_handler_(extension_prefs,
+                                     ExtensionRegistry::Get(profile),
+                                     this),
       registry_(ExtensionRegistry::Get(profile)),
       pending_extension_manager_(profile),
       install_directory_(install_directory),
@@ -536,7 +539,7 @@ void ExtensionService::Init() {
   // rather than running immediately at startup.
   CheckForExternalUpdates();
 
-  LoadGreylistFromPrefs();
+  safe_browsing_verdict_handler_.Init();
 
   // Must be called after extensions are loaded.
   allowlist_.Init();
@@ -582,22 +585,6 @@ void ExtensionService::MaybeFinishShutdownDelayed() {
       extension_prefs_->GetAllDelayedInstallInfo());
   UMA_HISTOGRAM_COUNTS_100("Extensions.UpdateOnLoad",
                            delayed_info2->size() - delayed_info->size());
-}
-
-void ExtensionService::LoadGreylistFromPrefs() {
-  TRACE_EVENT0("browser,startup", "ExtensionService::LoadGreylistFromPrefs");
-
-  std::unique_ptr<ExtensionSet> all_extensions =
-      registry_->GenerateInstalledExtensionsSet();
-
-  for (const auto& extension : *all_extensions) {
-    const BlocklistState state =
-        extension_prefs_->GetExtensionBlocklistState(extension->id());
-    if (state == BLOCKLISTED_SECURITY_VULNERABILITY ||
-        state == BLOCKLISTED_POTENTIALLY_UNWANTED ||
-        state == BLOCKLISTED_CWS_POLICY_VIOLATION)
-      greylist_.Insert(extension);
-  }
 }
 
 bool ExtensionService::UpdateExtension(const CRXFileInfo& file,
@@ -2215,7 +2202,6 @@ void ExtensionService::ManageBlocklist(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::set<std::string> blocklisted;
-  ExtensionIdSet greylist;
   ExtensionIdSet unchanged;
 
   // If it was previously disabled remotely for malware, do not remove from
@@ -2240,12 +2226,12 @@ void ExtensionService::ManageBlocklist(
           blocklisted.insert(it.first);
         break;
 
+      // The following three verdicts are handled by SafeBrowsingVerdictHandler
+      // below.
       case BLOCKLISTED_SECURITY_VULNERABILITY:
       case BLOCKLISTED_CWS_POLICY_VIOLATION:
       case BLOCKLISTED_POTENTIALLY_UNWANTED:
-        greylist.insert(it.first);
         break;
-
       case BLOCKLISTED_UNKNOWN:
         unchanged.insert(it.first);
         break;
@@ -2253,29 +2239,18 @@ void ExtensionService::ManageBlocklist(
   }
 
   UpdateBlocklistedExtensions(blocklisted, unchanged);
-  UpdateGreylistedExtensions(greylist, unchanged, state_map);
+  safe_browsing_verdict_handler_.ManageBlocklist(state_map);
 
   error_controller_->ShowErrorIfNeeded();
 }
-
-namespace {
-void Partition(const ExtensionIdSet& before,
-               const ExtensionIdSet& after,
-               const ExtensionIdSet& unchanged,
-               ExtensionIdSet* no_longer,
-               ExtensionIdSet* not_yet) {
-  *not_yet = base::STLSetDifference<ExtensionIdSet>(after, before);
-  *no_longer = base::STLSetDifference<ExtensionIdSet>(before, after);
-  *no_longer = base::STLSetDifference<ExtensionIdSet>(*no_longer, unchanged);
-}
-}  // namespace
 
 void ExtensionService::UpdateBlocklistedExtensions(
     const ExtensionIdSet& blocklisted,
     const ExtensionIdSet& unchanged) {
   ExtensionIdSet not_yet_blocked, no_longer_blocked;
-  Partition(registry_->blocklisted_extensions().GetIDs(), blocklisted,
-            unchanged, &no_longer_blocked, &not_yet_blocked);
+  SafeBrowsingVerdictHandler::Partition(
+      registry_->blocklisted_extensions().GetIDs(), blocklisted, unchanged,
+      &no_longer_blocked, &not_yet_blocked);
 
   for (auto it = no_longer_blocked.begin(); it != no_longer_blocked.end();
        ++it) {
@@ -2308,47 +2283,6 @@ void ExtensionService::UpdateBlocklistedExtensions(
     UnloadExtension(*it, UnloadedExtensionReason::BLOCKLIST);
     UMA_HISTOGRAM_ENUMERATION("ExtensionBlacklist.BlacklistInstalled",
                               extension->location());
-  }
-}
-
-// TODO(oleg): UMA logging
-void ExtensionService::UpdateGreylistedExtensions(
-    const ExtensionIdSet& greylist,
-    const ExtensionIdSet& unchanged,
-    const Blocklist::BlocklistStateMap& state_map) {
-  ExtensionIdSet not_yet_greylisted, no_longer_greylisted;
-  Partition(greylist_.GetIDs(), greylist, unchanged, &no_longer_greylisted,
-            &not_yet_greylisted);
-
-  for (auto it = no_longer_greylisted.begin(); it != no_longer_greylisted.end();
-       ++it) {
-    scoped_refptr<const Extension> extension = greylist_.GetByID(*it);
-    if (!extension.get()) {
-      NOTREACHED() << "Extension " << *it << " no longer greylisted, "
-                   << "but it was not marked as greylisted.";
-      continue;
-    }
-
-    greylist_.Remove(*it);
-    extension_prefs_->SetExtensionBlocklistState(extension->id(),
-                                                 NOT_BLOCKLISTED);
-    RemoveDisableReasonAndMaybeEnable(extension->id(),
-                                      disable_reason::DISABLE_GREYLIST);
-  }
-
-  for (auto it = not_yet_greylisted.begin(); it != not_yet_greylisted.end();
-       ++it) {
-    scoped_refptr<const Extension> extension =
-        registry_->GetInstalledExtension(*it);
-    if (!extension.get()) {
-      NOTREACHED() << "Extension " << *it << " needs to be "
-                   << "disabled, but it's not installed.";
-      continue;
-    }
-    greylist_.Insert(extension);
-    extension_prefs_->SetExtensionBlocklistState(extension->id(),
-                                                 state_map.find(*it)->second);
-    DisableExtension(*it, disable_reason::DISABLE_GREYLIST);
   }
 }
 

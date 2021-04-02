@@ -667,6 +667,8 @@ static_library("extensions") {
     "policy_handlers.h",
     "proxy_overridden_bubble_delegate.cc",
     "proxy_overridden_bubble_delegate.h",
+    "safe_browsing_verdict_handler.cc",
+    "safe_browsing_verdict_handler.h",
     "scoped_active_install.cc",
     "scoped_active_install.h",
     "scripting_permissions_modifier.cc",

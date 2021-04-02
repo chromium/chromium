@@ -329,6 +329,10 @@ void Blocklist::ResetDatabaseUpdatedListenerForTest() {
   database_updated_subscription_ = {};
 }
 
+void Blocklist::ResetBlocklistStateCacheForTest() {
+  blocklist_state_cache_.clear();
+}
+
 void Blocklist::AddObserver(Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observers_.AddObserver(observer);

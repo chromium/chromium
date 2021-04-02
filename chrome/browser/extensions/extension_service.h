@@ -27,6 +27,7 @@
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
+#include "chrome/browser/extensions/safe_browsing_verdict_handler.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
@@ -506,9 +507,6 @@ class ExtensionService : public ExtensionServiceInterface,
   // the browser was shut down.
   void MaybeFinishShutdownDelayed();
 
-  // Populates greylist_.
-  void LoadGreylistFromPrefs();
-
   // Signals *ready_ and sends a notification to the listeners.
   void SetReadyAndNotifyListeners();
 
@@ -585,11 +583,6 @@ class ExtensionService : public ExtensionServiceInterface,
   void UpdateBlocklistedExtensions(const ExtensionIdSet& to_blocklist,
                                    const ExtensionIdSet& unchanged);
 
-  void UpdateGreylistedExtensions(
-      const ExtensionIdSet& greylist,
-      const ExtensionIdSet& unchanged,
-      const Blocklist::BlocklistStateMap& state_map);
-
   // Used only by test code.
   void UnloadAllExtensionsInternal();
 
@@ -636,16 +629,10 @@ class ExtensionService : public ExtensionServiceInterface,
 
   ExtensionAllowlist allowlist_;
 
+  SafeBrowsingVerdictHandler safe_browsing_verdict_handler_;
+
   // Sets of enabled/disabled/terminated/blocklisted extensions. Not owned.
   ExtensionRegistry* registry_ = nullptr;
-
-  // Set of greylisted extensions. These extensions are disabled if they are
-  // already installed in Chromium at the time when they are added to
-  // the greylist. Unlike blocklisted extensions, greylisted ones are visible
-  // to the user and if user re-enables such an extension, they remain enabled.
-  //
-  // These extensions should appear in registry_.
-  ExtensionSet greylist_;
 
   // Set of allowlisted enabled extensions loaded from the
   // --disable-extensions-except command line flag.
@@ -752,10 +739,6 @@ class ExtensionService : public ExtensionServiceInterface,
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest, ReloadBlocklistedExtension);
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest, RemoveExtensionFromBlocklist);
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest, BlocklistedInPrefsFromStartup);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest, GreylistedExtensionDisabled);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
-                           GreylistDontEnableManuallyDisabled);
-  FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest, GreylistUnknownDontChange);
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
                            ManagementPolicyProhibitsEnableOnInstalled);
   FRIEND_TEST_ALL_PREFIXES(ExtensionServiceTest,
@@ -768,6 +751,14 @@ class ExtensionService : public ExtensionServiceInterface,
                            ExtensionsNotAllowlistedThenBlocklisted);
   FRIEND_TEST_ALL_PREFIXES(ExtensionAllowlistUnitTest,
                            ExtensionsBlocklistedThenNotAllowlisted);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           GreylistedExtensionDisabled);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           GreylistDontEnableManuallyDisabled);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           GreylistUnknownDontChange);
+  FRIEND_TEST_ALL_PREFIXES(SafeBrowsingVerdictHandlerUnitTest,
+                           UnblocklistedExtensionStillGreylisted);
   friend class ::BlocklistedExtensionSyncServiceTest;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionService);

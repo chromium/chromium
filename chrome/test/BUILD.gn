@@ -5430,6 +5430,7 @@ test("unit_tests") {
       "../browser/extensions/permissions_updater_unittest.cc",
       "../browser/extensions/policy_extension_reinstaller_unittest.cc",
       "../browser/extensions/policy_handlers_unittest.cc",
+      "../browser/extensions/safe_browsing_verdict_handler_unittest.cc",
       "../browser/extensions/scripting_permissions_modifier_unittest.cc",
       "../browser/extensions/shared_module_service_unittest.cc",
       "../browser/extensions/standard_management_policy_provider_unittest.cc",

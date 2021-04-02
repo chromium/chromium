@@ -110,6 +110,10 @@ class Blocklist : public KeyedService, public base::SupportsWeakPtr<Blocklist> {
   // Reset the listening for an updated database.
   void ResetDatabaseUpdatedListenerForTest();
 
+  // Reset blocklist state cache to make sure the blocklist state is
+  // fetched from the blocklist state fetcher.
+  void ResetBlocklistStateCacheForTest();
+
   // Adds/removes an observer to the blocklist.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
