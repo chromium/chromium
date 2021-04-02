@@ -159,6 +159,7 @@ extern const char kConfigureUserSettings[];
 extern const char kCriticalUpdateVersion[];
 extern const char kDeleteOldVersions[];
 extern const char kDeleteProfile[];
+extern const char kDeregisterURLProtocol[];
 extern const char kDisableLogging[];
 extern const char kDoNotLaunchChrome[];
 extern const char kDoNotRegisterForUpdateLaunch[];

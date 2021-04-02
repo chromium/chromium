@@ -91,6 +91,8 @@ enum RegistrationConfirmationLevel {
 
 const wchar_t kReinstallCommand[] = L"ReinstallCommand";
 
+const wchar_t kRegProgId[] = L"ProgId";
+
 // Returns the current (or installed) browser's ProgId (e.g.
 // "ChromeHTML|suffix|").
 // |suffix| can be the empty string.
@@ -406,14 +408,16 @@ void GetChromeProgIdEntries(
 }
 
 // This method returns a list of the registry entries needed to declare a
-// capability of handling a protocol on Windows.
+// capability of handling protocol associations on Windows.
 void GetProtocolCapabilityEntries(
     const std::wstring& suffix,
-    const std::wstring& protocol,
+    const ShellUtil::ProtocolAssociations& protocol_associations,
     std::vector<std::unique_ptr<RegistryEntry>>* entries) {
-  entries->push_back(std::make_unique<RegistryEntry>(
-      GetCapabilitiesKey(suffix).append(L"\\URLAssociations"), protocol,
-      GetBrowserProgId(suffix)));
+  for (const auto& association : protocol_associations.associations) {
+    entries->push_back(std::make_unique<RegistryEntry>(
+        GetCapabilitiesKey(suffix).append(L"\\URLAssociations"),
+        association.first, association.second));
+  }
 }
 
 // This method returns a list of the registry entries required to register this
@@ -670,27 +674,31 @@ bool IsChromeRegistered(const base::FilePath& chrome_exe,
 }
 
 // This method checks if Chrome is already registered on the local machine
-// for the requested protocol. It just checks the one value required for this.
-// See RegistryEntry::ExistsInRegistry for the behavior of |look_for_in|.
-bool IsChromeRegisteredForProtocol(const std::wstring& suffix,
-                                   const std::wstring& protocol,
-                                   uint32_t look_for_in) {
+// for the requested protocol associations. It just checks the one value
+// required for each association. See RegistryEntry::ExistsInRegistry for the
+// behavior of |look_for_in|.
+bool IsChromeRegisteredForProtocolAssociations(
+    const std::wstring& suffix,
+    const ShellUtil::ProtocolAssociations& protocol_associations,
+    uint32_t look_for_in) {
   std::vector<std::unique_ptr<RegistryEntry>> entries;
-  GetProtocolCapabilityEntries(suffix, protocol, &entries);
+  GetProtocolCapabilityEntries(suffix, protocol_associations, &entries);
   return AreEntriesAsDesired(entries, look_for_in);
 }
 
 // This method registers Chrome by launching an elevated setup.exe. That will
 // show the user the standard elevation prompt. If the user accepts it the new
 // process will make the necessary changes and return SUCCESS that we capture
-// and return. If protocol is non-empty we will also register Chrome as being
-// capable of handling the protocol. This is used for general browser
+// and return. If |additional_switches| is non-null, setup.exe will be launched
+// with the additional command line args. This is used for general browser
 // registration on Windows 7 for per-user installs where setup.exe did not have
 // permission to register Chrome during install. It may also be used on Windows
-// 7 for system-level installs to register Chrome for a specific protocol.
-bool ElevateAndRegisterChrome(const base::FilePath& chrome_exe,
-                              const std::wstring& suffix,
-                              const std::wstring& protocol) {
+// 7 for system-level installs to register Chrome for specific protocol
+// associations (via |additional_switches|).
+bool ElevateAndRegisterChrome(
+    const base::FilePath& chrome_exe,
+    const std::wstring& suffix,
+    const base::CommandLine::SwitchMap* additional_switches) {
   // Check for setup.exe in the same directory as chrome.exe, as is the case
   // when running out of a build output directory.
   base::FilePath exe_path = chrome_exe.DirName().Append(installer::kSetupExe);
@@ -722,9 +730,9 @@ bool ElevateAndRegisterChrome(const base::FilePath& chrome_exe,
                              suffix);
     }
 
-    if (!protocol.empty()) {
-      cmd.AppendSwitchNative(installer::switches::kRegisterURLProtocol,
-                             protocol);
+    if (additional_switches) {
+      for (const auto& switch_pair : *additional_switches)
+        cmd.AppendSwitchNative(switch_pair.first, switch_pair.second);
     }
 
     DWORD ret_val = 0;
@@ -1499,6 +1507,44 @@ std::wstring ShortenAppModelIdComponent(const std::wstring& component,
          component.substr(component.length() - ((desired_length + 1) / 2));
 }
 
+// Gets the registry entry which stores the default handler for |protocol|.
+std::unique_ptr<RegistryEntry> GetProtocolUserChoiceEntry(
+    const std::wstring& protocol) {
+  static constexpr wchar_t kUrlAssociationFormat[] =
+      L"SOFTWARE\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\"
+      L"%ls\\UserChoice";
+
+  std::wstring user_choice_path =
+      base::StringPrintf(kUrlAssociationFormat, protocol.c_str());
+  return std::make_unique<RegistryEntry>(user_choice_path.c_str(), kRegProgId);
+}
+
+// Checks if the current user has selected a default handler for |protocol|.
+bool DoesProtocolHaveUserChoiceHandler(const std::wstring& protocol) {
+  std::vector<std::unique_ptr<RegistryEntry>> entries;
+  entries.push_back(GetProtocolUserChoiceEntry(protocol));
+  return AreEntriesAsDesired(entries, RegistryEntry::LOOK_IN_HKCU);
+}
+
+// Gets a ProtocolAssociations instance containing a single association where
+// |protocol| is handled by the default HTML browser handler.
+ShellUtil::ProtocolAssociations GetBrowserProtocolAssociation(
+    const std::wstring& protocol,
+    const base::FilePath& chrome_exe) {
+  ShellUtil::ProtocolAssociations protocol_associations;
+  std::wstring suffix;
+  if (!GetInstallationSpecificSuffix(chrome_exe, &suffix))
+    return protocol_associations;
+
+  std::wstring browser_progid = GetBrowserProgId(suffix);
+  if (browser_progid.empty())
+    return protocol_associations;
+
+  protocol_associations.associations.emplace(protocol,
+                                             std::move(browser_progid));
+  return protocol_associations;
+}
+
 bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
                                const std::wstring& unique_suffix,
                                bool elevate_if_not_admin,
@@ -1563,7 +1609,7 @@ bool RegisterChromeBrowserImpl(const base::FilePath& chrome_exe,
   // Try to elevate and register if requested for per-user installs if the user
   // is not an admin.
   if (elevate_if_not_admin &&
-      ElevateAndRegisterChrome(chrome_exe, suffix, std::wstring())) {
+      ElevateAndRegisterChrome(chrome_exe, suffix, nullptr)) {
     return true;
   }
   // If we got to this point then all we can do is create ProgId and basic app
@@ -2197,8 +2243,11 @@ bool ShellUtil::MakeChromeDefaultProtocolClient(
   if (!install_static::SupportsSetAsDefaultBrowser())
     return false;
 
-  if (!RegisterChromeForProtocol(chrome_exe, std::wstring(), protocol, true))
+  if (!RegisterChromeForProtocols(
+          chrome_exe, std::wstring(),
+          GetBrowserProtocolAssociation(protocol, chrome_exe), true)) {
     return false;
+  }
 
   // Windows 8 does not permit making a browser default just like that.
   // This process needs to be routed through the system's UI. Use
@@ -2242,8 +2291,11 @@ bool ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(
   if (!install_static::SupportsSetAsDefaultBrowser())
     return false;
 
-  if (!RegisterChromeForProtocol(chrome_exe, std::wstring(), protocol, true))
+  if (!RegisterChromeForProtocols(
+          chrome_exe, std::wstring(),
+          GetBrowserProtocolAssociation(protocol, chrome_exe), true)) {
     return false;
+  }
 
   bool succeeded = true;
   bool is_default =
@@ -2290,10 +2342,63 @@ void ShellUtil::RegisterChromeBrowserBestEffort(
                             /*best_effort_no_rollback=*/true);
 }
 
-bool ShellUtil::RegisterChromeForProtocol(const base::FilePath& chrome_exe,
-                                          const std::wstring& unique_suffix,
-                                          const std::wstring& protocol,
-                                          bool elevate_if_not_admin) {
+ShellUtil::ProtocolAssociations::ProtocolAssociations() = default;
+ShellUtil::ProtocolAssociations::ProtocolAssociations(
+    const std::vector<std::pair<std::wstring, std::wstring>>&&
+        protocol_associations)
+    : associations(std::move(protocol_associations)) {}
+ShellUtil::ProtocolAssociations::ProtocolAssociations(
+    ProtocolAssociations&& other) = default;
+
+ShellUtil::ProtocolAssociations::~ProtocolAssociations() = default;
+
+std::wstring ShellUtil::ProtocolAssociations::ToCommandLineArgument() const {
+  // Setup.exe expects protocol associations to be passed as key/value pairs
+  // in the following format:
+  // |protocol|:|handler_progid|[,|protocol|:|handler_progid|, ...]
+  std::wstring cmd_arg;
+  for (auto i = associations.begin(); i != associations.end(); ++i) {
+    cmd_arg.append(i->first).append(L":").append(i->second);
+    // Add a comma delimiter for all key/value pairs except the last pair.
+    if (i != std::prev(associations.end()))
+      cmd_arg += (L",");
+  }
+  return cmd_arg;
+}
+
+base::Optional<ShellUtil::ProtocolAssociations>
+ShellUtil::ProtocolAssociations::FromCommandLineArgument(
+    const std::wstring& argument) {
+  // Given that protocol associations are stored in a string in the following
+  // format:
+  // |protocol|:|handler_progid|[,|protocol|:|handler_progid|, ...],
+  // split the string into key value pairs and initialize ProtocolAssociations.
+  base::StringPairs protocol_association_string_pairs;
+  base::SplitStringIntoKeyValuePairs(base::WideToUTF8(argument), ':', ',',
+                                     &protocol_association_string_pairs);
+
+  if (protocol_association_string_pairs.empty())
+    return base::nullopt;
+
+  std::vector<std::pair<std::wstring, std::wstring>> protocol_association_pairs;
+  protocol_association_pairs.reserve(protocol_association_string_pairs.size());
+
+  for (const auto& association_pair : protocol_association_string_pairs) {
+    std::wstring protocol = base::UTF8ToWide(association_pair.first);
+    std::wstring handler_progid = base::UTF8ToWide(association_pair.second);
+    protocol_association_pairs.emplace_back(protocol, handler_progid);
+  }
+
+  ProtocolAssociations protocol_associations(
+      std::move(protocol_association_pairs));
+  return protocol_associations;
+}
+
+bool ShellUtil::RegisterChromeForProtocols(
+    const base::FilePath& chrome_exe,
+    const std::wstring& unique_suffix,
+    const ProtocolAssociations& protocol_associations,
+    bool elevate_if_not_admin) {
   std::wstring suffix;
   if (!unique_suffix.empty()) {
     suffix = unique_suffix;
@@ -2305,15 +2410,18 @@ bool ShellUtil::RegisterChromeForProtocol(const base::FilePath& chrome_exe,
   HKEY root = DetermineRegistrationRoot(user_level);
 
   // Look only in HKLM for system-level installs (otherwise, if a user-level
-  // install is also present, it could lead IsChromeRegisteredForProtocol() to
-  // think this system-level install isn't registered properly as it may be
-  // shadowed by the user-level install's registrations).
+  // install is also present, it could lead
+  // IsChromeRegisteredForProtocolAssociations() to think this system-level
+  // install isn't registered properly as it may be shadowed by the user-level
+  // install's registrations).
   uint32_t look_for_in = user_level ? RegistryEntry::LOOK_IN_HKCU_THEN_HKLM
                                     : RegistryEntry::LOOK_IN_HKLM;
 
   // Check if chrome is already registered with this suffix.
-  if (IsChromeRegisteredForProtocol(suffix, protocol, look_for_in))
+  if (IsChromeRegisteredForProtocolAssociations(suffix, protocol_associations,
+                                                look_for_in)) {
     return true;
+  }
 
   if (root == HKEY_CURRENT_USER || IsUserAnAdmin()) {
     // We can do this operation directly.
@@ -2323,11 +2431,14 @@ bool ShellUtil::RegisterChromeForProtocol(const base::FilePath& chrome_exe,
 
     // Write in the capability for the protocol.
     std::vector<std::unique_ptr<RegistryEntry>> entries;
-    GetProtocolCapabilityEntries(suffix, protocol, &entries);
+    GetProtocolCapabilityEntries(suffix, protocol_associations, &entries);
     return AddRegistryEntries(root, entries);
   } else if (elevate_if_not_admin) {
     // Elevate to do the whole job
-    return ElevateAndRegisterChrome(chrome_exe, suffix, protocol);
+    base::CommandLine::SwitchMap switches{
+        {installer::switches::kRegisterURLProtocol,
+         protocol_associations.ToCommandLineArgument()}};
+    return ElevateAndRegisterChrome(chrome_exe, suffix, &switches);
   } else {
     // Admin rights are required to register capabilities before Windows 8.
     return false;
@@ -2561,6 +2672,136 @@ bool ShellUtil::DeleteFileAssociations(const std::wstring& prog_id) {
   // Delete the key HKEY_CURRENT_USER\Software\Classes\|prog_id|.
   return InstallUtil::DeleteRegistryKey(HKEY_CURRENT_USER, prog_id_path,
                                         WorkItem::kWow64Default);
+}
+
+// static
+bool ShellUtil::AddAppProtocolAssociations(
+    const ProtocolAssociations& protocol_associations,
+    const base::FilePath& chrome_exe) {
+  std::wstring suffix;
+  if (!GetInstallationSpecificSuffix(chrome_exe, &suffix))
+    return false;
+
+  if (!RegisterChromeForProtocols(chrome_exe, suffix, protocol_associations,
+                                  true)) {
+    return false;
+  }
+
+  for (const auto& protocol_association : protocol_associations.associations) {
+    // This registry value tells Windows that this 'class' is a URL scheme.
+    // <root hkey>\Software\Classes\<protocol>\URL Protocol
+    const std::wstring& protocol = protocol_association.first;
+    std::wstring url_key(ShellUtil::kRegClasses);
+    url_key.push_back(base::FilePath::kSeparators[0]);
+    url_key.append(protocol);
+
+    std::vector<std::unique_ptr<RegistryEntry>> entries;
+    entries.push_back(std::make_unique<RegistryEntry>(
+        url_key, ShellUtil::kRegUrlProtocol, std::wstring()));
+
+    if (!AddRegistryEntries(HKEY_CURRENT_USER, entries))
+      return false;
+
+    // On Windows 7, set this protocol as default for uncontested protocols.
+    // This is necessary to cause Windows to recognize this protocol
+    // in "Default Apps" Windows UI. This is not required for contested
+    // protocols as Windows has already recognized those protocols in
+    // Windows UI, and we don't wish to override existing defaults.
+    if (base::win::GetVersion() == base::win::Version::WIN7 &&
+        !DoesProtocolHaveUserChoiceHandler(protocol)) {
+      Microsoft::WRL::ComPtr<IApplicationAssociationRegistration> registration;
+      HRESULT hr =
+          ::CoCreateInstance(CLSID_ApplicationAssociationRegistration, nullptr,
+                             CLSCTX_INPROC, IID_PPV_ARGS(&registration));
+
+      if (FAILED(hr) || !registration)
+        return false;
+
+      std::wstring app_name = GetApplicationName(chrome_exe);
+      hr = registration->SetAppAsDefault(app_name.c_str(), protocol.c_str(),
+                                         AT_URLPROTOCOL);
+      if (FAILED(hr))
+        return false;
+    }
+
+    // On Windows 10, removing the existing user choice for a given protocol
+    // forces Windows to present a disambiguation dialog the next time this
+    // protocol is invoked from the OS.
+    if (base::win::GetVersion() >= base::win::Version::WIN10) {
+      std::unique_ptr<RegistryEntry> entry =
+          GetProtocolUserChoiceEntry(protocol);
+      if (!InstallUtil::DeleteRegistryValue(
+              HKEY_CURRENT_USER, entry->key_path(), WorkItem::kWow64Default,
+              kRegProgId)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+bool ShellUtil::DoesAppProtocolAssociationExist(
+    const std::wstring& protocol,
+    const std::wstring& app_progid,
+    const base::FilePath& chrome_exe) {
+  std::wstring suffix;
+  if (!GetInstallationSpecificSuffix(chrome_exe, &suffix))
+    return false;
+
+  bool user_level = InstallUtil::IsPerUserInstall();
+  uint32_t look_for_in = user_level ? RegistryEntry::LOOK_IN_HKCU_THEN_HKLM
+                                    : RegistryEntry::LOOK_IN_HKLM;
+
+  ProtocolAssociations protocol_associations({{protocol, app_progid}});
+
+  return IsChromeRegisteredForProtocolAssociations(
+      suffix, protocol_associations, look_for_in);
+}
+
+bool ShellUtil::RemoveAppProtocolAssociations(
+    const std::vector<std::wstring>& protocols,
+    const base::FilePath& chrome_exe,
+    bool elevate_if_not_admin) {
+  std::wstring suffix;
+  if (!GetInstallationSpecificSuffix(chrome_exe, &suffix))
+    return false;
+
+  const bool user_level = InstallUtil::IsPerUserInstall();
+  const HKEY root = DetermineRegistrationRoot(user_level);
+
+  if (root == HKEY_CURRENT_USER || IsUserAnAdmin()) {
+    // We can do this operation directly. Delete associations for |protocols|.
+    std::wstring url_associations_path =
+        GetCapabilitiesKey(suffix).append(L"\\URLAssociations");
+
+    bool success = true;
+    for (const auto& protocol : protocols) {
+      success = success && InstallUtil::DeleteRegistryValue(
+                               root, url_associations_path,
+                               WorkItem::kWow64Default, protocol);
+    }
+
+    return success;
+  }
+
+  if (!elevate_if_not_admin) {
+    // Admin rights are required to modify system-level protocol associations.
+    return false;
+  }
+
+  // Elevate to do the whole job.
+  std::wstring switch_value = base::JoinString(protocols, L",");
+  base::CommandLine::SwitchMap switches{
+      {installer::switches::kDeregisterURLProtocol, switch_value}};
+  return ElevateAndRegisterChrome(chrome_exe, suffix, &switches);
+}
+
+// static
+std::wstring ShellUtil::GetProgIdForBrowser(const base::FilePath& chrome_exe) {
+  std::wstring prog_id(install_static::GetProgIdPrefix());
+  prog_id += GetCurrentInstallationSuffix(chrome_exe);
+  return prog_id;
 }
 
 // static

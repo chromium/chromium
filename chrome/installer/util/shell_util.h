@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -537,10 +538,33 @@ class ShellUtil {
   // |elevate_if_not_admin| is false and unique_suffix is empty.
   static void RegisterChromeBrowserBestEffort(const base::FilePath& chrome_exe);
 
+  // Stores a map of protocol associations that can be registered in the browser
+  // process or passed as command line arguments to an elevated setup.exe.
+  // Protocol associations map a protocol to a handler progid.
+  struct ProtocolAssociations {
+    ProtocolAssociations();
+    explicit ProtocolAssociations(
+        const std::vector<std::pair<std::wstring, std::wstring>>&&
+            protocol_associations);
+    ProtocolAssociations(ProtocolAssociations&& other);
+    ~ProtocolAssociations();
+
+    // Converts the protocol associations map to the command line arg format
+    // expected by setup.exe.
+    std::wstring ToCommandLineArgument() const;
+
+    // Parses a ProtocolAssociations instance from a string command line arg.
+    static base::Optional<ProtocolAssociations> FromCommandLineArgument(
+        const std::wstring& argument);
+
+    base::flat_map<std::wstring, std::wstring> associations;
+  };
+
   // This method declares to Windows that Chrome is capable of handling the
-  // given protocol. This function will call the RegisterChromeBrowser function
-  // to register with Windows as capable of handling the protocol, if it isn't
-  // currently registered as capable.
+  // given protocols, either directly in a tab or indirectly through a web app.
+  // This function will call the RegisterChromeBrowser function
+  // to register the browser with Windows as capable of handling the protocol,
+  // if it isn't currently registered as capable.
   // Declaring the capability of handling a protocol is necessary to register
   // as the default handler for the protocol in Vista and later versions of
   // Windows.
@@ -551,13 +575,15 @@ class ShellUtil {
   // |chrome_exe| full path to chrome.exe.
   // |unique_suffix| Optional input. If given, this function appends the value
   // to default browser entries names that it creates in the registry.
-  // |protocol| The protocol to register as being capable of handling.s
+  // |protocol_associations| The protocol associations to register under the
+  // browser registration.
   // |elevate_if_not_admin| if true will make this method try alternate methods
   // as described above.
-  static bool RegisterChromeForProtocol(const base::FilePath& chrome_exe,
-                                        const std::wstring& unique_suffix,
-                                        const std::wstring& protocol,
-                                        bool elevate_if_not_admin);
+  static bool RegisterChromeForProtocols(
+      const base::FilePath& chrome_exe,
+      const std::wstring& unique_suffix,
+      const ProtocolAssociations& protocol_associations,
+      bool elevate_if_not_admin);
 
   // Removes installed shortcut(s) at |location|.
   // |level|: CURRENT_USER to remove per-user shortcuts, or SYSTEM_LEVEL to
@@ -695,6 +721,30 @@ class ShellUtil {
   // for |prog_id|, nothing will be returned.
   static FileAssociationsAndAppName GetFileAssociationsAndAppName(
       const std::wstring& prog_id);
+
+  // For each association in |protocol_associations|, the web app is designated
+  // as the non-default handler for the corresponding protocol. For protocols
+  // uncontested by other handlers on the OS, the app will be promoted to
+  // default handler.
+  static bool AddAppProtocolAssociations(
+      const ProtocolAssociations& protocol_associations,
+      const base::FilePath& chrome_exe);
+
+  // Returns whether |app_progid| is registered to handle |protocol| within the
+  // browser's protocol associations.
+  static bool DoesAppProtocolAssociationExist(const std::wstring& protocol,
+                                              const std::wstring& app_progid,
+                                              const base::FilePath& chrome_exe);
+
+  // For each protocol in |protocols|, the corresponding app handler registered
+  // within the browser's protocol associations is removed.
+  static bool RemoveAppProtocolAssociations(
+      const std::vector<std::wstring>& protocols,
+      const base::FilePath& chrome_exe,
+      bool elevate_if_not_admin);
+
+  // Returns the browser's ProgId for the current install.
+  static std::wstring GetProgIdForBrowser(const base::FilePath& chrome_exe);
 
   // Retrieves the file path of the application registered as the
   // shell->open->command for |prog_id|. This only queries the user's

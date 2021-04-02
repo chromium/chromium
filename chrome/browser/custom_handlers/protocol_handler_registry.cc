@@ -122,16 +122,15 @@ void ProtocolHandlerRegistry::Delegate::RegisterAppProtocolsWithOS(
     const base::FilePath& app_profile_path,
     const shell_integration::AppProtocolMap app_protocols,
     base::OnceCallback<void(bool)> registration_complete_callback) {
-  // TODO(crbug.com/1019239): Implement OS-specific protocol handler
-  // shell integration.
-  std::move(registration_complete_callback).Run(true);
+  shell_integration::AddAppProtocolClients(
+      app_protocols, app_profile_path,
+      std::move(registration_complete_callback));
 }
 
 void ProtocolHandlerRegistry::Delegate::DeregisterAppProtocolsWithOS(
     const base::FilePath& app_profile_path,
     const std::vector<std::string>& app_protocols) {
-  // TODO(crbug.com/1019239): Implement OS-specific protocol handler
-  // shell integration.
+  shell_integration::RemoveAppProtocolClients(app_protocols, app_profile_path);
 }
 
 void ProtocolHandlerRegistry::Delegate::CheckAppIsDefaultClientWithOS(
@@ -139,9 +138,8 @@ void ProtocolHandlerRegistry::Delegate::CheckAppIsDefaultClientWithOS(
     const base::FilePath& app_profile_path,
     const std::string& protocol,
     base::OnceCallback<void(bool)> check_complete_callback) {
-  // TODO(crbug.com/1019239): Implement OS-specific protocol handler
-  // shell integration.
-  std::move(check_complete_callback).Run(true);
+  shell_integration::CheckAppIsProtocolClient(
+      app_id, protocol, app_profile_path, std::move(check_complete_callback));
 }
 
 // ProtocolHandlerRegistry -----------------------------------------------------

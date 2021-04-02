@@ -36,6 +36,7 @@
 #include "base/process/process_metrics.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -909,14 +910,33 @@ bool HandleNonInstallCmdLineOptions(installer::ModifyParams& modify_params,
           installer::switches::kRegisterChromeBrowserSuffix);
     }
     if (cmd_line.HasSwitch(installer::switches::kRegisterURLProtocol)) {
-      std::wstring protocol = cmd_line.GetSwitchValueNative(
-          installer::switches::kRegisterURLProtocol);
+      const std::wstring protocol_associations_value =
+          cmd_line.GetSwitchValueNative(
+              installer::switches::kRegisterURLProtocol);
+      base::Optional<ShellUtil::ProtocolAssociations> protocol_associations =
+          ShellUtil::ProtocolAssociations::FromCommandLineArgument(
+              protocol_associations_value);
+
       // ShellUtil::RegisterChromeForProtocol performs all registration
       // done by ShellUtil::RegisterChromeBrowser, as well as registering
       // with Windows as capable of handling the supplied protocol.
-      if (ShellUtil::RegisterChromeForProtocol(chrome_exe, suffix, protocol,
-                                               false))
+      if (protocol_associations.has_value() &&
+          ShellUtil::RegisterChromeForProtocols(
+              chrome_exe, suffix, protocol_associations.value(), false)) {
         status = installer::IN_USE_UPDATED;
+      }
+    } else if (cmd_line.HasSwitch(
+                   installer::switches::kDeregisterURLProtocol)) {
+      const std::wstring protocols_value = cmd_line.GetSwitchValueNative(
+          installer::switches::kDeregisterURLProtocol);
+      std::vector<std::wstring> protocols = base::SplitString(
+          protocols_value, L",", base::WhitespaceHandling::TRIM_WHITESPACE,
+          base::SplitResult::SPLIT_WANT_NONEMPTY);
+
+      if (!protocols.empty() && ShellUtil::RemoveAppProtocolAssociations(
+                                    protocols, chrome_exe, false)) {
+        status = installer::IN_USE_UPDATED;
+      }
     } else {
       if (ShellUtil::RegisterChromeBrowser(chrome_exe, suffix,
                                            /*elevate_if_not_admin=*/false))

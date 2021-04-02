@@ -39,6 +39,29 @@ bool SetAsDefaultProtocolClient(const std::string& protocol);
 // disambiguation.
 using AppProtocolMap = std::map<std::string, base::Optional<std::string>>;
 
+// Called with the outcome of an asynchronous app protocol operation.
+using AppProtocolWorkerCallback = base::OnceCallback<void(bool)>;
+
+// Registers the browser as the handler for all URL protocols in
+// `app_protocols`. Protocols with a corresponding handler app id will be
+// registered to launch that app. `protocol_worker_callback` will be run on the
+// caller's sequence to report the results.
+void AddAppProtocolClients(const AppProtocolMap& app_protocols,
+                           const base::FilePath& profile_path,
+                           AppProtocolWorkerCallback protocol_worker_callback);
+
+// Removes each protocol and its registered web app handler from the OS.
+void RemoveAppProtocolClients(const std::vector<std::string>& protocols,
+                              const base::FilePath& profile_path);
+
+// Determines if web app with `app_id` is the default client application for the
+// given protocol.
+void CheckAppIsProtocolClient(
+    const std::string& app_id,
+    const std::string& protocol,
+    const base::FilePath& profile_path,
+    AppProtocolWorkerCallback protocol_worker_callback);
+
 // The different types of permissions required to set a default web client.
 enum DefaultWebClientSetPermission {
   // The browser distribution is not permitted to be made default.

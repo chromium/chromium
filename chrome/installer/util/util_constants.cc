@@ -38,6 +38,10 @@ const char kDeleteOldVersions[] = "delete-old-versions";
 // kUninstall, otherwise it is silently ignored.
 const char kDeleteProfile[] = "delete-profile";
 
+// Specifies a comma-separated list of protocols to remove from the browser's
+// protocol associations list.
+const char kDeregisterURLProtocol[] = "deregister-url-protocol";
+
 // Disable logging
 const char kDisableLogging[] = "disable-logging";
 
