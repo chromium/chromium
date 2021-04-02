@@ -1194,7 +1194,6 @@ void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,
     if (!only_draws_visible_content) {
       drawable_bounds = gfx::Rect(layer->bounds());
     }
-
     gfx::Rect visible_bounds_in_target_space =
         MathUtil::MapEnclosingClippedRect(
             layer->draw_properties().target_space_transform, drawable_bounds);

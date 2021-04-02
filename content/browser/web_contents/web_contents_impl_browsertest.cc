@@ -4181,9 +4181,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   EXPECT_TRUE(NavigateToURL(
       shell(), GURL(server->GetURL("/scrollable_page_with_content.html"))));
 
-  // Size our view so that we can scroll both horizontally and vertically while
-  // the content is visible.
-  ResizeWebContentsView(shell(), gfx::Size(20, 20), /*set_start_page=*/false);
+  // Size our view so that we can scroll both horizontally and vertically.
+  ResizeWebContentsView(shell(), gfx::Size(10, 10), /*set_start_page=*/false);
 
   // Set up observers to watch the web contents and render frame submissions.
   auto* web_contents = shell()->web_contents();

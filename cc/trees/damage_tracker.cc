@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <algorithm>
-#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "cc/base/math_util.h"
@@ -357,14 +356,13 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
   LayerRectMapData& data = RectDataForLayer(layer->id(), &layer_is_new);
   gfx::Rect old_rect_in_target_space = data.rect_;
 
-  gfx::Rect visible_rect_in_target_space =
-      layer->visible_drawable_content_rect();
-  data.Update(visible_rect_in_target_space, mailboxId_);
+  gfx::Rect rect_in_target_space = layer->GetEnclosingRectInTargetSpace();
+  data.Update(rect_in_target_space, mailboxId_);
 
   if (layer_is_new || layer->LayerPropertyChanged()) {
     // If a layer is new or has changed, then its entire layer rect affects the
     // target surface.
-    damage_for_this_update_.Union(visible_rect_in_target_space);
+    damage_for_this_update_.Union(rect_in_target_space);
 
     // The layer's old region is now exposed on the target surface, too.
     // Note old_rect_in_target_space is already in target space.
