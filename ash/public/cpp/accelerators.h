@@ -171,6 +171,12 @@ ASH_PUBLIC_EXPORT extern const AcceleratorData
 ASH_PUBLIC_EXPORT extern const size_t
     kDisableWithNewMappingAcceleratorDataLength;
 
+// Accelerators that are enabled with positional shortcut mapping.
+ASH_PUBLIC_EXPORT extern const AcceleratorData
+    kEnableWithPositionalAcceleratorsData[];
+ASH_PUBLIC_EXPORT extern const size_t
+    kEnableWithPositionalAcceleratorsDataLength;
+
 // The public-facing interface for accelerator handling, which is Ash's duty to
 // implement.
 class ASH_PUBLIC_EXPORT AcceleratorController {

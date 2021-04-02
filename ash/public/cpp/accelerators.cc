@@ -285,6 +285,23 @@ const AcceleratorData kEnableWithNewMappingAcceleratorData[] = {
 const size_t kEnableWithNewMappingAcceleratorDataLength =
     base::size(kEnableWithNewMappingAcceleratorData);
 
+const AcceleratorData kEnableWithPositionalAcceleratorsData[] = {
+    // These are the desk shortcuts as advertised, but previously
+    // they were implicitly implemented in terms of F11 and F12
+    // due to event rewrites. Since the F-Key rewrites are deprecated
+    // these can be implemented based on the keys they actually are.
+    //
+    // TODO(crbug.com/1179893): Merge these to the main table once
+    // IsImprovedKeyboardShortcutsEnabled() is permanently enabled.
+    {true, ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+     DESKS_NEW_DESK},
+    {true, ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
+     DESKS_REMOVE_CURRENT_DESK},
+};
+
+const size_t kEnableWithPositionalAcceleratorsDataLength =
+    base::size(kEnableWithPositionalAcceleratorsData);
+
 // static
 AcceleratorController* AcceleratorController::Get() {
   return g_instance;

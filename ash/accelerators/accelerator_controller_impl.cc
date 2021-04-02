@@ -1853,7 +1853,10 @@ void AcceleratorControllerImpl::Init() {
 
   RegisterAccelerators(kAcceleratorData, kAcceleratorDataLength);
 
-  if (::features::IsNewShortcutMappingEnabled()) {
+  if (::features::IsImprovedKeyboardShortcutsEnabled()) {
+    RegisterAccelerators(kEnableWithPositionalAcceleratorsData,
+                         kEnableWithPositionalAcceleratorsDataLength);
+  } else if (::features::IsNewShortcutMappingEnabled()) {
     RegisterAccelerators(kEnableWithNewMappingAcceleratorData,
                          kEnableWithNewMappingAcceleratorDataLength);
   } else {

@@ -76,6 +76,7 @@
 #include "ui/base/accelerators/test_accelerator_target.h"
 #include "ui/base/ime/chromeos/fake_ime_keyboard.h"
 #include "ui/base/ime/chromeos/ime_keyboard.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -2105,6 +2106,57 @@ TEST_F(AcceleratorControllerTest, TestToggleHighContrast) {
   EXPECT_FALSE(IsConfirmationDialogOpen());
   EXPECT_TRUE(ContainsHighContrastNotification());
   RemoveAllNotifications();
+}
+
+// TODO(crbug.com/1179893): Replace with the implementation below in
+// AcceleratorControllerImprovedTest::DeskShortcuts_New once the feature is
+// enabled permantently.
+TEST_F(AcceleratorControllerTest, DeskShortcuts_Old) {
+  // The shortcuts are Search+Shift+[MINUS|PLUS], but due to event
+  // rewriting they became Shift+[F11|F12]. So only the rewritten shortcut
+  // works but the "real" shortcut doesn't.
+  EXPECT_TRUE(controller_->IsRegistered(
+      ui::Accelerator(ui::VKEY_F12, ui::EF_SHIFT_DOWN)));
+  EXPECT_TRUE(controller_->IsRegistered(
+      ui::Accelerator(ui::VKEY_F11, ui::EF_SHIFT_DOWN)));
+  EXPECT_FALSE(controller_->IsRegistered(ui::Accelerator(
+      ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
+  EXPECT_FALSE(controller_->IsRegistered(ui::Accelerator(
+      ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
+}
+
+namespace {
+
+// TODO(crbug.com/1179893): Remove once the feature is enabled permantently.
+class AcceleratorControllerImprovedTest : public AcceleratorControllerTest {
+ public:
+  AcceleratorControllerImprovedTest() = default;
+  ~AcceleratorControllerImprovedTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kImprovedKeyboardShortcuts);
+    AcceleratorControllerTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+TEST_F(AcceleratorControllerImprovedTest, DeskShortcuts_New) {
+  // The shortcuts are Search+Shift+[MINUS|PLUS]. The old shortcuts that were
+  // rewritten to F11/F12 should not longer have any effect and the "real"
+  // shortcut should now work.
+  EXPECT_FALSE(controller_->IsRegistered(
+      ui::Accelerator(ui::VKEY_F12, ui::EF_SHIFT_DOWN)));
+  EXPECT_FALSE(controller_->IsRegistered(
+      ui::Accelerator(ui::VKEY_F11, ui::EF_SHIFT_DOWN)));
+  EXPECT_TRUE(controller_->IsRegistered(ui::Accelerator(
+      ui::VKEY_OEM_PLUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
+  EXPECT_TRUE(controller_->IsRegistered(ui::Accelerator(
+      ui::VKEY_OEM_MINUS, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN)));
 }
 
 namespace {
