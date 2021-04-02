@@ -446,8 +446,7 @@ IN_PROC_BROWSER_TEST_F(CommerceHintAgentTest, MultipleProfiles) {
       profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
-      profile_path2, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
-      std::u16string(), std::string());
+      profile_path2, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
   run_loop.Run();
   ASSERT_EQ(profile_manager->GetNumberOfProfiles(), 2U);
 

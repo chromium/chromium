@@ -40,8 +40,7 @@ Profile* CreateProfile() {
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
-      new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
-      std::u16string(), std::string());
+      new_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
   run_loop.Run();
   return profile_manager->GetProfileByPath(new_path);
 }

@@ -42,7 +42,7 @@ void OpenNewWindowForProfile(Profile* profile) {
 
     g_browser_process->profile_manager()->CreateProfileAsync(
         ProfileManager::GetSystemProfilePath(),
-        ProfileManager::CreateCallback(), std::u16string(), std::string());
+        ProfileManager::CreateCallback());
     return;
   }
 

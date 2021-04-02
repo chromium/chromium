@@ -627,31 +627,19 @@ bool ProfileManager::LoadProfileByPath(const base::FilePath& profile_path,
                           // OnProfileLoaded may be called multiple times, but
                           // |callback| will be called only once.
                           base::AdaptCallbackForRepeating(std::move(callback)),
-                          incognito),
-      std::u16string() /* name */, std::string() /* icon_url */);
+                          incognito));
   return true;
 }
 
 void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
-                                        const CreateCallback& callback,
-                                        const std::u16string& name,
-                                        const std::string& icon_url) {
+                                        const CreateCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TRACE_EVENT1("browser,startup",
                "ProfileManager::CreateProfileAsync",
                "profile_path",
                profile_path.AsUTF8Unsafe());
 
-  bool is_allowed_path = IsAllowedProfilePath(profile_path) ||
-                         base::CommandLine::ForCurrentProcess()->HasSwitch(
-                             switches::kAllowProfilesOutsideUserDir);
-
-  // Make sure the path is correct and this profile is not pending deletion.
-  if (!is_allowed_path || IsProfileDirectoryMarkedForDeletion(profile_path)) {
-    if (!is_allowed_path) {
-      LOG(ERROR) << "Cannot create profile at path "
-                 << profile_path.AsUTF8Unsafe();
-    }
+  if (!CanCreateProfileAtPath(profile_path)) {
     if (!callback.is_null())
       callback.Run(nullptr, Profile::CREATE_STATUS_LOCAL_FAIL);
     return;
@@ -666,15 +654,6 @@ void ProfileManager::CreateProfileAsync(const base::FilePath& profile_path,
   } else {
     // Initiate asynchronous creation process.
     info = RegisterProfile(CreateProfileAsyncHelper(profile_path, this), false);
-    size_t icon_index;
-    DCHECK(base::IsStringASCII(icon_url));
-    if (profiles::IsDefaultAvatarIconUrl(icon_url, &icon_index)) {
-      // add profile to cache with user selected name and avatar
-      GetProfileAttributesStorage().AddProfile(
-          profile_path, name, std::string(), std::u16string(),
-          /*is_consented_primary_account=*/false, icon_index,
-          /*supervised_user_id=*/std::string(), EmptyAccountId());
-    }
   }
 
   // Call or enqueue the callback.
@@ -835,6 +814,22 @@ bool ProfileManager::IsAllowedProfilePath(const base::FilePath& path) const {
   return path.DirName() == user_data_dir();
 }
 
+bool ProfileManager::CanCreateProfileAtPath(const base::FilePath& path) const {
+  bool is_allowed_path = IsAllowedProfilePath(path) ||
+                         base::CommandLine::ForCurrentProcess()->HasSwitch(
+                             switches::kAllowProfilesOutsideUserDir);
+
+  if (!is_allowed_path) {
+    LOG(ERROR) << "Cannot create profile at path " << path.AsUTF8Unsafe();
+    return false;
+  }
+
+  if (IsProfileDirectoryMarkedForDeletion(path))
+    return false;
+
+  return true;
+}
+
 Profile* ProfileManager::GetProfileByPath(const base::FilePath& path) const {
   TRACE_EVENT0("browser", "ProfileManager::GetProfileByPath");
   ProfileInfo* profile_info = GetProfileInfoByPath(path);
@@ -861,15 +856,42 @@ Profile* ProfileManager::GetProfileFromProfileKey(ProfileKey* profile_key) {
 // static
 base::FilePath ProfileManager::CreateMultiProfileAsync(
     const std::u16string& name,
-    const std::string& icon_url,
+    size_t icon_index,
     const CreateCallback& callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!name.empty());
+  DCHECK(profiles::IsDefaultAvatarIconIndex(icon_index));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
+  DCHECK(profile_manager->CanCreateProfileAtPath(new_path));
 
-  profile_manager->CreateProfileAsync(new_path, callback, name, icon_url);
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(new_path);
+  if (entry) {
+    LOG(WARNING) << "Failed to generate a unique profile name for a new "
+                    "profile. Creation parameters will be ignored, loading an "
+                    "existing profile at path \""
+                 << new_path << "\"instead.";
+  } else {
+    // Add a storage entry early here to set up a new profile with user selected
+    // name and avatar.
+    // These parameters will be used to initialize profile's prefs in
+    // InitProfileUserPrefs(). AddProfileToStorage() will set any missing
+    // attributes after prefs are loaded.
+    // TODO(alexilin): consider using the user data to supply these parameters
+    // to profile.
+    storage.AddProfile(new_path, name, /*gaia_id=*/std::string(),
+                       /*user_name=*/std::u16string(),
+                       /*is_consented_primary_account=*/false, icon_index,
+                       /*supervised_user_id=*/std::string(),
+                       /*account_id=*/EmptyAccountId());
+  }
+
+  profile_manager->CreateProfileAsync(new_path, callback);
   return new_path;
 }
 
@@ -1176,8 +1198,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
       avatar_index = entry->GetAvatarIconIndex();
       profile_name = base::UTF16ToUTF8(entry->GetLocalProfileName());
       supervised_user_id = entry->GetSupervisedUserId();
-    } else if (profile->GetPath() ==
-               profiles::GetDefaultProfileDir(user_data_dir())) {
+    } else {
       avatar_index = profiles::GetPlaceholderAvatarIndex();
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
       profile_name =
@@ -1185,13 +1206,11 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
 #else
       profile_name = l10n_util::GetStringUTF8(IDS_DEFAULT_PROFILE_NAME);
 #endif
-    } else {
-      avatar_index = storage.ChooseAvatarIconIndexForNewProfile();
-      profile_name =
-          base::UTF16ToUTF8(storage.ChooseNameForNewProfile(avatar_index));
     }
   }
 
+  // TODO(https://crbug.com/1194607): investigate whether these prefs are
+  // actually useful.
   if (!profile->GetPrefs()->HasPrefPath(prefs::kProfileAvatarIndex))
     profile->GetPrefs()->SetInteger(prefs::kProfileAvatarIndex, avatar_index);
 
@@ -1697,9 +1716,7 @@ Profile* ProfileManager::CreateAndInitializeProfile(
     const base::FilePath& profile_dir) {
   TRACE_EVENT0("browser", "ProfileManager::CreateAndInitializeProfile");
 
-  if (!IsAllowedProfilePath(profile_dir) &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAllowProfilesOutsideUserDir)) {
+  if (!CanCreateProfileAtPath(profile_dir)) {
     LOG(ERROR) << "Cannot create profile at path "
                << profile_dir.AsUTF8Unsafe();
     return nullptr;
@@ -1770,15 +1787,8 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
 
   // If we're deleting the last profile, then create a new profile in its place.
   // Load existing profile otherwise.
-  std::string new_avatar_url;
-  std::u16string new_profile_name;
   if (fallback_profile_path.empty()) {
     fallback_profile_path = GenerateNextProfileDirectoryPath();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    int avatar_index = profiles::GetPlaceholderAvatarIndex();
-    new_avatar_url = profiles::GetDefaultAvatarIconUrl(avatar_index);
-    new_profile_name = storage.ChooseNameForNewProfile(avatar_index);
-#endif
     // A new profile about to be created.
     ProfileMetrics::LogProfileAddNewUser(
         ProfileMetrics::ADD_NEW_USER_LAST_DELETED);
@@ -1792,8 +1802,7 @@ void ProfileManager::EnsureActiveProfileExistsBeforeDeletion(
           profile_dir, fallback_profile_path,
           // OnNewActiveProfileLoaded may be called several times, but
           // only once with CREATE_STATUS_INITIALIZED.
-          base::AdaptCallbackForRepeating(std::move(callback))),
-      new_profile_name, new_avatar_url);
+          base::AdaptCallbackForRepeating(std::move(callback))));
 }
 
 void ProfileManager::OnLoadProfileForProfileDeletion(

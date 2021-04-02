@@ -116,8 +116,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
                        ProfileManager::GetGuestProfilePath(),
                        base::BindRepeating(
                            &DiceSignedInProfileCreator::OnNewProfileCreated,
-                           weak_pointer_factory_.GetWeakPtr()),
-                       std::u16string(), std::string()));
+                           weak_pointer_factory_.GetWeakPtr())));
   } else {
     ProfileAttributesStorage& storage =
         g_browser_process->profile_manager()->GetProfileAttributesStorage();
@@ -127,7 +126,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
                               ? storage.ChooseNameForNewProfile(*icon_index)
                               : local_profile_name;
     ProfileManager::CreateMultiProfileAsync(
-        name, profiles::GetDefaultAvatarIconUrl(*icon_index),
+        name, *icon_index,
         base::BindRepeating(&DiceSignedInProfileCreator::OnNewProfileCreated,
                             weak_pointer_factory_.GetWeakPtr()));
   }

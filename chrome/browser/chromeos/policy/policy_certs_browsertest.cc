@@ -361,10 +361,8 @@ class MultiProfilePolicyProviderHelper {
         profile_manager->GenerateNextProfileDirectoryPath();
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
-        path_profile,
-        base::BindRepeating(&OnProfileInitialized, &profile_2_,
-                            run_loop.QuitClosure()),
-        std::u16string(), std::string());
+        path_profile, base::BindRepeating(&OnProfileInitialized, &profile_2_,
+                                          run_loop.QuitClosure()));
 
     // Run the message loop to allow profile creation to take place; the loop is
     // terminated by OnProfileInitialized calling the loop's QuitClosure when

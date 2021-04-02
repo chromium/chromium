@@ -534,8 +534,7 @@ void ProfilePickerView::Display(ProfilePicker::EntryPoint entry_point) {
     g_browser_process->profile_manager()->CreateProfileAsync(
         ProfileManager::GetSystemProfilePath(),
         base::BindRepeating(&ProfilePickerView::OnSystemProfileCreated,
-                            weak_ptr_factory_.GetWeakPtr()),
-        /*name=*/std::u16string(), /*icon_url=*/std::string());
+                            weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
@@ -626,7 +625,7 @@ void ProfilePickerView::SwitchToSignIn(
       g_browser_process->profile_manager()
           ->GetProfileAttributesStorage()
           .ChooseNameForNewProfile(icon_index),
-      profiles::GetDefaultAvatarIconUrl(icon_index),
+      icon_index,
       base::BindRepeating(&ProfilePickerView::OnProfileForSigninCreated,
                           weak_ptr_factory_.GetWeakPtr(), profile_color,
                           base::AdaptCallbackForRepeating(

@@ -46,8 +46,7 @@ Profile* CreateProfile() {
       profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
-      profile_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
-      std::u16string(), std::string());
+      profile_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
   run_loop.Run();
   return profile_manager->GetProfileByPath(profile_path);
 }

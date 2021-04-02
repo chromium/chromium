@@ -180,8 +180,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTestWithProfileShortcutManager,
   base::FilePath path_profile2 =
       profile_manager->GenerateNextProfileDirectoryPath();
   profile_manager->CreateProfileAsync(path_profile2,
-                                      ProfileManager::CreateCallback(),
-                                      std::u16string(), std::string());
+                                      ProfileManager::CreateCallback());
   // The default profile's name should be part of the relaunch name.
   ValidateBrowserWindowProperties(
       browser(), base::UTF8ToUTF16(browser()->profile()->GetProfileUserName()));

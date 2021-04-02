@@ -381,8 +381,7 @@ class QuicAllowedPolicyDynamicTest : public QuicTestBase {
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
         path_profile,
-        base::BindRepeating(&OnProfileInitialized, &profile_2_, &run_loop),
-        std::u16string(), std::string());
+        base::BindRepeating(&OnProfileInitialized, &profile_2_, &run_loop));
 
     // Run the message loop to allow profile creation to take place; the loop is
     // terminated by OnProfileInitialized calling the loop's QuitClosure when

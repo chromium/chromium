@@ -452,11 +452,10 @@ void ProfilePickerHandler::HandleCreateProfile(const base::ListValue* args) {
   DCHECK(profiles::IsDefaultAvatarIconIndex(avatar_index));
 #endif
 
-  std::string avatar_url = profiles::GetDefaultAvatarIconUrl(avatar_index);
   ProfileMetrics::LogProfileAddNewUser(
       ProfileMetrics::ADD_NEW_PROFILE_PICKER_LOCAL);
   ProfileManager::CreateMultiProfileAsync(
-      profile_name, avatar_url,
+      profile_name, avatar_index,
       base::BindRepeating(&ProfilePickerHandler::OnProfileCreated,
                           weak_factory_.GetWeakPtr(), profile_color,
                           create_shortcut));

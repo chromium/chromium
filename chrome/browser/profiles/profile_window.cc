@@ -211,26 +211,22 @@ void OpenBrowserWindowForProfile(ProfileManager::CreateCallback callback,
 void LoadProfileAsync(const base::FilePath& path,
                       ProfileManager::CreateCallback callback) {
   g_browser_process->profile_manager()->CreateProfileAsync(
-      path, base::BindRepeating(&ProfileLoadedCallback, callback),
-      std::u16string(), std::string());
+      path, base::BindRepeating(&ProfileLoadedCallback, callback));
 }
 
 void SwitchToProfile(const base::FilePath& path,
                      bool always_create,
                      ProfileManager::CreateCallback callback) {
   g_browser_process->profile_manager()->CreateProfileAsync(
-      path,
-      base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
-                          always_create, false, false),
-      std::u16string(), std::string());
+      path, base::BindRepeating(&profiles::OpenBrowserWindowForProfile,
+                                callback, always_create, false, false));
 }
 
 void SwitchToGuestProfile(ProfileManager::CreateCallback callback) {
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileManager::GetGuestProfilePath(),
       base::BindRepeating(&profiles::OpenBrowserWindowForProfile, callback,
-                          false, false, false),
-      std::u16string(), std::string());
+                          false, false, false));
 }
 #endif
 

@@ -198,15 +198,23 @@ class ProfileManagerTest : public testing::Test {
     return new UnittestProfileManager(temp_dir_.GetPath());
   }
 
-  // Helper function to create a profile with |name| for a profile |manager|.
+  // Helper function to create a profile at `path` for a profile `manager`.
   void CreateProfileAsync(ProfileManager* manager,
-                          const std::string& name,
+                          const base::FilePath& profile_path,
                           MockObserver* mock_observer) {
     manager->CreateProfileAsync(
-        temp_dir_.GetPath().AppendASCII(name),
+        profile_path, base::BindRepeating(&MockObserver::OnProfileCreated,
+                                          base::Unretained(mock_observer)));
+  }
+
+  // Helper function to create a profile with |name| for a profile |manager|.
+  void CreateMultiProfileAsync(ProfileManager* manager,
+                               const std::string& name,
+                               MockObserver* mock_observer) {
+    ProfileManager::CreateMultiProfileAsync(
+        base::UTF8ToUTF16(name), 0,
         base::BindRepeating(&MockObserver::OnProfileCreated,
-                            base::Unretained(mock_observer)),
-        base::UTF8ToUTF16(name), profiles::GetDefaultAvatarIconUrl(0));
+                            base::Unretained(mock_observer)));
   }
 
   // Helper function to add a profile with |profile_name| to |profile_manager|'s
@@ -446,14 +454,16 @@ TEST_F(ProfileManagerTest, LoadNonExistingProfile) {
 }
 
 TEST_F(ProfileManagerTest, LoadExistingProfile) {
-  const std::string profile_name = "MyProfile";
-  const std::string other_name = "SomeOtherProfile";
+  const std::string profile_basename = "MyProfile";
+  base::FilePath profile_path =
+      temp_dir_.GetPath().AppendASCII(profile_basename);
+  const std::string other_basename = "SomeOtherProfile";
   MockObserver mock_observer1;
   EXPECT_CALL(mock_observer1, OnProfileCreated(SameNotNull(), NotFail()))
       .Times(testing::AtLeast(1));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  CreateProfileAsync(profile_manager, profile_name, &mock_observer1);
+  CreateProfileAsync(profile_manager, profile_path, &mock_observer1);
 
   // Make sure a real profile is created before continuing.
   content::RunAllTasksUntilIdle();
@@ -461,23 +471,23 @@ TEST_F(ProfileManagerTest, LoadExistingProfile) {
   base::RunLoop load_profile;
   bool incognito = false;
   profile_manager->LoadProfile(
-      profile_name, incognito,
-      base::BindOnce(&ExpectProfileWithName, profile_name, incognito,
+      profile_basename, incognito,
+      base::BindOnce(&ExpectProfileWithName, profile_basename, incognito,
                      load_profile.QuitClosure()));
   load_profile.Run();
 
   base::RunLoop load_profile_incognito;
   incognito = true;
   profile_manager->LoadProfile(
-      profile_name, incognito,
-      base::BindOnce(&ExpectProfileWithName, profile_name, incognito,
+      profile_basename, incognito,
+      base::BindOnce(&ExpectProfileWithName, profile_basename, incognito,
                      load_profile_incognito.QuitClosure()));
   load_profile_incognito.Run();
 
   // Loading some other non existing profile should still return null.
   base::RunLoop load_other_profile;
   profile_manager->LoadProfile(
-      other_name, false,
+      other_basename, false,
       base::BindOnce(&ExpectNullProfile, load_other_profile.QuitClosure()));
   load_other_profile.Run();
 }
@@ -496,15 +506,62 @@ TEST_F(ProfileManagerTest, CreateProfileAsyncMultipleRequests) {
       SameNotNull(), NotFail())).Times(testing::AtLeast(1));
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  const std::string profile_name = "New Profile";
-  CreateProfileAsync(profile_manager, profile_name, &mock_observer1);
-  CreateProfileAsync(profile_manager, profile_name, &mock_observer2);
-  CreateProfileAsync(profile_manager, profile_name, &mock_observer3);
+  base::FilePath profile_path = temp_dir_.GetPath().AppendASCII("New Profile");
+  CreateProfileAsync(profile_manager, profile_path, &mock_observer1);
+  CreateProfileAsync(profile_manager, profile_path, &mock_observer2);
+  CreateProfileAsync(profile_manager, profile_path, &mock_observer3);
 
   content::RunAllTasksUntilIdle();
 }
 
 TEST_F(ProfileManagerTest, CreateProfilesAsync) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+
+  base::FilePath profile_path1 =
+      temp_dir_.GetPath().AppendASCII("New Profile 1");
+  base::FilePath profile_path2 =
+      temp_dir_.GetPath().AppendASCII("New Profile 2");
+
+  MockObserver mock_observer;
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull(), NotFail()))
+      .Times(testing::AtLeast(3));
+
+  CreateProfileAsync(profile_manager, profile_path1, &mock_observer);
+  CreateProfileAsync(profile_manager, profile_path2, &mock_observer);
+
+  content::RunAllTasksUntilIdle();
+}
+
+#if !defined(OS_ANDROID)
+// There's no multi-profiles on Android.
+TEST_F(ProfileManagerTest, CreateMultiProfileAsync) {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ASSERT_TRUE(profile_manager);
+
+  const std::string profile_name = "New Profile";
+
+  MockObserver mock_observer;
+  Profile* profile = nullptr;
+  EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull(), NotFail()))
+      .Times(testing::AtLeast(2))
+      .WillRepeatedly(testing::SaveArg<0>(&profile));
+
+  CreateMultiProfileAsync(profile_manager, profile_name, &mock_observer);
+
+  content::RunAllTasksUntilIdle();
+
+  // Check that the profile name is set correctly both in the profile prefs and
+  // in storage.
+  ASSERT_NE(profile, nullptr);
+  ProfileAttributesEntry* entry =
+      profile_manager->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(base::UTF16ToUTF8(entry->GetName()), profile_name);
+  EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kProfileName), profile_name);
+}
+
+TEST_F(ProfileManagerTest, CreateMultiProfilesAsync) {
   const std::string profile_name1 = "New Profile 1";
   const std::string profile_name2 = "New Profile 2";
 
@@ -514,11 +571,43 @@ TEST_F(ProfileManagerTest, CreateProfilesAsync) {
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
-  CreateProfileAsync(profile_manager, profile_name1, &mock_observer);
-  CreateProfileAsync(profile_manager, profile_name2, &mock_observer);
+  CreateMultiProfileAsync(profile_manager, profile_name1, &mock_observer);
+  CreateMultiProfileAsync(profile_manager, profile_name2, &mock_observer);
 
   content::RunAllTasksUntilIdle();
 }
+
+TEST_F(ProfileManagerTest, CreateMultiProfileAsyncMultipleRequests) {
+  Profile* profile1 = nullptr;
+  MockObserver mock_observer1;
+  EXPECT_CALL(mock_observer1, OnProfileCreated(testing::NotNull(), NotFail()))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly(testing::SaveArg<0>(&profile1));
+  Profile* profile2 = nullptr;
+  MockObserver mock_observer2;
+  EXPECT_CALL(mock_observer2, OnProfileCreated(testing::NotNull(), NotFail()))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly(testing::SaveArg<0>(&profile2));
+  Profile* profile3 = nullptr;
+  MockObserver mock_observer3;
+  EXPECT_CALL(mock_observer3, OnProfileCreated(testing::NotNull(), NotFail()))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly(testing::SaveArg<0>(&profile3));
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  const std::string profile_name = "New Profile";
+  CreateMultiProfileAsync(profile_manager, profile_name, &mock_observer1);
+  CreateMultiProfileAsync(profile_manager, profile_name, &mock_observer2);
+  CreateMultiProfileAsync(profile_manager, profile_name, &mock_observer3);
+
+  content::RunAllTasksUntilIdle();
+
+  // A new profile should have been created for each call.
+  EXPECT_NE(profile1, profile2);
+  EXPECT_NE(profile1, profile3);
+  EXPECT_NE(profile2, profile3);
+}
+#endif  // !defined(OS_ANDROID)
 
 // Checks that the supervised profiles no longer marked as omitted on creation.
 TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
@@ -1481,17 +1570,19 @@ TEST_F(ProfileManagerTest, ActiveProfileDeleted) {
   ASSERT_TRUE(profile_manager);
 
   // Create and load two profiles.
-  const std::string profile_name1 = "New Profile 1";
-  const std::string profile_name2 = "New Profile 2";
-  base::FilePath dest_path1 = temp_dir_.GetPath().AppendASCII(profile_name1);
-  base::FilePath dest_path2 = temp_dir_.GetPath().AppendASCII(profile_name2);
+  const std::string profile_basename1 = "New Profile 1";
+  const std::string profile_basename2 = "New Profile 2";
+  base::FilePath profile_path1 =
+      temp_dir_.GetPath().AppendASCII(profile_basename1);
+  base::FilePath profile_path2 =
+      temp_dir_.GetPath().AppendASCII(profile_basename2);
 
   MockObserver mock_observer;
   EXPECT_CALL(mock_observer, OnProfileCreated(
       testing::NotNull(), NotFail())).Times(testing::AtLeast(3));
 
-  CreateProfileAsync(profile_manager, profile_name1, &mock_observer);
-  CreateProfileAsync(profile_manager, profile_name2, &mock_observer);
+  CreateProfileAsync(profile_manager, profile_path1, &mock_observer);
+  CreateProfileAsync(profile_manager, profile_path2, &mock_observer);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(2u, profile_manager->GetLoadedProfiles().size());
@@ -1500,14 +1591,14 @@ TEST_F(ProfileManagerTest, ActiveProfileDeleted) {
 
   // Set the active profile.
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed, profile_name1);
+  local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile.
-  profile_manager->ScheduleProfileForDeletion(dest_path1, base::DoNothing());
+  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(dest_path2, profile_manager->GetLastUsedProfile()->GetPath());
-  EXPECT_EQ(profile_name2, local_state->GetString(prefs::kProfileLastUsed));
+  EXPECT_EQ(profile_path2, profile_manager->GetLastUsedProfile()->GetPath());
+  EXPECT_EQ(profile_basename2, local_state->GetString(prefs::kProfileLastUsed));
 }
 
 TEST_F(ProfileManagerTest, LastProfileDeleted) {
@@ -1517,14 +1608,15 @@ TEST_F(ProfileManagerTest, LastProfileDeleted) {
       profile_manager->GetProfileAttributesStorage();
 
   // Create and load a profile.
-  const std::string profile_name1 = "New Profile 1";
-  base::FilePath dest_path1 = temp_dir_.GetPath().AppendASCII(profile_name1);
+  const std::string profile_basename1 = "New Profile 1";
+  base::FilePath profile_path1 =
+      temp_dir_.GetPath().AppendASCII(profile_basename1);
 
   MockObserver mock_observer;
   EXPECT_CALL(mock_observer, OnProfileCreated(
       testing::NotNull(), NotFail())).Times(testing::AtLeast(1));
 
-  CreateProfileAsync(profile_manager, profile_name1, &mock_observer);
+  CreateProfileAsync(profile_manager, profile_path1, &mock_observer);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, profile_manager->GetLoadedProfiles().size());
@@ -1532,20 +1624,21 @@ TEST_F(ProfileManagerTest, LastProfileDeleted) {
 
   // Set it as the active profile.
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed, profile_name1);
+  local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile.
-  profile_manager->ScheduleProfileForDeletion(dest_path1, base::DoNothing());
+  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
   content::RunAllTasksUntilIdle();
 
   // A new profile should have been created
-  const std::string profile_name2 = "Profile 1";
-  base::FilePath dest_path2 = temp_dir_.GetPath().AppendASCII(profile_name2);
+  const std::string profile_basename2 = "Profile 1";
+  base::FilePath profile_path2 =
+      temp_dir_.GetPath().AppendASCII(profile_basename2);
 
-  EXPECT_EQ(dest_path2, profile_manager->GetLastUsedProfile()->GetPath());
-  EXPECT_EQ(profile_name2, local_state->GetString(prefs::kProfileLastUsed));
+  EXPECT_EQ(profile_path2, profile_manager->GetLastUsedProfile()->GetPath());
+  EXPECT_EQ(profile_basename2, local_state->GetString(prefs::kProfileLastUsed));
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
-  EXPECT_EQ(dest_path2, storage.GetAllProfilesAttributes()[0]->GetPath());
+  EXPECT_EQ(profile_path2, storage.GetAllProfilesAttributes()[0]->GetPath());
 }
 
 TEST_P(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
@@ -1555,28 +1648,29 @@ TEST_P(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
       profile_manager->GetProfileAttributesStorage();
 
   // Create and load a profile.
-  const std::string profile_name1 = "New Profile 1";
-  base::FilePath dest_path1 = temp_dir_.GetPath().AppendASCII(profile_name1);
+  const std::string profile_basename1 = "New Profile 1";
+  base::FilePath profile_path1 =
+      temp_dir_.GetPath().AppendASCII(profile_basename1);
 
   MockObserver mock_observer;
   EXPECT_CALL(mock_observer, OnProfileCreated(testing::NotNull(), NotFail()))
       .Times(testing::AtLeast(2));
 
-  CreateProfileAsync(profile_manager, profile_name1, &mock_observer);
+  CreateProfileAsync(profile_manager, profile_path1, &mock_observer);
   content::RunAllTasksUntilIdle();
 
   EXPECT_EQ(1u, profile_manager->GetLoadedProfiles().size());
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Create the profile and register it.
-  const std::string guest_profile_name =
+  const std::string guest_profile_basename =
       ProfileManager::GetGuestProfilePath().BaseName().MaybeAsASCII();
 
   TestingProfile::Builder builder;
   builder.SetGuestSession();
   builder.SetPath(ProfileManager::GetGuestProfilePath());
   std::unique_ptr<TestingProfile> guest_profile = builder.Build();
-  guest_profile->set_profile_name(guest_profile_name);
+  guest_profile->set_profile_name(guest_profile_basename);
   profile_manager->RegisterTestingProfile(std::move(guest_profile), false);
 
   // The Guest profile does not get added to the ProfileAttributesStorage.
@@ -1585,19 +1679,20 @@ TEST_P(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
 
   // Set the Guest profile as the active profile.
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed, guest_profile_name);
+  local_state->SetString(prefs::kProfileLastUsed, guest_profile_basename);
 
   // Delete the other profile.
-  profile_manager->ScheduleProfileForDeletion(dest_path1, base::DoNothing());
+  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
   content::RunAllTasksUntilIdle();
 
   // A new profile should have been created.
-  const std::string profile_name2 = "Profile 1";
-  base::FilePath dest_path2 = temp_dir_.GetPath().AppendASCII(profile_name2);
+  const std::string profile_basename2 = "Profile 1";
+  base::FilePath profile_path2 =
+      temp_dir_.GetPath().AppendASCII(profile_basename2);
 
   EXPECT_EQ(3u, profile_manager->GetLoadedProfiles().size());
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
-  EXPECT_EQ(dest_path2, storage.GetAllProfilesAttributes()[0]->GetPath());
+  EXPECT_EQ(profile_path2, storage.GetAllProfilesAttributes()[0]->GetPath());
 }
 
 TEST_F(ProfileManagerTest, ProfileDisplayNameResetsDefaultName) {
@@ -1813,21 +1908,23 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNeedsToLoadNextProfile) {
   ASSERT_TRUE(profile_manager);
 
   // Create and load one profile, and just create a second profile.
-  const std::string profile_name1 = "New Profile 1";
-  const std::string profile_name2 = "New Profile 2";
-  base::FilePath dest_path1 = temp_dir_.GetPath().AppendASCII(profile_name1);
-  base::FilePath dest_path2 = temp_dir_.GetPath().AppendASCII(profile_name2);
+  const std::string profile_basename1 = "New Profile 1";
+  const std::string profile_basename2 = "New Profile 2";
+  base::FilePath profile_path1 =
+      temp_dir_.GetPath().AppendASCII(profile_basename1);
+  base::FilePath profile_path2 =
+      temp_dir_.GetPath().AppendASCII(profile_basename2);
 
   MockObserver mock_observer;
   EXPECT_CALL(mock_observer, OnProfileCreated(
       testing::NotNull(), NotFail())).Times(testing::AtLeast(2));
-  CreateProfileAsync(profile_manager, profile_name1, &mock_observer);
+  CreateProfileAsync(profile_manager, profile_path1, &mock_observer);
   content::RunAllTasksUntilIdle();
 
   // Track the profile, but don't load it.
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  storage.AddProfile(dest_path2, ASCIIToUTF16(profile_name2), "23456",
+  storage.AddProfile(profile_path2, ASCIIToUTF16(profile_basename2), "23456",
                      std::u16string(), true, 0, std::string(),
                      EmptyAccountId());
   content::RunAllTasksUntilIdle();
@@ -1837,17 +1934,16 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNeedsToLoadNextProfile) {
 
   // Set the active profile.
   PrefService* local_state = g_browser_process->local_state();
-  local_state->SetString(prefs::kProfileLastUsed,
-                         dest_path1.BaseName().MaybeAsASCII());
+  local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile. This should switch and load the unloaded
   // profile.
-  profile_manager->ScheduleProfileForDeletion(dest_path1, base::DoNothing());
+  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(dest_path2, profile_manager->GetLastUsedProfile()->GetPath());
-  EXPECT_EQ(profile_name2, local_state->GetString(prefs::kProfileLastUsed));
+  EXPECT_EQ(profile_path2, profile_manager->GetLastUsedProfile()->GetPath());
+  EXPECT_EQ(profile_basename2, local_state->GetString(prefs::kProfileLastUsed));
 }
 
 // This tests the recursive call in ProfileManager::OnNewActiveProfileLoaded
@@ -1859,17 +1955,20 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   ASSERT_TRUE(profile_manager);
 
   // Create and load one profile, and create two more profiles.
-  const std::string profile_name1 = "New Profile 1";
-  const std::string profile_name2 = "New Profile 2";
-  const std::string profile_name3 = "New Profile 3";
-  base::FilePath dest_path1 = temp_dir_.GetPath().AppendASCII(profile_name1);
-  base::FilePath dest_path2 = temp_dir_.GetPath().AppendASCII(profile_name2);
-  base::FilePath dest_path3 = temp_dir_.GetPath().AppendASCII(profile_name3);
+  const std::string profile_basename1 = "New Profile 1";
+  const std::string profile_basename2 = "New Profile 2";
+  const std::string profile_basename3 = "New Profile 3";
+  base::FilePath profile_path1 =
+      temp_dir_.GetPath().AppendASCII(profile_basename1);
+  base::FilePath profile_path2 =
+      temp_dir_.GetPath().AppendASCII(profile_basename2);
+  base::FilePath profile_path3 =
+      temp_dir_.GetPath().AppendASCII(profile_basename3);
 
   MockObserver mock_observer;
   EXPECT_CALL(mock_observer, OnProfileCreated(
       testing::NotNull(), NotFail())).Times(testing::AtLeast(2));
-  CreateProfileAsync(profile_manager, profile_name1, &mock_observer);
+  CreateProfileAsync(profile_manager, profile_path1, &mock_observer);
   content::RunAllTasksUntilIdle();
 
   // Create the other profiles, but don't load them. Assign a fake avatar icon
@@ -1877,11 +1976,11 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   // profile name, and not randomly by the avatar name.
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  storage.AddProfile(dest_path2, ASCIIToUTF16(profile_name2), "23456",
-                     ASCIIToUTF16(profile_name2), true, 1, std::string(),
+  storage.AddProfile(profile_path2, ASCIIToUTF16(profile_basename2), "23456",
+                     ASCIIToUTF16(profile_basename2), true, 1, std::string(),
                      EmptyAccountId());
-  storage.AddProfile(dest_path3, ASCIIToUTF16(profile_name3), "34567",
-                     ASCIIToUTF16(profile_name3), true, 2, std::string(),
+  storage.AddProfile(profile_path3, ASCIIToUTF16(profile_basename3), "34567",
+                     ASCIIToUTF16(profile_basename3), true, 2, std::string(),
                      EmptyAccountId());
 
   content::RunAllTasksUntilIdle();
@@ -1892,7 +1991,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   // Set the active profile.
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kProfileLastUsed,
-                         dest_path1.BaseName().MaybeAsASCII());
+                         profile_path1.BaseName().MaybeAsASCII());
 
   // Delete the active profile, Profile1.
   // This will post a CreateProfileAsync message, that tries to load Profile2,
@@ -1901,18 +2000,18 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   // Try to break this flow by setting the active profile to Profile2 in the
   // middle (so after the first posted message), and trying to delete Profile2,
   // so that the ProfileManager has to look for a different profile to load.
-  profile_manager->ScheduleProfileForDeletion(dest_path1, base::DoNothing());
+  profile_manager->ScheduleProfileForDeletion(profile_path1, base::DoNothing());
   local_state->SetString(prefs::kProfileLastUsed,
-                         dest_path2.BaseName().MaybeAsASCII());
-  profile_manager->ScheduleProfileForDeletion(dest_path2, base::DoNothing());
+                         profile_path2.BaseName().MaybeAsASCII());
+  profile_manager->ScheduleProfileForDeletion(profile_path2, base::DoNothing());
   content::RunAllTasksUntilIdle();
 
-  EXPECT_EQ(dest_path3, profile_manager->GetLastUsedProfile()->GetPath());
-  EXPECT_EQ(profile_name3, local_state->GetString(prefs::kProfileLastUsed));
+  EXPECT_EQ(profile_path3, profile_manager->GetLastUsedProfile()->GetPath());
+  EXPECT_EQ(profile_basename3, local_state->GetString(prefs::kProfileLastUsed));
 }
 #endif  // defined(OS_MAC)
 
-TEST_F(ProfileManagerTest, CannotCreateProfileOusideUserDir) {
+TEST_F(ProfileManagerTest, CannotCreateProfileOutsideUserDir) {
   base::ScopedTempDir non_user_dir;
   ASSERT_TRUE(non_user_dir.CreateUniqueTempDir());
 
@@ -1925,13 +2024,12 @@ TEST_F(ProfileManagerTest, CannotCreateProfileOusideUserDir) {
   EXPECT_EQ(nullptr, profile);
 }
 
-TEST_F(ProfileManagerTest, CannotCreateProfileOusideUserDirAsync) {
+TEST_F(ProfileManagerTest, CannotCreateProfileOutsideUserDirAsync) {
   base::ScopedTempDir non_user_dir;
   ASSERT_TRUE(non_user_dir.CreateUniqueTempDir());
 
-  const std::string profile_name = "New Profile";
-  base::FilePath dest_path = non_user_dir.GetPath();
-  dest_path = dest_path.AppendASCII(profile_name);
+  base::FilePath profile_path =
+      non_user_dir.GetPath().AppendASCII("New Profile");
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
@@ -1939,11 +2037,7 @@ TEST_F(ProfileManagerTest, CannotCreateProfileOusideUserDirAsync) {
   EXPECT_CALL(mock_observer,
               OnProfileCreated(nullptr, Profile::CREATE_STATUS_LOCAL_FAIL));
 
-  profile_manager->CreateProfileAsync(
-      dest_path,
-      base::BindRepeating(&MockObserver::OnProfileCreated,
-                          base::Unretained(&mock_observer)),
-      base::UTF8ToUTF16(profile_name), profiles::GetDefaultAvatarIconUrl(0));
+  CreateProfileAsync(profile_manager, profile_path, &mock_observer);
   content::RunAllTasksUntilIdle();
 }
 

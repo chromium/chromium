@@ -129,6 +129,9 @@ class ProfileManager : public content::NotificationObserver,
   // already exist on disk
   // Returns true if the profile exists, but the final loaded profile will come
   // as part of the callback.
+  // TODO(https://crbug.com/1195201): `profile_name` parameter indicates the
+  // name of a directory within the user data directory and not the visible
+  // profile name. Rename to `profile_basename`.
   bool LoadProfile(const std::string& profile_name,
                    bool incognito,
                    ProfileLoadedCallback callback);
@@ -140,9 +143,7 @@ class ProfileManager : public content::NotificationObserver,
   // If the profile has already been created then callback is called
   // immediately. Should be called on the UI thread.
   void CreateProfileAsync(const base::FilePath& profile_path,
-                          const CreateCallback& callback,
-                          const std::u16string& name,
-                          const std::string& icon_url);
+                          const CreateCallback& callback);
 
   // Returns true if the profile pointer is known to point to an existing
   // profile.
@@ -155,14 +156,22 @@ class ProfileManager : public content::NotificationObserver,
   // Get the Profile last used (the Profile to which owns the most recently
   // focused window) with this Chrome build. If no signed profile has been
   // stored in Local State, hand back the Default profile.
+  // TODO(https://crbug.com/1195201): Remove `user_data_dir` parameter since it
+  // always must match `user_data_dir_` field.
   Profile* GetLastUsedProfile(const base::FilePath& user_data_dir);
 
   // Get the path of the last used profile, or if that's undefined, the default
   // profile.
+  // TODO(https://crbug.com/1195201): Remove `user_data_dir` parameter since it
+  // always must match `user_data_dir_` field.
   base::FilePath GetLastUsedProfileDir(const base::FilePath& user_data_dir);
 
   // Get the name of the last used profile, or if that's undefined, the default
   // profile.
+  // TODO(https://crbug.com/1195201): ProfileName means the profile directory
+  // within the user data directory and not the visible profile name. Rename to
+  // `GetLastUsedProfileBaseName()`. In addition, this method is only used
+  // internally, and can be moved to anonymous namespace in the .cc file.
   std::string GetLastUsedProfileName();
 
   // Get the Profiles which are currently open, i.e. have open browsers or were
@@ -171,6 +180,7 @@ class ProfileManager : public content::NotificationObserver,
   // profile will be on the list if it is initialized successfully, but its
   // index on the list will depend on when it was opened (it is not necessarily
   // the last one).
+  // TODO(https://crbug.com/1195201): This method is unused. Delete it.
   std::vector<Profile*> GetLastOpenedProfiles(
       const base::FilePath& user_data_dir);
 
@@ -192,7 +202,7 @@ class ProfileManager : public content::NotificationObserver,
   // prohibited. Returns the file path to the profile that will be created
   // asynchronously.
   static base::FilePath CreateMultiProfileAsync(const std::u16string& name,
-                                                const std::string& icon_url,
+                                                size_t icon_index,
                                                 const CreateCallback& callback);
 
   // Returns the full path to be used for guest profiles.
@@ -408,6 +418,9 @@ class ProfileManager : public content::NotificationObserver,
 
   // Returns whether |path| is allowed for profile creation.
   bool IsAllowedProfilePath(const base::FilePath& path) const;
+
+  // Whether a new profile can be created at |path|.
+  bool CanCreateProfileAtPath(const base::FilePath& path) const;
 
   // Returns a ProfileInfoCache object which can be used to get information
   // about profiles without having to load them from disk.

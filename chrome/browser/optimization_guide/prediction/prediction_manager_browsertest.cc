@@ -1081,8 +1081,7 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
           [&run_loop](Profile* profile, Profile::CreateStatus status) {
             if (status == Profile::CREATE_STATUS_INITIALIZED)
               run_loop.Quit();
-          }),
-      std::u16string(), std::string());
+          }));
 
   run_loop.Run();
 

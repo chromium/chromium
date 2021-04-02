@@ -1884,8 +1884,7 @@ bool IsOpeningNewWindow() {
 void CreateGuestProfileIfNeeded() {
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileManager::GetGuestProfilePath(),
-      base::BindRepeating(&UpdateProfileInUse), std::u16string(),
-      std::string());
+      base::BindRepeating(&UpdateProfileInUse));
 }
 
 void EnterpriseStartupDialogClosed() {

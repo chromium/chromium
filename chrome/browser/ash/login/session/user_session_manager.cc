@@ -1171,8 +1171,7 @@ void UserSessionManager::PrepareProfile(const base::FilePath& profile_path) {
   g_browser_process->profile_manager()->CreateProfileAsync(
       profile_path,
       base::BindRepeating(&UserSessionManager::OnProfileCreated, AsWeakPtr(),
-                          user_context_, is_demo_session),
-      std::u16string(), std::string());
+                          user_context_, is_demo_session));
 }
 
 void UserSessionManager::OnProfileCreated(const UserContext& user_context,

@@ -133,8 +133,8 @@ Profile* CreateAndWaitForProfile(const base::FilePath& profile_dir) {
   ProfileManager::CreateCallback create_callback = base::BindRepeating(
       &CreateProfileCallback,
       base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(), &profile);
-  g_browser_process->profile_manager()->CreateProfileAsync(
-      profile_dir, create_callback, std::u16string(), std::string());
+  g_browser_process->profile_manager()->CreateProfileAsync(profile_dir,
+                                                           create_callback);
   base::RunLoop().Run();
   return profile;
 }
@@ -795,10 +795,8 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
       profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
-      profile2_path,
-      base::BindRepeating(&RunClosureWhenProfileInitialized,
-                          run_loop.QuitClosure()),
-      std::u16string(), std::string());
+      profile2_path, base::BindRepeating(&RunClosureWhenProfileInitialized,
+                                         run_loop.QuitClosure()));
   run_loop.Run();
   Profile* profile2 = profile_manager->GetProfileByPath(profile2_path);
   ASSERT_TRUE(profile2);

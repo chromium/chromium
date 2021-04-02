@@ -78,8 +78,7 @@ void LockScreenStartReauthDialog::Show() {
   g_browser_process->profile_manager()->CreateProfileAsync(
       ProfileHelper::GetLockScreenProfileDir(),
       base::BindRepeating(&LockScreenStartReauthDialog::OnProfileCreated,
-                          weak_factory_.GetWeakPtr()),
-      std::u16string(), std::string());
+                          weak_factory_.GetWeakPtr()));
 }
 
 void LockScreenStartReauthDialog::OnProfileCreated(

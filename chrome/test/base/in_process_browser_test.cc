@@ -565,8 +565,7 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
 
   base::RunLoop run_loop;
   profile_manager->CreateProfileAsync(
-      guest_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop),
-      std::u16string(), std::string());
+      guest_path, base::BindRepeating(&UnblockOnProfileCreation, &run_loop));
   run_loop.Run();
 
   Profile* profile = profile_manager->GetProfileByPath(guest_path);

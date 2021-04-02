@@ -93,8 +93,7 @@ CommanderFrontendViews::CommanderFrontendViews(
   profile_manager->CreateProfileAsync(
       ProfileManager::GetSystemProfilePath(),
       base::BindRepeating(&CommanderFrontendViews::OnSystemProfileAvailable,
-                          weak_ptr_factory_.GetWeakPtr()),
-      std::u16string(), std::string());
+                          weak_ptr_factory_.GetWeakPtr()));
 #else
   // TODO(lgrey): ChromeOS doesn't have a system profile. Need to find
   // a better way to do this before Commander is hooked up, but doing

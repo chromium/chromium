@@ -1209,10 +1209,8 @@ void StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
   // The profile isn't loaded yet and so needs to be loaded asynchronously.
   if (!profile) {
     profile_manager->CreateProfileAsync(
-        profile_path,
-        base::BindRepeating(&ProcessCommandLineOnProfileCreated, command_line,
-                            cur_dir),
-        std::u16string(), std::string());
+        profile_path, base::BindRepeating(&ProcessCommandLineOnProfileCreated,
+                                          command_line, cur_dir));
     return;
   }
   StartupBrowserCreator startup_browser_creator;

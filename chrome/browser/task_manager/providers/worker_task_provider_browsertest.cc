@@ -95,8 +95,7 @@ class WorkerTaskProviderBrowserTest : public InProcessBrowserTest,
         profile_manager->GenerateNextProfileDirectoryPath();
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
-        new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop),
-        std::u16string(), std::string());
+        new_path, base::BindRepeating(&OnUnblockOnProfileCreation, &run_loop));
     run_loop.Run();
 
     profiles::SwitchToProfile(new_path, /* always_create = */ false,

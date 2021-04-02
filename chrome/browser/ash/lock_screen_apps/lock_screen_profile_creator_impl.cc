@@ -60,8 +60,7 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
       chromeos::ProfileHelper::GetLockScreenAppProfilePath(),
       base::BindRepeating(&LockScreenProfileCreatorImpl::OnProfileReady,
                           weak_ptr_factory_.GetWeakPtr(),
-                          tick_clock_->NowTicks()),
-      std::u16string() /* name */, "" /* icon_url*/);
+                          tick_clock_->NowTicks()));
 }
 
 void LockScreenProfileCreatorImpl::InitializeImpl() {
