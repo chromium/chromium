@@ -28,6 +28,8 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
@@ -309,7 +311,8 @@ class AppMenuAdapter extends BaseAdapter {
         if (getCustomItemViewType(item) == CustomViewBinder.NOT_HANDLED) {
             // IPH for custom view is handled by themselves.
             if (mHighlightedItemId != null && item.getItemId() == mHighlightedItemId) {
-                ViewHighlighter.turnOnRectangularHighlight(convertView);
+                ViewHighlighter.turnOnHighlight(
+                        convertView, new HighlightParams(HighlightShape.RECTANGLE));
             } else {
                 ViewHighlighter.turnOffHighlight(convertView);
             }
@@ -362,7 +365,7 @@ class AppMenuAdapter extends BaseAdapter {
         button.setOnLongClickListener(v -> mAppMenuClickHandler.onItemLongClick(item, v));
 
         if (mHighlightedItemId != null && item.getItemId() == mHighlightedItemId) {
-            ViewHighlighter.turnOnCircularHighlight(button);
+            ViewHighlighter.turnOnHighlight(button, new HighlightParams(HighlightShape.CIRCLE));
         } else {
             ViewHighlighter.turnOffHighlight(button);
         }

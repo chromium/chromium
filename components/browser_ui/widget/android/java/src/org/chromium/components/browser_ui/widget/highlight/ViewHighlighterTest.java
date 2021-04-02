@@ -28,6 +28,10 @@ import org.chromium.base.test.util.Batch;
 @Batch(Batch.UNIT_TESTS)
 public class ViewHighlighterTest {
     private Context mContext;
+    private final ViewHighlighter.HighlightParams mCircleParams =
+            new ViewHighlighter.HighlightParams(ViewHighlighter.HighlightShape.CIRCLE);
+    private final ViewHighlighter.HighlightParams mRectangleParams =
+            new ViewHighlighter.HighlightParams(ViewHighlighter.HighlightShape.RECTANGLE);
 
     @Before
     public void setUp() {
@@ -44,15 +48,15 @@ public class ViewHighlighterTest {
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         checkHighlightOff(tintedImageButton);
 
-        ViewHighlighter.turnOnCircularHighlight(tintedImageButton);
-        ViewHighlighter.turnOnCircularHighlight(tintedImageButton);
+        ViewHighlighter.turnOnHighlight(tintedImageButton, mCircleParams);
+        ViewHighlighter.turnOnHighlight(tintedImageButton, mCircleParams);
         checkHighlightOn(tintedImageButton);
 
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         checkHighlightOff(tintedImageButton);
 
-        ViewHighlighter.turnOnRectangularHighlight(tintedImageButton);
+        ViewHighlighter.turnOnHighlight(tintedImageButton, mRectangleParams);
         checkHighlightOn(tintedImageButton);
     }
 
@@ -65,13 +69,13 @@ public class ViewHighlighterTest {
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         checkHighlightOff(tintedImageButton);
 
-        ViewHighlighter.turnOnCircularHighlight(tintedImageButton);
+        ViewHighlighter.turnOnHighlight(tintedImageButton, mCircleParams);
         checkHighlightOn(tintedImageButton);
 
         ViewHighlighter.turnOffHighlight(tintedImageButton);
         checkHighlightOff(tintedImageButton);
 
-        ViewHighlighter.turnOnRectangularHighlight(tintedImageButton);
+        ViewHighlighter.turnOnHighlight(tintedImageButton, mRectangleParams);
         checkHighlightOn(tintedImageButton);
     }
 

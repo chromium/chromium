@@ -26,6 +26,8 @@ import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
@@ -241,8 +243,9 @@ public class SectionHeaderView extends LinearLayout {
         };
         int yInsetPx =
                 getResources().getDimensionPixelOffset(R.dimen.text_bubble_menu_anchor_y_inset);
-        PulseDrawable pulseDrawable = PulseDrawable.createCustomCircle(
-                mMenuView.getContext(), new PulseDrawable.Bounds() {
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setCircleRadius(
+                new PulseDrawable.Bounds() {
                     @Override
                     public float getMaxRadiusPx(Rect bounds) {
                         return Math.max(bounds.width(), bounds.height()) / 2.f;
@@ -258,8 +261,6 @@ public class SectionHeaderView extends LinearLayout {
                         FeatureConstants.FEED_HEADER_MENU_FEATURE, R.string.ntp_feed_menu_iph,
                         R.string.accessibility_ntp_feed_menu_iph)
                         .setAnchorView(mMenuView)
-                        .setCircleHighlight(true)
-                        .setShouldHighlight(true)
                         .setDismissOnTouch(false)
                         .setInsetRect(new Rect(0, 0, 0, -yInsetPx))
                         .setAutoDismissTimeout(5 * 1000)
@@ -268,7 +269,7 @@ public class SectionHeaderView extends LinearLayout {
                         // clipped. Set back for better performance during layout.
                         .setOnShowCallback(() -> setClipChildren(false))
                         .setOnDismissCallback(() -> setClipChildren(true))
-                        .setHighlighter(pulseDrawable)
+                        .setHighlightParams(params)
                         .build());
     }
 

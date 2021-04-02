@@ -31,6 +31,8 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.dragreorder.DragReorderableListAdapter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.EventConstants;
 
 import java.util.ArrayList;
@@ -225,7 +227,9 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
             });
             // Turn on the highlight for the currently highlighted bookmark.
             if (id.equals(mHighlightedBookmark)) {
-                ViewHighlighter.pulseHighlight(holder.itemView, false, 1);
+                HighlightParams params = new HighlightParams(HighlightShape.RECTANGLE);
+                params.setNumPulses(1);
+                ViewHighlighter.turnOnHighlight(holder.itemView, params);
                 clearHighlight();
             } else {
                 // We need this in case we are change state during a pulse.

@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.url.GURL;
@@ -57,7 +59,8 @@ public class ToggleTabStackButtonCoordinator {
 
     private LayoutStateProvider mLayoutStateProvider;
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
-    private boolean mIphBeingShown;
+    @VisibleForTesting
+    boolean mIphBeingShown;
 
     /**
      * @param context The Android context used for various view operations.
@@ -162,6 +165,8 @@ public class ToggleTabStackButtonCoordinator {
             return;
         }
 
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setBoundsRespectPadding(true);
         mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(mContext.getResources(),
                 FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE, R.string.iph_tab_switcher_text,
                 R.string.iph_tab_switcher_accessibility_text)
@@ -169,18 +174,17 @@ public class ToggleTabStackButtonCoordinator {
                                                     .setOnShowCallback(this::handleShowCallback)
                                                     .setOnDismissCallback(
                                                             this::handleDismissCallback)
+                                                    .setHighlightParams(params)
                                                     .build());
     }
 
     private void handleShowCallback() {
         assert mToggleTabStackButton != null;
         mIphBeingShown = true;
-        mToggleTabStackButton.setHighlightDrawable(true);
     }
 
     private void handleDismissCallback() {
         assert mToggleTabStackButton != null;
         mIphBeingShown = false;
-        mToggleTabStackButton.setHighlightDrawable(false);
     }
 }

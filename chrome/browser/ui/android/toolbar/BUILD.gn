@@ -151,7 +151,6 @@ java_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarButtonControllerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/HomeButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinatorTest.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayMediatorTest.java",
   ]
 

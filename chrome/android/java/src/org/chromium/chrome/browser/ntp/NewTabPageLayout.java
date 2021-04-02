@@ -63,6 +63,8 @@ import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialTryNowTracke
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.vr.VrModeObserver;
@@ -930,10 +932,12 @@ public class NewTabPageLayout extends LinearLayout implements TileGroup.Observer
             boolean showHighlight) {
         IPHCommandBuilder iphCommandBuilder =
                 new IPHCommandBuilder(resources, null, stringId, accessibilityStringId);
-        iphCommandBuilder.setAnchorView(anchorView).setCircleHighlight(showHighlight);
+        iphCommandBuilder.setAnchorView(anchorView);
         if (showHighlight) {
             iphCommandBuilder.setOnShowCallback(
-                    () -> ViewHighlighter.turnOnCircularHighlight(anchorView));
+                    ()
+                            -> ViewHighlighter.turnOnHighlight(
+                                    anchorView, new HighlightParams(HighlightShape.CIRCLE)));
             iphCommandBuilder.setOnDismissCallback(() -> new Handler().postDelayed(() -> {
                 ViewHighlighter.turnOffHighlight(anchorView);
             }, ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));

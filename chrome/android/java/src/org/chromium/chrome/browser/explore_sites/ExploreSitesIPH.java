@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -69,8 +71,9 @@ public class ExploreSitesIPH {
         View foregroundView = tileView.findViewById(org.chromium.chrome.R.id.tile_view_highlight);
         if (foregroundView == null) return;
 
-        PulseDrawable pulseDrawable = PulseDrawable.createCustomCircle(
-                foregroundView.getContext(), new PulseDrawable.Bounds() {
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setCircleRadius(
+                new PulseDrawable.Bounds() {
                     @Override
                     public float getMaxRadiusPx(Rect bounds) {
                         return Math.min(bounds.width(), bounds.height()) / 2.f;
@@ -82,7 +85,7 @@ public class ExploreSitesIPH {
                         return Math.min(bounds.width(), bounds.height()) / 3.f;
                     }
                 });
-        ViewHighlighter.attachViewAsHighlight(foregroundView, pulseDrawable);
+        ViewHighlighter.turnOnHighlight(foregroundView, params);
 
         textBubble.addOnDismissListener(() -> {
             ViewHighlighter.turnOffHighlight(foregroundView);

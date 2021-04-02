@@ -18,6 +18,8 @@ import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuClickHandler;
 import org.chromium.chrome.browser.ui.appmenu.CustomViewBinder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -68,7 +70,8 @@ class IncognitoMenuItemViewBinder implements CustomViewBinder {
         }
         convertView.setOnClickListener(v -> appMenuClickHandler.onItemClick(item));
         if (highlightedItemId != null && item.getItemId() == highlightedItemId) {
-            ViewHighlighter.turnOnRectangularHighlight(convertView);
+            ViewHighlighter.turnOnHighlight(
+                    convertView, new HighlightParams(HighlightShape.RECTANGLE));
         } else {
             ViewHighlighter.turnOffHighlight(convertView);
         }

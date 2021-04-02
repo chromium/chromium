@@ -8,9 +8,10 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -24,8 +25,6 @@ public class IPHCommandBuilder {
     private final String mFeatureName;
     private String mContentString;
     private String mAccessibilityText;
-    private boolean mShouldHighlight;
-    private boolean mCircleHighlight = true;
     private boolean mDismissOnTouch = true;
     @StringRes
     private int mStringId;
@@ -37,7 +36,8 @@ public class IPHCommandBuilder {
     private Rect mInsetRect;
     private long mAutoDismissTimeout = TextBubble.NO_TIMEOUT;
     private ViewRectProvider mViewRectProvider;
-    private PulseDrawable mHighlighter;
+    @Nullable
+    private HighlightParams mHighlightParams;
 
     /**
      * Constructor for IPHCommandBuilder when you would like your strings to be resolved for you.
@@ -71,24 +71,6 @@ public class IPHCommandBuilder {
 
     /**
      *
-     * @param circleHighlight whether the highlight should be circular.
-     */
-    public IPHCommandBuilder setCircleHighlight(boolean circleHighlight) {
-        mCircleHighlight = circleHighlight;
-        return this;
-    }
-
-    /**
-     *
-     * @param shouldHighlight whether the anchor view should be highlighted.
-     */
-    public IPHCommandBuilder setShouldHighlight(boolean shouldHighlight) {
-        mShouldHighlight = shouldHighlight;
-        return this;
-    }
-
-    /**
-     *
      * @param anchorView the view that the IPH bubble should be anchored to.
      */
     public IPHCommandBuilder setAnchorView(View anchorView) {
@@ -114,16 +96,6 @@ public class IPHCommandBuilder {
         return this;
     }
 
-    /**
-     * This is for views where it's necessary to have custom min/max pulse calculations.
-     * Will override circleHighlight settings.
-     *
-     * @param highlighter The PulseDrawable to use for the view highlight.
-     */
-    public IPHCommandBuilder setHighlighter(PulseDrawable highlighter) {
-        mHighlighter = highlighter;
-        return this;
-    }
 
     /**
      *
@@ -167,6 +139,17 @@ public class IPHCommandBuilder {
 
     /**
      *
+     * @param params Defines how to draw the Highlight within the view. If  set to null,
+     *               IPH without a highlight will requested.
+     */
+    public IPHCommandBuilder setHighlightParams(HighlightParams params) {
+        assert params != null;
+        mHighlightParams = params;
+        return this;
+    }
+
+    /**
+     *
      * @return an (@see IPHCommand) containing the accumulated state of this builder.
      */
     public IPHCommand build() {
@@ -193,8 +176,8 @@ public class IPHCommandBuilder {
             mInsetRect = new Rect(0, 0, 0, yInsetPx);
         }
 
-        return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mCircleHighlight,
-                mShouldHighlight, mDismissOnTouch, mAnchorView, mOnDismissCallback, mOnShowCallback,
-                mInsetRect, mAutoDismissTimeout, mViewRectProvider, mHighlighter);
+        return new IPHCommand(mFeatureName, mContentString, mAccessibilityText, mDismissOnTouch,
+                mAnchorView, mOnDismissCallback, mOnShowCallback, mInsetRect, mAutoDismissTimeout,
+                mViewRectProvider, mHighlightParams);
     }
 }

@@ -9,7 +9,7 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.components.browser_ui.widget.highlight.PulseDrawable;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -24,8 +24,6 @@ public class IPHCommand {
     public final String featureName;
     public final String contentString;
     public final String accessibilityText;
-    public final boolean circleHighlight;
-    public final boolean shouldHighlight;
     public final boolean dismissOnTouch;
     public final View anchorView;
     @Nullable
@@ -35,17 +33,16 @@ public class IPHCommand {
     public final Rect insetRect;
     public final long autoDismissTimeout;
     public final ViewRectProvider viewRectProvider;
-    public final PulseDrawable highlighter;
+    @Nullable
+    public final HighlightParams highlightParams;
 
     IPHCommand(@Nullable String featureName, String contentString, String accessibilityText,
-            boolean circleHighlight, boolean shouldHighlight, boolean dismissOnTouch,
-            View anchorView, Runnable onDismissCallback, Runnable onShowCallback, Rect insetRect,
-            long autoDismissTimeout, ViewRectProvider viewRectProvider, PulseDrawable highlighter) {
+            boolean dismissOnTouch, View anchorView, Runnable onDismissCallback,
+            Runnable onShowCallback, Rect insetRect, long autoDismissTimeout,
+            ViewRectProvider viewRectProvider, HighlightParams params) {
         this.featureName = featureName;
         this.contentString = contentString;
         this.accessibilityText = accessibilityText;
-        this.circleHighlight = circleHighlight;
-        this.shouldHighlight = shouldHighlight;
         this.dismissOnTouch = dismissOnTouch;
         this.anchorView = anchorView;
         this.onDismissCallback = onDismissCallback;
@@ -53,6 +50,6 @@ public class IPHCommand {
         this.insetRect = insetRect;
         this.autoDismissTimeout = autoDismissTimeout;
         this.viewRectProvider = viewRectProvider;
-        this.highlighter = highlighter;
+        this.highlightParams = params;
     }
 }

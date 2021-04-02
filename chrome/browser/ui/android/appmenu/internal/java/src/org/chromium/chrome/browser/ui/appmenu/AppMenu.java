@@ -42,6 +42,8 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -262,7 +264,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
         if (highlightedItemId != null) {
             View viewToHighlight = contentView.findViewById(highlightedItemId);
-            ViewHighlighter.turnOnRectangularHighlight(viewToHighlight);
+            ViewHighlighter.turnOnHighlight(
+                    viewToHighlight, new HighlightParams(HighlightShape.RECTANGLE));
         }
 
         // Set the adapter after the header is added to avoid crashes on JellyBean.

@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 
 /** View of the StartSurfaceToolbar */
 class StartSurfaceToolbarView extends RelativeLayout {
@@ -215,7 +217,8 @@ class StartSurfaceToolbarView extends RelativeLayout {
     void setNewTabButtonHighlight(boolean highlight) {
         if (mNewTabButton == null) return;
         if (highlight) {
-            ViewHighlighter.turnOnCircularHighlight(mNewTabButton);
+            ViewHighlighter.turnOnHighlight(
+                    mNewTabButton, new HighlightParams(HighlightShape.CIRCLE));
         } else {
             ViewHighlighter.turnOffHighlight(mNewTabButton);
         }

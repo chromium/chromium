@@ -28,6 +28,8 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.OptimizedFrameLayout;
 
@@ -263,7 +265,8 @@ public class TabSwitcherModeTTPhone extends OptimizedFrameLayout
     void setNewTabButtonHighlight(boolean highlight) {
         if (mNewTabImageButton == null) return;
         if (highlight) {
-            ViewHighlighter.turnOnCircularHighlight(mNewTabImageButton);
+            ViewHighlighter.turnOnHighlight(
+                    mNewTabImageButton, new HighlightParams(HighlightShape.CIRCLE));
         } else {
             ViewHighlighter.turnOffHighlight(mNewTabImageButton);
         }

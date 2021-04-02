@@ -13,6 +13,8 @@ import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -84,7 +86,7 @@ public class ToolbarUtils {
     private static void toggleHighlightForDownloadSettingsTextBubble(
             View anchorView, boolean shouldHighlight) {
         if (shouldHighlight) {
-            ViewHighlighter.turnOnCircularHighlight(anchorView);
+            ViewHighlighter.turnOnHighlight(anchorView, new HighlightParams(HighlightShape.CIRCLE));
         } else {
             ViewHighlighter.turnOffHighlight(anchorView);
         }

@@ -19,6 +19,7 @@ import android.view.animation.Interpolator;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
@@ -184,10 +185,12 @@ public class PulseDrawable extends Drawable implements Animatable {
     /**
      * Creates a {@link PulseDrawable} that will draw a pulsing circle inside the bounds.
      * @param context The {@link Context} under which the drawable is created.
-     * @param pulseEndAuthority The {@link PulseEndAuthority} associated with this drawable.
+     * @param pulseEndAuthority The {@link PulseEndAuthority} associated with this drawable. If
+     *         null, the default implementation is used.
      * @return A new {@link PulseDrawable} instance.
      */
-    public static PulseDrawable createCircle(Context context, PulseEndAuthority pulseEndAuthority) {
+    public static PulseDrawable createCircle(
+            Context context, @Nullable PulseEndAuthority pulseEndAuthority) {
         final int startingPulseRadiusPx =
                 context.getResources().getDimensionPixelSize(R.dimen.iph_pulse_baseline_radius);
 
@@ -202,7 +205,7 @@ public class PulseDrawable extends Drawable implements Animatable {
                 return Math.min(
                         startingPulseRadiusPx, Math.min(bounds.width(), bounds.height()) / 2.f);
             }
-        }, pulseEndAuthority);
+        }, pulseEndAuthority != null ? pulseEndAuthority : new EndlessPulser());
     }
 
     /**
@@ -220,14 +223,18 @@ public class PulseDrawable extends Drawable implements Animatable {
      * Creates a {@link PulseDrawable} that will draw a pulsing circle as large as possible inside
      * the bounds.
      * @param context The {@link Context} under which the drawable is created.
+     * @param boundsfn Defines size of the pulsing circle.
+     * @param pulseEndAuthority The {@link PulseEndAuthority} associated with this drawable. If
+     *         null, the default implementation is used.
      * @return A new {@link PulseDrawable} instance.
      */
     public static PulseDrawable createCustomCircle(
-            Context context, Bounds boundsfn, PulseEndAuthority pulseEndAuthority) {
+            Context context, Bounds boundsfn, @Nullable PulseEndAuthority pulseEndAuthority) {
         Painter painter = createCirclePainter(boundsfn);
 
         PulseDrawable drawable = new PulseDrawable(context,
-                PathInterpolatorCompat.create(.8f, 0.f, .6f, 1.f), painter, pulseEndAuthority);
+                PathInterpolatorCompat.create(.8f, 0.f, .6f, 1.f), painter,
+                pulseEndAuthority != null ? pulseEndAuthority : new EndlessPulser());
         drawable.setAlpha(76);
         return drawable;
     }
