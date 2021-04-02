@@ -90,9 +90,14 @@ template("cipd_archive") {
   }
 }
 
+targetarch = "arm64"
+if (target_cpu == "x64") {
+  targetarch = "amd64"
+}
+
 cipd_archive("webrunner") {
   package_definition_yaml = "webrunner.yaml"
-  package = "chromium/fuchsia/webrunner-\${targetarch}"
+  package = "chromium/fuchsia/webrunner-${targetarch}"
   description = "Prebuilt Chrome and Web Runner binaries for Fuchsia."
 
   deps = [
@@ -110,7 +115,7 @@ cipd_archive("webrunner") {
 
 cipd_archive("castrunner") {
   package_definition_yaml = "castrunner.yaml"
-  package = "chromium/fuchsia/castrunner-\${targetarch}"
+  package = "chromium/fuchsia/castrunner-${targetarch}"
   description = "Prebuilt Cast application Runner binaries for Fuchsia."
 
   deps = [ "//fuchsia/runners:cast_runner_pkg" ]
@@ -120,7 +125,7 @@ cipd_archive("castrunner") {
 
 cipd_archive("http") {
   package_definition_yaml = "http.yaml"
-  package = "chromium/fuchsia/http-\${targetarch}"
+  package = "chromium/fuchsia/http-${targetarch}"
   description = "Prebuilt HTTP service binary for Fuchsia."
 
   deps = [ "//fuchsia/http:http_pkg" ]
@@ -130,7 +135,7 @@ cipd_archive("http") {
 
 cipd_archive("web_engine_shell") {
   package_definition_yaml = "web_engine_shell.yaml"
-  package = "chromium/fuchsia/web_engine_shell-\${targetarch}"
+  package = "chromium/fuchsia/web_engine_shell-${targetarch}"
   description = "Simple command-line embedder for WebEngine."
   testonly = true
 
@@ -179,7 +184,7 @@ cipd_archive("chromedriver") {
 cipd_archive("tests") {
   _manifest_path = "${target_gen_dir}/test_manifest.json"
   package_definition_yaml = "tests.yaml"
-  package = "chromium/fuchsia/tests-\${targetarch}"
+  package = "chromium/fuchsia/tests-${targetarch}"
   description = "Prebuilt Chromium tests for Fuchsia."
   testonly = true
 
@@ -224,7 +229,7 @@ cipd_archive("tests") {
 
 cipd_archive("debug_symbols") {
   package_definition_yaml = "debug_symbols.yaml"
-  package = "chromium/fuchsia/debug-symbols-\${targetarch}"
+  package = "chromium/fuchsia/debug-symbols-${targetarch}"
   description = "Debugging symbols for prebuilt binaries from Chromium."
 
   _symbol_tarballs = [
@@ -250,7 +255,7 @@ cipd_archive("debug_symbols") {
 
 cipd_archive("clear_key_cdm") {
   package_definition_yaml = "clear_key_cdm.yaml"
-  package = "chromium/fuchsia/libclearkeycdm-\${targetarch}"
+  package = "chromium/fuchsia/libclearkeycdm-${targetarch}"
   description = "Prebuilt libclearkeycdm.so binary for Fuchsia."
   testonly = true
 
