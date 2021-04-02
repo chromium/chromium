@@ -17,7 +17,6 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequence_bound.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_impl.h"
 #include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
@@ -37,6 +36,7 @@
 #include "components/reporting/storage/storage_module.h"
 #include "components/reporting/storage/storage_module_interface.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
+#include "components/reporting/storage_selector/storage_selector.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status_macros.h"
 #include "components/reporting/util/statusor.h"
@@ -198,7 +198,14 @@ ReportingClient::ClientInitializingContext::~ClientInitializingContext() =
     default;
 
 void ReportingClient::ClientInitializingContext::OnStart() {
-  // CloudPolicyClient requires posting to the main UI thread.
+  if (!StorageSelector::is_uploader_required()) {
+    // Uploading is disabled, proceed with no CloudPolicyClient.
+    ConfigureStorageModule();
+    return;
+  }
+
+  // Uploading is enabled, it will need CloudPolicyClient, which requires
+  // posting to the main UI thread for getting access to it.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -229,20 +236,17 @@ void ReportingClient::ClientInitializingContext::OnCloudPolicyClientConfigured(
 }
 
 void ReportingClient::ClientInitializingContext::ConfigureStorageModule() {
+  // Storage location in the local file system (if local storage is enabled).
   base::FilePath user_data_dir;
   if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
     Complete(
         Status(error::FAILED_PRECONDITION, "Could not retrieve base path"));
     return;
   }
-
   base::FilePath reporting_path = user_data_dir.Append(kReportingDirectory);
-  StorageModule::Create(
-      StorageOptions()
-          .set_directory(reporting_path)
-          .set_signature_verification_public_key(
-              SignatureVerifier::VerificationKey()),
-      std::move(async_start_upload_cb_), EncryptionModule::Create(),
+
+  StorageSelector::CreateStorageModule(
+      reporting_path, std::move(async_start_upload_cb_),
       base::BindOnce(&ClientInitializingContext::OnStorageModuleConfigured,
                      base::Unretained(this)));
 }
@@ -257,6 +261,12 @@ void ReportingClient::ClientInitializingContext::OnStorageModuleConfigured(
   }
 
   storage_ = storage_result.ValueOrDie();
+  if (!cloud_policy_client_) {
+    // No policy client - no uploader needed (uploads will not be forwarded).
+    Complete(Status::StatusOK());
+    return;
+  }
+
   UploadClient::Create(
       cloud_policy_client_,
       base::BindRepeating(&StorageModuleInterface::ReportSuccess, storage_),
