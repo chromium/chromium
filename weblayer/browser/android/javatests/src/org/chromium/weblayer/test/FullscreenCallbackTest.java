@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.BrowserControlsOffsetCallback;
@@ -47,6 +48,7 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1191751")
     public void testFullscreen() {
         enterFullscreen();
         // Second touch exits.
@@ -57,6 +59,7 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1191751")
     public void testExitFullscreenWhenDelegateCleared() {
         enterFullscreen();
         // Clearing the FullscreenCallback should exit fullscreen.
@@ -68,6 +71,7 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1191751")
     public void testExitFullscreenUsingRunnable() {
         enterFullscreen();
         // Running the runnable supplied to the delegate should exit fullscreen.
@@ -78,6 +82,7 @@ public class FullscreenCallbackTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1191751")
     public void testExitFullscreenWhenTabDestroyed() {
         enterFullscreen();
         // Destroying the tab should exit fullscreen.
@@ -92,6 +97,7 @@ public class FullscreenCallbackTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/1191751")
     public void testDestroyFragmentWhileFullscreen() {
         enterFullscreen();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mActivity.destroyFragment(); });
