@@ -425,6 +425,7 @@ try_.chromium_android_builder(
 try_.chromium_android_builder(
     name = "android-pie-arm64-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
+    builderless = False,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
     tryjob = try_.job(
