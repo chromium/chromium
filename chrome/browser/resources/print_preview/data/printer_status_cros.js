@@ -100,28 +100,28 @@ export function getStatusReasonFromPrinterStatus(printerStatus) {
     console.warn('Received printer status missing printer id');
     return PrinterStatusReason.UNKNOWN_REASON;
   }
+  let statusReason = PrinterStatusReason.NO_ERROR;
+  for (const printerStatusReason of printerStatus.statusReasons) {
+    const reason = printerStatusReason.reason;
+    const severity = printerStatusReason.severity;
+    if (severity !== PrinterStatusSeverity.ERROR &&
+        severity !== PrinterStatusSeverity.WARNING) {
+      continue;
+    }
 
-  let noErrorReasonExists = false;
-  let unknownReasonExists = false;
-  for (const statusReason of printerStatus.statusReasons) {
-    const reason = statusReason.reason;
-    const severity = statusReason.severity;
-
+    // Always prioritize an ERROR severity status, unless it's for unknown
+    // reasons.
     if (reason !== PrinterStatusReason.UNKNOWN_REASON &&
-        (severity === PrinterStatusSeverity.WARNING ||
-         severity === PrinterStatusSeverity.ERROR)) {
+        severity === PrinterStatusSeverity.ERROR) {
       return reason;
     }
 
-    noErrorReasonExists =
-        noErrorReasonExists || reason === PrinterStatusReason.NO_ERROR;
-    unknownReasonExists =
-        unknownReasonExists || reason === PrinterStatusReason.UNKNOWN_REASON;
+    if (reason !== PrinterStatusReason.UNKNOWN_REASON ||
+        statusReason === PrinterStatusReason.NO_ERROR) {
+      statusReason = reason;
+    }
   }
-
-  return noErrorReasonExists || !unknownReasonExists ?
-      PrinterStatusReason.NO_ERROR :
-      PrinterStatusReason.UNKNOWN_REASON;
+  return statusReason;
 }
 
 /**

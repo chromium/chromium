@@ -37,62 +37,35 @@ suite(printer_status_test_cros.suiteName, function() {
   function setNativeLayerPrinterStatusMap() {
     [{
       printerId: 'ID1',
-      statusReasons: [{
-        reason: PrinterStatusReason.NO_ERROR,
-        severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
-      }],
+      statusReasons: [],
     },
      {
        printerId: 'ID2',
-       statusReasons: [
-         {
-           reason: PrinterStatusReason.NO_ERROR,
-           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
-         },
-         {
-           reason: PrinterStatusReason.LOW_ON_PAPER,
-           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
-         }
-       ],
+       statusReasons: [{
+         reason: PrinterStatusReason.LOW_ON_PAPER,
+         severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+       }],
      },
      {
        printerId: 'ID3',
-       statusReasons: [
-         {
-           reason: PrinterStatusReason.NO_ERROR,
-           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
-         },
-         {
-           reason: PrinterStatusReason.LOW_ON_PAPER,
-           severity: PrinterStatusSeverity.REPORT
-         }
-       ],
+       statusReasons: [{
+         reason: PrinterStatusReason.LOW_ON_PAPER,
+         severity: PrinterStatusSeverity.REPORT
+       }],
      },
      {
        printerId: 'ID4',
-       statusReasons: [
-         {
-           reason: PrinterStatusReason.NO_ERROR,
-           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
-         },
-         {
-           reason: PrinterStatusReason.LOW_ON_PAPER,
-           severity: PrinterStatusSeverity.WARNING
-         }
-       ],
+       statusReasons: [{
+         reason: PrinterStatusReason.LOW_ON_PAPER,
+         severity: PrinterStatusSeverity.WARNING
+       }],
      },
      {
        printerId: 'ID5',
-       statusReasons: [
-         {
-           reason: PrinterStatusReason.NO_ERROR,
-           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
-         },
-         {
-           reason: PrinterStatusReason.LOW_ON_PAPER,
-           severity: PrinterStatusSeverity.ERROR
-         }
-       ],
+       statusReasons: [{
+         reason: PrinterStatusReason.LOW_ON_PAPER,
+         severity: PrinterStatusSeverity.ERROR
+       }],
      },
      {
        printerId: 'ID6',
@@ -124,21 +97,15 @@ suite(printer_status_test_cros.suiteName, function() {
        printerId: 'ID8',
        statusReasons: [{
          reason: PrinterStatusReason.UNKNOWN_REASON,
-         severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+         severity: PrinterStatusSeverity.ERROR
        }],
      },
      {
        printerId: 'ID9',
-       statusReasons: [
-         {
-           reason: PrinterStatusReason.UNKNOWN_REASON,
-           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
-         },
-         {
-           reason: PrinterStatusReason.NO_ERROR,
-           severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
-         }
-       ],
+       statusReasons: [{
+         reason: PrinterStatusReason.UNKNOWN_REASON,
+         severity: PrinterStatusSeverity.UNKNOWN_SEVERITY
+       }],
      }]
         .forEach(
             status => nativeLayerCros.addPrinterStatusToMap(
@@ -239,31 +206,27 @@ suite(printer_status_test_cros.suiteName, function() {
                   /** @type {!PrintPreviewDestinationDropdownCrosElement} */ (
                       destinationSelect.$$('#dropdown'));
 
-              // No error printer status.
+              // Empty printer status.
               assertEquals(
                   'print-preview:printer-status-green',
                   getIconString(dropdown, destination1.key));
 
-              // No error printer status + error printer status with unknown
-              // severity.
+              // Error printer status with unknown severity.
               assertEquals(
                   'print-preview:printer-status-green',
                   getIconString(dropdown, destination2.key));
 
-              // No error printer status + error printer status with report
-              // severity.
+              // Error printer status with report severity.
               assertEquals(
                   'print-preview:printer-status-green',
                   getIconString(dropdown, destination3.key));
 
-              // No error printer status + error printer status with warning
-              // severity.
+              // Error printer status with warning severity.
               assertEquals(
                   'print-preview:printer-status-red',
                   getIconString(dropdown, destination4.key));
 
-              // No error printer status + error printer status with error
-              // severity.
+              // Error printer status with error severity.
               assertEquals(
                   'print-preview:printer-status-red',
                   getIconString(dropdown, destination5.key));
@@ -280,12 +243,12 @@ suite(printer_status_test_cros.suiteName, function() {
                   'print-preview:printer-status-green',
                   getIconString(dropdown, destination7.key));
 
-              // Unknown reason printer status.
+              // Unknown reason printer status with error severity.
               assertEquals(
                   'print-preview:printer-status-grey',
                   getIconString(dropdown, destination8.key));
 
-              // No error printer status + unknown reason printer status.
+              // Unknown reason printer status with unknown severity.
               assertEquals(
                   'print-preview:printer-status-green',
                   getIconString(dropdown, destination9.key));
