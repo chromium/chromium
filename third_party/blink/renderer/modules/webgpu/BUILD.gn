@@ -9,6 +9,8 @@ blink_modules_sources("webgpu") {
     "dawn_callback.h",
     "dawn_conversions.cc",
     "dawn_conversions.h",
+    "dawn_enum_conversions.cc",
+    "dawn_enum_conversions.h",
     "dawn_object.cc",
     "dawn_object.h",
     "gpu.cc",

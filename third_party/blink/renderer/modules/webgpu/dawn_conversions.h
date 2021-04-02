@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_object.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -26,18 +27,6 @@ class GPUImageCopyTexture;
 class GPUImageDataLayout;
 class UnsignedLongEnforceRangeSequenceOrGPUExtent3DDict;
 class UnsignedLongEnforceRangeSequenceOrGPUOrigin3DDict;
-class V8GPUIndexFormat;
-
-// Convert WebGPU bitfield values to Dawn enums. These have the same value.
-template <typename DawnEnum>
-DawnEnum AsDawnEnum(uint32_t webgpu_enum) {
-  return static_cast<DawnEnum>(webgpu_enum);
-}
-
-// Convert WebGPU string enums to Dawn enums.
-template <typename DawnEnum>
-DawnEnum AsDawnEnum(const WTF::String& webgpu_enum);
-WGPUIndexFormat AsDawnEnum(const V8GPUIndexFormat& webgpu_enum);
 
 // These conversions are used multiple times and are declared here. Conversions
 // used only once, for example for object construction, are defined

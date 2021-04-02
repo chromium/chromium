@@ -22,12 +22,6 @@ GPURenderPassEncoder::GPURenderPassEncoder(
     WGPURenderPassEncoder render_pass_encoder)
     : DawnObject<WGPURenderPassEncoder>(device, render_pass_encoder) {}
 
-void GPURenderPassEncoder::setBindGroup(uint32_t index,
-                                        GPUBindGroup* bindGroup) {
-  GetProcs().renderPassEncoderSetBindGroup(GetHandle(), index,
-                                           bindGroup->GetHandle(), 0, nullptr);
-}
-
 void GPURenderPassEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
@@ -58,24 +52,6 @@ void GPURenderPassEncoder::setBindGroup(
                                            dynamic_offsets_data_length, data);
 }
 
-void GPURenderPassEncoder::pushDebugGroup(String groupLabel) {
-  std::string label = groupLabel.Utf8();
-  GetProcs().renderPassEncoderPushDebugGroup(GetHandle(), label.c_str());
-}
-
-void GPURenderPassEncoder::popDebugGroup() {
-  GetProcs().renderPassEncoderPopDebugGroup(GetHandle());
-}
-
-void GPURenderPassEncoder::insertDebugMarker(String markerLabel) {
-  std::string label = markerLabel.Utf8();
-  GetProcs().renderPassEncoderInsertDebugMarker(GetHandle(), label.c_str());
-}
-
-void GPURenderPassEncoder::setPipeline(GPURenderPipeline* pipeline) {
-  GetProcs().renderPassEncoderSetPipeline(GetHandle(), pipeline->GetHandle());
-}
-
 void GPURenderPassEncoder::setBlendColor(DoubleSequenceOrGPUColorDict& color,
                                          ExceptionState& exception_state) {
   if (color.IsDoubleSequence() && color.GetAsDoubleSequence().size() != 4) {
@@ -87,97 +63,12 @@ void GPURenderPassEncoder::setBlendColor(DoubleSequenceOrGPUColorDict& color,
   GetProcs().renderPassEncoderSetBlendColor(GetHandle(), &dawn_color);
 }
 
-void GPURenderPassEncoder::setStencilReference(uint32_t reference) {
-  GetProcs().renderPassEncoderSetStencilReference(GetHandle(), reference);
-}
-
-void GPURenderPassEncoder::setViewport(float x,
-                                       float y,
-                                       float width,
-                                       float height,
-                                       float minDepth,
-                                       float maxDepth) {
-  GetProcs().renderPassEncoderSetViewport(GetHandle(), x, y, width, height,
-                                          minDepth, maxDepth);
-}
-
-void GPURenderPassEncoder::setScissorRect(uint32_t x,
-                                          uint32_t y,
-                                          uint32_t width,
-                                          uint32_t height) {
-  GetProcs().renderPassEncoderSetScissorRect(GetHandle(), x, y, width, height);
-}
-
-void GPURenderPassEncoder::setIndexBuffer(GPUBuffer* buffer,
-                                          const V8GPUIndexFormat& format,
-                                          uint64_t offset,
-                                          uint64_t size) {
-  GetProcs().renderPassEncoderSetIndexBufferWithFormat(
-      GetHandle(), buffer->GetHandle(), AsDawnEnum(format), offset, size);
-}
-
-void GPURenderPassEncoder::setVertexBuffer(uint32_t slot,
-                                           const GPUBuffer* buffer,
-                                           const uint64_t offset,
-                                           const uint64_t size) {
-  GetProcs().renderPassEncoderSetVertexBuffer(
-      GetHandle(), slot, buffer->GetHandle(), offset, size);
-}
-
-void GPURenderPassEncoder::draw(uint32_t vertexCount,
-                                uint32_t instanceCount,
-                                uint32_t firstVertex,
-                                uint32_t firstInstance) {
-  GetProcs().renderPassEncoderDraw(GetHandle(), vertexCount, instanceCount,
-                                   firstVertex, firstInstance);
-}
-
-void GPURenderPassEncoder::drawIndexed(uint32_t indexCount,
-                                       uint32_t instanceCount,
-                                       uint32_t firstIndex,
-                                       int32_t baseVertex,
-                                       uint32_t firstInstance) {
-  GetProcs().renderPassEncoderDrawIndexed(GetHandle(), indexCount,
-                                          instanceCount, firstIndex, baseVertex,
-                                          firstInstance);
-}
-
-void GPURenderPassEncoder::drawIndirect(GPUBuffer* indirectBuffer,
-                                        uint64_t indirectOffset) {
-  GetProcs().renderPassEncoderDrawIndirect(
-      GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
-}
-
-void GPURenderPassEncoder::drawIndexedIndirect(GPUBuffer* indirectBuffer,
-                                               uint64_t indirectOffset) {
-  GetProcs().renderPassEncoderDrawIndexedIndirect(
-      GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
-}
-
 void GPURenderPassEncoder::executeBundles(
     const HeapVector<Member<GPURenderBundle>>& bundles) {
   std::unique_ptr<WGPURenderBundle[]> dawn_bundles = AsDawnType(bundles);
 
   GetProcs().renderPassEncoderExecuteBundles(GetHandle(), bundles.size(),
                                              dawn_bundles.get());
-}
-
-void GPURenderPassEncoder::beginOcclusionQuery(uint32_t queryIndex) {
-  GetProcs().renderPassEncoderBeginOcclusionQuery(GetHandle(), queryIndex);
-}
-
-void GPURenderPassEncoder::endOcclusionQuery() {
-  GetProcs().renderPassEncoderEndOcclusionQuery(GetHandle());
-}
-
-void GPURenderPassEncoder::writeTimestamp(GPUQuerySet* querySet,
-                                          uint32_t queryIndex) {
-  GetProcs().renderPassEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
-                                             queryIndex);
-}
-
-void GPURenderPassEncoder::endPass() {
-  GetProcs().renderPassEncoderEndPass(GetHandle());
 }
 
 }  // namespace blink

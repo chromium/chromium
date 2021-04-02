@@ -242,18 +242,6 @@ GPUComputePassEncoder* GPUCommandEncoder::beginComputePass(
   return encoder;
 }
 
-void GPUCommandEncoder::copyBufferToBuffer(GPUBuffer* src,
-                                           uint64_t src_offset,
-                                           GPUBuffer* dst,
-                                           uint64_t dst_offset,
-                                           uint64_t size) {
-  DCHECK(src);
-  DCHECK(dst);
-  GetProcs().commandEncoderCopyBufferToBuffer(GetHandle(), src->GetHandle(),
-                                              src_offset, dst->GetHandle(),
-                                              dst_offset, size);
-}
-
 void GPUCommandEncoder::copyBufferToTexture(
     GPUImageCopyBuffer* source,
     GPUImageCopyTexture* destination,
@@ -302,36 +290,6 @@ void GPUCommandEncoder::copyTextureToTexture(
 
   GetProcs().commandEncoderCopyTextureToTexture(
       GetHandle(), &dawn_source, &dawn_destination, &dawn_copy_size);
-}
-
-void GPUCommandEncoder::pushDebugGroup(String groupLabel) {
-  std::string label = groupLabel.Utf8();
-  GetProcs().commandEncoderPushDebugGroup(GetHandle(), label.c_str());
-}
-
-void GPUCommandEncoder::popDebugGroup() {
-  GetProcs().commandEncoderPopDebugGroup(GetHandle());
-}
-
-void GPUCommandEncoder::insertDebugMarker(String markerLabel) {
-  std::string label = markerLabel.Utf8();
-  GetProcs().commandEncoderInsertDebugMarker(GetHandle(), label.c_str());
-}
-
-void GPUCommandEncoder::resolveQuerySet(GPUQuerySet* querySet,
-                                        uint32_t firstQuery,
-                                        uint32_t queryCount,
-                                        GPUBuffer* destination,
-                                        uint64_t destinationOffset) {
-  GetProcs().commandEncoderResolveQuerySet(
-      GetHandle(), querySet->GetHandle(), firstQuery, queryCount,
-      destination->GetHandle(), destinationOffset);
-}
-
-void GPUCommandEncoder::writeTimestamp(GPUQuerySet* querySet,
-                                       uint32_t queryIndex) {
-  GetProcs().commandEncoderWriteTimestamp(GetHandle(), querySet->GetHandle(),
-                                          queryIndex);
 }
 
 GPUCommandBuffer* GPUCommandEncoder::finish(

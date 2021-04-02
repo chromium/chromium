@@ -12,9 +12,6 @@
 namespace blink {
 
 class GPUBindGroup;
-class GPUBuffer;
-class GPUComputePipeline;
-class GPUQuerySet;
 
 class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
                               public GPUProgrammablePassEncoder {
@@ -25,7 +22,11 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
                                  WGPUComputePassEncoder compute_pass_encoder);
 
   // gpu_compute_pass_encoder.idl
-  void setBindGroup(uint32_t index, GPUBindGroup* bindGroup);
+  void setBindGroup(uint32_t index,
+                    const DawnObject<WGPUBindGroup>* bindGroup) {
+    GetProcs().computePassEncoderSetBindGroup(
+        GetHandle(), index, bindGroup->GetHandle(), 0, nullptr);
+  }
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bindGroup,
                     const Vector<uint32_t>& dynamicOffsets);
@@ -35,14 +36,35 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
                     uint64_t dynamic_offsets_data_start,
                     uint32_t dynamic_offsets_data_length,
                     ExceptionState& exception_state);
-  void pushDebugGroup(String groupLabel);
-  void popDebugGroup();
-  void insertDebugMarker(String markerLabel);
-  void setPipeline(GPUComputePipeline* pipeline);
-  void dispatch(uint32_t x, uint32_t y, uint32_t z);
-  void dispatchIndirect(GPUBuffer* indirectBuffer, uint64_t indirectOffset);
-  void writeTimestamp(GPUQuerySet* querySet, uint32_t queryIndex);
-  void endPass();
+  void pushDebugGroup(String groupLabel) {
+    std::string label = groupLabel.Utf8();
+    GetProcs().computePassEncoderPushDebugGroup(GetHandle(), label.c_str());
+  }
+  void popDebugGroup() {
+    GetProcs().computePassEncoderPopDebugGroup(GetHandle());
+  }
+  void insertDebugMarker(String markerLabel) {
+    std::string label = markerLabel.Utf8();
+    GetProcs().computePassEncoderInsertDebugMarker(GetHandle(), label.c_str());
+  }
+  void setPipeline(const DawnObject<WGPUComputePipeline>* pipeline) {
+    GetProcs().computePassEncoderSetPipeline(GetHandle(),
+                                             pipeline->GetHandle());
+  }
+  void dispatch(uint32_t x, uint32_t y, uint32_t z) {
+    GetProcs().computePassEncoderDispatch(GetHandle(), x, y, z);
+  }
+  void dispatchIndirect(const DawnObject<WGPUBuffer>* indirectBuffer,
+                        uint64_t indirectOffset) {
+    GetProcs().computePassEncoderDispatchIndirect(
+        GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
+  }
+  void writeTimestamp(const DawnObject<WGPUQuerySet>* querySet,
+                      uint32_t queryIndex) {
+    GetProcs().computePassEncoderWriteTimestamp(
+        GetHandle(), querySet->GetHandle(), queryIndex);
+  }
+  void endPass() { GetProcs().computePassEncoderEndPass(GetHandle()); }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUComputePassEncoder);

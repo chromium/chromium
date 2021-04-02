@@ -74,7 +74,9 @@ class DawnObjectBase {
 
   const scoped_refptr<DawnControlClientHolder>& GetDawnControlClient() const;
   gpu::webgpu::WebGPUInterface* GetInterface() const;
-  const DawnProcTable& GetProcs() const;
+  const DawnProcTable& GetProcs() const {
+    return dawn_control_client_->GetProcs();
+  }
 
   // Ensure commands up until now on this object's parent device are flushed by
   // the end of the task.

@@ -17,12 +17,6 @@ GPUComputePassEncoder::GPUComputePassEncoder(
     WGPUComputePassEncoder compute_pass_encoder)
     : DawnObject<WGPUComputePassEncoder>(device, compute_pass_encoder) {}
 
-void GPUComputePassEncoder::setBindGroup(uint32_t index,
-                                         GPUBindGroup* bindGroup) {
-  GetProcs().computePassEncoderSetBindGroup(GetHandle(), index,
-                                            bindGroup->GetHandle(), 0, nullptr);
-}
-
 void GPUComputePassEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
@@ -51,44 +45,6 @@ void GPUComputePassEncoder::setBindGroup(
   GetProcs().computePassEncoderSetBindGroup(GetHandle(), index,
                                             bind_group->GetHandle(),
                                             dynamic_offsets_data_length, data);
-}
-
-void GPUComputePassEncoder::pushDebugGroup(String groupLabel) {
-  std::string label = groupLabel.Utf8();
-  GetProcs().computePassEncoderPushDebugGroup(GetHandle(), label.c_str());
-}
-
-void GPUComputePassEncoder::popDebugGroup() {
-  GetProcs().computePassEncoderPopDebugGroup(GetHandle());
-}
-
-void GPUComputePassEncoder::insertDebugMarker(String markerLabel) {
-  std::string label = markerLabel.Utf8();
-  GetProcs().computePassEncoderInsertDebugMarker(GetHandle(), label.c_str());
-}
-
-void GPUComputePassEncoder::setPipeline(GPUComputePipeline* pipeline) {
-  GetProcs().computePassEncoderSetPipeline(GetHandle(), pipeline->GetHandle());
-}
-
-void GPUComputePassEncoder::dispatch(uint32_t x, uint32_t y, uint32_t z) {
-  GetProcs().computePassEncoderDispatch(GetHandle(), x, y, z);
-}
-
-void GPUComputePassEncoder::dispatchIndirect(GPUBuffer* indirectBuffer,
-                                             uint64_t indirectOffset) {
-  GetProcs().computePassEncoderDispatchIndirect(
-      GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
-}
-
-void GPUComputePassEncoder::writeTimestamp(GPUQuerySet* querySet,
-                                           uint32_t queryIndex) {
-  GetProcs().computePassEncoderWriteTimestamp(
-      GetHandle(), querySet->GetHandle(), queryIndex);
-}
-
-void GPUComputePassEncoder::endPass() {
-  GetProcs().computePassEncoderEndPass(GetHandle());
 }
 
 }  // namespace blink

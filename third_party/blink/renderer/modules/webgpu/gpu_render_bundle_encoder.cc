@@ -57,12 +57,6 @@ GPURenderBundleEncoder::GPURenderBundleEncoder(
     WGPURenderBundleEncoder render_bundle_encoder)
     : DawnObject<WGPURenderBundleEncoder>(device, render_bundle_encoder) {}
 
-void GPURenderBundleEncoder::setBindGroup(uint32_t index,
-                                          GPUBindGroup* bindGroup) {
-  GetProcs().renderBundleEncoderSetBindGroup(
-      GetHandle(), index, bindGroup->GetHandle(), 0, nullptr);
-}
-
 void GPURenderBundleEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
@@ -91,70 +85,6 @@ void GPURenderBundleEncoder::setBindGroup(
   GetProcs().renderBundleEncoderSetBindGroup(GetHandle(), index,
                                              bind_group->GetHandle(),
                                              dynamic_offsets_data_length, data);
-}
-
-void GPURenderBundleEncoder::pushDebugGroup(String groupLabel) {
-  std::string label = groupLabel.Utf8();
-  GetProcs().renderBundleEncoderPushDebugGroup(GetHandle(), label.c_str());
-}
-
-void GPURenderBundleEncoder::popDebugGroup() {
-  GetProcs().renderBundleEncoderPopDebugGroup(GetHandle());
-}
-
-void GPURenderBundleEncoder::insertDebugMarker(String markerLabel) {
-  std::string label = markerLabel.Utf8();
-  GetProcs().renderBundleEncoderInsertDebugMarker(GetHandle(), label.c_str());
-}
-
-void GPURenderBundleEncoder::setPipeline(GPURenderPipeline* pipeline) {
-  GetProcs().renderBundleEncoderSetPipeline(GetHandle(), pipeline->GetHandle());
-}
-
-void GPURenderBundleEncoder::setIndexBuffer(GPUBuffer* buffer,
-                                            const V8GPUIndexFormat& format,
-                                            uint64_t offset,
-                                            uint64_t size) {
-  GetProcs().renderBundleEncoderSetIndexBufferWithFormat(
-      GetHandle(), buffer->GetHandle(), AsDawnEnum(format), offset, size);
-}
-
-void GPURenderBundleEncoder::setVertexBuffer(uint32_t slot,
-                                             const GPUBuffer* buffer,
-                                             uint64_t offset,
-                                             uint64_t size) {
-  GetProcs().renderBundleEncoderSetVertexBuffer(
-      GetHandle(), slot, buffer->GetHandle(), offset, size);
-}
-
-void GPURenderBundleEncoder::draw(uint32_t vertexCount,
-                                  uint32_t instanceCount,
-                                  uint32_t firstVertex,
-                                  uint32_t firstInstance) {
-  GetProcs().renderBundleEncoderDraw(GetHandle(), vertexCount, instanceCount,
-                                     firstVertex, firstInstance);
-}
-
-void GPURenderBundleEncoder::drawIndexed(uint32_t indexCount,
-                                         uint32_t instanceCount,
-                                         uint32_t firstIndex,
-                                         int32_t baseVertex,
-                                         uint32_t firstInstance) {
-  GetProcs().renderBundleEncoderDrawIndexed(GetHandle(), indexCount,
-                                            instanceCount, firstIndex,
-                                            baseVertex, firstInstance);
-}
-
-void GPURenderBundleEncoder::drawIndirect(GPUBuffer* indirectBuffer,
-                                          uint64_t indirectOffset) {
-  GetProcs().renderBundleEncoderDrawIndirect(
-      GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
-}
-
-void GPURenderBundleEncoder::drawIndexedIndirect(GPUBuffer* indirectBuffer,
-                                                 uint64_t indirectOffset) {
-  GetProcs().renderBundleEncoderDrawIndexedIndirect(
-      GetHandle(), indirectBuffer->GetHandle(), indirectOffset);
 }
 
 GPURenderBundle* GPURenderBundleEncoder::finish(

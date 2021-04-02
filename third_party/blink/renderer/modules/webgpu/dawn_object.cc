@@ -23,10 +23,6 @@ gpu::webgpu::WebGPUInterface* DawnObjectBase::GetInterface() const {
   return dawn_control_client_->GetInterface();
 }
 
-const DawnProcTable& DawnObjectBase::GetProcs() const {
-  return dawn_control_client_->GetProcs();
-}
-
 void DawnObjectBase::setLabel(const String& value) {
   // TODO: Relay label changes to Dawn
   label_ = value;
