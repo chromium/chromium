@@ -20,12 +20,12 @@
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
-#include "components/subresource_filter/content/common/ad_evidence.h"
 #include "components/subresource_filter/content/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 
 namespace content {
 class NavigationHandle;
@@ -156,7 +156,7 @@ class ContentSubresourceFilterThrottleManager
   // `render_frame_host` or `base::nullopt` if there is none (i.e. the frame is
   // a main frame, or no navigation or commit has yet occurred and no evidence
   // has been reported by the renderer).
-  base::Optional<FrameAdEvidence> GetAdEvidenceForFrame(
+  base::Optional<blink::FrameAdEvidence> GetAdEvidenceForFrame(
       content::RenderFrameHost* render_frame_host);
 
  protected:
@@ -217,7 +217,7 @@ class ContentSubresourceFilterThrottleManager
   VerifiedRuleset::Handle* EnsureRulesetHandle();
   void DestroyRulesetHandleIfNoLongerUsed();
 
-  FrameAdEvidence& EnsureFrameAdEvidence(
+  blink::FrameAdEvidence& EnsureFrameAdEvidence(
       content::RenderFrameHost* render_frame_host);
 
   // Registers `render_frame_host` as an ad frame. If the frame later moves to
@@ -285,7 +285,7 @@ class ContentSubresourceFilterThrottleManager
   // Map of subframes, keyed by FrameTreeNode ID, with value being the evidence
   // for or against the frames being ads. This evidence is updated whenever a
   // navigation's LoadPolicy is calculated.
-  std::map<int, FrameAdEvidence> tracked_ad_evidence_;
+  std::map<int, blink::FrameAdEvidence> tracked_ad_evidence_;
 
   // Map of frames whose navigations have been identified as ads, keyed by
   // FrameTreeNode ID. Contains information on the most current completed

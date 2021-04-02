@@ -12,4 +12,20 @@ bool ShouldInheritActivation(const GURL& url) {
   return !content::IsURLHandledByNetworkStack(url);
 }
 
+blink::mojom::FilterListResult InterpretLoadPolicyAsEvidence(
+    const base::Optional<LoadPolicy>& load_policy) {
+  if (!load_policy.has_value()) {
+    return blink::mojom::FilterListResult::kNotChecked;
+  }
+  switch (load_policy.value()) {
+    case LoadPolicy::EXPLICITLY_ALLOW:
+      return blink::mojom::FilterListResult::kMatchedAllowingRule;
+    case LoadPolicy::ALLOW:
+      return blink::mojom::FilterListResult::kMatchedNoRules;
+    case LoadPolicy::WOULD_DISALLOW:
+    case LoadPolicy::DISALLOW:
+      return blink::mojom::FilterListResult::kMatchedBlockingRule;
+  }
+}
+
 }  // namespace subresource_filter

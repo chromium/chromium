@@ -67,6 +67,7 @@ static_library("browser") {
     "//content/public/common",
     "//ipc",
     "//net",
+    "//third_party/blink/public/common",
     "//url",
   ]
   public_deps = [

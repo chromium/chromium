@@ -172,7 +172,7 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitNavigation(
   // Update the ad status of a frame given the new navigation. This may tag or
   // untag a frame as an ad.
   if (!navigation_handle->IsInMainFrame()) {
-    FrameAdEvidence& ad_evidence = EnsureFrameAdEvidence(frame_host);
+    blink::FrameAdEvidence& ad_evidence = EnsureFrameAdEvidence(frame_host);
     ad_evidence.set_is_complete();
 
     SetIsAdSubframe(frame_host, ad_evidence.IndicatesAdSubframe());
@@ -462,7 +462,7 @@ void ContentSubresourceFilterThrottleManager::OnSubframeNavigationEvaluated(
           navigation_handle->GetFrameTreeNodeId());
   DCHECK(starting_rfh);
 
-  FrameAdEvidence& ad_evidence = EnsureFrameAdEvidence(starting_rfh);
+  blink::FrameAdEvidence& ad_evidence = EnsureFrameAdEvidence(starting_rfh);
   DCHECK_EQ(ad_evidence.parent_is_ad(),
             base::Contains(ad_frames_,
                            starting_rfh->GetParent()->GetFrameTreeNodeId()));
@@ -696,15 +696,18 @@ void ContentSubresourceFilterThrottleManager::SetIsAdSubframe(
 void ContentSubresourceFilterThrottleManager::SetIsAdSubframeForTesting(
     content::RenderFrameHost* render_frame_host,
     bool is_ad_subframe) {
+  DCHECK(render_frame_host->GetParent());
   if (is_ad_subframe ==
       base::Contains(ad_frames_, render_frame_host->GetFrameTreeNodeId())) {
     return;
   }
 
   if (is_ad_subframe) {
-    // We mark the frame as created by ad script so that the ad evidence
+    // We mark the frame as matching a blocking rule so that the ad evidence
     // indicates an ad subframe.
-    OnSubframeWasCreatedByAdScript(render_frame_host);
+    EnsureFrameAdEvidence(render_frame_host)
+        .UpdateFilterListResult(
+            blink::mojom::FilterListResult::kMatchedBlockingRule);
     OnFrameIsAdSubframe(render_frame_host);
   } else {
     // There's currently no legal transition that can untag a frame. Instead, to
@@ -715,7 +718,7 @@ void ContentSubresourceFilterThrottleManager::SetIsAdSubframeForTesting(
   }
 }
 
-base::Optional<FrameAdEvidence>
+base::Optional<blink::FrameAdEvidence>
 ContentSubresourceFilterThrottleManager::GetAdEvidenceForFrame(
     content::RenderFrameHost* render_frame_host) {
   auto tracked_ad_evidence_it =
@@ -758,10 +761,12 @@ void ContentSubresourceFilterThrottleManager::OnSubframeWasCreatedByAdScript(
   }
 
   EnsureFrameAdEvidence(frame_host)
-      .set_created_by_ad_script(ScriptHeuristicEvidence::kCreatedByAdScript);
+      .set_created_by_ad_script(
+          blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript);
 }
 
-FrameAdEvidence& ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(
+blink::FrameAdEvidence&
+ContentSubresourceFilterThrottleManager::EnsureFrameAdEvidence(
     content::RenderFrameHost* frame_host) {
   DCHECK(frame_host);
   DCHECK(frame_host->GetParent());

@@ -13,7 +13,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
-#include "components/subresource_filter/content/common/ad_evidence.h"
 #include "components/subresource_filter/content/common/subresource_filter_utils.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/content/renderer/web_document_subresource_filter_impl.h"
@@ -27,6 +26,7 @@
 #include "ipc/ipc_message.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
@@ -254,11 +254,11 @@ void SubresourceFilterAgent::SetIsAdSubframeIfNecessary() {
   // TODO(alexmt): Store FrameAdEvidence on each frame, typically updated by the
   // browser but also populated here when the browser has not informed the
   // renderer.
-  FrameAdEvidence ad_evidence(IsParentAdSubframe());
+  blink::FrameAdEvidence ad_evidence(IsParentAdSubframe());
   ad_evidence.set_created_by_ad_script(
       IsSubframeCreatedByAdScript()
-          ? ScriptHeuristicEvidence::kCreatedByAdScript
-          : ScriptHeuristicEvidence::kNotCreatedByAdScript);
+          ? blink::mojom::FrameCreationStackEvidence::kCreatedByAdScript
+          : blink::mojom::FrameCreationStackEvidence::kNotCreatedByAdScript);
   ad_evidence.set_is_complete();
 
   if (ad_evidence.IndicatesAdSubframe()) {

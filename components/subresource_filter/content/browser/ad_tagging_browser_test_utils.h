@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/subresource_filter/content/common/ad_evidence.h"
+#include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -36,16 +36,17 @@ content::RenderFrameHost* CreateSrcFrame(
 // Verifies that the ad evidence associated with the frame matches the
 // provided values. The first signature assumes that the most restrictive and
 // latest filter list results are the same.
-void ExpectFrameAdEvidence(content::RenderFrameHost* frame_host,
-                           bool parent_is_ad,
-                           FilterListEvidence filter_list_result,
-                           ScriptHeuristicEvidence created_by_ad_script);
 void ExpectFrameAdEvidence(
     content::RenderFrameHost* frame_host,
     bool parent_is_ad,
-    FilterListEvidence latest_filter_list_result,
-    FilterListEvidence most_restrictive_filter_list_result,
-    ScriptHeuristicEvidence created_by_ad_script);
+    blink::mojom::FilterListResult filter_list_result,
+    blink::mojom::FrameCreationStackEvidence created_by_ad_script);
+void ExpectFrameAdEvidence(
+    content::RenderFrameHost* frame_host,
+    bool parent_is_ad,
+    blink::mojom::FilterListResult latest_filter_list_result,
+    blink::mojom::FilterListResult most_restrictive_filter_list_result,
+    blink::mojom::FrameCreationStackEvidence created_by_ad_script);
 
 }  // namespace subresource_filter
 

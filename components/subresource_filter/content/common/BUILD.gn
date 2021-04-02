@@ -4,8 +4,6 @@
 
 static_library("common") {
   sources = [
-    "ad_evidence.cc",
-    "ad_evidence.h",
     "ruleset_dealer.cc",
     "ruleset_dealer.h",
     "subresource_filter_utils.cc",

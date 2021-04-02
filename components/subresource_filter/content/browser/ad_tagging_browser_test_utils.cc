@@ -56,10 +56,11 @@ content::RenderFrameHost* CreateSrcFrame(
   return CreateFrameImpl(adapter, url, false /* ad_script */);
 }
 
-void ExpectFrameAdEvidence(content::RenderFrameHost* frame_host,
-                           bool parent_is_ad,
-                           FilterListEvidence filter_list_result,
-                           ScriptHeuristicEvidence created_by_ad_script) {
+void ExpectFrameAdEvidence(
+    content::RenderFrameHost* frame_host,
+    bool parent_is_ad,
+    blink::mojom::FilterListResult filter_list_result,
+    blink::mojom::FrameCreationStackEvidence created_by_ad_script) {
   ExpectFrameAdEvidence(frame_host, parent_is_ad, filter_list_result,
                         filter_list_result, created_by_ad_script);
 }
@@ -67,13 +68,13 @@ void ExpectFrameAdEvidence(content::RenderFrameHost* frame_host,
 void ExpectFrameAdEvidence(
     content::RenderFrameHost* frame_host,
     bool parent_is_ad,
-    FilterListEvidence latest_filter_list_result,
-    FilterListEvidence most_restrictive_filter_list_result,
-    ScriptHeuristicEvidence created_by_ad_script) {
+    blink::mojom::FilterListResult latest_filter_list_result,
+    blink::mojom::FilterListResult most_restrictive_filter_list_result,
+    blink::mojom::FrameCreationStackEvidence created_by_ad_script) {
   auto* throttle_manager =
       ContentSubresourceFilterThrottleManager::FromWebContents(
           content::WebContents::FromRenderFrameHost(frame_host));
-  base::Optional<FrameAdEvidence> ad_evidence =
+  base::Optional<blink::FrameAdEvidence> ad_evidence =
       throttle_manager->GetAdEvidenceForFrame(frame_host);
   ASSERT_TRUE(ad_evidence.has_value());
   EXPECT_TRUE(ad_evidence->is_complete());

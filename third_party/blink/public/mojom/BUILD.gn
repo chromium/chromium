@@ -22,6 +22,7 @@ if (is_android) {
 mojom("mojom_platform") {
   generate_java = true
   sources = [
+    "ad_tagging/ad_evidence.mojom",
     "ad_tagging/ad_frame.mojom",
     "app_banner/app_banner.mojom",
     "appcache/appcache.mojom",
@@ -473,6 +474,15 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/context_menu_data/context_menu_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "blink.mojom.FrameAdEvidence"
+          cpp = "::blink::FrameAdEvidence"
+        },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/frame/frame_ad_evidence_mojom_traits.h" ]
     },
   ]
   cpp_typemaps = [
