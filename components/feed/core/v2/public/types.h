@@ -93,9 +93,17 @@ base::Optional<DebugStreamData> DeserializeDebugStreamData(
 
 // Information about a web page which may be used to determine an associated web
 // feed.
-struct WebFeedPageInformation {
-  // The URL for the page.
-  GURL url;
+class WebFeedPageInformation {
+ public:
+  WebFeedPageInformation() = default;
+  // The URL for the page. `url().has_ref()` is always false.
+  GURL url() const { return url_; }
+
+  // Set the URL for the page. Trims off the URL ref.
+  void SetUrl(const GURL& url);
+
+ private:
+  GURL url_;
   // TODO(crbug/1152592): There will be additional optional information.
 };
 

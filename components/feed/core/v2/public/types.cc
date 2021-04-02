@@ -13,6 +13,12 @@ WebFeedMetadata::WebFeedMetadata(WebFeedMetadata&&) = default;
 WebFeedMetadata& WebFeedMetadata::operator=(const WebFeedMetadata&) = default;
 WebFeedMetadata& WebFeedMetadata::operator=(WebFeedMetadata&&) = default;
 
+void WebFeedPageInformation::SetUrl(const GURL& url) {
+  url::Replacements<char> clear_ref;
+  clear_ref.ClearRef();
+  url_ = url.ReplaceComponents(clear_ref);
+}
+
 // operator<< functions below are for test purposes, and shouldn't be called
 // from production code to avoid a binary size impact.
 

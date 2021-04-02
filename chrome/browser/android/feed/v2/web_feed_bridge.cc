@@ -24,8 +24,9 @@ feed::WebFeedPageInformation ToNativePageInformation(
   std::unique_ptr<GURL> gurl = url::GURLAndroid::ToNativeGURL(
       env, Java_WebFeedPageInformation_getUrl(env, pageInfo));
   WebFeedPageInformation result;
-  if (gurl)
-    result.url = std::move(*gurl);
+  if (gurl) {
+    result.SetUrl(*gurl);
+  }
   return result;
 }
 

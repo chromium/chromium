@@ -243,7 +243,7 @@ void WebFeedSubscriptionCoordinator::FollowWebFeedFromUrlStart(
     const WebFeedPageInformation& page_info,
     base::OnceCallback<void(FollowWebFeedResult)> callback) {
   DCHECK(model_);
-  WebFeedIndex::Entry entry = index_.FindWebFeedForUrl(page_info.url);
+  WebFeedIndex::Entry entry = index_.FindWebFeedForUrl(page_info.url());
 
   SubscribeToWebFeedTask::Request request;
   request.page_info = page_info;
@@ -344,7 +344,7 @@ void WebFeedSubscriptionCoordinator::FindWebFeedInfoForPage(
     base::OnceCallback<void(WebFeedMetadata)> callback) {
   if (!model_ && !loading_model_) {
     // No model loaded, try to answer the request without it.
-    WebFeedIndex::Entry entry = index_.FindWebFeedForUrl(page_info.url);
+    WebFeedIndex::Entry entry = index_.FindWebFeedForUrl(page_info.url());
     if (!entry.followed()) {
       LookupWebFeedDataAndRespond(
           entry.web_feed_id, /*maybe_page_info=*/nullptr, std::move(callback));
@@ -419,7 +419,7 @@ void WebFeedSubscriptionCoordinator::LookupWebFeedDataAndRespond(
   if (!id.empty()) {
     entry = index_.FindWebFeed(id);
   } else if (maybe_page_info) {
-    entry = index_.FindWebFeedForUrl(maybe_page_info->url);
+    entry = index_.FindWebFeedForUrl(maybe_page_info->url());
     if (entry)
       id = entry.web_feed_id;
   }
@@ -540,8 +540,7 @@ const InFlightChange* WebFeedSubscriptionCoordinator::FindInflightChange(
   const InFlightChange* result = nullptr;
   for (const InFlightChange& change : in_flight_changes_) {
     if ((maybe_page_info && change.page_information &&
-         // TODO(crbug/1152592): Decide how much we cna relax URL matching.
-         change.page_information->url == maybe_page_info->url) ||
+         change.page_information->url() == maybe_page_info->url()) ||
         (!web_feed_id.empty() && change.web_feed_info &&
          change.web_feed_info->web_feed_id() == web_feed_id)) {
       result = &change;
@@ -577,7 +576,7 @@ SubscriptionInfo WebFeedSubscriptionCoordinator::FindSubscriptionInfo(
     const WebFeedPageInformation& page_info) {
   DCHECK(model_);
   return model_->GetSubscriptionInfo(
-      index_.FindWebFeedForUrl(page_info.url).web_feed_id);
+      index_.FindWebFeedForUrl(page_info.url()).web_feed_id);
 }
 SubscriptionInfo WebFeedSubscriptionCoordinator::FindSubscriptionInfoById(
     const std::string& web_feed_id) {

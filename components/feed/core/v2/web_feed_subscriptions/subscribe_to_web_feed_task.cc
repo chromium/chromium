@@ -26,7 +26,7 @@ SubscribeToWebFeedTask::~SubscribeToWebFeedTask() = default;
 
 void SubscribeToWebFeedTask::Run() {
   if (!request_.web_feed_id.empty()) {
-    DCHECK(request_.page_info.url.is_empty());
+    DCHECK(request_.page_info.url().is_empty());
     WebFeedSubscriptionCoordinator::SubscriptionInfo info =
         stream_->subscriptions().FindSubscriptionInfoById(request_.web_feed_id);
     if (info.status == WebFeedSubscriptionStatus::kSubscribed) {
@@ -44,7 +44,7 @@ void SubscribeToWebFeedTask::Run() {
         request, base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
                                 base::Unretained(this)));
   } else {
-    DCHECK(request_.page_info.url.is_valid());
+    DCHECK(request_.page_info.url().is_valid());
     WebFeedSubscriptionCoordinator::SubscriptionInfo info =
         stream_->subscriptions().FindSubscriptionInfo(request_.page_info);
     if (info.status == WebFeedSubscriptionStatus::kSubscribed) {
@@ -57,7 +57,7 @@ void SubscribeToWebFeedTask::Run() {
       return;
     }
     feedwire::webfeed::FollowWebFeedRequest request;
-    request.set_web_feed_uri(request_.page_info.url.spec());
+    request.set_web_feed_uri(request_.page_info.url().spec());
     stream_->GetNetwork()->SendApiRequest<FollowWebFeedDiscoverApi>(
         request, base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
                                 base::Unretained(this)));

@@ -173,6 +173,7 @@ source_set("core_unit_tests") {
     "proto_util_unittest.cc",
     "protocol_translator_unittest.cc",
     "public/feed_service_unittest.cc",
+    "public/types_unittest.cc",
     "request_throttler_unittest.cc",
     "stream_model_unittest.cc",
     "test/callback_receiver.cc",

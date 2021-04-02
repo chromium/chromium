@@ -21,7 +21,7 @@ constexpr int64_t kFollowerCount = 123;
 
 WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url) {
   WebFeedPageInformation info;
-  info.url = GURL(url);
+  info.SetUrl(GURL(url));
   return info;
 }
 
@@ -459,7 +459,7 @@ TEST_F(FeedApiSubscriptionsTest,
   WriteRecommendedFeeds(*store_, {MakeWebFeedInfo("catfood")});
   CreateStream();
   WebFeedPageInformation page_info;
-  page_info.url = GURL("https://catfood.com");
+  page_info.SetUrl(GURL("https://catfood.com"));
 
   CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> follow_callback;
   subscriptions().FollowWebFeed(page_info, follow_callback.Bind());
@@ -487,7 +487,9 @@ TEST_F(FeedApiSubscriptionsTest,
   // Check status during subscribe process.
   {
     CallbackReceiver<WebFeedMetadata> metadata;
-    subscriptions().FindWebFeedInfoForPage(page_info, metadata.Bind());
+    subscriptions().FindWebFeedInfoForPage(
+        MakeWebFeedPageInformation("https://cats.com#fragments-are-ignored"),
+        metadata.Bind());
 
     EXPECT_EQ("WebFeedMetadata{ status=kSubscribeInProgress }",
               PrintToString(metadata.RunAndGetResult()));
