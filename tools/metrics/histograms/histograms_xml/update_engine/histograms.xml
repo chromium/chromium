@@ -612,7 +612,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="UpdateEngine.SuccessfulUpdate.DurationFromSeenDays.TimeRestricted"
-    units="days" expires_after="2021-05-09">
+    units="days" expires_after="2021-09-12">
   <owner>snijhara@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
