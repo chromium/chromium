@@ -3307,7 +3307,7 @@
     You can also move between sections of the screen. For example, you can move between the launcher, the shelf, and your Chrome tabs. To move to the next section, swipe from left to right with four fingers. Try it now to continue.
   </message>
   <message desc="Text content for the next/previous section lesson in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_PREVIOUS_SECTION_TEXT">
-    Similarly, swiping with four fingers from right to left can be used to move to the previous major element. Try it now!
+    Similarly, swiping from right to left with four fingers can be used to move to the previous section. Try it now!
   </message>
   <message desc="Title for the congratulations page in the touch orientation." name="IDS_CHROMEVOX_TUTORIAL_TOUCH_ORIENTATION_COMPLETE_TITLE">
     Touch tutorial complete
