@@ -291,7 +291,7 @@ TEST_F(PredictionModelDownloadManagerTest, StartDownloadRestrictedDownloading) {
       download_params.scheduling_params.battery_requirements,
       download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE);
   EXPECT_EQ(download_params.scheduling_params.network_requirements,
-            download::SchedulingParams::NetworkRequirements::OPTIMISTIC);
+            download::SchedulingParams::NetworkRequirements::NONE);
 
   // Now invoke start callback.
   std::move(download_params.callback)
