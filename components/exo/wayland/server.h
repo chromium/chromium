@@ -27,6 +27,7 @@ namespace wayland {
 class SerialTracker;
 struct WaylandDataDeviceManager;
 class WaylandDisplayOutput;
+struct WaylandKeyboardExtension;
 struct WaylandSeat;
 struct WaylandTextInputManager;
 struct WaylandXdgShell;
@@ -77,6 +78,7 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandSeat> seat_data_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<WaylandKeyboardExtension> zcr_keyboard_extension_data_;
   std::unique_ptr<WaylandTextInputManager> zwp_text_manager_data_;
   std::unique_ptr<WaylandZxdgShell> zxdg_shell_data_;
   std::unique_ptr<WaylandXdgShell> xdg_shell_data_;

@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_keyboard_extension_v1" version="1">
+  <interface name="zcr_keyboard_extension_v1" version="2">
     <description summary="extends wl_keyboard with ack_key events">
       Allows a wl_keyboard to send ack_key requests for each key event of
       the keyboard to the server.
@@ -56,7 +56,7 @@
     </request>
   </interface>
 
-  <interface name="zcr_extended_keyboard_v1" version="1">
+  <interface name="zcr_extended_keyboard_v1" version="2">
     <description summary="extension of wl_keyboard protocol">
       The zcr_extended_keyboard_v1 interface extends the wl_keyboard interface
       with requests to notify whether sent key events are handled or not by
@@ -79,5 +79,22 @@
       <arg name="serial" type="uint"/>
       <arg name="handled" type="uint" enum="handled_state"/>
     </request>
+
+    <event name="peek_key" since="2">
+      <description summary="peek a key event">
+        A key event which will be soon delivered to the application via
+        wl_keyboard::key. If text_input consumes the key event,
+        wl_keyboard::key is not delivered, but this event is still delivered
+        to the application.
+        All arguments are the exactly same one of the following wl_keyboard::key,
+        including serial.
+      </description>
+      <arg name="serial" type="uint" summary="serial number of the key event"/>
+      <arg name="time" type="uint" summary="timestamp with millisecond granularity"/>
+      <arg name="key" type="uint" summary="key that produced the event"/>
+      <!-- Dropped enum="key_state" from state for the workaround of crbug.com/1194855. -->
+      <arg name="state" type="uint" summary="physical state of the key"/>
+    </event>
+
   </interface>
 </protocol>

@@ -11,6 +11,7 @@
 #include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/data_source_observer.h"
+#include "components/exo/key_state.h"
 #include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/base/clipboard/clipboard_observer.h"
@@ -69,7 +70,7 @@ class Seat : public aura::client::FocusChangeObserver,
   virtual Surface* GetFocusedSurface();
 
   // Returns currently pressed keys.
-  const base::flat_map<ui::DomCode, ui::DomCode>& pressed_keys() const {
+  const base::flat_map<ui::DomCode, KeyState>& pressed_keys() const {
     return pressed_keys_;
   }
 
@@ -176,7 +177,7 @@ class Seat : public aura::client::FocusChangeObserver,
   // The platform code is the key in this map as it represents the physical
   // key that was pressed. The value is a potentially rewritten code that the
   // physical key press generated.
-  base::flat_map<ui::DomCode, ui::DomCode> pressed_keys_;
+  base::flat_map<ui::DomCode, KeyState> pressed_keys_;
   ui::DomCode physical_code_for_currently_processing_event_ = ui::DomCode::NONE;
 
   // Data source being used as a clipboard content.

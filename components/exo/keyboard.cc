@@ -294,22 +294,28 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
   switch (event->type()) {
     case ui::ET_KEY_PRESSED: {
       auto it = pressed_keys_.find(physical_code);
-      if (it == pressed_keys_.end() && !consumed_by_ime && !event->handled() &&
+      if (it == pressed_keys_.end() && !event->handled() &&
           physical_code != ui::DomCode::NONE) {
-        // Process key press event if not already handled and not already
-        // pressed.
-        uint32_t serial =
-            delegate_->OnKeyboardKey(event->time_stamp(), event->code(), true);
-        if (AreKeyboardKeyAcksNeeded()) {
-          pending_key_acks_.insert(
-              {serial,
-               {*event, base::TimeTicks::Now() +
-                            expiration_delay_for_pending_key_acks_}});
-          event->SetHandled();
+        for (auto& observer : observer_list_)
+          observer.OnKeyboardKey(event->time_stamp(), event->code(), true);
+
+        if (!consumed_by_ime) {
+          // Process key press event if not already handled and not already
+          // pressed.
+          uint32_t serial = delegate_->OnKeyboardKey(event->time_stamp(),
+                                                     event->code(), true);
+          if (AreKeyboardKeyAcksNeeded()) {
+            pending_key_acks_.insert(
+                {serial,
+                 {*event, base::TimeTicks::Now() +
+                              expiration_delay_for_pending_key_acks_}});
+            event->SetHandled();
+          }
         }
         // Keep track of both the physical code and potentially re-written
         // code that this event generated.
-        pressed_keys_.insert({physical_code, event->code()});
+        pressed_keys_.emplace(physical_code,
+                              KeyState{event->code(), consumed_by_ime});
       } else if (it != pressed_keys_.end() && !event->handled()) {
         // Non-repeate key events for already pressed key can be sent in some
         // cases (e.g. Holding 'A' key then holding 'B' key then releasing 'A'
@@ -324,18 +330,23 @@ void Keyboard::OnKeyEvent(ui::KeyEvent* event) {
       // Process key release event if currently pressed.
       auto it = pressed_keys_.find(physical_code);
       if (it != pressed_keys_.end()) {
-        // We use the code that was generate when the physical key was
-        // pressed rather than the current event code. This allows events
-        // to be re-written before dispatch, while still allowing the
-        // client to track the state of the physical keyboard.
-        uint32_t serial =
-            delegate_->OnKeyboardKey(event->time_stamp(), it->second, false);
-        if (AreKeyboardKeyAcksNeeded()) {
-          pending_key_acks_.insert(
-              {serial,
-               {*event, base::TimeTicks::Now() +
-                            expiration_delay_for_pending_key_acks_}});
-          event->SetHandled();
+        for (auto& observer : observer_list_)
+          observer.OnKeyboardKey(event->time_stamp(), it->second.code, false);
+
+        if (!it->second.consumed_by_ime) {
+          // We use the code that was generated when the physical key was
+          // pressed rather than the current event code. This allows events
+          // to be re-written before dispatch, while still allowing the
+          // client to track the state of the physical keyboard.
+          uint32_t serial = delegate_->OnKeyboardKey(event->time_stamp(),
+                                                     it->second.code, false);
+          if (AreKeyboardKeyAcksNeeded()) {
+            pending_key_acks_.insert(
+                {serial,
+                 {*event, base::TimeTicks::Now() +
+                              expiration_delay_for_pending_key_acks_}});
+            event->SetHandled();
+          }
         }
         pressed_keys_.erase(it);
       }
