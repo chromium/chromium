@@ -13883,8 +13883,7 @@
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
-          "--child-arg=--ozone-platform=headless"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -13989,7 +13988,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 5
         },
         "test": "blink_platform_unittests",
         "test_id_prefix": "ninja://third_party/blink/renderer/platform:blink_platform_unittests/"
@@ -14154,8 +14154,7 @@
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
-          "--child-arg=--ozone-platform=headless"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14184,7 +14183,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 12
         },
         "test": "content_unittests",
         "test_id_prefix": "ninja://content/test:content_unittests/"
@@ -14629,7 +14629,8 @@
         },
         "swarming": {
           "can_use_on_swarming_builders": true,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 7
         },
         "test": "services_unittests",
         "test_id_prefix": "ninja://services:services_unittests/"
@@ -14677,8 +14678,7 @@
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
-          "--child-arg=--ozone-platform=headless"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
         "merge": {
@@ -14776,8 +14776,7 @@
           "--ram-size-mb=16384",
           "--code-coverage",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
-          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs",
-          "--child-arg=--ozone-platform=headless"
+          "--runner-logs-dir=${ISOLATED_OUTDIR}/runner_logs"
         ],
         "isolate_profile_data": true,
         "merge": {

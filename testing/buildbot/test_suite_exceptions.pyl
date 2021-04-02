@@ -163,16 +163,6 @@
       },
     },
   },
-  'aura_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'args': [
-          # http://crbug.com/1181465
-          '--child-arg=--ozone-platform=headless',
-        ],
-      },
-    },
-  },
   'base_unittests': {
     'modifications': {
       'android-11-x86-fyi-rel': {
@@ -204,6 +194,11 @@
               'device_type': 'sailfish',
             },
           ],
+        },
+      },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 5,
         },
       },
     },
@@ -1089,16 +1084,6 @@
       },
     },
   },
-  'compositor_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'args': [
-          # http://crbug.com/1181465
-          '--child-arg=--ozone-platform=headless',
-        ],
-      },
-    },
-  },
   'content_browsertests': {
     'remove_from': [
       'CrWinAsan(dll)', # https://crbug.com/935598
@@ -1321,6 +1306,11 @@
         'args': [
           '--gtest_filter=-FontUniqueNameLookupTest.TestMatchPostScriptNameTtc',
         ],
+      },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 12,
+        },
       },
     },
   },
@@ -2504,18 +2494,13 @@
         'args': [
           '--gtest_filter=-SystemPerfettoTest.*',
         ],
-      }
-    }
-  },
-  'snapshot_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'args': [
-          # http://crbug.com/1181465
-          '--child-arg=--ozone-platform=headless',
-        ],
       },
-    },
+      'fuchsia-code-coverage': {
+        'swarming': {
+          'shards': 7,
+        },
+      },
+    }
   },
   'swiftshader_unittests': {
     'remove_from': [
@@ -2874,12 +2859,6 @@
       'android-pie-x86-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.viz_unittests.filter',
-        ],
-      },
-      'fuchsia-code-coverage': {
-        'args': [
-          # http://crbug.com/1181465
-          '--child-arg=--ozone-platform=headless',
         ],
       },
     },
