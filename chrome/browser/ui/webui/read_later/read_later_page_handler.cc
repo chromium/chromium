@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/read_later/read_later_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/reading_list/core/reading_list_entry.h"
@@ -87,8 +88,10 @@ void ReadLaterPageHandler::OpenSavedEntry(const GURL& url) {
 
   // Open in active tab if the user is on the NTP.
   WindowOpenDisposition open_location =
-      IsActiveTabNTP(browser) ? WindowOpenDisposition::CURRENT_TAB
-                              : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+      IsActiveTabNTP(browser) ||
+              base::FeatureList::IsEnabled(features::kSidePanel)
+          ? WindowOpenDisposition::CURRENT_TAB
+          : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 
   content::OpenURLParams params(url, content::Referrer(), open_location,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK, false);
