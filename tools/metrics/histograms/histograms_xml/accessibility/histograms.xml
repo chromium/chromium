@@ -606,6 +606,47 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ImageLabels.{Result}By{Dimension}"
+    units="pixels" expires_after="2021-09-30">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <summary>
+    Counts the number of images that got a certain result from automatic image
+    labeling (empty, error, or success), as a function of the function of one of
+    the image's dimensions - either the min or the max dimension.
+  </summary>
+  <token key="Result">
+    <variant name="Empty"/>
+    <variant name="Error"/>
+    <variant name="Success"/>
+  </token>
+  <token key="Dimension">
+    <variant name="MaxDimension"/>
+    <variant name="MinDimension"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ImageLabels.{Result}By{Length}"
+    units="characters" expires_after="2021-09-30">
+  <owner>dmazzoni@chromium.org</owner>
+  <owner>mschillaci@google.com</owner>
+  <summary>
+    Counts the number of images that got a certain result from automatic image
+    labeling (empty, error, or success), as a function of the function of the
+    length of the characters in the image's name - either the original name, or
+    the name after removing stopwords.
+  </summary>
+  <token key="Result">
+    <variant name="Empty"/>
+    <variant name="Error"/>
+    <variant name="Success"/>
+  </token>
+  <token key="Length">
+    <variant name="NameLength"/>
+    <variant name="NonStopNameLength"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
     expires_after="2021-08-09">
   <owner>gambard@chromium.org</owner>

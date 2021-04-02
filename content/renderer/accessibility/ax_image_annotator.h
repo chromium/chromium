@@ -55,6 +55,7 @@ class CONTENT_EXPORT AXImageAnnotator : public base::CheckedObserver {
   void OnImageUpdated(blink::WebAXObject& image);
   void OnImageRemoved(blink::WebAXObject& image);
 
+  static int GetLengthAfterRemovingStopwords(const std::string& image_name);
   static bool ImageNameHasMostlyStopwords(const std::string& image_name);
 
  private:
