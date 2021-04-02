@@ -826,8 +826,8 @@ group("gn_all") {
       "//third_party/dawn/src/fuzzers:dawn_fuzzers",
       "//third_party/dawn/src/tests:dawn_end2end_tests",
       "//third_party/dawn/src/tests:dawn_unittests",
-      "//third_party/tint/src/fuzzers",
-      "//third_party/tint/src/test:tint_unittests",
+      "//third_party/dawn/third_party/tint/fuzzers",
+      "//third_party/dawn/third_party/tint/test:tint_unittests",
     ]
   }
 
