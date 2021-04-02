@@ -707,7 +707,9 @@ TEST_F('ChromeVoxTutorialTest', 'Gestures', function() {
 
 // Tests that touch orientation loads properly. Tests string content, but does
 // not test interactivity of lessons.
-TEST_F('ChromeVoxTutorialTest', 'TouchOrientation', function() {
+// TODO(crbug.com/1193799): fix ax node errors causing console spew and
+// breaking tests
+TEST_F('ChromeVoxTutorialTest', 'DISABLED_TouchOrientation', function() {
   const mockFeedback = this.createMockFeedback();
   this.runWithLoadedTree(this.simpleDoc, async function(root) {
     await this.launchAndWaitForTutorial();
@@ -721,18 +723,22 @@ TEST_F('ChromeVoxTutorialTest', 'TouchOrientation', function() {
           this.assertActiveScreen('lesson');
         })
         .expectSpeech('ChromeVox touch tutorial')
-        .call(doGesture(Gesture.SWIPE_RIGHT1))
         .expectSpeech(/Welcome to the ChromeVox tutorial/)
-        .call(() => {
-          tutorial.showNextLesson();
-        })
+        .call(doGesture(Gesture.CLICK))
         .expectSpeech('Activate an item')
-        .call(doGesture(Gesture.SWIPE_RIGHT1))
         .expectSpeech(/To continue, double-tap now/)
-        .call(() => {
-          tutorial.showNextLesson();
-        })
+        .call(doGesture(Gesture.CLICK))
         .expectSpeech('Move to the next or previous item')
+        .call(() => {
+          // Jump to the penultimate lesson.
+          tutorial.showLesson_(6);
+        })
+        .expectSpeech('Move to the next or previous section')
+        .expectSpeech(/swipe from left to right with four fingers/)
+        .call(doGesture(Gesture.SWIPE_RIGHT4))
+        .expectSpeech(/swiping with four fingers from right to left/)
+        .call(doGesture(Gesture.SWIPE_LEFT4))
+        .expectSpeech('Touch tutorial complete')
         .replay();
   });
 });

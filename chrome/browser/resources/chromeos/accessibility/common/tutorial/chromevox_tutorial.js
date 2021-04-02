@@ -310,14 +310,18 @@ Polymer({
           title: 'tutorial_touch_orientation_intro_title',
           content: ['tutorial_touch_orientation_intro_text'],
           medium: InteractionMedium.TOUCH,
-          curriculums: [Curriculum.TOUCH_ORIENTATION]
+          curriculums: [Curriculum.TOUCH_ORIENTATION],
+          actions: [{type: 'gesture', value: 'click'}],
+          autoInteractive: true,
         },
 
         {
           title: 'tutorial_touch_orientation_activate_title',
           content: ['tutorial_touch_orientation_activate_text'],
           medium: InteractionMedium.TOUCH,
-          curriculums: [Curriculum.TOUCH_ORIENTATION]
+          curriculums: [Curriculum.TOUCH_ORIENTATION],
+          actions: [{type: 'gesture', value: 'click'}],
+          autoInteractive: true,
         },
 
         {
@@ -349,14 +353,18 @@ Polymer({
             'tutorial_touch_orientation_stop_spech_text',
           ],
           medium: InteractionMedium.TOUCH,
-          curriculums: [Curriculum.TOUCH_ORIENTATION]
+          curriculums: [Curriculum.TOUCH_ORIENTATION],
+          actions: [{type: 'gesture', value: 'tap2'}],
+          autoInteractive: true,
         },
 
         {
           title: 'tutorial_touch_orientation_menus_title',
           content: ['tutorial_touch_orientation_menus_text'],
           medium: InteractionMedium.TOUCH,
-          curriculums: [Curriculum.TOUCH_ORIENTATION]
+          curriculums: [Curriculum.TOUCH_ORIENTATION],
+          actions: [{type: 'gesture', value: 'tap4', shouldPropagate: false}],
+          autoInteractive: true,
         },
 
         {
@@ -366,7 +374,17 @@ Polymer({
             'tutorial_touch_orientation_previous_section_text',
           ],
           medium: InteractionMedium.TOUCH,
-          curriculums: [Curriculum.TOUCH_ORIENTATION]
+          curriculums: [Curriculum.TOUCH_ORIENTATION],
+          actions: [
+            {
+              type: 'gesture',
+              value: 'swipeRight4',
+              shouldPropagate: false,
+              afterActionCmd: 'nextObject'
+            },
+            {type: 'gesture', value: 'swipeLeft4', shouldPropagate: false}
+          ],
+          autoInteractive: true,
         },
 
         {
