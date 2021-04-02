@@ -9841,4 +9841,184 @@ IN_PROC_BROWSER_TEST_F(
   }
 }
 
+// Regression test for crbug.com/1183313, but for is_overriding_user_agent.
+// Checks that we won't restore an entry from the BackForwardCache if the
+// is_overriding_user_agent value used in the entry differs from the one used
+// in the restoring navigation.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoNotRestoreWhenIsOverridingUserAgentDiffers) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  NavigationControllerImpl& controller = web_contents()->GetController();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  const std::string user_agent_override = "foo";
+
+  // 1) Navigate to A without user agent override.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    EXPECT_TRUE(NavigateToURL(shell(), url_a));
+    params_capturer.Wait();
+    EXPECT_FALSE(params_capturer.is_overriding_user_agent());
+    EXPECT_NE(user_agent_override,
+              EvalJs(shell()->web_contents(), "navigator.userAgent"));
+  }
+
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // Enable user agent override for future navigations.
+  UserAgentInjector injector(shell()->web_contents(), user_agent_override);
+
+  // 2) Navigate to B with user agent override.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    EXPECT_TRUE(NavigateToURL(shell(), url_b));
+    params_capturer.Wait();
+    EXPECT_TRUE(params_capturer.is_overriding_user_agent());
+    EXPECT_EQ(user_agent_override,
+              EvalJs(shell()->web_contents(), "navigator.userAgent"));
+  }
+
+  // A should be stored in the back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  RenderFrameHostImpl* rfh_b = current_frame_host();
+
+  // 3) Go back to A. RenderFrameHost of A should not be restored from the
+  // back-forward cache, and "is_overriding_user_agent" is set to true
+  // correctly.
+  {
+    RenderFrameDeletedObserver delete_observer(rfh_a);
+    FrameNavigateParamsCapturer params_capturer(root);
+    controller.GoBack();
+    params_capturer.Wait();
+    delete_observer.WaitUntilDeleted();
+    EXPECT_TRUE(params_capturer.is_overriding_user_agent());
+    EXPECT_EQ(user_agent_override,
+              EvalJs(shell()->web_contents(), "navigator.userAgent"));
+    ExpectNotRestored(
+        {BackForwardCacheMetrics::NotRestoredReason::kUserAgentOverrideDiffers},
+        {}, {}, {}, FROM_HERE);
+  }
+
+  // B should be stored in the back-forward cache.
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // 4) Go forward to B. RenderFrameHost of B should be restored from the
+  // back-forward cache, and "is_overriding_user_agent" is set to true
+  // correctly.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    controller.GoForward();
+    params_capturer.Wait();
+    EXPECT_TRUE(params_capturer.is_overriding_user_agent());
+    EXPECT_EQ(user_agent_override,
+              EvalJs(shell()->web_contents(), "navigator.userAgent"));
+    EXPECT_EQ(rfh_b, current_frame_host());
+    ExpectRestored(FROM_HERE);
+  }
+
+  // Stop overriding user agent from now on.
+  injector.set_is_overriding_user_agent(false);
+
+  // 5) Go to C, which should not do a user agent override.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    EXPECT_TRUE(NavigateToURL(shell(), url_c));
+    params_capturer.Wait();
+    EXPECT_FALSE(params_capturer.is_overriding_user_agent());
+    EXPECT_NE(user_agent_override,
+              EvalJs(shell()->web_contents(), "navigator.userAgent"));
+  }
+
+  // B should be stored in the back-forward cache again.
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // 6) Go back to B. RenderFrameHost of B should not be restored from the
+  // back-forward cache, and "is_overriding_user_agent" is set to false
+  // correctly.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    RenderFrameDeletedObserver delete_observer(rfh_b);
+    controller.GoBack();
+    params_capturer.Wait();
+    delete_observer.WaitUntilDeleted();
+    EXPECT_FALSE(params_capturer.is_overriding_user_agent());
+    EXPECT_NE(user_agent_override,
+              EvalJs(shell()->web_contents(), "navigator.userAgent"));
+    ExpectNotRestored(
+        {BackForwardCacheMetrics::NotRestoredReason::kUserAgentOverrideDiffers},
+        {}, {}, {}, FROM_HERE);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       RestoreWhenUserAgentOverrideDiffers) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  NavigationControllerImpl& controller = web_contents()->GetController();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  // Enable user agent override for future navigations.
+  const std::string user_agent_override_1 = "foo";
+  UserAgentInjector injector(shell()->web_contents(), user_agent_override_1);
+
+  // 1) Start a new navigation to A with user agent override.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    EXPECT_TRUE(NavigateToURL(shell(), url_a));
+    params_capturer.Wait();
+    EXPECT_TRUE(params_capturer.is_overriding_user_agent());
+    EXPECT_EQ(user_agent_override_1,
+              EvalJs(shell()->web_contents(), "navigator.userAgent"));
+  }
+
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+
+  // 2) Navigate to another page.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+
+  // A should be stored in the back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Change the user agent override string.
+  const std::string user_agent_override_2 = "bar";
+  injector.set_user_agent_override(user_agent_override_2);
+
+  // 3) Go back to A, which should restore the page saved in the back-forward
+  // cache and use the old user agent.
+  // TODO(https://crbug.com/1194880): This should use the new UA override.
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    controller.GoBack();
+    params_capturer.Wait();
+    EXPECT_TRUE(params_capturer.is_overriding_user_agent());
+    EXPECT_EQ(user_agent_override_1,
+              EvalJs(shell()->web_contents(), "navigator.userAgent"));
+    EXPECT_EQ(rfh_a, current_frame_host());
+    ExpectRestored(FROM_HERE);
+  }
+
+  // 4) Navigate to another page, which should use the new user agent. Note that
+  // we didn't do this in step 2 instead because the UA override change during
+  // navigation would trigger a RendererPreferences to the active page (page A).
+  {
+    FrameNavigateParamsCapturer params_capturer(root);
+    EXPECT_TRUE(NavigateToURL(shell(), url_b));
+    params_capturer.Wait();
+    EXPECT_TRUE(params_capturer.is_overriding_user_agent());
+    EXPECT_EQ(user_agent_override_2,
+              EvalJs(shell()->web_contents(), "navigator.userAgent"));
+  }
+}
+
 }  // namespace content

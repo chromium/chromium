@@ -741,6 +741,8 @@ void FrameNavigateParamsCapturer::DidFinishNavigation(
   did_replace_entries_.push_back(navigation_handle->DidReplaceEntry());
   is_renderer_initiateds_.push_back(navigation_handle->IsRendererInitiated());
   has_user_gestures_.push_back(navigation_handle->HasUserGesture());
+  is_overriding_user_agents_.push_back(
+      navigation_handle->GetIsOverridingUserAgent());
   if (!navigations_remaining_ &&
       (!web_contents()->IsLoading() || !wait_for_load_))
     loop_.Quit();
@@ -807,6 +809,12 @@ void DisableForRenderFrameHostForTesting(
 void DisableForRenderFrameHostForTesting(content::GlobalFrameRoutingId id) {
   content::BackForwardCache::DisableForRenderFrameHost(
       id, RenderFrameHostDisabledForTestingReason());
+}
+
+void UserAgentInjector::DidStartNavigation(
+    NavigationHandle* navigation_handle) {
+  web_contents()->SetUserAgentOverride(user_agent_override_, false);
+  navigation_handle->SetIsOverridingUserAgent(is_overriding_user_agent_);
 }
 
 }  // namespace content

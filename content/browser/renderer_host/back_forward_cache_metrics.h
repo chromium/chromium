@@ -93,7 +93,8 @@ class BackForwardCacheMetrics
     kNetworkExceedsBufferLimit = 40,
     kNavigationCancelledWhileRestoring = 41,
     kBackForwardCacheDisabledForPrerender = 42,
-    kMaxValue = kBackForwardCacheDisabledForPrerender,
+    kUserAgentOverrideDiffers = 43,
+    kMaxValue = kUserAgentOverrideDiffers,
   };
 
   using NotRestoredReasons =

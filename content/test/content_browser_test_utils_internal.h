@@ -474,6 +474,10 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
     EXPECT_EQ(1U, has_user_gestures_.size());
     return has_user_gestures_[0];
   }
+  bool is_overriding_user_agent() const {
+    EXPECT_EQ(1U, is_overriding_user_agents_.size());
+    return is_overriding_user_agents_[0];
+  }
 
   // Gets various captured parameters from all observed navigations.
   const std::vector<ui::PageTransition>& transitions() { return transitions_; }
@@ -486,6 +490,9 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
     return did_replace_entries_;
   }
   const std::vector<bool>& has_user_gestures() { return has_user_gestures_; }
+  const std::vector<bool>& is_overriding_user_agents() {
+    return is_overriding_user_agents_;
+  }
 
  private:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
@@ -511,6 +518,7 @@ class FrameNavigateParamsCapturer : public WebContentsObserver {
   std::vector<bool> did_replace_entries_;
   std::vector<bool> is_renderer_initiateds_;
   std::vector<bool> has_user_gestures_;
+  std::vector<bool> is_overriding_user_agents_;
 
   base::RunLoop loop_;
 };
@@ -564,6 +572,38 @@ BackForwardCache::DisabledReason RenderFrameHostDisabledForTestingReason();
 // Disable using the standard testing DisabledReason.
 void DisableForRenderFrameHostForTesting(RenderFrameHost* render_frame_host);
 void DisableForRenderFrameHostForTesting(GlobalFrameRoutingId id);
+
+// Changes the WebContents and active entry user agent override from
+// DidStartNavigation().
+class UserAgentInjector : public WebContentsObserver {
+ public:
+  UserAgentInjector(WebContents* web_contents, const std::string& user_agent)
+      : UserAgentInjector(web_contents,
+                          blink::UserAgentOverride::UserAgentOnly(user_agent),
+                          true) {}
+
+  UserAgentInjector(WebContents* web_contents,
+                    const blink::UserAgentOverride& ua_override,
+                    bool is_overriding_user_agent = true)
+      : WebContentsObserver(web_contents),
+        user_agent_override_(ua_override),
+        is_overriding_user_agent_(is_overriding_user_agent) {}
+
+  // WebContentsObserver:
+  void DidStartNavigation(NavigationHandle* navigation_handle) override;
+
+  void set_is_overriding_user_agent(bool is_overriding_user_agent) {
+    is_overriding_user_agent_ = is_overriding_user_agent;
+  }
+
+  void set_user_agent_override(const std::string& user_agent) {
+    user_agent_override_ = blink::UserAgentOverride::UserAgentOnly(user_agent);
+  }
+
+ private:
+  blink::UserAgentOverride user_agent_override_;
+  bool is_overriding_user_agent_ = true;
+};
 
 }  // namespace content
 

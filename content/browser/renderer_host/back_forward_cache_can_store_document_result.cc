@@ -153,6 +153,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Network request reads too much data and exceeds buffer limit";
     case Reason::kBackForwardCacheDisabledForPrerender:
       return "BackForwardCache is disabled for Prerender";
+    case Reason::kUserAgentOverrideDiffers:
+      return "User-agent override differs";
   }
 }
 

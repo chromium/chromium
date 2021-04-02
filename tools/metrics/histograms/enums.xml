@@ -6692,6 +6692,8 @@ others/histograms.xml -->
   <int value="39" label="Network request timed out"/>
   <int value="40" label="Network request exceeds buffer limit"/>
   <int value="41" label="Navigation was cancelled while restoring"/>
+  <int value="42" label="Disabled for Prerender"/>
+  <int value="43" label="User-agent override differs"/>
 </enum>
 
 <enum name="BackForwardCacheReloadsAfterHistoryNavigation">

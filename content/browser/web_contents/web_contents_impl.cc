@@ -5283,6 +5283,7 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
     // bfcached renderers).
     // TODO(rakina): Maybe handle the back-forward cache case in
     // ReadyToCommitNavigation instead?
+    // TODO(https://crbug.com/1194880): Maybe sync RendererPreferences as well?
     if (value_changed_due_to_override ||
         NavigationRequest::From(navigation_handle)
             ->IsServedFromBackForwardCache()) {

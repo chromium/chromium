@@ -1736,8 +1736,20 @@ void NavigationRequest::StartNavigation(bool is_for_commit) {
     GetDelegate()->DidStartNavigation(this);
   }
 
-  // The previous call to DidStartNavigation could have cancelled this request
-  // synchronously.
+  // The previous call to DidStartNavigation could have changed the
+  // is_overriding_user_agent value in CommitNavigationParams. If we're trying
+  // to restore an entry from the back-forward cache, we need to ensure that
+  // the is_overriding_user_agent used in the RenderFrameHost to restore matches
+  // the value set in CommitNavigationParams.
+  if (IsServedFromBackForwardCache() &&
+      rfh_restored_from_back_forward_cache_->is_overriding_user_agent() !=
+          commit_params_->is_overriding_user_agent) {
+    // Trigger an eviction, which will cancel this navigation and trigger a new
+    // one to the same entry (but won't try to restore the entry from the
+    // back-forward cache) asynchrnously.
+    rfh_restored_from_back_forward_cache_->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::kUserAgentOverrideDiffers);
+  }
 }
 
 void NavigationRequest::ResetForCrossDocumentRestart() {

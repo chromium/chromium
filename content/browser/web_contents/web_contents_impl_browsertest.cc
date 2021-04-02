@@ -2314,34 +2314,6 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, UserAgentOverride) {
   EXPECT_EQ(kUserAgentOverride, header_value);
 }
 
-// Changes the WebContents and active entry user agent override from
-// DidStartNavigation().
-// in WebContentsObserver::DidStartNavigation().
-class UserAgentInjector : public WebContentsObserver {
- public:
-  UserAgentInjector(WebContents* web_contents, const std::string& user_agent)
-      : UserAgentInjector(web_contents,
-                          blink::UserAgentOverride::UserAgentOnly(user_agent),
-                          true) {}
-
-  UserAgentInjector(WebContents* web_contents,
-                    const blink::UserAgentOverride& ua_override,
-                    bool is_overriding_user_agent = true)
-      : WebContentsObserver(web_contents),
-        user_agent_override_(ua_override),
-        is_overriding_user_agent_(is_overriding_user_agent) {}
-
-  // WebContentsObserver:
-  void DidStartNavigation(NavigationHandle* navigation_handle) override {
-    web_contents()->SetUserAgentOverride(user_agent_override_, false);
-    navigation_handle->SetIsOverridingUserAgent(is_overriding_user_agent_);
-  }
-
- private:
-  const blink::UserAgentOverride user_agent_override_;
-  const bool is_overriding_user_agent_ = true;
-};
-
 // Verifies the user-agent string may be changed in DidStartNavigation().
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
                        SetUserAgentOverrideFromDidStartNavigation) {
