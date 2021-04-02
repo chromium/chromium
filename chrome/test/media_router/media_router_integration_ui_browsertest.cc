@@ -40,9 +40,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
 IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
                        MANUAL_Dialog_RouteCreationTimedOut) {
-  // The hardcoded timeout route creation timeout for the UI.
-  // See kCreateRouteTimeoutSeconds in media_router_ui.cc.
-  test_provider_->set_delay(base::TimeDelta::FromSeconds(20));
+  SetTestData(FILE_PATH_LITERAL("route_creation_timed_out.json"));
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
   test_ui_->ShowDialog();
   test_ui_->WaitForSinkAvailable(receiver_);
@@ -52,6 +50,8 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
   test_ui_->WaitForAnyIssue();
 
   base::TimeDelta elapsed(base::TimeTicks::Now() - start_time);
+  // The hardcoded timeout route creation timeout for the UI.
+  // See kCreateRouteTimeoutSeconds in media_router_ui.cc.
   base::TimeDelta expected_timeout(base::TimeDelta::FromSeconds(20));
 
   EXPECT_GE(elapsed, expected_timeout);
@@ -63,7 +63,8 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
                 IDS_MEDIA_ROUTER_ISSUE_CREATE_ROUTE_TIMEOUT, u"file:///"),
             issue_title);
 
-  ASSERT_EQ(test_ui_->GetRouteIdForSink(receiver_), "");
+  // Route will still get created, it just takes longer than usual.
+  test_ui_->WaitForAnyRoute();
   test_ui_->HideDialog();
 }
 

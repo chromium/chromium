@@ -155,7 +155,6 @@ class MediaRouterMojoImpl : public MediaRouterBase, public mojom::MediaRouter {
   friend class MediaRouterFactory;
   friend class MediaRouterMojoImplTest;
   friend class MediaRouterMojoTest;
-  friend class MediaRouterIntegrationBrowserTest;
   friend class MediaRouterNativeIntegrationBrowserTest;
   FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest, JoinRouteTimedOutFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterMojoImplTest,
