@@ -109,7 +109,7 @@ def main():
   Git(["cl", "upload", "-f", "--bypass-hooks"])
   Git([
       "cl", "try", "-B", "chromium/try", "-b", "linux_upload_clang", "-b",
-      "mac_upload_clang", "-b", "win_upload_clang"
+      "mac_upload_clang", "-b", "mac_upload_clang_arm", "-b", "win_upload_clang"
   ])
 
   print ("Please, wait until the try bots succeeded "
