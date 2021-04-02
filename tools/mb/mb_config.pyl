@@ -731,6 +731,8 @@
     },
 
     'official.chrome': {
+      'fuchsia-arm64': 'official_fuchsia_arm64',
+      'fuchsia-x64': 'official_fuchsia_x64',
       'lacros64': 'chromeos_amd64-generic_lacros_official',
     },
 
@@ -2359,6 +2361,14 @@
       'official', 'release_bot', 'minimal_symbols',
     ],
 
+    'official_fuchsia_arm64': [
+      'arm64', 'fuchsia', 'official', 'custom_args',
+    ],
+
+    'official_fuchsia_x64': [
+      'fuchsia', 'official', 'x64', 'custom_args',
+    ],
+
     'official_goma': [
       'official', 'goma',
     ],
@@ -2914,6 +2924,10 @@
     'cronet_ios': {
       'mixins': ['cronet_common'],
       'gn_args': ('disable_brotli_filter=false is_cronet_build=true enable_remoting=false use_allocator_shim=false'),
+    },
+
+    'custom_args': {
+      'args_file': '//build/custom_args.gn',
     },
 
     'dawn_tests': {
