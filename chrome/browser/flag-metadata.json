@@ -4729,6 +4729,16 @@
     "expiry_milestone": 86
   },
   {
+    "name": "sharing-hub-desktop-app-menu",
+    "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
+    "name": "sharing-hub-desktop-omnibox",
+    "owners": [ "kristipark", "chrome-sharing-eng@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "sharing-prefer-vapid",
     "owners": [ "//chrome/browser/sharing/OWNERS" ],
     "expiry_milestone": 87

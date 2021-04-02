@@ -52,6 +52,7 @@
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/shared_clipboard/feature_flags.h"
 #include "chrome/browser/sharing/sms/sms_flags.h"
+#include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/site_isolation/about_flags.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -5391,6 +5392,17 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(kSharingDeviceExpiration,
                                     kSharingDeviceExpirationVariations,
                                     "SharingDeviceExpiration")},
+
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+    {"sharing-hub-desktop-app-menu",
+     flag_descriptions::kSharingHubDesktopAppMenuName,
+     flag_descriptions::kSharingHubDesktopAppMenuDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(sharing_hub::kSharingHubDesktopAppMenu)},
+    {"sharing-hub-desktop-omnibox",
+     flag_descriptions::kSharingHubDesktopOmniboxName,
+     flag_descriptions::kSharingHubDesktopOmniboxDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(sharing_hub::kSharingHubDesktopOmnibox)},
+#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"ash-enable-pip-rounded-corners",

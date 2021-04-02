@@ -1598,6 +1598,8 @@ static_library("browser") {
     "sharing/web_push/web_push_common.h",
     "sharing/web_push/web_push_sender.cc",
     "sharing/web_push/web_push_sender.h",
+    "sharing_hub/sharing_hub_features.cc",
+    "sharing_hub/sharing_hub_features.h",
     "shell_integration.cc",
     "shell_integration.h",
     "signin/about_signin_internals_factory.cc",

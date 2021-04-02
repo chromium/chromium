@@ -1255,6 +1255,12 @@ extern const char kSidePanelPrototypeDescription[];
 extern const char kSharedClipboardUIName[];
 extern const char kSharedClipboardUIDescription[];
 
+extern const char kSharingHubDesktopAppMenuName[];
+extern const char kSharingHubDesktopAppMenuDescription[];
+
+extern const char kSharingHubDesktopOmniboxName[];
+extern const char kSharingHubDesktopOmniboxDescription[];
+
 extern const char kSharingPeerConnectionReceiverName[];
 extern const char kSharingPeerConnectionReceiverDescription[];
 
