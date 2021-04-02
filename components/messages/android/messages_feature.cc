@@ -7,7 +7,7 @@
 namespace messages {
 
 const base::Feature kMessagesForAndroidInfrastructure{
-    "MessagesForAndroidInfrastructure", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MessagesForAndroidInfrastructure", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kMessagesForAndroidPasswords{
     "MessagesForAndroidPasswords", base::FEATURE_DISABLED_BY_DEFAULT};
