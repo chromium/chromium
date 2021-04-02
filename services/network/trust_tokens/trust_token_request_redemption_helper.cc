@@ -85,14 +85,6 @@ void TrustTokenRequestRedemptionHelper::Begin(
     return;
   }
 
-  if (refresh_policy_ == mojom::TrustTokenRefreshPolicy::kRefresh &&
-      (!request->initiator() ||
-       !request->initiator()->IsSameOriginWith(*issuer_))) {
-    LogOutcome(net_log_, kBegin, "Refresh from non-issuer context");
-    std::move(done).Run(mojom::TrustTokenOperationStatus::kFailedPrecondition);
-    return;
-  }
-
   if (!token_store_->SetAssociation(*issuer_, top_level_origin_)) {
     LogOutcome(net_log_, kBegin, "Couldn't set issuer-toplevel association");
     std::move(done).Run(mojom::TrustTokenOperationStatus::kResourceExhausted);

@@ -1238,7 +1238,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
 }
 
 // Redemption with `refresh-policy: 'refresh'` from a non-issuer context should
-// fail.
+// still work.
 IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
                        RefreshPolicyRefreshRequiresIssuerContext) {
   ProvideRequestHandlerKeyCommitmentsToNetworkService({"b.test"});
@@ -1246,7 +1246,8 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
   ASSERT_TRUE(NavigateToURL(shell(), server_.GetURL("a.test", "/title1.html")));
 
   // Execute the operations against issuer https://b.test:<port> from a
-  // different context; attempting to use refreshPolicy: 'refresh' should error.
+  // different context; attempting to use refreshPolicy: 'refresh' should still
+  // succeed.
   EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
         { trustToken: { type: 'token-request' } })
@@ -1259,7 +1260,7 @@ IN_PROC_BROWSER_TEST_F(TrustTokenBrowsertest,
         .then(()=>'Success'); )",
                                       server_.GetURL("b.test", "/redeem"))));
 
-  EXPECT_EQ("InvalidStateError",
+  EXPECT_EQ("Success",
             EvalJs(shell(), JsReplace(R"(fetch($1,
         { trustToken: { type: 'token-redemption',
                         refreshPolicy: 'refresh' } })

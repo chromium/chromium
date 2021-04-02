@@ -812,30 +812,6 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, StoresObtainedRedemptionRecord) {
           Property(&TrustTokenRedemptionRecord::signing_key, "signing key"))));
 }
 
-// Check that a "refresh" refresh mode is rejected unless the request's
-// initiating origin is the issuer origin.
-TEST_F(TrustTokenRequestRedemptionHelperTest,
-       RejectsRefreshFromNonissuerOrigin) {
-  std::unique_ptr<TrustTokenStore> store = TrustTokenStore::CreateForTesting();
-
-  TrustTokenRequestRedemptionHelper helper(
-      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      mojom::TrustTokenRefreshPolicy::kRefresh, store.get(),
-      &*g_fixed_key_commitment_getter, std::make_unique<FakeKeyPairGenerator>(),
-      std::make_unique<MockCryptographer>());
-
-  // kRefresh should mean that redemption fails on requests with
-  // non-issuer initiators.
-  auto request = MakeURLRequest("https://issuer.com/");
-  request->set_initiator(
-      *SuitableTrustTokenOrigin::Create(GURL("https://not-issuer.com/")));
-
-  mojom::TrustTokenOperationStatus result =
-      ExecuteBeginOperationAndWaitForResult(&helper, request.get());
-
-  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kFailedPrecondition);
-}
-
 // On a redemption operation parameterized by kUseCachedRr, if there's an RR
 // present in the store for the given issuer-toplevel pair, the request should
 // return early with kAlreadyExists.
@@ -912,13 +888,10 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
       std::move(cryptographer));
 
   auto request = MakeURLRequest("https://issuer.com/");
+  // In particular, `refresh_policy=kRefresh` redemptions should work when
+  // specified alongside requests from non-issuer contexts.
   request->set_initiator(
-      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")));
-
-  // Set the initiator in order to be able to use refresh mode
-  // kRefresh.
-  request->set_initiator(
-      *SuitableTrustTokenOrigin::Create(GURL("https://issuer.com/")));
+      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")));
 
   mojom::TrustTokenOperationStatus result =
       ExecuteBeginOperationAndWaitForResult(&helper, request.get());
@@ -971,24 +944,6 @@ TEST_F(TrustTokenRequestRedemptionHelperTest,
 
   EXPECT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
             mojom::TrustTokenOperationStatus::kInvalidArgument);
-}
-
-TEST_F(TrustTokenRequestRedemptionHelperTest, RequiresInitiatorForRrRefresh) {
-  // Refresh mode "refresh" requires that the request's initiator to
-  // be same-origin with the request's issuer. Test that, in this case, the
-  // redemption helper requires that the request have an initiator.
-  auto store = TrustTokenStore::CreateForTesting();
-  TrustTokenRequestRedemptionHelper helper(
-      *SuitableTrustTokenOrigin::Create(GURL("https://toplevel.com/")),
-      mojom::TrustTokenRefreshPolicy::kRefresh, store.get(),
-      &*g_fixed_key_commitment_getter, std::make_unique<FakeKeyPairGenerator>(),
-      std::make_unique<MockCryptographer>());
-
-  auto request = MakeURLRequest("https://issuer.example");
-  request->set_initiator(base::nullopt);
-
-  EXPECT_EQ(ExecuteBeginOperationAndWaitForResult(&helper, request.get()),
-            mojom::TrustTokenOperationStatus::kFailedPrecondition);
 }
 
 }  // namespace network

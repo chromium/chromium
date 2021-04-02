@@ -115,9 +115,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   //   2. potentially trustworthy origin to satisfy Web security requirements.
   //
   // - |refresh_policy| controls whether to attempt to overwrite the cached
-  // RR stored for the request's (issuer, top-level) origin pair. This is
-  // permitted to have value |kRefresh| only when the redemption
-  // request's initiator equals its issuer origin.
+  // RR stored for the request's (issuer, top-level) origin pair.
   //
   // - |token_store| will be responsible for storing underlying Trust Tokens
   // state. It must outlive this object.
