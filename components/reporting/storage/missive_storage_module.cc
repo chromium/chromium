@@ -40,7 +40,7 @@ void MissiveStorageModule::AddRecord(
     Priority priority,
     Record record,
     base::OnceCallback<void(Status)> callback) {
-  delegate_->AddRecord(priority, record, std::move(callback));
+  delegate_->AddRecord(priority, std::move(record), std::move(callback));
 }
 
 void MissiveStorageModule::Flush(Priority priority,

@@ -26,9 +26,9 @@ MissiveStorageModuleDelegateImpl::~MissiveStorageModuleDelegateImpl() = default;
 
 void MissiveStorageModuleDelegateImpl::AddRecord(
     const Priority priority,
-    const Record& record,
+    Record record,
     base::OnceCallback<void(Status)> callback) {
-  add_record_.Run(priority, record, std::move(callback));
+  add_record_.Run(priority, std::move(record), std::move(callback));
 }
 
 void MissiveStorageModuleDelegateImpl::Flush(

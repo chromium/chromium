@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.  Use
+// Copyright 2021 The Chromium OS Authors. All rights reserved.  Use
 // of this source code is governed by a BSD-style license that can
 // be found in the LICENSE file.
 
@@ -16,19 +16,13 @@ import "components/reporting/util/status.proto";
 // EnqueueRecordRequest enqueues records for encryption,
 // storage, and upload.
 message EnqueueRecordRequest {
-  // record_fd holds the file descriptor for serialized Record protos. File
-  // descriptor must point to a block of memory, because the record cannot
-  // be stored to disk prior to encryption.
-  // //chrome/cros/reporting/api/proto/record.proto
-  optional int32 record_fd = 1;
-
-  // pid holds the pid of the sending process.
-  optional int32 pid = 2;
+  // Record is the record the user wants to enqueue.
+  optional Record record = 1;
 
   // Priority from
   // //chrome/cros/reporting/api/proto/record_constants.proto
   // indicates what priority queue the record should be included in.
-  optional Priority priority = 3;
+  optional Priority priority = 2;
 }
 
 // EnqueueRecordResponse indicates the enqueue success or
@@ -78,15 +72,10 @@ message FlushPriorityResponse {
 // one) as it can for upload. Records not sent for upload can be sent again
 // at a later time.
 message UploadEncryptedRecordRequest {
-  // encrypted_record_fd holds the file descriptors for the serialized
-  // EncryptedRecords.
-  optional int32 encrypted_record_fd = 1;
-
-  // pid holds the pid of the sending process.
-  optional int32 pid = 2;
+  repeated EncryptedRecord encrypted_record = 1;
 
   // If true, server should send the encryption keys with the next response.
-  optional bool need_encryption_keys = 3;
+  optional bool need_encryption_keys = 2;
 }
 
 message UploadEncryptedRecordResponse {

@@ -38,7 +38,7 @@ class MissiveStorageModule : public StorageModuleInterface {
         const MissiveStorageModuleDelegateInterface& other) = delete;
 
     virtual void AddRecord(const Priority priority,
-                           const Record& record,
+                           Record record,
                            base::OnceCallback<void(Status)> callback) = 0;
     virtual void Flush(Priority priority,
                        base::OnceCallback<void(Status)> callback) = 0;

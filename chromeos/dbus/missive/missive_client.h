@@ -48,7 +48,7 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
  private:
   virtual void AddRecord(
       const reporting::Priority priority,
-      const reporting::Record& record,
+      reporting::Record record,
       base::OnceCallback<void(reporting::Status)> completion_callback) = 0;
 
   virtual void Flush(

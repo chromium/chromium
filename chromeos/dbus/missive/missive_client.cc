@@ -7,8 +7,11 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/missive/fake_missive_client.h"
+#include "components/reporting/proto/interface.pb.h"
 #include "components/reporting/proto/record.pb.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/storage/missive_storage_module.h"
@@ -32,6 +35,10 @@ using reporting::Status;
 namespace {
 
 MissiveClient* g_instance = nullptr;
+
+// Amount of time we wait for a response before timing out. The default value is
+// 25 seconds.
+const int kTimeoutMs = dbus::ObjectProxy::TIMEOUT_USE_DEFAULT;
 
 class MissiveClientImpl : public MissiveClient {
  public:
@@ -62,37 +69,95 @@ class MissiveClientImpl : public MissiveClient {
 
  private:
   void AddRecord(const reporting::Priority priority,
-                 const reporting::Record& record,
+                 reporting::Record record,
                  base::OnceCallback<void(reporting::Status)>
                      completion_callback) override {
-    // TODO(1174889): Implement the actual DBus Call after the Daemon is
-    // available.
-    std::move(completion_callback)
-        .Run(reporting::Status(reporting::error::UNAVAILABLE,
-                               "AddRecord has not been implemented."));
+    reporting::EnqueueRecordRequest request;
+    *request.mutable_record() = std::move(record);
+    request.set_priority(priority);
+
+    dbus::MethodCall method_call(missive::kMissiveServiceInterface,
+                                 missive::kEnqueueRecord);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendProtoAsArrayOfBytes(request);
+
+    missive_service_proxy_->CallMethod(
+        &method_call, kTimeoutMs,
+        base::BindOnce(&MissiveClientImpl::HandleAddRecordResponse,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(completion_callback)));
+  }
+
+  void HandleAddRecordResponse(
+      base::OnceCallback<void(reporting::Status)> completion_callback,
+      dbus::Response* response) {
+    dbus::MessageReader reader(response);
+    reporting::EnqueueRecordResponse response_body;
+    reader.PopArrayOfBytesAsProto(&response_body);
+
+    reporting::Status status;
+    status.RestoreFrom(response_body.status());
+    std::move(completion_callback).Run(status);
   }
 
   void Flush(const reporting::Priority priority,
              base::OnceCallback<void(reporting::Status)> completion_callback)
       override {
-    // TODO(1174889): Implement the actual DBus Call after the Daemon is
-    // available.
-    std::move(reporting::Status(reporting::error::UNAVAILABLE,
-                                "Flush has not been implemented."));
+    reporting::FlushPriorityRequest request;
+    request.set_priority(priority);
+    dbus::MethodCall method_call(missive::kMissiveServiceInterface,
+                                 missive::kFlushPriority);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendProtoAsArrayOfBytes(request);
+
+    missive_service_proxy_->CallMethod(
+        &method_call, kTimeoutMs,
+        base::BindOnce(&MissiveClientImpl::HandleFlushResponse,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(completion_callback)));
+  }
+
+  void HandleFlushResponse(
+      base::OnceCallback<void(reporting::Status)> completion_callback,
+      dbus::Response* response) {
+    dbus::MessageReader reader(response);
+    reporting::FlushPriorityResponse response_body;
+    reader.PopArrayOfBytesAsProto(&response_body);
+
+    reporting::Status status;
+    status.RestoreFrom(response_body.status());
+    std::move(completion_callback).Run(status);
   }
 
   void ReportSuccess(
       const reporting::SequencingInformation& sequencing_information,
       bool force_confirm) override {
-    // TODO(1174889): Implement the actual DBus Call after the Daemon is
-    // available.
-    return;
+    reporting::ConfirmRecordUploadRequest request;
+    *request.mutable_sequencing_information() =
+        std::move(sequencing_information);
+    request.set_force_confirm(force_confirm);
+    dbus::MethodCall method_call(missive::kMissiveServiceInterface,
+                                 missive::kConfirmRecordUpload);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendProtoAsArrayOfBytes(request);
+
+    missive_service_proxy_->CallMethod(&method_call, kTimeoutMs,
+                                       base::DoNothing());
   }
 
   void UpdateEncryptionKey(
       const reporting::SignedEncryptionInfo& encryption_info) override {
-    // TODO(1174889): Implement the actual DBus Call after the Daemon is
-    // available.
+    // TODO(1174889): Uncomment the following code once system_api has been
+    // updated with kUpdateEncryptionKey.
+    // reporting::UpdateEncryptKeyRequest request;
+    // *request.mutable_signed_encryption_info() = std::move(encryption_info);
+    // dbus::MethodCall method_call(missive::MissiveServiceInterface,
+    //                              missive::kUpdateEncryptionKey);
+    // dbus::MessageWriter writer(&method_call);
+    // writer.AppendProtoAsArrayOfBytes(request);
+
+    // missive_service_proxy_->CallMethod(
+    //     &method_call, kTimeoutMs, base::DoNothing());
     return;
   }
 

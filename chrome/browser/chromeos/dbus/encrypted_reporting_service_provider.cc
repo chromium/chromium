@@ -4,10 +4,6 @@
 
 #include "chrome/browser/chromeos/dbus/encrypted_reporting_service_provider.h"
 
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include <memory>
 #include <utility>
 
@@ -29,36 +25,6 @@
 
 namespace chromeos {
 namespace {
-
-class ManagedFileDescriptor {
- public:
-  static reporting::StatusOr<std::unique_ptr<ManagedFileDescriptor>> Create(
-      const std::string& path) {
-    const int fd = open(path.c_str(), O_RDONLY);
-    if (fd < 0) {
-      return reporting::Status(reporting::error::INTERNAL,
-                               "Unable to open record file for reading.");
-    }
-    return base::WrapUnique(new ManagedFileDescriptor(fd));
-  }
-
-  ~ManagedFileDescriptor() {
-    if (IsFileOpen()) {
-      if (close(fd_) == -1) {
-        PLOG(ERROR) << "Unable to close file. errno:";
-      }
-    }
-  }
-
-  bool IsFileOpen() const { return fd_ >= 0; }
-
-  int fd() const { return fd_; }
-
- private:
-  explicit ManagedFileDescriptor(int fd) : fd_(fd) {}
-
-  const int fd_;
-};
 
 void SendStatusAsResponse(std::unique_ptr<dbus::Response> response,
                           dbus::ExportedObject::ResponseSender response_sender,
@@ -223,32 +189,10 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecord(
     return;
   }
 
-  auto fd_result = ManagedFileDescriptor::Create(
-      base::StrCat({"/proc/", base::NumberToString(request.pid()), "/fd/",
-                    base::NumberToString(request.encrypted_record_fd())}));
-  if (!fd_result.ok()) {
-    reporting::Status status{
-        reporting::error::INVALID_ARGUMENT,
-        "Unable to open designated file descriptor for reading."};
-    LOG(ERROR) << status;
-    SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         status);
-    return;
-  }
-
-  reporting::EncryptedRecord record;
-  if (!record.ParseFromFileDescriptor(fd_result.ValueOrDie()->fd())) {
-    reporting::Status status{
-        reporting::error::NOT_FOUND,
-        "Designated file descriptor did not contain a valid EncryptedRecord."};
-    LOG(ERROR) << status;
-    SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         status);
-    return;
-  }
-
   auto records = std::make_unique<std::vector<reporting::EncryptedRecord>>();
-  records->push_back(std::move(record));
+  for (auto& record : request.encrypted_record()) {
+    records->push_back(std::move(record));
+  }
   auto enqueue_status = upload_client_->EnqueueUpload(
       request.need_encryption_keys(), std::move(records));
   SendStatusAsResponse(std::move(response), std::move(response_sender),

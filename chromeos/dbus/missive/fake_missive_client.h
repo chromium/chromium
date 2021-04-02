@@ -26,7 +26,7 @@ class FakeMissiveClient : public MissiveClient {
  private:
   void AddRecord(
       const reporting::Priority priority,
-      const reporting::Record& record,
+      reporting::Record record,
       base::OnceCallback<void(reporting::Status)> completion_callback) override;
 
   void Flush(

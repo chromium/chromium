@@ -11,6 +11,7 @@ component("missive") {
 
   deps = [
     "//base",
+    "//components/reporting/proto:interface_proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/storage:missive_storage_module",

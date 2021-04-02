@@ -38,7 +38,7 @@ void FakeMissiveClient::Init() {
 
 void FakeMissiveClient::AddRecord(
     const reporting::Priority priority,
-    const reporting::Record& record,
+    reporting::Record record,
     base::OnceCallback<void(reporting::Status)> completion_callback) {
   std::move(completion_callback).Run(reporting::Status::StatusOK());
 }

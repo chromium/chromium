@@ -4,10 +4,6 @@
 //
 #include "chrome/browser/chromeos/dbus/encrypted_reporting_service_provider.h"
 
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <memory>
 #include <utility>
 
@@ -205,16 +201,9 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
     sequencing_information->set_sequencing_id(42);
     sequencing_information->set_generation_id(1701);
     sequencing_information->set_priority(reporting::Priority::SLOW_BATCH);
-
-    fd_ = memfd_create("TempMemFile", 0);
-    ASSERT_GE(fd_, 0);
-    ASSERT_TRUE(record_.SerializeToFileDescriptor(fd_));
-
-    pid_ = getpid();
   }
 
   void TearDown() override {
-    EXPECT_NE(close(fd_), -1);
     test_helper_.TearDown();
   }
 
@@ -249,8 +238,6 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
 
   policy::MockCloudPolicyClient cloud_policy_client_;
   reporting::EncryptedRecord record_;
-  int fd_{-1};
-  pid_t pid_{0};
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -274,8 +261,7 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
           })));
 
   reporting::UploadEncryptedRecordRequest request;
-  request.set_encrypted_record_fd(fd_);
-  request.set_pid(pid_);
+  request.add_encrypted_record()->CheckTypeAndMergeFrom(record_);
 
   reporting::UploadEncryptedRecordResponse response;
   CallRequestUploadEncryptedRecord(request, &response);
