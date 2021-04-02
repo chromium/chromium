@@ -213,18 +213,18 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     // happens asynchronously after the observer gets OnWebAppInstalled. And
     // some installs might not have OS hooks installed but they will be in the
     // registry.
-    DCHECK(web_app::WebAppProvider::Get(profile)
-               ->registrar()
-               .AsWebAppRegistrar()
-               ->GetAppsInSyncInstall()
-               .empty());
+    ASSERT_TRUE(web_app::WebAppProvider::Get(profile)
+                    ->registrar()
+                    .AsWebAppRegistrar()
+                    ->GetAppsInSyncInstall()
+                    .empty());
 
     std::set<web_app::AppId> apps_in_sync_uninstall =
         web_app::WebAppProvider::Get(profile)
             ->registry_controller()
             .AsWebAppSyncBridge()
             ->GetAppsInSyncUninstallForTest();
-    DCHECK(apps_in_sync_uninstall.empty());
+    ASSERT_TRUE(apps_in_sync_uninstall.empty());
   }
 }
 
