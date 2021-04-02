@@ -75,6 +75,7 @@ void OnSodaResponse(const char* serialized_proto,
 
 SpeechRecognitionRecognizerImpl::~SpeechRecognitionRecognizerImpl() {
   RecordDuration();
+  soda_client_.reset();
 }
 
 void SpeechRecognitionRecognizerImpl::Create(
