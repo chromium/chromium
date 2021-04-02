@@ -29,8 +29,7 @@ void VersionHandlerWindows::HandleRequestVersionInfo(
 }
 
 void VersionHandlerWindows::OnVersion(const std::string& version) {
-  base::Value arg(version);
-  CallJavascriptFunction("returnOsVersion", arg);
+  FireWebUIListener("return-os-version", base::Value(version));
 }
 
 // static

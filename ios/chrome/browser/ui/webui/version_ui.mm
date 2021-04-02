@@ -108,6 +108,8 @@ web::WebUIIOSDataSource* CreateVersionUIDataSource() {
   html_source->AddResourcePath(version_ui::kVersionJS, IDR_VERSION_UI_JS);
   html_source->AddResourcePath(version_ui::kAboutVersionCSS,
                                IDR_VERSION_UI_CSS);
+  html_source->AddResourcePath(version_ui::kAboutVersionMobileCSS,
+                               IDR_VERSION_UI_MOBILE_CSS);
   html_source->SetDefaultResource(IDR_VERSION_UI_HTML);
   return html_source;
 }

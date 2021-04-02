@@ -10,7 +10,10 @@ namespace version_ui {
 
 // Resource paths.
 const char kAboutVersionCSS[] = "about_version.css";
-const char kVersionJS[] = "version.js";
+#if defined(OS_IOS) || defined(OS_ANDROID)
+const char kAboutVersionMobileCSS[] = "about_version_mobile.css";
+#endif
+const char kVersionJS[] = "about_version.js";
 
 // Message handlers.
 const char kRequestVersionInfo[] = "requestVersionInfo";
