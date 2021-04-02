@@ -73,7 +73,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
 
  private:
   void AddScrollingOverflowFromChildren();
-  void UpdateMargins();
 };
 
 // If you edit these export templates, also update templates in

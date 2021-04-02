@@ -121,6 +121,7 @@ void LayoutNGTable::UpdateBlockLayout(bool relayout_children) {
     return;
   }
   UpdateInFlowBlockLayout();
+  UpdateMargins();
 }
 
 void LayoutNGTable::AddChild(LayoutObject* child, LayoutObject* before_child) {

@@ -49,6 +49,7 @@ class LayoutNGMixin : public Base {
 
   void UpdateOutOfFlowBlockLayout();
   const NGLayoutResult* UpdateInFlowBlockLayout();
+  void UpdateMargins();
 };
 
 extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutBlock>;
