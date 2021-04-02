@@ -65,15 +65,17 @@ using QuarantineBitmap =
 // 2) Full.
 // 3) Empty.
 // 4) Decommitted.
-// An active slot span has available free slots. A full slot span has no free
-// slots. An empty slot span has no free slots, and a decommitted slot span is
-// an empty one that had its backing memory released back to the system.
+// An active slot span has available free slots, as well as allocated ones.
+// A full slot span has no free slots. An empty slot span has no allocated
+// slots, and a decommitted slot span is an empty one that had its backing
+// memory released back to the system.
 //
-// There are two linked lists tracking slot spans. The "active" list is an
+// There are three linked lists tracking slot spans. The "active" list is an
 // approximation of a list of active slot spans. It is an approximation because
 // full, empty and decommitted slot spans may briefly be present in the list
-// until we next do a scan over it. The "empty" list is an accurate list of slot
-// spans which are either empty or decommitted.
+// until we next do a scan over it. The "empty" list holds mostly empty slot
+// spans, but may briefly hold decommitted ones too. The "decommitted" list
+// holds only decommitted slot spans.
 //
 // The significant slot span transitions are:
 // - Free() will detect when a full slot span has a slot freed and immediately
@@ -85,7 +87,7 @@ using QuarantineBitmap =
 //   If it does this, full, empty and decommitted slot spans encountered will be
 //   booted out of the active list. If there are no suitable active slot spans
 //   found, an empty or decommitted slot spans (if one exists) will be pulled
-//   from the empty list on to the active list.
+//   from the empty/decommitted list on to the active list.
 template <bool thread_safe>
 struct __attribute__((packed)) SlotSpanMetadata {
   PartitionFreelistEntry* freelist_head = nullptr;
