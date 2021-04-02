@@ -6,7 +6,7 @@
 import os
 import sys
 
-from compile_src import run_tsc_ignore_errors
+from tsc_ignore_errors import run_tsc_ignore_errors
 
 third_party_dir = os.path.dirname(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))))

@@ -18,22 +18,14 @@ action("compile_src") {
 
   inputs = [ "//third_party/node/node_modules/typescript/lib/tsc.js" ] +
            ts_source_inputs
-  outputs = []
+
+  outputs = [ "$target_gen_dir/node/tools/gen_listings.js" ]
   foreach(ts_file, input_ts_files) {
     js_file = string_replace(ts_file, ".ts", ".js")
     outputs += [ "$target_gen_dir/$js_file" ]
   }
 
-  args = [
-    "--project",
-    rebase_path("src/tsconfig.json", root_build_dir),
-    "--outDir",
-    rebase_path("$target_gen_dir/src", root_build_dir),
-    "--noEmit",
-    "false",
-    "--declaration",
-    "false",
-    "--sourceMap",
-    "false",
-  ]
+  data = outputs
+
+  args = [ rebase_path("$target_gen_dir", root_build_dir) ]
 }
