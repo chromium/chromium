@@ -28,8 +28,6 @@ component("cryptohome") {
     "cryptohome_client.h",
     "fake_cryptohome_client.cc",
     "fake_cryptohome_client.h",
-    "tpm_util.cc",
-    "tpm_util.h",
   ]
 }
 
