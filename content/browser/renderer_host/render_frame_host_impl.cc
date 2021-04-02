@@ -8715,6 +8715,30 @@ RenderFrameHostImpl::CreateMessageFilterForAssociatedReceiver(
 
 network::mojom::ClientSecurityStatePtr
 RenderFrameHostImpl::BuildClientSecurityState() const {
+  // TODO(https://crbug.com/1184150) Remove this bandaid.
+  //
+  // Due to a race condition, CreateCrossOriginPrefetchLoaderFactoryBundle() is
+  // sometimes called on the previous document, before the new document is
+  // committed. In that case, it mistakenly builds a client security state
+  // based on the policies of the previous document. If no document has ever
+  // committed, there is no PolicyContainerHost to source policies from. To
+  // avoid crashes, this returns a maximally-restrictive value instead.
+  if (!policy_container_host_) {
+    // Prevent other code paths from depending on this bandaid.
+    DCHECK_EQ(lifecycle_state_, LifecycleStateImpl::kSpeculative);
+
+    // Omitted: reporting endpoint, report-only value and reporting endpoint.
+    network::CrossOriginEmbedderPolicy coep;
+    coep.value = network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
+
+    return network::mojom::ClientSecurityState::New(
+        std::move(coep),
+        /*is_web_secure_context=*/false,
+        network::mojom::IPAddressSpace::kUnknown,
+        network::mojom::PrivateNetworkRequestPolicy::
+            kBlockFromInsecureToMorePrivate);
+  }
+
   auto client_security_state = network::mojom::ClientSecurityState::New();
 
   const PolicyContainerPolicies& policies = policy_container_host_->policies();
