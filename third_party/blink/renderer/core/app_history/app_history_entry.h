@@ -24,6 +24,8 @@ class CORE_EXPORT AppHistoryEntry final : public EventTargetWithInlineData,
   AppHistoryEntry(ExecutionContext*, HistoryItem*);
   ~AppHistoryEntry() final = default;
 
+  String key() const;
+  String id() const;
   KURL url();
   bool sameDocument() const;
 

@@ -820,11 +820,21 @@ void DocumentLoader::SetHistoryItemStateForCommit(
   // explicitly want to restore the state we just committed.
   if (!old_item || IsBackForwardLoadType(load_type))
     return;
+
+  // The AppHistory key corresponds to a "slot" in the back/forward list, and
+  // should be shared for all replacing navigations so long as the navigation
+  // isn't cross-origin.
+  WebHistoryCommitType history_commit_type = LoadTypeToCommitType(load_type);
+  if (history_commit_type == kWebHistoryInertCommit &&
+      SecurityOrigin::Create(old_item->Url())
+          ->CanAccess(SecurityOrigin::Create(history_item_->Url()).get())) {
+    history_item_->SetAppHistoryKey(old_item->GetAppHistoryKey());
+  }
+
   // Don't propagate state from the old item if this is a different-document
   // navigation, unless the before and after pages are logically related. This
   // means they have the same url (ignoring fragment) and the new item was
   // loaded via reload or client redirect.
-  WebHistoryCommitType history_commit_type = LoadTypeToCommitType(load_type);
   if (navigation_type == HistoryNavigationType::kDifferentDocument &&
       (history_commit_type != kWebHistoryInertCommit ||
        !EqualIgnoringFragmentIdentifier(old_item->Url(), history_item_->Url())))

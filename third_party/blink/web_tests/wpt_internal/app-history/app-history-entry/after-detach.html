@@ -8,9 +8,13 @@ async_test(t => {
     let i_entry = i.contentWindow.appHistory.current;
     assert_true(i_entry.sameDocument);
     assert_not_equals(i_entry.url, "");
+    assert_not_equals(i_entry.key, "");
+    assert_not_equals(i_entry.id, "");
     i.remove();
     assert_false(i_entry.sameDocument);
     assert_equals(i_entry.url, "");
+    assert_equals(i_entry.key, "");
+    assert_equals(i_entry.id, "");
   });
-}, "AppHistoryEntry.sameDocument after detach");
+}, "AppHistoryEntry attributes after detach");
 </script>

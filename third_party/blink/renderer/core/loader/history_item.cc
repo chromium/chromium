@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/uuid.h"
 
 namespace blink {
 
@@ -47,7 +48,9 @@ static int64_t GenerateSequenceNumber() {
 
 HistoryItem::HistoryItem()
     : item_sequence_number_(GenerateSequenceNumber()),
-      document_sequence_number_(GenerateSequenceNumber()) {}
+      document_sequence_number_(GenerateSequenceNumber()),
+      app_history_key_(WTF::CreateCanonicalUUIDString()),
+      app_history_id_(WTF::CreateCanonicalUUIDString()) {}
 
 HistoryItem::~HistoryItem() = default;
 

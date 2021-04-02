@@ -189,6 +189,8 @@ struct SerializeObject {
 // 26: Switch to mojo-based serialization.
 // 27: Add serialized scroll anchor to FrameState.
 // 28: Add initiator origin to FrameState.
+// 29: Add app history key.
+// 30: Add app history id.
 // NOTE: If the version is -1, then the pickle contains only a URL string.
 // See ReadPageState.
 //
@@ -196,7 +198,7 @@ const int kMinVersion = 11;
 // NOTE: When changing the version, please add a backwards compatibility test.
 // See PageStateSerializationTest.DumpExpectedPageStateForBackwardsCompat for
 // instructions on how to generate the new test case.
-const int kCurrentVersion = 28;
+const int kCurrentVersion = 29;
 
 // A bunch of convenience functions to write to/read from SerializeObjects.  The
 // de-serializers assume the input data will be in the correct format and fall
@@ -788,6 +790,9 @@ void WriteFrameState(const ExplodedFrameState& state,
   frame->http_body = mojom::HttpBody::New();
   WriteHttpBody(state.http_body, frame->http_body.get());
 
+  frame->app_history_key = state.app_history_key;
+  frame->app_history_id = state.app_history_id;
+
   // Subitems
   const std::vector<ExplodedFrameState>& children = state.children;
   for (const auto& child : children) {
@@ -839,6 +844,9 @@ void ReadFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
   } else {
     state->http_body.request_body = nullptr;
   }
+
+  state->app_history_key = frame->app_history_key;
+  state->app_history_id = frame->app_history_id;
 
   state->children.resize(frame->children.size());
   int i = 0;
@@ -958,6 +966,8 @@ void ExplodedFrameState::assign(const ExplodedFrameState& other) {
   scroll_anchor_selector = other.scroll_anchor_selector;
   scroll_anchor_offset = other.scroll_anchor_offset;
   scroll_anchor_simhash = other.scroll_anchor_simhash;
+  app_history_key = other.app_history_key;
+  app_history_id = other.app_history_id;
   children = other.children;
 }
 

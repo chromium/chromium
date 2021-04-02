@@ -223,6 +223,22 @@ void WebHistoryItem::SetScrollAnchorData(
   private_->SetScrollAnchorData(scroll_anchor_data);
 }
 
+WebString WebHistoryItem::GetAppHistoryKey() const {
+  return private_->GetAppHistoryKey();
+}
+
+void WebHistoryItem::SetAppHistoryKey(const WebString& key) {
+  private_->SetAppHistoryKey(key);
+}
+
+WebString WebHistoryItem::GetAppHistoryId() const {
+  return private_->GetAppHistoryId();
+}
+
+void WebHistoryItem::SetAppHistoryId(const WebString& id) {
+  private_->SetAppHistoryId(id);
+}
+
 WebHistoryItem::WebHistoryItem(HistoryItem* item) : private_(item) {}
 
 WebHistoryItem& WebHistoryItem::operator=(HistoryItem* item) {

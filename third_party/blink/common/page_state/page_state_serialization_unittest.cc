@@ -102,6 +102,8 @@ void ExpectEquality(const ExplodedFrameState& expected,
   EXPECT_EQ(expected.scroll_anchor_selector, actual.scroll_anchor_selector);
   EXPECT_EQ(expected.scroll_anchor_offset, actual.scroll_anchor_offset);
   EXPECT_EQ(expected.scroll_anchor_simhash, actual.scroll_anchor_simhash);
+  EXPECT_EQ(expected.app_history_key, actual.app_history_key);
+  EXPECT_EQ(expected.app_history_id, actual.app_history_id);
   ExpectEquality(expected.http_body, actual.http_body);
   ExpectEquality(expected.children, actual.children);
 }
@@ -137,6 +139,8 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->scroll_anchor_selector = u"#selector";
     frame_state->scroll_anchor_offset = gfx::PointF(2.5, 3.5);
     frame_state->scroll_anchor_simhash = 12345;
+    frame_state->app_history_key = base::UTF8ToUTF16("abcd");
+    frame_state->app_history_id = base::UTF8ToUTF16("wxyz");
   }
 
   void PopulateHttpBody(
@@ -202,6 +206,14 @@ class PageStateSerializationTest : public testing::Test {
     frame_state->document_state.push_back(u"2");
     frame_state->document_state.push_back(u"file.txt");
     frame_state->document_state.push_back(u"displayName");
+
+    if (version >= 29) {
+      frame_state->app_history_key = base::UTF8ToUTF16("abcdef");
+      frame_state->app_history_id = base::UTF8ToUTF16("uvwxyz");
+    } else {
+      frame_state->app_history_key = base::nullopt;
+      frame_state->app_history_id = base::nullopt;
+    }
 
     if (!is_child) {
       frame_state->http_body.http_content_type = u"foo/bar";
@@ -576,6 +588,10 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_v27) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_v28) {
   TestBackwardsCompat(28);
+}
+
+TEST_F(PageStateSerializationTest, BackwardsCompat_v29) {
+  TestBackwardsCompat(29);
 }
 
 // Add your new backwards compat test for future versions *above* this

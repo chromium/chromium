@@ -1,0 +1,21 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+async_test(t => {
+  window.onload = t.step_func(() => {
+    let key = appHistory.current.key;
+    let id = appHistory.current.id;
+
+    history.pushState("hash", "", "#hash");
+    assert_not_equals(key, appHistory.current.key);
+    assert_not_equals(id, appHistory.current.id);
+
+    window.onpopstate = t.step_func_done(() => {
+      assert_equals(key, appHistory.current.key);
+      assert_equals(id, appHistory.current.id);
+    });
+    history.back();
+  });
+}, "AppHistoryEntry.key behavior on same-document back navigation");
+</script>

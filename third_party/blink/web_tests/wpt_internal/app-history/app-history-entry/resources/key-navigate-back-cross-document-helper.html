@@ -1,0 +1,21 @@
+<!doctype html>
+<script>
+// setTimeout because blink doesn't create history entries for location API
+// navigations if onload has not yet completed.
+window.onload = () => { setTimeout(() => {
+  if (location.search == "?go-back") {
+    // Step 2: Navigate back.
+    history.back();
+    return;
+  }
+  if (top.start_key) {
+    // Step 3: Notify parent, which will ensure the same key is used after back navigation.
+    top.finish(appHistory.current.key, appHistory.current.id);
+    return;
+  }
+  // Step 1: Record initial key and navigate.
+  top.start_key = appHistory.current.key;
+  top.start_id = appHistory.current.id;
+  location.search = "go-back";
+}, 0) };
+</script>

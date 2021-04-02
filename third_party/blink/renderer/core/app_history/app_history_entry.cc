@@ -12,6 +12,14 @@ namespace blink {
 AppHistoryEntry::AppHistoryEntry(ExecutionContext* context, HistoryItem* item)
     : ExecutionContextClient(context), item_(item) {}
 
+String AppHistoryEntry::key() const {
+  return DomWindow() ? item_->GetAppHistoryKey() : String();
+}
+
+String AppHistoryEntry::id() const {
+  return DomWindow() ? item_->GetAppHistoryId() : String();
+}
+
 KURL AppHistoryEntry::url() {
   return DomWindow() ? item_->Url() : NullURL();
 }

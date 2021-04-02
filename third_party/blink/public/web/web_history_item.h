@@ -121,6 +121,12 @@ class WebHistoryItem {
   BLINK_EXPORT ScrollAnchorData GetScrollAnchorData() const;
   BLINK_EXPORT void SetScrollAnchorData(const ScrollAnchorData&);
 
+  BLINK_EXPORT WebString GetAppHistoryKey() const;
+  BLINK_EXPORT void SetAppHistoryKey(const WebString&);
+
+  BLINK_EXPORT WebString GetAppHistoryId() const;
+  BLINK_EXPORT void SetAppHistoryId(const WebString&);
+
 #if INSIDE_BLINK
   BLINK_EXPORT WebHistoryItem(HistoryItem*);
   BLINK_EXPORT WebHistoryItem& operator=(HistoryItem*);

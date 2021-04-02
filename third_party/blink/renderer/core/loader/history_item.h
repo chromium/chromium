@@ -120,6 +120,12 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
 
   ResourceRequest GenerateResourceRequest(mojom::FetchCacheMode);
 
+  const String& GetAppHistoryKey() const { return app_history_key_; }
+  void SetAppHistoryKey(const String& key) { app_history_key_ = key; }
+
+  const String& GetAppHistoryId() const { return app_history_id_; }
+  void SetAppHistoryId(const String& id) { app_history_id_ = id; }
+
   void Trace(Visitor*) const;
 
  private:
@@ -153,6 +159,9 @@ class CORE_EXPORT HistoryItem final : public GarbageCollected<HistoryItem> {
   // info used to repost form data
   scoped_refptr<EncodedFormData> form_data_;
   AtomicString form_content_type_;
+
+  String app_history_key_;
+  String app_history_id_;
 };  // class HistoryItem
 
 }  // namespace blink
