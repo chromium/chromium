@@ -4,7 +4,8 @@
 
 #include "base/threading/thread_local_storage.h"
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/no_destructor.h"
@@ -69,8 +70,9 @@ namespace {
 // Chromium consumers.
 
 // g_native_tls_key is the one native TLS that we use. It stores our table.
-base::subtle::Atomic32 g_native_tls_key =
-    PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES;
+
+std::atomic<PlatformThreadLocalStorage::TLSKey> g_native_tls_key{
+    PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES};
 
 // The OS TLS slot has the following states. The TLS slot's lower 2 bits contain
 // the state, the upper bits the TlsVectorEntry*.
@@ -204,7 +206,7 @@ TlsVectorState GetTlsVectorStateAndValue(PlatformThreadLocalStorage::TLSKey key,
 // require memory allocations.
 TlsVectorEntry* ConstructTlsVector() {
   PlatformThreadLocalStorage::TLSKey key =
-      base::subtle::NoBarrier_Load(&g_native_tls_key);
+      g_native_tls_key.load(std::memory_order_relaxed);
   if (key == PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES) {
     CHECK(PlatformThreadLocalStorage::AllocTLS(&key));
 
@@ -222,16 +224,16 @@ TlsVectorEntry* ConstructTlsVector() {
     // Atomically test-and-set the tls_key. If the key is
     // TLS_KEY_OUT_OF_INDEXES, go ahead and set it. Otherwise, do nothing, as
     // another thread already did our dirty work.
-    if (PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES !=
-        static_cast<PlatformThreadLocalStorage::TLSKey>(
-            base::subtle::NoBarrier_CompareAndSwap(
-                &g_native_tls_key,
-                PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES, key))) {
+    PlatformThreadLocalStorage::TLSKey old_key =
+        PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES;
+    if (!g_native_tls_key.compare_exchange_strong(old_key, key,
+                                                  std::memory_order_relaxed,
+                                                  std::memory_order_relaxed)) {
       // We've been shortcut. Another thread replaced g_native_tls_key first so
       // we need to destroy our index and use the one the other thread got
       // first.
       PlatformThreadLocalStorage::FreeTLS(key);
-      key = base::subtle::NoBarrier_Load(&g_native_tls_key);
+      key = g_native_tls_key.load(std::memory_order_relaxed);
     }
   }
   CHECK_EQ(GetTlsVectorStateAndValue(key), TlsVectorState::kUninitialized);
@@ -271,7 +273,7 @@ void OnThreadExitInternal(TlsVectorEntry* tls_data) {
   memcpy(stack_allocated_tls_data, tls_data, sizeof(stack_allocated_tls_data));
   // Ensure that any re-entrant calls change the temp version.
   PlatformThreadLocalStorage::TLSKey key =
-      base::subtle::NoBarrier_Load(&g_native_tls_key);
+      g_native_tls_key.load(std::memory_order_relaxed);
   SetTlsVectorValue(key, stack_allocated_tls_data, TlsVectorState::kDestroying);
   delete[] tls_data;  // Our last dependence on an allocator.
 
@@ -328,7 +330,7 @@ namespace internal {
 #if defined(OS_WIN)
 void PlatformThreadLocalStorage::OnThreadExit() {
   PlatformThreadLocalStorage::TLSKey key =
-      base::subtle::NoBarrier_Load(&g_native_tls_key);
+      g_native_tls_key.load(std::memory_order_relaxed);
   if (key == PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES)
     return;
   TlsVectorEntry* tls_vector = nullptr;
@@ -352,7 +354,7 @@ void PlatformThreadLocalStorage::OnThreadExit(void* value) {
   const TlsVectorState state = GetTlsVectorStateAndValue(value, &tls_vector);
   if (state == TlsVectorState::kDestroyed) {
     PlatformThreadLocalStorage::TLSKey key =
-        base::subtle::NoBarrier_Load(&g_native_tls_key);
+        g_native_tls_key.load(std::memory_order_relaxed);
     SetTlsVectorValue(key, nullptr, TlsVectorState::kUninitialized);
     return;
   }
@@ -366,7 +368,7 @@ void PlatformThreadLocalStorage::OnThreadExit(void* value) {
 // static
 bool ThreadLocalStorage::HasBeenDestroyed() {
   PlatformThreadLocalStorage::TLSKey key =
-      base::subtle::NoBarrier_Load(&g_native_tls_key);
+      g_native_tls_key.load(std::memory_order_relaxed);
   if (key == PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES)
     return false;
   const TlsVectorState state = GetTlsVectorStateAndValue(key);
@@ -376,7 +378,7 @@ bool ThreadLocalStorage::HasBeenDestroyed() {
 
 void ThreadLocalStorage::Slot::Initialize(TLSDestructorFunc destructor) {
   PlatformThreadLocalStorage::TLSKey key =
-      base::subtle::NoBarrier_Load(&g_native_tls_key);
+      g_native_tls_key.load(std::memory_order_relaxed);
   if (key == PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES ||
       GetTlsVectorStateAndValue(key) == TlsVectorState::kUninitialized) {
     ConstructTlsVector();
@@ -423,7 +425,7 @@ void ThreadLocalStorage::Slot::Free() {
 void* ThreadLocalStorage::Slot::Get() const {
   TlsVectorEntry* tls_data = nullptr;
   const TlsVectorState state = GetTlsVectorStateAndValue(
-      base::subtle::NoBarrier_Load(&g_native_tls_key), &tls_data);
+      g_native_tls_key.load(std::memory_order_relaxed), &tls_data);
   DCHECK_NE(state, TlsVectorState::kDestroyed);
   if (!tls_data)
     return nullptr;
@@ -438,7 +440,7 @@ void* ThreadLocalStorage::Slot::Get() const {
 void ThreadLocalStorage::Slot::Set(void* value) {
   TlsVectorEntry* tls_data = nullptr;
   const TlsVectorState state = GetTlsVectorStateAndValue(
-      base::subtle::NoBarrier_Load(&g_native_tls_key), &tls_data);
+      g_native_tls_key.load(std::memory_order_relaxed), &tls_data);
   DCHECK_NE(state, TlsVectorState::kDestroyed);
   if (!tls_data) {
     if (!value)

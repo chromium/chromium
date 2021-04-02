@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "build/build_config.h"
@@ -46,7 +45,6 @@ class ThreadLocalStorageTestInternal;
 // * ThreadLocalStorage::StaticSlot/Slot for more direct control of the slot.
 class BASE_EXPORT PlatformThreadLocalStorage {
  public:
-
 #if defined(OS_WIN)
   typedef unsigned long TLSKey;
   enum : unsigned { TLS_KEY_OUT_OF_INDEXES = TLS_OUT_OF_INDEXES };
