@@ -95,7 +95,7 @@ class CorsURLLoaderFactory::FactoryOverride final {
   class ExposedNetworkLoaderFactory final : public mojom::URLLoaderFactory {
    public:
     ExposedNetworkLoaderFactory(
-        std::unique_ptr<URLLoaderFactory> network_loader_factory,
+        std::unique_ptr<network::URLLoaderFactory> network_loader_factory,
         mojo::PendingReceiver<mojom::URLLoaderFactory> receiver)
         : network_loader_factory_(std::move(network_loader_factory)) {
       if (receiver) {
@@ -125,14 +125,18 @@ class CorsURLLoaderFactory::FactoryOverride final {
         mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override {
       receivers_.Add(this, std::move(receiver));
     }
+    mojom::DevToolsObserver* GetDevToolsObserver() {
+      return network_loader_factory_->GetDevToolsObserver();
+    }
 
    private:
-    std::unique_ptr<URLLoaderFactory> network_loader_factory_;
+    std::unique_ptr<network::URLLoaderFactory> network_loader_factory_;
     mojo::ReceiverSet<mojom::URLLoaderFactory> receivers_;
   };
 
-  FactoryOverride(mojom::URLLoaderFactoryOverridePtr params,
-                  std::unique_ptr<URLLoaderFactory> network_loader_factory)
+  FactoryOverride(
+      mojom::URLLoaderFactoryOverridePtr params,
+      std::unique_ptr<network::URLLoaderFactory> network_loader_factory)
       : network_loader_factory_(std::move(network_loader_factory),
                                 std::move(params->overridden_factory_receiver)),
         overriding_factory_(std::move(params->overriding_factory)),
@@ -146,6 +150,10 @@ class CorsURLLoaderFactory::FactoryOverride final {
 
   bool ShouldSkipCorsEnabledSchemeCheck() {
     return skip_cors_enabled_scheme_check_;
+  }
+
+  mojom::DevToolsObserver* GetDevToolsObserver() {
+    return network_loader_factory_.GetDevToolsObserver();
   }
 
  private:
@@ -257,10 +265,12 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
       ResourceRequest::TrustedParams cloned_params =
           *resource_request.trusted_params;
       devtools_observer = std::move(cloned_params.devtools_observer);
-    } else if (!factory_override_) {
-      if (auto* observer = network_loader_factory_->GetDevToolsObserver()) {
+    } else {
+      mojom::DevToolsObserver* observer =
+          factory_override_ ? factory_override_->GetDevToolsObserver()
+                            : network_loader_factory_->GetDevToolsObserver();
+      if (observer)
         observer->Clone(devtools_observer.InitWithNewPipeAndPassReceiver());
-      }
     }
 
     auto loader = std::make_unique<CorsURLLoader>(

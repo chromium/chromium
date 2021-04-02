@@ -1,0 +1,14 @@
+Tests interoperation of Fetch interception with Network instrumentation for CORS preflight requests.
+request 1: OPTIONS http://localhost:8000/inspector-protocol/network/resources/post-echo.pl networkId: string
+request 2: POST http://localhost:8000/inspector-protocol/network/resources/post-echo.pl networkId: string
+Preflight request network events: [
+    [0] : Network.requestWillBeSent
+    [1] : Network.responseReceived
+    [2] : Network.loadingFinished
+]
+Actual request network events: [
+    [0] : Network.requestWillBeSent
+    [1] : Network.responseReceived
+    [2] : Network.loadingFinished
+]
+
