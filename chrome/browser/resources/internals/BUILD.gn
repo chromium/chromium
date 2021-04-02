@@ -9,8 +9,14 @@ import("//ui/webui/resources/tools/generate_grd.gni")
 generate_grd("build_grd") {
   grd_prefix = "internals"
   out_grd = "$target_gen_dir/resources.grd"
-  deps = [ "hello_ts:build_grdp" ]
-  grdp_files = [ "$target_gen_dir/hello_ts/resources.grdp" ]
+
+  if (!is_android) {
+    deps = [ "hello_ts:build_grdp" ]
+    grdp_files = [ "$target_gen_dir/hello_ts/resources.grdp" ]
+  } else {
+    deps = [ "notifications:build_grdp" ]
+    grdp_files = [ "$target_gen_dir/notifications/resources.grdp" ]
+  }
 }
 
 grit("resources") {

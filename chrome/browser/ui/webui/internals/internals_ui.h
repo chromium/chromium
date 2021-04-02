@@ -39,9 +39,6 @@ class InternalsUI : public ui::MojoWebUIController {
 #if defined(OS_ANDROID)
   // Add resources and message handler for chrome://internals/query-tiles.
   void AddQueryTilesInternals(content::WebUI* web_ui);
-
-  // Add resources and message handler for chrome://internals/notifications.
-  void AddNotificationsInternals(content::WebUI* web_ui);
 #endif  // defined(OS_ANDROID)
 
   Profile* profile_;
