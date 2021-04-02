@@ -15,6 +15,8 @@
 #include "chrome/browser/ui/webui/internals/query_tiles/query_tiles_internals_ui_message_handler.h"
 #else
 #include "chrome/browser/ui/webui/internals/web_app/web_app_internals_page_handler_impl.h"
+#include "chrome/grit/internals_resources.h"
+#include "chrome/grit/internals_resources_map.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #endif  // defined(OS_ANDROID)
 
@@ -32,6 +34,10 @@ InternalsUI::InternalsUI(content::WebUI* web_ui)
   if (!profile_->IsOffTheRecord())
     AddQueryTilesInternals(web_ui);
 #else
+  source_->AddResourcePaths(
+      base::make_span(kInternalsResources, kInternalsResourcesSize));
+  source_->AddResourcePath("hello-ts", IDR_HELLO_TS_HELLO_TS_HTML);
+
   // chrome://internals/web-app
   WebAppInternalsPageHandlerImpl::AddPageResources(source_);
 #endif  // defined(OS_ANDROID)

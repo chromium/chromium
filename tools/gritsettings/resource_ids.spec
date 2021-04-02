@@ -150,6 +150,10 @@
     "META": {"sizes": {"includes": [30]}},
     "includes": [1580],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/internals/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
+    "includes": [1590],
+  },
   "chrome/browser/resources/local_ntp/local_ntp_resources.grd": {
     "includes": [1620],
   },

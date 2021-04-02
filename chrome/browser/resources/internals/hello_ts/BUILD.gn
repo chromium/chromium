@@ -1,0 +1,31 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+
+preprocess_if_expr("preprocess_ts") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = [ "hello_ts.ts" ]
+}
+
+ts_library("build") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  sources = [ "hello_ts.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [ ":preprocess_ts" ]
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "hello_ts"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  input_files = [ "hello_ts.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+}
