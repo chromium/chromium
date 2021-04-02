@@ -91,6 +91,7 @@ AuthSessionRequest::~AuthSessionRequest() {
 void AuthSessionRequest::StartNewAuthSession(
     ASWebAuthenticationSessionRequest* request,
     Profile* profile) {
+  // Create a Browser with an empty tab.
   Browser* browser = CreateBrowser(request, profile);
   if (!browser) {
     // It's not clear what error to return here. -cancelWithError:'s
@@ -112,9 +113,18 @@ void AuthSessionRequest::StartNewAuthSession(
     return;
   }
 
+  // Then create the auth session that owns that browser and will intercept
+  // navigation requests.
   content::WebContents* contents =
       browser->tab_strip_model()->GetActiveWebContents();
   AuthSessionRequest::CreateForWebContents(contents, browser, request);
+
+  // Only then actually load the requested page, to make sure that if the very
+  // first navigation is the one that authorizes the login, it's caught.
+  // https://crbug.com/1195202
+  contents->GetController().LoadURL(net::GURLWithNSURL(request.URL),
+                                    content::Referrer(),
+                                    ui::PAGE_TRANSITION_LINK, std::string());
 }
 
 // static
@@ -190,7 +200,7 @@ Browser* AuthSessionRequest::CreateBrowser(
 
   Browser* browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_POPUP, profile, true));
-  chrome::AddTabAt(browser, net::GURLWithNSURL(request.URL), -1, true);
+  chrome::AddTabAt(browser, GURL("about:blank"), -1, true);
   browser->window()->Show();
 
   return browser;
