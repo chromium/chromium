@@ -72,7 +72,6 @@
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/gpu/shader_cache_factory.h"
-#include "content/browser/media/capture/audio_mirroring_manager.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/media/media_keys_listener_manager_impl.h"
 #include "content/browser/metrics/histogram_synchronizer.h"
@@ -1448,12 +1447,6 @@ void BrowserMainLoop::InitializeAudio() {
   // Iff |audio_manager_| is instantiated, the audio service will run
   // in-process. Complete the setup for that:
   if (audio_manager_) {
-    AudioMirroringManager* const mirroring_manager =
-        AudioMirroringManager::GetInstance();
-    audio_manager_->SetDiverterCallbacks(
-        mirroring_manager->GetAddDiverterCallback(),
-        mirroring_manager->GetRemoveDiverterCallback());
-
     TRACE_EVENT_INSTANT0("startup", "Starting Audio service task runner",
                          TRACE_EVENT_SCOPE_THREAD);
     audio::Service::GetInProcessTaskRunner()->StartWithTaskRunner(

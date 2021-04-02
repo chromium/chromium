@@ -1919,7 +1919,6 @@ test("content_unittests") {
     "../browser/media/audio_loopback_stream_broker_unittest.cc",
     "../browser/media/audio_output_stream_broker_unittest.cc",
     "../browser/media/audio_stream_monitor_unittest.cc",
-    "../browser/media/capture/audio_mirroring_manager_unittest.cc",
     "../browser/media/cdm_registry_impl_unittest.cc",
     "../browser/media/flinging_renderer_unittest.cc",
     "../browser/media/forwarding_audio_stream_factory_unittest.cc",

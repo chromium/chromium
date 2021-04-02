@@ -70,7 +70,6 @@
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/log_console_message.h"
 #include "content/browser/manifest/manifest_manager_host.h"
-#include "content/browser/media/capture/audio_mirroring_manager.h"
 #include "content/browser/media/media_interface_proxy.h"
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"
 #include "content/browser/navigation_subresource_loader_params.h"

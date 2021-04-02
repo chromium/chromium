@@ -100,7 +100,6 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/locks/lock_manager.h"
-#include "content/browser/media/capture/audio_mirroring_manager.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/metrics/histogram_controller.h"
 #include "content/browser/mime_registry_impl.h"

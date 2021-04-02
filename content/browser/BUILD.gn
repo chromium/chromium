@@ -1072,8 +1072,6 @@ source_set("browser") {
     "media/audio_stream_monitor.h",
     "media/browser_feature_provider.cc",
     "media/browser_feature_provider.h",
-    "media/capture/audio_mirroring_manager.cc",
-    "media/capture/audio_mirroring_manager.h",
     "media/capture/desktop_capture_device_uma_types.cc",
     "media/capture/desktop_capture_device_uma_types.h",
     "media/capture/desktop_streams_registry_impl.cc",
