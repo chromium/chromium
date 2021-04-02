@@ -3989,6 +3989,48 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestWithUnfreezableLoading,
+    ImageStillLoading_ResponseStartedWhileRestoring_DoNotTriggerEviction) {
+  net::test_server::ControllableHttpResponse image_response(
+      embedded_test_server(), "/image.png");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1) Navigate to a page with an image with src == "image.png".
+  GURL url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  RenderFrameHostImpl* rfh_1 = NavigateToPageWithImage(url);
+
+  // Wait for the image request, but don't send anything yet.
+  image_response.WaitForRequest();
+
+  // 2) Navigate away.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("b.com", "/title2.html")));
+  // The page was still loading when we navigated away, but it's still eligible
+  // for back-forward cache.
+  EXPECT_TRUE(rfh_1->IsInBackForwardCache());
+
+  // 3) Go back to the first page using TestNavigationManager so that we split
+  // the navigation into stages.
+  // web_contents()->GetController().GoBack();
+  TestNavigationManager navigation_manager_back(shell()->web_contents(), url);
+  web_contents()->GetController().GoBack();
+  EXPECT_TRUE(navigation_manager_back.WaitForRequestStart());
+
+  // Start sending the image response upon restoring the page. Since we are
+  // already in the process of restoring, we are not evicting the page even
+  // though the network request exceeds the bytes limit.
+  image_response.Send(net::HTTP_OK, "image/png");
+  std::string body(kMaxBufferedBytesPerRequest + 1, '*');
+  image_response.Send(body);
+  image_response.Done();
+
+  // Finish the navigation.
+  navigation_manager_back.WaitForNavigationFinished();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  ExpectRestored(FROM_HERE);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestWithUnfreezableLoading,
     ImageStillLoading_ResponseStartedWhileFrozen_ExceedsPerProcessBytesLimit) {
   net::test_server::ControllableHttpResponse image1_response(
       embedded_test_server(), "/image1.png");

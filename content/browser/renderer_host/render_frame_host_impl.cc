@@ -4723,8 +4723,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
     // TODO(carlscab): We should no longer get into this branch thanks to
     // https://crrev.com/c/2352815. Lets keep this old code for now just in case
     // and replace with a CHECK once we are confident that is the case.
-    // TODO(yuzus, 1163843): Call |DumpWithoutCrashing| when race condition bug
-    // is fixed.
+    base::debug::DumpWithoutCrashing();
     BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
         BackForwardCacheMetrics::EvictedAfterDocumentRestoredReason::
             kByJavaScript);

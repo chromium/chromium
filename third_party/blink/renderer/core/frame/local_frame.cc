@@ -967,6 +967,13 @@ void LocalFrame::RemoveBackForwardCacheEviction() {
   DCHECK(RuntimeEnabledFeatures::BackForwardCacheEnabled());
   static_cast<LocalWindowProxyManager*>(GetWindowProxyManager())
       ->SetAbortScriptExecution(nullptr);
+
+  // The page is being restored, and from this point eviction should not happen
+  // for any reason. Change the deferring state from
+  // |kDeferredWithBackForwardCache| to |kDeferred| so that network related
+  // eviction cannot happen.
+  GetDocument()->Fetcher()->SetDefersLoading(
+      blink::WebURLLoader::DeferType::kDeferred);
 }
 
 void LocalFrame::SetTextDirection(base::i18n::TextDirection direction) {
