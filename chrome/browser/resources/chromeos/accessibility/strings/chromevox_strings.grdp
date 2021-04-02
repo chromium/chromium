@@ -2202,7 +2202,7 @@
     Turn off screen?
   </message>
   <message desc="The message of a dialog Shown the first time a user requests to turn off the visual display, describes what the screen off command does and how to turn the screen on again with Search + Brightness Up buttons." name="IDS_CHROMEVOX_TOGGLE_SCREEN_DESCRIPTION">
-    This turns off the screen. You can always turn the screen back on by pressing Search + Brightness up.
+    This improves privacy by turning off your screen so it isn’t visible to others. You can always turn the screen back on by pressing Search + Brightness up.
   </message>
   <message desc="Describes a command that turns text to speech feedback off." name="IDS_CHROMEVOX_SPEECH_OFF">
     Speech off
