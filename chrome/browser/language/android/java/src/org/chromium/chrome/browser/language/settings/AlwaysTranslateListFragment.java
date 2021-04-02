@@ -27,6 +27,30 @@ public class AlwaysTranslateListFragment extends LanguageItemListFragment {
     }
 
     @Override
+    protected void recordFragmentImpression() {
+        LanguagesManager.recordImpression(
+                LanguagesManager.LanguageSettingsPageType.VIEW_ALWAYS_TRANSLATE_LANGUAGES);
+    }
+
+    @Override
+    protected void recordAddLanguageImpression() {
+        LanguagesManager.recordImpression(
+                LanguagesManager.LanguageSettingsPageType.ALWAYS_TRANSLATE_ADD_LANGUAGE);
+    }
+
+    @Override
+    protected void recordAddAction() {
+        LanguagesManager.recordAction(
+                LanguagesManager.LanguageSettingsActionType.ADD_TO_ALWAYS_TRANSLATE);
+    }
+
+    @Override
+    protected void recordRemoveAction() {
+        LanguagesManager.recordAction(
+                LanguagesManager.LanguageSettingsActionType.REMOVE_FROM_ALWAYS_TRANSLATE);
+    }
+
+    @Override
     protected void onLanguageAdded(String code) {
         TranslateBridge.setLanguageAlwaysTranslateState(code, true);
     }

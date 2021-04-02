@@ -145,7 +145,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
         appLanguagePreference.useLanguageItemForTitle(true);
         setSelectLanguageLauncher(appLanguagePreference,
                 AddLanguageFragment.LANGUAGE_OPTIONS_UI_LANGUAGES, REQUEST_CODE_CHANGE_APP_LANGUAGE,
-                LanguagesManager.LanguageSettingsPageType.CHROME_LANGUAGE);
+                LanguagesManager.LanguageSettingsPageType.CHANGE_CHROME_LANGUAGE);
     }
 
     /**
@@ -173,7 +173,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
         setSelectLanguageLauncher(targetLanguagePreference,
                 AddLanguageFragment.LANGUAGE_OPTIONS_TRANSLATE_LANGUAGES,
                 REQUEST_CODE_CHANGE_TARGET_LANGUAGE,
-                LanguagesManager.LanguageSettingsPageType.TARGET_LANGUAGE);
+                LanguagesManager.LanguageSettingsPageType.CHANGE_TARGET_LANGUAGE);
 
         // Setup always translate preference.
         LanguageItemListPreference alwaysTranslatePreference =
@@ -254,7 +254,7 @@ public class LanguageSettings extends PreferenceFragmentCompat
     @Override
     public void launchAddLanguage() {
         LanguagesManager.recordImpression(
-                LanguagesManager.LanguageSettingsPageType.PAGE_ADD_LANGUAGE);
+                LanguagesManager.LanguageSettingsPageType.CONTENT_LANGUAGE_ADD_LANGUAGE);
         launchSelectLanguage(AddLanguageFragment.LANGUAGE_OPTIONS_ACCEPT_LANGUAGES,
                 REQUEST_CODE_ADD_ACCEPT_LANGUAGE);
     }

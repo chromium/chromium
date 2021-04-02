@@ -28,6 +28,30 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
     }
 
     @Override
+    protected void recordFragmentImpression() {
+        LanguagesManager.recordImpression(
+                LanguagesManager.LanguageSettingsPageType.VIEW_NEVER_TRANSLATE_LANGUAGES);
+    }
+
+    @Override
+    protected void recordAddLanguageImpression() {
+        LanguagesManager.recordImpression(
+                LanguagesManager.LanguageSettingsPageType.NEVER_TRANSLATE_ADD_LANGUAGE);
+    }
+
+    @Override
+    protected void recordAddAction() {
+        LanguagesManager.recordAction(
+                LanguagesManager.LanguageSettingsActionType.ADD_TO_NEVER_TRANSLATE);
+    }
+
+    @Override
+    protected void recordRemoveAction() {
+        LanguagesManager.recordAction(
+                LanguagesManager.LanguageSettingsActionType.REMOVE_FROM_NEVER_TRANSLATE);
+    }
+
+    @Override
     protected void onLanguageAdded(String code) {
         TranslateBridge.setLanguageBlockedState(code, true);
     }

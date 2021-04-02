@@ -42548,8 +42548,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="1" label="Click on the 'Add Language' button">
     Removed from Android in M89 and Desktop in M90. Still on iOS.
   </int>
-  <int value="2" label="Language added"/>
-  <int value="3" label="Language removed"/>
+  <int value="2" label="Content Language added"/>
+  <int value="3" label="Content Language removed"/>
   <int value="4" label="Disable global 'Offer to translate' by switch"/>
   <int value="5" label="Enable global 'Offer to translate' by switch"/>
   <int value="6" label="Disable 'Offer to translate' for single language"/>
@@ -42557,16 +42557,26 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="8" label="Language list reordered"/>
   <int value="9" label="Change Chrome Language">Windows and Android only</int>
   <int value="10" label="Change Target Language"/>
+  <int value="11" label="Remove language from 'Never Translate' list"/>
+  <int value="12" label="Add language to 'Never Translate' list"/>
+  <int value="13" label="Remove language from 'Translate' list"/>
+  <int value="14" label="Add language to 'Always Translate' list"/>
+  <int value="15" label="Remove site from 'Never translate sites' list"/>
 </enum>
 
 <enum name="LanguageSettingsPageType">
   <int value="0" label="Main"/>
-  <int value="1" label="Add Language"/>
+  <int value="1" label="Content Languages Add Language"/>
   <int value="2" label="Language Details">iOS only.</int>
-  <int value="3" label="Chrome Language">Windows and Android only</int>
+  <int value="3" label="Select Chrome Language">Android only</int>
   <int value="4" label="Advanced Language Settings"/>
-  <int value="5" label="Target Language"/>
-  <int value="6" label="Language Overflow Menu Opened">Desktop only</int>
+  <int value="5" label="Select Target Language">Android only</int>
+  <int value="6" label="Language Overflow Menu Opened"/>
+  <int value="7" label="View Never Translate Languages">Android only</int>
+  <int value="8" label="Never Translate Add Language"/>
+  <int value="9" label="View Always Translate Languages">Android only</int>
+  <int value="10" label="Always Translate Add Language"/>
+  <int value="11" label="View Never Translate Sites"/>
 </enum>
 
 <enum name="LanguageUsage.UI.Android.Availability">

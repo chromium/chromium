@@ -79,6 +79,7 @@ public abstract class LanguageItemListFragment
                 if (textId == R.string.remove) {
                     onLanguageRemoved(currentLanguageItem.getCode());
                     onDataUpdated();
+                    recordRemoveAction();
                 }
             };
             ((LanguageRowViewHolder) holder)
@@ -100,6 +101,7 @@ public abstract class LanguageItemListFragment
         super.onCreate(savedInstanceState);
         mListDelegate = makeFragmentListDelegate();
         getActivity().setTitle(getLanguageListTitle(getContext()));
+        recordFragmentImpression();
     }
 
     @Override
@@ -131,6 +133,7 @@ public abstract class LanguageItemListFragment
                 null, null, null);
 
         addLanguageButton.setOnClickListener(view -> { // Lambda for View.OnClickListener
+            recordAddLanguageImpression();
             Intent intent = mSettingsLauncher.createSettingsActivityIntent(
                     getActivity(), AddLanguageFragment.class.getName());
             intent.putExtra(AddLanguageFragment.INTENT_LANGUAGE_OPTIONS,
@@ -148,6 +151,7 @@ public abstract class LanguageItemListFragment
             String code = data.getStringExtra(AddLanguageFragment.INTENT_SELECTED_LANGUAGE);
             onLanguageAdded(code);
             mAdapter.onDataUpdated();
+            recordAddAction();
         }
     }
 
@@ -165,6 +169,30 @@ public abstract class LanguageItemListFragment
      * Return title for LanguageItemListFragment.
      */
     protected abstract String getLanguageListTitle(Context context);
+
+    /**
+     * Records the {@link LangaugesManager.LanguageSettingsPageType} impression for viewing this
+     * LanguageItemListFragment.
+     */
+    protected abstract void recordFragmentImpression();
+
+    /**
+     * Records the {@link LangaugesManager.LanguageSettingsPageType} impression for viewing the
+     * Add Language page from this LanguageItemListFragment.
+     */
+    protected abstract void recordAddLanguageImpression();
+
+    /**
+     * Records the {@link LangaugesManager.LanguageSettingsActionType} for adding to this
+     * LanguageItemListFragment.
+     */
+    protected abstract void recordAddAction();
+
+    /**
+     * Records the {@link LangaugesManager.LanguageSettingsActionType} for removing from this
+     * LanguageItemListFragment.
+     */
+    protected abstract void recordRemoveAction();
 
     /**
      * Callback for when a language is added to the LanguageItemList.
