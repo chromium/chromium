@@ -19,6 +19,8 @@ if not hasattr(plistlib, 'loads'):
 
 _LOG_FILE_URL = 'LogFileURL'
 
+_NOTARY_SERVICE_MAX_RETRIES = 3
+
 
 class NotarizationError(Exception):
     pass
@@ -42,7 +44,21 @@ def submit(path, config):
     ]
     if config.notary_asc_provider is not None:
         command.extend(['--asc-provider', config.notary_asc_provider])
-    output = commands.run_command_output(command)
+
+    def submit_comand():
+        return commands.run_command_output(command)
+
+    # Known bad codes:
+    # 13 - A server with the specified hostname could not be found.
+    # 176 - Unable to find requested file(s): metadata.xml (1057)
+    # 236 - Exception occurred when creating MZContentProviderUpload for
+    #       provider. (1004)
+    # 240 - SIGSEGV in the Java Runtime Environment
+    # 250 - Unable to process upload done request at this time due to a general
+    #       error (1018)
+    output = _notary_service_retry(submit_comand, (13, 176, 236, 240, 250),
+                                   'submission')
+
     try:
         plist = plistlib.loads(output)
         uuid = plist['notarization-upload']['RequestUUID']
@@ -174,4 +190,41 @@ def staple(path):
         path: The path to the artifact that had previously been submitted for
             notarization and is now ready for stapling.
     """
-    commands.run_command(['xcrun', 'stapler', 'staple', '--verbose', path])
+
+    def staple_command():
+        commands.run_command(['xcrun', 'stapler', 'staple', '--verbose', path])
+
+    # Known bad codes:
+    # 65 - CloudKit query failed due to "(null)"
+    # 68 - A server with the specified hostname could not be found.
+    _notary_service_retry(staple_command, (65, 68), 'staple')
+
+
+def _notary_service_retry(func, known_bad_returncodes, short_command_name):
+    """Calls the function |func| that runs a subprocess command, retrying it if
+    the command exits uncleanly and the returncode is known to be bad (e.g.
+    flaky).
+
+    Args:
+        func: The function to call within try block that wil catch
+            CalledProcessError.
+        known_bad_returncodes: An iterable of the returncodes that should be
+            ignored and |func| retried.
+        short_command_name: A short descriptive string of |func| that will be
+            logged when |func| is retried.
+
+    Returns:
+        The result of |func|.
+    """
+    attempt = 0
+    while True:
+        try:
+            return func()
+        except subprocess.CalledProcessError as e:
+            attempt += 1
+            if (attempt < _NOTARY_SERVICE_MAX_RETRIES and
+                    e.returncode in known_bad_returncodes):
+                logger.warning('Retrying %s, exited %d, output: %s',
+                               short_command_name, e.returncode, e.output)
+            else:
+                raise e
