@@ -16,7 +16,6 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/userdataauth/cryptohome_pkcs11_client.h"
 #include "components/account_id/account_id.h"

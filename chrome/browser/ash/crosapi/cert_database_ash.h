@@ -9,7 +9,6 @@
 #include "base/optional.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"

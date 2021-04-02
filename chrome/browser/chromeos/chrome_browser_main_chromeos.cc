@@ -158,7 +158,6 @@
 #include "chromeos/components/power/dark_resume_controller.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/cryptohome/homedir_methods.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/constants/cryptohome_key_delegate_constants.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -401,7 +400,6 @@ class DBusServices {
     NetworkCertLoader::Initialize();
 
     disks::DiskMountManager::Initialize();
-    cryptohome::HomedirMethods::Initialize();
 
     NetworkHandler::Initialize();
 

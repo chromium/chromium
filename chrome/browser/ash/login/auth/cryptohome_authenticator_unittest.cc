@@ -33,7 +33,6 @@
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/cryptohome/account_identifier_operators.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
@@ -296,7 +295,6 @@ class CryptohomeAuthenticatorTest : public testing::Test {
     fake_userdataauth_client_ = new TestUserDataAuthClient;
 
     CryptohomeMiscClient::InitializeFake();
-    CryptohomeClient::InitializeFake();
     SystemSaltGetter::Initialize();
 
     auth_ = new ChromeCryptohomeAuthenticator(&consumer_);
@@ -306,7 +304,6 @@ class CryptohomeAuthenticatorTest : public testing::Test {
   // Tears down the test fixture.
   void TearDown() override {
     SystemSaltGetter::Shutdown();
-    CryptohomeClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
     UserDataAuthClient::Shutdown();
   }

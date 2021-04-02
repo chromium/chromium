@@ -11,7 +11,6 @@
 #include "base/strings/string_util.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
-#include "chromeos/cryptohome/homedir_methods.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"

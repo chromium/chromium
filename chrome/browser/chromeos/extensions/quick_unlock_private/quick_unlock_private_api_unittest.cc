@@ -38,7 +38,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/login/auth/fake_extended_authenticator.h"
@@ -170,7 +169,6 @@ class QuickUnlockPrivateUnitTest
     feature_list_.InitWithFeatureState(
         features::kQuickUnlockPinAutosubmit, std::get<1>(param));
 
-    CryptohomeClient::InitializeFake();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
     if (std::get<0>(param) == TestType::kCryptohome) {
@@ -245,7 +243,6 @@ class QuickUnlockPrivateUnitTest
     SystemSaltGetter::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
-    CryptohomeClient::Shutdown();
   }
 
   TestingProfile::TestingFactories GetTestingFactories() override {

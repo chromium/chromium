@@ -110,8 +110,6 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
-#include "chromeos/dbus/cryptohome/tpm_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
@@ -1936,7 +1934,7 @@ void UserSessionManager::NotifyPendingUserSessionsRestoreFinished() {
 void UserSessionManager::UpdateEasyUnlockKeys(const UserContext& user_context) {
   easy_unlock_key_ops_finished_ = false;
 
-  // Skip key update because FakeCryptohomeClient always return success
+  // Skip key update because FakeUserDataAuthClient always return success
   // and RefreshKeys op expects a failure to stop. As a result, some tests would
   // timeout.
   // TODO(xiyuan): Revisit this when adding tests.

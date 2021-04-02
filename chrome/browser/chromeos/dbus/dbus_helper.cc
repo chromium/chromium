@@ -21,7 +21,6 @@
 #include "chromeos/dbus/cdm_factory_daemon/cdm_factory_daemon_client.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "chromeos/dbus/cups_proxy/cups_proxy_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
@@ -92,7 +91,6 @@ void InitializeDBus() {
   InitializeDBusClient<CdmFactoryDaemonClient>(bus);
   InitializeDBusClient<CrasAudioClient>(bus);
   InitializeDBusClient<CrosHealthdClient>(bus);
-  InitializeDBusClient<CryptohomeClient>(bus);
   InitializeDBusClient<CryptohomeMiscClient>(bus);
   InitializeDBusClient<CryptohomePkcs11Client>(bus);
   InitializeDBusClient<CupsProxyClient>(bus);
@@ -168,7 +166,6 @@ void ShutdownDBus() {
   CupsProxyClient::Shutdown();
   CryptohomePkcs11Client::Shutdown();
   CryptohomeMiscClient::Shutdown();
-  CryptohomeClient::Shutdown();
   CrosHealthdClient::Shutdown();
   CrasAudioClient::Shutdown();
   CdmFactoryDaemonClient::Shutdown();

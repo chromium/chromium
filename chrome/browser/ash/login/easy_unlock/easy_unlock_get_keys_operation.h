@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_types.h"
-#include "chromeos/cryptohome/homedir_methods.h"
 #include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/login/auth/user_context.h"

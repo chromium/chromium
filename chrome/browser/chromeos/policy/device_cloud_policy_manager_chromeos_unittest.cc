@@ -35,7 +35,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/attestation/mock_attestation_flow.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_client_implementation_type.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
@@ -155,8 +154,6 @@ class DeviceCloudPolicyManagerChromeOSTest
     base::RunLoop().RunUntilIdle();
 
     if (set_empty_system_salt_) {
-      chromeos::FakeCryptohomeClient::Get()->set_system_salt(
-          std::vector<uint8_t>());
       chromeos::FakeCryptohomeMiscClient::Get()->set_system_salt(
           std::vector<uint8_t>());
     }

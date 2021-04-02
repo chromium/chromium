@@ -76,7 +76,6 @@ class ScreenLockerUnitTest : public testing::Test {
     BiodClient::InitializeFake();
     CrasAudioClient::InitializeFake();
     TpmManagerClient::InitializeFake();
-    CryptohomeClient::InitializeFake();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
 
@@ -143,7 +142,6 @@ class ScreenLockerUnitTest : public testing::Test {
     bluez::BluezDBusManager::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
-    CryptohomeClient::Shutdown();
     TpmManagerClient::Shutdown();
     CrasAudioClient::Shutdown();
     BiodClient::Shutdown();

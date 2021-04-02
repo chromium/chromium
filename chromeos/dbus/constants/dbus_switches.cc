@@ -7,7 +7,7 @@
 namespace chromeos {
 namespace switches {
 
-// Used in CryptohomeClient to determine which Google Privacy CA to use for
+// Used in AttestationClient to determine which Google Privacy CA to use for
 // attestation.
 const char kAttestationServer[] = "attestation-server";
 

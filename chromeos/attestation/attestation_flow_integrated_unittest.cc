@@ -25,7 +25,6 @@
 #include "chromeos/dbus/attestation/interface.pb.h"
 #include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "components/account_id/account_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -15,8 +15,6 @@
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/cryptohome/system_salt_getter.h"
-#include "chromeos/dbus/cryptohome/cryptohome_client.h"
-#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/fake_userdataauth_client.h"
@@ -40,8 +38,6 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
   void SetUp() override {
     quick_unlock::EnabledForTesting(true);
     SystemSaltGetter::Initialize();
-    CryptohomeClient::InitializeFake();
-    FakeCryptohomeClient::Get()->set_supports_low_entropy_credentials(true);
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
     FakeUserDataAuthClient::Get()->set_supports_low_entropy_credentials(true);
@@ -51,7 +47,6 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
   void TearDown() override {
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
-    CryptohomeClient::Shutdown();
     SystemSaltGetter::Shutdown();
     quick_unlock::EnabledForTesting(false);
     quick_unlock::IsFingerprintEnabled(nullptr);
