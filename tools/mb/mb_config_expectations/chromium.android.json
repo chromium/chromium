@@ -517,6 +517,7 @@
   "android-weblayer-x86-rel": {
     "gn_args": {
       "disable_android_lint": true,
+      "enable_proguard_obfuscation": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
