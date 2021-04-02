@@ -1276,7 +1276,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Blink.Input.GestureScrollBeginAsCursorControl"
-    enum="BooleanSuccess" expires_after="M89">
+    enum="BooleanSuccess" expires_after="M91">
   <owner>ctzsm@chromium.org</owner>
   <owner>changwan@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
