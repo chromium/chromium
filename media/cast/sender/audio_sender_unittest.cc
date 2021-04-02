@@ -107,14 +107,14 @@ class AudioSenderTest : public ::testing::Test {
     audio_config_.rtp_payload_type = RtpPayloadType::AUDIO_OPUS;
 
     transport_ = new TestPacketSender();
-    transport_sender_.reset(new CastTransportImpl(
+    transport_sender_ = std::make_unique<CastTransportImpl>(
         &testing_clock_, base::TimeDelta(), std::make_unique<TransportClient>(),
-        base::WrapUnique(transport_), task_runner_));
+        base::WrapUnique(transport_), task_runner_);
     OperationalStatus operational_status = STATUS_UNINITIALIZED;
-    audio_sender_.reset(new AudioSender(
+    audio_sender_ = std::make_unique<AudioSender>(
         cast_environment_, audio_config_,
         base::BindOnce(&SaveOperationalStatus, &operational_status),
-        transport_sender_.get()));
+        transport_sender_.get());
     task_runner_->RunTasks();
     CHECK_EQ(STATUS_INITIALIZED, operational_status);
   }

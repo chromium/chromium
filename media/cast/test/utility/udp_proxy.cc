@@ -6,6 +6,8 @@
 
 #include <math.h>
 #include <stdlib.h>
+
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -196,7 +198,7 @@ class DuplicateAndDelay : public RandomUnsortedDelay {
       delay_min_(delay_min) {
   }
   void Send(std::unique_ptr<Packet> packet) final {
-    pipe_->Send(std::unique_ptr<Packet>(new Packet(*packet.get())));
+    pipe_->Send(std::make_unique<Packet>(*packet.get()));
     RandomUnsortedDelay::Send(std::move(packet));
   }
   double GetDelay() final {
@@ -742,7 +744,8 @@ class UDPProxyImpl final : public UDPProxy {
  private:
   void Start(base::WaitableEvent* start_event,
              net::NetLog* net_log) {
-    socket_.reset(new net::UDPServerSocket(net_log, net::NetLogSource()));
+    socket_ =
+        std::make_unique<net::UDPServerSocket>(net_log, net::NetLogSource());
     BuildPipe(&to_dest_pipe_, new PacketSender(this, &destination_));
     BuildPipe(&from_dest_pipe_, new PacketSender(this, &return_address_));
     to_dest_pipe_->InitOnIOThread(base::ThreadTaskRunnerHandle::Get(),
@@ -798,7 +801,7 @@ class UDPProxyImpl final : public UDPProxy {
 
   void PollRead() {
     while (true) {
-      packet_.reset(new Packet(kMaxPacketSize));
+      packet_ = std::make_unique<Packet>(kMaxPacketSize);
       auto recv_buf = base::MakeRefCounted<net::WrappedIOBuffer>(
           reinterpret_cast<char*>(&packet_->front()));
       int len =

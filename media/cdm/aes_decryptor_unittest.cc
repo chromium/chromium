@@ -271,7 +271,7 @@ class AesDecryptorTest : public testing::TestWithParam<TestType> {
       scoped_feature_list_.InitWithFeatures(
           {media::kExternalClearKeyForTesting}, {});
 
-      helper_.reset(new ExternalClearKeyTestHelper());
+      helper_ = std::make_unique<ExternalClearKeyTestHelper>();
 
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
       CdmModule::GetInstance()->Initialize(helper_->LibraryPath(), {});

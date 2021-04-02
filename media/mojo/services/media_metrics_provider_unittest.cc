@@ -68,7 +68,7 @@ class MediaMetricsProviderTest : public testing::Test {
   void ResetMetricRecorders() {
     // Ensure cleared global before attempting to create a new TestUkmReporter.
     test_recorder_.reset();
-    test_recorder_.reset(new ukm::TestAutoSetUkmRecorder());
+    test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
  protected:

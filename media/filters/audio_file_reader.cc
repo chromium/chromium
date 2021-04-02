@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <cmath>
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -42,7 +43,7 @@ bool AudioFileReader::Open() {
 }
 
 bool AudioFileReader::OpenDemuxer() {
-  glue_.reset(new FFmpegGlue(protocol_));
+  glue_ = std::make_unique<FFmpegGlue>(protocol_);
   AVFormatContext* format_context = glue_->format_context();
 
   // Open FFmpeg AVFormatContext.

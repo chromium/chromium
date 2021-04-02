@@ -117,13 +117,13 @@ class RtpPacketizerTest : public ::testing::Test {
     config_.ssrc = kSsrc;
     config_.payload_type = kPayload;
     config_.max_payload_length = kMaxPacketLength;
-    transport_.reset(new TestRtpPacketTransport(config_));
-    pacer_.reset(new PacedSender(kTargetBurstSize, kMaxBurstSize,
-                                 &testing_clock_, nullptr, transport_.get(),
-                                 task_runner_));
+    transport_ = std::make_unique<TestRtpPacketTransport>(config_);
+    pacer_ = std::make_unique<PacedSender>(kTargetBurstSize, kMaxBurstSize,
+                                           &testing_clock_, nullptr,
+                                           transport_.get(), task_runner_);
     pacer_->RegisterSsrc(config_.ssrc, false);
-    rtp_packetizer_.reset(
-        new RtpPacketizer(pacer_.get(), &packet_storage_, config_));
+    rtp_packetizer_ = std::make_unique<RtpPacketizer>(
+        pacer_.get(), &packet_storage_, config_);
     video_frame_.dependency = EncodedFrame::DEPENDENT;
     video_frame_.frame_id = FrameId::first() + 1;
     video_frame_.referenced_frame_id = video_frame_.frame_id - 1;

@@ -316,8 +316,8 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     std::unique_ptr<BufferReader> sample_encryption_reader;
     uint32_t sample_encryption_entries_count = 0;
     if (!sample_encryption_data.empty()) {
-      sample_encryption_reader.reset(new BufferReader(
-          sample_encryption_data.data(), sample_encryption_data.size()));
+      sample_encryption_reader = std::make_unique<BufferReader>(
+          sample_encryption_data.data(), sample_encryption_data.size());
       RCHECK(sample_encryption_reader->Read4(&sample_encryption_entries_count));
     }
 

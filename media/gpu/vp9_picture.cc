@@ -4,6 +4,8 @@
 
 #include "media/gpu/vp9_picture.h"
 
+#include <memory>
+
 namespace media {
 
 VP9Picture::VP9Picture() : frame_hdr(new Vp9FrameHeader()) {}
@@ -24,7 +26,7 @@ scoped_refptr<VP9Picture> VP9Picture::Duplicate() {
     return nullptr;
 
   // Copy member of VP9Picture.
-  ret->frame_hdr.reset(new Vp9FrameHeader());
+  ret->frame_hdr = std::make_unique<Vp9FrameHeader>();
   memcpy(ret->frame_hdr.get(), frame_hdr.get(), sizeof(Vp9FrameHeader));
 
   // Copy member of CodecPicture.

@@ -168,9 +168,9 @@ class VideoSenderTest : public ::testing::Test {
     vea_factory_.SetAutoRespond(true);
     last_pixel_value_ = kPixelValue;
     transport_ = new TestPacketSender();
-    transport_sender_.reset(new CastTransportImpl(
+    transport_sender_ = std::make_unique<CastTransportImpl>(
         &testing_clock_, base::TimeDelta(), std::make_unique<TransportClient>(),
-        base::WrapUnique(transport_), task_runner_));
+        base::WrapUnique(transport_), task_runner_);
   }
 
   ~VideoSenderTest() override = default;
@@ -190,7 +190,7 @@ class VideoSenderTest : public ::testing::Test {
 
     if (external) {
       vea_factory_.SetInitializationWillSucceed(expect_init_success);
-      video_sender_.reset(new PeerVideoSender(
+      video_sender_ = std::make_unique<PeerVideoSender>(
           cast_environment_, video_config,
           base::BindRepeating(&SaveOperationalStatus, &operational_status_),
           base::BindRepeating(
@@ -199,13 +199,13 @@ class VideoSenderTest : public ::testing::Test {
           base::BindRepeating(
               &FakeVideoEncodeAcceleratorFactory::CreateSharedMemory,
               base::Unretained(&vea_factory_)),
-          transport_sender_.get()));
+          transport_sender_.get());
     } else {
-      video_sender_.reset(new PeerVideoSender(
+      video_sender_ = std::make_unique<PeerVideoSender>(
           cast_environment_, video_config,
           base::BindRepeating(&SaveOperationalStatus, &operational_status_),
           CreateDefaultVideoEncodeAcceleratorCallback(),
-          CreateDefaultVideoEncodeMemoryCallback(), transport_sender_.get()));
+          CreateDefaultVideoEncodeMemoryCallback(), transport_sender_.get());
     }
     task_runner_->RunTasks();
   }

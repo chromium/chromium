@@ -4,6 +4,8 @@
 
 #include "media/filters/offloading_video_decoder.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/sequenced_task_runner.h"
@@ -43,7 +45,7 @@ class CancellationHelper {
     // want to run |reset_cb| before we've reset the cancellation flag or the
     // client may end up issuing another Reset() before this code runs.
     decoder_->Reset(base::DoNothing());
-    cancellation_flag_.reset(new base::AtomicFlag());
+    cancellation_flag_ = std::make_unique<base::AtomicFlag>();
     std::move(reset_cb).Run();
   }
 

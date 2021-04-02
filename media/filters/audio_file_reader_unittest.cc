@@ -27,9 +27,9 @@ class AudioFileReaderTest : public testing::Test {
 
   void Initialize(const char* filename) {
     data_ = ReadTestDataFile(filename);
-    protocol_.reset(
-        new InMemoryUrlProtocol(data_->data(), data_->data_size(), false));
-    reader_.reset(new AudioFileReader(protocol_.get()));
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(
+        data_->data(), data_->data_size(), false);
+    reader_ = std::make_unique<AudioFileReader>(protocol_.get());
   }
 
   // Reads and the entire file provided to Initialize().

@@ -4,6 +4,7 @@
 
 #include "media/mojo/services/mojo_decryptor_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -78,14 +79,14 @@ void MojoDecryptorService::Initialize(
   }
   has_initialize_been_called_ = true;
 
-  audio_buffer_reader_.reset(
-      new MojoDecoderBufferReader(std::move(audio_pipe)));
-  video_buffer_reader_.reset(
-      new MojoDecoderBufferReader(std::move(video_pipe)));
-  decrypt_buffer_reader_.reset(
-      new MojoDecoderBufferReader(std::move(decrypt_pipe)));
-  decrypted_buffer_writer_.reset(
-      new MojoDecoderBufferWriter(std::move(decrypted_pipe)));
+  audio_buffer_reader_ =
+      std::make_unique<MojoDecoderBufferReader>(std::move(audio_pipe));
+  video_buffer_reader_ =
+      std::make_unique<MojoDecoderBufferReader>(std::move(video_pipe));
+  decrypt_buffer_reader_ =
+      std::make_unique<MojoDecoderBufferReader>(std::move(decrypt_pipe));
+  decrypted_buffer_writer_ =
+      std::make_unique<MojoDecoderBufferWriter>(std::move(decrypted_pipe));
 }
 
 void MojoDecryptorService::Decrypt(StreamType stream_type,

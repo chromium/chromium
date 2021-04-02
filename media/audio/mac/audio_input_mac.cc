@@ -6,6 +6,8 @@
 
 #include <CoreServices/CoreServices.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/mac/mac_logging.h"
@@ -111,7 +113,7 @@ void PCMQueueInAudioInputStream::Start(AudioInputCallback* callback) {
   // callbacks starts indicating if input audio recording starts as intended.
   // CheckInputStartupSuccess() will check if |input_callback_is_active_| is
   // true when the timer expires.
-  input_callback_timer_.reset(new base::OneShotTimer());
+  input_callback_timer_ = std::make_unique<base::OneShotTimer>();
   input_callback_timer_->Start(
       FROM_HERE,
       base::TimeDelta::FromSeconds(kInputCallbackStartTimeoutInSeconds), this,

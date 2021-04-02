@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -302,7 +303,7 @@ class VideoDecodePerfHistoryTest : public testing::Test {
                past_is_efficient);
     // Zero it out to make verification readable.
     if (!old_stats)
-      old_stats.reset(new DecodeStatsEntry(0, 0, 0));
+      old_stats = std::make_unique<DecodeStatsEntry>(0, 0, 0);
     EXPECT_UKM(UkmEntry::kPerf_PastVideoFramesDecodedName,
                old_stats->frames_decoded);
     EXPECT_UKM(UkmEntry::kPerf_PastVideoFramesDroppedName,

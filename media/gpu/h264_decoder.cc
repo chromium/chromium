@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -1440,7 +1441,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
     H264Parser::Result par_res;
 
     if (!curr_nalu_) {
-      curr_nalu_.reset(new H264NALU());
+      curr_nalu_ = std::make_unique<H264NALU>();
       par_res = parser_.AdvanceToNextNALU(curr_nalu_.get());
       if (par_res == H264Parser::kEOStream) {
         CHECK_ACCELERATOR_RESULT(FinishPrevFrameIfPresent());

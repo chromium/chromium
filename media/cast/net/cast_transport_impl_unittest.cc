@@ -153,10 +153,10 @@ class TransportClient : public CastTransport::Client {
 
 void CastTransportImplTest::InitWithoutLogging() {
   transport_ = new FakePacketSender();
-  transport_sender_.reset(
-      new CastTransportImpl(&testing_clock_, base::TimeDelta(),
-                            std::make_unique<TransportClient>(nullptr),
-                            base::WrapUnique(transport_), task_runner_));
+  transport_sender_ = std::make_unique<CastTransportImpl>(
+      &testing_clock_, base::TimeDelta(),
+      std::make_unique<TransportClient>(nullptr), base::WrapUnique(transport_),
+      task_runner_);
   task_runner_->RunTasks();
 }
 
@@ -167,20 +167,20 @@ void CastTransportImplTest::InitWithOptions() {
   options->SetInteger("pacer_target_burst_size", 20);
   options->SetInteger("pacer_max_burst_size", 100);
   transport_ = new FakePacketSender();
-  transport_sender_.reset(
-      new CastTransportImpl(&testing_clock_, base::TimeDelta(),
-                            std::make_unique<TransportClient>(nullptr),
-                            base::WrapUnique(transport_), task_runner_));
+  transport_sender_ = std::make_unique<CastTransportImpl>(
+      &testing_clock_, base::TimeDelta(),
+      std::make_unique<TransportClient>(nullptr), base::WrapUnique(transport_),
+      task_runner_);
   transport_sender_->SetOptions(*options);
   task_runner_->RunTasks();
 }
 
 void CastTransportImplTest::InitWithLogging() {
   transport_ = new FakePacketSender();
-  transport_sender_.reset(new CastTransportImpl(
+  transport_sender_ = std::make_unique<CastTransportImpl>(
       &testing_clock_, base::TimeDelta::FromMilliseconds(10),
       std::make_unique<TransportClient>(this), base::WrapUnique(transport_),
-      task_runner_));
+      task_runner_);
   task_runner_->RunTasks();
 }
 

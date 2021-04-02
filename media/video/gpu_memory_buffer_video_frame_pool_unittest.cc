@@ -29,15 +29,15 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
     // empty base::TimeTicks values.
     test_clock_.Advance(base::TimeDelta::FromSeconds(1234));
 
-    sii_.reset(new viz::TestSharedImageInterface);
+    sii_ = std::make_unique<viz::TestSharedImageInterface>();
     media_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     copy_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
-    media_task_runner_handle_.reset(
-        new base::ThreadTaskRunnerHandle(media_task_runner_));
-    mock_gpu_factories_.reset(new MockGpuVideoAcceleratorFactories(sii_.get()));
-    gpu_memory_buffer_pool_.reset(new GpuMemoryBufferVideoFramePool(
-        media_task_runner_, copy_task_runner_.get(),
-        mock_gpu_factories_.get()));
+    media_task_runner_handle_ =
+        std::make_unique<base::ThreadTaskRunnerHandle>(media_task_runner_);
+    mock_gpu_factories_ =
+        std::make_unique<MockGpuVideoAcceleratorFactories>(sii_.get());
+    gpu_memory_buffer_pool_ = std::make_unique<GpuMemoryBufferVideoFramePool>(
+        media_task_runner_, copy_task_runner_.get(), mock_gpu_factories_.get());
     gpu_memory_buffer_pool_->SetTickClockForTesting(&test_clock_);
   }
 

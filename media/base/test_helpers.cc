@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/macros.h"
@@ -98,7 +100,7 @@ void WaitableMessageLoopEvent::RunAndWaitForStatus(PipelineStatus expected) {
     return;
   }
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   base::OneShotTimer timer;
   timer.Start(FROM_HERE, timeout_,
               base::BindOnce(&WaitableMessageLoopEvent::OnTimeout,

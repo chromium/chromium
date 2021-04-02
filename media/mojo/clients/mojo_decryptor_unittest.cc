@@ -42,10 +42,10 @@ class MojoDecryptorTest : public ::testing::Test {
   void SetWriterCapacity(uint32_t capacity) { writer_capacity_ = capacity; }
 
   void Initialize() {
-    decryptor_.reset(new StrictMock<MockDecryptor>());
+    decryptor_ = std::make_unique<StrictMock<MockDecryptor>>();
 
-    mojo_decryptor_service_.reset(
-        new MojoDecryptorService(decryptor_.get(), nullptr));
+    mojo_decryptor_service_ =
+        std::make_unique<MojoDecryptorService>(decryptor_.get(), nullptr);
 
     receiver_ = std::make_unique<mojo::Receiver<mojom::Decryptor>>(
         mojo_decryptor_service_.get());

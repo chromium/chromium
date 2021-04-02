@@ -478,11 +478,11 @@ std::unique_ptr<Renderer> PipelineIntegrationTestBase::CreateDefaultRenderer(
   }
 
   // Simulate a 60Hz rendering sink.
-  video_sink_.reset(new NullVideoSink(
+  video_sink_ = std::make_unique<NullVideoSink>(
       clockless_playback_, base::TimeDelta::FromSecondsD(1.0 / 60),
       base::BindRepeating(&PipelineIntegrationTestBase::OnVideoFramePaint,
                           base::Unretained(this)),
-      task_environment_.GetMainThreadTaskRunner()));
+      task_environment_.GetMainThreadTaskRunner());
 
   // Disable frame dropping if hashing is enabled.
   std::unique_ptr<VideoRenderer> video_renderer(new VideoRendererImpl(

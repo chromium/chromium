@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/big_endian.h"
 #include "base/containers/circular_deque.h"
@@ -95,9 +96,9 @@ class PacedSenderTest : public ::testing::Test {
     testing_clock_.Advance(
         base::TimeDelta::FromMilliseconds(kStartMillisecond));
     task_runner_ = new FakeSingleThreadTaskRunner(&testing_clock_);
-    paced_sender_.reset(new PacedSender(kTargetBurstSize, kMaxBurstSize,
-                                        &testing_clock_, &packet_events_,
-                                        &mock_transport_, task_runner_));
+    paced_sender_ = std::make_unique<PacedSender>(
+        kTargetBurstSize, kMaxBurstSize, &testing_clock_, &packet_events_,
+        &mock_transport_, task_runner_);
     paced_sender_->RegisterSsrc(kAudioSsrc, true);
     paced_sender_->RegisterSsrc(kVideoSsrc, false);
   }

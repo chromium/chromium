@@ -384,7 +384,7 @@ class WebMediaPlayerImplTest
 
     auto factory_selector = std::make_unique<RendererFactorySelector>();
     renderer_factory_selector_ = factory_selector.get();
-    decoder_factory_.reset(new media::DefaultDecoderFactory(nullptr));
+    decoder_factory_ = std::make_unique<media::DefaultDecoderFactory>(nullptr);
 #if defined(OS_ANDROID)
     factory_selector->AddBaseFactory(
         RendererFactoryType::kDefault,
@@ -421,7 +421,7 @@ class WebMediaPlayerImplTest
 
     audio_sink_ = base::WrapRefCounted(new NiceMock<MockAudioRendererSink>());
 
-    url_index_.reset(new UrlIndex(&mock_resource_fetch_context_));
+    url_index_ = std::make_unique<UrlIndex>(&mock_resource_fetch_context_);
 
     auto params = std::make_unique<WebMediaPlayerParams>(
         std::move(media_log), WebMediaPlayerParams::DeferLoadCB(), audio_sink_,

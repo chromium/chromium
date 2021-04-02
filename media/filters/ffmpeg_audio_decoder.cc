@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <functional>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -354,7 +355,8 @@ bool FFmpegAudioDecoder::ConfigureDecoder(const AudioDecoderConfig& config) {
     return false;
   }
 
-  decoding_loop_.reset(new FFmpegDecodingLoop(codec_context_.get(), true));
+  decoding_loop_ =
+      std::make_unique<FFmpegDecodingLoop>(codec_context_.get(), true);
   ResetTimestampState(config);
   return true;
 }
@@ -363,9 +365,8 @@ void FFmpegAudioDecoder::ResetTimestampState(const AudioDecoderConfig& config) {
   // Opus codec delay is handled by ffmpeg.
   const int codec_delay =
       config.codec() == kCodecOpus ? 0 : config.codec_delay();
-  discard_helper_.reset(new AudioDiscardHelper(config.samples_per_second(),
-                                               codec_delay,
-                                               config.codec() == kCodecVorbis));
+  discard_helper_ = std::make_unique<AudioDiscardHelper>(
+      config.samples_per_second(), codec_delay, config.codec() == kCodecVorbis);
   discard_helper_->Reset(codec_delay);
 }
 

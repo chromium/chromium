@@ -480,10 +480,10 @@ void RunOneBenchmark::Create(const MeasuringPoint& p) {
       &video_bytes_encoded_, &audio_bytes_encoded_);
 
   receiver_to_sender_ = new LoopBackTransport(cast_environment_receiver_);
-  transport_receiver_.reset(new CastTransportImpl(
+  transport_receiver_ = std::make_unique<CastTransportImpl>(
       &testing_clock_receiver_, base::TimeDelta::FromSeconds(1),
       std::make_unique<TransportClient>(this),
-      base::WrapUnique(receiver_to_sender_), task_runner_receiver_));
+      base::WrapUnique(receiver_to_sender_), task_runner_receiver_);
 
   cast_receiver_ =
       CastReceiver::Create(cast_environment_receiver_, audio_receiver_config_,

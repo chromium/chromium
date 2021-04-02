@@ -54,10 +54,10 @@ class TextRendererTest : public testing::Test {
   void CreateTextRenderer() {
     DCHECK(!text_renderer_);
 
-    text_renderer_.reset(
-        new TextRenderer(task_environment_.GetMainThreadTaskRunner(),
-                         base::BindRepeating(&TextRendererTest::OnAddTextTrack,
-                                             base::Unretained(this))));
+    text_renderer_ = std::make_unique<TextRenderer>(
+        task_environment_.GetMainThreadTaskRunner(),
+        base::BindRepeating(&TextRendererTest::OnAddTextTrack,
+                            base::Unretained(this)));
     text_renderer_->Initialize(
         base::BindRepeating(&TextRendererTest::OnEnd, base::Unretained(this)));
   }
@@ -206,10 +206,10 @@ class TextRendererTest : public testing::Test {
 };
 
 TEST_F(TextRendererTest, CreateTextRendererNoInit) {
-  text_renderer_.reset(
-      new TextRenderer(task_environment_.GetMainThreadTaskRunner(),
-                       base::BindRepeating(&TextRendererTest::OnAddTextTrack,
-                                           base::Unretained(this))));
+  text_renderer_ = std::make_unique<TextRenderer>(
+      task_environment_.GetMainThreadTaskRunner(),
+      base::BindRepeating(&TextRendererTest::OnAddTextTrack,
+                          base::Unretained(this)));
   text_renderer_.reset();
 }
 

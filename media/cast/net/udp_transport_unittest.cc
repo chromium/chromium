@@ -5,6 +5,7 @@
 #include "media/cast/net/udp_transport_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -39,7 +40,7 @@ class MockPacketReceiver final : public UdpTransportReceiver {
   // UdpTransportReceiver implementation.
   void OnPacketReceived(const std::vector<uint8_t>& packet) override {
     EXPECT_GT(packet.size(), 0u);
-    packet_.reset(new Packet(packet));
+    packet_ = std::make_unique<Packet>(packet);
     packet_callback_.Run();
   }
 

@@ -386,9 +386,9 @@ void RunSimulation(const base::FilePath& source_path,
     std::copy(ipp_model.average_rate().begin(),
               ipp_model.average_rate().end(),
               average_rates.begin());
-    ipp.reset(new test::InterruptedPoissonProcess(
-        average_rates,
-        ipp_model.coef_burstiness(), ipp_model.coef_variance(), 0));
+    ipp = std::make_unique<test::InterruptedPoissonProcess>(
+        average_rates, ipp_model.coef_burstiness(), ipp_model.coef_variance(),
+        0);
     receiver_to_sender->Initialize(ipp->NewBuffer(128 * 1024),
                                    transport_sender->PacketReceiverForTesting(),
                                    task_runner, &testing_clock);
@@ -416,7 +416,8 @@ void RunSimulation(const base::FilePath& source_path,
                                quality_test);
   std::unique_ptr<EncodedVideoFrameTracker> video_frame_tracker;
   if (quality_test) {
-    video_frame_tracker.reset(new EncodedVideoFrameTracker(&media_source));
+    video_frame_tracker =
+        std::make_unique<EncodedVideoFrameTracker>(&media_source);
     sender_env->logger()->Subscribe(video_frame_tracker.get());
   }
 

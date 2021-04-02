@@ -4,6 +4,7 @@
 
 #include "media/mojo/services/mojo_video_decoder_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -178,8 +179,8 @@ void MojoVideoDecoderService::Construct(
       std::make_unique<VideoFrameHandleReleaserImpl>(),
       std::move(video_frame_handle_releaser_receiver));
 
-  mojo_decoder_buffer_reader_.reset(
-      new MojoDecoderBufferReader(std::move(decoder_buffer_pipe)));
+  mojo_decoder_buffer_reader_ =
+      std::make_unique<MojoDecoderBufferReader>(std::move(decoder_buffer_pipe));
 
   decoder_ = mojo_media_client_->CreateVideoDecoder(
       task_runner, media_log_.get(), std::move(command_buffer_id),

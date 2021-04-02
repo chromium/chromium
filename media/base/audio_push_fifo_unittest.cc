@@ -25,8 +25,8 @@ class AudioPushFifoTest : public testing::TestWithParam<int> {
   int output_chunk_size() const { return GetParam(); }
 
   void SetUp() final {
-    fifo_.reset(new AudioPushFifo(base::BindRepeating(
-        &AudioPushFifoTest::ReceiveAndCheckNextChunk, base::Unretained(this))));
+    fifo_ = std::make_unique<AudioPushFifo>(base::BindRepeating(
+        &AudioPushFifoTest::ReceiveAndCheckNextChunk, base::Unretained(this)));
     fifo_->Reset(output_chunk_size());
     ASSERT_EQ(output_chunk_size(), fifo_->frames_per_buffer());
   }

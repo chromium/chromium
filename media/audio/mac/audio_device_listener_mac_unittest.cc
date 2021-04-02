@@ -45,11 +45,11 @@ class AudioDeviceListenerMacTest : public testing::Test {
   void CreateDeviceListener() {
     // Force a post task using BindToCurrentLoop() to ensure device listener
     // internals are working correctly.
-    device_listener_.reset(new AudioDeviceListenerMac(
+    device_listener_ = std::make_unique<AudioDeviceListenerMac>(
         BindToCurrentLoop(
             base::BindRepeating(&AudioDeviceListenerMacTest::OnDeviceChange,
                                 base::Unretained(this))),
-        true /* monitor_default_input */, true /* monitor_addition_removal */));
+        true /* monitor_default_input */, true /* monitor_addition_removal */);
   }
 
   void DestroyDeviceListener() { device_listener_.reset(); }

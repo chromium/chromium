@@ -4,6 +4,8 @@
 
 #include "media/remoting/end2end_test_renderer.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -104,14 +106,14 @@ class TestRemoter final : public mojom::Remoter {
                         mojo::PendingReceiver<mojom::RemotingDataStreamSender>
                             video_sender_receiver) override {
     if (audio_pipe.is_valid()) {
-      audio_stream_sender_.reset(new TestStreamSender(
+      audio_stream_sender_ = std::make_unique<TestStreamSender>(
           std::move(audio_sender_receiver), std::move(audio_pipe),
-          DemuxerStream::AUDIO, send_frame_to_sink_cb_));
+          DemuxerStream::AUDIO, send_frame_to_sink_cb_);
     }
     if (video_pipe.is_valid()) {
-      video_stream_sender_.reset(new TestStreamSender(
+      video_stream_sender_ = std::make_unique<TestStreamSender>(
           std::move(video_sender_receiver), std::move(video_pipe),
-          DemuxerStream::VIDEO, send_frame_to_sink_cb_));
+          DemuxerStream::VIDEO, send_frame_to_sink_cb_);
     }
   }
 

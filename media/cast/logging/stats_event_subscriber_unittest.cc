@@ -55,8 +55,8 @@ class StatsEventSubscriberTest : public ::testing::Test {
 
   void Init(EventMediaType event_media_type) {
     DCHECK(!subscriber_.get());
-    subscriber_.reset(new StatsEventSubscriber(
-        event_media_type, cast_environment_->Clock(), &fake_offset_estimator_));
+    subscriber_ = std::make_unique<StatsEventSubscriber>(
+        event_media_type, cast_environment_->Clock(), &fake_offset_estimator_);
     cast_environment_->logger()->Subscribe(subscriber_.get());
   }
 

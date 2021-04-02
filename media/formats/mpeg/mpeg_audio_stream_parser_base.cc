@@ -220,7 +220,7 @@ int MPEGAudioStreamParserBase::ParseFrame(const uint8_t* data,
     if (timestamp_helper_)
       base_timestamp = timestamp_helper_->GetTimestamp();
 
-    timestamp_helper_.reset(new AudioTimestampHelper(sample_rate));
+    timestamp_helper_ = std::make_unique<AudioTimestampHelper>(sample_rate);
     timestamp_helper_->SetBaseTimestamp(base_timestamp);
 
     std::unique_ptr<MediaTracks> media_tracks(new MediaTracks());

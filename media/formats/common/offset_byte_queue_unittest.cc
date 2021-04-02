@@ -20,7 +20,7 @@ class OffsetByteQueueTest : public testing::Test {
     for (int i = 0; i < 256; i++) {
       buf[i] = i;
     }
-    queue_.reset(new OffsetByteQueue);
+    queue_ = std::make_unique<OffsetByteQueue>();
     queue_->Push(buf, sizeof(buf));
     queue_->Push(buf, sizeof(buf));
     queue_->Pop(384);

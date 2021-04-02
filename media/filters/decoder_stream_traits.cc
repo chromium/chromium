@@ -5,6 +5,7 @@
 #include "media/filters/decoder_stream_traits.h"
 
 #include <limits>
+#include <memory>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -107,8 +108,8 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::OnStreamReset(
   DCHECK(stream);
   // Stream is likely being seeked to a new timestamp, so make new validator to
   // build new timestamp expectations.
-  audio_ts_validator_.reset(
-      new AudioTimestampValidator(stream->audio_decoder_config(), media_log_));
+  audio_ts_validator_ = std::make_unique<AudioTimestampValidator>(
+      stream->audio_decoder_config(), media_log_);
 }
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::OnDecode(
@@ -126,7 +127,8 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::OnConfigChanged(
     const DecoderConfigType& config) {
   // Reset validator with the latest config. Also ensures that we do not attempt
   // to match timestamps across config boundaries.
-  audio_ts_validator_.reset(new AudioTimestampValidator(config, media_log_));
+  audio_ts_validator_ =
+      std::make_unique<AudioTimestampValidator>(config, media_log_);
 }
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::OnOutputReady(

@@ -171,10 +171,10 @@ class WatchTimeRecorderTest : public testing::Test {
   }
 
   void ResetMetricRecorders() {
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
     // Ensure cleared global before attempting to create a new TestUkmReporter.
     test_recorder_.reset();
-    test_recorder_.reset(new ukm::TestAutoSetUkmRecorder());
+    test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
     test_recorder_->UpdateSourceURL(source_id_, GURL(kTestOrigin));
   }
 

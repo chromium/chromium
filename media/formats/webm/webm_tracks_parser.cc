@@ -4,6 +4,8 @@
 
 #include "media/formats/webm/webm_tracks_parser.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -72,7 +74,7 @@ void WebMTracksParser::Reset() {
   detected_audio_track_count_ = 0;
   detected_video_track_count_ = 0;
   detected_text_track_count_ = 0;
-  media_tracks_.reset(new MediaTracks());
+  media_tracks_ = std::make_unique<MediaTracks>();
 }
 
 void WebMTracksParser::ResetTrackEntry() {
@@ -124,8 +126,8 @@ WebMParserClient* WebMTracksParser::OnListStart(int id) {
       return NULL;
     }
 
-    track_content_encodings_client_.reset(
-        new WebMContentEncodingsClient(media_log_));
+    track_content_encodings_client_ =
+        std::make_unique<WebMContentEncodingsClient>(media_log_);
     return track_content_encodings_client_->OnListStart(id);
   }
 

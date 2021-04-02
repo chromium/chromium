@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
@@ -199,7 +200,7 @@ void AudioOutputDevice::RequestDeviceAuthorizationOnIOThread() {
     // Create the timer on the thread it's used on. It's guaranteed to be
     // deleted on the same thread since users must call Stop() before deleting
     // AudioOutputDevice; see ShutDownOnIOThread().
-    auth_timeout_action_.reset(new base::OneShotTimer());
+    auth_timeout_action_ = std::make_unique<base::OneShotTimer>();
     auth_timeout_action_->Start(
         FROM_HERE, auth_timeout_,
         base::BindOnce(&AudioOutputDevice::OnDeviceAuthorized, this,
@@ -413,13 +414,13 @@ void AudioOutputDevice::OnStreamCreated(
     DCHECK(!audio_thread_);
     DCHECK(!audio_callback_);
 
-    audio_callback_.reset(new AudioOutputDeviceThreadCallback(
-        audio_parameters_, std::move(shared_memory_region), callback_));
+    audio_callback_ = std::make_unique<AudioOutputDeviceThreadCallback>(
+        audio_parameters_, std::move(shared_memory_region), callback_);
     if (playing_automatically)
       audio_callback_->InitializePlayStartTime();
-    audio_thread_.reset(new AudioDeviceThread(
+    audio_thread_ = std::make_unique<AudioDeviceThread>(
         audio_callback_.get(), std::move(socket_handle), "AudioOutputDevice",
-        base::ThreadPriority::REALTIME_AUDIO));
+        base::ThreadPriority::REALTIME_AUDIO);
   }
 }
 

@@ -22,7 +22,8 @@ class MemoryDataSourceTest : public ::testing::Test {
   void Initialize(size_t size) {
     data_.assign(size, 0);
     base::RandBytes(data_.data(), size);
-    memory_data_source_.reset(new MemoryDataSource(data_.data(), size));
+    memory_data_source_ =
+        std::make_unique<MemoryDataSource>(data_.data(), size);
     EXPECT_EQ(size, GetSize());
   }
 

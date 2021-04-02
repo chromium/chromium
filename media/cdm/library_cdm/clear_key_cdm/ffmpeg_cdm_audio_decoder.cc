@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -182,11 +183,11 @@ bool FFmpegCdmAudioDecoder::Initialize(
   }
 
   // Success!
-  decoding_loop_.reset(new FFmpegDecodingLoop(codec_context_.get()));
+  decoding_loop_ = std::make_unique<FFmpegDecodingLoop>(codec_context_.get());
   samples_per_second_ = config.samples_per_second;
   bytes_per_frame_ = codec_context_->channels * config.bits_per_channel / 8;
-  output_timestamp_helper_.reset(
-      new AudioTimestampHelper(config.samples_per_second));
+  output_timestamp_helper_ =
+      std::make_unique<AudioTimestampHelper>(config.samples_per_second);
   is_initialized_ = true;
 
   // Store initial values to guard against midstream configuration changes.

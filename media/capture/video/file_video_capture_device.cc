@@ -5,6 +5,8 @@
 #include "media/capture/video/file_video_capture_device.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -179,8 +181,8 @@ Y4mFileParser::Y4mFileParser(const base::FilePath& file_path)
 Y4mFileParser::~Y4mFileParser() = default;
 
 bool Y4mFileParser::Initialize(VideoCaptureFormat* capture_format) {
-  file_.reset(new base::File(file_path_,
-                             base::File::FLAG_OPEN | base::File::FLAG_READ));
+  file_ = std::make_unique<base::File>(
+      file_path_, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file_->IsValid()) {
     DLOG(ERROR) << file_path_.value() << ", error: "
                 << base::File::ErrorToString(file_->error_details());
@@ -229,7 +231,7 @@ MjpegFileParser::MjpegFileParser(const base::FilePath& file_path)
 MjpegFileParser::~MjpegFileParser() = default;
 
 bool MjpegFileParser::Initialize(VideoCaptureFormat* capture_format) {
-  mapped_file_.reset(new base::MemoryMappedFile());
+  mapped_file_ = std::make_unique<base::MemoryMappedFile>();
 
   if (!mapped_file_->Initialize(file_path_) || !mapped_file_->IsValid()) {
     LOG(ERROR) << "File memory map error: " << file_path_.value();
@@ -290,10 +292,10 @@ std::unique_ptr<VideoFileParser> FileVideoCaptureDevice::GetVideoFileParser(
   std::string file_name(file_path.value().begin(), file_path.value().end());
 
   if (base::EndsWith(file_name, "y4m", base::CompareCase::INSENSITIVE_ASCII)) {
-    file_parser.reset(new Y4mFileParser(file_path));
+    file_parser = std::make_unique<Y4mFileParser>(file_path);
   } else if (base::EndsWith(file_name, "mjpeg",
                             base::CompareCase::INSENSITIVE_ASCII)) {
-    file_parser.reset(new MjpegFileParser(file_path));
+    file_parser = std::make_unique<MjpegFileParser>(file_path);
   } else {
     LOG(ERROR) << "Unsupported file format.";
     return file_parser;

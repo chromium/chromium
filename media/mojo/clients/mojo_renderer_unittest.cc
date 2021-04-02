@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -72,10 +74,10 @@ class MojoRendererTest : public ::testing::Test {
         &mojo_cdm_service_context_, std::move(mock_renderer),
         remote_renderer_remote.InitWithNewPipeAndPassReceiver());
 
-    mojo_renderer_.reset(
-        new MojoRenderer(message_loop_.task_runner(),
-                         std::unique_ptr<VideoOverlayFactory>(nullptr), nullptr,
-                         std::move(remote_renderer_remote)));
+    mojo_renderer_ = std::make_unique<MojoRenderer>(
+        message_loop_.task_runner(),
+        std::unique_ptr<VideoOverlayFactory>(nullptr), nullptr,
+        std::move(remote_renderer_remote));
 
     // CreateAudioStream() and CreateVideoStream() overrides expectations for
     // expected non-NULL streams.

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -97,12 +98,12 @@ class VideoDecoderStreamTest
         pending_stop_(false),
         num_decoded_bytes_unreported_(0),
         has_no_key_(false) {
-    video_decoder_stream_.reset(new VideoDecoderStream(
+    video_decoder_stream_ = std::make_unique<VideoDecoderStream>(
         std::make_unique<VideoDecoderStream::StreamTraits>(&media_log_),
         task_environment_.GetMainThreadTaskRunner(),
         base::BindRepeating(&VideoDecoderStreamTest::CreateVideoDecodersForTest,
                             base::Unretained(this)),
-        &media_log_));
+        &media_log_);
     video_decoder_stream_->set_decoder_change_observer(base::BindRepeating(
         &VideoDecoderStreamTest::OnDecoderChanged, base::Unretained(this)));
     video_decoder_stream_
@@ -115,7 +116,7 @@ class VideoDecoderStreamTest
     }
 
     if (GetParam().is_encrypted && GetParam().has_decryptor) {
-      decryptor_.reset(new NiceMock<MockDecryptor>());
+      decryptor_ = std::make_unique<NiceMock<MockDecryptor>>();
 
       // Decryptor can only decrypt (not decrypt-and-decode) so that
       // DecryptingDemuxerStream will be used.
@@ -126,7 +127,7 @@ class VideoDecoderStreamTest
     }
 
     if (GetParam().is_encrypted) {
-      cdm_context_.reset(new StrictMock<MockCdmContext>());
+      cdm_context_ = std::make_unique<StrictMock<MockCdmContext>>();
 
       EXPECT_CALL(*cdm_context_, RegisterEventCB(_)).Times(AnyNumber());
       EXPECT_CALL(*cdm_context_, GetDecryptor())

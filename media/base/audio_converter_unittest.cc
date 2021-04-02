@@ -45,8 +45,8 @@ class AudioConverterTest
         AudioParameters::AUDIO_PCM_LOW_LATENCY, std::get<2>(GetParam()),
         std::get<1>(GetParam()), kLowLatencyBufferSize);
 
-    converter_.reset(new AudioConverter(
-        input_parameters_, output_parameters_, false));
+    converter_ = std::make_unique<AudioConverter>(input_parameters_,
+                                                  output_parameters_, false);
 
     audio_bus_ = AudioBus::Create(output_parameters_);
     expected_audio_bus_ = AudioBus::Create(output_parameters_);
@@ -54,7 +54,8 @@ class AudioConverterTest
     // Allocate one callback for generating expected results.
     double step = kSineCycles / static_cast<double>(
         output_parameters_.frames_per_buffer());
-    expected_callback_.reset(new FakeAudioRenderCallback(step, kSampleRate));
+    expected_callback_ =
+        std::make_unique<FakeAudioRenderCallback>(step, kSampleRate);
   }
 
   // Creates |count| input callbacks to be used for conversion testing.

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -57,10 +58,10 @@ class VideoDecodeStatsRecorderTest : public ::testing::Test {
                     learning::FeatureValue origin,
                     bool is_top_frame,
                     uint64_t player_id) {
-    recorder_.reset(new VideoDecodeStatsRecorder(
+    recorder_ = std::make_unique<VideoDecodeStatsRecorder>(
         base::BindRepeating(&VideoDecodeStatsRecorderTest::PrintSavePerfRecord,
                             base::Unretained(this)),
-        source_id, origin, is_top_frame, player_id));
+        source_id, origin, is_top_frame, player_id);
   }
 
   void PrintSavePerfRecord(ukm::SourceId source_id,

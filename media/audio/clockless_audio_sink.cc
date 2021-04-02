@@ -4,6 +4,8 @@
 
 #include "media/audio/clockless_audio_sink.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
@@ -26,12 +28,13 @@ class ClocklessAudioSinkThread : public base::DelegateSimpleThread::Delegate {
             base::WaitableEvent::ResetPolicy::AUTOMATIC,
             base::WaitableEvent::InitialState::NOT_SIGNALED)) {
     if (hashing)
-      audio_hash_.reset(new AudioHash());
+      audio_hash_ = std::make_unique<AudioHash>();
   }
 
   void Start() {
     stop_event_->Reset();
-    thread_.reset(new base::DelegateSimpleThread(this, "ClocklessAudioSink"));
+    thread_ = std::make_unique<base::DelegateSimpleThread>(
+        this, "ClocklessAudioSink");
     thread_->Start();
   }
 
@@ -93,7 +96,8 @@ ClocklessAudioSink::~ClocklessAudioSink() = default;
 void ClocklessAudioSink::Initialize(const AudioParameters& params,
                                     RenderCallback* callback) {
   DCHECK(!initialized_);
-  thread_.reset(new ClocklessAudioSinkThread(params, callback, hashing_));
+  thread_ =
+      std::make_unique<ClocklessAudioSinkThread>(params, callback, hashing_);
   initialized_ = true;
 }
 

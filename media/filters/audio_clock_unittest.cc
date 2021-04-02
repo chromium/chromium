@@ -28,7 +28,7 @@ class AudioClockTest : public testing::Test {
 
   void SetupClock(base::TimeDelta start_time, int sample_rate) {
     sample_rate_ = sample_rate;
-    clock_.reset(new AudioClock(start_time, sample_rate_));
+    clock_ = std::make_unique<AudioClock>(start_time, sample_rate_);
   }
 
   int FrontTimestampInDays() { return clock_->front_timestamp().InDays(); }

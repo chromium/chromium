@@ -11,6 +11,7 @@
 #include "media/base/audio_converter.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -44,7 +45,8 @@ AudioConverter::AudioConverter(const AudioParameters& input_params,
              << " to " << output_params.channel_layout() << "; from "
              << input_params.channels() << " channels to "
              << output_params.channels() << " channels.";
-    channel_mixer_.reset(new ChannelMixer(input_params, output_params));
+    channel_mixer_ =
+        std::make_unique<ChannelMixer>(input_params, output_params);
 
     // Pare off data as early as we can for efficiency.
     downmix_early_ = input_params.channels() > output_params.channels();
@@ -56,11 +58,11 @@ AudioConverter::AudioConverter(const AudioParameters& input_params,
              << output_params.sample_rate();
     const int request_size = disable_fifo ? SincResampler::kDefaultRequestSize :
         input_params.frames_per_buffer();
-    resampler_.reset(new MultiChannelResampler(
+    resampler_ = std::make_unique<MultiChannelResampler>(
         downmix_early_ ? output_params.channels() : input_params.channels(),
         io_sample_rate_ratio_, request_size,
         base::BindRepeating(&AudioConverter::ProvideInput,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
   }
 
   // The resampler can be configured to work with a specific request size, so a
@@ -75,11 +77,11 @@ AudioConverter::AudioConverter(const AudioParameters& input_params,
     DVLOG(1) << "Rebuffering from " << input_params.frames_per_buffer()
              << " to " << output_params.frames_per_buffer();
     chunk_size_ = input_params.frames_per_buffer();
-    audio_fifo_.reset(new AudioPullFifo(
+    audio_fifo_ = std::make_unique<AudioPullFifo>(
         downmix_early_ ? output_params.channels() : input_params.channels(),
         chunk_size_,
         base::BindRepeating(&AudioConverter::SourceCallback,
-                            base::Unretained(this))));
+                            base::Unretained(this)));
   }
 }
 

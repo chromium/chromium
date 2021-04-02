@@ -138,8 +138,8 @@ class MediaServiceTest : public testing::Test {
     video_stream_.set_video_decoder_config(video_config);
 
     mojo::PendingRemote<mojom::DemuxerStream> video_stream_proxy;
-    mojo_video_stream_.reset(new MojoDemuxerStreamImpl(
-        &video_stream_, video_stream_proxy.InitWithNewPipeAndPassReceiver()));
+    mojo_video_stream_ = std::make_unique<MojoDemuxerStreamImpl>(
+        &video_stream_, video_stream_proxy.InitWithNewPipeAndPassReceiver());
 
     mojo::PendingAssociatedRemote<mojom::RendererClient> client_remote;
     renderer_client_receiver_.Bind(

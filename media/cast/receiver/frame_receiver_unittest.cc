@@ -100,8 +100,8 @@ class FrameReceiverTest : public ::testing::Test {
     config_ = GetDefaultAudioReceiverConfig();
     config_.rtp_max_delay_ms = kPlayoutDelayMillis;
 
-    receiver_.reset(new FrameReceiver(
-        cast_environment_, config_, AUDIO_EVENT, &mock_transport_));
+    receiver_ = std::make_unique<FrameReceiver>(cast_environment_, config_,
+                                                AUDIO_EVENT, &mock_transport_);
   }
 
   void CreateFrameReceiverOfVideo() {
@@ -111,8 +111,8 @@ class FrameReceiverTest : public ::testing::Test {
     // doesn't have to account for rounding errors.
     config_.target_frame_rate = 25;
 
-    receiver_.reset(new FrameReceiver(
-        cast_environment_, config_, VIDEO_EVENT, &mock_transport_));
+    receiver_ = std::make_unique<FrameReceiver>(cast_environment_, config_,
+                                                VIDEO_EVENT, &mock_transport_);
   }
 
   void FeedOneFrameIntoReceiver() {
@@ -162,8 +162,8 @@ TEST_F(FrameReceiverTest, RejectsUnparsablePackets) {
   SimpleEventSubscriber event_subscriber;
   cast_environment_->logger()->Subscribe(&event_subscriber);
 
-  const bool success = receiver_->ProcessPacket(
-      std::unique_ptr<Packet>(new Packet(kPacketSize, 0xff)));
+  const bool success =
+      receiver_->ProcessPacket(std::make_unique<Packet>(kPacketSize, 0xff));
   EXPECT_FALSE(success);
 
   // Confirm no log events.

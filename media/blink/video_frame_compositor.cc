@@ -4,6 +4,8 @@
 
 #include "media/blink/video_frame_compositor.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/bind_post_task.h"
 #include "base/callback_helpers.h"
@@ -112,10 +114,10 @@ void VideoFrameCompositor::OnRendererStateUpdate(bool new_state) {
   rendering_ = new_state;
 
   if (!auto_open_close_) {
-    auto_open_close_.reset(new base::trace_event::AutoOpenCloseEvent<
-                           kTracingCategory>(
+    auto_open_close_ = std::make_unique<
+        base::trace_event::AutoOpenCloseEvent<kTracingCategory>>(
         base::trace_event::AutoOpenCloseEvent<kTracingCategory>::Type::ASYNC,
-        "VideoPlayback"));
+        "VideoPlayback");
   }
 
   if (rendering_) {

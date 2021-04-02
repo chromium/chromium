@@ -30,7 +30,7 @@ class WebMStreamParserTest : public testing::Test {
   void ParseWebMFile(const std::string& filename,
                      const StreamParser::InitParameters& expected_params) {
     scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile(filename);
-    parser_.reset(new WebMStreamParser());
+    parser_ = std::make_unique<WebMStreamParser>();
     Demuxer::EncryptedMediaInitDataCB encrypted_media_init_data_cb =
         base::BindRepeating(&WebMStreamParserTest::OnEncryptedMediaInitData,
                             base::Unretained(this));

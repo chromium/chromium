@@ -911,17 +911,17 @@ class TransportClient : public CastTransport::Client {
 }  // namespace
 
 void End2EndTest::Create() {
-  transport_sender_.reset(new CastTransportImpl(
+  transport_sender_ = std::make_unique<CastTransportImpl>(
       &testing_clock_sender_, base::TimeDelta::FromMilliseconds(1),
       std::make_unique<TransportClient>(cast_environment_sender_->logger(),
                                         nullptr),
-      base::WrapUnique(sender_to_receiver_), task_runner_sender_));
+      base::WrapUnique(sender_to_receiver_), task_runner_sender_);
 
-  transport_receiver_.reset(new CastTransportImpl(
+  transport_receiver_ = std::make_unique<CastTransportImpl>(
       &testing_clock_sender_, base::TimeDelta::FromMilliseconds(1),
       std::make_unique<TransportClient>(cast_environment_receiver_->logger(),
                                         this),
-      base::WrapUnique(receiver_to_sender_), task_runner_sender_));
+      base::WrapUnique(receiver_to_sender_), task_runner_sender_);
 
   cast_receiver_ =
       CastReceiver::Create(cast_environment_receiver_, audio_receiver_config_,
@@ -950,9 +950,9 @@ void End2EndTest::Create() {
   audio_frame_input_ = cast_sender_->audio_frame_input();
   video_frame_input_ = cast_sender_->video_frame_input();
 
-  audio_bus_factory_.reset(new TestAudioBusFactory(
+  audio_bus_factory_ = std::make_unique<TestAudioBusFactory>(
       audio_sender_config_.channels, audio_sender_config_.rtp_timebase,
-      kSoundFrequency, kSoundVolume));
+      kSoundFrequency, kSoundVolume);
 }
 
 TEST_F(End2EndTest, CAST_E2E_TEST(LoopWithLosslessEncoding)) {

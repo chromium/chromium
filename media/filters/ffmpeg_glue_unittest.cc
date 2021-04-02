@@ -50,7 +50,7 @@ class FFmpegGlueTest : public ::testing::Test {
       : protocol_(new StrictMock<MockProtocol>()) {
     // IsStreaming() is called when opening.
     EXPECT_CALL(*protocol_.get(), IsStreaming()).WillOnce(Return(true));
-    glue_.reset(new FFmpegGlue(protocol_.get()));
+    glue_ = std::make_unique<FFmpegGlue>(protocol_.get());
     CHECK(glue_->format_context());
     CHECK(glue_->format_context()->pb);
   }
@@ -87,9 +87,9 @@ class FFmpegGlueDestructionTest : public ::testing::Test {
 
   void Initialize(const char* filename) {
     data_ = ReadTestDataFile(filename);
-    protocol_.reset(new InMemoryUrlProtocol(
-        data_->data(), data_->data_size(), false));
-    glue_.reset(new FFmpegGlue(protocol_.get()));
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(
+        data_->data(), data_->data_size(), false);
+    glue_ = std::make_unique<FFmpegGlue>(protocol_.get());
     CHECK(glue_->format_context());
     CHECK(glue_->format_context()->pb);
   }

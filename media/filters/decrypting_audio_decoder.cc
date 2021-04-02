@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <cstdlib>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -214,8 +215,8 @@ void DecryptingAudioDecoder::FinishInitialization(bool success) {
   }
 
   // Success!
-  timestamp_helper_.reset(
-      new AudioTimestampHelper(config_.samples_per_second()));
+  timestamp_helper_ =
+      std::make_unique<AudioTimestampHelper>(config_.samples_per_second());
 
   state_ = kIdle;
   std::move(init_cb_).Run(OkStatus());

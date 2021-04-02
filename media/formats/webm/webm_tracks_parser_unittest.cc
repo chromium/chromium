@@ -127,7 +127,7 @@ TEST_F(WebMTracksParserTest, IgnoringTextTracks) {
   EXPECT_TRUE(ignored_tracks.find(2) != ignored_tracks.end());
 
   // Test again w/o ignoring the test tracks.
-  parser.reset(new WebMTracksParser(&media_log_, false));
+  parser = std::make_unique<WebMTracksParser>(&media_log_, false);
 
   result = parser->Parse(&buf[0], buf.size());
   EXPECT_GT(result, 0);

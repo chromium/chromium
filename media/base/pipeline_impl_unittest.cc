@@ -301,7 +301,7 @@ class PipelineImplTest : public ::testing::Test {
 
   void ResetRenderer() {
     // |renderer_| has been deleted, replace it.
-    scoped_renderer_.reset(new StrictMock<MockRenderer>());
+    scoped_renderer_ = std::make_unique<StrictMock<MockRenderer>>();
     renderer_ = scoped_renderer_.get();
     EXPECT_CALL(*renderer_, SetPreservesPitch(_)).Times(AnyNumber());
   }

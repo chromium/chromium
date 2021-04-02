@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -133,8 +134,8 @@ class AudioDecoderTest
         last_decode_status_(DecodeStatus::DECODE_ERROR) {
     switch (decoder_type_) {
       case FFMPEG:
-        decoder_.reset(new FFmpegAudioDecoder(
-            task_environment_.GetMainThreadTaskRunner(), &media_log_));
+        decoder_ = std::make_unique<FFmpegAudioDecoder>(
+            task_environment_.GetMainThreadTaskRunner(), &media_log_);
         break;
 #if defined(OS_ANDROID)
       case MEDIA_CODEC:
@@ -192,9 +193,9 @@ class AudioDecoderTest
   void Initialize() {
     // Load the test data file.
     data_ = ReadTestDataFile(params_.filename);
-    protocol_.reset(
-        new InMemoryUrlProtocol(data_->data(), data_->data_size(), false));
-    reader_.reset(new AudioFileReader(protocol_.get()));
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(
+        data_->data(), data_->data_size(), false);
+    reader_ = std::make_unique<AudioFileReader>(protocol_.get());
     ASSERT_TRUE(reader_->OpenDemuxerForTesting());
 
     // Load the first packet and check its timestamp.

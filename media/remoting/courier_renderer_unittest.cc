@@ -296,8 +296,8 @@ class CourierRendererTest : public testing::Test {
  protected:
   void InitializeRenderer() {
     // Register media::RendererClient implementation.
-    render_client_.reset(new RendererClientImpl());
-    media_resource_.reset(new FakeMediaResource());
+    render_client_ = std::make_unique<RendererClientImpl>();
+    media_resource_ = std::make_unique<FakeMediaResource>();
     EXPECT_CALL(*render_client_, OnPipelineStatus(_)).Times(1);
     DCHECK(renderer_);
     // Redirect RPC message for simulate receiver scenario
@@ -346,8 +346,9 @@ class CourierRendererTest : public testing::Test {
         base::BindRepeating(&CourierRendererTest::OnSendMessageToSink,
                             base::Unretained(this)));
 
-    renderer_.reset(new CourierRenderer(base::ThreadTaskRunnerHandle::Get(),
-                                        controller_->GetWeakPtr(), nullptr));
+    renderer_ =
+        std::make_unique<CourierRenderer>(base::ThreadTaskRunnerHandle::Get(),
+                                          controller_->GetWeakPtr(), nullptr);
     renderer_->clock_ = &clock_;
     clock_.Advance(base::TimeDelta::FromSeconds(1));
 

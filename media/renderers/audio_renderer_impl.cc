@@ -191,7 +191,8 @@ void AudioRendererImpl::SetMediaTime(base::TimeDelta time) {
   ended_timestamp_ = kInfiniteDuration;
   last_render_time_ = stop_rendering_time_ = base::TimeTicks();
   first_packet_timestamp_ = kNoTimestamp;
-  audio_clock_.reset(new AudioClock(time, audio_parameters_.sample_rate()));
+  audio_clock_ =
+      std::make_unique<AudioClock>(time, audio_parameters_.sample_rate());
 }
 
 base::TimeDelta AudioRendererImpl::CurrentMediaTime() {
@@ -590,8 +591,8 @@ void AudioRendererImpl::OnDeviceInfoReceived(
     // Set the |audio_clock_| under lock in case this is a reinitialize and some
     // external caller to GetWallClockTimes() exists.
     base::AutoLock lock(lock_);
-    audio_clock_.reset(
-        new AudioClock(base::TimeDelta(), audio_parameters_.sample_rate()));
+    audio_clock_ = std::make_unique<AudioClock>(
+        base::TimeDelta(), audio_parameters_.sample_rate());
   }
 
   audio_decoder_stream_->Initialize(
@@ -629,8 +630,10 @@ void AudioRendererImpl::OnAudioDecoderStreamInitialized(bool success) {
     return;
   }
 
-  if (expecting_config_changes_)
-    buffer_converter_.reset(new AudioBufferConverter(audio_parameters_));
+  if (expecting_config_changes_) {
+    buffer_converter_ =
+        std::make_unique<AudioBufferConverter>(audio_parameters_);
+  }
 
   // We're all good! Continue initializing the rest of the audio renderer
   // based on the decoder format.
@@ -933,8 +936,8 @@ bool AudioRendererImpl::HandleDecodedBuffer_Locked(
       if (buffer->timestamp() < start_timestamp_ &&
           (buffer->timestamp() + buffer->duration()) > start_timestamp_) {
         start_timestamp_ = buffer->timestamp();
-        audio_clock_.reset(new AudioClock(buffer->timestamp(),
-                                          audio_parameters_.sample_rate()));
+        audio_clock_ = std::make_unique<AudioClock>(
+            buffer->timestamp(), audio_parameters_.sample_rate());
       }
     } else if (state_ == kPlaying) {
       if (IsBeforeStartTime(*buffer))

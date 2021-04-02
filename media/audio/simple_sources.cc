@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/files/file.h"
 #include "base/logging.h"
@@ -201,8 +202,8 @@ void FileSource::LoadWavFile(const base::FilePath& path_to_wav_file) {
       GuessChannelLayout(wav_audio_handler_->num_channels()),
       wav_audio_handler_->sample_rate(), params_.frames_per_buffer());
 
-  file_audio_converter_.reset(
-      new AudioConverter(file_audio_slice, params_, false));
+  file_audio_converter_ =
+      std::make_unique<AudioConverter>(file_audio_slice, params_, false);
   file_audio_converter_->AddInput(this);
 }
 

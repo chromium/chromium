@@ -44,7 +44,8 @@ class EncodingEventSubscriberTest : public ::testing::Test {
 
   void Init(EventMediaType event_media_type) {
     DCHECK(!event_subscriber_);
-    event_subscriber_.reset(new EncodingEventSubscriber(event_media_type, 10));
+    event_subscriber_ =
+        std::make_unique<EncodingEventSubscriber>(event_media_type, 10);
     cast_environment_->logger()->Subscribe(event_subscriber_.get());
   }
 
@@ -701,7 +702,7 @@ TEST_F(EncodingEventSubscriberTest, FirstRtpTimeTicks) {
 
   rtp_timestamp = rtp_timestamp.Expand(UINT32_C(67890));
 
-  capture_begin_event.reset(new FrameEvent());
+  capture_begin_event = std::make_unique<FrameEvent>();
   capture_begin_event->timestamp = now;
   capture_begin_event->type = FRAME_CAPTURE_BEGIN;
   capture_begin_event->media_type = VIDEO_EVENT;

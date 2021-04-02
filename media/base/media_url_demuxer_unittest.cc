@@ -4,6 +4,8 @@
 
 #include "media/base/media_url_demuxer.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
@@ -24,9 +26,9 @@ class MediaUrlDemuxerTest : public testing::Test {
   void InitializeTest(const GURL& media_url,
                       const GURL& first_party,
                       bool allow_credentials) {
-    demuxer_.reset(new MediaUrlDemuxer(
+    demuxer_ = std::make_unique<MediaUrlDemuxer>(
         base::ThreadTaskRunnerHandle::Get(), media_url, first_party,
-        url::Origin::Create(first_party), allow_credentials, false));
+        url::Origin::Create(first_party), allow_credentials, false);
   }
 
   void InitializeTest() {

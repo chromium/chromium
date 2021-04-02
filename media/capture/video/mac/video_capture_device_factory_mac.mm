@@ -7,6 +7,7 @@
 #import <IOKit/audio/IOAudioTypes.h>
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -84,7 +85,8 @@ std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryMac::CreateDevice(
 
   std::unique_ptr<VideoCaptureDevice> capture_device;
   if (descriptor.capture_api == VideoCaptureApi::MACOSX_DECKLINK) {
-    capture_device.reset(new VideoCaptureDeviceDeckLinkMac(descriptor));
+    capture_device =
+        std::make_unique<VideoCaptureDeviceDeckLinkMac>(descriptor);
   } else {
     VideoCaptureDeviceMac* device = new VideoCaptureDeviceMac(descriptor);
     capture_device.reset(device);

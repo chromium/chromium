@@ -239,7 +239,7 @@ class MidiManagerUsbTest : public ::testing::Test {
 
  protected:
   void Initialize() {
-    client_.reset(new FakeMidiManagerClient(&logger_));
+    client_ = std::make_unique<FakeMidiManagerClient>(&logger_);
     service_->StartSession(client_.get());
   }
 

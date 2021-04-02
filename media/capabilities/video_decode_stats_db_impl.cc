@@ -336,7 +336,7 @@ void VideoDecodeStatsDBImpl::WriteUpdatedEntry(
 
   if (!stats_proto || !AreStatsUsable(stats_proto.get())) {
     // Default instance will have all zeros for numeric types.
-    stats_proto.reset(new DecodeStatsProto());
+    stats_proto = std::make_unique<DecodeStatsProto>();
   }
 
   // Debug alias the various counts so we can get them in dumps to catch

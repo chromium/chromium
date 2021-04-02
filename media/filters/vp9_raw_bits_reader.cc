@@ -6,6 +6,8 @@
 
 #include <limits.h>
 
+#include <memory>
+
 #include "base/check_op.h"
 #include "media/base/bit_reader.h"
 
@@ -17,7 +19,7 @@ Vp9RawBitsReader::~Vp9RawBitsReader() = default;
 
 void Vp9RawBitsReader::Initialize(const uint8_t* data, size_t size) {
   DCHECK(data);
-  reader_.reset(new BitReader(data, size));
+  reader_ = std::make_unique<BitReader>(data, size);
   valid_ = true;
 }
 

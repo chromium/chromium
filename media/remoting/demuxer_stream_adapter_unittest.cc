@@ -36,16 +36,16 @@ class MockDemuxerStreamAdapter {
       DemuxerStream* demuxer_stream,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> stream_sender_remote,
       mojo::ScopedDataPipeProducerHandle producer_handle) {
-    rpc_broker_.reset(new RpcBroker(
+    rpc_broker_ = std::make_unique<RpcBroker>(
         base::BindRepeating(&MockDemuxerStreamAdapter::OnSendMessageToSink,
-                            weak_factory_.GetWeakPtr())));
-    demuxer_stream_adapter_.reset(new DemuxerStreamAdapter(
+                            weak_factory_.GetWeakPtr()));
+    demuxer_stream_adapter_ = std::make_unique<DemuxerStreamAdapter>(
         std::move(main_task_runner), std::move(media_task_runner), name,
         demuxer_stream, rpc_broker_->GetWeakPtr(),
         rpc_broker_->GetUniqueHandle(), std::move(stream_sender_remote),
         std::move(producer_handle),
         base::BindOnce(&MockDemuxerStreamAdapter::OnError,
-                       weak_factory_.GetWeakPtr())));
+                       weak_factory_.GetWeakPtr()));
 
     // Faking initialization with random callback handle to start mojo watcher.
     demuxer_stream_adapter_->Initialize(3);
@@ -91,7 +91,7 @@ class MockDemuxerStreamAdapter {
 
  private:
   void OnSendMessageToSink(std::unique_ptr<std::vector<uint8_t>> message) {
-    last_received_rpc_.reset(new pb::RpcMessage());
+    last_received_rpc_ = std::make_unique<pb::RpcMessage>();
     CHECK(last_received_rpc_->ParseFromArray(message->data(), message->size()));
   }
 
@@ -115,7 +115,7 @@ class DemuxerStreamAdapterTest : public ::testing::Test {
 
   void SetUpDataPipe() {
     constexpr size_t kDataPipeCapacity = 256;
-    demuxer_stream_.reset(new FakeDemuxerStream(true));  // audio.
+    demuxer_stream_ = std::make_unique<FakeDemuxerStream>(true);  // audio.
     const MojoCreateDataPipeOptions data_pipe_options{
         sizeof(MojoCreateDataPipeOptions), MOJO_CREATE_DATA_PIPE_FLAG_NONE, 1,
         kDataPipeCapacity};
@@ -125,14 +125,14 @@ class DemuxerStreamAdapterTest : public ::testing::Test {
     CHECK_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(&data_pipe_options,
                                                   producer_end, consumer_end));
 
-    data_stream_sender_.reset(new FakeRemotingDataStreamSender(
+    data_stream_sender_ = std::make_unique<FakeRemotingDataStreamSender>(
         stream_sender.InitWithNewPipeAndPassReceiver(),
-        std::move(consumer_end)));
-    demuxer_stream_adapter_.reset(new MockDemuxerStreamAdapter(
+        std::move(consumer_end));
+    demuxer_stream_adapter_ = std::make_unique<MockDemuxerStreamAdapter>(
         task_environment_.GetMainThreadTaskRunner(),
         task_environment_.GetMainThreadTaskRunner(), "test",
         demuxer_stream_.get(), std::move(stream_sender),
-        std::move(producer_end)));
+        std::move(producer_end));
     // DemuxerStreamAdapter constructor posts task to main thread to
     // register MessageReceiverCallback. Therefore it should call
     // RunPendingTasks() to make sure task is executed.

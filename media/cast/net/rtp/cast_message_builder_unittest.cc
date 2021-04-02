@@ -127,12 +127,9 @@ class CastMessageBuilderTest : public ::testing::Test {
   }
 
   void SetDecoderSlowerThanMaxFrameRate(int max_unacked_frames) {
-    cast_msg_builder_.reset(new CastMessageBuilder(&testing_clock_,
-                                                   &feedback_,
-                                                   &framer_,
-                                                   kSsrc,
-                                                   false,
-                                                   max_unacked_frames));
+    cast_msg_builder_ = std::make_unique<CastMessageBuilder>(
+        &testing_clock_, &feedback_, &framer_, kSsrc, false,
+        max_unacked_frames);
   }
 
   NackFeedbackVerification feedback_;

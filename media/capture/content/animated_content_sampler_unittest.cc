@@ -40,7 +40,7 @@ class AnimatedContentSamplerTest : public ::testing::Test {
   void SetUp() override {
     rand_seed_ = static_cast<int>(
         (InitialTestTimeTicks() - base::TimeTicks()).InMicroseconds());
-    sampler_.reset(new AnimatedContentSampler(GetMinCapturePeriod()));
+    sampler_ = std::make_unique<AnimatedContentSampler>(GetMinCapturePeriod());
   }
 
  protected:

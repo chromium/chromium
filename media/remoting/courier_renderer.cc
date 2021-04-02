@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -293,23 +294,21 @@ void CourierRenderer::OnDataPipeCreated(
   // Create audio demuxer stream adapter if audio is available.
   if (audio_demuxer_stream && audio.is_valid() && audio_handle.is_valid() &&
       audio_rpc_handle != RpcBroker::kInvalidHandle) {
-    audio_demuxer_stream_adapter_.reset(new DemuxerStreamAdapter(
+    audio_demuxer_stream_adapter_ = std::make_unique<DemuxerStreamAdapter>(
         main_task_runner_, media_task_runner_, "audio", audio_demuxer_stream,
         rpc_broker_, audio_rpc_handle, std::move(audio),
         std::move(audio_handle),
-        base::BindOnce(&CourierRenderer::OnFatalError,
-                       base::Unretained(this))));
+        base::BindOnce(&CourierRenderer::OnFatalError, base::Unretained(this)));
   }
 
   // Create video demuxer stream adapter if video is available.
   if (video_demuxer_stream && video.is_valid() && video_handle.is_valid() &&
       video_rpc_handle != RpcBroker::kInvalidHandle) {
-    video_demuxer_stream_adapter_.reset(new DemuxerStreamAdapter(
+    video_demuxer_stream_adapter_ = std::make_unique<DemuxerStreamAdapter>(
         main_task_runner_, media_task_runner_, "video", video_demuxer_stream,
         rpc_broker_, video_rpc_handle, std::move(video),
         std::move(video_handle),
-        base::BindOnce(&CourierRenderer::OnFatalError,
-                       base::Unretained(this))));
+        base::BindOnce(&CourierRenderer::OnFatalError, base::Unretained(this)));
   }
 
   // Checks if data pipe is created successfully.

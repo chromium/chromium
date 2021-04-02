@@ -184,8 +184,8 @@ class H264DecoderTest : public ::testing::Test {
 void H264DecoderTest::SetUp() {
   auto mock_accelerator = std::make_unique<MockH264Accelerator>();
   accelerator_ = mock_accelerator.get();
-  decoder_.reset(new H264Decoder(std::move(mock_accelerator),
-                                 VIDEO_CODEC_PROFILE_UNKNOWN));
+  decoder_ = std::make_unique<H264Decoder>(std::move(mock_accelerator),
+                                           VIDEO_CODEC_PROFILE_UNKNOWN);
 
   // Sets default behaviors for mock methods for convenience.
   ON_CALL(*accelerator_, CreateH264Picture()).WillByDefault(Invoke([]() {

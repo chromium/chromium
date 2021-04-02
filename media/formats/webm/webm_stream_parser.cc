@@ -234,7 +234,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
     return -1;
   }
 
-  cluster_parser_.reset(new WebMClusterParser(
+  cluster_parser_ = std::make_unique<WebMClusterParser>(
       timecode_scale_in_ns, tracks_parser.audio_track_num(),
       tracks_parser.GetAudioDefaultDuration(timecode_scale_in_ns),
       tracks_parser.video_track_num(),
@@ -242,7 +242,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),
       tracks_parser.audio_encryption_key_id(),
       tracks_parser.video_encryption_key_id(), audio_config.codec(),
-      media_log_));
+      media_log_);
 
   if (init_cb_) {
     params.detected_audio_track_count =

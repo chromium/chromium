@@ -57,8 +57,10 @@ class VideoEncoderTest
     video_config_.codec = GetParam().first;
     video_config_.use_external_encoder = GetParam().second;
 
-    if (video_config_.use_external_encoder)
-      vea_factory_.reset(new FakeVideoEncodeAcceleratorFactory(task_runner_));
+    if (video_config_.use_external_encoder) {
+      vea_factory_ =
+          std::make_unique<FakeVideoEncodeAcceleratorFactory>(task_runner_);
+    }
   }
 
   void TearDown() final {

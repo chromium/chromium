@@ -110,7 +110,7 @@ class FakeVideoCaptureDeviceTestBase : public ::testing::Test {
   }
 
   void WaitForCapturedFrame() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -278,7 +278,7 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
 
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectGetPhotoState()).Times(1);
   device->GetPhotoState(std::move(scoped_get_callback));
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   const mojom::PhotoState* state = image_capture_client_->state();
@@ -371,7 +371,7 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectSetPhotoOptions(true))
       .Times(1);
   device->SetPhotoOptions(std::move(settings), std::move(scoped_set_callback));
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
 
   // Retrieve Capabilities again and check against the set values.
@@ -381,7 +381,7 @@ TEST_F(FakeVideoCaptureDeviceTest, GetAndSetCapabilities) {
 
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectGetPhotoState()).Times(1);
   device->GetPhotoState(std::move(scoped_get_callback2));
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   EXPECT_EQ(max_zoom_value, image_capture_client_->state()->zoom->current);
 
@@ -408,7 +408,7 @@ TEST_F(FakeVideoCaptureDeviceTest, TakePhoto) {
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectPhotoTaken()).Times(1);
   device->TakePhoto(std::move(scoped_callback));
 
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   device->StopAndDeAllocate();
 }

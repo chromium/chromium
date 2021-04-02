@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <cstdlib>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -56,7 +57,8 @@ class VideoDecoderTest : public ::testing::TestWithParam<Codec> {
 
  protected:
   void SetUp() final {
-    video_decoder_.reset(new VideoDecoder(cast_environment_, GetParam()));
+    video_decoder_ =
+        std::make_unique<VideoDecoder>(cast_environment_, GetParam());
     CHECK_EQ(STATUS_INITIALIZED, video_decoder_->InitializationResult());
 
     next_frame_size_ = gfx::Size(kStartingWidth, kStartingHeight);

@@ -5,6 +5,7 @@
 #include "media/cast/net/udp_transport_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -174,7 +175,7 @@ void UdpTransportImpl::ReceiveNextPacket(int length_or_status) {
   // the future when a packet is ready.
   while (true) {
     if (length_or_status == net::ERR_IO_PENDING) {
-      next_packet_.reset(new Packet(media::cast::kMaxIpPacketSize));
+      next_packet_ = std::make_unique<Packet>(media::cast::kMaxIpPacketSize);
       recv_buf_ = base::MakeRefCounted<net::WrappedIOBuffer>(
           reinterpret_cast<char*>(&next_packet_->front()));
       length_or_status = udp_socket_->RecvFrom(
@@ -350,7 +351,7 @@ void UdpTransportImpl::StartSending(
     mojo::ScopedDataPipeConsumerHandle packet_pipe) {
   DCHECK(packet_pipe.is_valid());
 
-  reader_.reset(new UdpPacketPipeReader(std::move(packet_pipe)));
+  reader_ = std::make_unique<UdpPacketPipeReader>(std::move(packet_pipe));
   ReadNextPacketToSend();
 }
 

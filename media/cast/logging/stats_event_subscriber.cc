@@ -79,7 +79,7 @@ StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
   for (size_t i = 1; i < buckets_.size() - 1; i++) {
     if (!buckets_[i])
       continue;
-    bucket.reset(new base::DictionaryValue);
+    bucket = std::make_unique<base::DictionaryValue>();
     int64_t lower = min_ + (i - 1) * width_;
     int64_t upper = lower + width_ - 1;
     bucket->SetInteger(
@@ -89,7 +89,7 @@ StatsEventSubscriber::SimpleHistogram::GetHistogram() const {
   }
 
   if (buckets_.back()) {
-    bucket.reset(new base::DictionaryValue);
+    bucket = std::make_unique<base::DictionaryValue>();
     bucket->SetInteger(base::StringPrintf(">=%" PRId64, max_),
                        buckets_.back());
     histo->Append(std::move(bucket));

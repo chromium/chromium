@@ -5,6 +5,7 @@
 #include "media/renderers/video_renderer_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -174,9 +175,9 @@ void VideoRendererImpl::Initialize(
 
   demuxer_stream_ = stream;
 
-  video_decoder_stream_.reset(new VideoDecoderStream(
+  video_decoder_stream_ = std::make_unique<VideoDecoderStream>(
       std::make_unique<VideoDecoderStream::StreamTraits>(media_log_),
-      task_runner_, create_video_decoders_cb_, media_log_));
+      task_runner_, create_video_decoders_cb_, media_log_);
   video_decoder_stream_->set_config_change_observer(base::BindRepeating(
       &VideoRendererImpl::OnConfigChange, weak_factory_.GetWeakPtr()));
   if (gpu_memory_buffer_pool_) {
@@ -303,7 +304,8 @@ void VideoRendererImpl::OnVideoDecoderStreamInitialized(bool success) {
   // frames yet.
   state_ = kFlushed;
 
-  algorithm_.reset(new VideoRendererAlgorithm(wall_clock_time_cb_, media_log_));
+  algorithm_ =
+      std::make_unique<VideoRendererAlgorithm>(wall_clock_time_cb_, media_log_);
   if (!drop_frames_)
     algorithm_->disable_frame_dropping();
 

@@ -83,7 +83,7 @@ TEST_F(SimpleEventSubscriberTest, GetAndResetEvents) {
   receive_event->size = 100u;
   cast_environment_->logger()->DispatchPacketEvent(std::move(receive_event));
 
-  receive_event.reset(new PacketEvent());
+  receive_event = std::make_unique<PacketEvent>();
   receive_event->timestamp = testing_clock_.NowTicks();
   receive_event->type = PACKET_RECEIVED;
   receive_event->media_type = VIDEO_EVENT;

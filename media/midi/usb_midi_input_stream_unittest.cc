@@ -62,7 +62,7 @@ class MockDelegate : public UsbMidiInputStream::Delegate {
 class UsbMidiInputStreamTest : public ::testing::Test {
  protected:
   UsbMidiInputStreamTest() {
-    stream_.reset(new UsbMidiInputStream(&delegate_));
+    stream_ = std::make_unique<UsbMidiInputStream>(&delegate_);
 
     stream_->Add(UsbMidiJack(&device1_,
                              84,  // jack_id

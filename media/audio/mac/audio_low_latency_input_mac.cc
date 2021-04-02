@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 #include <mach-o/loader.h>
 #include <mach/mach.h>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -716,7 +717,7 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
   // callbacks starts indicating if input audio recording starts as intended.
   // CheckInputStartupSuccess() will check if |input_callback_is_active_| is
   // true when the timer expires.
-  input_callback_timer_.reset(new base::OneShotTimer());
+  input_callback_timer_ = std::make_unique<base::OneShotTimer>();
   input_callback_timer_->Start(
       FROM_HERE,
       base::TimeDelta::FromSeconds(kInputCallbackStartTimeoutInSeconds), this,

@@ -4,6 +4,7 @@
 
 #include "media/renderers/renderer_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -391,8 +392,8 @@ void RendererImpl::InitializeAudioRenderer() {
 
   current_audio_stream_ = audio_stream;
 
-  audio_renderer_client_.reset(
-      new RendererClientInternal(DemuxerStream::AUDIO, this, media_resource_));
+  audio_renderer_client_ = std::make_unique<RendererClientInternal>(
+      DemuxerStream::AUDIO, this, media_resource_);
   // Note: After the initialization of a renderer, error events from it may
   // happen at any time and all future calls must guard against STATE_ERROR.
   audio_renderer_->Initialize(
@@ -442,8 +443,8 @@ void RendererImpl::InitializeVideoRenderer() {
 
   current_video_stream_ = video_stream;
 
-  video_renderer_client_.reset(
-      new RendererClientInternal(DemuxerStream::VIDEO, this, media_resource_));
+  video_renderer_client_ = std::make_unique<RendererClientInternal>(
+      DemuxerStream::VIDEO, this, media_resource_);
   video_renderer_->Initialize(
       video_stream, cdm_context_, video_renderer_client_.get(),
       base::BindRepeating(&RendererImpl::GetWallClockTimes,
@@ -474,7 +475,7 @@ void RendererImpl::OnVideoRendererInitializeDone(PipelineStatus status) {
   if (audio_renderer_) {
     time_source_ = audio_renderer_->GetTimeSource();
   } else if (!time_source_) {
-    wall_clock_time_source_.reset(new WallClockTimeSource());
+    wall_clock_time_source_ = std::make_unique<WallClockTimeSource>();
     time_source_ = wall_clock_time_source_.get();
   }
 

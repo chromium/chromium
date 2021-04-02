@@ -5,6 +5,7 @@
 #include "media/filters/vp9_bool_decoder.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/logging.h"
 #include "base/stl_util.h"
@@ -49,7 +50,7 @@ bool Vp9BoolDecoder::Initialize(const uint8_t* data, size_t size) {
     return false;
   }
 
-  reader_.reset(new BitReader(data, size));
+  reader_ = std::make_unique<BitReader>(data, size);
   valid_ = true;
 
   bool_value_ = 0;

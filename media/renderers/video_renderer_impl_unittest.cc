@@ -86,17 +86,17 @@ class VideoRendererImplTest : public testing::Test {
         demuxer_stream_(DemuxerStream::VIDEO),
         simulate_decode_delay_(false),
         expect_init_success_(true) {
-    null_video_sink_.reset(
-        new NullVideoSink(false, base::TimeDelta::FromSecondsD(1.0 / 60),
-                          base::BindRepeating(&MockCB::FrameReceived,
-                                              base::Unretained(&mock_cb_)),
-                          base::ThreadTaskRunnerHandle::Get()));
+    null_video_sink_ = std::make_unique<NullVideoSink>(
+        false, base::TimeDelta::FromSecondsD(1.0 / 60),
+        base::BindRepeating(&MockCB::FrameReceived,
+                            base::Unretained(&mock_cb_)),
+        base::ThreadTaskRunnerHandle::Get());
 
-    renderer_.reset(new VideoRendererImpl(
+    renderer_ = std::make_unique<VideoRendererImpl>(
         base::ThreadTaskRunnerHandle::Get(), null_video_sink_.get(),
         base::BindRepeating(&VideoRendererImplTest::CreateVideoDecodersForTest,
                             base::Unretained(this)),
-        true, &media_log_, nullptr));
+        true, &media_log_, nullptr);
     renderer_->SetTickClockForTesting(&tick_clock_);
     null_video_sink_->set_tick_clock_for_testing(&tick_clock_);
     time_source_.SetTickClockForTesting(&tick_clock_);
@@ -1177,14 +1177,13 @@ TEST_F(VideoRendererImplTest, VideoFrameRateChange) {
 class VideoRendererImplAsyncAddFrameReadyTest : public VideoRendererImplTest {
  public:
   void InitializeWithMockGpuMemoryBufferVideoFramePool() {
-    renderer_.reset(new VideoRendererImpl(
+    renderer_ = std::make_unique<VideoRendererImpl>(
         base::ThreadTaskRunnerHandle::Get(), null_video_sink_.get(),
         base::BindRepeating(&VideoRendererImplAsyncAddFrameReadyTest::
                                 CreateVideoDecodersForTest,
                             base::Unretained(this)),
         true, &media_log_,
-        std::make_unique<MockGpuMemoryBufferVideoFramePool>(
-            &frame_ready_cbs_)));
+        std::make_unique<MockGpuMemoryBufferVideoFramePool>(&frame_ready_cbs_));
     VideoRendererImplTest::Initialize();
   }
 

@@ -138,14 +138,14 @@ void FakeRemoter::StartDataStreams(
     mojo::PendingReceiver<mojom::RemotingDataStreamSender> video_sender) {
   if (audio_pipe.is_valid()) {
     VLOG(2) << "Has audio";
-    audio_stream_sender_.reset(new FakeRemotingDataStreamSender(
-        std::move(audio_sender), std::move(audio_pipe)));
+    audio_stream_sender_ = std::make_unique<FakeRemotingDataStreamSender>(
+        std::move(audio_sender), std::move(audio_pipe));
   }
 
   if (video_pipe.is_valid()) {
     VLOG(2) << "Has video";
-    video_stream_sender_.reset(new FakeRemotingDataStreamSender(
-        std::move(video_sender), std::move(video_pipe)));
+    video_stream_sender_ = std::make_unique<FakeRemotingDataStreamSender>(
+        std::move(video_sender), std::move(video_pipe));
   }
 }
 

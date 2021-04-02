@@ -5,6 +5,7 @@
 #include "media/base/pipeline_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -1188,8 +1189,8 @@ PipelineImpl::PipelineImpl(
   DVLOG(2) << __func__;
   DCHECK(create_renderer_cb_);
 
-  renderer_wrapper_.reset(new RendererWrapper(
-      media_task_runner_, std::move(main_task_runner), media_log_));
+  renderer_wrapper_ = std::make_unique<RendererWrapper>(
+      media_task_runner_, std::move(main_task_runner), media_log_);
 }
 
 PipelineImpl::~PipelineImpl() {

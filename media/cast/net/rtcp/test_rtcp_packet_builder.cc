@@ -4,6 +4,8 @@
 
 #include "media/cast/net/rtcp/test_rtcp_packet_builder.h"
 
+#include <memory>
+
 #include "base/check_op.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
 
@@ -231,8 +233,7 @@ void TestRtcpPacketBuilder::AddReceiverEventLog(uint16_t event_data,
 
 std::unique_ptr<media::cast::Packet> TestRtcpPacketBuilder::GetPacket() {
   PatchLengthField();
-  return std::unique_ptr<media::cast::Packet>(
-      new media::cast::Packet(buffer_, buffer_ + Length()));
+  return std::make_unique<media::cast::Packet>(buffer_, buffer_ + Length());
 }
 
 const uint8_t* TestRtcpPacketBuilder::Data() {

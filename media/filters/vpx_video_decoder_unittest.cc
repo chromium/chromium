@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -204,7 +205,7 @@ TEST_F(VpxVideoDecoderTest, DecodeFrame_LargerWidth) {
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
 TEST_F(VpxVideoDecoderTest, Offloaded_DecodeFrame_LargerWidth) {
-  decoder_.reset(new OffloadingVpxVideoDecoder());
+  decoder_ = std::make_unique<OffloadingVpxVideoDecoder>();
   DecodeIFrameThenTestFile("vp9-I-frame-1280x720", gfx::Size(1280, 720));
 }
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 
 #include "base/check_op.h"
 #include "media/base/audio_bus.h"
@@ -157,8 +158,8 @@ void AudioBufferConverter::ResetConverter(const AudioBuffer& buffer) {
     return;
 
   // Note: The FIFO is disabled to avoid extraneous memcpy().
-  audio_converter_.reset(
-      new AudioConverter(input_params_, output_params_, true));
+  audio_converter_ =
+      std::make_unique<AudioConverter>(input_params_, output_params_, true);
   audio_converter_->AddInput(this);
 }
 

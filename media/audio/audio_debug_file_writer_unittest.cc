@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -235,13 +237,13 @@ class AudioDebugFileWriterSingleThreadTest : public AudioDebugFileWriterTest {
 };
 
 TEST_P(AudioDebugFileWriterTest, WaveRecordingTest) {
-  debug_writer_.reset(new AudioDebugFileWriter(params_));
+  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
   RecordAndVerifyOnce();
 }
 
 TEST_P(AudioDebugFileWriterSingleThreadTest,
        DeletedBeforeRecordingFinishedOnFileThread) {
-  debug_writer_.reset(new AudioDebugFileWriter(params_));
+  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
 
   base::FilePath file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
@@ -267,25 +269,25 @@ TEST_P(AudioDebugFileWriterSingleThreadTest,
 }
 
 TEST_P(AudioDebugFileWriterBehavioralTest, StartWithInvalidFile) {
-  debug_writer_.reset(new AudioDebugFileWriter(params_));
+  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
   base::File file;  // Invalid file, recording should not crash
   debug_writer_->Start(std::move(file));
   DoDebugRecording();
 }
 
 TEST_P(AudioDebugFileWriterBehavioralTest, StartStopStartStop) {
-  debug_writer_.reset(new AudioDebugFileWriter(params_));
+  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
   RecordAndVerifyOnce();
   RecordAndVerifyOnce();
 }
 
 TEST_P(AudioDebugFileWriterBehavioralTest, DestroyNotStarted) {
-  debug_writer_.reset(new AudioDebugFileWriter(params_));
+  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
   debug_writer_.reset();
 }
 
 TEST_P(AudioDebugFileWriterBehavioralTest, DestroyStarted) {
-  debug_writer_.reset(new AudioDebugFileWriter(params_));
+  debug_writer_ = std::make_unique<AudioDebugFileWriter>(params_);
   base::FilePath file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
   base::File file = OpenFile(file_path);

@@ -5,6 +5,8 @@
 #include "media/mojo/services/mojo_demuxer_stream_adapter.h"
 
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -76,8 +78,8 @@ void MojoDemuxerStreamAdapter::OnStreamReady(
 
   type_ = type;
 
-  mojo_decoder_buffer_reader_.reset(
-      new MojoDecoderBufferReader(std::move(consumer_handle)));
+  mojo_decoder_buffer_reader_ =
+      std::make_unique<MojoDecoderBufferReader>(std::move(consumer_handle));
 
   UpdateConfig(std::move(audio_config), std::move(video_config));
 

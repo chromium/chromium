@@ -58,7 +58,7 @@ class UsbMidiOutputStreamTest : public ::testing::Test {
  protected:
   UsbMidiOutputStreamTest() {
     UsbMidiJack jack(&device_, 1, 2, 4);
-    stream_.reset(new UsbMidiOutputStream(jack));
+    stream_ = std::make_unique<UsbMidiOutputStream>(jack);
   }
 
   MockUsbMidiDevice device_;

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -341,10 +342,10 @@ OSStatus AUHALStream::Render(AudioUnitRenderActionFlags* flags,
       number_of_frames_requested_ = number_of_frames;
       DVLOG(1) << "Audio frame size changed from " << number_of_frames_
                << " to " << number_of_frames << " adding FIFO to compensate.";
-      audio_fifo_.reset(
-          new AudioPullFifo(params_.channels(), number_of_frames_,
-                            base::BindRepeating(&AUHALStream::ProvideInput,
-                                                base::Unretained(this))));
+      audio_fifo_ = std::make_unique<AudioPullFifo>(
+          params_.channels(), number_of_frames_,
+          base::BindRepeating(&AUHALStream::ProvideInput,
+                              base::Unretained(this)));
     }
   }
 
