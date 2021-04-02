@@ -962,7 +962,7 @@ message ClientDownloadResponse {
   optional bool upload = 5;
 
   // Whether or not Chrome should prompt the user for deep scanning
-  optional bool request_deep_scan = 6;
+  optional bool request_deep_scan = 19;
 }
 
 // The following protocol buffer holds the feedback report gathered
