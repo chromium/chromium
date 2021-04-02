@@ -10,6 +10,7 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -39,6 +40,8 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
             // Enabled:
             network::features::kCrossOriginOpenerPolicy,
             network::features::kCrossOriginOpenerPolicyReporting,
+            // SharedArrayBuffer is needed for these tests.
+            features::kSharedArrayBuffer,
         },
         {});
   }

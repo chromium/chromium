@@ -99,7 +99,7 @@
       "fast/dom",
       "http/tests/devtools/isolated-code-cache/"
     ],
-    "args": ["--enable-features=V8OffThreadFinalization,SmallScriptStreaming"]
+    "args": ["--enable-features=V8OffThreadFinalization,SmallScriptStreaming,SharedArrayBuffer"]
   },
   {
     "prefix": "exotic-color-space",
@@ -172,7 +172,39 @@
               "media",
               "svg",
               "scrollingcoordinator"],
-    "args": ["--enable-blink-features=ForceSynchronousHTMLParsing"]
+    "args": ["--enable-blink-features=ForceSynchronousHTMLParsing",
+             "--enable-features=SharedArrayBuffer"]
+  },
+  {
+    "prefix": "shared_array_buffer_on_desktop",
+    "bases": ["crypto",
+              "external/wpt/compression",
+              "external/wpt/encoding",
+              "external/wpt/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-agent-formalism",
+              "external/wpt/html/browsers/origin/origin-keyed-agent-clusters",
+              "external/wpt/native-io",
+              "external/wpt/orientation-sensor",
+              "external/wpt/wasm/jsapi/memory",
+              "external/wpt/webaudio/the-audio-api/the-audiobuffer-interface",
+              "external/wpt/webaudio/the-audio-api/the-audioworklet-interface",
+              "external/wpt/xhr",
+              "fast/beacon",
+              "fast/css/",
+              "fast/dom",
+              "fast/encoding",
+              "fast/events/constructors",
+              "fast/files",
+              "fast/peerconnection",
+              "fast/webgl",
+              "fast/workers",
+              "fast/xmlhttprequest",
+              "http/tests/devtools",
+              "http/tests/inspector-protocol/issues",
+              "http/tests/websocket",
+              "storage/indexeddb",
+              "platform/android/fast/workers",
+              "webaudio"],
+    "args": ["--enable-features=SharedArrayBuffer"]
   },
   {
     "prefix": "mse-1mb-buffers",
@@ -458,7 +490,7 @@
               "fast/workers",
               "http/tests/origin_trials",
               "http/tests/workers"],
-    "args": ["--enable-features=PlzDedicatedWorker"]
+    "args": ["--enable-features=PlzDedicatedWorker,SharedArrayBuffer"]
   },
   {
     "prefix": "plz-dedicated-worker-cors-rfc1918",
@@ -838,7 +870,7 @@
               "fast/scroll-behavior/middleclick-autoscroll-use-count.html",
               "http/tests/credentialmanager/credentialscontainer-create-with-virtual-authenticator.html",
               "ietestcenter/css3/bordersbackgrounds/background-attachment-local-scrolling.htm"],
-    "args": ["--enable-features=ScrollUnification",
+    "args": ["--enable-features=ScrollUnification,SharedArrayBuffer",
              "--enable-threaded-compositing"]
   },
   {

@@ -644,20 +644,13 @@ const base::Feature kServiceWorkerTerminationOnNoControllee{
 // http://tc39.github.io/ecmascript_sharedmem/shmem.html
 // This feature is also enabled independently of this flag for cross-origin
 // isolated renderers.
-const base::Feature kSharedArrayBuffer {
-  "SharedArrayBuffer",
-#if defined(OS_ANDROID)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
-// Convenience feature for developers testing SABs and Cross-origin Isolation.
-// Disables both SharedArrayBuffer and WebAssemblyThreads features, so SABs
-// require COOP+COEP isolation.
-// TODO(bbudge) Remove after reverse origin trial. See https://crbug.com/923807
-const base::Feature kRestrictSharedArrayBuffer{
-    "RestrictSharedArrayBuffer", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSharedArrayBuffer{"SharedArrayBuffer",
+                                       base::FEATURE_DISABLED_BY_DEFAULT};
+// If enabled, SharedArrayBuffer is present and can be transferred on desktop
+// platforms. This flag is used only as a "kill switch" as we migrate towards
+// requiring 'crossOriginIsolated'.
+const base::Feature kSharedArrayBufferOnDesktop{
+    "SharedArrayBufferOnDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Signed HTTP Exchange prefetch cache for navigations
 // https://crbug.com/968427
@@ -819,11 +812,7 @@ const base::Feature kWebAssemblyTiering{"WebAssemblyTiering",
 // isolated renderers.
 const base::Feature kWebAssemblyThreads {
   "WebAssemblyThreads",
-#if defined(OS_ANDROID)
       base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
 };
 
 // Enable WebAssembly trap handler.

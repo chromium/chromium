@@ -196,6 +196,7 @@ class WebRuntimeFeatures {
       bool);
   BLINK_PLATFORM_EXPORT static void
   EnableSendBeaconThrowForBlobWithNonSimpleType(bool);
+  BLINK_PLATFORM_EXPORT static void EnableSharedArrayBufferOnDesktop(bool);
   BLINK_PLATFORM_EXPORT static void EnableVideoPlaybackQuality(bool);
   BLINK_PLATFORM_EXPORT static void EnableMediaControlsOverlayPlayButton(bool);
   BLINK_PLATFORM_EXPORT static void EnableMediaCastOverlayButton(bool);

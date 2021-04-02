@@ -539,6 +539,7 @@ crbug.com/947951 [ Win ] external/wpt/pointerevents/pointerevent_touch-action-in
 crbug.com/626703 [ Mac ] external/wpt/preload/preload-with-type.html [ Slow ]
 crbug.com/626703 [ Mac ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-mode.html [ Slow ]
 crbug.com/626703 [ Mac ] external/wpt/infrastructure/testdriver/actions/pause.html [ Slow ]
+crbug.com/626703 external/wpt/html/infrastructure/safe-passing-of-structured-data/shared-array-buffers/window-iframe-messagechannel.https.html [ Slow ]
 crbug.com/982116 http/tests/devtools/elements/styles-4/styles-new-API.js [ Slow ]
 crbug.com/655458 external/wpt/workers/Worker_terminate_event_queue.htm [ Slow ]
 crbug.com/1073296 external/wpt/service-workers/service-worker/activation.https.html [ Slow ]

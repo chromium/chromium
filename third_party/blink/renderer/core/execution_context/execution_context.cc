@@ -169,14 +169,18 @@ unsigned ExecutionContext::ContextLifecycleStateObserverCountForTesting()
 }
 
 bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
-  if (RuntimeEnabledFeatures::SharedArrayBufferEnabled(this) ||
-      CrossOriginIsolatedCapability()) {
+  // Enable transfer if cross-origin isolated, or if the feature is enabled.
+  if (CrossOriginIsolatedCapability() ||
+      RuntimeEnabledFeatures::SharedArrayBufferEnabled()) {
     return true;
   }
 #if defined(OS_ANDROID)
   return false;
 #else
-  return RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this);
+  // On desktop, enable transfer for the reverse Origin Trial, or if the
+  // Finch "kill switch" is on.
+  return RuntimeEnabledFeatures::UnrestrictedSharedArrayBufferEnabled(this) ||
+         RuntimeEnabledFeatures::SharedArrayBufferOnDesktopEnabled();
 #endif
 }
 

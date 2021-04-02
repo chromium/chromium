@@ -291,6 +291,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kSecurePaymentConfirmationDebug},
     {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,
      features::kSendBeaconThrowForBlobWithNonSimpleType},
+    {wf::EnableSharedArrayBufferOnDesktop,
+     features::kSharedArrayBufferOnDesktop},
     {wf::EnableSignedExchangePrefetchCacheForNavigations,
      features::kSignedExchangePrefetchCacheForNavigations},
     {wf::EnableSignedExchangeSubresourcePrefetch,

@@ -150,33 +150,31 @@ RenderProcessImpl::RenderProcessImpl()
   constexpr char kAtomicsFlag[] = "--harmony-atomics";
   v8::V8::SetFlagsFromString(kAtomicsFlag, sizeof(kAtomicsFlag));
 
-  // SharedArrayBuffers require the feature flag, or the WebAssembly threads
-  // feature, or site isolation. On Android, SABs are disabled by default, so
-  // site isolation is required. On desktop, site isolation is optional while we
-  // migrate existing web pages to require site isolation.
   bool enable_wasm_threads =
       base::FeatureList::IsEnabled(features::kWebAssemblyThreads);
-  bool restrict_shared_array_buffers =
-      base::FeatureList::IsEnabled(features::kRestrictSharedArrayBuffer);
+  bool enable_shared_array_buffer =
+      base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
   bool cross_origin_isolated =
       base::FeatureList::IsEnabled(network::features::kCrossOriginIsolated) &&
       blink::IsCrossOriginIsolated();
 
-  bool enable_shared_array_buffer = false;
-  if (cross_origin_isolated) {
-    enable_shared_array_buffer = true;
-    enable_wasm_threads = true;
-  } else if (!restrict_shared_array_buffers) {
+  // The Finch "kill switch" feature can bypass the restriction on desktop only.
+#if (!defined(OS_ANDROID))
+  if (!enable_shared_array_buffer) {
     enable_shared_array_buffer =
-        enable_wasm_threads ||
-        base::FeatureList::IsEnabled(features::kSharedArrayBuffer);
+        base::FeatureList::IsEnabled(features::kSharedArrayBufferOnDesktop);
   }
+#endif
 
-  if (enable_wasm_threads) {
+  // WebAssembly Threads require the feature flag, or SharedArrayBuffer, or
+  // site isolation.
+  if (enable_wasm_threads || enable_shared_array_buffer ||
+      cross_origin_isolated) {
     constexpr char kWasmThreadsFlag[] = "--experimental-wasm-threads";
     v8::V8::SetFlagsFromString(kWasmThreadsFlag, sizeof(kWasmThreadsFlag));
   }
-  if (enable_shared_array_buffer) {
+  // SharedArrayBuffer requires feature flags, or site isolation.
+  if (enable_shared_array_buffer || cross_origin_isolated) {
     constexpr char kSABFlag[] = "--harmony-sharedarraybuffer";
     v8::V8::SetFlagsFromString(kSABFlag, sizeof(kSABFlag));
   } else {

@@ -3019,4 +3019,85 @@ IN_PROC_BROWSER_TEST_F(UnrestrictedSharedArrayBufferOriginTrialBrowserTest,
 #endif  // defined(OS_ANDROID)
 }
 
+// Ensure the SharedArrayBufferOnDesktop kill switch is correctly implemented.
+class SharedArrayBufferOnDesktopBrowserTest
+    : public CrossOriginOpenerPolicyBrowserTest {
+ public:
+  SharedArrayBufferOnDesktopBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {
+            // Enabled
+            features::kSharedArrayBufferOnDesktop,
+        },
+        {
+            // Disabled
+            features::kSharedArrayBuffer,
+            features::kWebAssemblyThreads,
+        });
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SharedArrayBufferOnDesktopBrowserTest,
+                         kTestParams);
+
+IN_PROC_BROWSER_TEST_P(SharedArrayBufferOnDesktopBrowserTest,
+                       DesktopHasSharedArrayBuffer) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL url = https_server()->GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  EXPECT_EQ(false, EvalJs(current_frame_host(), "self.crossOriginIsolated"));
+#if !defined(OS_ANDROID)
+  EXPECT_EQ(true,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+#else   // defined(OS_ANDROID)
+  EXPECT_EQ(false,
+            EvalJs(current_frame_host(), "'SharedArrayBuffer' in globalThis"));
+#endif  // defined(OS_ANDROID)
+}
+
+IN_PROC_BROWSER_TEST_P(SharedArrayBufferOnDesktopBrowserTest,
+                       DesktopTransferSharedArrayBuffer) {
+  CHECK(!base::FeatureList::IsEnabled(features::kSharedArrayBuffer));
+  GURL main_url = https_server()->GetURL("a.com", "/empty.html");
+  GURL iframe_url = https_server()->GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("g_iframe = document.createElement('iframe');"
+                               "g_iframe.src = $1;"
+                               "document.body.appendChild(g_iframe);",
+                               iframe_url)));
+  WaitForLoadStop(web_contents());
+
+  RenderFrameHostImpl* main_document = current_frame_host();
+  RenderFrameHostImpl* sub_document =
+      current_frame_host()->child_at(0)->current_frame_host();
+
+  EXPECT_EQ(false, EvalJs(main_document, "self.crossOriginIsolated"));
+  EXPECT_EQ(false, EvalJs(sub_document, "self.crossOriginIsolated"));
+
+  EXPECT_TRUE(ExecJs(main_document, R"(
+    g_sab_size = new Promise(resolve => {
+      addEventListener("message", event => resolve(event.data.byteLength));
+    });
+  )",
+                     EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+#if !defined(OS_ANDROID)
+  EXPECT_TRUE(ExecJs(sub_document, R"(
+    let sab = new SharedArrayBuffer(1234);
+    parent.postMessage(sab, "*");
+  )"));
+
+  EXPECT_EQ(1234, EvalJs(main_document, "g_sab_size"));
+#else   // defined(OS_ANDROID)
+  EXPECT_FALSE(ExecJs(sub_document, R"(
+    let sab = new SharedArrayBuffer(1234);
+    parent.postMessage(sab, "*");
+  )"));
+#endif  // defined(OS_ANDROID)
+}
 }  // namespace content
