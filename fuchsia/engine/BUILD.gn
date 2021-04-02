@@ -361,6 +361,7 @@ test("web_engine_browsertests") {
     "browser/headless_browsertest.cc",
     "browser/media_browsertest.cc",
     "browser/navigation_policy_browsertest.cc",
+    "browser/permissions_browsertest.cc",
     "browser/theme_manager_browsertest.cc",
     "browser/virtual_keyboard_browsertest.cc",
   ]

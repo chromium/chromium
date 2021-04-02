@@ -379,7 +379,7 @@ TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithoutPermission) {
       navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
       embedded_test_server_.GetURL("/mic.html?NoPermission").spec()));
 
-  navigation_listener_->RunUntilTitleEquals("ended");
+  navigation_listener_->RunUntilTitleEquals("ended-NotFoundError");
 }
 
 TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {

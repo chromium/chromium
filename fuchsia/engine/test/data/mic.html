@@ -1,4 +1,6 @@
 <script>
+  let getUserMediaError = null;
+
   function callGetUserMedia(haveAccess) {
     return navigator.mediaDevices.getUserMedia({ audio: true, video: false })
       .then(() => {
@@ -8,9 +10,7 @@
         }
       })
       .catch((e) => {
-        if (!haveAccess && e.name == "NotFoundError")
-          return;
-        throw e;
+        getUserMediaError = e.name;
       });
   }
 
@@ -44,5 +44,13 @@
 
   callGetUserMedia(haveAccess)
   .then(() => { return callEnumerateDevices(haveAccess); })
-  .then(() => { document.title = "ended"; })
+  .then(() => {
+    var title = "ended";
+    if (getUserMediaError)
+      title += "-" + getUserMediaError;
+    document.title = title;
+    if (window.parent) {
+      window.parent.postMessage({title: document.title}, "*");
+    }
+  });
 </script>
