@@ -4,6 +4,8 @@
 
 #include "extensions/browser/extensions_test.h"
 
+#include <memory>
+
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service_factory.h"
@@ -70,7 +72,7 @@ void ExtensionsTest::SetUp() {
   extensions_browser_client_->SetIncognitoContext(incognito_context_.get());
 
   // Set up all the dependencies of ExtensionPrefs.
-  extension_pref_value_map_.reset(new ExtensionPrefValueMap());
+  extension_pref_value_map_ = std::make_unique<ExtensionPrefValueMap>();
   PrefServiceFactory factory;
   factory.set_user_prefs(new TestingPrefStore());
   factory.set_extension_prefs(new TestingPrefStore());

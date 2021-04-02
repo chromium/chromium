@@ -51,20 +51,12 @@ class BluetoothSocketApiTest : public extensions::ShellApiTest {
     mock_adapter_ = new testing::StrictMock<MockBluetoothAdapter>();
     BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
 
-    mock_device1_.reset(
-        new testing::NiceMock<MockBluetoothDevice>(mock_adapter_.get(),
-                                                   0,
-                                                   "d1",
-                                                   "11:12:13:14:15:16",
-                                                   true /* paired */,
-                                                   false /* connected */));
-    mock_device2_.reset(
-        new testing::NiceMock<MockBluetoothDevice>(mock_adapter_.get(),
-                                                   0,
-                                                   "d2",
-                                                   "21:22:23:24:25:26",
-                                                   true /* paired */,
-                                                   false /* connected */));
+    mock_device1_ = std::make_unique<testing::NiceMock<MockBluetoothDevice>>(
+        mock_adapter_.get(), 0, "d1", "11:12:13:14:15:16", true /* paired */,
+        false /* connected */);
+    mock_device2_ = std::make_unique<testing::NiceMock<MockBluetoothDevice>>(
+        mock_adapter_.get(), 0, "d2", "21:22:23:24:25:26", true /* paired */,
+        false /* connected */);
   }
 
  protected:

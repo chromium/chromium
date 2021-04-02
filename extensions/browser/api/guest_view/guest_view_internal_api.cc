@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/guest_view/guest_view_internal_api.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -116,16 +117,16 @@ ExtensionFunction::ResponseAction GuestViewInternalSetSizeFunction::Run() {
         params->params.enable_auto_size.release());
   }
   if (params->params.min) {
-    set_size_params.min_size.reset(
-        new gfx::Size(params->params.min->width, params->params.min->height));
+    set_size_params.min_size = std::make_unique<gfx::Size>(
+        params->params.min->width, params->params.min->height);
   }
   if (params->params.max) {
-    set_size_params.max_size.reset(
-        new gfx::Size(params->params.max->width, params->params.max->height));
+    set_size_params.max_size = std::make_unique<gfx::Size>(
+        params->params.max->width, params->params.max->height);
   }
   if (params->params.normal) {
-    set_size_params.normal_size.reset(new gfx::Size(
-        params->params.normal->width, params->params.normal->height));
+    set_size_params.normal_size = std::make_unique<gfx::Size>(
+        params->params.normal->width, params->params.normal->height);
   }
 
   guest->SetSize(set_size_params);

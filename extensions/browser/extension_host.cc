@@ -4,6 +4,8 @@
 
 #include "extensions/browser/extension_host.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -180,7 +182,7 @@ const GURL& ExtensionHost::GetLastCommittedURL() const {
 }
 
 void ExtensionHost::LoadInitialURL() {
-  load_start_.reset(new base::ElapsedTimer());
+  load_start_ = std::make_unique<base::ElapsedTimer>();
   host_contents_->GetController().LoadURL(
       initial_url_, content::Referrer(), ui::PAGE_TRANSITION_LINK,
       std::string());

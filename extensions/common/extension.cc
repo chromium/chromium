@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -587,7 +588,7 @@ bool Extension::InitFromValue(int flags, std::u16string* error) {
   if (is_app() && !LoadAppFeatures(error))
     return false;
 
-  permissions_parser_.reset(new PermissionsParser());
+  permissions_parser_ = std::make_unique<PermissionsParser>();
   if (!permissions_parser_->Parse(this, error))
     return false;
 

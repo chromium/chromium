@@ -74,7 +74,7 @@ bool MockExternalProvider::GetExtensionDetails(
 
   // Only ExternalInstallInfoFile has version.
   if (version && it1 != file_extension_map_.end())
-    version->reset(new base::Version(it1->second->version));
+    *version = std::make_unique<base::Version>(it1->second->version);
 
   if (location)
     *location = location_;

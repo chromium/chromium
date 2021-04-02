@@ -4,6 +4,7 @@
 
 #include "extensions/common/stack_frame.h"
 
+#include <memory>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -63,8 +64,8 @@ std::unique_ptr<StackFrame> StackFrame::CreateFromText(
     return std::unique_ptr<StackFrame>();
   }
 
-  return std::unique_ptr<StackFrame>(new StackFrame(
-      line, column, base::UTF8ToUTF16(source), base::UTF8ToUTF16(function)));
+  return std::make_unique<StackFrame>(line, column, base::UTF8ToUTF16(source),
+                                      base::UTF8ToUTF16(function));
 }
 
 bool StackFrame::operator==(const StackFrame& rhs) const {

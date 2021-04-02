@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -840,7 +841,7 @@ TEST_F(SimpleFeatureTest, SimpleFeatureAvailability) {
     std::vector<Feature*> list;
     list.push_back(feature1.release());
     list.push_back(feature2.release());
-    complex_feature.reset(new ComplexFeature(&list));
+    complex_feature = std::make_unique<ComplexFeature>(&list);
   }
 
   Feature* feature = static_cast<Feature*>(complex_feature.get());
@@ -897,7 +898,7 @@ TEST_F(SimpleFeatureTest, ComplexFeatureAvailability) {
     std::vector<Feature*> list;
     list.push_back(feature1.release());
     list.push_back(feature2.release());
-    complex_feature.reset(new ComplexFeature(&list));
+    complex_feature = std::make_unique<ComplexFeature>(&list);
   }
 
   const HashedExtensionId kId1(std::string(32, 'a'));

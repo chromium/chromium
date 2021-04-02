@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/socket/socket_api.h"
 
+#include <memory>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -839,16 +840,17 @@ void SocketGetInfoFunction::Work() {
   // that it should be closed locally.
   net::IPEndPoint peerAddress;
   if (socket->GetPeerAddress(&peerAddress)) {
-    info.peer_address.reset(new std::string(peerAddress.ToStringWithoutPort()));
-    info.peer_port.reset(new int(peerAddress.port()));
+    info.peer_address =
+        std::make_unique<std::string>(peerAddress.ToStringWithoutPort());
+    info.peer_port = std::make_unique<int>(peerAddress.port());
   }
 
   // Grab the local address as known by the OS.
   net::IPEndPoint localAddress;
   if (socket->GetLocalAddress(&localAddress)) {
-    info.local_address.reset(
-        new std::string(localAddress.ToStringWithoutPort()));
-    info.local_port.reset(new int(localAddress.port()));
+    info.local_address =
+        std::make_unique<std::string>(localAddress.ToStringWithoutPort());
+    info.local_port = std::make_unique<int>(localAddress.port());
   }
 
   SetResult(info.ToValue());

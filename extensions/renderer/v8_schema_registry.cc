@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -170,9 +171,9 @@ v8::Local<v8::Context> V8SchemaRegistry::GetOrCreateContext(
   // It's ok to create local handles in this function, since this is only called
   // when we have a HandleScope.
   if (!context_holder_) {
-    context_holder_.reset(new gin::ContextHolder(isolate));
+    context_holder_ = std::make_unique<gin::ContextHolder>(isolate);
     context_holder_->SetContext(v8::Context::New(isolate));
-    schema_cache_.reset(new SchemaCache(isolate));
+    schema_cache_ = std::make_unique<SchemaCache>(isolate);
     return context_holder_->context();
   }
   return context_holder_->context();

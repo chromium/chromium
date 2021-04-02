@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/sockets_tcp_server/sockets_tcp_server_api.h"
 
+#include <memory>
 #include <unordered_set>
 #include <vector>
 
@@ -33,7 +34,7 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPServerSocket* socket) {
   // to the system.
   socket_info.socket_id = socket_id;
   if (!socket->name().empty()) {
-    socket_info.name.reset(new std::string(socket->name()));
+    socket_info.name = std::make_unique<std::string>(socket->name());
   }
   socket_info.persistent = socket->persistent();
   socket_info.paused = socket->paused();
@@ -41,9 +42,9 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPServerSocket* socket) {
   // Grab the local address as known by the OS.
   net::IPEndPoint localAddress;
   if (socket->GetLocalAddress(&localAddress)) {
-    socket_info.local_address.reset(
-        new std::string(localAddress.ToStringWithoutPort()));
-    socket_info.local_port.reset(new int(localAddress.port()));
+    socket_info.local_address =
+        std::make_unique<std::string>(localAddress.ToStringWithoutPort());
+    socket_info.local_port = std::make_unique<int>(localAddress.port());
   }
 
   return socket_info;

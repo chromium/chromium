@@ -289,8 +289,10 @@ void WebViewAPITest::SendMessageToGuestAndWait(
     const std::string& message,
     const std::string& wait_message) {
   std::unique_ptr<ExtensionTestMessageListener> listener;
-  if (!wait_message.empty())
-    listener.reset(new ExtensionTestMessageListener(wait_message, false));
+  if (!wait_message.empty()) {
+    listener =
+        std::make_unique<ExtensionTestMessageListener>(wait_message, false);
+  }
 
   EXPECT_TRUE(
       content::ExecuteScript(

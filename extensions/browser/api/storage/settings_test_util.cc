@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/storage/settings_test_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -24,8 +25,7 @@ namespace settings_test_util {
 // Creates a kilobyte of data.
 std::unique_ptr<base::Value> CreateKilobyte() {
   std::string kilobyte_string(1024u, 'a');
-  return std::unique_ptr<base::Value>(
-      new base::Value(std::move(kilobyte_string)));
+  return std::make_unique<base::Value>(std::move(kilobyte_string));
 }
 
 // Creates a megabyte of data.

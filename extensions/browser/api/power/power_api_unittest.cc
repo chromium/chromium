@@ -151,7 +151,7 @@ class PowerAPITest : public ApiUnitTest {
  public:
   void SetUp() override {
     ApiUnitTest::SetUp();
-    manager_.reset(new FakeWakeLockManager(browser_context()));
+    manager_ = std::make_unique<FakeWakeLockManager>(browser_context());
   }
 
   void TearDown() override {

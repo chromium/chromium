@@ -4,6 +4,7 @@
 
 #include "extensions/browser/guest_view/web_view/web_view_find_helper.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
@@ -165,8 +166,10 @@ void WebViewFindHelper::FindReply(int request_id,
   }
 
   // Clears the results for |findupdate| for a new find session.
-  if (!find_info->replied() && find_info->options()->new_session)
-    find_update_event_.reset(new FindUpdateEvent(find_info->search_text()));
+  if (!find_info->replied() && find_info->options()->new_session) {
+    find_update_event_ =
+        std::make_unique<FindUpdateEvent>(find_info->search_text());
+  }
 
   // Aggregate the find results.
   find_info->AggregateResults(number_of_matches, selection_rect,

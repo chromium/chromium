@@ -4,6 +4,8 @@
 
 #include "extensions/test/extension_test_notification_observer.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "content/public/browser/browser_context.h"
@@ -162,7 +164,8 @@ void ExtensionTestNotificationObserver::Watch(
     int type,
     const content::NotificationSource& source) {
   CHECK(!observer_);
-  observer_.reset(new content::WindowedNotificationObserver(type, source));
+  observer_ =
+      std::make_unique<content::WindowedNotificationObserver>(type, source);
   registrar_.Add(this, type, source);
 }
 

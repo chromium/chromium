@@ -4,6 +4,8 @@
 
 #include "extensions/browser/sandboxed_unpacker.h"
 
+#include <memory>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -155,8 +157,8 @@ class SandboxedUnpackerTest : public ExtensionsTest {
   void SetUp() override {
     ExtensionsTest::SetUp();
     ASSERT_TRUE(extensions_dir_.CreateUniqueTempDir());
-    in_process_utility_thread_helper_.reset(
-        new content::InProcessUtilityThreadHelper);
+    in_process_utility_thread_helper_ =
+        std::make_unique<content::InProcessUtilityThreadHelper>();
     // It will delete itself.
     client_ = new MockSandboxedUnpackerClient;
 

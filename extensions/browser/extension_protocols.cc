@@ -414,7 +414,7 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
 
   void OnStart() override {
     base::AutoLock auto_lock(lock_);
-    request_timer_.reset(new base::ElapsedTimer());
+    request_timer_ = std::make_unique<base::ElapsedTimer>();
   }
 
   void OnSeekComplete(int64_t result) override {

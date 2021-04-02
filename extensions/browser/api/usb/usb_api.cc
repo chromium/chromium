@@ -304,7 +304,7 @@ EndpointDescriptor ConvertEndpointDescriptor(
   output.synchronization =
       ConvertSynchronizationTypeToApi(input.synchronization_type);
   output.usage = ConvertUsageTypeToApi(input.usage_type);
-  output.polling_interval.reset(new int(input.polling_interval));
+  output.polling_interval = std::make_unique<int>(input.polling_interval);
   output.extra_data.assign(input.extra_data.begin(), input.extra_data.end());
   return output;
 }
@@ -608,7 +608,7 @@ ExtensionFunction::ResponseAction UsbFindDevicesFunction::Run() {
 
 void UsbFindDevicesFunction::OnGetDevicesComplete(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
-  result_.reset(new base::ListValue());
+  result_ = std::make_unique<base::ListValue>();
   barrier_ = base::BarrierClosure(
       devices.size(),
       base::BindOnce(&UsbFindDevicesFunction::OpenComplete, this));

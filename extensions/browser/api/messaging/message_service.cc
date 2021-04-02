@@ -5,7 +5,9 @@
 #include "extensions/browser/api/messaging/message_service.h"
 
 #include <stdint.h>
+
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -863,10 +865,10 @@ void MessageService::OnOpenChannelAllowed(
   // which depends on whether the extension uses spanning or split mode.
   if (content::RenderProcessHost* extension_process =
           GetExtensionProcess(context, params->target_extension_id)) {
-    params->receiver.reset(
-        new ExtensionMessagePort(
-            weak_factory_.GetWeakPtr(), params->receiver_port_id,
-            params->target_extension_id, extension_process));
+    params->receiver = std::make_unique<ExtensionMessagePort>(
+
+        weak_factory_.GetWeakPtr(), params->receiver_port_id,
+        params->target_extension_id, extension_process);
   } else {
     params->receiver.reset();
   }
@@ -898,9 +900,9 @@ void MessageService::PendingLazyContextOpenChannel(
   if (context_info == nullptr)
     return;  // TODO(mpcomplete): notify source of disconnect?
 
-  params->receiver.reset(new ExtensionMessagePort(
+  params->receiver = std::make_unique<ExtensionMessagePort>(
       weak_factory_.GetWeakPtr(), params->receiver_port_id,
-      params->target_extension_id, context_info->render_process_host));
+      params->target_extension_id, context_info->render_process_host);
   const Extension* const extension =
       extensions::ExtensionRegistry::Get(context_info->browser_context)
           ->enabled_extensions()

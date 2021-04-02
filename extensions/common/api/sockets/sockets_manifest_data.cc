@@ -4,6 +4,7 @@
 
 #include "extensions/common/api/sockets/sockets_manifest_data.h"
 
+#include <memory>
 #include <utility>
 
 #include "extensions/common/api/sockets/sockets_manifest_permission.h"
@@ -45,8 +46,7 @@ std::unique_ptr<SocketsManifestData> SocketsManifestData::FromValue(
   if (!permission)
     return std::unique_ptr<SocketsManifestData>();
 
-  return std::unique_ptr<SocketsManifestData>(
-      new SocketsManifestData(std::move(permission)));
+  return std::make_unique<SocketsManifestData>(std::move(permission));
 }
 
 }  // namespace extensions

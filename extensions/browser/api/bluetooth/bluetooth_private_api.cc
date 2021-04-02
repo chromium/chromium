@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -489,7 +490,8 @@ void BluetoothPrivateSetDiscoveryFilterFunction::DoWork(
         break;
     }
 
-    discovery_filter.reset(new device::BluetoothDiscoveryFilter(transport));
+    discovery_filter =
+        std::make_unique<device::BluetoothDiscoveryFilter>(transport);
 
     if (df_param.uuids.get()) {
       if (df_param.uuids->as_string.get()) {

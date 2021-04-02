@@ -91,7 +91,7 @@ BluetoothEventRouter* BluetoothAPI::event_router() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!event_router_) {
     BLUETOOTH_LOG(EVENT) << "BluetoothAPI: Creating BluetoothEventRouter";
-    event_router_.reset(new BluetoothEventRouter(browser_context_));
+    event_router_ = std::make_unique<BluetoothEventRouter>(browser_context_);
   }
   return event_router_.get();
 }

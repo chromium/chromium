@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/storage/storage_frontend.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -140,7 +141,8 @@ void StorageFrontend::Init(scoped_refptr<ValueStoreFactory> factory) {
   TRACE_EVENT0("browser,startup", "StorageFrontend::Init");
 
   observers_ = new SettingsObserverList();
-  browser_context_observer_.reset(new DefaultObserver(browser_context_));
+  browser_context_observer_ =
+      std::make_unique<DefaultObserver>(browser_context_);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!browser_context_->IsOffTheRecord());
 

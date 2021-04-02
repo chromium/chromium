@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/sockets_tcp/sockets_tcp_api.h"
 
+#include <memory>
 #include <string>
 #include <unordered_set>
 #include <utility>
@@ -38,11 +39,11 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
   // to the system.
   socket_info.socket_id = socket_id;
   if (!socket->name().empty()) {
-    socket_info.name.reset(new std::string(socket->name()));
+    socket_info.name = std::make_unique<std::string>(socket->name());
   }
   socket_info.persistent = socket->persistent();
   if (socket->buffer_size() > 0) {
-    socket_info.buffer_size.reset(new int(socket->buffer_size()));
+    socket_info.buffer_size = std::make_unique<int>(socket->buffer_size());
   }
   socket_info.paused = socket->paused();
   socket_info.connected = socket->IsConnected();
@@ -50,9 +51,9 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
   // Grab the local address as known by the OS.
   net::IPEndPoint localAddress;
   if (socket->GetLocalAddress(&localAddress)) {
-    socket_info.local_address.reset(
-        new std::string(localAddress.ToStringWithoutPort()));
-    socket_info.local_port.reset(new int(localAddress.port()));
+    socket_info.local_address =
+        std::make_unique<std::string>(localAddress.ToStringWithoutPort());
+    socket_info.local_port = std::make_unique<int>(localAddress.port());
   }
 
   // Grab the peer address as known by the OS. This and the call below will
@@ -61,9 +62,9 @@ SocketInfo CreateSocketInfo(int socket_id, ResumableTCPSocket* socket) {
   // that it should be closed locally.
   net::IPEndPoint peerAddress;
   if (socket->GetPeerAddress(&peerAddress)) {
-    socket_info.peer_address.reset(
-        new std::string(peerAddress.ToStringWithoutPort()));
-    socket_info.peer_port.reset(new int(peerAddress.port()));
+    socket_info.peer_address =
+        std::make_unique<std::string>(peerAddress.ToStringWithoutPort());
+    socket_info.peer_port = std::make_unique<int>(peerAddress.port());
   }
 
   return socket_info;
@@ -396,7 +397,7 @@ void SocketsTcpSendFunction::SetSendResult(int net_result, int bytes_sent) {
   sockets_tcp::SendInfo send_info;
   send_info.result_code = net_result;
   if (net_result == net::OK) {
-    send_info.bytes_sent.reset(new int(bytes_sent));
+    send_info.bytes_sent = std::make_unique<int>(bytes_sent);
   }
 
   if (net_result != net::OK)
@@ -517,14 +518,15 @@ void SocketsTcpSecureFunction::AsyncWorkStart() {
   // only values inside -- TLSVersionConstraints's |min| and |max|,
   api::socket::SecureOptions legacy_params;
   if (params_->options.get() && params_->options->tls_version.get()) {
-    legacy_params.tls_version.reset(new api::socket::TLSVersionConstraints);
+    legacy_params.tls_version =
+        std::make_unique<api::socket::TLSVersionConstraints>();
     if (params_->options->tls_version->min.get()) {
-      legacy_params.tls_version->min.reset(
-          new std::string(*params_->options->tls_version->min));
+      legacy_params.tls_version->min =
+          std::make_unique<std::string>(*params_->options->tls_version->min);
     }
     if (params_->options->tls_version->max.get()) {
-      legacy_params.tls_version->max.reset(
-          new std::string(*params_->options->tls_version->max));
+      legacy_params.tls_version->max =
+          std::make_unique<std::string>(*params_->options->tls_version->max);
     }
   }
 

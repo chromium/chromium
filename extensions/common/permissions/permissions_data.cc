@@ -4,6 +4,7 @@
 
 #include "extensions/common/permissions/permissions_data.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -196,7 +197,7 @@ URLPatternSet PermissionsData::policy_allowed_hosts() const {
 
 void PermissionsData::BindToCurrentThread() const {
   DCHECK(!thread_checker_);
-  thread_checker_.reset(new base::ThreadChecker());
+  thread_checker_ = std::make_unique<base::ThreadChecker>();
 }
 
 void PermissionsData::SetPermissions(

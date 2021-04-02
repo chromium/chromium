@@ -77,8 +77,8 @@ static void SetHostPatterns(
     std::unique_ptr<SocketHostPatterns>& host_patterns,
     const SocketsManifestPermission* permission,
     content::SocketPermissionRequest::OperationType operation_type) {
-  host_patterns.reset(new SocketHostPatterns());
-  host_patterns->as_strings.reset(new std::vector<std::string>());
+  host_patterns = std::make_unique<SocketHostPatterns>();
+  host_patterns->as_strings = std::make_unique<std::vector<std::string>>();
   for (auto it = permission->entries().cbegin();
        it != permission->entries().cend(); ++it) {
     if (it->pattern().type == operation_type) {
@@ -237,7 +237,7 @@ bool SocketsManifestPermission::FromValue(const base::Value* value) {
 std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
   Sockets sockets;
 
-  sockets.udp.reset(new Sockets::Udp());
+  sockets.udp = std::make_unique<Sockets::Udp>();
   SetHostPatterns(sockets.udp->bind, this, SocketPermissionRequest::UDP_BIND);
   SetHostPatterns(
       sockets.udp->send, this, SocketPermissionRequest::UDP_SEND_TO);
@@ -250,14 +250,14 @@ std::unique_ptr<base::Value> SocketsManifestPermission::ToValue() const {
     sockets.udp.reset(NULL);
   }
 
-  sockets.tcp.reset(new Sockets::Tcp());
+  sockets.tcp = std::make_unique<Sockets::Tcp>();
   SetHostPatterns(
       sockets.tcp->connect, this, SocketPermissionRequest::TCP_CONNECT);
   if (sockets.tcp->connect->as_strings->size() == 0) {
     sockets.tcp.reset(NULL);
   }
 
-  sockets.tcp_server.reset(new Sockets::TcpServer());
+  sockets.tcp_server = std::make_unique<Sockets::TcpServer>();
   SetHostPatterns(
       sockets.tcp_server->listen, this, SocketPermissionRequest::TCP_LISTEN);
   if (sockets.tcp_server->listen->as_strings->size() == 0) {

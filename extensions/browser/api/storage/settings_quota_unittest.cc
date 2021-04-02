@@ -56,8 +56,8 @@ class ExtensionSettingsQuotaTest : public testing::Test {
     ASSERT_TRUE(storage_.get() == NULL);
     SettingsStorageQuotaEnforcer::Limits limits =
         { quota_bytes, quota_bytes_per_item, max_items };
-    storage_.reset(
-        new SettingsStorageQuotaEnforcer(limits, base::WrapUnique(delegate_)));
+    storage_ = std::make_unique<SettingsStorageQuotaEnforcer>(
+        limits, base::WrapUnique(delegate_));
   }
 
   // Returns whether the settings in |storage_| and |delegate_| are the same as

@@ -164,7 +164,7 @@ class ExtensionThrottleEntryTest : public testing::Test {
 
 void ExtensionThrottleEntryTest::SetUp() {
   now_ = TimeTicks::Now();
-  entry_.reset(new MockExtensionThrottleEntry());
+  entry_ = std::make_unique<MockExtensionThrottleEntry>();
   entry_->ResetToBlank(now_);
 }
 

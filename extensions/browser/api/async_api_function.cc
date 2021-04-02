@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/async_api_function.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -65,7 +67,7 @@ void AsyncApiFunction::AsyncWorkCompleted() {
 }
 
 void AsyncApiFunction::SetResult(std::unique_ptr<base::Value> result) {
-  results_.reset(new base::ListValue());
+  results_ = std::make_unique<base::ListValue>();
   results_->Append(std::move(result));
 }
 

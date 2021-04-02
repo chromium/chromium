@@ -68,8 +68,8 @@ class BluetoothPrivateApiTest : public ExtensionApiTest {
         switches::kAllowlistedExtensionID, kTestExtensionId);
     mock_adapter_ = new NiceMock<MockBluetoothAdapter>();
     event_router()->SetAdapterForTest(mock_adapter_.get());
-    mock_device_.reset(new NiceMock<MockBluetoothDevice>(
-        mock_adapter_.get(), 0, kDeviceName, kDeviceAddress, false, false));
+    mock_device_ = std::make_unique<NiceMock<MockBluetoothDevice>>(
+        mock_adapter_.get(), 0, kDeviceName, kDeviceAddress, false, false);
     ON_CALL(*mock_adapter_, GetDevice(kDeviceAddress))
         .WillByDefault(Return(mock_device_.get()));
     ON_CALL(*mock_adapter_, IsPresent()).WillByDefault(Return(true));
@@ -103,7 +103,7 @@ class BluetoothPrivateApiTest : public ExtensionApiTest {
   void DispatchPairingEvent(bt_private::PairingEventType pairing_event_type) {
     bt_private::PairingEvent pairing_event;
     pairing_event.pairing = pairing_event_type;
-    pairing_event.device.name.reset(new std::string(kDeviceName));
+    pairing_event.device.name = std::make_unique<std::string>(kDeviceName);
     pairing_event.device.address = mock_device_->GetAddress();
     pairing_event.device.vendor_id_source = bt::VENDOR_ID_SOURCE_USB;
     pairing_event.device.type = bt::DEVICE_TYPE_PHONE;

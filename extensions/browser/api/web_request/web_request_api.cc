@@ -2666,8 +2666,9 @@ WebRequestInternalEventHandledFunction::Run() {
     if (!value->empty()) {
       base::Time install_time = ExtensionPrefs::Get(browser_context())
                                     ->GetInstallTime(extension_id_safe());
-      response.reset(new ExtensionWebRequestEventRouter::EventResponse(
-          extension_id_safe(), install_time));
+      response =
+          std::make_unique<ExtensionWebRequestEventRouter::EventResponse>(
+              extension_id_safe(), install_time);
     }
 
     // In Public Session we restrict everything but "cancel" (except for
@@ -2722,11 +2723,11 @@ WebRequestInternalEventHandledFunction::Run() {
       std::unique_ptr<net::HttpRequestHeaders> request_headers;
       std::unique_ptr<helpers::ResponseHeaders> response_headers;
       if (has_request_headers) {
-        request_headers.reset(new net::HttpRequestHeaders());
+        request_headers = std::make_unique<net::HttpRequestHeaders>();
         EXTENSION_FUNCTION_VALIDATE(value->GetList(keys::kRequestHeadersKey,
                                                    &headers_value));
       } else {
-        response_headers.reset(new helpers::ResponseHeaders());
+        response_headers = std::make_unique<helpers::ResponseHeaders>();
         EXTENSION_FUNCTION_VALIDATE(value->GetList(keys::kResponseHeadersKey,
                                                    &headers_value));
       }

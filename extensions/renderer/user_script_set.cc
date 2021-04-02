@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/debug/alias.h"
@@ -213,7 +214,7 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
       return injection;
   } else {
     DCHECK_EQ(host_id.type, mojom::HostID::HostType::kWebUi);
-    injection_host.reset(new WebUIInjectionHost(host_id));
+    injection_host = std::make_unique<WebUIInjectionHost>(host_id);
   }
 
   GURL effective_document_url =
@@ -237,9 +238,9 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
   bool inject_js =
       !script->js_scripts().empty() && script->run_location() == run_location;
   if (inject_css || inject_js) {
-    injection.reset(new ScriptInjection(std::move(injector), render_frame,
-                                        std::move(injection_host), run_location,
-                                        log_activity));
+    injection = std::make_unique<ScriptInjection>(
+        std::move(injector), render_frame, std::move(injection_host),
+        run_location, log_activity);
   }
   return injection;
 }

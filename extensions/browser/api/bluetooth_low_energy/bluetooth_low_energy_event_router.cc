@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <unordered_set>
 #include <utility>
 
@@ -52,13 +53,13 @@ void PopulateService(const BluetoothRemoteGattService* service,
 
   out->uuid = service->GetUUID().canonical_value();
   out->is_primary = service->IsPrimary();
-  out->instance_id.reset(new std::string(service->GetIdentifier()));
+  out->instance_id = std::make_unique<std::string>(service->GetIdentifier());
 
   if (!service->GetDevice())
     return;
 
-  out->device_address.reset(
-      new std::string(service->GetDevice()->GetAddress()));
+  out->device_address =
+      std::make_unique<std::string>(service->GetDevice()->GetAddress());
 }
 
 void PopulateCharacteristicProperties(
@@ -109,7 +110,8 @@ void PopulateCharacteristic(
   DCHECK(out);
 
   out->uuid = characteristic->GetUUID().canonical_value();
-  out->instance_id.reset(new std::string(characteristic->GetIdentifier()));
+  out->instance_id =
+      std::make_unique<std::string>(characteristic->GetIdentifier());
 
   out->service = std::make_unique<apibtle::Service>();
   PopulateService(characteristic->GetService(), out->service.get());
@@ -120,7 +122,7 @@ void PopulateCharacteristic(
   if (value.empty())
     return;
 
-  out->value.reset(new std::vector<uint8_t>(value));
+  out->value = std::make_unique<std::vector<uint8_t>>(value);
 }
 
 void PopulateDescriptor(const BluetoothRemoteGattDescriptor* descriptor,
@@ -128,7 +130,7 @@ void PopulateDescriptor(const BluetoothRemoteGattDescriptor* descriptor,
   DCHECK(out);
 
   out->uuid = descriptor->GetUUID().canonical_value();
-  out->instance_id.reset(new std::string(descriptor->GetIdentifier()));
+  out->instance_id = std::make_unique<std::string>(descriptor->GetIdentifier());
 
   out->characteristic = std::make_unique<apibtle::Characteristic>();
   PopulateCharacteristic(descriptor->GetCharacteristic(),
@@ -138,7 +140,7 @@ void PopulateDescriptor(const BluetoothRemoteGattDescriptor* descriptor,
   if (value.empty())
     return;
 
-  out->value.reset(new std::vector<uint8_t>(value));
+  out->value = std::make_unique<std::vector<uint8_t>>(value);
 }
 
 void PopulateDevice(const device::BluetoothDevice* device,
@@ -146,9 +148,10 @@ void PopulateDevice(const device::BluetoothDevice* device,
   if (!device)
     return;
   request->device.address = device->GetAddress();
-  request->device.name.reset(
-      new std::string(base::UTF16ToUTF8(device->GetNameForDisplay())));
-  request->device.device_class.reset(new int(device->GetBluetoothClass()));
+  request->device.name = std::make_unique<std::string>(
+      base::UTF16ToUTF8(device->GetNameForDisplay()));
+  request->device.device_class =
+      std::make_unique<int>(device->GetBluetoothClass());
 }
 
 typedef extensions::ApiResourceManager<extensions::BluetoothLowEnergyConnection>

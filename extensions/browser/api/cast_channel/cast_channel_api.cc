@@ -94,16 +94,19 @@ void FillErrorInfo(api::cast_channel::ChannelError error_state,
                    const LastError& last_error,
                    ErrorInfo* error_info) {
   error_info->error_state = error_state;
-  if (last_error.channel_event != cast_channel::ChannelEvent::UNKNOWN)
-    error_info->event_type.reset(
-        new int(cast_channel::AsInteger(last_error.channel_event)));
+  if (last_error.channel_event != cast_channel::ChannelEvent::UNKNOWN) {
+    error_info->event_type = std::make_unique<int>(
+        cast_channel::AsInteger(last_error.channel_event));
+  }
   if (last_error.challenge_reply_error !=
       cast_channel::ChallengeReplyError::NONE) {
-    error_info->challenge_reply_error_type.reset(
-        new int(cast_channel::AsInteger(last_error.challenge_reply_error)));
+    error_info->challenge_reply_error_type = std::make_unique<int>(
+        cast_channel::AsInteger(last_error.challenge_reply_error));
   }
-  if (last_error.net_return_value <= 0)
-    error_info->net_return_value.reset(new int(last_error.net_return_value));
+  if (last_error.net_return_value <= 0) {
+    error_info->net_return_value =
+        std::make_unique<int>(last_error.net_return_value);
+  }
 }
 
 bool IsValidConnectInfoPort(const ConnectInfo& connect_info) {

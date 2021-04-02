@@ -42,12 +42,11 @@ std::unique_ptr<base::Value> SummarizeV8Value(v8::Isolate* isolate,
                             v8::String::NewFromUtf8Literal(isolate, "]"));
 
   if (try_catch.HasCaught()) {
-    return std::unique_ptr<base::Value>(
-        new base::Value("[JS Execution Exception]"));
+    return std::make_unique<base::Value>("[JS Execution Exception]");
   }
 
-  return std::unique_ptr<base::Value>(
-      new base::Value(std::string(*v8::String::Utf8Value(isolate, name))));
+  return std::make_unique<base::Value>(
+      std::string(*v8::String::Utf8Value(isolate, name)));
 }
 
 }  // namespace

@@ -82,7 +82,7 @@ void ExtensionsTestSuite::Initialize() {
       extensions_shell_and_test_pak_path.AppendASCII(
           "extensions_shell_and_test.pak"));
 
-  client_.reset(new extensions::TestExtensionsClient());
+  client_ = std::make_unique<extensions::TestExtensionsClient>();
   extensions::ExtensionsClient::Set(client_.get());
 }
 

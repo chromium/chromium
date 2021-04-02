@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
@@ -218,9 +219,9 @@ void AppRuntimeEventRouter::DispatchOnLaunchedEventWithUrl(
   app_runtime::LaunchData launch_data;
   app_runtime::LaunchSource source_enum =
       app_runtime::LAUNCH_SOURCE_URL_HANDLER;
-  launch_data.id.reset(new std::string(handler_id));
-  launch_data.url.reset(new std::string(url.spec()));
-  launch_data.referrer_url.reset(new std::string(referrer_url.spec()));
+  launch_data.id = std::make_unique<std::string>(handler_id);
+  launch_data.url = std::make_unique<std::string>(url.spec());
+  launch_data.referrer_url = std::make_unique<std::string>(referrer_url.spec());
   if (extensions::FeatureSwitch::trace_app_source()->IsEnabled()) {
     launch_data.source = source_enum;
   }

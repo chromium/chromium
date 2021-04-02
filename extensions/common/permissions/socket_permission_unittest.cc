@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 
 #include "base/pickle.h"
@@ -128,137 +129,137 @@ TEST(SocketPermissionTest, Match) {
   std::unique_ptr<SocketPermission::CheckParam> param;
 
   CHECK(data.ParseForTest("tcp-connect"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "www.example.com", 80));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "www.example.com", 80);
   EXPECT_FALSE(data.Check(param.get()));
 
   CHECK(data.ParseForTest("udp-send-to::8800"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "www.example.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "www.example.com", 8800);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "smtp.example.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "smtp.example.com", 8800);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80);
   EXPECT_FALSE(data.Check(param.get()));
 
   CHECK(data.ParseForTest("udp-send-to:*.example.com:8800"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "www.example.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "www.example.com", 8800);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "smtp.example.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "smtp.example.com", 8800);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "SMTP.example.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "SMTP.example.com", 8800);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "www.google.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "www.google.com", 8800);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "wwwexample.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "wwwexample.com", 8800);
   EXPECT_FALSE(data.Check(param.get()));
 
   CHECK(data.ParseForTest("udp-send-to:*.ExAmPlE.cOm:8800"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "www.example.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "www.example.com", 8800);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "smtp.example.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "smtp.example.com", 8800);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "SMTP.example.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "SMTP.example.com", 8800);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "www.google.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "www.google.com", 8800);
   EXPECT_FALSE(data.Check(param.get()));
 
   ASSERT_TRUE(data.ParseForTest("udp-bind::8800"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8888));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8888);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "www.google.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "www.google.com", 8800);
   EXPECT_FALSE(data.Check(param.get()));
 
   // Do not wildcard part of ip address.
   ASSERT_TRUE(data.ParseForTest("tcp-connect:*.168.0.1:8800"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "192.168.0.1", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "192.168.0.1", 8800);
   EXPECT_FALSE(data.Check(param.get()));
 
   ASSERT_FALSE(data.ParseForTest("udp-multicast-membership:*"));
   ASSERT_FALSE(data.ParseForTest("udp-multicast-membership:*:*"));
   ASSERT_TRUE(data.ParseForTest("udp-multicast-membership"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8888));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8888);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "www.example.com", 80);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_SEND_TO, "www.google.com", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_SEND_TO, "www.google.com", 8800);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP, "127.0.0.1", 35));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_MULTICAST_MEMBERSHIP, "127.0.0.1", 35);
   EXPECT_TRUE(data.Check(param.get()));
 
   ASSERT_TRUE(data.ParseForTest("resolve-host"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::RESOLVE_HOST, "www.example.com", 80));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::RESOLVE_HOST, "www.example.com", 80);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::RESOLVE_HOST, "www.example.com", 8080));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::RESOLVE_HOST, "www.example.com", 8080);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "127.0.0.1", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "127.0.0.1", 8800);
   EXPECT_FALSE(data.Check(param.get()));
 
   ASSERT_TRUE(data.ParseForTest("resolve-proxy"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::RESOLVE_PROXY, "www.example.com", 80));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::RESOLVE_PROXY, "www.example.com", 80);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::RESOLVE_PROXY, "www.example.com", 8080));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::RESOLVE_PROXY, "www.example.com", 8080);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "127.0.0.1", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "127.0.0.1", 8800);
   EXPECT_FALSE(data.Check(param.get()));
 
   ASSERT_TRUE(data.ParseForTest("network-state"));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::NETWORK_STATE, std::string(), 0));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::NETWORK_STATE, std::string(), 0);
   EXPECT_TRUE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::UDP_BIND, "127.0.0.1", 8800);
   EXPECT_FALSE(data.Check(param.get()));
-  param.reset(new SocketPermission::CheckParam(
-      SocketPermissionRequest::TCP_CONNECT, "127.0.0.1", 8800));
+  param = std::make_unique<SocketPermission::CheckParam>(
+      SocketPermissionRequest::TCP_CONNECT, "127.0.0.1", 8800);
   EXPECT_FALSE(data.Check(param.get()));
 }
 

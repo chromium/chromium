@@ -5,6 +5,7 @@
 #include "extensions/browser/api/declarative/rules_registry.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/run_loop.h"
@@ -68,7 +69,7 @@ TEST(RulesRegistryTest, FillOptionalIdentifiers) {
   {
     std::vector<api::events::Rule> add_rules;
     add_rules.emplace_back();
-    add_rules[0].id.reset(new std::string(id0));
+    add_rules[0].id = std::make_unique<std::string>(id0);
     error = registry->AddRules(kExtensionId, std::move(add_rules));
     EXPECT_FALSE(error.empty());
   }
@@ -96,7 +97,7 @@ TEST(RulesRegistryTest, FillOptionalIdentifiers) {
   {
     std::vector<api::events::Rule> add_rules;
     add_rules.emplace_back();
-    add_rules[0].id.reset(new std::string(id0));
+    add_rules[0].id = std::make_unique<std::string>(id0);
     error = registry->AddRules(kExtensionId, std::move(add_rules));
     EXPECT_TRUE(error.empty()) << error;
     EXPECT_EQ(1u /*extensions*/ + 2u /*rules*/,
@@ -121,7 +122,7 @@ TEST(RulesRegistryTest, FillOptionalIdentifiers) {
   {
     std::vector<api::events::Rule> add_rules;
     add_rules.emplace_back();
-    add_rules[0].id.reset(new std::string(kRuleId));
+    add_rules[0].id = std::make_unique<std::string>(kRuleId);
     error = registry->AddRules(kExtensionId, std::move(add_rules));
     EXPECT_TRUE(error.empty()) << error;
   }
@@ -161,7 +162,7 @@ TEST(RulesRegistryTest, FillOptionalPriority) {
   {
     std::vector<api::events::Rule> add_rules;
     add_rules.emplace_back();
-    add_rules[0].priority.reset(new int(2));
+    add_rules[0].priority = std::make_unique<int>(2);
     add_rules.emplace_back();
     error = registry->AddRules(kExtensionId, std::move(add_rules));
     EXPECT_TRUE(error.empty()) << error;
@@ -305,9 +306,9 @@ TEST(RulesRegistryTest, DeleteRuleInManifest) {
     // Add some extra rules outside of the manifest.
     std::vector<api::events::Rule> add_rules;
     api::events::Rule rule_1;
-    rule_1.id.reset(new std::string("rule_1"));
+    rule_1.id = std::make_unique<std::string>("rule_1");
     api::events::Rule rule_2;
-    rule_2.id.reset(new std::string("rule_2"));
+    rule_2.id = std::make_unique<std::string>("rule_2");
     add_rules.push_back(std::move(rule_1));
     add_rules.push_back(std::move(rule_2));
     registry->AddRules(kExtensionId, std::move(add_rules));

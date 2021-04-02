@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -99,7 +101,7 @@ class QuotaServiceTest : public testing::Test {
  public:
   QuotaServiceTest()
       : extension_a_("a"), extension_b_("b"), extension_c_("c") {}
-  void SetUp() override { service_.reset(new QuotaService()); }
+  void SetUp() override { service_ = std::make_unique<QuotaService>(); }
   void TearDown() override {
     base::RunLoop().RunUntilIdle();
     service_.reset();

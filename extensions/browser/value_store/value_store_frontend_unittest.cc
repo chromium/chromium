@@ -92,8 +92,8 @@ TEST_F(ValueStoreFrontendTest, GetExistingData) {
 }
 
 TEST_F(ValueStoreFrontendTest, ChangesPersistAfterReload) {
-  storage_->Set("key0", std::unique_ptr<base::Value>(new base::Value(0)));
-  storage_->Set("key1", std::unique_ptr<base::Value>(new base::Value("new1")));
+  storage_->Set("key0", std::make_unique<base::Value>(0));
+  storage_->Set("key1", std::make_unique<base::Value>("new1"));
   storage_->Remove("key2");
 
   // Reload the DB and test our changes.

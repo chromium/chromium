@@ -4,6 +4,7 @@
 
 #include "extensions/browser/value_store/legacy_value_store_factory.h"
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_enumerator.h"
@@ -83,12 +84,13 @@ LegacyValueStoreFactory::SettingsRoot::SettingsRoot(
     const base::FilePath& base_path,
     const std::string& extension_dirname,
     const std::string& app_dirname) {
-  if (!extension_dirname.empty())
-    extensions_.reset(
-        new ModelSettings(base_path.AppendASCII(extension_dirname)));
+  if (!extension_dirname.empty()) {
+    extensions_ = std::make_unique<ModelSettings>(
+        base_path.AppendASCII(extension_dirname));
+  }
 
   if (!app_dirname.empty())
-    apps_.reset(new ModelSettings(base_path.AppendASCII(app_dirname)));
+    apps_ = std::make_unique<ModelSettings>(base_path.AppendASCII(app_dirname));
 }
 
 LegacyValueStoreFactory::SettingsRoot::~SettingsRoot() = default;

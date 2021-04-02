@@ -4,6 +4,7 @@
 
 #include "extensions/shell/browser/shell_extensions_browser_client.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -274,7 +275,7 @@ ShellExtensionsBrowserClient::GetExtensionWebContentsObserver(
 
 KioskDelegate* ShellExtensionsBrowserClient::GetKioskDelegate() {
   if (!kiosk_delegate_)
-    kiosk_delegate_.reset(new ShellKioskDelegate());
+    kiosk_delegate_ = std::make_unique<ShellKioskDelegate>();
   return kiosk_delegate_.get();
 }
 

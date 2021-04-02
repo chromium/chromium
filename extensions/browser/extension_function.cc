@@ -4,6 +4,7 @@
 
 #include "extensions/browser/extension_function.h"
 
+#include <memory>
 #include <numeric>
 #include <utility>
 
@@ -695,7 +696,7 @@ void ExtensionFunction::SendResponseImpl(bool success) {
 
   // If results were never set, we send an empty argument list.
   if (!results_)
-    results_.reset(new base::ListValue());
+    results_ = std::make_unique<base::ListValue>();
 
   std::move(response_callback_).Run(response, *results_, GetError());
   LogUma(success, timer_.Elapsed(), histogram_value_);

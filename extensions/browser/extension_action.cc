@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_action.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -308,12 +309,13 @@ void ExtensionAction::Populate(const Extension& extension,
 
   // Initialize the specified icon set.
   if (!manifest_data.default_icon.empty()) {
-    default_icon_.reset(new ExtensionIconSet(manifest_data.default_icon));
+    default_icon_ =
+        std::make_unique<ExtensionIconSet>(manifest_data.default_icon);
   } else {
     // Fall back to the product icons if no action icon exists.
     const ExtensionIconSet& product_icons = IconsInfo::GetIcons(&extension);
     if (!product_icons.empty())
-      default_icon_.reset(new ExtensionIconSet(product_icons));
+      default_icon_ = std::make_unique<ExtensionIconSet>(product_icons);
   }
 }
 

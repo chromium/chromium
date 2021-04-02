@@ -65,7 +65,8 @@ class AppWindowGeometryCacheTest : public ExtensionsTest {
 void AppWindowGeometryCacheTest::SetUp() {
   ExtensionsTest::SetUp();
   extension_prefs_ = ExtensionPrefs::Get(browser_context());
-  cache_.reset(new AppWindowGeometryCache(browser_context(), extension_prefs_));
+  cache_ = std::make_unique<AppWindowGeometryCache>(browser_context(),
+                                                    extension_prefs_);
   cache_->SetSyncDelayForTests(0);
 }
 

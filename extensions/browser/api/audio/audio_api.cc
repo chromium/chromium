@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/audio/audio_api.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -88,9 +89,9 @@ void AudioAPI::OnDeviceChanged() {
   if (!event_router)
     return;
 
-  std::unique_ptr<Event> event(new Event(
-      events::AUDIO_ON_DEVICE_CHANGED, audio::OnDeviceChanged::kEventName,
-      std::unique_ptr<base::ListValue>(new base::ListValue())));
+  auto event = std::make_unique<Event>(events::AUDIO_ON_DEVICE_CHANGED,
+                                       audio::OnDeviceChanged::kEventName,
+                                       std::make_unique<base::ListValue>());
   event->will_dispatch_callback =
       base::BindRepeating(&CanReceiveDeprecatedAudioEvent);
   event_router->BroadcastEvent(std::move(event));
@@ -107,9 +108,9 @@ void AudioAPI::OnLevelChanged(const std::string& id, int level) {
 
   std::unique_ptr<base::ListValue> event_args =
       audio::OnLevelChanged::Create(raw_event);
-  std::unique_ptr<Event> event(new Event(events::AUDIO_ON_LEVEL_CHANGED,
-                                         audio::OnLevelChanged::kEventName,
-                                         std::move(event_args)));
+  auto event = std::make_unique<Event>(events::AUDIO_ON_LEVEL_CHANGED,
+                                       audio::OnLevelChanged::kEventName,
+                                       std::move(event_args));
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -125,9 +126,9 @@ void AudioAPI::OnMuteChanged(bool is_input, bool is_muted) {
   raw_event.is_muted = is_muted;
   std::unique_ptr<base::ListValue> event_args =
       audio::OnMuteChanged::Create(raw_event);
-  std::unique_ptr<Event> event(new Event(events::AUDIO_ON_MUTE_CHANGED,
-                                         audio::OnMuteChanged::kEventName,
-                                         std::move(event_args)));
+  auto event = std::make_unique<Event>(events::AUDIO_ON_MUTE_CHANGED,
+                                       audio::OnMuteChanged::kEventName,
+                                       std::move(event_args));
   event_router->BroadcastEvent(std::move(event));
 }
 
@@ -138,9 +139,9 @@ void AudioAPI::OnDevicesChanged(const DeviceInfoList& devices) {
 
   std::unique_ptr<base::ListValue> args =
       audio::OnDeviceListChanged::Create(devices);
-  std::unique_ptr<Event> event(new Event(events::AUDIO_ON_DEVICES_CHANGED,
-                                         audio::OnDeviceListChanged::kEventName,
-                                         std::move(args)));
+  auto event = std::make_unique<Event>(events::AUDIO_ON_DEVICES_CHANGED,
+                                       audio::OnDeviceListChanged::kEventName,
+                                       std::move(args));
   event_router->BroadcastEvent(std::move(event));
 }
 

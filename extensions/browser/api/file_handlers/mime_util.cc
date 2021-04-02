@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/file_handlers/mime_util.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -195,7 +197,7 @@ void MimeTypeCollector::CollectForLocalPaths(
   callback_ = std::move(callback);
 
   DCHECK(!result_.get());
-  result_.reset(new std::vector<std::string>(local_paths.size()));
+  result_ = std::make_unique<std::vector<std::string>>(local_paths.size());
   left_ = local_paths.size();
 
   if (!left_) {

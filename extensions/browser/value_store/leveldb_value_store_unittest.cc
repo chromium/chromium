@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -53,8 +55,8 @@ class LeveldbValueStoreUnitTest : public testing::Test {
   void CloseStore() { store_.reset(); }
 
   void CreateStore() {
-    store_.reset(
-        new LeveldbValueStore(kDatabaseUMAClientName, database_path()));
+    store_ = std::make_unique<LeveldbValueStore>(kDatabaseUMAClientName,
+                                                 database_path());
   }
 
   LeveldbValueStore* store() { return store_.get(); }

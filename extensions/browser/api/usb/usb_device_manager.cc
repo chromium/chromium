@@ -363,14 +363,14 @@ void UsbDeviceManager::DispatchEvent(
 
     std::unique_ptr<Event> event;
     if (event_name == usb::OnDeviceAdded::kEventName) {
-      event.reset(new Event(events::USB_ON_DEVICE_ADDED,
-                            usb::OnDeviceAdded::kEventName,
-                            usb::OnDeviceAdded::Create(device_obj)));
+      event = std::make_unique<Event>(events::USB_ON_DEVICE_ADDED,
+                                      usb::OnDeviceAdded::kEventName,
+                                      usb::OnDeviceAdded::Create(device_obj));
     } else {
       DCHECK(event_name == usb::OnDeviceRemoved::kEventName);
-      event.reset(new Event(events::USB_ON_DEVICE_REMOVED,
-                            usb::OnDeviceRemoved::kEventName,
-                            usb::OnDeviceRemoved::Create(device_obj)));
+      event = std::make_unique<Event>(events::USB_ON_DEVICE_REMOVED,
+                                      usb::OnDeviceRemoved::kEventName,
+                                      usb::OnDeviceRemoved::Create(device_obj));
     }
 
     event->will_dispatch_callback =

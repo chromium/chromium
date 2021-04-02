@@ -5,6 +5,7 @@
 #include "extensions/browser/api/serial/serial_connection.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -465,11 +466,12 @@ void SerialConnection::GetInfo(GetInfoCompleteCallback callback) const {
           std::move(callback).Run(false, std::move(info));
           return;
         }
-        info->bitrate.reset(new int(port_info->bitrate));
+        info->bitrate = std::make_unique<int>(port_info->bitrate);
         info->data_bits = ConvertDataBitsFromMojo(port_info->data_bits);
         info->parity_bit = ConvertParityBitFromMojo(port_info->parity_bit);
         info->stop_bits = ConvertStopBitsFromMojo(port_info->stop_bits);
-        info->cts_flow_control.reset(new bool(port_info->cts_flow_control));
+        info->cts_flow_control =
+            std::make_unique<bool>(port_info->cts_flow_control);
         std::move(callback).Run(true, std::move(info));
       },
       std::move(callback), std::move(info));

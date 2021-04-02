@@ -53,7 +53,7 @@ void SendResponseHelper::OnResponse(ExtensionFunction::ResponseType response,
                                     const base::ListValue& results,
                                     const std::string& error) {
   ASSERT_NE(ExtensionFunction::BAD_MESSAGE, response);
-  response_.reset(new bool(response == ExtensionFunction::SUCCEEDED));
+  response_ = std::make_unique<bool>(response == ExtensionFunction::SUCCEEDED);
   run_loop_.Quit();
 }
 

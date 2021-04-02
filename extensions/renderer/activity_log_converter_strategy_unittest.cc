@@ -23,7 +23,7 @@ class ActivityLogConverterStrategyTest : public testing::Test {
  protected:
   void SetUp() override {
     converter_ = content::V8ValueConverter::Create();
-    strategy_.reset(new ActivityLogConverterStrategy());
+    strategy_ = std::make_unique<ActivityLogConverterStrategy>();
     converter_->SetFunctionAllowed(true);
     converter_->SetStrategy(strategy_.get());
   }

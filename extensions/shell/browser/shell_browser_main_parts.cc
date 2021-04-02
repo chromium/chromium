@@ -4,6 +4,7 @@
 
 #include "extensions/shell/browser/shell_browser_main_parts.h"
 
+#include <memory>
 #include <string>
 
 #include "apps/browser_context_keyed_service_factories.h"
@@ -225,7 +226,8 @@ int ShellBrowserMainParts::PreMainMessageLoopRun() {
 
   // TODO(jamescook): Initialize user_manager::UserManager.
 
-  update_query_params_delegate_.reset(new ShellUpdateQueryParamsDelegate);
+  update_query_params_delegate_ =
+      std::make_unique<ShellUpdateQueryParamsDelegate>();
   update_client::UpdateQueryParams::SetDelegate(
       update_query_params_delegate_.get());
 

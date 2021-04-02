@@ -229,10 +229,11 @@ Dispatcher::Dispatcher(std::unique_ptr<DispatcherDelegate> delegate)
   bindings_system_ = CreateBindingsSystem(
       IPCMessageSender::CreateMainThreadIPCMessageSender());
 
-  script_context_set_.reset(new ScriptContextSet(&active_extension_ids_));
-  user_script_set_manager_.reset(new UserScriptSetManager());
-  script_injection_manager_.reset(
-      new ScriptInjectionManager(user_script_set_manager_.get()));
+  script_context_set_ =
+      std::make_unique<ScriptContextSet>(&active_extension_ids_);
+  user_script_set_manager_ = std::make_unique<UserScriptSetManager>();
+  script_injection_manager_ =
+      std::make_unique<ScriptInjectionManager>(user_script_set_manager_.get());
   user_script_set_manager_observation_.Observe(user_script_set_manager_.get());
   PopulateSourceMap();
   WakeEventPage::Get()->Init(RenderThread::Get());

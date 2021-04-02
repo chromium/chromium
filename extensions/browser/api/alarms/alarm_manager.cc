@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -491,8 +492,8 @@ Alarm::Alarm(const std::string& name,
 
   // Check for repetition.
   if (create_info.period_in_minutes.get()) {
-    js_alarm->period_in_minutes.reset(
-        new double(*create_info.period_in_minutes));
+    js_alarm->period_in_minutes =
+        std::make_unique<double>(*create_info.period_in_minutes);
   }
 }
 

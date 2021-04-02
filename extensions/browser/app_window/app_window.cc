@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -295,8 +296,8 @@ void AppWindow::Init(const GURL& url,
   native_app_window_.reset(
       app_window_client->CreateNativeAppWindow(this, &new_params));
 
-  helper_.reset(new AppWebContentsHelper(
-      browser_context_, extension_id_, web_contents(), app_delegate_.get()));
+  helper_ = std::make_unique<AppWebContentsHelper>(
+      browser_context_, extension_id_, web_contents(), app_delegate_.get());
 
   native_app_window_->UpdateWindowIcon();
 

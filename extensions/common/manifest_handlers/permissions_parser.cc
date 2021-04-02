@@ -4,6 +4,7 @@
 
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -396,7 +397,7 @@ PermissionsParser::~PermissionsParser() {
 }
 
 bool PermissionsParser::Parse(Extension* extension, std::u16string* error) {
-  initial_required_permissions_.reset(new InitialPermissions);
+  initial_required_permissions_ = std::make_unique<InitialPermissions>();
   if (!ParseHelper(extension,
                    keys::kPermissions,
                    &initial_required_permissions_->api_permissions,
@@ -416,7 +417,7 @@ bool PermissionsParser::Parse(Extension* extension, std::u16string* error) {
                          &initial_required_permissions_->host_permissions);
   }
 
-  initial_optional_permissions_.reset(new InitialPermissions);
+  initial_optional_permissions_ = std::make_unique<InitialPermissions>();
   if (!ParseHelper(extension,
                    keys::kOptionalPermissions,
                    &initial_optional_permissions_->api_permissions,
