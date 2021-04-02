@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.WebContentsState;
+import org.chromium.chrome.browser.tab.proto.CriticalPersistedTabData.CriticalPersistedTabDataProto;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.url.GURL;
@@ -472,6 +473,25 @@ public class CriticalPersistedTabDataTest {
         spyCriticalPersistedTabData.setWebContentsState(null);
         Assert.assertNull(spyCriticalPersistedTabData.getWebContentsState());
         verify(spyCriticalPersistedTabData, times(4)).save();
+    }
+
+    @SmallTest
+    @Test
+    public void testConvertTabLaunchTypeToProtoLaunchType() {
+        for (@TabLaunchType Integer tabLaunchType = 0; tabLaunchType < TabLaunchType.SIZE;
+                tabLaunchType++) {
+            CriticalPersistedTabData.getLaunchType(tabLaunchType);
+        }
+    }
+
+    @SmallTest
+    @Test
+    public void testConvertProtoLaunchTypeToTabLaunchType() {
+        for (CriticalPersistedTabDataProto.LaunchTypeAtCreation type :
+                CriticalPersistedTabDataProto.LaunchTypeAtCreation.values()) {
+            if (type == CriticalPersistedTabDataProto.LaunchTypeAtCreation.UNKNOWN) continue;
+            CriticalPersistedTabData.getLaunchType(type);
+        }
     }
 
     private static final byte[] getByteArrayFromByteBuffer(ByteBuffer buffer) {

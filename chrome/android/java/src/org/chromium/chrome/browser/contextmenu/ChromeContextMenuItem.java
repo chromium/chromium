@@ -183,7 +183,9 @@ class ChromeContextMenuItem {
     private static @StringRes int getStringId(@Item int item) {
         assert STRING_IDS.length == Item.NUM_ENTRIES;
 
-        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled() && item == Item.OPEN_IN_NEW_TAB) {
+        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled()
+                && TabUiFeatureUtilities.ENABLE_TAB_GROUP_AUTO_CREATION.getValue()
+                && item == Item.OPEN_IN_NEW_TAB) {
             return R.string.contextmenu_open_in_new_tab_group;
         }
 

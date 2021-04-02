@@ -259,7 +259,7 @@ public class TabGridDialogMediatorUnitTest {
         verify(mDialogController).resetWithListOfTabs(null);
         verify(mTabCreator)
                 .createNewTab(
-                        isA(LoadUrlParams.class), eq(TabLaunchType.FROM_CHROME_UI), eq(mTab1));
+                        isA(LoadUrlParams.class), eq(TabLaunchType.FROM_TAB_GROUP_UI), eq(mTab1));
     }
 
     @Test

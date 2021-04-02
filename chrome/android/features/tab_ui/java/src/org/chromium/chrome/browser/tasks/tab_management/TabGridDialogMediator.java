@@ -515,7 +515,7 @@ public class TabGridDialogMediator implements SnackbarManager.SnackbarController
             Tab parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
             mTabCreatorManager.getTabCreator(currentTab.isIncognito())
                     .createNewTab(new LoadUrlParams(UrlConstants.NTP_URL),
-                            TabLaunchType.FROM_CHROME_UI, parentTabToAttach);
+                            TabLaunchType.FROM_TAB_GROUP_UI, parentTabToAttach);
             RecordUserAction.record("MobileNewTabOpened." + mComponentName);
         };
     }

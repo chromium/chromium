@@ -192,8 +192,16 @@ public class TabGroupModelFilter extends TabModelFilter {
     private boolean mShouldRecordUma = true;
     private boolean mIsResetting;
 
+    // Create group automatically for target_blank links.
+    private final boolean mGroupAutoCreation;
+
     public TabGroupModelFilter(TabModel tabModel) {
+        this(tabModel, true);
+    }
+
+    public TabGroupModelFilter(TabModel tabModel, boolean autoCreation) {
         super(tabModel);
+        mGroupAutoCreation = autoCreation;
     }
 
     /**
@@ -519,7 +527,8 @@ public class TabGroupModelFilter extends TabModelFilter {
             throw new IllegalStateException("Attempting to open tab in the wrong model");
         }
 
-        if (isTabModelRestored() && !mIsResetting) {
+        if (isTabModelRestored() && !mIsResetting
+                && (mGroupAutoCreation || tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI)) {
             Tab parentTab = TabModelUtils.getTabById(
                     getTabModel(), CriticalPersistedTabData.from(tab).getParentId());
             if (parentTab != null) {
@@ -531,7 +540,8 @@ public class TabGroupModelFilter extends TabModelFilter {
         if (mGroupIdToGroupMap.containsKey(groupId)) {
             if (mGroupIdToGroupMap.get(groupId).size() == 1) {
                 mActualGroupCount++;
-                if (mShouldRecordUma
+                // TODO(crbug.com/1188370): Update UMA for Context menu creation.
+                if (mShouldRecordUma && mGroupAutoCreation
                         && tab.getLaunchType() == TabLaunchType.FROM_LONGPRESS_BACKGROUND) {
                     RecordUserAction.record("TabGroup.Created.OpenInNewTab");
                 }

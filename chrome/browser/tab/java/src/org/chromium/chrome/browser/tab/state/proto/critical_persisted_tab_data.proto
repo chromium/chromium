@@ -46,8 +46,9 @@ message CriticalPersistedTabDataProto {
     FROM_LAUNCH_NEW_INCOGNITO_TAB = 10;
     FROM_STARTUP = 11;
     FROM_START_SURFACE = 12;
-    SIZE = 13;
-    UNKNOWN = 14;
+    FROM_TAB_GROUP_UI = 13;
+    SIZE = 14;
+    UNKNOWN = 15;
   }
   optional LaunchTypeAtCreation launch_type_at_creation = 8;
 }

@@ -86,6 +86,11 @@ class TabModel {
     FROM_STARTUP,
     // Opened from the start surface.
     FROM_START_SURFACE,
+    // Opened from Tab group UI.
+    // Tab group UI include:
+    // - "+" button in the bottom tab strip
+    // - "+" button in the tab grid dialog
+    FROM_TAB_GROUP_UI,
     // Must be last.
     SIZE
   };
