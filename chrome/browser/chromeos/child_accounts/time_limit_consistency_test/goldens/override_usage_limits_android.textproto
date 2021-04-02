@@ -1,5 +1,8 @@
 # There is a different behavior on Android and ChromeOS for the first test case
-# so they are split in two different suites temporarily.
+# with respect to the next_active_policy field, so they are split across two test
+# suites currently, and it is considered permissible for this split to exist
+# long term due to the triviality of how the difference affects each client's
+# actual behavior. No other tests should be split this way.
 
 supported_platforms: [ANDROID]
 
