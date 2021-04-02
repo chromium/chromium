@@ -318,6 +318,7 @@ js_library("cellular_networks_list.m") {
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:cellular_types.m",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_listener_behavior.m",
     "//ui/webui/resources/cr_components/chromeos/cellular_setup:esim_manager_utils.m",
+    "//ui/webui/resources/cr_components/chromeos/network:cellular_utils.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_list_types.m",
     "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
     "//ui/webui/resources/js:i18n_behavior.m",

@@ -52,7 +52,7 @@ function networkIsPSim_(network) {
 
 /**
  * Returns number of phyical SIM and eSIM slots on the current device
- * @param {!chromeos.networkConfig.mojom.DeviceStateProperties}
+ * @param {!chromeos.networkConfig.mojom.DeviceStateProperties|undefined}
  *     deviceState
  * @return {!{pSimSlots: number, eSimSlots: number}}
  */

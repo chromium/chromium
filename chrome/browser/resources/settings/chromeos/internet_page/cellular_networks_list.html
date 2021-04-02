@@ -4,6 +4,7 @@
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/esim_manager_utils.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/cellular_setup/cellular_eid_popup.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/cellular_utils.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_list_types.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/onc_mojo.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/mojo_interface_provider.html">
@@ -114,32 +115,35 @@
         </div>
       </template>
     </template>
-    <div class="cellular-network-list-separator"></div>
-    <div class="cellular-network-list-header">
-      $i18n{cellularNetworkPsimLabel}
-    </div>
-    <template
-        is="dom-if"
-        if="[[shouldShowNetworkSublist_(pSimNetworks_)]]" restamp>
-      <div class="cellular-network-content">
-        <network-list
-            id="psimNetworkList" show-buttons
-            show-technology-badge="[[showTechnologyBadge]]"
-            networks="[[pSimNetworks_]]"
-            device-state="[[deviceState]]">
-        </network-list>
+    <template is="dom-if"
+        if="[[shouldShowPSimSection_(deviceState, deviceState.*)]]" restamp>
+      <div class="cellular-network-list-separator"></div>
+      <div class="cellular-network-list-header">
+        $i18n{cellularNetworkPsimLabel}
       </div>
-    </template>
-    <template
-        is="dom-if"
-        if="[[!shouldShowNetworkSublist_(pSimNetworks_)]]" restamp>
-      <div id="pSimNoNetworkFound"
-          class="cellular-network-content cellular-not-setup">
-        <settings-localized-link
-            on-link-clicked="onPsimLearnMoreClicked_"
-            localized-string="$i18n{pSimNetworkNotSetup}">
-        </settings-localized-link>
-      </div>
+      <template
+          is="dom-if"
+          if="[[shouldShowNetworkSublist_(pSimNetworks_)]]" restamp>
+        <div class="cellular-network-content">
+          <network-list
+              id="psimNetworkList" show-buttons
+              show-technology-badge="[[showTechnologyBadge]]"
+              networks="[[pSimNetworks_]]"
+              device-state="[[deviceState]]">
+          </network-list>
+        </div>
+      </template>
+      <template
+          is="dom-if"
+          if="[[!shouldShowNetworkSublist_(pSimNetworks_)]]" restamp>
+        <div id="pSimNoNetworkFound"
+            class="cellular-network-content cellular-not-setup">
+          <settings-localized-link
+              on-link-clicked="onPsimLearnMoreClicked_"
+              localized-string="$i18n{pSimNetworkNotSetup}">
+          </settings-localized-link>
+        </div>
+      </template>
     </template>
     <template is="dom-if"
         if="[[shouldShowTetherSection_(multiDevicePageContentData_)]]" restamp>

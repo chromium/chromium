@@ -58,6 +58,18 @@ suite('CellularNetworksList', function() {
     cellularNetworkList.networks = networks;
   }
 
+  function addPSimSlot() {
+    cellularNetworkList.set('deviceState.simInfos', [{
+                              iccid: '',
+                            }]);
+    return flushAsync();
+  }
+
+  function removePSimSlot() {
+    cellularNetworkList.set('deviceState.simInfos', []);
+    return flushAsync();
+  }
+
   function flushAsync() {
     Polymer.dom.flush();
     // Use setTimeout to wait for the next macrotask.
@@ -85,6 +97,7 @@ suite('CellularNetworksList', function() {
     ]);
 
     eSimManagerRemote.addEuiccForTest(2);
+    addPSimSlot();
 
     await flushAsync();
 
@@ -111,7 +124,7 @@ suite('CellularNetworksList', function() {
         setNetworksForTest(mojom.NetworkType.kCellular, [
           OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
         ]);
-        Polymer.dom.flush();
+        addPSimSlot();
 
         await flushAsync();
         const esimNoNetworkAnchor =
@@ -196,6 +209,21 @@ suite('CellularNetworksList', function() {
     const esimNetworkList = cellularNetworkList.$$('#esimNetworkList');
 
     assertFalse(!!esimNetworkList);
+  });
+
+  test('Hide pSIM section when no pSIM slots', async () => {
+    init();
+    setNetworksForTest(mojom.NetworkType.kCellular, [
+      OncMojo.getDefaultNetworkState(mojom.NetworkType.kTether, 'tether1'),
+    ]);
+    await flushAsync();
+    assertFalse(!!cellularNetworkList.$$('#pSimNoNetworkFound'));
+
+    addPSimSlot();
+    assertTrue(!!cellularNetworkList.$$('#pSimNoNetworkFound'));
+
+    removePSimSlot();
+    assertFalse(!!cellularNetworkList.$$('#pSimNoNetworkFound'));
   });
 
   test('Hide instant tethering section when not enabled', async () => {

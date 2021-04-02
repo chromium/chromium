@@ -326,6 +326,16 @@ Polymer({
   },
 
   /**
+   * @param {!OncMojo.DeviceStateProperties|undefined} deviceState
+   * @returns {boolean}
+   * @private
+   */
+  shouldShowPSimSection_(deviceState) {
+    const {pSimSlots} = getSimSlotCount(deviceState);
+    return pSimSlots > 0;
+  },
+
+  /**
    * @param {!settings.MultiDevicePageContentData} newData
    * @private
    */
