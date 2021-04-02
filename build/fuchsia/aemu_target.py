@@ -49,8 +49,7 @@ class AemuTarget(qemu_target.QemuTarget):
 
   @staticmethod
   def RegisterArgs(arg_parser):
-    emu_target.EmuTarget.RegisterArgs(arg_parser)
-    aemu_args = arg_parser.add_argument_group('aemu', 'AEMU Arguments')
+    aemu_args = arg_parser.add_argument_group('aemu', 'AEMU arguments')
     aemu_args.add_argument('--enable-graphics',
                            action='store_true',
                            default=False,

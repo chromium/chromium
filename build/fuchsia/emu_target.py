@@ -30,25 +30,6 @@ class EmuTarget(target.Target):
     self._system_log_file = system_log_file
     self._amber_repo = None
 
-  @staticmethod
-  def RegisterArgs(arg_parser):
-    target.Target.RegisterArgs(arg_parser)
-    emu_args = arg_parser.add_argument_group('emu', 'Emulator arguments')
-    emu_args.add_argument('--cpu-cores',
-                          type=int,
-                          default=4,
-                          help='Sets the number of CPU cores to provide.')
-    emu_args.add_argument('--ram-size-mb',
-                          type=int,
-                          default=2048,
-                          help='Sets the RAM size (MB) if launching in a VM'),
-    emu_args.add_argument('--allow-no-kvm',
-                          action='store_false',
-                          dest='require_kvm',
-                          default=True,
-                          help='Do not require KVM acceleration for '
-                          'emulators.')
-
   def __enter__(self):
     return self
 

@@ -129,8 +129,8 @@ class DeviceTarget(target.Target):
 
   @staticmethod
   def RegisterArgs(arg_parser):
-    target.Target.RegisterArgs(arg_parser)
-    device_args = arg_parser.add_argument_group('device', 'Device Arguments')
+    device_args = arg_parser.add_argument_group(
+        'device', 'External device deployment arguments')
     device_args.add_argument('--host',
                              help='The IP of the target device. Optional.')
     device_args.add_argument('--node-name',

@@ -74,16 +74,7 @@ class Target(object):
 
   @staticmethod
   def RegisterArgs(arg_parser):
-    common_args = arg_parser.add_argument_group(
-        'target', 'Arguments that apply to all targets.')
-    common_args.add_argument(
-        '--out-dir',
-        type=os.path.realpath,
-        help=('Path to the directory in which build files are located. '
-              'Defaults to current directory.'))
-    common_args.add_argument('--system-log-file',
-                             help='File to write system logs to. Specify '
-                             '- to log to stdout.')
+    pass
 
   # Functions used by the Python context manager for teardown.
   def __enter__(self):

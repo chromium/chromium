@@ -11,7 +11,8 @@ import os
 import runner_logs
 import sys
 
-from common_args import AddCommonArgs, ConfigureLogging, GetDeploymentTargetForArgs
+from common_args import AddCommonArgs, AddTargetSpecificArgs, \
+                        ConfigureLogging, GetDeploymentTargetForArgs
 from net_test_server import SetupTestServer
 from run_test_package import RunTestPackage, RunTestPackageArgs, SystemLogReader
 from runner_exceptions import HandleExceptionAndReturnExitCode
@@ -29,80 +30,92 @@ TEST_RESULT_PATH = TEST_DATA_DIR + '/test_summary.json'
 TEST_REALM_NAME = 'chromium_tests'
 
 
-def main():
-  parser = argparse.ArgumentParser()
-  AddCommonArgs(parser)
-
-  parser.add_argument('--gtest_filter',
-                      help='GTest filter to use in place of any default.')
-  parser.add_argument('--gtest_repeat',
-                      help='GTest repeat value to use. This also disables the '
-                           'test launcher timeout.')
-  parser.add_argument('--test-launcher-retry-limit',
-                      help='Number of times that test suite will retry failing '
-                           'tests. This is multiplicative with --gtest_repeat.')
-  parser.add_argument(
-      '--test-launcher-shard-index',
-      type=int,
-      default=os.environ.get('GTEST_SHARD_INDEX'),
-      help='Index of this instance amongst swarming shards.')
-  parser.add_argument(
-      '--test-launcher-total-shards',
-      type=int,
-      default=os.environ.get('GTEST_TOTAL_SHARDS'),
-      help='Total number of swarming shards of this suite.')
-  parser.add_argument('--gtest_break_on_failure', action='store_true',
-                      default=False,
-                      help='Should GTest break on failure; useful with '
-                           '--gtest_repeat.')
-  parser.add_argument('--single-process-tests', action='store_true',
-                      default=False,
-                      help='Runs the tests and the launcher in the same '
-                           'process. Useful for debugging.')
-  parser.add_argument('--test-launcher-batch-limit',
-                      type=int,
-                      help='Sets the limit of test batch to run in a single '
-                      'process.')
+def AddTestExecutionArgs(arg_parser):
+  test_args = arg_parser.add_argument_group('testing',
+                                            'Test execution arguments')
+  test_args.add_argument('--gtest_filter',
+                         help='GTest filter to use in place of any default.')
+  test_args.add_argument(
+      '--gtest_repeat',
+      help='GTest repeat value to use. This also disables the '
+      'test launcher timeout.')
+  test_args.add_argument(
+      '--test-launcher-retry-limit',
+      help='Number of times that test suite will retry failing '
+      'tests. This is multiplicative with --gtest_repeat.')
+  test_args.add_argument('--test-launcher-shard-index',
+                         type=int,
+                         default=os.environ.get('GTEST_SHARD_INDEX'),
+                         help='Index of this instance amongst swarming shards.')
+  test_args.add_argument('--test-launcher-total-shards',
+                         type=int,
+                         default=os.environ.get('GTEST_TOTAL_SHARDS'),
+                         help='Total number of swarming shards of this suite.')
+  test_args.add_argument('--gtest_break_on_failure',
+                         action='store_true',
+                         default=False,
+                         help='Should GTest break on failure; useful with '
+                         '--gtest_repeat.')
+  test_args.add_argument('--single-process-tests',
+                         action='store_true',
+                         default=False,
+                         help='Runs the tests and the launcher in the same '
+                         'process. Useful for debugging.')
+  test_args.add_argument('--test-launcher-batch-limit',
+                         type=int,
+                         help='Sets the limit of test batch to run in a single '
+                         'process.')
   # --test-launcher-filter-file is specified relative to --out-dir,
   # so specifying type=os.path.* will break it.
-  parser.add_argument('--test-launcher-filter-file',
-                      default=None,
-                      help='Override default filter file passed to target test '
-                      'process. Set an empty path to disable filtering.')
-  parser.add_argument('--test-launcher-jobs',
-                      type=int,
-                      help='Sets the number of parallel test jobs.')
-  parser.add_argument('--test-launcher-summary-output',
-                      help='Where the test launcher will output its json.')
-  parser.add_argument('--enable-test-server', action='store_true',
-                      default=False,
-                      help='Enable Chrome test server spawner.')
-  parser.add_argument('--test-launcher-bot-mode', action='store_true',
-                      default=False,
-                      help='Informs the TestLauncher to that it should enable '
-                      'special allowances for running on a test bot.')
-  parser.add_argument('--child-arg', action='append',
-                      help='Arguments for the test process.')
-  parser.add_argument('child_args', nargs='*',
-                      help='Arguments for the test process.')
-  parser.add_argument('--isolated-script-test-output',
-                      help='If present, store test results on this path.')
-  parser.add_argument('--isolated-script-test-perf-output',
-                      help='If present, store chartjson results on this path.')
-  parser.add_argument('--use-run-test-component',
-                      default=False,
-                      action='store_true',
-                      help='Run the test package hermetically using '
-                      'run-test-component, rather than run.')
-  parser.add_argument('--code-coverage',
-                      default=False,
-                      action='store_true',
-                      help='Gather code coverage information.')
-  parser.add_argument('--code-coverage-dir',
-                      default=os.getcwd(),
-                      help='Directory to place code coverage information. '
-                      'Only relevant when --code-coverage set to true. '
-                      'Defaults to current directory.')
+  test_args.add_argument(
+      '--test-launcher-filter-file',
+      default=None,
+      help='Override default filter file passed to target test '
+      'process. Set an empty path to disable filtering.')
+  test_args.add_argument('--test-launcher-jobs',
+                         type=int,
+                         help='Sets the number of parallel test jobs.')
+  test_args.add_argument('--test-launcher-summary-output',
+                         help='Where the test launcher will output its json.')
+  test_args.add_argument('--enable-test-server',
+                         action='store_true',
+                         default=False,
+                         help='Enable Chrome test server spawner.')
+  test_args.add_argument(
+      '--test-launcher-bot-mode',
+      action='store_true',
+      default=False,
+      help='Informs the TestLauncher to that it should enable '
+      'special allowances for running on a test bot.')
+  test_args.add_argument('--isolated-script-test-output',
+                         help='If present, store test results on this path.')
+  test_args.add_argument(
+      '--isolated-script-test-perf-output',
+      help='If present, store chartjson results on this path.')
+  test_args.add_argument('--use-run-test-component',
+                         default=False,
+                         action='store_true',
+                         help='Run the test package hermetically using '
+                         'run-test-component, rather than run.')
+  test_args.add_argument(
+      '--code-coverage',
+      default=False,
+      action='store_true',
+      help='Gather code coverage information and place it in '
+      'the output directory.')
+  test_args.add_argument('--child-arg',
+                         action='append',
+                         help='Arguments for the test process.')
+  test_args.add_argument('child_args',
+                         nargs='*',
+                         help='Arguments for the test process.')
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  AddTestExecutionArgs(parser)
+  AddCommonArgs(parser)
+  AddTargetSpecificArgs(parser)
   args = parser.parse_args()
 
   # Flag out_dir is required for tests launched with this script.

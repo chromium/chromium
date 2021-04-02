@@ -14,7 +14,7 @@ from gpu_tests import path_util
 
 sys.path.insert(0,
                 os.path.join(path_util.GetChromiumSrcDir(), 'build', 'fuchsia'))
-from common_args import (AddCommonArgs, ConfigureLogging,
+from common_args import (AddCommonArgs, AddTargetSpecificArgs, ConfigureLogging,
                          GetDeploymentTargetForArgs)
 from symbolizer import RunSymbolizer
 
@@ -24,6 +24,7 @@ def RunTestOnFuchsiaDevice(script_cmd):
 
   parser = argparse.ArgumentParser()
   AddCommonArgs(parser)
+  AddTargetSpecificArgs(parser)
   runner_script_args, test_args = parser.parse_known_args()
   ConfigureLogging(runner_script_args)
 
