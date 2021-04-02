@@ -481,11 +481,17 @@ const base::Feature kVaapiAV1Decoder{"VaapiAV1Decoder",
 const base::Feature kVaapiLowPowerEncoderGen9x{
     "VaapiLowPowerEncoderGen9x", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Deny specific (likely small) resolutions for VA-API hardware decode and
-// encode acceleration.
-// TOOD(b/171041334): Enable by default once the ARC++ hw codecs issue is fixed.
+// Reject creation of encode/decode VAContexts when the requested resolution is
+// outside the enumerated minimum and maximum. TODO(b/171041334): Remove and
+// enable by default once the ARC++ hw codecs issue is fixed.
 const base::Feature kVaapiEnforceVideoMinMaxResolution{
     "VaapiEnforceVideoMinMaxResolution", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Ensure the advertised minimum supported resolution is larger than or equal to
+// a given one (likely QVGA + 1) for certain codecs/modes and platforms, for
+// performance reasons. This does not affect JPEG decoding.
+const base::Feature kVaapiVideoMinResolutionForPerformance{
+    "VaapiVideoMinResolutionForPerformance", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable VA-API hardware encode acceleration for VP8.
 const base::Feature kVaapiVP8Encoder{"VaapiVP8Encoder",
