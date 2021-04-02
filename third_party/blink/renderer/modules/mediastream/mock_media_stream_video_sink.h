@@ -20,7 +20,9 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
   ~MockMediaStreamVideoSink() override;
 
   void ConnectToTrack(const WebMediaStreamTrack& track) {
-    MediaStreamVideoSink::ConnectToTrack(track, GetDeliverFrameCB(), true);
+    MediaStreamVideoSink::ConnectToTrack(track, GetDeliverFrameCB(),
+                                         MediaStreamVideoSink::IsSecure::kYes,
+                                         uses_alpha_);
   }
 
   void ConnectEncodedToTrack(const WebMediaStreamTrack& track) {
@@ -30,7 +32,8 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
 
   void ConnectToTrackWithCallback(const WebMediaStreamTrack& track,
                                   const VideoCaptureDeliverFrameCB& callback) {
-    MediaStreamVideoSink::ConnectToTrack(track, callback, true);
+    MediaStreamVideoSink::ConnectToTrack(
+        track, callback, MediaStreamVideoSink::IsSecure::kYes, uses_alpha_);
   }
 
   using MediaStreamVideoSink::DisconnectEncodedFromTrack;
@@ -60,6 +63,10 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
     return content_hint_;
   }
 
+  void SetUsesAlpha(MediaStreamVideoSink::UsesAlpha uses_alpha) {
+    uses_alpha_ = uses_alpha;
+  }
+
  private:
   void DeliverVideoFrame(
       scoped_refptr<media::VideoFrame> frame,
@@ -68,6 +75,8 @@ class MockMediaStreamVideoSink : public MediaStreamVideoSink {
   void DeliverEncodedVideoFrame(scoped_refptr<EncodedVideoFrame> frame,
                                 base::TimeTicks estimated_capture_time);
 
+  MediaStreamVideoSink::UsesAlpha uses_alpha_ =
+      MediaStreamVideoSink::UsesAlpha::kDefault;
   int number_of_frames_;
   bool enabled_;
   media::VideoPixelFormat format_;

@@ -52,6 +52,12 @@ void MediaStreamVideoCapturerSource::SetDeviceCapturerFactoryCallbackForTesting(
   device_capturer_factory_callback_ = std::move(testing_factory_callback);
 }
 
+void MediaStreamVideoCapturerSource::SetCanDiscardAlpha(
+    bool can_discard_alpha) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  source_->SetCanDiscardAlpha(can_discard_alpha);
+}
+
 void MediaStreamVideoCapturerSource::RequestRefreshFrame() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   source_->RequestRefreshFrame();

@@ -209,7 +209,8 @@ MediaStreamVideoWebRtcSink::MediaStreamVideoWebRtcSink(
       WebMediaStreamTrack(component),
       ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
           &WebRtcVideoSourceAdapter::OnVideoFrameOnIO, source_adapter_)),
-      false);
+      MediaStreamVideoSink::IsSecure::kNo,
+      MediaStreamVideoSink::UsesAlpha::kNo);
 
   DVLOG(3) << "MediaStreamVideoWebRtcSink ctor() : is_screencast "
            << is_screencast;

@@ -124,6 +124,10 @@ class CAPTURE_EXPORT VideoCapturerSource {
   // Indicates to the source that a frame has been dropped.
   virtual void OnFrameDropped(media::VideoCaptureFrameDropReason reason) {}
 
+  // Hints to the source that if it has an alpha channel, that alpha channel
+  // will be ignored and can be discarded.
+  virtual void SetCanDiscardAlpha(bool can_discard_alpha) {}
+
   // Sends a log message to the source.
   virtual void OnLog(const std::string& message) {}
 };

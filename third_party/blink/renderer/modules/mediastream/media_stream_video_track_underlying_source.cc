@@ -122,7 +122,8 @@ bool MediaStreamVideoTrackUnderlyingSource::StartFrameDelivery() {
                  ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
                      &MediaStreamVideoTrackUnderlyingSource::OnFrameFromTrack,
                      WrapCrossThreadPersistent(this))),
-                 /*is_sink_secure=*/false);
+                 MediaStreamVideoSink::IsSecure::kNo,
+                 MediaStreamVideoSink::UsesAlpha::kDefault);
   return true;
 }
 

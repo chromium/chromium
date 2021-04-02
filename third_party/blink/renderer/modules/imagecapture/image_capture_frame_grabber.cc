@@ -259,7 +259,8 @@ void ImageCaptureFrameGrabber::GrabFrame(
               &ImageCaptureFrameGrabber::OnSkImage, weak_factory_.GetWeakPtr(),
               std::move(scoped_callbacks))),
           std::move(task_runner))),
-      false);
+      MediaStreamVideoSink::IsSecure::kNo,
+      MediaStreamVideoSink::UsesAlpha::kDefault);
 }
 
 void ImageCaptureFrameGrabber::OnSkImage(

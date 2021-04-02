@@ -52,6 +52,8 @@ class MediaStreamVideoSourceTest : public testing::Test {
         String::FromUTF8("dummy_source_name"), false /* remote */);
     stream_source_->SetPlatformSource(
         base::WrapUnique(mock_stream_video_source_));
+    ON_CALL(*mock_stream_video_source_, SetCanDiscardAlpha)
+        .WillByDefault(Return());
     ON_CALL(*mock_stream_video_source_, SupportsEncodedOutput)
         .WillByDefault(Return(true));
   }
@@ -785,6 +787,28 @@ TEST_F(MediaStreamVideoSourceTest, CapturingLinkSecureTracksAndEncodedSinks) {
   EXPECT_CALL(*mock_source(), OnCapturingLinkSecured(false));
   mock_source()->UpdateCapturingLinkSecure(MediaStreamVideoTrack::From(track),
                                            false);
+}
+
+TEST_F(MediaStreamVideoSourceTest, CanDiscardAlpha) {
+  InSequence s;
+  WebMediaStreamTrack track = CreateTrack();
+
+  MockMediaStreamVideoSink sink_no_alpha;
+  sink_no_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kNo);
+  MockMediaStreamVideoSink sink_alpha;
+  sink_alpha.SetUsesAlpha(MediaStreamVideoSink::UsesAlpha::kDefault);
+
+  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
+  sink_no_alpha.ConnectToTrack(track);
+
+  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
+  sink_alpha.ConnectToTrack(track);
+
+  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(false));
+  sink_no_alpha.DisconnectFromTrack();
+
+  EXPECT_CALL(*mock_source(), SetCanDiscardAlpha(true));
+  sink_alpha.DisconnectFromTrack();
 }
 
 }  // namespace blink

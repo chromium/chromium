@@ -475,7 +475,8 @@ void PepperMediaStreamVideoTrackHost::DidConnectPendingHostToResource() {
       media::BindToCurrentLoop(
           base::BindRepeating(&PepperMediaStreamVideoTrackHost::OnVideoFrame,
                               weak_factory_.GetWeakPtr())),
-      false);
+      MediaStreamVideoSink::IsSecure::kNo,
+      MediaStreamVideoSink::UsesAlpha::kDefault);
 }
 
 int32_t PepperMediaStreamVideoTrackHost::OnResourceMessageReceived(

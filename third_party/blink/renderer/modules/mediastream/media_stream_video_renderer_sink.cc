@@ -166,7 +166,8 @@ void MediaStreamVideoRendererSink::Start() {
           &FrameDeliverer::OnVideoFrame,
           WTF::CrossThreadUnretained(frame_deliverer_.get()))),
       // Local display video rendering is considered a secure link.
-      true);
+      MediaStreamVideoSink::IsSecure::kYes,
+      MediaStreamVideoSink::UsesAlpha::kDefault);
 
   if (video_component_->Source()->GetReadyState() ==
           MediaStreamSource::kReadyStateEnded ||

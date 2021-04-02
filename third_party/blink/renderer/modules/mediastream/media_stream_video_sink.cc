@@ -19,10 +19,11 @@ MediaStreamVideoSink::~MediaStreamVideoSink() {
 void MediaStreamVideoSink::ConnectToTrack(
     const WebMediaStreamTrack& track,
     const VideoCaptureDeliverFrameCB& callback,
-    bool is_sink_secure) {
+    MediaStreamVideoSink::IsSecure is_secure,
+    MediaStreamVideoSink::UsesAlpha uses_alpha) {
   DCHECK(connected_track_.IsNull());
   connected_track_ = track;
-  AddSinkToMediaStreamTrack(track, this, callback, is_sink_secure);
+  AddSinkToMediaStreamTrack(track, this, callback, is_secure, uses_alpha);
 }
 
 void MediaStreamVideoSink::ConnectEncodedToTrack(

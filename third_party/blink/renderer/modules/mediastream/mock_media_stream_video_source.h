@@ -21,11 +21,11 @@ class MockMediaStreamVideoSource : public blink::MediaStreamVideoSource {
   ~MockMediaStreamVideoSource() override;
 
   MOCK_METHOD1(DoSetMutedState, void(bool muted_state));
-
   MOCK_METHOD0(OnEncodedSinkEnabled, void());
   MOCK_METHOD0(OnEncodedSinkDisabled, void());
   MOCK_METHOD0(OnRequestRefreshFrame, void());
   MOCK_METHOD1(OnCapturingLinkSecured, void(bool));
+  MOCK_METHOD1(SetCanDiscardAlpha, void(bool can_discard_alpha));
   MOCK_CONST_METHOD0(SupportsEncodedOutput, bool());
   MOCK_METHOD1(OnFrameDropped, void(media::VideoCaptureFrameDropReason));
   MOCK_CONST_METHOD1(OnFrameFeedback, void(const media::VideoCaptureFeedback&));

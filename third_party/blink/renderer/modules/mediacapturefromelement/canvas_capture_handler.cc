@@ -92,6 +92,11 @@ class VideoCapturerSource : public media::VideoCapturerSource {
     if (canvas_handler_.get())
       canvas_handler_->StopVideoCapture();
   }
+  void SetCanDiscardAlpha(bool can_discard_alpha) override {
+    DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
+    if (canvas_handler_.get())
+      canvas_handler_->SetCanDiscardAlpha(can_discard_alpha);
+  }
 
  private:
   const gfx::Size size_;
@@ -433,6 +438,9 @@ scoped_refptr<media::VideoFrame> CanvasCaptureHandler::ConvertToYUVFrame(
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   TRACE_EVENT0("webrtc", "CanvasCaptureHandler::ConvertToYUVFrame");
 
+  // TODO(https://crbug.com/1191932): Use |is_opaque || can_discard_alpha_|
+  // instead of just |is_opaque| to determine if the format should be
+  // I420 versus I420A.
   scoped_refptr<media::VideoFrame> video_frame = frame_pool_.CreateFrame(
       is_opaque ? media::PIXEL_FORMAT_I420 : media::PIXEL_FORMAT_I420A,
       image_size, gfx::Rect(image_size), image_size, base::TimeDelta());

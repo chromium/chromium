@@ -69,6 +69,9 @@ class MODULES_EXPORT CanvasCaptureHandler {
       const media::VideoCapturerSource::RunningCallback& running_callback);
   void RequestRefreshFrame();
   void StopVideoCapture();
+  void SetCanDiscardAlpha(bool can_discard_alpha) {
+    can_discard_alpha_ = can_discard_alpha;
+  }
 
  private:
   // A VideoCapturerSource instance is created, which is responsible for handing
@@ -130,6 +133,7 @@ class MODULES_EXPORT CanvasCaptureHandler {
   class CanvasCaptureHandlerDelegate;
 
   media::VideoCaptureFormat capture_format_;
+  bool can_discard_alpha_ = true;
   bool ask_for_new_frame_;
   media::VideoFramePool frame_pool_;
   base::Optional<base::TimeTicks> first_frame_ticks_;

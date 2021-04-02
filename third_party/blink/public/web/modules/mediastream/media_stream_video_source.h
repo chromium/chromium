@@ -132,6 +132,9 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
 
   void UpdateCapturingLinkSecure(MediaStreamVideoTrack* track, bool is_secure);
 
+  // Indicate that the capturer can discard its alpha channel (if it has one).
+  virtual void SetCanDiscardAlpha(bool can_discard_alpha) {}
+
   // Request underlying source to capture a new frame.
   virtual void RequestRefreshFrame() {}
 
