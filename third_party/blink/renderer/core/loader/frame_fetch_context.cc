@@ -569,13 +569,13 @@ bool FrameFetchContext::ShouldBlockRequestByInspector(const KURL& url) const {
 
 void FrameFetchContext::DispatchDidBlockRequest(
     const ResourceRequest& resource_request,
-    const FetchInitiatorInfo& fetch_initiator_info,
+    const ResourceLoaderOptions& options,
     ResourceRequestBlockedReason blocked_reason,
     ResourceType resource_type) const {
   if (GetResourceFetcherProperties().IsDetached())
     return;
   probe::DidBlockRequest(Probe(), resource_request, document_loader_, Url(),
-                         fetch_initiator_info, blocked_reason, resource_type);
+                         options, blocked_reason, resource_type);
 }
 
 ContentSecurityPolicy* FrameFetchContext::GetContentSecurityPolicyForWorld(

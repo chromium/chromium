@@ -67,6 +67,7 @@ class NetworkResourcesData;
 enum class RenderBlockingBehavior : uint8_t;
 class Resource;
 class ResourceError;
+struct ResourceLoaderOptions;
 class ResourceResponse;
 class XHRReplayData;
 class XMLHttpRequest;
@@ -91,7 +92,7 @@ class CORE_EXPORT InspectorNetworkAgent final
   void DidBlockRequest(const ResourceRequest&,
                        DocumentLoader*,
                        const KURL& fetch_context_url,
-                       const FetchInitiatorInfo&,
+                       const ResourceLoaderOptions&,
                        ResourceRequestBlockedReason,
                        ResourceType);
   void DidChangeResourcePriority(DocumentLoader*,
@@ -105,7 +106,7 @@ class CORE_EXPORT InspectorNetworkAgent final
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
-                       const FetchInitiatorInfo&,
+                       const ResourceLoaderOptions&,
                        ResourceType,
                        RenderBlockingBehavior);
   void WillSendNavigationRequest(uint64_t identifier,
@@ -270,7 +271,7 @@ class CORE_EXPORT InspectorNetworkAgent final
                                const KURL& fetch_context_url,
                                const ResourceRequest&,
                                const ResourceResponse& redirect_response,
-                               const FetchInitiatorInfo&,
+                               const ResourceLoaderOptions&,
                                InspectorPageAgent::ResourceType);
 
   bool CanGetResponseBodyBlob(const String& request_id);
@@ -298,7 +299,6 @@ class CORE_EXPORT InspectorNetworkAgent final
   base::Optional<InspectorPageAgent::ResourceType> pending_request_type_;
 
   Member<XHRReplayData> pending_xhr_replay_data_;
-  bool is_handling_sync_xhr_ = false;
 
   HashMap<String, std::unique_ptr<protocol::Network::Initiator>>
       frame_navigation_initiator_map_;

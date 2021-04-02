@@ -34,7 +34,7 @@ class CORE_EXPORT ResourceLoadObserverForFrame final
   void WillSendRequest(const ResourceRequest&,
                        const ResourceResponse& redirect_response,
                        ResourceType,
-                       const FetchInitiatorInfo&,
+                       const ResourceLoaderOptions&,
                        RenderBlockingBehavior) override;
   void DidChangePriority(uint64_t identifier,
                          ResourceLoadPriority,

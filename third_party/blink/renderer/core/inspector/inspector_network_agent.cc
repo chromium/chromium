@@ -1009,14 +1009,14 @@ void InspectorNetworkAgent::DidBlockRequest(
     const ResourceRequest& request,
     DocumentLoader* loader,
     const KURL& fetch_context_url,
-    const FetchInitiatorInfo& initiator_info,
+    const ResourceLoaderOptions& options,
     ResourceRequestBlockedReason reason,
     ResourceType resource_type) {
   InspectorPageAgent::ResourceType type =
       InspectorPageAgent::ToResourceType(resource_type);
 
   WillSendRequestInternal(loader, fetch_context_url, request,
-                          ResourceResponse(), initiator_info, type);
+                          ResourceResponse(), options, type);
 
   String request_id =
       IdentifiersFactory::RequestId(loader, request.InspectorId());
@@ -1056,7 +1056,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
     const KURL& fetch_context_url,
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
-    const FetchInitiatorInfo& initiator_info,
+    const ResourceLoaderOptions& options,
     InspectorPageAgent::ResourceType type) {
   String loader_id = IdentifiersFactory::LoaderId(loader);
   String request_id =
@@ -1075,12 +1075,15 @@ void InspectorNetworkAgent::WillSendRequestInternal(
 
   resources_data_->ResourceCreated(request_id, loader_id, request.Url(),
                                    post_data);
-  if (initiator_info.name == fetch_initiator_type_names::kXmlhttprequest) {
+  if (options.initiator_info.name ==
+      fetch_initiator_type_names::kXmlhttprequest) {
     type = InspectorPageAgent::kXHRResource;
-  } else if (initiator_info.name == fetch_initiator_type_names::kFetch) {
+  } else if (options.initiator_info.name ==
+             fetch_initiator_type_names::kFetch) {
     type = InspectorPageAgent::kFetchResource;
-  } else if (initiator_info.name == fetch_initiator_type_names::kBeacon ||
-             initiator_info.name == fetch_initiator_type_names::kPing) {
+  } else if (options.initiator_info.name ==
+                 fetch_initiator_type_names::kBeacon ||
+             options.initiator_info.name == fetch_initiator_type_names::kPing) {
     type = InspectorPageAgent::kPingResource;
   }
 
@@ -1092,10 +1095,10 @@ void InspectorNetworkAgent::WillSendRequestInternal(
                         ? IdentifiersFactory::FrameId(loader->GetFrame())
                         : "";
   std::unique_ptr<protocol::Network::Initiator> initiator_object =
-      BuildInitiatorObject(loader && loader->GetFrame()
-                               ? loader->GetFrame()->GetDocument()
-                               : nullptr,
-                           initiator_info, std::numeric_limits<int>::max());
+      BuildInitiatorObject(
+          loader && loader->GetFrame() ? loader->GetFrame()->GetDocument()
+                                       : nullptr,
+          options.initiator_info, std::numeric_limits<int>::max());
 
   std::unique_ptr<protocol::Network::Request> request_info(
       BuildObjectForResourceRequest(request, post_data,
@@ -1112,7 +1115,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
 
   request_info->setReferrerPolicy(
       GetReferrerPolicy(request.GetReferrerPolicy()));
-  if (initiator_info.is_link_preload)
+  if (options.initiator_info.is_link_preload)
     request_info->setIsLinkPreload(true);
 
   String resource_type = InspectorPageAgent::ResourceTypeJson(type);
@@ -1128,7 +1131,7 @@ void InspectorNetworkAgent::WillSendRequestInternal(
       base::Time::Now().ToDoubleT(), std::move(initiator_object),
       BuildObjectForResourceResponse(redirect_response), resource_type,
       std::move(maybe_frame_id), request.HasUserGesture());
-  if (is_handling_sync_xhr_)
+  if (options.synchronous_policy == SynchronousPolicy::kRequestSynchronously)
     GetFrontend()->flush();
 
   if (pending_xhr_replay_data_) {
@@ -1256,18 +1259,18 @@ void InspectorNetworkAgent::WillSendRequest(
     const KURL& fetch_context_url,
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
-    const FetchInitiatorInfo& initiator_info,
+    const ResourceLoaderOptions& options,
     ResourceType resource_type,
     RenderBlockingBehavior render_blocking_behavior) {
   // Ignore the request initiated internally.
-  if (initiator_info.name == fetch_initiator_type_names::kInternal)
+  if (options.initiator_info.name == fetch_initiator_type_names::kInternal)
     return;
 
   InspectorPageAgent::ResourceType type =
       InspectorPageAgent::ToResourceType(resource_type);
 
   WillSendRequestInternal(loader, fetch_context_url, request, redirect_response,
-                          initiator_info, type);
+                          options, type);
 }
 
 void InspectorNetworkAgent::MarkResourceAsCached(DocumentLoader* loader,
@@ -1420,7 +1423,6 @@ void InspectorNetworkAgent::DidFinishLoading(
   if (monotonic_finish_time.is_null())
     monotonic_finish_time = base::TimeTicks::Now();
 
-  is_handling_sync_xhr_ = false;
   // TODO(npm): Use base::TimeTicks in Network.h.
   GetFrontend()->loadingFinished(
       request_id, monotonic_finish_time.since_origin().InSecondsF(),
@@ -1466,7 +1468,6 @@ void InspectorNetworkAgent::DidFailLoading(
   if (cors_error_status) {
     protocol_cors_error_status = BuildCorsErrorStatus(*cors_error_status);
   }
-  is_handling_sync_xhr_ = false;
   GetFrontend()->loadingFailed(
       request_id, base::TimeTicks::Now().since_origin().InSecondsF(),
       InspectorPageAgent::ResourceTypeJson(
@@ -1505,9 +1506,6 @@ void InspectorNetworkAgent::WillLoadXHR(ExecutionContext* execution_context,
       include_credentials);
   for (const auto& header : headers)
     pending_xhr_replay_data_->AddHeader(header.key, header.value);
-  DCHECK(!is_handling_sync_xhr_);
-  if (!async)
-    is_handling_sync_xhr_ = true;
 }
 
 void InspectorNetworkAgent::DidFinishXHR(XMLHttpRequest* xhr) {

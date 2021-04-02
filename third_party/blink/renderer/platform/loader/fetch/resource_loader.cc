@@ -845,7 +845,7 @@ bool ResourceLoader::WillFollowRedirect(
   DCHECK(!new_request->HttpBody());
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     observer->WillSendRequest(*new_request, redirect_response,
-                              resource_->GetType(), options.initiator_info,
+                              resource_->GetType(), options,
                               initial_request.GetRenderBlockingBehavior());
   }
 

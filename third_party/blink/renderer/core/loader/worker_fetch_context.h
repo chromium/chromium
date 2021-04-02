@@ -51,7 +51,7 @@ class WorkerFetchContext final : public BaseFetchContext {
   bool AllowScriptFromSource(const KURL&) const override;
   bool ShouldBlockRequestByInspector(const KURL&) const override;
   void DispatchDidBlockRequest(const ResourceRequest&,
-                               const FetchInitiatorInfo&,
+                               const ResourceLoaderOptions&,
                                ResourceRequestBlockedReason,
                                ResourceType) const override;
   ContentSecurityPolicy* GetContentSecurityPolicyForWorld(

@@ -61,8 +61,8 @@ base::Optional<ResourceRequestBlockedReason> BaseFetchContext::CanRequest(
                          reporting_disposition, redirect_info);
   if (blocked_reason &&
       reporting_disposition == ReportingDisposition::kReport) {
-    DispatchDidBlockRequest(resource_request, options.initiator_info,
-                            blocked_reason.value(), type);
+    DispatchDidBlockRequest(resource_request, options, blocked_reason.value(),
+                            type);
   }
   return blocked_reason;
 }
@@ -80,7 +80,7 @@ BaseFetchContext::CanRequestBasedOnSubresourceFilterOnly(
       !subresource_filter->AllowLoad(url, resource_request.GetRequestContext(),
                                      reporting_disposition)) {
     if (reporting_disposition == ReportingDisposition::kReport) {
-      DispatchDidBlockRequest(resource_request, options.initiator_info,
+      DispatchDidBlockRequest(resource_request, options,
                               ResourceRequestBlockedReason::kSubresourceFilter,
                               type);
     }

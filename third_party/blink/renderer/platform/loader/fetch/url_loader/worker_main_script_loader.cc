@@ -60,8 +60,7 @@ void WorkerMainScriptLoader::Start(
   resource_load_observer_->WillSendRequest(
       resource_request,
       /*redirect_response=*/ResourceResponse(), ResourceType::kScript,
-      resource_loader_options_.initiator_info,
-      RenderBlockingBehavior::kNonBlocking);
+      resource_loader_options_, RenderBlockingBehavior::kNonBlocking);
 
   resource_load_info_notifier_wrapper_->NotifyResourceLoadInitiated(
       request_id_, initial_request_url_, initial_request_.HttpMethod().Latin1(),
@@ -333,8 +332,7 @@ void WorkerMainScriptLoader::HandleRedirections(
         redirect_response->ssl_info.has_value(), request_id_);
     resource_load_observer_->WillSendRequest(
         *new_request, response.ToResourceResponse(), ResourceType::kScript,
-        resource_loader_options_.initiator_info,
-        RenderBlockingBehavior::kNonBlocking);
+        resource_loader_options_, RenderBlockingBehavior::kNonBlocking);
     resource_load_info_notifier_wrapper_->NotifyResourceRedirectReceived(
         redirect_info, std::move(redirect_response));
   }

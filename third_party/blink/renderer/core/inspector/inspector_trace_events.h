@@ -48,7 +48,6 @@ class Element;
 class EncodedFormData;
 class Event;
 class ExecutionContext;
-struct FetchInitiatorInfo;
 class FloatRect;
 class GraphicsLayer;
 class HitTestLocation;
@@ -68,6 +67,7 @@ class QualifiedName;
 enum class RenderBlockingBehavior : uint8_t;
 class Resource;
 class ResourceError;
+struct ResourceLoaderOptions;
 class ResourceRequest;
 class ResourceResponse;
 class StyleChangeReasonForTracing;
@@ -91,7 +91,7 @@ class CORE_EXPORT InspectorTraceEvents
                        const KURL& fetch_context_url,
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
-                       const FetchInitiatorInfo&,
+                       const ResourceLoaderOptions&,
                        ResourceType,
                        RenderBlockingBehavior);
   void WillSendNavigationRequest(uint64_t identifier,

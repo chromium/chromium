@@ -89,10 +89,10 @@ interface CoreProbes {
   void ApplyAcceptLanguageOverride(ExecutionContext*, String* accept_language);
   void ApplyUserAgentOverride(CoreProbeSink*, String* user_agent);
   void ApplyUserAgentMetadataOverride(CoreProbeSink*, base::Optional<blink::UserAgentMetadata>* ua_metadata_override);
-  void DidBlockRequest(CoreProbeSink*, const ResourceRequest&, DocumentLoader*, const KURL& fetch_context_url, const FetchInitiatorInfo&, ResourceRequestBlockedReason, ResourceType);
+  void DidBlockRequest(CoreProbeSink*, const ResourceRequest&, DocumentLoader*, const KURL& fetch_context_url, const ResourceLoaderOptions&, ResourceRequestBlockedReason, ResourceType);
   void DidChangeResourcePriority(LocalFrame*, DocumentLoader*, uint64_t identifier, ResourceLoadPriority load_priority);
   void PrepareRequest(CoreProbeSink*, DocumentLoader*, ResourceRequest&, ResourceLoaderOptions&, ResourceType);
-  void WillSendRequest(CoreProbeSink*, DocumentLoader*, const KURL& fetch_context_url, const ResourceRequest&, const ResourceResponse& redirect_response, const FetchInitiatorInfo&, ResourceType, RenderBlockingBehavior);
+  void WillSendRequest(CoreProbeSink*, DocumentLoader*, const KURL& fetch_context_url, const ResourceRequest&, const ResourceResponse& redirect_response, const ResourceLoaderOptions&, ResourceType, RenderBlockingBehavior);
   void WillSendNavigationRequest(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const KURL&, const AtomicString& http_method, EncodedFormData*);
   void MarkResourceAsCached(LocalFrame*, DocumentLoader*, uint64_t identifier);
   void DidReceiveResourceResponse(CoreProbeSink*, uint64_t identifier, DocumentLoader*, const ResourceResponse&, const Resource*);

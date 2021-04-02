@@ -150,7 +150,7 @@ class WorkerMainScriptLoaderTest : public testing::Test {
                  void(const ResourceRequest&,
                       const ResourceResponse& redirect_response,
                       ResourceType,
-                      const FetchInitiatorInfo&,
+                      const ResourceLoaderOptions&,
                       RenderBlockingBehavior));
     MOCK_METHOD3(DidChangePriority,
                  void(uint64_t identifier,

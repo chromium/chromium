@@ -604,7 +604,7 @@ void ResourceFetcher::DidLoadResourceFromMemoryCache(
 
   resource_load_observer_->WillSendRequest(
       request, ResourceResponse() /* redirects */, resource->GetType(),
-      resource->Options().initiator_info, render_blocking_behavior);
+      resource->Options(), render_blocking_behavior);
   resource_load_observer_->DidReceiveResponse(
       request.InspectorId(), request, resource->GetResponse(), resource,
       ResourceLoadObserver::ResponseSource::kFromMemoryCache);
@@ -1992,8 +1992,8 @@ bool ResourceFetcher::StartLoad(
       request.SetHttpBody(request_body.FormBody());
       ResourceResponse response;
       resource_load_observer_->WillSendRequest(
-          request, response, resource->GetType(),
-          resource->Options().initiator_info, render_blocking_behavior);
+          request, response, resource->GetType(), resource->Options(),
+          render_blocking_behavior);
     }
 
     using QuotaType = decltype(inflight_keepalive_bytes_);

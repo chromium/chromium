@@ -72,7 +72,7 @@ void ResourceLoadObserverForFrame::WillSendRequest(
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     ResourceType resource_type,
-    const FetchInitiatorInfo& initiator_info,
+    const ResourceLoaderOptions& options,
     RenderBlockingBehavior render_blocking_behavior) {
   LocalFrame* frame = document_->GetFrame();
   DCHECK(frame);
@@ -85,7 +85,7 @@ void ResourceLoadObserverForFrame::WillSendRequest(
   probe::WillSendRequest(
       GetProbe(), document_loader_,
       fetcher_properties_->GetFetchClientSettingsObject().GlobalObjectUrl(),
-      request, redirect_response, initiator_info, resource_type,
+      request, redirect_response, options, resource_type,
       render_blocking_behavior);
   if (auto* idleness_detector = frame->GetIdlenessDetector())
     idleness_detector->OnWillSendRequest(document_->Fetcher());

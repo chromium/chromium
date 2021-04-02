@@ -130,7 +130,7 @@ class ResourceFetcherTest : public testing::Test {
     void WillSendRequest(const ResourceRequest& request,
                          const ResourceResponse& redirect_response,
                          ResourceType,
-                         const FetchInitiatorInfo&,
+                         const ResourceLoaderOptions&,
                          RenderBlockingBehavior) override {
       request_ = PartialResourceRequest(request);
     }

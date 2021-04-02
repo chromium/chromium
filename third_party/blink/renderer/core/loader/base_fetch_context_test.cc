@@ -67,7 +67,7 @@ class MockBaseFetchContext final : public BaseFetchContext {
     return false;
   }
   void DispatchDidBlockRequest(const ResourceRequest&,
-                               const FetchInitiatorInfo&,
+                               const ResourceLoaderOptions&,
                                ResourceRequestBlockedReason,
                                ResourceType) const override {}
   ContentSecurityPolicy* GetContentSecurityPolicyForWorld(

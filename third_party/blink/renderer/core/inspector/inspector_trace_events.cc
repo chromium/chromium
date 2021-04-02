@@ -123,7 +123,7 @@ void InspectorTraceEvents::WillSendRequest(
     const KURL& fetch_context_url,
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
-    const FetchInitiatorInfo&,
+    const ResourceLoaderOptions&,
     ResourceType,
     RenderBlockingBehavior render_blocking_behavior) {
   LocalFrame* frame = loader ? loader->GetFrame() : nullptr;
