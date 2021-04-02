@@ -156,7 +156,7 @@ class RecentTabsTableCoordinatorTest : public BlockCleanupTest {
       DCHECK(account_mutator);
       account_mutator->ClearPrimaryAccount(
           signin_metrics::SIGNOUT_TEST,
-          signin_metrics::SignoutDelete::IGNORE_METRIC);
+          signin_metrics::SignoutDelete::kIgnoreMetric);
     }
 
     SessionSyncServiceMockForRecentTabsTableCoordinator* session_sync_service =

@@ -658,10 +658,10 @@ void LogSigninAccountReconciliationDuration(base::TimeDelta duration,
 void LogSignout(ProfileSignout source_metric, SignoutDelete delete_metric) {
   UMA_HISTOGRAM_ENUMERATION("Signin.SignoutProfile", source_metric,
                             NUM_PROFILE_SIGNOUT_METRICS);
-  if (delete_metric != SignoutDelete::IGNORE_METRIC) {
+  if (delete_metric != SignoutDelete::kIgnoreMetric) {
     UMA_HISTOGRAM_BOOLEAN(
         "Signin.SignoutDeleteProfile",
-        delete_metric == SignoutDelete::DELETED ? true : false);
+        delete_metric == SignoutDelete::kDeleted ? true : false);
   }
 }
 

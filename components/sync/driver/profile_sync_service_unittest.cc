@@ -572,7 +572,7 @@ TEST_F(ProfileSyncServiceTest, SignOutDisablesSyncTransportAndSyncFeature) {
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
   account_mutator->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+      signin_metrics::SignoutDelete::kIgnoreMetric);
   // Wait for ProfileSyncService to be notified.
   base::RunLoop().RunUntilIdle();
   // SyncRequested was set to false, causing DISABLE_REASON_USER_CHOICE.
@@ -599,7 +599,7 @@ TEST_F(ProfileSyncServiceTest,
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
   account_mutator->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+      signin_metrics::SignoutDelete::kIgnoreMetric);
   // Wait for ProfileSyncService to be notified.
   base::RunLoop().RunUntilIdle();
   // These are specific to sync-the-feature and should be cleared.
@@ -783,7 +783,7 @@ TEST_F(ProfileSyncServiceTest, SignOutRevokeAccessToken) {
 
   account_mutator->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+      signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_TRUE(service()->GetAccessTokenForTest().empty());
 }
 #endif
@@ -1136,7 +1136,7 @@ TEST_F(ProfileSyncServiceTest, DecoupleFromMasterSyncIfSignsOut) {
   DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
   account_mutator->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+      signin_metrics::SignoutDelete::kIgnoreMetric);
   // Wait for ProfileSyncService to be notified.
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(sync_prefs.GetDecoupledFromAndroidMasterSync());
@@ -1205,7 +1205,7 @@ TEST_F(ProfileSyncServiceTestWithSyncInvalidationsServiceCreated,
   EXPECT_CALL(*sync_invalidations_service(), SetActive(false));
   account_mutator->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+      signin_metrics::SignoutDelete::kIgnoreMetric);
 }
 #endif
 

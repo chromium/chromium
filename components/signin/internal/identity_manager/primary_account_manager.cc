@@ -424,7 +424,7 @@ void PrimaryAccountManager::OnRefreshTokensLoaded() {
       AccountTrackerService::MIGRATION_NOT_STARTED) {
     // Clear the primary account if any.
     ClearPrimaryAccount(signin_metrics::ACCOUNT_ID_MIGRATION,
-                        signin_metrics::SignoutDelete::IGNORE_METRIC);
+                        signin_metrics::SignoutDelete::kIgnoreMetric);
     // Clean all remaining account information from the account tracker.
     for (const auto& account : account_tracker_service_->GetAccounts())
       account_tracker_service_->RemoveAccount(account.account_id);

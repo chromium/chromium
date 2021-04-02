@@ -378,7 +378,7 @@ void PeopleHandler::DisplayGaiaLoginInNewTabOrWindow(
     // then sign in again.
     identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
         signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
-        signin_metrics::SignoutDelete::IGNORE_METRIC);
+        signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 
   // If the identity manager already has a primary account, this is a
@@ -641,7 +641,7 @@ void PeopleHandler::HandleTurnOffSync(const base::ListValue* args) {
 
   identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
       signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+      signin_metrics::SignoutDelete::kIgnoreMetric);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -677,8 +677,8 @@ void PeopleHandler::HandleSignout(const base::ListValue* args) {
     auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
     if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
       signin_metrics::SignoutDelete delete_metric =
-          delete_profile ? signin_metrics::SignoutDelete::DELETED
-                         : signin_metrics::SignoutDelete::KEEPING;
+          delete_profile ? signin_metrics::SignoutDelete::kDeleted
+                         : signin_metrics::SignoutDelete::kKeeping;
 
       // Only revoke the sync consent.
       // * If the primary account is still valid, then it will be removed by
@@ -776,7 +776,7 @@ void PeopleHandler::CloseSyncSetup() {
                 ->GetPrimaryAccountMutator()
                 ->RevokeSyncConsent(
                     signin_metrics::ABORT_SIGNIN,
-                    signin_metrics::SignoutDelete::IGNORE_METRIC);
+                    signin_metrics::SignoutDelete::kIgnoreMetric);
           }
 #endif
         }

@@ -357,7 +357,7 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
                   ->GetPrimaryAccountMutator()) {
         account_mutator->RevokeSyncConsent(
             signin_metrics::USER_CLICKED_SIGNOUT_SETTINGS,
-            signin_metrics::SignoutDelete::IGNORE_METRIC);
+            signin_metrics::SignoutDelete::kIgnoreMetric);
         Hide();
         browser()->signin_view_controller()->ShowSignin(
             profiles::BUBBLE_VIEW_MODE_GAIA_SIGNIN,

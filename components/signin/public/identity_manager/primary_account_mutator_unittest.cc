@@ -182,7 +182,7 @@ void RunRevokeConsentTest(
     case RevokeConsentAction::kRevokeSyncConsent:
       primary_account_mutator->RevokeSyncConsent(
           signin_metrics::SIGNOUT_TEST,
-          signin_metrics::SignoutDelete::IGNORE_METRIC);
+          signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
     case RevokeConsentAction::kClearPrimaryAccount:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -190,7 +190,7 @@ void RunRevokeConsentTest(
 #else
       primary_account_mutator->ClearPrimaryAccount(
           signin_metrics::SIGNOUT_TEST,
-          signin_metrics::SignoutDelete::IGNORE_METRIC);
+          signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
 #endif
   }
@@ -410,7 +410,7 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount_NotSignedIn) {
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
   EXPECT_FALSE(primary_account_mutator->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC));
+      signin_metrics::SignoutDelete::kIgnoreMetric));
 }
 
 // Test that ClearPrimaryAccount() clears the primary account, revokes the

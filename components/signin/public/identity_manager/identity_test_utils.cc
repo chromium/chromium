@@ -211,7 +211,7 @@ void RevokeSyncConsent(IdentityManager* identity_manager) {
       &run_loop));
   identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
       signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+      signin_metrics::SignoutDelete::kIgnoreMetric);
   run_loop.Run();
 }
 
@@ -240,7 +240,7 @@ void ClearPrimaryAccount(IdentityManager* identity_manager) {
       &run_loop));
   identity_manager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
       signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
+      signin_metrics::SignoutDelete::kIgnoreMetric);
 
   if (wait_for_primary_acount_cleared_notification)
     run_loop.Run();

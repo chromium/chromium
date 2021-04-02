@@ -170,7 +170,7 @@ TEST_F(PrimaryAccountManagerTest, SignOut) {
   manager_->SetSyncPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(main_account_id));
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
-                                signin_metrics::SignoutDelete::IGNORE_METRIC);
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(
@@ -202,7 +202,7 @@ TEST_F(PrimaryAccountManagerTest, SignOutRevoke) {
             manager_->GetPrimaryAccountId(ConsentLevel::kSync));
 
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
-                                signin_metrics::SignoutDelete::IGNORE_METRIC);
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
 
   // Tokens are revoked.
   EXPECT_EQ(1, num_successful_signouts_);
@@ -223,12 +223,12 @@ TEST_F(PrimaryAccountManagerTest, SignOutWhileProhibited) {
       account_tracker()->GetAccountInfo(main_account_id));
   signin_client()->set_is_signout_allowed(false);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
-                                signin_metrics::SignoutDelete::IGNORE_METRIC);
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(0, num_successful_signouts_);
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(true);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
-                                signin_metrics::SignoutDelete::IGNORE_METRIC);
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 }
@@ -247,7 +247,7 @@ TEST_F(PrimaryAccountManagerTest, UnconsentedSignOutWhileProhibited) {
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   signin_client()->set_is_signout_allowed(false);
   manager_->ClearPrimaryAccount(signin_metrics::SIGNOUT_TEST,
-                                signin_metrics::SignoutDelete::IGNORE_METRIC);
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 }
 
@@ -292,7 +292,7 @@ TEST_F(PrimaryAccountManagerTest, NoopSignOutDoesNotNotifyObservers) {
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->RevokeSyncConsent(signin_metrics::SIGNOUT_TEST,
-                              signin_metrics::SignoutDelete::IGNORE_METRIC);
+                              signin_metrics::SignoutDelete::kIgnoreMetric);
 
   // Since there was no sync consent, observers shouldn't be notified.
   EXPECT_EQ(0, num_successful_signouts_);
@@ -569,7 +569,7 @@ TEST_F(PrimaryAccountManagerTest, RevokeSyncConsent) {
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->RevokeSyncConsent(signin_metrics::ProfileSignout::SIGNOUT_TEST,
-                              signin_metrics::SignoutDelete::IGNORE_METRIC);
+                              signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));
@@ -586,7 +586,7 @@ TEST_F(PrimaryAccountManagerTest, ClearPrimaryAccount) {
   EXPECT_TRUE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
 
   manager_->ClearPrimaryAccount(signin_metrics::ProfileSignout::SIGNOUT_TEST,
-                                signin_metrics::SignoutDelete::IGNORE_METRIC);
+                                signin_metrics::SignoutDelete::kIgnoreMetric);
   EXPECT_EQ(1, num_successful_signouts_);
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSync));
   EXPECT_FALSE(manager_->HasPrimaryAccount(ConsentLevel::kSignin));

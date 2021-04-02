@@ -222,7 +222,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
             ->GetPrimaryAccountMutator();
     primary_account_mutator->ClearPrimaryAccount(
         signin_metrics::SIGNOUT_TEST,
-        signin_metrics::SignoutDelete::IGNORE_METRIC);
+        signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 #endif
 

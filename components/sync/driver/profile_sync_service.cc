@@ -900,7 +900,7 @@ void ProfileSyncService::OnActionableError(const SyncProtocolError& error) {
         // ConsentLevel::kSignin is not supported.
         account_mutator->RevokeSyncConsent(
             signin_metrics::SERVER_FORCED_DISABLE,
-            signin_metrics::SignoutDelete::IGNORE_METRIC);
+            signin_metrics::SignoutDelete::kIgnoreMetric);
       }
 #endif
       break;

@@ -591,7 +591,7 @@ void DiceTurnSyncOnHelper::FinishSyncSetupAndDelete(
       DCHECK(primary_account_mutator);
       primary_account_mutator->RevokeSyncConsent(
           signin_metrics::ABORT_SIGNIN,
-          signin_metrics::SignoutDelete::IGNORE_METRIC);
+          signin_metrics::SignoutDelete::kIgnoreMetric);
       AbortAndDelete();
       return;
     }

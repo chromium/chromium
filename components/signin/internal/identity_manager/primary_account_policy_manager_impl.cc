@@ -66,7 +66,7 @@ void PrimaryAccountPolicyManagerImpl::InitializePolicy(
     // RevokeSyncConsent() does not do anything.
     primary_account_manager->RevokeSyncConsent(
         signin_metrics::SIGNIN_PREF_CHANGED_DURING_SIGNIN,
-        signin_metrics::SignoutDelete::IGNORE_METRIC);
+        signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 }
 
@@ -81,7 +81,7 @@ void PrimaryAccountPolicyManagerImpl::OnGoogleServicesUsernamePatternChanged(
     // the user out.
     primary_account_manager->ClearPrimaryAccount(
         signin_metrics::GOOGLE_SERVICE_NAME_PATTERN_CHANGED,
-        signin_metrics::SignoutDelete::IGNORE_METRIC);
+        signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 }
 
@@ -96,7 +96,7 @@ void PrimaryAccountPolicyManagerImpl::OnSigninAllowedPrefChanged(
     VLOG(0) << "IsSigninAllowed() set to false, signing out the user";
     primary_account_manager->ClearPrimaryAccount(
         signin_metrics::SIGNOUT_PREF_CHANGED,
-        signin_metrics::SignoutDelete::IGNORE_METRIC);
+        signin_metrics::SignoutDelete::kIgnoreMetric);
   }
 }
 

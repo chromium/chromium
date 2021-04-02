@@ -357,13 +357,13 @@ enum class AccountEquality : int {
 };
 
 // When the user is give a choice of deleting their profile or not when signing
-// out, the |DELETED| or |KEEPING| metric should be used. If the user is not
-// given any option, then use the |IGNORE_METRIC| value should be used.
+// out, the |kDeleted| or |kKeeping| metric should be used. If the user is not
+// given any option, then use the |kIgnoreMetric| value should be used.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 enum class SignoutDelete : int {
-  DELETED = 0,
-  KEEPING,
-  IGNORE_METRIC,
+  kDeleted = 0,
+  kKeeping,
+  kIgnoreMetric,
 };
 
 // This is the relationship between the account used to sign into chrome, and

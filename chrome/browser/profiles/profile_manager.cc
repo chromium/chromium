@@ -1994,7 +1994,7 @@ void ProfileManager::AddProfileToStorage(Profile* profile) {
                     &signin::PrimaryAccountMutator::ClearPrimaryAccount),
                 base::Unretained(account_mutator),
                 signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN,
-                signin_metrics::SignoutDelete::IGNORE_METRIC));
+                signin_metrics::SignoutDelete::kIgnoreMetric));
       }
 #endif
       return;
