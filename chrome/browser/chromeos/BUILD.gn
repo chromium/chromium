@@ -4261,7 +4261,6 @@ source_set("unit_tests") {
     "//chromeos/components/proximity_auth",
     "//chromeos/components/proximity_auth:test_support",
     "//chromeos/components/tether:test_support",
-    "//chromeos/cryptohome:test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/attestation",
     "//chromeos/dbus/attestation:attestation_proto",

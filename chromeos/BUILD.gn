@@ -130,7 +130,6 @@ source_set("test_support_source_set") {
   if (is_chromeos_ash) {
     deps += [
       "//chromeos/attestation:test_support",
-      "//chromeos/cryptohome:test_support",
       "//chromeos/dbus:test_support",
       "//chromeos/disks:test_support",
       "//chromeos/login/auth:test_support",
