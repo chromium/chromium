@@ -53,22 +53,27 @@ consoles.list_view(
 
 try_.builder(
     name = "gen-android-try",
+    os = os.LINUX_BIONIC,
 )
 
 try_.builder(
     name = "gen-chromiumos-try",
+    os = os.LINUX_BIONIC,
 )
 
 try_.builder(
     name = "gen-fuchsia-try",
+    os = os.LINUX_BIONIC,
 )
 
 try_.builder(
     name = "gen-lacros-try",
+    os = os.LINUX_BIONIC,
 )
 
 try_.builder(
     name = "gen-linux-try",
+    os = os.LINUX_BIONIC,
 )
 
 try_.builder(
