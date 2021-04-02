@@ -664,12 +664,11 @@ class ASH_EXPORT ShelfLayoutManager
   std::unique_ptr<InAppToHomeNudgeController> in_app_to_home_nudge_controller_;
 
   // Whether upward fling from shelf should be handled as potential gesture from
-  // overview to home. This is set when the swipe would otherwise be handled by
-  // |window_drag_controller_|, but the swipe cannot be associated with a window
-  // to drag (for example, because the swipe started in split view mode on a
-  // side which is showing overview). Note that the gesture will be handled only
-  // if the overview session is active.
-  bool allow_fling_from_overview_to_home_ = false;
+  // overview to home. This is set to false when the swipe is handled by
+  // |window_drag_controller_|, when the swipe is associated with a window
+  // to drag. Note that the gesture will be handled only when the overview
+  // session is active.
+  bool allow_fling_from_overview_to_home_ = true;
 
   // Indicates whether shelf drag gesture can start window drag from shelf to
   // overview or home when hotseat is in extended state (the window drag will

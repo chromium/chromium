@@ -2313,7 +2313,7 @@ void ShelfLayoutManager::CompleteDrag(const ui::LocatedEvent& event_in_screen) {
 
   const bool transitioned_from_overview_to_home =
       MaybeEndDragFromOverviewToHome(event_in_screen);
-  allow_fling_from_overview_to_home_ = false;
+  allow_fling_from_overview_to_home_ = true;
 
   // Fling from overview to home should be allowed only if window_drag_handler_
   // is not handling a window.
