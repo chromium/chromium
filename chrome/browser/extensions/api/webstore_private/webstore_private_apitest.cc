@@ -654,8 +654,10 @@ class ExtensionWebstorePrivateApiAllowlistEnforcementTest
     : public ExtensionWebstorePrivateApiTest {
  public:
   ExtensionWebstorePrivateApiAllowlistEnforcementTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kEnforceSafeBrowsingExtensionAllowlist);
+    feature_list_.InitWithFeatures(
+        {extensions_features::kSafeBrowsingCrxAllowlistShowWarnings,
+         extensions_features::kSafeBrowsingCrxAllowlistAutoDisable},
+        {});
   }
 
  private:

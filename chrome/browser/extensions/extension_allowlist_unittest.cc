@@ -78,7 +78,8 @@ class ExtensionAllowlistUnitTest : public ExtensionAllowlistUnitTestBase {
  public:
   ExtensionAllowlistUnitTest() {
     feature_list_.InitWithFeatures(
-        {extensions_features::kEnforceSafeBrowsingExtensionAllowlist,
+        {extensions_features::kSafeBrowsingCrxAllowlistShowWarnings,
+         extensions_features::kSafeBrowsingCrxAllowlistAutoDisable,
          extensions_features::kDisableMalwareExtensionsRemotely},
         {});
   }
@@ -605,8 +606,10 @@ class ExtensionAllowlistWithFeatureDisabledUnitTest
     : public ExtensionAllowlistUnitTestBase {
  public:
   ExtensionAllowlistWithFeatureDisabledUnitTest() {
-    feature_list_.InitAndDisableFeature(
-        extensions_features::kEnforceSafeBrowsingExtensionAllowlist);
+    // Test with warnings enabled but auto disable disabled.
+    feature_list_.InitWithFeatures(
+        {extensions_features::kSafeBrowsingCrxAllowlistShowWarnings},
+        {extensions_features::kSafeBrowsingCrxAllowlistAutoDisable});
   }
 };
 

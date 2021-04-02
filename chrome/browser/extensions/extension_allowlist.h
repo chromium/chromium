@@ -74,18 +74,19 @@ class ExtensionAllowlist : private ExtensionPrefsObserver {
   // extension is not allowlisted and the allowlist is enforced.
   bool ShouldDisplayWarning(const std::string& extension_id) const;
 
-  // Whether the ESB allowlist is enforced or not.
-  bool is_allowlist_enforced() { return is_allowlist_enforced_; }
-
   // Informs the allowlist that a new extension was installed.
   //
   // `extension_id` is the id of the extension that was installed, and
   // `install_flags` is a bitmask of InstallFlags for the installation.
   void OnExtensionInstalled(const std::string& extension_id, int install_flags);
 
+  // Whether warnings should be shown for extensions not included in the
+  // allowlist (considers Enhanced Safe Browsing setting and finch feature).
+  bool warnings_enabled() const { return warnings_enabled_; }
+
  private:
   // Set if the allowlist should be enforced or not.
-  void SetAllowlistEnforcedField();
+  void SetAllowlistEnforcementFields();
 
   // Apply the allowlist enforcement by disabling a not allowlisted extension if
   // allowed by policy.
@@ -121,8 +122,14 @@ class ExtensionAllowlist : private ExtensionPrefsObserver {
 
   bool init_done_ = false;
 
-  // Whether the Safe Browsing allowlist is currently enforced or not.
-  bool is_allowlist_enforced_ = false;
+  // Specifies if warnings should be shown for extensions not included in the
+  // allowlist for this profile (considers ESB setting and finch feature).
+  bool warnings_enabled_ = false;
+
+  // Specifies if extensions not included in the allowlist should be
+  // automatically disabled on this profile (considers ESB setting and finch
+  // feature).
+  bool should_auto_disable_extensions_ = false;
 
   // Used to subscribe to profile preferences updates.
   PrefChangeRegistrar pref_change_registrar_;

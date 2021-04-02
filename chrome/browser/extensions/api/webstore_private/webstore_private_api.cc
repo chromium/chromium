@@ -763,11 +763,9 @@ bool WebstorePrivateBeginInstallWithManifest3Function::ShouldShowFrictionDialog(
   if (consider_allowlisted)
     return false;
 
-  // Only show friction if the allowlist enforcement is enabled.
+  // Only show friction if the allowlist warnings are enabled for the profile.
   auto* extension_system = ExtensionSystem::Get(profile);
-  return extension_system->extension_service()
-      ->allowlist()
-      ->is_allowlist_enforced();
+  return extension_system->extension_service()->allowlist()->warnings_enabled();
 }
 
 void WebstorePrivateBeginInstallWithManifest3Function::

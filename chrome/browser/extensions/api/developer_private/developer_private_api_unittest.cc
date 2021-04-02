@@ -1794,7 +1794,7 @@ class DeveloperPrivateApiAllowlistUnitTest
  public:
   DeveloperPrivateApiAllowlistUnitTest() {
     feature_list_.InitAndEnableFeature(
-        extensions_features::kEnforceSafeBrowsingExtensionAllowlist);
+        extensions_features::kSafeBrowsingCrxAllowlistShowWarnings);
   }
 
  private:

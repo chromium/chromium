@@ -16,10 +16,19 @@ const base::Feature kExtensionsCheckup{"ExtensionsCheckup",
 const base::Feature kDisableMalwareExtensionsRemotely{
     "DisableMalwareExtensionsRemotely", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether we disable extensions not allowlisted for Enhanced Safe
-// Browsing users.
-const base::Feature kEnforceSafeBrowsingExtensionAllowlist{
-    "EnforceSafeBrowsingExtensionAllowlist", base::FEATURE_DISABLED_BY_DEFAULT};
+// Controls whether we show an install friction dialog when an Enhanced Safe
+// Browsing user tries to install an extension that is not included in the
+// Safe Browsing CRX allowlist. This feature also controls if we show a warning
+// in 'chrome://extensions' for extensions not included in the allowlist.
+const base::Feature kSafeBrowsingCrxAllowlistShowWarnings{
+    "SafeBrowsingCrxAllowlistShowWarnings", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Automatically disable extensions not included in the Safe Browsing CRX
+// allowlist if the user has turned on Enhanced Safe Browsing (ESB). The
+// extensions can be disabled at ESB opt-in time or when an extension is moved
+// out of the allowlist.
+const base::Feature kSafeBrowsingCrxAllowlistAutoDisable{
+    "SafeBrowsingCrxAllowlistAutoDisable", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Parameters for ExtensionsCheckup feature.
 const char kExtensionsCheckupEntryPointParameter[] = "entry_point";

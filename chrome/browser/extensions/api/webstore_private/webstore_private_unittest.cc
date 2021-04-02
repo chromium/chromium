@@ -616,7 +616,7 @@ class WebstorePrivateBeginInstallWithManifest3FrictionDialogTest
  public:
   WebstorePrivateBeginInstallWithManifest3FrictionDialogTest() {
     feature_list_.InitAndEnableFeature(
-        extensions_features::kEnforceSafeBrowsingExtensionAllowlist);
+        extensions_features::kSafeBrowsingCrxAllowlistShowWarnings);
   }
 
   void SetUp() override {
