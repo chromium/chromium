@@ -10137,9 +10137,8 @@ TEST_F(HTTPSRequestTest, SSLSessionCacheShardTest) {
 // it is disabled, and vice versa.
 TEST_F(HTTPSRequestTest, NoSessionResumptionBetweenPrivacyModes) {
   // Start a server.
-  SpawnedTestServer test_server(
-      SpawnedTestServer::TYPE_HTTPS, SpawnedTestServer::SSLOptions(),
-      base::FilePath(FILE_PATH_LITERAL("net/data/ssl")));
+  EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
+  RegisterDefaultHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
   const auto url = test_server.GetURL("/");
 
