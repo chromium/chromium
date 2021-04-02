@@ -285,19 +285,34 @@ void NGLineBreaker::SetIntrinsicSizeOutputs(
 // Compute the base direction for bidi algorithm for this line.
 void NGLineBreaker::ComputeBaseDirection() {
   // If 'unicode-bidi' is not 'plaintext', use the base direction of the block.
-  if (!previous_line_had_forced_break_ ||
-      node_.Style().GetUnicodeBidi() != UnicodeBidi::kPlaintext)
+  if (node_.Style().GetUnicodeBidi() != UnicodeBidi::kPlaintext)
     return;
-  // If 'unicode-bidi: plaintext', compute the base direction for each paragraph
-  // (separated by forced break.)
+
   const String& text = Text();
   if (text.Is8Bit())
     return;
+
+  // If 'unicode-bidi: plaintext', compute the base direction for each
+  // "paragraph" (separated by forced break.)
+  wtf_size_t start_offset;
+  if (previous_line_had_forced_break_) {
+    start_offset = offset_;
+  } else {
+    // If this "paragraph" is at the beginning of the block, use
+    // |node_.BaseDirection()|.
+    if (!offset_)
+      return;
+    start_offset = text.ReverseFind(kNewlineCharacter, offset_ - 1);
+    if (start_offset == kNotFound)
+      return;
+    ++start_offset;
+  }
+
   wtf_size_t end_offset = text.find(kNewlineCharacter, offset_);
   base_direction_ = NGBidiParagraph::BaseDirectionForString(
       end_offset == kNotFound
-          ? StringView(text, offset_)
-          : StringView(text, offset_, end_offset - offset_));
+          ? StringView(text, start_offset)
+          : StringView(text, start_offset, end_offset - start_offset));
 }
 
 void NGLineBreaker::RecalcClonedBoxDecorations() {
