@@ -31,8 +31,7 @@ class FetchRecommendedWebFeedsTask : public offline_pages::Task {
     Result(Result&&);
     Result& operator=(const Result&);
     Result& operator=(Result&&);
-    RecommendedWebFeedRefreshStatus status =
-        RecommendedWebFeedRefreshStatus::kNoStatus;
+    WebFeedRefreshStatus status = WebFeedRefreshStatus::kNoStatus;
     std::vector<feedstore::WebFeedInfo> recommended_web_feeds;
   };
 
@@ -48,7 +47,7 @@ class FetchRecommendedWebFeedsTask : public offline_pages::Task {
   void RequestComplete(
       FeedNetwork::ApiResult<feedwire::webfeed::ListRecommendedWebFeedsResponse>
           response);
-  void Done(RecommendedWebFeedRefreshStatus status);
+  void Done(WebFeedRefreshStatus status);
 
   FeedStream* stream_;
   Result result_;

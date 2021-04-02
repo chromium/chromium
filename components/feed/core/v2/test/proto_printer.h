@@ -10,6 +10,9 @@
 
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/ui.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 
 namespace feedwire {
 class ActionPayload;
@@ -26,26 +29,35 @@ struct StreamModelUpdateRequest;
     return os << ToTextProto(v);                                           \
   }
 
-DECLARE_PRINTER(feedwire::ContentId)
-DECLARE_PRINTER(feedwire::Version)
-DECLARE_PRINTER(feedwire::DisplayInfo)
-DECLARE_PRINTER(feedwire::ClientInfo)
-DECLARE_PRINTER(feedwire::ActionPayload)
-DECLARE_PRINTER(feedstore::StreamData)
-DECLARE_PRINTER(feedstore::Metadata)
-DECLARE_PRINTER(feedstore::StreamStructureSet)
-DECLARE_PRINTER(feedstore::StreamStructure)
 DECLARE_PRINTER(feedstore::Content)
-DECLARE_PRINTER(feedstore::StreamSharedState)
-DECLARE_PRINTER(feedstore::StoredAction)
-DECLARE_PRINTER(feedstore::Record)
 DECLARE_PRINTER(feedstore::DataOperation)
-DECLARE_PRINTER(feedstore::WebFeedInfo)
-DECLARE_PRINTER(feedstore::RecommendedWebFeedIndex)
-DECLARE_PRINTER(feedstore::SubscribedWebFeeds)
 DECLARE_PRINTER(feedstore::Image)
+DECLARE_PRINTER(feedstore::Metadata)
+DECLARE_PRINTER(feedstore::RecommendedWebFeedIndex)
+DECLARE_PRINTER(feedstore::Record)
+DECLARE_PRINTER(feedstore::StoredAction)
+DECLARE_PRINTER(feedstore::StreamData)
+DECLARE_PRINTER(feedstore::StreamSharedState)
+DECLARE_PRINTER(feedstore::StreamStructure)
+DECLARE_PRINTER(feedstore::StreamStructureSet)
+DECLARE_PRINTER(feedstore::SubscribedWebFeeds)
 DECLARE_PRINTER(feedstore::UriMatcher)
+DECLARE_PRINTER(feedstore::WebFeedInfo)
 DECLARE_PRINTER(feedui::StreamUpdate)
+DECLARE_PRINTER(feedwire::ActionPayload)
+DECLARE_PRINTER(feedwire::ClientInfo)
+DECLARE_PRINTER(feedwire::ContentId)
+DECLARE_PRINTER(feedwire::DisplayInfo)
+DECLARE_PRINTER(feedwire::Version)
+DECLARE_PRINTER(feedwire::FeedAction)
+DECLARE_PRINTER(feedwire::UploadActionsRequest)
+DECLARE_PRINTER(feedwire::UploadActionsResponse)
+DECLARE_PRINTER(feedwire::webfeed::ListRecommendedWebFeedsRequest)
+DECLARE_PRINTER(feedwire::webfeed::ListRecommendedWebFeedsResponse)
+DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsRequest)
+DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsResponse)
+DECLARE_PRINTER(feedwire::webfeed::Image)
+DECLARE_PRINTER(feedwire::webfeed::WebFeed)
 
 #undef DECLARE_PRINTER
 

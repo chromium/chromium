@@ -7,9 +7,14 @@
 #include <sstream>
 #include <type_traits>
 #include "base/json/string_escape.h"
+#include "components/feed/core/proto/v2/wire/action_diagnostic_info.pb.h"
 #include "components/feed/core/proto/v2/wire/action_payload.pb.h"
 #include "components/feed/core/proto/v2/wire/client_info.pb.h"
+#include "components/feed/core/proto/v2/wire/consistency_token.pb.h"
 #include "components/feed/core/proto/v2/wire/content_id.pb.h"
+#include "components/feed/core/proto/v2/wire/feed_action.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
+#include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
 #include "components/feed/core/v2/protocol_translator.h"
 
 namespace feed {
@@ -338,6 +343,96 @@ class TextProtoPrinter {
     EndMessage();
     return *this;
   }
+  TextProtoPrinter& operator<<(const feedwire::ConsistencyToken& v) {
+    BeginMessage();
+    PRINT_FIELD(token);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedwire::FeedAction::ClientData& v) {
+    BeginMessage();
+    PRINT_FIELD(timestamp_seconds);
+    PRINT_FIELD(sequence_number);
+    PRINT_FIELD(duration_ms);
+    PRINT_FIELD(action_origin);
+    PRINT_FIELD(action_surface);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedwire::FeedAction& v) {
+    BeginMessage();
+    PRINT_FIELD(action_payload);
+    PRINT_FIELD(client_data);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedwire::ActionDiagnosticInfo& v) {
+    BeginMessage();
+    PRINT_FIELD(actions_remaining);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedwire::UploadActionsRequest& v) {
+    BeginMessage();
+    PRINT_FIELD(feed_actions);
+    PRINT_FIELD(consistency_token);
+    PRINT_FIELD(action_diagnostic_info);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedwire::UploadActionsResponse& v) {
+    BeginMessage();
+    PRINT_FIELD(consistency_token);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(
+      const feedwire::webfeed::ListRecommendedWebFeedsRequest& v) {
+    BeginMessage();
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(
+      const feedwire::webfeed::ListRecommendedWebFeedsResponse& v) {
+    BeginMessage();
+    PRINT_FIELD(recommended_web_feeds);
+    EndMessage();
+    return *this;
+  }
+
+  TextProtoPrinter& operator<<(
+      const feedwire::webfeed::ListWebFeedsRequest& v) {
+    BeginMessage();
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(
+      const feedwire::webfeed::ListWebFeedsResponse& v) {
+    BeginMessage();
+    PRINT_FIELD(web_feeds);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedwire::webfeed::Image& v) {
+    BeginMessage();
+    PRINT_FIELD(uri);
+    EndMessage();
+    return *this;
+  }
+  TextProtoPrinter& operator<<(const feedwire::webfeed::WebFeed& v) {
+    BeginMessage();
+    PRINT_FIELD(name);
+    PRINT_FIELD(title);
+    PRINT_FIELD(subtitle);
+    PRINT_FIELD(detail_text);
+    PRINT_FIELD(visit_uri);
+    PRINT_FIELD(rss_uri);
+    PRINT_FIELD(favicon);
+    PRINT_FIELD(follower_count);
+    PRINT_FIELD(state);
+    EndMessage();
+    return *this;
+  }
 
   template <typename T>
   void Field(const std::string& name, const T& value) {
@@ -368,26 +463,34 @@ class TextProtoPrinter {
     return TextProtoPrinter::ToString(v);        \
   }
 
-DECLARE_PRINTER(feedwire::ContentId)
-DECLARE_PRINTER(feedwire::Version)
-DECLARE_PRINTER(feedwire::DisplayInfo)
-DECLARE_PRINTER(feedwire::ClientInfo)
-DECLARE_PRINTER(feedwire::ActionPayload)
-DECLARE_PRINTER(feedstore::StreamData)
-DECLARE_PRINTER(feedstore::Metadata)
-DECLARE_PRINTER(feedstore::StreamStructureSet)
-DECLARE_PRINTER(feedstore::StreamStructure)
 DECLARE_PRINTER(feedstore::Content)
-DECLARE_PRINTER(feedstore::StreamSharedState)
-DECLARE_PRINTER(feedstore::StoredAction)
-DECLARE_PRINTER(feedstore::Record)
 DECLARE_PRINTER(feedstore::DataOperation)
-DECLARE_PRINTER(feedstore::WebFeedInfo)
-DECLARE_PRINTER(feedstore::RecommendedWebFeedIndex)
-DECLARE_PRINTER(feedstore::SubscribedWebFeeds)
 DECLARE_PRINTER(feedstore::Image)
+DECLARE_PRINTER(feedstore::Metadata)
+DECLARE_PRINTER(feedstore::RecommendedWebFeedIndex)
+DECLARE_PRINTER(feedstore::Record)
+DECLARE_PRINTER(feedstore::StoredAction)
+DECLARE_PRINTER(feedstore::StreamData)
+DECLARE_PRINTER(feedstore::StreamSharedState)
+DECLARE_PRINTER(feedstore::StreamStructure)
+DECLARE_PRINTER(feedstore::StreamStructureSet)
+DECLARE_PRINTER(feedstore::SubscribedWebFeeds)
 DECLARE_PRINTER(feedstore::UriMatcher)
+DECLARE_PRINTER(feedstore::WebFeedInfo)
 DECLARE_PRINTER(feedui::StreamUpdate)
+DECLARE_PRINTER(feedwire::ActionPayload)
+DECLARE_PRINTER(feedwire::ClientInfo)
+DECLARE_PRINTER(feedwire::ContentId)
+DECLARE_PRINTER(feedwire::DisplayInfo)
+DECLARE_PRINTER(feedwire::UploadActionsRequest)
+DECLARE_PRINTER(feedwire::UploadActionsResponse)
+DECLARE_PRINTER(feedwire::Version)
+DECLARE_PRINTER(feedwire::webfeed::Image)
+DECLARE_PRINTER(feedwire::webfeed::ListRecommendedWebFeedsRequest)
+DECLARE_PRINTER(feedwire::webfeed::ListRecommendedWebFeedsResponse)
+DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsRequest)
+DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsResponse)
+DECLARE_PRINTER(feedwire::webfeed::WebFeed)
 
 #undef DECLARE_PRINTER
 

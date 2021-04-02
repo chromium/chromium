@@ -42,12 +42,10 @@ WebFeedIndex::~WebFeedIndex() = default;
 void WebFeedIndex::Populate(
     const feedstore::RecommendedWebFeedIndex& recommended_feed_index) {
   int64_t update_time_millis = recommended_feed_index.update_time_millis();
-  if (update_time_millis <= 0) {
-    recommended_feeds_update_time_ = base::Time();
-  } else {
-    recommended_feeds_update_time_ =
-        feedstore::FromTimestampMillis(update_time_millis);
-  }
+  recommended_feeds_update_time_ =
+      update_time_millis <= 0
+          ? base::Time()
+          : feedstore::FromTimestampMillis(update_time_millis);
   recommended_ = {};
   std::vector<std::pair<std::string, int>> domain_list;
 
@@ -63,6 +61,11 @@ void WebFeedIndex::Populate(
 
 void WebFeedIndex::Populate(
     const feedstore::SubscribedWebFeeds& subscribed_feeds) {
+  int64_t update_time_millis = subscribed_feeds.update_time_millis();
+  subscribed_feeds_update_time_ =
+      update_time_millis <= 0
+          ? base::Time()
+          : feedstore::FromTimestampMillis(update_time_millis);
   subscribed_ = {};
   std::vector<std::pair<std::string, int>> domain_list;
   // TODO(crbug/1152592): Record UMA for subscribed and recommended lists.

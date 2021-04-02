@@ -655,10 +655,19 @@ void MetricsReporter::OnUnfollowAttempt(
 }
 
 void MetricsReporter::RefreshRecommendedWebFeedsAttempted(
-    RecommendedWebFeedRefreshStatus status,
+    WebFeedRefreshStatus status,
     int recommended_web_feed_count) {
+  // TODO(crbug/1152592): Add UMA.
   DVLOG(1) << "RefreshRecommendedWebFeedsAttempted status=" << status
            << " count=" << recommended_web_feed_count;
+}
+
+void MetricsReporter::RefreshSubscribedWebFeedsAttempted(
+    WebFeedRefreshStatus status,
+    int subscribed_web_feed_count) {
+  // TODO(crbug/1152592): Add UMA.
+  DVLOG(1) << "RefreshSubscribedWebFeedsAttempted status=" << status
+           << " count=" << subscribed_web_feed_count;
 }
 
 }  // namespace feed

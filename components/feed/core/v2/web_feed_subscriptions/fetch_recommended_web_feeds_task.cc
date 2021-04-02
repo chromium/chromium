@@ -27,7 +27,7 @@ FetchRecommendedWebFeedsTask::~FetchRecommendedWebFeedsTask() = default;
 void FetchRecommendedWebFeedsTask::Run() {
   if (!stream_->GetRequestThrottler()->RequestQuota(
           ListRecommendedWebFeedDiscoverApi::kRequestType)) {
-    Done(RecommendedWebFeedRefreshStatus::kNetworkRequestThrottled);
+    Done(WebFeedRefreshStatus::kNetworkRequestThrottled);
     return;
   }
   stream_->GetNetwork()->SendApiRequest<ListRecommendedWebFeedDiscoverApi>(
@@ -39,7 +39,7 @@ void FetchRecommendedWebFeedsTask::RequestComplete(
     FeedNetwork::ApiResult<feedwire::webfeed::ListRecommendedWebFeedsResponse>
         response) {
   if (!response.response_body) {
-    Done(RecommendedWebFeedRefreshStatus::kNetworkFailure);
+    Done(WebFeedRefreshStatus::kNetworkFailure);
     return;
   }
 
@@ -50,11 +50,10 @@ void FetchRecommendedWebFeedsTask::RequestComplete(
     result_.recommended_web_feeds.push_back(
         ConvertToStore(std::move(web_feed)));
   }
-  Done(RecommendedWebFeedRefreshStatus::kSuccess);
+  Done(WebFeedRefreshStatus::kSuccess);
 }
 
-void FetchRecommendedWebFeedsTask::Done(
-    RecommendedWebFeedRefreshStatus status) {
+void FetchRecommendedWebFeedsTask::Done(WebFeedRefreshStatus status) {
   result_.status = status;
   std::move(callback_).Run(std::move(result_));
   TaskComplete();

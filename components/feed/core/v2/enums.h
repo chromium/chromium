@@ -92,14 +92,14 @@ enum class UploadActionsBatchStatus {
 std::ostream& operator<<(std::ostream& out, UploadActionsStatus value);
 std::ostream& operator<<(std::ostream& out, UploadActionsBatchStatus value);
 
-enum class RecommendedWebFeedRefreshStatus {
+// Status of updating recommended or subscribed web feeds.
+enum class WebFeedRefreshStatus {
   kNoStatus = 0,
   kSuccess = 1,
   kNetworkFailure = 2,
   kNetworkRequestThrottled = 3,
 };
-std::ostream& operator<<(std::ostream& out,
-                         RecommendedWebFeedRefreshStatus value);
+std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value);
 
 }  // namespace feed
 

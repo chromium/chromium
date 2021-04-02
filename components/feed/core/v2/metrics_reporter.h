@@ -90,9 +90,10 @@ class MetricsReporter {
   void OnFollowAttempt(const WebFeedSubscriptions::FollowWebFeedResult& result);
   void OnUnfollowAttempt(
       const WebFeedSubscriptions::UnfollowWebFeedResult& status);
-  void RefreshRecommendedWebFeedsAttempted(
-      RecommendedWebFeedRefreshStatus status,
-      int recommended_web_feed_count);
+  void RefreshRecommendedWebFeedsAttempted(WebFeedRefreshStatus status,
+                                           int recommended_web_feed_count);
+  void RefreshSubscribedWebFeedsAttempted(WebFeedRefreshStatus status,
+                                          int subscribed_web_feed_count);
 
  private:
   // State replicated for reporting per-stream-type metrics.

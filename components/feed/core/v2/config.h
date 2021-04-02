@@ -57,13 +57,16 @@ struct Config {
 
   // Configuration for Web Feeds.
 
-  // TimeDelta after startup to fetch recommended feeds if they are stale. If
-  // zero, no fetching is done.
-  base::TimeDelta fetch_recommended_web_feeds_delay =
-      base::TimeDelta::FromSeconds(40);
+  // TimeDelta after startup to fetch recommended and subscribed Web Feeds if
+  // they are stale. If zero, no fetching is done.
+  base::TimeDelta fetch_web_feed_info_delay = base::TimeDelta::FromSeconds(40);
   // How long before cached recommended feed data on the device is considered
   // stale and refetched.
   base::TimeDelta recommended_feeds_staleness_threshold =
+      base::TimeDelta::FromDays(7);
+  // How long before cached subscribed feed data on the device is considered
+  // stale and refetched.
+  base::TimeDelta subscribed_feeds_staleness_threshold =
       base::TimeDelta::FromDays(7);
 
   // Configuration for `PersistentKeyValueStore`.

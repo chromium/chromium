@@ -35,7 +35,7 @@ struct UploadActionsDiscoverApi {
   static base::StringPiece RequestPath() { return "v1/actions:upload"; }
 };
 
-struct ListFollowedWebFeedDiscoverApi {
+struct ListWebFeedsDiscoverApi {
   using Request = feedwire::webfeed::ListWebFeedsRequest;
   using Response = feedwire::webfeed::ListWebFeedsResponse;
   static const NetworkRequestType kRequestType =

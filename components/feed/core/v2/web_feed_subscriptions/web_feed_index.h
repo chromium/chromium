@@ -54,6 +54,9 @@ class WebFeedIndex {
   base::Time GetRecommendedFeedsUpdateTime() const {
     return recommended_feeds_update_time_;
   }
+  base::Time GetSubscribedFeedsUpdateTime() const {
+    return subscribed_feeds_update_time_;
+  }
 
   std::vector<Entry> GetRecommendedEntriesForTesting() const;
 
@@ -76,6 +79,7 @@ class WebFeedIndex {
                                     base::StringPiece domain);
 
   base::Time recommended_feeds_update_time_;
+  base::Time subscribed_feeds_update_time_;
   EntrySet subscribed_;
   EntrySet recommended_;
   Entry empty_entry_;

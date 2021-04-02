@@ -115,16 +115,15 @@ std::ostream& operator<<(std::ostream& out, UploadActionsBatchStatus value) {
 #endif  // ifndef NDEBUG
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         RecommendedWebFeedRefreshStatus value) {
+std::ostream& operator<<(std::ostream& out, WebFeedRefreshStatus value) {
   switch (value) {
-    case RecommendedWebFeedRefreshStatus::kNoStatus:
+    case WebFeedRefreshStatus::kNoStatus:
       return out << "kNoStatus";
-    case RecommendedWebFeedRefreshStatus::kSuccess:
+    case WebFeedRefreshStatus::kSuccess:
       return out << "kSuccess";
-    case RecommendedWebFeedRefreshStatus::kNetworkFailure:
+    case WebFeedRefreshStatus::kNetworkFailure:
       return out << "kNetworkFailure";
-    case RecommendedWebFeedRefreshStatus::kNetworkRequestThrottled:
+    case WebFeedRefreshStatus::kNetworkRequestThrottled:
       return out << "kNetworkRequestThrottled";
   }
 }

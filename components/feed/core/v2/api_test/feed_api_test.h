@@ -196,6 +196,9 @@ class TestFeedNetwork : public FeedNetwork {
       feedwire::webfeed::ListRecommendedWebFeedsResponse response) {
     InjectApiResponse<ListRecommendedWebFeedDiscoverApi>(std::move(response));
   }
+  void InjectResponse(feedwire::webfeed::ListWebFeedsResponse response) {
+    InjectApiResponse<ListWebFeedsDiscoverApi>(std::move(response));
+  }
   void InjectEmptyActionRequestResult();
 
   template <typename API>
@@ -231,6 +234,9 @@ class TestFeedNetwork : public FeedNetwork {
   }
   int GetListRecommendedWebFeedsRequestCount() const {
     return GetApiRequestCount<ListRecommendedWebFeedDiscoverApi>();
+  }
+  int GetListFollowedWebFeedsRequestCount() const {
+    return GetApiRequestCount<ListWebFeedsDiscoverApi>();
   }
 
   void ClearTestData();

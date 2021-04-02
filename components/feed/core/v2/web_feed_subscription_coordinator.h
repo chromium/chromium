@@ -13,6 +13,7 @@
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/web_feed_subscriptions.h"
 #include "components/feed/core/v2/web_feed_subscriptions/fetch_recommended_web_feeds_task.h"
+#include "components/feed/core/v2/web_feed_subscriptions/fetch_subscribed_web_feeds_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/subscribe_to_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/unsubscribe_from_web_feed_task.h"
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
@@ -146,6 +147,11 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   void FetchRecommendedWebFeedsComplete(
       FetchRecommendedWebFeedsTask::Result result);
 
+  void FetchSubscribedWebFeedsIfStale();
+  void FetchSubscribedWebFeedsStart();
+  void FetchSubscribedWebFeedsComplete(
+      FetchSubscribedWebFeedsTask::Result result);
+
   FeedStream* feed_stream_;  // Always non-null, it owns this.
   WebFeedIndex index_;
   // A model of subscriptions. In memory only while needed.
@@ -162,6 +168,7 @@ class WebFeedSubscriptionCoordinator : public WebFeedSubscriptions {
   std::vector<feedstore::WebFeedInfo> recent_unsubscribed_;
   std::vector<base::OnceClosure> when_model_loads_;
   bool fetching_recommended_web_feeds_ = false;
+  bool fetching_subscribed_web_feeds_ = false;
 
   base::WeakPtrFactory<WebFeedSubscriptionCoordinator> weak_ptr_factory_{this};
 };

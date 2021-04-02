@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/feed/core/v2/api_test/feed_api_test.h"
+#include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 #include "base/callback.h"
@@ -283,6 +284,35 @@ void TestFeedNetwork::SendQueryRequest(
   Reply(base::BindOnce(std::move(callback), std::move(result)));
 }
 
+template <typename API>
+void DebugLogApiResponse(std::string request_bytes,
+                         const FeedNetwork::RawResponse& raw_response) {
+  typename API::Request request;
+  if (request.ParseFromString(request_bytes)) {
+    VLOG(1) << "Request: " << ToTextProto(request);
+  }
+  typename API::Response response;
+  if (response.ParseFromString(raw_response.response_bytes)) {
+    VLOG(1) << "Response: " << ToTextProto(response);
+  }
+}
+
+void DebugLogResponse(base::StringPiece api_path,
+                      base::StringPiece method,
+                      std::string request_bytes,
+                      const FeedNetwork::RawResponse& raw_response) {
+  VLOG(1) << "TestFeedNetwork responding to request " << method << " "
+          << api_path;
+  if (api_path == UploadActionsDiscoverApi::RequestPath()) {
+    DebugLogApiResponse<UploadActionsDiscoverApi>(request_bytes, raw_response);
+  } else if (api_path == ListRecommendedWebFeedDiscoverApi::RequestPath()) {
+    DebugLogApiResponse<ListRecommendedWebFeedDiscoverApi>(request_bytes,
+                                                           raw_response);
+  } else if (api_path == ListWebFeedsDiscoverApi::RequestPath()) {
+    DebugLogApiResponse<ListWebFeedsDiscoverApi>(request_bytes, raw_response);
+  }
+}
+
 void TestFeedNetwork::SendDiscoverApiRequest(
     base::StringPiece api_path,
     base::StringPiece method,
@@ -303,11 +333,24 @@ void TestFeedNetwork::SendDiscoverApiRequest(
           consistency_token);
       InjectApiResponse<UploadActionsDiscoverApi>(response_message);
     }
+    if (api_path == ListRecommendedWebFeedDiscoverApi::RequestPath()) {
+      feedwire::webfeed::ListRecommendedWebFeedsRequest request;
+      ASSERT_TRUE(request.ParseFromString(request_bytes));
+      feedwire::webfeed::ListRecommendedWebFeedsResponse response_message;
+      InjectResponse(response_message);
+    }
+    if (api_path == ListWebFeedsDiscoverApi::RequestPath()) {
+      feedwire::webfeed::ListWebFeedsRequest request;
+      ASSERT_TRUE(request.ParseFromString(request_bytes));
+      feedwire::webfeed::ListWebFeedsResponse response_message;
+      InjectResponse(response_message);
+    }
   }
 
   if (!injected_responses.empty()) {
     RawResponse response = injected_responses[0];
     injected_responses.erase(injected_responses.begin());
+    DebugLogResponse(api_path, method, request_bytes, response);
     Reply(base::BindOnce(std::move(callback), std::move(response)));
     return;
   }
@@ -556,7 +599,7 @@ void FeedApiTest::SetUp() {
   Config config;
   // Disable fetching of recommended web feeds at startup to
   // avoid a delayed task in tests that don't need it.
-  config.fetch_recommended_web_feeds_delay = base::TimeDelta();
+  config.fetch_web_feed_info_delay = base::TimeDelta();
   SetFeedConfigForTesting(config);
 
   feed::prefs::RegisterFeedSharedProfilePrefs(profile_prefs_.registry());
