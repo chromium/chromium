@@ -61,13 +61,7 @@ const LanguageCodePair kLanguageCodeChineseCompatiblePairs[] = {
 }  // namespace
 
 void ToTranslateLanguageSynonym(std::string* language) {
-  for (const auto& language_pair : kChromeToTranslateLanguageMap) {
-    if (*language == language_pair.chrome_language) {
-      *language = language_pair.translate_language;
-      return;
-    }
-  }
-
+  // Get the base language (e.g. "es" for "es-MX")
   base::StringPiece main_part = language::SplitIntoMainAndTail(*language).first;
   if (main_part.empty())
     return;
@@ -89,14 +83,22 @@ void ToTranslateLanguageSynonym(std::string* language) {
     return;
   }
 
-  // Apply linear search here because number of items in the list is just four.
-  for (const auto& language_pair : kLanguageCodeSynonyms) {
+  for (const auto& language_pair : kChromeToTranslateLanguageMap) {
     if (main_part == language_pair.chrome_language) {
-      main_part = language_pair.translate_language;
-      break;
+      *language = language_pair.translate_language;
+      return;
     }
   }
 
+  // Apply linear search here because number of items in the list is just four.
+  for (const auto& language_pair : kLanguageCodeSynonyms) {
+    if (main_part == language_pair.chrome_language) {
+      *language = language_pair.translate_language;
+      return;
+    }
+  }
+
+  // By default use the base language as the translate synonym.
   *language = std::string(main_part);
 }
 

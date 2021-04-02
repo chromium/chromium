@@ -9,11 +9,13 @@
 
 namespace language {
 
-// Converts language code synonym to use at Translate server.
-//
-// The same logic exists in
+// Some languages like Norwegian and Filipino use different codes within Chrome
+// and the Translate service (ie "nb" vs "no" and "fil" vs "tl").
+// This converts a Chrome language code to the Translate server synonym. The
+// only translate language codes with a country extension are zh-TW and zh-CN,
+// the country code is striped from all other languages. Does not check if the
+// base language is translatable. Please keep consistent with the same logic in:
 // chrome/browser/resources/settings/languages_page/languages.js,
-// please keep consistency with the JavaScript file.
 void ToTranslateLanguageSynonym(std::string* language);
 
 // Converts language code synonym to use at Chrome internal.
