@@ -99,22 +99,36 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
      * @param nativeSigninManagerAndroid A pointer to native's SigninManagerAndroid.
      */
     @CalledByNative
-    private static SigninManager create(long nativeSigninManagerAndroid,
+    @VisibleForTesting
+    static SigninManager create(long nativeSigninManagerAndroid,
             AccountTrackerService accountTrackerService, IdentityManager identityManager,
             IdentityMutator identityMutator) {
         assert nativeSigninManagerAndroid != 0;
         assert accountTrackerService != null;
         assert identityManager != null;
         assert identityMutator != null;
-        return new SigninManagerImpl(nativeSigninManagerAndroid, accountTrackerService,
-                identityManager, identityMutator, AndroidSyncSettings.get(),
+        final SigninManagerImpl signinManager = new SigninManagerImpl(nativeSigninManagerAndroid,
+                accountTrackerService, identityManager, identityMutator, AndroidSyncSettings.get(),
                 ExternalAuthUtils.getInstance());
+
+        identityManager.addObserver(signinManager);
+        AccountInfoService.init(identityManager);
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)) {
+            accountTrackerService.setOnAccountSeededListener(
+                    identityManager::forceRefreshOfExtendedAccountInfo);
+        }
+
+        identityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
+                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
+
+        signinManager.maybeRollbackMobileIdentityConsistency();
+        return signinManager;
     }
 
-    @VisibleForTesting
-    SigninManagerImpl(long nativeSigninManagerAndroid, AccountTrackerService accountTrackerService,
-            IdentityManager identityManager, IdentityMutator identityMutator,
-            AndroidSyncSettings androidSyncSettings, ExternalAuthUtils externalAuthUtils) {
+    private SigninManagerImpl(long nativeSigninManagerAndroid,
+            AccountTrackerService accountTrackerService, IdentityManager identityManager,
+            IdentityMutator identityMutator, AndroidSyncSettings androidSyncSettings,
+            ExternalAuthUtils externalAuthUtils) {
         ThreadUtils.assertOnUiThread();
         assert androidSyncSettings != null;
         mNativeSigninManagerAndroid = nativeSigninManagerAndroid;
@@ -126,17 +140,6 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
 
         mSigninAllowedByPolicy =
                 SigninManagerImplJni.get().isSigninAllowedByPolicy(mNativeSigninManagerAndroid);
-        mIdentityManager.addObserver(this);
-
-        AccountInfoService.init(mIdentityManager);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEPRECATE_MENAGERIE_API)) {
-            mAccountTrackerService.setOnAccountSeededListener(
-                    mIdentityManager::forceRefreshOfExtendedAccountInfo);
-        }
-        mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountInfo.getIdFrom(
-                mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
-
-        maybeRollbackMobileIdentityConsistency();
     }
 
     /**

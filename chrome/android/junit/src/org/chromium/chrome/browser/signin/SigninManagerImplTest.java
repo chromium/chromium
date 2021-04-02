@@ -80,6 +80,8 @@ public class SigninManagerImplTest {
         mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
         ProfileSyncService.overrideForTests(mProfileSyncService);
+        AndroidSyncSettings.overrideForTests(mAndroidSyncSettings);
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
@@ -96,8 +98,8 @@ public class SigninManagerImplTest {
                                 NATIVE_IDENTITY_MANAGER, ACCOUNT_INFO.getEmail()))
                 .thenReturn(ACCOUNT_INFO);
 
-        mSigninManager = new SigninManagerImpl(NATIVE_SIGNIN_MANAGER, mAccountTrackerService,
-                mIdentityManager, mIdentityMutator, mAndroidSyncSettings, mExternalAuthUtils);
+        mSigninManager = (SigninManagerImpl) SigninManagerImpl.create(
+                NATIVE_SIGNIN_MANAGER, mAccountTrackerService, mIdentityManager, mIdentityMutator);
     }
 
     @After
@@ -336,8 +338,8 @@ public class SigninManagerImplTest {
                      NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(ACCOUNT_INFO);
 
-        mSigninManager = new SigninManagerImpl(NATIVE_SIGNIN_MANAGER, mAccountTrackerService,
-                mIdentityManager, mIdentityMutator, mAndroidSyncSettings, mExternalAuthUtils);
+        mSigninManager = (SigninManagerImpl) SigninManagerImpl.create(
+                NATIVE_SIGNIN_MANAGER, mAccountTrackerService, mIdentityManager, mIdentityMutator);
 
         // SignedIn state (without sync consent) doesn't exist pre-MobileIdentityConsistency. If the
         // feature is disabled while in this state, SigninManager ctor should trigger sign-out.
@@ -358,8 +360,9 @@ public class SigninManagerImplTest {
                      NATIVE_IDENTITY_MANAGER, ConsentLevel.SIGNIN))
                 .thenReturn(ACCOUNT_INFO);
 
-        mSigninManager = new SigninManagerImpl(NATIVE_SIGNIN_MANAGER, mAccountTrackerService,
-                mIdentityManager, mIdentityMutator, mAndroidSyncSettings, mExternalAuthUtils);
+        mSigninManager = (SigninManagerImpl) SigninManagerImpl.create(
+                NATIVE_SIGNIN_MANAGER, mAccountTrackerService, mIdentityManager, mIdentityMutator);
+        ;
 
         verify(mIdentityMutator, never()).clearPrimaryAccount(anyInt(), anyInt());
         verify(mNativeMock, never())
