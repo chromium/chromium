@@ -17,7 +17,6 @@ goog.require('EventSourceState');
 goog.require('LocaleOutputHelper');
 goog.require('LogStore');
 goog.require('NavBraille');
-goog.require('OutputFormatToken');
 goog.require('OutputFormatTree');
 goog.require('OutputRulesStr');
 goog.require('PhoneticData');
@@ -660,7 +659,7 @@ Output = class {
    * verbalized; can specify pitch, rate, language, etc.
    * @param {!{
    *    node: AutomationNode,
-   *    outputFormat: (string|!OutputFormatTree),
+   *    outputFormat: (string|OutputFormatTree),
    *    outputBuffer: !Array<Spannable>,
    *    outputRuleString: !OutputRulesStr,
    *    opt_prevNode: (!AutomationNode|undefined),
@@ -904,11 +903,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatValue_(node, token, buff, options, ruleStr) {
     const text = node.value || '';
@@ -940,12 +939,12 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param prevNode {!AutomationNode|undefined}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {!AutomationNode|undefined} prevNode
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatName_(node, prevNode, token, buff, options, ruleStr) {
     options.annotation.push(token);
@@ -962,7 +961,7 @@ Output = class {
     }
 
     if (localStorage['languageSwitching'] === 'true') {
-      this.assignLocaleAndAppend_(node.name, node, buff, options);
+      this.assignLocaleAndAppend_(node.name || '', node, buff, options);
     } else {
       this.append_(buff, node.name || '', options);
     }
@@ -971,11 +970,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatDescription_(node, token, buff, options, ruleStr) {
     if (node.name === node.description) {
@@ -988,11 +987,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatUrlFilename_(node, token, buff, options, ruleStr) {
     options.annotation.push('name');
@@ -1011,11 +1010,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatNameFromNode_(node, token, buff, options, ruleStr) {
     if (node.nameFrom === NameFromType.CONTENTS) {
@@ -1028,11 +1027,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatNameOrDescendants_(node, token, buff, options, ruleStr) {
     options.annotation.push(token);
@@ -1055,12 +1054,12 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param tree {!OutputFormatTree}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!OutputFormatTree} tree
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatIndexInParent_(node, token, tree, buff, options, ruleStr) {
     if (node.parent) {
@@ -1088,10 +1087,10 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!OutputRulesStr} ruleStr
    */
   formatRestriction_(node, token, buff, ruleStr) {
     const msg = Output.RESTRICTION_STATE_MAP[node.restriction];
@@ -1107,10 +1106,10 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!OutputRulesStr} ruleStr
    */
   formatChecked_(node, token, buff, ruleStr) {
     const msg = Output.CHECKED_STATE_MAP[node.checked];
@@ -1126,10 +1125,10 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!OutputRulesStr} ruleStr
    */
   formatPressed_(node, token, buff, ruleStr) {
     const msg = Output.PRESSED_STATE_MAP[node.checked];
@@ -1145,10 +1144,10 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!OutputRulesStr} ruleStr
    */
   formatState_(node, token, buff, ruleStr) {
     if (node.state) {
@@ -1168,11 +1167,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param tree {!OutputFormatTree}
-   * @param buff {!Array<Spannable>}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!OutputFormatTree} tree
+   * @param {!Array<Spannable>} buff
+   * @param {!OutputRulesStr} ruleStr
    */
   formatFind_(node, token, tree, buff, ruleStr) {
     // Find takes two arguments: JSON query string and format string.
@@ -1180,7 +1179,7 @@ Output = class {
       const jsonQuery = tree.firstChild.value;
       node = node.find(
           /** @type {chrome.automation.FindParams}*/ (JSON.parse(jsonQuery)));
-      const formatString = tree.firstChild.nextSibling;
+      const formatString = tree.firstChild.nextSibling || '';
       if (node) {
         ruleStr.writeToken(token);
         this.format_({
@@ -1194,10 +1193,10 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!OutputRulesStr} ruleStr
    */
   formatDescendants_(node, token, buff, ruleStr) {
     if (!node) {
@@ -1239,11 +1238,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatJoinedDescendants_(node, token, buff, options, ruleStr) {
     const unjoined = [];
@@ -1260,11 +1259,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatRole_(node, token, buff, options, ruleStr) {
     options.annotation.push(token);
@@ -1288,11 +1287,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatInputType_(node, token, buff, options, ruleStr) {
     if (!node.inputType) {
@@ -1309,11 +1308,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatTableCellIndex_(node, token, buff, options, ruleStr) {
     let value = node[token];
@@ -1327,11 +1326,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatCellIndexText_(node, token, buff, options, ruleStr) {
     if (node.htmlAttributes['aria-coltext']) {
@@ -1361,13 +1360,13 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param prevNode {!AutomationNode|undefined}
-   * @param token {!OutputFormatToken}
-   * @param tree {!OutputFormatTree}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {!AutomationNode|undefined} prevNode
+   * @param {string} token
+   * @param {!OutputFormatTree} tree
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatNode_(node, prevNode, token, tree, buff, options, ruleStr) {
     if (!tree.firstChild) {
@@ -1413,11 +1412,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatTextContent_(node, token, buff, options, ruleStr) {
     if (node.name && token === 'nameOrTextContent') {
@@ -1457,11 +1456,11 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatAsFieldAccessor_(node, token, buff, options, ruleStr) {
     options.annotation.push(token);
@@ -1474,17 +1473,18 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatAsStateValue_(node, token, buff, options, ruleStr) {
     options.annotation.push('state');
     const stateInfo = Output.STATE_INFO_[token];
     let resolvedInfo = {};
-    resolvedInfo = node.state[token] ? stateInfo.on : stateInfo.off;
+    resolvedInfo = node.state[/** @type {StateType} */ (token)] ? stateInfo.on :
+                                                                  stateInfo.off;
     if (!resolvedInfo) {
       return;
     }
@@ -1501,10 +1501,10 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!OutputRulesStr} ruleStr
    */
   formatPosInSetFallback_(node, token, buff, ruleStr) {
     if (node.posInSet !== undefined) {
@@ -1523,10 +1523,10 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param buff {!Array<Spannable>}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!Array<Spannable>} buff
+   * @param {!OutputRulesStr} ruleStr
    */
   formatSetSizeFallback_(node, token, buff, ruleStr) {
     // Size is always expected to be 0.
@@ -1536,21 +1536,22 @@ Output = class {
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param buff {!Array<Spannable>}
+   * @param {AutomationNode} node
+   * @param {!Array<Spannable>} buff
    */
   formatPhoneticReading_(node, buff) {
-    const text = PhoneticData.forText(node.name, chrome.i18n.getUILanguage());
+    const text =
+        PhoneticData.forText(node.name || '', chrome.i18n.getUILanguage());
     this.append_(buff, text);
   }
 
   /**
-   * @param node {AutomationNode}
-   * @param token {!OutputFormatToken}
-   * @param tree {!OutputFormatTree}
-   * @param buff {!Array<Spannable>}
-   * @param options {Object}
-   * @param ruleStr {!OutputRuleStr}
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!OutputFormatTree} tree
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
    */
   formatCustomFunction_(node, token, tree, buff, options, ruleStr) {
     // Custom functions.
@@ -1562,7 +1563,7 @@ Output = class {
         ruleStr.write(attrib + '==true => ');
         this.format_({
           node,
-          outputFormat: cond.nextSibling,
+          outputFormat: cond.nextSibling || '',
           outputBuffer: buff,
           outputRuleString: ruleStr
         });
@@ -1570,7 +1571,7 @@ Output = class {
         ruleStr.write(attrib + '==false => ');
         this.format_({
           node,
-          outputFormat: cond.nextSibling.nextSibling,
+          outputFormat: cond.nextSibling.nextSibling || '',
           outputBuffer: buff,
           outputRuleString: ruleStr
         });
@@ -1583,7 +1584,7 @@ Output = class {
         ruleStr.write(attrib + '==false => ');
         this.format_({
           node,
-          outputFormat: cond.nextSibling,
+          outputFormat: cond.nextSibling || '',
           outputBuffer: buff,
           outputRuleString: ruleStr
         });
@@ -1591,7 +1592,7 @@ Output = class {
         ruleStr.write(attrib + '==true => ');
         this.format_({
           node,
-          outputFormat: cond.nextSibling.nextSibling,
+          outputFormat: cond.nextSibling.nextSibling || '',
           outputBuffer: buff,
           outputRuleString: ruleStr
         });
@@ -2191,8 +2192,7 @@ Output = class {
    * Appends output to the |buff|.
    * @param {!Array<Spannable>} buff
    * @param {string|!Spannable} value
-   * @param {{isUnique: (boolean|undefined),
-   *      annotation: !Array<*>}=} opt_options
+   * @param {{annotation: Array<*>, isUnique: (boolean|undefined)}=} opt_options
    */
   append_(buff, value, opt_options) {
     opt_options = opt_options || {isUnique: false, annotation: []};
@@ -2382,7 +2382,7 @@ Output = class {
    * @param {string} text
    * @param {!AutomationNode} contextNode
    * @param {!Array<Spannable>} buff
-   * @param {{isUnique: (boolean|undefined), annotation: !Array<*>}} options
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
    * @private
    */
   assignLocaleAndAppend_(text, contextNode, buff, options) {

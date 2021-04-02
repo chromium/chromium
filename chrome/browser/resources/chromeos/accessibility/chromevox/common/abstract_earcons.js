@@ -112,7 +112,7 @@ AbstractEarcons = class {
 
   /**
    * Set whether or not earcons are enabled.
-   * @param {Boolean} value True turns on earcons, false turns off earcons.
+   * @param {boolean} value True turns on earcons, false turns off earcons.
    */
   set enabled(value) {
     localStorage['earcons'] = value;

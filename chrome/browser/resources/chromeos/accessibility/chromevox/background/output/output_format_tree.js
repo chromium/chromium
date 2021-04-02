@@ -6,18 +6,14 @@
  * @fileoverview Parses the output format.
  */
 
-goog.provide('OutputFormatToken');
 goog.provide('OutputFormatTree');
 
 goog.scope(function() {
-/** @typedef {string} */
-let OutputFormatToken;
-
 OutputFormatTree = class {
   /** @private */
   constructor() {
-    /** @public {!OutputFormatToken} */
-    this.value = /* @type {!OutputFormatToken} */ ('');
+    /** @public {string} */
+    this.value = '';
     /** @public {OutputFormatTree|undefined} */
     this.firstChild;
     /** @public {OutputFormatTree|undefined} */
