@@ -5,6 +5,7 @@
 #include "base/stl_util.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/static_range.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_command_type.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command_names.h"
@@ -142,6 +143,27 @@ TEST_F(EditingCommandTest, EnabledInEditableTextOrCaretBrowsing) {
   EXPECT_TRUE(command.IsEnabled());
   div->removeAttribute("contenteditable");
   EXPECT_FALSE(command.IsEnabled());
+}
+
+TEST_F(EditingCommandTest, DeleteSoftLineBackwardTargetRanges) {
+  Editor& editor = GetDocument().GetFrame()->GetEditor();
+  const EditorCommand command = editor.CreateCommand("DeleteToBeginningOfLine");
+
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>abcdef<br>123|<div>"),
+      SetSelectionOptions());
+  Element* div = GetDocument().QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr));
+  EXPECT_TRUE(command.IsEnabled());
+  const StaticRangeVector* ranges = command.GetTargetRanges();
+  EXPECT_EQ(1u, ranges->size());
+  const StaticRange& range = *ranges->at(0);
+  EXPECT_EQ("123", range.startContainer()->textContent());
+  EXPECT_EQ(0u, range.startOffset());
+  EXPECT_EQ(range.startContainer(), range.endContainer());
+  EXPECT_EQ(3u, range.endOffset());
 }
 
 }  // namespace blink

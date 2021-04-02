@@ -2030,7 +2030,8 @@ const StaticRangeVector* EditorCommand::GetTargetRanges() const {
           TextGranularity::kCharacter);
     case EditingCommandType::kDeleteToBeginningOfLine:
       return RangesFromCurrentSelectionOrExtendCaret(
-          *frame_, SelectionModifyDirection::kBackward, TextGranularity::kLine);
+          *frame_, SelectionModifyDirection::kBackward,
+          TextGranularity::kLineBoundary);
     case EditingCommandType::kDeleteToBeginningOfParagraph:
       return RangesFromCurrentSelectionOrExtendCaret(
           *frame_, SelectionModifyDirection::kBackward,
