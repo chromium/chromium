@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
@@ -189,6 +190,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kDuetTabStripIntegrationAndroid,
     &kEnhancedProtectionPromoCard,
     &kEphemeralTabUsingBottomSheet,
+    &kExperimentsForAgsa,
     &kExploreSites,
     &kFocusOmniboxInIncognitoTabIntents,
     &kHandleMediaIntents,
@@ -531,6 +533,9 @@ const base::Feature kEnhancedProtectionPromoCard{
 const base::Feature kEphemeralTabUsingBottomSheet{
     "EphemeralTabUsingBottomSheet", base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kExperimentsForAgsa{"ExperimentsForAgsa",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
 const base::Feature kExploreSites{"ExploreSites",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -792,6 +797,23 @@ static jboolean JNI_ChromeFeatureList_GetFieldTrialParamByFeatureAsBoolean(
   const std::string& param_name = ConvertJavaStringToUTF8(env, jparam_name);
   return base::GetFieldTrialParamByFeatureAsBool(*feature, param_name,
                                                  jdefault_value);
+}
+
+static ScopedJavaLocalRef<jobjectArray>
+JNI_ChromeFeatureList_GetFlattedFieldTrialParamsForFeature(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& feature_name) {
+  base::FieldTrialParams params;
+  std::vector<std::string> keys_and_values;
+  const base::Feature* feature =
+      FindFeatureExposedToJava(ConvertJavaStringToUTF8(env, feature_name));
+  if (feature && base::GetFieldTrialParamsByFeature(*feature, &params)) {
+    for (const auto& param_pair : params) {
+      keys_and_values.push_back(param_pair.first);
+      keys_and_values.push_back(param_pair.second);
+    }
+  }
+  return base::android::ToJavaArrayOfStrings(env, keys_and_values);
 }
 
 }  // namespace android

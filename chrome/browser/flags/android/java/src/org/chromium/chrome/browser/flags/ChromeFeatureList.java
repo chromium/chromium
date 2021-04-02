@@ -11,6 +11,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -168,6 +169,20 @@ public abstract class ChromeFeatureList {
     }
 
     /**
+     * Returns all the field trial parameters for the specified feature.
+     */
+    public static Map<String, String> getFieldTrialParamsForFeature(String featureName) {
+        assert FeatureList.isInitialized();
+        Map<String, String> result = new HashMap<String, String>();
+        String[] flattenedParams =
+                ChromeFeatureListJni.get().getFlattedFieldTrialParamsForFeature(featureName);
+        for (int i = 0; i < flattenedParams.length; i += 2) {
+            result.put(flattenedParams[i], flattenedParams[i + 1]);
+        }
+        return result;
+    }
+
+    /**
      * Returns a field trial param as a boolean for the specified feature.
      *
      * Note: Features queried through this API must be added to the array
@@ -320,6 +335,7 @@ public abstract class ChromeFeatureList {
     public static final String EARLY_LIBRARY_LOAD = "EarlyLibraryLoad";
     public static final String ENHANCED_PROTECTION_PROMO_CARD = "EnhancedProtectionPromoCard";
     public static final String EPHEMERAL_TAB_USING_BOTTOM_SHEET = "EphemeralTabUsingBottomSheet";
+    public static final String EXPERIMENTS_FOR_AGSA = "ExperimentsForAgsa";
     public static final String EXPLICIT_LANGUAGE_ASK = "ExplicitLanguageAsk";
     public static final String EXPLORE_SITES = "ExploreSites";
     public static final String FILLING_PASSWORDS_FROM_ANY_ORIGIN = "FillingPasswordsFromAnyOrigin";
@@ -498,5 +514,6 @@ public abstract class ChromeFeatureList {
                 String featureName, String paramName, double defaultValue);
         boolean getFieldTrialParamByFeatureAsBoolean(
                 String featureName, String paramName, boolean defaultValue);
+        String[] getFlattedFieldTrialParamsForFeature(String featureName);
     }
 }

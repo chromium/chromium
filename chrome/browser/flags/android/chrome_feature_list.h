@@ -80,6 +80,7 @@ extern const base::Feature kDownloadRename;
 extern const base::Feature kDuetTabStripIntegrationAndroid;
 extern const base::Feature kEnhancedProtectionPromoCard;
 extern const base::Feature kEphemeralTabUsingBottomSheet;
+extern const base::Feature kExperimentsForAgsa;
 extern const base::Feature kExploreSites;
 extern const base::Feature kFocusOmniboxInIncognitoTabIntents;
 extern const base::Feature kHandleMediaIntents;
