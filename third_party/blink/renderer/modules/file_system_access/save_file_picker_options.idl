@@ -4,5 +4,5 @@
 
 // https://wicg.github.io/file-system-access/#dictdef-savefilepickeroptions
 dictionary SaveFilePickerOptions : FilePickerOptions {
-  [RuntimeEnabled=FileSystemAccessAPIExperimental] USVString? suggestedName;
+  USVString? suggestedName;
 };

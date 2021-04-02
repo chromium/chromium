@@ -15,6 +15,6 @@ enum WellKnownDirectory {
 dictionary FilePickerOptions {
   sequence<FilePickerAcceptType> types;
   boolean excludeAcceptAllOption = false;
-  [RuntimeEnabled=FileSystemAccessAPIExperimental] DOMString id;
-  [RuntimeEnabled=FileSystemAccessAPIExperimental] (WellKnownDirectory or FileSystemHandle) startIn;
+  DOMString id;
+  (WellKnownDirectory or FileSystemHandle) startIn;
 };

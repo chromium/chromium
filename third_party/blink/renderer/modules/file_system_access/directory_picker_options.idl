@@ -4,6 +4,6 @@
 
 // https://wicg.github.io/file-system-access/#dictdef-directorypickeroptions
 dictionary DirectoryPickerOptions {
-  [RuntimeEnabled=FileSystemAccessAPIExperimental] DOMString id;
-  [RuntimeEnabled=FileSystemAccessAPIExperimental] (WellKnownDirectory or FileSystemHandle) startIn;
+  DOMString id;
+  (WellKnownDirectory or FileSystemHandle) startIn;
 };
