@@ -224,6 +224,10 @@ TEST_F(ChromeCustomizeThemesHandlerTest, ObserveThemeChanges) {
 }
 
 TEST_F(ChromeCustomizeThemesHandlerTest, InstallThirdPartyTheme) {
+  // Prevent "Cached Theme.pak" from being created in the current directory by
+  // this test.
+  ThemeService::DisableThemePackForTesting();
+
   // Read and parse an extension theme manifest from a test file.
   base::FilePath test_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
