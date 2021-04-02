@@ -9040,6 +9040,121 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   ASSERT_TRUE(subframe->current_frame_host()->IsRenderFrameLive());
 }
 
+// Tests that enable clearing window.name on cross-site
+// cross-BrowsingInstance navigations.
+class RenderFrameHostManagerClearWindowNameTest
+    : public RenderFrameHostManagerTest {
+ public:
+  RenderFrameHostManagerClearWindowNameTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kClearCrossBrowsingContextGroupMainFrameName);
+  }
+  ~RenderFrameHostManagerClearWindowNameTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that cross-site main frame navigation that swaps BrowsingInstances
+// clears window.name.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerClearWindowNameTest,
+                       ClearWindowNameCrossSite) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Navigate to a.com/title1.html.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  // Set window.name.
+  EXPECT_TRUE(content::ExecuteScript(web_contents, "window.name='foo'"));
+  auto* frame_a = web_contents->GetMainFrame();
+  EXPECT_EQ("foo", frame_a->GetFrameName());
+
+  scoped_refptr<SiteInstance> site_instance_a = frame_a->GetSiteInstance();
+
+  // Renderer-initiated navigate to b.com/title2.html.
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url_b));
+  auto* frame_b = web_contents->GetMainFrame();
+  scoped_refptr<SiteInstance> site_instance_b = frame_b->GetSiteInstance();
+
+  // Whether renderer-initiated top-level cross-site navigates swap
+  // BrowsingInstances is based on whether ProactivelySwapBrowsingInstances or
+  // BackForwardCache is enabled.
+  if (CanCrossSiteNavigationsProactivelySwapBrowsingInstances()) {
+    EXPECT_FALSE(site_instance_a->IsRelatedSiteInstance(site_instance_b.get()));
+    // The BrowsingInstance got swapped, window.name is cleared.
+    EXPECT_EQ("", frame_b->GetFrameName());
+  } else {
+    EXPECT_TRUE(site_instance_a->IsRelatedSiteInstance(site_instance_b.get()));
+    // Window.name is not cleared.
+    EXPECT_EQ("foo", frame_b->GetFrameName());
+  }
+
+  // Navigate to c.com/title1.html. The navigation is cross-site, top-level and
+  // swaps BrowsingInstances, thus should clear window.name.
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  auto* frame_c = web_contents->GetMainFrame();
+  // Check that b.com/title1.html and c.com/title1.html are in different
+  // BrowsingInstances.
+  scoped_refptr<SiteInstance> site_instance_c = frame_c->GetSiteInstance();
+  EXPECT_FALSE(site_instance_b->IsRelatedSiteInstance(site_instance_c.get()));
+  // Window.name should be cleared.
+  EXPECT_EQ("", frame_c->GetFrameName());
+}
+
+// Tests that enable clearing window.name on on cross-site
+// cross-BrowsingInstance navigations when
+// ProactivelySwapBrowsingInstancesSameSite is enabled.
+class ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest
+    : public ProactivelySwapBrowsingInstancesSameSiteTest {
+ public:
+  ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kClearCrossBrowsingContextGroupMainFrameName);
+  }
+  ~ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest() override =
+      default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Verify that same-site main frame navigation that swaps BrowsingInstances
+// does not clear window.name.
+IN_PROC_BROWSER_TEST_P(
+    ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest,
+    NotClearWindowNameSameSite) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+
+  // Navigate to a.com/title1.html.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a1));
+  // Set window.name.
+  EXPECT_TRUE(content::ExecuteScript(web_contents, "window.name='foo'"));
+  auto* frame_a1 = web_contents->GetMainFrame();
+  EXPECT_EQ("foo", frame_a1->GetFrameName());
+
+  scoped_refptr<SiteInstance> site_instance_a1 = frame_a1->GetSiteInstance();
+
+  // Navigate to a.com/title2.html. Even though we proactively swap
+  // BrowsingInstances for same-site navigation as well, we should only clear
+  // window.name for cross-BrowsingInstance navigation that's not same-site.
+  // https://html.spec.whatwg.org/multipage/browsing-the-web.html#resetBCName.
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), url_a2));
+  auto* frame_a2 = web_contents->GetMainFrame();
+  // Check that title1.html and title2.html are in different BrowsingInstances.
+  scoped_refptr<SiteInstance> site_instance_a2 = frame_a2->GetSiteInstance();
+  EXPECT_FALSE(site_instance_a1->IsRelatedSiteInstance(site_instance_a2.get()));
+  // Window.name should not be cleared.
+  EXPECT_EQ("foo", frame_a2->GetFrameName());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostManagerTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
@@ -9072,5 +9187,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostManagerNoSiteIsolationTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
-
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderFrameHostManagerClearWindowNameTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProactivelySwapBrowsingInstancesSameSiteClearWindowNameTest,
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 }  // namespace content

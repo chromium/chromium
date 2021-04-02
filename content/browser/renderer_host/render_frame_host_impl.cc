@@ -2406,6 +2406,8 @@ bool RenderFrameHostImpl::CreateRenderFrame(
         base::FeatureList::IsEnabled(
             features::kClearCrossBrowsingContextGroupMainFrameName)));
 
+  // TODO(https://crbug.com/1188676): Update the field and flag name for
+  // clearing window.name on cross-site cross-BrowsingInstance navigations.
   if (should_clear_browsing_instance_name) {
     params->replication_state->name = "";
     // The "swaps" only affect main frames, that have an empty unique name.

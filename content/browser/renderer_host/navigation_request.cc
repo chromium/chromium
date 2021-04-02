@@ -3907,12 +3907,6 @@ void NavigationRequest::CommitNavigation() {
     }
   }
 
-  if (!IsSameDocument() && !render_frame_host_->GetParent()) {
-    commit_params_->is_cross_browsing_instance =
-        !render_frame_host_->GetSiteInstance()->IsRelatedSiteInstance(
-            GetStartingSiteInstance());
-  }
-
   // Set `is_prerendering` here so it's accurate before sending it to the
   // renderer, as it may be out of sync with the source of truth which is the
   // frame tree state. The frame tree may have changed if activation happened
