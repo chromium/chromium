@@ -705,6 +705,20 @@ LayoutUnit ComputeBlockSizeForFragment(
       available_block_size_adjustment);
 }
 
+LayoutUnit ComputeInitialBlockSizeForFragment(
+    const NGConstraintSpace& space,
+    const ComputedStyle& style,
+    const NGBoxStrut& border_padding,
+    LayoutUnit intrinsic_size,
+    base::Optional<LayoutUnit> inline_size,
+    LayoutUnit available_block_size_adjustment) {
+  if (space.IsFixedBlockSizeIndefinite())
+    return intrinsic_size;
+  return ComputeBlockSizeForFragment(space, style, border_padding,
+                                     intrinsic_size, inline_size,
+                                     available_block_size_adjustment);
+}
+
 // Computes size for a replaced element.
 void ComputeReplacedSize(const NGBlockNode& node,
                          const NGConstraintSpace& space,
@@ -1232,20 +1246,6 @@ LayoutUnit CalculateDefaultBlockSize(
 }
 
 namespace {
-
-// Calculates default content size for html and body elements in quirks mode.
-// Returns |kIndefiniteSize| in all other cases.
-LayoutUnit ComputeInitialBlockSizeForFragment(
-    const NGConstraintSpace& space,
-    const ComputedStyle& style,
-    const NGBoxStrut& border_padding,
-    LayoutUnit intrinsic_size,
-    base::Optional<LayoutUnit> inline_size) {
-  if (space.IsFixedBlockSizeIndefinite())
-    return intrinsic_size;
-  return ComputeBlockSizeForFragment(space, style, border_padding,
-                                     intrinsic_size, inline_size);
-}
 
 // Clamp the inline size of the scrollbar, unless it's larger than the inline
 // size of the content box, in which case we'll return that instead. Scrollbar

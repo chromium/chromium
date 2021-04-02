@@ -577,12 +577,19 @@ void NGTableLayoutAlgorithm::ComputeRows(
   // If we can correctly resolve our min-block-size we want to distribute
   // sections/rows into this space. Pass a definite intrinsic block-size into
   // |ComputeBlockSizeForFragment| to force it to resolve.
-  const LayoutUnit intrinsic_block_size =
+  LayoutUnit intrinsic_block_size =
       BlockLengthUnresolvable(ConstraintSpace(), Style().LogicalMinHeight())
           ? kIndefiniteSize
           : table_border_padding.BlockSum();
 
-  const LayoutUnit css_table_block_size = ComputeBlockSizeForFragment(
+  // If container forces block size, use that as as intrinsic size.
+  if (ConstraintSpace().IsFixedBlockSize()) {
+    DCHECK_GE(ConstraintSpace().AvailableSize().block_size,
+              intrinsic_block_size);
+    intrinsic_block_size = ConstraintSpace().AvailableSize().block_size;
+  }
+
+  const LayoutUnit css_table_block_size = ComputeInitialBlockSizeForFragment(
       ConstraintSpace(), Style(), table_border_padding, intrinsic_block_size,
       table_grid_inline_size,
       /* available_block_size_adjustment */ captions_block_size);
