@@ -973,6 +973,8 @@ void FeedStream::ReportOpenAction(const StreamType& stream_type,
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenAction(stream_type, index);
+  // TODO(crbug/1152592): Determine if we need this logic for the Web Feed
+  // stream.
   if (stream_type.IsForYou()) {
     notice_card_tracker_.OnOpenAction(index);
   }
@@ -987,6 +989,8 @@ void FeedStream::ReportOpenInNewTabAction(const StreamType& stream_type,
   if (index < 0)
     index = MetricsReporter::kUnknownCardIndex;
   metrics_reporter_->OpenInNewTabAction(stream_type, index);
+  // TODO(crbug/1152592): Determine if we need this logic for the Web Feed
+  // stream.
   if (stream_type.IsForYou()) {
     notice_card_tracker_.OnOpenAction(index);
   }
@@ -1006,6 +1010,8 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
     }
     metrics_reporter_->ContentSliceViewed(stream_type, index);
   }
+  // TODO(crbug/1152592): Determine if we need this logic for the Web Feed
+  // stream.
   if (stream_type.IsForYou()) {
     upload_criteria_.OnSliceViewed(stream.model->signed_in(), index);
     notice_card_tracker_.OnSliceViewed(index);

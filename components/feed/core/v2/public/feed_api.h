@@ -30,9 +30,6 @@ class WebFeedSubscriptions;
 class PersistentKeyValueStore;
 
 // Selects the stream type.
-// TODO(crbug.com/1152592): Need to use StreamType in several places:
-// - Stream loading/saving
-// - Metrics
 // Note: currently there are two options, but this leaves room for more
 // parameters.
 class StreamType {
@@ -50,8 +47,6 @@ class StreamType {
   constexpr explicit StreamType(Type t) : type_(t) {}
   bool operator<(const StreamType& rhs) const { return type_ < rhs.type_; }
   bool operator==(const StreamType& rhs) const { return type_ == rhs.type_; }
-  // TODO(crbug.com/1152592): When we're closer to code-complete, audit all uses
-  // of IsForYou() and IsWebFeed().
   bool IsForYou() const { return type_ == Type::kForYou; }
   bool IsWebFeed() const { return type_ == Type::kWebFeed; }
 
@@ -100,8 +95,6 @@ inline std::ostream& operator<<(std::ostream& os,
   return os << stream_type.ToString();
 }
 
-// TODO(crbug.com/1152592): When we're closer to code-complete, audit all uses
-// of kForYouStream and kWebFeedStream.
 constexpr StreamType kForYouStream(StreamType::Type::kForYou);
 constexpr StreamType kWebFeedStream(StreamType::Type::kWebFeed);
 
@@ -114,8 +107,6 @@ class FeedApi {
   FeedApi(const FeedApi&) = delete;
   FeedApi& operator=(const FeedApi&) = delete;
 
-  // TODO(crbug/1152592): Implement subscriptions().
-  // WebFeedSubscriptions& subscriptions() = 0;
   // Observes whether there is unread content for a specific stream type.
   // In some cases, this information will not be known until after stream
   // data is loaded from the database. This observer will not be notified until
