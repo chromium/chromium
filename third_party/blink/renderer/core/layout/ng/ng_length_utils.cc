@@ -553,7 +553,6 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const NGConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const NGBoxStrut& border_padding,
-    LayoutUnit intrinsic_size,
     LayoutUnit available_block_size_adjustment,
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max) {
   MinMaxSizes sizes = {
@@ -623,10 +622,9 @@ LayoutUnit ComputeBlockSizeForFragmentInternal(
     LayoutUnit available_block_size_adjustment = LayoutUnit(),
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr) {
-  MinMaxSizes min_max =
-      ComputeMinMaxBlockSizes(space, style, border_padding, intrinsic_size,
-                              available_block_size_adjustment,
-                              opt_percentage_resolution_block_size_for_min_max);
+  MinMaxSizes min_max = ComputeMinMaxBlockSizes(
+      space, style, border_padding, available_block_size_adjustment,
+      opt_percentage_resolution_block_size_for_min_max);
 
   // Scrollable percentage-sized children of table cells, in the table
   // "measure" phase contribute nothing to the row height measurement.

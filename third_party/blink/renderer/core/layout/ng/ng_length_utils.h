@@ -331,7 +331,6 @@ MinMaxSizes ComputeMinMaxBlockSizes(
     const NGConstraintSpace&,
     const ComputedStyle&,
     const NGBoxStrut& border_padding,
-    LayoutUnit intrinsic_size,
     LayoutUnit available_block_size_adjustment = LayoutUnit(),
     const LayoutUnit* opt_percentage_resolution_block_size_for_min_max =
         nullptr);
