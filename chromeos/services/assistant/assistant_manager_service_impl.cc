@@ -269,6 +269,12 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
 }
 
 AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {
+  // Reset the observer for |CrosActionModule| before we flush the background
+  // thread, where |CrosActionModule| gets created and exposed from. This can
+  // prevent potential race condition between the main thread and background
+  // thread when accessing/changing the shared object.
+  scoped_action_observer_.Reset();
+
   // Destroy the Assistant Proxy first so the background thread is flushed
   // before any of the other objects are destroyed.
   assistant_proxy_ = nullptr;
