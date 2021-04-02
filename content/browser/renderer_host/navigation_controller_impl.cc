@@ -2115,20 +2115,21 @@ bool NavigationControllerImpl::IsURLSameDocumentNavigation(
     RenderFrameHost* rfh) {
   RenderFrameHostImpl* rfhi = static_cast<RenderFrameHostImpl*>(rfh);
   GURL last_committed_url;
-  if (rfh->GetParent()) {
+  // For cases that can't compare against the main frame's URL in the last
+  // committed entry, use the FrameTreeNode's current_url(). Note that it is
+  // possible to get same-document commits in the initial empty document when
+  // there is no last committed entry (e.g., about:blank#foo).
+  // TODO(creis): It would be simpler to always get the URL from the FTN rather
+  // than ever looking at GetLastCommittedEntry here. We're limiting the change
+  // in behavior for a merge and will clean it up further afterward.
+  if (rfh->GetParent() || !GetLastCommittedEntry()) {
     // Use the FrameTreeNode's current_url and not rfh->GetLastCommittedURL(),
     // which might be empty in a new RenderFrameHost after a process swap.
     // Here, we care about the last committed URL in the FrameTreeNode,
     // regardless of which process it is in.
     last_committed_url = rfhi->frame_tree_node()->current_url();
   } else {
-    NavigationEntry* last_committed = GetLastCommittedEntry();
-    // There must be a last-committed entry to compare URLs to. TODO(avi): When
-    // might Blink say that a navigation is in-page yet there be no last-
-    // committed entry?
-    if (!last_committed)
-      return false;
-    last_committed_url = last_committed->GetURL();
+    last_committed_url = GetLastCommittedEntry()->GetURL();
   }
 
   auto prefs = rfhi->GetOrCreateWebPreferences();
@@ -3996,6 +3997,11 @@ NavigationControllerImpl::ComputePolicyContainerPoliciesForFrameEntry(
     return nullptr;
 
   if (is_same_document) {
+    // TODO(https://crbug.com/524208): Remove this nullptr check when we can
+    // ensure we always have a FrameNavigationEntry here.
+    if (!GetLastCommittedEntry())
+      return nullptr;
+
     FrameNavigationEntry* previous_frame_entry =
         GetLastCommittedEntry()->GetFrameEntry(rfh->frame_tree_node());
 

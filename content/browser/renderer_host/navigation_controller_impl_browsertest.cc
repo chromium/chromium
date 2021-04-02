@@ -2664,6 +2664,28 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 }
 
+// Captures LoadCommittedDetails to compare against expectations.
+class LoadCommittedDetailsObserver : public WebContentsObserver {
+ public:
+  explicit LoadCommittedDetailsObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void Wait() { loop_.Run(); }
+
+  const LoadCommittedDetails& load_details() { return load_details_; }
+
+ private:
+  void NavigationEntryCommitted(
+      const LoadCommittedDetails& load_details) override {
+    load_details_ = load_details;
+    loop_.Quit();
+  }
+
+  LoadCommittedDetails load_details_;
+
+  base::RunLoop loop_;
+};
+
 // Tests for navigations that happen after initial empty document loads on an
 // iframe/opened window. This class is parameterized by both RenderDocumentHost
 // mode and by whether it would do renderer vs browser initiated navigations.
@@ -2735,8 +2757,10 @@ class InitialEmptyDocNavigationControllerBrowserTest
   void NavigateWindowAndCheckNavigationTypeIsNewEntry(
       WebContentsImpl* web_contents,
       const GURL& url,
-      bool wait_for_previous_navigations = true) {
+      bool wait_for_previous_navigations = true,
+      bool expect_same_document = false) {
     FrameTreeNode* root = web_contents->GetFrameTree()->root();
+    LoadCommittedDetailsObserver load_details_observer(web_contents);
     FrameNavigateParamsCapturer capturer(root);
     if (renderer_initiated()) {
       EXPECT_TRUE(NavigateToURLFromRenderer(web_contents, url));
@@ -2757,9 +2781,18 @@ class InitialEmptyDocNavigationControllerBrowserTest
       }
     }
     capturer.Wait();
+    load_details_observer.Wait();
 
     EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
     EXPECT_FALSE(capturer.did_replace_entry());
+
+    // Check both NavigationHandle and LoadCommittedDetails for whether this was
+    // considered same-document, as these have diverged in the past (since only
+    // the latter is affected by IsURLSameDocumentNavigation).
+    // See https://crbug.com/1193134.
+    EXPECT_EQ(expect_same_document, capturer.is_same_document());
+    EXPECT_EQ(expect_same_document,
+              load_details_observer.load_details().is_same_document);
   }
 
  private:
@@ -2788,6 +2821,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
   // 1) Navigate to |url_2| on a new subframe that hasn't done any navigation.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 1.");
+
     // Create the "child1" subframe without navigating it.
     CreateSubframe(contents(), "child1", GURL(),
                    false /* wait_for_navigation */);
@@ -2804,6 +2839,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // 2) Navigate to |url_2| on a new subframe that has done a navigation to
   // about:blank and a same-document navigation to about:blank#foo.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 2.");
+
     // Create the "child2" subframe with src set to about:blank, navigating it
     // there.
     CreateSubframe(contents(), "child2", GURL("about:blank"),
@@ -2841,6 +2878,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // 3) Navigate to |url_2| on a new subframe that has done a navigation to a
   // data: URL.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 3.");
+
     // Create the "child3" subframe with src set to a data: URL, navigating it
     // there.
     CreateSubframe(contents(), "child3", GURL("data:text/html,foo"),
@@ -2861,6 +2900,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // 4) Navigate to |url_2| on a new subframe that has started a navigation to
   // a URL that never committed.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 4.");
+
     // Create the "child4" subframe with src set to a URL that never commits.
     CreateSubframe(contents(), "child4", hung_url,
                    false /* wait_for_navigation */);
@@ -2878,6 +2919,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
   // 5) Navigate to |url_2| on a new subframe that has done a document.open().
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 5.");
+
     // Create the "child5" subframe.
     CreateSubframe(contents(), "child5", GURL(),
                    false /* wait_for_navigation */);
@@ -2925,6 +2968,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // 6) Navigate to |url_2| on a new subframe that has done a navigation to
   // a javascript: url that replaces the document.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 6.");
+
     // Create the "child6" subframe and set it to a javascript: URL.
     CreateSubframe(contents(), "child6", GURL("javascript:'foo'"),
                    false /* wait_for_navigation */);
@@ -2955,6 +3000,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
   // 1) Navigate to |url_2| on a new window that hasn't done any navigation.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 1.");
+
     // Create a new blank window that won't create a NavigationEntry.
     Shell* new_shell = OpenBlankWindow(contents());
     WebContentsImpl* new_contents =
@@ -2977,6 +3024,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // TODO(https://crbug.com/1190088): Enable this for browser-initiated
   // navigations too once the bug is fixed.
   if (renderer_initiated()) {
+    SCOPED_TRACE(testing::Message() << " Testing case 2.");
+
     // Create a new blank window that won't create a NavigationEntry.
     Shell* new_shell = OpenBlankWindow(contents());
     WebContentsImpl* new_contents =
@@ -2996,6 +3045,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // 3) Navigate to about:blank#foo on a new window that hasn't done any
   // navigation.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 3.");
+
     // Create a new blank window that won't create a NavigationEntry.
     Shell* new_shell = OpenBlankWindow(contents());
     WebContentsImpl* new_contents =
@@ -3004,10 +3055,12 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     EXPECT_EQ(0, controller.GetEntryCount());
     EXPECT_FALSE(controller.GetLastCommittedEntry());
 
-    // Navigating the window to about:blank#foo will be classified as NEW_ENTRY
-    // and will add a new entry.
-    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents,
-                                                   GURL("about:blank#foo"));
+    // Navigating the window to about:blank#foo will be classified as a same-
+    // document NEW_ENTRY, and will add a new entry.
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(
+        new_contents, GURL("about:blank#foo"),
+        true /* wait_for_previous_navigations */,
+        true /* expect_same_document */);
     EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_TRUE(controller.GetLastCommittedEntry());
   }
@@ -3015,6 +3068,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // 4) Navigate to |url_2| on a new window that initially loaded about:blank
   // and has done a same-document navigation to about:blank#foo.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 4.");
+
     // Create a new window with URL set to about:blank, which will create a
     // NavigationEntry.
     Shell* new_shell = OpenWindow(contents(), GURL("about:blank"));
@@ -3027,8 +3082,10 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
     // Do a navigation on the window to about:blank#foo, creating a
     // same-document navigation.
-    NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents,
-                                                   GURL("about:blank#foo"));
+    NavigateWindowAndCheckNavigationTypeIsNewEntry(
+        new_contents, GURL("about:blank#foo"),
+        true /* wait_for_previous_navigations */,
+        true /* expect_same_document */);
     EXPECT_EQ(2, controller.GetEntryCount());
     EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
     // Check that we did a same-document navigation (the DSN stays the same).
@@ -3047,6 +3104,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // 5) Navigate to |url_2| on a new window that has started a navigation to
   // a URL that never committed.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 5.");
+
     // Create a new window with URL set to a URL that never commits, which will
     // not create a NavigationEntry.
     Shell* new_shell = OpenWindow(contents(), hung_url);
@@ -3066,6 +3125,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
 
   // 6) Navigate to |url_2| on a new window that has done a document.open().
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 6.");
+
     // Create a new blank window that won't create a NavigationEntry.
     Shell* new_shell = OpenBlankWindow(contents());
     WebContentsImpl* new_contents =
@@ -3103,6 +3164,8 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
   // 7) Navigate to |url_2| on a new window that has navigated to a javascript:
   // URL that replaced the initial empty document.
   {
+    SCOPED_TRACE(testing::Message() << " Testing case 7.");
+
     // Create a new window with URL set to a javascript: URL that replaces the
     // document, which will not create a NavigationEntry.
     Shell* new_shell = OpenWindow(contents(), GURL("javascript:'foo'"));
@@ -3117,6 +3180,64 @@ IN_PROC_BROWSER_TEST_P(InitialEmptyDocNavigationControllerBrowserTest,
     NavigateWindowAndCheckNavigationTypeIsNewEntry(new_contents, url_2);
     EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_TRUE(controller.GetLastCommittedEntry());
+  }
+}
+
+// Test pushState in a new window's initial empty document after it has done a
+// document.open() (inheriting the opener's URL).
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       PushStateAfterDocumentOpenInNewWindow) {
+  GURL main_window_url(embedded_test_server()->GetURL("/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_window_url));
+
+  // Create a new blank window that won't create a NavigationEntry.
+  Shell* new_shell = OpenBlankWindow(contents());
+  WebContentsImpl* new_contents =
+      static_cast<WebContentsImpl*>(new_shell->web_contents());
+  NavigationControllerImpl& controller = new_contents->GetController();
+  FrameTreeNode* root = new_contents->GetFrameTree()->root();
+  EXPECT_EQ(0, controller.GetEntryCount());
+  EXPECT_FALSE(controller.GetLastCommittedEntry());
+
+  {
+    // Do a document.open() on the blank window, generating a same-document
+    // navigation.
+    TestNavigationObserver nav_observer(new_contents);
+    EXPECT_TRUE(ExecJs(contents(), R"(
+          last_opened_window.document.open();
+          last_opened_window.document.write("foo");
+          last_opened_window.document.close();
+      )"));
+    nav_observer.Wait();
+
+    // The document.open() changed the window's URL to be the same as the main
+    // tab's URL, but didn't add a new entry because the navigation is
+    // ignored (see https://crbug.com/1190111).
+    EXPECT_EQ(main_window_url,
+              new_contents->GetFrameTree()->root()->current_url());
+    EXPECT_EQ(0, controller.GetEntryCount());
+  }
+
+  {
+    // Do a pushState (now that document.open has made it possible), generating
+    // a same-document navigation.
+    LoadCommittedDetailsObserver load_details_observer(new_contents);
+    FrameNavigateParamsCapturer capturer(root);
+    EXPECT_TRUE(ExecJs(contents(),
+                       "last_opened_window.history.pushState({}, '', 'foo');"));
+    capturer.Wait();
+    load_details_observer.Wait();
+
+    // The pushState will be classified as NEW_ENTRY and will add a new entry.
+    EXPECT_EQ(1, controller.GetEntryCount());
+    EXPECT_TRUE(controller.GetLastCommittedEntry());
+
+    // Check both NavigationHandle and LoadCommittedDetails for whether this was
+    // considered same-document, as these have diverged in the past (since only
+    // the latter is affected by IsURLSameDocumentNavigation).
+    // See https://crbug.com/1193134.
+    EXPECT_TRUE(capturer.is_same_document());
+    EXPECT_TRUE(load_details_observer.load_details().is_same_document);
   }
 }
 

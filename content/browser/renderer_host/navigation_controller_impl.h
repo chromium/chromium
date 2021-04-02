@@ -260,8 +260,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Returns true if the given URL would be a same-document navigation (e.g., if
   // the reference fragment is different, or after a pushState) from the last
-  // committed URL in the specified frame. If there is no last committed entry,
-  // then nothing will be same-document.
+  // committed URL in the specified frame.
   //
   // Special note: if the URLs are the same, it does NOT automatically count as
   // a same-document navigation. Neither does an input URL that has no ref, even
