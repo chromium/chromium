@@ -15,19 +15,6 @@
 #include "fuchsia/base/mem_buffer_util.h"
 
 namespace cr_fuchsia {
-namespace {
-
-void QuitRunLoopAndRunCallback(
-    base::OnceClosure quit_run_loop_closure,
-    TestNavigationListener::BeforeAckCallback before_ack_callback,
-    const fuchsia::web::NavigationState& change,
-    fuchsia::web::NavigationEventListener::OnNavigationStateChangedCallback
-        ack_callback) {
-  std::move(quit_run_loop_closure).Run();
-  before_ack_callback.Run(change, std::move(ack_callback));
-}
-
-}  // namespace
 
 TestNavigationListener::TestNavigationListener() {
   // Set up the default acknowledgement handling behavior.
@@ -41,13 +28,17 @@ void TestNavigationListener::RunUntilNavigationStateMatches(
   DCHECK(before_ack_);
 
   // Spin the runloop until the expected conditions are met.
-  while (!AllFieldsMatch(expected_state)) {
-    base::RunLoop run_loop;
-    base::AutoReset<BeforeAckCallback> callback_setter(
-        &before_ack_, base::BindRepeating(&QuitRunLoopAndRunCallback,
-                                          run_loop.QuitClosure(), before_ack_));
-    run_loop.Run();
-  }
+  if (AllFieldsMatch(expected_state))
+    return;
+
+  base::RunLoop run_loop;
+  base::AutoReset<BeforeAckCallback> callback_setter(
+      &before_ack_,
+      base::BindRepeating(&TestNavigationListener::QuitLoopIfAllFieldsMatch,
+                          base::Unretained(this),
+                          base::Unretained(&expected_state),
+                          run_loop.QuitClosure(), before_ack_));
+  run_loop.Run();
 }
 
 void TestNavigationListener::RunUntilLoaded() {
@@ -104,6 +95,16 @@ void TestNavigationListener::RunUntilUrlTitleBackForwardEquals(
   state.set_can_go_back(expected_can_go_back);
   state.set_can_go_forward(expected_can_go_forward);
   RunUntilNavigationStateMatches(state);
+}
+
+void TestNavigationListener::SetBeforeAckHook(BeforeAckCallback send_ack_cb) {
+  if (send_ack_cb) {
+    before_ack_ = send_ack_cb;
+  } else {
+    before_ack_ = base::BindRepeating(
+        [](const fuchsia::web::NavigationState&,
+           OnNavigationStateChangedCallback callback) { callback(); });
+  }
 }
 
 void TestNavigationListener::OnNavigationStateChanged(
@@ -172,16 +173,6 @@ void TestNavigationListener::OnNavigationStateChanged(
   before_ack_.Run(change, std::move(callback));
 }
 
-void TestNavigationListener::SetBeforeAckHook(BeforeAckCallback send_ack_cb) {
-  if (send_ack_cb) {
-    before_ack_ = send_ack_cb;
-  } else {
-    before_ack_ = base::BindRepeating(
-        [](const fuchsia::web::NavigationState&,
-           OnNavigationStateChangedCallback callback) { callback(); });
-  }
-}
-
 bool TestNavigationListener::AllFieldsMatch(
     const fuchsia::web::NavigationState& expected) {
   if (expected.has_url() &&
@@ -220,6 +211,18 @@ bool TestNavigationListener::AllFieldsMatch(
   }
 
   return true;
+}
+
+void TestNavigationListener::QuitLoopIfAllFieldsMatch(
+    const fuchsia::web::NavigationState* expected_state,
+    base::RepeatingClosure quit_run_loop_closure,
+    TestNavigationListener::BeforeAckCallback before_ack_callback,
+    const fuchsia::web::NavigationState& change,
+    fuchsia::web::NavigationEventListener::OnNavigationStateChangedCallback
+        ack_callback) {
+  if (AllFieldsMatch(*expected_state))
+    quit_run_loop_closure.Run();
+  before_ack_callback.Run(change, std::move(ack_callback));
 }
 
 }  // namespace cr_fuchsia

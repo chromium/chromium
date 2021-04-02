@@ -25,6 +25,9 @@ class TestNavigationListener : public fuchsia::web::NavigationEventListener {
   TestNavigationListener();
   ~TestNavigationListener() final;
 
+  TestNavigationListener(const TestNavigationListener&) = delete;
+  TestNavigationListener& operator=(const TestNavigationListener&) = delete;
+
   // Spins a RunLoop until the navigation state of the page matches the fields
   // of |expected_state| that have been set.
   void RunUntilNavigationStateMatches(
@@ -78,14 +81,20 @@ class TestNavigationListener : public fuchsia::web::NavigationEventListener {
       fuchsia::web::NavigationState change,
       OnNavigationStateChangedCallback callback) final;
 
-  fuchsia::web::NavigationState current_state_;
-
-  BeforeAckCallback before_ack_;
-
   // Compare the current state with all fields of |expected| that have been set.
   bool AllFieldsMatch(const fuchsia::web::NavigationState& expected);
 
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationListener);
+  void QuitLoopIfAllFieldsMatch(
+      const fuchsia::web::NavigationState* expected_state,
+      base::RepeatingClosure quit_run_loop_closure,
+      BeforeAckCallback before_ack_callback,
+      const fuchsia::web::NavigationState& change,
+      fuchsia::web::NavigationEventListener::OnNavigationStateChangedCallback
+          ack_callback);
+
+  fuchsia::web::NavigationState current_state_;
+
+  BeforeAckCallback before_ack_;
 };
 
 }  // namespace cr_fuchsia
