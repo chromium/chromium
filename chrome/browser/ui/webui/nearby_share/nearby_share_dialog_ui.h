@@ -8,9 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/observer_list.h"
-#include "base/observer_list_types.h"
 #include "chrome/browser/nearby_sharing/attachment.h"
+#include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/ui/webui/nearby_share/nearby_share.mojom.h"
 #include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,18 +22,14 @@ namespace nearby_share {
 // The WebUI controller for chrome://nearby.
 class NearbyShareDialogUI : public ui::MojoWebUIController {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnClose() = 0;
-  };
-
   explicit NearbyShareDialogUI(content::WebUI* web_ui);
   NearbyShareDialogUI(const NearbyShareDialogUI&) = delete;
   NearbyShareDialogUI& operator=(const NearbyShareDialogUI&) = delete;
   ~NearbyShareDialogUI() override;
 
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
+  void SetSharesheetController(sharesheet::SharesheetController* controller) {
+    sharesheet_controller_ = controller;
+  }
   void SetAttachments(std::vector<std::unique_ptr<Attachment>> attachments);
 
   // Instantiates the implementor of the mojom::DiscoveryManager mojo
@@ -58,8 +53,12 @@ class NearbyShareDialogUI : public ui::MojoWebUIController {
   // of file paths.
   void SetAttachmentFromQueryParameter(const GURL& url);
 
+  // A pointer to the Sharesheet controller is provided by
+  // |NearbyShareAction::LaunchAction| when this WebUI controller is created. It
+  // is used to close the Sharesheet in |HandleClose|.
+  sharesheet::SharesheetController* sharesheet_controller_ = nullptr;
+
   std::vector<std::unique_ptr<Attachment>> attachments_;
-  base::ObserverList<Observer> observers_;
   NearbySharingService* nearby_service_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

@@ -83,15 +83,6 @@ NearbyShareDialogUI::NearbyShareDialogUI(content::WebUI* web_ui)
 
 NearbyShareDialogUI::~NearbyShareDialogUI() = default;
 
-void NearbyShareDialogUI::AddObserver(NearbyShareDialogUI::Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void NearbyShareDialogUI::RemoveObserver(
-    NearbyShareDialogUI::Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
-
 void NearbyShareDialogUI::SetAttachments(
     std::vector<std::unique_ptr<Attachment>> attachments) {
   attachments_ = std::move(attachments);
@@ -122,8 +113,12 @@ void NearbyShareDialogUI::BindInterface(
 }
 
 void NearbyShareDialogUI::HandleClose(const base::ListValue* args) {
-  for (auto& observer : observers_) {
-    observer.OnClose();
+  if (sharesheet_controller_) {
+    sharesheet_controller_->CloseSharesheet();
+
+    // We need to clear out the controller here to protect against calling
+    // CloseShareSheet() more than once, which will cause a crash.
+    sharesheet_controller_ = nullptr;
   }
 }
 

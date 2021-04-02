@@ -134,9 +134,6 @@ void NearbyShareAction::LaunchAction(
     sharesheet::SharesheetController* controller,
     views::View* root_view,
     apps::mojom::IntentPtr intent) {
-  // Store so we can trigger the share sheet close later.
-  controller_ = controller;
-
   gfx::Size size = ComputeSize();
   controller->SetSharesheetSize(size.width(), size.height());
 
@@ -159,24 +156,13 @@ void NearbyShareAction::LaunchAction(
   auto* webui = web_view_->GetWebContents()->GetWebUI();
   DCHECK(webui != nullptr);
 
-  nearby_ui_ =
+  auto* nearby_ui =
       webui->GetController()->GetAs<nearby_share::NearbyShareDialogUI>();
-  DCHECK(nearby_ui_ != nullptr);
+  DCHECK(nearby_ui != nullptr);
 
-  nearby_ui_->AddObserver(this);
-  nearby_ui_->SetAttachments(
+  nearby_ui->SetSharesheetController(controller);
+  nearby_ui->SetAttachments(
       CreateAttachmentsFromIntent(profile, std::move(intent)));
-}
-
-void NearbyShareAction::OnClose() {
-  // The nearby WebUI requested to close through user action
-  if (controller_) {
-    controller_->CloseSharesheet();
-
-    // We need to clear out the controller here to protect against calling
-    // CloseShareSheet() more than once, which will cause a crash.
-    controller_ = nullptr;
-  }
 }
 
 bool NearbyShareAction::ShouldShowAction(const apps::mojom::IntentPtr& intent,
@@ -233,14 +219,6 @@ NearbyShareAction::CreateAttachmentsFromIntent(Profile* profile,
     // Only create a file attachment if there is no text or URL. Google docs may
     // have associated file paths, but are still treated as text shares.
     return CreateFileAttachmentsFromIntent(profile, intent);
-  }
-}
-
-void NearbyShareAction::OnClosing(
-    sharesheet::SharesheetController* controller) {
-  if (nearby_ui_) {
-    nearby_ui_->RemoveObserver(this);
-    nearby_ui_ = nullptr;
   }
 }
 
