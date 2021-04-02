@@ -543,9 +543,9 @@ void BrowserManager::StartWithLogFile(
   legacy_channel.PrepareToPassRemoteEndpoint(&options, &command_line);
   DCHECK(!legacy_crosapi_id_.has_value());
   legacy_crosapi_id_ = CrosapiManager::Get()->SendLegacyInvitation(
-      environment_provider_.get(), legacy_channel.TakeLocalEndpoint(),
-      base::BindOnce(
-          []() { LOG(WARNING) << "Legacy Crosapi Channel disconnected"; }));
+      legacy_channel.TakeLocalEndpoint(), base::BindOnce([]() {
+        LOG(WARNING) << "Legacy Crosapi Channel disconnected";
+      }));
 
   mojo::PlatformChannel channel;
   std::string channel_flag_value;

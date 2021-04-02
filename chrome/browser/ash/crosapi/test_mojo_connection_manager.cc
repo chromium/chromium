@@ -97,8 +97,7 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
 
   mojo::PlatformChannel legacy_channel;
   CrosapiManager::Get()->SendLegacyInvitation(
-      environment_provider_.get(), legacy_channel.TakeLocalEndpoint(),
-      base::BindOnce([]() {
+      legacy_channel.TakeLocalEndpoint(), base::BindOnce([]() {
         // Called when the Mojo connection to lacros-chrome is disconnected.
         // It may be "just a Mojo error" or "test is finished".
         LOG(WARNING) << "Legacy Mojo to lacros-chrome is disconnected.";

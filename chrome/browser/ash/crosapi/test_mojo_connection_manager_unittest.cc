@@ -16,6 +16,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -56,13 +57,12 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
 
   ~TestBrowserService() override = default;
 
-  void InitDeprecated(crosapi::mojom::BrowserInitParamsPtr params) override {
-    init_is_called_ = true;
+  void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override {
+    NOTIMPLEMENTED();
   }
 
   void RequestCrosapiReceiver(
       RequestCrosapiReceiverCallback callback) override {
-    EXPECT_TRUE(init_is_called_);
     std::move(callback).Run(crosapi_.BindNewPipeAndPassReceiver());
   }
 
@@ -74,13 +74,8 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override {}
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override {}
 
-  bool init_is_called() { return init_is_called_; }
-
  private:
   mojo::Receiver<mojom::BrowserService> receiver_;
-
-  bool init_is_called_ = false;
-
   mojo::Remote<crosapi::mojom::Crosapi> crosapi_;
 };
 

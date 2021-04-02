@@ -112,27 +112,24 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
     system_idle_cache_ = std::make_unique<SystemIdleCache>();
 
   } else {
-    // Try to read the startup data. If ash-chrome is too old, the data
-    // may not available, then fallback to the older approach.
+    // Read the startup data from the inherited FD.
     init_params_ = ReadStartupBrowserInitParams();
+    DCHECK(init_params_);
+    if (init_params_->idle_info) {
+      // Presence of initial |idle_info| indicates that ash-chrome can stream
+      // idle info updates, so instantiate under Streaming mode, using
+      // |idle_info| as initial cached values.
+      system_idle_cache_ =
+          std::make_unique<SystemIdleCache>(*init_params_->idle_info);
 
-    if (init_params_) {
-      if (init_params_->idle_info) {
-        // Presence of initial |idle_info| indicates that ash-chrome can stream
-        // idle info updates, so instantiate under Streaming mode, using
-        // |idle_info| as initial cached values.
-        system_idle_cache_ =
-            std::make_unique<SystemIdleCache>(*init_params_->idle_info);
-
-        // After construction finishes, start caching.
-        base::SequencedTaskRunnerHandle::Get()->PostTask(
-            FROM_HERE,
-            base::BindOnce(&LacrosChromeServiceImpl::StartSystemIdleCache,
-                           weak_factory_.GetWeakPtr()));
-      } else {
-        // Ash-chrome cannot stream, so instantiate under fallback mode.
-        system_idle_cache_ = std::make_unique<SystemIdleCache>();
-      }
+      // After construction finishes, start caching.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&LacrosChromeServiceImpl::StartSystemIdleCache,
+                         weak_factory_.GetWeakPtr()));
+    } else {
+      // Ash-chrome cannot stream, so instantiate under fallback mode.
+      system_idle_cache_ = std::make_unique<SystemIdleCache>();
     }
 
     // Short term workaround: if --crosapi-mojo-platform-channel-handle is
@@ -160,9 +157,8 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl(
 
   sequenced_state_ = std::unique_ptr<LacrosChromeServiceImplNeverBlockingState,
                                      base::OnTaskRunnerDeleter>(
-      new LacrosChromeServiceImplNeverBlockingState(
-          affine_sequence, weak_factory_.GetWeakPtr(),
-          init_params_.is_null() ? &init_params_ : nullptr),
+      new LacrosChromeServiceImplNeverBlockingState(affine_sequence,
+                                                    weak_factory_.GetWeakPtr()),
       base::OnTaskRunnerDeleter(never_blocking_sequence_));
   weak_sequenced_state_ = sequenced_state_->GetWeakPtr();
 
@@ -201,12 +197,6 @@ void LacrosChromeServiceImpl::BindReceiver(
         FROM_HERE, base::BindOnce(&LacrosChromeServiceImplNeverBlockingState::
                                       BindBrowserServiceReceiver,
                                   weak_sequenced_state_, std::move(receiver)));
-
-    // If ash-chrome is too old, BrowserInitParams may not be passed from
-    // a memory backed file directly. Then, try to wait for InitDeprecated()
-    // invocation for backward compatibility.
-    if (!init_params_)
-      sequenced_state_->WaitForInit();
   } else {
     // Accept Crosapi invitation here. Mojo IPC support should be initialized
     // at this stage.
@@ -233,10 +223,6 @@ void LacrosChromeServiceImpl::BindReceiver(
     // In this case, ash-chrome should be new enough, so init params should be
     // passed from the startup outband file descriptor.
   }
-
-  // In any case, |init_params_| should be initialized to a valid instance
-  // at this point.
-  DCHECK(init_params_);
 
   delegate_->OnInitialized(*init_params_);
   did_bind_receiver_ = true;

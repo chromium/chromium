@@ -384,12 +384,8 @@ struct BrowserInitParams {
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
 interface BrowserService {
-  // DEPRECATED: in M89. In new versions, memory backed file based
-  // initialization data passing is used.
-  //
-  // Ash-chrome can pass initialize parameters via this method.
-  // The parameters are available on the browser startup.
-  InitDeprecated@2(BrowserInitParams params);
+  // Removed method. No longer used.
+  REMOVED_2@2(BrowserInitParams params);
 
   // DEPRECATED: in M90. In new versions, Crosapi is the bootstrap interface.
   // BrowserService should be registered via BrowserServiceHost.

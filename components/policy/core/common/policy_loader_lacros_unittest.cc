@@ -62,9 +62,10 @@ class PolicyLoaderLacrosTest : public PolicyTestBase {
 TEST_F(PolicyLoaderLacrosTest, BasicTest) {
   std::vector<uint8_t> data = GetValidPolicyFetchResponse();
 
+  chromeos::LacrosChromeServiceImpl::DisableCrosapiForTests();
+  chromeos::LacrosChromeServiceImpl lacros_chrome_service(/*delegate=*/nullptr);
   auto init_params = crosapi::mojom::BrowserInitParams::New();
   init_params->device_account_policy = data;
-  chromeos::LacrosChromeServiceImpl lacros_chrome_service(/*delegate=*/nullptr);
   lacros_chrome_service.SetInitParamsForTests(std::move(init_params));
 
   PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner());

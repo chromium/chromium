@@ -29,7 +29,6 @@ CrosapiManager* g_instance = nullptr;
 // Handles a flow to invite crosapi client (such as lacros-chrome) to Mojo
 // universe.
 // - Bind the given end point to BrowserService.
-// - Queuing an IPC to call InitDeprecated for backward compatibility.
 // - Queuing another IPC to call RequestCrosapiReceiver to obtain the
 //   pending_receiver from the client.
 // - Then, send the invitation to crosapi.
@@ -47,19 +46,12 @@ class CrosapiManager::LegacyInvitationFlow {
   LegacyInvitationFlow& operator=(const LegacyInvitationFlow&) = delete;
   ~LegacyInvitationFlow() = default;
 
-  void Run(EnvironmentProvider* environment_provider,
-           mojo::PlatformChannelEndpoint local_endpoint) {
+  void Run(mojo::PlatformChannelEndpoint local_endpoint) {
     mojo::OutgoingInvitation invitation;
     browser_service_.Bind(mojo::PendingRemote<crosapi::mojom::BrowserService>(
         invitation.AttachMessagePipe(/*token=*/0), /*version=*/0));
     browser_service_.set_disconnect_handler(base::BindOnce(
         &LegacyInvitationFlow::OnDisconnected, weak_factory_.GetWeakPtr()));
-
-    // This is for backward compatibility.
-    // TODO(crbug.com/1156033): Remove InitDeprecated() invocation when lacros
-    // becomes mature enough.
-    browser_service_->InitDeprecated(browser_util::GetBrowserInitParams(
-        environment_provider, browser_util::InitialBrowserAction::kOpenWindow));
 
     browser_service_->RequestCrosapiReceiver(
         base::BindOnce(&LegacyInvitationFlow::OnCrosapiReceiverReceived,
@@ -145,15 +137,13 @@ CrosapiId CrosapiManager::SendInvitation(
 }
 
 CrosapiId CrosapiManager::SendLegacyInvitation(
-    EnvironmentProvider* environment_provider,
     mojo::PlatformChannelEndpoint local_endpoint,
     base::OnceClosure disconnect_handler) {
   CrosapiId crosapi_id = crosapi_id_generator_.GenerateNextId();
   pending_invitation_flow_list_.push_back(
       std::make_unique<LegacyInvitationFlow>(crosapi_id,
                                              std::move(disconnect_handler)));
-  pending_invitation_flow_list_.back()->Run(environment_provider,
-                                            std::move(local_endpoint));
+  pending_invitation_flow_list_.back()->Run(std::move(local_endpoint));
   return crosapi_id;
 }
 

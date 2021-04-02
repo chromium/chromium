@@ -17,7 +17,6 @@ class PlatformChannelEndpoint;
 
 namespace crosapi {
 class CrosapiAsh;
-class EnvironmentProvider;
 
 // Maintains the crosapi connection provided by ash-chrome.
 class CrosapiManager {
@@ -54,8 +53,7 @@ class CrosapiManager {
   // disconnection, but not on BrowserService disconnection. Returns an
   // identifier representing the crosapi connection. It can be used for client
   // to know where some sub-surfaces come from.
-  CrosapiId SendLegacyInvitation(EnvironmentProvider* environment_provider,
-                                 mojo::PlatformChannelEndpoint local_endpoint,
+  CrosapiId SendLegacyInvitation(mojo::PlatformChannelEndpoint local_endpoint,
                                  base::OnceClosure disconnect_handler);
 
  private:

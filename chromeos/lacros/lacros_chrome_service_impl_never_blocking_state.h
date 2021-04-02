@@ -33,12 +33,11 @@ class LacrosChromeServiceImplNeverBlockingState
  public:
   LacrosChromeServiceImplNeverBlockingState(
       scoped_refptr<base::SequencedTaskRunner> owner_sequence,
-      base::WeakPtr<LacrosChromeServiceImpl> owner,
-      crosapi::mojom::BrowserInitParamsPtr* init_params);
+      base::WeakPtr<LacrosChromeServiceImpl> owner);
   ~LacrosChromeServiceImplNeverBlockingState() override;
 
   // crosapi::mojom::BrowserService:
-  void InitDeprecated(crosapi::mojom::BrowserInitParamsPtr params) override;
+  void REMOVED_2(crosapi::mojom::BrowserInitParamsPtr) override;
   void RequestCrosapiReceiver(RequestCrosapiReceiverCallback callback) override;
   void NewWindow(bool incognito, NewWindowCallback callback) override;
   void NewTab(NewTabCallback callback) override;
@@ -47,13 +46,6 @@ class LacrosChromeServiceImplNeverBlockingState
   void GetHistograms(GetHistogramsCallback callback) override;
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override;
   void UpdateDeviceAccountPolicy(const std::vector<uint8_t>& policy) override;
-
-  // Unlike most of other methods of this class, this is called on the
-  // affined thread. Specifically, it is intended to be called before starting
-  // the message pumping of the affined thread to pass the initialization
-  // parameter from ash-chrome needed for the procedure running before the
-  // message pumping.
-  void WaitForInit();
 
   // Crosapi is the interface that lacros-chrome uses to message
   // ash-chrome. This method binds the remote, which allows queuing of message
@@ -101,14 +93,6 @@ class LacrosChromeServiceImplNeverBlockingState
   // |owner_sequence_|.
   scoped_refptr<base::SequencedTaskRunner> owner_sequence_;
   base::WeakPtr<LacrosChromeServiceImpl> owner_;
-
-  // Owned by LacrosChromeServiceImpl.
-  crosapi::mojom::BrowserInitParamsPtr* const init_params_;
-
-  // Lock to wait for InitDeprecated() invocation.
-  // Because the parameters are needed before starting the affined thread's
-  // message pumping, it is necessary to use sync primitive here, instead.
-  base::WaitableEvent initialized_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

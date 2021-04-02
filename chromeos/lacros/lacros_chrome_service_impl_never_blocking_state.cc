@@ -5,17 +5,15 @@
 #include "chromeos/lacros/lacros_chrome_service_impl_never_blocking_state.h"
 
 #include "base/bind_post_task.h"
+#include "base/notreached.h"
 
 namespace chromeos {
 
 LacrosChromeServiceImplNeverBlockingState::
     LacrosChromeServiceImplNeverBlockingState(
         scoped_refptr<base::SequencedTaskRunner> owner_sequence,
-        base::WeakPtr<LacrosChromeServiceImpl> owner,
-        crosapi::mojom::BrowserInitParamsPtr* init_params)
-    : owner_sequence_(owner_sequence),
-      owner_(owner),
-      init_params_(init_params) {
+        base::WeakPtr<LacrosChromeServiceImpl> owner)
+    : owner_sequence_(owner_sequence), owner_(owner) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 LacrosChromeServiceImplNeverBlockingState::
@@ -24,11 +22,9 @@ LacrosChromeServiceImplNeverBlockingState::
 }
 
 // crosapi::mojom::BrowserService:
-void LacrosChromeServiceImplNeverBlockingState::InitDeprecated(
-    crosapi::mojom::BrowserInitParamsPtr params) {
-  if (init_params_)
-    *init_params_ = std::move(params);
-  initialized_.Signal();
+void LacrosChromeServiceImplNeverBlockingState::REMOVED_2(
+    crosapi::mojom::BrowserInitParamsPtr) {
+  NOTIMPLEMENTED();
 }
 
 void LacrosChromeServiceImplNeverBlockingState::RequestCrosapiReceiver(
@@ -103,15 +99,6 @@ void LacrosChromeServiceImplNeverBlockingState::UpdateDeviceAccountPolicy(
       base::BindOnce(
           &LacrosChromeServiceImpl::UpdateDeviceAccountPolicyAffineSequence,
           owner_, policy));
-}
-
-// Unlike most of other methods of this class, this is called on the
-// affined thread. Specifically, it is intended to be called before starting
-// the message pumping of the affined thread to pass the initialization
-// parameter from ash-chrome needed for the procedure running before the
-// message pumping.
-void LacrosChromeServiceImplNeverBlockingState::WaitForInit() {
-  initialized_.Wait();
 }
 
 // Crosapi is the interface that lacros-chrome uses to message
