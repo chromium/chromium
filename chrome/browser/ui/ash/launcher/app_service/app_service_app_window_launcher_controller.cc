@@ -292,7 +292,7 @@ void AppServiceAppWindowLauncherController::OnWindowDestroying(
   // controller on window destroying. Controller will be closed onTaskDestroyed
   // event which is generated when actual task is destroyed.
   if (arc_tracker_ && arc::GetWindowTaskId(window) != arc::kNoTaskId) {
-    arc_tracker_->OnWindowDestroying(window);
+    arc_tracker_->HandleWindowDestroying(window);
     aura_window_to_app_window_.erase(window);
     return;
   }
