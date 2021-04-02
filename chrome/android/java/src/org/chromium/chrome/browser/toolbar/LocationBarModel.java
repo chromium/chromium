@@ -383,11 +383,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
             if (nonPrimaryOtrProfile != null) return nonPrimaryOtrProfile;
 
             // When in overview mode with no open tabs, there has not been created an
-            // OTR profile yet. #getOffTheRecordProfile will create a profile if none
-            // exists.
+            // OTR profile yet.
             assert lastUsedRegularProfile.hasPrimaryOTRProfile() || isInOverviewAndShowingOmnibox();
             // Return the primary OTR profile.
-            return lastUsedRegularProfile.getPrimaryOTRProfile();
+            return lastUsedRegularProfile.getPrimaryOTRProfile(/*createIfNeeded=*/true);
         }
         return lastUsedRegularProfile;
     }

@@ -225,7 +225,7 @@ public class IncognitoUtils {
         Profile incognitoProfile = getNonPrimaryOTRProfileFromWindowAndroid(windowAndroid);
         return (incognitoProfile != null)
                 ? incognitoProfile
-                : Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
+                : Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true);
     }
 
     /**
@@ -260,7 +260,7 @@ public class IncognitoUtils {
         if (otrProfileID == null) return ProfileKey.getLastUsedRegularProfileKey();
 
         return Profile.getLastUsedRegularProfile()
-                .getOffTheRecordProfile(otrProfileID)
+                .getOffTheRecordProfile(otrProfileID, /*createIfNeeded=*/true)
                 .getProfileKey();
     }
 

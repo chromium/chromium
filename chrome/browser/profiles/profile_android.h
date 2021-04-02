@@ -42,12 +42,14 @@ class ProfileAndroid : public base::SupportsUserData::Data {
   base::android::ScopedJavaLocalRef<jobject> GetOffTheRecordProfile(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& j_otr_profile_id);
+      const base::android::JavaParamRef<jobject>& j_otr_profile_id,
+      const jboolean j_create_if_needed);
 
   // Return primary OffTheRecord profile.
   base::android::ScopedJavaLocalRef<jobject> GetPrimaryOTRProfile(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
+      const base::android::JavaParamRef<jobject>& obj,
+      const jboolean j_create_if_needed);
 
   // Return whether an OffTheRecord profile with given OTRProfileID exists.
   jboolean HasOffTheRecordProfile(

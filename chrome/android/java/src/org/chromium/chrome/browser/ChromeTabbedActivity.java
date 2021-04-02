@@ -853,7 +853,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         if (IncognitoUtils.shouldDestroyIncognitoProfileOnStartup(
                     getTabModelSelector().getCurrentModel().isIncognito())) {
-            Profile.getLastUsedRegularProfile().getPrimaryOTRProfile().destroyWhenAppropriate();
+            Profile.getLastUsedRegularProfile()
+                    .getPrimaryOTRProfile(/*createIfNeeded=*/true)
+                    .destroyWhenAppropriate();
         } else {
             CookiesFetcher.restoreCookies();
         }

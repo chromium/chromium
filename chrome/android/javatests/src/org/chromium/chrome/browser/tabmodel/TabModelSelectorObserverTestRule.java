@@ -120,8 +120,9 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 NO_RESTORE_TYPE, delegate);
 
         mIncognitoTabModel = new TabModelSelectorTestIncognitoTabModel(
-                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), orderController,
-                tabContentManager, nextTabPolicySupplier, asyncTabParamsManager, delegate);
+                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true),
+                orderController, tabContentManager, nextTabPolicySupplier, asyncTabParamsManager,
+                delegate);
 
         mSelector.initialize(mNormalTabModel, mIncognitoTabModel);
     }
@@ -167,9 +168,9 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
                 TabModelOrderController orderController, TabContentManager tabContentManager,
                 NextTabPolicySupplier nextTabPolicySupplier,
                 AsyncTabParamsManager asyncTabParamsManager, TabModelDelegate modelDelegate) {
-            super(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), orderController,
-                    tabContentManager, nextTabPolicySupplier, asyncTabParamsManager,
-                    NO_RESTORE_TYPE, modelDelegate);
+            super(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true),
+                    orderController, tabContentManager, nextTabPolicySupplier,
+                    asyncTabParamsManager, NO_RESTORE_TYPE, modelDelegate);
         }
 
         @Override

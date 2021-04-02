@@ -78,7 +78,9 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         View.OnClickListener incognitoLearnMoreClickListener = v -> {
             HelpAndFeedbackLauncherImpl.getInstance().show(activity,
                     activity.getString(R.string.help_context_incognito_learn_more),
-                    Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), null);
+                    Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                            /*createIfNeeded=*/true),
+                    null);
         };
         IncognitoCookieControlsManager incognitoCookieControlsManager =
                 new IncognitoCookieControlsManager();

@@ -88,14 +88,16 @@ public class ProfileResolverTest {
 
     private Profile getPrimaryOtrProfileOnUiThread() throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(
-                () -> Profile.getLastUsedRegularProfile().getPrimaryOTRProfile());
+                ()
+                        -> Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                                /*createIfNeeded=*/true));
     }
 
     private Profile newOtrProfileOnUiThread(String profileIdPrefix) throws ExecutionException {
         return TestThreadUtils.runOnUiThreadBlocking(() -> {
             Profile regularProfile = Profile.getLastUsedRegularProfile();
             OTRProfileID otrProfileId = OTRProfileID.createUnique(profileIdPrefix);
-            return regularProfile.getOffTheRecordProfile(otrProfileId);
+            return regularProfile.getOffTheRecordProfile(otrProfileId, /*createIfNeeded=*/true);
         });
     }
 

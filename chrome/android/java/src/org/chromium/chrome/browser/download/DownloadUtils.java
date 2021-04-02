@@ -169,7 +169,8 @@ public class DownloadUtils {
         if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
             Profile profile = otrProfileID == null
                     ? Profile.getLastUsedRegularProfile()
-                    : Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
+                    : Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                            otrProfileID, /*createIfNeeded=*/true);
             Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
             tracker.notifyEvent(EventConstants.DOWNLOAD_HOME_OPENED);
         }

@@ -107,8 +107,10 @@ public class RequestCoordinatorBridgeTest {
     @Test
     @MediumTest
     public void testRequestCoordinatorBridgeDisabledInIncognitoTabbedActivity() throws Exception {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { mProfile = Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mProfile = Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                    /*createIfNeeded=*/true);
+        });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mRequestCoordinatorBridge);
     }
@@ -118,7 +120,8 @@ public class RequestCoordinatorBridgeTest {
     public void testRequestCoordinatorBridgeDisabledInIncognitoCCT() throws Exception {
         OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfile = Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
+            mProfile = Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                    otrProfileID, /*createIfNeeded=*/true);
         });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mRequestCoordinatorBridge);

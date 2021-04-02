@@ -155,7 +155,7 @@ public class LayerTitleCache implements TitleCache {
         // to get the correct profile.
         Profile profile = !tab.isIncognito()
                 ? Profile.getLastUsedRegularProfile()
-                : Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
+                : Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true);
         mFaviconHelper.getLocalFaviconImageForURL(
                 profile, tab.getUrlString(), mFaviconSize, new FaviconImageCallback() {
                     @Override

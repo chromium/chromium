@@ -76,8 +76,8 @@ public class IncognitoInterstitialDelegateTest {
     public void testOpenLearnMorePage() {
         mIncognitoInterstitialDelegate.openLearnMorePage();
         verify(mHelpAndFeedbackLauncherMock)
-                .show(mActivityMock, sIncognitoLearnMoreText, mProfileMock.getPrimaryOTRProfile(),
-                        null);
+                .show(mActivityMock, sIncognitoLearnMoreText,
+                        mProfileMock.getPrimaryOTRProfile(/*createIfNeeded=*/true), null);
     }
 
     @Test

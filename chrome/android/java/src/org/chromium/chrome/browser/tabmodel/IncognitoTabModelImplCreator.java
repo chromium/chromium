@@ -73,7 +73,8 @@ class IncognitoTabModelImplCreator implements IncognitoTabModelDelegate {
         // The |mWindowAndroidSupplier| is null only for {@link ChromeTabbedActivity} in which case
         // we should return the primary OTR profile.
         if (mWindowAndroidSupplier == null) {
-            return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile();
+            return Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                    /*createIfNeeded=*/true);
         }
 
         // The |mWindowAndroidSupplier| is not null only for {@link CustomTabActivity} where we

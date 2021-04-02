@@ -210,8 +210,9 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
     private Profile getProfile(boolean isIncognito) {
         if (!isIncognito) return Profile.getLastUsedRegularProfile();
         Profile otrProfile = IncognitoUtils.getNonPrimaryOTRProfileFromWindowAndroid(mWindow);
-        return (otrProfile == null) ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile()
-                                    : otrProfile;
+        return (otrProfile == null)
+                ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true)
+                : otrProfile;
     }
 
     private void createWebContents(Profile profile) {

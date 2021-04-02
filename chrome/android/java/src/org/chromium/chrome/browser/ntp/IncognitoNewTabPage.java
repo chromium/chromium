@@ -46,7 +46,8 @@ public class IncognitoNewTabPage
     private void showIncognitoLearnMore() {
         HelpAndFeedbackLauncherImpl.getInstance().show(mActivity,
                 mActivity.getString(R.string.help_context_incognito_learn_more),
-                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(), null);
+                Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true),
+                null);
     }
 
     /**

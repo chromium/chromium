@@ -92,14 +92,16 @@ public class WarmupManagerTest {
     private static Profile getNonPrimaryOTRProfile() {
         return TestThreadUtils.runOnUiThreadBlockingNoException((Callable<Profile>) () -> {
             OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
-            return Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
+            return Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                    otrProfileID, /*createIfNeeded=*/true);
         });
     }
 
     private static Profile getPrimaryOTRProfile() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 (Callable<Profile>) ()
-                        -> Profile.getLastUsedRegularProfile().getPrimaryOTRProfile());
+                        -> Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                                /*createIfNeeded=*/true));
     }
 
     private static Profile getRegularProfile() {

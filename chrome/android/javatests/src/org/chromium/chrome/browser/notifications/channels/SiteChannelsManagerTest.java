@@ -202,7 +202,8 @@ public class SiteChannelsManagerTest {
         PermissionInfo info = new PermissionInfo(
                 ContentSettingsType.NOTIFICATIONS, "https://example-incognito.com", null, true);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            info.setContentSetting(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(),
+            info.setContentSetting(Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                                           /*createIfNeeded=*/true),
                     ContentSettingValues.BLOCK);
         });
         assertThat(Arrays.asList(mSiteChannelsManager.getSiteChannels()), hasSize(0));
@@ -217,7 +218,8 @@ public class SiteChannelsManagerTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
             Profile nonPrimaryOTRProfile =
-                    Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileID);
+                    Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                            otrProfileID, /*createIfNeeded=*/true);
             assertNotNull(nonPrimaryOTRProfile);
             assertTrue(nonPrimaryOTRProfile.isOffTheRecord());
             info.setContentSetting(nonPrimaryOTRProfile, ContentSettingValues.BLOCK);

@@ -70,7 +70,8 @@ public class LocationBarModelUnitTest {
 
         when(mCustomTabIncognitoManagerMock.getProfile()).thenReturn(mNonPrimaryOTRProfileMock);
         when(mRegularProfileMock.hasPrimaryOTRProfile()).thenReturn(true);
-        when(mRegularProfileMock.getPrimaryOTRProfile()).thenReturn(mPrimaryOTRProfileMock);
+        when(mRegularProfileMock.getPrimaryOTRProfile(/*createIfNeeded=*/true))
+                .thenReturn(mPrimaryOTRProfileMock);
         when(mIncognitoTabMock.getWindowAndroid()).thenReturn(mWindowAndroidMock);
         when(mIncognitoTabMock.isIncognito()).thenReturn(true);
     }

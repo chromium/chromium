@@ -69,7 +69,8 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
             if (newState == ActivityState.RESUMED) {
                 Profile profile = otrProfileId == null
                         ? Profile.getLastUsedRegularProfile()
-                        : Profile.getLastUsedRegularProfile().getOffTheRecordProfile(otrProfileId);
+                        : Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                                otrProfileId, /*createIfNeeded=*/true);
                 DownloadUtils.checkForExternallyRemovedDownloads(profile.getProfileKey());
             }
         };

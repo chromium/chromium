@@ -105,7 +105,8 @@ public class CustomTabIncognitoManager implements NativeInitObserver, Destroyabl
 
     public Profile getProfile() {
         if (mOTRProfileID == null) mOTRProfileID = OTRProfileID.createUnique("CCT:Incognito");
-        return Profile.getLastUsedRegularProfile().getOffTheRecordProfile(mOTRProfileID);
+        return Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                mOTRProfileID, /*createIfNeeded=*/true);
     }
 
     @Override
@@ -119,7 +120,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, Destroyabl
     public void destroy() {
         if (mOTRProfileID != null) {
             Profile.getLastUsedRegularProfile()
-                    .getOffTheRecordProfile(mOTRProfileID)
+                    .getOffTheRecordProfile(mOTRProfileID, /*createIfNeeded=*/true)
                     .destroyWhenAppropriate();
             mOTRProfileID = null;
         }

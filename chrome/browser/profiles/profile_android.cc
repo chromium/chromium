@@ -89,20 +89,27 @@ base::android::ScopedJavaLocalRef<jobject>
 ProfileAndroid::GetOffTheRecordProfile(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& j_otr_profile_id) {
+    const JavaParamRef<jobject>& j_otr_profile_id,
+    const jboolean j_create_if_needed) {
   Profile::OTRProfileID otr_profile_id =
       Profile::OTRProfileID::ConvertFromJavaOTRProfileID(env, j_otr_profile_id);
   ProfileAndroid* otr_profile = ProfileAndroid::FromProfile(
-      profile_->GetOffTheRecordProfile(otr_profile_id));
+      profile_->GetOffTheRecordProfile(otr_profile_id, j_create_if_needed));
+  if (!j_create_if_needed && !otr_profile)
+    return nullptr;
   DCHECK(otr_profile);
   return otr_profile->GetJavaObject();
 }
 
 base::android::ScopedJavaLocalRef<jobject> ProfileAndroid::GetPrimaryOTRProfile(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  ProfileAndroid* otr_profile = ProfileAndroid::FromProfile(
-      profile_->GetOffTheRecordProfile(Profile::OTRProfileID::PrimaryID()));
+    const JavaParamRef<jobject>& obj,
+    const jboolean j_create_if_needed) {
+  ProfileAndroid* otr_profile =
+      ProfileAndroid::FromProfile(profile_->GetOffTheRecordProfile(
+          Profile::OTRProfileID::PrimaryID(), j_create_if_needed));
+  if (!j_create_if_needed && !otr_profile)
+    return nullptr;
   DCHECK(otr_profile);
   return otr_profile->GetJavaObject();
 }
