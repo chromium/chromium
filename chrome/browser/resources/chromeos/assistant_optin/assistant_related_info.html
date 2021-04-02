@@ -49,7 +49,8 @@
       [[i18nDynamic(locale, titleKey_)]]
     </h1>
     <div slot="subtitle" hidden$="[[skipActivityControl_]]"
-        inner-h-t-m-l="[[i18nAdvanced('assistantRelatedInfoMessage')]]"></div>
+        inner-h-t-m-l="[[getSubtitleMessage_(locale)]]">
+    </div>
     <div slot="subtitle" class="animation-container"
         hidden$="[[!skipActivityControl_]]">
       <webview id="assistant-animation-webview" tabindex="-1"></webview>

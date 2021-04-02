@@ -302,4 +302,11 @@ Polymer({
   getDefaultAnimationUrl_() {
     return this.urlTemplate_.replace('$', 'en_us');
   },
+
+  /**
+   * Returns the text for subtitle.
+   */
+  getSubtitleMessage_(locale) {
+    return this.i18nAdvanced('assistantRelatedInfoMessage');
+  },
 });
