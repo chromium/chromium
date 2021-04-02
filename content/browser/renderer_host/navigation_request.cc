@@ -785,6 +785,15 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
   return computed_ip_address_space;
 }
 
+// Returns true if the parent's COEP policy should block a child embedded
+// in an <iframe>.
+bool CoepBlockIframe(
+    network::mojom::CrossOriginEmbedderPolicyValue parent_coep,
+    network::mojom::CrossOriginEmbedderPolicyValue child_coep) {
+  return parent_coep != network::mojom::CrossOriginEmbedderPolicyValue::kNone &&
+         child_coep == network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+}
+
 }  // namespace
 
 // static
@@ -2759,34 +2768,34 @@ void NavigationRequest::OnResponseStarted(
     // https://mikewest.github.io/corpp/#process-navigation-response
     if (auto* const parent = GetParentFrame()) {
       const auto& parent_coep = parent->cross_origin_embedder_policy();
-      constexpr auto kRequireCorp =
-          network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
-      constexpr auto kNone =
-          network::mojom::CrossOriginEmbedderPolicyValue::kNone;
+      CrossOriginEmbedderPolicyReporter* parent_coep_reporter =
+          parent->coep_reporter();
 
       // Some special URLs not loaded using the network are inheriting the
       // Cross-Origin-Embedder-Policy header from their parent.
-      const bool has_allowed_scheme =
+      // TODO(https://crbug.com/1153648) Add COEP into the PolicyContainer and
+      // remove this fragile inheritance mechanism.
+      const bool inherit_coep_from_parent =
           url.SchemeIsBlob() || url.SchemeIs(url::kDataScheme) ||
           GetContentClient()
               ->browser()
               ->ShouldInheritCrossOriginEmbedderPolicyImplicitly(url);
-      if (parent_coep.value == kRequireCorp && has_allowed_scheme) {
-        cross_origin_embedder_policy.value = kRequireCorp;
+      if (inherit_coep_from_parent)
+        cross_origin_embedder_policy.value = parent_coep.value;
+
+      if (CoepBlockIframe(parent_coep.report_only_value,
+                          cross_origin_embedder_policy.value)) {
+        if (parent_coep_reporter) {
+          parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
+                                                      /*report_only=*/true);
+        }
       }
 
-      auto* const coep_reporter = parent->coep_reporter();
-      if (parent_coep.report_only_value == kRequireCorp &&
-          !has_allowed_scheme && cross_origin_embedder_policy.value == kNone &&
-          coep_reporter) {
-        coep_reporter->QueueNavigationReport(redirect_chain_[0],
-                                             /*report_only=*/true);
-      }
-      if (parent_coep.value == kRequireCorp &&
-          cross_origin_embedder_policy.value == kNone) {
-        if (coep_reporter) {
-          coep_reporter->QueueNavigationReport(redirect_chain_[0],
-                                               /*report_only=*/false);
+      if (CoepBlockIframe(parent_coep.value,
+                          cross_origin_embedder_policy.value)) {
+        if (parent_coep_reporter) {
+          parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
+                                                      /*report_only=*/false);
         }
         // TODO(https://crbug.com/1172169): Investigate what must be done in
         // case of a download.
