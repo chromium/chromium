@@ -146,8 +146,7 @@ void NearbyConnectionsManagerImpl::StartAdvertising(
       std::move(lifecycle_listener), std::move(callback));
 }
 
-void NearbyConnectionsManagerImpl::StopAdvertising(
-    ConnectionsCallback callback) {
+void NearbyConnectionsManagerImpl::StopAdvertising() {
   incoming_connection_listener_ = nullptr;
 
   // TODO(https://crbug.com/1177088): Determine if we should attempt to bind to
@@ -156,7 +155,12 @@ void NearbyConnectionsManagerImpl::StopAdvertising(
     return;
 
   process_reference_->GetNearbyConnections()->StopAdvertising(
-      kServiceId, std::move(callback));
+      kServiceId, base::BindOnce([](ConnectionsStatus status) {
+        NS_LOG(VERBOSE) << __func__
+                        << ": Stop advertising attempted over Nearby "
+                           "Connections with result: "
+                        << ConnectionsStatusToString(status);
+      }));
 }
 
 void NearbyConnectionsManagerImpl::StartDiscovery(

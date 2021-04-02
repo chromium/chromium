@@ -29,16 +29,13 @@ void FakeNearbyConnectionsManager::StartAdvertising(
       NearbyConnectionsManager::ConnectionsStatus::kSuccess);
 }
 
-void FakeNearbyConnectionsManager::StopAdvertising(
-    ConnectionsCallback callback) {
+void FakeNearbyConnectionsManager::StopAdvertising() {
   DCHECK(IsAdvertising());
   DCHECK(!is_shutdown());
   advertising_listener_ = nullptr;
   advertising_data_usage_ = DataUsage::kUnknown;
   advertising_power_level_ = PowerLevel::kUnknown;
   advertising_endpoint_info_.reset();
-  std::move(callback).Run(
-      NearbyConnectionsManager::ConnectionsStatus::kSuccess);
 }
 
 void FakeNearbyConnectionsManager::StartDiscovery(

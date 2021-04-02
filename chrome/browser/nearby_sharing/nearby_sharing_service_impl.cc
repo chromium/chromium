@@ -1920,21 +1920,22 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
 }
 
 void NearbySharingServiceImpl::StopAdvertising() {
+  SetInHighVisibility(false);
   if (advertising_power_level_ == PowerLevel::kUnknown) {
     NS_LOG(VERBOSE) << __func__ << ": Not currently advertising, ignoring.";
     return;
   }
 
-  nearby_connections_manager_->StopAdvertising(
-      base::BindOnce(&NearbySharingServiceImpl::OnStopAdvertisingResult,
-                     weak_ptr_factory_.GetWeakPtr()));
+  nearby_connections_manager_->StopAdvertising();
+  advertising_power_level_ = PowerLevel::kUnknown;
 
   // TODO(crbug/1147652): The call to update the advertising interval is
   // removed to prevent a Bluez crash. We need to either reduce the global
   // advertising interval asynchronously and wait for the result or use the
   // updated API referenced in the bug which allows setting a per-advertisement
   // interval.
-  NS_LOG(VERBOSE) << __func__ << ": Stop advertising requested";
+
+  NS_LOG(VERBOSE) << __func__ << ": Advertising has stopped";
 }
 
 void NearbySharingServiceImpl::StartScanning() {
@@ -3820,26 +3821,6 @@ void NearbySharingServiceImpl::OnStartAdvertisingResult(
       observer.OnStartAdvertisingFailure();
     }
   }
-}
-
-void NearbySharingServiceImpl::OnStopAdvertisingResult(
-    NearbyConnectionsManager::ConnectionsStatus status) {
-  if (status == NearbyConnectionsManager::ConnectionsStatus::kSuccess) {
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": StopAdvertising over Nearby Connections was successful.";
-  } else {
-    NS_LOG(ERROR) << __func__
-                  << ": StopAdvertising over Nearby Connections failed: "
-                  << NearbyConnectionsManager::ConnectionsStatusToString(
-                         status);
-  }
-
-  // Set power level to unknown regardless of success since in the most likely
-  // failures (e.g. advertisement not found, Bluez crash), advertising is
-  // stopped
-  advertising_power_level_ = PowerLevel::kUnknown;
-  SetInHighVisibility(false);
 }
 
 void NearbySharingServiceImpl::OnStartDiscoveryResult(

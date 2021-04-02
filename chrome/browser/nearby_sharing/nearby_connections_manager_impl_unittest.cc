@@ -1420,8 +1420,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_F(NearbyConnectionsManagerImplTest, StopAdvertising_BeforeStart) {
   EXPECT_CALL(nearby_connections_, StopAdvertising).Times(0);
-  nearby_connections_manager_.StopAdvertising(base::BindOnce(
-      [](Status status) { EXPECT_EQ(status, Status::kSuccess); }));
+  nearby_connections_manager_.StopAdvertising();
 }
 
 TEST_F(NearbyConnectionsManagerImplTest, StopAdvertising) {
@@ -1438,8 +1437,7 @@ TEST_F(NearbyConnectionsManagerImplTest, StopAdvertising) {
         std::move(callback).Run(Status::kSuccess);
         run_loop.Quit();
       });
-  nearby_connections_manager_.StopAdvertising(base::BindOnce(
-      [](Status status) { EXPECT_EQ(status, Status::kSuccess); }));
+  nearby_connections_manager_.StopAdvertising();
   run_loop.Run();
 }
 
