@@ -1226,7 +1226,16 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Notifies the render frame that |frame_tree_node_| has had the sticky
   // user activation bit set for the first time.
+  // This is called both for the actual frame that saw user activation and any
+  // ancestor frames that might also be activated as part of UserActivationV2
+  // requirements.
   void DidReceiveFirstUserActivation();
+
+  // Apply any isolation policies, such as site isolation triggered by COOP
+  // headers, that might be triggered when a particular frame has just seen a
+  // user activation. Called whenever this frame sees a user activation (which
+  // may or may not be the first activation in this frame).
+  void MaybeIsolateForUserActivation();
 
   // Returns the current size for this frame.
   const base::Optional<gfx::Size>& frame_size() const { return frame_size_; }

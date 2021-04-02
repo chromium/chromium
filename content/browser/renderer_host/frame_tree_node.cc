@@ -638,12 +638,16 @@ void FrameTreeNode::BeforeUnloadCanceled() {
 
 bool FrameTreeNode::NotifyUserActivation(
     blink::mojom::UserActivationNotificationType notification_type) {
+  // User Activation V2 requires activating all ancestor frames in addition to
+  // the current frame. See
+  // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation.
   for (RenderFrameHostImpl* rfh = current_frame_host(); rfh;
        rfh = rfh->GetParent()) {
     if (!rfh->frame_tree_node()->user_activation_state_.HasBeenActive())
       rfh->DidReceiveFirstUserActivation();
     rfh->frame_tree_node()->user_activation_state_.Activate(notification_type);
   }
+
   replication_state_->has_active_user_gesture = true;
 
   // See the "Same-origin Visibility" section in |UserActivationState| class
@@ -661,6 +665,7 @@ bool FrameTreeNode::NotifyUserActivation(
   }
 
   navigator().controller().NotifyUserActivation();
+  current_frame_host()->MaybeIsolateForUserActivation();
 
   return true;
 }

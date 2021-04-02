@@ -4965,6 +4965,38 @@ void RenderFrameHostImpl::DidReceiveFirstUserActivation() {
   delegate_->DidReceiveFirstUserActivation(this);
 }
 
+void RenderFrameHostImpl::MaybeIsolateForUserActivation() {
+  // If user activation occurs in a frame that previously triggered a site
+  // isolation hint based on the Cross-Origin-Opener-Policy header, isolate the
+  // corresponding site for all future BrowsingInstances.  We also do this for
+  // user activation on any same-origin subframe of such COOP main frames.
+  //
+  // Note that without user activation, COOP-triggered site isolation is scoped
+  // only to the current BrowsingInstance.  This prevents malicious sites from
+  // silently loading COOP sites to put them on the isolation list and later
+  // querying that state.
+  if (GetMainFrame()
+          ->GetSiteInstance()
+          ->GetSiteInfo()
+          .does_site_request_dedicated_process_for_coop()) {
+    // The SiteInfo flag above should guarantee that we've already passed all
+    // the isolation eligibility checks, such as having the corresponding
+    // feature enabled or satisfying memory requirements.
+    DCHECK(base::FeatureList::IsEnabled(
+        features::kSiteIsolationForCrossOriginOpenerPolicy));
+
+    bool is_same_origin_activation =
+        GetParent() ? GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
+                          GetLastCommittedOrigin())
+                    : true;
+    if (is_same_origin_activation) {
+      SiteInstanceImpl::StartIsolatingSite(
+          GetSiteInstance()->GetBrowserContext(),
+          GetMainFrame()->GetLastCommittedURL(), false /* should_persist */);
+    }
+  }
+}
+
 void RenderFrameHostImpl::UpdateUserActivationState(
     blink::mojom::UserActivationUpdateType update_type,
     blink::mojom::UserActivationNotificationType notification_type) {

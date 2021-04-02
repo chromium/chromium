@@ -1772,6 +1772,13 @@ bool SiteInstanceImpl::IsCoopCoepCrossOriginIsolated() const {
 // static
 void SiteInstance::StartIsolatingSite(BrowserContext* context,
                                       const GURL& url) {
+  SiteInstanceImpl::StartIsolatingSite(context, url, true /* should_persist */);
+}
+
+// static
+void SiteInstanceImpl::StartIsolatingSite(BrowserContext* context,
+                                          const GURL& url,
+                                          bool should_persist) {
   if (!SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled())
     return;
 
@@ -1798,7 +1805,7 @@ void SiteInstance::StartIsolatingSite(BrowserContext* context,
   // This function currently assumes the new isolated site should persist
   // across restarts, so ask the embedder to save it, excluding off-the-record
   // profiles.
-  if (!context->IsOffTheRecord())
+  if (!context->IsOffTheRecord() && should_persist)
     GetContentClient()->browser()->PersistIsolatedOrigin(context, site_origin);
 }
 

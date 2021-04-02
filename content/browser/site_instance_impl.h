@@ -772,6 +772,14 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   // CoopCoepCrossOriginIsolatedInfo of this BrowsingInstance.
   bool IsCoopCoepCrossOriginIsolated() const;
 
+  // Internal version of the public SiteInstance::StartIsolatingSite() which
+  // allows controlling whether the new isolated site should be persisted
+  // across restarts.  See comments on SiteInstance::StartIsolatingSite() for
+  // more info.
+  static void StartIsolatingSite(BrowserContext* context,
+                                 const GURL& url,
+                                 bool should_persist);
+
  private:
   friend class BrowsingInstance;
   friend class SiteInstanceTestBrowserClient;

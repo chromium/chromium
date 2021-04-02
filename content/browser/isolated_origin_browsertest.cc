@@ -4905,10 +4905,11 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOrigin) {
 
   // Check that a cross-site subframe in a non-isolated site becomes an OOPIF
   // in a new, non-isolated SiteInstance.
-  ASSERT_TRUE(ExecuteScript(shell(),
-                            "var iframe = document.createElement('iframe');"
-                            "iframe.id = 'child';"
-                            "document.body.appendChild(iframe);"));
+  ASSERT_TRUE(ExecuteScriptWithoutUserGesture(
+      shell(),
+      "var iframe = document.createElement('iframe');"
+      "iframe.id = 'child';"
+      "document.body.appendChild(iframe);"));
   FrameTreeNode* root = web_contents()->GetFrameTree()->root();
   FrameTreeNode* child = root->child_at(0);
   GURL c_url(https_server()->GetURL("c.com", "/title1.html"));
@@ -5250,6 +5251,202 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SiteAlreadyRequiresDedicatedProcess) {
   EXPECT_FALSE(policy->IsIsolatedOrigin(coop_instance->GetIsolationContext(),
                                         url::Origin::Create(coop_url),
                                         false /* origin_requests_isolation */));
+}
+
+// Verify that seeing a user activation on a COOP document triggers isolation
+// of that document's site in future BrowsingInstances, but doesn't affect any
+// existing BrowsingInstances.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivation) {
+  GURL coop_url = https_server()->GetURL(
+      "b.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
+  FrameTreeNode* coop_root = web_contents()->GetFrameTree()->root();
+  SiteInstance* coop_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  // The b.com COOP page should trigger the isolation heuristic and require a
+  // dedicated process locked to b.com.
+  EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
+
+  // At this point, the COOP page shouldn't have user activation.
+  EXPECT_FALSE(coop_root->HasTransientUserActivation());
+
+  // Create a new window, forcing a new BrowsingInstance, and check that b.com
+  // is *not* isolated in it.  Since b.com in `coop_instance`'s
+  // BrowsingInstance hasn't been interacted with, the COOP isolation does not
+  // apply to other BrowsingInstances yet.
+  Shell* shell2 = CreateBrowser();
+  GURL no_coop_b_url = https_server()->GetURL("b.com", "/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell2, no_coop_b_url));
+  FrameTreeNode* shell2_root =
+      static_cast<WebContentsImpl*>(shell2->web_contents())
+          ->GetFrameTree()
+          ->root();
+  scoped_refptr<SiteInstance> instance2 =
+      shell2->web_contents()->GetMainFrame()->GetSiteInstance();
+  EXPECT_FALSE(instance2->RequiresDedicatedProcess());
+
+  // Simulate a user activation in the original COOP page by running a dummy
+  // script (ExecuteScript sends user activation by default).
+  EXPECT_TRUE(ExecuteScript(coop_root, "// no-op"));
+  EXPECT_TRUE(coop_root->HasTransientUserActivation());
+
+  // Create a third window in a new BrowsingInstance and navigate it to a
+  // non-COOP b.com URL. The above user activation should've forced COOP
+  // isolation for b.com to apply to future BrowsingInstances, so check that
+  // this navigation ends up requiring a dedicated process.
+  Shell* shell3 = CreateBrowser();
+  EXPECT_TRUE(NavigateToURL(shell3, no_coop_b_url));
+  SiteInstance* instance3 =
+      shell3->web_contents()->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(instance3->RequiresDedicatedProcess());
+  EXPECT_FALSE(instance2->IsRelatedSiteInstance(instance3));
+  EXPECT_FALSE(coop_instance->IsRelatedSiteInstance(instance3));
+
+  // Ensure that the older BrowsingInstance in the second window wasn't
+  // affected by the new isolation. Adding a b.com subframe or popup should
+  // stay in the same SiteInstance. Navigating the popup out from and back to
+  // b.com should also end up on the same SiteInstance.
+  ASSERT_TRUE(ExecuteScriptWithoutUserGesture(
+      shell2,
+      "var iframe = document.createElement('iframe');"
+      "iframe.id = 'child';"
+      "document.body.appendChild(iframe);"));
+  FrameTreeNode* child = shell2_root->child_at(0);
+  GURL another_b_url(https_server()->GetURL("b.com", "/title3.html"));
+  EXPECT_TRUE(
+      NavigateIframeToURL(shell2->web_contents(), "child", another_b_url));
+  SiteInstanceImpl* child_instance =
+      child->current_frame_host()->GetSiteInstance();
+  EXPECT_EQ(child_instance, instance2);
+
+  Shell* popup = OpenPopup(shell2, another_b_url, "");
+  FrameTreeNode* popup_root =
+      static_cast<WebContentsImpl*>(popup->web_contents())
+          ->GetFrameTree()
+          ->root();
+  EXPECT_EQ(popup_root->current_frame_host()->GetSiteInstance(), instance2);
+
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      popup, https_server()->GetURL("c.com", "/title1.html")));
+  EXPECT_TRUE(NavigateToURLFromRenderer(popup, another_b_url));
+  EXPECT_EQ(popup_root->current_frame_host()->GetSiteInstance(), instance2);
+
+  // Close the popup.
+  popup->Close();
+
+  // Without any related windows, navigating to b.com in the second window's
+  // main frame should trigger a proactive BrowsingInstance swap (see
+  // ShouldSwapBrowsingInstancesForDynamicIsolation()), since we notice that
+  // b.com would be isolated in a fresh BrowsingInstance, and nothing prevents
+  // the BrowsingInstance swap. Hence, in that case, the navigation should be
+  // in a new BrowsingInstance and in an isolated process.
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      shell2, https_server()->GetURL("b.com", "/title3.html")));
+  scoped_refptr<SiteInstance> instance2_new =
+      shell2->web_contents()->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(instance2_new->RequiresDedicatedProcess());
+  EXPECT_NE(instance2_new, instance2);
+  EXPECT_FALSE(instance2_new->IsRelatedSiteInstance(instance2.get()));
+}
+
+// Similar to the test above, but verify that a user activation on a same-site
+// subframe also triggers isolation of a COOP site in the main frame for future
+// BrowsingInstances.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivationInSubframe) {
+  GURL coop_url = https_server()->GetURL(
+      "b.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
+  SiteInstance* coop_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
+
+  // Add a cross-site subframe.
+  ASSERT_TRUE(ExecuteScriptWithoutUserGesture(
+      shell(),
+      "var iframe = document.createElement('iframe');"
+      "iframe.id = 'child';"
+      "document.body.appendChild(iframe);"));
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child = root->child_at(0);
+  GURL c_url(https_server()->GetURL("c.com", "/title1.html"));
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child", c_url));
+
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  EXPECT_FALSE(child->HasTransientUserActivation());
+
+  // Simulate a user activation in the subframe by running a dummy script.
+  EXPECT_TRUE(ExecuteScript(child, "// no-op"));
+  EXPECT_TRUE(child->HasTransientUserActivation());
+
+  // Since the iframe is cross-origin, it shouldn't trigger isolation of b.com
+  // for future BrowsingInstances.
+  GURL no_coop_b_url = https_server()->GetURL("b.com", "/title2.html");
+  {
+    Shell* new_shell = CreateBrowser();
+    EXPECT_TRUE(NavigateToURL(new_shell, no_coop_b_url));
+    scoped_refptr<SiteInstance> instance =
+        new_shell->web_contents()->GetMainFrame()->GetSiteInstance();
+    EXPECT_FALSE(instance->RequiresDedicatedProcess());
+  }
+
+  // Now, make the iframe same-origin and simulate a user gesture.
+  GURL b_url(https_server()->GetURL("b.com", "/title1.html"));
+  EXPECT_TRUE(NavigateIframeToURL(web_contents(), "child", b_url));
+
+  EXPECT_TRUE(ExecuteScript(child, "// no-op"));
+
+  // Ensure that b.com is now isolated in a new tab and BrowsingInstance.
+  {
+    Shell* new_shell = CreateBrowser();
+    EXPECT_TRUE(NavigateToURL(new_shell, no_coop_b_url));
+    scoped_refptr<SiteInstance> instance =
+        new_shell->web_contents()->GetMainFrame()->GetSiteInstance();
+    EXPECT_TRUE(instance->RequiresDedicatedProcess());
+  }
+}
+
+// Similar to the test above, but verify that a user activation on a
+// same-origin about:blank subframe triggers isolation of a COOP site in the
+// main frame for future BrowsingInstances.
+IN_PROC_BROWSER_TEST_F(COOPIsolationTest, UserActivationInAboutBlankSubframe) {
+  GURL coop_url = https_server()->GetURL(
+      "b.com", "/set-header?Cross-Origin-Opener-Policy: same-origin");
+  EXPECT_TRUE(NavigateToURL(shell(), coop_url));
+  EXPECT_EQ(web_contents()->GetMainFrame()->cross_origin_opener_policy().value,
+            network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin);
+  SiteInstance* coop_instance =
+      web_contents()->GetMainFrame()->GetSiteInstance();
+  EXPECT_TRUE(coop_instance->RequiresDedicatedProcess());
+
+  // Add a cross-site blank subframe.
+  ASSERT_TRUE(ExecuteScriptWithoutUserGesture(
+      shell(),
+      "var iframe = document.createElement('iframe');"
+      "iframe.id = 'child';"
+      "document.body.appendChild(iframe);"));
+  FrameTreeNode* root = web_contents()->GetFrameTree()->root();
+  FrameTreeNode* child = root->child_at(0);
+
+  EXPECT_FALSE(root->HasTransientUserActivation());
+  EXPECT_FALSE(child->HasTransientUserActivation());
+
+  // Simulate a user activation in the subframe by running a dummy script.
+  EXPECT_TRUE(ExecuteScript(child, "// no-op"));
+  EXPECT_TRUE(child->HasTransientUserActivation());
+
+  // Ensure that b.com is isolated in a new tab and BrowsingInstance.
+  {
+    Shell* new_shell = CreateBrowser();
+    GURL no_coop_b_url = https_server()->GetURL("b.com", "/title2.html");
+    EXPECT_TRUE(NavigateToURL(new_shell, no_coop_b_url));
+    scoped_refptr<SiteInstance> instance =
+        new_shell->web_contents()->GetMainFrame()->GetSiteInstance();
+    EXPECT_TRUE(instance->RequiresDedicatedProcess());
+  }
 }
 
 }  // namespace content
