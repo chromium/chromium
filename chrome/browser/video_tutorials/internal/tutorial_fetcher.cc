@@ -68,6 +68,8 @@ class TutorialFetcherImpl : public TutorialFetcher {
   // TutorialFetcher implementation.
   void StartFetchForTutorials(FinishedCallback callback) override {
     auto resource_request = BuildGetRequest();
+    if (!resource_request)
+      return;
     url_loader_ = network::SimpleURLLoader::Create(
         std::move(resource_request), kVideoTutorialFetcherTrafficAnnotation);
     url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
@@ -78,6 +80,8 @@ class TutorialFetcherImpl : public TutorialFetcher {
 
   // Build the request to get tutorial info.
   std::unique_ptr<network::ResourceRequest> BuildGetRequest() {
+    if (url_.is_empty() && g_override_url_for_testing.Get().is_empty())
+      return nullptr;
     auto request = std::make_unique<network::ResourceRequest>();
     request->method = net::HttpRequestHeaders::kGetMethod;
     request->headers.SetHeader("x-goog-api-key", api_key_);

@@ -9,10 +9,6 @@
 #include "chrome/browser/video_tutorials/switches.h"
 
 namespace video_tutorials {
-
-// Default base URL string for the server.
-constexpr char kDefaultBaseURL[] = "https://chromeupboarding-pa.googleapis.com";
-
 // Default URL string for GetTutorials RPC.
 constexpr char kDefaultGetTutorialsPath[] = "/v1/videotutorials";
 
@@ -41,12 +37,16 @@ const GURL BuildGetTutorialsEndpoint(const GURL& base_url, const char* path) {
 }  // namespace
 
 // static
-GURL Config::GetTutorialsServerURL() {
+GURL Config::GetTutorialsServerURL(const std::string& default_server_url) {
   std::string base_url_from_finch = base::GetFieldTrialParamValueByFeature(
       features::kVideoTutorials, kBaseURLKey);
-  GURL server_url = base_url_from_finch.empty() ? GURL(kDefaultBaseURL)
-                                                : GURL(base_url_from_finch);
-  return BuildGetTutorialsEndpoint(server_url, kDefaultGetTutorialsPath);
+  if (!base_url_from_finch.empty())
+    return BuildGetTutorialsEndpoint(GURL(base_url_from_finch),
+                                     kDefaultGetTutorialsPath);
+  return default_server_url.empty()
+             ? GURL()
+             : BuildGetTutorialsEndpoint(GURL(default_server_url),
+                                         kDefaultGetTutorialsPath);
 }
 
 // static

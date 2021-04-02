@@ -33,6 +33,7 @@ std::unique_ptr<VideoTutorialService> CreateVideoTutorialService(
     const std::string& api_key,
     const std::string& client_version,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& default_server_url,
     PrefService* pref_service);
 
 }  // namespace video_tutorials

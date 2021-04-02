@@ -33,6 +33,7 @@ std::unique_ptr<VideoTutorialService> CreateVideoTutorialService(
     const std::string& api_key,
     const std::string& client_version,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& default_server_url,
     PrefService* pref_service) {
   // Create tutorial store and manager.
   auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -49,8 +50,9 @@ std::unique_ptr<VideoTutorialService> CreateVideoTutorialService(
 
   // Create fetcher.
   auto fetcher = TutorialFetcher::Create(
-      Config::GetTutorialsServerURL(), country_code, accepted_language, api_key,
-      Config::GetExperimentTag(), client_version, url_loader_factory);
+      Config::GetTutorialsServerURL(default_server_url), country_code,
+      accepted_language, api_key, Config::GetExperimentTag(), client_version,
+      url_loader_factory);
 
   auto tutorial_service_impl = std::make_unique<TutorialServiceImpl>(
       std::move(tutorial_manager), std::move(fetcher), pref_service);
