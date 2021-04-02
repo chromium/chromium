@@ -20,8 +20,10 @@ import org.chromium.components.signin.base.CoreAccountId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * Android wrapper of AccountTrackerService which provides access from the java layer.
@@ -46,7 +48,7 @@ public class AccountTrackerService {
     }
 
     private final long mNativeAccountTrackerService;
-    private final List<Runnable> mRunnablesWaitingForAccountsSeeding = new ArrayList<>();
+    private final Queue<Runnable> mRunnablesWaitingForAccountsSeeding = new ArrayDeque<>();
     private @AccountsSeedingStatus int mAccountsSeedingStatus;
     private Callback<CoreAccountId> mOnAccountSeededListener;
     private AccountsChangeObserver mAccountsChangeObserver;
@@ -79,37 +81,61 @@ public class AccountTrackerService {
         if (mAccountsSeedingStatus == AccountsSeedingStatus.DONE) {
             return true;
         }
-        seedAccounts();
+        if (mAccountsSeedingStatus == AccountsSeedingStatus.NOT_STARTED) {
+            seedAccounts();
+        }
         return false;
     }
 
     /**
-     * Seeds the accounts if they are not seeded yet.
+     * Seeds the accounts only if they are not seeded yet.
      * The given runnable will run after the accounts are seeded. If the accounts
      * are already seeded, the runnable will be executed immediately.
      */
     public void seedAccountsIfNeeded(Runnable onAccountsSeeded) {
         ThreadUtils.assertOnUiThread();
-        if (mAccountsSeedingStatus == AccountsSeedingStatus.DONE) {
-            onAccountsSeeded.run();
-            return;
+        switch (mAccountsSeedingStatus) {
+            case AccountsSeedingStatus.NOT_STARTED:
+                mRunnablesWaitingForAccountsSeeding.add(onAccountsSeeded);
+                seedAccounts();
+                break;
+            case AccountsSeedingStatus.IN_PROGRESS:
+                mRunnablesWaitingForAccountsSeeding.add(onAccountsSeeded);
+                break;
+            case AccountsSeedingStatus.DONE:
+                onAccountsSeeded.run();
+                break;
         }
-        mRunnablesWaitingForAccountsSeeding.add(onAccountsSeeded);
-        seedAccounts();
     }
 
-    public void seedAccounts() {
+    /**
+     * Implements {@link AccountsChangeObserver}.
+     * This is invoked when accounts change on device. When there is already a seeding in
+     * progress, the {@link #seedAccounts()} task will be added to the pending task list so
+     * that we will seed the accounts again in the end of the current seeding to avoid
+     * the race condition.
+     */
+    public void onAccountsChanged() {
+        if (mAccountsSeedingStatus == AccountsSeedingStatus.IN_PROGRESS) {
+            mRunnablesWaitingForAccountsSeeding.add(this::seedAccounts);
+        } else {
+            seedAccounts();
+        }
+    }
+
+    private void seedAccounts() {
         ThreadUtils.assertOnUiThread();
         final AccountManagerFacade accountManagerFacade =
                 AccountManagerFacadeProvider.getInstance();
-        if (!accountManagerFacade.isGooglePlayServicesAvailable()
-                || mAccountsSeedingStatus == AccountsSeedingStatus.IN_PROGRESS) {
+        if (!accountManagerFacade.isGooglePlayServicesAvailable()) {
             return;
         }
+        assert mAccountsSeedingStatus
+                != AccountsSeedingStatus.IN_PROGRESS : "There is already a seeding in progress!";
         mAccountsSeedingStatus = AccountsSeedingStatus.IN_PROGRESS;
 
         if (mAccountsChangeObserver == null) {
-            mAccountsChangeObserver = this::seedAccounts;
+            mAccountsChangeObserver = this::onAccountsChanged;
             accountManagerFacade.addObserver(mAccountsChangeObserver);
         }
 
@@ -150,10 +176,11 @@ public class AccountTrackerService {
         AccountTrackerServiceJni.get().seedAccountsInfo(mNativeAccountTrackerService,
                 gaiaIds.toArray(new String[0]), emails.toArray(new String[0]));
         mAccountsSeedingStatus = AccountsSeedingStatus.DONE;
-        for (Runnable runnable : mRunnablesWaitingForAccountsSeeding) {
+
+        while (!mRunnablesWaitingForAccountsSeeding.isEmpty()) {
+            Runnable runnable = mRunnablesWaitingForAccountsSeeding.remove();
             runnable.run();
         }
-        mRunnablesWaitingForAccountsSeeding.clear();
 
         if (mOnAccountSeededListener != null) {
             for (String gaiaId : gaiaIds) {

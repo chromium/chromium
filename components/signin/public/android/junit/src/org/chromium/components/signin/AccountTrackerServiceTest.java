@@ -42,6 +42,7 @@ import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -119,6 +120,31 @@ public class AccountTrackerServiceTest {
     }
 
     @Test
+    public void testSeedAccountsIfNeededWhenSeedingIsInProgress() {
+        final AtomicBoolean isInvoked = new AtomicBoolean(false);
+        doAnswer(invocation -> {
+            if (!isInvoked.getAndSet(true)) {
+                mService.seedAccountsIfNeeded(mRunnableMock);
+            }
+            return toGaiaId(invocation.getArgument(0));
+        })
+                .when(mFakeAccountManagerFacade)
+                .getAccountGaiaId(anyString());
+        verify(mNativeMock, never()).seedAccountsInfo(anyLong(), any(), any());
+
+        mService.seedAccountsIfNeeded(() -> {});
+
+        verify(mNativeMock)
+                .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), mGaiaIdsCaptor.capture(),
+                        mEmailsCaptor.capture());
+        Assert.assertArrayEquals(
+                new String[] {mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL)},
+                mGaiaIdsCaptor.getValue());
+        Assert.assertArrayEquals(new String[] {ACCOUNT_EMAIL}, mEmailsCaptor.getValue());
+        verify(mRunnableMock).run();
+    }
+
+    @Test
     public void testSeedAccountsIfNeededAfterAccountsAreSeeded() {
         mService.seedAccountsIfNeeded(() -> {});
 
@@ -146,6 +172,46 @@ public class AccountTrackerServiceTest {
 
         verify(mNativeMock, times(2))
                 .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), any(), any());
+    }
+
+    /**
+     * This test reproduces the bug crbug/1193890 caused by the race condition without the fix.
+     */
+    @Test
+    public void testAddingAccountTriggersSeedingWhenAnotherSeedingIsInProgress() {
+        final Account newAccount = AccountUtils.createAccountFromName("test2@gmail.com");
+        final AtomicBoolean isNewAccountAdded = new AtomicBoolean(false);
+        doAnswer(invocation -> {
+            final String email = invocation.getArgument(0);
+            if (ACCOUNT_EMAIL.equals(email) && !isNewAccountAdded.getAndSet(true)) {
+                // Add the new account when the old account fetches the gaia ID to
+                // simulate the race condition.
+                mFakeAccountManagerFacade.addAccount(newAccount);
+            }
+            return toGaiaId(email);
+        })
+                .when(mFakeAccountManagerFacade)
+                .getAccountGaiaId(anyString());
+        verify(mNativeMock, never()).seedAccountsInfo(anyLong(), any(), any());
+
+        mService.seedAccountsIfNeeded(() -> {});
+
+        verify(mNativeMock, times(2))
+                .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), mGaiaIdsCaptor.capture(),
+                        mEmailsCaptor.capture());
+        Assert.assertArrayEquals(
+                "seedAccountsInfo() should be invoked with the old account alone in the"
+                        + " first call.",
+                new String[] {toGaiaId(ACCOUNT_EMAIL)}, mGaiaIdsCaptor.getAllValues().get(0));
+        Assert.assertArrayEquals(new String[] {ACCOUNT_EMAIL}, mEmailsCaptor.getAllValues().get(0));
+
+        Assert.assertArrayEquals(
+                "seedAccountsInfo() should be invoked with the old account and the new account"
+                        + " together in the second call.",
+                new String[] {toGaiaId(ACCOUNT_EMAIL), toGaiaId(newAccount.name)},
+                mGaiaIdsCaptor.getAllValues().get(1));
+        Assert.assertArrayEquals(
+                new String[] {ACCOUNT_EMAIL, newAccount.name}, mEmailsCaptor.getAllValues().get(1));
     }
 
     @Test
@@ -200,5 +266,9 @@ public class AccountTrackerServiceTest {
         final CoreAccountId accountId =
                 new CoreAccountId(mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL));
         verify(mCallbackMock).onResult(accountId);
+    }
+
+    private static String toGaiaId(String email) {
+        return "gaia-id-" + email.replace("@", "_at_");
     }
 }

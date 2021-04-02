@@ -48,7 +48,7 @@ public class AccountsChangedReceiver extends BroadcastReceiver {
                     AccountTrackerService trackerService =
                             IdentityServicesProvider.get().getAccountTrackerService(
                                     Profile.getLastUsedRegularProfile());
-                    trackerService.seedAccounts();
+                    trackerService.onAccountsChanged();
                     SigninHelperProvider.get().validateAccountSettings();
                 });
             }

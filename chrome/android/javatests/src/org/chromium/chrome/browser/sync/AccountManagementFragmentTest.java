@@ -31,7 +31,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -120,7 +119,6 @@ public class AccountManagementFragmentTest {
     @MediumTest
     @Feature("RenderTest")
     @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    @DisabledTest(message = "crbug.com/1193890")
     public void testSignedInAccountShownOnTop() throws Exception {
         mAccountManagerTestRule.addAccount("testSecondary@gmail.com");
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
