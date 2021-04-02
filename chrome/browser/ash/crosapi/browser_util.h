@@ -33,6 +33,10 @@ namespace version_info {
 enum class Channel;
 }  // namespace version_info
 
+namespace user_manager {
+class User;
+}  // namespace user_manager
+
 // These methods are used by ash-chrome.
 namespace crosapi {
 namespace browser_util {
@@ -54,15 +58,19 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // Returns the user directory for lacros-chrome.
 base::FilePath GetUserDataDir();
 
-// Returns true if the Lacros feature is allowed to be enabled. This checks
-// current user type, chrome channel and enterprise policy.
+// Returns true if the Lacros feature is allowed to be enabled for primary user.
+// This checks user type, chrome channel and enterprise policy.
 bool IsLacrosAllowedToBeEnabled(version_info::Channel channel);
 
-// Returns true if the Lacros feature is enabled.
+// Returns true if the Lacros feature is enabled for the primary user.
 bool IsLacrosEnabled();
 
 // As above, but takes a channel. Exposed for testing.
 bool IsLacrosEnabled(version_info::Channel channel);
+
+// As above, but takes a user. It can be called before primary user is set by
+// UserManager.
+bool IsLacrosEnabledWithUser(const user_manager::User* user);
 
 // Forces IsLacrosEnabled() to return true for testing.
 void SetLacrosEnabledForTest(bool force_enabled);

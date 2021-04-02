@@ -76,6 +76,41 @@ bool IsUserTypeAllowed(const User* user) {
   }
 }
 
+// Gets called from IsLacrosAllowedToBeEnabled with primary user or from
+// IsLacrosEnabledWithUser with the user that the IsLacrosEnabledWithUser was
+// passed.
+bool IsLacrosAllowedToBeEnabledWithUser(const User* user, Channel channel) {
+  if (g_lacros_enabled_for_test)
+    return true;
+
+  if (!IsUserTypeAllowed(user)) {
+    LOG(WARNING) << "Current user type not allowed to launch lacros-chrome";
+    return false;
+  }
+
+  // TODO(https://crbug.com/1135494): Remove the free ticket for
+  // Channel::UNKNOWN after the policy is set on server side for developers.
+  if (channel == Channel::UNKNOWN)
+    return true;
+
+  if (!g_browser_process->local_state()->GetBoolean(prefs::kLacrosAllowed)) {
+    LOG(WARNING) << "Lacros-chrome is not allowed by policy";
+    return false;
+  }
+
+  switch (channel) {
+    case Channel::UNKNOWN:
+    case Channel::CANARY:
+    case Channel::DEV:
+    case Channel::BETA:
+      // Canary/dev/beta builds can use Lacros.
+      // Developer builds can use lacros.
+      return true;
+    case Channel::STABLE:
+      return base::FeatureList::IsEnabled(kLacrosAllowOnStableChannel);
+  }
+}
+
 // Returns the vector containing policy data of the device account. In case of
 // an error, returns nullopt.
 base::Optional<std::vector<uint8_t>> GetDeviceAccountPolicy(
@@ -188,6 +223,7 @@ bool IsLacrosAllowedToBeEnabled(Channel channel) {
   if (g_lacros_enabled_for_test)
     return true;
 
+  // GetPrimaryUser works only after user session is started.
   const User* user = user_manager::UserManager::Get()->GetPrimaryUser();
   if (!user) {
     LOG(WARNING)
@@ -195,32 +231,7 @@ bool IsLacrosAllowedToBeEnabled(Channel channel) {
     return false;
   }
 
-  if (!IsUserTypeAllowed(user)) {
-    LOG(WARNING) << "Current user type not allowed to launch lacros-chrome";
-    return false;
-  }
-
-  // TODO(https://crbug.com/1135494): Remove the free ticket for
-  // Channel::UNKNOWN after the policy is set on server side for developers.
-  if (channel == Channel::UNKNOWN)
-    return true;
-
-  if (!g_browser_process->local_state()->GetBoolean(prefs::kLacrosAllowed)) {
-    LOG(WARNING) << "Lacros-chrome is not allowed by policy";
-    return false;
-  }
-
-  switch (channel) {
-    case Channel::UNKNOWN:
-    case Channel::CANARY:
-    case Channel::DEV:
-    case Channel::BETA:
-      // Canary/dev/beta builds can use Lacros.
-      // Developer builds can use lacros.
-      return true;
-    case Channel::STABLE:
-      return base::FeatureList::IsEnabled(kLacrosAllowOnStableChannel);
-  }
+  return IsLacrosAllowedToBeEnabledWithUser(user, channel);
 }
 
 bool IsLacrosEnabled() {
@@ -234,6 +245,16 @@ bool IsLacrosEnabled(Channel channel) {
     return true;
 
   if (!IsLacrosAllowedToBeEnabled(channel))
+    return false;
+
+  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
+}
+
+bool IsLacrosEnabledWithUser(const User* user) {
+  if (g_lacros_enabled_for_test)
+    return true;
+
+  if (!IsLacrosAllowedToBeEnabledWithUser(user, chrome::GetChannel()))
     return false;
 
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
