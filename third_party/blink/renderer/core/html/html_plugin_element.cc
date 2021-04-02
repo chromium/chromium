@@ -114,20 +114,16 @@ void PluginParameters::MapDataParamToSrc() {
   }
 }
 
-HTMLPlugInElement::HTMLPlugInElement(
-    const QualifiedName& tag_name,
-    Document& doc,
-    const CreateElementFlags flags,
-    PreferPlugInsForImagesOption prefer_plug_ins_for_images_option)
+HTMLPlugInElement::HTMLPlugInElement(const QualifiedName& tag_name,
+                                     Document& doc,
+                                     const CreateElementFlags flags)
     : HTMLFrameOwnerElement(tag_name, doc),
       is_delaying_load_event_(false),
       // needs_plugin_update_(!IsCreatedByParser) allows HTMLObjectElement to
       // delay EmbeddedContentView updates until after all children are
       // parsed. For HTMLEmbedElement this delay is unnecessary, but it is
       // simpler to make both classes share the same codepath in this class.
-      needs_plugin_update_(!flags.IsCreatedByParser()),
-      should_prefer_plug_ins_for_images_(prefer_plug_ins_for_images_option ==
-                                         kShouldPreferPlugInsForImages) {
+      needs_plugin_update_(!flags.IsCreatedByParser()) {
   SetHasCustomStyleCallbacks();
   if (auto* context = doc.GetExecutionContext()) {
     context->GetScheduler()->RegisterStickyFeature(
@@ -545,9 +541,8 @@ HTMLPlugInElement::ObjectContentType HTMLPlugInElement::GetObjectContentType()
   }
 
   if (MIMETypeRegistry::IsSupportedImageMIMEType(mime_type)) {
-    return should_prefer_plug_ins_for_images_ && plugin_supports_mime_type
-               ? ObjectContentType::kPlugin
-               : ObjectContentType::kImage;
+    return plugin_supports_mime_type ? ObjectContentType::kPlugin
+                                     : ObjectContentType::kImage;
   }
 
   if (plugin_supports_mime_type)

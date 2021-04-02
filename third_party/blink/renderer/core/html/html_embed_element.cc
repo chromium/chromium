@@ -43,10 +43,7 @@ namespace blink {
 
 HTMLEmbedElement::HTMLEmbedElement(Document& document,
                                    const CreateElementFlags flags)
-    : HTMLPlugInElement(html_names::kEmbedTag,
-                        document,
-                        flags,
-                        kShouldPreferPlugInsForImages) {
+    : HTMLPlugInElement(html_names::kEmbedTag, document, flags) {
   EnsureUserAgentShadowRoot();
 }
 

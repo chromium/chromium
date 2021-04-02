@@ -47,10 +47,7 @@ namespace blink {
 
 HTMLObjectElement::HTMLObjectElement(Document& document,
                                      const CreateElementFlags flags)
-    : HTMLPlugInElement(html_names::kObjectTag,
-                        document,
-                        flags,
-                        kShouldNotPreferPlugInsForImages),
+    : HTMLPlugInElement(html_names::kObjectTag, document, flags),
       use_fallback_content_(false) {
   EnsureUserAgentShadowRoot();
 }
