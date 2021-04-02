@@ -14,7 +14,7 @@
 class PrefService;
 class PrefRegistrySimple;
 
-namespace chromeos {
+namespace ash {
 
 namespace bluetooth {
 
@@ -70,6 +70,6 @@ class DebugLogsManager : public mojom::DebugLogsChangeHandler {
 
 }  // namespace bluetooth
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_BLUETOOTH_DEBUG_LOGS_MANAGER_H_

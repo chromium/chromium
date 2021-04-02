@@ -14,7 +14,7 @@
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace bluetooth {
 
@@ -181,4 +181,4 @@ TEST_F(DebugLogsManagerTest, RetryUponSetVerboseLogsFailure) {
 
 }  // namespace bluetooth
 
-}  // namespace chromeos
+}  // namespace ash

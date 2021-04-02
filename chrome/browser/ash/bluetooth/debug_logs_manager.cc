@@ -12,7 +12,7 @@
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace bluetooth {
 
@@ -131,4 +131,4 @@ void DebugLogsManager::OnVerboseLogsEnableError(
 
 }  // namespace bluetooth
 
-}  // namespace chromeos
+}  // namespace ash

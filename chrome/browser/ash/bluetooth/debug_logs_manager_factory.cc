@@ -13,7 +13,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace bluetooth {
 
@@ -23,10 +23,9 @@ namespace {
 class DebugLogsManagerService : public KeyedService {
  public:
   explicit DebugLogsManagerService(Profile* profile)
-      : debug_logs_manager_(chromeos::ProfileHelper::Get()
-                                ->GetUserByProfile(profile)
-                                ->GetDisplayEmail(),
-                            profile->GetPrefs()) {}
+      : debug_logs_manager_(
+            ProfileHelper::Get()->GetUserByProfile(profile)->GetDisplayEmail(),
+            profile->GetPrefs()) {}
 
   ~DebugLogsManagerService() override = default;
 
@@ -69,7 +68,7 @@ KeyedService* DebugLogsManagerFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(context);
 
   // Only primary profiles have an associated logs manager.
-  if (!chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile))
+  if (!ProfileHelper::Get()->IsPrimaryProfile(profile))
     return nullptr;
 
   return new DebugLogsManagerService(profile);
@@ -85,4 +84,4 @@ bool DebugLogsManagerFactory::ServiceIsNULLWhileTesting() const {
 
 }  // namespace bluetooth
 
-}  // namespace chromeos
+}  // namespace ash

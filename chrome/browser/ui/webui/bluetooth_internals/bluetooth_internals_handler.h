@@ -13,11 +13,11 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace chromeos {
+namespace ash {
 namespace bluetooth {
 class DebugLogsManager;
 }  // namespace bluetooth
-}  // namespace chromeos
+}  // namespace ash
 #endif
 
 // Handles API requests from chrome://bluetooth-internals page by implementing
@@ -30,7 +30,7 @@ class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void set_debug_logs_manager(
-      chromeos::bluetooth::DebugLogsManager* debug_logs_manager) {
+      ash::bluetooth::DebugLogsManager* debug_logs_manager) {
     debug_logs_manager_ = debug_logs_manager;
   }
 #endif
@@ -47,7 +47,7 @@ class BluetoothInternalsHandler : public mojom::BluetoothInternalsHandler {
   mojo::Receiver<mojom::BluetoothInternalsHandler> receiver_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::bluetooth::DebugLogsManager* debug_logs_manager_ = nullptr;
+  ash::bluetooth::DebugLogsManager* debug_logs_manager_ = nullptr;
 #endif
 
   base::WeakPtrFactory<BluetoothInternalsHandler> weak_ptr_factory_{this};

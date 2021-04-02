@@ -52,7 +52,7 @@ void BluetoothInternalsUI::BindInterface(
       std::make_unique<BluetoothInternalsHandler>(std::move(receiver));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   page_handler_->set_debug_logs_manager(
-      chromeos::bluetooth::DebugLogsManagerFactory::GetForProfile(
+      ash::bluetooth::DebugLogsManagerFactory::GetForProfile(
           Profile::FromWebUI(web_ui())));
 #endif
 }

@@ -1078,7 +1078,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::app_time::AppActivityRegistry::RegisterProfilePrefs(registry);
   chromeos::app_time::AppTimeController::RegisterProfilePrefs(registry);
   chromeos::assistant::prefs::RegisterProfilePrefs(registry);
-  chromeos::bluetooth::DebugLogsManager::RegisterPrefs(registry);
+  ash::bluetooth::DebugLogsManager::RegisterPrefs(registry);
   chromeos::ClientAppMetadataProviderService::RegisterProfilePrefs(registry);
   chromeos::CupsPrintersManager::RegisterProfilePrefs(registry);
   chromeos::device_sync::RegisterProfilePrefs(registry);
