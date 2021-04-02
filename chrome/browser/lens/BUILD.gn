@@ -8,6 +8,7 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/lens/LensController.java" ]
+
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -17,9 +18,45 @@ android_library("java") {
     "//ui/android:ui_java",
   ]
 
-  public_deps = [ ":util_java" ]
+  public_deps = [
+    ":delegate_java",
+    ":util_java",
+  ]
 
   resources_package = "org.chromium.chrome.browser.lens"
+}
+
+android_library("delegate_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/lens/LensControllerDelegate.java",
+    "java/src/org/chromium/chrome/browser/lens/LensControllerDelegateImpl.java",
+  ]
+
+  deps = [
+    ":java_resources",
+    ":util_java",
+    "//base:base_java",
+    "//chrome/browser/contextmenu:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.lens"
+
+  # Add the actual implementation where necessary so that downstream targets
+  # can provide their own implementations.
+  jar_excluded_patterns = [ "*/LensControllerDelegateImpl.class" ]
+}
+
+android_library("delegate_public_impl_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/lens/LensControllerDelegateImpl.java",
+  ]
+
+  deps = [
+    ":delegate_java",
+    ":util_java",
+  ]
 }
 
 android_library("util_java") {
