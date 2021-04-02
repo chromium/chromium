@@ -233,7 +233,7 @@ class OmniboxPedalAuthRequired : public OmniboxPedal {
   bool IsReadyToTrigger(
       const AutocompleteInput& input,
       const AutocompleteProviderClient& client) const override {
-    return client.IsSyncActive();
+    return client.IsAuthenticated();
   }
 };
 
