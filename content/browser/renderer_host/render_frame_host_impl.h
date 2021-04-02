@@ -3030,10 +3030,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   std::unique_ptr<ScreenEnumerationImpl> screen_enumeration_impl_;
 
-  // Forwards messages between WebRTCInternals in the browser process
-  // and PeerConnectionManager in the renderer process.
-  std::unique_ptr<PeerConnectionTrackerHost> peer_connection_tracker_host_;
-
   // The object managing the accessibility tree for this frame.
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager_;
 

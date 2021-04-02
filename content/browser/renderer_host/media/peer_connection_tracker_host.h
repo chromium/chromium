@@ -14,6 +14,7 @@
 #include "base/types/pass_key.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/peer_connection_tracker_host_observer.h"
+#include "content/public/browser/render_document_host_user_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -35,11 +36,11 @@ class RenderFrameHost;
 // Note: This class and all of its methods are meant to only be used on the UI
 //       thread.
 class PeerConnectionTrackerHost
-    : public base::PowerSuspendObserver,
+    : public RenderDocumentHostUserData<PeerConnectionTrackerHost>,
+      public base::PowerSuspendObserver,
       public base::PowerThermalObserver,
       public blink::mojom::PeerConnectionTrackerHost {
  public:
-  explicit PeerConnectionTrackerHost(RenderFrameHost* rfh);
   ~PeerConnectionTrackerHost() override;
 
   // Adds/removes a PeerConnectionTrackerHostObserver.
@@ -68,6 +69,10 @@ class PeerConnectionTrackerHost
           pending_receiver);
 
  private:
+  friend class RenderDocumentHostUserData<PeerConnectionTrackerHost>;
+  explicit PeerConnectionTrackerHost(RenderFrameHost* rfh);
+  RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
+
   // blink::mojom::PeerConnectionTrackerHost implementation.
   void AddPeerConnection(blink::mojom::PeerConnectionInfoPtr info) override;
   void RemovePeerConnection(int lid) override;

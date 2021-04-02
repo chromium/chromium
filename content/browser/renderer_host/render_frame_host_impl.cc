@@ -10568,11 +10568,7 @@ RenderFrameHostImpl::CreateURLLoaderNetworkObserver() {
 }
 
 PeerConnectionTrackerHost& RenderFrameHostImpl::GetPeerConnectionTrackerHost() {
-  if (!peer_connection_tracker_host_) {
-    peer_connection_tracker_host_ =
-        std::make_unique<PeerConnectionTrackerHost>(this);
-  }
-  return *peer_connection_tracker_host_.get();
+  return *PeerConnectionTrackerHost::GetOrCreateForCurrentDocument(this);
 }
 
 void RenderFrameHostImpl::BindPeerConnectionTrackerHost(
