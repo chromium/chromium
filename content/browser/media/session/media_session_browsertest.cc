@@ -206,28 +206,6 @@ class MediaSessionBrowserTestWithoutInternalMediaSession
   base::test::ScopedFeatureList disabled_feature_list_;
 };
 
-// A MediaSessionBrowserTest with BackForwardCache enabled.
-class MediaSessionBrowserTestWithBackForwardCache
-    : public MediaSessionBrowserTestBase {
- public:
-  MediaSessionBrowserTestWithBackForwardCache() {
-    feature_list_.InitWithFeaturesAndParameters(
-        {{features::kBackForwardCache,
-          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}},
-         {media::kInternalMediaSession, {}}},
-        // Allow BackForwardCache for all devices regardless of their memory.
-        /*disabled_features=*/{features::kBackForwardCacheMemoryControls});
-  }
-
-  void SetUpOnMainThread() override {
-    host_resolver()->AddRule("*", "127.0.0.1");
-    MediaSessionBrowserTestBase::SetUpOnMainThread();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 }  // anonymous namespace
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithoutInternalMediaSession,
@@ -435,43 +413,4 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
   EXPECT_FALSE(WasURLVisited(image.src));
 }
 
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithBackForwardCache,
-                       DoNotCacheIfMediaSessionExists) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page containing media.
-  EXPECT_TRUE(NavigateToURL(shell(),
-                            GetTestUrl("media/session", "media-session.html")));
-
-  RenderFrameHost* rfh_a = shell()->web_contents()->GetMainFrame();
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-
-  // The page should not have been cached in the back forward cache.
-  delete_observer_rfh_a.WaitUntilDeleted();
-}
-
-IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTestWithBackForwardCache,
-                       CachesPageWithoutMedia) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  // 1) Navigate to a page not containing any media.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
-
-  RenderFrameHostImpl* rfh_a = static_cast<RenderFrameHostImpl*>(
-      shell()->web_contents()->GetMainFrame());
-  RenderFrameDeletedObserver delete_observer_rfh_a(rfh_a);
-
-  // 2) Navigate away.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("b.com", "/title1.html")));
-
-  // The page should be cached in the back forward cache.
-  EXPECT_FALSE(delete_observer_rfh_a.deleted());
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-}
 }  // namespace content
