@@ -145,6 +145,7 @@ source_set("common") {
     "mobile_metrics/mobile_friendliness.cc",
     "native_io/native_io_utils.cc",
     "navigation/impression.cc",
+    "navigation/impression_mojom_traits.cc",
     "navigation/navigation_policy.cc",
     "navigation/navigation_policy_mojom_traits.cc",
     "net/ip_address_space_util.cc",

@@ -468,6 +468,11 @@ mojom("mojom_platform") {
           mojom = "blink.mojom.Impression"
           cpp = "::blink::Impression"
         },
+      ]
+      traits_headers = [ "//third_party/blink/public/common/navigation/impression_mojom_traits.h" ]
+    },
+    {
+      types = [
         {
           mojom = "blink.mojom.UntrustworthyContextMenuParams"
           cpp = "::blink::UntrustworthyContextMenuParams"

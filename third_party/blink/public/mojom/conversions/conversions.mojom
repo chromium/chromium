@@ -4,6 +4,7 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
 
 struct Conversion {
@@ -13,6 +14,26 @@ struct Conversion {
   // Conversion data specified in conversion redirect. 0 is used as a
   // default if none is provided.
   uint64 conversion_data = 0;
+};
+
+// Mojo struct to represent blink::Impression native struct.
+struct Impression {
+  // Intended committed top-level origin of the resulting navigation. Must match
+  // the committed navigation's origin to be a valid impression. Declared by
+  // the impression tag.
+  url.mojom.Origin conversion_destination;
+
+  // Optional origin that will receive all conversion measurement reports
+  // associated with this impression. Declared by the impression tag.
+  url.mojom.Origin? reporting_origin;
+
+  // Data that will be sent in conversion reports to identify this impression.
+  // Declared by the impression tag.
+  uint64 impression_data;
+
+  // Optional expiry specifying the amount of time this impression can convert.
+  // Declared by the impression tag.
+  mojo_base.mojom.TimeDelta? expiry;
 };
 
 // Sent from renderer to browser process when a resource request matching the
