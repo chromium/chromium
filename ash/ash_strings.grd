@@ -3228,11 +3228,17 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_ALT_TAB_CURRENT_DESK_MODE_SELECTED_TITLE" desc="Accessibility text read by ChromeVox to indicate that alt-tab is in the current-desk mode.">
         Show windows from the current desk, radio button selected
       </message>
-      <message name="IDS_ASH_ALT_TAB_FOCUS_WINDOW_LIST_TITLE" desc="Accessibility text read by ChromeVox to suggest that the user can continue cycling the window list by pressing Down arrow key.">
+      <message name="IDS_ASH_ALT_TAB_FOCUS_WINDOW_LIST_TITLE" desc="Accessibility text read by ChromeVox to suggest that the user can continue cycling the window list by pressing the Down arrow key.">
         Press the Down arrow key to switch windows
       </message>
       <message name="IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE" desc="Accessibility text read by ChromeVox to inform that the window is selected during alt-tab mode switching.">
         <ph name="WINDOW_TITLE">$1<ex>Chrome New tab</ex></ph> window selected
+      </message>
+      <message name="IDS_ASH_ALT_TAB_FOCUS_ALL_DESKS_MODE" desc="Accessibility text read by ChromeVox when starting alt-tab right after announcing the window title to suggest that the user can switch from the all-desks mode to the current-desk mode by pressing the Up arrow key.">
+        Showing windows from all desks, press the Up arrow key to show windows from the current desk
+      </message>
+      <message name="IDS_ASH_ALT_TAB_FOCUS_CURRENT_DESK_MODE" desc="Accessibility text read by ChromeVox when starting alt-tab right after announcing the window title to suggest that the user can switch from the current-desk mode to the all-desks mode by pressing the Up arrow key.">
+        Showing windows from the current desk, press the Up arrow key to show windows from all desks
       </message>
 
       <!-- Back gesture -->

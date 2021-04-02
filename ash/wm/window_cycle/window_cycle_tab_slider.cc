@@ -120,6 +120,7 @@ WindowCycleTabSlider::WindowCycleTabSlider()
       Shell::Get()->window_cycle_controller()->IsAltTabPerActiveDesk();
   all_desks_tab_slider_button_->SetToggled(!per_desk);
   current_desk_tab_slider_button_->SetToggled(per_desk);
+  active_button_selector_->SetFocusBehavior(View::FocusBehavior::ALWAYS);
 }
 
 void WindowCycleTabSlider::SetFocus(bool focus) {
@@ -137,6 +138,7 @@ void WindowCycleTabSlider::OnModePrefsChanged() {
   all_desks_tab_slider_button_->SetToggled(!per_desk);
   current_desk_tab_slider_button_->SetToggled(per_desk);
   UpdateActiveButtonSelector(per_desk);
+  active_button_selector_->RequestFocus();
 }
 
 void WindowCycleTabSlider::Layout() {

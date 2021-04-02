@@ -508,21 +508,31 @@ class WindowCycleView : public views::WidgetDelegateView,
     if (target_it != window_view_map_.end())
       target_it->second->UpdateBorderState(/*show=*/true);
 
-    // Focus the target window if the user is not currently switching the mode.
-    // During the mode switch, we want more informative a11y string than that
-    // automatically announced from the focus event, so we prevent the focus
-    // to avoid such auto announcement and send our own string in
-    // `WindowCycleController::OnModeChanged`.
-    auto* shell = Shell::Get();
-    const bool chromevox_enabled =
-        shell->accessibility_controller()->spoken_feedback().enabled();
-    const bool is_switching_mode =
-        shell->window_cycle_controller()->IsSwitchingMode();
-    if (target_window_ && (!chromevox_enabled || !is_switching_mode)) {
-      if (GetWidget())
+    // Focus the target window if the user is not currently switching the mode
+    // while ChromeVox is on.
+    // During the mode switch, we prevent ChromeVox auto-announce the window
+    // title from the focus and send our custom string to announce both window
+    // title and the selected mode together
+    // (see `WindowCycleController::OnModeChanged`).
+    auto* a11y_controller = Shell::Get()->accessibility_controller();
+    auto* window_cycle_controller = Shell::Get()->window_cycle_controller();
+    const bool chromevox_enabled = a11y_controller->spoken_feedback().enabled();
+    const bool is_switching_mode = window_cycle_controller->IsSwitchingMode();
+    if (target_window_ && !(chromevox_enabled && is_switching_mode)) {
+      if (GetWidget()) {
         window_view_map_[target_window_]->RequestFocus();
-      else
+      } else {
         SetInitiallyFocusedView(window_view_map_[target_window_]);
+        // When alt-tab mode selection is available, announce via ChromeVox the
+        // current mode and the directional cue for mode switching.
+        if (window_cycle_controller->IsInteractiveAltTabModeAllowed()) {
+          a11y_controller->TriggerAccessibilityAlertWithMessage(
+              l10n_util::GetStringUTF8(
+                  window_cycle_controller->IsAltTabPerActiveDesk()
+                      ? IDS_ASH_ALT_TAB_FOCUS_CURRENT_DESK_MODE
+                      : IDS_ASH_ALT_TAB_FOCUS_ALL_DESKS_MODE));
+        }
+      }
     }
   }
 

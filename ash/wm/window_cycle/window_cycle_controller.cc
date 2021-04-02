@@ -169,7 +169,7 @@ void WindowCycleController::HandleKeyboardNavigation(
     // Pressing the Up arrow key moves the focus from the window cycle list
     // to the tab slider button.
     case KeyboardNavDirection::kUp:
-      DCHECK(!IsTabSliderFocused());
+      DCHECK(!IsTabSliderFocused() && IsInteractiveAltTabModeAllowed());
       window_cycle_list_->SetFocusTabSlider(true);
       // Focusing the alt-tab mode button announces the current mode.
       Shell::Get()

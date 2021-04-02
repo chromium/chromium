@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
@@ -2645,13 +2646,13 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
+  Shell::Get()->accessibility_controller()->SetSpokenFeedbackEnabled(
+      true, A11Y_NOTIFICATION_NONE);
 
   // Create two windows for desk1 and one window for desk2 in the reversed
   // order of the most recently active window.
   auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
   auto win1 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
-  win2->SetTitle(u"win2");
-  win1->SetTitle(u"win1");
   auto* desks_controller = DesksController::Get();
   desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
   ASSERT_EQ(2u, desks_controller->desks().size());
@@ -2659,7 +2660,6 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   ActivateDesk(desk_2);
   EXPECT_EQ(desk_2, desks_controller->active_desk());
   auto win0 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
-  win0->SetTitle(u"win0");
 
   TestAccessibilityControllerClient client;
   const std::string kAllDesksSelected =
@@ -2669,14 +2669,14 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
   const std::string kFocusWindowDirectionalCue =
       l10n_util::GetStringUTF8(IDS_ASH_ALT_TAB_FOCUS_WINDOW_LIST_TITLE);
 
-  // Start alt-tab.
+  // Start alt-tab in the default all-desks mode.
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   EXPECT_EQ(win1.get(), GetTargetWindow());
-  views::View::Views tab_slider_buttons = GetWindowCycleTabSliderButtons();
   EXPECT_FALSE(cycle_controller->IsTabSliderFocused());
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
-  EXPECT_NE(kAllDesksSelected, client.last_alert_message());
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ASH_ALT_TAB_FOCUS_ALL_DESKS_MODE),
+            client.last_alert_message());
 
   // Pressing the up arrow key should focus and alert all-desks mode.
   generator->PressKey(ui::VKEY_UP, ui::EF_NONE);
@@ -2752,6 +2752,19 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVox) {
 
   CompleteCycling(cycle_controller);
   EXPECT_TRUE(wm::IsActiveWindow(win0.get()));
+
+  // Start alt-tab in the current-desk mode.
+  // Need to create one more window so we have >1 window to enter alt-tab.
+  auto win3 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
+  cycle_controller->HandleCycleWindow(
+      WindowCycleController::WindowCyclingDirection::kForward);
+  EXPECT_EQ(win0.get(), GetTargetWindow());
+  EXPECT_FALSE(cycle_controller->IsTabSliderFocused());
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ASH_ALT_TAB_FOCUS_CURRENT_DESK_MODE),
+            client.last_alert_message());
+  CompleteCyclingAndDeskSwitching(cycle_controller);
+  EXPECT_TRUE(wm::IsActiveWindow(win0.get()));
 }
 
 // Tests that ChromeVox alerts correctly when the current desk has no window
@@ -2760,6 +2773,8 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   WindowCycleController* cycle_controller =
       Shell::Get()->window_cycle_controller();
+  Shell::Get()->accessibility_controller()->SetSpokenFeedbackEnabled(
+      true, A11Y_NOTIFICATION_NONE);
 
   // Create two desks with all two windows in the non-active desk.
   auto win1 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
@@ -2787,10 +2802,11 @@ TEST_F(ModeSelectionWindowCycleControllerTest, ChromeVoxNoWindow) {
   cycle_controller->HandleCycleWindow(
       WindowCycleController::WindowCyclingDirection::kForward);
   EXPECT_EQ(win1.get(), GetTargetWindow());
-  views::View::Views tab_slider_buttons = GetWindowCycleTabSliderButtons();
   EXPECT_FALSE(cycle_controller->IsTabSliderFocused());
   EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
   EXPECT_NE(kAllDesksSelected, client.last_alert_message());
+  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_ASH_ALT_TAB_FOCUS_ALL_DESKS_MODE),
+            client.last_alert_message());
 
   // Pressing the up arrow key should focus and alert all-desks mode.
   generator->PressKey(ui::VKEY_UP, ui::EF_NONE);
