@@ -208,7 +208,9 @@ source_set("updater_tests") {
     "net/network_unittest.cc",
     "net/proxy_configuration_unittest.cc",
     "net/proxy_info_unittest.cc",
+    "setup/setup_util_unittest.cc",
     "tag_extractor_unittest.cc",
+    "task_scheduler_unittest.cc",
     "util_unittest.cc",
   ]
 
@@ -216,38 +218,6 @@ source_set("updater_tests") {
     ":app_install_controller",
     ":constants",
     ":tag_extractor",
-    "//base/test:test_support",
-    "//chrome/updater:lib",
-    "//testing/gtest",
-    "//url:url",
-  ]
-
-  data_deps = [
-    ":updater_unittests",
-    "//chrome/updater/win/installer:installer_unittest",
-  ]
-
-  data = [
-    "../test/data/signed.exe",
-    "../test/data/signed.exe.gz",
-    "../test/data/tagged_encode_utf8.exe",
-    "../test/data/tagged_magic_utf16.exe",
-  ]
-}
-
-# Specific tests which must run in their own process due to COM, security, or
-# test isolation requirements.
-test("updater_unittests") {
-  testonly = true
-
-  sources = [
-    "//chrome/updater/win/test/test_main.cc",
-    "setup/setup_util_unittest.cc",
-    "task_scheduler_unittest.cc",
-  ]
-
-  deps = [
-    ":app_install_controller",
     "//base",
     "//base/test:test_support",
     "//chrome/updater:branding_header",
@@ -255,9 +225,18 @@ test("updater_unittests") {
     "//chrome/updater/win/test:test_executables",
     "//chrome/updater/win/test:test_strings",
     "//testing/gtest",
+    "//url:url",
   ]
 
-  data = [ "//chrome/updater/test/data/updater.runtime_deps" ]
+  data_deps = [ "//chrome/updater/win/installer:installer_unittest" ]
+
+  data = [
+    "../test/data/signed.exe",
+    "../test/data/signed.exe.gz",
+    "../test/data/tagged_encode_utf8.exe",
+    "../test/data/tagged_magic_utf16.exe",
+    "../test/data/updater.runtime_deps",
+  ]
 }
 
 fuzzer_test("updater_fuzzer") {
