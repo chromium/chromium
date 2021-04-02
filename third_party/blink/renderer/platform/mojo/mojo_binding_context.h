@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -22,12 +23,19 @@ class BrowserInterfaceBrokerProxy;
 // This class encapsulates the necessary information for binding Mojo
 // interfaces, to enable interfaces provided by the platform to be aware of the
 // context in which they are intended to be used.
-class PLATFORM_EXPORT MojoBindingContext : public ContextLifecycleNotifier {
+class PLATFORM_EXPORT MojoBindingContext
+    : public ContextLifecycleNotifier,
+      public Supplementable<MojoBindingContext> {
  public:
   virtual const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
       const = 0;
   virtual scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(
       TaskType) = 0;
+
+  void Trace(Visitor* visitor) const override {
+    ContextLifecycleNotifier::Trace(visitor);
+    Supplementable::Trace(visitor);
+  }
 };
 
 }  // namespace blink

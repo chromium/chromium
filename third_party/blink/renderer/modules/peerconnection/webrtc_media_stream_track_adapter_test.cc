@@ -29,7 +29,8 @@ namespace blink {
 class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
  public:
   void SetUp() override {
-    dependency_factory_.reset(new blink::MockPeerConnectionDependencyFactory());
+    dependency_factory_ =
+        MakeGarbageCollected<MockPeerConnectionDependencyFactory>();
     main_thread_ = blink::scheduler::GetSingleThreadTaskRunnerForTesting();
   }
 
@@ -75,7 +76,7 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
       webrtc::MediaStreamTrackInterface* webrtc_track) {
     track_adapter_ =
         blink::WebRtcMediaStreamTrackAdapter::CreateRemoteTrackAdapter(
-            dependency_factory_.get(), main_thread_, webrtc_track);
+            dependency_factory_.Get(), main_thread_, webrtc_track);
   }
 
   void HoldOntoAdapterReference(
@@ -110,7 +111,7 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
 
-  std::unique_ptr<blink::MockPeerConnectionDependencyFactory>
+  CrossThreadPersistent<MockPeerConnectionDependencyFactory>
       dependency_factory_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   scoped_refptr<blink::WebRtcMediaStreamTrackAdapter> track_adapter_;
@@ -119,7 +120,7 @@ class WebRtcMediaStreamTrackAdapterTest : public ::testing::Test {
 TEST_F(WebRtcMediaStreamTrackAdapterTest, LocalAudioTrack) {
   track_adapter_ =
       blink::WebRtcMediaStreamTrackAdapter::CreateLocalTrackAdapter(
-          dependency_factory_.get(), main_thread_, CreateLocalAudioTrack());
+          dependency_factory_.Get(), main_thread_, CreateLocalAudioTrack());
   EXPECT_TRUE(track_adapter_->is_initialized());
   EXPECT_TRUE(track_adapter_->track());
   EXPECT_EQ(track_adapter_->track()->Source()->GetType(),
@@ -139,7 +140,7 @@ TEST_F(WebRtcMediaStreamTrackAdapterTest, LocalAudioTrack) {
 TEST_F(WebRtcMediaStreamTrackAdapterTest, DISABLED_LocalVideoTrack) {
   track_adapter_ =
       blink::WebRtcMediaStreamTrackAdapter::CreateLocalTrackAdapter(
-          dependency_factory_.get(), main_thread_, CreateLocalVideoTrack());
+          dependency_factory_.Get(), main_thread_, CreateLocalVideoTrack());
   EXPECT_TRUE(track_adapter_->is_initialized());
   EXPECT_TRUE(track_adapter_->track());
   EXPECT_EQ(track_adapter_->track()->Source()->GetType(),

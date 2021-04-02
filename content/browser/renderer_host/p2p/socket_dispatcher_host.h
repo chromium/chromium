@@ -17,8 +17,9 @@
 #include "base/sequenced_task_runner.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "services/network/public/mojom/p2p_trusted.mojom.h"
 
@@ -40,7 +41,9 @@ class P2PSocketDispatcherHost
   void StopRtpDump(bool incoming, bool outgoing);
 
   void BindReceiver(
-      mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver);
+      RenderProcessHostImpl& process,
+      mojo::PendingReceiver<network::mojom::P2PSocketManager> receiver,
+      net::NetworkIsolationKey isolation_key);
 
   base::WeakPtr<P2PSocketDispatcherHost> GetWeakPtr();
 
@@ -57,8 +60,16 @@ class P2PSocketDispatcherHost
   bool dump_outgoing_rtp_packet_ = false;
   RenderProcessHost::WebRtcRtpPacketCallback packet_callback_;
 
-  mojo::Receiver<network::mojom::P2PTrustedSocketManagerClient> receiver_{this};
-  mojo::Remote<network::mojom::P2PTrustedSocketManager> trusted_socket_manager_;
+  // TODO(crbug.com/1178670): We use sets of interfaces for now (instead of
+  // creating a host-per-frame) since RTP dumps are started/stopped at the
+  // process level (for now).
+  // There are, however, plans to:
+  // 1. Make WebRtcLoggingAgent per-frame (and RTP dumps along with it)
+  // 2. (Maybe) deprecate RTP dumps.
+  // Once either of these happens, this can be cleaned up.
+  mojo::ReceiverSet<network::mojom::P2PTrustedSocketManagerClient> receivers_;
+  mojo::RemoteSet<network::mojom::P2PTrustedSocketManager>
+      trusted_socket_managers_;
 
   network::mojom::P2PNetworkNotificationClientPtr network_notification_client_;
 

@@ -37,6 +37,7 @@ namespace blink {
 class AecDumpAgentImpl;
 class MediaStreamAudioBus;
 class MediaStreamAudioFifo;
+class WebRtcAudioDeviceImpl;
 
 using webrtc::AudioProcessorInterface;
 
@@ -55,9 +56,10 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   //
   // Threading note: The constructor assumes it is being run on the main render
   // thread.
-  MediaStreamAudioProcessor(const AudioProcessingProperties& properties,
-                            bool use_capture_multi_channel_processing,
-                            WebRtcPlayoutDataSource* playout_data_source);
+  MediaStreamAudioProcessor(
+      const AudioProcessingProperties& properties,
+      bool use_capture_multi_channel_processing,
+      scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source);
 
   // Called when the format of the capture data has changed.
   // Called on the main render thread. The caller is responsible for stopping
@@ -209,11 +211,8 @@ class MODULES_EXPORT MediaStreamAudioProcessor
   media::AudioParameters input_format_;
   media::AudioParameters output_format_;
 
-  // Raw pointer to the WebRtcPlayoutDataSource, which is valid for the
-  // lifetime of RenderThread.
-  //
   // TODO(crbug.com/704136): Replace with Member at some point.
-  WebRtcPlayoutDataSource* playout_data_source_;
+  scoped_refptr<WebRtcAudioDeviceImpl> playout_data_source_;
 
   // Task runner for the main render thread.
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_runner_;

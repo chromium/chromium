@@ -18,7 +18,9 @@ namespace blink {
 
 namespace {
 
-class MockP2PSocketDispatcher : public blink::NetworkListManager {
+class MockP2PSocketDispatcher
+    : public GarbageCollected<MockP2PSocketDispatcher>,
+      public NetworkListManager {
  public:
   void AddNetworkListObserver(
       blink::NetworkListObserver* network_list_observer) override {}
@@ -26,7 +28,9 @@ class MockP2PSocketDispatcher : public blink::NetworkListManager {
   void RemoveNetworkListObserver(
       blink::NetworkListObserver* network_list_observer) override {}
 
-  ~MockP2PSocketDispatcher() override {}
+  void Trace(Visitor* visitor) const override {
+    NetworkListManager::Trace(visitor);
+  }
 };
 
 class EmptyMdnsResponder : public webrtc::MdnsResponderInterface {
@@ -49,13 +53,13 @@ static const char kIPv4MappedAddrString[] = "::ffff:38.32.0.0";
 class IpcNetworkManagerTest : public testing::Test {
  public:
   IpcNetworkManagerTest()
-      : network_list_manager_(new MockP2PSocketDispatcher()),
+      : network_list_manager_(MakeGarbageCollected<MockP2PSocketDispatcher>()),
         network_manager_(std::make_unique<IpcNetworkManager>(
-            network_list_manager_.get(),
+            network_list_manager_.Get(),
             std::make_unique<EmptyMdnsResponder>())) {}
 
  protected:
-  std::unique_ptr<MockP2PSocketDispatcher> network_list_manager_;
+  Persistent<MockP2PSocketDispatcher> network_list_manager_;
   std::unique_ptr<IpcNetworkManager> network_manager_;
 };
 

@@ -10,15 +10,27 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/media_permission.h"
+#include "third_party/blink/renderer/platform/p2p/ipc_network_manager.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 FilteringNetworkManager::FilteringNetworkManager(
-    rtc::NetworkManager* network_manager,
+    IpcNetworkManager* network_manager,
     media::MediaPermission* media_permission,
     bool allow_mdns_obfuscation)
-    : network_manager_(network_manager),
+    : FilteringNetworkManager(network_manager->AsWeakPtr(),
+                              media_permission,
+                              allow_mdns_obfuscation) {}
+
+// DO NOT dereference/check `network_manager_weak` in the ctor! Doing so would
+// bind its WeakFactory to the constructing thread (main thread) instead of
+// the thread `this` lives in (signaling thread).
+FilteringNetworkManager::FilteringNetworkManager(
+    base::WeakPtr<rtc::NetworkManager> network_manager_weak,
+    media::MediaPermission* media_permission,
+    bool allow_mdns_obfuscation)
+    : network_manager_(std::move(network_manager_weak)),
       media_permission_(media_permission),
       allow_mdns_obfuscation_(allow_mdns_obfuscation) {
   DETACH_FROM_THREAD(thread_checker_);
@@ -53,6 +65,7 @@ void FilteringNetworkManager::Initialize() {
 void FilteringNetworkManager::StartUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(started_permission_check_);
+  DCHECK(network_manager_);
 
   if (start_updating_time_.is_null()) {
     start_updating_time_ = base::TimeTicks::Now();
@@ -76,7 +89,8 @@ void FilteringNetworkManager::StartUpdating() {
 
 void FilteringNetworkManager::StopUpdating() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  network_manager_->StopUpdating();
+  if (network_manager_)
+    network_manager_->StopUpdating();
   DCHECK_GT(start_count_, 0);
   --start_count_;
 }
@@ -95,11 +109,15 @@ webrtc::MdnsResponderInterface* FilteringNetworkManager::GetMdnsResponder()
     const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  if (!network_manager_)
+    return nullptr;
+
   // mDNS responder is set to null if we have the enumeration permission or the
   // mDNS obfuscation of IPs is disallowed.
   if (enumeration_permission() == ENUMERATION_ALLOWED ||
-      !allow_mdns_obfuscation_)
+      !allow_mdns_obfuscation_) {
     return nullptr;
+  }
 
   return network_manager_->GetMdnsResponder();
 }
@@ -141,6 +159,8 @@ void FilteringNetworkManager::OnPermissionStatus(bool granted) {
 
 void FilteringNetworkManager::OnNetworksChanged() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK(network_manager_);
+
   pending_network_update_ = false;
 
   // Update the default local addresses.
