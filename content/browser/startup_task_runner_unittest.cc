@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/task_runner.h"
@@ -104,7 +105,7 @@ class TaskRunnerProxy : public base::SingleThreadTaskRunner {
  private:
   ~TaskRunnerProxy() override {}
 
-  MockTaskRunner* mock_;
+  CheckedPtr<MockTaskRunner> mock_;
   base::OnceClosure last_task_;
 };
 

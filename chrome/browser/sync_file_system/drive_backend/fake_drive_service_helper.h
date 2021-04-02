@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
 
@@ -96,8 +97,8 @@ class FakeDriveServiceHelper {
   base::FilePath temp_dir_;
 
   // Not own.
-  drive::FakeDriveService* fake_drive_service_;
-  drive::DriveUploaderInterface* drive_uploader_;
+  CheckedPtr<drive::FakeDriveService> fake_drive_service_;
+  CheckedPtr<drive::DriveUploaderInterface> drive_uploader_;
 
   std::string sync_root_folder_title_;
 };

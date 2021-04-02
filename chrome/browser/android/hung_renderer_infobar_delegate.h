@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_HUNG_RENDERER_INFOBAR_DELEGATE_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace content {
@@ -60,7 +61,7 @@ class HungRendererInfoBarDelegate : public ConfirmInfoBarDelegate {
   void LogEvent(Event event);
 
   // Used to terminate the renderer process if the user clicks the kill button.
-  content::RenderProcessHost* render_process_host_;
+  CheckedPtr<content::RenderProcessHost> render_process_host_;
 
   bool terminal_event_logged_for_uma_;
 

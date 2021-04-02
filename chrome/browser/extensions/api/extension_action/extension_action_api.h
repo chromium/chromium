@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
@@ -109,9 +110,9 @@ class ExtensionActionAPI : public BrowserContextKeyedAPI {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
-  ExtensionPrefs* extension_prefs_;
+  CheckedPtr<ExtensionPrefs> extension_prefs_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionActionAPI);
 };
@@ -140,7 +141,7 @@ class ExtensionActionFunction : public ExtensionFunction {
 
   // All the extension action APIs take a single argument called details that
   // is a dictionary.
-  base::DictionaryValue* details_;
+  CheckedPtr<base::DictionaryValue> details_;
 
   // The tab id the extension action function should apply to, if any, or
   // kDefaultTabId if none was specified.
@@ -150,7 +151,7 @@ class ExtensionActionFunction : public ExtensionFunction {
   content::WebContents* contents_;
 
   // The extension action for the current extension.
-  ExtensionAction* extension_action_;
+  CheckedPtr<ExtensionAction> extension_action_;
 };
 
 //

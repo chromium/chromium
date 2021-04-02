@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
@@ -147,8 +148,8 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
     return service;
   }
 
-  syncer::TestSyncService* sync_service_ = nullptr;
-  history::FakeWebHistoryService* web_history_service_ = nullptr;
+  CheckedPtr<syncer::TestSyncService> sync_service_ = nullptr;
+  CheckedPtr<history::FakeWebHistoryService> web_history_service_ = nullptr;
   std::unique_ptr<content::TestWebUI> web_ui_;
 };
 

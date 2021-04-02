@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -103,7 +104,7 @@ class AdRedirectTriggerBrowserTest
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::OnceClosure blocked_url_added_closure_;
-  Browser* current_browser_;
+  CheckedPtr<Browser> current_browser_;
 };
 
 // Check that a report is sent when the source of a blocked redirect is an ad.

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/checked_ptr.h"
 #include "ui/accessibility/platform/ax_platform_node_win_unittest.h"
 
 #include <UIAutomationClient.h>
@@ -356,7 +357,7 @@ TEST_F(AXPlatformNodeTextProviderTest, NearestTextIndexToPoint) {
   AXNode* text_node = root_node->children()[0];
 
   struct NearestTextIndexTestData {
-    AXNode* node;
+    CheckedPtr<AXNode> node;
     struct point_offset_expected_index_pair {
       int point_offset_x;
       int expected_index;

@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -107,8 +108,8 @@ class ExtensionAlarmsTest : public ApiUnitTest {
   }
 
   base::SimpleTestClock test_clock_;
-  AlarmManager* alarm_manager_;
-  AlarmDelegate* alarm_delegate_;
+  CheckedPtr<AlarmManager> alarm_manager_;
+  CheckedPtr<AlarmDelegate> alarm_delegate_;
 };
 
 void ExtensionAlarmsTestGetAllAlarmsCallback(

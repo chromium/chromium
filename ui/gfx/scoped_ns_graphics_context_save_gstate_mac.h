@@ -6,6 +6,7 @@
 #define UI_GFX_SCOPED_NS_GRAPHICS_CONTEXT_SAVE_GSTATE_MAC_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/gfx_export.h"
 
 #if defined(__OBJC__)
@@ -23,7 +24,7 @@ class GFX_EXPORT ScopedNSGraphicsContextSaveGState {
   ~ScopedNSGraphicsContextSaveGState();
 
  private:
-  NSGraphicsContext* context_;  // weak
+  CheckedPtr<NSGraphicsContext> context_;  // weak
 
   DISALLOW_COPY_AND_ASSIGN(ScopedNSGraphicsContextSaveGState);
 };

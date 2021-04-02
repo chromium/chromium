@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -28,7 +29,7 @@ class SessionSyncPrefs {
   void SetLegacySyncSessionsGUIDForTesting(const std::string& guid);
 
  private:
-  PrefService* const pref_service_;
+  const CheckedPtr<PrefService> pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionSyncPrefs);
 };

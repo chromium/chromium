@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -353,7 +354,7 @@ class LeftMouseClick {
   }
 
   // Unowned pointer.
-  content::WebContents* web_contents_;
+  CheckedPtr<content::WebContents> web_contents_;
 
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 
@@ -486,7 +487,7 @@ class MockDownloadWebContentsDelegate : public content::WebContentsDelegate {
   }
 
  private:
-  content::WebContentsDelegate* orig_delegate_;
+  CheckedPtr<content::WebContentsDelegate> orig_delegate_;
   bool waiting_for_decision_ = false;
   bool expect_allow_ = false;
   bool decision_made_ = false;
@@ -874,8 +875,8 @@ class WebViewTest : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManagerFactory factory_;
   // Note that these are only set if you launch app using LoadAppWithGuest().
-  content::WebContents* guest_web_contents_;
-  content::WebContents* embedder_web_contents_;
+  CheckedPtr<content::WebContents> guest_web_contents_;
+  CheckedPtr<content::WebContents> embedder_web_contents_;
 };
 
 // The following test suites are created to group tests based on specific
@@ -3000,7 +3001,7 @@ class DownloadManagerWaiter : public content::DownloadManager::Observer {
  private:
   base::OnceClosure quit_closure_;
   bool initialized_;
-  content::DownloadManager* download_manager_;
+  CheckedPtr<content::DownloadManager> download_manager_;
 };
 
 }  // namespace

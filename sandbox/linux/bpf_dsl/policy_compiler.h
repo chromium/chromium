@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl_forward.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
@@ -136,8 +137,8 @@ class SANDBOX_EXPORT PolicyCompiler {
   // attempted to pass a 64bit value in a 32bit system call argument.
   CodeGen::Node Unexpected64bitArgument();
 
-  const Policy* policy_;
-  TrapRegistry* registry_;
+  CheckedPtr<const Policy> policy_;
+  CheckedPtr<TrapRegistry> registry_;
   uint64_t escapepc_;
   PanicFunc panic_func_;
 

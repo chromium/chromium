@@ -14,6 +14,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "components/prefs/pref_member.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
@@ -44,7 +45,7 @@ class AccessibilityLabelsMenuObserver : public RenderViewContextMenuObserver {
 
   // The interface to add a context-menu item and update it. This class uses
   // this interface to avoid accessing context-menu items directly.
-  RenderViewContextMenuProxy* proxy_;
+  CheckedPtr<RenderViewContextMenuProxy> proxy_;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityLabelsMenuObserver);
 };

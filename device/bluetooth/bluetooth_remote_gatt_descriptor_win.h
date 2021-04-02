@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_low_energy_defs_win.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
@@ -50,7 +51,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWin
   }
 
  private:
-  BluetoothRemoteGattCharacteristicWin* parent_characteristic_;
+  CheckedPtr<BluetoothRemoteGattCharacteristicWin> parent_characteristic_;
   std::unique_ptr<BTH_LE_GATT_DESCRIPTOR> descriptor_info_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
 

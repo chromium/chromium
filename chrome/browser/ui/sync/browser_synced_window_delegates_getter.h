@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_window_delegates_getter.h"
 
@@ -27,7 +28,7 @@ class BrowserSyncedWindowDelegatesGetter
   const sync_sessions::SyncedWindowDelegate* FindById(SessionID id) override;
 
  private:
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserSyncedWindowDelegatesGetter);
 };

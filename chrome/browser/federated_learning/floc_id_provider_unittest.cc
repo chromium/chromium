@@ -5,6 +5,7 @@
 #include "chrome/browser/federated_learning/floc_id_provider_impl.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -323,7 +324,7 @@ class FlocIdProviderUnitTest : public testing::Test {
   std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
   std::unique_ptr<MockFlocIdProvider> floc_id_provider_;
 
-  MockFlocSortingLshService* sorting_lsh_service_;
+  CheckedPtr<MockFlocSortingLshService> sorting_lsh_service_;
 
   base::ScopedTempDir temp_dir_;
 

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/clear_for_opaque_raster.h"
 #include "cc/paint/scoped_raster_flags.h"
@@ -29,7 +30,7 @@ class ScopedFlagsOverride {
   ~ScopedFlagsOverride() { options_->flags_to_serialize = nullptr; }
 
  private:
-  PaintOp::SerializeOptions* options_;
+  CheckedPtr<PaintOp::SerializeOptions> options_;
 };
 
 PlaybackParams MakeParams(const SkCanvas* canvas) {

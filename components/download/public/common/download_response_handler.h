@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_export.h"
@@ -78,7 +79,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadResponseHandler
   // Helper method that is called when response is received.
   void OnResponseStarted(mojom::DownloadStreamHandlePtr stream_handle);
 
-  Delegate* const delegate_;
+  const CheckedPtr<Delegate> delegate_;
 
   std::unique_ptr<DownloadCreateInfo> create_info_;
 

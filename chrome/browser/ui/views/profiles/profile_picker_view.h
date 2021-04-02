@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_VIEW_H_
 
 #include "base/cancelable_callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
@@ -102,7 +103,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
     // sign-in flow.
     std::unique_ptr<content::WebContents> contents;
 
-    Profile* profile = nullptr;
+    CheckedPtr<Profile> profile = nullptr;
 
     // Set for the profile at the very end to avoid coloring the simple toolbar
     // for GAIA sign-in (that uses the ThemeProvider of the current profile).

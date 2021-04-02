@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_MODERN_IMPL_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_VIEW_MODERN_IMPL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "components/media_message_center/media_notification_view.h"
 
 #include "base/component_export.h"
@@ -127,7 +128,7 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   void SeekTo(double seek_progress);
 
   // Container that receives events.
-  MediaNotificationContainer* const container_;
+  const CheckedPtr<MediaNotificationContainer> container_;
 
   // Keeps track of media metadata and controls the session when buttons are
   // clicked.
@@ -142,19 +143,19 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationViewModernImpl
   // Contains the title, artist and album separated by hyphens.
   std::u16string accessible_name_;
 
-  MediaNotificationBackground* background_;
+  CheckedPtr<MediaNotificationBackground> background_;
 
   media_session::MediaPosition position_;
 
   // Container views directly attached to this view.
-  views::View* artwork_container_ = nullptr;
-  MediaArtworkView* artwork_ = nullptr;
-  views::Label* title_label_ = nullptr;
-  views::Label* subtitle_label_ = nullptr;
-  views::ToggleImageButton* picture_in_picture_button_ = nullptr;
-  views::View* notification_controls_spacer_ = nullptr;
-  views::View* media_controls_container_ = nullptr;
-  views::ToggleImageButton* play_pause_button_ = nullptr;
+  CheckedPtr<views::View> artwork_container_ = nullptr;
+  CheckedPtr<MediaArtworkView> artwork_ = nullptr;
+  CheckedPtr<views::Label> title_label_ = nullptr;
+  CheckedPtr<views::Label> subtitle_label_ = nullptr;
+  CheckedPtr<views::ToggleImageButton> picture_in_picture_button_ = nullptr;
+  CheckedPtr<views::View> notification_controls_spacer_ = nullptr;
+  CheckedPtr<views::View> media_controls_container_ = nullptr;
+  CheckedPtr<views::ToggleImageButton> play_pause_button_ = nullptr;
   MediaControlsProgressView* progress_ = nullptr;
 };
 

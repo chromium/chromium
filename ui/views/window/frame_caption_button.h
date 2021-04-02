@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ui/gfx/color_palette.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -118,7 +119,7 @@ class VIEWS_EXPORT FrameCaptionButton : public views::Button {
 
   // The image id (kept for the purposes of testing) and image used to paint the
   // button's icon.
-  const gfx::VectorIcon* icon_definition_ = nullptr;
+  CheckedPtr<const gfx::VectorIcon> icon_definition_ = nullptr;
   gfx::ImageSkia icon_image_;
 
   // The icon image to crossfade from.

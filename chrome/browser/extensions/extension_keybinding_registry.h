@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "extensions/browser/extension_registry.h"
@@ -155,13 +156,13 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // Returns true if any media keys are registered.
   bool IsListeningToAnyMediaKeys() const;
 
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
 
   // What extensions to register keybindings for.
   ExtensionFilter extension_filter_;
 
   // Weak pointer to our delegate. Not owned by us. Must outlive this class.
-  Delegate* delegate_;
+  CheckedPtr<Delegate> delegate_;
 
   // Maps an accelerator to a list of string pairs (extension id, command name)
   // for commands that have been registered. This keeps track of the targets for

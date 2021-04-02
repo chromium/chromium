@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
@@ -329,7 +330,7 @@ class WebController {
     void RenderFrameDeleted(
         content::RenderFrameHost* render_frame_host) override;
 
-    content::RenderFrameHost* render_frame_host_;
+    CheckedPtr<content::RenderFrameHost> render_frame_host_;
   };
 
   void OnJavaScriptResult(

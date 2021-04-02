@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -592,10 +593,10 @@ class TestWriteReadCompletionCallback {
   int result_;
   bool have_result_;
   bool waiting_for_result_;
-  FileStream* stream_;
-  int* total_bytes_written_;
-  int* total_bytes_read_;
-  std::string* data_read_;
+  CheckedPtr<FileStream> stream_;
+  CheckedPtr<int> total_bytes_written_;
+  CheckedPtr<int> total_bytes_read_;
+  CheckedPtr<std::string> data_read_;
   scoped_refptr<DrainableIOBuffer> drainable_;
 };
 
@@ -703,8 +704,8 @@ class TestWriteCloseCompletionCallback {
   int result_;
   bool have_result_;
   bool waiting_for_result_;
-  FileStream* stream_;
-  int* total_bytes_written_;
+  CheckedPtr<FileStream> stream_;
+  CheckedPtr<int> total_bytes_written_;
   scoped_refptr<DrainableIOBuffer> drainable_;
 };
 

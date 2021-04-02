@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -126,7 +127,7 @@ class ProcessMetricsDecoratorTest : public GraphTestHarness {
   }
 
  private:
-  TestProcessMetricsDecorator* decorator_raw_;
+  CheckedPtr<TestProcessMetricsDecorator> decorator_raw_;
 
   std::unique_ptr<MockSinglePageWithMultipleProcessesGraph> mock_graph_;
 

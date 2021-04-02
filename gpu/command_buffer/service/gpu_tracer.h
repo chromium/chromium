@@ -15,6 +15,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/stack.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/threading/thread.h"
 #include "gpu/gpu_gles2_export.h"
 
@@ -103,10 +104,10 @@ class GPU_GLES2_EXPORT GPUTracer {
   bool CheckDisjointStatus();
   void ClearOngoingTraces(bool have_context);
 
-  Outputter* outputter_ = nullptr;
+  CheckedPtr<Outputter> outputter_ = nullptr;
   std::vector<TraceMarker> markers_[NUM_TRACER_SOURCES];
   base::circular_deque<scoped_refptr<GPUTrace>> finished_traces_;
-  DecoderContext* decoder_;
+  CheckedPtr<DecoderContext> decoder_;
   int64_t disjoint_time_ = 0;
   bool gpu_executing_ = false;
   bool began_device_traces_ = false;
@@ -193,7 +194,7 @@ class GPU_GLES2_EXPORT GPUTrace : public base::RefCounted<GPUTrace> {
   const GpuTracerSource source_ = kTraceGroupInvalid;
   const std::string category_;
   const std::string name_;
-  Outputter* outputter_ = nullptr;
+  CheckedPtr<Outputter> outputter_ = nullptr;
   std::unique_ptr<gl::GPUTimer> gpu_timer_;
   const bool service_enabled_ = false;
   const bool device_enabled_ = false;
@@ -214,7 +215,7 @@ class ScopedGPUTrace {
   ~ScopedGPUTrace() { gpu_tracer_->End(source_); }
 
  private:
-  GPUTracer* gpu_tracer_;
+  CheckedPtr<GPUTracer> gpu_tracer_;
   GpuTracerSource source_;
 };
 

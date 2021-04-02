@@ -1244,7 +1244,7 @@ void AutofillPopupViewNativeViews::CreateChildViews() {
     padding_wrapper->SetBorder(
         views::CreateEmptyBorder(gfx::Insets(GetContentsVerticalPadding(), 0)));
     padding_wrapper->SetLayoutManager(std::make_unique<views::FillLayout>());
-    padding_wrapper->AddChildView(scroll_view_);
+    padding_wrapper->AddChildView(scroll_view_.get());
     AddChildView(padding_wrapper);
     layout_->SetFlexForView(padding_wrapper, 1);
   }

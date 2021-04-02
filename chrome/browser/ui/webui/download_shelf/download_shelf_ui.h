@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_page_handler.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui_embedder.h"
@@ -53,8 +54,8 @@ class DownloadShelfUI : public ui::MojoWebUIController,
   mojo::Receiver<download_shelf::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
 
-  content::DownloadManager* const download_manager_;
-  DownloadShelfUIEmbedder* embedder_ = nullptr;
+  const CheckedPtr<content::DownloadManager> download_manager_;
+  CheckedPtr<DownloadShelfUIEmbedder> embedder_ = nullptr;
 
   base::flat_map<uint32_t, DownloadItemModel::DownloadUIModelPtr> items_;
 

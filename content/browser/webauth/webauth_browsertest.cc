@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -375,7 +376,7 @@ class WebAuthBrowserTestClientDelegate
   }
 
  private:
-  WebAuthBrowserTestState* const test_state_;
+  const CheckedPtr<WebAuthBrowserTestState> test_state_;
 
   DISALLOW_COPY_AND_ASSIGN(WebAuthBrowserTestClientDelegate);
 };
@@ -396,7 +397,7 @@ class WebAuthBrowserTestContentBrowserClient : public ContentBrowserClient {
   }
 
  private:
-  WebAuthBrowserTestState* const test_state_;
+  const CheckedPtr<WebAuthBrowserTestState> test_state_;
 
   DISALLOW_COPY_AND_ASSIGN(WebAuthBrowserTestContentBrowserClient);
 };
@@ -455,7 +456,7 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<WebAuthBrowserTestContentBrowserClient> test_client_;
   WebAuthBrowserTestState test_state_;
-  ContentBrowserClient* old_client_ = nullptr;
+  CheckedPtr<ContentBrowserClient> old_client_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebAuthBrowserTestBase);
 };
@@ -559,7 +560,7 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
     return authenticator_remote_.get();
   }
 
-  device::test::FakeFidoDiscoveryFactory* discovery_factory_;
+  CheckedPtr<device::test::FakeFidoDiscoveryFactory> discovery_factory_;
 
  private:
   mojo::Remote<blink::mojom::Authenticator> authenticator_remote_;

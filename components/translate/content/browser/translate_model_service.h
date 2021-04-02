@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
@@ -54,7 +55,7 @@ class TranslateModelService
   // Optimization Guide Service that provides model files for this service.
   // Optimization Guide Service is a BrowserContextKeyedServiceFactory and
   // should not be used after Shutdown.
-  optimization_guide::OptimizationGuideDecider* opt_guide_;
+  CheckedPtr<optimization_guide::OptimizationGuideDecider> opt_guide_;
 
   // The file that contains the language detection model. Available when the
   // file path has been provided by the Optimization Guide and has been

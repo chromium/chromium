@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_BUCKETS_BUCKET_HOST_H_
 #define CONTENT_BROWSER_BUCKETS_BUCKET_HOST_H_
 
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
@@ -46,7 +47,7 @@ class BucketHost : public blink::mojom::BucketHost {
 
   // |bucket_manager_host_| is valid throughout lifetime of `this` because it
   // owns `this` and is therefore guaranteed to outlive it.
-  BucketManagerHost* bucket_manager_host_;
+  CheckedPtr<BucketManagerHost> bucket_manager_host_;
 
   // TODO(ayui): Temporarily used as bucket ID.
   const std::string bucket_name_;

@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/linked_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -85,7 +86,7 @@ class CONTENT_EXPORT IdleManagerImpl : public IdleManager,
   // Raw pointer should always be valid. IdleManagerImpl is owned by the
   // StoragePartitionImpl which is owned by BrowserContext. Therefore when the
   // BrowserContext is destroyed, |this| will be destroyed as well.
-  BrowserContext* const browser_context_;
+  const CheckedPtr<BrowserContext> browser_context_;
 
   // Registered clients.
   mojo::ReceiverSet<blink::mojom::IdleManager, url::Origin> receivers_;

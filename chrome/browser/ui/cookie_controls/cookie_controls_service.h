@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/profiles/profile.h"
@@ -62,7 +63,7 @@ class CookieControlsService : public KeyedService,
   void OnThirdPartyCookieBlockingPolicyChanged(const base::Value* previous,
                                                const base::Value* current);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   std::unique_ptr<policy::PolicyChangeRegistrar> policy_registrar_;
   scoped_refptr<content_settings::CookieSettings> incongito_cookie_settings_;
   scoped_refptr<content_settings::CookieSettings> regular_cookie_settings_;

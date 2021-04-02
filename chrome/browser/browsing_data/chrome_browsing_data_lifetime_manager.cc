@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
@@ -132,7 +133,7 @@ class BrowsingDataRemoverObserver
   const base::TimeTicks start_time_;
   const bool filterable_deletion_;
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
 };
 

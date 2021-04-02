@@ -12,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/host_experiment_sender.h"
@@ -128,10 +129,10 @@ class ChromotingClient : public SignalStrategy::Listener,
   std::unique_ptr<protocol::CandidateSessionConfig> protocol_config_;
 
   // The following are not owned by this class.
-  ClientUserInterface* user_interface_ = nullptr;
-  protocol::VideoRenderer* video_renderer_ = nullptr;
+  CheckedPtr<ClientUserInterface> user_interface_ = nullptr;
+  CheckedPtr<protocol::VideoRenderer> video_renderer_ = nullptr;
   base::WeakPtr<protocol::AudioStub> audio_stream_consumer_;
-  SignalStrategy* signal_strategy_ = nullptr;
+  CheckedPtr<SignalStrategy> signal_strategy_ = nullptr;
 
   std::string host_jid_;
   protocol::ClientAuthenticationConfig client_auth_config_;

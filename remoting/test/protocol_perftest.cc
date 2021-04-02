@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -410,7 +411,7 @@ class ProtocolPerfTest
   std::unique_ptr<SoftwareVideoRenderer> video_renderer_;
   std::unique_ptr<ChromotingClient> client_;
 
-  FakePacketSocketFactory* client_socket_factory_;
+  CheckedPtr<FakePacketSocketFactory> client_socket_factory_;
 
   std::unique_ptr<base::RunLoop> connecting_loop_;
   std::unique_ptr<base::RunLoop> waiting_frames_loop_;

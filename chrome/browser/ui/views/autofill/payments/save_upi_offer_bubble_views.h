@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble_controller.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -43,7 +44,7 @@ class SaveUPIOfferBubbleViews : public autofill::SaveUPIBubble,
 
   ~SaveUPIOfferBubbleViews() override;
 
-  autofill::SaveUPIBubbleController* controller_;
+  CheckedPtr<autofill::SaveUPIBubbleController> controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_SAVE_UPI_OFFER_BUBBLE_VIEWS_H_

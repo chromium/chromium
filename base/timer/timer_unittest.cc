@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -88,7 +89,7 @@ class OneShotTimerTesterBase {
   std::unique_ptr<OneShotTimer> timer_ = std::make_unique<OneShotTimer>();
 
  private:
-  WaitableEvent* const did_run_;
+  const CheckedPtr<WaitableEvent> did_run_;
   const TimeDelta delay_;
   TimeTicks started_time_;
 
@@ -189,7 +190,7 @@ class RepeatingTimerTester {
 
   RunLoop run_loop_;
   RepeatingClosure quit_closure_;
-  WaitableEvent* const did_run_;
+  const CheckedPtr<WaitableEvent> did_run_;
 
   const TimeDelta delay_;
   TimeTicks started_time_;
@@ -338,8 +339,8 @@ struct ResetHelper {
   }
 
  private:
-  DelayTimer* const timer_;
-  DelayTimerTarget* const target_;
+  const CheckedPtr<DelayTimer> timer_;
+  const CheckedPtr<DelayTimerTarget> target_;
 };
 
 void RunTest_DelayTimer_Reset(

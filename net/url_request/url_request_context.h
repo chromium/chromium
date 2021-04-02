@@ -13,6 +13,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -320,31 +321,31 @@ class NET_EXPORT URLRequestContext
  private:
   // Ownership for these members are not defined here. Clients should either
   // provide storage elsewhere or have a subclass take ownership.
-  NetLog* net_log_;
-  HostResolver* host_resolver_;
-  CertVerifier* cert_verifier_;
-  HttpAuthHandlerFactory* http_auth_handler_factory_;
-  ProxyResolutionService* proxy_resolution_service_;
-  ProxyDelegate* proxy_delegate_;
-  SSLConfigService* ssl_config_service_;
-  NetworkDelegate* network_delegate_;
-  HttpServerProperties* http_server_properties_;
-  const HttpUserAgentSettings* http_user_agent_settings_;
-  CookieStore* cookie_store_;
-  TransportSecurityState* transport_security_state_;
-  CTPolicyEnforcer* ct_policy_enforcer_;
-  SCTAuditingDelegate* sct_auditing_delegate_;
-  HttpTransactionFactory* http_transaction_factory_;
-  const URLRequestJobFactory* job_factory_;
-  URLRequestThrottlerManager* throttler_manager_;
-  QuicContext* quic_context_;
-  NetworkQualityEstimator* network_quality_estimator_;
+  CheckedPtr<NetLog> net_log_;
+  CheckedPtr<HostResolver> host_resolver_;
+  CheckedPtr<CertVerifier> cert_verifier_;
+  CheckedPtr<HttpAuthHandlerFactory> http_auth_handler_factory_;
+  CheckedPtr<ProxyResolutionService> proxy_resolution_service_;
+  CheckedPtr<ProxyDelegate> proxy_delegate_;
+  CheckedPtr<SSLConfigService> ssl_config_service_;
+  CheckedPtr<NetworkDelegate> network_delegate_;
+  CheckedPtr<HttpServerProperties> http_server_properties_;
+  CheckedPtr<const HttpUserAgentSettings> http_user_agent_settings_;
+  CheckedPtr<CookieStore> cookie_store_;
+  CheckedPtr<TransportSecurityState> transport_security_state_;
+  CheckedPtr<CTPolicyEnforcer> ct_policy_enforcer_;
+  CheckedPtr<SCTAuditingDelegate> sct_auditing_delegate_;
+  CheckedPtr<HttpTransactionFactory> http_transaction_factory_;
+  CheckedPtr<const URLRequestJobFactory> job_factory_;
+  CheckedPtr<URLRequestThrottlerManager> throttler_manager_;
+  CheckedPtr<QuicContext> quic_context_;
+  CheckedPtr<NetworkQualityEstimator> network_quality_estimator_;
 #if BUILDFLAG(ENABLE_REPORTING)
-  ReportingService* reporting_service_;
-  NetworkErrorLoggingService* network_error_logging_service_;
+  CheckedPtr<ReportingService> reporting_service_;
+  CheckedPtr<NetworkErrorLoggingService> network_error_logging_service_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 #if !BUILDFLAG(DISABLE_FTP_SUPPORT)
-  FtpAuthCache* ftp_auth_cache_;
+  CheckedPtr<FtpAuthCache> ftp_auth_cache_;
 #endif  // !BUILDFLAG(DISABLE_FTP_SUPPORT)
 
   std::unique_ptr<std::set<const URLRequest*>> url_requests_;

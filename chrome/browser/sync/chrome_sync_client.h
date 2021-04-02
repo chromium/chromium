@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
@@ -87,7 +88,7 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
       syncer::SyncService* sync_service);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  Profile* const profile_;
+  const CheckedPtr<Profile> profile_;
 
   // The sync api component factory in use by this client.
   std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>

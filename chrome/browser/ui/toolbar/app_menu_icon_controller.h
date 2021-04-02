@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -89,9 +90,9 @@ class AppMenuIconController : public GlobalErrorObserver,
 
   // True for desktop Chrome on dev and canary channels.
   const bool is_unstable_channel_;
-  UpgradeDetector* const upgrade_detector_;
-  Profile* const profile_;
-  Delegate* const delegate_;
+  const CheckedPtr<UpgradeDetector> upgrade_detector_;
+  const CheckedPtr<Profile> profile_;
+  const CheckedPtr<Delegate> delegate_;
   base::ScopedObservation<GlobalErrorService, GlobalErrorObserver>
       global_error_observation_{this};
 

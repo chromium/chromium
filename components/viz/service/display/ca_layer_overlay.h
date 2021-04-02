@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
@@ -80,7 +81,7 @@ class VIZ_SERVICE_EXPORT CALayerOverlay {
   unsigned filter = 0;
   // If |rpdq| is present, then the renderer must draw the filter effects and
   // copy the result into an IOSurface.
-  const AggregatedRenderPassDrawQuad* rpdq = nullptr;
+  CheckedPtr<const AggregatedRenderPassDrawQuad> rpdq = nullptr;
   // The DDL for generating render pass overlay buffer with SkiaRenderer.
   sk_sp<SkDeferredDisplayList> ddl;
 };

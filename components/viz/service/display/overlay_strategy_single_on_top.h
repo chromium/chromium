@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/viz/service/display/overlay_candidate.h"
 #include "components/viz/service/display/overlay_processor_using_strategy.h"
 #include "components/viz/service/viz_service_export.h"
@@ -64,7 +65,7 @@ class VIZ_SERVICE_EXPORT OverlayStrategySingleOnTop
                   const OverlayCandidate& candidate,
                   QuadList::Iterator candidate_iterator);
 
-  OverlayProcessorUsingStrategy* capability_checker_;  // Weak.
+  CheckedPtr<OverlayProcessorUsingStrategy> capability_checker_;  // Weak.
 
   ResourceId previous_frame_resource_id_ = kInvalidResourceId;
   size_t same_resource_id_frames_count_ = 0;

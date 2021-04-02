@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 
@@ -45,7 +46,7 @@ class BufferedMessageSender {
       buffered_messages_;
 
   // Non-owned pointer provided by DialMediaRouteProvider.
-  mojom::MediaRouter* const media_router_;
+  const CheckedPtr<mojom::MediaRouter> media_router_;
 
   DISALLOW_COPY_AND_ASSIGN(BufferedMessageSender);
 };

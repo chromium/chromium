@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/zucchini/algorithm.h"
 #include "components/zucchini/image_utils.h"
 
@@ -119,7 +120,7 @@ class AddressTranslator {
 
    private:
     const AddressTranslator& translator_;
-    mutable const AddressTranslator::Unit* cached_unit_ = nullptr;
+    mutable CheckedPtr<const AddressTranslator::Unit> cached_unit_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(OffsetToRvaCache);
   };
@@ -138,7 +139,7 @@ class AddressTranslator {
 
    private:
     const AddressTranslator& translator_;
-    mutable const AddressTranslator::Unit* cached_unit_ = nullptr;
+    mutable CheckedPtr<const AddressTranslator::Unit> cached_unit_ = nullptr;
 
     DISALLOW_COPY_AND_ASSIGN(RvaToOffsetCache);
   };

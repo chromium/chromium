@@ -14,6 +14,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
@@ -143,8 +144,8 @@ class ContentSettingSourceSetter {
   }
 
  private:
-  sync_preferences::TestingPrefServiceSyncable* prefs_;
-  HostContentSettingsMap* host_content_settings_map_;
+  CheckedPtr<sync_preferences::TestingPrefServiceSyncable> prefs_;
+  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
   ContentSettingsType content_type_;
 };
 
@@ -494,7 +495,7 @@ class SiteSettingsHandlerTest : public testing::Test {
   base::ScopedTempDir profile_dir_;
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  TestingProfile* incognito_profile_;
+  CheckedPtr<TestingProfile> incognito_profile_;
   web_app::TestAppRegistrar app_registrar_;
   content::TestWebUI web_ui_;
   std::unique_ptr<SiteSettingsHandler> handler_;

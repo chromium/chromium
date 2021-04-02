@@ -7,6 +7,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
 #include "components/permissions/permission_request.h"
 
@@ -40,7 +41,7 @@ class RegisterProtocolHandlerPermissionRequest
   void Cancelled() override;
   void RequestFinished() override;
 
-  ProtocolHandlerRegistry* registry_;
+  CheckedPtr<ProtocolHandlerRegistry> registry_;
   ProtocolHandler handler_;
   GURL origin_;
   // Fullscreen will be blocked for the duration of the lifetime of this block.

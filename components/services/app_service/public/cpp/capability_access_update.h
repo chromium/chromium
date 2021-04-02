@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
@@ -65,8 +66,8 @@ class COMPONENT_EXPORT(APP_UPDATE) CapabilityAccessUpdate {
   const ::AccountId& AccountId() const;
 
  private:
-  const apps::mojom::CapabilityAccess* state_;
-  const apps::mojom::CapabilityAccess* delta_;
+  CheckedPtr<const apps::mojom::CapabilityAccess> state_;
+  CheckedPtr<const apps::mojom::CapabilityAccess> delta_;
 
   const ::AccountId& account_id_;
 };
