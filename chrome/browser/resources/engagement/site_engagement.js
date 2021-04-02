@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {$, createElementWithClassName} from 'chrome://resources/js/util.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {SiteEngagementDetails, SiteEngagementDetailsProvider, SiteEngagementDetailsProviderRemote} from './site_engagement_details.mojom-webui.js';
 
-(function() {
 let resolvePageIsPopulated = null;
 const pageIsPopulatedPromise = new Promise((resolve, reject) => {
   resolvePageIsPopulated = resolve;
@@ -217,4 +218,3 @@ function initialize() {
 }
 
 document.addEventListener('DOMContentLoaded', initialize);
-})();
