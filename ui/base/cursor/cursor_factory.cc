@@ -164,6 +164,10 @@ std::vector<std::string> CursorNamesFromType(mojom::CursorType type) {
     case mojom::CursorType::kCopy:
       return {"copy"};
     case mojom::CursorType::kNotAllowed:
+    case mojom::CursorType::kNorthSouthNoResize:
+    case mojom::CursorType::kEastWestNoResize:
+    case mojom::CursorType::kNorthEastSouthWestNoResize:
+    case mojom::CursorType::kNorthWestSouthEastNoResize:
       return {"not-allowed", "crossed_circle"};
     case mojom::CursorType::kDndNone:
       return {"dnd-none", "hand2"};

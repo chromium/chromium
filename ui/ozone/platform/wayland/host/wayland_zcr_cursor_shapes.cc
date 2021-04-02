@@ -119,6 +119,10 @@ base::Optional<int32_t> WaylandZcrCursorShapes::ShapeFromType(CursorType type) {
       return ZCR_CURSOR_SHAPES_V1_CURSOR_SHAPE_TYPE_GRABBING;
     case CursorType::kMiddlePanningVertical:
     case CursorType::kMiddlePanningHorizontal:
+    case CursorType::kEastWestNoResize:
+    case CursorType::kNorthEastSouthWestNoResize:
+    case CursorType::kNorthSouthNoResize:
+    case CursorType::kNorthWestSouthEastNoResize:
       // Not supported by this API.
       return base::nullopt;
     case CursorType::kCustom:

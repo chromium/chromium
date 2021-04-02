@@ -3067,6 +3067,14 @@ static const char* CursorTypeToString(
       return "DragAndDropCopy";
     case ui::mojom::blink::CursorType::kDndLink:
       return "DragAndDropLink";
+    case ui::mojom::blink::CursorType::kNorthSouthNoResize:
+      return "NorthSouthNoResize";
+    case ui::mojom::blink::CursorType::kEastWestNoResize:
+      return "EastWestNoResize";
+    case ui::mojom::blink::CursorType::kNorthEastSouthWestNoResize:
+      return "NorthEastSouthWestNoResize";
+    case ui::mojom::blink::CursorType::kNorthWestSouthEastNoResize:
+      return "NorthWestSouthEastNoResize";
   }
 
   NOTREACHED();

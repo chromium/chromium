@@ -60,4 +60,8 @@ enum CursorType {
   kDndMove,
   kDndCopy,
   kDndLink,
+  kEastWestNoResize,
+  kNorthSouthNoResize,
+  kNorthEastSouthWestNoResize,
+  kNorthWestSouthEastNoResize,
 };

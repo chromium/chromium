@@ -76,6 +76,10 @@ bool UseDefaultCursorForType(mojom::CursorType type) {
     case CursorType::kMiddlePanningVertical:
     case CursorType::kMiddlePanningHorizontal:
     case CursorType::kCustom:
+    case CursorType::kEastWestNoResize:
+    case CursorType::kNorthEastSouthWestNoResize:
+    case CursorType::kNorthSouthNoResize:
+    case CursorType::kNorthWestSouthEastNoResize:
       return false;
   }
 }

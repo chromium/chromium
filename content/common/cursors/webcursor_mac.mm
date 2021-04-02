@@ -243,6 +243,10 @@ gfx::NativeCursor WebCursor::GetNativeCursor() {
                                        IDR_PROGRESS_CURSOR, 3, 2);
     case ui::mojom::CursorType::kNoDrop:
     case ui::mojom::CursorType::kNotAllowed:
+    case ui::mojom::CursorType::kEastWestNoResize:
+    case ui::mojom::CursorType::kNorthEastSouthWestNoResize:
+    case ui::mojom::CursorType::kNorthSouthNoResize:
+    case ui::mojom::CursorType::kNorthWestSouthEastNoResize:
       return [NSCursor operationNotAllowedCursor];
     case ui::mojom::CursorType::kCopy:
       return [NSCursor dragCopyCursor];

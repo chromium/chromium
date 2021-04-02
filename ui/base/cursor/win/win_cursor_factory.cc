@@ -66,6 +66,10 @@ const wchar_t* GetCursorId(mojom::CursorType type) {
       return IDC_APPSTARTING;
     case mojom::CursorType::kNoDrop:
     case mojom::CursorType::kNotAllowed:
+    case mojom::CursorType::kEastWestNoResize:
+    case mojom::CursorType::kNorthEastSouthWestNoResize:
+    case mojom::CursorType::kNorthSouthNoResize:
+    case mojom::CursorType::kNorthWestSouthEastNoResize:
       return IDC_NO;
     case mojom::CursorType::kColumnResize:
       return MAKEINTRESOURCE(IDC_COLRESIZE);
