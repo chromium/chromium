@@ -242,8 +242,10 @@ class CORE_EXPORT NGExclusionSpaceInternal final
     LayoutUnit line_left;
     LayoutUnit line_right;
 
-    Vector<NGShelfEdge, 1> line_left_edges;
-    Vector<NGShelfEdge, 1> line_right_edges;
+    // TODO(crbug.com/1195345): restore inline buffer removed in
+    // https://crrev.com/c/2801713
+    Vector<NGShelfEdge> line_left_edges;
+    Vector<NGShelfEdge> line_right_edges;
 
     // shape_exclusions contains all the floats which sit below this shelf. The
     // has_shape_exclusions member will be true if shape_exclusions contains an
@@ -288,8 +290,8 @@ class CORE_EXPORT NGExclusionSpaceInternal final
 
    public:
     NGClosedArea(NGLayoutOpportunity opportunity,
-                 const Vector<NGShelfEdge, 1>& line_left_edges,
-                 const Vector<NGShelfEdge, 1>& line_right_edges)
+                 const Vector<NGShelfEdge>& line_left_edges,
+                 const Vector<NGShelfEdge>& line_right_edges)
         : opportunity(opportunity),
           line_left_edges(line_left_edges),
           line_right_edges(line_right_edges) {}
@@ -297,8 +299,11 @@ class CORE_EXPORT NGExclusionSpaceInternal final
     void Trace(Visitor* visitor) const { visitor->Trace(opportunity); }
 
     const NGLayoutOpportunity opportunity;
-    const Vector<NGShelfEdge, 1> line_left_edges;
-    const Vector<NGShelfEdge, 1> line_right_edges;
+
+    // TODO(crbug.com/1195345): restore inline buffer removed in
+    // https://crrev.com/c/2801713
+    const Vector<NGShelfEdge> line_left_edges;
+    const Vector<NGShelfEdge> line_right_edges;
   };
 
  private:

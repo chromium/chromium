@@ -60,10 +60,9 @@ void InsertClosedArea(
 }
 
 // Returns true if there is at least one edge between block_start and block_end.
-bool HasSolidEdges(
-    const Vector<NGExclusionSpaceInternal::NGShelfEdge, 1>& edges,
-    LayoutUnit block_start,
-    LayoutUnit block_end) {
+bool HasSolidEdges(const Vector<NGExclusionSpaceInternal::NGShelfEdge>& edges,
+                   LayoutUnit block_start,
+                   LayoutUnit block_end) {
   // If there aren't any adjacent exclusions, we must be the initial shelf.
   // This always has "solid" edges on either side.
   if (edges.IsEmpty())
@@ -82,9 +81,9 @@ bool HasSolidEdges(
 // to the given out_edges vector.
 // edges will be invalid after this call.
 void CollectSolidEdges(
-    Vector<NGExclusionSpaceInternal::NGShelfEdge, 1>* edges,
+    Vector<NGExclusionSpaceInternal::NGShelfEdge>* edges,
     LayoutUnit block_offset,
-    Vector<NGExclusionSpaceInternal::NGShelfEdge, 1>* out_edges) {
+    Vector<NGExclusionSpaceInternal::NGShelfEdge>* out_edges) {
   *out_edges = std::move(*edges);
   for (auto* it = out_edges->begin(); it != out_edges->end();) {
     if ((*it).block_end <= block_offset) {
