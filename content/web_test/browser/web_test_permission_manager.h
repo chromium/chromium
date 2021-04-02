@@ -27,13 +27,14 @@ class WebTestPermissionManager
   ~WebTestPermissionManager() override;
 
   // PermissionManager overrides.
-  int RequestPermission(PermissionType permission,
-                        RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                            callback) override;
-  int RequestPermissions(
+  void RequestPermission(
+      PermissionType permission,
+      RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
+  void RequestPermissions(
       const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

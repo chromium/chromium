@@ -29,11 +29,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // render_frame_host.
   // When the permission request is handled, whether it failed, timed out or
   // succeeded, the |callback| will be run.
-  // Returns a request id which can be used to cancel the permission (see
-  // CancelPermissionRequest). This can be kNoPendingOperation if
-  // there is no further need to cancel the permission in which case |callback|
-  // was invoked.
-  virtual int RequestPermission(
+  virtual void RequestPermission(
       PermissionType permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -46,11 +42,7 @@ class CONTENT_EXPORT PermissionControllerDelegate {
   // succeeded, the |callback| will be run. The order of statuses in the
   // returned vector will correspond to the order of requested permission
   // types.
-  // Returns a request id which can be used to cancel the request (see
-  // CancelPermissionRequest). This can be kNoPendingOperation if
-  // there is no further need to cancel the permission in which case |callback|
-  // was invoked.
-  virtual int RequestPermissions(
+  virtual void RequestPermissions(
       const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

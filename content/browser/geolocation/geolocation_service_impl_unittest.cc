@@ -38,22 +38,18 @@ double kMockLongitude = 10.0;
 
 class TestPermissionManager : public MockPermissionManager {
  public:
-  TestPermissionManager()
-      : request_id_(PermissionController::kNoPendingOperation) {}
+  TestPermissionManager() = default;
   ~TestPermissionManager() override = default;
 
-  int RequestPermission(PermissionType permissions,
-                        RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        PermissionCallback callback) override {
+  void RequestPermission(PermissionType permissions,
+                         RenderFrameHost* render_frame_host,
+                         const GURL& requesting_origin,
+                         bool user_gesture,
+                         PermissionCallback callback) override {
     EXPECT_EQ(permissions, PermissionType::GEOLOCATION);
     EXPECT_TRUE(user_gesture);
     request_callback_.Run(std::move(callback));
-    return request_id_;
   }
-
-  void SetRequestId(int request_id) { request_id_ = request_id; }
 
   void SetRequestCallback(
       base::RepeatingCallback<void(PermissionCallback)> request_callback) {
@@ -61,8 +57,6 @@ class TestPermissionManager : public MockPermissionManager {
   }
 
  private:
-  int request_id_;
-
   base::RepeatingCallback<void(PermissionCallback)> request_callback_;
 };
 
@@ -250,7 +244,6 @@ TEST_F(GeolocationServiceTest, PermissionDeniedSync) {
 TEST_F(GeolocationServiceTest, PermissionGrantedAsync) {
   CreateEmbeddedFrameAndGeolocationService(
       /*allow_via_permissions_policy=*/true);
-  permission_manager()->SetRequestId(42);
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback permission_callback) {
         base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -281,7 +274,6 @@ TEST_F(GeolocationServiceTest, PermissionGrantedAsync) {
 TEST_F(GeolocationServiceTest, PermissionDeniedAsync) {
   CreateEmbeddedFrameAndGeolocationService(
       /*allow_via_permissions_policy=*/true);
-  permission_manager()->SetRequestId(42);
   permission_manager()->SetRequestCallback(
       base::BindRepeating([](PermissionCallback permission_callback) {
         base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -307,7 +299,6 @@ TEST_F(GeolocationServiceTest, PermissionDeniedAsync) {
 TEST_F(GeolocationServiceTest, ServiceClosedBeforePermissionResponse) {
   CreateEmbeddedFrameAndGeolocationService(
       /*allow_via_permissions_policy=*/true);
-  permission_manager()->SetRequestId(42);
   mojo::Remote<Geolocation> geolocation;
   service_remote()->CreateGeolocation(
       geolocation.BindNewPipeAndPassReceiver(), true,

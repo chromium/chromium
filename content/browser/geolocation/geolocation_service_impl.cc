@@ -19,8 +19,7 @@ namespace content {
 
 GeolocationServiceImplContext::GeolocationServiceImplContext(
     PermissionControllerImpl* permission_controller)
-    : permission_controller_(permission_controller),
-      request_id_(PermissionController::kNoPendingOperation) {}
+    : permission_controller_(permission_controller) {}
 
 GeolocationServiceImplContext::~GeolocationServiceImplContext() {
 }
@@ -29,14 +28,15 @@ void GeolocationServiceImplContext::RequestPermission(
     RenderFrameHost* render_frame_host,
     bool user_gesture,
     PermissionCallback callback) {
-  if (request_id_ != PermissionController::kNoPendingOperation) {
+  if (has_pending_permission_request_) {
     mojo::ReportBadMessage(
         "GeolocationService client may only create one Geolocation at a "
         "time.");
     return;
   }
 
-  request_id_ = permission_controller_->RequestPermission(
+  has_pending_permission_request_ = true;
+  permission_controller_->RequestPermission(
       PermissionType::GEOLOCATION, render_frame_host,
       render_frame_host->GetLastCommittedOrigin().GetURL(), user_gesture,
       base::BindOnce(&GeolocationServiceImplContext::HandlePermissionStatus,
@@ -46,7 +46,7 @@ void GeolocationServiceImplContext::RequestPermission(
 void GeolocationServiceImplContext::HandlePermissionStatus(
     PermissionCallback callback,
     blink::mojom::PermissionStatus permission_status) {
-  request_id_ = PermissionController::kNoPendingOperation;
+  has_pending_permission_request_ = false;
   std::move(callback).Run(permission_status);
 }
 

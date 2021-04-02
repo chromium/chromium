@@ -17,7 +17,7 @@ HeadlessPermissionManager::HeadlessPermissionManager(
 
 HeadlessPermissionManager::~HeadlessPermissionManager() = default;
 
-int HeadlessPermissionManager::RequestPermission(
+void HeadlessPermissionManager::RequestPermission(
     content::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -29,14 +29,13 @@ int HeadlessPermissionManager::RequestPermission(
   if (browser_context_->IsOffTheRecord() &&
       permission == content::PermissionType::NOTIFICATIONS) {
     std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
-    return content::PermissionController::kNoPendingOperation;
+    return;
   }
 
   std::move(callback).Run(blink::mojom::PermissionStatus::ASK);
-  return content::PermissionController::kNoPendingOperation;
 }
 
-int HeadlessPermissionManager::RequestPermissions(
+void HeadlessPermissionManager::RequestPermissions(
     const std::vector<content::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -48,7 +47,6 @@ int HeadlessPermissionManager::RequestPermissions(
   std::vector<blink::mojom::PermissionStatus> result(
       permissions.size(), blink::mojom::PermissionStatus::ASK);
   std::move(callback).Run(result);
-  return content::PermissionController::kNoPendingOperation;
 }
 
 void HeadlessPermissionManager::ResetPermission(

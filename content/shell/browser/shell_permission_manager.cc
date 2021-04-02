@@ -71,7 +71,7 @@ ShellPermissionManager::ShellPermissionManager() = default;
 ShellPermissionManager::~ShellPermissionManager() {
 }
 
-int ShellPermissionManager::RequestPermission(
+void ShellPermissionManager::RequestPermission(
     PermissionType permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -80,10 +80,9 @@ int ShellPermissionManager::RequestPermission(
   std::move(callback).Run(IsAllowlistedPermissionType(permission)
                               ? blink::mojom::PermissionStatus::GRANTED
                               : blink::mojom::PermissionStatus::DENIED);
-  return PermissionController::kNoPendingOperation;
 }
 
-int ShellPermissionManager::RequestPermissions(
+void ShellPermissionManager::RequestPermissions(
     const std::vector<PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -97,7 +96,6 @@ int ShellPermissionManager::RequestPermissions(
                          : blink::mojom::PermissionStatus::DENIED);
   }
   std::move(callback).Run(result);
-  return PermissionController::kNoPendingOperation;
 }
 
 void ShellPermissionManager::ResetPermission(

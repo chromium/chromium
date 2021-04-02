@@ -26,10 +26,6 @@ class CONTENT_EXPORT PermissionController
   // identifier values may be different.
   using SubscriptionId = util::IdType64<PermissionController>;
 
-  // Constant returned when requesting a permission if cancelling at a later
-  // stage would have no effect.
-  static const int kNoPendingOperation = -1;
-
   ~PermissionController() override {}
 
   // Returns the permission status of a given requesting_origin/embedding_origin

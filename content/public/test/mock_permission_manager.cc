@@ -13,23 +13,19 @@ MockPermissionManager::MockPermissionManager() {}
 
 MockPermissionManager::~MockPermissionManager() {}
 
-int MockPermissionManager::RequestPermission(
+void MockPermissionManager::RequestPermission(
     PermissionType permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
-    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
-  return PermissionController::kNoPendingOperation;
-}
+    base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {}
 
-int MockPermissionManager::RequestPermissions(
+void MockPermissionManager::RequestPermissions(
     const std::vector<PermissionType>& permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
-        callback) {
-  return PermissionController::kNoPendingOperation;
-}
+        callback) {}
 
 }  // namespace content

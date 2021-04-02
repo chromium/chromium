@@ -17,7 +17,7 @@ CastPermissionManager::CastPermissionManager() {}
 CastPermissionManager::~CastPermissionManager() {
 }
 
-int CastPermissionManager::RequestPermission(
+void CastPermissionManager::RequestPermission(
     content::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& origin,
@@ -25,10 +25,9 @@ int CastPermissionManager::RequestPermission(
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
   LOG(INFO) << __FUNCTION__ << ": " << static_cast<int>(permission);
   std::move(callback).Run(blink::mojom::PermissionStatus::GRANTED);
-  return content::PermissionController::kNoPendingOperation;
 }
 
-int CastPermissionManager::RequestPermissions(
+void CastPermissionManager::RequestPermissions(
     const std::vector<content::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -37,7 +36,6 @@ int CastPermissionManager::RequestPermissions(
         callback) {
   std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
       permissions.size(), blink::mojom::PermissionStatus::GRANTED));
-  return content::PermissionController::kNoPendingOperation;
 }
 
 void CastPermissionManager::ResetPermission(

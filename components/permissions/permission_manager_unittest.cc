@@ -166,17 +166,16 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                                                                value);
   }
 
-  int RequestPermission(PermissionType type,
-                        content::RenderFrameHost* rfh,
-                        const GURL& origin) {
+  void RequestPermission(PermissionType type,
+                         content::RenderFrameHost* rfh,
+                         const GURL& origin) {
     base::RunLoop loop;
     quit_closure_ = loop.QuitClosure();
-    int result = GetPermissionControllerDelegate()->RequestPermission(
+    GetPermissionControllerDelegate()->RequestPermission(
         type, rfh, origin, true,
         base::BindOnce(&PermissionManagerTest::OnPermissionChange,
                        base::Unretained(this)));
     loop.Run();
-    return result;
   }
 
   const GURL& url() const { return url_; }

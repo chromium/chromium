@@ -20,13 +20,14 @@ class WebEnginePermissionDelegate
   WebEnginePermissionDelegate& operator=(WebEnginePermissionDelegate&) = delete;
 
   // content::PermissionControllerDelegate implementation:
-  int RequestPermission(content::PermissionType permission,
-                        content::RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                            callback) override;
-  int RequestPermissions(
+  void RequestPermission(
+      content::PermissionType permission,
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
+  void RequestPermissions(
       const std::vector<content::PermissionType>& permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

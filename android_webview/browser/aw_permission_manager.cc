@@ -234,20 +234,19 @@ AwPermissionManager::~AwPermissionManager() {
   CancelPermissionRequests();
 }
 
-int AwPermissionManager::RequestPermission(
+void AwPermissionManager::RequestPermission(
     PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
     bool user_gesture,
     base::OnceCallback<void(PermissionStatus)> callback) {
-  return RequestPermissions(
-      std::vector<PermissionType>(1, permission), render_frame_host,
-      requesting_origin, user_gesture,
-      base::BindOnce(&PermissionRequestResponseCallbackWrapper,
-                     std::move(callback)));
+  RequestPermissions(std::vector<PermissionType>(1, permission),
+                     render_frame_host, requesting_origin, user_gesture,
+                     base::BindOnce(&PermissionRequestResponseCallbackWrapper,
+                                    std::move(callback)));
 }
 
-int AwPermissionManager::RequestPermissions(
+void AwPermissionManager::RequestPermissions(
     const std::vector<PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -255,7 +254,7 @@ int AwPermissionManager::RequestPermissions(
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
   if (permissions.empty()) {
     std::move(callback).Run(std::vector<PermissionStatus>());
-    return content::PermissionController::kNoPendingOperation;
+    return;
   }
 
   const GURL& embedding_origin = LastCommittedOrigin(render_frame_host);
@@ -373,7 +372,7 @@ int AwPermissionManager::RequestPermissions(
   // If delegate resolve the permission synchronously, all requests could be
   // already resolved here.
   if (!pending_requests_.Lookup(request_id))
-    return content::PermissionController::kNoPendingOperation;
+    return;
 
   // If requests are resolved without calling delegate functions, e.g.
   // PermissionType::MIDI is permitted within the previous for-loop, all
@@ -385,10 +384,7 @@ int AwPermissionManager::RequestPermissions(
         std::move(pending_request_raw->callback);
     pending_requests_.Remove(request_id);
     std::move(completed_callback).Run(results);
-    return content::PermissionController::kNoPendingOperation;
   }
-
-  return request_id;
 }
 
 // static

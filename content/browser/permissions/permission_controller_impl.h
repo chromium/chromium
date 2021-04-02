@@ -53,14 +53,14 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
 
-  int RequestPermission(
+  void RequestPermission(
       PermissionType permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool user_gesture,
       base::OnceCallback<void(blink::mojom::PermissionStatus)> callback);
 
-  int RequestPermissions(
+  void RequestPermissions(
       const std::vector<PermissionType>& permission,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

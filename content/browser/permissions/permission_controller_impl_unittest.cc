@@ -34,7 +34,7 @@ class MockManagerWithRequests : public MockPermissionManager {
   MockManagerWithRequests() {}
   ~MockManagerWithRequests() override {}
   MOCK_METHOD(
-      int,
+      void,
       RequestPermissions,
       (const std::vector<PermissionType>& permission,
        RenderFrameHost* render_frame_host,

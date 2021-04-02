@@ -58,12 +58,12 @@ class PermissionManager : public KeyedService,
   // are for the content::PermissionControllerDelegate overrides and shouldn't
   // be used from chrome/.
 
-  int RequestPermission(ContentSettingsType permission,
-                        content::RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        base::OnceCallback<void(ContentSetting)> callback);
-  int RequestPermissions(
+  void RequestPermission(ContentSettingsType permission,
+                         content::RenderFrameHost* render_frame_host,
+                         const GURL& requesting_origin,
+                         bool user_gesture,
+                         base::OnceCallback<void(ContentSetting)> callback);
+  void RequestPermissions(
       const std::vector<ContentSettingsType>& permissions,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -86,13 +86,14 @@ class PermissionManager : public KeyedService,
       const GURL& requesting_origin);
 
   // content::PermissionControllerDelegate implementation.
-  int RequestPermission(content::PermissionType permission,
-                        content::RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                            callback) override;
-  int RequestPermissions(
+  void RequestPermission(
+      content::PermissionType permission,
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
+  void RequestPermissions(
       const std::vector<content::PermissionType>& permissions,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,

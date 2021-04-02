@@ -36,7 +36,7 @@ class GeolocationServiceImplContext {
 
  private:
   PermissionControllerImpl* permission_controller_;
-  int request_id_;
+  bool has_pending_permission_request_ = false;
 
   void HandlePermissionStatus(PermissionCallback callback,
                               blink::mojom::PermissionStatus permission_status);

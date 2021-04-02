@@ -17,7 +17,7 @@
 WebEnginePermissionDelegate::WebEnginePermissionDelegate() = default;
 WebEnginePermissionDelegate::~WebEnginePermissionDelegate() = default;
 
-int WebEnginePermissionDelegate::RequestPermission(
+void WebEnginePermissionDelegate::RequestPermission(
     content::PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& origin,
@@ -33,11 +33,9 @@ int WebEnginePermissionDelegate::RequestPermission(
             std::move(callback).Run(state[0]);
           },
           std::move(callback)));
-
-  return content::PermissionController::kNoPendingOperation;
 }
 
-int WebEnginePermissionDelegate::RequestPermissions(
+void WebEnginePermissionDelegate::RequestPermissions(
     const std::vector<content::PermissionType>& permissions,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -49,8 +47,6 @@ int WebEnginePermissionDelegate::RequestPermissions(
   frame->permission_controller()->RequestPermissions(
       permissions, url::Origin::Create(requesting_origin), user_gesture,
       std::move(callback));
-
-  return content::PermissionController::kNoPendingOperation;
 }
 
 void WebEnginePermissionDelegate::ResetPermission(

@@ -17,11 +17,11 @@ class TestFontAccessPermissionManager : public MockPermissionManager {
   using PermissionCallback =
       base::OnceCallback<void(blink::mojom::PermissionStatus)>;
 
-  int RequestPermission(PermissionType permissions,
-                        RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        PermissionCallback callback) override;
+  void RequestPermission(PermissionType permissions,
+                         RenderFrameHost* render_frame_host,
+                         const GURL& requesting_origin,
+                         bool user_gesture,
+                         PermissionCallback callback) override;
 
   blink::mojom::PermissionStatus GetPermissionStatusForFrame(
       PermissionType permission,
