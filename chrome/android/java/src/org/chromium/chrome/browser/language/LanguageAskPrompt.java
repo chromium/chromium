@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.language;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -20,8 +21,8 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.translate.TranslateBridge;
@@ -240,14 +241,16 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
     /**
      * Displays the Explicit Language Ask prompt if the experiment is enabled.
      * @param activity The current activity to display the prompt into.
+     * @param modalDialogManagerSupplier Supplier of {@link ModalDialogManager}.
      * @return Whether the prompt was shown or not.
      */
-    public static boolean maybeShowLanguageAskPrompt(ChromeActivity activity) {
+    public static boolean maybeShowLanguageAskPrompt(
+            Activity activity, ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.EXPLICIT_LANGUAGE_ASK)) return false;
         if (TranslateBridge.getExplicitLanguageAskPromptShown()) return false;
 
         LanguageAskPrompt prompt = new LanguageAskPrompt();
-        prompt.show(activity);
+        prompt.show(activity, modalDialogManagerSupplier);
 
         TranslateBridge.setExplicitLanguageAskPromptShown(true);
 
@@ -286,8 +289,10 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
     /**
      * Displays this prompt inside the specified |activity|.
      * @param activity The current activity to display the prompt into.
+     * @param modalDialogManagerSupplier Supplier of {@link ModalDialogManager}.
      */
-    public void show(ChromeActivity activity) {
+    public void show(
+            Activity activity, ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
         if (activity == null) return;
 
         recordPromptEvent(PROMPT_EVENT_SHOWN);
@@ -355,7 +360,7 @@ public class LanguageAskPrompt implements ModalDialogProperties.Controller {
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .build();
 
-        mModalDialogManager = activity.getModalDialogManager();
+        mModalDialogManager = modalDialogManagerSupplier.get();
         mModalDialogManager.showDialog(model, ModalDialogManager.ModalDialogType.APP);
     }
 

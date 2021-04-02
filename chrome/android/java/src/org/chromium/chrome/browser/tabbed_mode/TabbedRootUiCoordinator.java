@@ -640,6 +640,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             return true;
         }
 
-        return LanguageAskPrompt.maybeShowLanguageAskPrompt(mActivity);
+        return LanguageAskPrompt.maybeShowLanguageAskPrompt(
+                mActivity, mActivity.getModalDialogManagerSupplier());
     }
 }
