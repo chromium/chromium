@@ -103,6 +103,11 @@ def AddTestExecutionArgs(arg_parser):
       action='store_true',
       help='Gather code coverage information and place it in '
       'the output directory.')
+  test_args.add_argument('--code-coverage-dir',
+                         default=os.getcwd(),
+                         help='Directory to place code coverage information. '
+                         'Only relevant when --code-coverage set to true. '
+                         'Defaults to current directory.')
   test_args.add_argument('--child-arg',
                          action='append',
                          help='Arguments for the test process.')
