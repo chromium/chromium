@@ -19,7 +19,14 @@ from telemetry.testing import unittest_runner
 
 
 def main():
-  return unittest_runner.Run(gpu_project_config.CONFIG, no_browser=True)
+  args = sys.argv[1:]
+  # TODO(crbug.com/1195465): Remove this once the issue with multiprocessing
+  # on Mac is fixed.
+  if sys.platform == 'darwin':
+    args.append('--jobs=1')
+  return unittest_runner.Run(gpu_project_config.CONFIG,
+                             no_browser=True,
+                             passed_args=args)
 
 
 if __name__ == '__main__':
