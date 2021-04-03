@@ -21313,6 +21313,9 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="EduCoexistenceFlowResult">
+  <obsolete>
+    Deprecated in M91 after v2 EduCoexistence.
+  </obsolete>
   <int value="0" label="Parents List Screen"/>
   <int value="1" label="Parent Password Screen"/>
   <int value="2" label="Parent Info Screen 1"/>

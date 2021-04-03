@@ -111,14 +111,6 @@ void InlineLoginDialogChromeOS::ShowDeprecated(
   ShowDeprecated(/* email= */ std::string(), source);
 }
 
-// static
-void InlineLoginDialogChromeOS::UpdateEduCoexistenceFlowResult(
-    EduCoexistenceFlowResult result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (dialog)
-    dialog->SetEduCoexistenceFlowResult(result);
-}
-
 void InlineLoginDialogChromeOS::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
   params->z_order = ui::ZOrderLevel::kNormal;
@@ -149,11 +141,6 @@ void InlineLoginDialogChromeOS::AddObserver(
 void InlineLoginDialogChromeOS::RemoveObserver(
     web_modal::ModalDialogHostObserver* observer) {
   modal_dialog_host_observer_list_.RemoveObserver(observer);
-}
-
-void InlineLoginDialogChromeOS::SetEduCoexistenceFlowResult(
-    EduCoexistenceFlowResult result) {
-  edu_coexistence_flow_result_ = result;
 }
 
 InlineLoginDialogChromeOS::InlineLoginDialogChromeOS()
@@ -233,12 +220,6 @@ void InlineLoginDialogChromeOS::OnDialogShown(content::WebUI* webui) {
 }
 
 void InlineLoginDialogChromeOS::OnDialogClosed(const std::string& json_retval) {
-  if (ProfileManager::GetActiveUserProfile()->IsChild() &&
-      !base::FeatureList::IsEnabled(supervised_users::kEduCoexistenceFlowV2)) {
-    DCHECK(edu_coexistence_flow_result_.has_value());
-    base::UmaHistogramEnumeration("AccountManager.EduCoexistence.FlowResult",
-                                  edu_coexistence_flow_result_.value());
-  }
   SystemWebDialogDelegate::OnDialogClosed(json_retval);
 }
 

@@ -30,18 +30,6 @@ export let ParentSigninFailureResult;
  */
 export let EduLoginParams;
 
-// Keep in sync with
-// chrome/browser/ui/webui/signin/inline_login_handler_dialog_chromeos.h
-/** @enum {number} */
-export const EduCoexistenceFlowResult = {
-  PARENTS_LIST_SCREEN: 0,
-  PARENT_PASSWORD_SCREEN: 1,
-  PARENT_INFO_SCREEN1: 2,
-  PARENT_INFO_SCREEN2: 3,
-  EDU_ACCOUNT_LOGIN_SCREEN: 4,
-  FLOW_COMPLETED: 5,
-};
-
 /**
  * Type of the error screen.
  * @enum {string}

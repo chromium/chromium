@@ -6,16 +6,10 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
 
 import {AuthCompletedCredentials} from '../../gaia_auth_host/authenticator.m.js';
 
-import {EduCoexistenceFlowResult, EduLoginParams, ParentAccount} from './edu_login_util.js';
+import {EduLoginParams, ParentAccount} from './edu_login_util.js';
 
 /** @interface */
 export class EduAccountLoginBrowserProxy {
-  /**
-   * Sends 'updateEduCoexistenceFlowResult' request with provided value.
-   * @param {EduCoexistenceFlowResult} result
-   */
-  updateEduCoexistenceFlowResult(result) {}
-
   /**
    * @return {Promise<boolean>}
    */
@@ -76,11 +70,6 @@ export class EduAccountLoginBrowserProxy {
  * @implements {EduAccountLoginBrowserProxy}
  */
 export class EduAccountLoginBrowserProxyImpl {
-  /** @override */
-  updateEduCoexistenceFlowResult(result) {
-    chrome.send('updateEduCoexistenceFlowResult', [result]);
-  }
-
   /** @override */
   isNetworkReady() {
     return sendWithPromise('isNetworkReady');

@@ -348,8 +348,6 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
       const std::string* parentId =
           edu_login_params.FindStringKey("parentObfuscatedGaiaId");
       CHECK(parentId);
-      InlineLoginDialogChromeOS::UpdateEduCoexistenceFlowResult(
-          InlineLoginDialogChromeOS::EduCoexistenceFlowResult::kFlowCompleted);
 
       // ChildSigninHelper deletes itself after its work is done.
       new ChildSigninHelper(

@@ -125,6 +125,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="AccountManager.EduCoexistence.FlowResult"
     enum="EduCoexistenceFlowResult" expires_after="2021-08-01">
+  <obsolete>
+    Removed in M91. Replaced by
+    AccountManager.EduCoexistenceV2.{InSessionFlowResult, OnboardingFlowResult}
+    after v2 EduCoexistence.
+  </obsolete>
   <owner>sinhak@chromium.org</owner>
   <owner>anastasiian@chromium.org</owner>
   <summary>
