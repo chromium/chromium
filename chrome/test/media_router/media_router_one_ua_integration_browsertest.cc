@@ -42,6 +42,23 @@ class MediaRouterIntegrationOneUABrowserTest
   GURL GetTestPageUrl(const base::FilePath& full_path) override {
     return embedded_test_server()->GetURL("/basic_test.html?__oneUA__=true");
   }
+
+  WebContents* StartSessionWithTestPageAndChooseSink() override {
+    WebContents* web_contents = MediaRouterIntegrationBrowserTest::
+        StartSessionWithTestPageAndChooseSink();
+    CaptureOffScreenTab();
+    return web_contents;
+  }
+
+  void CaptureOffScreenTab() {
+    GURL receiver_page =
+        embedded_test_server()->GetURL("/presentation_receiver.html");
+    std::string presentation_id = test_provider_->get_presentation_ids().at(0);
+    test_provider_->CaptureOffScreenTab(GetActiveWebContents(), receiver_page,
+                                        presentation_id);
+    // Wait for offscreen tab to be created and loaded.
+    Wait(base::TimeDelta::FromSeconds(3));
+  }
 };
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
