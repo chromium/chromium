@@ -22,6 +22,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/posix/safe_strerror.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
@@ -187,7 +188,8 @@ class TestArcVmBootNotificationServer
   // starts listening to the socket on another thread.
   void Start() {
     fd_.reset(socket(AF_UNIX, SOCK_STREAM | SOCK_NONBLOCK, 0));
-    ASSERT_TRUE(fd_.is_valid());
+    ASSERT_TRUE(fd_.is_valid())
+        << "open failed with " << base::safe_strerror(errno);
 
     sockaddr_un addr{.sun_family = AF_UNIX};
     memcpy(addr.sun_path, kArcVmBootNotificationServerAddress,
@@ -195,9 +197,10 @@ class TestArcVmBootNotificationServer
 
     ASSERT_EQ(HANDLE_EINTR(bind(fd_.get(), reinterpret_cast<sockaddr*>(&addr),
                                 sizeof(sockaddr_un))),
-              0);
-    ASSERT_EQ(HANDLE_EINTR(listen(fd_.get(), 5)), 0);
-
+              0)
+        << "bind failed with " << base::safe_strerror(errno);
+    ASSERT_EQ(HANDLE_EINTR(listen(fd_.get(), 5)), 0)
+        << "listen failed with " << base::safe_strerror(errno);
     controller_.reset(new base::MessagePumpForUI::FdWatchController(FROM_HERE));
     ASSERT_TRUE(base::CurrentUIThread::Get()->WatchFileDescriptor(
         fd_.get(), true, base::MessagePumpForUI::WATCH_READ, controller_.get(),
