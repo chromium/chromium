@@ -1023,6 +1023,9 @@ void SynthesizedClip::UpdateLayer(bool needs_layer,
   const RefCountedPath* path = clip.ClipPath();
   SkRRect new_rrect = clip.PixelSnappedClipRect();
   IntRect layer_bounds = EnclosingIntRect(clip.PixelSnappedClipRect().Rect());
+  // Expand the mask layer by 1 pixel to ensure it fully covers the masked layer
+  // in case of floating point errors etc.
+  layer_bounds.Inflate(1);
   bool needs_display = false;
 
   auto new_translation_2d_or_matrix =

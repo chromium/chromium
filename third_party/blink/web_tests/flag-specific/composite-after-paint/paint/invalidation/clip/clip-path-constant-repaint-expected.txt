@@ -15,7 +15,8 @@
     },
     {
       "name": "Synthesized Clip",
-      "bounds": [800, 300],
+      "position": [-1, -1],
+      "bounds": [802, 302],
       "transform": 2
     }
   ],
