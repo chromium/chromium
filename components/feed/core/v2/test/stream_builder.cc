@@ -259,8 +259,14 @@ feedstore::WebFeedInfo MakeWebFeedInfo(const std::string& name) {
   result.mutable_favicon()->set_url("http://favicon/" + name);
   result.set_follower_count(123);
   result.set_visit_uri("https://" + name + ".com");
-  feedstore::UriMatcher* matcher = result.add_uri_matchers();
-  matcher->set_domain_match(name + ".com");
+  feedwire::webfeed::WebFeedMatcher* matcher = result.add_matchers();
+  feedwire::webfeed::WebFeedMatcher::Criteria* criteria =
+      matcher->add_criteria();
+  criteria->set_criteria_type(
+      feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_SUFFIX);
+  criteria->set_text(name + ".com");
+  return result;
+
   return result;
 }
 

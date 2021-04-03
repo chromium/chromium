@@ -25,6 +25,15 @@ WebFeedPageInformation MakeWebFeedPageInformation(const std::string& url) {
   return info;
 }
 
+feedwire::webfeed::WebFeedMatcher MakeDomainMatcher(const std::string& domain) {
+  feedwire::webfeed::WebFeedMatcher result;
+  feedwire::webfeed::WebFeedMatcher::Criteria* criteria = result.add_criteria();
+  criteria->set_criteria_type(
+      feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_SUFFIX);
+  criteria->set_text(domain);
+  return result;
+}
+
 feedwire::webfeed::WebFeed MakeWireWebFeed(const std::string& name) {
   feedwire::webfeed::WebFeed result;
   result.set_name("id_" + name);
@@ -33,7 +42,7 @@ feedwire::webfeed::WebFeed MakeWireWebFeed(const std::string& name) {
   result.set_detail_text("details...");
   result.set_visit_uri("https://" + name + ".com");
   result.set_follower_count(kFollowerCount);
-  result.add_uri_matchers()->set_domain_match(name + ".com");
+  *result.add_web_feed_matchers() = MakeDomainMatcher(name + ".com");
   return result;
 }
 
@@ -61,7 +70,7 @@ void WriteRecommendedFeeds(
   for (const auto& info : recommended_feeds) {
     auto* entry = index.add_entries();
     entry->set_web_feed_id(info.web_feed_id());
-    *entry->mutable_matchers() = info.uri_matchers();
+    *entry->mutable_matchers() = info.matchers();
   }
 
   store.WriteRecommendedFeeds(index, recommended_feeds, base::DoNothing());

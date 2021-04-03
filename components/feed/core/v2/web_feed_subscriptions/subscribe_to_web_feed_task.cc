@@ -57,7 +57,7 @@ void SubscribeToWebFeedTask::Run() {
       return;
     }
     feedwire::webfeed::FollowWebFeedRequest request;
-    request.set_web_feed_uri(request_.page_info.url().spec());
+    request.set_web_page_uri(request_.page_info.url().spec());
     stream_->GetNetwork()->SendApiRequest<FollowWebFeedDiscoverApi>(
         request, base::BindOnce(&SubscribeToWebFeedTask::RequestComplete,
                                 base::Unretained(this)));

@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package feedwire.webfeed;
 
+import "components/feed/core/proto/v2/wire/web_feed_matcher.proto";
+
 option optimize_for = LITE_RUNTIME;
 
 message WebFeed {
@@ -23,13 +25,10 @@ message WebFeed {
   Image favicon = 7;
   int64 follower_count = 8;
   State state = 9;
-  repeated UriMatcher uri_matchers = 10;
+  repeated WebFeedMatcher web_feed_matchers = 10;
 }
 message Image {
   string uri = 1;
-}
-message UriMatcher {
-  string domain_match = 1;
 }
 message ListWebFeedsRequest {}
 message ListWebFeedsResponse {
@@ -38,8 +37,9 @@ message ListWebFeedsResponse {
 message FollowWebFeedRequest {
   oneof identifier {
     string name = 1;
-    string web_feed_uri = 2;
+    string web_page_uri = 2;
   }
+  repeated string page_rss_uris = 3;
 }
 message FollowWebFeedResponse {
   WebFeed web_feed = 1;

@@ -10,7 +10,6 @@
 
 namespace feed {
 
-feedstore::UriMatcher ConvertToStore(feedwire::webfeed::UriMatcher value);
 feedstore::Image ConvertToStore(feedwire::webfeed::Image value);
 feedstore::WebFeedInfo::State ConvertToStore(
     feedwire::webfeed::WebFeed::State value);

@@ -148,7 +148,7 @@ class WebFeedSubscriptionModel {
       feedstore::RecommendedWebFeedIndex::Entry& entry =
           *store_index.add_entries();
       entry.set_web_feed_id(info.web_feed_id());
-      *entry.mutable_matchers() = info.uri_matchers();
+      *entry.mutable_matchers() = info.matchers();
     }
     index_->Populate(store_index);
     store_->WriteRecommendedFeeds(std::move(store_index),

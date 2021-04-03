@@ -738,10 +738,10 @@ TEST_F(FeedStoreTest, WriteRecommendedFeedsAndReadThem) {
   feedstore::RecommendedWebFeedIndex index;
   index.add_entries()->set_web_feed_id("foo");
   *index.mutable_entries(0)->add_matchers() =
-      MakeWebFeedInfo("foo").uri_matchers(0);
+      MakeWebFeedInfo("foo").matchers(0);
   index.add_entries()->set_web_feed_id("bar");
   *index.mutable_entries(1)->add_matchers() =
-      MakeWebFeedInfo("bar").uri_matchers(0);
+      MakeWebFeedInfo("bar").matchers(0);
 
   store_->WriteRecommendedFeeds(
       index, {MakeWebFeedInfo("foo"), MakeWebFeedInfo("bar")}, receiver.Bind());
@@ -760,13 +760,19 @@ TEST_F(FeedStoreTest, WriteRecommendedFeedsAndReadThem) {
   std::string want = R"({
   entries {
     matchers {
-      domain_match: "foo.com"
+      criteria {
+        text: "foo.com"
+        criteria_type: 2
+      }
     }
     web_feed_id: "foo"
   }
   entries {
     matchers {
-      domain_match: "bar.com"
+      criteria {
+        text: "bar.com"
+        criteria_type: 2
+      }
     }
     web_feed_id: "bar"
   }
@@ -788,8 +794,11 @@ TEST_F(FeedStoreTest, WriteRecommendedFeedsAndReadThem) {
     url: "http://favicon/foo"
   }
   follower_count: 123
-  uri_matchers {
-    domain_match: "foo.com"
+  matchers {
+    criteria {
+      text: "foo.com"
+      criteria_type: 2
+    }
   }
 }
 )",
@@ -808,8 +817,11 @@ TEST_F(FeedStoreTest, WriteRecommendedFeedsAndReadThem) {
     url: "http://favicon/bar"
   }
   follower_count: 123
-  uri_matchers {
-    domain_match: "bar.com"
+  matchers {
+    criteria {
+      text: "bar.com"
+      criteria_type: 2
+    }
   }
 }
 )",
@@ -845,8 +857,11 @@ TEST_F(FeedStoreTest, WriteSubscribedFeeds) {
       url: "http://favicon/foo"
     }
     follower_count: 123
-    uri_matchers {
-      domain_match: "foo.com"
+    matchers {
+      criteria {
+        text: "foo.com"
+        criteria_type: 2
+      }
     }
   }
   feeds {
@@ -857,8 +872,11 @@ TEST_F(FeedStoreTest, WriteSubscribedFeeds) {
       url: "http://favicon/bar"
     }
     follower_count: 123
-    uri_matchers {
-      domain_match: "bar.com"
+    matchers {
+      criteria {
+        text: "bar.com"
+        criteria_type: 2
+      }
     }
   }
 }

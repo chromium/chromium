@@ -8,6 +8,7 @@
 
 #include "base/strings/string_piece.h"
 #include "components/feed/core/proto/v2/store.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feed_matcher.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "url/gurl.h"
 
@@ -15,17 +16,26 @@ namespace feed {
 
 namespace {
 using Entry = WebFeedIndex::Entry;
-void AddEntries(
-    std::vector<Entry>& entries,
-    std::vector<std::pair<std::string, int>>& domain_list,
-    const ::google::protobuf::RepeatedPtrField<feedstore::UriMatcher>& matchers,
-    bool is_recommended,
-    const std::string& web_feed_id) {
+void AddEntries(std::vector<Entry>& entries,
+                std::vector<std::pair<std::string, int>>& domain_list,
+                const ::google::protobuf::RepeatedPtrField<
+                    feedwire::webfeed::WebFeedMatcher>& matchers,
+                bool is_recommended,
+                const std::string& web_feed_id) {
   int index = static_cast<int>(entries.size());
   entries.push_back({web_feed_id, is_recommended});
-  for (const feedstore::UriMatcher& matcher : matchers) {
-    if (!web_feed_id.empty() && !matcher.domain_match().empty())
-      domain_list.emplace_back(matcher.domain_match(), index);
+  for (const feedwire::webfeed::WebFeedMatcher& matcher : matchers) {
+    // TODO(crbug/1152592): This code is wrong! We need to match ALL criteria
+    // provided. Also, we need to support the initial set of criteria types.
+    if (!web_feed_id.empty()) {
+      for (const auto& criteria : matcher.criteria()) {
+        if (criteria.criteria_type() == feedwire::webfeed::WebFeedMatcher::
+                                            Criteria::PAGE_URL_HOST_SUFFIX &&
+            !criteria.text().empty()) {
+          domain_list.emplace_back(criteria.text(), index);
+        }
+      }
+    }
   }
 }
 
@@ -71,7 +81,7 @@ void WebFeedIndex::Populate(
   // TODO(crbug/1152592): Record UMA for subscribed and recommended lists.
   // Note that flat_map will keep only the first entry with a given key.
   for (const auto& info : subscribed_feeds.feeds()) {
-    AddEntries(subscribed_.entries, domain_list, info.uri_matchers(),
+    AddEntries(subscribed_.entries, domain_list, info.matchers(),
                /*is_recommended=*/false, info.web_feed_id());
   }
 

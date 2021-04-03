@@ -6,14 +6,6 @@
 
 namespace feed {
 
-feedstore::UriMatcher ConvertToStore(feedwire::webfeed::UriMatcher value) {
-  feedstore::UriMatcher result;
-  if (!value.domain_match().empty()) {
-    result.set_allocated_domain_match(value.release_domain_match());
-  }
-  return result;
-}
-
 feedstore::Image ConvertToStore(feedwire::webfeed::Image value) {
   feedstore::Image result;
   result.set_allocated_url(value.release_uri());
@@ -45,8 +37,8 @@ feedstore::WebFeedInfo ConvertToStore(feedwire::webfeed::WebFeed web_feed) {
     *result.mutable_favicon() = ConvertToStore(*web_feed.mutable_favicon());
   result.set_follower_count(web_feed.follower_count());
   result.set_state(ConvertToStore(web_feed.state()));
-  for (auto& matcher : web_feed.uri_matchers()) {
-    *result.add_uri_matchers() = ConvertToStore(std::move(matcher));
+  for (auto& matcher : web_feed.web_feed_matchers()) {
+    *result.add_matchers() = std::move(matcher);
   }
   return result;
 }

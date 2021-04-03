@@ -4,10 +4,20 @@
 
 #include "components/feed/core/v2/web_feed_subscriptions/web_feed_index.h"
 
+#include "components/feed/core/proto/v2/wire/web_feed_matcher.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace feed {
 namespace {
+
+feedwire::webfeed::WebFeedMatcher MakeDomainMatcher(const std::string& domain) {
+  feedwire::webfeed::WebFeedMatcher result;
+  feedwire::webfeed::WebFeedMatcher::Criteria* criteria = result.add_criteria();
+  criteria->set_criteria_type(
+      feedwire::webfeed::WebFeedMatcher::Criteria::PAGE_URL_HOST_SUFFIX);
+  criteria->set_text(domain);
+  return result;
+}
 
 TEST(WebFeedIndex, FindWebFeedForUrlBeforePopulate) {
   WebFeedIndex index;
@@ -20,7 +30,7 @@ TEST(WebFeedIndex, FindWebFeedForUrlResolvesDomainsCorrectly) {
   {
     auto* feed = startup_data.subscribed_web_feeds.add_feeds();
     feed->set_web_feed_id("id");
-    feed->add_uri_matchers()->set_domain_match("foo.com");
+    *feed->add_matchers() = MakeDomainMatcher("foo.com");
   }
   index.Populate(startup_data.subscribed_web_feeds);
 
@@ -56,9 +66,9 @@ TEST(WebFeedIndex, PopulateOverwritesContent) {
   FeedStore::WebFeedStartupData startup_data;
   auto* feed = startup_data.subscribed_web_feeds.add_feeds();
   feed->set_web_feed_id("id");
-  feed->add_uri_matchers()->set_domain_match("foo.com");
+  *feed->add_matchers() = MakeDomainMatcher("foo.com");
   index.Populate(startup_data.subscribed_web_feeds);
-  feed->mutable_uri_matchers(0)->set_domain_match("boo.com");
+  *feed->mutable_matchers(0) = MakeDomainMatcher("boo.com");
   feed->set_web_feed_id("aid");
   index.Populate(startup_data.subscribed_web_feeds);
 
@@ -72,7 +82,7 @@ TEST(WebFeedIndex, FindWebFeedForUrlFindsRecommendedUrl) {
   FeedStore::WebFeedStartupData startup_data;
   auto* feed = startup_data.recommended_feed_index.add_entries();
   feed->set_web_feed_id("id");
-  feed->add_matchers()->set_domain_match("foo.com");
+  *feed->add_matchers() = MakeDomainMatcher("foo.com");
   index.Populate(startup_data.recommended_feed_index);
 
   EXPECT_EQ("id", index.FindWebFeedForUrl(GURL("https://foo.com")).web_feed_id);
@@ -84,12 +94,12 @@ TEST(WebFeedIndex, FindWebFeedForUrlFindMoreSpecificFirst) {
   {
     auto* feed = startup_data.recommended_feed_index.add_entries();
     feed->set_web_feed_id("foo");
-    feed->add_matchers()->set_domain_match("foo.com");
+    *feed->add_matchers() = MakeDomainMatcher("foo.com");
   }
   {
     auto* feed = startup_data.recommended_feed_index.add_entries();
     feed->set_web_feed_id("barfoo");
-    feed->add_matchers()->set_domain_match("bar.foo.com");
+    *feed->add_matchers() = MakeDomainMatcher("bar.foo.com");
   }
 
   index.Populate(startup_data.recommended_feed_index);
@@ -110,12 +120,12 @@ TEST(WebFeedIndex, FindWebFeedForUrlFindsSubscribedFeedsPreferentially) {
   {
     auto* feed = startup_data.subscribed_web_feeds.add_feeds();
     feed->set_web_feed_id("sub-id");
-    feed->add_uri_matchers()->set_domain_match("foo.com");
+    *feed->add_matchers() = MakeDomainMatcher("foo.com");
   }
   {
     auto* feed = startup_data.recommended_feed_index.add_entries();
     feed->set_web_feed_id("recommended-id");
-    feed->add_matchers()->set_domain_match("foo.com");
+    *feed->add_matchers() = MakeDomainMatcher("foo.com");
   }
   index.Populate(startup_data.recommended_feed_index);
   index.Populate(startup_data.subscribed_web_feeds);

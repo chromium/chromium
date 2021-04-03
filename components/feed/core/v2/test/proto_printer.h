@@ -12,6 +12,7 @@
 #include "components/feed/core/proto/v2/ui.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_request.pb.h"
 #include "components/feed/core/proto/v2/wire/upload_actions_response.pb.h"
+#include "components/feed/core/proto/v2/wire/web_feed_matcher.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 
 namespace feedwire {
@@ -41,7 +42,6 @@ DECLARE_PRINTER(feedstore::StreamSharedState)
 DECLARE_PRINTER(feedstore::StreamStructure)
 DECLARE_PRINTER(feedstore::StreamStructureSet)
 DECLARE_PRINTER(feedstore::SubscribedWebFeeds)
-DECLARE_PRINTER(feedstore::UriMatcher)
 DECLARE_PRINTER(feedstore::WebFeedInfo)
 DECLARE_PRINTER(feedui::StreamUpdate)
 DECLARE_PRINTER(feedwire::ActionPayload)
@@ -58,6 +58,7 @@ DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsRequest)
 DECLARE_PRINTER(feedwire::webfeed::ListWebFeedsResponse)
 DECLARE_PRINTER(feedwire::webfeed::Image)
 DECLARE_PRINTER(feedwire::webfeed::WebFeed)
+DECLARE_PRINTER(feedwire::webfeed::WebFeedMatcher)
 
 #undef DECLARE_PRINTER
 

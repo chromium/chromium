@@ -7,8 +7,9 @@ syntax = "proto3";
 package feedstore;
 
 import "components/feed/core/proto/v2/wire/content_id.proto";
-import "components/feed/core/proto/v2/wire/stream_structure.proto";
 import "components/feed/core/proto/v2/wire/feed_action.proto";
+import "components/feed/core/proto/v2/wire/stream_structure.proto";
+import "components/feed/core/proto/v2/wire/web_feed_matcher.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -201,21 +202,12 @@ message SubscribedWebFeeds {
 message RecommendedWebFeedIndex {
   message Entry {
     string web_feed_id = 1;
-    repeated UriMatcher matchers = 2;
+    repeated feedwire.webfeed.WebFeedMatcher matchers = 2;
   }
   repeated Entry entries = 1;
   // The unix timestamp in milliseconds that this data was updated from the
   // server.
   int64 update_time_millis = 2;
-}
-
-// Data to allow matching URI.
-message UriMatcher {
-  // Simple String comparing, will use to match against the domain part of the
-  // hostname string and ignore the subdomains. For example: "foo.com" should
-  // match "https://www.foo.com/..." and "https://foo.com/..." but should not
-  // match "https://foo.com.br/...".
-  string domain_match = 1;
 }
 
 // Reference to an image.
@@ -239,5 +231,5 @@ message WebFeedInfo {
   Image favicon = 7;
   int64 follower_count = 8;
   State state = 9;
-  repeated UriMatcher uri_matchers = 10;
+  repeated feedwire.webfeed.WebFeedMatcher matchers = 10;
 }
