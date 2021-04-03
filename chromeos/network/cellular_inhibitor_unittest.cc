@@ -51,7 +51,8 @@ class CellularInhibitorTest : public testing::Test {
  protected:
   CellularInhibitorTest()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         helper_(/*use_default_devices_and_services=*/false) {}
   ~CellularInhibitorTest() override = default;
 
@@ -64,7 +65,10 @@ class CellularInhibitorTest : public testing::Test {
     cellular_inhibitor_.AddObserver(&observer_);
   }
 
-  void TearDown() override { cellular_inhibitor_.RemoveObserver(&observer_); }
+  void TearDown() override {
+    cellular_inhibitor_.RemoveObserver(&observer_);
+    helper_.device_test()->SetPropertyChangeDelay(base::nullopt);
+  }
 
   void AddCellularDevice() {
     helper_.device_test()->AddDevice(kDefaultCellularDevicePath,
@@ -127,6 +131,16 @@ class CellularInhibitorTest : public testing::Test {
 
   base::Optional<CellularInhibitor::InhibitReason> GetInhibitReason() const {
     return cellular_inhibitor_.GetInhibitReason();
+  }
+
+  void SetDevicePropertyChangeDelay() {
+    helper_.device_test()->SetPropertyChangeDelay(
+        CellularInhibitor::kInhibitPropertyChangeTimeout);
+  }
+
+  void FastForwardInhibitPropertyChangeTimeout() {
+    task_environment_.FastForwardBy(
+        CellularInhibitor::kInhibitPropertyChangeTimeout);
   }
 
   size_t GetNumObserverEvents() const {
@@ -254,6 +268,20 @@ TEST_F(CellularInhibitorTest, Failure) {
           CellularInhibitor::InhibitReason::kInstallingProfile);
   EXPECT_EQ(GetInhibitedPropertyResult::kOperationFailed,
             GetInhibitedProperty());
+  EXPECT_FALSE(inhibit_lock);
+}
+
+TEST_F(CellularInhibitorTest, FailurePropertySetTimeout) {
+  AddCellularDevice();
+  SetDevicePropertyChangeDelay();
+
+  std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock;
+  InhibitCellularScanning(CellularInhibitor::InhibitReason::kInstallingProfile,
+                          inhibit_lock);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(inhibit_lock);
+  FastForwardInhibitPropertyChangeTimeout();
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(inhibit_lock);
 }
 

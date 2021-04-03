@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state_handler.h"
@@ -42,6 +43,10 @@ CellularInhibitor::InhibitLock::InhibitLock(base::OnceClosure unlock_callback)
 CellularInhibitor::InhibitLock::~InhibitLock() {
   std::move(unlock_callback_).Run();
 }
+
+// static
+const base::TimeDelta CellularInhibitor::kInhibitPropertyChangeTimeout =
+    base::TimeDelta::FromSeconds(5);
 
 CellularInhibitor::CellularInhibitor() = default;
 
@@ -96,6 +101,7 @@ void CellularInhibitor::DeviceListChanged() {
 
 void CellularInhibitor::DevicePropertiesUpdated(const DeviceState* device) {
   CheckScanningIfNeeded();
+  CheckInhibitPropertyIfNeeded();
 }
 
 const DeviceState* CellularInhibitor::GetCellularDevice() const {
@@ -133,20 +139,19 @@ void CellularInhibitor::ProcessRequests() {
   if (state_ != State::kIdle)
     return;
 
+  uninhibit_attempts_so_far_ = 0;
   TransitionToState(State::kInhibiting);
-  SetInhibitProperty(/*new_inhibit_value=*/true,
-                     base::BindOnce(&CellularInhibitor::OnInhibit,
-                                    weak_ptr_factory_.GetWeakPtr()));
+  SetInhibitProperty();
 }
 
 void CellularInhibitor::OnInhibit(bool success) {
-  DCHECK(state_ == State::kInhibiting);
+  DCHECK(state_ == State::kWaitForInhibit || state_ == State::kInhibiting);
 
   if (success) {
     TransitionToState(State::kInhibited);
     std::unique_ptr<InhibitLock> lock = std::make_unique<InhibitLock>(
         base::BindOnce(&CellularInhibitor::AttemptUninhibit,
-                       weak_ptr_factory_.GetWeakPtr(), /*attempts_so_far=*/0));
+                       weak_ptr_factory_.GetWeakPtr()));
     std::move(inhibit_requests_.front()->inhibit_callback).Run(std::move(lock));
     return;
   }
@@ -155,27 +160,26 @@ void CellularInhibitor::OnInhibit(bool success) {
   PopRequestAndProcessNext();
 }
 
-void CellularInhibitor::AttemptUninhibit(size_t attempts_so_far) {
+void CellularInhibitor::AttemptUninhibit() {
   DCHECK(state_ == State::kInhibited);
   TransitionToState(State::kUninhibiting);
-  SetInhibitProperty(
-      /*new_inhibit_value=*/false,
-      base::BindOnce(&CellularInhibitor::OnUninhibit,
-                     weak_ptr_factory_.GetWeakPtr(), attempts_so_far));
+  SetInhibitProperty();
 }
 
-void CellularInhibitor::OnUninhibit(size_t attempts_so_far, bool success) {
-  DCHECK(state_ == State::kUninhibiting);
+void CellularInhibitor::OnUninhibit(bool success) {
+  DCHECK(state_ == State::kWaitForUninhibit || state_ == State::kUninhibiting);
 
   if (!success) {
-    base::TimeDelta retry_delay = kUninhibitRetryDelay * (1 << attempts_so_far);
+    base::TimeDelta retry_delay =
+        kUninhibitRetryDelay * (1 << uninhibit_attempts_so_far_);
     NET_LOG(DEBUG) << "Uninhibit Failed. Retrying in " << retry_delay;
     TransitionToState(State::kInhibited);
+    uninhibit_attempts_so_far_++;
 
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CellularInhibitor::AttemptUninhibit,
-                       weak_ptr_factory_.GetWeakPtr(), attempts_so_far + 1),
+                       weak_ptr_factory_.GetWeakPtr()),
         retry_delay);
     return;
   }
@@ -231,45 +235,86 @@ void CellularInhibitor::PopRequestAndProcessNext() {
   ProcessRequests();
 }
 
-void CellularInhibitor::SetInhibitProperty(bool new_inhibit_value,
-                                           SuccessCallback callback) {
+void CellularInhibitor::SetInhibitProperty() {
+  DCHECK(state_ == State::kInhibiting || state_ == State::kUninhibiting);
   const DeviceState* cellular_device = GetCellularDevice();
   if (!cellular_device) {
-    std::move(callback).Run(false);
+    ReturnSetInhibitPropertyResult(/*success=*/false);
     return;
   }
+
+  bool new_inhibit_value = state_ == State::kInhibiting;
 
   // If the new value is already set, return early.
   if (cellular_device->inhibited() == new_inhibit_value) {
-    std::move(callback).Run(true);
+    ReturnSetInhibitPropertyResult(/*success=*/true);
     return;
   }
 
-  auto repeating_callback =
-      base::AdaptCallbackForRepeating(std::move(callback));
   network_device_handler_->SetDeviceProperty(
       cellular_device->path(), shill::kInhibitedProperty,
       base::Value(new_inhibit_value),
       base::BindOnce(&CellularInhibitor::OnSetPropertySuccess,
-                     weak_ptr_factory_.GetWeakPtr(), repeating_callback),
+                     weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&CellularInhibitor::OnSetPropertyError,
-                     weak_ptr_factory_.GetWeakPtr(), repeating_callback,
+                     weak_ptr_factory_.GetWeakPtr(),
                      /*attempted_inhibit=*/new_inhibit_value));
 }
 
-void CellularInhibitor::OnSetPropertySuccess(
-    const base::RepeatingCallback<void(bool)>& success_callback) {
-  std::move(success_callback).Run(true);
+void CellularInhibitor::OnSetPropertySuccess() {
+  if (state_ == State::kInhibiting) {
+    TransitionToState(State::kWaitForInhibit);
+  } else if (state_ == State::kUninhibiting) {
+    TransitionToState(State::kWaitForUninhibit);
+  }
+  set_inhibit_timer_.Start(
+      FROM_HERE, kInhibitPropertyChangeTimeout,
+      base::BindOnce(&CellularInhibitor::OnInhibitPropertyChangeTimeout,
+                     weak_ptr_factory_.GetWeakPtr()));
+  CheckInhibitPropertyIfNeeded();
 }
 
 void CellularInhibitor::OnSetPropertyError(
-    const base::RepeatingCallback<void(bool)>& success_callback,
     bool attempted_inhibit,
     const std::string& error_name,
     std::unique_ptr<base::DictionaryValue> error_data) {
   NET_LOG(ERROR) << (attempted_inhibit ? "Inhibit" : "Uninhibit")
                  << "CellularScanning() failed: " << error_name;
-  std::move(success_callback).Run(false);
+  ReturnSetInhibitPropertyResult(/*success=*/false);
+}
+
+void CellularInhibitor::ReturnSetInhibitPropertyResult(bool success) {
+  set_inhibit_timer_.Stop();
+  if (state_ == State::kInhibiting || state_ == State::kWaitForInhibit) {
+    OnInhibit(success);
+    return;
+  }
+  if (state_ == State::kUninhibiting || state_ == State::kWaitForUninhibit) {
+    OnUninhibit(success);
+  }
+}
+
+void CellularInhibitor::CheckInhibitPropertyIfNeeded() {
+  if (state_ != State::kWaitForInhibit && state_ != State::kWaitForUninhibit)
+    return;
+
+  const DeviceState* cellular_device = GetCellularDevice();
+  if (!cellular_device)
+    return;
+
+  if (state_ == State::kWaitForInhibit && !cellular_device->inhibited())
+    return;
+
+  if (state_ == State::kWaitForUninhibit && cellular_device->inhibited())
+    return;
+
+  ReturnSetInhibitPropertyResult(/*success=*/true);
+}
+
+void CellularInhibitor::OnInhibitPropertyChangeTimeout() {
+  NET_LOG(EVENT) << "Timeout waiting for inhibit property change state_"
+                 << state_;
+  ReturnSetInhibitPropertyResult(/*success=*/false);
 }
 
 std::ostream& operator<<(std::ostream& stream,
@@ -281,11 +326,17 @@ std::ostream& operator<<(std::ostream& stream,
     case CellularInhibitor::State::kInhibiting:
       stream << "[Inhibiting]";
       break;
+    case CellularInhibitor::State::kWaitForInhibit:
+      stream << "[Waiting for Inhibit property set]";
+      break;
     case CellularInhibitor::State::kInhibited:
       stream << "[Inhibited]";
       break;
     case CellularInhibitor::State::kUninhibiting:
       stream << "[Uninhibiting]";
+      break;
+    case CellularInhibitor::State::kWaitForUninhibit:
+      stream << "[Waiting for Inhibit property clear]";
       break;
     case CellularInhibitor::State::kWaitingForScanningToStart:
       stream << "[Waiting for scanning to start]";
