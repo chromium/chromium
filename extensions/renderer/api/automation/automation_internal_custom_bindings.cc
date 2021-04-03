@@ -2353,7 +2353,7 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
   }
 
   if (!tree_wrapper->OnAccessibilityEvents(event_bundle, is_active_profile)) {
-    LOG(ERROR) << tree_wrapper->tree()->error();
+    DLOG(ERROR) << tree_wrapper->tree()->error();
     base::ListValue args;
     args.AppendString(tree_id.ToString());
     bindings_system_->DispatchEventInContext(
