@@ -3547,7 +3547,7 @@ Here are some things you can try to get started.
         Peripheral performance may be limited in Guest mode
       </message>
       <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_GUEST_MODE_NOT_SUPPORTED" desc="Notification body text that explains to the user that their peripheral is not supported in Guest mode due to security reasons.">
-        Peripheral not supported in Guest mode for security reasons
+        Peripheral not supported in Guest mode
       </message>
       <message name="IDS_ASH_PCIE_PERIPHERAL_NOTIFICATION_DEVICE_BLOCKED_TITLE" desc="Notification title that indicates to the user that their peripheral is not supported due to security reasons.">
         Peripheral not supported
