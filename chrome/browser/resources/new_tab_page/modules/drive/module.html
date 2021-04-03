@@ -17,8 +17,8 @@
     display: flex;
     flex-shrink: 0;
     height: 38px;
-    margin-inline-end: 16px;
-    margin-inline-start: 16px;
+    margin-inline-end: 15px;
+    margin-inline-start: 15px;
     text-decoration: none;
   }
 
@@ -27,11 +27,18 @@
   }
 
   .file-title {
+    flex-basis: 0;
+    flex-grow: 250;
+    overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .file-description {
     color: var(--cr-secondary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .file-info {
@@ -39,8 +46,10 @@
   }
 
   .justification-container {
-    align-items: center;
     display: flex;
+    flex-basis: 0;
+    flex-grow: 186;
+    overflow: hidden;
   }
 
   .user-image {
