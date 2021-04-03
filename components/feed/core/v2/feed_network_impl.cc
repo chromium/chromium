@@ -292,9 +292,11 @@ class FeedNetworkImpl::NetworkFetch {
 
   void SetRequestHeaders(bool has_request_body,
                          network::ResourceRequest& request) const {
+    // content-type in the request header affects server response, so include it
+    // even if there's no body.
+    request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
+                              kApplicationXProtobuf);
     if (has_request_body) {
-      request.headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                kApplicationXProtobuf);
       request.headers.SetHeader("Content-Encoding", "gzip");
     }
 

@@ -550,6 +550,16 @@ TEST_F(FeedNetworkTest, SendApiRequest_Unfollow) {
       "ContentSuggestions.Feed.Network.ResponseStatus.UnfollowWebFeed", 200, 1);
 }
 
+TEST_F(FeedNetworkTest, SendApiRequest_ListWebFeedsSendsCorrectContentType) {
+  feed_network()->SendApiRequest<ListWebFeedsDiscoverApi>({},
+                                                          base::DoNothing());
+  std::string requested_content_type;
+  RespondToDiscoverRequest("", net::HTTP_OK)
+      .headers.GetHeader("content-type", &requested_content_type);
+
+  EXPECT_EQ("application/x-protobuf", requested_content_type);
+}
+
 TEST_F(FeedNetworkTest, TestOverrideHostDoesNotAffectDiscoverApis) {
   profile_prefs().SetString(feed::prefs::kHostOverrideHost,
                             "http://www.newhost.com/");
