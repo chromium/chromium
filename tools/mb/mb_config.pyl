@@ -325,7 +325,7 @@
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
-      'fuchsia-fyi-x64-rel': 'release_bot_fuchsia_official',
+      'fuchsia-fyi-x64-rel': 'release_bot_fuchsia',
       'ios13-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios13-sdk-device': 'ios_device_release_static_bot_xctest',
       'ios13-sdk-simulator': 'ios_simulator_debug_static_bot_xctest',
@@ -2605,10 +2605,6 @@
 
     'release_bot_fuchsia_arm64_cast': [
       'release_bot', 'fuchsia', 'arm64', 'cast', 'no_symbols',
-    ],
-
-    'release_bot_fuchsia_official': [
-      'release_bot', 'fuchsia', 'official_optimize',
     ],
 
     'release_bot_mac_strip_minimal_symbols': [
