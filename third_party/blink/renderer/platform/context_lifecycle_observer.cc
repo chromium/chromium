@@ -8,6 +8,11 @@
 
 namespace blink {
 
+ContextLifecycleObserver::ContextLifecycleObserver() {
+  // Registration is currently needed for ContextLifecycleNotifier::NotifyContextDestroyed.
+  recordreplay::RegisterPointer(this);
+}
+
 ContextLifecycleObserver::~ContextLifecycleObserver() {
 #if DCHECK_IS_ON()
   // We want to make sure that if we are still waiting for a notification,
@@ -17,6 +22,7 @@ ContextLifecycleObserver::~ContextLifecycleObserver() {
   // !waiting_for_context_destroyed_ || notifier_
   DCHECK(!waiting_for_context_destroyed_ || notifier_);
 #endif
+  recordreplay::UnregisterPointer(this);
 }
 
 void ContextLifecycleObserver::SetContextLifecycleNotifier(

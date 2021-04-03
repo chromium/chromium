@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/thread_pool_impl.h"
 #include "base/threading/platform_thread.h"
@@ -52,8 +53,10 @@ ThreadPoolInstance::ScopedBestEffortExecutionFence::
 #if !defined(OS_NACL)
 // static
 void ThreadPoolInstance::CreateAndStartWithDefaultParams(StringPiece name) {
+  recordreplay::Assert("ThreadPoolInstance::CreateAndStartWithDefaultParams Start");
   Create(name);
   g_thread_pool->StartWithDefaultParams();
+  recordreplay::Assert("ThreadPoolInstance::CreateAndStartWithDefaultParams Done");
 }
 
 void ThreadPoolInstance::StartWithDefaultParams() {
@@ -70,7 +73,9 @@ void ThreadPoolInstance::StartWithDefaultParams() {
 #endif  // !defined(OS_NACL)
 
 void ThreadPoolInstance::Create(StringPiece name) {
+  recordreplay::Assert("ThreadPoolInstance::Create Start");
   Set(std::make_unique<internal::ThreadPoolImpl>(name));
+  recordreplay::Assert("ThreadPoolInstance::Create Done");
 }
 
 // static

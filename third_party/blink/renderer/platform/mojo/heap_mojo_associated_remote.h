@@ -7,6 +7,7 @@
 
 #include <utility>
 
+#include "base/record_replay.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -103,6 +104,11 @@ class HeapMojoAssociatedRemote {
 
     // ContextLifecycleObserver methods
     void ContextDestroyed() override {
+      // When recording/replaying objects will be collected at non-deterministic points.
+      // For now we let all associated resources leak.
+      if (recordreplay::IsRecordingOrReplaying()) {
+        return;
+      }
       if (Mode == HeapMojoWrapperMode::kWithContextObserver)
         associated_remote_.reset();
     }

@@ -331,10 +331,14 @@ const gProtocolIdToScope = new Map();
 let gNextObjectId = 1;
 
 function clearPauseDataCallback() {
-  gProtocolIdToObject.clear();
-  gObjectIdToProtocolId.clear();
-  gProtocolIdToScope.clear();
-  gNextObjectId = 1;
+  try {
+    gProtocolIdToObject.clear();
+    gObjectIdToProtocolId.clear();
+    gProtocolIdToScope.clear();
+    gNextObjectId = 1;
+  } catch (e) {
+    log(`Error: clearPauseDataCallback exception: ${e}`);
+  }
 }
 
 function remoteObjectToProtocolId(remoteObject) {

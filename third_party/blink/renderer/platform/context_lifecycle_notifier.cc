@@ -27,10 +27,19 @@ void ContextLifecycleNotifier::RemoveContextLifecycleObserver(
 }
 
 void ContextLifecycleNotifier::NotifyContextDestroyed() {
-  observers_.ForEachObserver([](ContextLifecycleObserver* observer) {
-    observer->NotifyContextDestroyed();
+  // Manually ensure we notify observers in a consistent order when recording
+  // vs. replaying. It would be better to ensure the observers_ set is iterated
+  // deterministically, but this is easier for now.
+  std::vector<ContextLifecycleObserver*> observers;
+  observers_.ForEachObserver([&](ContextLifecycleObserver* observer) {
+    observers.push_back(observer);
   });
   observers_.Clear();
+
+  std::sort(observers.begin(), observers.end(), recordreplay::CompareByPointerId);
+  for (auto observer : observers) {
+    observer->NotifyContextDestroyed();
+  }
 
 #if DCHECK_IS_ON()
   did_notify_observers_ = true;

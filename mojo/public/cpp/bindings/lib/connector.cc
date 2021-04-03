@@ -156,6 +156,7 @@ Connector::Connector(ScopedMessagePipeHandle message_pipe,
       incoming_serialization_mode_(g_default_incoming_serialization_mode),
       interface_name_(interface_name),
       nesting_observer_(RunLoopNestingObserver::GetForThread()) {
+  recordreplay::RegisterPointer(this);
   if (config == MULTI_THREADED_SEND)
     lock_.emplace();
 
@@ -188,6 +189,7 @@ Connector::~Connector() {
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CancelWait();
+  recordreplay::UnregisterPointer(this);
 }
 
 void Connector::SetOutgoingSerializationMode(OutgoingSerializationMode mode) {
@@ -620,6 +622,7 @@ void Connector::ReadAllAvailableMessages() {
 }
 
 void Connector::CancelWait() {
+  recordreplay::Assert("Connector::CancelWait %lu", recordreplay::PointerId(this));
   peer_remoteness_tracker_.reset();
   handle_watcher_.reset();
   sync_watcher_.reset();

@@ -8,6 +8,7 @@
 
 #include <limits>
 
+#include "base/record_replay.h"
 #include "base/trace_event/memory_dump_manager.h"
 
 namespace mojo {
@@ -88,9 +89,13 @@ bool HandleTable::AddDispatchersFromTransit(
 }
 
 scoped_refptr<Dispatcher> HandleTable::GetDispatcher(MojoHandle handle) const {
+  recordreplay::Assert("HandleTable::GetDispatcher Start %u", handle);
   auto it = handles_.find(handle);
-  if (it == handles_.end())
+  if (it == handles_.end()) {
+    recordreplay::Assert("HandleTable::GetDispatcher #1");
     return nullptr;
+  }
+  recordreplay::Assert("HandleTable::GetDispatcher Done %u", handle);
   return it->second.dispatcher;
 }
 

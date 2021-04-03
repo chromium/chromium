@@ -122,12 +122,15 @@ SimpleWatcher::SimpleWatcher(const base::Location& from_here,
                               task_runner_ ==
                                   base::ThreadTaskRunnerHandle::Get()),
       handler_tag_(handler_tag ? handler_tag : from_here.file_name()) {
+  recordreplay::RegisterPointer(this);
   MojoResult rv = CreateTrap(&Context::CallNotify, &trap_handle_);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 }
 
 SimpleWatcher::~SimpleWatcher() {
+  recordreplay::Assert("SimpleWatcher::~SimpleWatcher %lu", recordreplay::PointerId(this));
+  recordreplay::UnregisterPointer(this);
   if (IsWatching())
     Cancel();
 }

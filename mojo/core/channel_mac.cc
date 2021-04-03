@@ -346,6 +346,8 @@ class ChannelMac : public Channel,
   }
 
   bool SendMessageLocked(MessagePtr message) {
+    recordreplay::Assert("ChannelMac::SendMessageLocked Start %lu", message->data_num_bytes());
+
     DCHECK(!send_buffer_contains_message_);
     base::BufferIterator<char> buffer(
         reinterpret_cast<char*>(send_buffer_.address()), send_buffer_.size());
@@ -419,6 +421,8 @@ class ChannelMac : public Channel,
       }
     }
 
+    recordreplay::Assert("ChannelMac::SendMessageLocked #1 %lu %d", buffer.position(), transfer_message_ool);
+
     if (transfer_message_ool) {
       auto* descriptor = buffer.MutableObject<mach_msg_ool_descriptor_t>();
       descriptor->address = const_cast<void*>(message->data());
@@ -435,6 +439,8 @@ class ChannelMac : public Channel,
       auto data = buffer.MutableSpan<char>(message->data_num_bytes());
       memcpy(data.data(), message->data(), message->data_num_bytes());
     }
+
+    recordreplay::Assert("ChannelMac::SendMessageLocked #2 %lu", buffer.position());
 
     header->msgh_size = round_msg(buffer.position());
     return MachMessageSendLocked(header);
