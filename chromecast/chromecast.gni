@@ -86,10 +86,10 @@ declare_args() {
   use_android_user_agent = false
 
   # Contain default command line switches we want to set.
-  # The syntax: "test-flag-one=public,test-flag-two=true,test-flag-three=1,".
-  # This arg can be overridden but not supports += operator.
+  # This will get joined into a comma-separated list that looks like:
+  #   "test-flag-one=public,test-flag-two=true,test-flag-three=1,"
   # TODO(ziyangch): make the parsing logic have ability to quote/escape characters.
-  default_command_line_flags = ""
+  default_command_line_flags = []
 
   # Set to true to disable secure flac/opus support in EME, when using
   # cast CMA media backend and supporting Widevine or Playready.

@@ -598,8 +598,9 @@ group("chromecast_locales_pak") {
 
 buildflag_header("chromecast_buildflags") {
   header = "chromecast_buildflags.h"
+  _command_line_flags = string_join(",", default_command_line_flags)
   flags = [
-    "DEFAULT_COMMAND_LINE_FLAGS=\"$default_command_line_flags\"",
+    "DEFAULT_COMMAND_LINE_FLAGS=\"$_command_line_flags\"",
     "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
     "ENABLE_CAST_FRAGMENT=$enable_cast_fragment",
