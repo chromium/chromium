@@ -37,8 +37,8 @@ void ContextLifecycleNotifier::NotifyContextDestroyed() {
   });
   observers_.Clear();
 
-  std::sort(observers.begin(), observers.end(), recordreplay::CompareByPointerId);
-  for (auto observer : observers) {
+  std::sort(observers.begin(), observers.end(), recordreplay::CompareByPointerId());
+  for (ContextLifecycleObserver* observer : observers) {
     observer->NotifyContextDestroyed();
   }
 

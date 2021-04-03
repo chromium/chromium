@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 
 namespace blink {
