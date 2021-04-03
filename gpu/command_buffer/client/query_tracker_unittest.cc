@@ -34,12 +34,12 @@ class QuerySyncManagerTest : public testing::Test {
       kNumCommandEntries * sizeof(CommandBufferEntry);
 
   void SetUp() override {
-    command_buffer_.reset(new MockClientCommandBuffer());
-    helper_.reset(new GLES2CmdHelper(command_buffer_.get()));
+    command_buffer_ = std::make_unique<MockClientCommandBuffer>();
+    helper_ = std::make_unique<GLES2CmdHelper>(command_buffer_.get());
     helper_->Initialize(kCommandBufferSizeBytes);
-    mapped_memory_.reset(
-        new MappedMemoryManager(helper_.get(), MappedMemoryManager::kNoLimit));
-    sync_manager_.reset(new QuerySyncManager(mapped_memory_.get()));
+    mapped_memory_ = std::make_unique<MappedMemoryManager>(
+        helper_.get(), MappedMemoryManager::kNoLimit);
+    sync_manager_ = std::make_unique<QuerySyncManager>(mapped_memory_.get());
   }
 
   void TearDown() override {
@@ -209,12 +209,12 @@ class QueryTrackerTest : public testing::Test {
       kNumCommandEntries * sizeof(CommandBufferEntry);
 
   void SetUp() override {
-    command_buffer_.reset(new MockClientCommandBuffer());
-    helper_.reset(new GLES2CmdHelper(command_buffer_.get()));
+    command_buffer_ = std::make_unique<MockClientCommandBuffer>();
+    helper_ = std::make_unique<GLES2CmdHelper>(command_buffer_.get());
     helper_->Initialize(kCommandBufferSizeBytes);
-    mapped_memory_.reset(
-        new MappedMemoryManager(helper_.get(), MappedMemoryManager::kNoLimit));
-    query_tracker_.reset(new QueryTracker(mapped_memory_.get()));
+    mapped_memory_ = std::make_unique<MappedMemoryManager>(
+        helper_.get(), MappedMemoryManager::kNoLimit);
+    query_tracker_ = std::make_unique<QueryTracker>(mapped_memory_.get());
   }
 
   void TearDown() override {

@@ -35,8 +35,8 @@ class BufferManagerTestBase : public GpuServiceTest {
       TestHelper::SetupFeatureInfoInitExpectations(gl_.get(), extensions);
       feature_info->InitializeForTesting();
     }
-    error_state_.reset(new MockErrorState());
-    manager_.reset(new BufferManager(memory_tracker, feature_info));
+    error_state_ = std::make_unique<MockErrorState>();
+    manager_ = std::make_unique<BufferManager>(memory_tracker, feature_info);
   }
 
   void TearDown() override {

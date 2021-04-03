@@ -5,6 +5,7 @@
 #include "gpu/ipc/service/gpu_channel_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -361,8 +362,10 @@ GpuChannelManager::~GpuChannelManager() {
 gles2::Outputter* GpuChannelManager::outputter() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!outputter_)
-    outputter_.reset(new gles2::TraceOutputter("GpuChannelManager Trace"));
+  if (!outputter_) {
+    outputter_ =
+        std::make_unique<gles2::TraceOutputter>("GpuChannelManager Trace");
+  }
   return outputter_.get();
 }
 
@@ -378,13 +381,13 @@ gles2::ProgramCache* GpuChannelManager::program_cache() {
     // Use the EGL blob cache extension for the passthrough decoder.
     if (gpu_preferences_.use_passthrough_cmd_decoder &&
         gles2::PassthroughCommandDecoderSupported()) {
-      program_cache_.reset(new gles2::PassthroughProgramCache(
-          gpu_preferences_.gpu_program_cache_size, disable_disk_cache));
+      program_cache_ = std::make_unique<gles2::PassthroughProgramCache>(
+          gpu_preferences_.gpu_program_cache_size, disable_disk_cache);
     } else {
-      program_cache_.reset(new gles2::MemoryProgramCache(
+      program_cache_ = std::make_unique<gles2::MemoryProgramCache>(
           gpu_preferences_.gpu_program_cache_size, disable_disk_cache,
           workarounds.disable_program_caching_for_transform_feedback,
-          &activity_flags_));
+          &activity_flags_);
     }
   }
   return program_cache_.get();

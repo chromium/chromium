@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <set>
 #include <vector>
 
@@ -475,8 +476,8 @@ void FeatureInfo::InitializeFeatures() {
   const char* renderer_str =
       reinterpret_cast<const char*>(glGetString(GL_RENDERER));
 
-  gl_version_info_.reset(
-      new gl::GLVersionInfo(version_str, renderer_str, extensions));
+  gl_version_info_ = std::make_unique<gl::GLVersionInfo>(
+      version_str, renderer_str, extensions);
 
   bool enable_es3 = IsWebGL2OrES3OrHigherContext();
 

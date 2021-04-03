@@ -41,8 +41,9 @@ const int32_t kUnusedCommandId = 5;  // we use 0 and 2 currently.
 class CommandBufferHelperTest : public testing::Test {
  protected:
   void SetUp() override {
-    command_buffer_.reset(new CommandBufferDirectLocked());
-    api_mock_.reset(new AsyncAPIMock(true, command_buffer_->service()));
+    command_buffer_ = std::make_unique<CommandBufferDirectLocked>();
+    api_mock_ =
+        std::make_unique<AsyncAPIMock>(true, command_buffer_->service());
     command_buffer_->set_handler(api_mock_.get());
 
     // ignore noops in the mock - we don't want to inspect the internals of the
@@ -50,7 +51,7 @@ class CommandBufferHelperTest : public testing::Test {
     EXPECT_CALL(*api_mock_, DoCommand(cmd::kNoop, _, _))
         .WillRepeatedly(Return(error::kNoError));
 
-    helper_.reset(new CommandBufferHelper(command_buffer_.get()));
+    helper_ = std::make_unique<CommandBufferHelper>(command_buffer_.get());
     helper_->Initialize(kCommandBufferSizeBytes);
 
     test_command_next_id_ = kUnusedCommandId;

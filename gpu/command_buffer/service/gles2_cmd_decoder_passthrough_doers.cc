@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
+#include <memory>
+
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
@@ -4865,7 +4867,7 @@ error::Error GLES2DecoderPassthroughImpl::DoScheduleCALayerSharedStateCHROMIUM(
     GLint sorting_context_id,
     const GLfloat* transform) {
   if (!ca_layer_shared_state_) {
-    ca_layer_shared_state_.reset(new CALayerSharedState);
+    ca_layer_shared_state_ = std::make_unique<CALayerSharedState>();
   }
 
   ca_layer_shared_state_->opacity = opacity;

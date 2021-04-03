@@ -198,7 +198,7 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
   gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
 
-  gl_.reset(new StrictMock<MockGLInterface>());
+  gl_ = std::make_unique<StrictMock<MockGLInterface>>();
   ::gl::MockGLInterface::SetGLInterface(gl_.get());
 
   SetupMockGLBehaviors();
@@ -243,9 +243,9 @@ ContextResult GLES2DecoderTestBase::MaybeInitDecoderWithWorkarounds(
   // We initialize the ContextGroup with a MockGLES2Decoder so that
   // we can use the ContextGroup to figure out how the real GLES2Decoder
   // will initialize itself.
-  command_buffer_service_.reset(new FakeCommandBufferServiceBase());
-  mock_decoder_.reset(
-      new MockGLES2Decoder(this, command_buffer_service_.get(), &outputter_));
+  command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
+  mock_decoder_ = std::make_unique<MockGLES2Decoder>(
+      this, command_buffer_service_.get(), &outputter_);
 
   EXPECT_EQ(group_->Initialize(mock_decoder_.get(), init.context_type,
                                DisallowedFeatures()),
@@ -2453,10 +2453,10 @@ void GLES2DecoderPassthroughTestBase::SetUp() {
       GenerateGLContextAttribs(context_creation_attribs_, group_.get()));
   context_->MakeCurrent(surface_.get());
 
-  command_buffer_service_.reset(new FakeCommandBufferServiceBase());
+  command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
 
-  decoder_.reset(new GLES2DecoderPassthroughImpl(
-      this, command_buffer_service_.get(), &outputter_, group_.get()));
+  decoder_ = std::make_unique<GLES2DecoderPassthroughImpl>(
+      this, command_buffer_service_.get(), &outputter_, group_.get());
 
   // Don't request any optional extensions at startup, individual tests will
   // request what they need.

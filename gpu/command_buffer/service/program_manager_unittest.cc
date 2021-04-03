@@ -60,9 +60,9 @@ uint32_t ComputeOffset(const void* start, const void* position) {
 class ProgramManagerTestBase : public GpuServiceTest, public DecoderClient {
  protected:
   virtual void SetupProgramManager() {
-    manager_.reset(new ProgramManager(
+    manager_ = std::make_unique<ProgramManager>(
         nullptr, kMaxVaryingVectors, kMaxDrawBuffers, kMaxDualSourceDrawBuffers,
-        kMaxVertexAttribs, gpu_preferences_, feature_info_.get(), nullptr));
+        kMaxVertexAttribs, gpu_preferences_, feature_info_.get(), nullptr);
   }
   void SetUpBase(const char* gl_version,
                  const char* gl_extensions,
@@ -2172,10 +2172,10 @@ class ProgramManagerWithCacheTest : public ProgramManagerTestBase {
 
  protected:
   void SetupProgramManager() override {
-    manager_.reset(
-        new ProgramManager(cache_.get(), kMaxVaryingVectors, kMaxDrawBuffers,
-                           kMaxDualSourceDrawBuffers, kMaxVertexAttribs,
-                           gpu_preferences_, feature_info_.get(), nullptr));
+    manager_ = std::make_unique<ProgramManager>(
+        cache_.get(), kMaxVaryingVectors, kMaxDrawBuffers,
+        kMaxDualSourceDrawBuffers, kMaxVertexAttribs, gpu_preferences_,
+        feature_info_.get(), nullptr);
   }
 
   void SetUp() override {

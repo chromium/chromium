@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/service/image_transport_surface_overlay_mac.h"
 
+#include <memory>
 #include <sstream>
 
 #include "base/bind.h"
@@ -49,8 +50,8 @@ ImageTransportSurfaceOverlayMacBase<BaseClass>::
            ->workarounds()
            .disable_av_sample_buffer_display_layer;
 
-  ca_layer_tree_coordinator_.reset(new ui::CALayerTreeCoordinator(
-      use_remote_layer_api_, allow_av_sample_buffer_display_layer));
+  ca_layer_tree_coordinator_ = std::make_unique<ui::CALayerTreeCoordinator>(
+      use_remote_layer_api_, allow_av_sample_buffer_display_layer);
 
   // Create the CAContext to send this to the GPU process, and the layer for
   // the context.

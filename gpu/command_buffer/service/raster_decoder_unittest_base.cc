@@ -147,7 +147,7 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
   gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
   gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
 
-  gl_.reset(new StrictMock<MockGLInterface>());
+  gl_ = std::make_unique<StrictMock<MockGLInterface>>();
   ::gl::MockGLInterface::SetGLInterface(gl_.get());
 
   InSequence sequence;
@@ -196,7 +196,7 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
   shared_context_state_->disable_check_reset_status_throttling_for_test_ = true;
   shared_context_state_->InitializeGL(GpuPreferences(), feature_info_);
 
-  command_buffer_service_.reset(new FakeCommandBufferServiceBase());
+  command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
 
   decoder_.reset(RasterDecoder::Create(
       this, command_buffer_service_.get(), &outputter_, gpu_feature_info,

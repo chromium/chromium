@@ -966,8 +966,8 @@ ContextResult RasterDecoderImpl::Initialize(
   DCHECK_EQ(context.get(), shared_context_state_->context());
 
   // Create GPU Tracer for timing values.
-  gpu_tracer_.reset(
-      new gles2::GPUTracer(this, shared_context_state_->GrContextIsGL()));
+  gpu_tracer_ = std::make_unique<gles2::GPUTracer>(
+      this, shared_context_state_->GrContextIsGL());
 
   // Save the loseContextWhenOutOfMemory context creation attribute.
   lose_context_when_out_of_memory_ =
@@ -1896,8 +1896,8 @@ error::Error RasterDecoderImpl::HandleSetActiveURLCHROMIUM(
 bool RasterDecoderImpl::InitializeCopyTexImageBlitter() {
   if (!copy_tex_image_blit_.get()) {
     LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER("glCopySubTexture");
-    copy_tex_image_blit_.reset(
-        new gles2::CopyTexImageResourceManager(feature_info()));
+    copy_tex_image_blit_ =
+        std::make_unique<gles2::CopyTexImageResourceManager>(feature_info());
     copy_tex_image_blit_->Initialize(this);
     if (LOCAL_PEEK_GL_ERROR("glCopySubTexture") != GL_NO_ERROR)
       return false;

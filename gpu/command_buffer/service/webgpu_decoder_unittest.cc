@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/service/webgpu_decoder.h"
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/common/webgpu_cmd_format.h"
@@ -29,8 +31,8 @@ class WebGPUDecoderTest : public ::testing::Test {
     if (!WebGPUSupported()) {
       return;
     }
-    decoder_client_.reset(new FakeDecoderClient());
-    command_buffer_service_.reset(new FakeCommandBufferServiceBase());
+    decoder_client_ = std::make_unique<FakeDecoderClient>();
+    command_buffer_service_ = std::make_unique<FakeCommandBufferServiceBase>();
     decoder_.reset(WebGPUDecoder::Create(
         decoder_client_.get(), command_buffer_service_.get(), nullptr, nullptr,
         &outputter_, GpuPreferences()));

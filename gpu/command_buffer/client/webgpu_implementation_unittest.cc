@@ -6,6 +6,8 @@
 
 #include "gpu/command_buffer/client/webgpu_implementation.h"
 
+#include <memory>
+
 #include "gpu/command_buffer/client/client_test_helper.h"
 #include "gpu/command_buffer/client/mock_transfer_buffer.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -45,16 +47,16 @@ class WebGPUImplementationTest : public testing::Test {
 
   bool Initialize() {
     SharedMemoryLimits limits = SharedMemoryLimitsForTesting();
-    command_buffer_.reset(new StrictMock<MockClientCommandBuffer>());
+    command_buffer_ = std::make_unique<StrictMock<MockClientCommandBuffer>>();
 
-    transfer_buffer_.reset(
-        new MockTransferBuffer(command_buffer_.get(), kTransferBufferSize,
-                               ImplementationBase::kStartingOffset,
-                               ImplementationBase::kAlignment, false));
+    transfer_buffer_ = std::make_unique<MockTransferBuffer>(
+        command_buffer_.get(), kTransferBufferSize,
+        ImplementationBase::kStartingOffset, ImplementationBase::kAlignment,
+        false);
 
-    helper_.reset(new WebGPUCmdHelper(command_buffer_.get()));
+    helper_ = std::make_unique<WebGPUCmdHelper>(command_buffer_.get());
     helper_->Initialize(limits.command_buffer_size);
-    gpu_control_.reset(new StrictMock<MockClientGpuControl>());
+    gpu_control_ = std::make_unique<StrictMock<MockClientGpuControl>>();
 
     EXPECT_CALL(*gpu_control_, GetCapabilities())
         .WillOnce(ReturnRef(capabilities_));
@@ -62,8 +64,8 @@ class WebGPUImplementationTest : public testing::Test {
     {
       InSequence sequence;
 
-      gl_.reset(new WebGPUImplementation(helper_.get(), transfer_buffer_.get(),
-                                         gpu_control_.get()));
+      gl_ = std::make_unique<WebGPUImplementation>(
+          helper_.get(), transfer_buffer_.get(), gpu_control_.get());
     }
 
     // The client should be set to something non-null.

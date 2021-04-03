@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/check_op.h"
 #include "base/format_macros.h"
@@ -356,8 +357,8 @@ bool Buffer::GetMaxValueForRange(
 void Buffer::SetMappedRange(GLintptr offset, GLsizeiptr size, GLenum access,
                             void* pointer, scoped_refptr<gpu::Buffer> shm,
                             unsigned int shm_offset) {
-  mapped_range_.reset(
-      new MappedRange(offset, size, access, pointer, shm, shm_offset));
+  mapped_range_ = std::make_unique<MappedRange>(offset, size, access, pointer,
+                                                shm, shm_offset);
 }
 
 void Buffer::RemoveMappedRange() {

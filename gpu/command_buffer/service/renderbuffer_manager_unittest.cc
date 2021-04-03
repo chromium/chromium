@@ -6,7 +6,9 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <set>
+
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gpu_service_test.h"
@@ -39,8 +41,8 @@ class RenderbufferManagerTestBase : public GpuServiceTest {
         use_gles ? "OpenGL ES 2.0" : "2.1",
         feature_info_->context_type());
     feature_info_->InitializeForTesting();
-    manager_.reset(new RenderbufferManager(
-        memory_tracker, kMaxSize, kMaxSamples, feature_info_.get()));
+    manager_ = std::make_unique<RenderbufferManager>(
+        memory_tracker, kMaxSize, kMaxSamples, feature_info_.get());
   }
 
   void TearDown() override {

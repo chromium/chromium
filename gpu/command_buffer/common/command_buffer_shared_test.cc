@@ -21,7 +21,7 @@ namespace gpu {
 class CommandBufferSharedTest : public testing::Test {
  protected:
   void SetUp() override {
-    shared_state_.reset(new CommandBufferSharedState());
+    shared_state_ = std::make_unique<CommandBufferSharedState>();
     shared_state_->Initialize();
   }
 

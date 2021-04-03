@@ -4,6 +4,8 @@
 
 #include "gpu/gles2_conform_support/egl/display.h"
 
+#include <memory>
+
 #include "base/stl_util.h"
 #include "build/build_config.h"
 #include "gpu/gles2_conform_support/egl/config.h"
@@ -364,8 +366,8 @@ void Display::InitializeConfigsIfNeeded() {
     // This way we can record the client intention at context creation time.
     // The GL implementation (gl::GLContext and gl::GLSurface) needs this
     // distinction when creating a context.
-    configs_[0].reset(new Config(EGL_WINDOW_BIT));
-    configs_[1].reset(new Config(EGL_PBUFFER_BIT));
+    configs_[0] = std::make_unique<Config>(EGL_WINDOW_BIT);
+    configs_[1] = std::make_unique<Config>(EGL_PBUFFER_BIT);
   }
 }
 

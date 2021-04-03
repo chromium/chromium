@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -580,7 +581,7 @@ GLES2DecoderPassthroughImpl::EmulatedDefaultFramebuffer::
                                         GL_RENDERBUFFER,
                                         color_buffer_service_id);
   } else {
-    color_texture.reset(new EmulatedColorBuffer(api, format));
+    color_texture = std::make_unique<EmulatedColorBuffer>(api, format);
     api->glFramebufferTexture2DEXTFn(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                                      GL_TEXTURE_2D,
                                      color_texture->texture->service_id(), 0);
@@ -924,12 +925,12 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
                            this);
 
   // Create GPU Tracer for timing values.
-  gpu_tracer_.reset(new GPUTracer(this));
+  gpu_tracer_ = std::make_unique<GPUTracer>(this);
 
-  gpu_fence_manager_.reset(new GpuFenceManager());
+  gpu_fence_manager_ = std::make_unique<GpuFenceManager>();
 
-  multi_draw_manager_.reset(
-      new MultiDrawManager(MultiDrawManager::IndexStorageType::Pointer));
+  multi_draw_manager_ = std::make_unique<MultiDrawManager>(
+      MultiDrawManager::IndexStorageType::Pointer);
 
   auto result =
       group_->Initialize(this, attrib_helper.context_type, disallowed_features);

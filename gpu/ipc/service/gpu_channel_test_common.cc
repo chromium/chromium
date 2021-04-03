@@ -4,6 +4,8 @@
 
 #include "gpu/ipc/service/gpu_channel_test_common.h"
 
+#include <memory>
+
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -88,14 +90,14 @@ GpuChannelTestCommon::GpuChannelTestCommon(
   feature_info.enabled_gpu_driver_bug_workarounds =
       std::move(enabled_workarounds);
 
-  channel_manager_.reset(new GpuChannelManager(
+  channel_manager_ = std::make_unique<GpuChannelManager>(
       GpuPreferences(), channel_manager_delegate_.get(), nullptr, /* watchdog */
       task_runner_.get(), io_task_runner_.get(), scheduler_.get(),
       sync_point_manager_.get(), shared_image_manager_.get(),
       nullptr, /* gpu_memory_buffer_factory */
       std::move(feature_info), GpuProcessActivityFlags(),
       gl::init::CreateOffscreenGLSurface(gfx::Size()),
-      nullptr /* image_decode_accelerator_worker */));
+      nullptr /* image_decode_accelerator_worker */);
 }
 
 GpuChannelTestCommon::~GpuChannelTestCommon() {

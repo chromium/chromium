@@ -63,15 +63,16 @@ class TransferBufferTest : public testing::Test {
 };
 
 void TransferBufferTest::SetUp() {
-  command_buffer_.reset(new StrictMock<MockClientCommandBufferMockFlush>());
+  command_buffer_ =
+      std::make_unique<StrictMock<MockClientCommandBufferMockFlush>>();
 
-  helper_.reset(new CommandBufferHelper(command_buffer()));
+  helper_ = std::make_unique<CommandBufferHelper>(command_buffer());
   ASSERT_EQ(helper_->Initialize(kCommandBufferSizeBytes),
             gpu::ContextResult::kSuccess);
 
   transfer_buffer_id_ = command_buffer()->GetNextFreeTransferBufferId();
 
-  transfer_buffer_.reset(new TransferBuffer(helper_.get()));
+  transfer_buffer_ = std::make_unique<TransferBuffer>(helper_.get());
 }
 
 void TransferBufferTest::TearDown() {
@@ -275,7 +276,8 @@ class TransferBufferExpandContractTest : public testing::Test {
 };
 
 void TransferBufferExpandContractTest::SetUp() {
-  command_buffer_.reset(new StrictMock<MockClientCommandBufferCanFail>());
+  command_buffer_ =
+      std::make_unique<StrictMock<MockClientCommandBufferCanFail>>();
   command_buffer_->SetTokenForSetGetBuffer(0);
 
   EXPECT_CALL(*command_buffer(),
@@ -285,7 +287,7 @@ void TransferBufferExpandContractTest::SetUp() {
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
       .RetiresOnSaturation();
 
-  helper_.reset(new CommandBufferHelper(command_buffer()));
+  helper_ = std::make_unique<CommandBufferHelper>(command_buffer());
   ASSERT_EQ(helper_->Initialize(kCommandBufferSizeBytes),
             gpu::ContextResult::kSuccess);
 
@@ -298,7 +300,7 @@ void TransferBufferExpandContractTest::SetUp() {
                  &MockClientCommandBufferCanFail::RealCreateTransferBuffer))
       .RetiresOnSaturation();
 
-  transfer_buffer_.reset(new TransferBuffer(helper_.get()));
+  transfer_buffer_ = std::make_unique<TransferBuffer>(helper_.get());
   ASSERT_TRUE(transfer_buffer_->Initialize(
       kStartTransferBufferSize, kStartingOffset, kMinTransferBufferSize,
       kMaxTransferBufferSize, kAlignment));

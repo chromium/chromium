@@ -33,8 +33,9 @@ class MappedMemoryTestBase : public testing::Test {
   static const unsigned int kBufferSize = 1024;
 
   void SetUp() override {
-    command_buffer_.reset(new CommandBufferDirectLocked());
-    api_mock_.reset(new AsyncAPIMock(true, command_buffer_->service()));
+    command_buffer_ = std::make_unique<CommandBufferDirectLocked>();
+    api_mock_ =
+        std::make_unique<AsyncAPIMock>(true, command_buffer_->service());
     command_buffer_->set_handler(api_mock_.get());
 
     // ignore noops in the mock - we don't want to inspect the internals of the
@@ -46,7 +47,7 @@ class MappedMemoryTestBase : public testing::Test {
         .WillRepeatedly(DoAll(Invoke(api_mock_.get(), &AsyncAPIMock::SetToken),
                               Return(error::kNoError)));
 
-    helper_.reset(new CommandBufferHelper(command_buffer_.get()));
+    helper_ = std::make_unique<CommandBufferHelper>(command_buffer_.get());
     helper_->Initialize(kBufferSize);
   }
 
@@ -77,7 +78,7 @@ class MemoryChunkTest : public MappedMemoryTestBase {
         shared_memory_region.Map();
     buffer_ = MakeBufferFromSharedMemory(std::move(shared_memory_region),
                                          std::move(shared_memory_mapping));
-    chunk_.reset(new MemoryChunk(kShmId, buffer_, helper_.get()));
+    chunk_ = std::make_unique<MemoryChunk>(kShmId, buffer_, helper_.get());
   }
 
   void TearDown() override {
@@ -136,8 +137,8 @@ class MappedMemoryManagerTest : public MappedMemoryTestBase {
  protected:
   void SetUp() override {
     MappedMemoryTestBase::SetUp();
-    manager_.reset(
-        new MappedMemoryManager(helper_.get(), MappedMemoryManager::kNoLimit));
+    manager_ = std::make_unique<MappedMemoryManager>(
+        helper_.get(), MappedMemoryManager::kNoLimit);
   }
 
   void TearDown() override {
@@ -328,7 +329,7 @@ TEST_F(MappedMemoryManagerTest, ChunkSizeMultiple) {
 TEST_F(MappedMemoryManagerTest, UnusedMemoryLimit) {
   const unsigned int kChunkSize = 2048;
   // Reset the manager with a memory limit.
-  manager_.reset(new MappedMemoryManager(helper_.get(), kChunkSize));
+  manager_ = std::make_unique<MappedMemoryManager>(helper_.get(), kChunkSize);
   manager_->set_chunk_size_multiple(kChunkSize);
 
   // Allocate one chunk worth of memory.
@@ -359,7 +360,7 @@ TEST_F(MappedMemoryManagerTest, UnusedMemoryLimit) {
 TEST_F(MappedMemoryManagerTest, MemoryLimitWithReuse) {
   const unsigned int kSize = 1024;
   // Reset the manager with a memory limit.
-  manager_.reset(new MappedMemoryManager(helper_.get(), kSize));
+  manager_ = std::make_unique<MappedMemoryManager>(helper_.get(), kSize);
   const unsigned int kChunkSize = 2 * 1024;
   manager_->set_chunk_size_multiple(kChunkSize);
 
@@ -411,7 +412,7 @@ TEST_F(MappedMemoryManagerTest, MemoryLimitWithReuse) {
 TEST_F(MappedMemoryManagerTest, MaxAllocationTest) {
   const unsigned int kSize = 1024;
   // Reset the manager with a memory limit.
-  manager_.reset(new MappedMemoryManager(helper_.get(), kSize));
+  manager_ = std::make_unique<MappedMemoryManager>(helper_.get(), kSize);
 
   const size_t kLimit = 512;
   manager_->set_chunk_size_multiple(kLimit);

@@ -198,7 +198,7 @@ void CommandBufferProxyImpl::OnGpuSwitched(
 void CommandBufferProxyImpl::AddDeletionObserver(DeletionObserver* observer) {
   std::unique_ptr<base::AutoLock> lock;
   if (lock_)
-    lock.reset(new base::AutoLock(*lock_));
+    lock = std::make_unique<base::AutoLock>(*lock_);
   deletion_observers_.AddObserver(observer);
 }
 
@@ -206,7 +206,7 @@ void CommandBufferProxyImpl::RemoveDeletionObserver(
     DeletionObserver* observer) {
   std::unique_ptr<base::AutoLock> lock;
   if (lock_)
-    lock.reset(new base::AutoLock(*lock_));
+    lock = std::make_unique<base::AutoLock>(*lock_);
   deletion_observers_.RemoveObserver(observer);
 }
 

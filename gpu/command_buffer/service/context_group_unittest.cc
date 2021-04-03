@@ -45,8 +45,8 @@ class ContextGroupTest : public GpuServiceTest {
  protected:
   void SetUp() override {
     GpuServiceTest::SetUp();
-    decoder_.reset(
-        new MockGLES2Decoder(&client_, &command_buffer_service_, &outputter_));
+    decoder_ = std::make_unique<MockGLES2Decoder>(
+        &client_, &command_buffer_service_, &outputter_);
     scoped_refptr<FeatureInfo> feature_info = new FeatureInfo;
     group_ = scoped_refptr<ContextGroup>(new ContextGroup(
         gpu_preferences_, false, &mailbox_manager_,

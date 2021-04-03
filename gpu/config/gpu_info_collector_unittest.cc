@@ -58,7 +58,7 @@ class GPUInfoCollectorTest
     testing::Test::SetUp();
     gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
     gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
-    gl_.reset(new ::testing::StrictMock<::gl::MockGLInterface>());
+    gl_ = std::make_unique<::testing::StrictMock<::gl::MockGLInterface>>();
     ::gl::MockGLInterface::SetGLInterface(gl_.get());
     switch (GetParam()) {
       case kMockedAndroid: {

@@ -16,6 +16,7 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <string>
@@ -290,7 +291,7 @@ gpu::ContextResult GLES2Implementation::Initialize(
                                                     helper_);
 
   for (int i = 0; i < static_cast<int>(IdNamespaces::kNumIdNamespaces); ++i)
-    id_allocators_[i].reset(new IdAllocator());
+    id_allocators_[i] = std::make_unique<IdAllocator>();
 
   if (support_client_side_arrays_) {
     GetIdHandler(SharedIdNamespaces::kBuffers)
@@ -298,9 +299,9 @@ gpu::ContextResult GLES2Implementation::Initialize(
                   &reserved_ids_[0]);
   }
 
-  vertex_array_object_manager_.reset(new VertexArrayObjectManager(
+  vertex_array_object_manager_ = std::make_unique<VertexArrayObjectManager>(
       capabilities_.max_vertex_attribs, reserved_ids_[0], reserved_ids_[1],
-      support_client_side_arrays_));
+      support_client_side_arrays_);
 
   // GL_BIND_GENERATES_RESOURCE_CHROMIUM state must be the same
   // on Client & Service.

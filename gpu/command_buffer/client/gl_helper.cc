@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -500,14 +501,14 @@ void GLHelper::ReadbackTextureAsync(GLuint texture,
 void GLHelper::InitCopyTextToImpl() {
   // Lazily initialize |copy_texture_to_impl_|
   if (!copy_texture_to_impl_)
-    copy_texture_to_impl_.reset(
-        new CopyTextureToImpl(gl_, context_support_, this));
+    copy_texture_to_impl_ =
+        std::make_unique<CopyTextureToImpl>(gl_, context_support_, this);
 }
 
 void GLHelper::InitScalerImpl() {
   // Lazily initialize |scaler_impl_|
   if (!scaler_impl_)
-    scaler_impl_.reset(new GLHelperScaling(gl_, this));
+    scaler_impl_ = std::make_unique<GLHelperScaling>(gl_, this);
 }
 
 GLint GLHelper::MaxDrawBuffers() {

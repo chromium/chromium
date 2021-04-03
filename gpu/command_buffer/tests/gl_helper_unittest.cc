@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -83,8 +84,8 @@ class GLHelperTest : public testing::Test {
     gl_ = context_->GetImplementation();
     ContextSupport* support = context_->GetImplementation();
 
-    helper_.reset(new GLHelper(gl_, support));
-    helper_scaling_.reset(new GLHelperScaling(gl_, helper_.get()));
+    helper_ = std::make_unique<GLHelper>(gl_, support);
+    helper_scaling_ = std::make_unique<GLHelperScaling>(gl_, helper_.get());
   }
 
   void TearDown() override {
