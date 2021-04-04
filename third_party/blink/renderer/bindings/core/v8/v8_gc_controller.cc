@@ -76,6 +76,7 @@ Node* V8GCController::OpaqueRootForGC(v8::Isolate*, Node* node) {
   return node;
 }
 
+/*
 #if !BUILDFLAG(USE_V8_OILPAN)
 namespace {
 bool IsNestedInV8GC(ThreadState* thread_state, v8::GCType type) {
@@ -84,10 +85,14 @@ bool IsNestedInV8GC(ThreadState* thread_state, v8::GCType type) {
 }
 }  // namespace
 #endif  // !USE_V8_OILPAN
+*/
 
 void V8GCController::GcPrologue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
+  // Disable code to avoid getting the current time at non-deterministic points.
+  // FIXME update ThreadHeapStatsCollector instead.
+  /*
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcPrologue);
 #if !BUILDFLAG(USE_V8_OILPAN)
   ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
@@ -95,6 +100,7 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
           ? ThreadState::Current()->Heap().stats_collector()
           : nullptr);
 #endif  // !USE_V8_OILPAN
+  */
 
   auto* per_isolate_data = V8PerIsolateData::From(isolate);
   per_isolate_data->EnterGC();
@@ -133,6 +139,7 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
 void V8GCController::GcEpilogue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
+  /*
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcEpilogue);
 #if !BUILDFLAG(USE_V8_OILPAN)
   ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
@@ -140,6 +147,7 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
           ? ThreadState::Current()->Heap().stats_collector()
           : nullptr);
 #endif  // !USE_V8_OILPAN
+  */
 
   V8PerIsolateData::From(isolate)->LeaveGC();
 

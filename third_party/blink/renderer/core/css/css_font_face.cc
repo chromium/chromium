@@ -62,8 +62,12 @@ void CSSFontFace::DidBeginLoad() {
 }
 
 bool CSSFontFace::FontLoaded(CSSFontFaceSource* source) {
-  if (!IsValid() || source != sources_.front())
+  recordreplay::Assert("CSSFontFace::FontLoaded Start");
+
+  if (!IsValid() || source != sources_.front()) {
+    recordreplay::Assert("CSSFontFace::FontLoaded #1");
     return false;
+  }
 
   if (LoadStatus() == FontFace::kLoading) {
     if (source->IsValid()) {
@@ -79,6 +83,8 @@ bool CSSFontFace::FontLoaded(CSSFontFaceSource* source) {
 
   for (CSSSegmentedFontFace* segmented_font_face : segmented_font_faces_)
     segmented_font_face->FontFaceInvalidated();
+
+  recordreplay::Assert("CSSFontFace::FontLoaded Done");
   return true;
 }
 

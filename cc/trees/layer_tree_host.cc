@@ -24,6 +24,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -618,9 +619,11 @@ void LayerTreeHost::OnDeferCommitsChanged(bool defer_status) {
 
 DISABLE_CFI_PERF
 void LayerTreeHost::SetNeedsAnimate() {
+  recordreplay::Assert("LayerTreeHost::SetNeedsAnimate Start");
   proxy_->SetNeedsAnimate();
   swap_promise_manager_.NotifySwapPromiseMonitorsOfSetNeedsCommit();
   events_metrics_manager_.SaveActiveEventMetrics();
+  recordreplay::Assert("LayerTreeHost::SetNeedsAnimate Done");
 }
 
 void LayerTreeHost::SetNeedsAnimateIfNotInsideMainFrame() {

@@ -125,6 +125,7 @@ void TimeDomain::SetNextWakeUpForQueue(
 }
 
 void TimeDomain::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
+  recordreplay::Assert("TimeDomain::MoveReadyDelayedTasksToWorkQueues Start");
   DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
   // Wake up any queues with pending delayed work.  Note std::multimap stores
   // the elements sorted by key, so the begin() iterator points to the earliest
@@ -134,6 +135,7 @@ void TimeDomain::MoveReadyDelayedTasksToWorkQueues(LazyNow* lazy_now) {
     internal::TaskQueueImpl* queue = delayed_wake_up_queue_.Min().queue;
     queue->MoveReadyDelayedTasksToWorkQueue(lazy_now);
   }
+  recordreplay::Assert("TimeDomain::MoveReadyDelayedTasksToWorkQueues Done");
 }
 
 Optional<TimeTicks> TimeDomain::NextScheduledRunTime() const {
