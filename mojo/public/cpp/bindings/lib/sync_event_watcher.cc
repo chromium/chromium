@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
+#include "base/record_replay.h"
 
 namespace mojo {
 
@@ -30,6 +31,8 @@ void SyncEventWatcher::AllowWokenUpBySyncWatchOnSameThread() {
 
 bool SyncEventWatcher::SyncWatch(const bool** stop_flags,
                                  size_t num_stop_flags) {
+  recordreplay::Assert("SyncEventWatcher::SyncWatch Start");
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   IncrementRegisterCount();
 
@@ -46,10 +49,14 @@ bool SyncEventWatcher::SyncWatch(const bool** stop_flags,
                                 should_stop_array.container().size());
 
   // This object has been destroyed.
-  if (destroyed->data)
+  if (destroyed->data) {
+    recordreplay::Assert("SyncEventWatcher::SyncWatch #1");
     return false;
+  }
 
   DecrementRegisterCount();
+
+  recordreplay::Assert("SyncEventWatcher::SyncWatch Done %d", result);
   return result;
 }
 

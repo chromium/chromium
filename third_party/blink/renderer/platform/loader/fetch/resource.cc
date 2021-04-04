@@ -156,6 +156,7 @@ Resource::Resource(const ResourceRequestHead& request,
       response_timestamp_(Now()),
       resource_request_(request),
       overhead_size_(CalculateOverheadSize()) {
+  recordreplay::RegisterPointer(this);
   scoped_refptr<const SecurityOrigin> top_frame_origin =
       resource_request_.TopFrameOrigin();
   if (top_frame_origin) {
@@ -171,6 +172,7 @@ Resource::Resource(const ResourceRequestHead& request,
 
 Resource::~Resource() {
   InstanceCounters::DecrementCounter(InstanceCounters::kResourceCounter);
+  recordreplay::UnregisterPointer(this);
 }
 
 void Resource::Trace(Visitor* visitor) const {
@@ -233,6 +235,8 @@ void Resource::CheckResourceIntegrity() {
 
 void Resource::NotifyFinished() {
   CHECK(IsLoaded());
+
+  recordreplay::Assert("Resource::NotifyFinished %lu", recordreplay::PointerId(this));
 
   ResourceClientWalker<ResourceClient> w(clients_);
   while (ResourceClient* c = w.Next()) {

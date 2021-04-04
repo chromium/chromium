@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 #include "base/threading/sequence_local_storage_slot.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -112,6 +113,7 @@ SyncHandleRegistry::EventCallbackSubscription SyncHandleRegistry::RegisterEvent(
 }
 
 bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
+  recordreplay::Assert("SyncHandleRegistry::Wait Start");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   size_t num_ready_handles;
@@ -120,9 +122,13 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
 
   scoped_refptr<SyncHandleRegistry> preserver(this);
   while (true) {
+    recordreplay::Assert("SyncHandleRegistry::Wait #1");
     for (size_t i = 0; i < count; ++i) {
-      if (*should_stop[i])
+      recordreplay::Assert("SyncHandleRegistry::Wait #2");
+      if (*should_stop[i]) {
+        recordreplay::Assert("SyncHandleRegistry::Wait #3");
         return true;
+      }
     }
 
     // TODO(yzshen): Theoretically it can reduce sync call re-entrancy if we
@@ -131,11 +137,14 @@ bool SyncHandleRegistry::Wait(const bool* should_stop[], size_t count) {
     num_ready_handles = 1;
     wait_set_.Wait(&ready_event, &num_ready_handles, &ready_handle,
                    &ready_handle_result);
+    recordreplay::Assert("SyncHandleRegistry::Wait #3.1 %lu", num_ready_handles);
     if (num_ready_handles) {
       DCHECK_EQ(1u, num_ready_handles);
       const auto iter = handles_.find(ready_handle);
       iter->second.Run(ready_handle_result);
     }
+
+    recordreplay::Assert("SyncHandleRegistry::Wait #4 %d", !!ready_event);
 
     if (ready_event) {
       const auto iter = events_.find(ready_event);

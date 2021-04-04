@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RESOURCE_CLIENT_H_
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -42,8 +43,13 @@ class Resource;
 class PLATFORM_EXPORT ResourceClient : public GarbageCollectedMixin {
   USING_PRE_FINALIZER(ResourceClient, ClearResource);
  public:
-  ResourceClient() = default;
-  virtual ~ResourceClient() = default;
+  ResourceClient() {
+    // Pointer registration is needed by ResourceClientWalker.
+    recordreplay::RegisterPointer(this);
+  }
+  virtual ~ResourceClient() {
+    recordreplay::UnregisterPointer(this);
+  }
 
   // DataReceived() is called each time a chunk of data is received.
   // For cache hits, the data is replayed before NotifyFinished() is called.

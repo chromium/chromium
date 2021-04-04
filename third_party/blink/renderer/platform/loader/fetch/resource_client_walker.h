@@ -31,6 +31,18 @@
 
 namespace blink {
 
+struct RecordReplayCompareResourceClientByPointerId {
+  bool operator()(const WeakMember<ResourceClient>& a, const WeakMember<ResourceClient>& b) const {
+    if (recordreplay::IsRecordingOrReplaying()) {
+      int ida = recordreplay::PointerId(a.Get());
+      int idb = recordreplay::PointerId(b.Get());
+      CHECK(ida && idb);
+      return ida < idb;
+    }
+    return a < b;
+  }
+};
+
 // Call this "walker" instead of iterator so people won't expect Qt or STL-style
 // iterator interface. Just keep calling next() on this. It's safe from
 // deletions of items.
@@ -43,6 +55,10 @@ class ResourceClientWalker {
       const HeapHashCountedSet<WeakMember<ResourceClient>>& set)
       : client_set_(set) {
     CopyToVector(client_set_, client_vector_);
+
+    // Sort by pointer ID when recording/replaying to ensure a consistent iteration order.
+    std::sort(client_vector_.begin(), client_vector_.end(),
+              RecordReplayCompareResourceClientByPointerId());
   }
 
   T* Next() {

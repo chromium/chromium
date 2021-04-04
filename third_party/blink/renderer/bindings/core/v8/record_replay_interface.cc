@@ -104,7 +104,6 @@ addEventListener("Runtime.consoleAPICalled", onConsoleAPICall);
 sendMessage("Runtime.enable");
 
 const CommandCallbacks = {
-  "Target.countStackFrames": Target_countStackFrames,
   "Target.getCurrentMessageContents": Target_getCurrentMessageContents,
   "Target.getSourceMapURL": Target_getSourceMapURL,
   "Target.getStepOffsets": Target_getStepOffsets,
@@ -129,11 +128,6 @@ function commandCallback(method, params) {
     log(`Error: Command exception ${method} ${e}`);
     return {};
   }
-}
-
-function Target_countStackFrames() {
-  const count = getStackFrames().length;
-  return { count };
 }
 
 // Contents of the last console API call. Runtime.consoleAPICalled will be

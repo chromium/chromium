@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/css/font_face.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/string_or_array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_font_face_descriptors.h"
@@ -230,12 +231,15 @@ FontFace* FontFace::Create(Document* document,
 }
 
 FontFace::FontFace(ExecutionContext* context)
-    : ExecutionContextClient(context), status_(kUnloaded) {}
+    : ExecutionContextClient(context), status_(kUnloaded) {
+  recordreplay::RegisterPointer(this);
+}
 
 FontFace::FontFace(ExecutionContext* context,
                    const AtomicString& family,
                    const FontFaceDescriptors* descriptors)
     : ExecutionContextClient(context), family_(family), status_(kUnloaded) {
+  recordreplay::RegisterPointer(this);
   SetPropertyFromString(context, descriptors->style(),
                         AtRuleDescriptorID::FontStyle);
   SetPropertyFromString(context, descriptors->weight(),
@@ -260,7 +264,9 @@ FontFace::FontFace(ExecutionContext* context,
   }
 }
 
-FontFace::~FontFace() = default;
+FontFace::~FontFace() {
+  recordreplay::UnregisterPointer(this);
+}
 
 String FontFace::style() const {
   return style_ ? style_->CssText() : "normal";
@@ -505,6 +511,8 @@ String FontFace::status() const {
 }
 
 void FontFace::SetLoadStatus(LoadStatusType status) {
+  recordreplay::Assert("FontFace::SetLoadStatus Start %lu %d", recordreplay::PointerId(this), status);
+
   status_ = status;
   DCHECK(status_ != kError || error_);
 
