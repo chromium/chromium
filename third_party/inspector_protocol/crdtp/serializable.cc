@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/record_replay.h"
+
 namespace crdtp {
 // =============================================================================
 // Serializable - An object to be emitted as a sequence of bytes.
@@ -14,6 +16,7 @@ namespace crdtp {
 std::vector<uint8_t> Serializable::Serialize() const {
   std::vector<uint8_t> out;
   AppendSerialized(&out);
+  recordreplay::Assert("Serializable::Serialize %lu", out.size());
   return out;
 }
 

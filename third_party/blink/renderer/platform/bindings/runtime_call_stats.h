@@ -114,28 +114,35 @@ class PLATFORM_EXPORT RuntimeCallTimer {
   const base::TickClock* clock_ = nullptr;
 };
 
+static inline bool BlinkRuntimeCallStatsEnabled() {
+  // Force-disable call stats when recording/replaying, as calls can occur at
+  // non-deterministic points and will also bloat the recording.
+  return UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled()
+               && !v8::recordreplay::IsRecordingOrReplaying());
+}
+
 // Macros that take RuntimeCallStats as a parameter; used only in
 // RuntimeCallStatsTest.
 #define RUNTIME_CALL_STATS_ENTER_WITH_RCS(runtime_call_stats, timer,      \
                                           counterId)                      \
-  if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) { \
+  if (BlinkRuntimeCallStatsEnabled()) {                                   \
     (runtime_call_stats)->Enter(timer, counterId);                        \
   }
 
 #define RUNTIME_CALL_STATS_LEAVE_WITH_RCS(runtime_call_stats, timer)      \
-  if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) { \
+  if (BlinkRuntimeCallStatsEnabled()) {                                   \
     (runtime_call_stats)->Leave(timer);                                   \
   }
 
 #define RUNTIME_CALL_TIMER_SCOPE_WITH_RCS(runtime_call_stats, counterId)  \
   base::Optional<RuntimeCallTimerScope> rcs_scope;                        \
-  if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) { \
+  if (BlinkRuntimeCallStatsEnabled()) {                                   \
     rcs_scope.emplace(runtime_call_stats, counterId);                     \
   }
 
 #define RUNTIME_CALL_TIMER_SCOPE_WITH_OPTIONAL_RCS(                       \
     optional_scope_name, runtime_call_stats, counterId)                   \
-  if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) { \
+  if (BlinkRuntimeCallStatsEnabled()) {                                   \
     optional_scope_name.emplace(runtime_call_stats, counterId);           \
   }
 
@@ -385,7 +392,7 @@ class PLATFORM_EXPORT RuntimeCallStatsScopedTracer {
 
  public:
   explicit RuntimeCallStatsScopedTracer(v8::Isolate* isolate) {
-    if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled()))
+    if (BlinkRuntimeCallStatsEnabled())
       AddBeginTraceEventIfEnabled(isolate);
   }
 

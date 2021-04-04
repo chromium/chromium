@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "base/record_replay.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
@@ -26,10 +27,14 @@ struct Serializer<StringDataView, MaybeConstUserType> {
 
   static void Serialize(MaybeConstUserType& input,
                         MessageFragment<String_Data>& fragment) {
-    if (CallIsNullIfExists<Traits>(input))
+    recordreplay::Assert("Serializer<StringDataView>::Serialize Start");
+    if (CallIsNullIfExists<Traits>(input)) {
+      recordreplay::Assert("Serializer<StringDataView>::Serialize #1");
       return;
+    }
 
     auto r = Traits::GetUTF8(input);
+    recordreplay::Assert("Serializer<StringDataView>::Serialize #2 %lu", r.size());
     fragment.AllocateArrayData(r.size());
     memcpy(fragment->storage(), r.data(), r.size());
   }

@@ -12,8 +12,6 @@
 #include "base/record_replay.h"
 #include "base/threading/post_task_and_reply_impl.h"
 
-#ifndef NACL_TC_REV
-
 #include <dlfcn.h>
 
 // There are linker problems if we try to use recordreplay::Assert here.
@@ -33,12 +31,6 @@ static void RecordReplayAssert(const char* aFormat, ...) {
   gRecordReplayAssertFn(aFormat, ap);
   va_end(ap);
 }
-
-#else
-
-static void RecordReplayAssert(const char* aFormat, ...) {}
-
-#endif
 
 namespace base {
 

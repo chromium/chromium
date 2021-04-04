@@ -1122,10 +1122,14 @@ void InspectorNetworkAgent::WillSendRequestInternal(
   Maybe<String> maybe_frame_id;
   if (!frame_id.IsEmpty())
     maybe_frame_id = frame_id;
+
+  double wallTime = base::Time::Now().ToDoubleT();
+  recordreplay::Assert("InspectorNetworkAgent::WillSendRequestInternal %.2f", wallTime);
+
   GetFrontend()->requestWillBeSent(
       request_id, loader_id, documentURL, std::move(request_info),
       base::TimeTicks::Now().since_origin().InSecondsF(),
-      base::Time::Now().ToDoubleT(), std::move(initiator_object),
+      wallTime, std::move(initiator_object),
       BuildObjectForResourceResponse(redirect_response), resource_type,
       std::move(maybe_frame_id), request.HasUserGesture());
   if (is_handling_sync_xhr_)
@@ -1367,8 +1371,11 @@ void InspectorNetworkAgent::DidReceiveData(uint64_t identifier,
       resources_data_->MaybeAddResourceData(request_id, data, data_length);
   }
 
+  double timestamp = base::TimeTicks::Now().since_origin().InSecondsF();
+  recordreplay::Assert("InspectorNetworkAgent::DidReceiveData %lf", timestamp);
+
   GetFrontend()->dataReceived(
-      request_id, base::TimeTicks::Now().since_origin().InSecondsF(),
+      request_id, timestamp,
       static_cast<int>(data_length),
       static_cast<int>(
           resources_data_->GetAndClearPendingEncodedDataLength(request_id)));
@@ -1403,8 +1410,11 @@ void InspectorNetworkAgent::DidFinishLoading(
   int pending_encoded_data_length = static_cast<int>(
       resources_data_->GetAndClearPendingEncodedDataLength(request_id));
   if (pending_encoded_data_length > 0) {
+    double timestamp = base::TimeTicks::Now().since_origin().InSecondsF();
+    recordreplay::Assert("InspectorNetworkAgent::DidFinishLoading %lf", timestamp);
+
     GetFrontend()->dataReceived(
-        request_id, base::TimeTicks::Now().since_origin().InSecondsF(), 0,
+        request_id, timestamp, 0,
         pending_encoded_data_length);
   }
 

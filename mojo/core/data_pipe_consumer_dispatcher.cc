@@ -440,6 +440,7 @@ DataPipeConsumerDispatcher::DataPipeConsumerDispatcher(
       node_controller_(node_controller),
       control_port_(control_port),
       pipe_id_(pipe_id),
+      lock_("DataPipeConsumerDispatcher.pipe_id_"),
       watchers_(this),
       shared_ring_buffer_(std::move(shared_ring_buffer)) {}
 

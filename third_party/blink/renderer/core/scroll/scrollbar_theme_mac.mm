@@ -28,6 +28,7 @@
 #include <Carbon/Carbon.h>
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
+#include "base/record_replay.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
@@ -73,6 +74,7 @@
 }
 
 - (void)setSuppressSetScrollbarsHidden:(BOOL)value {
+  recordreplay::AutoPassThroughEvents pt;
   _suppressSetScrollbarsHidden = value;
   if (value) {
     _saved_knob_alpha = [_scrollbarPainter knobAlpha];
@@ -91,6 +93,7 @@
                       ofObject:(id)object
                         change:(NSDictionary*)change
                        context:(void*)context {
+  recordreplay::AutoPassThroughEvents pt;
   if ([keyPath isEqualToString:@"knobAlpha"]) {
     if (!_suppressSetScrollbarsHidden) {
       BOOL visible = [_scrollbarPainter knobAlpha] > 0;

@@ -350,9 +350,14 @@ void MessagePumpCFRunLoopBase::RunDelayedWorkTimer(CFRunLoopTimerRef timer,
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
   // The timer fired, assume we have work and let RunWork() figure out what to
   // do and what to schedule after.
-  base::mac::CallWithEHFrame(^{
+
+  // For now CallWithEHFrame is disabled in this file to avoid crashes when
+  // replaying. These calls are only used to ensure the process terminates if
+  // an exception is thrown, but it would be nice to figure out what's going on
+  // sometime and restore these calls.
+  //base::mac::CallWithEHFrame(^{
     self->RunWork();
-  });
+  //});
 }
 
 // Called from the run loop.
@@ -361,9 +366,9 @@ void MessagePumpCFRunLoopBase::RunWorkSource(void* info) {
   recordreplay::NewCheckpoint();
 
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
-  base::mac::CallWithEHFrame(^{
+  //base::mac::CallWithEHFrame(^{
     self->RunWork();
-  });
+  //});
 }
 
 // Called by MessagePumpCFRunLoopBase::RunWorkSource and RunDelayedWorkTimer.
@@ -401,9 +406,9 @@ bool MessagePumpCFRunLoopBase::RunWork() {
 // static
 void MessagePumpCFRunLoopBase::RunIdleWorkSource(void* info) {
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
-  base::mac::CallWithEHFrame(^{
+  //base::mac::CallWithEHFrame(^{
     self->RunIdleWork();
-  });
+  //});
 }
 
 // Called by MessagePumpCFRunLoopBase::RunIdleWorkSource.
@@ -434,9 +439,9 @@ void MessagePumpCFRunLoopBase::RunIdleWork() {
 // static
 void MessagePumpCFRunLoopBase::RunNestingDeferredWorkSource(void* info) {
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
-  base::mac::CallWithEHFrame(^{
+  //base::mac::CallWithEHFrame(^{
     self->RunNestingDeferredWork();
-  });
+  //});
 }
 
 // Called by MessagePumpCFRunLoopBase::RunNestingDeferredWorkSource.
@@ -478,7 +483,7 @@ void MessagePumpCFRunLoopBase::PreWaitObserver(CFRunLoopObserverRef observer,
                                                CFRunLoopActivity activity,
                                                void* info) {
   MessagePumpCFRunLoopBase* self = static_cast<MessagePumpCFRunLoopBase*>(info);
-  base::mac::CallWithEHFrame(^{
+  //base::mac::CallWithEHFrame(^{
     // Attempt to do some idle work before going to sleep.
     self->RunIdleWork();
 
@@ -487,7 +492,7 @@ void MessagePumpCFRunLoopBase::PreWaitObserver(CFRunLoopObserverRef observer,
     // nesting-deferred work may have accumulated.  Schedule it for processing
     // if appropriate.
     self->MaybeScheduleNestingDeferredWork();
-  });
+  //});
 }
 
 // Called from the run loop.
@@ -502,9 +507,9 @@ void MessagePumpCFRunLoopBase::PreSourceObserver(CFRunLoopObserverRef observer,
   // level did not sleep or exit, nesting-deferred work may have accumulated
   // if a nested loop ran.  Schedule nesting-deferred work for processing if
   // appropriate.
-  base::mac::CallWithEHFrame(^{
+  //base::mac::CallWithEHFrame(^{
     self->MaybeScheduleNestingDeferredWork();
-  });
+  //});
 }
 
 // Called from the run loop.
@@ -539,9 +544,9 @@ void MessagePumpCFRunLoopBase::EnterExitObserver(CFRunLoopObserverRef observer,
       // to sleep or exiting.  It must be called before decrementing the
       // value so that the value still corresponds to the level of the exiting
       // loop.
-      base::mac::CallWithEHFrame(^{
+      //base::mac::CallWithEHFrame(^{
         self->MaybeScheduleNestingDeferredWork();
-      });
+      //});
       --self->nesting_level_;
       break;
 
@@ -549,9 +554,9 @@ void MessagePumpCFRunLoopBase::EnterExitObserver(CFRunLoopObserverRef observer,
       break;
   }
 
-  base::mac::CallWithEHFrame(^{
+  //base::mac::CallWithEHFrame(^{
     self->EnterExitRunLoop(activity);
-  });
+  //});
 }
 
 // Called by MessagePumpCFRunLoopBase::EnterExitRunLoop.  The default

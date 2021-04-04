@@ -26,11 +26,18 @@ PageResourceDataUse::PageResourceDataUse()
       proxy_used_(false),
       is_primary_frame_resource_(false),
       completed_before_fcp_(false),
-      cache_type_(mojom::CacheType::kNotCached) {}
+      cache_type_(mojom::CacheType::kNotCached) {
+  // Pointer registration is needed for sorting in PageTimingMetricsSender.modified_resources_
+  recordreplay::RegisterPointer(this);
+}
 
-PageResourceDataUse::PageResourceDataUse(const PageResourceDataUse& other) =
-    default;
-PageResourceDataUse::~PageResourceDataUse() = default;
+PageResourceDataUse::PageResourceDataUse(const PageResourceDataUse& other) {
+  recordreplay::RegisterPointer(this);
+}
+
+PageResourceDataUse::~PageResourceDataUse() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void PageResourceDataUse::DidStartResponse(
     const GURL& response_url,
@@ -115,6 +122,7 @@ int PageResourceDataUse::CalculateNewlyReceivedBytes() {
 }
 
 mojom::ResourceDataUpdatePtr PageResourceDataUse::GetResourceDataUpdate() {
+  recordreplay::Assert("PageResourceDataUse::GetResourceDataUpdate %s", mime_type_.c_str());
   DCHECK(cache_type_ == mojom::CacheType::kMemory ? is_complete_ : true);
   mojom::ResourceDataUpdatePtr resource_data_update =
       mojom::ResourceDataUpdate::New();

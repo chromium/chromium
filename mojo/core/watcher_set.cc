@@ -9,17 +9,30 @@
 namespace mojo {
 namespace core {
 
-WatcherSet::WatcherSet(Dispatcher* owner) : owner_(owner) {}
+WatcherSet::WatcherSet(Dispatcher* owner) : owner_(owner) {
+  recordreplay::RegisterPointer(this);
+}
 
-WatcherSet::~WatcherSet() = default;
+WatcherSet::~WatcherSet() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void WatcherSet::NotifyState(const HandleSignalsState& state) {
   // Avoid notifying watchers if they have already seen this state.
-  if (last_known_state_.has_value() && state.equals(last_known_state_.value()))
+  recordreplay::Assert("WatcherSet::NotifyState Start %lu %u %u",
+                       recordreplay::PointerId(this),
+                       state.satisfied_signals, state.satisfiable_signals);
+  if (last_known_state_.has_value() && state.equals(last_known_state_.value())) {
+    recordreplay::Assert("WatcherSet::NotifyState #1");
     return;
+  }
+  recordreplay::Assert("WatcherSet::NotifyState #2");
   last_known_state_ = state;
-  for (const auto& entry : watchers_)
+  for (const auto& entry : watchers_) {
+    recordreplay::Assert("WatcherSet::NotifyState #3");
     entry.first->NotifyHandleState(owner_, state);
+  }
+  recordreplay::Assert("WatcherSet::NotifyState Done");
 }
 
 void WatcherSet::NotifyClosed() {
@@ -30,6 +43,10 @@ void WatcherSet::NotifyClosed() {
 MojoResult WatcherSet::Add(const scoped_refptr<WatcherDispatcher>& watcher,
                            uintptr_t context,
                            const HandleSignalsState& current_state) {
+  recordreplay::Assert("WatcherSet::Add Start %lu %u %u",
+                       recordreplay::PointerId(this),
+                       current_state.satisfied_signals, current_state.satisfiable_signals);
+
   auto it = watchers_.find(watcher.get());
   if (it == watchers_.end()) {
     auto result =
@@ -53,6 +70,10 @@ MojoResult WatcherSet::Add(const scoped_refptr<WatcherDispatcher>& watcher,
 }
 
 MojoResult WatcherSet::Remove(WatcherDispatcher* watcher, uintptr_t context) {
+  recordreplay::Assert("WatcherSet::Remove Start %lu %lu",
+                       recordreplay::PointerId(this),
+                       recordreplay::PointerId(watcher));
+
   auto it = watchers_.find(watcher);
   if (it == watchers_.end())
     return MOJO_RESULT_NOT_FOUND;

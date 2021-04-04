@@ -59,6 +59,8 @@ ports::NodeName GetRandomNodeName() {
 }
 
 Channel::MessagePtr SerializeEventMessage(ports::ScopedEvent event) {
+  recordreplay::Assert("SerializeEventMessage Start %d", event->type());
+
   if (event->type() == ports::Event::Type::kUserMessage) {
     // User message events must already be partially serialized.
     return UserMessageImpl::FinalizeEventMessage(
@@ -69,6 +71,8 @@ Channel::MessagePtr SerializeEventMessage(ports::ScopedEvent event) {
   size_t size = event->GetSerializedSize();
   auto message = NodeChannel::CreateEventMessage(size, size, &data, 0);
   event->Serialize(data);
+
+  recordreplay::Assert("SerializeEventMessage Done %lu %lu", size, message->data_num_bytes());
   return message;
 }
 
@@ -790,6 +794,8 @@ void NodeController::BroadcastEvent(ports::ScopedEvent event) {
 }
 
 void NodeController::PortStatusChanged(const ports::PortRef& port) {
+  recordreplay::Assert("NodeController::PortStatusChanged Start");
+
   scoped_refptr<ports::UserData> user_data;
   node_->GetUserData(port, &user_data);
 
@@ -800,6 +806,8 @@ void NodeController::PortStatusChanged(const ports::PortRef& port) {
     DVLOG(2) << "Ignoring status change for " << port.name() << " because it "
              << "doesn't have an observer.";
   }
+
+  recordreplay::Assert("NodeController::PortStatusChanged Done");
 }
 
 void NodeController::OnAcceptInvitee(const ports::NodeName& from_node,
@@ -1057,6 +1065,7 @@ void NodeController::OnEventMessage(const ports::NodeName& from_node,
   if (!event) {
     // We silently ignore unparseable events, as they may come from a process
     // running a newer version of Mojo.
+    recordreplay::Assert("NodeController::OnEventMessage #1");
     DVLOG(1) << "Ignoring invalid or unknown event from " << from_node;
     return;
   }

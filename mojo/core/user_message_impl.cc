@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
+#include "base/record_replay.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_provider.h"
@@ -405,6 +406,8 @@ Channel::MessagePtr UserMessageImpl::FinalizeEventMessage(
   auto* message = message_event->GetMessage<UserMessageImpl>();
   DCHECK(message->IsSerialized());
 
+  recordreplay::Assert("UserMessageImpl::FinalizeEventMessage %lu", message->user_payload_size());
+
   if (!message->is_committed_)
     return nullptr;
 
@@ -459,6 +462,8 @@ MojoResult UserMessageImpl::SetContext(
 MojoResult UserMessageImpl::AppendData(uint32_t additional_payload_size,
                                        const MojoHandle* handles,
                                        uint32_t num_handles) {
+  recordreplay::Assert("UserMessageImpl::AppendData %lu", additional_payload_size);
+
   if (HasContext())
     return MOJO_RESULT_FAILED_PRECONDITION;
 
@@ -689,6 +694,7 @@ UserMessageImpl::UserMessageImpl(ports::UserMessageEvent* message_event,
       header_size_(header_size),
       user_payload_(user_payload),
       user_payload_size_(user_payload_size) {
+  recordreplay::Assert("UserMessageImpl::UserMessageImpl %lu", user_payload_size_);
   EnsureMemoryDumpProviderExists();
   IncrementMessageCount();
 }

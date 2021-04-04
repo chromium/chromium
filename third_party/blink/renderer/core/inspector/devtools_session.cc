@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
@@ -313,7 +314,9 @@ void DevToolsSession::SendProtocolNotification(
     return;
   notification_queue_.push_back(WTF::Bind(
       [](std::unique_ptr<protocol::Serializable> notification) {
-        return notification->Serialize();
+        std::vector<uint8_t> rv = notification->Serialize();
+        recordreplay::Assert("DevToolsSession::SendProtocolNotification callback %lu", rv.size());
+        return rv;
       },
       std::move(notification)));
 }
@@ -324,7 +327,9 @@ void DevToolsSession::sendNotification(
     return;
   notification_queue_.push_back(WTF::Bind(
       [](std::unique_ptr<v8_inspector::StringBuffer> notification) {
-        return Get8BitStringFrom(notification.get());
+        std::vector<uint8_t> rv = Get8BitStringFrom(notification.get());
+        recordreplay::Assert("DevToolsSession::sendNotification callback %lu", rv.size());
+        return rv;
       },
       std::move(notification)));
 }
@@ -359,20 +364,26 @@ void DevToolsSession::Trace(Visitor* visitor) const {
 
 blink::mojom::blink::DevToolsMessagePtr DevToolsSession::FinalizeMessage(
     std::vector<uint8_t> message) const {
+  recordreplay::Assert("DevToolsSession::FinalizeMessage %lu", message.size());
   std::vector<uint8_t> message_to_send = std::move(message);
   if (!session_id_.IsEmpty()) {
     crdtp::Status status = crdtp::cbor::AppendString8EntryToCBORMap(
         crdtp::SpanFrom(kSessionId), crdtp::SpanFrom(session_id_.Ascii()),
         &message_to_send);
     CHECK(status.ok()) << status.ToASCIIString();
+    recordreplay::Assert("DevToolsSession::FinalizeMessage #1 %lu", message_to_send.size());
   }
   if (!client_expects_binary_responses_) {
     std::vector<uint8_t> json;
     crdtp::Status status =
         crdtp::json::ConvertCBORToJSON(crdtp::SpanFrom(message_to_send), &json);
     CHECK(status.ok()) << status.ToASCIIString();
+    std::string json_string((char*)&json[0], json.size());
+    recordreplay::Assert("DevToolsSession::FinalizeMessage JSON %s", json_string.c_str());
     message_to_send = std::move(json);
+    recordreplay::Assert("DevToolsSession::FinalizeMessage #2 %lu", message_to_send.size());
   }
+  recordreplay::Assert("DevToolsSession::FinalizeMessage #3 %lu", message_to_send.size());
   auto mojo_msg = mojom::blink::DevToolsMessage::New();
   mojo_msg->data = std::move(message_to_send);
   return mojo_msg;
