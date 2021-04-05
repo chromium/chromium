@@ -123,7 +123,7 @@ AppInventoryManager::AppInventoryManager(
     : upload_app_inventory_request_timeout_(
           upload_app_inventory_request_timeout) {
   g_upload_app_inventory_from_esa_enabled =
-      GetGlobalFlagOrDefault(kUploadAppInventoryFromEsaEnabledRegKey, 0) == 1;
+      GetGlobalFlagOrDefault(kUploadAppInventoryFromEsaEnabledRegKey, 1) == 1;
 }
 
 AppInventoryManager::~AppInventoryManager() = default;

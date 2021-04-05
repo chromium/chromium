@@ -135,7 +135,7 @@ GemDeviceDetailsManager::GemDeviceDetailsManager(
     : upload_device_details_request_timeout_(
           upload_device_details_request_timeout) {
   g_upload_device_details_from_esa_enabled =
-      GetGlobalFlagOrDefault(kUploadDeviceDetailsFromEsaEnabledRegKey, 0) == 1;
+      GetGlobalFlagOrDefault(kUploadDeviceDetailsFromEsaEnabledRegKey, 1) == 1;
 }
 
 GemDeviceDetailsManager::~GemDeviceDetailsManager() = default;
