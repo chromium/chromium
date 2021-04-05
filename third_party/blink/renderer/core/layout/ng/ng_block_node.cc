@@ -297,11 +297,8 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
 
   // Check if we have any percentage inline padding.
   const auto& style = node.Style();
-  if (style.MayHavePadding() &&
-      (style.PaddingStart().IsPercentOrCalc() ||
-       style.PaddingEnd().IsPercentOrCalc()) &&
-      constraint_space.PercentageResolutionInlineSizeForParentWritingMode() !=
-          kIndefiniteSize)
+  if (style.MayHavePadding() && (style.PaddingStart().IsPercentOrCalc() ||
+                                 style.PaddingEnd().IsPercentOrCalc()))
     return false;
 
   if (!style.AspectRatio().IsAuto() &&
