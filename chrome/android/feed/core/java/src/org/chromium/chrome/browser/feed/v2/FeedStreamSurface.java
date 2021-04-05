@@ -249,13 +249,21 @@ public class FeedStreamSurface
      * Provides activity and darkmode context for a single surface.
      */
     private class FeedSurfaceScopeDependencyProvider implements SurfaceScopeDependencyProvider {
+        final Activity mActivity;
         final Context mActivityContext;
         final boolean mDarkMode;
 
-        FeedSurfaceScopeDependencyProvider(Context activityContext, boolean darkMode) {
+        FeedSurfaceScopeDependencyProvider(
+                Activity activity, Context activityContext, boolean darkMode) {
+            mActivity = activity;
             mActivityContext =
                     FeedProcessScopeDependencyProvider.createFeedContext(activityContext);
             mDarkMode = darkMode;
+        }
+
+        @Override
+        public Activity getActivity() {
+            return mActivity;
         }
 
         @Override
@@ -394,7 +402,7 @@ public class FeedStreamSurface
         ProcessScope processScope = xSurfaceProcessScope();
         if (processScope != null) {
             mSurfaceScope = processScope.obtainSurfaceScope(
-                    new FeedSurfaceScopeDependencyProvider(context, isBackgroundDark));
+                    new FeedSurfaceScopeDependencyProvider(activity, context, isBackgroundDark));
         } else {
             mSurfaceScope = null;
         }
