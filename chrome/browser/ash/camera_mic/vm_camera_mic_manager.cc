@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager.h"
+#include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 
 #include <string>
 #include <tuple>

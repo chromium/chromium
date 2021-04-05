@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/camera_mic/vm_camera_mic_manager.h"
+#include "chrome/browser/ash/camera_mic/vm_camera_mic_manager.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
