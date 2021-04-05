@@ -4,6 +4,7 @@
 
 #include "components/download/internal/background_service/scheduler/device_status_listener.h"
 #include "base/bind.h"
+#include "build/build_config.h"
 
 namespace download {
 
@@ -28,10 +29,15 @@ NetworkStatus ToNetworkStatus(network::mojom::ConnectionType type) {
       // TODO(crbug.com/1127134): 5G networks may be unmetered. Find a way to
       // detect this and make DeviceStatusListener aware of it.
       return NetworkStatus::METERED;
-    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
     case network::mojom::ConnectionType::CONNECTION_NONE:
     case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return NetworkStatus::DISCONNECTED;
+    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
+#if defined(OS_ANDROID)
+      return NetworkStatus::DISCONNECTED;
+#else
+      return NetworkStatus::UNMETERED;
+#endif
   }
   NOTREACHED();
   return NetworkStatus::DISCONNECTED;
