@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
+#include "third_party/blink/renderer/core/streams/test_underlying_source.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_inputs.pb.h"
 #include "third_party/blink/renderer/modules/webcodecs/fuzzer_utils.h"
@@ -50,6 +52,37 @@ String ToColorSpaceConversion(
   }
 }
 
+void RunFuzzingLoop(ImageDecoderExternal* image_decoder,
+                    const google::protobuf::RepeatedPtrField<
+                        wc_fuzzer::ImageDecoderApiInvocation>& invocations) {
+  Persistent<ImageDecodeOptions> options = ImageDecodeOptions::Create();
+  for (auto& invocation : invocations) {
+    switch (invocation.Api_case()) {
+      case wc_fuzzer::ImageDecoderApiInvocation::kDecodeImage:
+        options->setFrameIndex(invocation.decode_image().frame_index());
+        options->setCompleteFramesOnly(
+            invocation.decode_image().complete_frames_only());
+        image_decoder->decode(options);
+        break;
+      case wc_fuzzer::ImageDecoderApiInvocation::kDecodeMetadata:
+        image_decoder->decodeMetadata();
+        break;
+      case wc_fuzzer::ImageDecoderApiInvocation::kSelectTrack: {
+        auto* track = image_decoder->tracks().AnonymousIndexedGetter(
+            invocation.select_track().track_id());
+        if (track)
+          track->setSelected(invocation.select_track().selected());
+        break;
+      }
+      case wc_fuzzer::ImageDecoderApiInvocation::API_NOT_SET:
+        break;
+    }
+
+    // Give other tasks a chance to run (e.g. calling our output callback).
+    base::RunLoop().RunUntilIdle();
+  }
+}
+
 }  // namespace
 
 DEFINE_BINARY_PROTO_FUZZER(
@@ -80,7 +113,7 @@ DEFINE_BINARY_PROTO_FUZZER(
     Persistent<ImageDecoderInit> image_decoder_init =
         MakeGarbageCollected<ImageDecoderInit>();
     image_decoder_init->setType(proto.config().type().c_str());
-    DOMArrayBuffer* data_copy = DOMArrayBuffer::Create(
+    Persistent<DOMArrayBuffer> data_copy = DOMArrayBuffer::Create(
         proto.config().data().data(), proto.config().data().size());
     image_decoder_init->setData(
         ArrayBufferOrArrayBufferViewOrReadableStream::FromArrayBuffer(
@@ -103,38 +136,45 @@ DEFINE_BINARY_PROTO_FUZZER(
                                      IGNORE_EXCEPTION_FOR_TESTING);
 
     if (image_decoder) {
-      Persistent<ImageDecodeOptions> options = ImageDecodeOptions::Create();
       // Promises will be fulfilled synchronously since we're using an array
       // buffer based source.
-      for (auto& invocation : proto.invocations()) {
-        switch (invocation.Api_case()) {
-          case wc_fuzzer::ImageDecoderApiInvocation::kDecodeImage:
-            options->setFrameIndex(invocation.decode_image().frame_index());
-            options->setCompleteFramesOnly(
-                invocation.decode_image().complete_frames_only());
-            image_decoder->decode(options);
-            break;
-          case wc_fuzzer::ImageDecoderApiInvocation::kDecodeMetadata:
-            image_decoder->decodeMetadata();
-            break;
-          case wc_fuzzer::ImageDecoderApiInvocation::kSelectTrack: {
-            auto* track = image_decoder->tracks().AnonymousIndexedGetter(
-                invocation.select_track().track_id());
-            if (track)
-              track->setSelected(true);
-            break;
-          }
-          case wc_fuzzer::ImageDecoderApiInvocation::API_NOT_SET:
-            break;
-        }
-
-        // Give other tasks a chance to run (e.g. calling our output callback).
-        base::RunLoop().RunUntilIdle();
-      }
+      RunFuzzingLoop(image_decoder, proto.invocations());
     }
 
-    // TODO(crbug.com/1166925): Push the same image data incrementally into
-    // the fuzzer via a ReadableSource.
+    Persistent<TestUnderlyingSource> underlying_source =
+        MakeGarbageCollected<TestUnderlyingSource>(script_state);
+    Persistent<ReadableStream> stream =
+        ReadableStream::CreateWithCountQueueingStrategy(script_state,
+                                                        underlying_source, 0);
+
+    image_decoder_init->setData(
+        ArrayBufferOrArrayBufferViewOrReadableStream::FromReadableStream(
+            stream));
+    image_decoder = ImageDecoderExternal::Create(
+        script_state, image_decoder_init, IGNORE_EXCEPTION_FOR_TESTING);
+
+    if (image_decoder) {
+      // Split the image data into chunks.
+      constexpr size_t kNumChunks = 2;
+      const size_t chunk_size = (data_copy->ByteLength() + 1) / kNumChunks;
+      size_t offset = 0;
+      for (size_t i = 0; i < kNumChunks; ++i) {
+        RunFuzzingLoop(image_decoder, proto.invocations());
+
+        const size_t current_chunk_size =
+            std::min(data_copy->ByteLength() - offset, chunk_size);
+        underlying_source->Enqueue(ScriptValue(
+            script_state->GetIsolate(),
+            ToV8(DOMUint8Array::Create(data_copy, offset, current_chunk_size),
+                 script_state)));
+        offset += chunk_size;
+      }
+
+      underlying_source->Close();
+
+      // Run one additional loop after all data has been appended.
+      RunFuzzingLoop(image_decoder, proto.invocations());
+    }
   }
 
   // Request a V8 GC. Oilpan will be invoked by the GC epilogue.

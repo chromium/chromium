@@ -15,7 +15,8 @@ invocations: [
   },
   {
     select_track {
-      track_id: 0
+      track_id: 0,
+      selected: true
     }
   },
   {

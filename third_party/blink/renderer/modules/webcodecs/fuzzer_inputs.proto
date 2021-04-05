@@ -153,6 +153,7 @@ message DecodeMetadata {}
 
 message SelectTrack {
   required uint32 track_id = 1;
+  optional bool selected = 2 [default = true];
 }
 
 message ImageDecoderApiInvocation {
