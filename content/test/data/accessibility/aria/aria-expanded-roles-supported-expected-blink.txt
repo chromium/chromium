@@ -49,11 +49,9 @@ rootWebArea
 ++++++menuItemRadio expanded
 ++++++meter
 ++++++navigation
-++++++none
 ++++++note
 ++++++listBoxOption
 ++++++paragraph
-++++++presentational
 ++++++progressIndicator
 ++++++radioButton
 ++++++radioGroup

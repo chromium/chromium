@@ -7,13 +7,11 @@ rootWebArea
 ++++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++++staticText name='%E2%80%A2 '
 ++++++++++++++++inlineTextBox name='%E2%80%A2 '
-++++++++++++presentational ignored
-++++++++++++++staticText name='Hello'
-++++++++++++++++inlineTextBox name='Hello'
+++++++++++++staticText name='Hello'
+++++++++++++++inlineTextBox name='Hello'
 ++++++++++listItem
 ++++++++++++listMarker name='%E2%80%A2 '
 ++++++++++++++staticText name='%E2%80%A2 '
 ++++++++++++++++inlineTextBox name='%E2%80%A2 '
-++++++++++++presentational ignored
-++++++++++++++staticText name='Bye'
-++++++++++++++++inlineTextBox name='Bye'
+++++++++++++staticText name='Bye'
+++++++++++++++inlineTextBox name='Bye'

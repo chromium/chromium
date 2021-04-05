@@ -33,7 +33,8 @@ function axElementById(id) {
 
 test(function(t) {
     const axPresentation = axElementById('row1');
-    assert_true(axPresentation.isIgnored);
+    // "row1" should not be in the accessibility tree at all.
+    assert_equals(undefined, axPresentation);
 
     // Change role attribute
     document.getElementById('row1').setAttribute('role', 'row');

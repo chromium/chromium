@@ -29,6 +29,7 @@
 
 function verifySelection(anchorObject, anchorOffset, focusObject, focusOffset,
     selectionString) {
+    console.log(selectionString);
   const axTextBox = accessibilityController.accessibleElementById('textbox');
   assert_equals(axTextBox.selectionAnchorObject, anchorObject, 'anchorObject');
   assert_equals(axTextBox.selectionAnchorOffset, anchorOffset, 'anchorOffset');
@@ -104,7 +105,10 @@ async_test((t) => {
       anchorObject: axLine1,
       anchorOffset: 0,
       focusObject: axLine3,
-      focusOffset: 0,
+      // The `focusOffset` should be 1 because Shift+Down selects to the
+      // position after the list bullet.
+      // This is how Blink editing code currently works.
+      focusOffset: 1,
       selectedText: '\xA0\nApple\n\n'});
     expectedIntents.push('AXEventIntent(extendSelection,none,lineStart,forward)');
 
