@@ -160,6 +160,9 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   // sufficient range of its bounds and contains pinnable files.
   void UpdateDropTargetState(const ui::DropTargetEvent* event);
 
+  // Sets whether tray visibility and previews updates should be animated.
+  void SetShouldAnimate(bool should_animate);
+
   std::unique_ptr<HoldingSpaceTrayBubble> bubble_;
   std::unique_ptr<ui::SimpleMenuModel> context_menu_model_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;

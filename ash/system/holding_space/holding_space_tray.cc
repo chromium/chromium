@@ -268,9 +268,6 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   //   * the cursor is sufficiently close to this view.
   drop_target_overlay_ = AddChildView(CreateDropTargetOverlay());
   drop_target_overlay_->layer()->SetOpacity(0.f);
-
-  // Animation.
-  set_use_bounce_in_animation(true);
 }
 
 HoldingSpaceTray::~HoldingSpaceTray() = default;
@@ -493,6 +490,13 @@ void HoldingSpaceTray::HideBubble(const TrayBubbleView* bubble_view) {
 }
 
 void HoldingSpaceTray::OnHoldingSpaceModelAttached(HoldingSpaceModel* model) {
+  // When the `model` is attached the session is either being started/unlocked
+  // or the active profile is being changed. It's also possible that the status
+  // area is being initialized (such as is the case when a display is added at
+  // runtime). The holding space tray should not bounce or animate previews
+  // during this phase.
+  SetShouldAnimate(false);
+
   model_observer_.Observe(model);
   UpdateVisibility();
   UpdatePreviewsState();
@@ -506,6 +510,17 @@ void HoldingSpaceTray::OnHoldingSpaceModelDetached(HoldingSpaceModel* model) {
 
 void HoldingSpaceTray::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
+  // If a finalized holding space item is added to the model mid-session, the
+  // holding space tray should bounce in (if it isn't already visible) and
+  // previews should be animated.
+  if (!Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    const bool has_finalized_item = std::any_of(
+        items.begin(), items.end(),
+        [](const HoldingSpaceItem* item) { return item->IsFinalized(); });
+    if (has_finalized_item)
+      SetShouldAnimate(true);
+  }
+
   UpdateVisibility();
   UpdatePreviewsState();
 }
@@ -625,6 +640,12 @@ void HoldingSpaceTray::OnActiveUserPrefServiceChanged(PrefService* prefs) {
 
 void HoldingSpaceTray::OnSessionStateChanged(
     session_manager::SessionState state) {
+  // If the session is blocked the holding space tray should *not* bounce or
+  // animate previews when the session becomes unblocked. Note that the holding
+  // space tray is not visible if the session is blocked.
+  if (Shell::Get()->session_controller()->IsUserSessionBlocked())
+    SetShouldAnimate(false);
+
   UpdateVisibility();
 }
 
@@ -736,6 +757,12 @@ void HoldingSpaceTray::UpdateDropTargetState(const ui::DropTargetEvent* event) {
   // not directly over this view, it would look strange to give the ink drop an
   // out-of-bounds origin.
   AnimateInkDrop(target_ink_drop_state, /*event=*/nullptr);
+}
+
+void HoldingSpaceTray::SetShouldAnimate(bool should_animate) {
+  set_use_bounce_in_animation(should_animate);
+  if (previews_tray_icon_)
+    previews_tray_icon_->set_should_animate_updates(should_animate);
 }
 
 BEGIN_METADATA(HoldingSpaceTray, TrayBackgroundView)

@@ -25,6 +25,7 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
@@ -168,6 +169,98 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               (override));
 };
 
+// TransformRecordingLayerDelegate ---------------------------------------------
+
+// A scoped `ui::LayerDelegate` which records information about transforms.
+class ScopedTransformRecordingLayerDelegate : public ui::LayerDelegate {
+ public:
+  explicit ScopedTransformRecordingLayerDelegate(ui::Layer* layer)
+      : layer_(layer), layer_delegate_(layer_->delegate()) {
+    layer_->set_delegate(this);
+    Reset();
+  }
+
+  ScopedTransformRecordingLayerDelegate(
+      const ScopedTransformRecordingLayerDelegate&) = delete;
+  ScopedTransformRecordingLayerDelegate& operator=(
+      const ScopedTransformRecordingLayerDelegate&) = delete;
+
+  ~ScopedTransformRecordingLayerDelegate() override {
+    layer_->set_delegate(layer_delegate_);
+  }
+
+  // Resets recorded information.
+  void Reset() {
+    const gfx::Transform& transform = layer_->transform();
+    start_scale_ = end_scale_ = min_scale_ = max_scale_ = transform.Scale2d();
+    start_translation_ = end_translation_ = min_translation_ =
+        max_translation_ = transform.To2dTranslation();
+  }
+
+  // Returns true if a scale occurred.
+  bool DidScale() const {
+    return start_scale_ != min_scale_ || start_scale_ != max_scale_;
+  }
+
+  // Returns true if a translation occurred.
+  bool DidTranslate() const {
+    return start_translation_ != min_translation_ ||
+           start_translation_ != max_translation_;
+  }
+
+  // Returns true if `layer_` scaled from `start` to `end`.
+  bool ScaledFrom(const gfx::Vector2dF& start,
+                  const gfx::Vector2dF& end) const {
+    return start == start_scale_ && end == end_scale_;
+  }
+
+  // Returns true if `layer_` scaled within `min` and `max`.
+  bool ScaledInRange(const gfx::Vector2dF& min,
+                     const gfx::Vector2dF& max) const {
+    return min == min_scale_ && max == max_scale_;
+  }
+
+  // Returns true if `layer_` translated from `start` to `end`.
+  bool TranslatedFrom(const gfx::Vector2dF& start,
+                      const gfx::Vector2dF& end) const {
+    return start == start_translation_ && end == end_translation_;
+  }
+
+  // Returns true if `layer_` translated within `min` to `max`.
+  bool TranslatedInRange(const gfx::Vector2dF& min,
+                         const gfx::Vector2dF& max) const {
+    return min == min_translation_ && max == max_translation_;
+  }
+
+ private:
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override {}
+  void OnDeviceScaleFactorChanged(float old_scale, float new_scale) override {}
+
+  void OnLayerTransformed(const gfx::Transform& old_transform,
+                          ui::PropertyChangeReason reason) override {
+    const gfx::Transform& transform = layer_->transform();
+    end_scale_ = transform.Scale2d();
+    end_translation_ = transform.To2dTranslation();
+    min_scale_.SetToMin(end_scale_);
+    max_scale_.SetToMax(end_scale_);
+    min_translation_.SetToMin(end_translation_);
+    max_translation_.SetToMax(end_translation_);
+  }
+
+  ui::Layer* const layer_;
+  ui::LayerDelegate* const layer_delegate_;
+
+  gfx::Vector2dF start_scale_;
+  gfx::Vector2dF start_translation_;
+  gfx::Vector2dF end_scale_;
+  gfx::Vector2dF end_translation_;
+  gfx::Vector2dF min_scale_;
+  gfx::Vector2dF max_scale_;
+  gfx::Vector2dF min_translation_;
+  gfx::Vector2dF max_translation_;
+};
+
 }  // namespace
 
 // HoldingSpaceTrayTest --------------------------------------------------------
@@ -226,6 +319,7 @@ class HoldingSpaceTrayTest : public AshTestBase,
     target_model->AddItem(std::move(item));
     return item_ptr;
   }
+
   HoldingSpaceItem* AddPartiallyInitializedItem(HoldingSpaceItem::Type type,
                                                 const base::FilePath& path) {
     // Create a holding space item, and use it to create a serialized item
@@ -245,6 +339,11 @@ class HoldingSpaceTrayTest : public AshTestBase,
     HoldingSpaceItem* deserialized_item_ptr = deserialized_item.get();
     model()->AddItem(std::move(deserialized_item));
     return deserialized_item_ptr;
+  }
+
+  void RemoveAllItems() {
+    model()->RemoveIf(
+        base::BindRepeating([](const HoldingSpaceItem* item) { return true; }));
   }
 
   // The holding space tray is only visible in the shelf after the first holding
@@ -2484,6 +2583,116 @@ TEST_P(HoldingSpaceTrayTest, OpenItemsViaDoubleClickWithEventModifiers) {
   Click(item_views[0]);
   DoubleClick(item_views[1], ui::EF_SHIFT_DOWN);
   testing::Mock::VerifyAndClearExpectations(client());
+}
+
+// Verifies that the holding space tray animates in and out as expected.
+TEST_P(HoldingSpaceTrayTest, EnterAndExitAnimations) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Prior to session start, the tray should not be showing.
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  views::View* const tray = test_api()->GetTray();
+  ASSERT_TRUE(tray && tray->layer());
+
+  // Record transforms performed to the `tray` layer.
+  ScopedTransformRecordingLayerDelegate transform_recorder(tray->layer());
+
+  // Start the session. Because a holding space item was added in a previous
+  // session (according to prefs state), the tray should animate in.
+  StartSession();
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // The entry animation should be the default entry animation in which the
+  // tray translates in from the right without scaling.
+  EXPECT_FALSE(transform_recorder.DidScale());
+  EXPECT_TRUE(transform_recorder.TranslatedFrom({0.f, 0.f}, {0.f, 0.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {44.f, 0.f}));
+  transform_recorder.Reset();
+
+  // Pin a holding space item. Because the tray was already showing there
+  // should be no change in tray visibility.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake1"));
+  MarkTimeOfFirstPin();
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // Because there was no change in visibility, there should be no transform.
+  EXPECT_FALSE(transform_recorder.DidScale());
+  EXPECT_FALSE(transform_recorder.DidTranslate());
+  transform_recorder.Reset();
+
+  // Remove all holding space items. Because a holding space item was
+  // previously pinned, the tray should animate out.
+  RemoveAllItems();
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // The exit animation should be the default exit animation in which the tray
+  // scales down and pivots about its center point.
+  EXPECT_TRUE(transform_recorder.ScaledFrom({1.f, 1.f}, {0.5f, 0.5f}));
+  EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedFrom({0.f, 0.f}, {11.f, 12.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {11.f, 12.f}));
+  transform_recorder.Reset();
+
+  // Pin a holding space item. The tray should animate in.
+  AddItem(HoldingSpaceItem::Type::kPinnedFile, base::FilePath("/tmp/fake2"));
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // The entry animation should be the bounce in animation in which the tray
+  // translates in vertically with scaling (since it previously scaled out).
+  EXPECT_TRUE(transform_recorder.ScaledFrom({0.5f, 0.5f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedFrom({11.f, 12.f}, {0.f, 0.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, -16.f}, {11.f, 12.f}));
+  transform_recorder.Reset();
+
+  // Lock the screen. The tray should animate out.
+  auto* session_controller =
+      ash_test_helper()->test_session_controller_client();
+  session_controller->LockScreen();
+  EXPECT_FALSE(test_api()->IsShowingInShelf());
+
+  // The exit animation should be the default exit animation in which the tray
+  // scales down and pivots about its center point.
+  EXPECT_TRUE(transform_recorder.ScaledFrom({1.0f, 1.0f}, {0.5f, 0.5f}));
+  EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedFrom({0.f, 0.f}, {11.f, 12.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {11.f, 12.f}));
+  transform_recorder.Reset();
+
+  // Unlock the screen. The tray should animate in.
+  session_controller->UnlockScreen();
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // The entry animation should be the default entry animation in which the
+  // tray translates in from the right.
+  EXPECT_TRUE(transform_recorder.ScaledFrom({0.5f, 0.5f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedFrom({11.f, 12.f}, {0.f, 0.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {44.f, 12.f}));
+  transform_recorder.Reset();
+
+  // Switch to another user with a populated model. The tray should animate in.
+  constexpr char kSecondaryUserId[] = "user@secondary";
+  HoldingSpaceModel secondary_holding_space_model;
+  AddItemToModel(&secondary_holding_space_model,
+                 HoldingSpaceItem::Type::kPinnedFile,
+                 base::FilePath("/tmp/fake3"));
+  SwitchToSecondaryUser(kSecondaryUserId, /*client=*/nullptr,
+                        &secondary_holding_space_model);
+  EXPECT_TRUE(test_api()->IsShowingInShelf());
+
+  // The entry animation should be the default entry animation in which the
+  // tray translates in from the right.
+  EXPECT_TRUE(transform_recorder.ScaledFrom({1.f, 1.f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.ScaledInRange({0.5f, 0.5f}, {1.f, 1.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedFrom({0.f, 0.f}, {0.f, 0.f}));
+  EXPECT_TRUE(transform_recorder.TranslatedInRange({0.f, 0.f}, {44.f, 12.f}));
+  transform_recorder.Reset();
+
+  // Clean up.
+  UnregisterModelForUser(kSecondaryUserId);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, HoldingSpaceTrayTest, testing::Bool());

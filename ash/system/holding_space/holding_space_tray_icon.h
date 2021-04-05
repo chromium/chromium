@@ -48,15 +48,17 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   // Clears the icon.
   void Clear();
 
-  // Returns the shelf associated with this holding space tray icon.
-  Shelf* shelf() { return shelf_; }
-
   // Called from HoldingSpaceTray when holding space model changes:
   void OnHoldingSpaceModelAttached(HoldingSpaceModel* model);
   void OnHoldingSpaceModelDetached(HoldingSpaceModel* model);
   void OnHoldingSpaceItemAdded(const HoldingSpaceItem* item);
   void OnHoldingSpaceItemRemoved(const HoldingSpaceItem* item);
   void OnHoldingSpaceItemFinalized(const HoldingSpaceItem* item);
+
+  // Sets if updates should be animated.
+  void set_should_animate_updates(bool should_animate_updates) {
+    should_animate_updates_ = should_animate_updates;
+  }
 
  private:
   class ResizeAnimation;
@@ -80,19 +82,26 @@ class ASH_EXPORT HoldingSpaceTrayIcon : public views::View,
   void OnOldItemAnimatedOut(HoldingSpaceTrayIconPreview*,
                             const base::RepeatingClosure& callback);
 
-  // Called when all obsolete previews have been animated out during previews
-  // update.
+  // Called when all obsolete previews have been removed during previews update.
   void OnOldItemsRemoved();
 
-  // Starts shift animation for existing items. Done while updating the previews
-  // shown in the icon.
-  void ShiftExistingItems();
+  // Defines parameters for how to animate a given `preview`.
+  struct PreviewAnimationParams {
+    HoldingSpaceTrayIconPreview* preview;
+    base::TimeDelta delay;
+  };
 
-  // Animates new items in. Done while updating the previews shown in the icon.
-  void AnimateInNewItems();
+  // Calculates parameters for how to animate shift/in existing/new items.
+  std::vector<PreviewAnimationParams> CalculateAnimateShiftParams();
+  std::vector<PreviewAnimationParams> CalculateAnimateInParams();
 
   // The shelf associated with this holding space tray icon.
   Shelf* const shelf_;
+
+  // True if updates should be animated, false otherwise. Generally speaking,
+  // updates are animated only if they occur mid-session. Updates that occur
+  // during session start/unlock or on profile change should not be animated.
+  bool should_animate_updates_ = false;
 
   // A preview is added to the tray icon to visually represent each holding
   // space item. Upon creation, previews are added to `previews_by_id_` where
