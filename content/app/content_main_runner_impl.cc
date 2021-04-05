@@ -710,7 +710,7 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
     // When running browser tests, don't create a second AtExitManager as that
     // interfers with shutdown when objects created before ContentMain is
     // called are destructed when it returns.
-    exit_manager_.reset(new base::AtExitManager);
+    exit_manager_ = std::make_unique<base::AtExitManager>();
   }
 #endif  // !OS_ANDROID
 

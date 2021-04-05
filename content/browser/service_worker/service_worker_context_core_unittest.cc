@@ -28,7 +28,7 @@ class ServiceWorkerContextCoreTest : public testing::Test,
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override {
-    helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
   }
 
   void TearDown() override {

@@ -4,6 +4,8 @@
 
 #include "content/browser/media/session/pepper_playback_observer.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "content/browser/media/session/media_session_impl.h"
@@ -69,8 +71,8 @@ void PepperPlaybackObserver::PepperStartsPlayback(
   if (players_map_.count(id))
     return;
 
-  players_map_[id].reset(new PepperPlayerDelegate(
-      render_frame_host, pp_instance));
+  players_map_[id] =
+      std::make_unique<PepperPlayerDelegate>(render_frame_host, pp_instance);
 
   MediaSessionImpl::Get(contents_)->AddPlayer(
       players_map_[id].get(), PepperPlayerDelegate::kPlayerId,

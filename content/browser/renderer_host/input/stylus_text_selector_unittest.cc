@@ -28,7 +28,7 @@ class StylusTextSelectorTest : public testing::Test,
 
   // Test implementation.
   void SetUp() override {
-    selector_.reset(new StylusTextSelector(this));
+    selector_ = std::make_unique<StylusTextSelector>(this);
     event_log_.clear();
   }
 

@@ -4,6 +4,8 @@
 
 #include "content/browser/media/cdm_storage_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file.h"
@@ -51,7 +53,7 @@ class RunLoopWithExpectedCount {
     DCHECK_GT(expected_quit_calls, 0);
     DCHECK_EQ(remaining_quit_calls_, 0);
     remaining_quit_calls_ = expected_quit_calls;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

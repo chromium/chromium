@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/render_widget_targeter.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -312,13 +314,13 @@ void RenderWidgetTargeter::QueryClient(
   async_depth_++;
 
   TracingUmaTracker tracker("Event.AsyncTargeting.ResponseTime");
-  async_hit_test_timeout_.reset(new OneShotTimeoutMonitor(
+  async_hit_test_timeout_ = std::make_unique<OneShotTimeoutMonitor>(
       base::BindOnce(
           &RenderWidgetTargeter::AsyncHitTestTimedOut,
           weak_ptr_factory_.GetWeakPtr(), target->GetWeakPtr(), target_location,
           last_request_target ? last_request_target->GetWeakPtr() : nullptr,
           last_target_location),
-      async_hit_test_timeout_delay_));
+      async_hit_test_timeout_delay_);
 
   target_client.set_disconnect_handler(base::BindOnce(
       &RenderWidgetTargeter::OnInputTargetDisconnect,

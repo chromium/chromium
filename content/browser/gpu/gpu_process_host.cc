@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <list>
+#include <memory>
 #include <utility>
 
 #include "base/base64.h"
@@ -722,8 +723,8 @@ GpuProcessHost::GpuProcessHost(int host_id, GpuProcessKind kind)
 
   g_gpu_process_hosts[kind] = this;
 
-  process_.reset(new BrowserChildProcessHostImpl(
-      PROCESS_TYPE_GPU, this, ChildProcessHost::IpcMode::kNormal));
+  process_ = std::make_unique<BrowserChildProcessHostImpl>(
+      PROCESS_TYPE_GPU, this, ChildProcessHost::IpcMode::kNormal);
 }
 
 GpuProcessHost::~GpuProcessHost() {

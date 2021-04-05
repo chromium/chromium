@@ -266,7 +266,7 @@ void PageHandler::SetRenderer(int process_host_id,
 }
 
 void PageHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Page::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Page::Frontend>(dispatcher->channel());
   Page::Dispatcher::wire(dispatcher, this);
 }
 

@@ -312,14 +312,14 @@ class MediaDevicesManagerTest : public ::testing::Test {
             base::ThreadTaskRunnerHandle::Get(), kIgnoreLogMessageCB);
     video_capture_manager_ = new VideoCaptureManager(
         std::move(video_capture_provider), kIgnoreLogMessageCB);
-    media_devices_manager_.reset(new MediaDevicesManager(
+    media_devices_manager_ = std::make_unique<MediaDevicesManager>(
         audio_system_.get(), video_capture_manager_,
         base::BindRepeating(
             &MockMediaDevicesManagerClient::StopRemovedInputDevice,
             base::Unretained(&media_devices_manager_client_)),
         base::BindRepeating(
             &MockMediaDevicesManagerClient::InputDevicesChangedUI,
-            base::Unretained(&media_devices_manager_client_))));
+            base::Unretained(&media_devices_manager_client_)));
     media_devices_manager_->set_salt_and_origin_callback_for_testing(
         base::BindRepeating(&GetSaltAndOrigin));
     media_devices_manager_->SetPermissionChecker(

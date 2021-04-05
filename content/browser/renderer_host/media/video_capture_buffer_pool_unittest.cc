@@ -104,8 +104,7 @@ class VideoCaptureBufferPoolTest
 
     std::unique_ptr<media::VideoCaptureBufferHandle> buffer_handle =
         pool_->GetHandleForInProcessAccess(buffer_id);
-    return std::unique_ptr<Buffer>(
-        new Buffer(pool_, std::move(buffer_handle), buffer_id));
+    return std::make_unique<Buffer>(pool_, std::move(buffer_handle), buffer_id);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;

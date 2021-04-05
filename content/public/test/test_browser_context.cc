@@ -4,6 +4,7 @@
 
 #include "content/public/test/test_browser_context.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -88,7 +89,7 @@ DownloadManagerDelegate* TestBrowserContext::GetDownloadManagerDelegate() {
 
 ResourceContext* TestBrowserContext::GetResourceContext() {
   if (!resource_context_)
-    resource_context_.reset(new MockResourceContext);
+    resource_context_ = std::make_unique<MockResourceContext>();
   return resource_context_.get();
 }
 
@@ -111,7 +112,7 @@ TestBrowserContext::GetStorageNotificationService() {
 
 SSLHostStateDelegate* TestBrowserContext::GetSSLHostStateDelegate() {
   if (!ssl_host_state_delegate_)
-    ssl_host_state_delegate_.reset(new MockSSLHostStateDelegate());
+    ssl_host_state_delegate_ = std::make_unique<MockSSLHostStateDelegate>();
   return ssl_host_state_delegate_.get();
 }
 
@@ -130,8 +131,10 @@ BackgroundFetchDelegate* TestBrowserContext::GetBackgroundFetchDelegate() {
 }
 
 BackgroundSyncController* TestBrowserContext::GetBackgroundSyncController() {
-  if (!background_sync_controller_)
-    background_sync_controller_.reset(new MockBackgroundSyncController());
+  if (!background_sync_controller_) {
+    background_sync_controller_ =
+        std::make_unique<MockBackgroundSyncController>();
+  }
 
   return background_sync_controller_.get();
 }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -80,8 +82,8 @@ class PaymentAppBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    https_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(GetTestDataFilePath());
     ASSERT_TRUE(https_server_->Start());
     ASSERT_TRUE(NavigateToURL(

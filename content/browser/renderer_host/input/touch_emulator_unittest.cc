@@ -47,7 +47,7 @@ class TouchEmulatorTest : public testing::Test,
 
   // testing::Test
   void SetUp() override {
-    emulator_.reset(new TouchEmulator(this, 1.0f));
+    emulator_ = std::make_unique<TouchEmulator>(this, 1.0f);
     emulator_->SetDoubleTapSupportForPageEnabled(false);
     emulator_->Enable(TouchEmulator::Mode::kEmulatingTouchFromMouse,
                       ui::GestureProviderConfigType::GENERIC_MOBILE);

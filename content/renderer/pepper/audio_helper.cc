@@ -4,6 +4,8 @@
 
 #include "content/renderer/pepper/audio_helper.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "content/common/pepper_file_util.h"
 #include "ppapi/c/pp_completion_callback.h"
@@ -44,8 +46,8 @@ void AudioHelper::StreamCreated(
     // this case we don't need to map any data or start the thread since it
     // will be handled by the proxy.
     shared_memory_for_create_callback_ = std::move(shared_memory_region);
-    socket_for_create_callback_.reset(
-        new base::SyncSocket(std::move(socket_handle)));
+    socket_for_create_callback_ =
+        std::make_unique<base::SyncSocket>(std::move(socket_handle));
 
     create_callback_->Run(PP_OK);
 

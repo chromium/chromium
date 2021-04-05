@@ -4,6 +4,8 @@
 
 #include "content/public/test/unittest_test_suite.h"
 
+#include <memory>
+
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -89,7 +91,7 @@ UnitTestTestSuite::UnitTestTestSuite(base::TestSuite* test_suite)
 #endif
 
   DCHECK(test_suite);
-  blink_test_support_.reset(new TestBlinkWebUnitTestSupport);
+  blink_test_support_ = std::make_unique<TestBlinkWebUnitTestSupport>();
   test_host_resolver_ = std::make_unique<TestHostResolver>();
 }
 

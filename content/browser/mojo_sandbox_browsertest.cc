@@ -74,7 +74,7 @@ class MojoSandboxTest : public ContentBrowserTest {
 
  private:
   void StartUtilityProcessOnIoThread(BeforeStartCallback callback) {
-    host_.reset(new UtilityProcessHost());
+    host_ = std::make_unique<UtilityProcessHost>();
     host_->SetMetricsName("mojo_sandbox_test_process");
     if (callback)
       std::move(callback).Run(host_.get());

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -110,7 +111,7 @@ class RenderWidgetHostViewChildFrameTest : public testing::Test {
   }
 
   void SetUpEnvironment(bool use_zoom_for_device_scale_factor) {
-    browser_context_.reset(new TestBrowserContext);
+    browser_context_ = std::make_unique<TestBrowserContext>();
 
 // ImageTransportFactory doesn't exist on Android.
 #if !defined(OS_ANDROID)

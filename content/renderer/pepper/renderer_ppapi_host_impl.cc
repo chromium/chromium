@@ -4,6 +4,8 @@
 
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
@@ -45,7 +47,8 @@ RendererPpapiHostImpl::RendererPpapiHostImpl(
       dispatcher_(dispatcher),
       is_external_plugin_host_(false) {
   // Hook the PpapiHost up to the dispatcher for out-of-process communication.
-  ppapi_host_.reset(new ppapi::host::PpapiHost(dispatcher, permissions));
+  ppapi_host_ =
+      std::make_unique<ppapi::host::PpapiHost>(dispatcher, permissions);
   ppapi_host_->AddHostFactoryFilter(std::unique_ptr<ppapi::host::HostFactory>(
       new ContentRendererPepperHostFactory(this)));
   dispatcher->AddFilter(ppapi_host_.get());
@@ -58,9 +61,9 @@ RendererPpapiHostImpl::RendererPpapiHostImpl(
     const ppapi::PpapiPermissions& permissions)
     : module_(module), dispatcher_(nullptr), is_external_plugin_host_(false) {
   // Hook the host up to the in-process router.
-  in_process_router_.reset(new PepperInProcessRouter(this));
-  ppapi_host_.reset(new ppapi::host::PpapiHost(
-      in_process_router_->GetRendererToPluginSender(), permissions));
+  in_process_router_ = std::make_unique<PepperInProcessRouter>(this);
+  ppapi_host_ = std::make_unique<ppapi::host::PpapiHost>(
+      in_process_router_->GetRendererToPluginSender(), permissions);
   ppapi_host_->AddHostFactoryFilter(std::unique_ptr<ppapi::host::HostFactory>(
       new ContentRendererPepperHostFactory(this)));
   is_running_in_process_ = true;

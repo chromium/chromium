@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -797,7 +799,7 @@ HandleRequestAndSendRedirectResponse(
     const net::test_server::HttpRequest& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
   if (request.relative_url == relative_url) {
-    response.reset(new net::test_server::BasicHttpResponse);
+    response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HTTP_FOUND);
     response->AddCustomHeader("Location", target_url.spec());
   }
@@ -824,7 +826,7 @@ HandleRequestAndSendBasicResponse(
     const net::test_server::HttpRequest& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
   if (request.relative_url == relative_url) {
-    response.reset(new net::test_server::BasicHttpResponse);
+    response = std::make_unique<net::test_server::BasicHttpResponse>();
     for (const auto& pair : headers)
       response->AddCustomHeader(pair.first, pair.second);
     response->set_content_type(content_type);
@@ -851,7 +853,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequestAndEchoCookies(
     const net::test_server::HttpRequest& request) {
   std::unique_ptr<net::test_server::BasicHttpResponse> response;
   if (request.relative_url == relative_url) {
-    response.reset(new net::test_server::BasicHttpResponse);
+    response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->AddCustomHeader("Content-Disposition", "attachment");
     response->AddCustomHeader("Vary", "");
     response->AddCustomHeader("Cache-Control", "no-cache");
@@ -928,7 +930,7 @@ class DownloadContentTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     ASSERT_TRUE(downloads_directory_.CreateUniqueTempDir());
 
-    test_delegate_.reset(new TestShellDownloadManagerDelegate());
+    test_delegate_ = std::make_unique<TestShellDownloadManagerDelegate>();
     test_delegate_->SetDownloadBehaviorForTesting(
         downloads_directory_.GetPath());
     DownloadManager* manager = DownloadManagerForShell(shell());
@@ -4542,9 +4544,9 @@ IN_PROC_BROWSER_TEST_F(DownloadContentTest, FetchErrorResponseBodyResumption) {
   DownloadManager* download_manager = DownloadManagerForShell(shell());
 
   std::unique_ptr<DownloadTestObserver> observer;
-  observer.reset(new content::DownloadTestObserverInterrupted(
+  observer = std::make_unique<content::DownloadTestObserverInterrupted>(
       download_manager, 1,
-      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL));
+      content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_FAIL);
   download_manager->DownloadUrl(std::move(download_parameters));
   observer->WaitForFinished();
   std::vector<download::DownloadItem*> items;

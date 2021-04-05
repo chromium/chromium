@@ -172,12 +172,12 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   }
 
   void SetFollowupEvent(const WebTouchEvent& event) {
-    followup_touch_event_.reset(new WebTouchEvent(event));
+    followup_touch_event_ = std::make_unique<WebTouchEvent>(event);
   }
 
   void SetSyncAckResult(blink::mojom::InputEventResultState sync_ack_result) {
-    sync_ack_result_.reset(
-        new blink::mojom::InputEventResultState(sync_ack_result));
+    sync_ack_result_ =
+        std::make_unique<blink::mojom::InputEventResultState>(sync_ack_result);
   }
 
   void PressTouchPoint(float x, float y) {
@@ -326,7 +326,7 @@ class PassthroughTouchEventQueueTest : public testing::Test,
   }
 
   void ResetQueueWithConfig(const PassthroughTouchEventQueue::Config& config) {
-    queue_.reset(new PassthroughTouchEventQueue(this, config));
+    queue_ = std::make_unique<PassthroughTouchEventQueue>(this, config);
     queue_->OnHasTouchEventHandlers(true);
   }
 

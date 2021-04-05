@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <tuple>
 
 #include "base/bind.h"
@@ -703,7 +704,7 @@ class SetMouseCaptureInterceptor
       msg_received_ = false;
       return;
     }
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset();
     msg_received_ = false;
@@ -3293,7 +3294,7 @@ class TooltipMonitor : public CursorManager::TooltipObserver {
   ~TooltipMonitor() override {}
 
   void Reset() {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     tooltips_received_.clear();
   }
 

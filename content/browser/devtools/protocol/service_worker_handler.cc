@@ -4,6 +4,8 @@
 
 #include "content/browser/devtools/protocol/service_worker_handler.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
@@ -189,7 +191,7 @@ ServiceWorkerHandler::ServiceWorkerHandler(bool allow_inspect_worker)
 ServiceWorkerHandler::~ServiceWorkerHandler() = default;
 
 void ServiceWorkerHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new ServiceWorker::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<ServiceWorker::Frontend>(dispatcher->channel());
   ServiceWorker::Dispatcher::wire(dispatcher, this);
 }
 

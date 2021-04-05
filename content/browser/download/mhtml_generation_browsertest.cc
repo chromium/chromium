@@ -316,7 +316,7 @@ class MHTMLGenerationTest : public ContentBrowserTest,
 
   void GenerateMHTMLForCurrentPage(MHTMLGenerationParams& params) {
     base::RunLoop run_loop;
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     bool use_result_callback = GetParam();
 

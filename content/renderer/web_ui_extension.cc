@@ -107,7 +107,7 @@ void WebUIExtension::Send(gin::Arguments* args) {
   // Value to send to the browser process.
   std::unique_ptr<base::ListValue> content;
   if (args->PeekNext().IsEmpty() || args->PeekNext()->IsUndefined()) {
-    content.reset(new base::ListValue());
+    content = std::make_unique<base::ListValue>();
   } else {
     v8::Local<v8::Object> obj;
     if (!args->GetNext(&obj)) {

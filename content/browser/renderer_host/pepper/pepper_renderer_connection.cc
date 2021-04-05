@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -141,13 +142,9 @@ PepperRendererConnection::PepperRendererConnection(
       plugin_service_(plugin_service),
       profile_data_directory_(storage_partition->GetPath()) {
   // Only give the renderer permission for stable APIs.
-  in_process_host_.reset(new BrowserPpapiHostImpl(this,
-                                                  ppapi::PpapiPermissions(),
-                                                  "",
-                                                  base::FilePath(),
-                                                  base::FilePath(),
-                                                  true /* in_process */,
-                                                  false /* external_plugin */));
+  in_process_host_ = std::make_unique<BrowserPpapiHostImpl>(
+      this, ppapi::PpapiPermissions(), "", base::FilePath(), base::FilePath(),
+      true /* in_process */, false /* external_plugin */);
 }
 
 PepperRendererConnection::~PepperRendererConnection() {}
@@ -221,8 +218,8 @@ void PepperRendererConnection::OnMsgCreateResourceHostsFromHost(
         base::FilePath external_path;
         if (ppapi::UnpackMessage<PpapiHostMsg_FileRef_CreateForRawFS>(
                 nested_msg, &external_path)) {
-          resource_host.reset(new PepperFileRefHost(
-              host, instance, params.pp_resource(), external_path));
+          resource_host = std::make_unique<PepperFileRefHost>(
+              host, instance, params.pp_resource(), external_path);
         }
       } else if (nested_msg.type() ==
                  PpapiHostMsg_FileSystem_CreateFromRenderer::ID) {

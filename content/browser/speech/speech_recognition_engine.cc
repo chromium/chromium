@@ -5,6 +5,7 @@
 #include "content/browser/speech/speech_recognition_engine.h"
 
 #include <algorithm>
+#include <memory>
 #include <vector>
 
 #include "base/big_endian.h"
@@ -293,8 +294,8 @@ SpeechRecognitionEngine::ConnectBothStreams(const FSMEventArgs&) {
   DCHECK(!upstream_loader_.get());
   DCHECK(!downstream_loader_.get());
 
-  encoder_.reset(new AudioEncoder(config_.audio_sample_rate,
-                                  config_.audio_num_bits_per_sample));
+  encoder_ = std::make_unique<AudioEncoder>(config_.audio_sample_rate,
+                                            config_.audio_num_bits_per_sample);
   DCHECK(encoder_.get());
   const std::string request_key = GenerateRequestKey();
 
@@ -304,9 +305,8 @@ SpeechRecognitionEngine::ConnectBothStreams(const FSMEventArgs&) {
                            !config_.auth_token.empty() &&
                            !config_.auth_scope.empty());
   if (use_framed_post_data_) {
-    preamble_encoder_.reset(new AudioEncoder(
-        config_.preamble->sample_rate,
-        config_.preamble->sample_depth * 8));
+    preamble_encoder_ = std::make_unique<AudioEncoder>(
+        config_.preamble->sample_rate, config_.preamble->sample_depth * 8);
   }
 
   const char* web_service_base_url = !web_service_base_url_for_tests

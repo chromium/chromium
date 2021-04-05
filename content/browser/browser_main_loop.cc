@@ -655,7 +655,7 @@ void BrowserMainLoop::PostMainMessageLoopStart() {
   TRACE_EVENT0("startup", "BrowserMainLoop::PostMainMessageLoopStart");
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:SystemMonitor");
-    system_monitor_.reset(new base::SystemMonitor);
+    system_monitor_ = std::make_unique<base::SystemMonitor>();
   }
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:PowerMonitor");
@@ -666,7 +666,8 @@ void BrowserMainLoop::PostMainMessageLoopStart() {
   }
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:HighResTimerManager");
-    hi_res_timer_manager_.reset(new base::HighResolutionTimerManager);
+    hi_res_timer_manager_ =
+        std::make_unique<base::HighResolutionTimerManager>();
   }
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:NetworkChangeNotifier");
@@ -690,7 +691,7 @@ void BrowserMainLoop::PostMainMessageLoopStart() {
 
   {
     TRACE_EVENT0("startup", "BrowserMainLoop::Subsystem:OnlineStateObserver");
-    online_state_observer_.reset(new BrowserOnlineStateObserver);
+    online_state_observer_ = std::make_unique<BrowserOnlineStateObserver>();
   }
 
   { base::SetRecordActionTaskRunner(GetUIThreadTaskRunner({})); }
@@ -1235,7 +1236,7 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
 
   {
     TRACE_EVENT0("startup", "PostCreateThreads::Subsystem:MidiService");
-    midi_service_.reset(new midi::MidiService);
+    midi_service_ = std::make_unique<midi::MidiService>();
   }
 
   {
@@ -1257,8 +1258,8 @@ void BrowserMainLoop::PostCreateThreadsImpl() {
   // See audio_thread_impl.cc and https://crbug.com/158170.
   DCHECK(!audio_manager_ ||
          audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
-  device_monitor_mac_.reset(
-      new media::DeviceMonitorMac(base::ThreadTaskRunnerHandle::Get()));
+  device_monitor_mac_ = std::make_unique<media::DeviceMonitorMac>(
+      base::ThreadTaskRunnerHandle::Get());
 #endif
 
   // Instantiated once using CreateSingletonInstance(), and accessed only using

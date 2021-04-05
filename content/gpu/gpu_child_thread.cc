@@ -5,6 +5,8 @@
 #include "content/gpu/gpu_child_thread.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/allocator/allocator_extension.h"
@@ -198,12 +200,12 @@ void GpuChildThread::OnGpuServiceConnection(viz::GpuServiceImpl* gpu_service) {
   }
 
   // Only set once per process instance.
-  service_factory_.reset(new GpuServiceFactory(
+  service_factory_ = std::make_unique<GpuServiceFactory>(
       gpu_service->gpu_preferences(),
       gpu_service->gpu_channel_manager()->gpu_driver_bug_workarounds(),
       gpu_service->gpu_feature_info(),
       gpu_service->media_gpu_channel_manager()->AsWeakPtr(),
-      gpu_service->gpu_memory_buffer_factory(), std::move(overlay_factory_cb)));
+      gpu_service->gpu_memory_buffer_factory(), std::move(overlay_factory_cb));
   for (auto& receiver : pending_service_receivers_)
     BindServiceInterface(std::move(receiver));
   pending_service_receivers_.clear();

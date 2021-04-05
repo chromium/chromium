@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -229,8 +231,8 @@ void PresentationServiceImpl::StartPresentation(
   }
 
   start_presentation_request_id_ = GetNextRequestId();
-  pending_start_presentation_cb_.reset(
-      new NewPresentationCallbackWrapper(std::move(callback)));
+  pending_start_presentation_cb_ =
+      std::make_unique<NewPresentationCallbackWrapper>(std::move(callback));
   PresentationRequest request({render_process_id_, render_frame_id_},
                               presentation_urls,
                               render_frame_host_->GetLastCommittedOrigin());

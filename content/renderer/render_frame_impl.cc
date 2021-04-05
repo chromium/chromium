@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -1975,8 +1976,8 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
                               base::Unretained(this))),
       devtools_frame_token_(params.devtools_frame_token) {
   DCHECK(RenderThread::IsMainThread());
-  blink_interface_registry_.reset(new BlinkInterfaceRegistryImpl(
-      registry_.GetWeakPtr(), associated_interfaces_.GetWeakPtr()));
+  blink_interface_registry_ = std::make_unique<BlinkInterfaceRegistryImpl>(
+      registry_.GetWeakPtr(), associated_interfaces_.GetWeakPtr());
 
   DCHECK(params.frame_receiver.is_valid());
   pending_frame_receiver_ = std::move(params.frame_receiver);
@@ -5950,8 +5951,10 @@ GURL RenderFrameImpl::GetLoadingUrl() const {
 }
 
 media::MediaPermission* RenderFrameImpl::GetMediaPermission() {
-  if (!media_permission_dispatcher_)
-    media_permission_dispatcher_.reset(new MediaPermissionDispatcher(this));
+  if (!media_permission_dispatcher_) {
+    media_permission_dispatcher_ =
+        std::make_unique<MediaPermissionDispatcher>(this);
+  }
   return media_permission_dispatcher_.get();
 }
 

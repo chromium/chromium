@@ -429,8 +429,8 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
             "\"PREEMPTIVE_TRACING_MODE\"}");
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::PREEMPTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::PREEMPTIVE);
     config->set_category_preset(BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
 
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
@@ -445,8 +445,8 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
   }
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::PREEMPTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::PREEMPTIVE);
     config->set_category_preset(BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
 
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
@@ -463,8 +463,8 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
   }
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::PREEMPTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::PREEMPTIVE);
     config->set_category_preset(BackgroundTracingConfigImpl::BENCHMARK_STARTUP);
 
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
@@ -484,8 +484,8 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
   }
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::PREEMPTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::PREEMPTIVE);
 
     std::unique_ptr<base::DictionaryValue> second_dict(
         new base::DictionaryValue());
@@ -506,8 +506,8 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
   }
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::PREEMPTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::PREEMPTIVE);
 
     std::unique_ptr<base::DictionaryValue> second_dict(
         new base::DictionaryValue());
@@ -529,8 +529,8 @@ TEST_F(BackgroundTracingConfigTest, ValidPreemptiveConfigToString) {
   }
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::PREEMPTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::PREEMPTIVE);
 
     std::unique_ptr<base::DictionaryValue> second_dict(
         new base::DictionaryValue());
@@ -556,8 +556,8 @@ TEST_F(BackgroundTracingConfigTest, InvalidPreemptiveConfigToString) {
   std::unique_ptr<BackgroundTracingConfigImpl> config;
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::PREEMPTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::PREEMPTIVE);
 
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
     dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_BROWSER_STARTUP_COMPLETE");
@@ -569,8 +569,8 @@ TEST_F(BackgroundTracingConfigTest, InvalidPreemptiveConfigToString) {
   }
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::PREEMPTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::PREEMPTIVE);
 
     std::unique_ptr<base::DictionaryValue> second_dict(
         new base::DictionaryValue());
@@ -585,8 +585,8 @@ TEST_F(BackgroundTracingConfigTest, InvalidPreemptiveConfigToString) {
   }
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::PREEMPTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::PREEMPTIVE);
 
     std::unique_ptr<base::DictionaryValue> second_dict(
         new base::DictionaryValue());
@@ -611,8 +611,8 @@ TEST_F(BackgroundTracingConfigTest, ValidReactiveConfigToString) {
             "{\"configs\":[],\"mode\":\"REACTIVE_TRACING_MODE\"}");
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::REACTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::REACTIVE);
 
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
     dict->SetString("rule", "TRACE_ON_NAVIGATION_UNTIL_TRIGGER_OR_FULL");
@@ -628,8 +628,8 @@ TEST_F(BackgroundTracingConfigTest, ValidReactiveConfigToString) {
   }
 
   {
-    config.reset(
-        new BackgroundTracingConfigImpl(BackgroundTracingConfig::REACTIVE));
+    config = std::make_unique<BackgroundTracingConfigImpl>(
+        BackgroundTracingConfig::REACTIVE);
 
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
     dict->SetString("rule", "TRACE_ON_NAVIGATION_UNTIL_TRIGGER_OR_FULL");

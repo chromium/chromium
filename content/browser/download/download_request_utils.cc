@@ -4,6 +4,8 @@
 
 #include "content/public/browser/download_request_utils.h"
 
+#include <memory>
+
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
@@ -20,10 +22,9 @@ DownloadRequestUtils::CreateDownloadForWebContentsMainFrame(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   RenderFrameHost* render_frame_host = web_contents->GetMainFrame();
-  return std::unique_ptr<download::DownloadUrlParameters>(
-      new download::DownloadUrlParameters(
-          url, render_frame_host->GetProcess()->GetID(),
-          render_frame_host->GetRoutingID(), traffic_annotation));
+  return std::make_unique<download::DownloadUrlParameters>(
+      url, render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetRoutingID(), traffic_annotation);
 }
 
 // static

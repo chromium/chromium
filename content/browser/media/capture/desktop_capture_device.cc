@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -277,7 +279,7 @@ void DesktopCaptureDevice::Core::SetMockTimeForTesting(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* tick_clock) {
   tick_clock_ = tick_clock;
-  capture_timer_.reset(new base::OneShotTimer(tick_clock_));
+  capture_timer_ = std::make_unique<base::OneShotTimer>(tick_clock_);
   capture_timer_->SetTaskRunner(task_runner);
 }
 
@@ -363,7 +365,7 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
     // replace it with a black frame to avoid the video appearing frozen at the
     // last frame.
     if (!black_frame_ || !black_frame_->size().equals(output_size)) {
-      black_frame_.reset(new webrtc::BasicDesktopFrame(output_size));
+      black_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(output_size);
     }
     output_data = black_frame_->data();
   } else {
@@ -393,7 +395,8 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       // don't need to worry about clearing out stale pixel data in
       // letterboxed areas.
       if (!output_frame_) {
-        output_frame_.reset(new webrtc::BasicDesktopFrame(output_size));
+        output_frame_ =
+            std::make_unique<webrtc::BasicDesktopFrame>(output_size);
       }
       DCHECK(output_frame_->size().equals(output_size));
 
@@ -414,7 +417,8 @@ void DesktopCaptureDevice::Core::OnCaptureResult(
       // crbug.com/306876), or if |frame| is cropped form a larger frame (see
       // crbug.com/437740).
       if (!output_frame_) {
-        output_frame_.reset(new webrtc::BasicDesktopFrame(output_size));
+        output_frame_ =
+            std::make_unique<webrtc::BasicDesktopFrame>(output_size);
       }
 
       output_frame_->CopyPixelsFrom(
@@ -515,7 +519,7 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 
   // For browser tests, to create a fake desktop capturer.
   if (source.id == DesktopMediaID::kFakeId) {
-    capturer.reset(new webrtc::FakeDesktopCapturer());
+    capturer = std::make_unique<webrtc::FakeDesktopCapturer>();
     result.reset(new DesktopCaptureDevice(std::move(capturer), source.type));
     return result;
   }
@@ -533,8 +537,8 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
           webrtc::DesktopCapturer::CreateScreenCapturer(options));
 #endif
       if (screen_capturer && screen_capturer->SelectSource(source.id)) {
-        capturer.reset(new webrtc::DesktopAndCursorComposer(
-            std::move(screen_capturer), options));
+        capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
+            std::move(screen_capturer), options);
         IncrementDesktopCaptureCounter(SCREEN_CAPTURER_CREATED);
         IncrementDesktopCaptureCounter(
             source.audio_share ? SCREEN_CAPTURER_CREATED_WITH_AUDIO
@@ -554,8 +558,8 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
 #endif
       if (window_capturer && window_capturer->SelectSource(source.id)) {
         window_capturer->FocusOnSelectedSource();
-        capturer.reset(new webrtc::DesktopAndCursorComposer(
-            std::move(window_capturer), options));
+        capturer = std::make_unique<webrtc::DesktopAndCursorComposer>(
+            std::move(window_capturer), options);
         IncrementDesktopCaptureCounter(WINDOW_CAPTURER_CREATED);
       }
       break;
@@ -616,7 +620,8 @@ DesktopCaptureDevice::DesktopCaptureDevice(
 
   thread_.StartWithOptions(base::Thread::Options(thread_type, 0));
 
-  core_.reset(new Core(thread_.task_runner(), std::move(capturer), type));
+  core_ =
+      std::make_unique<Core>(thread_.task_runner(), std::move(capturer), type);
 }
 
 void DesktopCaptureDevice::SetMockTimeForTesting(

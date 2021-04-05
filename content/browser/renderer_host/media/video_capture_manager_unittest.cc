@@ -248,7 +248,7 @@ class VideoCaptureManagerTest : public testing::Test {
 
  protected:
   void SetUp() override {
-    listener_.reset(new MockMediaStreamProviderListener());
+    listener_ = std::make_unique<MockMediaStreamProviderListener>();
     auto video_capture_device_factory =
         std::make_unique<WrappedDeviceFactory>();
     video_capture_device_factory_ = video_capture_device_factory.get();
@@ -268,7 +268,7 @@ class VideoCaptureManagerTest : public testing::Test {
     video_capture_device_factory_->SetToDefaultDevicesConfig(
         kNumberOfFakeDevices);
     vcm_->RegisterListener(listener_.get());
-    frame_observer_.reset(new MockFrameObserver());
+    frame_observer_ = std::make_unique<MockFrameObserver>();
 
     base::RunLoop run_loop;
     vcm_->EnumerateDevices(

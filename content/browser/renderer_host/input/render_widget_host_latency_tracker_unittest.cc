@@ -129,7 +129,7 @@ class RenderWidgetHostLatencyTrackerTest
   ui::LatencyTracker* viz_tracker() { return &viz_tracker_; }
 
   void ResetHistograms() {
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   const base::HistogramTester& histogram_tester() {

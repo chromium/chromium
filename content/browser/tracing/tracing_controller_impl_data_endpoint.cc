@@ -1,6 +1,8 @@
 // Copyright 2015 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -176,7 +178,7 @@ class CompressedTraceDataEndpoint
       return false;
 
     already_tried_open_ = true;
-    stream_.reset(new z_stream);
+    stream_ = std::make_unique<z_stream>();
     *stream_ = {nullptr};
     stream_->zalloc = Z_NULL;
     stream_->zfree = Z_NULL;

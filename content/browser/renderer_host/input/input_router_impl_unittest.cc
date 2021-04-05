@@ -230,11 +230,11 @@ class InputRouterImplTestBase : public testing::Test {
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(switches::kValidateInputEventStream);
-    client_.reset(new MockInputRouterImplClient());
-    disposition_handler_.reset(new MockInputDispositionHandler());
-    input_router_.reset(
-        new InputRouterImpl(client_.get(), disposition_handler_.get(),
-                            &client_->input_router_client_, config_));
+    client_ = std::make_unique<MockInputRouterImplClient>();
+    disposition_handler_ = std::make_unique<MockInputDispositionHandler>();
+    input_router_ = std::make_unique<InputRouterImpl>(
+        client_.get(), disposition_handler_.get(),
+        &client_->input_router_client_, config_);
 
     client_->set_input_router(input_router());
     disposition_handler_->set_input_router(input_router());

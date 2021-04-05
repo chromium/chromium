@@ -1206,7 +1206,7 @@ std::vector<NetworkHandler*> NetworkHandler::ForAgentHost(
 }
 
 void NetworkHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Network::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Network::Frontend>(dispatcher->channel());
   Network::Dispatcher::wire(dispatcher, this);
 }
 

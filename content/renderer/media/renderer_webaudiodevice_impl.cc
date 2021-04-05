@@ -195,9 +195,9 @@ void RendererWebAudioDeviceImpl::Start() {
   // Use a task runner instead of the render thread for fake Render() calls
   // since it has special connotations for Blink and garbage collection. Timeout
   // value chosen to be highly unlikely in the normal case.
-  webaudio_suspender_.reset(new media::SilentSinkSuspender(
+  webaudio_suspender_ = std::make_unique<media::SilentSinkSuspender>(
       this, base::TimeDelta::FromSeconds(30), sink_params_, sink_,
-      GetSuspenderTaskRunner()));
+      GetSuspenderTaskRunner());
   sink_->Initialize(sink_params_, webaudio_suspender_.get());
 
   sink_->Start();

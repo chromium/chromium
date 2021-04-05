@@ -487,10 +487,10 @@ TEST_F(SpeechRecognitionEngineTest, SendPreamble) {
 }
 
 void SpeechRecognitionEngineTest::SetUp() {
-  engine_under_test_.reset(new SpeechRecognitionEngine(
+  engine_under_test_ = std::make_unique<SpeechRecognitionEngine>(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &url_loader_factory_),
-      "" /* accept_language */));
+      "" /* accept_language */);
   engine_under_test_->set_delegate(this);
 }
 

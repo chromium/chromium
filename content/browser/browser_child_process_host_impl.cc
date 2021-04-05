@@ -4,6 +4,8 @@
 
 #include "content/browser/browser_child_process_host_impl.h"
 
+#include <memory>
+
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -353,13 +355,13 @@ void BrowserChildProcessHostImpl::LaunchWithoutExtraCommandLineSwitches(
   data_.sandbox_type = delegate->GetSandboxType();
 
   notify_child_disconnected_ = true;
-  child_process_.reset(new ChildProcessLauncher(
+  child_process_ = std::make_unique<ChildProcessLauncher>(
       std::move(delegate), std::move(cmd_line), data_.id, this,
       std::move(*child_process_host_->GetMojoInvitation()),
       base::BindRepeating(&BrowserChildProcessHostImpl::OnMojoError,
                           weak_factory_.GetWeakPtr(),
                           base::ThreadTaskRunnerHandle::Get()),
-      std::move(files_to_preload), terminate_on_shutdown));
+      std::move(files_to_preload), terminate_on_shutdown);
   ShareMetricsAllocatorToProcess();
 }
 

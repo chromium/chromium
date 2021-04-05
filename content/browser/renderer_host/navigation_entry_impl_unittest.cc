@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -65,17 +66,17 @@ class NavigationEntryTest : public testing::Test {
   NavigationEntryTest() : instance_(nullptr) {}
 
   void SetUp() override {
-    entry1_.reset(new NavigationEntryImpl);
+    entry1_ = std::make_unique<NavigationEntryImpl>();
 
     const url::Origin kInitiatorOrigin =
         url::Origin::Create(GURL("https://initiator.example.com"));
 
     instance_ = SiteInstanceImpl::Create(&browser_context_);
-    entry2_.reset(new NavigationEntryImpl(
+    entry2_ = std::make_unique<NavigationEntryImpl>(
         instance_, GURL("test:url"),
         Referrer(GURL("from"), network::mojom::ReferrerPolicy::kDefault),
         kInitiatorOrigin, u"title", ui::PAGE_TRANSITION_TYPED, false,
-        nullptr /* blob_url_loader_factory */));
+        nullptr /* blob_url_loader_factory */);
   }
 
   void TearDown() override {}

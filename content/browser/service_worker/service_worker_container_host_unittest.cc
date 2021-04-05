@@ -112,7 +112,7 @@ class ServiceWorkerContainerHostTest : public testing::Test {
     mojo::SetDefaultProcessErrorHandler(base::BindRepeating(
         &ServiceWorkerContainerHostTest::OnMojoError, base::Unretained(this)));
 
-    helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
     context_ = helper_->context();
     script_url_ = GURL("https://www.example.com/service_worker.js");
 

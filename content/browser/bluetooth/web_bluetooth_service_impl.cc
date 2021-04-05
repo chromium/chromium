@@ -11,6 +11,7 @@
 #include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -1607,8 +1608,9 @@ void WebBluetoothServiceImpl::RequestDeviceImpl(
   // before constructing the new one to make sure they can't conflict.
   device_chooser_controller_.reset();
 
-  device_chooser_controller_.reset(new BluetoothDeviceChooserController(
-      this, render_frame_host_, std::move(adapter)));
+  device_chooser_controller_ =
+      std::make_unique<BluetoothDeviceChooserController>(
+          this, render_frame_host_, std::move(adapter));
 
   // TODO(crbug.com/730593): Remove AdaptCallbackForRepeating() by updating
   // the callee interface.
@@ -2248,8 +2250,8 @@ void WebBluetoothServiceImpl::ClearState() {
   descriptor_id_to_characteristic_id_.clear();
   characteristic_id_to_service_id_.clear();
   service_id_to_device_address_.clear();
-  connected_devices_.reset(
-      new FrameConnectedBluetoothDevices(render_frame_host_));
+  connected_devices_ =
+      std::make_unique<FrameConnectedBluetoothDevices>(render_frame_host_);
   device_chooser_controller_.reset();
   device_scanning_prompt_controller_.reset();
   ClearAdvertisementClients();

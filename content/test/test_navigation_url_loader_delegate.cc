@@ -4,6 +4,8 @@
 
 #include "content/test/test_navigation_url_loader_delegate.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/common/navigation_params.h"
@@ -19,19 +21,19 @@ TestNavigationURLLoaderDelegate::TestNavigationURLLoaderDelegate()
 TestNavigationURLLoaderDelegate::~TestNavigationURLLoaderDelegate() {}
 
 void TestNavigationURLLoaderDelegate::WaitForRequestRedirected() {
-  request_redirected_.reset(new base::RunLoop);
+  request_redirected_ = std::make_unique<base::RunLoop>();
   request_redirected_->Run();
   request_redirected_.reset();
 }
 
 void TestNavigationURLLoaderDelegate::WaitForResponseStarted() {
-  response_started_.reset(new base::RunLoop);
+  response_started_ = std::make_unique<base::RunLoop>();
   response_started_->Run();
   response_started_.reset();
 }
 
 void TestNavigationURLLoaderDelegate::WaitForRequestFailed() {
-  request_failed_.reset(new base::RunLoop);
+  request_failed_ = std::make_unique<base::RunLoop>();
   request_failed_->Run();
   request_failed_.reset();
 }

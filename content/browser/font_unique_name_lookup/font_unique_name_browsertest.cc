@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -174,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest, ContentLocalFontsMatching) {
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_int());
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetInteger("nodeId", result->GetInt());
   params->SetString("selector", ".testnode");
   result = SendCommand("DOM.querySelectorAll", std::move(params));
@@ -187,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest, ContentLocalFontsMatching) {
   ASSERT_EQ(nodes_view.size(), base::size(kExpectedFontFamilyNames));
   for (size_t i = 0; i < nodes_view.size(); ++i) {
     const base::Value& nodeId = nodes_view[i];
-    params.reset(new base::DictionaryValue());
+    params = std::make_unique<base::DictionaryValue>();
     params->SetInteger("nodeId", nodeId.GetInt());
     const base::Value* font_info =
         SendCommand("CSS.getPlatformFontsForNode", std::move(params));

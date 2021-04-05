@@ -4,6 +4,8 @@
 
 #include "content/browser/service_worker/service_worker_context_watcher.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -126,7 +128,7 @@ class ServiceWorkerContextWatcherTest : public testing::Test {
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override {
-    helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
     base::RunLoop().RunUntilIdle();
   }
 

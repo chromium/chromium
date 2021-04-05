@@ -4,6 +4,8 @@
 
 #include "content/browser/speech/tts_utterance_impl.h"
 
+#include <memory>
+
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom.h"
@@ -66,7 +68,7 @@ TtsUtteranceImpl::TtsUtteranceImpl(BrowserContext* browser_context,
       should_clear_queue_(true),
       char_index_(0),
       finished_(false) {
-  options_.reset(new base::DictionaryValue());
+  options_ = std::make_unique<base::DictionaryValue>();
 }
 
 TtsUtteranceImpl::~TtsUtteranceImpl() {

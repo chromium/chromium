@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/command_line.h"
 #include "base/cpu.h"
@@ -82,7 +83,7 @@ PpapiThread::PpapiThread(base::RepeatingClosure quit_closure,
       next_plugin_dispatcher_id_(1) {
   plugin_globals_.SetPluginProxyDelegate(this);
 
-  blink_platform_impl_.reset(new PpapiBlinkPlatformImpl);
+  blink_platform_impl_ = std::make_unique<PpapiBlinkPlatformImpl>();
   blink::Platform::CreateMainThreadAndInitialize(blink_platform_impl_.get());
 
   scoped_refptr<ppapi::proxy::PluginMessageFilter> plugin_filter(

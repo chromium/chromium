@@ -6,6 +6,8 @@
 
 #include <ctype.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_delta_serialization.h"
@@ -65,8 +67,8 @@ void ChildHistogramFetcherImpl::GetChildNonPersistentHistogramData(
     global_allocator->UpdateTrackingHistograms();
 
   if (!histogram_delta_serialization_) {
-    histogram_delta_serialization_.reset(
-        new base::HistogramDeltaSerialization("ChildProcess"));
+    histogram_delta_serialization_ =
+        std::make_unique<base::HistogramDeltaSerialization>("ChildProcess");
   }
 
   std::vector<std::string> deltas;

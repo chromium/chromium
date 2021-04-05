@@ -96,9 +96,11 @@ class MediaSessionImplTest : public RenderViewHostTestHarness {
 
     RenderViewHostTestHarness::SetUp();
 
-    player_observer_.reset(new MockMediaSessionPlayerObserver(main_rfh()));
-    mock_media_session_service_.reset(
-        new testing::NiceMock<MockMediaSessionServiceImpl>(main_rfh()));
+    player_observer_ =
+        std::make_unique<MockMediaSessionPlayerObserver>(main_rfh());
+    mock_media_session_service_ =
+        std::make_unique<testing::NiceMock<MockMediaSessionServiceImpl>>(
+            main_rfh());
 
     // Connect to the Media Session service and bind |audio_focus_remote_| to
     // it.

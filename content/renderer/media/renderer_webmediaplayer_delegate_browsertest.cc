@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <tuple>
 
 #include "base/bind.h"
@@ -53,8 +54,8 @@ class RendererWebMediaPlayerDelegateTest : public content::RenderViewTest {
     RenderViewTest::SetUp();
     // Start the tick clock off at a non-null value.
     tick_clock_.Advance(base::TimeDelta::FromSeconds(1234));
-    delegate_manager_.reset(
-        new RendererWebMediaPlayerDelegate(view_->GetMainRenderFrame()));
+    delegate_manager_ = std::make_unique<RendererWebMediaPlayerDelegate>(
+        view_->GetMainRenderFrame());
     delegate_manager_->SetIdleCleanupParamsForTesting(
         kIdleTimeout, base::TimeDelta(), &tick_clock_, false);
   }

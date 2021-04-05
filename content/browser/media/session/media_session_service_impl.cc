@@ -4,6 +4,8 @@
 
 #include "content/browser/media/session/media_session_service_impl.h"
 
+#include <memory>
+
 #include "content/browser/media/session/media_metadata_sanitizer.h"
 #include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -156,8 +158,9 @@ MediaSessionImpl* MediaSessionServiceImpl::GetMediaSession() {
 
 void MediaSessionServiceImpl::Bind(
     mojo::PendingReceiver<blink::mojom::MediaSessionService> receiver) {
-  receiver_.reset(new mojo::Receiver<blink::mojom::MediaSessionService>(
-      this, std::move(receiver)));
+  receiver_ =
+      std::make_unique<mojo::Receiver<blink::mojom::MediaSessionService>>(
+          this, std::move(receiver));
 }
 
 }  // namespace content

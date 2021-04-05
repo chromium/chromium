@@ -7,7 +7,9 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
+
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -160,9 +162,9 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
     std::unique_ptr<webrtc::DesktopFrame> frame = CreateBasicFrame(size);
 
     if (generate_inverted_frames_) {
-      frame.reset(new InvertedDesktopFrame(std::move(frame)));
+      frame = std::make_unique<InvertedDesktopFrame>(std::move(frame));
     } else if (generate_cropped_frames_) {
-      frame.reset(new UnpackedDesktopFrame(std::move(frame)));
+      frame = std::make_unique<UnpackedDesktopFrame>(std::move(frame));
     }
 
     if (run_callback_asynchronously_) {
@@ -467,8 +469,8 @@ TEST_F(DesktopCaptureDeviceTest, UnpackedFrame) {
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   int frame_size = 0;
-  output_frame_.reset(new webrtc::BasicDesktopFrame(
-      webrtc::DesktopSize(kTestFrameWidth1, kTestFrameHeight1)));
+  output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(
+      webrtc::DesktopSize(kTestFrameWidth1, kTestFrameHeight1));
 
   std::unique_ptr<media::MockVideoCaptureDeviceClient> client(
       CreateMockVideoCaptureDeviceClient());
@@ -516,8 +518,8 @@ TEST_F(DesktopCaptureDeviceTest, InvertedFrame) {
       base::WaitableEvent::InitialState::NOT_SIGNALED);
 
   int frame_size = 0;
-  output_frame_.reset(new webrtc::BasicDesktopFrame(
-      webrtc::DesktopSize(kTestFrameWidth1, kTestFrameHeight1)));
+  output_frame_ = std::make_unique<webrtc::BasicDesktopFrame>(
+      webrtc::DesktopSize(kTestFrameWidth1, kTestFrameHeight1));
 
   std::unique_ptr<media::MockVideoCaptureDeviceClient> client(
       CreateMockVideoCaptureDeviceClient());

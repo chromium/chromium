@@ -8,6 +8,7 @@
 #include <GLES2/gl2ext.h>
 #include <GLES2/gl2extchromium.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -158,7 +159,7 @@ void VideoDecoderShim::DecoderImpl::Initialize(
 #if BUILDFLAG(ENABLE_LIBVPX) || BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 #if BUILDFLAG(ENABLE_LIBVPX)
   if (config.codec() == media::kCodecVP9) {
-    decoder_.reset(new media::VpxVideoDecoder());
+    decoder_ = std::make_unique<media::VpxVideoDecoder>();
   } else
 #endif  // BUILDFLAG(ENABLE_LIBVPX)
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
@@ -281,10 +282,12 @@ void VideoDecoderShim::DecoderImpl::OnOutputComplete(
   DCHECK(awaiting_decoder_);
 
   std::unique_ptr<PendingFrame> pending_frame;
-  if (!frame->metadata().end_of_stream)
-    pending_frame.reset(new PendingFrame(decode_id_, std::move(frame)));
-  else
-    pending_frame.reset(new PendingFrame(decode_id_));
+  if (!frame->metadata().end_of_stream) {
+    pending_frame =
+        std::make_unique<PendingFrame>(decode_id_, std::move(frame));
+  } else {
+    pending_frame = std::make_unique<PendingFrame>(decode_id_);
+  }
 
   main_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoDecoderShim::OnOutputComplete, shim_,
@@ -309,7 +312,7 @@ VideoDecoderShim::VideoDecoderShim(PepperVideoDecoderHost* host,
   DCHECK(host_);
   DCHECK(media_task_runner_.get());
   DCHECK(context_provider_.get());
-  decoder_impl_.reset(new DecoderImpl(weak_ptr_factory_.GetWeakPtr()));
+  decoder_impl_ = std::make_unique<DecoderImpl>(weak_ptr_factory_.GetWeakPtr());
 }
 
 VideoDecoderShim::~VideoDecoderShim() {

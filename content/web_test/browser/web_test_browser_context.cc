@@ -4,6 +4,7 @@
 
 #include "content/web_test/browser/web_test_browser_context.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -49,7 +50,8 @@ WebTestBrowserContext::~WebTestBrowserContext() {
 
 DownloadManagerDelegate* WebTestBrowserContext::GetDownloadManagerDelegate() {
   if (!download_manager_delegate_) {
-    download_manager_delegate_.reset(new WebTestDownloadManagerDelegate());
+    download_manager_delegate_ =
+        std::make_unique<WebTestDownloadManagerDelegate>();
     download_manager_delegate_->SetDownloadManager(
         BrowserContext::GetDownloadManager(this));
     download_manager_delegate_->SetDownloadBehaviorForTesting(

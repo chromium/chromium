@@ -480,7 +480,8 @@ bool TracingControllerImpl::StopTracing(
     return true;
   }
 
-  drainer_.reset(new mojo::DataPipeDrainer(this, std::move(consumer_handle)));
+  drainer_ =
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(consumer_handle));
 
   tracing_session_host_->DisableTracingAndEmitJson(
       agent_label, std::move(producer_handle), privacy_filtering_enabled,

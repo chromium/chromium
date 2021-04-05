@@ -124,7 +124,7 @@ SecurityHandler::SecurityHandler()
 SecurityHandler::~SecurityHandler() = default;
 
 void SecurityHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Security::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Security::Frontend>(dispatcher->channel());
   Security::Dispatcher::wire(dispatcher, this);
 }
 

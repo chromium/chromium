@@ -4,6 +4,8 @@
 
 #include "content/shell/browser/shell_javascript_dialog_manager.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,9 +52,9 @@ void ShellJavaScriptDialogManager::RunJavaScriptDialog(
       u"\n\n" + message_text;
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
 
-  dialog_.reset(new ShellJavaScriptDialog(this, parent_window, dialog_type,
-                                          new_message_text, default_prompt_text,
-                                          std::move(callback)));
+  dialog_ = std::make_unique<ShellJavaScriptDialog>(
+      this, parent_window, dialog_type, new_message_text, default_prompt_text,
+      std::move(callback));
 #else
   // TODO: implement ShellJavaScriptDialog for other platforms, drop this #if
   *did_suppress_message = true;
@@ -88,10 +90,10 @@ void ShellJavaScriptDialogManager::RunBeforeUnloadDialog(
 
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
 
-  dialog_.reset(new ShellJavaScriptDialog(
+  dialog_ = std::make_unique<ShellJavaScriptDialog>(
       this, parent_window, JAVASCRIPT_DIALOG_TYPE_CONFIRM, message_text,
       std::u16string(),  // default
-      std::move(callback)));
+      std::move(callback));
 #else
   // TODO: implement ShellJavaScriptDialog for other platforms, drop this #if
   std::move(callback).Run(true, std::u16string());

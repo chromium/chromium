@@ -4,6 +4,7 @@
 
 #include "content/browser/code_cache/generated_code_cache.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -69,8 +70,8 @@ class GeneratedCodeCacheTest : public testing::Test {
   // to test the pending operaions path.
   void InitializeCacheAndReOpen(GeneratedCodeCache::CodeCacheType cache_type) {
     InitializeCache(cache_type);
-    generated_code_cache_.reset(
-        new GeneratedCodeCache(cache_path_, kMaxSizeInBytes, cache_type));
+    generated_code_cache_ = std::make_unique<GeneratedCodeCache>(
+        cache_path_, kMaxSizeInBytes, cache_type);
   }
 
   void WriteToCache(const GURL& url,

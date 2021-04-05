@@ -4,19 +4,17 @@
 
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_test.h"
 
+#include <memory>
+
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 
 namespace content {
 
 BrowserPpapiHostTest::BrowserPpapiHostTest() : sink_() {
-  ppapi_host_.reset(
-      new BrowserPpapiHostImpl(&sink_,
-                               ppapi::PpapiPermissions::AllPermissions(),
-                               std::string(),
-                               base::FilePath(),
-                               base::FilePath(),
-                               false /* in_process */,
-                               false /* external_plugin */));
+  ppapi_host_ = std::make_unique<BrowserPpapiHostImpl>(
+      &sink_, ppapi::PpapiPermissions::AllPermissions(), std::string(),
+      base::FilePath(), base::FilePath(), false /* in_process */,
+      false /* external_plugin */);
   ppapi_host_->set_plugin_process(base::Process::Current());
 }
 

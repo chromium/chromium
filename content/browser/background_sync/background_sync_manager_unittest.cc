@@ -115,7 +115,7 @@ class BackgroundSyncManagerTest
     // TODO(jkarlin): Create a new object with all of the necessary SW calls
     // so that we can inject test versions instead of bringing up all of this
     // extra SW stuff.
-    helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
 
     std::unique_ptr<MockPermissionManager> mock_permission_manager(
         new testing::NiceMock<MockPermissionManager>());

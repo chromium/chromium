@@ -40,7 +40,7 @@ FetchHandler::FetchHandler(
 FetchHandler::~FetchHandler() = default;
 
 void FetchHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Fetch::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Fetch::Frontend>(dispatcher->channel());
   Fetch::Dispatcher::wire(dispatcher, this);
 }
 

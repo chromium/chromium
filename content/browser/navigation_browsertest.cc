@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -102,7 +104,7 @@ class InterceptAndCancelDidCommitProvisionalLoad
 
   void Wait(size_t number_of_messages) {
     while (intercepted_messages_.size() < number_of_messages) {
-      loop_.reset(new base::RunLoop);
+      loop_ = std::make_unique<base::RunLoop>();
       loop_->Run();
     }
   }
@@ -1679,8 +1681,8 @@ class PreviewsStateBrowserTest : public ContentBrowserTest {
 
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    client_.reset(new PreviewsStateContentBrowserClient(
-        embedded_test_server()->GetURL("/title1.html")));
+    client_ = std::make_unique<PreviewsStateContentBrowserClient>(
+        embedded_test_server()->GetURL("/title1.html"));
 
     client_->SetClient();
   }

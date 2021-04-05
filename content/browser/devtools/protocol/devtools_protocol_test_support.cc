@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
+
+#include <memory>
+
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -209,7 +212,7 @@ void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
     url = RemovePort(GURL(url));
 
     if (!is_navigation) {
-      params.reset(new base::DictionaryValue());
+      params = std::make_unique<base::DictionaryValue>();
       params->SetString("interceptionId", interception_id);
       SendCommand("Network.continueInterceptedRequest", std::move(params),
                   false);
@@ -222,7 +225,7 @@ void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
       if (url != it->url || is_redirect != it->is_redirect)
         continue;
 
-      params.reset(new base::DictionaryValue());
+      params = std::make_unique<base::DictionaryValue>();
       params->SetString("interceptionId", interception_id);
       if (it->abort)
         params->SetString("errorReason", "Aborted");

@@ -6,6 +6,7 @@
 
 #import "content/browser/web_contents/web_contents_view_mac.h"
 
+#include <memory>
 #include <string>
 
 #import "base/mac/mac_util.h"
@@ -266,8 +267,8 @@ void WebContentsViewMac::ShowPopupMenu(
     std::vector<blink::mojom::MenuItemPtr> menu_items,
     bool right_aligned,
     bool allow_multiple_selection) {
-  popup_menu_helper_.reset(
-      new PopupMenuHelper(this, render_frame_host, std::move(popup_client)));
+  popup_menu_helper_ = std::make_unique<PopupMenuHelper>(
+      this, render_frame_host, std::move(popup_client));
   popup_menu_helper_->ShowPopupMenu(bounds, item_height, item_font_size,
                                     selected_item, std::move(menu_items),
                                     right_aligned, allow_multiple_selection);

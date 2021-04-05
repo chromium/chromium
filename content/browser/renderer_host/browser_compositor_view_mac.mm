@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
@@ -58,12 +60,12 @@ BrowserCompositorMac::BrowserCompositorMac(
       weak_factory_(this) {
   g_browser_compositors.Get().insert(this);
 
-  root_layer_.reset(new ui::Layer(ui::LAYER_SOLID_COLOR));
+  root_layer_ = std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
   // Ensure that this layer draws nothing when it does not not have delegated
   // content (otherwise this solid color will be flashed during navigation).
   root_layer_->SetColor(SK_ColorTRANSPARENT);
-  delegated_frame_host_.reset(new DelegatedFrameHost(
-      frame_sink_id, this, true /* should_register_frame_sink_id */));
+  delegated_frame_host_ = std::make_unique<DelegatedFrameHost>(
+      frame_sink_id, this, true /* should_register_frame_sink_id */);
 
   SetRenderWidgetHostIsHidden(render_widget_host_is_hidden);
 }

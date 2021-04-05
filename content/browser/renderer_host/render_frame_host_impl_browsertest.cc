@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -737,7 +738,7 @@ class RenderFrameHostImplBeforeUnloadBrowserTest
  protected:
   void SetUpOnMainThread() override {
     RenderFrameHostImplBrowserTest::SetUpOnMainThread();
-    dialog_manager_.reset(new TestJavaScriptDialogManager);
+    dialog_manager_ = std::make_unique<TestJavaScriptDialogManager>();
     web_contents()->SetDelegate(dialog_manager_.get());
   }
 

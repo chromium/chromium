@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/macros.h"
@@ -617,8 +618,8 @@ SpeechRecognizerImpl::StartRecording(const FSMEventArgs&) {
 
   // Create an audio converter which converts data between native input format
   // and WebSpeech specific output format.
-  audio_converter_.reset(
-      new OnDataConverter(input_parameters, output_parameters));
+  audio_converter_ =
+      std::make_unique<OnDataConverter>(input_parameters, output_parameters);
 
   // The endpointer needs to estimate the environment/background noise before
   // starting to treat the audio as user input. We wait in the state

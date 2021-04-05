@@ -51,7 +51,8 @@ class GestureEventQueueTest : public testing::Test,
 
   // testing::Test
   void SetUp() override {
-    queue_.reset(new GestureEventQueue(this, this, this, DefaultConfig()));
+    queue_ =
+        std::make_unique<GestureEventQueue>(this, this, this, DefaultConfig());
   }
 
   void TearDown() override {
@@ -67,7 +68,8 @@ class GestureEventQueueTest : public testing::Test,
     gesture_config.fling_config.touchscreen_tap_suppression_config
         .max_cancel_to_down_time =
         base::TimeDelta::FromMilliseconds(max_cancel_to_down_time_ms);
-    queue_.reset(new GestureEventQueue(this, this, this, gesture_config));
+    queue_ =
+        std::make_unique<GestureEventQueue>(this, this, this, gesture_config);
   }
 
   // GestureEventQueueClient
@@ -188,13 +190,14 @@ class GestureEventQueueTest : public testing::Test,
   }
 
   void set_synchronous_ack(blink::mojom::InputEventResultState ack_result) {
-    sync_ack_result_.reset(new blink::mojom::InputEventResultState(ack_result));
+    sync_ack_result_ =
+        std::make_unique<blink::mojom::InputEventResultState>(ack_result);
   }
 
   void set_sync_followup_event(WebInputEvent::Type type,
                                WebGestureDevice sourceDevice) {
-    sync_followup_event_.reset(new WebGestureEvent(
-        blink::SyntheticWebGestureEventBuilder::Build(type, sourceDevice)));
+    sync_followup_event_ = std::make_unique<WebGestureEvent>(
+        blink::SyntheticWebGestureEventBuilder::Build(type, sourceDevice));
   }
 
   unsigned GestureEventQueueSize() {

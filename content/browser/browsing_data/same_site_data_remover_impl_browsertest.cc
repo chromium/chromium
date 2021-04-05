@@ -43,8 +43,8 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
     if (IsOutOfProcessNetworkService())
       browsing_data_browsertest_utils::SetUpMockCertVerifier(net::OK);
 
-    https_server_.reset(new net::EmbeddedTestServer(
-        net::test_server::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     https_server_->RegisterRequestHandler(
         base::BindRepeating(&SameSiteDataRemoverBrowserTest::HandleRequest,

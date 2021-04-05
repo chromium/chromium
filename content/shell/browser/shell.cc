@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -337,8 +338,8 @@ void Shell::UpdateNavigationControls(bool to_different_document) {
 void Shell::ShowDevTools() {
   if (!devtools_frontend_) {
     devtools_frontend_ = ShellDevToolsFrontend::Show(web_contents());
-    devtools_observer_.reset(new DevToolsWebContentsObserver(
-        this, devtools_frontend_->frontend_shell()->web_contents()));
+    devtools_observer_ = std::make_unique<DevToolsWebContentsObserver>(
+        this, devtools_frontend_->frontend_shell()->web_contents());
   }
 
   devtools_frontend_->Activate();

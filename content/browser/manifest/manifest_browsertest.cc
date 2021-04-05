@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -83,8 +84,8 @@ class ManifestBrowserTest : public ContentBrowserTest,
     ContentBrowserTest::SetUpOnMainThread();
     DCHECK(shell()->web_contents());
 
-    mock_web_contents_delegate_.reset(
-        new MockWebContentsDelegate(shell()->web_contents(), this));
+    mock_web_contents_delegate_ = std::make_unique<MockWebContentsDelegate>(
+        shell()->web_contents(), this);
     shell()->web_contents()->SetDelegate(mock_web_contents_delegate_.get());
     Observe(shell()->web_contents());
     ASSERT_TRUE(embedded_test_server()->Start());

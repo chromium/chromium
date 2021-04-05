@@ -4,6 +4,8 @@
 
 #include "content/browser/devtools/protocol/target_handler.h"
 
+#include <memory>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -583,7 +585,7 @@ std::vector<TargetHandler*> TargetHandler::ForAgentHost(
 }
 
 void TargetHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Target::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Target::Frontend>(dispatcher->channel());
   Target::Dispatcher::wire(dispatcher, this);
 }
 

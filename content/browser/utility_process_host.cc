@@ -4,6 +4,7 @@
 
 #include "content/browser/utility_process_host.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -70,8 +71,8 @@ UtilityProcessHost::UtilityProcessHost(std::unique_ptr<Client> client)
       started_(false),
       name_(u"utility process"),
       client_(std::move(client)) {
-  process_.reset(new BrowserChildProcessHostImpl(
-      PROCESS_TYPE_UTILITY, this, ChildProcessHost::IpcMode::kNormal));
+  process_ = std::make_unique<BrowserChildProcessHostImpl>(
+      PROCESS_TYPE_UTILITY, this, ChildProcessHost::IpcMode::kNormal);
 }
 
 UtilityProcessHost::~UtilityProcessHost() {

@@ -546,7 +546,7 @@ void TracingHandler::SetRenderer(int process_host_id,
 }
 
 void TracingHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Tracing::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Tracing::Frontend>(dispatcher->channel());
   Tracing::Dispatcher::wire(dispatcher, this);
 }
 
@@ -1082,7 +1082,7 @@ void TracingHandler::SetupTimer(double usage_reporting_interval) {
 
   base::TimeDelta interval =
       base::TimeDelta::FromMilliseconds(std::ceil(usage_reporting_interval));
-  buffer_usage_poll_timer_.reset(new base::RepeatingTimer());
+  buffer_usage_poll_timer_ = std::make_unique<base::RepeatingTimer>();
   buffer_usage_poll_timer_->Start(
       FROM_HERE, interval,
       base::BindRepeating(&TracingHandler::UpdateBufferUsage,

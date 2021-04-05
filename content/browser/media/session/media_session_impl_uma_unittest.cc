@@ -99,9 +99,9 @@ class MediaSessionImplUmaTest : public RenderViewHostImplTestHarness {
     contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
     StartPlayer();
 
-    mock_media_session_service_.reset(
-        new testing::NiceMock<MockMediaSessionServiceImpl>(
-            contents()->GetMainFrame()));
+    mock_media_session_service_ =
+        std::make_unique<testing::NiceMock<MockMediaSessionServiceImpl>>(
+            contents()->GetMainFrame());
   }
 
   void TearDown() override {
@@ -113,8 +113,8 @@ class MediaSessionImplUmaTest : public RenderViewHostImplTestHarness {
   MediaSessionImpl* GetSession() { return MediaSessionImpl::Get(contents()); }
 
   void StartPlayer() {
-    player_.reset(
-        new MockMediaSessionPlayerObserver(contents()->GetMainFrame()));
+    player_ = std::make_unique<MockMediaSessionPlayerObserver>(
+        contents()->GetMainFrame());
     GetSession()->AddPlayer(player_.get(), kPlayerId,
                             media::MediaContentType::Persistent);
   }

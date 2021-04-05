@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 
+#include <memory>
+
 #include "components/viz/test/mock_compositor_frame_sink_client.h"
 #include "content/browser/renderer_host/frame_token_message_queue.h"
 #include "content/test/test_render_widget_host.h"
@@ -22,8 +24,8 @@ void MockRenderWidgetHost::OnTouchEventAck(
 }
 
 void MockRenderWidgetHost::DisableGestureDebounce() {
-  input_router_.reset(new InputRouterImpl(this, this, fling_scheduler_.get(),
-                                          InputRouter::Config()));
+  input_router_ = std::make_unique<InputRouterImpl>(
+      this, this, fling_scheduler_.get(), InputRouter::Config());
 }
 
 void MockRenderWidgetHost::ExpectForceEnableZoom(bool enable) {
@@ -35,7 +37,7 @@ void MockRenderWidgetHost::ExpectForceEnableZoom(bool enable) {
 }
 
 void MockRenderWidgetHost::SetupForInputRouterTest() {
-  input_router_.reset(new MockInputRouter(this));
+  input_router_ = std::make_unique<MockInputRouter>(this);
 }
 
 // static

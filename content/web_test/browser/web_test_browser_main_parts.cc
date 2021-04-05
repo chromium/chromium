@@ -4,6 +4,8 @@
 
 #include "content/web_test/browser/web_test_browser_main_parts.h"
 
+#include <memory>
+
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -57,7 +59,7 @@ void WebTestBrowserMainParts::InitializeBrowserContexts() {
 void WebTestBrowserMainParts::InitializeMessageLoopContext() {
 #if BUILDFLAG(ENABLE_PLUGINS)
   PluginService* plugin_service = PluginService::GetInstance();
-  plugin_service_filter_.reset(new ShellPluginServiceFilter);
+  plugin_service_filter_ = std::make_unique<ShellPluginServiceFilter>();
   plugin_service->SetFilter(plugin_service_filter_.get());
 #endif
 }

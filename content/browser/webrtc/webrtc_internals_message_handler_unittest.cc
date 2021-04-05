@@ -55,7 +55,7 @@ class WebRtcInternalsMessageHandlerTest : public RenderViewHostTestHarness {
  protected:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    web_ui_.reset(new TestWebUI());
+    web_ui_ = std::make_unique<TestWebUI>();
     web_ui_->set_web_contents(web_contents());
   }
 

@@ -4,6 +4,8 @@
 
 #include "content/browser/devtools/protocol/inspector_handler.h"
 
+#include <memory>
+
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 
@@ -23,7 +25,7 @@ std::vector<InspectorHandler*> InspectorHandler::ForAgentHost(
 }
 
 void InspectorHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Inspector::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Inspector::Frontend>(dispatcher->channel());
   Inspector::Dispatcher::wire(dispatcher, this);
 }
 

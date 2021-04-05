@@ -4,6 +4,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -149,8 +150,8 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
             {});
     event_recorder->SetOnlyWebEvents(true);
 
-    waiter.reset(new AccessibilityNotificationWaiter(
-        shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kNone));
+    waiter = std::make_unique<AccessibilityNotificationWaiter>(
+        shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kNone);
 
     // It's possible for platform events to be received after all blink or
     // generated events have been fired. Unblock the |waiter| when this happens.
@@ -177,9 +178,9 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     // To make sure we've received all accessibility events, add a
     // sentinel by calling SignalEndOfTest and waiting for a kEndOfTest
     // event in response.
-    waiter.reset(new AccessibilityNotificationWaiter(
+    waiter = std::make_unique<AccessibilityNotificationWaiter>(
         shell()->web_contents(), ui::kAXModeComplete,
-        ax::mojom::Event::kEndOfTest));
+        ax::mojom::Event::kEndOfTest);
     BrowserAccessibilityManager* manager =
         web_contents->GetRootBrowserAccessibilityManager();
     manager->SignalEndOfTest();

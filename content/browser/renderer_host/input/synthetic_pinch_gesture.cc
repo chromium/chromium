@@ -4,6 +4,8 @@
 
 #include "content/browser/renderer_host/input/synthetic_pinch_gesture.h"
 
+#include <memory>
+
 #include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
 #include "content/browser/renderer_host/input/synthetic_touchscreen_pinch_gesture.h"
 
@@ -25,10 +27,11 @@ SyntheticGesture::Result SyntheticPinchGesture::ForwardInputEvents(
 
     DCHECK_NE(content::mojom::GestureSourceType::kDefaultInput, source_type);
     if (source_type == content::mojom::GestureSourceType::kTouchInput) {
-      lazy_gesture_.reset(new SyntheticTouchscreenPinchGesture(params_));
+      lazy_gesture_ =
+          std::make_unique<SyntheticTouchscreenPinchGesture>(params_);
     } else {
       DCHECK_EQ(content::mojom::GestureSourceType::kMouseInput, source_type);
-      lazy_gesture_.reset(new SyntheticTouchpadPinchGesture(params_));
+      lazy_gesture_ = std::make_unique<SyntheticTouchpadPinchGesture>(params_);
     }
   }
 

@@ -64,7 +64,7 @@ class DevToolsVideoConsumerTest : public ContentBrowserTest {
   }
 
   void WaitUntilFrameReceived() {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

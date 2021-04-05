@@ -72,10 +72,9 @@ class CrossSiteTransferTest : public ContentBrowserTest {
                                      bool should_replace_current_entry,
                                      bool should_wait_for_navigation) {
     std::unique_ptr<TestNavigationManager> navigation_manager =
-        should_wait_for_navigation
-            ? std::unique_ptr<TestNavigationManager>(
-                  new TestNavigationManager(window->web_contents(), url))
-            : nullptr;
+        should_wait_for_navigation ? std::make_unique<TestNavigationManager>(
+                                         window->web_contents(), url)
+                                   : nullptr;
     std::string script;
     if (should_replace_current_entry)
       script = base::StringPrintf("location.replace('%s')", url.spec().c_str());

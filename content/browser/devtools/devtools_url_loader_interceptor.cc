@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/browser/devtools/devtools_url_loader_interceptor.h"
+
+#include <memory>
+
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -219,7 +222,8 @@ void BodyReader::StartReading(mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(!body_pipe_drainer_);
   DCHECK(!data_complete_);
 
-  body_pipe_drainer_.reset(new mojo::DataPipeDrainer(this, std::move(body)));
+  body_pipe_drainer_ =
+      std::make_unique<mojo::DataPipeDrainer>(this, std::move(body));
 }
 
 void BodyReader::OnDataComplete() {

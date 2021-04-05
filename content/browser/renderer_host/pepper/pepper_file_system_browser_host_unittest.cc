@@ -24,10 +24,9 @@ class PepperFileSystemBrowserHostTest : public testing::Test,
   void SetUp() override {
     PP_Instance pp_instance = 12345;
     PP_Resource pp_resource = 67890;
-    host_.reset(new PepperFileSystemBrowserHost(GetBrowserPpapiHost(),
-                                                pp_instance,
-                                                pp_resource,
-                                                PP_FILESYSTEMTYPE_ISOLATED));
+    host_ = std::make_unique<PepperFileSystemBrowserHost>(
+        GetBrowserPpapiHost(), pp_instance, pp_resource,
+        PP_FILESYSTEMTYPE_ISOLATED);
   }
 
   void TearDown() override { host_.reset(); }

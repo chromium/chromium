@@ -148,7 +148,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::IO)),
         network_change_notifier_(
             net::test::MockNetworkChangeNotifier::Create()) {
-    browser_context_.reset(new TestBrowserContext);
+    browser_context_ = std::make_unique<TestBrowserContext>();
     http_test_server_.AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
 

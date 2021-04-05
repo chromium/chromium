@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -32,7 +34,7 @@ IOHandler::IOHandler(DevToolsIOContext* io_context)
 IOHandler::~IOHandler() = default;
 
 void IOHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new IO::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<IO::Frontend>(dispatcher->channel());
   IO::Dispatcher::wire(dispatcher, this);
 }
 

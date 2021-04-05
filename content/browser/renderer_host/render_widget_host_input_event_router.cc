@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <deque>
+#include <memory>
 #include <vector>
 
 #include "base/debug/crash_logging.h"
@@ -1885,8 +1886,10 @@ void RenderWidgetHostInputEventRouter::DispatchEventToTarget(
 }
 
 TouchEmulator* RenderWidgetHostInputEventRouter::GetTouchEmulator() {
-  if (!touch_emulator_)
-    touch_emulator_.reset(new TouchEmulator(this, last_device_scale_factor_));
+  if (!touch_emulator_) {
+    touch_emulator_ =
+        std::make_unique<TouchEmulator>(this, last_device_scale_factor_);
+  }
 
   return touch_emulator_.get();
 }

@@ -35,7 +35,8 @@ class PepperGamepadHostTest : public testing::Test,
   ~PepperGamepadHostTest() override {}
 
   void ConstructService(const device::Gamepads& test_data) {
-    service_.reset(new device::GamepadServiceTestConstructor(test_data));
+    service_ =
+        std::make_unique<device::GamepadServiceTestConstructor>(test_data);
   }
 
   device::GamepadService* gamepad_service() {

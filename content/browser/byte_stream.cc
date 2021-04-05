@@ -4,6 +4,7 @@
 
 #include "content/browser/byte_stream.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -290,7 +291,7 @@ void ByteStreamWriterImpl::PostToPeer(bool complete, int status) {
   std::unique_ptr<ContentVector> transfer_buffer;
   size_t buffer_size = 0;
   if (0 != input_contents_size_) {
-    transfer_buffer.reset(new ContentVector);
+    transfer_buffer = std::make_unique<ContentVector>();
     transfer_buffer->swap(input_contents_);
     buffer_size = input_contents_size_;
     output_size_used_ += input_contents_size_;

@@ -4,6 +4,8 @@
 
 #include "content/browser/media/session/media_session_service_impl.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -125,8 +127,8 @@ class MediaSessionServiceImplBrowserTest : public ContentBrowserTest {
     if (player_)
       return;
 
-    player_.reset(new MockMediaSessionPlayerObserver(
-        shell()->web_contents()->GetMainFrame()));
+    player_ = std::make_unique<MockMediaSessionPlayerObserver>(
+        shell()->web_contents()->GetMainFrame());
 
     MediaSessionImpl::Get(shell()->web_contents())
         ->AddPlayer(player_.get(), kPlayerId,

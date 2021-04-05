@@ -4,6 +4,8 @@
 
 #include "content/utility/in_process_utility_thread.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -49,7 +51,7 @@ void InProcessUtilityThread::CleanUp()
 void InProcessUtilityThread::InitInternal()
     EXCLUSIVE_LOCK_FUNCTION(g_one_utility_thread_lock.Get()) {
   g_one_utility_thread_lock.Get().Acquire();
-  child_process_.reset(new ChildProcess());
+  child_process_ = std::make_unique<ChildProcess>();
   child_process_->set_main_thread(new UtilityThreadImpl(params_));
 }
 

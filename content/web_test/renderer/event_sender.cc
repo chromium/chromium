@@ -1293,7 +1293,7 @@ void EventSender::Install(WebLocalFrame* frame) {
 }
 
 void EventSender::SetContextMenuData(const ContextMenuData& data) {
-  last_context_menu_data_.reset(new ContextMenuData(data));
+  last_context_menu_data_ = std::make_unique<ContextMenuData>(data);
 }
 
 int EventSender::ModifiersForPointer(int pointer_id) {

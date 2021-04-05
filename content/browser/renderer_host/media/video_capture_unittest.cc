@@ -113,8 +113,8 @@ class VideoCaptureTest : public testing::Test,
         &VideoCaptureTest::CreateFakeUI, base::Unretained(this)));
 
     // Create a Host and connect it to a simulated IPC channel.
-    host_.reset(new VideoCaptureHost(0 /* render_process_id */,
-                                     media_stream_manager_.get()));
+    host_ = std::make_unique<VideoCaptureHost>(0 /* render_process_id */,
+                                               media_stream_manager_.get());
 
     OpenSession();
   }

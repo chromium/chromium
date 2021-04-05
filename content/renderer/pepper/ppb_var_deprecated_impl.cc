@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/message_channel.h"
@@ -45,8 +46,8 @@ class ObjectAccessor {
       : object_var_(V8ObjectVar::FromPPVar(var).get()),
         instance_(object_var_ ? object_var_->instance() : nullptr) {
     if (instance_) {
-      converter_.reset(new V8VarConverter(instance_->pp_instance(),
-                                          V8VarConverter::kAllowObjectVars));
+      converter_ = std::make_unique<V8VarConverter>(
+          instance_->pp_instance(), V8VarConverter::kAllowObjectVars);
     }
   }
 

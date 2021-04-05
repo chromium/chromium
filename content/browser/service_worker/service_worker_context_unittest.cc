@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -162,7 +164,7 @@ class ServiceWorkerContextTest : public ServiceWorkerContextCoreObserver,
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override {
-    helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
     helper_->context_wrapper()->AddObserver(this);
   }
 
@@ -1129,7 +1131,7 @@ TEST_P(ServiceWorkerContextRecoveryTest, DeleteAndStartOver) {
     // Reinitialize the helper to test on-disk storage.
     base::FilePath user_data_directory;
     ASSERT_NO_FATAL_FAILURE(GetTemporaryDirectory(&user_data_directory));
-    helper_.reset(new EmbeddedWorkerTestHelper(user_data_directory));
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(user_data_directory);
     helper_->context_wrapper()->AddObserver(this);
   }
 

@@ -4,6 +4,8 @@
 
 #include "content/browser/geolocation/geolocation_service_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -69,7 +71,7 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
     NavigateAndCommit(GURL("https://www.google.com/maps"));
-    browser_context_.reset(new content::TestBrowserContext());
+    browser_context_ = std::make_unique<content::TestBrowserContext>();
     browser_context_->SetPermissionControllerDelegate(
         std::make_unique<TestPermissionManager>());
 
@@ -109,7 +111,8 @@ class GeolocationServiceTest : public RenderViewHostImplTestHarness {
     BrowserContext::SetPermissionControllerForTesting(
         embedded_rfh->GetProcess()->GetBrowserContext(),
         std::make_unique<PermissionControllerImpl>(browser_context_.get()));
-    service_.reset(new GeolocationServiceImpl(context_.get(), embedded_rfh));
+    service_ =
+        std::make_unique<GeolocationServiceImpl>(context_.get(), embedded_rfh);
     service_->Bind(service_remote_.BindNewPipeAndPassReceiver());
   }
 

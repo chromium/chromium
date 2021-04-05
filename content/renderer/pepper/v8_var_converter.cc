@@ -295,7 +295,7 @@ V8VarConverter::V8VarConverter(PP_Instance instance,
                                AllowObjectVars object_vars_allowed)
     : instance_(instance),
       object_vars_allowed_(object_vars_allowed) {
-  resource_converter_.reset(new ResourceConverterImpl(instance));
+  resource_converter_ = std::make_unique<ResourceConverterImpl>(instance);
 }
 
 V8VarConverter::V8VarConverter(

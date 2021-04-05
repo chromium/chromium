@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
@@ -102,7 +104,7 @@ class MemoryTracingTest : public ContentBrowserTest {
   void SetUp() override {
     next_request_index_ = 0;
 
-    mock_dump_provider_.reset(new MockDumpProvider());
+    mock_dump_provider_ = std::make_unique<MockDumpProvider>();
     MemoryDumpManager::GetInstance()->RegisterDumpProvider(
         mock_dump_provider_.get(), "MockDumpProvider", nullptr);
     MemoryDumpManager::GetInstance()

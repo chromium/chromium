@@ -4,6 +4,8 @@
 
 #include "content/renderer/media/renderer_webaudiodevice_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -77,11 +79,11 @@ class RendererWebAudioDeviceImplTest
   }
 
   void SetupDevice(media::ChannelLayout layout, int channels) {
-    webaudio_device_.reset(new RendererWebAudioDeviceImplUnderTest(
+    webaudio_device_ = std::make_unique<RendererWebAudioDeviceImplUnderTest>(
         layout, channels,
         blink::WebAudioLatencyHint(
             blink::WebAudioLatencyHint::kCategoryInteractive),
-        this, base::UnguessableToken()));
+        this, base::UnguessableToken());
     webaudio_device_->SetSuspenderTaskRunnerForTesting(
         blink::scheduler::GetSingleThreadTaskRunnerForTesting());
   }

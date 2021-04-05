@@ -146,8 +146,8 @@ class ClearSiteDataHandlerBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
 
     // Set up HTTPS server.
-    https_server_.reset(new net::EmbeddedTestServer(
-        net::test_server::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     https_server_->RegisterRequestHandler(
         base::BindRepeating(&ClearSiteDataHandlerBrowserTest::HandleRequest,

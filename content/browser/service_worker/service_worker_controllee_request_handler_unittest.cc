@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_controllee_request_handler.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -89,7 +90,7 @@ class ServiceWorkerControlleeRequestHandlerTest : public testing::Test {
   void SetUp() override { SetUpWithHelper(/*is_parent_frame_secure=*/true); }
 
   void SetUpWithHelper(bool is_parent_frame_secure) {
-    helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
 
     // A new unstored registration/version.
     scope_ = GURL("https://host/scope/");

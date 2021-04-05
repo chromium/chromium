@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
@@ -57,8 +59,8 @@ class GenericSensorBrowserTest : public ContentBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    https_embedded_test_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(https_embedded_test_server_->InitializeAndListen());

@@ -88,8 +88,8 @@ class TapSuppressionControllerTest : public testing::Test {
  protected:
   // testing::Test
   void SetUp() override {
-    tap_suppression_controller_.reset(
-        new MockTapSuppressionController(GetConfig()));
+    tap_suppression_controller_ =
+        std::make_unique<MockTapSuppressionController>(GetConfig());
   }
 
   void TearDown() override { tap_suppression_controller_.reset(); }
@@ -201,8 +201,8 @@ TEST_F(TapSuppressionControllerTest, GFCAckBeforeTapSufficientlyLateTapDown) {
 TEST_F(TapSuppressionControllerTest, NoSuppressionIfDisabled) {
   TapSuppressionController::Config disabled_config;
   disabled_config.enabled = false;
-  tap_suppression_controller_.reset(
-      new MockTapSuppressionController(disabled_config));
+  tap_suppression_controller_ =
+      std::make_unique<MockTapSuppressionController>(disabled_config);
 
   // Send GestureFlingCancel Ack.
   tap_suppression_controller_->NotifyGestureFlingCancelStoppedFling();

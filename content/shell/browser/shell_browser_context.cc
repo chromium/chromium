@@ -4,6 +4,7 @@
 
 #include "content/shell/browser/shell_browser_context.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -152,7 +153,8 @@ bool ShellBrowserContext::IsOffTheRecord() {
 
 DownloadManagerDelegate* ShellBrowserContext::GetDownloadManagerDelegate()  {
   if (!download_manager_delegate_.get()) {
-    download_manager_delegate_.reset(new ShellDownloadManagerDelegate());
+    download_manager_delegate_ =
+        std::make_unique<ShellDownloadManagerDelegate>();
     download_manager_delegate_->SetDownloadManager(
         BrowserContext::GetDownloadManager(this));
   }
@@ -188,7 +190,7 @@ SSLHostStateDelegate* ShellBrowserContext::GetSSLHostStateDelegate() {
 PermissionControllerDelegate*
 ShellBrowserContext::GetPermissionControllerDelegate() {
   if (!permission_manager_.get())
-    permission_manager_.reset(new ShellPermissionManager());
+    permission_manager_ = std::make_unique<ShellPermissionManager>();
   return permission_manager_.get();
 }
 
@@ -202,8 +204,10 @@ BackgroundFetchDelegate* ShellBrowserContext::GetBackgroundFetchDelegate() {
 }
 
 BackgroundSyncController* ShellBrowserContext::GetBackgroundSyncController() {
-  if (!background_sync_controller_)
-    background_sync_controller_.reset(new MockBackgroundSyncController());
+  if (!background_sync_controller_) {
+    background_sync_controller_ =
+        std::make_unique<MockBackgroundSyncController>();
+  }
   return background_sync_controller_.get();
 }
 

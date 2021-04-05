@@ -176,8 +176,8 @@ class V8VarConverterTest : public testing::Test {
   V8VarConverterTest()
       : isolate_(v8::Isolate::GetCurrent()) {
     PP_Instance dummy = 1234;
-    converter_.reset(new V8VarConverter(
-        dummy, std::unique_ptr<ResourceConverter>(new MockResourceConverter)));
+    converter_ = std::make_unique<V8VarConverter>(
+        dummy, std::unique_ptr<ResourceConverter>(new MockResourceConverter));
   }
   ~V8VarConverterTest() override {}
 

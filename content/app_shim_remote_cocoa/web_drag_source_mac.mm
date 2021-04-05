@@ -6,6 +6,7 @@
 
 #include <sys/param.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -62,7 +63,7 @@ using content::DropData;
     _contentsView = contentsView;
     DCHECK(_contentsView);
 
-    _dropData.reset(new DropData(*dropData));
+    _dropData = std::make_unique<DropData>(*dropData);
     DCHECK(_dropData.get());
 
     _dragImage.reset([image retain]);

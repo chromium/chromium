@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
+#include <memory>
 #include <tuple>
 
 #include "base/barrier_closure.h"
@@ -169,7 +171,7 @@ class ServiceWorkerJobTest : public testing::Test {
                           BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   void SetUp() override {
-    helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
   }
 
   void TearDown() override { helper_.reset(); }

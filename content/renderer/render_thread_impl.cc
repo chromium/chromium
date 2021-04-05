@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <limits>
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -607,7 +608,7 @@ void RenderThreadImpl::Init() {
   mojo::BinderMap binders;
   InitializeWebKit(&binders);
 
-  vc_manager_.reset(new blink::WebVideoCaptureImplManager());
+  vc_manager_ = std::make_unique<blink::WebVideoCaptureImplManager>();
 
   GetContentClient()->renderer()->RenderThreadStarted();
   ExposeRendererInterfacesToBrowser(weak_factory_.GetWeakPtr(), &binders);
@@ -921,8 +922,8 @@ void RenderThreadImpl::InitializeWebKit(mojo::BinderMap* binders) {
     gin::Debug::SetJitCodeEventHandler(vTune::GetVtuneCodeEventHandler());
 #endif
 
-  blink_platform_impl_.reset(
-      new RendererBlinkPlatformImpl(main_thread_scheduler_.get()));
+  blink_platform_impl_ =
+      std::make_unique<RendererBlinkPlatformImpl>(main_thread_scheduler_.get());
   // This, among other things, enables any feature marked "test" in
   // runtime_enabled_features. It is run before
   // SetRuntimeFeaturesDefaultsAndUpdateFromArgs() so that command line
@@ -1759,7 +1760,7 @@ scoped_refptr<base::SingleThreadTaskRunner>
 RenderThreadImpl::GetMediaThreadTaskRunner() {
   DCHECK(main_thread_runner()->BelongsToCurrentThread());
   if (!media_thread_) {
-    media_thread_.reset(new base::Thread("Media"));
+    media_thread_ = std::make_unique<base::Thread>("Media");
 #if defined(OS_FUCHSIA)
     // Start IO thread on Fuchsia to make that thread usable for FIDL.
     base::Thread::Options options(base::MessagePumpType::IO, 0);

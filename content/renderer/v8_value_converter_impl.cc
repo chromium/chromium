@@ -448,7 +448,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Array(
   // that context, but change back after val is converted.
   if (!val->CreationContext().IsEmpty() &&
       val->CreationContext() != isolate->GetCurrentContext())
-    scope.reset(new v8::Context::Scope(val->CreationContext()));
+    scope = std::make_unique<v8::Context::Scope>(val->CreationContext());
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;
@@ -527,7 +527,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
   // that context, but change back after val is converted.
   if (!val->CreationContext().IsEmpty() &&
       val->CreationContext() != isolate->GetCurrentContext())
-    scope.reset(new v8::Context::Scope(val->CreationContext()));
+    scope = std::make_unique<v8::Context::Scope>(val->CreationContext());
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;

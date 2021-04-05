@@ -4,6 +4,8 @@
 
 #include "content/renderer/pepper/pepper_platform_audio_output_dev.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -289,7 +291,7 @@ void PepperPlatformAudioOutputDev::RequestDeviceAuthorizationOnIOThread() {
     // Create the timer on the thread it's used on. It's guaranteed to be
     // deleted on the same thread since users must call ShutDown() before
     // deleting PepperPlatformAudioOutputDev; see ShutDownOnIOThread().
-    auth_timeout_action_.reset(new base::OneShotTimer());
+    auth_timeout_action_ = std::make_unique<base::OneShotTimer>();
     auth_timeout_action_->Start(
         FROM_HERE, auth_timeout_,
         base::BindOnce(&PepperPlatformAudioOutputDev::OnDeviceAuthorized, this,

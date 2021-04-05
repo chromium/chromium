@@ -4,6 +4,7 @@
 
 #include "content/utility/utility_thread_impl.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -247,7 +248,7 @@ void UtilityThreadImpl::Init() {
   content::ExposeUtilityInterfacesToBrowser(&binders);
   ExposeInterfacesToBrowser(std::move(binders));
 
-  service_factory_.reset(new UtilityServiceFactory);
+  service_factory_ = std::make_unique<UtilityServiceFactory>();
 }
 
 bool UtilityThreadImpl::OnControlMessageReceived(const IPC::Message& msg) {

@@ -7,6 +7,7 @@
 #import <Carbon/Carbon.h>
 
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -190,8 +191,8 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
 
   viz::FrameSinkId frame_sink_id = host()->GetFrameSinkId();
 
-  browser_compositor_.reset(new BrowserCompositorMac(
-      this, this, host()->is_hidden(), display_, frame_sink_id));
+  browser_compositor_ = std::make_unique<BrowserCompositorMac>(
+      this, this, host()->is_hidden(), display_, frame_sink_id);
   DCHECK(![GetInProcessNSView() window]);
 
   host()->SetView(this);
@@ -212,7 +213,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
     ignore_result(owner_delegate->GetWebkitPreferencesForWidget());
   }
 
-  cursor_manager_.reset(new CursorManager(this));
+  cursor_manager_ = std::make_unique<CursorManager>(this);
 
   if (GetTextInputManager())
     GetTextInputManager()->AddObserver(this);
@@ -1402,10 +1403,12 @@ RenderWidgetHostViewMac::AccessibilityGetNativeViewAccessibleForWindow() {
 void RenderWidgetHostViewMac::SetTextInputActive(bool active) {
   const bool should_enable_password_input =
       active && GetTextInputType() == ui::TEXT_INPUT_TYPE_PASSWORD;
-  if (should_enable_password_input)
-    password_input_enabler_.reset(new ui::ScopedPasswordInputEnabler());
-  else
+  if (should_enable_password_input) {
+    password_input_enabler_ =
+        std::make_unique<ui::ScopedPasswordInputEnabler>();
+  } else {
     password_input_enabler_.reset();
+  }
 }
 
 MouseWheelPhaseHandler* RenderWidgetHostViewMac::GetMouseWheelPhaseHandler() {

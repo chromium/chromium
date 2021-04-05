@@ -150,11 +150,11 @@ class RenderThreadImplBrowserTest : public testing::Test,
   RenderThreadImplBrowserTest() {}
 
   void SetUp() override {
-    content_renderer_client_.reset(new ContentRendererClient());
+    content_renderer_client_ = std::make_unique<ContentRendererClient>();
     SetRendererClientForTesting(content_renderer_client_.get());
 
-    browser_threads_.reset(
-        new BrowserTaskEnvironment(BrowserTaskEnvironment::REAL_IO_THREAD));
+    browser_threads_ = std::make_unique<BrowserTaskEnvironment>(
+        BrowserTaskEnvironment::REAL_IO_THREAD);
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner =
         GetIOThreadTaskRunner({});
 
@@ -163,7 +163,7 @@ class RenderThreadImplBrowserTest : public testing::Test,
         ChildProcessHost::Create(this, ChildProcessHost::IpcMode::kNormal);
     process_host_->CreateChannelMojo();
 
-    process_.reset(new RenderProcess);
+    process_ = std::make_unique<RenderProcess>();
     test_task_counter_ = base::MakeRefCounted<TestTaskCounter>();
 
     // RenderThreadImpl expects the browser to pass these flags.

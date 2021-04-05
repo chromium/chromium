@@ -6530,9 +6530,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CSSVisibilityChanged) {
   std::vector<std::unique_ptr<RenderWidgetHostVisibilityObserver>>
       hide_widget_host_observers(child_widget_hosts.size());
   for (size_t index = 0U; index < child_widget_hosts.size(); ++index) {
-    hide_widget_host_observers[index].reset(
-        new RenderWidgetHostVisibilityObserver(child_widget_hosts[index],
-                                               false));
+    hide_widget_host_observers[index] =
+        std::make_unique<RenderWidgetHostVisibilityObserver>(
+            child_widget_hosts[index], false);
   }
 
   EXPECT_TRUE(ExecuteScript(shell(), hide_script));
@@ -6546,9 +6546,9 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CSSVisibilityChanged) {
   std::vector<std::unique_ptr<RenderWidgetHostVisibilityObserver>>
       show_widget_host_observers(child_widget_hosts.size());
   for (size_t index = 0U; index < child_widget_hosts.size(); ++index) {
-    show_widget_host_observers[index].reset(
-        new RenderWidgetHostVisibilityObserver(child_widget_hosts[index],
-                                               true));
+    show_widget_host_observers[index] =
+        std::make_unique<RenderWidgetHostVisibilityObserver>(
+            child_widget_hosts[index], true);
   }
 
   EXPECT_TRUE(ExecuteScript(shell(), show_script));
@@ -13722,7 +13722,7 @@ class ClosePageBeforeCommitHelper : public DidCommitNavigationInterceptor {
       : DidCommitNavigationInterceptor(web_contents) {}
 
   void Wait() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     run_loop_.reset();
   }
@@ -14214,8 +14214,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTouchActionTest,
   WaitForHitTestData(child->current_frame_host());
   // Navigation destroys the previous RenderWidgetHost, so we need to begin
   // observing the new renderer main thread associated with the child frame.
-  child_thread_observer.reset(new MainThreadFrameObserver(
-      child->current_frame_host()->GetRenderWidgetHost()));
+  child_thread_observer = std::make_unique<MainThreadFrameObserver>(
+      child->current_frame_host()->GetRenderWidgetHost());
 
   rwhv_child = static_cast<RenderWidgetHostViewBase*>(
       child->current_frame_host()->GetRenderWidgetHost()->GetView());

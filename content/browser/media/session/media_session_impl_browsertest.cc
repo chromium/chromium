@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <list>
+#include <memory>
 #include <vector>
 
 #include "base/atomic_sequence_num.h"
@@ -239,8 +240,9 @@ class MediaSessionImplBrowserTest : public ContentBrowserTest {
   void SystemStopDucking() { media_session_->StopDucking(); }
 
   void EnsureMediaSessionService() {
-    mock_media_session_service_.reset(new NiceMock<MockMediaSessionServiceImpl>(
-        shell()->web_contents()->GetMainFrame()));
+    mock_media_session_service_ =
+        std::make_unique<NiceMock<MockMediaSessionServiceImpl>>(
+            shell()->web_contents()->GetMainFrame());
   }
 
   void SetPlaybackState(blink::mojom::MediaSessionPlaybackState state) {

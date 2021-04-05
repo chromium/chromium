@@ -1819,7 +1819,7 @@ TEST_F(SyntheticGestureControllerTest, PointerTouchAction) {
   param_list.push_back(param0);
   param_list.push_back(param1);
   params.PushPointerActionParamsList(param_list);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_touch_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1837,7 +1837,7 @@ TEST_F(SyntheticGestureControllerTest, PointerTouchAction) {
   param_list.clear();
   param_list.push_back(param1);
   params.PushPointerActionParamsList(param_list);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_touch_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1879,7 +1879,7 @@ TEST_F(SyntheticGestureControllerTest, PointerMouseAction) {
       SyntheticPointerActionParams::PointerActionType::PRESS);
   param.set_position(gfx::PointF(183, 239));
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_mouse_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1895,7 +1895,7 @@ TEST_F(SyntheticGestureControllerTest, PointerMouseAction) {
       SyntheticPointerActionParams::PointerActionType::MOVE);
   param.set_position(gfx::PointF(254, 279));
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_mouse_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1910,7 +1910,7 @@ TEST_F(SyntheticGestureControllerTest, PointerMouseAction) {
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_mouse_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1952,7 +1952,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
       SyntheticPointerActionParams::PointerActionType::PRESS);
   param.set_position(gfx::PointF(183, 239));
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_pen_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1968,7 +1968,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
       SyntheticPointerActionParams::PointerActionType::MOVE);
   param.set_position(gfx::PointF(254, 279));
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_pen_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1983,7 +1983,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::RELEASE);
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_pen_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();
@@ -1998,7 +1998,7 @@ TEST_F(SyntheticGestureControllerTest, PointerPenAction) {
   param.set_pointer_action_type(
       SyntheticPointerActionParams::PointerActionType::LEAVE);
   params.PushPointerActionParams(param);
-  gesture.reset(new SyntheticPointerAction(params));
+  gesture = std::make_unique<SyntheticPointerAction>(params);
   QueueSyntheticGesture(std::move(gesture));
   pointer_pen_target->reset_num_dispatched_pointer_actions();
   FlushInputUntilComplete();

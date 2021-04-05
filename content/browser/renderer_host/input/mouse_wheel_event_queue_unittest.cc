@@ -150,7 +150,7 @@ class MouseWheelEventQueueTest : public testing::Test,
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         acked_event_count_(0),
         last_acked_event_state_(blink::mojom::InputEventResultState::kUnknown) {
-    queue_.reset(new MouseWheelEventQueue(this));
+    queue_ = std::make_unique<MouseWheelEventQueue>(this);
   }
 
   ~MouseWheelEventQueueTest() override {}

@@ -102,8 +102,8 @@ class BrowserAccessibilityMacTest : public ui::CocoaTest {
     child2.relative_bounds.bounds.set_height(100);
     child2.role = ax::mojom::Role::kHeading;
 
-    manager_.reset(new BrowserAccessibilityManagerMac(
-        MakeAXTreeUpdate(root_, child1, child2), nullptr));
+    manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+        MakeAXTreeUpdate(root_, child1, child2), nullptr);
     accessibility_.reset(
         [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
   }
@@ -175,8 +175,8 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
   root_ = ui::AXNodeData();
   root_.id = 1;
   root_.role = ax::mojom::Role::kTextField;
-  manager_.reset(
-      new BrowserAccessibilityManagerMac(MakeAXTreeUpdate(root_), nullptr));
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdate(root_), nullptr);
   accessibility_.reset(
       [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
 
@@ -260,7 +260,8 @@ TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
   MakeCell(&initial_state.nodes[5], 6, 1, 0);
   MakeCell(&initial_state.nodes[6], 7, 1, 1);
 
-  manager_.reset(new BrowserAccessibilityManagerMac(initial_state, nullptr));
+  manager_ =
+      std::make_unique<BrowserAccessibilityManagerMac>(initial_state, nullptr);
   base::scoped_nsobject<BrowserAccessibilityCocoa> ax_table_(
       [ToBrowserAccessibilityCocoa(manager_->GetRoot()) retain]);
   id children = [ax_table_ children];

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
@@ -144,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticInputTest, SmoothScrollWheel) {
   // Use PrecisePixel to avoid animating.
   params.granularity = ui::ScrollGranularity::kScrollByPrecisePixel;
 
-  runner_.reset(new base::RunLoop());
+  runner_ = std::make_unique<base::RunLoop>();
 
   std::unique_ptr<SyntheticSmoothScrollGesture> gesture(
       new SyntheticSmoothScrollGesture(params));

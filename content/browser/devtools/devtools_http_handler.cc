@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -263,9 +264,9 @@ void StartServerOnHandlerThread(
       socket_factory->CreateForHttpServer();
   std::unique_ptr<net::IPEndPoint> ip_address(new net::IPEndPoint);
   if (server_socket) {
-    server_wrapper.reset(new ServerWrapper(handler, std::move(server_socket),
-                                           debug_frontend_dir,
-                                           bundles_resources));
+    server_wrapper =
+        std::make_unique<ServerWrapper>(handler, std::move(server_socket),
+                                        debug_frontend_dir, bundles_resources);
     if (server_wrapper->GetLocalAddress(ip_address.get()) != net::OK)
       ip_address.reset();
   } else {
@@ -716,9 +717,10 @@ void DevToolsHttpHandler::OnWebSocketRequest(
             thread_->task_runner(),
             base::BindRepeating(&DevToolsSocketFactory::CreateForTethering,
                                 base::Unretained(socket_factory_.get())));
-    connection_to_client_[connection_id].reset(new DevToolsAgentHostClientImpl(
-        thread_->task_runner(), server_wrapper_.get(), connection_id,
-        browser_agent));
+    connection_to_client_[connection_id] =
+        std::make_unique<DevToolsAgentHostClientImpl>(
+            thread_->task_runner(), server_wrapper_.get(), connection_id,
+            browser_agent);
     AcceptWebSocket(connection_id, request);
     return;
   }
@@ -737,8 +739,9 @@ void DevToolsHttpHandler::OnWebSocketRequest(
     return;
   }
 
-  connection_to_client_[connection_id].reset(new DevToolsAgentHostClientImpl(
-      thread_->task_runner(), server_wrapper_.get(), connection_id, agent));
+  connection_to_client_[connection_id] =
+      std::make_unique<DevToolsAgentHostClientImpl>(
+          thread_->task_runner(), server_wrapper_.get(), connection_id, agent);
 
   AcceptWebSocket(connection_id, request);
 }

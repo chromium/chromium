@@ -4,6 +4,7 @@
 
 #include "content/browser/service_worker/service_worker_process_manager.h"
 
+#include <memory>
 #include <string>
 
 #include "base/macros.h"
@@ -62,12 +63,12 @@ class ServiceWorkerProcessManagerTest : public testing::Test {
   ServiceWorkerProcessManagerTest() {}
 
   void SetUp() override {
-    browser_context_.reset(new TestBrowserContext);
-    process_manager_.reset(
-        new ServiceWorkerProcessManager(browser_context_.get()));
+    browser_context_ = std::make_unique<TestBrowserContext>();
+    process_manager_ =
+        std::make_unique<ServiceWorkerProcessManager>(browser_context_.get());
     script_url_ = GURL("http://www.example.com/sw.js");
-    render_process_host_factory_.reset(
-        new SiteInstanceRenderProcessHostFactory());
+    render_process_host_factory_ =
+        std::make_unique<SiteInstanceRenderProcessHostFactory>();
     RenderProcessHostImpl::set_render_process_host_factory_for_testing(
         render_process_host_factory_.get());
   }

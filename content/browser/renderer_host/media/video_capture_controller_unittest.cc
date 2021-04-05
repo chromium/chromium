@@ -192,10 +192,10 @@ class VideoCaptureControllerTest
         std::make_unique<MockLaunchedVideoCaptureDevice>();
     mock_launched_device_ = mock_launched_device.get();
     controller_->OnDeviceLaunched(std::move(mock_launched_device));
-    client_a_.reset(
-        new MockVideoCaptureControllerEventHandler(controller_.get()));
-    client_b_.reset(
-        new MockVideoCaptureControllerEventHandler(controller_.get()));
+    client_a_ = std::make_unique<MockVideoCaptureControllerEventHandler>(
+        controller_.get());
+    client_b_ = std::make_unique<MockVideoCaptureControllerEventHandler>(
+        controller_.get());
   }
 
   void TearDown() override { base::RunLoop().RunUntilIdle(); }
@@ -210,11 +210,11 @@ class VideoCaptureControllerTest
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
         buffer_pool_, media::VideoCaptureJpegDecoderFactoryCB()));
 #else
-    device_client_.reset(new media::VideoCaptureDeviceClient(
+    device_client_ = std::make_unique<media::VideoCaptureDeviceClient>(
         media::VideoCaptureBufferType::kSharedMemory,
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
-        buffer_pool_));
+        buffer_pool_);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
