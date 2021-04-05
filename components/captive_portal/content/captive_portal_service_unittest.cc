@@ -4,6 +4,8 @@
 
 #include "components/captive_portal/content/captive_portal_service.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
@@ -84,12 +86,12 @@ class CaptivePortalServiceTest : public testing::Test,
 
     CaptivePortalService::set_state_for_testing(testing_state);
 
-    browser_context_.reset(new content::TestBrowserContext());
-    tick_clock_.reset(new base::SimpleTestTickClock());
+    browser_context_ = std::make_unique<content::TestBrowserContext>();
+    tick_clock_ = std::make_unique<base::SimpleTestTickClock>();
     tick_clock_->Advance(base::TimeTicks::Now() - tick_clock_->NowTicks());
-    service_.reset(new CaptivePortalService(browser_context_.get(),
-                                            &pref_service_, tick_clock_.get(),
-                                            test_loader_factory()));
+    service_ = std::make_unique<CaptivePortalService>(
+        browser_context_.get(), &pref_service_, tick_clock_.get(),
+        test_loader_factory());
 
     // Use no delays for most tests.
     set_initial_backoff_no_portal(base::TimeDelta());

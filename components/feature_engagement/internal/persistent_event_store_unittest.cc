@@ -5,6 +5,7 @@
 #include "components/feature_engagement/internal/persistent_event_store.h"
 
 #include <map>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -52,7 +53,7 @@ class PersistentEventStoreTest : public ::testing::Test {
 
     auto db = std::make_unique<leveldb_proto::test::FakeDB<Event>>(&db_events_);
     db_ = db.get();
-    store_.reset(new PersistentEventStore(std::move(db)));
+    store_ = std::make_unique<PersistentEventStore>(std::move(db));
   }
 
   void LoadCallback(bool success, std::unique_ptr<std::vector<Event>> events) {

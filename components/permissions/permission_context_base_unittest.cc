@@ -5,6 +5,7 @@
 #include "components/permissions/permission_context_base.h"
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -711,7 +712,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
     PermissionRequestManager::CreateForWebContents(web_contents());
     PermissionRequestManager* manager =
         PermissionRequestManager::FromWebContents(web_contents());
-    prompt_factory_.reset(new MockPermissionPromptFactory(manager));
+    prompt_factory_ = std::make_unique<MockPermissionPromptFactory>(manager);
   }
 
   void TearDown() override {

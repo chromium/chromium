@@ -73,7 +73,7 @@ std::vector<RegexSetMatcher::RE2ID> RegexSetMatcher::FindSubstringMatches(
 
 void RegexSetMatcher::RebuildMatcher() {
   re2_id_map_.clear();
-  filtered_re2_.reset(new re2::FilteredRE2());
+  filtered_re2_ = std::make_unique<re2::FilteredRE2>();
   if (regexes_.empty())
     return;
 

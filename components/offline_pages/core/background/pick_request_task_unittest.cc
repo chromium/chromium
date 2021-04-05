@@ -147,8 +147,8 @@ class PickRequestTaskTest : public RequestQueueTaskTestBase {
 
 void PickRequestTaskTest::SetUp() {
   DeviceConditions conditions;
-  policy_.reset(new OfflinerPolicy());
-  notifier_.reset(new RequestNotifierStub());
+  policy_ = std::make_unique<OfflinerPolicy>();
+  notifier_ = std::make_unique<RequestNotifierStub>();
   MakePickRequestTask();
   request_queue_not_picked_called_ = false;
   total_request_count_ = 9999;
@@ -165,7 +165,7 @@ void PickRequestTaskTest::RequestPicked(
     const SavePageRequest& request,
     std::unique_ptr<std::vector<SavePageRequest>> available_requests,
     const bool cleanup_needed) {
-  last_picked_.reset(new SavePageRequest(request));
+  last_picked_ = std::make_unique<SavePageRequest>(request);
   cleanup_needed_ = cleanup_needed;
 }
 
@@ -197,7 +197,7 @@ void PickRequestTaskTest::QueueRequests(const SavePageRequest& request1,
 
 void PickRequestTaskTest::MakePickRequestTask() {
   DeviceConditions conditions;
-  task_.reset(new PickRequestTask(
+  task_ = std::make_unique<PickRequestTask>(
       &store_, policy_.get(),
       base::BindOnce(&PickRequestTaskTest::RequestPicked,
                      base::Unretained(this)),
@@ -205,7 +205,7 @@ void PickRequestTaskTest::MakePickRequestTask() {
                      base::Unretained(this)),
       base::BindOnce(&PickRequestTaskTest::RequestCountCallback,
                      base::Unretained(this)),
-      conditions, disabled_requests_, &prioritized_requests_));
+      conditions, disabled_requests_, &prioritized_requests_);
 }
 
 TEST_F(PickRequestTaskTest, PickFromEmptyQueue) {
@@ -225,9 +225,9 @@ TEST_F(PickRequestTaskTest, PickFromEmptyQueue) {
 
 TEST_F(PickRequestTaskTest, ChooseRequestWithHigherRetryCount) {
   // Set up policy to prefer higher retry count.
-  policy_.reset(new OfflinerPolicy(
+  policy_ = std::make_unique<OfflinerPolicy>(
       kPreferUntried, kPreferEarlier, kPreferRetryCount, kMaxStartedTries,
-      kMaxCompletedTries + 1, kBackgroundProcessingTimeBudgetSeconds));
+      kMaxCompletedTries + 1, kBackgroundProcessingTimeBudgetSeconds);
   MakePickRequestTask();
 
   base::Time creation_time = OfflineTimeNow();
@@ -270,9 +270,9 @@ TEST_F(PickRequestTaskTest, ChooseRequestWithSameRetryCountButEarlier) {
 
 TEST_F(PickRequestTaskTest, ChooseEarlierRequest) {
   // We need a custom policy object prefering recency to retry count.
-  policy_.reset(new OfflinerPolicy(
+  policy_ = std::make_unique<OfflinerPolicy>(
       kPreferUntried, kPreferEarlier, !kPreferRetryCount, kMaxStartedTries,
-      kMaxCompletedTries, kBackgroundProcessingTimeBudgetSeconds));
+      kMaxCompletedTries, kBackgroundProcessingTimeBudgetSeconds);
   MakePickRequestTask();
 
   base::Time creation_time1 =
@@ -296,9 +296,9 @@ TEST_F(PickRequestTaskTest, ChooseEarlierRequest) {
 
 TEST_F(PickRequestTaskTest, ChooseSameTimeRequestWithHigherRetryCount) {
   // We need a custom policy object preferring recency to retry count.
-  policy_.reset(new OfflinerPolicy(
+  policy_ = std::make_unique<OfflinerPolicy>(
       kPreferUntried, kPreferEarlier, !kPreferRetryCount, kMaxStartedTries,
-      kMaxCompletedTries + 1, kBackgroundProcessingTimeBudgetSeconds));
+      kMaxCompletedTries + 1, kBackgroundProcessingTimeBudgetSeconds);
   MakePickRequestTask();
 
   base::Time creation_time = OfflineTimeNow();
@@ -320,9 +320,9 @@ TEST_F(PickRequestTaskTest, ChooseSameTimeRequestWithHigherRetryCount) {
 
 TEST_F(PickRequestTaskTest, ChooseRequestWithLowerRetryCount) {
   // We need a custom policy object preferring lower retry count.
-  policy_.reset(new OfflinerPolicy(
+  policy_ = std::make_unique<OfflinerPolicy>(
       !kPreferUntried, kPreferEarlier, kPreferRetryCount, kMaxStartedTries,
-      kMaxCompletedTries + 1, kBackgroundProcessingTimeBudgetSeconds));
+      kMaxCompletedTries + 1, kBackgroundProcessingTimeBudgetSeconds);
   MakePickRequestTask();
 
   base::Time creation_time = OfflineTimeNow();
@@ -344,9 +344,9 @@ TEST_F(PickRequestTaskTest, ChooseRequestWithLowerRetryCount) {
 
 TEST_F(PickRequestTaskTest, ChooseLaterRequest) {
   // We need a custom policy preferring recency over retry, and later requests.
-  policy_.reset(new OfflinerPolicy(
+  policy_ = std::make_unique<OfflinerPolicy>(
       kPreferUntried, !kPreferEarlier, !kPreferRetryCount, kMaxStartedTries,
-      kMaxCompletedTries, kBackgroundProcessingTimeBudgetSeconds));
+      kMaxCompletedTries, kBackgroundProcessingTimeBudgetSeconds);
   MakePickRequestTask();
 
   base::Time creation_time1 =
@@ -441,9 +441,9 @@ TEST_F(PickRequestTaskTest, ChooseRequestThatHasNotExceededCompletionLimit) {
 }
 
 TEST_F(PickRequestTaskTest, ChooseRequestThatIsNotDisabled) {
-  policy_.reset(new OfflinerPolicy(
+  policy_ = std::make_unique<OfflinerPolicy>(
       kPreferUntried, kPreferEarlier, kPreferRetryCount, kMaxStartedTries,
-      kMaxCompletedTries + 1, kBackgroundProcessingTimeBudgetSeconds));
+      kMaxCompletedTries + 1, kBackgroundProcessingTimeBudgetSeconds);
 
   // put request 2 on disabled list, ensure request1 picked instead,
   // even though policy would prefer 2.

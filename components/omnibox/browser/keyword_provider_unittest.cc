@@ -127,7 +127,7 @@ const TemplateURLService::Initializer KeywordProviderTest::kTestData[] = {
 };
 
 void KeywordProviderTest::SetUpClientAndKeywordProvider() {
-  client_.reset(new MockAutocompleteProviderClient());
+  client_ = std::make_unique<MockAutocompleteProviderClient>();
   client_->set_template_url_service(
       std::make_unique<TemplateURLService>(kTestData, base::size(kTestData)));
   kw_provider_ = new KeywordProvider(client_.get(), nullptr);

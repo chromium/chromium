@@ -221,8 +221,8 @@ UkmService::UkmService(PrefService* pref_service,
           base::BindRepeating(&metrics::MetricsServiceClient::GetUploadInterval,
                               base::Unretained(client_));
   bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
-  scheduler_.reset(new UkmRotationScheduler(
-      rotate_callback, fast_startup_for_testing, get_upload_interval_callback));
+  scheduler_ = std::make_unique<UkmRotationScheduler>(
+      rotate_callback, fast_startup_for_testing, get_upload_interval_callback);
   StoreWhitelistedEntries();
 
   DelegatingUkmRecorder::Get()->AddDelegate(self_ptr_factory_.GetWeakPtr());

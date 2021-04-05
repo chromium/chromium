@@ -348,7 +348,7 @@ void SharedProtoDatabase::OnGetGlobalMetadata(
 
   // We failed to get the global metadata, so we need to create it for the first
   // time.
-  metadata_.reset(new SharedDBMetadataProto());
+  metadata_ = std::make_unique<SharedDBMetadataProto>();
   metadata_->set_corruptions(corruption ? 1U : 0U);
   metadata_->clear_migration_status();
   CommitUpdatedGlobalMetadata(

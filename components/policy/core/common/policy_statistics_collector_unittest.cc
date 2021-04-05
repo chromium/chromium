@@ -106,12 +106,10 @@ class PolicyStatisticsCollectorTest : public testing::Test {
     // Arbitrary negative value (so it'll be different from |update_delay_|).
     last_delay_ = base::TimeDelta::FromDays(-1);
     policy_map_.Clear();
-    policy_statistics_collector_.reset(new TestPolicyStatisticsCollector(
-        policy_details_.GetCallback(),
-        chrome_schema_,
-        &policy_service_,
-        &prefs_,
-        task_runner_));
+    policy_statistics_collector_ =
+        std::make_unique<TestPolicyStatisticsCollector>(
+            policy_details_.GetCallback(), chrome_schema_, &policy_service_,
+            &prefs_, task_runner_);
   }
 
   void SetPolicy(const std::string& name) {

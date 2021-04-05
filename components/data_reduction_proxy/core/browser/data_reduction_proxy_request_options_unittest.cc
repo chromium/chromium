@@ -130,8 +130,8 @@ class DataReductionProxyRequestOptionsTest : public testing::Test {
   }
 
   void CreateRequestOptions(const std::string& version) {
-    request_options_.reset(
-        new TestDataReductionProxyRequestOptions(kClient, version));
+    request_options_ = std::make_unique<TestDataReductionProxyRequestOptions>(
+        kClient, version);
     request_options_->Init();
   }
 

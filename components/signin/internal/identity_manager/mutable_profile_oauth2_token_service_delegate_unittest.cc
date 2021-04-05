@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -100,7 +101,7 @@ class MutableProfileOAuth2TokenServiceDelegateTest
         pref_service_.registry());
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
-    client_.reset(new TestSigninClient(&pref_service_));
+    client_ = std::make_unique<TestSigninClient>(&pref_service_);
     client_->GetTestURLLoaderFactory()->AddResponse(
         GaiaUrls::GetInstance()->oauth2_revoke_url().spec(), "");
     LoadTokenDatabase();

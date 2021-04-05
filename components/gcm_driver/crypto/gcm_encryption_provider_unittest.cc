@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <sstream>
 #include <string>
 
@@ -64,7 +65,7 @@ class GCMEncryptionProviderTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
 
-    encryption_provider_.reset(new GCMEncryptionProvider);
+    encryption_provider_ = std::make_unique<GCMEncryptionProvider>();
     encryption_provider_->Init(scoped_temp_dir_.GetPath(),
                                base::ThreadTaskRunnerHandle::Get());
   }

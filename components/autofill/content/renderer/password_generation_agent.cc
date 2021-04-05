@@ -620,8 +620,8 @@ void PasswordGenerationAgent::MaybeCreateCurrentGenerationItem(
       passwords.push_back(*input);
   }
 
-  current_generation_item_.reset(new GenerationItemInfo(
-      generation_element, std::move(*form_data), std::move(passwords)));
+  current_generation_item_ = std::make_unique<GenerationItemInfo>(
+      generation_element, std::move(*form_data), std::move(passwords));
 
   generation_element.SetHasBeenPasswordField();
 

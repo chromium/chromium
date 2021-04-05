@@ -443,9 +443,9 @@ int CastSocketImpl::DoSslConnectComplete(int result) {
     if (!transport_) {
       // Create a channel transport if one wasn't already set (e.g. by test
       // code).
-      transport_.reset(new CastTransportImpl(mojo_data_pump_.get(), channel_id_,
-                                             open_params_.ip_endpoint,
-                                             logger_));
+      transport_ = std::make_unique<CastTransportImpl>(
+          mojo_data_pump_.get(), channel_id_, open_params_.ip_endpoint,
+          logger_);
     }
     auth_delegate_ = new AuthTransportDelegate(this);
     transport_->SetReadDelegate(base::WrapUnique(auth_delegate_));
@@ -515,7 +515,7 @@ void CastSocketImpl::AuthTransportDelegate::OnMessage(
     error_state_ = ChannelError::TRANSPORT_ERROR;
     socket_->PostTaskToStartConnectLoop(net::ERR_INVALID_RESPONSE);
   } else {
-    socket_->challenge_reply_.reset(new CastMessage(message));
+    socket_->challenge_reply_ = std::make_unique<CastMessage>(message);
     socket_->PostTaskToStartConnectLoop(net::OK);
   }
 }

@@ -482,16 +482,14 @@ TEST(URLMatcherConditionSetTest, Matching) {
 
   // Test scheme filters.
   scoped_refptr<URLMatcherConditionSet> condition_set2(
-      new URLMatcherConditionSet(1, conditions,
-                                 std::unique_ptr<URLMatcherSchemeFilter>(
-                                     new URLMatcherSchemeFilter("https")),
-                                 std::unique_ptr<URLMatcherPortFilter>()));
+      new URLMatcherConditionSet(
+          1, conditions, std::make_unique<URLMatcherSchemeFilter>("https"),
+          std::unique_ptr<URLMatcherPortFilter>()));
   EXPECT_FALSE(condition_set2->IsMatch(matching_patterns, url1));
   scoped_refptr<URLMatcherConditionSet> condition_set3(
-      new URLMatcherConditionSet(1, conditions,
-                                 std::unique_ptr<URLMatcherSchemeFilter>(
-                                     new URLMatcherSchemeFilter("http")),
-                                 std::unique_ptr<URLMatcherPortFilter>()));
+      new URLMatcherConditionSet(
+          1, conditions, std::make_unique<URLMatcherSchemeFilter>("http"),
+          std::unique_ptr<URLMatcherPortFilter>()));
   EXPECT_TRUE(condition_set3->IsMatch(matching_patterns, url1));
 
   // Test port filters.

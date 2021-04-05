@@ -45,9 +45,10 @@ class BrowserPresentationConnectionProxyTest : public ::testing::Test {
         std::make_unique<MockPresentationConnectionProxy>();
     mojo::PendingRemote<blink::mojom::PresentationConnection>
         controller_connection_remote;
-    receiver_.reset(new mojo::Receiver<blink::mojom::PresentationConnection>(
-        mock_controller_connection_proxy_.get(),
-        controller_connection_remote.InitWithNewPipeAndPassReceiver()));
+    receiver_ =
+        std::make_unique<mojo::Receiver<blink::mojom::PresentationConnection>>(
+            mock_controller_connection_proxy_.get(),
+            controller_connection_remote.InitWithNewPipeAndPassReceiver());
     EXPECT_CALL(mock_router_, RegisterRouteMessageObserver(_));
     EXPECT_CALL(
         *mock_controller_connection_proxy_,

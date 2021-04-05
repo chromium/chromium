@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/offline_page_metadata_store_test_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -47,14 +48,14 @@ void OfflinePageMetadataStoreTestUtil::BuildStore() {
     return;
   }
 
-  store_.reset(new OfflinePageMetadataStore(base::ThreadTaskRunnerHandle::Get(),
-                                            temp_directory_.GetPath()));
+  store_ = std::make_unique<OfflinePageMetadataStore>(
+      base::ThreadTaskRunnerHandle::Get(), temp_directory_.GetPath());
   store_ptr_ = store_.get();
 }
 
 void OfflinePageMetadataStoreTestUtil::BuildStoreInMemory() {
-  store_.reset(
-      new OfflinePageMetadataStore(base::ThreadTaskRunnerHandle::Get()));
+  store_ = std::make_unique<OfflinePageMetadataStore>(
+      base::ThreadTaskRunnerHandle::Get());
   store_ptr_ = store_.get();
 }
 

@@ -196,9 +196,9 @@ GCMAccountTrackerTest::GCMAccountTrackerTest() {
   std::unique_ptr<AccountTracker> gaia_account_tracker(
       new AccountTracker(identity_test_env_.identity_manager()));
 
-  tracker_.reset(new GCMAccountTracker(std::move(gaia_account_tracker),
-                                       identity_test_env_.identity_manager(),
-                                       &driver_));
+  tracker_ = std::make_unique<GCMAccountTracker>(
+      std::move(gaia_account_tracker), identity_test_env_.identity_manager(),
+      &driver_);
 }
 
 GCMAccountTrackerTest::~GCMAccountTrackerTest() {

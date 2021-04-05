@@ -5,6 +5,8 @@
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/callback_helpers.h"
@@ -304,7 +306,7 @@ void CloudPolicyValidatorBase::ReportCompletion(
 }
 
 void CloudPolicyValidatorBase::RunValidation() {
-  policy_data_.reset(new em::PolicyData());
+  policy_data_ = std::make_unique<em::PolicyData>();
   RunChecks();
 }
 

@@ -33,7 +33,7 @@ class DownloadStoreTest : public testing::Test {
     auto db = std::make_unique<leveldb_proto::test::FakeDB<protodb::Entry>>(
         &db_entries_);
     db_ = db.get();
-    store_.reset(new DownloadStore(std::move(db)));
+    store_ = std::make_unique<DownloadStore>(std::move(db));
   }
 
   void InitCallback(std::vector<Entry>* loaded_entries,

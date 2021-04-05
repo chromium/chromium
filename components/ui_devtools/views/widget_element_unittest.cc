@@ -4,6 +4,8 @@
 
 #include "components/ui_devtools/views/widget_element.h"
 
+#include <memory>
+
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
 #include "components/ui_devtools/views/view_element.h"
@@ -31,8 +33,9 @@ class WidgetElementTest : public views::ViewsTestBase {
     params.name = kWidgetName;
     widget_->Init(std::move(params));
 
-    delegate_.reset(new testing::NiceMock<MockUIElementDelegate>);
-    element_.reset(new WidgetElement(widget_, delegate_.get(), nullptr));
+    delegate_ = std::make_unique<testing::NiceMock<MockUIElementDelegate>>();
+    element_ =
+        std::make_unique<WidgetElement>(widget_, delegate_.get(), nullptr);
     // The widget element will delete the ViewElement in |OnWillRemoveView|
     // TODO(lgrey): I think probably WidgetElement should do this itself
     // rather than making the DOMAgent (or test)  put the tree together.

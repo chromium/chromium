@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -114,7 +116,7 @@ void TopSitesBackend::ResetDatabaseOnDBThread(const base::FilePath& file_path) {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   db_.reset(nullptr);
   sql::Database::Delete(db_path_);
-  db_.reset(new TopSitesDatabase());
+  db_ = std::make_unique<TopSitesDatabase>();
   InitDBOnDBThread(db_path_);
 }
 

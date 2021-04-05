@@ -93,9 +93,9 @@ class ComponentCloudPolicyStoreTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    cache_.reset(new ResourceCache(
+    cache_ = std::make_unique<ResourceCache>(
         temp_dir_.GetPath(), base::MakeRefCounted<base::TestSimpleTaskRunner>(),
-        /* max_cache_size */ base::nullopt));
+        /* max_cache_size */ base::nullopt);
     store_ = CreateStore();
     store_->SetCredentials(
         PolicyBuilder::kFakeUsername, PolicyBuilder::kFakeGaiaId,

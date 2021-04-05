@@ -19,8 +19,9 @@ class FaviconUrlParserTest : public testing::Test {
     std::vector<ui::ScaleFactor> supported_scale_factors;
     supported_scale_factors.push_back(ui::SCALE_FACTOR_100P);
     supported_scale_factors.push_back(ui::SCALE_FACTOR_140P);
-    scoped_set_supported_scale_factors_.reset(
-        new ui::test::ScopedSetSupportedScaleFactors(supported_scale_factors));
+    scoped_set_supported_scale_factors_ =
+        std::make_unique<ui::test::ScopedSetSupportedScaleFactors>(
+            supported_scale_factors);
   }
 
   ~FaviconUrlParserTest() override {}

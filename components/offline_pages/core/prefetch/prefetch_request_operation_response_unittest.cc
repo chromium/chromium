@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/test/mock_callback.h"
 #include "components/offline_pages/core/prefetch/generate_page_bundle_request.h"
 #include "components/offline_pages/core/prefetch/get_operation_request.h"
@@ -53,9 +55,9 @@ class GeneratePageBundleRequestBuilder : public RequestBuilder {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefetchRequestFinishedCallback callback) override {
     std::vector<std::string> pages = {kTestURL, kTestURL2};
-    fetcher_.reset(new GeneratePageBundleRequest(
+    fetcher_ = std::make_unique<GeneratePageBundleRequest>(
         kTestUserAgent, kTestGCMID, kTestMaxBundleSize, pages, kTestChannel,
-        /*testing_header_value=*/"", url_loader_factory, std::move(callback)));
+        /*testing_header_value=*/"", url_loader_factory, std::move(callback));
   }
 
  private:
@@ -67,9 +69,9 @@ class GetOperationRequestBuilder : public RequestBuilder {
   void CreateRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefetchRequestFinishedCallback callback) override {
-    fetcher_.reset(new GetOperationRequest(kTestOperationName, kTestChannel,
-                                           url_loader_factory,
-                                           std::move(callback)));
+    fetcher_ = std::make_unique<GetOperationRequest>(
+        kTestOperationName, kTestChannel, url_loader_factory,
+        std::move(callback));
   }
 
  private:
@@ -190,8 +192,8 @@ class GeneratePageBundleRequestDoneOperationBuilder
     : public PrefetchRequestOperationResponseTestBuilder {
  public:
   GeneratePageBundleRequestDoneOperationBuilder() {
-    request_builder_.reset(new GeneratePageBundleRequestBuilder);
-    operation_builder_.reset(new DoneOperationBuilder);
+    request_builder_ = std::make_unique<GeneratePageBundleRequestBuilder>();
+    operation_builder_ = std::make_unique<DoneOperationBuilder>();
   }
 };
 
@@ -199,8 +201,8 @@ class GeneratePageBundleRequestPendingOperationBuilder
     : public PrefetchRequestOperationResponseTestBuilder {
  public:
   GeneratePageBundleRequestPendingOperationBuilder() {
-    request_builder_.reset(new GeneratePageBundleRequestBuilder);
-    operation_builder_.reset(new PendingOperationBuilder);
+    request_builder_ = std::make_unique<GeneratePageBundleRequestBuilder>();
+    operation_builder_ = std::make_unique<PendingOperationBuilder>();
   }
 };
 
@@ -208,8 +210,8 @@ class GetOperationRequestDoneOperationBuilder
     : public PrefetchRequestOperationResponseTestBuilder {
  public:
   GetOperationRequestDoneOperationBuilder() {
-    request_builder_.reset(new GetOperationRequestBuilder);
-    operation_builder_.reset(new DoneOperationBuilder);
+    request_builder_ = std::make_unique<GetOperationRequestBuilder>();
+    operation_builder_ = std::make_unique<DoneOperationBuilder>();
     expected_operation_name_ = std::string(kTestOperationName);
   }
 };
@@ -218,8 +220,8 @@ class GetOperationRequestPendingOperationBuilder
     : public PrefetchRequestOperationResponseTestBuilder {
  public:
   GetOperationRequestPendingOperationBuilder() {
-    request_builder_.reset(new GetOperationRequestBuilder);
-    operation_builder_.reset(new PendingOperationBuilder);
+    request_builder_ = std::make_unique<GetOperationRequestBuilder>();
+    operation_builder_ = std::make_unique<PendingOperationBuilder>();
     expected_operation_name_ = std::string(kTestOperationName);
   }
 };

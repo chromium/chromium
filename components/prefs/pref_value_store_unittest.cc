@@ -108,18 +108,14 @@ class PrefValueStoreTest : public testing::Test {
     CreateUserPrefs();
     CreateRecommendedPrefs();
     CreateDefaultPrefs();
-    sync_associator_.reset(new MockPrefModelAssociator());
+    sync_associator_ = std::make_unique<MockPrefModelAssociator>();
 
     // Create a fresh PrefValueStore.
-    pref_value_store_.reset(
-        new PrefValueStore(managed_pref_store_.get(),
-                           supervised_user_pref_store_.get(),
-                           extension_pref_store_.get(),
-                           command_line_pref_store_.get(),
-                           user_pref_store_.get(),
-                           recommended_pref_store_.get(),
-                           default_pref_store_.get(),
-                           &pref_notifier_));
+    pref_value_store_ = std::make_unique<PrefValueStore>(
+        managed_pref_store_.get(), supervised_user_pref_store_.get(),
+        extension_pref_store_.get(), command_line_pref_store_.get(),
+        user_pref_store_.get(), recommended_pref_store_.get(),
+        default_pref_store_.get(), &pref_notifier_);
 
     pref_value_store_->set_callback(
         base::BindRepeating(&MockPrefModelAssociator::ProcessPrefChange,

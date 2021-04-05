@@ -5,6 +5,7 @@
 #include "components/offline_pages/core/background/request_coordinator.h"
 
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -644,7 +645,7 @@ bool RequestCoordinator::StartScheduledProcessing(
     const DeviceConditions& device_conditions,
     const base::RepeatingCallback<void(bool)>& callback) {
   DVLOG(2) << "Scheduled " << __func__;
-  current_conditions_.reset(new DeviceConditions(device_conditions));
+  current_conditions_ = std::make_unique<DeviceConditions>(device_conditions);
   return StartProcessingInternal(ProcessingWindowState::SCHEDULED_WINDOW,
                                  callback);
 }
@@ -717,9 +718,9 @@ RequestCoordinator::TryImmediateStart(
 }
 
 void RequestCoordinator::RequestConnectedEventForStarting() {
-  connection_notifier_.reset(new ConnectionNotifier(
+  connection_notifier_ = std::make_unique<ConnectionNotifier>(
       base::BindOnce(&RequestCoordinator::HandleConnectedEventForStarting,
-                     weak_ptr_factory_.GetWeakPtr())));
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RequestCoordinator::ClearConnectedEventRequest() {

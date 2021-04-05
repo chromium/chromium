@@ -118,7 +118,7 @@ class FormDataImporterTestBase {
   FormDataImporterTestBase() : autofill_table_(nullptr) {}
 
   void ResetPersonalDataManager(UserMode user_mode) {
-    personal_data_manager_.reset(new PersonalDataManager("en", "US"));
+    personal_data_manager_ = std::make_unique<PersonalDataManager>("en", "US");
     personal_data_manager_->Init(
         scoped_refptr<AutofillWebDataService>(autofill_database_service_),
         /*account_database=*/nullptr,
@@ -269,10 +269,10 @@ class FormDataImporterTest
     test::DisableSystemServices(prefs_.get());
     ResetPersonalDataManager(USER_MODE_NORMAL);
 
-    form_data_importer_.reset(
-        new FormDataImporter(autofill_client_.get(),
-                             /*payments::PaymentsClient=*/nullptr,
-                             personal_data_manager_.get(), "en"));
+    form_data_importer_ =
+        std::make_unique<FormDataImporter>(autofill_client_.get(),
+                                           /*payments::PaymentsClient=*/nullptr,
+                                           personal_data_manager_.get(), "en");
 
     // Reset the deduping pref to its default value.
     personal_data_manager_->pref_service_->SetInteger(

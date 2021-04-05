@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -103,7 +105,7 @@ void CloudPolicyClientRegistrationHelper::StartRegistration(
   callback_ = std::move(callback);
   client_->AddObserver(this);
 
-  identity_manager_helper_.reset(new IdentityManagerHelper());
+  identity_manager_helper_ = std::make_unique<IdentityManagerHelper>();
   identity_manager_helper_->FetchAccessToken(
       identity_manager, account_id,
       base::BindOnce(&CloudPolicyClientRegistrationHelper::OnTokenFetched,
@@ -137,8 +139,8 @@ void CloudPolicyClientRegistrationHelper::OnTokenFetched(
   DVLOG(1) << "Fetched new scoped OAuth token:" << oauth_access_token_;
   // Now we've gotten our access token - contact GAIA to see if this is a
   // hosted domain.
-  user_info_fetcher_.reset(
-      new UserInfoFetcher(this, client_->GetURLLoaderFactory()));
+  user_info_fetcher_ =
+      std::make_unique<UserInfoFetcher>(this, client_->GetURLLoaderFactory());
   user_info_fetcher_->Start(oauth_access_token_);
 }
 

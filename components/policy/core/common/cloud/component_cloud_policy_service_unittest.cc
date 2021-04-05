@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -121,9 +122,9 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
-    owned_cache_.reset(new ResourceCache(temp_dir_.GetPath(),
-                                         base::ThreadTaskRunnerHandle::Get(),
-                                         /* max_cache_size */ base::nullopt));
+    owned_cache_ = std::make_unique<ResourceCache>(
+        temp_dir_.GetPath(), base::ThreadTaskRunnerHandle::Get(),
+        /* max_cache_size */ base::nullopt);
     cache_ = owned_cache_.get();
   }
 
@@ -139,10 +140,10 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
     client_ = new MockCloudPolicyClient(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &loader_factory_));
-    service_.reset(new ComponentCloudPolicyService(
+    service_ = std::make_unique<ComponentCloudPolicyService>(
         dm_protocol::kChromeExtensionPolicyType, POLICY_SOURCE_CLOUD,
         &delegate_, &registry_, &core_, client_, std::move(owned_cache_),
-        base::ThreadTaskRunnerHandle::Get()));
+        base::ThreadTaskRunnerHandle::Get());
 
     client_->SetDMToken(ComponentCloudPolicyBuilder::kFakeToken);
     EXPECT_EQ(1u, client_->types_to_fetch_.size());

@@ -314,9 +314,9 @@ void InMemoryURLIndexTest::InitializeInMemoryURLIndex() {
 
   SchemeSet client_schemes_to_allowlist;
   client_schemes_to_allowlist.insert(kClientAllowlistedScheme);
-  url_index_.reset(new InMemoryURLIndex(
+  url_index_ = std::make_unique<InMemoryURLIndex>(
       nullptr, history_service_.get(), template_url_service_.get(),
-      base::FilePath(), client_schemes_to_allowlist));
+      base::FilePath(), client_schemes_to_allowlist);
   url_index_->Init();
   RebuildFromHistory();
 }
@@ -1524,8 +1524,8 @@ class InMemoryURLIndexCacheTest : public testing::Test {
 void InMemoryURLIndexCacheTest::SetUp() {
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   base::FilePath path(temp_dir_.GetPath());
-  url_index_.reset(
-      new InMemoryURLIndex(nullptr, nullptr, nullptr, path, SchemeSet()));
+  url_index_ = std::make_unique<InMemoryURLIndex>(nullptr, nullptr, nullptr,
+                                                  path, SchemeSet());
 }
 
 void InMemoryURLIndexCacheTest::TearDown() {

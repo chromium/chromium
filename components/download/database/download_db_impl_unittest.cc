@@ -49,8 +49,8 @@ class DownloadDBTest : public testing::Test {
         leveldb_proto::test::FakeDB<download_pb::DownloadDBEntry>>(
         &db_entries_);
     db_ = db.get();
-    download_db_.reset(new DownloadDBImpl(
-        DownloadNamespace::NAMESPACE_BROWSER_DOWNLOAD, std::move(db)));
+    download_db_ = std::make_unique<DownloadDBImpl>(
+        DownloadNamespace::NAMESPACE_BROWSER_DOWNLOAD, std::move(db));
   }
 
   void InitCallback(bool success) { init_success_ = success; }

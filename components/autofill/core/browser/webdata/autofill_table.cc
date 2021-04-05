@@ -2023,8 +2023,8 @@ bool AutofillTable::GetPaymentsCustomerData(
   sql::Statement s(db_->GetUniqueStatement(
       "SELECT customer_id FROM payments_customer_data"));
   if (s.Step()) {
-    customer_data->reset(
-        new PaymentsCustomerData(/*customer_id=*/s.ColumnString(0)));
+    *customer_data = std::make_unique<PaymentsCustomerData>(
+        /*customer_id=*/s.ColumnString(0));
   }
 
   return s.Succeeded();

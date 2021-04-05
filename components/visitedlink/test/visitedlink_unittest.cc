@@ -163,9 +163,9 @@ class VisitedLinkTest : public testing::Test {
                    bool suppress_rebuild,
                    bool wait_for_io_complete) {
     // Initialize the visited link system.
-    writer_.reset(new VisitedLinkWriter(new TrackingVisitedLinkEventListener(),
-                                        &delegate_, true, suppress_rebuild,
-                                        visited_file_, initial_size));
+    writer_ = std::make_unique<VisitedLinkWriter>(
+        new TrackingVisitedLinkEventListener(), &delegate_, true,
+        suppress_rebuild, visited_file_, initial_size);
     bool result = writer_->Init();
     if (result && wait_for_io_complete) {
       // Wait for all pending file I/O to be completed.
@@ -700,8 +700,9 @@ class VisitedLinkEventsTest : public content::RenderViewHostTestHarness {
 
  protected:
   void CreateVisitedLinkWriter(content::BrowserContext* browser_context) {
-    timer_.reset(new base::MockOneShotTimer());
-    writer_.reset(new VisitedLinkWriter(browser_context, &delegate_, true));
+    timer_ = std::make_unique<base::MockOneShotTimer>();
+    writer_ =
+        std::make_unique<VisitedLinkWriter>(browser_context, &delegate_, true);
     static_cast<VisitedLinkEventListener*>(writer_->GetListener())
         ->SetCoalesceTimerForTest(timer_.get());
     writer_->Init();

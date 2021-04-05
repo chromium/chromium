@@ -4,6 +4,8 @@
 
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 
+#include <memory>
+
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -112,7 +114,7 @@ void FakeProfileOAuth2TokenServiceDelegate::IssueRefreshTokenForUser(
     refresh_tokens_.erase(account_id);
     FireRefreshTokenRevoked(account_id);
   } else {
-    refresh_tokens_[account_id].reset(new AccountInfo(token));
+    refresh_tokens_[account_id] = std::make_unique<AccountInfo>(token);
     // If the token is a special "invalid" value, then that means the token was
     // rejected by the client and is thus not valid. So set the appropriate
     // error in that case. This logic is essentially duplicated from

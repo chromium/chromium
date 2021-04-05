@@ -5,6 +5,7 @@
 #include "components/omnibox/browser/omnibox_edit_model.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -136,7 +137,8 @@ OmniboxEditModel::OmniboxEditModel(OmniboxView* view,
       keyword_mode_entry_method_(OmniboxEventProto::INVALID),
       in_revert_(false),
       allow_exact_keyword_match_(false) {
-  omnibox_controller_.reset(new OmniboxController(this, client_.get()));
+  omnibox_controller_ =
+      std::make_unique<OmniboxController>(this, client_.get());
 }
 
 OmniboxEditModel::~OmniboxEditModel() {

@@ -4,6 +4,7 @@
 
 #include "components/gcm_driver/crypto/gcm_key_store.h"
 
+#include <memory>
 #include <string>
 
 #include "base/base64url.h"
@@ -75,9 +76,9 @@ class GCMKeyStoreTest : public ::testing::Test {
   // Creates the GCM Key Store instance. May be called from within a test's body
   // to re-create the key store, causing the database to re-open.
   void CreateKeyStore() {
-    gcm_key_store_.reset(
-        new GCMKeyStore(scoped_temp_dir_.GetPath(),
-                        task_environment_.GetMainThreadTaskRunner()));
+    gcm_key_store_ = std::make_unique<GCMKeyStore>(
+        scoped_temp_dir_.GetPath(),
+        task_environment_.GetMainThreadTaskRunner());
   }
 
   // Callback to use with GCMKeyStore::{GetKeys, CreateKeys} calls.

@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -246,10 +247,10 @@ class DownloadFileTest : public testing::Test {
     save_info->offset = 0;
     save_info->file_offset = file_offset;
 
-    download_file_.reset(new TestDownloadFileImpl(
+    download_file_ = std::make_unique<TestDownloadFileImpl>(
         std::move(save_info), download_dir_.GetPath(),
         std::unique_ptr<MockInputStream>(input_stream_),
-        DownloadItem::kInvalidId, observer_factory_.GetWeakPtr()));
+        DownloadItem::kInvalidId, observer_factory_.GetWeakPtr());
 
     EXPECT_CALL(*input_stream_, Read(_, _))
         .WillOnce(Return(InputStream::EMPTY))

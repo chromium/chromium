@@ -496,8 +496,9 @@ bool GCMClientImplTest::CreateUniqueTempDir() {
 }
 
 void GCMClientImplTest::BuildGCMClient(base::TimeDelta clock_step) {
-  gcm_client_.reset(new GCMClientImpl(base::WrapUnique<GCMInternalsBuilder>(
-      new FakeGCMInternalsBuilder(clock_step))));
+  gcm_client_ =
+      std::make_unique<GCMClientImpl>(base::WrapUnique<GCMInternalsBuilder>(
+          new FakeGCMInternalsBuilder(clock_step)));
 }
 
 void GCMClientImplTest::FailCheckin(net::HttpStatusCode response_code) {

@@ -123,8 +123,8 @@ void DistillerPageWebContents::CreateNewWebContents(const GURL& url) {
   web_contents->GetController().LoadURLWithParams(params);
 
   // SourcePageHandleWebContents takes ownership of |web_contents|.
-  source_page_handle_.reset(
-      new SourcePageHandleWebContents(web_contents.release(), true));
+  source_page_handle_ = std::make_unique<SourcePageHandleWebContents>(
+      web_contents.release(), true);
 }
 
 gfx::Size DistillerPageWebContents::GetSizeForNewRenderView(

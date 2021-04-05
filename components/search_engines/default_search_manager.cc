@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -191,7 +192,7 @@ const TemplateURLData* DefaultSearchManager::GetFallbackSearchEngine() const {
 void DefaultSearchManager::SetUserSelectedDefaultSearchEngine(
     const TemplateURLData& data) {
   if (!pref_service_) {
-    prefs_default_search_.reset(new TemplateURLData(data));
+    prefs_default_search_ = std::make_unique<TemplateURLData>(data);
     MergePrefsDataWithPrepopulated();
     NotifyObserver();
     return;

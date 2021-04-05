@@ -239,9 +239,9 @@ std::unique_ptr<MCSClient> GCMInternalsBuilder::BuildMCSClient(
     GCMStore* gcm_store,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     GCMStatsRecorder* recorder) {
-  return std::unique_ptr<MCSClient>(
-      new MCSClient(version, clock, connection_factory, gcm_store,
-                    std::move(io_task_runner), recorder));
+  return std::make_unique<MCSClient>(version, clock, connection_factory,
+                                     gcm_store, std::move(io_task_runner),
+                                     recorder);
 }
 
 std::unique_ptr<ConnectionFactory> GCMInternalsBuilder::BuildConnectionFactory(
@@ -316,9 +316,9 @@ void GCMClientImpl::Initialize(
   url_loader_factory_ = url_loader_factory;
   network_connection_tracker_ = network_connection_tracker;
   chrome_build_info_ = chrome_build_info;
-  gcm_store_.reset(
-      new GCMStoreImpl(path, remove_account_mappings_with_email_key,
-                       blocking_task_runner, std::move(encryptor)));
+  gcm_store_ = std::make_unique<GCMStoreImpl>(
+      path, remove_account_mappings_with_email_key, blocking_task_runner,
+      std::move(encryptor));
   delegate_ = delegate;
   io_task_runner_ = std::move(io_task_runner);
   recorder_.SetDelegate(this);
@@ -684,11 +684,11 @@ void GCMClientImpl::StartCheckin() {
                                            device_checkin_info_.account_tokens,
                                            gservices_settings_.digest(),
                                            chrome_build_proto);
-  checkin_request_.reset(new CheckinRequest(
+  checkin_request_ = std::make_unique<CheckinRequest>(
       gservices_settings_.GetCheckinURL(), request_info, GetGCMBackoffPolicy(),
       base::BindOnce(&GCMClientImpl::OnCheckinCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
-      url_loader_factory_, io_task_runner_, &recorder_));
+      url_loader_factory_, io_task_runner_, &recorder_);
   // Taking a snapshot of the accounts count here, as there might be an asynch
   // update of the account tokens while checkin is in progress.
   device_checkin_info_.SnapshotCheckinAccounts();
@@ -932,7 +932,7 @@ void GCMClientImpl::Register(
         senders.append(",");
       senders.append(*iter);
     }
-    request_handler.reset(new GCMRegistrationRequestHandler(senders));
+    request_handler = std::make_unique<GCMRegistrationRequestHandler>(senders);
     source_to_record = senders;
   }
 
@@ -942,12 +942,12 @@ void GCMClientImpl::Register(
     auto instance_id_iter = instance_id_data_.find(registration_info->app_id);
     DCHECK(instance_id_iter != instance_id_data_.end());
 
-    request_handler.reset(new InstanceIDGetTokenRequestHandler(
+    request_handler = std::make_unique<InstanceIDGetTokenRequestHandler>(
         instance_id_iter->second.first,
         instance_id_token_info->authorized_entity,
         instance_id_token_info->scope,
         ConstructGCMVersion(chrome_build_info_.version),
-        instance_id_token_info->time_to_live));
+        instance_id_token_info->time_to_live);
     source_to_record = instance_id_token_info->authorized_entity + "/" +
                        instance_id_token_info->scope;
   }
@@ -1069,8 +1069,8 @@ void GCMClientImpl::Unregister(
   const GCMRegistrationInfo* gcm_registration_info =
       GCMRegistrationInfo::FromRegistrationInfo(registration_info.get());
   if (gcm_registration_info) {
-    request_handler.reset(
-        new GCMUnregistrationRequestHandler(registration_info->app_id));
+    request_handler = std::make_unique<GCMUnregistrationRequestHandler>(
+        registration_info->app_id);
   }
 
   const InstanceIDTokenInfo* instance_id_token_info =
@@ -1084,11 +1084,11 @@ void GCMClientImpl::Unregister(
       return;
     }
 
-    request_handler.reset(new InstanceIDDeleteTokenRequestHandler(
+    request_handler = std::make_unique<InstanceIDDeleteTokenRequestHandler>(
         instance_id_iter->second.first,
         instance_id_token_info->authorized_entity,
         instance_id_token_info->scope,
-        ConstructGCMVersion(chrome_build_info_.version)));
+        ConstructGCMVersion(chrome_build_info_.version));
     source_to_record = instance_id_token_info->authorized_entity + "/" +
                        instance_id_token_info->scope;
   }

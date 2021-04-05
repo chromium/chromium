@@ -88,8 +88,8 @@ ShortcutsBackendTest::MatchCoreForTesting(const std::string& url,
       AutocompleteMatch::ClassificationsFromString(contents_class);
   match.description_class =
       AutocompleteMatch::ClassificationsFromString(description_class);
-  match.search_terms_args.reset(
-      new TemplateURLRef::SearchTermsArgs(match.contents));
+  match.search_terms_args =
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(match.contents);
   SearchTermsData search_terms_data;
   return ShortcutsBackend::MatchToMatchCore(match, template_url_service_.get(),
                                             &search_terms_data);
@@ -108,7 +108,7 @@ void ShortcutsBackendTest::SetSearchProvider() {
 
 void ShortcutsBackendTest::SetUp() {
   ASSERT_TRUE(profile_dir_.CreateUniqueTempDir());
-  template_url_service_.reset(new TemplateURLService(nullptr, 0));
+  template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
   history_service_ =
       history::CreateHistoryService(profile_dir_.GetPath(), true);
   ASSERT_TRUE(history_service_);
@@ -237,8 +237,8 @@ TEST_F(ShortcutsBackendTest, EntitySuggestionTest) {
   match.destination_url =
       GURL("http://www.foo.com/search?bar=franklin+d+roosevelt&gs_ssp=1234");
   match.keyword = u"foo";
-  match.search_terms_args.reset(
-      new TemplateURLRef::SearchTermsArgs(match.fill_into_edit));
+  match.search_terms_args =
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(match.fill_into_edit);
 
   SearchTermsData search_terms_data;
   ShortcutsDatabase::Shortcut::MatchCore match_core =

@@ -69,7 +69,8 @@ class BackToBackBeginFrameSourceTest : public ::testing::Test {
             task_runner_->GetMockTickClock(), task_runner_.get());
 
     delay_based_time_source_ = time_source.get();
-    source_.reset(new BackToBackBeginFrameSource(std::move(time_source)));
+    source_ =
+        std::make_unique<BackToBackBeginFrameSource>(std::move(time_source));
     obs_ = std::make_unique<::testing::NiceMock<MockBeginFrameObserver>>();
   }
 
@@ -363,7 +364,7 @@ class DelayBasedBeginFrameSourceTest : public ::testing::Test {
         base::TimeTicks(), base::TimeDelta::FromMicroseconds(10000));
     source_ = std::make_unique<DelayBasedBeginFrameSource>(
         std::move(time_source), BeginFrameSource::kNotRestartableId);
-    obs_.reset(new MockBeginFrameObserver);
+    obs_ = std::make_unique<MockBeginFrameObserver>();
   }
 
   void TearDown() override { obs_.reset(); }

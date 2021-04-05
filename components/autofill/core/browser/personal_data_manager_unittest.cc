@@ -352,7 +352,7 @@ class PersonalDataManagerHelper : public PersonalDataManagerTestBase {
                                 bool use_account_server_storage = false) {
     if (personal_data_)
       personal_data_->Shutdown();
-    personal_data_.reset(new PersonalDataManager("EN", "US"));
+    personal_data_ = std::make_unique<PersonalDataManager>("EN", "US");
     PersonalDataManagerTestBase::ResetPersonalDataManager(
         user_mode, use_account_server_storage, personal_data_.get());
   }
@@ -611,7 +611,8 @@ class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
   void ResetPersonalDataManager(UserMode user_mode) {
     if (personal_data_)
       personal_data_->Shutdown();
-    personal_data_.reset(new PersonalDataManagerMock("en", std::string()));
+    personal_data_ =
+        std::make_unique<PersonalDataManagerMock>("en", std::string());
     PersonalDataManagerTestBase::ResetPersonalDataManager(
         user_mode, /*use_account_server_storage=*/true, personal_data_.get());
   }

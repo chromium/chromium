@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -376,7 +377,8 @@ TestContextProvider::TestContextProvider(
   // Just pass nullptr to the ContextCacheController for its task runner.
   // Idle handling is tested directly in ContextCacheController's
   // unittests, and isn't needed here.
-  cache_controller_.reset(new ContextCacheController(support_.get(), nullptr));
+  cache_controller_ =
+      std::make_unique<ContextCacheController>(support_.get(), nullptr);
 }
 
 TestContextProvider::~TestContextProvider() {

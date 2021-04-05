@@ -847,10 +847,11 @@ void GuestViewBase::SetUpSizing(const base::DictionaryValue& params) {
   }
 
   SetSizeParams set_size_params;
-  set_size_params.enable_auto_size.reset(new bool(auto_size_enabled));
-  set_size_params.min_size.reset(new gfx::Size(min_width, min_height));
-  set_size_params.max_size.reset(new gfx::Size(max_width, max_height));
-  set_size_params.normal_size.reset(new gfx::Size(normal_width, normal_height));
+  set_size_params.enable_auto_size = std::make_unique<bool>(auto_size_enabled);
+  set_size_params.min_size = std::make_unique<gfx::Size>(min_width, min_height);
+  set_size_params.max_size = std::make_unique<gfx::Size>(max_width, max_height);
+  set_size_params.normal_size =
+      std::make_unique<gfx::Size>(normal_width, normal_height);
 
   // Call SetSize to apply all the appropriate validation and clipping of
   // values.

@@ -419,7 +419,7 @@ void HostContentSettingsMap::SetDefaultContentSetting(
     DCHECK(content_settings::ContentSettingsRegistry::GetInstance()
                ->Get(content_type)
                ->IsDefaultSettingValid(setting));
-    value.reset(new base::Value(setting));
+    value = std::make_unique<base::Value>(setting);
   }
   SetWebsiteSettingCustomScope(ContentSettingsPattern::Wildcard(),
                                ContentSettingsPattern::Wildcard(), content_type,
@@ -554,7 +554,7 @@ void HostContentSettingsMap::SetContentSettingCustomScope(
     DCHECK(content_settings::ContentSettingsRegistry::GetInstance()
                ->Get(content_type)
                ->IsSettingValid(setting));
-    value.reset(new base::Value(setting));
+    value = std::make_unique<base::Value>(setting);
   }
   SetWebsiteSettingCustomScope(primary_pattern, secondary_pattern, content_type,
                                std::move(value), constraints);
@@ -837,8 +837,7 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSetting(
           info->primary_pattern = ContentSettingsPattern::Wildcard();
           info->secondary_pattern = ContentSettingsPattern::Wildcard();
         }
-        return std::unique_ptr<base::Value>(
-            new base::Value(CONTENT_SETTING_ALLOW));
+        return std::make_unique<base::Value>(CONTENT_SETTING_ALLOW);
       }
     }
   }

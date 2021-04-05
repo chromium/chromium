@@ -98,9 +98,9 @@ class AbstractPreferenceMergeTest : public testing::Test {
     ASSERT_TRUE(pref);
     base::Value::Type type = pref->GetType();
     if (type == base::Value::Type::DICTIONARY)
-      empty_value.reset(new base::DictionaryValue);
+      empty_value = std::make_unique<base::DictionaryValue>();
     else if (type == base::Value::Type::LIST)
-      empty_value.reset(new base::ListValue);
+      empty_value = std::make_unique<base::ListValue>();
     else
       FAIL();
     pref_service_->Set(pref_name.c_str(), *empty_value);

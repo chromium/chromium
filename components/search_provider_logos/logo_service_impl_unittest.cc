@@ -285,7 +285,7 @@ class MockLogoCache : public LogoCache {
     ASSERT_TRUE(logo_.get());
     ASSERT_TRUE(metadata_.get());
     EXPECT_EQ(metadata_->fingerprint, metadata.fingerprint);
-    metadata_.reset(new LogoMetadata(metadata));
+    metadata_ = std::make_unique<LogoMetadata>(metadata);
     logo_->metadata = metadata;
   }
 

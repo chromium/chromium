@@ -86,10 +86,10 @@ void GetIntegerTypeMap(
         result) {
   result->push_back(
       std::make_unique<StringMappingListPolicyHandler::MappingEntry>(
-          "one", std::unique_ptr<base::Value>(new base::Value(1))));
+          "one", std::make_unique<base::Value>(1)));
   result->push_back(
       std::make_unique<StringMappingListPolicyHandler::MappingEntry>(
-          "two", std::unique_ptr<base::Value>(new base::Value(2))));
+          "two", std::make_unique<base::Value>(2)));
 }
 
 class TestSchemaValidatingPolicyHandler : public SchemaValidatingPolicyHandler {
@@ -403,7 +403,7 @@ TEST(IntRangePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0));
+  expected = std::make_unique<base::Value>(0);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -411,7 +411,7 @@ TEST(IntRangePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(5), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(5));
+  expected = std::make_unique<base::Value>(5);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -419,7 +419,7 @@ TEST(IntRangePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(10), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(10));
+  expected = std::make_unique<base::Value>(10);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -429,7 +429,7 @@ TEST(IntRangePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(-5), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0));
+  expected = std::make_unique<base::Value>(0);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -437,7 +437,7 @@ TEST(IntRangePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(15), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(10));
+  expected = std::make_unique<base::Value>(10);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 }
@@ -457,7 +457,7 @@ TEST(IntRangePolicyHandler, ApplyPolicySettingsDontClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0));
+  expected = std::make_unique<base::Value>(0);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -465,7 +465,7 @@ TEST(IntRangePolicyHandler, ApplyPolicySettingsDontClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(5), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(5));
+  expected = std::make_unique<base::Value>(5);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -473,7 +473,7 @@ TEST(IntRangePolicyHandler, ApplyPolicySettingsDontClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(10), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(10));
+  expected = std::make_unique<base::Value>(10);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 }
@@ -596,7 +596,7 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0.0));
+  expected = std::make_unique<base::Value>(0.0);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -604,7 +604,7 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(5), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0.05));
+  expected = std::make_unique<base::Value>(0.05);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -612,7 +612,7 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(10), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0.1));
+  expected = std::make_unique<base::Value>(0.1);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -622,7 +622,7 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(-5), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0.0));
+  expected = std::make_unique<base::Value>(0.0);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -630,7 +630,7 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(15), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0.1));
+  expected = std::make_unique<base::Value>(0.1);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 }
@@ -651,7 +651,7 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsDontClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(0), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0.0));
+  expected = std::make_unique<base::Value>(0.0);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -659,7 +659,7 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsDontClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(5), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0.05));
+  expected = std::make_unique<base::Value>(0.05);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 
@@ -667,7 +667,7 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsDontClamp) {
                  POLICY_SOURCE_CLOUD, base::Value(10), nullptr);
   prefs.Clear();
   handler.ApplyPolicySettings(policy_map, &prefs);
-  expected.reset(new base::Value(0.1));
+  expected = std::make_unique<base::Value>(0.1);
   EXPECT_TRUE(prefs.GetValue(kTestPref, &value));
   EXPECT_EQ(*expected, *value);
 }

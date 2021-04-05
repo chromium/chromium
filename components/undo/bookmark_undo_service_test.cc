@@ -44,7 +44,7 @@ void BookmarkUndoServiceTest::SetUp() {
   DCHECK(!bookmark_model_);
   DCHECK(!bookmark_undo_service_);
   bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
-  bookmark_undo_service_.reset(new BookmarkUndoService);
+  bookmark_undo_service_ = std::make_unique<BookmarkUndoService>();
   bookmark_undo_service_->Start(bookmark_model_.get());
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_.get());
 }

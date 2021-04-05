@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -153,8 +155,8 @@ class CastTransportTest : public testing::Test {
  public:
   CastTransportTest() : logger_(new Logger()) {
     delegate_ = new MockCastTransportDelegate;
-    transport_.reset(new CastTransportImpl(&mock_socket_, kChannelId,
-                                           CreateIPEndPointForTest(), logger_));
+    transport_ = std::make_unique<CastTransportImpl>(
+        &mock_socket_, kChannelId, CreateIPEndPointForTest(), logger_);
     transport_->SetReadDelegate(base::WrapUnique(delegate_));
   }
   ~CastTransportTest() override {}

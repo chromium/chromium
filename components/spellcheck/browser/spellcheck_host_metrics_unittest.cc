@@ -21,7 +21,9 @@ class SpellcheckHostMetricsTest : public testing::Test {
   SpellcheckHostMetricsTest() {
   }
 
-  void SetUp() override { metrics_.reset(new SpellCheckHostMetrics); }
+  void SetUp() override {
+    metrics_ = std::make_unique<SpellCheckHostMetrics>();
+  }
 
   SpellCheckHostMetrics* metrics() { return metrics_.get(); }
   void RecordWordCountsForTesting() { metrics_->RecordWordCounts(); }

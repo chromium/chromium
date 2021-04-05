@@ -124,6 +124,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -247,13 +248,13 @@ void MetricsService::InitializeMetricsRecordingState() {
   base::RepeatingClosure upload_callback = base::BindRepeating(
       &MetricsService::StartScheduledUpload, self_ptr_factory_.GetWeakPtr());
 
-  rotation_scheduler_.reset(new MetricsRotationScheduler(
+  rotation_scheduler_ = std::make_unique<MetricsRotationScheduler>(
       upload_callback,
       // MetricsServiceClient outlives MetricsService, and
       // MetricsRotationScheduler is tied to the lifetime of |this|.
       base::BindRepeating(&MetricsServiceClient::GetUploadInterval,
                           base::Unretained(client_)),
-      client_->ShouldStartUpFastForTesting()));
+      client_->ShouldStartUpFastForTesting());
 
   // Init() has to be called after LogCrash() in order for LogCrash() to work.
   delegating_provider_.Init();

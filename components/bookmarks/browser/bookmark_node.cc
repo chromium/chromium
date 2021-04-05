@@ -5,6 +5,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/check.h"
@@ -76,7 +77,7 @@ bool BookmarkNode::GetMetaInfo(const std::string& key,
 bool BookmarkNode::SetMetaInfo(const std::string& key,
                                const std::string& value) {
   if (!meta_info_map_)
-    meta_info_map_.reset(new MetaInfoMap);
+    meta_info_map_ = std::make_unique<MetaInfoMap>();
 
   auto it = meta_info_map_->find(key);
   if (it == meta_info_map_->end()) {
@@ -103,7 +104,7 @@ void BookmarkNode::SetMetaInfoMap(const MetaInfoMap& meta_info_map) {
   if (meta_info_map.empty())
     meta_info_map_.reset();
   else
-    meta_info_map_.reset(new MetaInfoMap(meta_info_map));
+    meta_info_map_ = std::make_unique<MetaInfoMap>(meta_info_map);
 }
 
 const BookmarkNode::MetaInfoMap* BookmarkNode::GetMetaInfoMap() const {

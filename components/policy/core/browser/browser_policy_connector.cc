@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -109,9 +110,10 @@ void BrowserPolicyConnector::InitInternal(
     std::unique_ptr<DeviceManagementService> device_management_service) {
   device_management_service_ = std::move(device_management_service);
 
-  policy_statistics_collector_.reset(new policy::PolicyStatisticsCollector(
-      base::BindRepeating(&GetChromePolicyDetails), GetChromeSchema(),
-      GetPolicyService(), local_state, base::ThreadTaskRunnerHandle::Get()));
+  policy_statistics_collector_ =
+      std::make_unique<policy::PolicyStatisticsCollector>(
+          base::BindRepeating(&GetChromePolicyDetails), GetChromeSchema(),
+          GetPolicyService(), local_state, base::ThreadTaskRunnerHandle::Get());
   policy_statistics_collector_->Initialize();
 }
 

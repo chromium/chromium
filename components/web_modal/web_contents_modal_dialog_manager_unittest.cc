@@ -92,11 +92,12 @@ class WebContentsModalDialogManagerTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
-    delegate.reset(new TestWebContentsModalDialogManagerDelegate);
+    delegate = std::make_unique<TestWebContentsModalDialogManagerDelegate>();
     WebContentsModalDialogManager::CreateForWebContents(web_contents());
     manager = WebContentsModalDialogManager::FromWebContents(web_contents());
     manager->SetDelegate(delegate.get());
-    test_api.reset(new WebContentsModalDialogManager::TestApi(manager));
+    test_api =
+        std::make_unique<WebContentsModalDialogManager::TestApi>(manager);
   }
 
   void TearDown() override {

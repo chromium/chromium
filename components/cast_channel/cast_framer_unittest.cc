@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +33,7 @@ class CastFramerTest : public testing::Test {
 
     buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();
     buffer_->SetCapacity(MessageFramer::MessageHeader::max_message_size());
-    framer_.reset(new MessageFramer(buffer_.get()));
+    framer_ = std::make_unique<MessageFramer>(buffer_.get());
   }
 
   void WriteToBuffer(const std::string& data) {

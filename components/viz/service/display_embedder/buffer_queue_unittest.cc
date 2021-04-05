@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -131,8 +132,8 @@ class BufferQueueTest : public ::testing::Test,
       std::unique_ptr<TestSharedImageInterface> sii) {
     context_provider_ = TestContextProvider::Create(std::move(sii));
     context_provider_->BindToCurrentThread();
-    output_surface_.reset(new BufferQueue(
-        context_provider_->SharedImageInterface(), kFakeSurfaceHandle));
+    output_surface_ = std::make_unique<BufferQueue>(
+        context_provider_->SharedImageInterface(), kFakeSurfaceHandle);
     output_surface_->SetSyncTokenProvider(this);
   }
 

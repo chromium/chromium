@@ -4810,9 +4810,9 @@ TEST_P(AutofillManagerStructuredProfileTest, FormSubmittedSaveData) {
 // submissions are still received by AutocompleteHistoryManager.
 TEST_P(AutofillManagerStructuredProfileTest, FormSubmittedAutocompleteEnabled) {
   TestAutofillClient client;
-  autofill_manager_.reset(
-      new TestAutofillManager(autofill_driver_.get(), &client, &personal_data_,
-                              autocomplete_history_manager_.get()));
+  autofill_manager_ = std::make_unique<TestAutofillManager>(
+      autofill_driver_.get(), &client, &personal_data_,
+      autocomplete_history_manager_.get());
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
 
@@ -4859,9 +4859,9 @@ TEST_P(AutofillManagerStructuredProfileTest, ValuePatternsMetric) {
 TEST_P(AutofillManagerStructuredProfileTest,
        AutocompleteSuggestions_SomeWhenAutofillDisabled) {
   TestAutofillClient client;
-  autofill_manager_.reset(
-      new TestAutofillManager(autofill_driver_.get(), &client, &personal_data_,
-                              autocomplete_history_manager_.get()));
+  autofill_manager_ = std::make_unique<TestAutofillManager>(
+      autofill_driver_.get(), &client, &personal_data_,
+      autocomplete_history_manager_.get());
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
@@ -4889,9 +4889,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
 TEST_P(AutofillManagerStructuredProfileTest,
        AutocompleteSuggestions_AutofillDisabledAndFieldShouldNotAutocomplete) {
   TestAutofillClient client;
-  autofill_manager_.reset(
-      new TestAutofillManager(autofill_driver_.get(), &client, &personal_data_,
-                              autocomplete_history_manager_.get()));
+  autofill_manager_ = std::make_unique<TestAutofillManager>(
+      autofill_driver_.get(), &client, &personal_data_,
+      autocomplete_history_manager_.get());
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
@@ -4972,9 +4972,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
   replacements.SetScheme(url::kHttpScheme,
                          url::Component(0, strlen(url::kHttpScheme)));
   client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
-  autofill_manager_.reset(
-      new TestAutofillManager(autofill_driver_.get(), &client, &personal_data_,
-                              autocomplete_history_manager_.get()));
+  autofill_manager_ = std::make_unique<TestAutofillManager>(
+      autofill_driver_.get(), &client, &personal_data_,
+      autocomplete_history_manager_.get());
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
@@ -5011,9 +5011,9 @@ TEST_P(AutofillManagerStructuredProfileTest,
   replacements.SetScheme(url::kHttpScheme,
                          url::Component(0, strlen(url::kHttpScheme)));
   client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
-  autofill_manager_.reset(
-      new TestAutofillManager(autofill_driver_.get(), &client, &personal_data_,
-                              autocomplete_history_manager_.get()));
+  autofill_manager_ = std::make_unique<TestAutofillManager>(
+      autofill_driver_.get(), &client, &personal_data_,
+      autocomplete_history_manager_.get());
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(
@@ -5066,9 +5066,9 @@ TEST_F(
 TEST_P(AutofillManagerStructuredProfileTest,
        AutocompleteOffRespectedForAutocomplete) {
   TestAutofillClient client;
-  autofill_manager_.reset(
-      new TestAutofillManager(autofill_driver_.get(), &client, &personal_data_,
-                              autocomplete_history_manager_.get()));
+  autofill_manager_ = std::make_unique<TestAutofillManager>(
+      autofill_driver_.get(), &client, &personal_data_,
+      autocomplete_history_manager_.get());
   autofill_manager_->SetAutofillProfileEnabled(false);
   autofill_manager_->SetAutofillCreditCardEnabled(false);
   auto external_delegate = std::make_unique<TestAutofillExternalDelegate>(

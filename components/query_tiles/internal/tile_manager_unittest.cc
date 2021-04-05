@@ -4,6 +4,7 @@
 
 #include "components/query_tiles/internal/tile_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -121,7 +122,7 @@ class TileManagerTest : public testing::Test {
   void SaveTiles(const TileGroup& group, TileGroupStatus expected_status) {
     base::RunLoop loop;
     manager()->SaveTiles(
-        std::unique_ptr<TileGroup>(new TileGroup(group)),
+        std::make_unique<TileGroup>(group),
         base::BindOnce(&TileManagerTest::OnTilesSaved, base::Unretained(this),
                        loop.QuitClosure(), expected_status));
     loop.Run();

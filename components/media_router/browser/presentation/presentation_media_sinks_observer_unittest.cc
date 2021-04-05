@@ -32,11 +32,11 @@ class PresentationMediaSinksObserverTest : public ::testing::Test {
 
   void SetUp() override {
     EXPECT_CALL(router_, RegisterMediaSinksObserver(_)).WillOnce(Return(true));
-    observer_.reset(new PresentationMediaSinksObserver(
+    observer_ = std::make_unique<PresentationMediaSinksObserver>(
         &router_, &listener_,
         MediaSource::ForPresentationUrl(
             GURL("http://example.com/presentation.html")),
-        url::Origin::Create(GURL(kOrigin))));
+        url::Origin::Create(GURL(kOrigin)));
     EXPECT_TRUE(observer_->Init());
   }
 

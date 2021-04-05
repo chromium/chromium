@@ -4,6 +4,8 @@
 
 #include "components/dom_distiller/core/viewer.h"
 
+#include <memory>
+
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 #include "components/dom_distiller/core/distiller_ui_handle.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
@@ -64,7 +66,9 @@ class TestDomDistillerService : public DomDistillerServiceInterface {
 
 class DomDistillerViewerTest : public testing::Test {
  public:
-  void SetUp() override { service_.reset(new TestDomDistillerService()); }
+  void SetUp() override {
+    service_ = std::make_unique<TestDomDistillerService>();
+  }
 
  protected:
   std::unique_ptr<ViewerHandle> CreateViewRequest(

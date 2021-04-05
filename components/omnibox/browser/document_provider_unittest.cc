@@ -4,6 +4,7 @@
 
 #include "components/omnibox/browser/document_provider.h"
 
+#include <memory>
 #include <string>
 
 #include "base/json/json_reader.h"
@@ -108,7 +109,7 @@ class DocumentProviderTest : public testing::Test,
 DocumentProviderTest::DocumentProviderTest() {}
 
 void DocumentProviderTest::SetUp() {
-  client_.reset(new FakeAutocompleteProviderClient());
+  client_ = std::make_unique<FakeAutocompleteProviderClient>();
 
   TemplateURLService* turl_model = client_->GetTemplateURLService();
   turl_model->Load();

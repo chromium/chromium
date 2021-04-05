@@ -293,8 +293,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     model_type_state.set_cache_guid(kDefaultCacheGuid);
     EXPECT_TRUE(table()->UpdateModelTypeState(syncer::AUTOFILL_WALLET_METADATA,
                                               model_type_state));
-    bridge_.reset(new AutofillWalletMetadataSyncBridge(
-        mock_processor_.CreateForwardingProcessor(), &backend_));
+    bridge_ = std::make_unique<AutofillWalletMetadataSyncBridge>(
+        mock_processor_.CreateForwardingProcessor(), &backend_);
   }
 
   void StopSyncing() {

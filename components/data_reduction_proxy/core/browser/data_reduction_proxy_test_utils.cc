@@ -5,6 +5,7 @@
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_test_utils.h"
 
 #include <map>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -209,10 +210,11 @@ DataReductionProxyTestContext::Builder::Build() {
 
   if (use_mock_request_options_) {
     test_context_flags |= USE_MOCK_REQUEST_OPTIONS;
-    request_options.reset(new MockDataReductionProxyRequestOptions(client_));
+    request_options =
+        std::make_unique<MockDataReductionProxyRequestOptions>(client_);
   } else {
-    request_options.reset(
-        new TestDataReductionProxyRequestOptions(client_, "1.2.3.4"));
+    request_options = std::make_unique<TestDataReductionProxyRequestOptions>(
+        client_, "1.2.3.4");
   }
 
   if (!settings_)

@@ -4,6 +4,8 @@
 
 #include "components/offline_pages/core/prefetch/store/prefetch_store_test_util.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -210,13 +212,14 @@ void PrefetchStoreTestUtil::BuildStore() {
   if (!temp_directory_.CreateUniqueTempDir())
     DVLOG(1) << "temp_directory_ not created";
 
-  owned_store_.reset(new PrefetchStore(base::ThreadTaskRunnerHandle::Get(),
-                                       temp_directory_.GetPath()));
+  owned_store_ = std::make_unique<PrefetchStore>(
+      base::ThreadTaskRunnerHandle::Get(), temp_directory_.GetPath());
   store_ = owned_store_.get();
 }
 
 void PrefetchStoreTestUtil::BuildStoreInMemory() {
-  owned_store_.reset(new PrefetchStore(base::ThreadTaskRunnerHandle::Get()));
+  owned_store_ =
+      std::make_unique<PrefetchStore>(base::ThreadTaskRunnerHandle::Get());
   store_ = owned_store_.get();
 }
 

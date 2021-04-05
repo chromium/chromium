@@ -4,6 +4,8 @@
 
 #include "components/download/content/public/all_download_item_notifier.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "content/public/test/mock_download_manager.h"
@@ -58,8 +60,8 @@ class AllDownloadItemNotifierTest : public testing::Test {
 
   void SetNotifier() {
     EXPECT_CALL(*download_manager_, AddObserver(_));
-    notifier_.reset(
-        new AllDownloadItemNotifier(download_manager_.get(), &observer_));
+    notifier_ = std::make_unique<AllDownloadItemNotifier>(
+        download_manager_.get(), &observer_);
   }
 
   void ClearNotifier() { notifier_.reset(); }

@@ -120,7 +120,7 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
                                 /*is_off_the_record=*/false);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
 
-    requester_.reset(new TestAuthenticationRequester());
+    requester_ = std::make_unique<TestAuthenticationRequester>();
     autofill_driver_ =
         std::make_unique<testing::NiceMock<TestAutofillDriver>>();
     autofill_driver_->SetAuthenticator(new TestInternalAuthenticator());

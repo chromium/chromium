@@ -8,6 +8,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -324,7 +325,8 @@ OmniboxView::OmniboxView(OmniboxEditController* controller,
     : controller_(controller) {
   // |client| can be null in tests.
   if (client) {
-    model_.reset(new OmniboxEditModel(this, controller, std::move(client)));
+    model_ =
+        std::make_unique<OmniboxEditModel>(this, controller, std::move(client));
   }
 }
 

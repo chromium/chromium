@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <cmath>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/macros.h"
@@ -116,7 +117,7 @@ InstanceIDDriverTest::~InstanceIDDriverTest() {
 }
 
 void InstanceIDDriverTest::SetUp() {
-  gcm_driver_.reset(new FakeGCMDriverForInstanceID);
+  gcm_driver_ = std::make_unique<FakeGCMDriverForInstanceID>();
   RecreateInstanceIDDriver();
 }
 
@@ -129,7 +130,7 @@ void InstanceIDDriverTest::TearDown() {
 }
 
 void InstanceIDDriverTest::RecreateInstanceIDDriver() {
-  driver_.reset(new InstanceIDDriver(gcm_driver_.get()));
+  driver_ = std::make_unique<InstanceIDDriver>(gcm_driver_.get());
 }
 
 void InstanceIDDriverTest::WaitForAsyncOperation() {

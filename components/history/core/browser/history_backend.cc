@@ -298,7 +298,7 @@ void HistoryBackend::Init(
   // HistoryBackend is created on the UI thread by HistoryService, then the
   // HistoryBackend::Init() method is called on the DB thread. Create the
   // base::SupportsUserData on the DB thread since it is not thread-safe.
-  supports_user_data_helper_.reset(new HistoryBackendHelper);
+  supports_user_data_helper_ = std::make_unique<HistoryBackendHelper>();
 
   if (!force_fail)
     InitImpl(history_database_params);
@@ -815,9 +815,9 @@ void HistoryBackend::InitImpl(
   DeleteFTSIndexDatabases();
 
   // History database.
-  db_.reset(new HistoryDatabase(
+  db_ = std::make_unique<HistoryDatabase>(
       history_database_params.download_interrupt_reason_none,
-      history_database_params.download_interrupt_reason_crash));
+      history_database_params.download_interrupt_reason_crash);
 
   // Unretained to avoid a ref loop with db_.
   db_->set_error_callback(base::BindRepeating(

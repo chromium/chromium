@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
 
+#include <memory>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
@@ -60,9 +62,9 @@ class UserCloudPolicyStoreTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
-    store_.reset(new UserCloudPolicyStore(policy_file(), key_file(),
-                                          base::ThreadTaskRunnerHandle::Get()));
-    external_data_manager_.reset(new MockCloudExternalDataManager);
+    store_ = std::make_unique<UserCloudPolicyStore>(
+        policy_file(), key_file(), base::ThreadTaskRunnerHandle::Get());
+    external_data_manager_ = std::make_unique<MockCloudExternalDataManager>();
     external_data_manager_->SetPolicyStore(store_.get());
     store_->SetSigninAccountId(PolicyBuilder::GetFakeAccountIdForTesting());
     EXPECT_EQ(PolicyBuilder::GetFakeAccountIdForTesting(),

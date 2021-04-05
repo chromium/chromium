@@ -5,6 +5,7 @@
 #include "components/speech/chunked_byte_buffer.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/big_endian.h"
@@ -70,7 +71,7 @@ void ChunkedByteBuffer::Append(const uint8_t* start, size_t length) {
       if (partial_chunk_->ExpectedContentLength() == 0) {
         // Handle zero-byte chunks.
         chunks_.push_back(std::move(partial_chunk_));
-        partial_chunk_.reset(new Chunk());
+        partial_chunk_ = std::make_unique<Chunk>();
       } else {
         partial_chunk_->content->reserve(
             partial_chunk_->ExpectedContentLength());
@@ -79,7 +80,7 @@ void ChunkedByteBuffer::Append(const uint8_t* start, size_t length) {
       DCHECK_EQ(partial_chunk_->content->size(),
                 partial_chunk_->ExpectedContentLength());
       chunks_.push_back(std::move(partial_chunk_));
-      partial_chunk_.reset(new Chunk());
+      partial_chunk_ = std::make_unique<Chunk>();
     }
   }
   DCHECK_EQ(next_data, start + length);
@@ -108,7 +109,7 @@ std::unique_ptr<std::vector<uint8_t>> ChunkedByteBuffer::PopChunk() {
 
 void ChunkedByteBuffer::Clear() {
   chunks_.clear();
-  partial_chunk_.reset(new Chunk());
+  partial_chunk_ = std::make_unique<Chunk>();
   total_bytes_stored_ = 0;
 }
 

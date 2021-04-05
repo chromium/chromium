@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
@@ -252,8 +254,8 @@ void GCMDriverTest::CreateDriver() {
       base::ThreadTaskRunnerHandle::Get(), io_thread_.task_runner(),
       task_environment_.GetMainThreadTaskRunner());
 
-  gcm_app_handler_.reset(new FakeGCMAppHandler);
-  gcm_connection_observer_.reset(new FakeGCMConnectionObserver);
+  gcm_app_handler_ = std::make_unique<FakeGCMAppHandler>();
+  gcm_connection_observer_ = std::make_unique<FakeGCMConnectionObserver>();
 
   driver_->AddConnectionObserver(gcm_connection_observer_.get());
 }

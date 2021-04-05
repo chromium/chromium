@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <string>
 
 #include "base/auto_reset.h"
@@ -254,7 +255,7 @@ void WebViewPlugin::DidFinishLoading() {
 
 void WebViewPlugin::DidFailLoading(const WebURLError& error) {
   DCHECK(!error_);
-  error_.reset(new WebURLError(error));
+  error_ = std::make_unique<WebURLError>(error);
 }
 
 WebViewPlugin::WebViewHelper::WebViewHelper(WebViewPlugin* plugin,

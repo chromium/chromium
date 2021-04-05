@@ -4,6 +4,8 @@
 
 #include "components/guest_view/renderer/guest_view_container.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
@@ -56,8 +58,8 @@ GuestViewContainer::GuestViewContainer(content::RenderFrame* render_frame)
       in_destruction_(false),
       destruction_isolate_(nullptr),
       element_resize_isolate_(nullptr) {
-  render_frame_lifetime_observer_.reset(
-      new RenderFrameLifetimeObserver(this, render_frame_));
+  render_frame_lifetime_observer_ =
+      std::make_unique<RenderFrameLifetimeObserver>(this, render_frame_);
 }
 
 GuestViewContainer::~GuestViewContainer() {

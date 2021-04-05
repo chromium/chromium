@@ -44,15 +44,15 @@ class BidirectionalStreamTestURLRequestContextGetter
 
   net::URLRequestContext* GetURLRequestContext() override {
     if (!request_context_) {
-      request_context_.reset(
-          new net::TestURLRequestContext(true /* delay_initialization */));
+      request_context_ = std::make_unique<net::TestURLRequestContext>(
+          true /* delay_initialization */);
       auto mock_host_resolver = std::make_unique<net::MockHostResolver>();
-      host_resolver_.reset(
-          new net::MappedHostResolver(std::move(mock_host_resolver)));
+      host_resolver_ = std::make_unique<net::MappedHostResolver>(
+          std::move(mock_host_resolver));
       UpdateHostResolverRules();
       auto test_cert = net::ImportCertFromFile(net::GetTestCertsDirectory(),
                                                "quic-chain.pem");
-      mock_cert_verifier_.reset(new net::MockCertVerifier());
+      mock_cert_verifier_ = std::make_unique<net::MockCertVerifier>();
       net::CertVerifyResult verify_result;
       verify_result.verified_cert = test_cert;
       verify_result.is_issued_by_known_root = true;

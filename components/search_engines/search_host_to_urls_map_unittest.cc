@@ -40,7 +40,7 @@ void SearchHostToURLsMapTest::SetUp() {
   data.SetURL("http://" + host_ + "/path2");
   template_urls_.push_back(std::make_unique<TemplateURL>(data));
 
-  provider_map_.reset(new SearchHostToURLsMap);
+  provider_map_ = std::make_unique<SearchHostToURLsMap>();
   provider_map_->Init(template_urls_, SearchTermsData());
 }
 

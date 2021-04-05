@@ -4,6 +4,8 @@
 
 #include "components/download/internal/background_service/in_memory_download.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/message_loop/message_pump_type.h"
@@ -88,7 +90,7 @@ class InMemoryDownloadTest : public testing::Test {
   ~InMemoryDownloadTest() override = default;
 
   void SetUp() override {
-    io_thread_.reset(new base::Thread("Network and Blob IO thread"));
+    io_thread_ = std::make_unique<base::Thread>("Network and Blob IO thread");
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     io_thread_->StartWithOptions(options);
 

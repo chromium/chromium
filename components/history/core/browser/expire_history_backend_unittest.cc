@@ -155,7 +155,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
 
     base::FilePath history_name = path().Append(kHistoryFilename);
-    main_db_.reset(new TestHistoryDatabase);
+    main_db_ = std::make_unique<TestHistoryDatabase>();
     if (main_db_->Init(history_name) != sql::INIT_OK)
       main_db_.reset();
 
@@ -164,7 +164,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
     if (thumb_db_->Init(thumb_name) != sql::INIT_OK)
       thumb_db_.reset();
 
-    pref_service_.reset(new TestingPrefServiceSimple);
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     TopSitesImpl::RegisterPrefs(pref_service_->registry());
 
     expirer_.SetDatabases(main_db_.get(), thumb_db_.get());

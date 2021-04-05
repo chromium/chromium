@@ -181,7 +181,7 @@ class FlagsStateTest : public ::testing::Test,
     while (os_other_than_current == FlagsState::GetCurrentPlatform())
       os_other_than_current <<= 1;
     kEntries[2].supported_platforms = os_other_than_current;
-    flags_state_.reset(new FlagsState(kEntries, this));
+    flags_state_ = std::make_unique<FlagsState>(kEntries, this);
   }
 
   ~FlagsStateTest() override {

@@ -4,6 +4,8 @@
 
 #include "components/sync/test/engine/test_engine_components_factory.h"
 
+#include <memory>
+
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/test/engine/fake_sync_scheduler.h"
 
@@ -30,10 +32,10 @@ std::unique_ptr<SyncCycleContext> TestEngineComponentsFactory::BuildContext(
     base::TimeDelta poll_interval) {
   // Tests don't wire up listeners.
   std::vector<SyncEngineEventListener*> empty_listeners;
-  return std::unique_ptr<SyncCycleContext>(new SyncCycleContext(
+  return std::make_unique<SyncCycleContext>(
       connection_manager, monitor, empty_listeners, debug_info_getter,
       model_type_registry, invalidator_client_id, cache_guid, store_birthday,
-      bag_of_chips, poll_interval));
+      bag_of_chips, poll_interval);
 }
 
 }  // namespace syncer

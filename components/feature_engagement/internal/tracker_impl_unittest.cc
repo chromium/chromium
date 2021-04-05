@@ -219,11 +219,11 @@ class TrackerImplTest : public ::testing::Test {
         std::make_unique<TestTrackerDisplayLockController>();
     display_lock_controller_ = display_lock_controller.get();
 
-    tracker_.reset(new TrackerImpl(
+    tracker_ = std::make_unique<TrackerImpl>(
         std::move(event_model), std::move(availability_model),
         std::move(configuration), std::move(display_lock_controller),
         std::make_unique<OnceConditionValidator>(),
-        std::make_unique<TestTimeProvider>()));
+        std::make_unique<TestTimeProvider>());
   }
 
   void VerifyEventTriggerEvents(const base::Feature& feature, uint32_t count) {

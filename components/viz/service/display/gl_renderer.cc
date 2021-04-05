@@ -3681,7 +3681,7 @@ void GLRenderer::SetUseProgram(const ProgramKey& program_key_no_color,
   // Create and set the program if needed.
   std::unique_ptr<Program>& program = program_cache_[program_key];
   if (!program) {
-    program.reset(new Program);
+    program = std::make_unique<Program>();
     program->Initialize(output_surface_->context_provider(), program_key);
   }
   DCHECK(program);

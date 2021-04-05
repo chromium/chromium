@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/common/ruleset_dealer.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/files/file.h"
@@ -50,7 +51,9 @@ class SubresourceFilterRulesetDealerTest : public ::testing::Test {
 
   RulesetDealer* ruleset_dealer() { return ruleset_dealer_.get(); }
 
-  void ResetRulesetDealer() { ruleset_dealer_.reset(new RulesetDealer); }
+  void ResetRulesetDealer() {
+    ruleset_dealer_ = std::make_unique<RulesetDealer>();
+  }
 
   bool has_cached_ruleset() const {
     return ruleset_dealer_->has_cached_ruleset();

@@ -92,9 +92,9 @@ payments::FullCardRequest* CreditCardCVCAuthenticator::GetFullCardRequest() {
   // CreditCardAccessManager to retrieve cards from payments instead of calling
   // this function directly.
   if (!full_card_request_) {
-    full_card_request_.reset(
-        new payments::FullCardRequest(client_, client_->GetPaymentsClient(),
-                                      client_->GetPersonalDataManager()));
+    full_card_request_ = std::make_unique<payments::FullCardRequest>(
+        client_, client_->GetPaymentsClient(),
+        client_->GetPersonalDataManager());
   }
   return full_card_request_.get();
 }

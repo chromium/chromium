@@ -23,6 +23,7 @@
 
 #include <algorithm>
 #include <array>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -68,7 +69,7 @@ class HistoryServiceTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     history_dir_ = temp_dir_.GetPath().AppendASCII("HistoryServiceTest");
     ASSERT_TRUE(base::CreateDirectory(history_dir_));
-    history_service_.reset(new history::HistoryService);
+    history_service_ = std::make_unique<history::HistoryService>();
     if (!history_service_->Init(
             TestHistoryDatabaseParamsForPath(history_dir_))) {
       history_service_.reset();

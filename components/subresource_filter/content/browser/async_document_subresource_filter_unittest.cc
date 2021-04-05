@@ -41,8 +41,8 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
     ASSERT_NO_FATAL_FAILURE(test_ruleset_creator_.CreateRulesetWithRules(
         rules, &test_ruleset_pair_));
 
-    dealer_handle_.reset(
-        new VerifiedRulesetDealer::Handle(blocking_task_runner_));
+    dealer_handle_ =
+        std::make_unique<VerifiedRulesetDealer::Handle>(blocking_task_runner_);
   }
 
   void TearDown() override {

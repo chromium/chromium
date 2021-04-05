@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 
+#include <memory>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
@@ -51,10 +53,10 @@ class UserCloudPolicyManagerTest : public testing::Test {
     store_ = new MockUserCloudPolicyStore();
     EXPECT_CALL(*store_, Load());
     const auto task_runner = task_environment_.GetMainThreadTaskRunner();
-    manager_.reset(new UserCloudPolicyManager(
+    manager_ = std::make_unique<UserCloudPolicyManager>(
         std::unique_ptr<UserCloudPolicyStore>(store_), base::FilePath(),
         std::unique_ptr<CloudExternalDataManager>(), task_runner,
-        network::TestNetworkConnectionTracker::CreateGetter()));
+        network::TestNetworkConnectionTracker::CreateGetter());
     manager_->Init(&schema_registry_);
     manager_->AddObserver(&observer_);
     Mock::VerifyAndClearExpectations(store_);

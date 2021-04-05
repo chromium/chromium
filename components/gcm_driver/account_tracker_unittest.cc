@@ -5,6 +5,7 @@
 #include "components/gcm_driver/account_tracker.h"
 
 #include <algorithm>
+#include <memory>
 #include <vector>
 
 #include "base/strings/stringprintf.h"
@@ -233,8 +234,8 @@ class AccountTrackerTest : public testing::Test {
   ~AccountTrackerTest() override {}
 
   void SetUp() override {
-    account_tracker_.reset(
-        new AccountTracker(identity_test_env_.identity_manager()));
+    account_tracker_ =
+        std::make_unique<AccountTracker>(identity_test_env_.identity_manager());
     account_tracker_->AddObserver(&observer_);
   }
 

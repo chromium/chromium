@@ -91,7 +91,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesWordPhraseQuery) {
       model->AddFolder(model->other_node(), 0, u"foo");
   std::vector<const BookmarkNode*> nodes;
   QueryFields query;
-  query.word_phrase_query.reset(new std::u16string);
+  query.word_phrase_query = std::make_unique<std::u16string>();
   // No nodes are returned for empty string.
   *query.word_phrase_query = u"";
   GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
@@ -145,7 +145,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesUrl) {
 
   std::vector<const BookmarkNode*> nodes;
   QueryFields query;
-  query.url.reset(new std::u16string);
+  query.url = std::make_unique<std::u16string>();
   *query.url = u"https://www.google.com/";
   GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
   ASSERT_EQ(1U, nodes.size());
@@ -177,7 +177,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesTitle) {
 
   std::vector<const BookmarkNode*> nodes;
   QueryFields query;
-  query.title.reset(new std::u16string);
+  query.title = std::make_unique<std::u16string>();
   *query.title = u"Google";
   GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
   ASSERT_EQ(1U, nodes.size());
@@ -211,9 +211,9 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
   QueryFields query;
 
   // Test all fields matching.
-  query.word_phrase_query.reset(new std::u16string(u"www"));
-  query.url.reset(new std::u16string(u"https://www.google.com/"));
-  query.title.reset(new std::u16string(u"Google"));
+  query.word_phrase_query = std::make_unique<std::u16string>(u"www");
+  query.url = std::make_unique<std::u16string>(u"https://www.google.com/");
+  query.title = std::make_unique<std::u16string>(u"Google");
   GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
   ASSERT_EQ(1U, nodes.size());
   EXPECT_TRUE(nodes[0] == node1);
@@ -235,7 +235,7 @@ TEST_F(BookmarkUtilsTest, GetBookmarksMatchingPropertiesConjunction) {
   // Test two fields matching with one non-matching field.
   for (size_t i = 0; i < base::size(fields); i++) {
     std::unique_ptr<std::u16string> original_value(fields[i]->release());
-    fields[i]->reset(new std::u16string(u"fjdkslafjkldsa"));
+    *fields[i] = std::make_unique<std::u16string>(u"fjdkslafjkldsa");
     GetBookmarksMatchingProperties(model.get(), query, 100, &nodes);
     ASSERT_EQ(0U, nodes.size());
     nodes.clear();

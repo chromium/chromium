@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "components/signin/public/webdata/token_service_table.h"
+
+#include <memory>
+
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,8 +28,8 @@ class TokenServiceTableTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
-    table_.reset(new TokenServiceTable);
-    db_.reset(new WebDatabase);
+    table_ = std::make_unique<TokenServiceTable>();
+    db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
   }

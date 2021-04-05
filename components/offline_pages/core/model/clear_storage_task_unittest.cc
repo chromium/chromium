@@ -130,7 +130,7 @@ void ClearStorageTaskTest::Initialize(
   // Adding pages based on |page_settings|.
   for (const auto& setting : page_settings)
     AddPages(setting);
-  archive_manager_.reset(new TestArchiveManager(TemporaryDir()));
+  archive_manager_ = std::make_unique<TestArchiveManager>(TemporaryDir());
 }
 
 void ClearStorageTaskTest::OnClearStorageDone(size_t cleared_page_count,

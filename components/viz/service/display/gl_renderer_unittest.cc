@@ -2477,9 +2477,9 @@ class MockOutputSurfaceTest : public GLRendererTest {
     resource_provider_ = std::make_unique<DisplayResourceProviderGL>(
         output_surface_->context_provider());
 
-    renderer_.reset(new FakeRendererGL(&settings_, &debug_settings_,
-                                       output_surface_.get(),
-                                       resource_provider_.get()));
+    renderer_ = std::make_unique<FakeRendererGL>(&settings_, &debug_settings_,
+                                                 output_surface_.get(),
+                                                 resource_provider_.get());
     renderer_->Initialize();
 
     EXPECT_CALL(*output_surface_, EnsureBackbuffer()).Times(1);

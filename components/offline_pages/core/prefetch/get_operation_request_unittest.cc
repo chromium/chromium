@@ -4,6 +4,8 @@
 
 #include "components/offline_pages/core/prefetch/get_operation_request.h"
 
+#include <memory>
+
 #include "base/test/mock_callback.h"
 #include "components/offline_pages/core/prefetch/prefetch_request_test_base.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
@@ -39,9 +41,9 @@ class GetOperationRequestTest : public PrefetchRequestTestBase {
  public:
   std::unique_ptr<GetOperationRequest> CreateRequest(
       PrefetchRequestFinishedCallback callback) {
-    return std::unique_ptr<GetOperationRequest>(new GetOperationRequest(
+    return std::make_unique<GetOperationRequest>(
         kTestOperationName, kTestChannel, shared_url_loader_factory(),
-        std::move(callback)));
+        std::move(callback));
   }
 };
 

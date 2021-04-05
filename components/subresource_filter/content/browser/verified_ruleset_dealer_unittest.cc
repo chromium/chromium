@@ -111,7 +111,7 @@ class SubresourceFilterVerifiedRulesetDealerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     rulesets_.CreateRulesets(true /* many_rules */);
-    ruleset_dealer_.reset(new VerifiedRulesetDealer);
+    ruleset_dealer_ = std::make_unique<VerifiedRulesetDealer>();
   }
 
   const TestRulesets& rulesets() const { return rulesets_; }
@@ -615,7 +615,8 @@ class SubresourceFilterVerifiedRulesetHandleTest : public ::testing::Test {
   void SetUp() override {
     rulesets_.CreateRulesets(true /* many_rules */);
     task_runner_ = new base::TestSimpleTaskRunner;
-    dealer_handle_.reset(new VerifiedRulesetDealer::Handle(task_runner_));
+    dealer_handle_ =
+        std::make_unique<VerifiedRulesetDealer::Handle>(task_runner_);
   }
 
   void TearDown() override {
@@ -636,8 +637,7 @@ class SubresourceFilterVerifiedRulesetHandleTest : public ::testing::Test {
   }
 
   std::unique_ptr<VerifiedRuleset::Handle> CreateRulesetHandle() {
-    return std::unique_ptr<VerifiedRuleset::Handle>(
-        new VerifiedRuleset::Handle(dealer_handle()));
+    return std::make_unique<VerifiedRuleset::Handle>(dealer_handle());
   }
 
  private:

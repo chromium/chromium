@@ -271,7 +271,7 @@ void RlzLibTest::SetUp() {
   m_rlz_test_helper_.SetUp();
 
   delegate_ = new TestRLZTrackerDelegate;
-  tracker_.reset(new TestRLZTracker());
+  tracker_ = std::make_unique<TestRLZTracker>();
   RLZTracker::SetRlzDelegate(base::WrapUnique(delegate_));
 
   // Make sure a non-organic brand code is set in the registry or the RLZTracker

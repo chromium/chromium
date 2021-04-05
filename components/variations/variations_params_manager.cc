@@ -4,6 +4,7 @@
 
 #include "components/variations/variations_params_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -87,7 +88,7 @@ void VariationParamsManager::ClearAllVariationParams() {
   testing::ClearAllVariationParams();
   // When the scoped feature list is destroyed, it puts back the original
   // feature list that was there when InitWithFeatureList() was called.
-  scoped_feature_list_.reset(new base::test::ScopedFeatureList());
+  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   // Ensure the destructor is called properly, so it can be freshly recreated.
   field_trial_list_.reset();
   field_trial_list_ = std::make_unique<base::FieldTrialList>(nullptr);

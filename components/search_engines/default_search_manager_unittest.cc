@@ -83,7 +83,8 @@ class DefaultSearchManagerTest : public testing::Test {
   DefaultSearchManagerTest() {}
 
   void SetUp() override {
-    pref_service_.reset(new sync_preferences::TestingPrefServiceSyncable);
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     DefaultSearchManager::RegisterProfilePrefs(pref_service_->registry());
     TemplateURLPrepopulateData::RegisterProfilePrefs(pref_service_->registry());
   }

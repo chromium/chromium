@@ -130,8 +130,8 @@ class CleanupTaskTest : public RequestQueueTaskTestBase {
 
 void CleanupTaskTest::SetUp() {
   DeviceConditions conditions;
-  policy_.reset(new OfflinerPolicy());
-  notifier_.reset(new RequestNotifierStub());
+  policy_ = std::make_unique<OfflinerPolicy>();
+  notifier_ = std::make_unique<RequestNotifierStub>();
   MakeFactoryAndTask();
 
   InitializeStore();
@@ -159,8 +159,8 @@ void CleanupTaskTest::QueueRequests(const SavePageRequest& request1,
 }
 
 void CleanupTaskTest::MakeFactoryAndTask() {
-  factory_.reset(
-      new CleanupTaskFactory(policy_.get(), notifier_.get(), &event_logger_));
+  factory_ = std::make_unique<CleanupTaskFactory>(
+      policy_.get(), notifier_.get(), &event_logger_);
   DeviceConditions conditions;
   task_ = factory_->CreateCleanupTask(&store_);
 }

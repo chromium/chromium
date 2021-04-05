@@ -5,6 +5,7 @@
 #include "components/viz/test/test_in_process_context_provider.h"
 
 #include <stdint.h>
+#include <memory>
 #include <utility>
 
 #include "base/lazy_instance.h"
@@ -121,9 +122,9 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
         holder->gpu_service()->gr_shader_cache(), activity_flags_);
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
 
-    cache_controller_.reset(
-        new ContextCacheController(raster_context_->GetContextSupport(),
-                                   base::ThreadTaskRunnerHandle::Get()));
+    cache_controller_ = std::make_unique<ContextCacheController>(
+        raster_context_->GetContextSupport(),
+        base::ThreadTaskRunnerHandle::Get());
 
     caps_ = raster_context_->GetCapabilities();
   } else {
@@ -136,9 +137,9 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
         &gpu_memory_buffer_manager_, &image_factory_,
         base::ThreadTaskRunnerHandle::Get(), false /* oop_raster */,
         display_controller_.get());
-    cache_controller_.reset(
-        new ContextCacheController(gles2_context_->GetImplementation(),
-                                   base::ThreadTaskRunnerHandle::Get()));
+    cache_controller_ = std::make_unique<ContextCacheController>(
+        gles2_context_->GetImplementation(),
+        base::ThreadTaskRunnerHandle::Get());
     raster_implementation_gles2_ =
         std::make_unique<gpu::raster::RasterImplementationGLES>(
             gles2_context_->GetImplementation(), ContextSupport());
@@ -187,9 +188,9 @@ class GrDirectContext* TestInProcessContextProvider::GrContext() {
   size_t max_glyph_cache_texture_bytes;
   gpu::DefaultGrCacheLimitsForTests(&max_resource_cache_bytes,
                                     &max_glyph_cache_texture_bytes);
-  gr_context_.reset(new skia_bindings::GrContextForGLES2Interface(
+  gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
       ContextGL(), ContextSupport(), ContextCapabilities(),
-      max_resource_cache_bytes, max_glyph_cache_texture_bytes));
+      max_resource_cache_bytes, max_glyph_cache_texture_bytes);
   cache_controller_->SetGrContext(gr_context_->get());
   return gr_context_->get();
 }

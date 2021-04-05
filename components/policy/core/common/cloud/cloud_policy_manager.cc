@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -152,9 +153,9 @@ void CloudPolicyManager::CreateComponentCloudPolicyService(
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   std::unique_ptr<ResourceCache> resource_cache(new ResourceCache(
       policy_cache_path, task_runner, /* max_cache_size */ base::nullopt));
-  component_policy_service_.reset(new ComponentCloudPolicyService(
+  component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
       policy_type, policy_source, this, schema_registry, core(), client,
-      std::move(resource_cache), task_runner));
+      std::move(resource_cache), task_runner);
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 }
 

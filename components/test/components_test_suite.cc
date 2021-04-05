@@ -129,7 +129,8 @@ class ComponentsUnitTestEventListener : public testing::EmptyTestEventListener {
 #if defined(OS_IOS)
     ios_initializer_.reset(new IosComponentsTestInitializer());
 #else
-    content_initializer_.reset(new content::TestContentClientInitializer());
+    content_initializer_ =
+        std::make_unique<content::TestContentClientInitializer>();
 #endif
   }
 

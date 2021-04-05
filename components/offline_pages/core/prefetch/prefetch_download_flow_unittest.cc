@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_downloader_impl.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -40,7 +41,7 @@ class PrefetchDownloadFlowTest : public PrefetchTaskTestBase {
   void SetUp() override {
     PrefetchTaskTestBase::SetUp();
 
-    prefetch_service_taco_.reset(new PrefetchServiceTestTaco);
+    prefetch_service_taco_ = std::make_unique<PrefetchServiceTestTaco>();
     prefetch_service_taco_->SetPrefService(std::move(prefs_));
     prefetch_prefs::SetEnabledByServer(prefetch_service_taco_->pref_service(),
                                        true);

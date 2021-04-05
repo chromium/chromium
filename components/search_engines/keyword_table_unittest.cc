@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -30,8 +31,8 @@ class KeywordTableTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
-    table_.reset(new KeywordTable);
-    db_.reset(new WebDatabase);
+    table_ = std::make_unique<KeywordTable>();
+    db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
   }

@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/location.h"
@@ -147,7 +149,7 @@ void AutofillWebDataBackendImpl::NotifyThatSyncHasStarted(
 base::SupportsUserData* AutofillWebDataBackendImpl::GetDBUserData() {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!user_data_)
-    user_data_.reset(new SupportsUserDataAggregatable());
+    user_data_ = std::make_unique<SupportsUserDataAggregatable>();
   return user_data_.get();
 }
 

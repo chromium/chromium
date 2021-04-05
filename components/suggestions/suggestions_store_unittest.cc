@@ -84,7 +84,8 @@ class SuggestionsStoreTest : public testing::Test {
 
   void SetUp() override {
     SuggestionsStore::RegisterProfilePrefs(pref_service_->registry());
-    suggestions_store_.reset(new SuggestionsStore(pref_service_.get()));
+    suggestions_store_ =
+        std::make_unique<SuggestionsStore>(pref_service_.get());
 
     test_clock_.SetNow(base::Time::FromInternalValue(13063394337546738));
     suggestions_store_->SetClockForTesting(&test_clock_);

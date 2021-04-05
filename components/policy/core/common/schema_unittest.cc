@@ -846,7 +846,7 @@ TEST(SchemaTest, Validate) {
     root.Remove(root.GetSize() - 1, nullptr);
 
     // Invalid property.
-    dict_value.reset(new base::DictionaryValue());
+    dict_value = std::make_unique<base::DictionaryValue>();
     dict_value->SetBoolean("two", true);
     root.Append(std::move(dict_value));
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);

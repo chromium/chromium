@@ -193,8 +193,8 @@ void TestProvider::AddResultsWithSearchTermsArgs(
     match.description = match.fill_into_edit;
     match.description_class.push_back(
         ACMatchClassification(0, ACMatchClassification::NONE));
-    match.search_terms_args.reset(
-        new TemplateURLRef::SearchTermsArgs(search_terms_args));
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(search_terms_args);
     if (!match_keyword_.empty()) {
       match.keyword = match_keyword_;
       ASSERT_NE(nullptr,
@@ -491,8 +491,8 @@ void AutocompleteProviderTest::ResetControllerWithKeywordProvider() {
 
 void AutocompleteProviderTest::ResetControllerWithType(int type) {
   EXPECT_FALSE(client_owned_);
-  controller_.reset(
-      new AutocompleteController(base::WrapUnique(client_), type));
+  controller_ =
+      std::make_unique<AutocompleteController>(base::WrapUnique(client_), type);
   client_owned_ = true;
 }
 
@@ -565,8 +565,8 @@ void AutocompleteProviderTest::RunAssistedQueryStatsTest(
                             aqs_test_data[i].match_type);
     match.allowed_to_be_default_match = true;
     match.keyword = base::ASCIIToUTF16(kTestTemplateURLKeyword);
-    match.search_terms_args.reset(
-        new TemplateURLRef::SearchTermsArgs(std::u16string()));
+    match.search_terms_args =
+        std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
     match.subtypes = aqs_test_data[i].subtypes;
     matches.push_back(match);
   }
@@ -989,8 +989,8 @@ TEST_F(AutocompleteProviderTest, GetDestinationURL) {
   EXPECT_TRUE(url.path().empty());
 
   // search_terms_args needs to be set.
-  match.search_terms_args.reset(
-      new TemplateURLRef::SearchTermsArgs(std::u16string()));
+  match.search_terms_args =
+      std::make_unique<TemplateURLRef::SearchTermsArgs>(std::u16string());
   url = GetDestinationURL(match, base::TimeDelta::FromMilliseconds(2456));
   EXPECT_TRUE(url.path().empty());
 

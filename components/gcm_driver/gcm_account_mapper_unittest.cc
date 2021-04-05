@@ -4,6 +4,7 @@
 
 #include "components/gcm_driver/gcm_account_mapper.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -294,7 +295,7 @@ void GCMAccountMapperTest::Restart() {
   if (account_mapper_)
     account_mapper_->ShutdownHandler();
   gcm_driver_.RemoveAppHandler(kGCMAccountMapperAppId);
-  account_mapper_.reset(new GCMAccountMapper(&gcm_driver_));
+  account_mapper_ = std::make_unique<GCMAccountMapper>(&gcm_driver_);
   account_mapper_->SetClockForTesting(&clock_);
 }
 

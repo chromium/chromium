@@ -4,6 +4,8 @@
 
 #include "components/security_interstitials/content/content_metrics_helper.h"
 
+#include <memory>
+
 #include "components/captive_portal/core/buildflags.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/web_contents.h"
@@ -26,8 +28,8 @@ ContentMetricsHelper::~ContentMetricsHelper() = default;
 void ContentMetricsHelper::StartRecordingCaptivePortalMetrics(
     captive_portal::CaptivePortalService* captive_portal_service,
     bool overridable) {
-  captive_portal_recorder_.reset(
-      new CaptivePortalMetricsRecorder(captive_portal_service, overridable));
+  captive_portal_recorder_ = std::make_unique<CaptivePortalMetricsRecorder>(
+      captive_portal_service, overridable);
 }
 #endif
 

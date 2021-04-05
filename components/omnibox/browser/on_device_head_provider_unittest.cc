@@ -4,6 +4,8 @@
 
 #include "components/omnibox/browser/on_device_head_provider.h"
 
+#include <memory>
+
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -30,7 +32,7 @@ class OnDeviceHeadProviderTest : public testing::Test,
                                  public AutocompleteProviderListener {
  protected:
   void SetUp() override {
-    client_.reset(new FakeAutocompleteProviderClient());
+    client_ = std::make_unique<FakeAutocompleteProviderClient>();
     SetTestOnDeviceHeadModel();
     provider_ = OnDeviceHeadProvider::Create(client_.get(), this);
     task_environment_.RunUntilIdle();

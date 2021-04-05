@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -45,8 +46,8 @@ void CloudPolicyCore::Connect(std::unique_ptr<CloudPolicyClient> client) {
   CHECK(!client_);
   CHECK(client);
   client_ = std::move(client);
-  service_.reset(new CloudPolicyService(policy_type_, settings_entity_id_,
-                                        client_.get(), store_));
+  service_ = std::make_unique<CloudPolicyService>(
+      policy_type_, settings_entity_id_, client_.get(), store_);
   for (auto& observer : observers_)
     observer.OnCoreConnected(this);
 }
@@ -97,7 +98,7 @@ void CloudPolicyCore::StartRefreshScheduler() {
 void CloudPolicyCore::TrackRefreshDelayPref(
     PrefService* pref_service,
     const std::string& refresh_pref_name) {
-  refresh_delay_.reset(new IntegerPrefMember());
+  refresh_delay_ = std::make_unique<IntegerPrefMember>();
   refresh_delay_->Init(
       refresh_pref_name, pref_service,
       base::BindRepeating(&CloudPolicyCore::UpdateRefreshDelayFromPref,

@@ -1218,7 +1218,7 @@ ServiceWorkerStorage::ServiceWorkerStorage(
       database_task_runner_(std::move(database_task_runner)),
       is_purge_pending_(false),
       has_checked_for_stale_resources_(false) {
-  database_.reset(new ServiceWorkerDatabase(GetDatabasePath()));
+  database_ = std::make_unique<ServiceWorkerDatabase>(GetDatabasePath());
 }
 
 base::FilePath ServiceWorkerStorage::GetDatabasePath() {
@@ -1391,7 +1391,7 @@ ServiceWorkerDiskCache* ServiceWorkerStorage::disk_cache() {
       << state_;
   if (disk_cache_)
     return disk_cache_.get();
-  disk_cache_.reset(new ServiceWorkerDiskCache);
+  disk_cache_ = std::make_unique<ServiceWorkerDiskCache>();
 
   if (IsDisabled()) {
     disk_cache_->Disable();

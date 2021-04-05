@@ -5,6 +5,8 @@
 #include "components/dom_distiller/core/task_tracker.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -193,7 +195,7 @@ void TaskTracker::ContentSourceFinished() {
   if (content_ready_) {
     CancelPendingSources();
   } else if (!IsAnySourceRunning()) {
-    distilled_article_.reset(new DistilledArticleProto());
+    distilled_article_ = std::make_unique<DistilledArticleProto>();
     NotifyViewersAndCallbacks();
   }
 }

@@ -4,6 +4,7 @@
 
 #include "components/gcm_driver/gcm_driver_desktop.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -545,7 +546,7 @@ GCMDriverDesktop::GCMDriverDesktop(
       wake_from_suspend_enabled_(false) {
   // Create and initialize the GCMClient. Note that this does not initiate the
   // GCM check-in.
-  io_worker_.reset(new IOWorker(ui_thread, io_thread));
+  io_worker_ = std::make_unique<IOWorker>(ui_thread, io_thread);
   io_thread_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -1227,7 +1228,7 @@ GCMClient::Result GCMDriverDesktop::EnsureStarted(
     return GCMClient::UNKNOWN_ERROR;
 
   if (!delayed_task_controller_)
-    delayed_task_controller_.reset(new GCMDelayedTaskController);
+    delayed_task_controller_ = std::make_unique<GCMDelayedTaskController>();
 
   // Note that we need to pass weak pointer again since the existing weak
   // pointer in IOWorker might have been invalidated when GCM is stopped.

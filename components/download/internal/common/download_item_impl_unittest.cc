@@ -240,9 +240,8 @@ class DownloadItemTest : public testing::Test {
             base::test::TaskEnvironment::MainThreadType::UI,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
         next_download_id_(DownloadItem::kInvalidId + 1) {
-    create_info_.reset(new DownloadCreateInfo());
-    create_info_->save_info =
-        std::unique_ptr<DownloadSaveInfo>(new DownloadSaveInfo());
+    create_info_ = std::make_unique<DownloadCreateInfo>();
+    create_info_->save_info = std::make_unique<DownloadSaveInfo>();
     create_info_->save_info->prompt_for_save_location = false;
     create_info_->url_chain.push_back(GURL("http://example.com/download"));
     create_info_->etag = "SomethingToSatisfyResumption";

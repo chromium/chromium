@@ -131,8 +131,9 @@ class FileSystemHelperTest : public testing::Test {
   void CallbackStartFetching(base::RunLoop* run_loop,
                              const std::list<FileSystemHelper::FileSystemInfo>&
                                  file_system_info_list) {
-    file_system_info_list_.reset(
-        new std::list<FileSystemHelper::FileSystemInfo>(file_system_info_list));
+    file_system_info_list_ =
+        std::make_unique<std::list<FileSystemHelper::FileSystemInfo>>(
+            file_system_info_list);
     run_loop->Quit();
   }
 

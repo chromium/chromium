@@ -5,6 +5,7 @@
 #include "components/ui_devtools/tracing_agent.h"
 
 #include <algorithm>
+#include <memory>
 #include <unordered_set>
 #include <vector>
 
@@ -463,7 +464,7 @@ void TracingAgent::SetupTimer(double usage_reporting_interval) {
 
   base::TimeDelta interval =
       base::TimeDelta::FromMilliseconds(std::ceil(usage_reporting_interval));
-  buffer_usage_poll_timer_.reset(new base::RepeatingTimer());
+  buffer_usage_poll_timer_ = std::make_unique<base::RepeatingTimer>();
   buffer_usage_poll_timer_->Start(
       FROM_HERE, interval,
       base::BindRepeating(&TracingAgent::UpdateBufferUsage,

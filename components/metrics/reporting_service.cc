@@ -6,6 +6,8 @@
 
 #include "components/metrics/reporting_service.h"
 
+#include <memory>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -49,8 +51,8 @@ void ReportingService::Initialize() {
   base::RepeatingClosure send_next_log_callback = base::BindRepeating(
       &ReportingService::SendNextLog, self_ptr_factory_.GetWeakPtr());
   bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
-  upload_scheduler_.reset(new MetricsUploadScheduler(send_next_log_callback,
-                                                     fast_startup_for_testing));
+  upload_scheduler_ = std::make_unique<MetricsUploadScheduler>(
+      send_next_log_callback, fast_startup_for_testing);
 }
 
 void ReportingService::Start() {

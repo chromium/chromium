@@ -262,8 +262,8 @@ WARN_UNUSED_RESULT bool CheckTargetCertificate(
   if (!GetCommonNameFromSubject(cert->tbs().subject_tlv, &common_name))
     return false;
 
-  context->reset(
-      new CertVerificationContextImpl(cert->tbs().spki_tlv, common_name));
+  *context = std::make_unique<CertVerificationContextImpl>(cert->tbs().spki_tlv,
+                                                           common_name);
   return true;
 }
 

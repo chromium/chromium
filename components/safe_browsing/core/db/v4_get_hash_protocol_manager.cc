@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/db/v4_get_hash_protocol_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/base64url.h"
@@ -351,10 +352,9 @@ void V4GetHashProtocolManager::GetFullHashes(
       base::BindOnce(&V4GetHashProtocolManager::OnURLLoaderComplete,
                      base::Unretained(this), loader));
 
-  pending_hash_requests_[loader].reset(new FullHashCallbackInfo(
+  pending_hash_requests_[loader] = std::make_unique<FullHashCallbackInfo>(
       cached_full_hash_infos, prefixes_to_request, std::move(owned_loader),
-      full_hash_to_store_and_hash_prefixes, std::move(callback),
-      clock_->Now()));
+      full_hash_to_store_and_hash_prefixes, std::move(callback), clock_->Now());
   UMA_HISTOGRAM_COUNTS_100("SafeBrowsing.V4GetHash.CountOfPrefixes",
                            prefixes_to_request.size());
 }

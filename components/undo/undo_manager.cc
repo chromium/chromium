@@ -4,6 +4,7 @@
 
 #include "components/undo/undo_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -98,7 +99,7 @@ void UndoManager::AddUndoOperation(std::unique_ptr<UndoOperation> operation) {
 
 void UndoManager::StartGroupingActions() {
   if (!group_actions_count_)
-    pending_grouped_action_.reset(new UndoGroup());
+    pending_grouped_action_ = std::make_unique<UndoGroup>();
   ++group_actions_count_;
 }
 

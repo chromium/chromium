@@ -49,8 +49,8 @@ class GetUpdatesProcessorTest : public ::testing::Test {
 
   std::unique_ptr<GetUpdatesProcessor> BuildGetUpdatesProcessor(
       const GetUpdatesDelegate& delegate) {
-    return std::unique_ptr<GetUpdatesProcessor>(
-        new GetUpdatesProcessor(&update_handler_map_, delegate));
+    return std::make_unique<GetUpdatesProcessor>(&update_handler_map_,
+                                                 delegate);
   }
 
   void InitFakeUpdateResponse(sync_pb::GetUpdatesResponse* response) {

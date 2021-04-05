@@ -72,10 +72,10 @@ class MediaRouterDialogControllerTest
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
 
-    web_contents_delegate_.reset(new MockWebContentsDelegate());
+    web_contents_delegate_ = std::make_unique<MockWebContentsDelegate>();
     web_contents()->SetDelegate(web_contents_delegate_.get());
-    dialog_controller_.reset(
-        new TestMediaRouterDialogController(web_contents()));
+    dialog_controller_ =
+        std::make_unique<TestMediaRouterDialogController>(web_contents());
   }
 
   void TearDown() override {

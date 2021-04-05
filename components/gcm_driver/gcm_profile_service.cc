@@ -4,6 +4,7 @@
 
 #include "components/gcm_driver/gcm_profile_service.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -121,8 +122,8 @@ void GCMProfileService::IdentityObserver::StartAccountTracker(
   std::unique_ptr<AccountTracker> gaia_account_tracker(
       new AccountTracker(identity_manager_));
 
-  gcm_account_tracker_.reset(new GCMAccountTracker(
-      std::move(gaia_account_tracker), identity_manager_, driver_));
+  gcm_account_tracker_ = std::make_unique<GCMAccountTracker>(
+      std::move(gaia_account_tracker), identity_manager_, driver_);
 
   gcm_account_tracker_->Start();
 }
@@ -170,8 +171,8 @@ GCMProfileService::GCMProfileService(
       product_category_for_subtypes, ui_task_runner, io_task_runner,
       blocking_task_runner);
 
-  identity_observer_.reset(new IdentityObserver(
-      identity_manager_, url_loader_factory_, driver_.get()));
+  identity_observer_ = std::make_unique<IdentityObserver>(
+      identity_manager_, url_loader_factory_, driver_.get());
 }
 #endif  // BUILDFLAG(USE_GCM_FROM_PLATFORM)
 

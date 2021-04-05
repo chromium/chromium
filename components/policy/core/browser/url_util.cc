@@ -4,6 +4,7 @@
 
 #include "components/policy/core/browser/url_util.h"
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -264,13 +265,13 @@ scoped_refptr<URLMatcherConditionSet> CreateConditionSet(
 
   std::unique_ptr<URLMatcherSchemeFilter> scheme_filter;
   if (!scheme.empty())
-    scheme_filter.reset(new URLMatcherSchemeFilter(scheme));
+    scheme_filter = std::make_unique<URLMatcherSchemeFilter>(scheme);
 
   std::unique_ptr<URLMatcherPortFilter> port_filter;
   if (port != 0) {
     std::vector<URLMatcherPortFilter::Range> ranges;
     ranges.push_back(URLMatcherPortFilter::CreateRange(port));
-    port_filter.reset(new URLMatcherPortFilter(ranges));
+    port_filter = std::make_unique<URLMatcherPortFilter>(ranges);
   }
 
   return base::MakeRefCounted<URLMatcherConditionSet>(

@@ -4,6 +4,8 @@
 
 #include "components/metrics/file_metrics_provider.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_util.h"
@@ -98,7 +100,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
 
   FileMetricsProvider* provider() {
     if (!provider_)
-      provider_.reset(new FileMetricsProvider(prefs()));
+      provider_ = std::make_unique<FileMetricsProvider>(prefs());
     return provider_.get();
   }
 

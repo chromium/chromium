@@ -63,10 +63,10 @@ class NetworkTimeTrackerTest : public ::testing::Test {
     shared_url_loader_factory_ =
         base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
 
-    tracker_.reset(new NetworkTimeTracker(
+    tracker_ = std::make_unique<NetworkTimeTracker>(
         std::unique_ptr<base::Clock>(clock_),
         std::unique_ptr<const base::TickClock>(tick_clock_), &pref_service_,
-        shared_url_loader_factory_));
+        shared_url_loader_factory_);
 
     // Do this to be sure that |is_null| returns false.
     clock_->Advance(base::TimeDelta::FromDays(111));
@@ -87,10 +87,10 @@ class NetworkTimeTrackerTest : public ::testing::Test {
     new_tick_clock->SetNowTicks(tick_clock_->NowTicks());
     clock_ = new_clock;
     tick_clock_ = new_tick_clock;
-    tracker_.reset(new NetworkTimeTracker(
+    tracker_ = std::make_unique<NetworkTimeTracker>(
         std::unique_ptr<base::Clock>(clock_),
         std::unique_ptr<const base::TickClock>(tick_clock_), &pref_service_,
-        shared_url_loader_factory_));
+        shared_url_loader_factory_);
   }
 
   // Good signature over invalid data, though made with a non-production key.

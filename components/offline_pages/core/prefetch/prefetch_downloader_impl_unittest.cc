@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_downloader_impl.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/strings/strcat.h"
@@ -43,7 +44,7 @@ class PrefetchDownloaderImplTest : public PrefetchRequestTestBase {
   void SetUp() override {
     PrefetchRequestTestBase::SetUp();
 
-    prefetch_service_taco_.reset(new PrefetchServiceTestTaco);
+    prefetch_service_taco_ = std::make_unique<PrefetchServiceTestTaco>();
 
     auto downloader = std::make_unique<PrefetchDownloaderImpl>(
         &download_service_, kTestChannel,

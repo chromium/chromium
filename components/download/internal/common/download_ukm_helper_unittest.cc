@@ -4,6 +4,8 @@
 
 #include "components/download/public/common/download_ukm_helper.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -25,7 +27,7 @@ class DownloadUkmHelperTest : public testing::Test {
   ~DownloadUkmHelperTest() override = default;
 
   void ResetUkmRecorder() {
-    test_recorder_.reset(new ukm::TestAutoSetUkmRecorder);
+    test_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
   void ExpectUkmMetrics(const base::StringPiece entry_name,

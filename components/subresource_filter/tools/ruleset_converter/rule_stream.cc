@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/tools/ruleset_converter/rule_stream.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check_op.h"
@@ -146,7 +147,7 @@ class ProtobufRuleInputStream : public RuleInputStream {
   explicit ProtobufRuleInputStream(std::unique_ptr<std::istream> input) {
     std::string buffer = ReadStreamToString(input.get());
     CHECK(rules_.ParseFromString(buffer));
-    impl_.reset(new ProtobufRuleInputStreamImpl(rules_));
+    impl_ = std::make_unique<ProtobufRuleInputStreamImpl>(rules_);
   }
 
   url_pattern_index::proto::RuleType FetchNextRule() override {
@@ -209,9 +210,10 @@ class UnindexedRulesetRuleInputStream : public RuleInputStream {
   explicit UnindexedRulesetRuleInputStream(
       std::unique_ptr<std::istream> input) {
     ruleset_ = ReadStreamToString(input.get());
-    ruleset_input_.reset(new google::protobuf::io::ArrayInputStream(
-        ruleset_.data(), ruleset_.size()));
-    ruleset_reader_.reset(new UnindexedRulesetReader(ruleset_input_.get()));
+    ruleset_input_ = std::make_unique<google::protobuf::io::ArrayInputStream>(
+        ruleset_.data(), ruleset_.size());
+    ruleset_reader_ =
+        std::make_unique<UnindexedRulesetReader>(ruleset_input_.get());
   }
 
   url_pattern_index::proto::RuleType FetchNextRule() override {
@@ -239,7 +241,7 @@ class UnindexedRulesetRuleInputStream : public RuleInputStream {
 
   bool ReadNextChunk() {
     if (ruleset_reader_->ReadNextChunk(&rules_chunk_)) {
-      impl_.reset(new ProtobufRuleInputStreamImpl(rules_chunk_));
+      impl_ = std::make_unique<ProtobufRuleInputStreamImpl>(rules_chunk_);
       return true;
     }
     impl_.reset();

@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_gcm_app_handler.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -25,7 +26,7 @@ class PrefetchGCMAppHandlerTest : public testing::Test {
     auto gcm_app_handler = std::make_unique<PrefetchGCMAppHandler>();
     handler_ = gcm_app_handler.get();
 
-    prefetch_service_taco_.reset(new PrefetchServiceTestTaco);
+    prefetch_service_taco_ = std::make_unique<PrefetchServiceTestTaco>();
     prefetch_service_taco_->SetPrefetchGCMHandler(std::move(gcm_app_handler));
     prefetch_service_taco_->SetPrefetchDispatcher(std::move(dispatcher));
     prefetch_service_taco_->CreatePrefetchService();

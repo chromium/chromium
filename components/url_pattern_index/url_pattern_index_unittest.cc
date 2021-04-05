@@ -78,7 +78,7 @@ class UrlPatternIndexTest : public ::testing::Test {
 
     const flat::UrlPatternIndex* flat_index =
         flat::GetUrlPatternIndex(flat_builder_->GetBufferPointer());
-    index_matcher_.reset(new UrlPatternIndexMatcher(flat_index));
+    index_matcher_ = std::make_unique<UrlPatternIndexMatcher>(flat_index);
 
     ASSERT_EQ(indexed_rules_count_, index_matcher_->GetRulesCount());
   }
@@ -148,8 +148,9 @@ class UrlPatternIndexTest : public ::testing::Test {
   void Reset() {
     index_matcher_.reset();
     index_builder_.reset();
-    flat_builder_.reset(new flatbuffers::FlatBufferBuilder());
-    index_builder_.reset(new UrlPatternIndexBuilder(flat_builder_.get()));
+    flat_builder_ = std::make_unique<flatbuffers::FlatBufferBuilder>();
+    index_builder_ =
+        std::make_unique<UrlPatternIndexBuilder>(flat_builder_.get());
     domain_map_.clear();
     indexed_rules_count_ = 0;
   }

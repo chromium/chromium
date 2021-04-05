@@ -4,6 +4,8 @@
 
 #include "components/offline_pages/core/prefetch/generate_page_bundle_request.h"
 
+#include <memory>
+
 #include "base/test/mock_callback.h"
 #include "components/offline_pages/core/prefetch/prefetch_request_test_base.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
@@ -41,11 +43,9 @@ class GeneratePageBundleRequestTest : public PrefetchRequestTestBase {
       const std::string& testing_header_value,
       PrefetchRequestFinishedCallback callback) {
     std::vector<std::string> page_urls = {kTestURL, kTestURL2};
-    return std::unique_ptr<GeneratePageBundleRequest>(
-        new GeneratePageBundleRequest(
-            kTestUserAgent, kTestGCMID, kTestMaxBundleSize, page_urls,
-            kTestChannel, testing_header_value, shared_url_loader_factory(),
-            std::move(callback)));
+    return std::make_unique<GeneratePageBundleRequest>(
+        kTestUserAgent, kTestGCMID, kTestMaxBundleSize, page_urls, kTestChannel,
+        testing_header_value, shared_url_loader_factory(), std::move(callback));
   }
 };
 

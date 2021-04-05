@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <unordered_map>
 #include <utility>
 
@@ -202,8 +203,8 @@ void ComponentCloudPolicyService::Backend::InitIfNeeded() {
   store_.Load();
 
   // Start downloading any pending data.
-  updater_.reset(new ComponentCloudPolicyUpdater(
-      task_runner_, std::move(external_policy_data_fetcher_), &store_));
+  updater_ = std::make_unique<ComponentCloudPolicyUpdater>(
+      task_runner_, std::move(external_policy_data_fetcher_), &store_);
 
   std::unique_ptr<PolicyBundle> bundle(std::make_unique<PolicyBundle>());
   bundle->CopyFrom(store_.policy());
@@ -285,12 +286,12 @@ ComponentCloudPolicyService::ComponentCloudPolicyService(
          policy_type == dm_protocol::kChromeSigninExtensionPolicyType);
   CHECK(!core_->client());
 
-  backend_.reset(
-      new Backend(weak_ptr_factory_.GetWeakPtr(), backend_task_runner_,
-                  base::ThreadTaskRunnerHandle::Get(), std::move(cache),
-                  std::make_unique<ExternalPolicyDataFetcher>(
-                      client->GetURLLoaderFactory(), backend_task_runner_),
-                  policy_type, policy_source));
+  backend_ = std::make_unique<Backend>(
+      weak_ptr_factory_.GetWeakPtr(), backend_task_runner_,
+      base::ThreadTaskRunnerHandle::Get(), std::move(cache),
+      std::make_unique<ExternalPolicyDataFetcher>(client->GetURLLoaderFactory(),
+                                                  backend_task_runner_),
+      policy_type, policy_source);
 
   // Observe the schema registry for keeping |current_schema_map_| up to date.
   schema_registry_->AddObserver(this);

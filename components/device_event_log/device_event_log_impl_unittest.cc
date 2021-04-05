@@ -49,7 +49,8 @@ class DeviceEventLogTest : public testing::Test {
   DeviceEventLogTest() : task_runner_(new base::TestSimpleTaskRunner()) {}
 
   void SetUp() override {
-    impl_.reset(new DeviceEventLogImpl(task_runner_, kDefaultMaxEvents));
+    impl_ =
+        std::make_unique<DeviceEventLogImpl>(task_runner_, kDefaultMaxEvents);
   }
 
   void TearDown() override { impl_.reset(); }
@@ -294,7 +295,7 @@ TEST_F(DeviceEventLogTest, TestMaxEvents) {
 
 TEST_F(DeviceEventLogTest, TestMaxErrors) {
   const int kMaxTestEntries = 4;
-  impl_.reset(new DeviceEventLogImpl(task_runner_, kMaxTestEntries));
+  impl_ = std::make_unique<DeviceEventLogImpl>(task_runner_, kMaxTestEntries);
   AddTestEvent(LOG_LEVEL_EVENT, "event1");
   AddTestEvent(LOG_LEVEL_ERROR, "error2");
   AddTestEvent(LOG_LEVEL_EVENT, "event3");

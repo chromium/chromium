@@ -5,6 +5,7 @@
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 
 #include <algorithm>
+#include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
@@ -480,9 +481,9 @@ void PageLoadTracker::FailedProvisionalLoad(
     content::NavigationHandle* navigation_handle,
     base::TimeTicks failed_load_time) {
   DCHECK(!failed_provisional_load_info_);
-  failed_provisional_load_info_.reset(new FailedProvisionalLoadInfo(
+  failed_provisional_load_info_ = std::make_unique<FailedProvisionalLoadInfo>(
       failed_load_time - navigation_handle->NavigationStart(),
-      navigation_handle->GetNetErrorCode()));
+      navigation_handle->GetNetErrorCode());
 }
 
 void PageLoadTracker::Redirect(content::NavigationHandle* navigation_handle) {

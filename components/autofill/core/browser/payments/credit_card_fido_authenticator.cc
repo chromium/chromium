@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/credit_card_fido_authenticator.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -413,9 +414,9 @@ void CreditCardFIDOAuthenticator::OnDidGetAssertion(
   if (current_flow_ == AUTHENTICATION_FLOW) {
     base::Value response =
         ParseAssertionResponse(std::move(assertion_response));
-    full_card_request_.reset(new payments::FullCardRequest(
+    full_card_request_ = std::make_unique<payments::FullCardRequest>(
         autofill_client_, autofill_client_->GetPaymentsClient(),
-        autofill_client_->GetPersonalDataManager(), form_parsed_timestamp_));
+        autofill_client_->GetPersonalDataManager(), form_parsed_timestamp_);
     full_card_request_->GetFullCardViaFIDO(
         *card_, AutofillClient::UNMASK_FOR_AUTOFILL,
         weak_ptr_factory_.GetWeakPtr(), std::move(response));

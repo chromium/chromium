@@ -94,10 +94,11 @@ class CardUnmaskPromptControllerImplGenericTest {
   CardUnmaskPromptControllerImplGenericTest() {}
 
   void SetUp() {
-    test_unmask_prompt_view_.reset(new TestCardUnmaskPromptView());
-    pref_service_.reset(new TestingPrefServiceSimple());
-    controller_.reset(new TestCardUnmaskPromptController(pref_service_.get()));
-    delegate_.reset(new TestCardUnmaskDelegate());
+    test_unmask_prompt_view_ = std::make_unique<TestCardUnmaskPromptView>();
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
+    controller_ =
+        std::make_unique<TestCardUnmaskPromptController>(pref_service_.get());
+    delegate_ = std::make_unique<TestCardUnmaskDelegate>();
   }
 
   void ShowPrompt() {

@@ -5,6 +5,7 @@
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 
 #include <map>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -173,9 +174,9 @@ bool PresentationFrame::SetScreenAvailabilityListener(
   if (sinks_observer && sinks_observer->listener() == listener)
     return false;
 
-  sinks_observer.reset(new PresentationMediaSinksObserver(
+  sinks_observer = std::make_unique<PresentationMediaSinksObserver>(
       router_, listener, source,
-      GetLastCommittedURLForFrame(render_frame_host_id_)));
+      GetLastCommittedURLForFrame(render_frame_host_id_));
 
   if (!sinks_observer->Init()) {
     url_to_sinks_observer_.erase(source.id());
@@ -369,8 +370,8 @@ PresentationFrame* PresentationServiceDelegateImpl::GetOrAddPresentationFrame(
     const content::GlobalFrameRoutingId& render_frame_host_id) {
   auto& presentation_frame = presentation_frames_[render_frame_host_id];
   if (!presentation_frame) {
-    presentation_frame.reset(
-        new PresentationFrame(render_frame_host_id, web_contents_, router_));
+    presentation_frame = std::make_unique<PresentationFrame>(
+        render_frame_host_id, web_contents_, router_);
   }
   return presentation_frame.get();
 }

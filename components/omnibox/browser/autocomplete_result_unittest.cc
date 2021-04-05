@@ -140,7 +140,7 @@ class AutocompleteResultTest : public testing::Test {
   AutocompleteResultTest& operator=(const AutocompleteResultTest&) = delete;
 
   void SetUp() override {
-    template_url_service_.reset(new TemplateURLService(nullptr, 0));
+    template_url_service_ = std::make_unique<TemplateURLService>(nullptr, 0);
     template_url_service_->Load();
   }
 

@@ -4,6 +4,8 @@
 
 #include "components/dom_distiller/core/distiller_url_fetcher.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -31,8 +33,8 @@ class DistillerURLFetcherTest : public testing::Test {
  protected:
   // testing::Test implementation:
   void SetUp() override {
-    url_fetcher_.reset(new dom_distiller::DistillerURLFetcher(
-        test_shared_url_loader_factory_));
+    url_fetcher_ = std::make_unique<dom_distiller::DistillerURLFetcher>(
+        test_shared_url_loader_factory_);
     test_url_loader_factory_.AddResponse(
         kTestPageA,
         std::string(kTestPageAResponse, sizeof(kTestPageAResponse)));

@@ -229,7 +229,7 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, RemoveAndAddComponent) {
   Mock::VerifyAndClearExpectations(&mock_provider_);
 
   EXPECT_CALL(observer_, OnUpdatePolicy(_));
-  copy.reset(new PolicyBundle);
+  copy = std::make_unique<PolicyBundle>();
   copy->CopyFrom(platform_policy);
   mock_provider_.UpdatePolicy(std::move(copy));
   Mock::VerifyAndClearExpectations(&observer_);

@@ -5,6 +5,7 @@
 #include "components/heap_profiling/multi_process/test_driver.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
 #include "base/allocator/partition_allocator/partition_root.h"
@@ -588,7 +589,7 @@ void TestDriver::CollectResults(bool synchronous) {
   std::unique_ptr<base::RunLoop> run_loop;
 
   if (synchronous) {
-    run_loop.reset(new base::RunLoop);
+    run_loop = std::make_unique<base::RunLoop>();
     finish_tracing_closure = run_loop->QuitClosure();
   } else {
     finish_tracing_closure = base::BindOnce(

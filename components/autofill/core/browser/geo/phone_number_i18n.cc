@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check_op.h"
@@ -428,11 +429,12 @@ PhoneObject& PhoneObject::operator=(const PhoneObject& other) {
 
   region_ = other.region_;
 
-  if (other.i18n_number_)
-    i18n_number_.reset(
-        new ::i18n::phonenumbers::PhoneNumber(*other.i18n_number_));
-  else
+  if (other.i18n_number_) {
+    i18n_number_ = std::make_unique<::i18n::phonenumbers::PhoneNumber>(
+        *other.i18n_number_);
+  } else {
     i18n_number_.reset();
+  }
 
   country_code_ = other.country_code_;
   city_code_ = other.city_code_;

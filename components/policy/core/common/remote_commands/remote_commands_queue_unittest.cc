@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -290,7 +291,8 @@ TEST_F(RemoteCommandsQueueTest, TwoCommands) {
   // Initialize another job expected to succeed after 5 seconds, from a protobuf
   // with |kUniqueID2|, |kPayload2| and |test_start_time_ + 1s| as command
   // issued time.
-  job.reset(new TestRemoteCommandJob(true, base::TimeDelta::FromSeconds(5)));
+  job = std::make_unique<TestRemoteCommandJob>(true,
+                                               base::TimeDelta::FromSeconds(5));
   InitializeJob(job.get(), kUniqueID2,
                 test_start_time_ + base::TimeDelta::FromSeconds(1), kPayload2);
 

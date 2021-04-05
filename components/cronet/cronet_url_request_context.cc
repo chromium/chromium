@@ -10,6 +10,7 @@
 
 #include <limits>
 #include <map>
+#include <memory>
 #include <set>
 #include <utility>
 #include <vector>
@@ -85,7 +86,8 @@ class NetLogWithNetworkChangeEvents {
     DCHECK(cronet::OnInitThread());
     if (net_change_logger_)
       return;
-    net_change_logger_.reset(new net::LoggingNetworkChangeObserver(net_log_));
+    net_change_logger_ =
+        std::make_unique<net::LoggingNetworkChangeObserver>(net_log_);
   }
 
  private:
@@ -562,7 +564,7 @@ int CronetURLRequestContext::default_load_flags() const {
 base::Thread* CronetURLRequestContext::GetFileThread() {
   DCHECK(OnInitThread());
   if (!file_thread_) {
-    file_thread_.reset(new base::Thread("Network File Thread"));
+    file_thread_ = std::make_unique<base::Thread>("Network File Thread");
     file_thread_->Start();
   }
   return file_thread_.get();

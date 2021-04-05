@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check_op.h"
@@ -26,8 +27,10 @@ DocumentSubresourceFilter::DocumentSubresourceFilter(
       ruleset_matcher_(ruleset_->data(), ruleset_->length()) {
   DCHECK_NE(activation_state_.activation_level,
             mojom::ActivationLevel::kDisabled);
-  if (!activation_state_.filtering_disabled_for_document)
-    document_origin_.reset(new FirstPartyOrigin(std::move(document_origin)));
+  if (!activation_state_.filtering_disabled_for_document) {
+    document_origin_ =
+        std::make_unique<FirstPartyOrigin>(std::move(document_origin));
+  }
 }
 
 DocumentSubresourceFilter::~DocumentSubresourceFilter() = default;

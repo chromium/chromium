@@ -167,7 +167,7 @@ RequestQueueTest::~RequestQueueTest() {}
 void RequestQueueTest::SetUp() {
   auto store = std::make_unique<TestRequestQueueStore>();
   store_ = store.get();
-  queue_.reset(new RequestQueue(std::move(store)));
+  queue_ = std::make_unique<RequestQueue>(std::move(store));
 }
 
 void RequestQueueTest::PumpLoop() {
@@ -177,7 +177,7 @@ void RequestQueueTest::PumpLoop() {
 void RequestQueueTest::AddRequestDone(AddRequestResult result,
                                       const SavePageRequest& request) {
   last_add_result_ = result;
-  last_added_request_.reset(new SavePageRequest(request));
+  last_added_request_ = std::make_unique<SavePageRequest>(request);
 }
 
 void RequestQueueTest::GetRequestsDone(

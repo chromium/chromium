@@ -323,7 +323,7 @@ TEST_F(PolicyServiceTest, NotifyObserversInMultipleNamespaces) {
   // Chrome policy stays the same, kExtension0 is gone, kExtension1 changes,
   // and kExtension2 is new.
   previous_policy_map.CopyFrom(policy_map);
-  bundle.reset(new PolicyBundle());
+  bundle = std::make_unique<PolicyBundle>();
   bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .CopyFrom(policy_map);
   policy_map.Set("policy", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,

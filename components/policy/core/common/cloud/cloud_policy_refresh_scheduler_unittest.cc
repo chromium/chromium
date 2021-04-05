@@ -50,7 +50,7 @@ class CloudPolicyRefreshSchedulerTest : public testing::Test {
     // Set up the protobuf timestamp to be one minute in the past. Since the
     // protobuf field only has millisecond precision, we convert the actual
     // value back to get a millisecond-clamped time stamp for the checks below.
-    store_.policy_.reset(new em::PolicyData());
+    store_.policy_ = std::make_unique<em::PolicyData>();
     base::Time now = base::Time::NowFromSystemTime();
     base::TimeDelta initial_age =
         base::TimeDelta::FromMinutes(kInitialCacheAgeMinutes);

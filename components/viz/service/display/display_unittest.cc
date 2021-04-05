@@ -6,6 +6,7 @@
 
 #include <limits>
 #include <map>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -196,7 +197,7 @@ class DisplayTest : public testing::Test {
       const RendererSettings& settings,
       const FrameSinkId& frame_sink_id,
       std::unique_ptr<OutputSurface> output_surface) {
-    begin_frame_source_.reset(new StubBeginFrameSource);
+    begin_frame_source_ = std::make_unique<StubBeginFrameSource>();
     auto scheduler = std::make_unique<TestDisplayScheduler>(
         begin_frame_source_.get(), task_runner_.get());
     scheduler_ = scheduler.get();

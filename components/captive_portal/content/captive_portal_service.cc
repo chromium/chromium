@@ -4,6 +4,8 @@
 
 #include "components/captive_portal/content/captive_portal_service.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
@@ -297,8 +299,8 @@ void CaptivePortalService::ResetBackoffEntry(CaptivePortalResult result) {
         recheck_policy_.initial_backoff_no_portal_ms;
   }
 
-  backoff_entry_.reset(new net::BackoffEntry(&recheck_policy().backoff_policy,
-                                             tick_clock_for_testing_));
+  backoff_entry_ = std::make_unique<net::BackoffEntry>(
+      &recheck_policy().backoff_policy, tick_clock_for_testing_);
 }
 
 void CaptivePortalService::UpdateEnabledState() {

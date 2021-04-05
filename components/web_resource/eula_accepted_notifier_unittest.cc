@@ -23,7 +23,7 @@ class EulaAcceptedNotifierTest : public testing::Test,
   // testing::Test overrides.
   void SetUp() override {
     local_state_.registry()->RegisterBooleanPref(prefs::kEulaAccepted, false);
-    notifier_.reset(new EulaAcceptedNotifier(&local_state_));
+    notifier_ = std::make_unique<EulaAcceptedNotifier>(&local_state_);
     notifier_->Init(this);
   }
 

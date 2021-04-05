@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
@@ -80,10 +82,10 @@ class KeepAliveDelegateTest : public testing::Test {
   void SetUp() override {
     inner_delegate_ = new MockCastTransportDelegate;
     logger_ = new Logger();
-    keep_alive_.reset(new KeepAliveDelegate(
+    keep_alive_ = std::make_unique<KeepAliveDelegate>(
         &socket_, logger_, base::WrapUnique(inner_delegate_),
         base::TimeDelta::FromMilliseconds(kTestPingTimeoutMillis),
-        base::TimeDelta::FromMilliseconds(kTestLivenessTimeoutMillis)));
+        base::TimeDelta::FromMilliseconds(kTestLivenessTimeoutMillis));
     liveness_timer_ = new MockTimerWithMonitoredReset;
     ping_timer_ = new MockTimerWithMonitoredReset;
     EXPECT_CALL(*liveness_timer_, StopTriggered()).Times(0);

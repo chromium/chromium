@@ -327,11 +327,11 @@ class SSLErrorHandlerNameMismatchTest
 #endif
 
     delegate_ = new TestSSLErrorHandlerDelegate(web_contents(), ssl_info_);
-    error_handler_.reset(new TestSSLErrorHandler(
+    error_handler_ = std::make_unique<TestSSLErrorHandler>(
         std::unique_ptr<SSLErrorHandler::Delegate>(delegate_), web_contents(),
         net::MapCertStatusToNetError(ssl_info_.cert_status), ssl_info_,
         /*network_time_tracker=*/nullptr, GURL() /*request_url*/,
-        captive_portal_service_.get()));
+        captive_portal_service_.get());
   }
 
   void TearDown() override {
@@ -603,11 +603,11 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
 #endif
 
     delegate_ = new TestSSLErrorHandlerDelegate(web_contents(), ssl_info_);
-    error_handler_.reset(new TestSSLErrorHandler(
+    error_handler_ = std::make_unique<TestSSLErrorHandler>(
         std::unique_ptr<SSLErrorHandler::Delegate>(delegate_), web_contents(),
         net::MapCertStatusToNetError(ssl_info_.cert_status), ssl_info_,
         /*network_time_tracker=*/nullptr, GURL() /*request_url*/,
-        captive_portal_service_.get()));
+        captive_portal_service_.get());
   }
 
   net::SSLInfo ssl_info_;
@@ -653,10 +653,10 @@ class SSLErrorHandlerDateInvalidTest
     shared_url_loader_factory_ = network::SharedURLLoaderFactory::Create(
         std::move(pending_url_loader_factory));
 
-    tracker_.reset(new network_time::NetworkTimeTracker(
+    tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
         std::unique_ptr<base::Clock>(clock_),
         std::unique_ptr<base::TickClock>(tick_clock_), &pref_service_,
-        shared_url_loader_factory_));
+        shared_url_loader_factory_);
     // Do this to be sure that |is_null| returns false.
     clock_->Advance(base::TimeDelta::FromDays(111));
     tick_clock_->Advance(base::TimeDelta::FromDays(222));
@@ -667,11 +667,11 @@ class SSLErrorHandlerDateInvalidTest
     ssl_info_.cert_status = net::CERT_STATUS_DATE_INVALID;
 
     delegate_ = new TestSSLErrorHandlerDelegate(web_contents(), ssl_info_);
-    error_handler_.reset(new TestSSLErrorHandler(
+    error_handler_ = std::make_unique<TestSSLErrorHandler>(
         std::unique_ptr<SSLErrorHandler::Delegate>(delegate_), web_contents(),
         net::MapCertStatusToNetError(ssl_info_.cert_status), ssl_info_,
         tracker_.get(), GURL() /*request_url*/,
-        /*captive_portal_service=*/nullptr));
+        /*captive_portal_service=*/nullptr);
 
     // Fix flakiness in case system time is off and triggers a bad clock
     // interstitial. https://crbug.com/666821#c50

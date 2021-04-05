@@ -41,7 +41,7 @@ class LanguagePrefsTest : public testing::Test {
   LanguagePrefsTest()
       : prefs_(new sync_preferences::TestingPrefServiceSyncable()) {
     LanguagePrefs::RegisterProfilePrefs(prefs_->registry());
-    language_prefs_.reset(new language::LanguagePrefs(prefs_.get()));
+    language_prefs_ = std::make_unique<language::LanguagePrefs>(prefs_.get());
   }
 
   void SetUp() override {

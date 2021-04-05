@@ -130,7 +130,7 @@ class ZeroSuggestProviderTest : public testing::Test,
 };
 
 void ZeroSuggestProviderTest::SetUp() {
-  client_.reset(new FakeAutocompleteProviderClient());
+  client_ = std::make_unique<FakeAutocompleteProviderClient>();
 
   TemplateURLService* turl_model = client_->GetTemplateURLService();
   turl_model->Load();

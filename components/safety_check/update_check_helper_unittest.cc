@@ -4,6 +4,8 @@
 
 #include "components/safety_check/update_check_helper.h"
 
+#include <memory>
+
 #include "components/safety_check/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -20,7 +22,8 @@ class UpdateCheckHelperTest : public testing::Test {
         shared_url_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {
-    update_helper_.reset(new UpdateCheckHelper(shared_url_loader_factory_));
+    update_helper_ =
+        std::make_unique<UpdateCheckHelper>(shared_url_loader_factory_);
   }
 
   void SetExpectedResult(bool connected) { expected_ = connected; }

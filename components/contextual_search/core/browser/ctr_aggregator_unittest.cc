@@ -4,6 +4,7 @@
 
 #include "components/contextual_search/core/browser/ctr_aggregator.h"
 
+#include <memory>
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
@@ -55,7 +56,7 @@ class CtrAggregatorTest : public testing::Test {
   std::unique_ptr<WeeklyActivityStorage> storage_;
 
   void SetUp() override {
-    storage_.reset(new WeeklyActivityStorageStub());
+    storage_ = std::make_unique<WeeklyActivityStorageStub>();
     aggregator_.reset(new CtrAggregator(*storage_, kTestWeek));
   }
 

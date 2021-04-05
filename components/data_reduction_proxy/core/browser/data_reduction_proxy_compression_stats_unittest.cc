@@ -123,13 +123,13 @@ class DataReductionProxyCompressionStatsTest : public testing::Test {
   void SetUp() override {
     drp_test_context_ = DataReductionProxyTestContext::Builder().Build();
 
-    compression_stats_.reset(new DataReductionProxyCompressionStats(
-        data_reduction_proxy_service(), pref_service(), base::TimeDelta()));
+    compression_stats_ = std::make_unique<DataReductionProxyCompressionStats>(
+        data_reduction_proxy_service(), pref_service(), base::TimeDelta());
   }
 
   void ResetCompressionStatsWithDelay(const base::TimeDelta& delay) {
-    compression_stats_.reset(new DataReductionProxyCompressionStats(
-        data_reduction_proxy_service(), pref_service(), delay));
+    compression_stats_ = std::make_unique<DataReductionProxyCompressionStats>(
+        data_reduction_proxy_service(), pref_service(), delay);
   }
 
   base::Time FakeNow() const {

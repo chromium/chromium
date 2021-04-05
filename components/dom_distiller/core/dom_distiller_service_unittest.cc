@@ -4,6 +4,7 @@
 
 #include "components/dom_distiller/core/dom_distiller_service.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -60,11 +61,11 @@ class DomDistillerServiceTest : public testing::Test {
   void SetUp() override {
     distiller_factory_ = new MockDistillerFactory();
     distiller_page_factory_ = new MockDistillerPageFactory();
-    service_.reset(new DomDistillerService(
+    service_ = std::make_unique<DomDistillerService>(
         std::unique_ptr<DistillerFactory>(distiller_factory_),
         std::unique_ptr<DistillerPageFactory>(distiller_page_factory_),
         /* distilled_page_prefs */ nullptr,
-        /* distiller_ui_handle */ nullptr));
+        /* distiller_ui_handle */ nullptr);
   }
 
   void TearDown() override {

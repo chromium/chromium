@@ -86,7 +86,7 @@ class FeedbackDataTest : public testing::Test {
   }
 
   void RunMessageLoop() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     quit_closure_ = run_loop_->QuitClosure();
     run_loop_->Run();
   }

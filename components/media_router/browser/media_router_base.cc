@@ -151,7 +151,8 @@ void MediaRouterBase::Initialize() {
   DCHECK(!initialized_);
   // The observer calls virtual methods on MediaRouter; it must be created
   // outside of the ctor
-  internal_routes_observer_.reset(new InternalMediaRoutesObserver(this));
+  internal_routes_observer_ =
+      std::make_unique<InternalMediaRoutesObserver>(this);
   initialized_ = true;
 }
 

@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/time/time.h"
 #include "components/domain_reliability/config.h"
@@ -32,11 +34,11 @@ class DomainReliabilitySchedulerTest : public testing::Test {
     DCHECK(!scheduler_);
 
     num_collectors_ = num_collectors;
-    scheduler_.reset(new DomainReliabilityScheduler(
+    scheduler_ = std::make_unique<DomainReliabilityScheduler>(
         &time_, num_collectors_, params_,
         base::BindRepeating(
             &DomainReliabilitySchedulerTest::ScheduleUploadCallback,
-            base::Unretained(this))));
+            base::Unretained(this)));
     scheduler_->MakeDeterministicForTesting();
   }
 

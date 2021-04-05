@@ -445,7 +445,7 @@ TEST_F(PhishingTermFeatureExtractorTest, PartialExtractionTest) {
   // Extract first 10 words then stop.
   PartialExtractFeatures(page_text.get(), &features, &shingle_hashes);
 
-  page_text.reset(new std::u16string());
+  page_text = std::make_unique<std::u16string>();
   for (int i = 30; i < 58; ++i) {
     page_text->append(ASCIIToUTF16(base::StringPrintf("%d ", i)));
   }

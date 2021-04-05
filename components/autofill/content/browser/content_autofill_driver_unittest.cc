@@ -309,9 +309,9 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     // happy for when AppendChild is called.
     NavigateAndCommit(GURL("about:blank"));
 
-    test_autofill_client_.reset(new MockAutofillClient());
-    driver_.reset(new TestContentAutofillDriver(web_contents()->GetMainFrame(),
-                                                test_autofill_client_.get()));
+    test_autofill_client_ = std::make_unique<MockAutofillClient>();
+    driver_ = std::make_unique<TestContentAutofillDriver>(
+        web_contents()->GetMainFrame(), test_autofill_client_.get());
 
     blink::AssociatedInterfaceProvider* remote_interfaces =
         web_contents()->GetMainFrame()->GetRemoteAssociatedInterfaces();

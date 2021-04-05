@@ -8,6 +8,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <unordered_set>
 #include <utility>
 #include <vector>
@@ -565,7 +567,7 @@ void ThreatDetails::AddDomElement(
 
 void ThreatDetails::StartCollection() {
   DVLOG(1) << "Starting to compute threat details.";
-  report_.reset(new ClientSafeBrowsingReportRequest());
+  report_ = std::make_unique<ClientSafeBrowsingReportRequest>();
 
   if (IsReportableUrl(resource_.url)) {
     report_->set_url(resource_.url.spec());

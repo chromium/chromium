@@ -4,6 +4,8 @@
 
 #include "components/dom_distiller/core/distilled_page_prefs.h"
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -45,9 +47,11 @@ class TestingObserver : public DistilledPagePrefs::Observer {
 class DistilledPagePrefsTest : public testing::Test {
  protected:
   void SetUp() override {
-    pref_service_.reset(new sync_preferences::TestingPrefServiceSyncable());
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     DistilledPagePrefs::RegisterProfilePrefs(pref_service_->registry());
-    distilled_page_prefs_.reset(new DistilledPagePrefs(pref_service_.get()));
+    distilled_page_prefs_ =
+        std::make_unique<DistilledPagePrefs>(pref_service_.get());
   }
 
   std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;

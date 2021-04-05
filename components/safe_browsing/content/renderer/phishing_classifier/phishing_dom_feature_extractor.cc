@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_feature_extractor.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -352,7 +353,7 @@ void PhishingDOMFeatureExtractor::ResetFrameData() {
   DCHECK(!cur_document_.IsNull());
   DCHECK(!cur_frame_data_.get());
 
-  cur_frame_data_.reset(new FrameData());
+  cur_frame_data_ = std::make_unique<FrameData>();
   cur_frame_data_->elements = cur_document_.All();
   cur_frame_data_->domain =
       net::registry_controlled_domains::GetDomainAndRegistry(

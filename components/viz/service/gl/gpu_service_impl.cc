@@ -581,8 +581,8 @@ void GpuServiceImpl::InitializeWithHost(
       image_decode_accelerator_worker_.get(), vulkan_context_provider(),
       metal_context_provider_.get(), dawn_context_provider());
 
-  media_gpu_channel_manager_.reset(
-      new media::MediaGpuChannelManager(gpu_channel_manager_.get()));
+  media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
+      gpu_channel_manager_.get());
   if (watchdog_thread())
     watchdog_thread()->AddPowerObserver();
 }

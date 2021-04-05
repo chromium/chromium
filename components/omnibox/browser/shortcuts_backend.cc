@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -218,8 +219,8 @@ void ShortcutsBackend::InitInternal() {
   db_->Init();
   ShortcutsDatabase::GuidToShortcutMap shortcuts;
   db_->LoadShortcuts(&shortcuts);
-  temp_shortcuts_map_.reset(new ShortcutMap);
-  temp_guid_map_.reset(new GuidMap);
+  temp_shortcuts_map_ = std::make_unique<ShortcutMap>();
+  temp_guid_map_ = std::make_unique<GuidMap>();
   for (ShortcutsDatabase::GuidToShortcutMap::const_iterator it(
            shortcuts.begin());
        it != shortcuts.end(); ++it) {

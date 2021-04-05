@@ -101,7 +101,7 @@ class BuiltinProviderTest : public testing::Test {
   BuiltinProviderTest& operator=(const BuiltinProviderTest&) = delete;
 
   void SetUp() override {
-    client_.reset(new FakeAutocompleteProviderClient());
+    client_ = std::make_unique<FakeAutocompleteProviderClient>();
     provider_ = new BuiltinProvider(client_.get());
   }
   void TearDown() override { provider_ = nullptr; }

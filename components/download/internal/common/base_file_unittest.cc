@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/files/file.h"
@@ -60,7 +62,7 @@ class BaseFileTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    base_file_.reset(new BaseFile(DownloadItem::kInvalidId));
+    base_file_ = std::make_unique<BaseFile>(DownloadItem::kInvalidId);
   }
 
   void TearDown() override {
@@ -414,7 +416,7 @@ TEST_F(BaseFileTest, WriteWithError) {
   // Pass a file handle which was opened without the WRITE flag.
   // This should result in an error when writing.
   base::File file(path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ);
-  base_file_.reset(new BaseFile(download::DownloadItem::kInvalidId));
+  base_file_ = std::make_unique<BaseFile>(download::DownloadItem::kInvalidId);
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
             base_file_->Initialize(path, base::FilePath(), std::move(file), 0,
                                    std::string(),
@@ -456,7 +458,7 @@ TEST_F(BaseFileTest, AppendToBaseFile) {
   set_expected_data(kTestData4);
 
   // Use the file we've just created.
-  base_file_.reset(new BaseFile(download::DownloadItem::kInvalidId));
+  base_file_ = std::make_unique<BaseFile>(download::DownloadItem::kInvalidId);
   ASSERT_EQ(
       DOWNLOAD_INTERRUPT_REASON_NONE,
       base_file_->Initialize(existing_file_name, base::FilePath(), base::File(),
@@ -487,7 +489,7 @@ TEST_F(BaseFileTest, ReadonlyBaseFile) {
   EXPECT_TRUE(base::MakeFileUnwritable(readonly_file_name));
 
   // Try to overwrite it.
-  base_file_.reset(new BaseFile(download::DownloadItem::kInvalidId));
+  base_file_ = std::make_unique<BaseFile>(download::DownloadItem::kInvalidId);
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED,
             base_file_->Initialize(readonly_file_name, base::FilePath(),
                                    base::File(), 0, std::string(),

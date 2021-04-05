@@ -35,20 +35,16 @@ TestOmniboxClient::~TestOmniboxClient() {
 
 std::unique_ptr<AutocompleteProviderClient>
 TestOmniboxClient::CreateAutocompleteProviderClient() {
-  std::unique_ptr<MockAutocompleteProviderClient> provider_client(
-      new MockAutocompleteProviderClient());
+  auto provider_client = std::make_unique<MockAutocompleteProviderClient>();
   EXPECT_CALL(*provider_client, GetBuiltinURLs())
       .WillRepeatedly(testing::Return(std::vector<std::u16string>()));
   EXPECT_CALL(*provider_client, GetSchemeClassifier())
       .WillRepeatedly(testing::ReturnRef(scheme_classifier_));
 
-  std::unique_ptr<TemplateURLService> template_url_service(
-      new TemplateURLService(
-          nullptr /* PrefService */,
-          std::unique_ptr<SearchTermsData>(new SearchTermsData),
-          nullptr /* KeywordWebDataService */,
-          std::unique_ptr<TemplateURLServiceClient>(),
-          base::RepeatingClosure()));
+  auto template_url_service = std::make_unique<TemplateURLService>(
+      nullptr /* PrefService */, std::make_unique<SearchTermsData>(),
+      nullptr /* KeywordWebDataService */,
+      std::unique_ptr<TemplateURLServiceClient>(), base::RepeatingClosure());
 
   // Save a reference to the created TemplateURLService for test use.
   template_url_service_ = template_url_service.get();

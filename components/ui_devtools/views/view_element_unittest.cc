@@ -4,6 +4,8 @@
 
 #include "components/ui_devtools/views/view_element.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "components/ui_devtools/Protocol.h"
 #include "components/ui_devtools/ui_devtools_unittest_utils.h"
@@ -107,7 +109,8 @@ class ViewElementTest : public views::ViewsTestBase {
     delegate_ = std::make_unique<testing::NiceMock<MockUIElementDelegate>>();
     // |OnUIElementAdded| is called on element creation.
     EXPECT_CALL(*delegate_, OnUIElementAdded(_, _)).Times(1);
-    element_.reset(new ViewElement(view_.get(), delegate_.get(), nullptr));
+    element_ =
+        std::make_unique<ViewElement>(view_.get(), delegate_.get(), nullptr);
   }
 
   MockNamedTestView* view() { return view_.get(); }

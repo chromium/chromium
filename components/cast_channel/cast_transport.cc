@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -60,7 +61,7 @@ CastTransportImpl::CastTransportImpl(Channel* channel,
   // [re]allocations.
   read_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();
   read_buffer_->SetCapacity(MessageFramer::MessageHeader::max_message_size());
-  framer_.reset(new MessageFramer(read_buffer_));
+  framer_ = std::make_unique<MessageFramer>(read_buffer_);
 }
 
 CastTransportImpl::~CastTransportImpl() {

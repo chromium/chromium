@@ -4,6 +4,8 @@
 
 #include "components/services/storage/dom_storage/storage_area_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
@@ -733,7 +735,7 @@ void StorageAreaImpl::CreateCommitBatchIfNeeded() {
     return;
   DCHECK(database_);
 
-  commit_batch_.reset(new CommitBatch());
+  commit_batch_ = std::make_unique<CommitBatch>();
   StartCommitTimer();
 }
 

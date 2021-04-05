@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <tuple>
@@ -150,8 +151,8 @@ class AutofillTableTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
-    table_.reset(new AutofillTable);
-    db_.reset(new WebDatabase);
+    table_ = std::make_unique<AutofillTable>();
+    db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
   }
@@ -3257,8 +3258,8 @@ class GetFormValuesTest : public testing::TestWithParam<GetFormValuesTestCase> {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
-    table_.reset(new AutofillTable);
-    db_.reset(new WebDatabase);
+    table_ = std::make_unique<AutofillTable>();
+    db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
   }

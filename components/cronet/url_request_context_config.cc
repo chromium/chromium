@@ -4,6 +4,7 @@
 
 #include "components/cronet/url_request_context_config.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/json/json_reader.h"
@@ -717,10 +718,10 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
     // Cronet HostResolvers.
     if (stale_dns_enable) {
       DCHECK(!disable_ipv6_on_wifi);
-      host_resolver.reset(new StaleHostResolver(
+      host_resolver = std::make_unique<StaleHostResolver>(
           net::HostResolver::CreateStandaloneContextResolver(
               net::NetLog::Get(), std::move(host_resolver_manager_options)),
-          stale_dns_options));
+          stale_dns_options);
     } else {
       host_resolver = net::HostResolver::CreateStandaloneResolver(
           net::NetLog::Get(), std::move(host_resolver_manager_options));

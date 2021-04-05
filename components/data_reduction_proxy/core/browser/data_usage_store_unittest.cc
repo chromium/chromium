@@ -45,8 +45,8 @@ namespace data_reduction_proxy {
 class DataUsageStoreTest : public testing::Test {
  protected:
   void SetUp() override {
-    store_.reset(new TestDataStore());
-    data_usage_store_.reset(new DataUsageStore(store_.get()));
+    store_ = std::make_unique<TestDataStore>();
+    data_usage_store_ = std::make_unique<DataUsageStore>(store_.get());
   }
 
   int current_bucket_index() const {

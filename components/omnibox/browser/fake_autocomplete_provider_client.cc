@@ -31,9 +31,9 @@ FakeAutocompleteProviderClient::FakeAutocompleteProviderClient(
   history_service_ =
       history::CreateHistoryService(history_dir_.GetPath(), create_history_db);
 
-  in_memory_url_index_.reset(
-      new InMemoryURLIndex(bookmark_model_.get(), history_service_.get(),
-                           nullptr, history_dir_.GetPath(), SchemeSet()));
+  in_memory_url_index_ = std::make_unique<InMemoryURLIndex>(
+      bookmark_model_.get(), history_service_.get(), nullptr,
+      history_dir_.GetPath(), SchemeSet());
   in_memory_url_index_->Init();
 
   pref_service_ = std::make_unique<TestingPrefServiceSimple>();

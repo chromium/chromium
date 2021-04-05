@@ -38,7 +38,7 @@ class TestInMemoryEventStore : public InMemoryEventStore {
 
   void WriteEvent(const Event& event) override {
     ++store_operation_count_;
-    last_written_event_.reset(new Event(event));
+    last_written_event_ = std::make_unique<Event>(event);
   }
 
   void DeleteEvent(const std::string& event_name) override {
@@ -140,8 +140,8 @@ class EventModelImplTest : public ::testing::Test {
     auto storage_validator = std::make_unique<TestEventStorageValidator>();
     storage_validator_ = storage_validator.get();
 
-    model_.reset(
-        new EventModelImpl(std::move(store), std::move(storage_validator)));
+    model_ = std::make_unique<EventModelImpl>(std::move(store),
+                                              std::move(storage_validator));
 
     // By default store all events for a very long time.
     storage_validator_->SetMaxKeepAge("foo", 10000u);

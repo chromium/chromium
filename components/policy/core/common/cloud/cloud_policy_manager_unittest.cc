@@ -181,8 +181,8 @@ class CloudPolicyManagerTest : public testing::Test {
     policy_.Build();
 
     EXPECT_CALL(store_, Load());
-    manager_.reset(new TestCloudPolicyManager(
-        &store_, task_environment_.GetMainThreadTaskRunner()));
+    manager_ = std::make_unique<TestCloudPolicyManager>(
+        &store_, task_environment_.GetMainThreadTaskRunner());
     manager_->Init(&schema_registry_);
     Mock::VerifyAndClearExpectations(&store_);
     manager_->AddObserver(&observer_);
@@ -222,7 +222,7 @@ TEST_F(CloudPolicyManagerTest, InitAndShutdown) {
   Mock::VerifyAndClearExpectations(&observer_);
 
   store_.policy_map_.CopyFrom(policy_map_);
-  store_.policy_.reset(new em::PolicyData(policy_.policy_data()));
+  store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_.NotifyStoreLoaded();
   Mock::VerifyAndClearExpectations(&observer_);
@@ -304,7 +304,7 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
   manager_->core()->Connect(std::unique_ptr<CloudPolicyClient>(client));
 
   // Simulate a store load.
-  store_.policy_.reset(new em::PolicyData(policy_.policy_data()));
+  store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   EXPECT_CALL(*client, SetupRegistration(_, _, _));
   store_.NotifyStoreLoaded();
@@ -344,7 +344,7 @@ TEST_F(CloudPolicyManagerTest, RefreshSuccessful) {
 
 TEST_F(CloudPolicyManagerTest, SignalOnError) {
   // Simulate a failed load and verify that it triggers OnUpdatePolicy().
-  store_.policy_.reset(new em::PolicyData(policy_.policy_data()));
+  store_.policy_ = std::make_unique<em::PolicyData>(policy_.policy_data());
   EXPECT_CALL(observer_, OnUpdatePolicy(manager_.get()));
   store_.NotifyStoreError();
   Mock::VerifyAndClearExpectations(&observer_);

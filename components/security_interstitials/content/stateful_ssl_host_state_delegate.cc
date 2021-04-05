@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <functional>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -239,7 +240,7 @@ void StatefulSSLHostStateDelegate::AllowCert(
           url, url, ContentSettingsType::SSL_CERT_DECISIONS, nullptr));
 
   if (!value.get() || !value->is_dict())
-    value.reset(new base::DictionaryValue());
+    value = std::make_unique<base::DictionaryValue>();
 
   base::DictionaryValue* dict;
   bool success = value->GetAsDictionary(&dict);

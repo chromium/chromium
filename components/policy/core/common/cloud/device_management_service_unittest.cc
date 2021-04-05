@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/cloud/device_management_service.h"
 
+#include <memory>
 #include <ostream>
 #include <utility>
 #include <vector>
@@ -96,7 +97,8 @@ class DeviceManagementServiceTestBase : public testing::Test {
   void ResetService() {
     std::unique_ptr<DeviceManagementService::Configuration> configuration(
         new MockDeviceManagementServiceConfiguration(kServiceUrl));
-    service_.reset(new DeviceManagementService(std::move(configuration)));
+    service_ =
+        std::make_unique<DeviceManagementService>(std::move(configuration));
   }
 
   void InitializeService() {

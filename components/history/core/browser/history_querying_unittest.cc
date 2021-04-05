@@ -4,6 +4,8 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -167,7 +169,7 @@ class HistoryQueryTest : public testing::Test {
     history_dir_ = temp_dir_.GetPath().AppendASCII("HistoryTest");
     ASSERT_TRUE(base::CreateDirectory(history_dir_));
 
-    history_.reset(new HistoryService);
+    history_ = std::make_unique<HistoryService>();
     if (!history_->Init(TestHistoryDatabaseParamsForPath(history_dir_))) {
       history_.reset();  // Tests should notice this NULL ptr & fail.
       return;

@@ -304,7 +304,7 @@ TEST_F(ModelLoaderTest, FetchModelTest) {
 
   // Model version number is decreasing.  Set the model version number of the
   // model that is currently loaded in the loader object to 11.
-  loader.model_.reset(new ClientSideModel(model));
+  loader.model_ = std::make_unique<ClientSideModel>(model);
   loader.model_->set_version(11);
   {
     base::RunLoop loop;
@@ -378,8 +378,8 @@ TEST_F(ModelLoaderTest, ModelNamesTest) {
 
   // No Finch setup. Should default to 4.
   std::unique_ptr<ModelLoader> loader;
-  loader.reset(new ModelLoader(base::RepeatingClosure(), nullptr,
-                               false /* is_extended_reporting */));
+  loader = std::make_unique<ModelLoader>(base::RepeatingClosure(), nullptr,
+                                         false /* is_extended_reporting */);
   EXPECT_EQ(loader->name(), "client_model_v5_variation_6.pb");
   EXPECT_EQ(loader->url_.spec(),
             "https://ssl.gstatic.com/safebrowsing/csd/"
@@ -387,12 +387,14 @@ TEST_F(ModelLoaderTest, ModelNamesTest) {
 
   // Model 1, no extended reporting.
   SetFinchModelNumber(1);
-  loader.reset(new ModelLoader(base::RepeatingClosure(), nullptr, false));
+  loader =
+      std::make_unique<ModelLoader>(base::RepeatingClosure(), nullptr, false);
   EXPECT_EQ(loader->name(), "client_model_v5_variation_1.pb");
 
   // Model 2, with extended reporting.
   SetFinchModelNumber(2);
-  loader.reset(new ModelLoader(base::RepeatingClosure(), nullptr, true));
+  loader =
+      std::make_unique<ModelLoader>(base::RepeatingClosure(), nullptr, true);
   EXPECT_EQ(loader->name(), "client_model_v5_ext_variation_2.pb");
 }
 

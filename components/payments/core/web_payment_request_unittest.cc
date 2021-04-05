@@ -4,6 +4,8 @@
 
 #include "components/payments/core/web_payment_request.h"
 
+#include <memory>
+
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +34,7 @@ TEST(PaymentRequestTest, ParsingPartiallyPopulatedRequestDictionaryFails) {
   EXPECT_EQ(expected_request, output_request);
 
   // A non-dictionary value in the methodData list is incorrect.
-  method_data_list.reset(new base::ListValue);
+  method_data_list = std::make_unique<base::ListValue>();
   method_data_list->AppendString("fake method data dictionary");
   request_dict.Set("methodData", std::move(method_data_list));
 
@@ -40,7 +42,7 @@ TEST(PaymentRequestTest, ParsingPartiallyPopulatedRequestDictionaryFails) {
   EXPECT_EQ(expected_request, output_request);
 
   // An empty dictionary in the methodData list is still insufficient.
-  method_data_list.reset(new base::ListValue);
+  method_data_list = std::make_unique<base::ListValue>();
   auto method_data_dict = std::make_unique<base::DictionaryValue>();
   method_data_list->Append(std::move(method_data_dict));
   request_dict.Set("methodData", std::move(method_data_list));

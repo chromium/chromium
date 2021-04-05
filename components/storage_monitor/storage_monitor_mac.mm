@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
@@ -188,7 +190,7 @@ void StorageMonitorMac::Init() {
   DASessionScheduleWithRunLoop(
       session_, CFRunLoopGetCurrent(), kCFRunLoopCommonModes);
 
-  image_capture_device_manager_.reset(new ImageCaptureDeviceManager);
+  image_capture_device_manager_ = std::make_unique<ImageCaptureDeviceManager>();
   image_capture_device_manager_->SetNotifications(receiver());
 }
 

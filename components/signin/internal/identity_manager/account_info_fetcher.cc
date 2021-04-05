@@ -4,6 +4,7 @@
 
 #include "components/signin/internal/identity_manager/account_info_fetcher.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
@@ -45,7 +46,8 @@ void AccountInfoFetcher::OnGetTokenSuccess(
                                this, "OnGetTokenSuccess");
   DCHECK_EQ(request, login_token_request_.get());
 
-  gaia_oauth_client_.reset(new gaia::GaiaOAuthClient(url_loader_factory_));
+  gaia_oauth_client_ =
+      std::make_unique<gaia::GaiaOAuthClient>(url_loader_factory_);
   const int kMaxRetries = 3;
   gaia_oauth_client_->GetUserInfo(token_response.access_token, kMaxRetries,
                                   this);

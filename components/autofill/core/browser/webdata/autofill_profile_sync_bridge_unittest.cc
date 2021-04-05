@@ -287,8 +287,8 @@ class AutofillProfileSyncBridgeTestBase : public testing::Test {
   }
 
   void ResetBridge() {
-    bridge_.reset(new AutofillProfileSyncBridge(
-        mock_processor_.CreateForwardingProcessor(), kLocaleString, &backend_));
+    bridge_ = std::make_unique<AutofillProfileSyncBridge>(
+        mock_processor_.CreateForwardingProcessor(), kLocaleString, &backend_);
   }
 
   void StartSyncing(

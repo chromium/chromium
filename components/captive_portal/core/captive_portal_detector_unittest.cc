@@ -56,7 +56,7 @@ class CaptivePortalDetectorTest : public testing::Test,
   ~CaptivePortalDetectorTest() override {}
 
   void SetUp() override {
-    detector_.reset(new CaptivePortalDetector(test_loader_factory()));
+    detector_ = std::make_unique<CaptivePortalDetector>(test_loader_factory());
     set_detector(detector_.get());
   }
 

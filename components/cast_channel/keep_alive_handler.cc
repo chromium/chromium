@@ -4,6 +4,7 @@
 
 #include "components/cast_channel/keep_alive_handler.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -55,10 +56,10 @@ void KeepAliveHandler::Start() {
 
   // Use injected mock timers, if provided.
   if (!ping_timer_) {
-    ping_timer_.reset(new base::RetainingOneShotTimer());
+    ping_timer_ = std::make_unique<base::RetainingOneShotTimer>();
   }
   if (!liveness_timer_) {
-    liveness_timer_.reset(new base::RetainingOneShotTimer());
+    liveness_timer_ = std::make_unique<base::RetainingOneShotTimer>();
   }
 
   ping_timer_->Start(

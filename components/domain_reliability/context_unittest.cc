@@ -138,9 +138,9 @@ class DomainReliabilityContextTest : public testing::Test {
   }
 
   void InitContext(std::unique_ptr<const DomainReliabilityConfig> config) {
-    context_.reset(new DomainReliabilityContext(
+    context_ = std::make_unique<DomainReliabilityContext>(
         &time_, params_, upload_reporter_string_, &last_network_change_time_,
-        upload_allowed_callback_, &dispatcher_, &uploader_, std::move(config)));
+        upload_allowed_callback_, &dispatcher_, &uploader_, std::move(config));
   }
 
   void ShutDownContext() { context_.reset(); }

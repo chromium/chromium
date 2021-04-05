@@ -998,8 +998,8 @@ void PasswordAutofillAgent::AnnotateFormsAndFieldsWithSignatures(
 void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
-    logger.reset(new RendererSavePasswordProgressLogger(
-        GetPasswordManagerDriver().get()));
+    logger = std::make_unique<RendererSavePasswordProgressLogger>(
+        GetPasswordManagerDriver().get());
     logger->LogMessage(Logger::STRING_SEND_PASSWORD_FORMS_METHOD);
     logger->LogBoolean(Logger::STRING_ONLY_VISIBLE, only_visible);
   }
@@ -1169,8 +1169,8 @@ void PasswordAutofillAgent::ReadyToCommitNavigation(
     blink::WebDocumentLoader* document_loader) {
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
-    logger.reset(new RendererSavePasswordProgressLogger(
-        GetPasswordManagerDriver().get()));
+    logger = std::make_unique<RendererSavePasswordProgressLogger>(
+        GetPasswordManagerDriver().get());
     logger->LogMessage(Logger::STRING_DID_START_PROVISIONAL_LOAD_METHOD);
   }
 
@@ -1193,8 +1193,8 @@ void PasswordAutofillAgent::FillPasswordForm(
     const PasswordFormFillData& form_data) {
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
-    logger.reset(new RendererSavePasswordProgressLogger(
-        GetPasswordManagerDriver().get()));
+    logger = std::make_unique<RendererSavePasswordProgressLogger>(
+        GetPasswordManagerDriver().get());
     logger->LogMessage(Logger::STRING_ON_FILL_PASSWORD_FORM_METHOD);
   }
 
@@ -1683,8 +1683,8 @@ void PasswordAutofillAgent::OnProvisionallySaveForm(
 void PasswordAutofillAgent::OnFormSubmitted(const WebFormElement& form) {
   std::unique_ptr<RendererSavePasswordProgressLogger> logger;
   if (logging_state_active_) {
-    logger.reset(new RendererSavePasswordProgressLogger(
-        GetPasswordManagerDriver().get()));
+    logger = std::make_unique<RendererSavePasswordProgressLogger>(
+        GetPasswordManagerDriver().get());
     LogHTMLForm(logger.get(), Logger::STRING_HTML_FORM_FOR_SUBMIT, form);
   }
 

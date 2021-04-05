@@ -497,8 +497,8 @@ class PartialSwapSoftwareOutputDevice : public SoftwareOutputDevice {
   // SoftwareOutputDevice overrides.
   SkCanvas* BeginPaint(const gfx::Rect& damage_rect) override {
     damage_rect_at_start_ = damage_rect;
-    canvas_.reset(new ClipTrackingCanvas(viewport_pixel_size_.width(),
-                                         viewport_pixel_size_.height()));
+    canvas_ = std::make_unique<ClipTrackingCanvas>(
+        viewport_pixel_size_.width(), viewport_pixel_size_.height());
     canvas_->addCanvas(SoftwareOutputDevice::BeginPaint(damage_rect));
     return canvas_.get();
   }

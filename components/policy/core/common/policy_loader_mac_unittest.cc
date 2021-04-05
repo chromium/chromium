@@ -150,8 +150,8 @@ class PolicyLoaderMacTest : public PolicyTestBase {
     PolicyTestBase::SetUp();
     std::unique_ptr<AsyncPolicyLoader> loader(new PolicyLoaderMac(
         task_environment_.GetMainThreadTaskRunner(), base::FilePath(), prefs_));
-    provider_.reset(
-        new AsyncPolicyProvider(&schema_registry_, std::move(loader)));
+    provider_ = std::make_unique<AsyncPolicyProvider>(&schema_registry_,
+                                                      std::move(loader));
     provider_->Init(&schema_registry_);
   }
 

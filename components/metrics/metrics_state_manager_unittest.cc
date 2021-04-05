@@ -7,6 +7,8 @@
 #include <ctype.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -77,7 +79,7 @@ class MetricsStateManagerTest : public testing::Test {
   }
 
   void SetFakeClientInfoBackup(const ClientInfo& client_info) {
-    fake_client_info_backup_.reset(new ClientInfo);
+    fake_client_info_backup_ = std::make_unique<ClientInfo>();
     fake_client_info_backup_->client_id = client_info.client_id;
     fake_client_info_backup_->installation_date = client_info.installation_date;
     fake_client_info_backup_->reporting_enabled_date =
@@ -104,7 +106,7 @@ class MetricsStateManagerTest : public testing::Test {
   // Stores the |client_info| in |stored_client_info_backup_| for verification
   // by the tests later.
   void MockStoreClientInfoBackup(const ClientInfo& client_info) {
-    stored_client_info_backup_.reset(new ClientInfo);
+    stored_client_info_backup_ = std::make_unique<ClientInfo>();
     stored_client_info_backup_->client_id = client_info.client_id;
     stored_client_info_backup_->installation_date =
         client_info.installation_date;

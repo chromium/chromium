@@ -4,6 +4,8 @@
 
 #include "components/visitedlink/browser/visitedlink_event_listener.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "components/visitedlink/common/visitedlink.mojom.h"
@@ -203,8 +205,8 @@ void VisitedLinkEventListener::Observe(
       if (!table_region_.IsValid())
         return;
 
-      updaters_[process->GetID()].reset(
-          new VisitedLinkUpdater(process->GetID()));
+      updaters_[process->GetID()] =
+          std::make_unique<VisitedLinkUpdater>(process->GetID());
       updaters_[process->GetID()]->SendVisitedLinkTable(&table_region_);
       break;
     }

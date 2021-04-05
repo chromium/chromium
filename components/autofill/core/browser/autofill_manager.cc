@@ -837,7 +837,7 @@ void AutofillManager::UpdatePendingForm(const FormData& form) {
     ProcessPendingFormForUpload();
   }
   // A new pending form is assigned.
-  pending_form_data_.reset(new FormData(form));
+  pending_form_data_ = std::make_unique<FormData>(form);
 }
 
 void AutofillManager::ProcessPendingFormForUpload() {

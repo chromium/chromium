@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -51,7 +53,7 @@ TEST_F(CloudPolicyServiceTest, PolicyUpdateSuccess) {
 
   // After |store_| initializes, credentials and other meta data should be
   // transferred to |client_|.
-  store_.policy_.reset(new em::PolicyData());
+  store_.policy_ = std::make_unique<em::PolicyData>();
   store_.policy_->set_request_token("fake token");
   store_.policy_->set_device_id("fake client id");
   store_.policy_->set_timestamp(32);
@@ -98,7 +100,7 @@ TEST_F(CloudPolicyServiceTest, RefreshPolicySuccess) {
   EXPECT_EQ(12345, store_.invalidation_version());
 
   // Store reloads policy, callback gets triggered.
-  store_.policy_.reset(new em::PolicyData());
+  store_.policy_ = std::make_unique<em::PolicyData>();
   store_.policy_->set_request_token("token");
   store_.policy_->set_device_id("device-id");
   EXPECT_CALL(*this, OnPolicyRefresh(true)).Times(1);

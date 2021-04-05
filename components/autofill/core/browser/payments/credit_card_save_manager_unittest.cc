@@ -138,7 +138,7 @@ class CreditCardSaveManagerTest : public testing::Test {
     autocomplete_history_manager_.Init(
         /*profile_database=*/database_,
         /*is_off_the_record=*/false);
-    autofill_driver_.reset(new TestAutofillDriver());
+    autofill_driver_ = std::make_unique<TestAutofillDriver>();
     payments_client_ = new payments::TestPaymentsClient(
         autofill_driver_->GetURLLoaderFactory(),
         autofill_client_.GetIdentityManager(), &personal_data_);
@@ -156,9 +156,9 @@ class CreditCardSaveManagerTest : public testing::Test {
     autofill_client_.set_test_form_data_importer(
         std::unique_ptr<TestFormDataImporter>(test_form_data_importer));
     autofill_client_.GetStrikeDatabase();
-    autofill_manager_.reset(new TestAutofillManager(
+    autofill_manager_ = std::make_unique<TestAutofillManager>(
         autofill_driver_.get(), &autofill_client_, &personal_data_,
-        &autocomplete_history_manager_));
+        &autocomplete_history_manager_);
     autofill_manager_->SetExpectedObservedSubmission(true);
   }
 

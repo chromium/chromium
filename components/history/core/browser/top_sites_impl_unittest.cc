@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
@@ -106,10 +108,10 @@ class TopSitesImplTest : public HistoryUnitTestBase {
 
   void SetUp() override {
     ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-    pref_service_.reset(new TestingPrefServiceSimple);
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     TopSitesImpl::RegisterPrefs(pref_service_->registry());
-    history_service_.reset(
-        new HistoryService(nullptr, std::unique_ptr<VisitDelegate>()));
+    history_service_ = std::make_unique<HistoryService>(
+        nullptr, std::unique_ptr<VisitDelegate>());
     ASSERT_TRUE(history_service_->Init(
         TestHistoryDatabaseParamsForPath(scoped_temp_dir_.GetPath())));
     ResetTopSites();

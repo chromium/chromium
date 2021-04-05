@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/payments/full_card_request.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -87,7 +89,7 @@ void FullCardRequest::GetFullCard(
   }
 
   result_delegate_ = result_delegate;
-  request_.reset(new payments::PaymentsClient::UnmaskRequestDetails);
+  request_ = std::make_unique<payments::PaymentsClient::UnmaskRequestDetails>();
   request_->card = card;
   request_->reason = reason;
   should_unmask_card_ = card.record_type() == CreditCard::MASKED_SERVER_CARD ||

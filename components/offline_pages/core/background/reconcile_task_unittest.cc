@@ -110,9 +110,9 @@ void ReconcileTaskTest::QueueRequests(const SavePageRequest& request1,
 }
 
 void ReconcileTaskTest::MakeTask() {
-  task_.reset(new ReconcileTask(
+  task_ = std::make_unique<ReconcileTask>(
       &store_, base::BindOnce(&ReconcileTaskTest::ReconcileCallback,
-                              base::Unretained(this))));
+                              base::Unretained(this)));
 }
 
 TEST_F(ReconcileTaskTest, Reconcile) {
