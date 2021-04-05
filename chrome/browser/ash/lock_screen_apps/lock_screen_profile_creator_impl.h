@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,9 +60,9 @@ class LockScreenProfileCreatorImpl
   Profile* const primary_profile_;
   const base::TickClock* tick_clock_;
 
-  ScopedObserver<chromeos::NoteTakingHelper,
-                 chromeos::NoteTakingHelper::Observer>
-      note_taking_helper_observer_;
+  base::ScopedObservation<chromeos::NoteTakingHelper,
+                          chromeos::NoteTakingHelper::Observer>
+      note_taking_helper_observation_{this};
 
   base::WeakPtrFactory<LockScreenProfileCreatorImpl> weak_ptr_factory_{this};
 

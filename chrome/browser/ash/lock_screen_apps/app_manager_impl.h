@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
 #include "chrome/browser/chromeos/note_taking_helper.h"
@@ -163,16 +163,16 @@ class AppManagerImpl : public AppManager,
 
   const base::TickClock* tick_clock_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extensions_observer_;
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      lock_screen_profile_extensions_observer_;
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extensions_observation_{this};
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      lock_screen_profile_extensions_observation_{this};
 
-  ScopedObserver<chromeos::NoteTakingHelper,
-                 chromeos::NoteTakingHelper::Observer>
-      note_taking_helper_observer_;
+  base::ScopedObservation<chromeos::NoteTakingHelper,
+                          chromeos::NoteTakingHelper::Observer>
+      note_taking_helper_observation_{this};
 
   // To be called when the lock screen app availability changes.
   base::RepeatingClosure app_changed_callback_;

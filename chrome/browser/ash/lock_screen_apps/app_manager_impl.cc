@@ -168,10 +168,7 @@ void InstallExtensionCopy(
 }  // namespace
 
 AppManagerImpl::AppManagerImpl(const base::TickClock* tick_clock)
-    : tick_clock_(tick_clock),
-      extensions_observer_(this),
-      lock_screen_profile_extensions_observer_(this),
-      note_taking_helper_observer_(this) {}
+    : tick_clock_(tick_clock) {}
 
 AppManagerImpl::~AppManagerImpl() = default;
 
@@ -186,7 +183,7 @@ void AppManagerImpl::Initialize(
 
   state_ = State::kInactive;
 
-  note_taking_helper_observer_.Add(chromeos::NoteTakingHelper::Get());
+  note_taking_helper_observation_.Observe(chromeos::NoteTakingHelper::Get());
 
   lock_screen_profile_creator_->AddCreateProfileCallback(
       base::BindOnce(&AppManagerImpl::OnLockScreenProfileLoaded,
@@ -224,7 +221,7 @@ void AppManagerImpl::Start(
   if (state_ == State::kActive || state_ == State::kActivating)
     return;
 
-  extensions_observer_.Add(
+  extensions_observation_.Observe(
       extensions::ExtensionRegistry::Get(primary_profile_));
 
   lock_screen_app_id_.clear();
@@ -243,7 +240,7 @@ void AppManagerImpl::Stop() {
   DCHECK_NE(State::kNotInitialized, state_);
 
   app_changed_callback_.Reset();
-  extensions_observer_.RemoveAll();
+  extensions_observation_.Reset();
   available_lock_screen_app_reloads_ = 0;
 
   if (state_ == State::kInactive)
@@ -493,7 +490,7 @@ void AppManagerImpl::InstallAndEnableLockScreenChromeAppInLockScreenProfile(
 
   available_lock_screen_app_reloads_ = kMaxLockScreenAppReloadsCount;
 
-  lock_screen_profile_extensions_observer_.Add(
+  lock_screen_profile_extensions_observation_.Observe(
       extensions::ExtensionRegistry::Get(lock_screen_profile_));
 }
 
@@ -502,7 +499,7 @@ void AppManagerImpl::RemoveChromeAppFromLockScreenProfile(
   if (app_id.empty())
     return;
 
-  lock_screen_profile_extensions_observer_.RemoveAll();
+  lock_screen_profile_extensions_observation_.Reset();
 
   extensions::ExtensionRegistry* lock_screen_registry =
       extensions::ExtensionRegistry::Get(lock_screen_profile_);

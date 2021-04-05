@@ -8,7 +8,7 @@
 #include "ash/public/mojom/tray_action.mojom.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/lock_screen_apps/lock_screen_profile_creator.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
@@ -34,7 +34,7 @@ const char kTestAppId[] = "cadfeochfldmbdgoccgbeianhamecbae";
 // Class used to wait for a specific lock_screen_apps::StateController state.
 class LockScreenAppsEnabledWaiter : public lock_screen_apps::StateObserver {
  public:
-  LockScreenAppsEnabledWaiter() : lock_screen_apps_state_observer_(this) {}
+  LockScreenAppsEnabledWaiter() = default;
   ~LockScreenAppsEnabledWaiter() override {}
 
   // Runs loop until lock_screen_apps::StateController enters |target_state|.
@@ -48,11 +48,11 @@ class LockScreenAppsEnabledWaiter : public lock_screen_apps::StateObserver {
 
     base::RunLoop run_loop;
     state_change_callback_ = run_loop.QuitClosure();
-    lock_screen_apps_state_observer_.Add(
+    lock_screen_apps_state_observation_.Observe(
         lock_screen_apps::StateController::Get());
     run_loop.Run();
 
-    lock_screen_apps_state_observer_.RemoveAll();
+    lock_screen_apps_state_observation_.Reset();
 
     return target_state ==
            lock_screen_apps::StateController::Get()->GetLockScreenNoteState();
@@ -64,9 +64,9 @@ class LockScreenAppsEnabledWaiter : public lock_screen_apps::StateObserver {
   }
 
  private:
-  ScopedObserver<lock_screen_apps::StateController,
-                 lock_screen_apps::StateObserver>
-      lock_screen_apps_state_observer_;
+  base::ScopedObservation<lock_screen_apps::StateController,
+                          lock_screen_apps::StateObserver>
+      lock_screen_apps_state_observation_{this};
 
   base::OnceClosure state_change_callback_;
 

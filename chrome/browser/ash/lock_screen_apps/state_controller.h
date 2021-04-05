@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/lock_screen_apps/app_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/state_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -244,19 +244,19 @@ class StateController : public ash::mojom::TrayActionClient,
   // for the associated app has been previosly seen (and closed) by the user.
   std::unique_ptr<FirstAppRunToastManager> first_app_run_toast_manager_;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> note_window_observer_{
-      this};
-  ScopedObserver<extensions::AppWindowRegistry,
-                 extensions::AppWindowRegistry::Observer>
-      app_window_observer_{this};
-  ScopedObserver<session_manager::SessionManager,
-                 session_manager::SessionManagerObserver>
-      session_observer_{this};
-  ScopedObserver<ui::DeviceDataManager, ui::InputDeviceEventObserver>
-      input_devices_observer_{this};
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      power_manager_client_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      note_window_observation_{this};
+  base::ScopedObservation<extensions::AppWindowRegistry,
+                          extensions::AppWindowRegistry::Observer>
+      app_window_observation_{this};
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_observation_{this};
+  base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
+      input_devices_observation_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observation_{this};
 
   // If set, this callback will be run when the state controller is fully
   // initialized. It can be used to throttle tests until state controller

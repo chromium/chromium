@@ -152,7 +152,7 @@ void StateController::SetPrimaryProfile(Profile* profile) {
 }
 
 void StateController::Shutdown() {
-  session_observer_.RemoveAll();
+  session_observation_.Reset();
   lock_screen_data_.reset();
   if (app_manager_) {
     app_manager_->Stop();
@@ -163,8 +163,8 @@ void StateController::Shutdown() {
   first_app_run_toast_manager_.reset();
   lock_screen_profile_creator_.reset();
   focus_cycler_delegate_ = nullptr;
-  power_manager_client_observer_.RemoveAll();
-  input_devices_observer_.RemoveAll();
+  power_manager_client_observation_.Reset();
+  input_devices_observation_.Reset();
   receiver_.reset();
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
@@ -219,7 +219,7 @@ void StateController::InitializeWithCryptoKey(Profile* profile,
   first_app_run_toast_manager_ =
       std::make_unique<FirstAppRunToastManager>(profile);
 
-  input_devices_observer_.Add(ui::DeviceDataManager::GetInstance());
+  input_devices_observation_.Observe(ui::DeviceDataManager::GetInstance());
 
   // Do not start state controller if stylus input is not present as lock
   // screen notes apps are geared towards stylus.
@@ -239,8 +239,9 @@ void StateController::InitializeWithCryptoKey(Profile* profile,
 void StateController::InitializeWithStylusInputPresent() {
   stylus_input_missing_ = false;
 
-  power_manager_client_observer_.Add(chromeos::PowerManagerClient::Get());
-  session_observer_.Add(session_manager::SessionManager::Get());
+  power_manager_client_observation_.Observe(
+      chromeos::PowerManagerClient::Get());
+  session_observation_.Observe(session_manager::SessionManager::Get());
   OnSessionStateChanged();
 
   // SessionController is fully initialized at this point.
@@ -330,7 +331,8 @@ void StateController::OnWindowVisibilityChanged(aura::Window* window,
   if (window != note_app_window_->GetNativeWindow() || !window->IsVisible())
     return;
 
-  note_window_observer_.Remove(window);
+  DCHECK(note_window_observation_.IsObservingSource(window));
+  note_window_observation_.Reset();
 
   UpdateLockScreenNoteState(TrayActionState::kActive);
   if (focus_cycler_delegate_) {
@@ -350,7 +352,7 @@ void StateController::OnWindowDestroying(aura::Window* window) {
 void StateController::OnAppWindowAdded(extensions::AppWindow* app_window) {
   if (note_app_window_ != app_window)
     return;
-  note_window_observer_.Add(note_app_window_->GetNativeWindow());
+  note_window_observation_.Observe(note_app_window_->GetNativeWindow());
   first_app_run_toast_manager_->RunForAppWindow(note_app_window_);
   note_app_window_metrics_->AppWindowCreated(app_window);
 }
@@ -409,7 +411,7 @@ extensions::AppWindow* StateController::CreateAppWindowForLockScreenAction(
   // The ownership of the window is passed to the caller of this method.
   note_app_window_ =
       new extensions::AppWindow(context, app_delegate.release(), extension);
-  app_window_observer_.Add(extensions::AppWindowRegistry::Get(
+  app_window_observation_.Observe(extensions::AppWindowRegistry::Get(
       lock_screen_profile_creator_->lock_screen_profile()));
   return note_app_window_;
 }
@@ -455,8 +457,8 @@ void StateController::FocusAppWindow(bool reverse) {
 void StateController::ResetNoteTakingWindowAndMoveToNextState(
     bool close_window,
     CloseLockScreenNoteReason reason) {
-  note_window_observer_.RemoveAll();
-  app_window_observer_.RemoveAll();
+  note_window_observation_.Reset();
+  app_window_observation_.Reset();
   if (first_app_run_toast_manager_)
     first_app_run_toast_manager_->Reset();
 

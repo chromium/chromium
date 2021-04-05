@@ -95,15 +95,15 @@ void FirstAppRunToastManager::RunForAppWindow(
   if (app_window_->GetNativeWindow()->HasFocus()) {
     CreateAndShowToastDialog();
   } else {
-    app_window_observer_.Add(
+    app_window_observation_.Observe(
         extensions::AppWindowRegistry::Get(app_window_->browser_context()));
   }
 }
 
 void FirstAppRunToastManager::Reset() {
   app_widget_observer_.reset();
-  app_window_observer_.RemoveAll();
-  toast_widget_observer_.RemoveAll();
+  app_window_observation_.Reset();
+  toast_widget_observation_.Reset();
 
   app_window_ = nullptr;
 
@@ -121,7 +121,7 @@ void FirstAppRunToastManager::OnWidgetDestroyed(views::Widget* widget) {
 void FirstAppRunToastManager::OnAppWindowActivated(
     extensions::AppWindow* app_window) {
   if (app_window == app_window_) {
-    app_window_observer_.RemoveAll();
+    app_window_observation_.Reset();
 
     // Start toast dialog creation asynchronously so it happens after app window
     // activation completes.
@@ -140,7 +140,7 @@ void FirstAppRunToastManager::CreateAndShowToastDialog() {
   toast_widget_ = views::BubbleDialogDelegateView::CreateBubble(toast_dialog);
   toast_widget_->Show();
   AdjustToastWidgetBounds();
-  toast_widget_observer_.Add(toast_widget_);
+  toast_widget_observation_.Observe(toast_widget_);
 }
 
 void FirstAppRunToastManager::ToastDialogDismissed() {

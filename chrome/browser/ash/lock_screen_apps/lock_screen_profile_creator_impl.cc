@@ -26,9 +26,7 @@ namespace lock_screen_apps {
 LockScreenProfileCreatorImpl::LockScreenProfileCreatorImpl(
     Profile* primary_profile,
     const base::TickClock* tick_clock)
-    : primary_profile_(primary_profile),
-      tick_clock_(tick_clock),
-      note_taking_helper_observer_(this) {}
+    : primary_profile_(primary_profile), tick_clock_(tick_clock) {}
 
 LockScreenProfileCreatorImpl::~LockScreenProfileCreatorImpl() {}
 
@@ -52,7 +50,7 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
   // Lock screen profile creation should be attempted only once - stop observing
   // note taking apps status so profile creation is not attempted again if lock
   // screen note availability changes.
-  note_taking_helper_observer_.RemoveAll();
+  note_taking_helper_observation_.Reset();
 
   OnLockScreenProfileCreateStarted();
 
@@ -75,7 +73,7 @@ void LockScreenProfileCreatorImpl::InitializeImpl() {
 }
 
 void LockScreenProfileCreatorImpl::OnExtensionSystemReady() {
-  note_taking_helper_observer_.Add(chromeos::NoteTakingHelper::Get());
+  note_taking_helper_observation_.Observe(chromeos::NoteTakingHelper::Get());
 
   // Determine the current note taking state.
   OnPreferredNoteTakingAppUpdated(primary_profile_);
