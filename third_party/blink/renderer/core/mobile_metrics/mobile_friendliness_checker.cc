@@ -428,16 +428,15 @@ bool CheckParentHasOverflowXHidden(const LayoutObject* obj) {
 
 void MobileFriendlinessChecker::ComputeTextContentOutsideViewport(
     const LayoutObject& object) {
+  if (!frame_view_->GetFrame().IsMainFrame())
+    return;
+
   int frame_width = frame_view_->GetPage()->GetVisualViewport().Size().Width();
   if (frame_width == 0) {
     return;
   }
 
   int total_text_width;
-  int text_content_outside_viewport_percentage = 0;
-  if (frame_width == 0)
-    return;
-
   if (const auto* text = DynamicTo<LayoutText>(object)) {
     const ComputedStyle* style = text->Style();
     if (style->Visibility() != EVisibility::kVisible ||
@@ -463,6 +462,7 @@ void MobileFriendlinessChecker::ComputeTextContentOutsideViewport(
   if (initial_scale > 0)
     total_text_width *= initial_scale;
 
+  int text_content_outside_viewport_percentage = 0;
   if (total_text_width > frame_width) {
     // We use ceil function here because we want to treat 100.1% as 101 which
     // requires a scroll bar.
