@@ -205,11 +205,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Returns the storage partition associated with this process.
   virtual StoragePartition* GetStoragePartition() = 0;
 
-  // Try to shut down the associated renderer process without running unload
-  // handlers, etc, giving it the specified exit code.  Returns true
-  // if it was able to shut down.  On Windows, this must not be called before
-  // RenderProcessReady was called on a RenderProcessHostObserver, otherwise
-  // RenderProcessExited may never be called.
+  // Terminate the associated renderer process without running unload handlers,
+  // waiting for the process to exit, etc. If supported by the OS, set the
+  // process exit code to |exit_code|. Returns false if the shutdown request
+  // will not be dispatched. If called before
+  // RenderProcessHostObserver::RenderProcessReady,
+  // RenderProcessHostObserver::RenderProcessExited may never be called since
+  // Shutdown() will race with child process startup.
   virtual bool Shutdown(int exit_code) = 0;
 
   // Returns true if shutdown was started by calling |Shutdown()|.
