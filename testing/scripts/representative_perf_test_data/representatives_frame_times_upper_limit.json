@@ -38,6 +38,7 @@
       "_comment": "crbug.com/1134251"
     },
     "balls_css_transition_2_properties": {
+      "experimental": true,
       "ci_095": 7.166,
       "avg": 75.508,
       "cpu_wall_time_ratio": 0.282
