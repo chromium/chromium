@@ -16,7 +16,6 @@
     android:layout_marginTop="0dp"
     android:layout_marginBottom="1dp"
     android:gravity="center_vertical"
-    android:addStatesFromChildren="true"
     android:background="@drawable/ntp_search_box"
     android:orientation="horizontal"
     android:paddingStart="@dimen/location_bar_lateral_padding" >

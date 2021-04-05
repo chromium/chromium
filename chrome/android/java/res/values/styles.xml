@@ -386,6 +386,7 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:scaleType">centerInside</item>
         <item name="tint">@color/default_icon_color_tint_list</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
     </style>
     <style name="ModernToolbar" parent="Widget.AppCompat.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.Headline.Primary</item>
