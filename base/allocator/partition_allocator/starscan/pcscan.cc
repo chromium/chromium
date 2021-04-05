@@ -668,6 +668,14 @@ size_t PCScanInternal::CalculateTotalHeapSize() const {
 }
 
 void PCScanInternal::ClearRootsForTesting() {
+  // Set all roots as non-scannable and non-quarantinable.
+  for (auto* root : scannable_roots_) {
+    root->scan_mode = Root::ScanMode::kDisabled;
+    root->quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
+  }
+  for (auto* root : nonscannable_roots_) {
+    root->quarantine_mode = Root::QuarantineMode::kDisabledByDefault;
+  }
   scannable_roots_.ClearForTesting();     // IN-TEST
   nonscannable_roots_.ClearForTesting();  // IN-TEST
 }
