@@ -1745,6 +1745,10 @@ class OopTextBlobPixelTest
     if (sdk <= base::android::SDK_VERSION_MARSHMALLOW) {
       error_pixels_percentage = 10.f;
       max_abs_error = 16;
+    } else {
+      // Newer OSes occasionally have smaller flakes when using the real GPU
+      error_pixels_percentage = 1.5f;
+      max_abs_error = 2;
     }
 #elif defined(OS_MAC) || defined(OS_WIN)
     // Mac and Windows need very small tolerances only under complex transforms
