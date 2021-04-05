@@ -206,7 +206,7 @@ TestAppRegistrar::GetAppShortcutsMenuItemInfos(const AppId& app_id) const {
   return {};
 }
 
-std::vector<std::vector<SquareSizePx>>
+std::vector<IconSizes>
 TestAppRegistrar::GetAppDownloadedShortcutsMenuIconsSizes(
     const AppId& app_id) const {
   NOTIMPLEMENTED();

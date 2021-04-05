@@ -137,14 +137,14 @@ std::vector<std::vector<ImageLoader::ImageRepresentation>>
 CreateShortcutsMenuIconsImageRepresentations(
     Profile* profile,
     const web_app::AppId& app_id,
-    const std::vector<std::vector<SquareSizePx>>& shortcuts_menu_icons_sizes) {
+    const std::vector<IconSizes>& shortcuts_menu_icons_sizes) {
   const Extension* web_app = GetBookmarkApp(profile, app_id);
   DCHECK(web_app);
 
   std::vector<std::vector<ImageLoader::ImageRepresentation>> results;
   for (size_t i = 0; i < shortcuts_menu_icons_sizes.size(); ++i) {
     std::vector<ImageLoader::ImageRepresentation> result;
-    for (const auto& icon_size : shortcuts_menu_icons_sizes[i]) {
+    for (const auto& icon_size : shortcuts_menu_icons_sizes[i].any) {
       ExtensionResource resource = WebAppShortcutIconsInfo::GetIconResource(
           web_app, i, icon_size, ExtensionIconSet::MATCH_EXACTLY);
       ImageLoader::ImageRepresentation image_rep{

@@ -76,8 +76,8 @@ class WebAppRegistrar : public AppRegistrar, public ProfileManagerObserver {
       const AppId& app_id) const override;
   std::vector<WebApplicationShortcutsMenuItemInfo> GetAppShortcutsMenuItemInfos(
       const AppId& app_id) const override;
-  std::vector<std::vector<SquareSizePx>>
-  GetAppDownloadedShortcutsMenuIconsSizes(const AppId& app_id) const override;
+  std::vector<IconSizes> GetAppDownloadedShortcutsMenuIconsSizes(
+      const AppId& app_id) const override;
   RunOnOsLoginMode GetAppRunOnOsLoginMode(const AppId& app_id) const override;
   std::vector<AppId> GetAppIds() const override;
   WebAppRegistrar* AsWebAppRegistrar() override;

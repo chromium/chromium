@@ -1354,6 +1354,7 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
     blink::Manifest::ImageResource icon;
     icon.src = icon_src;
     icon.sizes.emplace_back(gfx::Size(icon_size, icon_size));
+    icon.purpose.emplace_back(IconPurpose::ANY);
     shortcut_item.icons.emplace_back(icon);
     manifest->shortcuts.emplace_back(shortcut_item);
 
@@ -1381,13 +1382,20 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
           EXPECT_EQ(shortcut_url,
                     final_web_app_info->shortcuts_menu_item_infos[0].url);
           EXPECT_EQ(1u, final_web_app_info->shortcuts_menu_item_infos[0]
-                            .shortcut_icon_infos.size());
-          EXPECT_EQ(icon_size, final_web_app_info->shortcuts_menu_item_infos[0]
-                                   .shortcut_icon_infos[0]
-                                   .square_size_px);
-          EXPECT_EQ(icon_src, final_web_app_info->shortcuts_menu_item_infos[0]
-                                  .shortcut_icon_infos[0]
-                                  .url);
+                            .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
+                            .size());
+          EXPECT_EQ(icon_size,
+                    final_web_app_info->shortcuts_menu_item_infos[0]
+                        .GetShortcutIconInfosForPurpose(IconPurpose::ANY)[0]
+                        .square_size_px);
+          EXPECT_EQ(icon_src,
+                    final_web_app_info->shortcuts_menu_item_infos[0]
+                        .GetShortcutIconInfosForPurpose(IconPurpose::ANY)[0]
+                        .url);
+          EXPECT_EQ(0u,
+                    final_web_app_info->shortcuts_menu_item_infos[0]
+                        .GetShortcutIconInfosForPurpose(IconPurpose::MASKABLE)
+                        .size());
 
           callback_called = true;
           run_loop.Quit();
@@ -1425,7 +1433,8 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
 
     icon.url = icon_src;
     icon.square_size_px = icon_size;
-    shortcut_item.shortcut_icon_infos.emplace_back(std::move(icon));
+    shortcut_item.SetShortcutIconInfosForPurpose(IconPurpose::MASKABLE,
+                                                 {std::move(icon)});
     web_app_info->shortcuts_menu_item_infos.emplace_back(
         std::move(shortcut_item));
 
@@ -1449,13 +1458,20 @@ class WebAppInstallTaskTestWithShortcutsMenu : public WebAppInstallTaskTest {
                     final_web_app_info->shortcuts_menu_item_infos[0].name);
           EXPECT_EQ(shortcut_url,
                     final_web_app_info->shortcuts_menu_item_infos[0].url);
-          EXPECT_EQ(1u, final_web_app_info->shortcuts_menu_item_infos[0]
-                            .shortcut_icon_infos.size());
+          EXPECT_EQ(0u, final_web_app_info->shortcuts_menu_item_infos[0]
+                            .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
+                            .size());
+          EXPECT_EQ(1u,
+                    final_web_app_info->shortcuts_menu_item_infos[0]
+                        .GetShortcutIconInfosForPurpose(IconPurpose::MASKABLE)
+                        .size());
           EXPECT_EQ(icon_size, final_web_app_info->shortcuts_menu_item_infos[0]
-                                   .shortcut_icon_infos[0]
+                                   .GetShortcutIconInfosForPurpose(
+                                       IconPurpose::MASKABLE)[0]
                                    .square_size_px);
           EXPECT_EQ(icon_src, final_web_app_info->shortcuts_menu_item_infos[0]
-                                  .shortcut_icon_infos[0]
+                                  .GetShortcutIconInfosForPurpose(
+                                      IconPurpose::MASKABLE)[0]
                                   .url);
 
           callback_called = true;

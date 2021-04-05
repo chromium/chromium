@@ -159,7 +159,8 @@ WebApplicationInfo CreateWebAppInfo(const char* title,
     shortcut_item.url = GURL(kShortcutUrl);
     icon.url = GURL(kShortcutIconUrl);
     icon.square_size_px = size;
-    shortcut_item.shortcut_icon_infos.push_back(std::move(icon));
+    shortcut_item.SetShortcutIconInfosForPurpose(IconPurpose::ANY,
+                                                 {std::move(icon)});
     web_app_info.shortcuts_menu_item_infos.emplace_back(
         std::move(shortcut_item));
     shortcut_icon_bitmaps.any[size] = CreateSquareBitmap(size);

@@ -324,7 +324,8 @@ scoped_refptr<Extension> ConvertWebAppToExtension(
                                       shortcut.url.spec());
       // Add shortcut item icons information.
       auto shortcut_item_icons = std::make_unique<base::ListValue>();
-      for (const auto& icon : shortcut.shortcut_icon_infos) {
+      for (const auto& icon :
+           shortcut.GetShortcutIconInfosForPurpose(IconPurpose::ANY)) {
         DCHECK(icon.url.is_valid());
         std::unique_ptr<base::DictionaryValue> shortcut_item_icon(
             new base::DictionaryValue());

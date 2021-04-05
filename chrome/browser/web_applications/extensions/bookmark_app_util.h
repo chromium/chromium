@@ -51,8 +51,8 @@ int CountUserInstalledBookmarkApps(content::BrowserContext* browser_context);
 std::vector<SquareSizePx> GetBookmarkAppDownloadedIconSizes(
     const Extension* extension);
 
-std::vector<std::vector<SquareSizePx>>
-GetBookmarkAppDownloadedShortcutsMenuIconsSizes(const Extension* extension);
+std::vector<IconSizes> GetBookmarkAppDownloadedShortcutsMenuIconsSizes(
+    const Extension* extension);
 
 struct LaunchContainerAndType {
   extensions::LaunchContainer launch_container;

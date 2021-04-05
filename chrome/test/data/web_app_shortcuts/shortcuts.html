@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!-- https://www.w3.org/TR/appmanifest/#shortcut-items -->
+  <title>Shortcuts</title>
+  <link rel="manifest" href="shortcuts.json">
+  <link rel="icon" href="red-192.png">
+  <script>
+    window.onload = () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("service_worker.js");
+      }
+      if (window.location.hash.length > 0) {
+        const selected = document.getElementById(window.location.hash.substring(1));
+        if (selected)
+          selected.classList += 'selected';
+      }
+    };
+  </script>
+  <style>
+    .selected {
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Shortcuts</h1>
+  <h2 id="one">One</h2>
+  <h2 id="two">Two</h2>
+  <h2 id="three">Three</h2>
+  <h2 id="four">Four</h2>
+  <h2 id="five">Five</h2>
+  <h2 id="six">Six</h2>
+</body>
+</html>

@@ -575,15 +575,18 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
   shortcut_item.url = GURL("https://shortcut-app.io/shortcuts/shortcut1");
   {
     IconBitmaps shortcut_icon_bitmaps;
+    std::vector<WebApplicationShortcutsMenuItemInfo::Icon> icon_infos;
     const int sizes[] = {16, 128};
     for (const auto& size : sizes) {
       WebApplicationShortcutsMenuItemInfo::Icon icon_info;
       icon_info.url = web_app.start_url.Resolve(
           base::StringPrintf("shortcut1/%i.png", size));
       icon_info.square_size_px = size;
-      shortcut_item.shortcut_icon_infos.push_back(std::move(icon_info));
+      icon_infos.push_back(std::move(icon_info));
       shortcut_icon_bitmaps.any[size] = GetIconBitmap(size);
     }
+    shortcut_item.SetShortcutIconInfosForPurpose(IconPurpose::ANY,
+                                                 std::move(icon_infos));
     web_app.shortcuts_menu_icon_bitmaps.emplace_back(
         std::move(shortcut_icon_bitmaps));
   }
@@ -593,15 +596,18 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
   shortcut_item.url = GURL("https://shortcut-app.io/shortcuts/shortcut2");
   {
     IconBitmaps shortcut_icon_bitmaps;
+    std::vector<WebApplicationShortcutsMenuItemInfo::Icon> icon_infos;
     const int sizes[] = {16, 48};
     for (const auto& size : sizes) {
       WebApplicationShortcutsMenuItemInfo::Icon icon_info;
       icon_info.url =
           web_app.start_url.Resolve(base::StringPrintf("0/%i.png", size));
       icon_info.square_size_px = size;
-      shortcut_item.shortcut_icon_infos.push_back(std::move(icon_info));
+      icon_infos.push_back(std::move(icon_info));
       shortcut_icon_bitmaps.any[size] = GetIconBitmap(size);
     }
+    shortcut_item.SetShortcutIconInfosForPurpose(IconPurpose::ANY,
+                                                 std::move(icon_infos));
     web_app.shortcuts_menu_icon_bitmaps.emplace_back(
         std::move(shortcut_icon_bitmaps));
   }
@@ -619,7 +625,8 @@ TEST_F(ExtensionFromWebAppWithShortcutsMenu,
       WebAppShortcutIconsInfo::GetShortcutIcons(extension.get());
   for (size_t i = 0; i < web_app.shortcuts_menu_item_infos.size(); ++i) {
     const std::vector<WebApplicationShortcutsMenuItemInfo::Icon>& icon_infos =
-        web_app.shortcuts_menu_item_infos[i].shortcut_icon_infos;
+        web_app.shortcuts_menu_item_infos[i].GetShortcutIconInfosForPurpose(
+            IconPurpose::ANY);
     const std::vector<WebAppLinkedShortcutItems::ShortcutItemInfo::IconInfo>&
         linked_shortcut_icons_info =
             linked_shortcut_items.shortcut_item_infos[i]

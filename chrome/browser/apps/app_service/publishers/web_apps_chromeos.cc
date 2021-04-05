@@ -275,8 +275,6 @@ void WebAppsChromeOs::GetMenuModel(const std::string& app_id,
   if (base::FeatureList::IsEnabled(
           features::kDesktopPWAsAppIconShortcutsMenuUI) &&
       !web_app->shortcuts_menu_item_infos().empty()) {
-    // TODO(crbug.com/1152661): ReadAllShortcutsMenuIcons must support
-    // IconPurpose::MASKABLE.
     provider()->icon_manager().ReadAllShortcutsMenuIcons(
         app_id,
         base::BindOnce(&WebAppsChromeOs::OnShortcutsMenuIconsRead,
@@ -307,8 +305,13 @@ void WebAppsChromeOs::OnShortcutsMenuIconsRead(
        web_app->shortcuts_menu_item_infos()) {
     const std::map<SquareSizePx, SkBitmap>* menu_item_icon_bitmaps = nullptr;
     if (menu_item_index < shortcuts_menu_icon_bitmaps.size()) {
+      // We prefer |MASKABLE| icons, but fall back to icons with purpose |ANY|.
       menu_item_icon_bitmaps =
-          &shortcuts_menu_icon_bitmaps[menu_item_index].any;
+          &shortcuts_menu_icon_bitmaps[menu_item_index].maskable;
+      if (menu_item_icon_bitmaps->empty()) {
+        menu_item_icon_bitmaps =
+            &shortcuts_menu_icon_bitmaps[menu_item_index].any;
+      }
     }
 
     if (menu_item_index != 0) {
@@ -317,12 +320,11 @@ void WebAppsChromeOs::OnShortcutsMenuIconsRead(
 
     gfx::ImageSkia icon;
     if (menu_item_icon_bitmaps) {
-      // TODO(crbug.com/1152661): Remove kCrOsStandardIcon and add
-      // kCrOsStandardBackground|kCrOsStandardMask effects for web app menu
-      // maskable icons.
       IconEffects icon_effects = IconEffects::kNone;
       if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
-        icon_effects = IconEffects::kCrOsStandardIcon;
+        // We apply masking to each shortcut icon, regardless if the purpose is
+        // |MASKABLE| or |ANY|.
+        icon_effects = kCrOsStandardBackground | kCrOsStandardMask;
       }
 
       icon = ConvertSquareBitmapsToImageSkia(

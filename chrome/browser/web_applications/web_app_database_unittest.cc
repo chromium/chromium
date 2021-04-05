@@ -40,8 +40,6 @@ namespace web_app {
 
 namespace {
 
-const int kIconSize = 64;
-
 class RandomHelper {
  public:
   explicit RandomHelper(const uint32_t seed)
@@ -170,36 +168,56 @@ class WebAppDatabaseTest : public WebAppTest {
   }
 
   static std::vector<WebApplicationShortcutsMenuItemInfo>
-  CreateShortcutsMenuItemInfos(const std::string& base_url, uint32_t suffix) {
+  CreateShortcutsMenuItemInfos(const std::string& base_url,
+                               RandomHelper& random) {
+    const uint32_t suffix = random.next_uint();
     std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos;
-    for (unsigned int i = 0; i < 3; ++i) {
+    for (int i = random.next_uint(4) + 1; i >= 0; --i) {
       std::string suffix_str =
           base::NumberToString(suffix) + base::NumberToString(i);
       WebApplicationShortcutsMenuItemInfo shortcut_info;
       shortcut_info.url = GURL(base_url + "/shortcut" + suffix_str);
       shortcut_info.name = base::UTF8ToUTF16("shortcut" + suffix_str);
-      for (unsigned int j = 0; j < i; ++j) {
+      std::vector<WebApplicationShortcutsMenuItemInfo::Icon> shortcut_icons_any;
+      std::vector<WebApplicationShortcutsMenuItemInfo::Icon>
+          shortcut_icons_maskable;
+      for (int j = random.next_uint(4) + 1; j >= 0; --j) {
         std::string icon_suffix_str = suffix_str + base::NumberToString(j);
         WebApplicationShortcutsMenuItemInfo::Icon shortcut_icon;
         shortcut_icon.url =
             GURL(base_url + "/shortcuts/icon" + icon_suffix_str);
-        shortcut_icon.square_size_px = kIconSize * (i + j);
-        shortcut_info.shortcut_icon_infos.emplace_back(
-            std::move(shortcut_icon));
+        // Within each shortcut_icons_*, square_size_px must be unique.
+        shortcut_icon.square_size_px = (j * 10) + random.next_uint(10);
+        if (random.next_bool())
+          shortcut_icons_any.push_back(std::move(shortcut_icon));
+        else
+          shortcut_icons_maskable.push_back(std::move(shortcut_icon));
       }
+      shortcut_info.SetShortcutIconInfosForPurpose(
+          IconPurpose::ANY, std::move(shortcut_icons_any));
+      shortcut_info.SetShortcutIconInfosForPurpose(
+          IconPurpose::MASKABLE, std::move(shortcut_icons_maskable));
       shortcuts_menu_item_infos.emplace_back(std::move(shortcut_info));
     }
     return shortcuts_menu_item_infos;
   }
 
-  static std::vector<std::vector<SquareSizePx>>
-  CreateDownloadedShortcutsMenuIconsSizes() {
-    std::vector<std::vector<SquareSizePx>> results;
+  static std::vector<IconSizes> CreateDownloadedShortcutsMenuIconsSizes(
+      RandomHelper& random) {
+    std::vector<IconSizes> results;
     for (unsigned int i = 0; i < 3; ++i) {
-      std::vector<SquareSizePx> result;
+      IconSizes result;
+      std::vector<SquareSizePx> shortcuts_menu_icon_sizes_any;
+      std::vector<SquareSizePx> shortcuts_menu_icon_sizes_maskable;
       for (unsigned int j = 0; j < i; ++j) {
-        result.emplace_back(kIconSize * (i + j));
+        shortcuts_menu_icon_sizes_any.emplace_back(random.next_uint(256) + 1);
+        shortcuts_menu_icon_sizes_maskable.emplace_back(random.next_uint(256) +
+                                                        1);
       }
+      result.SetSizesForPurpose(IconPurpose::ANY,
+                                std::move(shortcuts_menu_icon_sizes_any));
+      result.SetSizesForPurpose(IconPurpose::MASKABLE,
+                                std::move(shortcuts_menu_icon_sizes_maskable));
       results.emplace_back(std::move(result));
     }
     return results;
@@ -325,9 +343,9 @@ class WebAppDatabaseTest : public WebAppTest {
     app->SetAdditionalSearchTerms(std::move(additional_search_terms));
 
     app->SetShortcutsMenuItemInfos(
-        CreateShortcutsMenuItemInfos(base_url, random.next_uint()));
+        CreateShortcutsMenuItemInfos(base_url, random));
     app->SetDownloadedShortcutsMenuIconsSizes(
-        CreateDownloadedShortcutsMenuIconsSizes());
+        CreateDownloadedShortcutsMenuIconsSizes(random));
     app->SetManifestUrl(GURL(base_url + "manifest" + seed_str + ".json"));
 
     if (IsChromeOs()) {

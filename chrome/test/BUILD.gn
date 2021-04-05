@@ -1784,6 +1784,7 @@ if (!is_android) {
         "../browser/apps/app_service/media_access_browsertest.cc",
         "../browser/apps/app_service/notifications_browsertest.cc",
         "../browser/apps/app_service/publishers/web_apps_base_browsertest.cc",
+        "../browser/apps/app_service/publishers/web_apps_chromeos_browsertest.cc",
         "../browser/apps/icon_standardizer_unittest.cc",
         "../browser/policy/login_policy_test_base_browsertest.cc",
         "../browser/policy/test/accessibility_policy_browsertest.cc",

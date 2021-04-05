@@ -1778,7 +1778,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
   EXPECT_EQ(GetProvider()
                 .registrar()
                 .GetAppShortcutsMenuItemInfos(app_id)[0]
-                .shortcut_icon_infos[0]
+                .GetShortcutIconInfosForPurpose(IconPurpose::ANY)[0]
                 .url,
             http_server_.GetURL(kAnotherIconSrc));
 }
@@ -1822,7 +1822,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
   EXPECT_EQ(GetProvider()
                 .registrar()
                 .GetAppShortcutsMenuItemInfos(app_id)[0]
-                .shortcut_icon_infos[0]
+                .GetShortcutIconInfosForPurpose(IconPurpose::ANY)[0]
                 .square_size_px,
             kAnotherIconSize);
 }

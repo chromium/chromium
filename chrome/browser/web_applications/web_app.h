@@ -168,8 +168,7 @@ class WebApp {
 
   // Represents which shortcuts menu icon sizes we successfully downloaded for
   // each WebAppShortcutsMenuItemInfo.shortcuts_menu_icon_infos.
-  const std::vector<std::vector<SquareSizePx>>&
-  downloaded_shortcuts_menu_icons_sizes() const {
+  const std::vector<IconSizes>& downloaded_shortcuts_menu_icons_sizes() const {
     return downloaded_shortcuts_menu_icons_sizes_;
   }
 
@@ -216,8 +215,7 @@ class WebApp {
   void SetShortcutsMenuItemInfos(
       std::vector<WebApplicationShortcutsMenuItemInfo>
           shortcuts_menu_item_infos);
-  void SetDownloadedShortcutsMenuIconsSizes(
-      std::vector<std::vector<SquareSizePx>> icon_sizes);
+  void SetDownloadedShortcutsMenuIconsSizes(std::vector<IconSizes> icon_sizes);
   void SetFileHandlers(apps::FileHandlers file_handlers);
   void SetShareTarget(base::Optional<apps::ShareTarget> share_target);
   void SetAdditionalSearchTerms(
@@ -273,7 +271,7 @@ class WebApp {
   SortedSizesPx downloaded_icon_sizes_maskable_;
   bool is_generated_icon_ = false;
   std::vector<WebApplicationShortcutsMenuItemInfo> shortcuts_menu_item_infos_;
-  std::vector<std::vector<SquareSizePx>> downloaded_shortcuts_menu_icons_sizes_;
+  std::vector<IconSizes> downloaded_shortcuts_menu_icons_sizes_;
   apps::FileHandlers file_handlers_;
   base::Optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;

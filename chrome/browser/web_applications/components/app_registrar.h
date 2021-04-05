@@ -150,8 +150,8 @@ class AppRegistrar {
 
   // Represents which icon sizes we successfully downloaded from the
   // ShortcutsMenuItemInfos.
-  virtual std::vector<std::vector<SquareSizePx>>
-  GetAppDownloadedShortcutsMenuIconsSizes(const AppId& app_id) const = 0;
+  virtual std::vector<IconSizes> GetAppDownloadedShortcutsMenuIconsSizes(
+      const AppId& app_id) const = 0;
 
   virtual std::vector<AppId> GetAppIds() const = 0;
 

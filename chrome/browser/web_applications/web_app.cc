@@ -246,7 +246,7 @@ void WebApp::SetShortcutsMenuItemInfos(
 }
 
 void WebApp::SetDownloadedShortcutsMenuIconsSizes(
-    std::vector<std::vector<SquareSizePx>> sizes) {
+    std::vector<IconSizes> sizes) {
   downloaded_shortcuts_menu_icons_sizes_ = std::move(sizes);
 }
 
@@ -364,10 +364,15 @@ std::ostream& operator<<(std::ostream& out, const WebApp& app) {
        app.shortcuts_menu_item_infos_) {
     out << info;
   }
-  for (const std::vector<SquareSizePx>& size_vec :
+  for (const IconSizes& icon_sizes :
        app.downloaded_shortcuts_menu_icons_sizes_) {
-    out << "  downloaded_shortcuts_menu_icons_sizes_:";
-    for (SquareSizePx size : size_vec)
+    out << "  downloaded_shortcuts_menu_icons_sizes_.any:";
+    for (SquareSizePx size : icon_sizes.any)
+      out << " " << size;
+    out << std::endl;
+
+    out << "  downloaded_shortcuts_menu_icons_sizes_.maskable:";
+    for (SquareSizePx size : icon_sizes.maskable)
       out << " " << size;
     out << std::endl;
   }

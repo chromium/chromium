@@ -325,7 +325,7 @@ class WebAppMigrationManagerBrowserTestWithShortcutsMenu
 
   void ReadAndVerifyDownloadedShortcutsMenuIcons(
       const AppId& app_id,
-      std::vector<std::vector<SquareSizePx>> shortcuts_menu_icons_sizes) {
+      std::vector<IconSizes> shortcuts_menu_icons_sizes) {
     EXPECT_EQ(
         provider().registrar().GetAppDownloadedShortcutsMenuIconsSizes(app_id),
         shortcuts_menu_icons_sizes);
@@ -337,10 +337,11 @@ class WebAppMigrationManagerBrowserTestWithShortcutsMenu
             [&](ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps) {
               EXPECT_EQ(2u, shortcuts_menu_icon_bitmaps.size());
               for (size_t i = 0; i < shortcuts_menu_icon_bitmaps.size(); ++i) {
-                EXPECT_EQ(shortcuts_menu_icons_sizes[i].size(),
+                EXPECT_EQ(shortcuts_menu_icons_sizes[i].any.size(),
                           shortcuts_menu_icon_bitmaps[i].any.size());
+                EXPECT_EQ(0u, shortcuts_menu_icon_bitmaps[i].maskable.size());
                 const std::vector<SquareSizePx>& icon_sizes =
-                    shortcuts_menu_icons_sizes[i];
+                    shortcuts_menu_icons_sizes[i].any;
                 const IconBitmaps& icon_maps = shortcuts_menu_icon_bitmaps[i];
                 for (const auto& icon_map : icon_maps.any) {
                   const SquareSizePx& size_px = icon_map.first;
@@ -378,12 +379,27 @@ IN_PROC_BROWSER_TEST_F(WebAppMigrationManagerBrowserTestWithShortcutsMenu,
       provider().registrar().GetAppShortcutsMenuItemInfos(app_id);
   EXPECT_EQ(shortcuts_menu_item_infos.size(), 2u);
   EXPECT_EQ(shortcuts_menu_item_infos[0].name, u"shortcut1");
-  EXPECT_EQ(shortcuts_menu_item_infos[0].shortcut_icon_infos.size(), 1u);
+  EXPECT_EQ(shortcuts_menu_item_infos[0]
+                .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
+                .size(),
+            1u);
   EXPECT_EQ(shortcuts_menu_item_infos[1].name, u"shortcut2");
-  EXPECT_EQ(shortcuts_menu_item_infos[1].shortcut_icon_infos.size(), 2u);
+  EXPECT_EQ(shortcuts_menu_item_infos[1]
+                .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
+                .size(),
+            2u);
 
-  const std::vector<std::vector<SquareSizePx>> shortcuts_menu_icons_sizes = {
-      {48}, {96, 144}};
+  std::vector<IconSizes> shortcuts_menu_icons_sizes;
+  {
+    IconSizes icon_sizes;
+    icon_sizes.SetSizesForPurpose(IconPurpose::ANY, {48});
+    shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
+  }
+  {
+    IconSizes icon_sizes;
+    icon_sizes.SetSizesForPurpose(IconPurpose::ANY, {96, 144});
+    shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
+  }
   ReadAndVerifyDownloadedShortcutsMenuIcons(app_id, shortcuts_menu_icons_sizes);
 }
 
@@ -406,14 +422,27 @@ IN_PROC_BROWSER_TEST_F(WebAppMigrationManagerBrowserTestWithShortcutsMenu,
 
   EXPECT_EQ(web_app->shortcuts_menu_item_infos().size(), 2u);
   EXPECT_EQ(web_app->shortcuts_menu_item_infos()[0].name, u"shortcut1");
-  EXPECT_EQ(web_app->shortcuts_menu_item_infos()[0].shortcut_icon_infos.size(),
+  EXPECT_EQ(web_app->shortcuts_menu_item_infos()[0]
+                .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
+                .size(),
             1u);
   EXPECT_EQ(web_app->shortcuts_menu_item_infos()[1].name, u"shortcut2");
-  EXPECT_EQ(web_app->shortcuts_menu_item_infos()[1].shortcut_icon_infos.size(),
+  EXPECT_EQ(web_app->shortcuts_menu_item_infos()[1]
+                .GetShortcutIconInfosForPurpose(IconPurpose::ANY)
+                .size(),
             2u);
 
-  const std::vector<std::vector<SquareSizePx>> shortcuts_menu_icons_sizes = {
-      {48}, {96, 144}};
+  std::vector<IconSizes> shortcuts_menu_icons_sizes;
+  {
+    IconSizes icon_sizes;
+    icon_sizes.SetSizesForPurpose(IconPurpose::ANY, {48});
+    shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
+  }
+  {
+    IconSizes icon_sizes;
+    icon_sizes.SetSizesForPurpose(IconPurpose::ANY, {96, 144});
+    shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
+  }
   ReadAndVerifyDownloadedShortcutsMenuIcons(app_id, shortcuts_menu_icons_sizes);
 }
 

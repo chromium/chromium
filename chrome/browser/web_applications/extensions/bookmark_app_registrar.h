@@ -75,8 +75,7 @@ class BookmarkAppRegistrar : public web_app::AppRegistrar,
       const web_app::AppId& app_id) const override;
   std::vector<WebApplicationShortcutsMenuItemInfo> GetAppShortcutsMenuItemInfos(
       const web_app::AppId& app_id) const override;
-  std::vector<std::vector<SquareSizePx>>
-  GetAppDownloadedShortcutsMenuIconsSizes(
+  std::vector<IconSizes> GetAppDownloadedShortcutsMenuIconsSizes(
       const web_app::AppId& app_id) const override;
   web_app::RunOnOsLoginMode GetAppRunOnOsLoginMode(
       const web_app::AppId& app_id) const override;

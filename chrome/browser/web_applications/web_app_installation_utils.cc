@@ -36,15 +36,19 @@ std::vector<SquareSizePx> GetSquareSizePxs(
   return sizes;
 }
 
-// TODO(crbug.com/1152661): Return maskable icon sizes too. Consider
-// parameterizing method.
-std::vector<std::vector<SquareSizePx>> GetDownloadedShortcutsMenuIconsSizes(
+std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
-  std::vector<std::vector<SquareSizePx>> shortcuts_menu_icons_sizes;
+  std::vector<IconSizes> shortcuts_menu_icons_sizes;
   shortcuts_menu_icons_sizes.reserve(shortcuts_menu_icon_bitmaps.size());
   for (const auto& shortcut_icon_bitmaps : shortcuts_menu_icon_bitmaps) {
-    shortcuts_menu_icons_sizes.emplace_back(
-        GetSquareSizePxs(shortcut_icon_bitmaps.any));
+    IconSizes icon_sizes;
+    // TODO (crbug.com/1114638): Return monochrome icon sizes too.
+    icon_sizes.SetSizesForPurpose(IconPurpose::ANY,
+                                  GetSquareSizePxs(shortcut_icon_bitmaps.any));
+    icon_sizes.SetSizesForPurpose(
+        IconPurpose::MASKABLE,
+        GetSquareSizePxs(shortcut_icon_bitmaps.maskable));
+    shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
   }
   return shortcuts_menu_icons_sizes;
 }

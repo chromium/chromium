@@ -103,20 +103,25 @@ std::vector<SquareSizePx> GetBookmarkAppDownloadedIconSizes(
   return icon_sizes_in_px;
 }
 
-std::vector<std::vector<SquareSizePx>>
-GetBookmarkAppDownloadedShortcutsMenuIconsSizes(const Extension* extension) {
-  std::vector<std::vector<SquareSizePx>> shortcuts_menu_icons_sizes;
+std::vector<IconSizes> GetBookmarkAppDownloadedShortcutsMenuIconsSizes(
+    const Extension* extension) {
+  std::vector<IconSizes> shortcuts_menu_icons_sizes;
 
   const std::map<int, ExtensionIconSet>& shortcuts_menu_icons =
       WebAppShortcutIconsInfo::GetShortcutIcons(extension);
   shortcuts_menu_icons_sizes.reserve(shortcuts_menu_icons.size());
   for (const auto& shortcuts_menu_icon : shortcuts_menu_icons) {
-    std::vector<SquareSizePx> shortcuts_menu_icon_sizes;
-    shortcuts_menu_icon_sizes.reserve(shortcuts_menu_icon.second.map().size());
+    std::vector<SquareSizePx> shortcuts_menu_icon_sizes_any;
+    shortcuts_menu_icon_sizes_any.reserve(
+        shortcuts_menu_icon.second.map().size());
     for (const auto& icon_info : shortcuts_menu_icon.second.map()) {
-      shortcuts_menu_icon_sizes.emplace_back(icon_info.first);
+      shortcuts_menu_icon_sizes_any.emplace_back(icon_info.first);
     }
-    shortcuts_menu_icons_sizes.push_back(std::move(shortcuts_menu_icon_sizes));
+
+    IconSizes icon_sizes;
+    icon_sizes.SetSizesForPurpose(IconPurpose::ANY,
+                                  std::move(shortcuts_menu_icon_sizes_any));
+    shortcuts_menu_icons_sizes.push_back(std::move(icon_sizes));
   }
 
   return shortcuts_menu_icons_sizes;
