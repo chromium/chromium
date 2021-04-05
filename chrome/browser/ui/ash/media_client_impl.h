@@ -19,8 +19,8 @@
 #include "ui/base/accelerators/media_keys_listener.h"
 
 class MediaClientImpl : public ash::MediaClient,
+                        public ash::VmCameraMicManager::Observer,
                         public BrowserListObserver,
-                        public chromeos::VmCameraMicManager::Observer,
                         public MediaCaptureDevicesDispatcher::Observer,
                         public media::CameraPrivacySwitchObserver,
                         public media::CameraActiveClientObserver {
@@ -58,9 +58,8 @@ class MediaClientImpl : public ash::MediaClient,
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
 
-  // chromeos::VmCameraMicManager::Observer
-  void OnVmCameraMicActiveChanged(
-      chromeos::VmCameraMicManager* manager) override;
+  // ash::VmCameraMicManager::Observer
+  void OnVmCameraMicActiveChanged(ash::VmCameraMicManager* manager) override;
 
   // media::CameraPrivacySwitchObserver:
   void OnCameraPrivacySwitchStatusChanged(

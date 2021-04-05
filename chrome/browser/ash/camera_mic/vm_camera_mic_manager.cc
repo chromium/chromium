@@ -38,7 +38,7 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kNotificationIdPrefix[] = "vm_camera_mic_manager";
@@ -525,4 +525,4 @@ void VmCameraMicManager::SetMicActive(VmType vm, bool active) {
   UpdateVmInfo(vm, &VmInfo::SetMicActive, active);
 }
 
-}  // namespace chromeos
+}  // namespace ash

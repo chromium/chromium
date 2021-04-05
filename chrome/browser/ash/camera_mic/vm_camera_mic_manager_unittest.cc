@@ -26,9 +26,9 @@
 
 namespace {
 using testing::UnorderedElementsAre;
-using VmType = chromeos::VmCameraMicManager::VmType;
-using DeviceType = chromeos::VmCameraMicManager::DeviceType;
-using NotificationType = chromeos::VmCameraMicManager::NotificationType;
+using VmType = ash::VmCameraMicManager::VmType;
+using DeviceType = ash::VmCameraMicManager::DeviceType;
+using NotificationType = ash::VmCameraMicManager::NotificationType;
 
 constexpr VmType kCrostiniVm = VmType::kCrostiniVm;
 constexpr VmType kPluginVm = VmType::kPluginVm;
@@ -37,13 +37,13 @@ constexpr DeviceType kCamera = DeviceType::kCamera;
 constexpr DeviceType kMic = DeviceType::kMic;
 
 constexpr NotificationType kMicNotification =
-    chromeos::VmCameraMicManager::kMicNotification;
+    ash::VmCameraMicManager::kMicNotification;
 constexpr NotificationType kCameraNotification =
-    chromeos::VmCameraMicManager::kCameraNotification;
+    ash::VmCameraMicManager::kCameraNotification;
 constexpr NotificationType kCameraAndMicNotification =
-    chromeos::VmCameraMicManager::kCameraAndMicNotification;
+    ash::VmCameraMicManager::kCameraAndMicNotification;
 
-constexpr auto kDebounceTime = chromeos::VmCameraMicManager::kDebounceTime;
+constexpr auto kDebounceTime = ash::VmCameraMicManager::kDebounceTime;
 
 class FakeNotificationDisplayService : public NotificationDisplayService {
  public:
@@ -92,7 +92,7 @@ bool contains(const T& container, const V& value) {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class VmCameraMicManagerTest : public testing::Test {
  public:
@@ -530,4 +530,4 @@ TEST_F(VmCameraMicManagerDebounceTest, SimulateSkypeStartingMeeting) {
                 GetNotificationId(kPluginVm, kCameraAndMicNotification)});
 }
 
-}  // namespace chromeos
+}  // namespace ash

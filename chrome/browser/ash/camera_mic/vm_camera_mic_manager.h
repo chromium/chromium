@@ -22,7 +22,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 // This class manages camera/mic access (and the access notifications) for VMs
 // (crostini and parallels for now). All of the notifications are sent to the
@@ -114,6 +114,12 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
   base::ObserverList<Observer> observers_;
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::VmCameraMicManager;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_CAMERA_MIC_VM_CAMERA_MIC_MANAGER_H_
