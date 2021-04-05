@@ -715,8 +715,8 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
           FROM_HERE, base::BindOnce(update_occlusion_state_callback_,
                                     root_window_hwnds_occlusion_state_,
                                     showing_thumbnails_));
-      return;
     }
+    return;
   } else if (event == EVENT_OBJECT_HIDE) {
     // Avoid getting the hwnd's class name, and recomputing occlusion, if not
     // needed.
@@ -729,6 +729,8 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
       // Let occlusion calculation fix occlusion state, even though hwnd might
       // be a popup window.
       calculate_occlusion = true;
+    } else {
+      return;
     }
   }
   // Don't continually calculate occlusion while a window is moving (unless it's
