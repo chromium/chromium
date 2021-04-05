@@ -281,3 +281,52 @@ IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
   histogram_tester.ExpectBucketCount(
       "LanguageDetection.TFLiteModel.WasModelAvailableForDetection", true, 1);
 }
+
+IN_PROC_BROWSER_TEST_F(TranslateModelServiceBrowserTest,
+                       ModelUpdateFromOptimizationGuide) {
+  base::ScopedAllowBlockingForTesting allow_io_for_test_setup;
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(translate_model_service());
+
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelFileForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          /*model_metadata=*/base::nullopt, model_file_path());
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", 1);
+  histogram_tester.ExpectUniqueSample(
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
+
+  std::unique_ptr<base::RunLoop> run_loop = std::make_unique<base::RunLoop>();
+  translate_model_service()->GetLanguageDetectionModelFile(base::BindOnce(
+      [](base::RunLoop* run_loop, base::File model_file) {
+        EXPECT_TRUE(model_file.IsValid());
+        run_loop->Quit();
+      },
+      run_loop.get()));
+
+  run_loop->Run();
+
+  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->profile())
+      ->OverrideTargetModelFileForTesting(
+          optimization_guide::proto::OPTIMIZATION_TARGET_LANGUAGE_DETECTION,
+          /*model_metadata=*/base::nullopt, model_file_path());
+
+  RetryForHistogramUntilCountReached(
+      &histogram_tester,
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", 2);
+  histogram_tester.ExpectUniqueSample(
+      "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 2);
+
+  run_loop = std::make_unique<base::RunLoop>();
+  translate_model_service()->GetLanguageDetectionModelFile(base::BindOnce(
+      [](base::RunLoop* run_loop, base::File model_file) {
+        EXPECT_TRUE(model_file.IsValid());
+        run_loop->Quit();
+      },
+      run_loop.get()));
+
+  run_loop->Run();
+}

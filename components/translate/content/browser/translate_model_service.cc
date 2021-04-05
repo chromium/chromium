@@ -26,6 +26,13 @@ base::File LoadModelFile(const base::FilePath& model_file_path) {
                     base::File::FLAG_OPEN | base::File::FLAG_READ);
 }
 
+// Close the provided model file.
+void CloseModelFile(base::File model_file) {
+  if (!model_file.IsValid())
+    return;
+  model_file.Close();
+}
+
 // Util class for recording the result of loading the detection model. The
 // result is recorded when it goes out of scope and its destructor is called.
 class ScopedModelLoadingResultRecorder {
@@ -88,6 +95,13 @@ void TranslateModelService::OnModelFileLoaded(base::File model_file) {
   if (!model_file.IsValid())
     return;
 
+  if (language_detection_model_file_) {
+    // If the model file is already loaded, it should be closed on a
+    // background thread.
+    background_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&CloseModelFile,
+                                  std::move(*language_detection_model_file_)));
+  }
   language_detection_model_file_ = std::move(model_file);
   result_recorder.set_was_loaded();
   UMA_HISTOGRAM_COUNTS_100(
@@ -96,13 +110,15 @@ void TranslateModelService::OnModelFileLoaded(base::File model_file) {
   for (auto& pending_request : pending_model_requests_) {
     std::move(pending_request).Run(language_detection_model_file_->Duplicate());
   }
+  pending_model_requests_.clear();
 }
 
 void TranslateModelService::GetLanguageDetectionModelFile(
     GetModelCallback callback) {
   if (!language_detection_model_file_) {
-    if (pending_model_requests_.size() < kMaxPendingRequestsAllowed)
+    if (pending_model_requests_.size() < kMaxPendingRequestsAllowed) {
       pending_model_requests_.emplace_back(std::move(callback));
+    }
     return;
   }
   // The model must be valid at this point.
