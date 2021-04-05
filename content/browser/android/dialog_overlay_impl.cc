@@ -52,7 +52,7 @@ static jlong JNI_DialogOverlayImpl_Init(JNIEnv* env,
     return 0;
 
   // Dialog-based overlays are not supported for persistent video.
-  if (web_contents_impl->HasPersistentVideo())
+  if (web_contents_impl->has_persistent_video())
     return 0;
 
   // If we require a power-efficient overlay, then approximate that with "is

@@ -2464,7 +2464,8 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.threaded_scrolling_enabled =
       !command_line.HasSwitch(blink::switches::kDisableThreadedScrolling);
 
-  if (IsOverridingUserAgent()) {
+  if (GetController().GetVisibleEntry() &&
+      GetController().GetVisibleEntry()->GetIsOverridingUserAgent()) {
 #if defined(OS_ANDROID)
     // Only ignore viewport meta tag when Request Desktop Site is used, but not
     // in other situations where embedder changes to arbitrary mobile UA string.
@@ -2480,7 +2481,7 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.spatial_navigation_enabled =
       command_line.HasSwitch(switches::kEnableSpatialNavigation);
 
-  if (IsSpatialNavigationDisabled())
+  if (is_spatial_navigation_disabled_)
     prefs.spatial_navigation_enabled = false;
 
   prefs.disable_reading_from_canvas =
@@ -2510,11 +2511,11 @@ const blink::web_pref::WebPreferences WebContentsImpl::ComputeWebPreferences() {
   prefs.user_gesture_required_for_presentation = !command_line.HasSwitch(
       switches::kDisableGestureRequirementForPresentation);
 
-  if (HideDownloadUI())
+  if (is_overlay_content_)
     prefs.hide_download_ui = true;
 
   // `media_controls_enabled` is `true` by default.
-  if (HasPersistentVideo())
+  if (has_persistent_video_)
     prefs.media_controls_enabled = false;
 
 #if defined(OS_ANDROID)
@@ -3965,11 +3966,6 @@ SessionStorageNamespaceMap WebContentsImpl::GetSessionStorageNamespaceMap() {
 
 FrameTree* WebContentsImpl::GetFrameTree() {
   return &frame_tree_;
-}
-
-bool WebContentsImpl::IsOverridingUserAgent() {
-  return GetController().GetVisibleEntry() &&
-         GetController().GetVisibleEntry()->GetIsOverridingUserAgent();
 }
 
 bool WebContentsImpl::IsJavaScriptDialogShowing() const {
@@ -5597,10 +5593,6 @@ WebContentsImpl::GetOrCreateWebPreferences() {
   return *web_preferences_.get();
 }
 
-bool WebContentsImpl::IsWebPreferencesSet() const {
-  return web_preferences_.get();
-}
-
 void WebContentsImpl::SetWebPreferences(
     const blink::web_pref::WebPreferences& prefs) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::SetWebPreferences");
@@ -6598,18 +6590,6 @@ double WebContentsImpl::GetPendingPageZoomLevel() {
       url.scheme(), net::GetHostOrSpecFromURL(url));
 }
 #endif  // !defined(OS_ANDROID)
-
-bool WebContentsImpl::HideDownloadUI() const {
-  return is_overlay_content_;
-}
-
-bool WebContentsImpl::HasPersistentVideo() const {
-  return has_persistent_video_;
-}
-
-bool WebContentsImpl::IsSpatialNavigationDisabled() const {
-  return is_spatial_navigation_disabled_;
-}
 
 bool WebContentsImpl::IsPictureInPictureAllowedForFullscreenVideo() const {
   return media_web_contents_observer_

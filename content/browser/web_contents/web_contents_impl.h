@@ -839,18 +839,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   std::string GetDefaultMediaDeviceID(
       blink::mojom::MediaStreamType type) override;
   SessionStorageNamespaceMap GetSessionStorageNamespaceMap() override;
-  bool IsOverridingUserAgent() override;
   bool IsJavaScriptDialogShowing() const override;
   bool ShouldIgnoreUnresponsiveRenderer() override;
-  bool HideDownloadUI() const override;
-  bool HasPersistentVideo() const override;
-  bool IsSpatialNavigationDisabled() const override;
   void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) override;
   void OnThemeColorChanged(RenderViewHostImpl* source) override;
   void OnBackgroundColorChanged(RenderViewHostImpl* source) override;
-
   void RecomputeWebPreferencesSlow() override;
-  bool IsWebPreferencesSet() const override;
 
   // NavigatorDelegate ---------------------------------------------------------
 
@@ -1219,6 +1213,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   }
 
   float page_scale_factor() { return page_scale_factor_; }
+
+  bool has_persistent_video() { return has_persistent_video_; }
 
   // Returns the focused frame's input handler.
   blink::mojom::FrameWidgetInputHandler* GetFocusedFrameWidgetInputHandler();

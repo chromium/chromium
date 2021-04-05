@@ -117,9 +117,6 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   virtual const blink::web_pref::WebPreferences&
   GetOrCreateWebPreferences() = 0;
 
-  // Returns true if the WebPreferences for this RenderViewHost is not null.
-  virtual bool IsWebPreferencesSet() const;
-
   // Sets the WebPreferences for the WebContents associated with this
   // RenderViewHost to |prefs| and send the new value to all renderers in the
   // WebContents.
@@ -134,24 +131,11 @@ class CONTENT_EXPORT RenderViewHostDelegate {
   // recomputed).
   virtual void RecomputeWebPreferencesSlow() {}
 
-  // Whether the user agent is overridden using the Chrome for Android "Request
-  // Desktop Site" feature.
-  virtual bool IsOverridingUserAgent();
-
   virtual bool IsJavaScriptDialogShowing() const;
 
   // If a timer for an unresponsive renderer fires, whether it should be
   // ignored.
   virtual bool ShouldIgnoreUnresponsiveRenderer();
-
-  // Whether download UI should be hidden.
-  virtual bool HideDownloadUI() const;
-
-  // Whether the WebContents as a persistent video.
-  virtual bool HasPersistentVideo() const;
-
-  // Whether spatial navigation is permitted.
-  virtual bool IsSpatialNavigationDisabled() const;
 
   // The RenderView finished the first visually non-empty paint.
   virtual void DidFirstVisuallyNonEmptyPaint(RenderViewHostImpl* source) {}
