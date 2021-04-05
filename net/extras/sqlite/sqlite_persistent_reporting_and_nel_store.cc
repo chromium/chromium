@@ -892,61 +892,61 @@ bool SQLitePersistentReportingAndNelStore::Backend::CommitNelPolicyOperation(
     PendingOperation<NelPolicyInfo>* op) {
   DCHECK_EQ(1, db()->transaction_nesting());
 
-  sql::Statement add_smt(db()->GetCachedStatement(
+  sql::Statement add_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO nel_policies (nik, origin_scheme, origin_host, origin_port, "
       "received_ip_address, group_name, expires_us_since_epoch, "
       "success_fraction, failure_fraction, is_include_subdomains, "
       "last_access_us_since_epoch) VALUES (?,?,?,?,?,?,?,?,?,?,?)"));
-  if (!add_smt.is_valid())
+  if (!add_statement.is_valid())
     return false;
 
-  sql::Statement update_access_smt(db()->GetCachedStatement(
+  sql::Statement update_access_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "UPDATE nel_policies SET last_access_us_since_epoch=? WHERE "
       "nik=? AND origin_scheme=? AND origin_host=? AND origin_port=?"));
-  if (!update_access_smt.is_valid())
+  if (!update_access_statement.is_valid())
     return false;
 
-  sql::Statement del_smt(db()->GetCachedStatement(
+  sql::Statement del_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "DELETE FROM nel_policies WHERE "
       "nik=? AND origin_scheme=? AND origin_host=? AND origin_port=?"));
-  if (!del_smt.is_valid())
+  if (!del_statement.is_valid())
     return false;
 
   const NelPolicyInfo& nel_policy_info = op->data();
 
   switch (op->type()) {
     case PendingOperationType::ADD:
-      add_smt.Reset(true);
-      add_smt.BindString(0, nel_policy_info.network_isolation_key_string);
-      add_smt.BindString(1, nel_policy_info.origin_scheme);
-      add_smt.BindString(2, nel_policy_info.origin_host);
-      add_smt.BindInt(3, nel_policy_info.origin_port);
-      add_smt.BindString(4, nel_policy_info.received_ip_address);
-      add_smt.BindString(5, nel_policy_info.report_to);
-      add_smt.BindInt64(6, nel_policy_info.expires_us_since_epoch);
-      add_smt.BindDouble(7, nel_policy_info.success_fraction);
-      add_smt.BindDouble(8, nel_policy_info.failure_fraction);
-      add_smt.BindBool(9, nel_policy_info.is_include_subdomains);
-      add_smt.BindInt64(10, nel_policy_info.last_access_us_since_epoch);
-      if (!add_smt.Run()) {
+      add_statement.Reset(true);
+      add_statement.BindString(0, nel_policy_info.network_isolation_key_string);
+      add_statement.BindString(1, nel_policy_info.origin_scheme);
+      add_statement.BindString(2, nel_policy_info.origin_host);
+      add_statement.BindInt(3, nel_policy_info.origin_port);
+      add_statement.BindString(4, nel_policy_info.received_ip_address);
+      add_statement.BindString(5, nel_policy_info.report_to);
+      add_statement.BindInt64(6, nel_policy_info.expires_us_since_epoch);
+      add_statement.BindDouble(7, nel_policy_info.success_fraction);
+      add_statement.BindDouble(8, nel_policy_info.failure_fraction);
+      add_statement.BindBool(9, nel_policy_info.is_include_subdomains);
+      add_statement.BindInt64(10, nel_policy_info.last_access_us_since_epoch);
+      if (!add_statement.Run()) {
         DLOG(WARNING) << "Could not add a NEL policy to the DB.";
         return false;
       }
       break;
 
     case PendingOperationType::UPDATE_ACCESS_TIME:
-      update_access_smt.Reset(true);
-      update_access_smt.BindInt64(0,
-                                  nel_policy_info.last_access_us_since_epoch);
-      update_access_smt.BindString(
+      update_access_statement.Reset(true);
+      update_access_statement.BindInt64(
+          0, nel_policy_info.last_access_us_since_epoch);
+      update_access_statement.BindString(
           1, nel_policy_info.network_isolation_key_string);
-      update_access_smt.BindString(2, nel_policy_info.origin_scheme);
-      update_access_smt.BindString(3, nel_policy_info.origin_host);
-      update_access_smt.BindInt(4, nel_policy_info.origin_port);
-      if (!update_access_smt.Run()) {
+      update_access_statement.BindString(2, nel_policy_info.origin_scheme);
+      update_access_statement.BindString(3, nel_policy_info.origin_host);
+      update_access_statement.BindInt(4, nel_policy_info.origin_port);
+      if (!update_access_statement.Run()) {
         DLOG(WARNING)
             << "Could not update NEL policy last access time in the DB.";
         return false;
@@ -954,12 +954,12 @@ bool SQLitePersistentReportingAndNelStore::Backend::CommitNelPolicyOperation(
       break;
 
     case PendingOperationType::DELETE:
-      del_smt.Reset(true);
-      del_smt.BindString(0, nel_policy_info.network_isolation_key_string);
-      del_smt.BindString(1, nel_policy_info.origin_scheme);
-      del_smt.BindString(2, nel_policy_info.origin_host);
-      del_smt.BindInt(3, nel_policy_info.origin_port);
-      if (!del_smt.Run()) {
+      del_statement.Reset(true);
+      del_statement.BindString(0, nel_policy_info.network_isolation_key_string);
+      del_statement.BindString(1, nel_policy_info.origin_scheme);
+      del_statement.BindString(2, nel_policy_info.origin_host);
+      del_statement.BindInt(3, nel_policy_info.origin_port);
+      if (!del_statement.Run()) {
         DLOG(WARNING) << "Could not delete a NEL policy from the DB.";
         return false;
       }
@@ -981,62 +981,65 @@ bool SQLitePersistentReportingAndNelStore::Backend::
         PendingOperation<ReportingEndpointInfo>* op) {
   DCHECK_EQ(1, db()->transaction_nesting());
 
-  sql::Statement add_smt(db()->GetCachedStatement(
+  sql::Statement add_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO reporting_endpoints (nik, origin_scheme, origin_host, "
       "origin_port, group_name, url, priority, weight) "
       "VALUES (?,?,?,?,?,?,?,?)"));
-  if (!add_smt.is_valid())
+  if (!add_statement.is_valid())
     return false;
 
-  sql::Statement update_details_smt(db()->GetCachedStatement(
+  sql::Statement update_details_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "UPDATE reporting_endpoints SET priority=?, weight=? WHERE "
       "nik=? AND origin_scheme=? AND origin_host=? AND origin_port=? "
       "AND group_name=? AND url=?"));
-  if (!update_details_smt.is_valid())
+  if (!update_details_statement.is_valid())
     return false;
 
-  sql::Statement del_smt(db()->GetCachedStatement(
+  sql::Statement del_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "DELETE FROM reporting_endpoints WHERE "
       "nik=? AND origin_scheme=? AND origin_host=? AND origin_port=? "
       "AND group_name=? AND url=?"));
-  if (!del_smt.is_valid())
+  if (!del_statement.is_valid())
     return false;
 
   const ReportingEndpointInfo& reporting_endpoint_info = op->data();
 
   switch (op->type()) {
     case PendingOperationType::ADD:
-      add_smt.Reset(true);
-      add_smt.BindString(0,
-                         reporting_endpoint_info.network_isolation_key_string);
-      add_smt.BindString(1, reporting_endpoint_info.origin_scheme);
-      add_smt.BindString(2, reporting_endpoint_info.origin_host);
-      add_smt.BindInt(3, reporting_endpoint_info.origin_port);
-      add_smt.BindString(4, reporting_endpoint_info.group_name);
-      add_smt.BindString(5, reporting_endpoint_info.url);
-      add_smt.BindInt(6, reporting_endpoint_info.priority);
-      add_smt.BindInt(7, reporting_endpoint_info.weight);
-      if (!add_smt.Run()) {
+      add_statement.Reset(true);
+      add_statement.BindString(
+          0, reporting_endpoint_info.network_isolation_key_string);
+      add_statement.BindString(1, reporting_endpoint_info.origin_scheme);
+      add_statement.BindString(2, reporting_endpoint_info.origin_host);
+      add_statement.BindInt(3, reporting_endpoint_info.origin_port);
+      add_statement.BindString(4, reporting_endpoint_info.group_name);
+      add_statement.BindString(5, reporting_endpoint_info.url);
+      add_statement.BindInt(6, reporting_endpoint_info.priority);
+      add_statement.BindInt(7, reporting_endpoint_info.weight);
+      if (!add_statement.Run()) {
         DLOG(WARNING) << "Could not add a Reporting endpoint to the DB.";
         return false;
       }
       break;
 
     case PendingOperationType::UPDATE_DETAILS:
-      update_details_smt.Reset(true);
-      update_details_smt.BindInt(0, reporting_endpoint_info.priority);
-      update_details_smt.BindInt(1, reporting_endpoint_info.weight);
-      update_details_smt.BindString(
+      update_details_statement.Reset(true);
+      update_details_statement.BindInt(0, reporting_endpoint_info.priority);
+      update_details_statement.BindInt(1, reporting_endpoint_info.weight);
+      update_details_statement.BindString(
           2, reporting_endpoint_info.network_isolation_key_string);
-      update_details_smt.BindString(3, reporting_endpoint_info.origin_scheme);
-      update_details_smt.BindString(4, reporting_endpoint_info.origin_host);
-      update_details_smt.BindInt(5, reporting_endpoint_info.origin_port);
-      update_details_smt.BindString(6, reporting_endpoint_info.group_name);
-      update_details_smt.BindString(7, reporting_endpoint_info.url);
-      if (!update_details_smt.Run()) {
+      update_details_statement.BindString(
+          3, reporting_endpoint_info.origin_scheme);
+      update_details_statement.BindString(4,
+                                          reporting_endpoint_info.origin_host);
+      update_details_statement.BindInt(5, reporting_endpoint_info.origin_port);
+      update_details_statement.BindString(6,
+                                          reporting_endpoint_info.group_name);
+      update_details_statement.BindString(7, reporting_endpoint_info.url);
+      if (!update_details_statement.Run()) {
         DLOG(WARNING)
             << "Could not update Reporting endpoint details in the DB.";
         return false;
@@ -1044,15 +1047,15 @@ bool SQLitePersistentReportingAndNelStore::Backend::
       break;
 
     case PendingOperationType::DELETE:
-      del_smt.Reset(true);
-      del_smt.BindString(0,
-                         reporting_endpoint_info.network_isolation_key_string);
-      del_smt.BindString(1, reporting_endpoint_info.origin_scheme);
-      del_smt.BindString(2, reporting_endpoint_info.origin_host);
-      del_smt.BindInt(3, reporting_endpoint_info.origin_port);
-      del_smt.BindString(4, reporting_endpoint_info.group_name);
-      del_smt.BindString(5, reporting_endpoint_info.url);
-      if (!del_smt.Run()) {
+      del_statement.Reset(true);
+      del_statement.BindString(
+          0, reporting_endpoint_info.network_isolation_key_string);
+      del_statement.BindString(1, reporting_endpoint_info.origin_scheme);
+      del_statement.BindString(2, reporting_endpoint_info.origin_host);
+      del_statement.BindInt(3, reporting_endpoint_info.origin_port);
+      del_statement.BindString(4, reporting_endpoint_info.group_name);
+      del_statement.BindString(5, reporting_endpoint_info.url);
+      if (!del_statement.Run()) {
         DLOG(WARNING) << "Could not delete a Reporting endpoint from the DB.";
         return false;
       }
@@ -1073,74 +1076,77 @@ bool SQLitePersistentReportingAndNelStore::Backend::
         PendingOperation<ReportingEndpointGroupInfo>* op) {
   DCHECK_EQ(1, db()->transaction_nesting());
 
-  sql::Statement add_smt(db()->GetCachedStatement(
+  sql::Statement add_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO reporting_endpoint_groups (nik, origin_scheme, origin_host, "
       "origin_port, group_name, is_include_subdomains, expires_us_since_epoch, "
       "last_access_us_since_epoch) VALUES (?,?,?,?,?,?,?,?)"));
-  if (!add_smt.is_valid())
+  if (!add_statement.is_valid())
     return false;
 
-  sql::Statement update_access_smt(db()->GetCachedStatement(
+  sql::Statement update_access_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "UPDATE reporting_endpoint_groups SET last_access_us_since_epoch=? WHERE "
       "nik=? AND origin_scheme=? AND origin_host=? AND origin_port=? AND "
       "group_name=?"));
-  if (!update_access_smt.is_valid())
+  if (!update_access_statement.is_valid())
     return false;
 
-  sql::Statement update_details_smt(db()->GetCachedStatement(
+  sql::Statement update_details_statement(db()->GetCachedStatement(
       SQL_FROM_HERE,
       "UPDATE reporting_endpoint_groups SET is_include_subdomains=?, "
       "expires_us_since_epoch=?, last_access_us_since_epoch=? WHERE "
       "nik=? AND origin_scheme=? AND origin_host=? AND origin_port=? AND "
       "group_name=?"));
-  if (!update_details_smt.is_valid())
+  if (!update_details_statement.is_valid())
     return false;
 
-  sql::Statement del_smt(
+  sql::Statement del_statement(
       db()->GetCachedStatement(SQL_FROM_HERE,
                                "DELETE FROM reporting_endpoint_groups WHERE "
                                "nik=? AND origin_scheme=? AND origin_host=? "
                                "AND origin_port=? AND group_name=?"));
-  if (!del_smt.is_valid())
+  if (!del_statement.is_valid())
     return false;
 
   const ReportingEndpointGroupInfo& reporting_endpoint_group_info = op->data();
 
   switch (op->type()) {
     case PendingOperationType::ADD:
-      add_smt.Reset(true);
-      add_smt.BindString(
+      add_statement.Reset(true);
+      add_statement.BindString(
           0, reporting_endpoint_group_info.network_isolation_key_string);
-      add_smt.BindString(1, reporting_endpoint_group_info.origin_scheme);
-      add_smt.BindString(2, reporting_endpoint_group_info.origin_host);
-      add_smt.BindInt(3, reporting_endpoint_group_info.origin_port);
-      add_smt.BindString(4, reporting_endpoint_group_info.group_name);
-      add_smt.BindBool(5, reporting_endpoint_group_info.is_include_subdomains);
-      add_smt.BindInt64(6,
-                        reporting_endpoint_group_info.expires_us_since_epoch);
-      add_smt.BindInt64(
+      add_statement.BindString(1, reporting_endpoint_group_info.origin_scheme);
+      add_statement.BindString(2, reporting_endpoint_group_info.origin_host);
+      add_statement.BindInt(3, reporting_endpoint_group_info.origin_port);
+      add_statement.BindString(4, reporting_endpoint_group_info.group_name);
+      add_statement.BindBool(
+          5, reporting_endpoint_group_info.is_include_subdomains);
+      add_statement.BindInt64(
+          6, reporting_endpoint_group_info.expires_us_since_epoch);
+      add_statement.BindInt64(
           7, reporting_endpoint_group_info.last_access_us_since_epoch);
-      if (!add_smt.Run()) {
+      if (!add_statement.Run()) {
         DLOG(WARNING) << "Could not add a Reporting endpoint group to the DB.";
         return false;
       }
       break;
 
     case PendingOperationType::UPDATE_ACCESS_TIME:
-      update_access_smt.Reset(true);
-      update_access_smt.BindInt64(
+      update_access_statement.Reset(true);
+      update_access_statement.BindInt64(
           0, reporting_endpoint_group_info.last_access_us_since_epoch);
-      update_access_smt.BindString(
+      update_access_statement.BindString(
           1, reporting_endpoint_group_info.network_isolation_key_string);
-      update_access_smt.BindString(2,
-                                   reporting_endpoint_group_info.origin_scheme);
-      update_access_smt.BindString(3,
-                                   reporting_endpoint_group_info.origin_host);
-      update_access_smt.BindInt(4, reporting_endpoint_group_info.origin_port);
-      update_access_smt.BindString(5, reporting_endpoint_group_info.group_name);
-      if (!update_access_smt.Run()) {
+      update_access_statement.BindString(
+          2, reporting_endpoint_group_info.origin_scheme);
+      update_access_statement.BindString(
+          3, reporting_endpoint_group_info.origin_host);
+      update_access_statement.BindInt(
+          4, reporting_endpoint_group_info.origin_port);
+      update_access_statement.BindString(
+          5, reporting_endpoint_group_info.group_name);
+      if (!update_access_statement.Run()) {
         DLOG(WARNING)
             << "Could not update Reporting endpoint group last access "
                "time in the DB.";
@@ -1149,23 +1155,24 @@ bool SQLitePersistentReportingAndNelStore::Backend::
       break;
 
     case PendingOperationType::UPDATE_DETAILS:
-      update_details_smt.Reset(true);
-      update_details_smt.BindBool(
+      update_details_statement.Reset(true);
+      update_details_statement.BindBool(
           0, reporting_endpoint_group_info.is_include_subdomains);
-      update_details_smt.BindInt64(
+      update_details_statement.BindInt64(
           1, reporting_endpoint_group_info.expires_us_since_epoch);
-      update_details_smt.BindInt64(
+      update_details_statement.BindInt64(
           2, reporting_endpoint_group_info.last_access_us_since_epoch);
-      update_details_smt.BindString(
+      update_details_statement.BindString(
           3, reporting_endpoint_group_info.network_isolation_key_string);
-      update_details_smt.BindString(
+      update_details_statement.BindString(
           4, reporting_endpoint_group_info.origin_scheme);
-      update_details_smt.BindString(5,
-                                    reporting_endpoint_group_info.origin_host);
-      update_details_smt.BindInt(6, reporting_endpoint_group_info.origin_port);
-      update_details_smt.BindString(7,
-                                    reporting_endpoint_group_info.group_name);
-      if (!update_details_smt.Run()) {
+      update_details_statement.BindString(
+          5, reporting_endpoint_group_info.origin_host);
+      update_details_statement.BindInt(
+          6, reporting_endpoint_group_info.origin_port);
+      update_details_statement.BindString(
+          7, reporting_endpoint_group_info.group_name);
+      if (!update_details_statement.Run()) {
         DLOG(WARNING)
             << "Could not update Reporting endpoint group details in the DB.";
         return false;
@@ -1173,14 +1180,14 @@ bool SQLitePersistentReportingAndNelStore::Backend::
       break;
 
     case PendingOperationType::DELETE:
-      del_smt.Reset(true);
-      del_smt.BindString(
+      del_statement.Reset(true);
+      del_statement.BindString(
           0, reporting_endpoint_group_info.network_isolation_key_string);
-      del_smt.BindString(1, reporting_endpoint_group_info.origin_scheme);
-      del_smt.BindString(2, reporting_endpoint_group_info.origin_host);
-      del_smt.BindInt(3, reporting_endpoint_group_info.origin_port);
-      del_smt.BindString(4, reporting_endpoint_group_info.group_name);
-      if (!del_smt.Run()) {
+      del_statement.BindString(1, reporting_endpoint_group_info.origin_scheme);
+      del_statement.BindString(2, reporting_endpoint_group_info.origin_host);
+      del_statement.BindInt(3, reporting_endpoint_group_info.origin_port);
+      del_statement.BindString(4, reporting_endpoint_group_info.group_name);
+      if (!del_statement.Run()) {
         DLOG(WARNING)
             << "Could not delete a Reporting endpoint group from the DB.";
         return false;
@@ -1384,14 +1391,15 @@ void SQLitePersistentReportingAndNelStore::Backend::
     return;
   }
 
-  sql::Statement endpoints_smt(db()->GetUniqueStatement(
+  sql::Statement endpoints_statement(db()->GetUniqueStatement(
       "SELECT nik, origin_scheme, origin_host, origin_port, group_name, "
       "url, priority, weight FROM reporting_endpoints"));
-  sql::Statement endpoint_groups_smt(db()->GetUniqueStatement(
+  sql::Statement endpoint_groups_statement(db()->GetUniqueStatement(
       "SELECT nik, origin_scheme, origin_host, origin_port, group_name, "
       "is_include_subdomains, expires_us_since_epoch, "
       "last_access_us_since_epoch FROM reporting_endpoint_groups"));
-  if (!endpoints_smt.is_valid() || !endpoint_groups_smt.is_valid()) {
+  if (!endpoints_statement.is_valid() ||
+      !endpoint_groups_statement.is_valid()) {
     Reset();
     PostClientTask(
         FROM_HERE,
@@ -1402,52 +1410,54 @@ void SQLitePersistentReportingAndNelStore::Backend::
     return;
   }
 
-  while (endpoints_smt.Step()) {
+  while (endpoints_statement.Step()) {
     // Attempt to reconstitute a ReportingEndpoint from the fields stored in the
     // database.
     NetworkIsolationKey network_isolation_key;
-    if (!NetworkIsolationKeyFromString(endpoints_smt.ColumnString(0),
+    if (!NetworkIsolationKeyFromString(endpoints_statement.ColumnString(0),
                                        &network_isolation_key))
       continue;
     ReportingEndpointGroupKey group_key(
         network_isolation_key,
         /* origin = */
         url::Origin::CreateFromNormalizedTuple(
-            /* origin_scheme = */ endpoints_smt.ColumnString(1),
-            /* origin_host = */ endpoints_smt.ColumnString(2),
-            /* origin_port = */ endpoints_smt.ColumnInt(3)),
-        /* group_name = */ endpoints_smt.ColumnString(4));
+            /* origin_scheme = */ endpoints_statement.ColumnString(1),
+            /* origin_host = */ endpoints_statement.ColumnString(2),
+            /* origin_port = */ endpoints_statement.ColumnInt(3)),
+        /* group_name = */ endpoints_statement.ColumnString(4));
     ReportingEndpoint::EndpointInfo endpoint_info;
-    endpoint_info.url = GURL(endpoints_smt.ColumnString(5));
-    endpoint_info.priority = endpoints_smt.ColumnInt(6);
-    endpoint_info.weight = endpoints_smt.ColumnInt(7);
+    endpoint_info.url = GURL(endpoints_statement.ColumnString(5));
+    endpoint_info.priority = endpoints_statement.ColumnInt(6);
+    endpoint_info.weight = endpoints_statement.ColumnInt(7);
 
     loaded_endpoints.emplace_back(std::move(group_key),
                                   std::move(endpoint_info));
   }
 
-  while (endpoint_groups_smt.Step()) {
+  while (endpoint_groups_statement.Step()) {
     // Attempt to reconstitute a CachedReportingEndpointGroup from the fields
     // stored in the database.
     NetworkIsolationKey network_isolation_key;
-    if (!NetworkIsolationKeyFromString(endpoint_groups_smt.ColumnString(0),
-                                       &network_isolation_key))
+    if (!NetworkIsolationKeyFromString(
+            endpoint_groups_statement.ColumnString(0), &network_isolation_key))
       continue;
     ReportingEndpointGroupKey group_key(
         network_isolation_key,
         /* origin = */
         url::Origin::CreateFromNormalizedTuple(
-            /* origin_scheme = */ endpoint_groups_smt.ColumnString(1),
-            /* origin_host = */ endpoint_groups_smt.ColumnString(2),
-            /* origin_port = */ endpoint_groups_smt.ColumnInt(3)),
-        /* group_name = */ endpoint_groups_smt.ColumnString(4));
-    OriginSubdomains include_subdomains = endpoint_groups_smt.ColumnBool(5)
-                                              ? OriginSubdomains::INCLUDE
-                                              : OriginSubdomains::EXCLUDE;
+            /* origin_scheme = */ endpoint_groups_statement.ColumnString(1),
+            /* origin_host = */ endpoint_groups_statement.ColumnString(2),
+            /* origin_port = */ endpoint_groups_statement.ColumnInt(3)),
+        /* group_name = */ endpoint_groups_statement.ColumnString(4));
+    OriginSubdomains include_subdomains =
+        endpoint_groups_statement.ColumnBool(5) ? OriginSubdomains::INCLUDE
+                                                : OriginSubdomains::EXCLUDE;
     base::Time expires = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(endpoint_groups_smt.ColumnInt64(6)));
+        base::TimeDelta::FromMicroseconds(
+            endpoint_groups_statement.ColumnInt64(6)));
     base::Time last_used = base::Time::FromDeltaSinceWindowsEpoch(
-        base::TimeDelta::FromMicroseconds(endpoint_groups_smt.ColumnInt64(7)));
+        base::TimeDelta::FromMicroseconds(
+            endpoint_groups_statement.ColumnInt64(7)));
 
     loaded_endpoint_groups.emplace_back(std::move(group_key),
                                         include_subdomains, expires, last_used);

@@ -1154,44 +1154,44 @@ bool AddV9CookiesToDB(sql::Database* db) {
 
 bool AddV9CookiesToDBImpl(sql::Database* db,
                           const std::vector<CanonicalCookie>& cookies) {
-  sql::Statement add_smt(db->GetCachedStatement(
+  sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO cookies (creation_utc, host_key, name, value, "
       "encrypted_value, path, expires_utc, secure, httponly, firstpartyonly, "
       "last_access_utc, has_expires, persistent, priority) "
       "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
-  if (!add_smt.is_valid())
+  if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
   transaction.Begin();
   for (size_t i = 0; i < cookies.size(); ++i) {
-    add_smt.Reset(true);
-    add_smt.BindInt64(
+    statement.Reset(true);
+    statement.BindInt64(
         0,
         cookies[i].CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    add_smt.BindString(1, cookies[i].Domain());
-    add_smt.BindString(2, cookies[i].Name());
-    add_smt.BindString(3, cookies[i].Value());
-    add_smt.BindBlob(4, "", 0);  // encrypted_value
-    add_smt.BindString(5, cookies[i].Path());
-    add_smt.BindInt64(
+    statement.BindString(1, cookies[i].Domain());
+    statement.BindString(2, cookies[i].Name());
+    statement.BindString(3, cookies[i].Value());
+    statement.BindBlob(4, "", 0);  // encrypted_value
+    statement.BindString(5, cookies[i].Path());
+    statement.BindInt64(
         6, cookies[i].ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    add_smt.BindInt(7, cookies[i].IsSecure());
-    add_smt.BindInt(8, cookies[i].IsHttpOnly());
+    statement.BindInt(7, cookies[i].IsSecure());
+    statement.BindInt(8, cookies[i].IsHttpOnly());
     // Note that this and Priority() below nominally rely on the enums in
     // sqlite_persistent_cookie_store.cc having the same values as the
     // ones in ../../cookies/cookie_constants.h.  But nothing in this test
     // relies on that equivalence, so it's not worth the hassle to guarantee
     // that.
-    add_smt.BindInt(9, static_cast<int>(cookies[i].SameSite()));
-    add_smt.BindInt64(10, cookies[i]
-                              .LastAccessDate()
-                              .ToDeltaSinceWindowsEpoch()
-                              .InMicroseconds());
-    add_smt.BindInt(11, cookies[i].IsPersistent());
-    add_smt.BindInt(12, cookies[i].IsPersistent());
-    add_smt.BindInt(13, static_cast<int>(cookies[i].Priority()));
-    if (!add_smt.Run())
+    statement.BindInt(9, static_cast<int>(cookies[i].SameSite()));
+    statement.BindInt64(10, cookies[i]
+                                .LastAccessDate()
+                                .ToDeltaSinceWindowsEpoch()
+                                .InMicroseconds());
+    statement.BindInt(11, cookies[i].IsPersistent());
+    statement.BindInt(12, cookies[i].IsPersistent());
+    statement.BindInt(13, static_cast<int>(cookies[i].Priority()));
+    if (!statement.Run())
       return false;
   }
   if (!transaction.Commit())
@@ -1621,44 +1621,44 @@ bool AddV10CookiesToDB(sql::Database* db) {
 
 bool AddV10CookiesToDBImpl(sql::Database* db,
                            const std::vector<CanonicalCookie>& cookies) {
-  sql::Statement add_smt(db->GetCachedStatement(
+  sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO cookies (creation_utc, host_key, name, value, "
       "encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "firstpartyonly, last_access_utc, has_expires, is_persistent, priority) "
       "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
-  if (!add_smt.is_valid())
+  if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
   transaction.Begin();
   for (size_t i = 0; i < cookies.size(); ++i) {
-    add_smt.Reset(true);
-    add_smt.BindInt64(
+    statement.Reset(true);
+    statement.BindInt64(
         0,
         cookies[i].CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    add_smt.BindString(1, cookies[i].Domain());
-    add_smt.BindString(2, cookies[i].Name());
-    add_smt.BindString(3, cookies[i].Value());
-    add_smt.BindBlob(4, "", 0);  // encrypted_value
-    add_smt.BindString(5, cookies[i].Path());
-    add_smt.BindInt64(
+    statement.BindString(1, cookies[i].Domain());
+    statement.BindString(2, cookies[i].Name());
+    statement.BindString(3, cookies[i].Value());
+    statement.BindBlob(4, "", 0);  // encrypted_value
+    statement.BindString(5, cookies[i].Path());
+    statement.BindInt64(
         6, cookies[i].ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    add_smt.BindInt(7, cookies[i].IsSecure());
-    add_smt.BindInt(8, cookies[i].IsHttpOnly());
+    statement.BindInt(7, cookies[i].IsSecure());
+    statement.BindInt(8, cookies[i].IsHttpOnly());
     // Note that this and Priority() below nominally rely on the enums in
     // sqlite_persistent_cookie_store.cc having the same values as the
     // ones in ../../cookies/cookie_constants.h.  But nothing in this test
     // relies on that equivalence, so it's not worth the hassle to guarantee
     // that.
-    add_smt.BindInt(9, static_cast<int>(cookies[i].SameSite()));
-    add_smt.BindInt64(10, cookies[i]
-                              .LastAccessDate()
-                              .ToDeltaSinceWindowsEpoch()
-                              .InMicroseconds());
-    add_smt.BindInt(11, cookies[i].IsPersistent());
-    add_smt.BindInt(12, cookies[i].IsPersistent());
-    add_smt.BindInt(13, static_cast<int>(cookies[i].Priority()));
-    if (!add_smt.Run())
+    statement.BindInt(9, static_cast<int>(cookies[i].SameSite()));
+    statement.BindInt64(10, cookies[i]
+                                .LastAccessDate()
+                                .ToDeltaSinceWindowsEpoch()
+                                .InMicroseconds());
+    statement.BindInt(11, cookies[i].IsPersistent());
+    statement.BindInt(12, cookies[i].IsPersistent());
+    statement.BindInt(13, static_cast<int>(cookies[i].Priority()));
+    if (!statement.Run())
       return false;
   }
   if (!transaction.Commit())
@@ -1836,44 +1836,44 @@ std::vector<CanonicalCookie> CookiesForMigrationTest() {
 
 bool AddV11CookiesToDB(sql::Database* db) {
   std::vector<CanonicalCookie> cookies = CookiesForMigrationTest();
-  sql::Statement add_smt(db->GetCachedStatement(
+  sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO cookies (creation_utc, host_key, name, value, "
       "encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority)"
       "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
-  if (!add_smt.is_valid())
+  if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
   transaction.Begin();
   for (size_t i = 0; i < cookies.size(); ++i) {
-    add_smt.Reset(true);
-    add_smt.BindInt64(
+    statement.Reset(true);
+    statement.BindInt64(
         0,
         cookies[i].CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    add_smt.BindString(1, cookies[i].Domain());
-    add_smt.BindString(2, cookies[i].Name());
-    add_smt.BindString(3, cookies[i].Value());
-    add_smt.BindBlob(4, "", 0);  // encrypted_value
-    add_smt.BindString(5, cookies[i].Path());
-    add_smt.BindInt64(
+    statement.BindString(1, cookies[i].Domain());
+    statement.BindString(2, cookies[i].Name());
+    statement.BindString(3, cookies[i].Value());
+    statement.BindBlob(4, "", 0);  // encrypted_value
+    statement.BindString(5, cookies[i].Path());
+    statement.BindInt64(
         6, cookies[i].ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    add_smt.BindInt(7, cookies[i].IsSecure());
-    add_smt.BindInt(8, cookies[i].IsHttpOnly());
+    statement.BindInt(7, cookies[i].IsSecure());
+    statement.BindInt(8, cookies[i].IsHttpOnly());
     // Note that this and Priority() below nominally rely on the enums in
     // sqlite_persistent_cookie_store.cc having the same values as the
     // ones in ../../cookies/cookie_constants.h.  But nothing in this test
     // relies on that equivalence, so it's not worth the hassle to guarantee
     // that.
-    add_smt.BindInt(9, static_cast<int>(cookies[i].SameSite()));
-    add_smt.BindInt64(10, cookies[i]
-                              .LastAccessDate()
-                              .ToDeltaSinceWindowsEpoch()
-                              .InMicroseconds());
-    add_smt.BindInt(11, cookies[i].IsPersistent());
-    add_smt.BindInt(12, cookies[i].IsPersistent());
-    add_smt.BindInt(13, static_cast<int>(cookies[i].Priority()));
-    if (!add_smt.Run())
+    statement.BindInt(9, static_cast<int>(cookies[i].SameSite()));
+    statement.BindInt64(10, cookies[i]
+                                .LastAccessDate()
+                                .ToDeltaSinceWindowsEpoch()
+                                .InMicroseconds());
+    statement.BindInt(11, cookies[i].IsPersistent());
+    statement.BindInt(12, cookies[i].IsPersistent());
+    statement.BindInt(13, static_cast<int>(cookies[i].Priority()));
+    if (!statement.Run())
       return false;
   }
   if (!transaction.Commit())
@@ -1884,44 +1884,44 @@ bool AddV11CookiesToDB(sql::Database* db) {
 
 bool AddV12CookiesToDB(sql::Database* db) {
   std::vector<CanonicalCookie> cookies = CookiesForMigrationTest();
-  sql::Statement add_smt(db->GetCachedStatement(
+  sql::Statement statement(db->GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO cookies (creation_utc, host_key, name, value, "
       "encrypted_value, path, expires_utc, is_secure, is_httponly, "
       "samesite, last_access_utc, has_expires, is_persistent, priority, "
       "source_scheme)"
       "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"));
-  if (!add_smt.is_valid())
+  if (!statement.is_valid())
     return false;
   sql::Transaction transaction(db);
   transaction.Begin();
   for (const CanonicalCookie& cookie : cookies) {
-    add_smt.Reset(true);
-    add_smt.BindInt64(
+    statement.Reset(true);
+    statement.BindInt64(
         0, cookie.CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    add_smt.BindString(1, cookie.Domain());
-    add_smt.BindString(2, cookie.Name());
-    add_smt.BindString(3, cookie.Value());
-    add_smt.BindBlob(4, "", 0);  // encrypted_value
-    add_smt.BindString(5, cookie.Path());
-    add_smt.BindInt64(
+    statement.BindString(1, cookie.Domain());
+    statement.BindString(2, cookie.Name());
+    statement.BindString(3, cookie.Value());
+    statement.BindBlob(4, "", 0);  // encrypted_value
+    statement.BindString(5, cookie.Path());
+    statement.BindInt64(
         6, cookie.ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    add_smt.BindInt(7, cookie.IsSecure());
-    add_smt.BindInt(8, cookie.IsHttpOnly());
+    statement.BindInt(7, cookie.IsSecure());
+    statement.BindInt(8, cookie.IsHttpOnly());
     // Note that this, Priority(), and SourceScheme() below nominally rely on
     // the enums in sqlite_persistent_cookie_store.cc having the same values as
     // the ones in ../../cookies/cookie_constants.h.  But nothing in this test
     // relies on that equivalence, so it's not worth the hassle to guarantee
     // that.
-    add_smt.BindInt(9, static_cast<int>(cookie.SameSite()));
-    add_smt.BindInt64(
+    statement.BindInt(9, static_cast<int>(cookie.SameSite()));
+    statement.BindInt64(
         10,
         cookie.LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds());
-    add_smt.BindInt(11, cookie.IsPersistent());
-    add_smt.BindInt(12, cookie.IsPersistent());
-    add_smt.BindInt(13, static_cast<int>(cookie.Priority()));
-    add_smt.BindInt(14, static_cast<int>(cookie.SourceScheme()));
-    if (!add_smt.Run())
+    statement.BindInt(11, cookie.IsPersistent());
+    statement.BindInt(12, cookie.IsPersistent());
+    statement.BindInt(13, static_cast<int>(cookie.Priority()));
+    statement.BindInt(14, static_cast<int>(cookie.SourceScheme()));
+    if (!statement.Run())
       return false;
   }
   if (!transaction.Commit())
