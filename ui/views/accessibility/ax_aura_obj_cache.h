@@ -158,7 +158,7 @@ class VIEWS_EXPORT AXAuraObjCache : public aura::client::FocusChangeObserver {
 
   std::set<aura::Window*> root_windows_;
 
-  aura::Window* last_focused_window_ = nullptr;
+  aura::Window* focused_window_ = nullptr;
 
   views::Widget* focused_widget_for_testing_ = nullptr;
 };
