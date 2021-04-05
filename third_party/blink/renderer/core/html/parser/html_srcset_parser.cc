@@ -200,13 +200,13 @@ static void TokenizeDescriptors(const CharType* attribute_start,
 
 static void SrcsetError(Document* document, String message) {
   if (document && document->GetFrame()) {
-    StringBuilder error_message;
-    error_message.Append("Failed parsing 'srcset' attribute value since ");
-    error_message.Append(message);
+    StringBuilder warning_message;
+    warning_message.Append("Failed parsing 'srcset' attribute value since ");
+    warning_message.Append(message);
     document->GetFrame()->Console().AddMessage(
         MakeGarbageCollected<ConsoleMessage>(
             mojom::ConsoleMessageSource::kOther,
-            mojom::ConsoleMessageLevel::kError, error_message.ToString()));
+            mojom::ConsoleMessageLevel::kWarning, warning_message.ToString()));
   }
 }
 
@@ -336,7 +336,7 @@ static void ParseImageCandidatesFromSrcsetAttribute(
             document->GetFrame()->Console().AddMessage(
                 MakeGarbageCollected<ConsoleMessage>(
                     mojom::ConsoleMessageSource::kOther,
-                    mojom::ConsoleMessageLevel::kError,
+                    mojom::ConsoleMessageLevel::kWarning,
                     String("Dropped srcset candidate ") +
                         JSONValue::QuoteString(
                             String(image_url_start,
