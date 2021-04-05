@@ -17359,10 +17359,10 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="1" label="Failed unsupported quad (not recorded)"/>
   <int value="2" label="Failed quad blend mode"/>
   <int value="3" label="Failed texture not candidate"/>
-  <int value="4" label="Failed occluded"/>
+  <int value="4" label="Failed occluded (deprecated)"/>
   <int value="5" label="Failed complex transform"/>
   <int value="6" label="Failed transparent"/>
-  <int value="7" label="Failed non-root renderpass"/>
+  <int value="7" label="Failed non-root renderpass (not recorded)"/>
   <int value="8" label="Failed too many overlays"/>
   <int value="9" label="Failed no hw overlay support (deprecated)"/>
   <int value="10" label="Failed quad has rounded corners"/>
