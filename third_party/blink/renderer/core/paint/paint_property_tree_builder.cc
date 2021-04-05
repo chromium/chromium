@@ -1244,10 +1244,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       if (has_mask_based_clip_path)
         clip_path_clip = fragment_data_.ClipPathBoundingBox();
 
-      const auto* output_clip = EffectCanUseCurrentClipAsOutputClip()
-                                    ? context_.current.clip
-                                    : nullptr;
-
       if (mask_clip || clip_path_clip) {
         IntRect combined_clip = mask_clip ? *mask_clip : *clip_path_clip;
         if (mask_clip && clip_path_clip)
@@ -1257,7 +1253,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
             *context_.current.clip,
             ClipPaintPropertyNode::State(context_.current.transform,
                                          FloatRoundedRect(combined_clip))));
-        output_clip = properties_->MaskClip();
       } else {
         OnClearClip(properties_->ClearMaskClip());
       }
@@ -1267,6 +1262,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         mask_compositor_element_id =
             GetCompositorElementId(CompositorElementIdNamespace::kEffectMask);
       }
+
+      const auto* output_clip = EffectCanUseCurrentClipAsOutputClip()
+                                    ? context_.current.clip
+                                    : nullptr;
 
       EffectPaintPropertyNode::State state;
       state.local_transform_space = context_.current.transform;

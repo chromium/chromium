@@ -2256,6 +2256,7 @@ TEST_P(PaintArtifactCompositorTest, NonCompositedSimpleMask) {
 }
 
 TEST_P(PaintArtifactCompositorTest, CompositedMaskOneChild) {
+  auto mask_clip = CreateClip(c0(), t0(), FloatRoundedRect(150, 150, 100, 100));
   auto masked = CreateOpacityEffect(
       e0(), 1.0, CompositingReason::kIsolateCompositedDescendants);
   EffectPaintPropertyNode::State masking_state;
@@ -2267,16 +2268,27 @@ TEST_P(PaintArtifactCompositorTest, CompositedMaskOneChild) {
       EffectPaintPropertyNode::Create(*masked, std::move(masking_state));
 
   TestPaintArtifact artifact;
-  artifact.Chunk(t0(), c0(), *masked)
+  artifact.Chunk(t0(), *mask_clip, *masked)
       .RectDrawing(IntRect(100, 100, 200, 200), Color::kGray);
-  artifact.Chunk(t0(), c0(), *masking)
+  artifact.Chunk(t0(), *mask_clip, *masking)
       .RectDrawing(IntRect(150, 150, 100, 100), Color::kWhite);
   Update(artifact.Build());
   ASSERT_EQ(2u, LayerCount());
 
+  const cc::Layer* masked_layer = LayerAt(0);
   const cc::Layer* masking_layer = LayerAt(1);
   const cc::EffectNode* masking_group =
       GetPropertyTrees().effect_tree.Node(masking_layer->effect_tree_index());
+  const cc::ClipNode* cc_mask_clip =
+      GetPropertyTrees().clip_tree.Node(masked_layer->clip_tree_index());
+
+  EXPECT_EQ(gfx::Vector2dF(150, 150),
+            masked_layer->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(100, 100), masked_layer->bounds());
+  EXPECT_EQ(gfx::Vector2dF(149, 149),
+            masking_layer->offset_to_transform_parent());
+  EXPECT_EQ(gfx::Size(102, 102), masking_layer->bounds());
+  EXPECT_EQ(cc_mask_clip->parent_id, masking_layer->clip_tree_index());
 
   // Render surface is not needed for one child.
   EXPECT_FALSE(masking_group->HasRenderSurface());

@@ -1441,7 +1441,7 @@ TEST_P(PaintPropertyTreeBuilderTest, ForeignObjectWithMask) {
   const ObjectPaintProperties* foreign_object_properties =
       foreign_object.FirstFragment().PaintProperties();
   EXPECT_TRUE(foreign_object_properties->Mask());
-  EXPECT_EQ(foreign_object_properties->MaskClip(),
+  EXPECT_EQ(foreign_object_properties->MaskClip()->Parent(),
             foreign_object_properties->Mask()->OutputClip());
   EXPECT_EQ(&svg.FirstFragment().LocalBorderBoxProperties().Transform(),
             &foreign_object_properties->Mask()->LocalTransformSpace());
@@ -5053,23 +5053,23 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskSimple) {
   )HTML");
 
   const ObjectPaintProperties* properties = PaintPropertiesForElement("target");
-  const ClipPaintPropertyNode* output_clip = properties->MaskClip();
+  const ClipPaintPropertyNode* mask_clip = properties->MaskClip();
 
   const auto* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(output_clip,
+  EXPECT_EQ(mask_clip,
             &target->FirstFragment().LocalBorderBoxProperties().Clip());
-  EXPECT_EQ(DocContentClip(), output_clip->Parent());
-  EXPECT_EQ(FloatRoundedRect(8, 8, 300, 200), output_clip->UnsnappedClipRect());
+  EXPECT_EQ(DocContentClip(), mask_clip->Parent());
+  EXPECT_EQ(FloatRoundedRect(8, 8, 300, 200), mask_clip->UnsnappedClipRect());
 
   EXPECT_EQ(properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
   EXPECT_TRUE(properties->Effect()->Parent()->IsRoot());
   EXPECT_EQ(SkBlendMode::kSrcOver, properties->Effect()->BlendMode());
-  EXPECT_EQ(output_clip, properties->Effect()->OutputClip());
+  EXPECT_EQ(mask_clip->Parent(), properties->Effect()->OutputClip());
 
   EXPECT_EQ(properties->Effect(), properties->Mask()->Parent());
   EXPECT_EQ(SkBlendMode::kDstIn, properties->Mask()->BlendMode());
-  EXPECT_EQ(output_clip, properties->Mask()->OutputClip());
+  EXPECT_EQ(mask_clip->Parent(), properties->Mask()->OutputClip());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, MaskWithOutset) {
@@ -5082,24 +5082,24 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskWithOutset) {
   )HTML");
 
   const ObjectPaintProperties* properties = PaintPropertiesForElement("target");
-  const ClipPaintPropertyNode* output_clip = properties->MaskClip();
+  const ClipPaintPropertyNode* mask_clip = properties->MaskClip();
 
   const auto* target = GetLayoutObjectByElementId("target");
-  EXPECT_EQ(output_clip,
+  EXPECT_EQ(mask_clip,
             &target->FirstFragment().LocalBorderBoxProperties().Clip());
-  EXPECT_EQ(DocContentClip(), output_clip->Parent());
+  EXPECT_EQ(DocContentClip(), mask_clip->Parent());
   EXPECT_EQ(FloatRoundedRect(-12, -2, 340, 220),
-            output_clip->UnsnappedClipRect());
+            mask_clip->UnsnappedClipRect());
 
   EXPECT_EQ(properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
   EXPECT_TRUE(properties->Effect()->Parent()->IsRoot());
   EXPECT_EQ(SkBlendMode::kSrcOver, properties->Effect()->BlendMode());
-  EXPECT_EQ(output_clip, properties->Effect()->OutputClip());
+  EXPECT_EQ(mask_clip->Parent(), properties->Effect()->OutputClip());
 
   EXPECT_EQ(properties->Effect(), properties->Mask()->Parent());
   EXPECT_EQ(SkBlendMode::kDstIn, properties->Mask()->BlendMode());
-  EXPECT_EQ(output_clip, properties->Mask()->OutputClip());
+  EXPECT_EQ(mask_clip->Parent(), properties->Mask()->OutputClip());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, MaskEscapeClip) {
@@ -5150,11 +5150,13 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskEscapeClip) {
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
   EXPECT_TRUE(target_properties->Effect()->Parent()->IsRoot());
   EXPECT_EQ(SkBlendMode::kSrcOver, target_properties->Effect()->BlendMode());
-  EXPECT_EQ(mask_clip, target_properties->Effect()->OutputClip());
+  // This is nullptr instead of mask_clip->Parent() because
+  // EffectCanUseCurrentClipAsOutputClip() is false for |target|.
+  EXPECT_EQ(nullptr, target_properties->Effect()->OutputClip());
 
   EXPECT_EQ(target_properties->Effect(), target_properties->Mask()->Parent());
   EXPECT_EQ(SkBlendMode::kDstIn, target_properties->Mask()->BlendMode());
-  EXPECT_EQ(mask_clip, target_properties->Mask()->OutputClip());
+  EXPECT_EQ(nullptr, target_properties->Mask()->OutputClip());
 
   const auto* absolute = GetLayoutObjectByElementId("absolute");
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
@@ -5189,27 +5191,26 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskInline) {
   )HTML");
 
   const ObjectPaintProperties* properties = PaintPropertiesForElement("target");
-  const ClipPaintPropertyNode* output_clip = properties->MaskClip();
+  const ClipPaintPropertyNode* mask_clip = properties->MaskClip();
   const auto* target = GetLayoutObjectByElementId("target");
 
-  EXPECT_EQ(output_clip,
+  EXPECT_EQ(mask_clip,
             &target->FirstFragment().LocalBorderBoxProperties().Clip());
-  EXPECT_EQ(DocContentClip(), output_clip->Parent());
-  EXPECT_EQ(FloatRoundedRect(104, 21, 432, 16),
-            output_clip->UnsnappedClipRect());
+  EXPECT_EQ(DocContentClip(), mask_clip->Parent());
+  EXPECT_EQ(FloatRoundedRect(104, 21, 432, 16), mask_clip->UnsnappedClipRect());
 
   EXPECT_EQ(properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
   EXPECT_TRUE(properties->Effect()->Parent()->IsRoot());
   EXPECT_EQ(SkBlendMode::kSrcOver, properties->Effect()->BlendMode());
-  EXPECT_EQ(output_clip, properties->Effect()->OutputClip());
+  EXPECT_EQ(mask_clip->Parent(), properties->Effect()->OutputClip());
 
   EXPECT_EQ(properties->Effect(), properties->Mask()->Parent());
   EXPECT_EQ(SkBlendMode::kDstIn, properties->Mask()->BlendMode());
-  EXPECT_EQ(output_clip, properties->Mask()->OutputClip());
+  EXPECT_EQ(mask_clip->Parent(), properties->Mask()->OutputClip());
 
   const auto* overflowing = GetLayoutObjectByElementId("overflowing");
-  EXPECT_EQ(output_clip,
+  EXPECT_EQ(mask_clip,
             &overflowing->FirstFragment().LocalBorderBoxProperties().Clip());
   EXPECT_EQ(properties->Effect(),
             &overflowing->FirstFragment().LocalBorderBoxProperties().Effect());

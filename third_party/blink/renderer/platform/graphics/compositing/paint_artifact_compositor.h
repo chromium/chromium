@@ -338,6 +338,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
                             cc::LayerSelection& layer_selection);
 
   void DecompositeTransforms();
+  void ExpandMaskLayers();
 
   // Collects the PaintChunks into groups which will end up in the same
   // cc layer. This is the entry point of the layerization algorithm.
