@@ -86,10 +86,10 @@ RTCIceTransport* RTCIceTransport::Create(
   scoped_refptr<base::SingleThreadTaskRunner> proxy_thread =
       context->GetTaskRunner(TaskType::kNetworking);
 
-  PeerConnectionDependencyFactory::From(*context).EnsureInitialized();
+  PeerConnectionDependencyFactory::GetInstance()->EnsureInitialized();
   scoped_refptr<base::SingleThreadTaskRunner> host_thread =
-      PeerConnectionDependencyFactory::From(*context)
-          .GetWebRtcNetworkTaskRunner();
+      PeerConnectionDependencyFactory::GetInstance()
+          ->GetWebRtcNetworkTaskRunner();
   return MakeGarbageCollected<RTCIceTransport>(
       context, std::move(proxy_thread), std::move(host_thread),
       std::make_unique<DtlsIceTransportAdapterCrossThreadFactory>(

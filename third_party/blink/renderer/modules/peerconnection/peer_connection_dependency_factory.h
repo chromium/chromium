@@ -7,15 +7,11 @@
 
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
+#include "base/task/current_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
-#include "base/types/pass_key.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/peer_connection_interface.h"
 
@@ -53,17 +49,11 @@ class WebRtcAudioDeviceImpl;
 
 // Object factory for RTC PeerConnections.
 class MODULES_EXPORT PeerConnectionDependencyFactory
-    : public GarbageCollected<PeerConnectionDependencyFactory>,
-      public Supplement<ExecutionContext>,
-      public ExecutionContextLifecycleObserver {
+    : base::CurrentThread::DestructionObserver {
  public:
-  static const char kSupplementName[];
-
-  static PeerConnectionDependencyFactory& From(ExecutionContext& context);
-  PeerConnectionDependencyFactory(
-      ExecutionContext& context,
-      base::PassKey<PeerConnectionDependencyFactory>);
   ~PeerConnectionDependencyFactory() override;
+
+  static PeerConnectionDependencyFactory* GetInstance();
 
   // Create a RTCPeerConnectionHandler object.
   std::unique_ptr<RTCPeerConnectionHandler> CreateRTCPeerConnectionHandler(
@@ -130,11 +120,8 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   media::GpuVideoAcceleratorFactories* GetGpuFactories();
 
-  void Trace(Visitor*) const override;
-
  protected:
-  // Ctor for tests.
-  PeerConnectionDependencyFactory();
+  PeerConnectionDependencyFactory(bool create_p2p_socket_dispatcher);
 
   virtual const scoped_refptr<webrtc::PeerConnectionFactoryInterface>&
   GetPcFactory();
@@ -144,8 +131,10 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   void EnsureWebRtcAudioDeviceImpl();
 
  private:
-  // ExecutionContextLifecycleObserver overrides:
-  void ContextDestroyed() override;
+  // Implement base::CurrentThread::DestructionObserver.
+  // This makes sure the libjingle PeerConnectionFactory is released before
+  // the renderer message loop is destroyed.
+  void WillDestroyCurrentMessageLoop() override;
 
   // Functions related to Stun probing trial to determine how fast we could send
   // Stun request without being dropped by NAT.
@@ -162,13 +151,16 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       media::DecoderFactory* media_decoder_factory,
       base::WaitableEvent* event);
 
+  void InitializeWorkerThread(rtc::Thread** thread, base::WaitableEvent* event);
+
   void CreateIpcNetworkManagerOnNetworkThread(
       base::WaitableEvent* event,
-      std::unique_ptr<MdnsResponderAdapter> mdns_responder);
-  void DeleteIpcNetworkManager(base::WaitableEvent* event);
+      std::unique_ptr<MdnsResponderAdapter> mdns_responder,
+      rtc::Thread** thread);
+  void DeleteIpcNetworkManager();
   void CleanupPeerConnectionFactory();
 
-  // network_manager_ must be deleted on the network thread. The network manager
+  // network_manager_ must be deleted on the worker thread. The network manager
   // uses |p2p_socket_dispatcher_|.
   std::unique_ptr<blink::IpcNetworkManager> network_manager_;
   std::unique_ptr<IpcPacketSocketFactory> socket_factory_;
@@ -176,11 +168,20 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
   scoped_refptr<webrtc::PeerConnectionFactoryInterface> pc_factory_;
 
   // Dispatches all P2P sockets.
-  Member<P2PSocketDispatcher> p2p_socket_dispatcher_;
+  scoped_refptr<P2PSocketDispatcher> p2p_socket_dispatcher_;
 
   scoped_refptr<blink::WebRtcAudioDeviceImpl> audio_device_;
 
   media::GpuVideoAcceleratorFactories* gpu_factories_;
+
+  // PeerConnection threads. signaling_thread_ is created from the
+  // "current" chrome thread.
+  rtc::Thread* signaling_thread_ = nullptr;
+  rtc::Thread* worker_thread_ = nullptr;
+  rtc::Thread* network_thread_ = nullptr;
+  base::Thread chrome_signaling_thread_;
+  base::Optional<base::Thread> chrome_worker_thread_;
+  base::Thread chrome_network_thread_;
 
   THREAD_CHECKER(thread_checker_);
 

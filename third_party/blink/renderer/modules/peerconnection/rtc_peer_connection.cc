@@ -800,8 +800,8 @@ RTCPeerConnection::RTCPeerConnection(
         std::move(g_create_rpc_peer_connection_handler_callback_.Get()).Run();
   } else {
     peer_handler_ =
-        PeerConnectionDependencyFactory::From(*context)
-            .CreateRTCPeerConnectionHandler(
+        PeerConnectionDependencyFactory::GetInstance()
+            ->CreateRTCPeerConnectionHandler(
                 this, window->GetTaskRunner(TaskType::kInternalMedia),
                 force_encoded_audio_insertable_streams_,
                 force_encoded_video_insertable_streams_);
@@ -1890,12 +1890,11 @@ ScriptPromise RTCPeerConnection::generateCertificate(
           ->GetTaskRunner(blink::TaskType::kInternalMedia);
   if (!expires) {
     certificate_generator->GenerateCertificate(
-        key_params.value(), std::move(completion_callback),
-        *ExecutionContext::From(script_state), task_runner);
+        key_params.value(), std::move(completion_callback), task_runner);
   } else {
     certificate_generator->GenerateCertificateWithExpiration(
         key_params.value(), expires.value(), std::move(completion_callback),
-        *ExecutionContext::From(script_state), task_runner);
+        task_runner);
   }
 
   return promise;
