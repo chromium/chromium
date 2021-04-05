@@ -7,6 +7,8 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
+class AccountId;
+
 namespace ash {
 
 // Used by ash to control a Chrome client of the WallpaperController.
@@ -18,6 +20,10 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   // Closes the app side of the wallpaper preview (top header bar) if it is
   // currently open.
   virtual void MaybeClosePreviewWallpaper() = 0;
+
+  // Sets the default wallpaper and removes the file for the previous wallpaper.
+  virtual void SetDefaultWallpaper(const AccountId& account_id,
+                                   bool show_wallpaper) = 0;
 };
 
 }  // namespace ash

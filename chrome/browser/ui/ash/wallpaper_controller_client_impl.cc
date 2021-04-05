@@ -258,27 +258,6 @@ void WallpaperControllerClientImpl::SetOnlineWallpaperFromData(
       account_id, image_data, url, layout, preview_mode, std::move(callback));
 }
 
-void WallpaperControllerClientImpl::SetDefaultWallpaper(
-    const AccountId& account_id,
-    bool show_wallpaper) {
-  if (!IsKnownUser(account_id))
-    return;
-
-  // Postpone setting the wallpaper until we can get files id.
-  if (!CanGetFilesId()) {
-    LOG(WARNING)
-        << "Cannot get wallpaper files id in SetDefaultWallpaper. This "
-           "should never happen under normal circumstances.";
-    AddCanGetFilesIdCallback(
-        base::BindOnce(&WallpaperControllerClientImpl::SetDefaultWallpaper,
-                       weak_factory_.GetWeakPtr(), account_id, show_wallpaper));
-    return;
-  }
-
-  wallpaper_controller_->SetDefaultWallpaper(account_id, GetFilesId(account_id),
-                                             show_wallpaper);
-}
-
 void WallpaperControllerClientImpl::SetCustomizedDefaultWallpaperPaths(
     const base::FilePath& customized_default_small_path,
     const base::FilePath& customized_default_large_path) {
@@ -521,6 +500,27 @@ void WallpaperControllerClientImpl::MaybeClosePreviewWallpaper() {
       std::move(event_args));
   event_router->DispatchEventToExtension(extension_misc::kWallpaperManagerId,
                                          std::move(event));
+}
+
+void WallpaperControllerClientImpl::SetDefaultWallpaper(
+    const AccountId& account_id,
+    bool show_wallpaper) {
+  if (!IsKnownUser(account_id))
+    return;
+
+  // Postpone setting the wallpaper until we can get files id.
+  if (!CanGetFilesId()) {
+    LOG(WARNING)
+        << "Cannot get wallpaper files id in SetDefaultWallpaper. This "
+           "should never happen under normal circumstances.";
+    AddCanGetFilesIdCallback(
+        base::BindOnce(&WallpaperControllerClient::SetDefaultWallpaper,
+                       weak_factory_.GetWeakPtr(), account_id, show_wallpaper));
+    return;
+  }
+
+  wallpaper_controller_->SetDefaultWallpaper(account_id, GetFilesId(account_id),
+                                             show_wallpaper);
 }
 
 bool WallpaperControllerClientImpl::ShouldShowUserNamesOnLogin() const {

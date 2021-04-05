@@ -31,6 +31,10 @@ struct WallpaperInfo {
            (type == other.type);
   }
 
+  bool operator!=(const WallpaperInfo& other) const {
+    return !(*this == other);
+  }
+
   // Either file name of migrated wallpaper including first directory level
   // (corresponding to user wallpaper_files_id) or online wallpaper URL.
   std::string location;

@@ -56,6 +56,8 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   // WallpaperControllerClient:
   void OpenWallpaperPicker() override { open_count_++; }
   void MaybeClosePreviewWallpaper() override {}
+  void SetDefaultWallpaper(const AccountId& account_id,
+                           bool show_wallpaper) override {}
 
  private:
   size_t open_count_ = 0;

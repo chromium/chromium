@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/ash_pref_names.h"
@@ -47,6 +48,7 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/values.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -69,12 +71,6 @@ using color_utils::SaturationRange;
 namespace ash {
 
 namespace {
-
-// Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
-constexpr char kNewWallpaperDateNodeName[] = "date";
-constexpr char kNewWallpaperLayoutNodeName[] = "layout";
-constexpr char kNewWallpaperLocationNodeName[] = "file";
-constexpr char kNewWallpaperTypeNodeName[] = "type";
 
 // The file name of the policy wallpaper.
 constexpr char kPolicyWallpaperFile[] = "policy-controlled.jpeg";
@@ -383,6 +379,12 @@ const UserSession* GetActiveUserSession() {
   return Shell::Get()->session_controller()->GetUserSession(/*user index=*/0);
 }
 
+AccountId GetActiveAccountId() {
+  const UserSession* const session = GetActiveUserSession();
+  DCHECK(session);
+  return session->user_info.account_id;
+}
+
 // Checks if |account_id| is the current active user.
 bool IsActiveUser(const AccountId& account_id) {
   const UserSession* const session = GetActiveUserSession();
@@ -472,11 +474,104 @@ user_manager::UserType GetUserType(const AccountId& id) {
   return user_manager::USER_TYPE_REGULAR;
 }
 
+PrefService* GetUserPrefServiceSyncable(const AccountId& account_id) {
+  return features::IsWallpaperWebUIEnabled()
+             ? Shell::Get()->session_controller()->GetUserPrefServiceForUser(
+                   account_id)
+             : nullptr;
+}
+
+bool GetWallpaperInfo(const AccountId& account_id,
+                      const PrefService* const pref_service,
+                      const std::string& pref_name,
+                      WallpaperInfo* info) {
+  if (!pref_service)
+    return false;
+
+  const base::Value* info_dict =
+      pref_service->GetDictionary(pref_name)->FindDictKey(
+          account_id.GetUserEmail());
+  if (!info_dict)
+    return false;
+
+  // Use temporary variables to keep |info| untouched in the error case.
+  const std::string* location = info_dict->FindStringPath(
+      WallpaperControllerImpl::kNewWallpaperLocationNodeName);
+  base::Optional<int> layout = info_dict->FindIntPath(
+      WallpaperControllerImpl::kNewWallpaperLayoutNodeName);
+  base::Optional<int> type = info_dict->FindIntPath(
+      WallpaperControllerImpl::kNewWallpaperTypeNodeName);
+  const std::string* date_string = info_dict->FindStringPath(
+      WallpaperControllerImpl::kNewWallpaperDateNodeName);
+
+  if (!location || !layout || !type || !date_string)
+    return false;
+
+  int64_t date_val;
+  if (!base::StringToInt64(*date_string, &date_val))
+    return false;
+
+  info->location = *location;
+  info->layout = static_cast<WallpaperLayout>(layout.value());
+  info->type = static_cast<WallpaperType>(type.value());
+  info->date = base::Time::FromInternalValue(date_val);
+  return true;
+}
+
+bool SetWallpaperInfo(const AccountId& account_id,
+                      const WallpaperInfo& info,
+                      PrefService* const pref_service,
+                      const std::string& pref_name) {
+  if (!pref_service)
+    return false;
+
+  DictionaryPrefUpdate wallpaper_update(pref_service, pref_name);
+  base::Value wallpaper_info_dict(base::Value::Type::DICTIONARY);
+  wallpaper_info_dict.SetStringPath(
+      WallpaperControllerImpl::kNewWallpaperDateNodeName,
+      base::NumberToString(info.date.ToInternalValue()));
+  wallpaper_info_dict.SetStringPath(
+      WallpaperControllerImpl::kNewWallpaperLocationNodeName, info.location);
+  wallpaper_info_dict.SetIntPath(
+      WallpaperControllerImpl::kNewWallpaperLayoutNodeName, info.layout);
+  wallpaper_info_dict.SetIntPath(
+      WallpaperControllerImpl::kNewWallpaperTypeNodeName, info.type);
+  wallpaper_update->SetKey(account_id.GetUserEmail(),
+                           std::move(wallpaper_info_dict));
+  return true;
+}
+
+void RemoveWallpaperInfo(const AccountId& account_id,
+                         PrefService* const pref_service,
+                         const std::string& pref_name) {
+  if (!pref_service)
+    return;
+  DictionaryPrefUpdate prefs_wallpapers_info_update(pref_service, pref_name);
+  prefs_wallpapers_info_update->RemoveKey(account_id.GetUserEmail());
+}
+
+bool GetSyncedWallpaperInfo(const AccountId& account_id, WallpaperInfo* info) {
+  return GetWallpaperInfo(account_id, GetUserPrefServiceSyncable(account_id),
+                          prefs::kSyncableWallpaperInfo, info);
+}
+
+bool SetSyncedWallpaperInfo(const AccountId& account_id,
+                            const WallpaperInfo& info) {
+  return SetWallpaperInfo(account_id, info,
+                          GetUserPrefServiceSyncable(account_id),
+                          prefs::kSyncableWallpaperInfo);
+}
+
 }  // namespace
 
 const char WallpaperControllerImpl::kSmallWallpaperSubDir[] = "small";
 const char WallpaperControllerImpl::kLargeWallpaperSubDir[] = "large";
 const char WallpaperControllerImpl::kOriginalWallpaperSubDir[] = "original";
+
+const char WallpaperControllerImpl::kNewWallpaperDateNodeName[] = "date";
+const char WallpaperControllerImpl::kNewWallpaperLayoutNodeName[] = "layout";
+const char WallpaperControllerImpl::kNewWallpaperLocationNodeName[] = "file";
+const char WallpaperControllerImpl::kNewWallpaperTypeNodeName[] = "type";
 
 WallpaperControllerImpl::WallpaperControllerImpl(PrefService* local_state)
     : color_profiles_(GetProminentColorProfiles()),
@@ -512,6 +607,14 @@ void WallpaperControllerImpl::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kUserWallpaperInfo);
   registry->RegisterDictionaryPref(prefs::kWallpaperColors);
+}
+
+// static
+void WallpaperControllerImpl::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(
+      prefs::kSyncableWallpaperInfo,
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 // static
@@ -771,29 +874,18 @@ bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
     return true;
   }
 
-  if (!local_state_)
-    return false;
-
   WallpaperInfo old_info;
-  if (GetUserWallpaperInfo(account_id, &old_info)) {
+  if (local_state_ && GetUserWallpaperInfo(account_id, &old_info)) {
     // Remove the color cache of the previous wallpaper if it exists.
     DictionaryPrefUpdate wallpaper_colors_update(local_state_,
                                                  prefs::kWallpaperColors);
     wallpaper_colors_update->RemoveKey(old_info.location);
   }
+  bool success = SetLocalWallpaperInfo(account_id, info);
+  if (IsWallpaperTypeSyncable(info.type))
+    SetSyncedWallpaperInfo(account_id, info);
 
-  DictionaryPrefUpdate wallpaper_update(local_state_,
-                                        prefs::kUserWallpaperInfo);
-  auto wallpaper_info_dict = std::make_unique<base::DictionaryValue>();
-  wallpaper_info_dict->SetString(
-      kNewWallpaperDateNodeName,
-      base::NumberToString(info.date.ToInternalValue()));
-  wallpaper_info_dict->SetString(kNewWallpaperLocationNodeName, info.location);
-  wallpaper_info_dict->SetInteger(kNewWallpaperLayoutNodeName, info.layout);
-  wallpaper_info_dict->SetInteger(kNewWallpaperTypeNodeName, info.type);
-  wallpaper_update->SetWithoutPathExpansion(account_id.GetUserEmail(),
-                                            std::move(wallpaper_info_dict));
-  return true;
+  return success;
 }
 
 bool WallpaperControllerImpl::GetUserWallpaperInfo(const AccountId& account_id,
@@ -809,37 +901,7 @@ bool WallpaperControllerImpl::GetUserWallpaperInfo(const AccountId& account_id,
     return true;
   }
 
-  if (!local_state_)
-    return false;
-  const base::DictionaryValue* info_dict;
-  if (!local_state_->GetDictionary(prefs::kUserWallpaperInfo)
-           ->GetDictionaryWithoutPathExpansion(account_id.GetUserEmail(),
-                                               &info_dict)) {
-    return false;
-  }
-
-  // Use temporary variables to keep |info| untouched in the error case.
-  std::string location;
-  if (!info_dict->GetString(kNewWallpaperLocationNodeName, &location))
-    return false;
-  int layout;
-  if (!info_dict->GetInteger(kNewWallpaperLayoutNodeName, &layout))
-    return false;
-  int type;
-  if (!info_dict->GetInteger(kNewWallpaperTypeNodeName, &type))
-    return false;
-  std::string date_string;
-  if (!info_dict->GetString(kNewWallpaperDateNodeName, &date_string))
-    return false;
-  int64_t date_val;
-  if (!base::StringToInt64(date_string, &date_val))
-    return false;
-
-  info->location = location;
-  info->layout = static_cast<WallpaperLayout>(layout);
-  info->type = static_cast<WallpaperType>(type);
-  info->date = base::Time::FromInternalValue(date_val);
-  return true;
+  return GetLocalWallpaperInfo(account_id, info);
 }
 
 bool WallpaperControllerImpl::GetWallpaperFromCache(const AccountId& account_id,
@@ -1467,6 +1529,29 @@ void WallpaperControllerImpl::CompositorLockTimedOut() {
   compositor_lock_.reset();
 }
 
+void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
+    PrefService* pref_service) {
+  if (!features::IsWallpaperWebUIEnabled())
+    return;
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
+  pref_change_registrar_->Add(
+      prefs::kSyncableWallpaperInfo,
+      base::BindRepeating(&WallpaperControllerImpl::OnPrefChanged,
+                          weak_factory_.GetWeakPtr()));
+
+  AccountId account_id = GetActiveAccountId();
+  WallpaperInfo local_info;
+  WallpaperInfo synced_info;
+  // Migrate wallpaper info to syncable prefs.
+  if (!GetSyncedWallpaperInfo(account_id, &synced_info) &&
+      GetLocalWallpaperInfo(account_id, &local_info) &&
+      IsWallpaperTypeSyncable(local_info.type)) {
+    SetSyncedWallpaperInfo(account_id, local_info);
+  }
+  OnPrefChanged();
+}
+
 void WallpaperControllerImpl::ShowDefaultWallpaperForTesting() {
   SetDefaultWallpaperImpl(EmptyAccountId(), /*show_wallpaper=*/true);
 }
@@ -1480,6 +1565,10 @@ void WallpaperControllerImpl::CreateEmptyWallpaperForTesting() {
 
 void WallpaperControllerImpl::ReloadWallpaperForTesting(bool clear_cache) {
   ReloadWallpaper(clear_cache);
+}
+
+void WallpaperControllerImpl::ClearPrefChangeObserverForTesting() {
+  pref_change_registrar_.reset();
 }
 
 void WallpaperControllerImpl::UpdateWallpaperForRootWindow(
@@ -1546,13 +1635,15 @@ void WallpaperControllerImpl::RemoveUserWallpaperInfo(
   if (wallpaper_cache_map_.find(account_id) != wallpaper_cache_map_.end())
     wallpaper_cache_map_.erase(account_id);
 
-  if (!local_state_)
-    return;
   WallpaperInfo info;
   GetUserWallpaperInfo(account_id, &info);
-  DictionaryPrefUpdate prefs_wallpapers_info_update(local_state_,
-                                                    prefs::kUserWallpaperInfo);
-  prefs_wallpapers_info_update->RemoveKey(account_id.GetUserEmail());
+  RemoveWallpaperInfo(account_id, local_state_, prefs::kUserWallpaperInfo);
+  RemoveWallpaperInfo(account_id, GetUserPrefServiceSyncable(account_id),
+                      prefs::kSyncableWallpaperInfo);
+
+  // Can be null in tests.
+  if (!local_state_)
+    return;
   // Remove the color cache of the previous wallpaper if it exists.
   DictionaryPrefUpdate wallpaper_colors_update(local_state_,
                                                prefs::kWallpaperColors);
@@ -2124,6 +2215,93 @@ void WallpaperControllerImpl::RepaintWallpaper() {
         root_window_controller->wallpaper_widget_controller()->wallpaper_view();
     if (wallpaper_view)
       wallpaper_view->SchedulePaint();
+  }
+}
+
+bool WallpaperControllerImpl::SetLocalWallpaperInfo(const AccountId& account_id,
+                                                    const WallpaperInfo& info) {
+  return SetWallpaperInfo(account_id, info, local_state_,
+                          prefs::kUserWallpaperInfo);
+}
+
+bool WallpaperControllerImpl::GetLocalWallpaperInfo(const AccountId& account_id,
+                                                    WallpaperInfo* info) const {
+  return GetWallpaperInfo(account_id, local_state_, prefs::kUserWallpaperInfo,
+                          info);
+}
+
+void WallpaperControllerImpl::OnPrefChanged() {
+  // Check if the synced info was set by another device, and if we have already
+  // handled it locally.
+  AccountId account_id = GetActiveAccountId();
+  WallpaperInfo synced_info;
+  WallpaperInfo local_info;
+  if (!GetSyncedWallpaperInfo(account_id, &synced_info))
+    return;
+  if (!GetLocalWallpaperInfo(account_id, &local_info)) {
+    HandleWallpaperInfoSyncedIn(account_id, synced_info);
+    return;
+  }
+  if (synced_info != local_info)
+    HandleWallpaperInfoSyncedIn(account_id, synced_info);
+}
+
+void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
+    const AccountId& account_id,
+    WallpaperInfo info) {
+  if (!CanSetUserWallpaper(account_id))
+    return;
+  switch (info.type) {
+    case DAILY:
+      // TODO (b/178216755): Implement rotating wallpapers.
+      NOTIMPLEMENTED();
+      break;
+    case CUSTOMIZED:
+      // TODO (b/180736877): Implement getting synced wallpaper image and
+      // setting it as the wallpaper.
+      NOTIMPLEMENTED();
+      break;
+    case DEFAULT:
+      if (wallpaper_controller_client_) {
+        wallpaper_controller_client_->SetDefaultWallpaper(account_id, true);
+      }
+      break;
+    case ONLINE:
+      SetOnlineWallpaperIfExists(
+          account_id, info.location, info.layout, false,
+          base::BindOnce(&WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
+                         weak_factory_.GetWeakPtr(), info));
+      break;
+    case POLICY:
+    case THIRDPARTY:
+    case DEVICE:
+    case ONE_SHOT:
+    case WALLPAPER_TYPE_COUNT:
+      DCHECK(false) << "Synced in an unsyncable wallpaper type";
+      break;
+  }
+}
+
+void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(WallpaperInfo info,
+                                                          bool success) {
+  // TODO (b/181996915): Implement fetching online wallpaper and setting it.
+  NOTIMPLEMENTED();
+}
+
+constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(
+    WallpaperType type) {
+  switch (type) {
+    case DAILY:
+    case CUSTOMIZED:
+    case DEFAULT:
+    case ONLINE:
+      return true;
+    case POLICY:
+    case THIRDPARTY:
+    case DEVICE:
+    case ONE_SHOT:
+    case WALLPAPER_TYPE_COUNT:
+      return false;
   }
 }
 

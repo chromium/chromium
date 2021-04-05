@@ -37,6 +37,12 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   // Returns files identifier for the |account_id|.
   std::string GetFilesId(const AccountId& account_id) const;
 
+  // ash::WallpaperControllerClient:
+  void OpenWallpaperPicker() override;
+  void MaybeClosePreviewWallpaper() override;
+  void SetDefaultWallpaper(const AccountId& account_id,
+                           bool show_wallpaper) override;
+
   // Wrappers around the ash::WallpaperController interface.
   void SetCustomWallpaper(const AccountId& account_id,
                           const std::string& wallpaper_files_id,
@@ -57,7 +63,6 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
       ash::WallpaperLayout layout,
       bool preview_mode,
       ash::WallpaperController::SetOnlineWallpaperFromDataCallback callback);
-  void SetDefaultWallpaper(const AccountId& account_id, bool show_wallpaper);
   void SetCustomizedDefaultWallpaperPaths(
       const base::FilePath& customized_default_small_path,
       const base::FilePath& customized_default_large_path);
@@ -101,10 +106,6 @@ class WallpaperControllerClientImpl : public ash::WallpaperControllerClient {
   // default signin wallpaper if there's no user. This ensures the wallpaper is
   // shown right after boot, regardless of when the login screen is available.
   void ShowWallpaperOnLoginScreen();
-
-  // ash::WallpaperControllerClient:
-  void OpenWallpaperPicker() override;
-  void MaybeClosePreviewWallpaper() override;
 
   void DeviceWallpaperImageFilePathChanged();
 

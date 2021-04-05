@@ -82,6 +82,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry, bool for_test) {
   TouchDevicesController::RegisterProfilePrefs(registry, for_test);
   tray::VPNListView::RegisterProfilePrefs(registry);
   MediaTray::RegisterProfilePrefs(registry);
+  WallpaperControllerImpl::RegisterProfilePrefs(registry);
   WindowCycleController::RegisterProfilePrefs(registry);
 
   // Provide prefs registered in the browser for ash_unittests.

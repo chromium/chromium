@@ -27,6 +27,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "ui/compositor/compositor_lock.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/native_theme/native_theme.h"
@@ -85,10 +86,17 @@ class ASH_EXPORT WallpaperControllerImpl
   static const char kLargeWallpaperSubDir[];
   static const char kOriginalWallpaperSubDir[];
 
+  // Names of nodes with wallpaper info in |kUserWallpaperInfo| dictionary.
+  static const char kNewWallpaperDateNodeName[];
+  static const char kNewWallpaperLayoutNodeName[];
+  static const char kNewWallpaperLocationNodeName[];
+  static const char kNewWallpaperTypeNodeName[];
+
   explicit WallpaperControllerImpl(PrefService* local_state);
   ~WallpaperControllerImpl() override;
 
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns the maximum size of all displays combined in native
   // resolutions.  Note that this isn't the bounds of the display who
@@ -300,6 +308,7 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;
+  void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
   // TabletModeObserver:
   void OnTabletModeStarted() override;
@@ -331,6 +340,9 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Proxy to private ReloadWallpaper().
   void ReloadWallpaperForTesting(bool clear_cache);
+
+  // Needed when logoff is simulated in testing.
+  void ClearPrefChangeObserverForTesting();
 
   void set_bypass_decode_for_testing() { bypass_decode_for_testing_ = true; }
 
@@ -530,6 +542,17 @@ class ASH_EXPORT WallpaperControllerImpl
   // This is used when we want to change wallpaper dimming.
   void RepaintWallpaper();
 
+  bool SetLocalWallpaperInfo(const AccountId& account_id,
+                             const WallpaperInfo& info);
+  bool GetLocalWallpaperInfo(const AccountId& account_id,
+                             WallpaperInfo* info) const;
+  void OnPrefChanged();
+  void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
+                                   WallpaperInfo info);
+  void OnAttemptSetOnlineWallpaper(WallpaperInfo info, bool success);
+
+  constexpr bool IsWallpaperTypeSyncable(WallpaperType type);
+
   bool locked_ = false;
 
   WallpaperMode wallpaper_mode_ = WALLPAPER_NONE;
@@ -600,6 +623,8 @@ class ASH_EXPORT WallpaperControllerImpl
       theme_observation_{this};
 
   std::unique_ptr<ui::CompositorLock> compositor_lock_;
+
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
   // A non-empty value indicates the current wallpaper is in preview mode, which
   // expects either |ConfirmPreviewWallpaper| or |CancelPreviewWallpaper| to be
