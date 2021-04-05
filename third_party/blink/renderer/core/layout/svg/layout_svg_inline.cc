@@ -57,8 +57,7 @@ LayoutSVGInline::LayoutSVGInline(Element* element) : LayoutInline(element) {
 
 InlineFlowBox* LayoutSVGInline::CreateInlineFlowBox() {
   NOT_DESTROYED();
-  InlineFlowBox* box =
-      MakeGarbageCollected<SVGInlineFlowBox>(LineLayoutItem(this));
+  InlineFlowBox* box = new SVGInlineFlowBox(LineLayoutItem(this));
   box->SetHasVirtualLogicalHeight();
   return box;
 }

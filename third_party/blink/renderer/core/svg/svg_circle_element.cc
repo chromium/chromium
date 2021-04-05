@@ -117,7 +117,7 @@ bool SVGCircleElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGCircleElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return MakeGarbageCollected<LayoutSVGEllipse>(this);
+  return new LayoutSVGEllipse(this);
 }
 
 }  // namespace blink

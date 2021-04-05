@@ -17,25 +17,23 @@ class NGFragmentItemsBuilder;
 //
 // During the layout phase, descendants of the inline formatting context is
 // transformed to a flat list of |NGFragmentItem| and stored in this class.
-class CORE_EXPORT NGFragmentItems final {
-  DISALLOW_NEW();
-
+class CORE_EXPORT NGFragmentItems {
  public:
   NGFragmentItems(const NGFragmentItems& other);
   explicit NGFragmentItems(NGFragmentItemsBuilder* builder);
   ~NGFragmentItems();
 
-  wtf_size_t Size() const { return const_size_; }
+  wtf_size_t Size() const { return size_; }
 
   using Span = base::span<const NGFragmentItem>;
-  Span Items() const { return base::make_span(ItemsData(), const_size_); }
+  Span Items() const { return base::make_span(ItemsData(), size_); }
   bool Equals(const Span& span) const {
     return ItemsData() == span.data() && Size() == span.size();
   }
   bool IsSubSpan(const Span& span) const;
 
   const NGFragmentItem& front() const {
-    CHECK_GE(const_size_, 1u);
+    CHECK_GE(size_, 1u);
     return items_[0];
   }
 
@@ -57,9 +55,7 @@ class CORE_EXPORT NGFragmentItems final {
   wtf_size_t SizeOfEarlierFragments() const {
     return size_of_earlier_fragments_;
   }
-  wtf_size_t EndItemIndex() const {
-    return size_of_earlier_fragments_ + const_size_;
-  }
+  wtf_size_t EndItemIndex() const { return size_of_earlier_fragments_ + size_; }
   bool HasItemIndex(wtf_size_t index) const {
     return index >= SizeOfEarlierFragments() && index < EndItemIndex();
   }
@@ -67,7 +63,7 @@ class CORE_EXPORT NGFragmentItems final {
   // Associate |NGFragmentItem|s with |LayoutObject|s and finalize the items
   // (set which ones are the first / last for the LayoutObject).
   static void FinalizeAfterLayout(
-      const HeapVector<Member<const NGLayoutResult>, 1>& results);
+      const Vector<scoped_refptr<const NGLayoutResult>, 1>& results);
 
   // Disassociate |NGFragmentItem|s with |LayoutObject|s. And more.
   static void ClearAssociatedFragments(LayoutObject* container);
@@ -98,8 +94,6 @@ class CORE_EXPORT NGFragmentItems final {
   void CheckAllItemsAreValid() const;
 #endif
 
-  void Trace(Visitor*) const;
-
  private:
   const NGFragmentItem* ItemsData() const { return items_; }
 
@@ -113,12 +107,19 @@ class CORE_EXPORT NGFragmentItems final {
   String text_content_;
   String first_line_text_content_;
 
-  const wtf_size_t const_size_;
+  wtf_size_t size_;
 
   // Total size of |NGFragmentItem| in earlier fragments when block fragmented.
   // 0 for the first |NGFragmentItems|.
   mutable wtf_size_t size_of_earlier_fragments_;
 
+  // Semantically, |items_| is a flexible array of |scoped_refptr<const
+  // NGFragmentItem>|, but |scoped_refptr| has non-trivial destruction which
+  // causes an error in clang. Declare as a flexible array of |NGFragmentItem*|
+  // instead. Please see |ItemsData()|.
+  static_assert(
+      sizeof(NGFragmentItem*) == sizeof(scoped_refptr<const NGFragmentItem>),
+      "scoped_refptr must be the size of a pointer for |ItemsData()| to work");
   NGFragmentItem items_[0];
 };
 

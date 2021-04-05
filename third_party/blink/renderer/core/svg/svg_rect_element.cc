@@ -166,7 +166,7 @@ bool SVGRectElement::SelfHasRelativeLengths() const {
 
 LayoutObject* SVGRectElement::CreateLayoutObject(const ComputedStyle&,
                                                  LegacyLayout) {
-  return MakeGarbageCollected<LayoutSVGRect>(this);
+  return new LayoutSVGRect(this);
 }
 
 }  // namespace blink

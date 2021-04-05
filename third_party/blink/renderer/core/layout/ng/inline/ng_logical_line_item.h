@@ -32,7 +32,7 @@ struct NGLogicalLineItem {
   // bidi level and affects bidi reordering.
   explicit NGLogicalLineItem(UBiDiLevel bidi_level) : bidi_level(bidi_level) {}
   // Create an in-flow |NGLayoutResult|.
-  NGLogicalLineItem(const NGLayoutResult* layout_result,
+  NGLogicalLineItem(scoped_refptr<const NGLayoutResult> layout_result,
                     const LogicalRect& rect,
                     unsigned children_count,
                     UBiDiLevel bidi_level)
@@ -40,7 +40,7 @@ struct NGLogicalLineItem {
         rect(rect),
         children_count(children_count),
         bidi_level(bidi_level) {}
-  NGLogicalLineItem(const NGLayoutResult* layout_result,
+  NGLogicalLineItem(scoped_refptr<const NGLayoutResult> layout_result,
                     LogicalOffset offset,
                     LayoutUnit inline_size,
                     unsigned children_count,
@@ -132,7 +132,7 @@ struct NGLogicalLineItem {
   NGLogicalLineItem(LayoutObject* unpositioned_float, UBiDiLevel bidi_level)
       : unpositioned_float(unpositioned_float), bidi_level(bidi_level) {}
   // Create a positioned float.
-  NGLogicalLineItem(const NGLayoutResult* layout_result,
+  NGLogicalLineItem(scoped_refptr<const NGLayoutResult> layout_result,
                     NGBfcOffset bfc_offset,
                     UBiDiLevel bidi_level)
       : layout_result(std::move(layout_result)),
@@ -199,9 +199,7 @@ struct NGLogicalLineItem {
                           : TextDirection::kLtr;
   }
 
-  void Trace(Visitor*) const;
-
-  Member<const NGLayoutResult> layout_result;
+  scoped_refptr<const NGLayoutResult> layout_result;
 
   // Data to create a text fragment from.
   // |inline_item| is null only for ellipsis items.
@@ -214,13 +212,12 @@ struct NGLogicalLineItem {
 
   // Ellipsis does not have |NGInlineItem|, but built from |LayoutObject| and
   // |NGStyleVariant|.
-  Member<const LayoutObject> layout_object = nullptr;
+  const LayoutObject* layout_object = nullptr;
   // Used only when |layout_object_| is not null.
   NGStyleVariant style_variant = NGStyleVariant::kStandard;
 
-  Member<LayoutObject> out_of_flow_positioned_box;
-  Member<LayoutObject> unpositioned_float;
-
+  LayoutObject* out_of_flow_positioned_box = nullptr;
+  LayoutObject* unpositioned_float = nullptr;
   // The offset of the border box, initially in this child coordinate system.
   // |ComputeInlinePositions()| converts it to the offset within the line box.
   LogicalRect rect;
@@ -253,8 +250,7 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
 // A vector of Child.
 // Unlike the fragment builder, chlidren are mutable.
 // Callers can add to the fragment builder in a batch once finalized.
-class CORE_EXPORT NGLogicalLineItems final
-    : public GarbageCollected<NGLogicalLineItems> {
+class NGLogicalLineItems {
  public:
   NGLogicalLineItems() = default;
   void operator=(NGLogicalLineItems&& other) {
@@ -300,7 +296,7 @@ class CORE_EXPORT NGLogicalLineItems final
     children_.insert(index, item);
   }
   void InsertChild(unsigned index,
-                   const NGLayoutResult* layout_result,
+                   scoped_refptr<const NGLayoutResult> layout_result,
                    const LogicalRect& rect,
                    unsigned children_count) {
     WillInsertChild(index);
@@ -314,12 +310,10 @@ class CORE_EXPORT NGLogicalLineItems final
   void MoveInBlockDirection(LayoutUnit);
   void MoveInBlockDirection(LayoutUnit, unsigned start, unsigned end);
 
-  void Trace(Visitor*) const;
-
  private:
   void WillInsertChild(unsigned index);
 
-  HeapVector<NGLogicalLineItem, 16> children_;
+  Vector<NGLogicalLineItem, 16> children_;
 };
 
 }  // namespace blink

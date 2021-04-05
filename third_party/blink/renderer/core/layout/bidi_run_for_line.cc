@@ -137,7 +137,7 @@ void ConstructBidiRunsForLine(InlineBidiResolver& top_resolver,
     LineMidpointState& isolated_line_midpoint_state =
         isolated_resolver.GetMidpointState();
     isolated_line_midpoint_state =
-        top_resolver.MidpointStateForIsolatedRun(*isolated_run.run_to_replace);
+        top_resolver.MidpointStateForIsolatedRun(isolated_run.run_to_replace);
     UnicodeBidi unicode_bidi = isolated_inline.StyleRef().GetUnicodeBidi();
     TextDirection direction;
     if (unicode_bidi == UnicodeBidi::kPlaintext) {
@@ -172,7 +172,7 @@ void ConstructBidiRunsForLine(InlineBidiResolver& top_resolver,
 
     DCHECK(isolated_resolver.Runs().RunCount());
     if (isolated_resolver.Runs().RunCount())
-      bidi_runs.ReplaceRunWithRuns(isolated_run.run_to_replace,
+      bidi_runs.ReplaceRunWithRuns(&isolated_run.run_to_replace,
                                    isolated_resolver.Runs());
 
     // If we encountered any nested isolate runs, save them for later
@@ -182,9 +182,9 @@ void ConstructBidiRunsForLine(InlineBidiResolver& top_resolver,
           isolated_resolver.IsolatedRuns().back();
       isolated_resolver.IsolatedRuns().pop_back();
       top_resolver.SetMidpointStateForIsolatedRun(
-          *run_with_context.run_to_replace,
+          run_with_context.run_to_replace,
           isolated_resolver.MidpointStateForIsolatedRun(
-              *run_with_context.run_to_replace));
+              run_with_context.run_to_replace));
       top_resolver.IsolatedRuns().push_back(run_with_context);
     }
   }

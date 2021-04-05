@@ -34,23 +34,21 @@ namespace blink {
 // This is struct is allowed to be stored/persisted.
 //
 // [1] https://www.w3.org/TR/CSS2/visudet.html#abs-non-replaced-width
-struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode final {
-  DISALLOW_NEW();
-
- public:
+struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   NGBlockNode node;
   NGPhysicalStaticPosition static_position;
   // Continuation root of the optional inline container.
-  Member<const LayoutInline> inline_container;
+  const LayoutInline* inline_container;
   PhysicalOffset containing_block_offset;
-  Member<const NGPhysicalContainerFragment> containing_block_fragment;
+  scoped_refptr<const NGPhysicalContainerFragment> containing_block_fragment;
 
   NGPhysicalOutOfFlowPositionedNode(
       NGBlockNode node,
       NGPhysicalStaticPosition static_position,
       const LayoutInline* inline_container = nullptr,
       PhysicalOffset containing_block_offset = PhysicalOffset(),
-      const NGPhysicalContainerFragment* containing_block_fragment = nullptr)
+      scoped_refptr<const NGPhysicalContainerFragment>
+          containing_block_fragment = nullptr)
       : node(node),
         static_position(static_position),
         inline_container(inline_container),
@@ -58,12 +56,6 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode final {
         containing_block_fragment(std::move(containing_block_fragment)) {
     DCHECK(!inline_container ||
            inline_container == inline_container->ContinuationRoot());
-  }
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(node);
-    visitor->Trace(inline_container);
-    visitor->Trace(containing_block_fragment);
   }
 };
 
@@ -73,18 +65,14 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode final {
 //
 // It is *only* used within an algorithm pass, (it is temporary, and should not
 // be stored/persisted).
-struct NGLogicalOutOfFlowPositionedNode final {
-  DISALLOW_NEW();
-
- public:
+struct NGLogicalOutOfFlowPositionedNode {
   NGBlockNode node;
   NGLogicalStaticPosition static_position;
   // Continuation root of the optional inline container.
-  Member<const LayoutInline> inline_container;
+  const LayoutInline* inline_container;
   bool needs_block_offset_adjustment;
-  const LayoutUnit fragmentainer_consumed_block_size;
   LogicalOffset containing_block_offset;
-  Member<const NGPhysicalContainerFragment> containing_block_fragment;
+  scoped_refptr<const NGPhysicalContainerFragment> containing_block_fragment;
   base::Optional<LogicalRect> containing_block_rect;
 
   NGLogicalOutOfFlowPositionedNode(
@@ -93,7 +81,8 @@ struct NGLogicalOutOfFlowPositionedNode final {
       const LayoutInline* inline_container = nullptr,
       bool needs_block_offset_adjustment = false,
       LogicalOffset containing_block_offset = LogicalOffset(),
-      const NGPhysicalContainerFragment* containing_block_fragment = nullptr,
+      scoped_refptr<const NGPhysicalContainerFragment>
+          containing_block_fragment = nullptr,
       const base::Optional<LogicalRect> containing_block_rect = base::nullopt)
       : node(node),
         static_position(static_position),
@@ -105,19 +94,8 @@ struct NGLogicalOutOfFlowPositionedNode final {
     DCHECK(!inline_container ||
            inline_container == inline_container->ContinuationRoot());
   }
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(node);
-    visitor->Trace(inline_container);
-    visitor->Trace(containing_block_fragment);
-  }
 };
 
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGPhysicalOutOfFlowPositionedNode)
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
-    blink::NGLogicalOutOfFlowPositionedNode)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_OUT_OF_FLOW_POSITIONED_NODE_H_

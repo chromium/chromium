@@ -12,8 +12,4 @@ TableGridCell::TableGridCell() = default;
 
 TableGridCell::~TableGridCell() = default;
 
-void TableGridCell::Trace(Visitor* visitor) const {
-  visitor->Trace(cells_);
-}
-
 }  // namespace blink

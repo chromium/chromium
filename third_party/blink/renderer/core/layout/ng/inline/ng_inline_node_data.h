@@ -15,7 +15,7 @@ template <typename OffsetMappingBuilder>
 class NGInlineItemsBuilderTemplate;
 
 // Data which is required for inline nodes.
-struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
+struct CORE_EXPORT NGInlineNodeData : NGInlineItemsData {
  public:
   bool IsBidiEnabled() const { return is_bidi_enabled_; }
   TextDirection BaseDirection() const {
@@ -32,11 +32,6 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
     return !is_first_line || !first_line_items_
                ? (const NGInlineItemsData&)*this
                : *first_line_items_;
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(first_line_items_);
-    NGInlineItemsData::Trace(visitor);
   }
 
  private:
@@ -58,7 +53,7 @@ struct CORE_EXPORT NGInlineNodeData final : NGInlineItemsData {
   // Items have different ComputedStyle, and may also have different
   // text_content and ShapeResult if 'text-transform' is applied or fonts are
   // different.
-  Member<NGInlineItemsData> first_line_items_;
+  std::unique_ptr<NGInlineItemsData> first_line_items_;
 
   unsigned is_bidi_enabled_ : 1;
   unsigned base_direction_ : 1;  // TextDirection

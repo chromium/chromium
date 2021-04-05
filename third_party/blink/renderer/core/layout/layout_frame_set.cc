@@ -55,11 +55,6 @@ LayoutFrameSet::LayoutFrameSet(HTMLFrameSetElement* frame_set)
 
 LayoutFrameSet::~LayoutFrameSet() = default;
 
-void LayoutFrameSet::Trace(Visitor* visitor) const {
-  visitor->Trace(children_);
-  LayoutBox::Trace(visitor);
-}
-
 LayoutFrameSet::GridAxis::GridAxis() : split_being_resized_(kNoSplit) {}
 
 HTMLFrameSetElement* LayoutFrameSet::FrameSet() const {

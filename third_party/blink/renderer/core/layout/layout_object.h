@@ -75,6 +75,7 @@ class AffineTransform;
 class HitTestLocation;
 class HitTestRequest;
 class InlineBox;
+class LayoutBoxModelObject;
 class LayoutBlock;
 class LayoutBlockFlow;
 class LayoutFlowThread;
@@ -268,8 +269,7 @@ struct RecalcLayoutOverflowResult {
 // IntrinsicLogicalWidthsDirty.
 //
 // See the individual getters below for more details about what each width is.
-class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
-                                 public ImageResourceObserver,
+class CORE_EXPORT LayoutObject : public ImageResourceObserver,
                                  public DisplayItemClient {
   friend class LayoutObjectChildList;
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest, MutableForPaintingClearPaintFlags);
@@ -288,31 +288,16 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   FRIEND_TEST_ALL_PREFIXES(
       LayoutObjectTest,
       ContainingBlockAbsoluteLayoutObjectShouldNotBeNonStaticallyPositionedInlineAncestor);
-  FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest, VisualRect);
 
   friend class VisualRectMappingTest;
 
  public:
-#if !BUILDFLAG(USE_V8_OILPAN)
-  // Use a type specific arena for LayoutObject
-  template <typename T>
-  static void* AllocateObject(size_t size) {
-    ThreadState* state =
-        ThreadStateFor<ThreadingTrait<LayoutObject>::kAffinity>::GetState();
-    const char* type_name = "blink::LayoutObject";
-    return state->Heap().AllocateOnArenaIndex(
-        state, size, BlinkGC::kLayoutObjectArenaIndex,
-        GCInfoTrait<GCInfoFoldedType<LayoutObject>>::Index(), type_name);
-  }
-#endif  // !BUILDFLAG(USE_V8_OILPAN)
-
   // Anonymous objects should pass the document as their node, and they will
   // then automatically be marked as anonymous in the constructor.
   explicit LayoutObject(Node*);
   LayoutObject(const LayoutObject&) = delete;
   LayoutObject& operator=(const LayoutObject&) = delete;
   ~LayoutObject() override;
-  virtual void Trace(Visitor*) const;
 
 // Should be added at the beginning of every method to ensure we are not
 // accessing a LayoutObject after the Desroy() call.
@@ -345,7 +330,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
  protected:
   void EnsureIdForTesting() {
     NOT_DESTROYED();
-    fragment_->EnsureId();
+    fragment_.EnsureId();
   }
 
  private:
@@ -592,7 +577,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   UniqueObjectId UniqueId() const {
     NOT_DESTROYED();
-    return fragment_->UniqueId();
+    return fragment_.UniqueId();
   }
 
   inline bool ShouldApplyPaintContainment(const ComputedStyle& style) const {
@@ -769,6 +754,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   static LayoutObject* CreateObject(Element*,
                                     const ComputedStyle&,
                                     LegacyLayout);
+
+  // LayoutObjects are allocated out of the rendering partition.
+  void* operator new(size_t);
+  void operator delete(void*);
 
   bool IsPseudoElement() const {
     NOT_DESTROYED();
@@ -1753,7 +1742,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // from the originating element's style (because we can cache only one
   // version), while the uncached pseudo style can inherit from any style.
   const ComputedStyle* GetCachedPseudoElementStyle(PseudoId) const;
-  ComputedStyle* GetUncachedPseudoElementStyle(const StyleRequest&) const;
+  scoped_refptr<ComputedStyle> GetUncachedPseudoElementStyle(
+      const StyleRequest&) const;
 
   LayoutView* View() const {
     NOT_DESTROYED();
@@ -2217,11 +2207,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // and new ComputedStyle like paint and size invalidations. If kNo, just set
   // the ComputedStyle member.
   enum class ApplyStyleChanges { kNo, kYes };
-  void SetStyle(const ComputedStyle*,
+  void SetStyle(scoped_refptr<const ComputedStyle>,
                 ApplyStyleChanges = ApplyStyleChanges::kYes);
 
   // Set the style of the object if it's generated content.
-  void SetPseudoElementStyle(const ComputedStyle*);
+  void SetPseudoElementStyle(scoped_refptr<const ComputedStyle>);
 
   // In some cases we modify the ComputedStyle after the style recalc, either
   // for updating anonymous style or doing layout hacks for special elements
@@ -2233,7 +2223,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // visual invalidation etc.
   //
   // Do not use unless strictly necessary.
-  void SetModifiedStyleOutsideStyleRecalc(const ComputedStyle*,
+  void SetModifiedStyleOutsideStyleRecalc(scoped_refptr<const ComputedStyle>,
                                           ApplyStyleChanges);
 
   void ClearBaseComputedStyle();
@@ -2478,7 +2468,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   const ComputedStyle* Style() const {
     NOT_DESTROYED();
-    return style_;
+    return style_.get();
   }
 
   // style_ can only be nullptr before the first style is set, thus most
@@ -2980,7 +2970,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // See ../paint/README.md for more on fragments.
   const FragmentData& FirstFragment() const {
     NOT_DESTROYED();
-    return *fragment_;
+    return fragment_;
   }
 
   // Attempt to return the top/left fragment, to be used in block-fragmentation-
@@ -3005,8 +2995,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
     if (LIKELY(!HasFlippedBlocksWritingMode() || !IsLayoutNGObject()))
-      return *fragment_;
-    return fragment_->LastFragment();
+      return fragment_;
+    return fragment_.LastFragment();
   }
 
   enum OverflowRecalcType {
@@ -3178,9 +3168,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           .SetShouldAssumePaintOffsetTranslationForLayoutShiftTracking(b);
     }
 
-    FragmentData& FirstFragment() { return *layout_object_.fragment_; }
+    FragmentData& FirstFragment() { return layout_object_.fragment_; }
 
-    void EnsureId() { layout_object_.fragment_->EnsureId(); }
+    void EnsureId() { layout_object_.fragment_.EnsureId(); }
 
    protected:
     friend class LayoutBoxModelObject;
@@ -3496,12 +3486,16 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     return false;
   }
 
-  void SetDestroyedForTesting() {
+  // While the |DeleteThis()| method is virtual, this should only be overridden
+  // in very rare circumstances.
+  // You want to override |WillBeDestroyed()| instead unless you explicitly need
+  // to stop this object from being destroyed (for example,
+  // |LayoutEmbeddedContent| overrides |DeleteThis()| for this purpose).
+  virtual void DeleteThis();
+
+  void SetBeingDestroyedForTesting() {
     NOT_DESTROYED();
     bitfields_.SetBeingDestroyed(true);
-#if DCHECK_IS_ON()
-    is_destroyed_ = true;
-#endif
   }
 
   const ComputedStyle& SlowEffectiveStyle(NGStyleVariant style_variant) const;
@@ -3509,9 +3503,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Updates only the local style ptr of the object.  Does not update the state
   // of the object, and so only should be called when the style is known not to
   // have changed (or from SetStyle).
-  void SetStyleInternal(const ComputedStyle* style) {
+  void SetStyleInternal(scoped_refptr<const ComputedStyle> style) {
     NOT_DESTROYED();
-    style_ = style;
+    style_ = std::move(style);
   }
   // Overrides should call the superclass at the end. style_ will be 0 the
   // first time this function will be called.
@@ -4134,7 +4128,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                          HasNonCollapsedBorderDecoration);
 
     // True at start of |Destroy()| before calling |WillBeDestroyed()|.
-    // TODO(yukiy): Remove this bitfield
     ADD_BOOLEAN_BITFIELD(being_destroyed_, BeingDestroyed);
 
     // From LayoutListMarkerImage
@@ -4295,17 +4288,20 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
  private:
   friend class LineLayoutItem;
-  friend class LocalFrameView;
 
-  Member<const ComputedStyle> style_;
-  Member<Node> node_;
-  Member<LayoutObject> parent_;
-  Member<LayoutObject> previous_;
-  Member<LayoutObject> next_;
-  Member<FragmentData> fragment_;
+  scoped_refptr<const ComputedStyle> style_;
+
+  // Oilpan: This untraced pointer to the owning Node is considered safe.
+  UntracedMember<Node> node_;
+
+  LayoutObject* parent_;
+  LayoutObject* previous_;
+  LayoutObject* next_;
 
   // Store state between styleWillChange and styleDidChange
   static bool affects_parent_block_;
+
+  FragmentData fragment_;
 
 #if DCHECK_IS_ON()
   bool is_destroyed_ = false;

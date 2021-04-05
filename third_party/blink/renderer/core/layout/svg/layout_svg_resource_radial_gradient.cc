@@ -34,11 +34,6 @@ LayoutSVGResourceRadialGradient::LayoutSVGResourceRadialGradient(
 
 LayoutSVGResourceRadialGradient::~LayoutSVGResourceRadialGradient() = default;
 
-void LayoutSVGResourceRadialGradient::Trace(Visitor* visitor) const {
-  visitor->Trace(attributes_wrapper_);
-  LayoutSVGResourceGradient::Trace(visitor);
-}
-
 void LayoutSVGResourceRadialGradient::CollectGradientAttributes() {
   NOT_DESTROYED();
   DCHECK(GetElement());

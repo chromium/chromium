@@ -61,13 +61,12 @@ void NGMathRadicalLayoutAlgorithm::GatherChildren(
   }
 }
 
-const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGMathRadicalLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
   DCHECK(IsValidMathMLRadical(Node()));
 
   auto vertical = GetRadicalVerticalParameters(Style(), Node().HasIndex());
-  const NGPhysicalBoxFragment* index_fragment = nullptr;
-  const NGPhysicalBoxFragment* base_fragment = nullptr;
+  scoped_refptr<const NGPhysicalBoxFragment> index_fragment, base_fragment;
   LayoutUnit index_inline_size, index_ascent, index_descent, base_ascent,
       base_descent;
   RadicalHorizontalParameters horizontal;
@@ -81,7 +80,8 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
     // the row layout algorithm.
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), base);
-    const NGLayoutResult* base_layout_result = base.Layout(constraint_space);
+    scoped_refptr<const NGLayoutResult> base_layout_result =
+        base.Layout(constraint_space);
     base_fragment =
         &To<NGPhysicalBoxFragment>(base_layout_result->PhysicalFragment());
     base_margins =
@@ -96,7 +96,8 @@ const NGLayoutResult* NGMathRadicalLayoutAlgorithm::Layout() {
     // (https://mathml-refresh.github.io/mathml-core/#root-with-index).
     NGConstraintSpace constraint_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), index);
-    const NGLayoutResult* index_layout_result = index.Layout(constraint_space);
+    scoped_refptr<const NGLayoutResult> index_layout_result =
+        index.Layout(constraint_space);
     index_fragment =
         &To<NGPhysicalBoxFragment>(index_layout_result->PhysicalFragment());
     index_margins =

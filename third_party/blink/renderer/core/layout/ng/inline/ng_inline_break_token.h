@@ -26,19 +26,21 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   // Creates a break token for a node which did fragment, and can potentially
   // produce more fragments.
   // Takes ownership of the state_stack.
-  static NGInlineBreakToken* Create(
+  static scoped_refptr<NGInlineBreakToken> Create(
       NGInlineNode node,
       const ComputedStyle* style,
       unsigned item_index,
       unsigned text_offset,
       unsigned flags /* NGInlineBreakTokenFlags */) {
-    return MakeGarbageCollected<NGInlineBreakToken>(
-        PassKey(), node, style, item_index, text_offset, flags);
+    return base::AdoptRef(new NGInlineBreakToken(
+        PassKey(), node, style, item_index, text_offset, flags));
   }
+
+  ~NGInlineBreakToken() override;
 
   // The style at the end of this break token. The next line should start with
   // this style.
-  const ComputedStyle* Style() const { return style_; }
+  const ComputedStyle* Style() const { return style_.get(); }
 
   unsigned ItemIndex() const {
     return item_index_;
@@ -76,10 +78,8 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
   String ToString() const override;
 #endif
 
-  void Trace(Visitor*) const override;
-
  private:
-  Member<const ComputedStyle> style_;
+  scoped_refptr<const ComputedStyle> style_;
   unsigned item_index_;
   unsigned text_offset_;
 };

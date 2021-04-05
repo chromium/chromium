@@ -94,7 +94,7 @@ NGMathScriptsLayoutAlgorithm::NGMathScriptsLayoutAlgorithm(
 
 void NGMathScriptsLayoutAlgorithm::GatherChildren(
     NGBlockNode* base,
-    HeapVector<SubSupPair>* sub_sup_pairs,
+    Vector<SubSupPair>* sub_sup_pairs,
     NGBlockNode* prescripts,
     unsigned* first_prescript_index,
     NGBoxFragmentBuilder* container_builder) const {
@@ -286,12 +286,12 @@ NGMathScriptsLayoutAlgorithm::LayoutAndGetMetrics(NGBlockNode child) const {
   return child_and_metrics;
 }
 
-const NGLayoutResult* NGMathScriptsLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGMathScriptsLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   NGBlockNode base = nullptr;
   NGBlockNode prescripts = nullptr;
-  HeapVector<SubSupPair> sub_sup_pairs;
+  Vector<SubSupPair> sub_sup_pairs;
   wtf_size_t first_prescript_index = 0;
   GatherChildren(&base, &sub_sup_pairs, &prescripts, &first_prescript_index,
                  &container_builder_);
@@ -415,7 +415,7 @@ MinMaxSizesResult NGMathScriptsLayoutAlgorithm::ComputeMinMaxSizes(
 
   NGBlockNode base = nullptr;
   NGBlockNode prescripts = nullptr;
-  HeapVector<SubSupPair> sub_sup_pairs;
+  Vector<SubSupPair> sub_sup_pairs;
   unsigned first_prescript_index = 0;
   GatherChildren(&base, &sub_sup_pairs, &prescripts, &first_prescript_index);
   DCHECK_GE(sub_sup_pairs.size(), 1ul);

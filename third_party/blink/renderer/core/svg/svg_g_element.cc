@@ -37,10 +37,10 @@ LayoutObject* SVGGElement::CreateLayoutObject(const ComputedStyle& style,
   // element, though the subtree may be hidden - we only want the resource
   // layoutObjects to exist so they can be referenced from somewhere else.
   if (style.Display() == EDisplay::kNone)
-    return MakeGarbageCollected<LayoutSVGHiddenContainer>(this);
+    return new LayoutSVGHiddenContainer(this);
   if (style.Display() == EDisplay::kContents)
     return nullptr;
-  return MakeGarbageCollected<LayoutSVGTransformableContainer>(this);
+  return new LayoutSVGTransformableContainer(this);
 }
 
 bool SVGGElement::LayoutObjectIsNeeded(const ComputedStyle&) const {

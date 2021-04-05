@@ -46,11 +46,12 @@ EditingViewPortElement::EditingViewPortElement(Document& document)
   setAttribute(html_names::kIdAttr, shadow_element_names::kIdEditingViewPort);
 }
 
-ComputedStyle* EditingViewPortElement::CustomStyleForLayoutObject(
+scoped_refptr<ComputedStyle> EditingViewPortElement::CustomStyleForLayoutObject(
     const StyleRecalcContext&) {
   // FXIME: Move these styles to html.css.
 
-  ComputedStyle* style = GetDocument().GetStyleResolver().CreateComputedStyle();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   style->InheritFrom(OwnerShadowHost()->ComputedStyleRef());
 
   style->SetFlexGrow(1);
@@ -134,9 +135,10 @@ LayoutObject* TextControlInnerEditorElement::CreateLayoutObject(
                                                            legacy);
 }
 
-ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
+scoped_refptr<ComputedStyle>
+TextControlInnerEditorElement::CustomStyleForLayoutObject(
     const StyleRecalcContext&) {
-  ComputedStyle* inner_editor_style = CreateInnerEditorStyle();
+  scoped_refptr<ComputedStyle> inner_editor_style = CreateInnerEditorStyle();
   // Using StyleAdjuster::adjustComputedStyle updates unwanted style. We'd like
   // to apply only editing-related and alignment-related.
   StyleAdjuster::AdjustStyleForEditing(*inner_editor_style);
@@ -145,11 +147,12 @@ ComputedStyle* TextControlInnerEditorElement::CustomStyleForLayoutObject(
   return inner_editor_style;
 }
 
-ComputedStyle* TextControlInnerEditorElement::CreateInnerEditorStyle() const {
+scoped_refptr<ComputedStyle>
+TextControlInnerEditorElement::CreateInnerEditorStyle() const {
   Element* host = OwnerShadowHost();
   DCHECK(host);
   const ComputedStyle& start_style = host->ComputedStyleRef();
-  ComputedStyle* text_block_style =
+  scoped_refptr<ComputedStyle> text_block_style =
       GetDocument().GetStyleResolver().CreateComputedStyle();
   text_block_style->InheritFrom(start_style);
   // The inner block, if present, always has its direction set to LTR,
@@ -200,7 +203,7 @@ ComputedStyle* TextControlInnerEditorElement::CreateInnerEditorStyle() const {
     text_block_style->SetOverflowX(EOverflow::kScroll);
     // overflow-y:visible doesn't work because overflow-x:scroll makes a layer.
     text_block_style->SetOverflowY(EOverflow::kScroll);
-    ComputedStyle* no_scrollbar_style =
+    scoped_refptr<ComputedStyle> no_scrollbar_style =
         GetDocument().GetStyleResolver().CreateComputedStyle();
     no_scrollbar_style->SetStyleType(kPseudoIdScrollbar);
     no_scrollbar_style->SetDisplay(EDisplay::kNone);

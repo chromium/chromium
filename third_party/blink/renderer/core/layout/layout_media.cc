@@ -41,11 +41,6 @@ LayoutMedia::LayoutMedia(HTMLMediaElement* video) : LayoutImage(video) {
 
 LayoutMedia::~LayoutMedia() = default;
 
-void LayoutMedia::Trace(Visitor* visitor) const {
-  visitor->Trace(children_);
-  LayoutImage::Trace(visitor);
-}
-
 HTMLMediaElement* LayoutMedia::MediaElement() const {
   NOT_DESTROYED();
   return To<HTMLMediaElement>(GetNode());

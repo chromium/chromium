@@ -62,7 +62,7 @@ class BaselineGroup {
   ItemPosition preference_;
   LayoutUnit max_ascent_;
   LayoutUnit max_descent_;
-  HashSet<UntracedMember<const LayoutBox>> items_;
+  HashSet<const LayoutBox*> items_;
 };
 
 // Boxes share an alignment context along a particular axis when they

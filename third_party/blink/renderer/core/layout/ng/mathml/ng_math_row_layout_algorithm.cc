@@ -75,7 +75,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
     const ComputedStyle& child_style = child.Style();
     NGConstraintSpace child_space = CreateConstraintSpaceForMathChild(
         Node(), ChildAvailableSize(), ConstraintSpace(), child);
-    const NGLayoutResult* result =
+    scoped_refptr<const NGLayoutResult> result =
         To<NGBlockNode>(child).Layout(child_space, nullptr /* break token */);
     const NGPhysicalContainerFragment& physical_fragment =
         result->PhysicalFragment();
@@ -110,7 +110,7 @@ void NGMathRowLayoutAlgorithm::LayoutRowItems(
   row_total_size->block_size = max_row_ascent + max_row_descent;
 }
 
-const NGLayoutResult* NGMathRowLayoutAlgorithm::Layout() {
+scoped_refptr<const NGLayoutResult> NGMathRowLayoutAlgorithm::Layout() {
   DCHECK(!BreakToken());
 
   bool is_display_block_math =

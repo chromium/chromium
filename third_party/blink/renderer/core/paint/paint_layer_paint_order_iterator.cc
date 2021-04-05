@@ -37,8 +37,8 @@ namespace blink {
 
 PaintLayer* PaintLayerPaintOrderIterator::Next() {
   if (remaining_children_ & kNegativeZOrderChildren) {
-    if (root_->StackingNode()) {
-      const auto& neg_z_order_list = root_->StackingNode()->NegZOrderList();
+    if (root_.StackingNode()) {
+      const auto& neg_z_order_list = root_.StackingNode()->NegZOrderList();
       if (index_ < neg_z_order_list.size())
         return neg_z_order_list[index_++];
     }
@@ -60,13 +60,13 @@ PaintLayer* PaintLayerPaintOrderIterator::Next() {
     }
 
     // We reset the iterator in case we reuse it.
-    current_normal_flow_child_ = root_->FirstChild();
+    current_normal_flow_child_ = root_.FirstChild();
     remaining_children_ &= ~kNormalFlowChildren;
   }
 
   if (remaining_children_ & kPositiveZOrderChildren) {
-    if (root_->StackingNode()) {
-      const auto& pos_z_order_list = root_->StackingNode()->PosZOrderList();
+    if (root_.StackingNode()) {
+      const auto& pos_z_order_list = root_.StackingNode()->PosZOrderList();
       if (index_ < pos_z_order_list.size())
         return pos_z_order_list[index_++];
     }
@@ -80,8 +80,8 @@ PaintLayer* PaintLayerPaintOrderIterator::Next() {
 
 PaintLayer* PaintLayerPaintOrderReverseIterator::Next() {
   if (remaining_children_ & kNegativeZOrderChildren) {
-    if (root_->StackingNode()) {
-      const auto& neg_z_order_list = root_->StackingNode()->NegZOrderList();
+    if (root_.StackingNode()) {
+      const auto& neg_z_order_list = root_.StackingNode()->NegZOrderList();
       if (index_ >= 0)
         return neg_z_order_list[index_--];
     }
@@ -108,8 +108,8 @@ PaintLayer* PaintLayerPaintOrderReverseIterator::Next() {
   }
 
   if (remaining_children_ & kPositiveZOrderChildren) {
-    if (root_->StackingNode()) {
-      const auto& pos_z_order_list = root_->StackingNode()->PosZOrderList();
+    if (root_.StackingNode()) {
+      const auto& pos_z_order_list = root_.StackingNode()->PosZOrderList();
       if (index_ >= 0)
         return pos_z_order_list[index_--];
     }
@@ -123,8 +123,8 @@ PaintLayer* PaintLayerPaintOrderReverseIterator::Next() {
 
 void PaintLayerPaintOrderReverseIterator::SetIndexToLastItem() {
   if (remaining_children_ & kNegativeZOrderChildren) {
-    if (root_->StackingNode()) {
-      const auto& neg_z_order_list = root_->StackingNode()->NegZOrderList();
+    if (root_.StackingNode()) {
+      const auto& neg_z_order_list = root_.StackingNode()->NegZOrderList();
       if (!neg_z_order_list.IsEmpty()) {
         index_ = neg_z_order_list.size() - 1;
         return;
@@ -135,13 +135,13 @@ void PaintLayerPaintOrderReverseIterator::SetIndexToLastItem() {
   }
 
   if (remaining_children_ & kNormalFlowChildren) {
-    current_normal_flow_child_ = root_->LastChild();
+    current_normal_flow_child_ = root_.LastChild();
     return;
   }
 
   if (remaining_children_ & kPositiveZOrderChildren) {
-    if (root_->StackingNode()) {
-      const auto& pos_z_order_list = root_->StackingNode()->PosZOrderList();
+    if (root_.StackingNode()) {
+      const auto& pos_z_order_list = root_.StackingNode()->PosZOrderList();
       if (!pos_z_order_list.IsEmpty()) {
         index_ = pos_z_order_list.size() - 1;
         return;

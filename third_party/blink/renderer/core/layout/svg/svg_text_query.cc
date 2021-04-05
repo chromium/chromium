@@ -34,9 +34,6 @@ namespace blink {
 
 // Base structure for callback user data
 struct QueryData {
-  STACK_ALLOCATED();
-
- public:
   QueryData()
       : is_vertical_text(false),
         current_offset(0),
@@ -80,9 +77,8 @@ static inline InlineFlowBox* FlowBoxForLayoutObject(
   return nullptr;
 }
 
-static void CollectTextBoxesInFlowBox(
-    InlineFlowBox* flow_box,
-    HeapVector<Member<SVGInlineTextBox>>& text_boxes) {
+static void CollectTextBoxesInFlowBox(InlineFlowBox* flow_box,
+                                      Vector<SVGInlineTextBox*>& text_boxes) {
   if (!flow_box)
     return;
 
@@ -127,7 +123,7 @@ static bool QueryTextBox(QueryData* query_data,
 static void SpatialQuery(LayoutObject* query_root,
                          QueryData* query_data,
                          ProcessTextFragmentCallback fragment_callback) {
-  HeapVector<Member<SVGInlineTextBox>> text_boxes;
+  Vector<SVGInlineTextBox*> text_boxes;
   CollectTextBoxesInFlowBox(FlowBoxForLayoutObject(query_root), text_boxes);
 
   // Loop over all text boxes
@@ -139,7 +135,7 @@ static void SpatialQuery(LayoutObject* query_root,
 
 static void CollectTextBoxesInLogicalOrder(
     LineLayoutSVGInlineText text_line_layout,
-    HeapVector<Member<SVGInlineTextBox>>& text_boxes) {
+    Vector<SVGInlineTextBox*>& text_boxes) {
   text_boxes.Shrink(0);
   for (InlineTextBox* text_box = text_line_layout.FirstTextBox(); text_box;
        text_box = text_box->NextForSameLayoutObject())
@@ -158,7 +154,7 @@ static void LogicalQuery(LayoutObject* query_root,
 
   // Walk the layout tree in pre-order, starting at the specified root, and
   // run the query for each text node.
-  HeapVector<Member<SVGInlineTextBox>> text_boxes;
+  Vector<SVGInlineTextBox*> text_boxes;
   for (LayoutObject* layout_object = query_root->SlowFirstChild();
        layout_object;
        layout_object = layout_object->NextInPreOrder(query_root)) {
@@ -556,7 +552,7 @@ static unsigned LogicalOffsetInTextNode(
     LineLayoutSVGInlineText text_line_layout,
     const SVGInlineTextBox* start_text_box,
     unsigned fragment_offset) {
-  HeapVector<Member<SVGInlineTextBox>> text_boxes;
+  Vector<SVGInlineTextBox*> text_boxes;
   CollectTextBoxesInLogicalOrder(text_line_layout, text_boxes);
 
   DCHECK(start_text_box);

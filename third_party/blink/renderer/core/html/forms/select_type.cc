@@ -90,7 +90,9 @@ class MenuListSelectType final : public SelectType {
   void UpdateTextStyle() override { UpdateTextStyleInternal(); }
   void UpdateTextStyleAndContent() override;
   HTMLOptionElement* OptionToBeShown() const override;
-  const ComputedStyle* OptionStyle() const override { return option_style_; }
+  const ComputedStyle* OptionStyle() const override {
+    return option_style_.get();
+  }
   void MaximumOptionWidthMightBeChanged() const override;
 
   void CreateShadowSubtree(ShadowRoot& root) override;
@@ -118,7 +120,7 @@ class MenuListSelectType final : public SelectType {
 
   Member<PopupMenu> popup_;
   Member<PopupUpdater> popup_updater_;
-  Member<const ComputedStyle> option_style_;
+  scoped_refptr<const ComputedStyle> option_style_;
   int ax_menulist_last_active_index_ = -1;
   bool has_updated_menulist_active_option_ = false;
   bool popup_is_visible_ = false;
@@ -128,7 +130,6 @@ class MenuListSelectType final : public SelectType {
 void MenuListSelectType::Trace(Visitor* visitor) const {
   visitor->Trace(popup_);
   visitor->Trace(popup_updater_);
-  visitor->Trace(option_style_);
   SelectType::Trace(visitor);
 }
 
@@ -486,7 +487,8 @@ String MenuListSelectType::UpdateTextStyleInternal() {
   if (inner_style && option_style &&
       ((option_style->Direction() != inner_style->Direction() ||
         option_style->GetUnicodeBidi() != inner_style->GetUnicodeBidi()))) {
-    ComputedStyle* cloned_style = ComputedStyle::Clone(*inner_style);
+    scoped_refptr<ComputedStyle> cloned_style =
+        ComputedStyle::Clone(*inner_style);
     cloned_style->SetDirection(option_style->Direction());
     cloned_style->SetUnicodeBidi(option_style->GetUnicodeBidi());
     if (auto* inner_layout = inner_element.GetLayoutObject()) {

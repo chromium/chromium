@@ -29,8 +29,9 @@ class CSSPropertyTest : public PageTestBase {
     return &set->PropertyAt(0).Value();
   }
 
-  ComputedStyle* ComputedStyleWithValue(const CSSProperty& property,
-                                        const CSSValue& value) {
+  scoped_refptr<ComputedStyle> ComputedStyleWithValue(
+      const CSSProperty& property,
+      const CSSValue& value) {
     StyleResolverState state(GetDocument(), *GetDocument().body());
     state.SetStyle(GetDocument().GetStyleResolver().CreateComputedStyle());
 
@@ -79,7 +80,7 @@ TEST_F(CSSPropertyTest, InternalFontSizeDeltaNotWebExposed) {
 }
 
 TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
-  ComputedStyle* initial_style =
+  scoped_refptr<ComputedStyle> initial_style =
       GetDocument().GetStyleResolver().CreateComputedStyle();
 
   // Count the number of 'visited' properties seen.

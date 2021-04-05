@@ -539,7 +539,7 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
     auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
       if (!calculated_intrinsic_block_size) {
         NGConstraintSpace child_space = BuildSpaceForIntrinsicBlockSize(child);
-        const NGLayoutResult* layout_result =
+        scoped_refptr<const NGLayoutResult> layout_result =
             child.Layout(child_space, /* break_token */ nullptr);
         calculated_intrinsic_block_size = layout_result->IntrinsicBlockSize();
       }
@@ -855,8 +855,8 @@ NGFlexLayoutAlgorithm::AdjustChildSizeForAspectRatioCrossAxisMinAndMax(
   return content_size_suggestion;
 }
 
-const NGLayoutResult* NGFlexLayoutAlgorithm::Layout() {
-  if (auto* result = LayoutInternal())
+scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::Layout() {
+  if (auto result = LayoutInternal())
     return result;
 
   // We may have aborted layout due to a child changing scrollbars, relayout
@@ -864,7 +864,7 @@ const NGLayoutResult* NGFlexLayoutAlgorithm::Layout() {
   return RelayoutIgnoringChildScrollbarChanges();
 }
 
-const NGLayoutResult*
+scoped_refptr<const NGLayoutResult>
 NGFlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   DCHECK(!ignore_child_scrollbar_changes_);
   DCHECK(!layout_info_for_devtools_);
@@ -877,7 +877,7 @@ NGFlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
   return algorithm.Layout();
 }
 
-const NGLayoutResult* NGFlexLayoutAlgorithm::LayoutInternal() {
+scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   // Freezing the scrollbars for the sub-tree shouldn't be strictly necessary,
   // but we do this just in case we trigger an unstable layout.
   base::Optional<PaintLayerScrollableArea::FreezeScrollbarsScope>
@@ -1291,7 +1291,7 @@ void NGFlexLayoutAlgorithm::PropagateBaselineFromChild(
   // We prefer a baseline from a child with baseline alignment, and no
   // auto-margins in the cross axis (even if we have to synthesize the
   // baseline).
-  if (FlexLayoutAlgorithm::AlignmentForChild(Style(), *flex_item.style_) ==
+  if (FlexLayoutAlgorithm::AlignmentForChild(Style(), flex_item.style_) ==
           ItemPosition::kBaseline &&
       !flex_item.HasAutoMarginsInCrossAxis()) {
     container_builder_.SetBaseline(baseline_offset);

@@ -40,7 +40,7 @@ HTMLWBRElement::HTMLWBRElement(Document& document)
 
 LayoutObject* HTMLWBRElement::CreateLayoutObject(const ComputedStyle& style,
                                                  LegacyLayout) {
-  return MakeGarbageCollected<LayoutWordBreak>(this);
+  return new LayoutWordBreak(this);
 }
 
 }  // namespace blink

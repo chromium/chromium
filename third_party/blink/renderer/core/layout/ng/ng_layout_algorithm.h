@@ -26,7 +26,7 @@ class NGLayoutAlgorithmOperations {
   // constraints given by the NGConstraintSpace. Returns a layout result with
   // the resulting layout information.
   // TODO(layout-dev): attempt to make this function const.
-  virtual const NGLayoutResult* Layout() = 0;
+  virtual scoped_refptr<const NGLayoutResult> Layout() = 0;
 
   // Computes the min-content and max-content intrinsic sizes for the given box.
   // The result will not take any min-width, max-width or width properties into
@@ -67,7 +67,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   STACK_ALLOCATED();
  public:
   NGLayoutAlgorithm(NGInputNodeType node,
-                    const ComputedStyle* style,
+                    scoped_refptr<const ComputedStyle> style,
                     const NGConstraintSpace& space,
                     TextDirection direction,
                     const NGBreakTokenType* break_token)
@@ -117,7 +117,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
 
   NGInputNodeType Node() const { return node_; }
 
-  const NGBreakTokenType* BreakToken() const { return break_token_; }
+  const NGBreakTokenType* BreakToken() const { return break_token_.get(); }
 
   const NGBoxStrut& BorderPadding() const {
     return container_builder_.BorderPadding();
@@ -134,7 +134,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   // fragmentainer at an less-than-ideal location, due to breaking restrictions,
   // such as orphans, widows, break-before:avoid or break-after:avoid.
   template <typename Algorithm>
-  const NGLayoutResult* RelayoutAndBreakEarlier(
+  scoped_refptr<const NGLayoutResult> RelayoutAndBreakEarlier(
       const NGEarlyBreak& breakpoint) {
     // Not allowed to recurse!
     DCHECK(!early_break_);
@@ -160,7 +160,7 @@ class CORE_EXPORT NGLayoutAlgorithm : public NGLayoutAlgorithmOperations {
   const NGEarlyBreak* early_break_ = nullptr;
 
   // The break token from which we are currently resuming layout.
-  const NGBreakTokenType* break_token_;
+  scoped_refptr<const NGBreakTokenType> break_token_;
 
   NGBoxFragmentBuilderType container_builder_;
 };

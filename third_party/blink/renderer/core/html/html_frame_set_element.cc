@@ -234,7 +234,7 @@ LayoutObject* HTMLFrameSetElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
   if (style.ContentBehavesAsNormal())
-    return MakeGarbageCollected<LayoutFrameSet>(this);
+    return new LayoutFrameSet(this);
   return LayoutObject::CreateObject(this, style, legacy);
 }
 

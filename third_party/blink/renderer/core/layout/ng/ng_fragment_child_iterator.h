@@ -56,8 +56,6 @@ class CORE_EXPORT NGFragmentChildIterator {
   }
 
   class Current {
-    STACK_ALLOCATED();
-
     friend class NGFragmentChildIterator;
 
    public:
@@ -66,7 +64,7 @@ class CORE_EXPORT NGFragmentChildIterator {
     const NGLink& Link() const { return link_; }
 
     const NGPhysicalBoxFragment* BoxFragment() const {
-      return To<NGPhysicalBoxFragment>(link_.fragment.Get());
+      return To<NGPhysicalBoxFragment>(link_.fragment);
     }
     const NGFragmentItem* FragmentItem() const {
       if (!cursor_)
@@ -118,7 +116,7 @@ class CORE_EXPORT NGFragmentChildIterator {
   NGFragmentChildIterator(
       const NGInlineCursor& parent,
       const NGBlockBreakToken* parent_break_token,
-      base::span<const Member<const NGBreakToken>> child_break_tokens);
+      base::span<const NGBreakToken* const> child_break_tokens);
 
   bool AdvanceChildFragment();
   void UpdateSelfFromFragment(
@@ -132,7 +130,7 @@ class CORE_EXPORT NGFragmentChildIterator {
   const NGPhysicalBoxFragment* parent_fragment_ = nullptr;
   const NGBlockBreakToken* parent_break_token_ = nullptr;
   Current current_;
-  base::span<const Member<const NGBreakToken>> child_break_tokens_;
+  base::span<const NGBreakToken* const> child_break_tokens_;
   wtf_size_t child_fragment_idx_ = 0;
   wtf_size_t child_break_token_idx_ = 0;
   bool is_fragmentation_context_root_ = false;

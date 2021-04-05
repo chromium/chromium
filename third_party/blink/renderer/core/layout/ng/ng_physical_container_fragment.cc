@@ -23,8 +23,9 @@ namespace {
 
 struct SameSizeAsNGPhysicalContainerFragment : NGPhysicalFragment {
   wtf_size_t size;
-  Member<void*> break_token;
-  Member<Vector<NGPhysicalOutOfFlowPositionedNode>> oof_positioned_descendants_;
+  void* break_token;
+  std::unique_ptr<Vector<NGPhysicalOutOfFlowPositionedNode>>
+      oof_positioned_descendants_;
   void* pointer;
 };
 
@@ -39,13 +40,12 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
     NGFragmentType type,
     unsigned sub_type)
     : NGPhysicalFragment(builder, type, sub_type),
-      const_num_children_(builder->children_.size()),
+      num_children_(builder->children_.size()),
       break_token_(std::move(builder->break_token_)),
       oof_positioned_descendants_(
           builder->oof_positioned_descendants_.IsEmpty()
               ? nullptr
-              : MakeGarbageCollected<
-                    HeapVector<NGPhysicalOutOfFlowPositionedNode>>()),
+              : new Vector<NGPhysicalOutOfFlowPositionedNode>()),
       buffer_(buffer) {
   has_floating_descendants_for_paint_ =
       builder->has_floating_descendants_for_paint_;
@@ -77,8 +77,15 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
   for (auto& child : builder->children_) {
     buffer[i].offset =
         converter.ToPhysical(child.offset, child.fragment->Size());
-    // Fragments in |builder| are not used after |this| was constructed.
-    buffer[i].fragment = std::move(child.fragment);
+    // Call the move constructor to move without |AddRef|. Fragments in
+    // |builder| are not used after |this| was constructed.
+    static_assert(
+        sizeof(buffer[0].fragment) ==
+            sizeof(scoped_refptr<const NGPhysicalFragment>),
+        "scoped_refptr must be the size of a pointer for this to work");
+    new (&buffer[i].fragment)
+        scoped_refptr<const NGPhysicalFragment>(std::move(child.fragment));
+    DCHECK(!child.fragment);  // Ensure it was moved.
     ++i;
   }
 }
@@ -88,21 +95,21 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
     bool recalculate_layout_overflow,
     NGLink* buffer)
     : NGPhysicalFragment(other),
-      const_num_children_(other.const_num_children_),
+      num_children_(other.num_children_),
       break_token_(other.break_token_),
       oof_positioned_descendants_(
           other.oof_positioned_descendants_
-              ? MakeGarbageCollected<
-                    HeapVector<NGPhysicalOutOfFlowPositionedNode>>(
+              ? new Vector<NGPhysicalOutOfFlowPositionedNode>(
                     *other.oof_positioned_descendants_)
               : nullptr),
       buffer_(buffer) {
   DCHECK(other.children_valid_);
   DCHECK(children_valid_);
   // To ensure the fragment tree is consistent, use the post-layout fragment.
-  for (wtf_size_t i = 0; i < const_num_children_; ++i) {
+  for (wtf_size_t i = 0; i < num_children_; ++i) {
     buffer[i].offset = other.buffer_[i].offset;
-    const NGPhysicalFragment* post_layout = other.buffer_[i]->PostLayout();
+    scoped_refptr<const NGPhysicalFragment> post_layout =
+        other.buffer_[i]->PostLayout();
     // While making the fragment tree consistent, we need to also clone any
     // fragmentainer fragments, as they don't nessecerily have their result
     // stored on the layout-object tree.
@@ -119,7 +126,8 @@ NGPhysicalContainerFragment::NGPhysicalContainerFragment(
       post_layout = NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
           box_fragment, layout_overflow);
     }
-    buffer[i].fragment = post_layout;
+    new (&buffer[i].fragment)
+        scoped_refptr<const NGPhysicalFragment>(std::move(post_layout));
   }
 }
 
@@ -130,7 +138,10 @@ void NGPhysicalContainerFragment::SetChildrenInvalid() const {
     return;
 
   for (const NGLink& child : Children()) {
-    const_cast<NGLink&>(child).fragment = nullptr;
+    if (const_cast<NGLink&>(child).fragment) {
+      const_cast<NGLink&>(child).fragment->Release();
+      const_cast<NGLink&>(child).fragment = nullptr;
+    }
   }
   children_valid_ = false;
 }
@@ -435,17 +446,6 @@ bool NGPhysicalContainerFragment::DependsOnPercentageBlockSize(
     return true;
 
   return false;
-}
-
-void NGPhysicalContainerFragment::TraceAfterDispatch(Visitor* visitor) const {
-  // Accessing |const_num_children_| inside Trace() here is safe since it is
-  // const. Note we don't check children_valid_ since that is not threadsafe.
-  // Tracing the child links themselves is safe from a background thread.
-  for (const auto& child : base::make_span(buffer_, const_num_children_))
-    visitor->Trace(child);
-  visitor->Trace(break_token_);
-  visitor->Trace(oof_positioned_descendants_);
-  NGPhysicalFragment::TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

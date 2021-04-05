@@ -28,14 +28,14 @@ class CORE_EXPORT NGSimplifiedOOFLayoutAlgorithm
                                  const NGPhysicalBoxFragment&,
                                  bool is_new_fragment);
 
-  const NGLayoutResult* Layout() override;
+  scoped_refptr<const NGLayoutResult> Layout() override;
   MinMaxSizesResult ComputeMinMaxSizes(
       const MinMaxSizesFloatInput&) const override {
     NOTREACHED();
     return MinMaxSizesResult();
   }
 
-  void AppendOutOfFlowResult(const NGLayoutResult* child);
+  void AppendOutOfFlowResult(scoped_refptr<const NGLayoutResult> child);
 
  private:
   void AddChildFragment(const NGLink& old_fragment);
@@ -47,7 +47,7 @@ class CORE_EXPORT NGSimplifiedOOFLayoutAlgorithm
   base::span<const NGLink> children_;
   base::span<const NGLink>::iterator child_iterator_;
   const NGBlockBreakToken* incoming_break_token_;
-  base::span<const Member<const NGBreakToken>>::iterator break_token_iterator_;
+  base::span<const NGBreakToken* const>::iterator break_token_iterator_;
 };
 
 }  // namespace blink

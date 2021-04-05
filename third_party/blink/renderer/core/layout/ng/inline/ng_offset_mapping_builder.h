@@ -119,7 +119,7 @@ class CORE_EXPORT NGOffsetMappingBuilder {
 
   // Finalize and return the offset mapping.
   // This method can only be called once, as it can invalidate the stored data.
-  NGOffsetMapping* Build();
+  std::unique_ptr<NGOffsetMapping> Build();
 
  private:
   const LayoutObject* current_layout_object_ = nullptr;
@@ -133,7 +133,7 @@ class CORE_EXPORT NGOffsetMappingBuilder {
   unsigned destination_length_ = 0;
 
   // Mapping units of the current mapping function.
-  HeapVector<NGOffsetMappingUnit> mapping_units_;
+  Vector<NGOffsetMappingUnit> mapping_units_;
 
   // Unit ranges of the current mapping function.
   NGOffsetMapping::RangeMap unit_ranges_;

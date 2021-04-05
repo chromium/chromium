@@ -103,7 +103,8 @@ RecalcLayoutOverflowResult LayoutNGMixin<Base>::RecalcLayoutOverflow() {
   bool layout_overflow_changed = false;
 
   if (rebuild_fragment_tree || should_recalculate_layout_overflow) {
-    for (auto& layout_result : Base::layout_results_) {
+    for (scoped_refptr<const NGLayoutResult>& layout_result :
+         Base::layout_results_) {
       const auto& fragment =
           To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment());
       base::Optional<PhysicalRect> layout_overflow;
@@ -246,7 +247,7 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   // copying back position information.
   NGBlockNode container_node(container);
   NGBoxFragmentBuilder container_builder(
-      container_node, container_style,
+      container_node, scoped_refptr<const ComputedStyle>(container_style),
       /* space */ nullptr, container_style->GetWritingDirection());
   container_builder.SetIsNewFormattingContext(
       container_node.CreatesNewFormattingContext());
@@ -316,7 +317,8 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
                         *container_style, constraint_space, &container_builder,
                         initial_containing_block_fixed_size)
       .Run(/* only_layout */ this);
-  const NGLayoutResult* result = container_builder.ToBoxFragment();
+  scoped_refptr<const NGLayoutResult> result =
+      container_builder.ToBoxFragment();
   // These are the unpositioned OOF descendants of the current OOF block.
   for (const auto& descendant :
        result->PhysicalFragment().OutOfFlowPositionedDescendants())
@@ -347,8 +349,10 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
 }
 
 template <typename Base>
-const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
-  const NGLayoutResult* previous_result = Base::GetCachedLayoutResult();
+scoped_refptr<const NGLayoutResult>
+LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
+  scoped_refptr<const NGLayoutResult> previous_result =
+      Base::GetCachedLayoutResult();
   bool is_layout_root = !Base::View()->GetLayoutState()->Next();
 
   // If we are a layout root, use the previous space if available. This will
@@ -358,7 +362,8 @@ const NGLayoutResult* LayoutNGMixin<Base>::UpdateInFlowBlockLayout() {
           ? previous_result->GetConstraintSpaceForCaching()
           : NGConstraintSpace::CreateFromLayoutObject(*this);
 
-  const NGLayoutResult* result = NGBlockNode(this).Layout(constraint_space);
+  scoped_refptr<const NGLayoutResult> result =
+      NGBlockNode(this).Layout(constraint_space);
 
   const auto& physical_fragment =
       To<NGPhysicalBoxFragment>(result->PhysicalFragment());

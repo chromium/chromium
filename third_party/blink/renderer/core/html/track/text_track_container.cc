@@ -109,7 +109,7 @@ LayoutObject* TextTrackContainer::CreateLayoutObject(const ComputedStyle&,
   // typically be a child of LayoutVideo (a legacy type), and we'll typically
   // also insert a LayoutVTTCue (a LayoutBlockFlow type) child, which also isn't
   // implemented in NG.
-  return MakeGarbageCollected<LayoutBlockFlow>(this);
+  return new LayoutBlockFlow(this);
 }
 
 void TextTrackContainer::ObserveSizeChanges(Element& element) {
