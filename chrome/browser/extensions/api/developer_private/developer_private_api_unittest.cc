@@ -1796,9 +1796,6 @@ class DeveloperPrivateApiAllowlistUnitTest
     feature_list_.InitAndEnableFeature(
         extensions_features::kSafeBrowsingCrxAllowlistShowWarnings);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(DeveloperPrivateApiAllowlistUnitTest,
