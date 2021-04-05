@@ -11,7 +11,6 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/views/border.h"
@@ -33,9 +32,9 @@ DownloadShelfWebView::DownloadShelfWebView(Browser* browser,
       web_contents());
   task_manager::WebContentsTags::CreateForTabContents(web_contents());
 
-  content::WebUI* web_ui = GetWebContents()->GetWebUI();
-  if (web_ui)
-    web_ui->GetController()->GetAs<DownloadShelfUI>()->set_embedder(this);
+  DownloadShelfUI* download_shelf_ui = GetDownloadShelfUI();
+  if (download_shelf_ui)
+    download_shelf_ui->set_embedder(this);
 }
 
 DownloadShelfWebView::~DownloadShelfWebView() = default;
@@ -54,7 +53,12 @@ void DownloadShelfWebView::OnThemeChanged() {
 }
 
 void DownloadShelfWebView::DoShowDownload(
-    DownloadUIModel::DownloadUIModelPtr download) {}
+    DownloadUIModel::DownloadUIModelPtr download) {
+  DownloadShelfUI* download_shelf_ui = GetDownloadShelfUI();
+  if (download_shelf_ui) {
+    download_shelf_ui->DoShowDownload(std::move(download));
+  }
+}
 
 void DownloadShelfWebView::DoOpen() {
   SetVisible(true);
@@ -117,4 +121,9 @@ bool DownloadShelfWebView::IsShowing() const {
 
 bool DownloadShelfWebView::IsClosing() const {
   return shelf_animation_.IsClosing();
+}
+
+DownloadShelfUI* DownloadShelfWebView::GetDownloadShelfUI() {
+  content::WebUI* web_ui = GetWebContents()->GetWebUI();
+  return web_ui ? web_ui->GetController()->GetAs<DownloadShelfUI>() : nullptr;
 }

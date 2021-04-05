@@ -7,6 +7,7 @@
 
 #include "chrome/browser/download/download_shelf.h"
 #include "chrome/browser/ui/views/download/download_shelf_context_menu_view.h"
+#include "chrome/browser/ui/webui/download_shelf/download_shelf_ui.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui_embedder.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -54,6 +55,8 @@ class DownloadShelfWebView : public DownloadShelf,
   // DownloadShelf:
   bool IsShowing() const override;
   bool IsClosing() const override;
+
+  DownloadShelfUI* GetDownloadShelfUI();
 
   BrowserView* parent_;
 

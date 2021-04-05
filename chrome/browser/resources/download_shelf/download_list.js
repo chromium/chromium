@@ -31,17 +31,32 @@ export class DownloadListElement extends CustomElement {
     /** @private {!DownloadShelfApiProxy} */
     this.apiProxy_ = DownloadShelfApiProxyImpl.getInstance();
 
-    /** @private {Element} */
-    this.listElement_ = this.$('#downloadList');
+    /** @private {!Element} */
+    this.listElement_ = assert(this.$('#downloadList'));
+
+    /** @private {!Array<number>} */
+    this.listenerIds_ = [];
 
     /** @private {ResizeObserver} */
     this.resizeObserver_ = new ResizeObserver(() => this.updateElements_());
-    this.resizeObserver_.observe(assert(this.listElement_));
+    this.resizeObserver_.observe(this.listElement_);
 
     this.apiProxy_.getDownloads().then(downloadItems => {
       this.items_ = downloadItems;
       this.updateElements_();
     });
+
+    const callbackRouter = this.apiProxy_.getCallbackRouter();
+    // TODO(romanarora): Once we implement a close panel button, we should
+    // ensure it removes all listeners from this.listenerIds_ when triggered.
+
+    // Triggers for downloads other than the first one, as the page handler will
+    // not be ready by the first download.
+    this.listenerIds_.push(callbackRouter.onNewDownload.addListener(
+        (download_model) => {
+            // TODO(romanarora): Implement this method as replacement to
+            // onCreated.
+        }));
 
     this.apiProxy_.onCreated(item => {
       this.items_.unshift(item);

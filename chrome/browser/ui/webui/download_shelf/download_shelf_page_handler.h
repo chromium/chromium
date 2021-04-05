@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_DOWNLOAD_SHELF_DOWNLOAD_SHELF_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_DOWNLOAD_SHELF_DOWNLOAD_SHELF_PAGE_HANDLER_H_
 
-#include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "content/public/browser/download_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -31,6 +31,9 @@ class DownloadShelfPageHandler : public download_shelf::mojom::PageHandler {
   void ShowContextMenu(uint32_t download_id,
                        int32_t client_x,
                        int32_t client_y) override;
+
+  // Notify the view to show a new download.
+  void DoShowDownload(DownloadUIModel* download_model);
 
  private:
   mojo::Receiver<download_shelf::mojom::PageHandler> receiver_;

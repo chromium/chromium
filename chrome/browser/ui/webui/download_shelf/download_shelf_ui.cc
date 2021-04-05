@@ -45,17 +45,6 @@ void DownloadShelfUI::CreatePageHandler(
       std::move(receiver), std::move(page), web_ui(), this);
 }
 
-DownloadUIModel* DownloadShelfUI::AddDownload(
-    DownloadUIModel::DownloadUIModelPtr download) {
-  DownloadUIModel* pointer = download.get();
-  items_.insert_or_assign(download->download()->GetId(), std::move(download));
-  return pointer;
-}
-
-DownloadUIModel* DownloadShelfUI::FindDownloadById(uint32_t download_id) const {
-  return items_.count(download_id) ? items_.at(download_id).get() : nullptr;
-}
-
 void DownloadShelfUI::ShowContextMenu(uint32_t download_id,
                                       int32_t client_x,
                                       int32_t client_y) {
@@ -75,4 +64,23 @@ void DownloadShelfUI::ShowContextMenu(uint32_t download_id,
     embedder()->ShowDownloadContextMenu(download_ui_model,
                                         gfx::Point(client_x, client_y));
   }
+}
+
+void DownloadShelfUI::DoShowDownload(
+    DownloadUIModel::DownloadUIModelPtr download_model) {
+  DownloadUIModel* download = AddDownload(std::move(download_model));
+
+  if (page_handler_)
+    page_handler_->DoShowDownload(download);
+}
+
+DownloadUIModel* DownloadShelfUI::AddDownload(
+    DownloadUIModel::DownloadUIModelPtr download) {
+  DownloadUIModel* pointer = download.get();
+  items_.insert_or_assign(download->download()->GetId(), std::move(download));
+  return pointer;
+}
+
+DownloadUIModel* DownloadShelfUI::FindDownloadById(uint32_t download_id) const {
+  return items_.count(download_id) ? items_.at(download_id).get() : nullptr;
 }

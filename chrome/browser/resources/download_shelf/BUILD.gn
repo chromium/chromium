@@ -40,7 +40,7 @@ preprocess_if_expr("preprocess") {
 }
 
 preprocess_if_expr("preprocess_mojo") {
-  deps = [ "//chrome/browser/ui/webui/download_shelf:mojo_bindings_js" ]
+  deps = [ "//chrome/browser/ui/webui/download_shelf:mojo_bindings_webui_js" ]
   in_folder =
       "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/download_shelf/"
   out_folder = "$target_gen_dir/$preprocess_folder"

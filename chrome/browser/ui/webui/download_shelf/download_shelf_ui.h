@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf.mojom.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_page_handler.h"
 #include "chrome/browser/ui/webui/download_shelf/download_shelf_ui_embedder.h"
@@ -33,11 +35,11 @@ class DownloadShelfUI : public ui::MojoWebUIController,
   void set_embedder(DownloadShelfUIEmbedder* embedder) { embedder_ = embedder; }
   DownloadShelfUIEmbedder* embedder() const { return embedder_; }
 
-  DownloadUIModel* AddDownload(DownloadUIModel::DownloadUIModelPtr download);
-
   void ShowContextMenu(uint32_t download_id,
                        int32_t client_x,
                        int32_t client_y);
+
+  void DoShowDownload(DownloadUIModel::DownloadUIModelPtr download_model);
 
  private:
   // download_shelf::mojom::PageHandlerFactory
@@ -45,6 +47,8 @@ class DownloadShelfUI : public ui::MojoWebUIController,
       mojo::PendingRemote<download_shelf::mojom::Page> page,
       mojo::PendingReceiver<download_shelf::mojom::PageHandler> receiver)
       override;
+
+  DownloadUIModel* AddDownload(DownloadUIModel::DownloadUIModelPtr download);
 
   DownloadUIModel* FindDownloadById(uint32_t download_id) const;
 
@@ -56,7 +60,7 @@ class DownloadShelfUI : public ui::MojoWebUIController,
   content::DownloadManager* const download_manager_;
   DownloadShelfUIEmbedder* embedder_ = nullptr;
 
-  base::flat_map<uint32_t, DownloadItemModel::DownloadUIModelPtr> items_;
+  base::flat_map<uint32_t, DownloadUIModel::DownloadUIModelPtr> items_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

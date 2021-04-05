@@ -55,6 +55,11 @@
           use_base_dir="false"
           resource_path="mojo/mojo/public/mojom/base/file.mojom-webui.js"
           type="BINDATA" />
+      <include name="IDR_MOJO_FILE_PATH_MOJOM_WEBUI_JS"
+          file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/file_path.mojom-webui.js"
+          use_base_dir="false"
+          resource_path="mojo/mojo/public/mojom/base/file_path.mojom-webui.js"
+          type="BINDATA" />
       <include name="IDR_MOJO_STRING16_MOJOM_HTML"
           file="${root_gen_dir}/mojo/public/mojom/base/string16.mojom.html"
           use_base_dir="false"
