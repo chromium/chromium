@@ -3940,17 +3940,10 @@ class CheckDeprecationOfPreferencesTest(unittest.TestCase):
 
 
 class InclusiveLanguageCheckTest(unittest.TestCase):
-  def testMissingExemptFile(self):
-    input_api = MockInputApi()
-    input_api.change.RepositoryRoot = lambda: ''
-
-    input_api.files = []
-    errors = PRESUBMIT.CheckInclusiveLanguage(input_api, MockOutputApi())
-    self.assertEqual(0, len(errors))
-
   def testBlockedTerms(self):
     input_api = MockInputApi()
     input_api.change.RepositoryRoot = lambda: ''
+    input_api.presubmit_local_path = ''
 
     input_api.files = [
       MockFile('infra/inclusive_language_presubmit_exempt_dirs.txt', [
@@ -4018,6 +4011,7 @@ class InclusiveLanguageCheckTest(unittest.TestCase):
   def testBlockedTermsWithLegacy(self):
     input_api = MockInputApi()
     input_api.change.RepositoryRoot = lambda: ''
+    input_api.presubmit_local_path = ''
 
     input_api.files = [
       MockFile('infra/inclusive_language_presubmit_exempt_dirs.txt', [
@@ -4053,6 +4047,7 @@ class InclusiveLanguageCheckTest(unittest.TestCase):
   def testBlockedTermsWithNocheck(self):
     input_api = MockInputApi()
     input_api.change.RepositoryRoot = lambda: ''
+    input_api.presubmit_local_path = ''
 
     input_api.files = [
       MockFile('infra/inclusive_language_presubmit_exempt_dirs.txt', [
@@ -4094,6 +4089,7 @@ class InclusiveLanguageCheckTest(unittest.TestCase):
   def testTopLevelDirExcempt(self):
     input_api = MockInputApi()
     input_api.change.RepositoryRoot = lambda: ''
+    input_api.presubmit_local_path = ''
 
     input_api.files = [
       MockFile('infra/inclusive_language_presubmit_exempt_dirs.txt', [
@@ -4111,6 +4107,20 @@ class InclusiveLanguageCheckTest(unittest.TestCase):
     self.assertEqual(1, len(errors))
     self.assertTrue('PRESUBMIT_test.py' in errors[0].message)
     self.assertTrue('PRESUBMIT.py' not in errors[0].message)
+
+
+  def testChangeIsForSomeOtherRepo(self):
+    input_api = MockInputApi()
+    input_api.change.RepositoryRoot = lambda: 'v8'
+    input_api.presubmit_local_path = ''
+
+    input_api.files = [
+      MockFile('some_file', [
+               '# this is a blacklist', # nocheck
+               ]),
+    ]
+    errors = PRESUBMIT.CheckInclusiveLanguage(input_api, MockOutputApi())
+    self.assertEqual([], errors)
 
 
 if __name__ == '__main__':

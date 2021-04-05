@@ -5426,6 +5426,14 @@ def _GetMessageForMatchingTerm(input_api, affected_file, line_number, line,
 
 def CheckInclusiveLanguage(input_api, output_api):
   """Make sure that banned non-inclusive terms are not used."""
+
+  # Presubmit checks may run on a bot where the changes are actually
+  # in a repo that isn't chromium/src (e.g., when testing src + tip-of-tree
+  # ANGLE), but this particular check only makes sense for changes to
+  # chromium/src.
+  if input_api.change.RepositoryRoot() != input_api.PresubmitLocalPath():
+    return []
+
   warnings = []
   errors = []
 
@@ -5449,18 +5457,10 @@ def CheckInclusiveLanguage(input_api, output_api):
 
   excluded_paths = []
 
-  try:
-    dirs_file_path = input_api.os_path.join(
-        input_api.change.RepositoryRoot(), 'infra',
-        'inclusive_language_presubmit_exempt_dirs.txt')
-    f = input_api.ReadFile(dirs_file_path)
-  except Exception as e:
-    input_api.logging.info(
-      'Failed to load inclusive language exempt dirs file:\n'
-      '\t%s\n'
-      'Skipping this check as a failsafe.'
-      'Stack:\n%s' % (dirs_file_path, str(e)))
-    return []
+  dirs_file_path = input_api.os_path.join(
+      input_api.change.RepositoryRoot(), 'infra',
+      'inclusive_language_presubmit_exempt_dirs.txt')
+  f = input_api.ReadFile(dirs_file_path)
 
   for line in f.split('\n'):
     path = line.split(' ')[0]
