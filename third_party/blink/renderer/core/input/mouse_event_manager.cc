@@ -744,6 +744,12 @@ WebInputEventResult MouseEventManager::HandleMouseReleaseEvent(
   if (controller && controller->SelectionAutoscrollInProgress())
     scroll_manager_->StopAutoscroll();
 
+  // |SelectionController| calls |PositionForPoint()| which requires
+  // |kPrePaintClean|. |FocusDocumentView| above is the last possible
+  // modifications before we call |SelectionController|.
+  if (LocalFrameView* frame_view = frame_->View())
+    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+
   return frame_->GetEventHandler()
                  .GetSelectionController()
                  .HandleMouseReleaseEvent(event, drag_start_pos_)
