@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/fragmentainer_iterator.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
+#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_table_row.h"
@@ -2548,8 +2549,14 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
   const LayoutBox& box = To<LayoutBox>(object_);
 
   if (box.IsLayoutReplaced() &&
-      box.PreviousPhysicalContentBoxRect() != box.PhysicalContentBoxRect())
+      box.PreviousPhysicalContentBoxRect() != box.PhysicalContentBoxRect()) {
     box.GetMutableForPainting().SetNeedsPaintPropertyUpdate();
+    if (box.IsLayoutEmbeddedContent()) {
+      if (const auto* child_view =
+              To<LayoutEmbeddedContent>(box).ChildLayoutView())
+        child_view->GetMutableForPainting().SetNeedsPaintPropertyUpdate();
+    }
+  }
 
   if (box.Size() == box.PreviousSize())
     return;
