@@ -74,19 +74,41 @@ static void RecordReplayLoadSymbol(void* handle, const char* name, T& function) 
 static const char* gBuildId = "macOS-chromium-experimental";
 
 static void RecordReplayAttach(int* pargc, char*** pargv) {
-  // Only renderer processes are recorded/replayed.
-  bool renderer = false;
-  for (int i = 0; i < *pargc; i++) {
-    if (!strcmp((*pargv)[i], "--type=renderer")) {
-      renderer = true;
-    }
-  }
-  if (!renderer) {
+  const char* driver = getenv("RECORD_REPLAY_DRIVER");
+  if (!driver) {
+    // When not configured to record/replay, don't change anything.
     return;
   }
 
-  const char* driver = getenv("RECORD_REPLAY_DRIVER");
-  if (!driver) {
+  // Figure out what type of process this is.
+  char* type = nullptr;
+  for (int i = 0; i < *pargc; i++) {
+    if (!strncmp((*pargv)[i], "--type=", 7)) {
+      type = (*pargv)[i] + 7;
+      break;
+    }
+  }
+  if (type) {
+    // Only renderer processes are recorded/replayed.
+    if (strcmp(type, "renderer")) {
+      return;
+    }
+  } else {
+    // If there is no type, this is the main process. Add a couple command line
+    // arguments which are required to record/replay.
+    char** nargv = new char*[*pargc + 3];
+    memcpy(nargv, *pargv, *pargc * sizeof(char*));
+    *pargv = nargv;
+
+    // Recording processes currently need the sandbox disabled in order to
+    // write out recording IDs to the specified path name.
+    (*pargv)[*pargc] = strdup("--no-sandbox");
+
+    // Recording/replaying currently requires software rendering.
+    (*pargv)[*pargc + 1] = strdup("--disable-gpu");
+
+    (*pargv)[*pargc + 2] = nullptr;
+    *pargc += 2;
     return;
   }
 
