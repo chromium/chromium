@@ -92,7 +92,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   // Virtual so it can be extended for testing.
   virtual Mode mode() const;
 
-  std::string& method() { return method_; }
+  const std::string& method() const { return method_; }
 
   const std::string& key() const { return cache_key_; }
 
