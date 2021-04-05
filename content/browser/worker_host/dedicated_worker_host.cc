@@ -653,6 +653,19 @@ void DedicatedWorkerHost::MaybeCountWebFeature(const GURL& script_url) {
           container_host->controller_registration()->scope(), script_url)) {
     container_host->CountFeature(
         blink::mojom::WebFeature::kWorkerControlledByServiceWorkerOutOfScope);
+
+    // Count the number of dedicated workers that will not be controlled by the
+    // service worker with a fetch event handler. This better measures the risk
+    // of site breakage by PlzDedicatedWorker.
+    if (container_host->controller()) {
+      DCHECK_NE(container_host->controller()->fetch_handler_existence(),
+                ServiceWorkerVersion::FetchHandlerExistence::UNKNOWN);
+      if (container_host->controller()->fetch_handler_existence() ==
+          ServiceWorkerVersion::FetchHandlerExistence::EXISTS)
+        container_host->CountFeature(
+            blink::mojom::WebFeature::
+                kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope);
+    }
   }
 }
 
