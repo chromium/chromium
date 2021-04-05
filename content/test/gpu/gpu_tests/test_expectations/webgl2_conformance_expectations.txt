@@ -179,11 +179,6 @@ crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuff
 crbug.com/angleproject/4417 [ win angle-d3d11 ] conformance2/rendering/framebuffer-render-to-layer-angle-issue.html [ Failure ]
 crbug.com/1127867 [ win angle-d3d11 ] conformance2/textures/image_data/tex-3d-rgb565-rgb-unsigned_byte.html [ RetryOnFailure ]
 
-# Intel flaky issues
-crbug.com/1114780 [ win intel ] deqp/functional/gles3/multisample/default_fbo.html [ Skip ]
-crbug.com/1114780 [ win intel ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Skip ]
-crbug.com/1114780 [ win intel ] deqp/functional/gles3/multisample/fbo_8_samples.html [ Skip ]
-crbug.com/1114780 [ win intel ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Skip ]
 # Flakily times out on driver 26.20.100.8141.
 crbug.com/1093482 [ win10 intel-0x5912 ] deqp/functional/gles3/shadermatrix/div_dynamic.html [ RetryOnFailure ]
 crbug.com/1093482 [ win10 intel-0x3e92 ] deqp/functional/gles3/shadermatrix/sub_dynamic.html [ RetryOnFailure ]
@@ -307,10 +302,6 @@ crbug.com/811614 [ amd mac ] deqp/functional/gles3/negativeshaderapi.html [ Fail
 crbug.com/811614 [ intel mac ] deqp/functional/gles3/negativeshaderapi.html [ Failure ]
 
 # Mac Retina NVIDIA
-crbug.com/981101 [ mac no-asan nvidia-0xfe9 ] deqp/functional/gles3/multisample/default_fbo.html [ Failure ]
-crbug.com/981101 [ mac no-asan nvidia-0xfe9 ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Failure ]
-crbug.com/981101 [ mac no-asan nvidia-0xfe9 ] deqp/functional/gles3/multisample/fbo_8_samples.html [ Failure ]
-crbug.com/981101 [ mac no-asan nvidia-0xfe9 ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Failure ]
 crbug.com/728271 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/mat_01.html [ Failure ]
 crbug.com/728271 [ mac nvidia-0xfe9 ] deqp/functional/gles3/shaderindexing/tmp.html [ Failure ]
 crbug.com/641209 [ mac nvidia-0xfe9 ] deqp/functional/gles3/fbomultisample* [ Failure ]
@@ -506,12 +497,6 @@ crbug.com/1092734 [ mac passthrough intel ] conformance2/textures/webgl_canvas/t
 crbug.com/1092734 [ mac passthrough intel ] conformance2/textures/webgl_canvas/tex-2d-rgba4-rgba-unsigned_byte.html [ Failure ]
 crbug.com/1092734 [ mac passthrough intel ] conformance2/textures/webgl_canvas/tex-2d-rgba4-rgba-unsigned_short_4_4_4_4.html [ Failure ]
 crbug.com/1092734 [ mac passthrough intel ] conformance2/textures/webgl_canvas/tex-2d-rgba8-rgba-unsigned_byte.html [ Failure ]
-
-# Mac ASAN slow tests
-crbug.com/1113404 [ mac asan ] deqp/functional/gles3/multisample/default_fbo.html [ Skip ]
-crbug.com/1113404 [ mac asan ] deqp/functional/gles3/multisample/fbo_4_samples.html [ Skip ]
-crbug.com/1113404 [ mac asan ] deqp/functional/gles3/multisample/fbo_8_samples.html [ Skip ]
-crbug.com/1113404 [ mac asan ] deqp/functional/gles3/multisample/fbo_max_samples.html [ Skip ]
 
 # Mac Validating / Intel
 crbug.com/1078988 [ catalina no-passthrough intel ] deqp/functional/gles3/fbocolorbuffer/tex2d_00.html [ Failure ]
