@@ -483,17 +483,19 @@ ScriptProcessorNode* ScriptProcessorNode::Create(
   uint32_t buffer_size;
   switch (requested_buffer_size) {
     case 0:
-      // Choose an appropriate size.  For an AudioContext, we need to
-      // choose an appropriate size based on the callback buffer size.
-      if (context.HasRealtimeConstraint()) {
+      // Choose an appropriate size.  For an AudioContext that is not closed, we
+      // need to choose an appropriate size based on the callback buffer size.
+      if (context.HasRealtimeConstraint() && !context.IsContextClosed()) {
         RealtimeAudioDestinationHandler& destination_handler =
             static_cast<RealtimeAudioDestinationHandler&>(
                 context.destination()->GetAudioDestinationHandler());
         buffer_size =
             ChooseBufferSize(destination_handler.GetCallbackBufferSize());
       } else {
-        // For OfflineAudioContext, there's no callback buffer size, so
-        // just use the minimum valid buffer size.
+        // An OfflineAudioContext has no callback buffer size, so just use the
+        // minimum.  If the realtime context is closed, we can't guarantee the
+        // we can get the callback size, so use this same default.  (With the
+        // context closed, there's not much you can do with this node anyway.)
         buffer_size = 256;
       }
       break;
