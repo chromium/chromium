@@ -513,6 +513,19 @@ struct HistoryLastVisitResult {
   base::Time last_visit;
 };
 
+// DailyVisitsResult contains the result of counting visits to a host over a
+// time range.
+struct DailyVisitsResult {
+  // Indicates whether the call was successful or not. Failure can happen if
+  // there are internal database errors or the query was called with invalid
+  // arguments.
+  bool success = false;
+  // Number of days in the time range containing visits to the host.
+  int days_with_visits = 0;
+  // Total number of visits to the host within the time range.
+  int total_visits = 0;
+};
+
 struct ExpireHistoryArgs {
   ExpireHistoryArgs();
   ExpireHistoryArgs(const ExpireHistoryArgs& other);

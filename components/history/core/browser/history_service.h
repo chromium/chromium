@@ -364,6 +364,20 @@ class HistoryService : public KeyedService {
       GetLastVisitCallback callback,
       base::CancelableTaskTracker* tracker);
 
+  using GetDailyVisitsToHostCallback =
+      base::OnceCallback<void(DailyVisitsResult)>;
+
+  // TODO(crbug/1152592): Use this function.
+  // Gets counts for total visits and days visited for pages matching `host`'s
+  // scheme, port, and host. Counts only user-visible visits (i.e. no redirects
+  // or subframes) within the time range [`begin_time`, `end_time`).
+  base::CancelableTaskTracker::TaskId GetDailyVisitsToHost(
+      const GURL& host,
+      base::Time begin_time,
+      base::Time end_time,
+      GetDailyVisitsToHostCallback callback,
+      base::CancelableTaskTracker* tracker);
+
   // Database management operations --------------------------------------------
 
   // Delete all the information related to a list of urls.  (Deleting

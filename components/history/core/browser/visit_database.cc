@@ -40,6 +40,37 @@ int32_t FromApi3QualifierForQuery() {
              : 0;
 }
 
+// Returns [lower, upper) bounds for matching a URL against `host`.
+std::pair<std::string, std::string> GetHostSearchBounds(const GURL& host) {
+  // We need to search for URLs with a matching host/port. One way to query for
+  // this is to use the GLOB operator, eg 'url GLOB "http://google.com/*"'. This
+  // approach requires escaping the * and ? and such a query would also need to
+  // be recompiled on every Step(). The same query can be executed by using >=
+  // and < operator. The query becomes: 'url >= http://google.com/' and url <
+  // http://google.com0'. 0 is used as it is one character greater than '/'.
+  // This effectively applies the GLOB optimization by doing it in C++ instead
+  // of relying on SQLite to do it.
+  static_assert('/' + 1 == '0', "");
+  const std::string host_query_min = host.GetOrigin().spec();
+  DCHECK(!host_query_min.empty());
+  DCHECK_EQ('/', host_query_min.back());
+
+  std::string host_query_max =
+      host_query_min.substr(0, host_query_min.size() - 1) + '0';
+
+  return {std::move(host_query_min), std::move(host_query_max)};
+}
+
+// Is the transition user-visible.
+bool TransitionIsVisible(int32_t transition) {
+  ui::PageTransition page_transition = ui::PageTransitionFromInt(transition);
+  return (ui::PAGE_TRANSITION_CHAIN_END & transition) != 0 &&
+         (transition & FromApi3QualifierForQuery()) == 0 &&
+         ui::PageTransitionIsMainFrame(page_transition) &&
+         !ui::PageTransitionCoreTypeIs(page_transition,
+                                       ui::PAGE_TRANSITION_KEYWORD_GENERATED);
+}
+
 }  // namespace
 
 VisitDatabase::VisitDatabase() {}
@@ -606,20 +637,7 @@ bool VisitDatabase::GetLastVisitToHost(const GURL& host,
   if (!host.is_valid() || !host.SchemeIsHTTPOrHTTPS())
     return false;
 
-  // We need to search for URLs with a matching host/port. One way to query for
-  // this is to use the GLOB operator, eg 'url GLOB "http://google.com/*"'. This
-  // approach requires escaping the * and ? and such a query would also need to
-  // be recompiled on every Step(). The same query can be executed by using >=
-  // and < operator. The query becomes: 'url >= http://google.com/' and url <
-  // http://google.com0'. 0 is used as it is one character greater than '/'.
-  // This effectively applies the GLOB optimization by doing it in C++ instead
-  // of relying on SQLite to do it.
-  const std::string host_query_min = host.GetOrigin().spec();
-  DCHECK(!host_query_min.empty());
-  DCHECK_EQ('/', host_query_min.back());
-
-  const std::string host_query_max =
-      host_query_min.substr(0, host_query_min.size() - 1) + '0';
+  std::pair<std::string, std::string> host_bounds = GetHostSearchBounds(host);
 
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
@@ -633,8 +651,8 @@ bool VisitDatabase::GetLastVisitToHost(const GURL& host,
       "  v.visit_time < ? "
       "ORDER BY v.visit_time DESC "
       "LIMIT 1"));
-  statement.BindString(0, host_query_min);
-  statement.BindString(1, host_query_max);
+  statement.BindString(0, host_bounds.first);
+  statement.BindString(1, host_bounds.second);
   statement.BindInt64(2, begin_time.ToInternalValue());
   statement.BindInt64(3, end_time.ToInternalValue());
 
@@ -679,6 +697,51 @@ bool VisitDatabase::GetLastVisitToURL(const GURL& url,
 
   *last_visit = base::Time::FromInternalValue(statement.ColumnInt64(0));
   return true;
+}
+
+DailyVisitsResult VisitDatabase::GetDailyVisitsToHost(const GURL& host,
+                                                      base::Time begin_time,
+                                                      base::Time end_time) {
+  DailyVisitsResult result;
+  if (!host.is_valid() || !host.SchemeIsHTTPOrHTTPS())
+    return result;
+
+  std::pair<std::string, std::string> host_bounds = GetHostSearchBounds(host);
+
+  sql::Statement statement(GetDB().GetCachedStatement(
+      // clang-format off
+      SQL_FROM_HERE,
+        "SELECT "
+        "visit_time,"
+        "transition "
+        "FROM visits v INNER JOIN urls u ON v.url=u.id "
+        "WHERE "
+          "u.url>=? AND "
+          "u.url<? AND "
+          "v.visit_time>=? AND "
+          "v.visit_time<?"
+      // clang-format on
+      ));
+
+  statement.BindString(0, host_bounds.first);
+  statement.BindString(1, host_bounds.second);
+  statement.BindInt64(2, begin_time.ToInternalValue());
+  statement.BindInt64(3, end_time.ToInternalValue());
+
+  std::vector<base::Time> dates;
+  while (statement.Step()) {
+    if (!TransitionIsVisible(statement.ColumnInt(1)))
+      continue;
+    ++result.total_visits;
+    dates.push_back(base::Time::FromInternalValue(statement.ColumnInt64(0))
+                        .LocalMidnight());
+  }
+  std::sort(dates.begin(), dates.end());
+  result.days_with_visits =
+      std::unique(dates.begin(), dates.end()) - dates.begin();
+  result.success = true;
+
+  return result;
 }
 
 bool VisitDatabase::GetStartDate(base::Time* first_visit) {

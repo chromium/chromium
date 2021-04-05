@@ -1324,6 +1324,12 @@ HistoryLastVisitResult HistoryBackend::GetLastVisitToURL(const GURL& url,
   };
 }
 
+DailyVisitsResult HistoryBackend::GetDailyVisitsToHost(const GURL& host,
+                                                       base::Time begin_time,
+                                                       base::Time end_time) {
+  return db_->GetDailyVisitsToHost(host, begin_time, end_time);
+}
+
 // Keyword visits --------------------------------------------------------------
 
 void HistoryBackend::SetKeywordSearchTermsForURL(const GURL& url,

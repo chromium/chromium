@@ -7,8 +7,6 @@
 #include <set>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -51,10 +49,8 @@ class VisitDatabaseTest : public PlatformTest,
   // Test setup.
   void SetUp() override {
     PlatformTest::SetUp();
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    base::FilePath db_file = temp_dir_.GetPath().AppendASCII("VisitTest.db");
 
-    EXPECT_TRUE(db_.Open(db_file));
+    EXPECT_TRUE(db_.OpenInMemory());
 
     // Initialize the tables for this test.
     CreateURLTable(false);
@@ -69,7 +65,6 @@ class VisitDatabaseTest : public PlatformTest,
   // Provided for URL/VisitDatabase.
   sql::Database& GetDB() override { return db_; }
 
-  base::ScopedTempDir temp_dir_;
   sql::Database db_;
 };
 
@@ -836,6 +831,75 @@ TEST_F(VisitDatabaseTest, GetLastVisitToURL) {
                                   base::Time::FromTimeT(150), &last_visit));
     EXPECT_EQ(last_visit, base::Time::FromTimeT(100));
   }
+}
+
+TEST_F(VisitDatabaseTest, GetDailyVisitsToHostWithVisits) {
+  base::Time begin_time = base::Time::Now();
+  base::Time end_time = begin_time + base::TimeDelta::FromDays(10);
+
+  base::Time day1_time =
+      begin_time.LocalMidnight() + base::TimeDelta::FromHours(24);
+  base::Time day2_time = day1_time + base::TimeDelta::FromHours(24);
+
+  auto add_visit = [&](const GURL& url, base::Time visit_time) {
+    VisitRow row{AddURL(URLRow(url)),
+                 visit_time,
+                 0,
+                 ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
+                                           ui::PAGE_TRANSITION_CHAIN_START |
+                                           ui::PAGE_TRANSITION_CHAIN_END),
+                 0,
+                 false,
+                 false};
+    AddVisit(&row, SOURCE_BROWSED);
+  };
+  // One visit before time range.
+  add_visit(GURL("https://foo.com/"),
+            begin_time - base::TimeDelta::FromHours(1));
+  // Two visits on first day.
+  add_visit(GURL("https://foo.com/bar"), day1_time);
+  add_visit(GURL("https://foo.com/baz"), day1_time +
+                                             base::TimeDelta::FromHours(24) -
+                                             base::TimeDelta::FromSeconds(1));
+  // Five visits on the next day.
+  for (int i = 0; i < 5; ++i) {
+    add_visit(GURL("https://foo.com/bar"), day2_time);
+  }
+  // These aren't visits, different scheme/host/port.
+  add_visit(GURL("http://foo.com/bar"), day2_time);
+  add_visit(GURL("https://fun.foo.com"), day2_time);
+  add_visit(GURL("https://foo.com:123/bar"), day2_time);
+
+  // One visit after end_time.
+  add_visit(GURL("https://foo.com/bar"),
+            end_time + base::TimeDelta::FromSeconds(1));
+
+  DailyVisitsResult result =
+      GetDailyVisitsToHost(GURL("https://foo.com"), begin_time, end_time);
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(2, result.days_with_visits);
+  EXPECT_EQ(7, result.total_visits);
+}
+
+TEST_F(VisitDatabaseTest, GetDailyVisitsToHostNoVisits) {
+  base::Time begin_time = base::Time::Now();
+  base::Time end_time = begin_time + base::TimeDelta::FromDays(10);
+
+  // A non-user visible visit.
+  VisitRow row{AddURL(URLRow(GURL("https://www.chromium.org"))),
+               begin_time,
+               0,
+               ui::PageTransitionFromInt(0),
+               0,
+               false,
+               false};
+  AddVisit(&row, SOURCE_BROWSED);
+
+  DailyVisitsResult result = GetDailyVisitsToHost(
+      GURL("https://www.chromium.org"), begin_time, end_time);
+  EXPECT_TRUE(result.success);
+  EXPECT_EQ(0, result.days_with_visits);
+  EXPECT_EQ(0, result.total_visits);
 }
 
 TEST_F(VisitDatabaseTest, GetGoogleDomainVisitsFromSearchesInRange_NoVisits) {

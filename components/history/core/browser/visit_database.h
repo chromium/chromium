@@ -200,6 +200,12 @@ class VisitDatabase {
                          base::Time end_time,
                          base::Time* last_visit);
 
+  // Gets counts for total visits and days visited for pages matching |host|'s
+  // scheme, port, and host. Counts only user-visible visits.
+  DailyVisitsResult GetDailyVisitsToHost(const GURL& host,
+                                         base::Time begin_time,
+                                         base::Time end_time);
+
   // Get the time of the first item in our database.
   bool GetStartDate(base::Time* first_visit);
 

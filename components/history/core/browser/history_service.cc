@@ -815,6 +815,22 @@ base::CancelableTaskTracker::TaskId HistoryService::GetLastVisitToURL(
       std::move(callback));
 }
 
+base::CancelableTaskTracker::TaskId HistoryService::GetDailyVisitsToHost(
+    const GURL& host,
+    base::Time begin_time,
+    base::Time end_time,
+    GetDailyVisitsToHostCallback callback,
+    base::CancelableTaskTracker* tracker) {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::GetDailyVisitsToHost, history_backend_,
+                     host, begin_time, end_time),
+      std::move(callback));
+}
+
 // Downloads -------------------------------------------------------------------
 
 // Handle creation of a download by creating an entry in the history service's
