@@ -34,6 +34,8 @@ bool StringTraits<WTF::String>::Read(StringDataView input,
 
 // static
 bool StringTraits<WTF::String>::IsValidUTF8(const WTF::String& value) {
+  if (value.IsNull())
+    return true;
   if (!value.Is8Bit())
     return false;
   base::span<const LChar> data = value.Span8();
