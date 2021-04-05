@@ -346,6 +346,8 @@ String SerializeConfiguration(
   if (usesInsertableStreams) {
     result.Append(", encodedInsertableStreams: true");
   }
+  result.Append(", extmapAllowMixed: ");
+  result.Append(SerializeBoolean(config.offer_extmap_allow_mixed));
   result.Append(" }");
   return result.ToString();
 }
