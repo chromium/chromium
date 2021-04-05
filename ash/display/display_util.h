@@ -52,6 +52,9 @@ void MoveCursorTo(AshWindowTreeHost* ash_host,
 void ShowDisplayErrorNotification(const std::u16string& message,
                                   bool allow_feedback);
 
+// Returns whether `rect_in_screen` is contained by any display.
+bool IsRectContainedByAnyDisplay(const gfx::Rect& rect_in_screen);
+
 // Takes a refresh rate represented as a float and rounds it to two decimal
 // places. If the rounded refresh rate is a whole number, the mantissa is
 // removed. Ex: 54.60712 -> "54.61"

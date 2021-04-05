@@ -175,6 +175,16 @@ void ShowDisplayErrorNotification(const std::u16string& message,
       std::move(notification));
 }
 
+bool IsRectContainedByAnyDisplay(const gfx::Rect& rect_in_screen) {
+  const std::vector<display::Display>& displays =
+      display::Screen::GetScreen()->GetAllDisplays();
+  for (const auto& display : displays) {
+    if (display.bounds().Contains(rect_in_screen))
+      return true;
+  }
+  return false;
+}
+
 std::u16string ConvertRefreshRateToString16(float refresh_rate) {
   std::string str = base::StringPrintf("%.2f", refresh_rate);
 
