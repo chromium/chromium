@@ -31,8 +31,6 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
-#include "ash/wm/container_finder.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
 #include "ui/aura/window.h"
 #include "ui/display/manager/display_manager.h"
@@ -149,26 +147,12 @@ void AppListPresenterDelegateImpl::OnClosed() {
   controller_->ViewClosed();
 }
 
-bool AppListPresenterDelegateImpl::IsTabletMode() const {
-  return Shell::Get()->tablet_mode_controller()->InTabletMode();
-}
-
 AppListViewDelegate* AppListPresenterDelegateImpl::GetAppListViewDelegate() {
   return controller_;
 }
 
 bool AppListPresenterDelegateImpl::GetOnScreenKeyboardShown() {
   return controller_->onscreen_keyboard_shown();
-}
-
-aura::Window* AppListPresenterDelegateImpl::GetContainerForWindow(
-    aura::Window* window) {
-  return ash::GetContainerForWindow(window);
-}
-
-aura::Window* AppListPresenterDelegateImpl::GetRootWindowForDisplayId(
-    int64_t display_id) {
-  return Shell::Get()->GetRootWindowForDisplayId(display_id);
 }
 
 void AppListPresenterDelegateImpl::OnVisibilityChanged(bool visible,
@@ -272,7 +256,7 @@ void AppListPresenterDelegateImpl::ProcessLocatedEvent(
   if (presenter_->HandleCloseOpenFolder())
     return;
 
-  if (!switches::ShouldNotDismissOnBlur() && !IsTabletMode()) {
+  if (!switches::ShouldNotDismissOnBlur() && !Shell::Get()->IsInTabletMode()) {
     // Do not dismiss the app list if the event is targeting shelf area
     // containing app icons.
     if (target == shelf->hotseat_widget()->GetNativeWindow() &&
@@ -335,7 +319,7 @@ void AppListPresenterDelegateImpl::OnKeyEvent(ui::KeyEvent* event) {
     return;
 
   // If the home launcher is not shown in tablet mode, ignore events.
-  if (IsTabletMode() && !IsVisible(base::nullopt))
+  if (Shell::Get()->IsInTabletMode() && !IsVisible(base::nullopt))
     return;
 
   // Don't absorb the first event for the search box while it is open

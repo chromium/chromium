@@ -18,6 +18,8 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
+#include "ash/wm/container_finder.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -121,13 +123,13 @@ void AppListPresenterImpl::Show(AppListViewState preferred_state,
   if (is_target_visibility_show_) {
     // Launcher is always visible on the internal display when home launcher is
     // enabled in tablet mode.
-    if (delegate_->IsTabletMode() || display_id == GetDisplayId())
+    if (Shell::Get()->IsInTabletMode() || display_id == GetDisplayId())
       return;
 
     Dismiss(event_time_stamp);
   }
 
-  if (!delegate_->GetRootWindowForDisplayId(display_id)) {
+  if (!Shell::Get()->GetRootWindowForDisplayId(display_id)) {
     LOG(ERROR) << "Root window does not exist for display: " << display_id;
     return;
   }
@@ -276,7 +278,7 @@ void AppListPresenterImpl::UpdateScaleAndOpacityForHomeLauncher(
     return;
 
   ui::Layer* layer = view_->GetWidget()->GetNativeWindow()->layer();
-  if (!delegate_->IsTabletMode()) {
+  if (!Shell::Get()->IsInTabletMode()) {
     // In clamshell mode, set the opacity of the AppList immediately to
     // instantly hide it. Opacity of the AppList is reset when it is shown
     // again.
@@ -412,8 +414,7 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
   int gained_focus_container_id = kShellWindowId_Invalid;
   if (gained_focus) {
     gained_focus_container_id = gained_focus->id();
-    const aura::Window* container =
-        delegate_->GetContainerForWindow(gained_focus);
+    const aura::Window* container = ash::GetContainerForWindow(gained_focus);
     if (container)
       gained_focus_container_id = container->id();
   }
@@ -439,7 +440,7 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
   const bool visible = app_list_gained_focus ||
                        (IsAtLeastPartiallyVisible() && !app_list_lost_focus);
 
-  if (delegate_->IsTabletMode()) {
+  if (Shell::Get()->IsInTabletMode()) {
     if (visible != delegate_->IsVisible(GetDisplayId())) {
       if (app_list_gained_focus)
         view_->OnHomeLauncherGainingFocusWithoutAnimation();
@@ -452,7 +453,7 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
     base::RecordAction(base::UserMetricsAction("AppList_WindowFocused"));
 
   if (app_list_lost_focus && !switches::ShouldNotDismissOnBlur() &&
-      !delegate_->IsTabletMode()) {
+      !Shell::Get()->IsInTabletMode()) {
     Dismiss(base::TimeTicks());
   }
 }
@@ -511,7 +512,8 @@ void AppListPresenterImpl::RequestPresentationTime(
     base::TimeTicks event_time_stamp) {
   if (event_time_stamp.is_null())
     return;
-  aura::Window* root_window = delegate_->GetRootWindowForDisplayId(display_id);
+  aura::Window* root_window =
+      Shell::Get()->GetRootWindowForDisplayId(display_id);
   if (!root_window)
     return;
   ui::Compositor* compositor = root_window->layer()->GetCompositor();

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ui/base/models/simple_menu_model.h"
+
 namespace ash {
 
 TestAppListClient::TestAppListClient() = default;
@@ -26,7 +28,9 @@ void TestAppListClient::GetContextMenuModel(
     int profile_id,
     const std::string& id,
     GetContextMenuModelCallback callback) {
-  std::move(callback).Run(nullptr);
+  auto model = std::make_unique<ui::SimpleMenuModel>(/*delegate=*/nullptr);
+  model->AddItem(/*command_id=*/0, u"Menu item");
+  std::move(callback).Run(std::move(model));
 }
 
 AppListNotifier* TestAppListClient::GetNotifier() {

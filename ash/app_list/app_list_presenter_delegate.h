@@ -10,10 +10,6 @@
 #include "ash/ash_export.h"
 #include "base/optional.h"
 
-namespace aura {
-class Window;
-}  // namespace aura
-
 namespace ash {
 
 class AppListPresenterImpl;
@@ -42,22 +38,12 @@ class ASH_EXPORT AppListPresenterDelegate {
   // Called when app list is closed.
   virtual void OnClosed() = 0;
 
-  // Returns true if tablet mode is enabled.
-  virtual bool IsTabletMode() const = 0;
-
   // Returns the view delegate, which will be passed into views so that views
   // can get access to Ash.
   virtual AppListViewDelegate* GetAppListViewDelegate() = 0;
 
   // Returns whether the on-screen keyboard is shown.
   virtual bool GetOnScreenKeyboardShown() = 0;
-
-  // Returns the container parent of the given window.
-  virtual aura::Window* GetContainerForWindow(aura::Window* window) = 0;
-
-  // Returns the root Window for the given display id. If there is no display
-  // for |display_id| null is returned.
-  virtual aura::Window* GetRootWindowForDisplayId(int64_t display_id) = 0;
 
   // Called when the app list visibility changes.
   virtual void OnVisibilityChanged(bool visible, int64_t display_id) = 0;
