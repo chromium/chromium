@@ -83,7 +83,7 @@ class PermissionsData {
   virtual ~PermissionsData();
 
   // Returns true if the extension is a COMPONENT extension or is on the
-  // whitelist of extensions that can script all pages.
+  // allowlist of extensions that can script all pages.
   // NOTE: This is static because it is used during extension initialization,
   // before the extension has an associated PermissionsData object.
   static bool CanExecuteScriptEverywhere(const ExtensionId& extension_id,
