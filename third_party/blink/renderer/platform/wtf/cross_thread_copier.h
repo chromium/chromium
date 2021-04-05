@@ -54,6 +54,7 @@ class Time;
 class UnguessableToken;
 }  // namespace base
 
+struct SkISize;
 class SkRefCnt;
 template <typename T>
 class sk_sp;
@@ -61,7 +62,7 @@ class sk_sp;
 namespace gfx {
 class ColorSpace;
 class Size;
-}
+}  // namespace gfx
 
 namespace gpu {
 struct SyncToken;
@@ -70,7 +71,7 @@ struct SyncToken;
 namespace media {
 class VideoFrame;
 struct VideoCaptureFeedback;
-}
+}  // namespace media
 
 namespace mojo {
 template <typename Interface>
@@ -81,7 +82,7 @@ template <typename Interface>
 class PendingAssociatedRemote;
 template <typename Interface>
 class PendingAssociatedReceiver;
-}
+}  // namespace mojo
 
 namespace WTF {
 
@@ -329,6 +330,12 @@ struct CrossThreadCopier<
   static Type Copy(Type pointer) {
     return pointer;  // This is in fact a move.
   }
+};
+
+template <>
+struct CrossThreadCopier<SkISize>
+    : public CrossThreadCopierPassThrough<SkISize> {
+  STATIC_ONLY(CrossThreadCopier);
 };
 
 template <>
