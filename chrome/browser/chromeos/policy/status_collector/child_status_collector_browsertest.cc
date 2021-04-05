@@ -20,7 +20,6 @@
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/simple_test_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -87,6 +86,8 @@ constexpr int64_t kMillisecondsPerDay = Time::kMicrosecondsPerDay / 1000;
 
 constexpr int kIdlePollIntervalSeconds = 30;
 
+constexpr char kStartTime[] = "1 Jan 2020 21:15";
+
 const char kArcStatus[] = R"(
 {
    "applications":[
@@ -110,15 +111,12 @@ class TestingChildStatusCollector : public policy::ChildStatusCollector {
       chromeos::system::StatisticsProvider* provider,
       const policy::StatusCollector::AndroidStatusFetcher&
           android_status_fetcher,
-      TimeDelta activity_day_start,
-      base::SimpleTestClock* clock)
+      TimeDelta activity_day_start)
       : policy::ChildStatusCollector(pref_service,
                                      profile,
                                      provider,
                                      android_status_fetcher,
-                                     activity_day_start) {
-    clock_ = clock;
-  }
+                                     activity_day_start) {}
 
   // Each time this is called, returns a time that is a fixed increment
   // later than the previous time.
@@ -224,6 +222,9 @@ class ChildStatusCollectorTest : public testing::Test {
     content::RunAllTasksUntilIdle();
   }
 
+  ChildStatusCollectorTest(const ChildStatusCollectorTest&) = delete;
+  ChildStatusCollectorTest& operator=(const ChildStatusCollectorTest&) = delete;
+
   void SetUp() override {
     RestartStatusCollector(base::BindRepeating(&GetEmptyAndroidStatus));
 
@@ -233,7 +234,9 @@ class ChildStatusCollectorTest : public testing::Test {
 
     // Mock clock in task environment is set to Unix Epoch, advance it to avoid
     // using times from before Unix Epoch in some tests.
-    task_environment_.AdvanceClock(base::TimeDelta::FromDays(365));
+    Time start_time;
+    EXPECT_TRUE(Time::FromString(kStartTime, &start_time));
+    FastForwardTo(start_time);
   }
 
   void TearDown() override { status_collector_.reset(); }
@@ -271,7 +274,7 @@ class ChildStatusCollectorTest : public testing::Test {
           break;
         case DeviceStateTransitions::kLeaveSleep:
           chromeos::FakePowerManagerClient::Get()->SendSuspendDone(
-              base::TimeDelta::FromSeconds(kIdlePollIntervalSeconds));
+              TimeDelta::FromSeconds(kIdlePollIntervalSeconds));
           break;
         case DeviceStateTransitions::kEnterSessionActive:
           session_manager::SessionManager::Get()->SetSessionState(
@@ -284,7 +287,8 @@ class ChildStatusCollectorTest : public testing::Test {
         case DeviceStateTransitions::kPeriodicCheckTriggered:
           break;
       }
-      test_clock_.Advance(TimeDelta::FromSeconds(kIdlePollIntervalSeconds));
+      task_environment_.AdvanceClock(
+          TimeDelta::FromSeconds(kIdlePollIntervalSeconds));
       status_collector_->UpdateUsageTime();
     }
   }
@@ -292,7 +296,7 @@ class ChildStatusCollectorTest : public testing::Test {
   // If `should_run_tasks` is true, then use FastForwardBy() to run tasks.
   // Otherwise use AdvanceClock() to skip running tasks.
   void SimulateAppActivity(const chromeos::app_time::AppId& app_id,
-                           base::TimeDelta duration,
+                           TimeDelta duration,
                            bool should_run_tasks = true) {
     chromeos::ChildUserService::TestApi child_user_service =
         chromeos::ChildUserService::TestApi(
@@ -307,28 +311,22 @@ class ChildStatusCollectorTest : public testing::Test {
     app_registry->OnAppInstalled(app_id);
 
     // Window instance is irrelevant for tests here.
-    app_registry->OnAppActive(app_id, nullptr /* window */, test_clock_.Now());
+    app_registry->OnAppActive(app_id, nullptr /* window */, Time::Now());
     if (should_run_tasks) {
       task_environment_.FastForwardBy(duration);
     } else {
       task_environment_.AdvanceClock(duration);
     }
-    test_clock_.Advance(duration);
-    app_registry->OnAppInactive(app_id, nullptr /* window */,
-                                test_clock_.Now());
+    app_registry->OnAppInactive(app_id, nullptr /* window */, Time::Now());
   }
 
   virtual void RestartStatusCollector(
       const policy::StatusCollector::AndroidStatusFetcher&
           android_status_fetcher,
       const TimeDelta activity_day_start = kMidnight) {
-    // Set the baseline time to a fixed value (1 hour after day start) to
-    // prevent test flakiness due to a single activity period spanning two days.
-    test_clock_.SetNow(Time::Now().LocalMidnight() + activity_day_start +
-                       kHour);
     status_collector_ = std::make_unique<TestingChildStatusCollector>(
         pref_service(), testing_profile(), &fake_statistics_provider_,
-        android_status_fetcher, activity_day_start, &test_clock_);
+        android_status_fetcher, activity_day_start);
   }
 
   void GetStatus() {
@@ -377,8 +375,7 @@ class ChildStatusCollectorTest : public testing::Test {
   void MockPlatformVersion(const std::string& platform_version) {
     const std::string lsb_release = base::StringPrintf(
         "CHROMEOS_RELEASE_VERSION=%s", platform_version.c_str());
-    base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release,
-                                                 test_clock_.Now());
+    base::SysInfo::SetChromeOSVersionInfoForTest(lsb_release, Time::Now());
   }
 
   // Convenience method.
@@ -404,6 +401,12 @@ class ChildStatusCollectorTest : public testing::Test {
                                   prefs::kLastChildScreenTimeReset));
             },
             time, pref_service()));
+  }
+
+  void FastForwardTo(Time time) {
+    TimeDelta forward_by = time - Time::Now();
+    EXPECT_LT(TimeDelta(), forward_by);
+    task_environment_.AdvanceClock(forward_by);
   }
 
   Profile* testing_profile() { return testing_profile_.get(); }
@@ -433,14 +436,10 @@ class ChildStatusCollectorTest : public testing::Test {
   base::ScopedPathOverride user_data_dir_override_;
   chromeos::FakeUpdateEngineClient* const update_engine_client_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::SimpleTestClock test_clock_;
 
   // This property is required to instantiate the session manager, a singleton
   // which is used by the device status collector.
   session_manager::SessionManager session_manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChildStatusCollectorTest);
 };
 
 TEST_F(ChildStatusCollectorTest, ReportingBootMode) {
@@ -553,8 +552,7 @@ TEST_F(ChildStatusCollectorTest, ReportingActivityTimesIdleTransitions) {
 TEST_F(ChildStatusCollectorTest, ActivityKeptInPref) {
   EXPECT_TRUE(
       pref_service()->GetDictionary(prefs::kUserActivityTimes)->empty());
-  base::Time initial_time = base::Time::Now() + kHour;
-  test_clock_.SetNow(initial_time);
+  task_environment_.AdvanceClock(kHour);
 
   DeviceStateTransitions test_states[] = {
       DeviceStateTransitions::kEnterSessionActive,
@@ -576,7 +574,8 @@ TEST_F(ChildStatusCollectorTest, ActivityKeptInPref) {
   // able to count the active periods found by the original collector, because
   // the results are stored in a pref.
   RestartStatusCollector(base::BindRepeating(&GetEmptyAndroidStatus));
-  test_clock_.SetNow(initial_time);
+  // Avoid resetting to test accumulating screen time.
+  pref_service()->SetTime(prefs::kLastChildScreenTimeReset, Time::Now());
   SimulateStateChanges(test_states,
                        sizeof(test_states) / sizeof(DeviceStateTransitions));
 
@@ -614,9 +613,11 @@ TEST_F(ChildStatusCollectorTest, ActivityNotWrittenToLocalState) {
 
 TEST_F(ChildStatusCollectorTest, BeforeDayStart) {
   RestartStatusCollector(base::BindRepeating(&GetEmptyAndroidStatus), kSixAm);
-  // 04:00 AM
-  Time initial_time = Time::Now().LocalMidnight() + TimeDelta::FromHours(4);
-  test_clock_.SetNow(initial_time);
+  // TaskEnvironment can't go backwards in time, so fast forward to 04:00 AM on
+  // the next day.
+  Time initial_time = Time::Now().LocalMidnight() + TimeDelta::FromDays(1) +
+                      TimeDelta::FromHours(4);
+  FastForwardTo(initial_time);
   EXPECT_TRUE(
       pref_service()->GetDictionary(prefs::kUserActivityTimes)->empty());
 
@@ -645,7 +646,11 @@ TEST_F(ChildStatusCollectorTest, ActivityCrossingMidnight) {
 
   // Set the baseline time to 15 seconds before midnight, so the activity is
   // split between two days.
-  test_clock_.SetNow(Time::Now().LocalMidnight() - TimeDelta::FromSeconds(15));
+  // TaskEnvironment can't go backwards in time, so fast forward to 11:45:45 PM
+  // on the next day.
+  Time start_time = Time::Now().LocalMidnight() + TimeDelta::FromDays(1) -
+                    TimeDelta::FromSeconds(15);
+  FastForwardTo(start_time);
   SimulateStateChanges(test_states,
                        sizeof(test_states) / sizeof(DeviceStateTransitions));
   GetStatus();
@@ -673,16 +678,14 @@ TEST_F(ChildStatusCollectorTest, ActivityCrossingMidnight) {
 TEST_F(ChildStatusCollectorTest, ClockChanged) {
   DeviceStateTransitions test_states[1] = {
       DeviceStateTransitions::kEnterSessionActive};
-  base::Time initial_time;
-  ASSERT_TRUE(base::Time::FromString("30 Mar 2020 1:00AM PST", &initial_time));
-  test_clock_.SetNow(initial_time);
+  Time initial_time;
+  // Test daylight savings time (spring forward).
+  ASSERT_TRUE(Time::FromString("30 Mar 2020 1:00AM PST", &initial_time));
+  FastForwardTo(initial_time);
   SimulateStateChanges(test_states, 1);
 
   // Simulate a real DST clock change.
-  base::Time clock_change_time;
-  ASSERT_TRUE(
-      base::Time::FromString("30 Mar 2020 2:00AM PDT", &clock_change_time));
-  test_clock_.SetNow(clock_change_time);
+  task_environment_.AdvanceClock(kHour);
   test_states[0] = DeviceStateTransitions::kLeaveSessionActive;
   SimulateStateChanges(test_states, 1);
 
@@ -702,10 +705,9 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivity) {
   const chromeos::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
   const chromeos::app_time::AppId app2(apps::mojom::AppType::kExtension,
                                        "app2");
-  const base::Time start_time = base::Time::Now();
-  test_clock_.SetNow(start_time);
-  const base::TimeDelta app1_interval = base::TimeDelta::FromMinutes(1);
-  const base::TimeDelta app2_interval = base::TimeDelta::FromMinutes(2);
+  const Time start_time = Time::Now();
+  const TimeDelta app1_interval = TimeDelta::FromMinutes(1);
+  const TimeDelta app2_interval = TimeDelta::FromMinutes(2);
   SimulateAppActivity(app1, app1_interval);
   SimulateAppActivity(app2, app2_interval);
   SimulateAppActivity(app1, app1_interval);
@@ -721,10 +723,10 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivity) {
       EXPECT_EQ(0, app_activity.app_info().additional_app_id_size());
       EXPECT_EQ(em::AppActivity::DEFAULT, app_activity.app_state());
       EXPECT_EQ(3, app_activity.active_time_periods_size());
-      base::Time start = start_time;
+      Time start = start_time;
       for (const auto& active_period : app_activity.active_time_periods()) {
         EXPECT_EQ(start.ToJavaTime(), active_period.start_timestamp());
-        const base::Time end = start + app1_interval;
+        const Time end = start + app1_interval;
         EXPECT_EQ(end.ToJavaTime(), active_period.end_timestamp());
         start = end + app2_interval;
       }
@@ -735,10 +737,10 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivity) {
       EXPECT_EQ(0, app_activity.app_info().additional_app_id_size());
       EXPECT_EQ(em::AppActivity::DEFAULT, app_activity.app_state());
       EXPECT_EQ(2, app_activity.active_time_periods_size());
-      base::Time start = start_time + app1_interval;
+      Time start = start_time + app1_interval;
       for (const auto& active_period : app_activity.active_time_periods()) {
         EXPECT_EQ(start.ToJavaTime(), active_period.start_timestamp());
-        const base::Time end = start + app2_interval;
+        const Time end = start + app2_interval;
         EXPECT_EQ(end.ToJavaTime(), active_period.end_timestamp());
         start = end + app1_interval;
       }
@@ -761,8 +763,8 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityNoReport) {
   const chromeos::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
   const chromeos::app_time::AppId app2(apps::mojom::AppType::kExtension,
                                        "app2");
-  const base::TimeDelta app1_interval = base::TimeDelta::FromMinutes(1);
-  const base::TimeDelta app2_interval = base::TimeDelta::FromMinutes(2);
+  const TimeDelta app1_interval = TimeDelta::FromMinutes(1);
+  const TimeDelta app2_interval = TimeDelta::FromMinutes(2);
 
   SimulateAppActivity(app1, app1_interval);
   SimulateAppActivity(app2, app2_interval);
@@ -808,10 +810,8 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityMetrics) {
   const chromeos::app_time::AppId app1(apps::mojom::AppType::kWeb, "app1");
   const chromeos::app_time::AppId app2(apps::mojom::AppType::kExtension,
                                        "app2");
-  const base::Time start_time = base::Time::Now();
-  test_clock_.SetNow(start_time);
-  const base::TimeDelta app1_interval = base::TimeDelta::FromSeconds(1);
-  const base::TimeDelta app2_interval = base::TimeDelta::FromSeconds(2);
+  const TimeDelta app1_interval = TimeDelta::FromSeconds(1);
+  const TimeDelta app2_interval = TimeDelta::FromSeconds(2);
   SimulateAppActivity(app1, app1_interval);
   SimulateAppActivity(app2, app2_interval);
   SimulateAppActivity(app1, app1_interval);
@@ -846,7 +846,7 @@ TEST_F(ChildStatusCollectorTest, ReportingAppActivityMetrics) {
 
   histogram_tester.ExpectBucketCount(
       ChildStatusCollector::GetReportSizeHistogramNameForTest(),
-      /*sample=*/1093 /*KB*/,
+      /*sample=*/1250 /*KB*/,
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(
       ChildStatusCollector::GetReportSizeHistogramNameForTest(),
