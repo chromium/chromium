@@ -1461,10 +1461,13 @@ void BookmarkBarView::Init() {
       base::BindRepeating(
           &BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged,
           base::Unretained(this)));
-  profile_pref_registrar_.Add(
-      bookmarks::prefs::kShowReadingListInBookmarkBar,
-      base::BindRepeating(&BookmarkBarView::OnReadingListVisibilityPrefChanged,
-                          base::Unretained(this)));
+  if (read_later_button_) {
+    profile_pref_registrar_.Add(
+        bookmarks::prefs::kShowReadingListInBookmarkBar,
+        base::BindRepeating(
+            &BookmarkBarView::OnReadingListVisibilityPrefChanged,
+            base::Unretained(this)));
+  }
   profile_pref_registrar_.Add(
       bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
       base::BindRepeating(&BookmarkBarView::OnShowManagedBookmarksPrefChanged,
@@ -2019,6 +2022,7 @@ void BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged() {
 }
 
 void BookmarkBarView::OnReadingListVisibilityPrefChanged() {
+  DCHECK(read_later_button_);
   bool visible =
       chrome::ShouldShowReadingListInBookmarkBar(browser_->profile());
   if (read_later_button_->GetVisible() == visible)
