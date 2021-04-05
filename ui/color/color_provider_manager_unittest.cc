@@ -47,7 +47,7 @@ TEST_F(ColorProviderManagerTest, Persistence) {
 // Verifies that the initializer is called for each newly created color
 // provider.
 TEST_F(ColorProviderManagerTest, SetInitializer) {
-  ColorProviderManager::GetForTesting().AppendColorProviderInitializer(
+  ColorProviderManager::GetForTesting().SetColorProviderInitializer(
       base::BindRepeating([](ColorProvider* provider,
                              ColorProviderManager::ColorMode,
                              ColorProviderManager::ContrastMode) {

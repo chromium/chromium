@@ -52,17 +52,13 @@ base::Optional<SkColor> GetHighContrastColor(
   }
 }
 
-base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id,
-                                           const NativeTheme* base_theme) {
+base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id) {
   switch (color_id) {
     // Alert
     case NativeTheme::kColorId_AlertSeverityLow:
     case NativeTheme::kColorId_AlertSeverityHigh:
-    case NativeTheme::kColorId_AlertSeverityMedium: {
-      auto provider_color_id = NativeThemeColorIdToColorId(color_id);
-      DCHECK(provider_color_id);
-      return GetAlertSeverityColor(provider_color_id.value(), true);
-    }
+    case NativeTheme::kColorId_AlertSeverityMedium:
+      return GetAlertSeverityColor(color_id, true);
 
     // Border
     case NativeTheme::kColorId_FocusedBorderColor:
@@ -90,22 +86,18 @@ base::Optional<SkColor> GetDarkSchemeColor(NativeTheme::ColorId color_id,
 
     // Toggle button
     case ui::NativeTheme::kColorId_ToggleButtonThumbColorOff: {
-      const SkColor enabled = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_LabelEnabledColor,
-          NativeTheme::ColorScheme::kDark);
-      const SkColor secondary = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_LabelSecondaryColor,
-          NativeTheme::ColorScheme::kDark);
-      return color_utils::AlphaBlend(enabled, secondary, SkAlpha{0x0D});
+      const SkColor enabled =
+          *GetDarkSchemeColor(NativeTheme::kColorId_LabelEnabledColor);
+      const SkColor secondary =
+          *GetDarkSchemeColor(NativeTheme::kColorId_LabelSecondaryColor);
+      return color_utils::AlphaBlend(enabled, secondary, 0.05f);
     }
     case ui::NativeTheme::kColorId_ToggleButtonThumbColorOn: {
-      const SkColor enabled = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_LabelEnabledColor,
-          NativeTheme::ColorScheme::kDark);
-      const SkColor prominent = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_ProminentButtonColor,
-          NativeTheme::ColorScheme::kDark);
-      return color_utils::AlphaBlend(enabled, prominent, SkAlpha{0x0D});
+      const SkColor enabled =
+          *GetDarkSchemeColor(NativeTheme::kColorId_LabelEnabledColor);
+      const SkColor prominent =
+          *GetDarkSchemeColor(NativeTheme::kColorId_ProminentButtonColor);
+      return color_utils::AlphaBlend(enabled, prominent, 0.05f);
     }
     case ui::NativeTheme::kColorId_ToggleButtonTrackColorOff:
       return gfx::kGoogleGrey700;
@@ -128,11 +120,8 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
     // Alert
     case NativeTheme::kColorId_AlertSeverityLow:
     case NativeTheme::kColorId_AlertSeverityHigh:
-    case NativeTheme::kColorId_AlertSeverityMedium: {
-      auto provider_color_id = NativeThemeColorIdToColorId(color_id);
-      DCHECK(provider_color_id);
-      return GetAlertSeverityColor(provider_color_id.value(), false);
-    }
+    case NativeTheme::kColorId_AlertSeverityMedium:
+      return GetAlertSeverityColor(color_id, false);
 
     // Avatar
     case NativeTheme::kColorId_AvatarHeaderArt:
@@ -249,7 +238,7 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
           NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
     case NativeTheme::kColorId_DisabledIconColor: {
       const SkColor icon = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_DefaultIconColor, color_scheme);
+          NativeTheme::kColorId_LabelSecondaryColor, color_scheme);
       return SkColorSetA(icon, gfx::kDisabledControlAlpha);
     }
 
@@ -343,13 +332,12 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
 #endif
     case NativeTheme::kColorId_NotificationPlaceholderColor: {
       const SkColor color = base_theme->GetUnprocessedSystemColor(
-          NativeTheme::kColorId_NotificationColor, color_scheme);
+          NativeTheme::kColorId_TextOnProminentButtonColor, color_scheme);
       return SkColorSetA(color, gfx::kGoogleGreyAlpha700);
     }
     case NativeTheme::kColorId_NotificationColor:
-      return color_utils::GetColorWithMaxContrast(
-          base_theme->GetUnprocessedSystemColor(
-              NativeTheme::kColorId_NotificationInkDropBase, color_scheme));
+      return base_theme->GetUnprocessedSystemColor(
+          NativeTheme::kColorId_TextOnProminentButtonColor, color_scheme);
     case NativeTheme::kColorId_NotificationActionsRowBackground:
     case NativeTheme::kColorId_NotificationBackgroundActive:
     case NativeTheme::kColorId_NotificationLargeImageBackground:
@@ -563,13 +551,14 @@ SkColor GetDefaultColor(NativeTheme::ColorId color_id,
 
 }  // namespace
 
-SkColor GetAlertSeverityColor(ColorId color_id, bool dark) {
+SkColor GetAlertSeverityColor(NativeTheme::ColorId color_id, bool dark) {
   constexpr auto kColorIdMap =
-      base::MakeFixedFlatMap<ColorId, std::array<SkColor, 2>>({
-          {kColorAlertHighSeverity, {{gfx::kGoogleRed600, gfx::kGoogleRed300}}},
-          {kColorAlertLowSeverity,
+      base::MakeFixedFlatMap<NativeTheme::ColorId, std::array<SkColor, 2>>({
+          {NativeTheme::kColorId_AlertSeverityHigh,
+           {{gfx::kGoogleRed600, gfx::kGoogleRed300}}},
+          {NativeTheme::kColorId_AlertSeverityLow,
            {{gfx::kGoogleGreen700, gfx::kGoogleGreen300}}},
-          {kColorAlertMediumSeverity,
+          {NativeTheme::kColorId_AlertSeverityMedium,
            {{gfx::kGoogleYellow700, gfx::kGoogleYellow300}}},
       });
   return kColorIdMap.at(color_id)[dark];
@@ -595,7 +584,7 @@ SkColor GetAuraColor(NativeTheme::ColorId color_id,
   }
 
   if (color_scheme == NativeTheme::ColorScheme::kDark) {
-    base::Optional<SkColor> color = GetDarkSchemeColor(color_id, base_theme);
+    base::Optional<SkColor> color = GetDarkSchemeColor(color_id);
     if (color.has_value()) {
       DVLOG(2) << "GetDarkSchemeColor: "
                << "NativeTheme::ColorId: " << NativeThemeColorIdName(color_id)

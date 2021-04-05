@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ui/color/color_id.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_export.h"
 
@@ -19,7 +18,8 @@ namespace ui {
 // TODO(tluk): Create unique color ids for each use of the alert severity colors
 // and update this function to take the background color over which the alert
 // color is to be used.
-SkColor NATIVE_THEME_EXPORT GetAlertSeverityColor(ColorId color_id, bool dark);
+SkColor NATIVE_THEME_EXPORT GetAlertSeverityColor(NativeTheme::ColorId color_id,
+                                                  bool dark);
 
 // Returns the color to use on Aura for |color_id|.  For a few colors that are
 // theme-specific, |base_theme| must be non-null; consult the code to see which

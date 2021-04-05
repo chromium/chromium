@@ -5,7 +5,6 @@
 #ifndef UI_GTK_NATIVE_THEME_GTK_H_
 #define UI_GTK_NATIVE_THEME_GTK_H_
 
-#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/no_destructor.h"

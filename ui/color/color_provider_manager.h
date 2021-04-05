@@ -9,7 +9,6 @@
 #include <tuple>
 
 #include "base/callback.h"
-#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 
@@ -33,8 +32,8 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
     kHigh,
   };
   using ColorProviderKey = std::tuple<ColorMode, ContrastMode>;
-  using ColorProviderInitializerList = base::RepeatingCallbackList<
-      void(ColorProvider*, ColorMode, ContrastMode)>;
+  using ColorProviderInitializer =
+      base::RepeatingCallback<void(ColorProvider*, ColorMode, ContrastMode)>;
 
   ColorProviderManager(const ColorProviderManager&) = delete;
   ColorProviderManager& operator=(const ColorProviderManager&) = delete;
@@ -43,12 +42,9 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
   static ColorProviderManager& GetForTesting();
   static void ResetForTesting();
 
-  // Resets the current `initializer_list_`.
-  void ResetColorProviderInitializerList();
-
-  // Appends `initializer` to the end of the current `initializer_list_`.
-  void AppendColorProviderInitializer(
-      ColorProviderInitializerList::CallbackType Initializer);
+  // Sets the initializer for all ColorProviders returned from
+  // GetColorProviderFor().
+  void SetColorProviderInitializer(ColorProviderInitializer initializer);
 
   // Returns a color provider for |key|, creating one if necessary.
   ColorProvider* GetColorProviderFor(ColorProviderKey key);
@@ -58,12 +54,7 @@ class COMPONENT_EXPORT(COLOR) ColorProviderManager {
   virtual ~ColorProviderManager();
 
  private:
-  // Holds the chain of ColorProvider initializer callbacks.
-  std::unique_ptr<ColorProviderInitializerList> initializer_list_;
-
-  // Holds the subscriptions for initializers in the `initializer_list_`.
-  std::vector<base::CallbackListSubscription> initializer_subscriptions_;
-
+  ColorProviderInitializer initializer_;
   base::flat_map<ColorProviderKey, std::unique_ptr<ColorProvider>>
       color_providers_;
 };
