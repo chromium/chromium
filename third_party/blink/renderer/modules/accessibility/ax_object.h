@@ -474,14 +474,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   bool IsPresentational() const;
   bool IsRangeValueSupported() const;
-  bool IsScrollbar() const {
-    return RoleValue() == ax::mojom::blink::Role::kScrollBar;
-  }
-  virtual bool IsNativeSlider() const { return false; }
-  virtual bool IsSpinButton() const {
-    return RoleValue() == ax::mojom::blink::Role::kSpinButton;
-  }
-  bool IsTabItem() const { return RoleValue() == ax::mojom::blink::Role::kTab; }
+  bool IsScrollbar() const;
+  virtual bool IsNativeSlider() const;
+  virtual bool IsSpinButton() const;
+  bool IsTabItem() const;
 
   // This object is a text field. This is any widget in which the user should be
   // able to enter and edit text.
@@ -502,33 +498,27 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   }
 
   // Check object state.
-  virtual bool IsAutofillAvailable() const { return false; }
+  virtual bool IsAutofillAvailable() const;
   virtual bool IsClickable() const;
-  virtual AccessibilityExpanded IsExpanded() const {
-    return kExpandedUndefined;
-  }
-  virtual bool IsFocused() const { return false; }
+  virtual AccessibilityExpanded IsExpanded() const;
+  virtual bool IsFocused() const;
   // aria-grabbed is deprecated in WAI-ARIA 1.1.
-  virtual AccessibilityGrabbedState IsGrabbed() const {
-    return kGrabbedStateUndefined;
-  }
-  virtual bool IsHovered() const { return false; }
-  virtual bool IsLineBreakingObject() const { return false; }
-  virtual bool IsLinked() const { return false; }
-  virtual bool IsLoaded() const { return false; }
+  virtual AccessibilityGrabbedState IsGrabbed() const;
+  virtual bool IsHovered() const;
+  virtual bool IsLineBreakingObject() const;
+  virtual bool IsLinked() const;
+  virtual bool IsLoaded() const;
   virtual bool IsModal() const;
-  virtual bool IsMultiSelectable() const { return false; }
-  virtual bool IsOffScreen() const { return false; }
-  virtual bool IsRequired() const { return false; }
-  virtual AccessibilitySelectedState IsSelected() const {
-    return kSelectedStateUndefined;
-  }
+  virtual bool IsMultiSelectable() const;
+  virtual bool IsOffScreen() const;
+  virtual bool IsRequired() const;
+  virtual AccessibilitySelectedState IsSelected() const;
   // Is the object selected because selection is following focus?
-  virtual bool IsSelectedFromFocus() const { return false; }
-  virtual bool IsSelectedOptionActive() const { return false; }
-  virtual bool IsNotUserSelectable() const { return false; }
+  virtual bool IsSelectedFromFocus() const;
+  virtual bool IsSelectedOptionActive() const;
+  virtual bool IsNotUserSelectable() const;
   virtual bool IsVisible() const;
-  virtual bool IsVisited() const { return false; }
+  virtual bool IsVisited() const;
 
   // Check whether value can be modified.
   bool CanSetValueAttribute() const;
@@ -576,7 +566,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   bool LastKnownIsIgnoredButIncludedInTreeValue() const;
   bool LastKnownIsIncludedInTreeValue() const;
   bool HasInheritedPresentationalRole() const;
-  bool IsPresentationalChild() const;
   bool CanBeActiveDescendant() const;
   // Some objects, such as table header containers, could be the children of
   // more than one object but have only one primary parent.

@@ -2009,14 +2009,94 @@ bool AXObject::IsRangeValueSupported() const {
   return ui::IsRangeValueSupported(RoleValue());
 }
 
+bool AXObject::IsScrollbar() const {
+  return RoleValue() == ax::mojom::blink::Role::kScrollBar;
+}
+
+bool AXObject::IsNativeSlider() const {
+  return false;
+}
+
+bool AXObject::IsSpinButton() const {
+  return RoleValue() == ax::mojom::blink::Role::kSpinButton;
+}
+
+bool AXObject::IsTabItem() const {
+  return RoleValue() == ax::mojom::blink::Role::kTab;
+}
+
 bool AXObject::IsTextField() const {
   if (IsDetached())
     return false;
   return IsNativeTextField() || IsNonNativeTextField();
 }
 
+bool AXObject::IsAutofillAvailable() const {
+  return false;
+}
+
 bool AXObject::IsClickable() const {
   return ui::IsClickable(RoleValue());
+}
+
+AccessibilityExpanded AXObject::IsExpanded() const {
+  return kExpandedUndefined;
+}
+
+bool AXObject::IsFocused() const {
+  return false;
+}
+
+AccessibilityGrabbedState AXObject::IsGrabbed() const {
+  return kGrabbedStateUndefined;
+}
+
+bool AXObject::IsHovered() const {
+  return false;
+}
+
+bool AXObject::IsLineBreakingObject() const {
+  return false;
+}
+
+bool AXObject::IsLinked() const {
+  return false;
+}
+
+bool AXObject::IsLoaded() const {
+  return false;
+}
+
+bool AXObject::IsMultiSelectable() const {
+  return false;
+}
+
+bool AXObject::IsOffScreen() const {
+  return false;
+}
+
+bool AXObject::IsRequired() const {
+  return false;
+}
+
+AccessibilitySelectedState AXObject::IsSelected() const {
+  return kSelectedStateUndefined;
+}
+
+bool AXObject::IsSelectedFromFocus() const {
+  return false;
+}
+
+bool AXObject::IsSelectedOptionActive() const {
+  return false;
+}
+
+bool AXObject::IsNotUserSelectable() const {
+  return false;
+}
+
+bool AXObject::IsVisited() const {
+  return false;
 }
 
 bool AXObject::AccessibilityIsIgnored() const {
