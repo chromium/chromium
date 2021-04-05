@@ -22,7 +22,6 @@ class ProcessMetricsHistory;
 
 enum ProcessSubtypes {
   kProcessSubtypeUnknown,
-  kProcessSubtypePPAPIFlash,
   kProcessSubtypeExtensionPersistent,
   kProcessSubtypeExtensionEvent,
   kProcessSubtypeNetworkProcess,

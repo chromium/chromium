@@ -193,10 +193,7 @@ std::vector<ProcessMetadata> ProcessMonitor::GatherProcessesOnIOThread() {
     child_process_data.handle = iter.GetData().GetProcess().Handle();
     child_process_data.process_type = iter.GetData().process_type;
 
-    if (iter.GetData().name == base::ASCIIToUTF16(content::kFlashPluginName)) {
-      child_process_data.process_subtype = kProcessSubtypePPAPIFlash;
-    } else if (iter.GetData().metrics_name ==
-               network::mojom::NetworkService::Name_) {
+    if (iter.GetData().metrics_name == network::mojom::NetworkService::Name_) {
       child_process_data.process_subtype = kProcessSubtypeNetworkProcess;
     }
 

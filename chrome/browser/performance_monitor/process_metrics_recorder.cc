@@ -101,9 +101,6 @@ void ProcessMetricsRecorder::OnMetricsSampled(
   switch (process_metadata.process_subtype) {
     case kProcessSubtypeUnknown:
       break;
-    case kProcessSubtypePPAPIFlash:
-      NOTREACHED() << "Flash isn't supported anymore.";
-      break;
     case kProcessSubtypeExtensionPersistent:
       RecordProcessHistograms("RendererExtensionPersistentProcess", metrics);
       break;
