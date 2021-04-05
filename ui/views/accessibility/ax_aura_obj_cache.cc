@@ -181,18 +181,21 @@ View* AXAuraObjCache::GetFocusedView() {
   Widget* focused_widget = focused_widget_for_testing_;
   aura::Window* focused_window = nullptr;
   if (!focused_widget) {
-    if (root_windows_.empty())
-      return nullptr;
-    aura::client::FocusClient* focus_client =
-        GetFocusClient(*root_windows_.begin());
-    if (!focus_client)
-      return nullptr;
-
     // Uses the a11y override window for focus if it exists, otherwise gets the
-    // current focused window.
-    focused_window = a11y_override_window_;
-    if (!focused_window)
-      focused_window = focus_client->GetFocusedWindow();
+    // last focused window.
+    focused_window =
+        a11y_override_window_ ? a11y_override_window_ : last_focused_window_;
+
+    // Finally, fallback to searching for the focus.
+    if (!focused_window) {
+      for (aura::Window* window : root_windows_) {
+        auto* focus_client = GetFocusClient(window);
+        if (focus_client &&
+            (focused_window = GetFocusClient(window)->GetFocusedWindow())) {
+          break;
+        }
+      }
+    }
 
     if (!focused_window)
       return nullptr;
@@ -236,6 +239,7 @@ View* AXAuraObjCache::GetFocusedView() {
 
 void AXAuraObjCache::OnWindowFocused(aura::Window* gained_focus,
                                      aura::Window* lost_focus) {
+  last_focused_window_ = gained_focus;
   OnFocusedViewChanged();
 }
 
@@ -249,6 +253,9 @@ void AXAuraObjCache::OnRootWindowObjDestroyed(aura::Window* window) {
   root_windows_.erase(window);
   if (root_windows_.empty() && GetFocusClient(window))
     GetFocusClient(window)->RemoveObserver(this);
+
+  if (last_focused_window_ == window)
+    last_focused_window_ = nullptr;
 }
 
 void AXAuraObjCache::SetA11yOverrideWindow(aura::Window* a11y_override_window) {
