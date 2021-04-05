@@ -122,7 +122,6 @@ preprocess_if_expr("preprocess_polymer2") {
     "policy/cr_policy_pref_indicator.js",
     "policy/cr_tooltip_icon.html",
     "policy/cr_tooltip_icon.js",
-    "search_highlight_style_css.html",
     "shared_style_css.html",
     "shared_vars_css.html",
   ]
@@ -203,7 +202,7 @@ preprocess_if_expr("preprocess_generated") {
     "policy/cr_policy_pref_behavior.m.js",
     "policy/cr_policy_pref_indicator.m.js",
     "policy/cr_tooltip_icon.m.js",
-    "search_highlight_style_css.m.js",
+    "search_highlight_style_css.js",
     "shared_style_css.m.js",
     "shared_vars_css.m.js",
   ]
@@ -350,12 +349,6 @@ polymer_modulizer("icons") {
   html_type = "iron-iconset"
 }
 
-polymer_modulizer("search_highlight_style_css") {
-  js_file = "search_highlight_style_css.m.js"
-  html_file = "search_highlight_style_css.html"
-  html_type = "style-module"
-}
-
 js_modulizer("modulize") {
   input_files = [
     "cr_container_shadow_behavior.js",
@@ -372,7 +365,6 @@ group("polymer3_elements") {
     ":icons_module",
     ":md_select_css_module",
     ":modulize",
-    ":search_highlight_style_css_module",
     ":shared_style_css_module",
     ":shared_vars_css_module",
     ":web_components",
@@ -455,5 +447,6 @@ html_to_js("web_components") {
     "mwb_shared_icons.js",
     "mwb_shared_style.js",
     "mwb_shared_vars.js",
+    "search_highlight_style_css.js",
   ]
 }
