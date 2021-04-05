@@ -68,7 +68,18 @@ TEST_F(ChromeLabsButtonTest, ShowAndHideChromeLabsBubbleOnPress) {
 }
 
 TEST_F(ChromeLabsButtonTest, ShouldButtonShowTest) {
+  // There are experiments available so the button should not be nullptr.
   EXPECT_NE(browser_view()->toolbar()->chrome_labs_button(), nullptr);
+  // Enterprise policy is initially set to true.
+  EXPECT_TRUE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
+
+  // Default enterprise policy value should show the Chrome Labs button.
+  profile()->GetPrefs()->ClearPref(chrome_labs_prefs::kBrowserLabsEnabled);
+  EXPECT_TRUE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
+
+  profile()->GetPrefs()->SetBoolean(chrome_labs_prefs::kBrowserLabsEnabled,
+                                    false);
+  EXPECT_FALSE(browser_view()->toolbar()->chrome_labs_button()->GetVisible());
 }
 
 class ChromeLabsButtonNoExperimentsAvailableTest : public TestWithBrowserView {
