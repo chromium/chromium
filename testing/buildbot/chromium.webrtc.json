@@ -96,6 +96,31 @@
   "WebRTC Chromium Linux Tester": {
     "gtest_tests": [
       {
+        "annotate": "graphing",
+        "args": [
+          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--run-manual",
+          "--ui-test-action-max-timeout=300000",
+          "--test-launcher-timeout=350000",
+          "--test-launcher-jobs=1",
+          "--test-launcher-bot-mode",
+          "--test-launcher-print-test-stdio=always"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "perf_config": {
+          "a_default_rev": "r_webrtc_git",
+          "r_webrtc_git": "${webrtc_got_rev}"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": false
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter",
           "--run-manual",
@@ -292,6 +317,31 @@
   "WebRTC Chromium Mac Tester": {
     "gtest_tests": [
       {
+        "annotate": "graphing",
+        "args": [
+          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--run-manual",
+          "--ui-test-action-max-timeout=300000",
+          "--test-launcher-timeout=350000",
+          "--test-launcher-jobs=1",
+          "--test-launcher-bot-mode",
+          "--test-launcher-print-test-stdio=always"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "perf_config": {
+          "a_default_rev": "r_webrtc_git",
+          "r_webrtc_git": "${webrtc_got_rev}"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": false
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter",
           "--run-manual",
@@ -448,6 +498,31 @@
   "WebRTC Chromium Win10 Tester": {
     "gtest_tests": [
       {
+        "annotate": "graphing",
+        "args": [
+          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--run-manual",
+          "--ui-test-action-max-timeout=300000",
+          "--test-launcher-timeout=350000",
+          "--test-launcher-jobs=1",
+          "--test-launcher-bot-mode",
+          "--test-launcher-print-test-stdio=always"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "perf_config": {
+          "a_default_rev": "r_webrtc_git",
+          "r_webrtc_git": "${webrtc_got_rev}"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": false
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter",
           "--run-manual",
@@ -598,6 +673,31 @@
   "WebRTC Chromium Win7 Tester": {
     "gtest_tests": [
       {
+        "annotate": "graphing",
+        "args": [
+          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--run-manual",
+          "--ui-test-action-max-timeout=300000",
+          "--test-launcher-timeout=350000",
+          "--test-launcher-jobs=1",
+          "--test-launcher-bot-mode",
+          "--test-launcher-print-test-stdio=always"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "perf_config": {
+          "a_default_rev": "r_webrtc_git",
+          "r_webrtc_git": "${webrtc_got_rev}"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": false
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
+      {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter",
           "--run-manual",
@@ -747,6 +847,31 @@
   },
   "WebRTC Chromium Win8 Tester": {
     "gtest_tests": [
+      {
+        "annotate": "graphing",
+        "args": [
+          "--gtest_filter=WebRtcInternalsPerfBrowserTest.*:WebRtcStatsPerfBrowserTest.*:WebRtcVideoDisplayPerfBrowserTests*:WebRtcVideoQualityBrowserTests*:WebRtcVideoHighBitrateBrowserTest*:WebRtcWebcamBrowserTests*",
+          "--run-manual",
+          "--ui-test-action-max-timeout=300000",
+          "--test-launcher-timeout=350000",
+          "--test-launcher-jobs=1",
+          "--test-launcher-bot-mode",
+          "--test-launcher-print-test-stdio=always"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "perf_config": {
+          "a_default_rev": "r_webrtc_git",
+          "r_webrtc_git": "${webrtc_got_rev}"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": false
+        },
+        "test": "browser_tests",
+        "test_id_prefix": "ninja://chrome/test:browser_tests/"
+      },
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/webrtc_functional.browser_tests.filter",

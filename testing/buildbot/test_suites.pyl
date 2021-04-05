@@ -5192,6 +5192,30 @@
 
     # TODO(crbug.com/888429): Port remaining WebRTC tests to swarming.
     'webrtc_chromium_baremetal_gtests': {
+      'browser_tests': {
+        'args': [
+          '--gtest_filter=WebRtcInternalsPerfBrowserTest.*:'
+           'WebRtcStatsPerfBrowserTest.*:'
+           'WebRtcVideoDisplayPerfBrowserTests*:'
+           'WebRtcVideoQualityBrowserTests*:'
+           'WebRtcVideoHighBitrateBrowserTest*:'
+           'WebRtcWebcamBrowserTests*',
+          '--run-manual',
+          '--ui-test-action-max-timeout=300000',
+          '--test-launcher-timeout=350000',
+          '--test-launcher-jobs=1',
+          '--test-launcher-bot-mode',
+          '--test-launcher-print-test-stdio=always',
+        ],
+        'annotate': 'graphing',
+        'perf_config': {
+          'a_default_rev': 'r_webrtc_git',
+          'r_webrtc_git': '${webrtc_got_rev}'
+        },
+        'swarming': {
+          'can_use_on_swarming_builders': False,
+        },
+      },
       # Run capture unittests as well since our bots have real webcams.
       'capture_unittests': {
         'args': ['--enable-logging', '--v=1', '--test-launcher-jobs=1',
@@ -5200,8 +5224,6 @@
           'can_use_on_swarming_builders': False,
         },
       },
-      # TODO(crbug.com/888429): move performance browser tests here once
-      # they successfully upload perf results.
     },
 
     'webrtc_chromium_gtests': {
