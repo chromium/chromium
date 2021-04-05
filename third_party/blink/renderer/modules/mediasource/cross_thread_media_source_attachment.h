@@ -101,6 +101,13 @@ class CrossThreadMediaSourceAttachment final
                       RunExclusivelyCB cb) final
       LOCKS_EXCLUDED(attachment_state_lock_);
 
+  // See MediaSourceAttachmentSupplement for details. Simply, if this returns
+  // true, then SourceBuffer::RemovedFromMediaSource() can safely access the
+  // underlying demuxer, so long as the |attachment_state_lock_| is held
+  // continuously throughout this call and such accesses.
+  bool FullyAttachedOrSameThread(SourceBufferPassKey) const final
+      EXCLUSIVE_LOCKS_REQUIRED(attachment_state_lock_);
+
   // MediaSourceAttachment methods called on main thread by media element,
   // except Unregister is called on either main or dedicated worker thread by
   // MediaSourceRegistryImpl.

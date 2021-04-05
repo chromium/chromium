@@ -1187,7 +1187,17 @@ void SourceBuffer::RemovedFromMediaSource() {
     RemoveMediaTracks();
   }
 
-  web_source_buffer_->RemovedFromMediaSource();
+  // Update the underlying demuxer except in the cross-thread attachment case
+  // where detachment or element context destruction may have already begun.
+  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
+  MediaSourceTracer* tracer;
+  std::tie(attachment, tracer) = source_->AttachmentAndTracer();
+  DCHECK(attachment);
+  if (attachment->FullyAttachedOrSameThread(
+          MediaSourceAttachmentSupplement::SourceBufferPassKey())) {
+    web_source_buffer_->RemovedFromMediaSource();
+  }
+
   web_source_buffer_.reset();
   source_ = nullptr;
   async_event_queue_ = nullptr;

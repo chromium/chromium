@@ -39,6 +39,11 @@ bool MediaSourceAttachmentSupplement::RunExclusively(
   return true;  // Indicates that we ran |cb|.
 }
 
+bool MediaSourceAttachmentSupplement::FullyAttachedOrSameThread(
+    SourceBufferPassKey) const {
+  return true;
+}
+
 void MediaSourceAttachmentSupplement::
     AssertCrossThreadMutexIsAcquiredForDebugging() {
   DCHECK(false)

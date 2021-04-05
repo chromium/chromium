@@ -420,6 +420,23 @@ void CrossThreadMediaSourceAttachment::OnMediaSourceContextDestroyed() {
   media_source_context_destroyed_ = true;
 }
 
+bool CrossThreadMediaSourceAttachment::FullyAttachedOrSameThread(
+    SourceBufferPassKey) const {
+  attachment_state_lock_.AssertAcquired();
+
+  // We must only be used by the MSE API on the worker thread.
+  DCHECK(!IsMainThread());
+  DCHECK(worker_runner_->BelongsToCurrentThread());
+
+  // We might be called while MSE worker context is being destroyed, but we must
+  // not be called if we've never been used yet to attach.
+  DCHECK(attached_media_source_);
+  DCHECK(have_ever_attached_);
+
+  return !media_element_context_destroyed_ && attached_element_ &&
+         !have_ever_started_closing_;
+}
+
 bool CrossThreadMediaSourceAttachment::RunExclusively(
     bool abort_if_not_fully_attached,
     RunExclusivelyCB cb) {
