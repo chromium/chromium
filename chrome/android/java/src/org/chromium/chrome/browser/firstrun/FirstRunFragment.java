@@ -38,4 +38,9 @@ public interface FirstRunFragment {
     default FirstRunPageDelegate getPageDelegate() {
         return (FirstRunPageDelegate) getActivity();
     }
+
+    /**
+     * Reset the fragment state. This can be used when the fragment is revisited with back button.
+     */
+    default void reset() {}
 }

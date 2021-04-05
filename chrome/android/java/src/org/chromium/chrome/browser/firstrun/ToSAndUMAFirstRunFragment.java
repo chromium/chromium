@@ -175,6 +175,15 @@ public class ToSAndUMAFirstRunFragment extends Fragment implements FirstRunFragm
         tryMarkTermsAccepted(false);
     }
 
+    @Override
+    public void reset() {
+        // We cannot pass the welcome page when native or policy is not initialized. When this page
+        // is revisited, this means this page is persist and we should re-show the ToS And UMA.
+        assert !isWaitingForNativeAndPolicyInit();
+
+        setSpinnerVisible(false);
+    }
+
     private void onTosButtonClicked() {
         mTosButtonClicked = true;
         mTosAcceptedTime = SystemClock.elapsedRealtime();
