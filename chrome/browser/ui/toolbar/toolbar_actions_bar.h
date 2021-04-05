@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
@@ -29,7 +28,6 @@ class PrefRegistrySyncable;
 
 class BrowserWindow;
 class ToolbarActionsBarDelegate;
-class ToolbarActionsBarObserver;
 class ToolbarActionViewController;
 
 // A platform-independent version of the container for toolbar actions,
@@ -188,10 +186,6 @@ class ToolbarActionsBar : public ExtensionsContainer,
 
   // Called when the active bubble is closed.
   void OnBubbleClosed();
-
-  // Add or remove an observer.
-  void AddObserver(ToolbarActionsBarObserver* observer);
-  void RemoveObserver(ToolbarActionsBarObserver* observer);
 
   // Returns the underlying toolbar actions, but does not order them. Primarily
   // for use in testing.
@@ -365,8 +359,6 @@ class ToolbarActionsBar : public ExtensionsContainer,
   // The index of the action currently being dragged, or |base::nullopt| if
   // no drag is in progress.
   base::Optional<size_t> index_of_dragged_item_;
-
-  base::ObserverList<ToolbarActionsBarObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<ToolbarActionsBar> weak_ptr_factory_{this};
 

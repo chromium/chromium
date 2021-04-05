@@ -1316,7 +1316,6 @@ static_library("ui") {
       "toolbar/toolbar_actions_bar.h",
       "toolbar/toolbar_actions_bar_bubble_delegate.h",
       "toolbar/toolbar_actions_bar_delegate.h",
-      "toolbar/toolbar_actions_bar_observer.h",
       "toolbar/toolbar_actions_model.cc",
       "toolbar/toolbar_actions_model.h",
       "toolbar/toolbar_actions_model_factory.cc",
