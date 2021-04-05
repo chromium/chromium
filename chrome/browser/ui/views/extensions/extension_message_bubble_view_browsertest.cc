@@ -277,28 +277,6 @@ IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
   TestControlledHomeBubbleShown();
 }
 
-class ControlledSearchMessageBubbleViewBrowserTest
-    : public LegacyExtensionMessageBubbleViewBrowserTest {
- public:
-  ControlledSearchMessageBubbleViewBrowserTest() = default;
-  ~ControlledSearchMessageBubbleViewBrowserTest() override = default;
-
-  std::vector<base::Feature> GetFeaturesToDisable() override {
-    std::vector<base::Feature> features_to_disable =
-        LegacyExtensionMessageBubbleViewBrowserTest::GetFeaturesToDisable();
-    // The kExtensionSettingsOverriddenDialogs introduces a new UI for the
-    // controlled search confirmation. Disable it to test the old UI.
-    features_to_disable.push_back(
-        features::kExtensionSettingsOverriddenDialogs);
-    return features_to_disable;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ControlledSearchMessageBubbleViewBrowserTest,
-                       TestControlledSearchMessageBubble) {
-  TestControlledSearchBubbleShown();
-}
-
 IN_PROC_BROWSER_TEST_F(LegacyExtensionMessageBubbleViewBrowserTest,
                        PRE_TestControlledStartupMessageBubble) {
   PreTestControlledStartupBubbleShown();

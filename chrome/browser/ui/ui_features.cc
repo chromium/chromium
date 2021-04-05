@@ -26,15 +26,6 @@ const base::Feature kChromeTipsInMainMenu{"ChromeTipsInMainMenu",
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Enables using dialogs (instead of bubbles) for the post-install UI when an
-// extension overrides a setting.
-// TODO(devlin): Remove this feature in M88, since this launched as part of
-// https://crbug.com/1084281.
-const base::Feature kExtensionSettingsOverriddenDialogs{
-    "ExtensionSettingsOverriddenDialogs", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif
-
 // Enables an extension menu in the toolbar. See https://crbug.com/943702
 const base::Feature kExtensionsToolbarMenu{"ExtensionsToolbarMenu",
                                            base::FEATURE_ENABLED_BY_DEFAULT};

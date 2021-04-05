@@ -112,10 +112,6 @@ class ExtensionMessageBubbleBrowserTest
   void TestControlledHomeBubbleShown();
 
   // Tests that the bubble indicating an extension is controlling a user's
-  // search engine is shown.
-  void TestControlledSearchBubbleShown();
-
-  // Tests that the bubble indicating an extension is controlling a user's
   // startup pages is shown.
   void PreTestControlledStartupBubbleShown();
   void TestControlledStartupBubbleShown();

@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registry.h"
@@ -279,32 +278,6 @@ void ExtensionMessageBubbleBrowserTest::TestControlledHomeBubbleShown() {
 
   chrome::ExecuteCommandWithDisposition(
       browser(), IDC_HOME, WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  base::RunLoop().RunUntilIdle();
-
-  CheckBubble(browser(), ANCHOR_BROWSER_ACTION, false);
-  CloseBubble(browser());
-}
-
-void ExtensionMessageBubbleBrowserTest::TestControlledSearchBubbleShown() {
-  const char kSearchProvider[] =
-      R"("search_provider": {
-           "search_url": "https://www.google.com/search?q={searchTerms}",
-           "is_default": true,
-           "favicon_url": "https://www.google.com/favicon.icon",
-           "keyword": "TheGoogs",
-           "name": "Google",
-           "encoding": "UTF-8"
-         })";
-  AddSettingsOverrideExtension(kSearchProvider);
-
-  CheckBubbleIsNotPresent(browser(), false, false);
-
-  OmniboxView* omnibox =
-      browser()->window()->GetLocationBar()->GetOmniboxView();
-  omnibox->OnBeforePossibleChange();
-  omnibox->SetUserText(u"search for this");
-  omnibox->OnAfterPossibleChange(true);
-  omnibox->model()->AcceptInput(WindowOpenDisposition::CURRENT_TAB);
   base::RunLoop().RunUntilIdle();
 
   CheckBubble(browser(), ANCHOR_BROWSER_ACTION, false);

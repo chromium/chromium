@@ -14,7 +14,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
-#include "extensions/buildflags/buildflags.h"
 
 namespace features {
 
@@ -30,10 +29,6 @@ extern const base::Feature kChromeTipsInMainMenu;
 extern const base::Feature kCommander;
 
 extern const base::Feature kEvDetailsInPageInfo;
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-extern const base::Feature kExtensionSettingsOverriddenDialogs;
-#endif
 
 extern const base::Feature kExtensionsToolbarMenu;
 

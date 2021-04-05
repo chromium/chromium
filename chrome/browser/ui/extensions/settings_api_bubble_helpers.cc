@@ -20,7 +20,6 @@
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_registry.h"
@@ -142,23 +141,17 @@ void MaybeShowExtensionControlledSearchNotification(
   if (!browser)
     return;
 
-  if (base::FeatureList::IsEnabled(
-          features::kExtensionSettingsOverriddenDialogs)) {
-    base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
-        settings_overridden_params::GetSearchOverriddenParams(
-            browser->profile());
-    if (!params)
-      return;
+  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+      settings_overridden_params::GetSearchOverriddenParams(browser->profile());
+  if (!params)
+    return;
 
-    auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
-        std::move(*params), browser->profile());
-    if (!dialog->ShouldShow())
-      return;
+  auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
+      std::move(*params), browser->profile());
+  if (!dialog->ShouldShow())
+    return;
 
-    chrome::ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
-  } else {
-    ShowSettingsApiBubble(BUBBLE_TYPE_SEARCH_ENGINE, browser);
-  }
+  chrome::ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
 #endif
 }
 
@@ -196,21 +189,17 @@ void MaybeShowExtensionControlledNewTabPage(
   if (model->has_active_bubble())
     return;
 
-  if (base::FeatureList::IsEnabled(
-          features::kExtensionSettingsOverriddenDialogs)) {
-    base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
-        settings_overridden_params::GetNtpOverriddenParams(profile);
-    if (!params)
-      return;
-
-    auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
-        std::move(*params), profile);
-    if (!dialog->ShouldShow())
-      return;
-
-    chrome::ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
+  base::Optional<ExtensionSettingsOverriddenDialog::Params> params =
+      settings_overridden_params::GetNtpOverriddenParams(profile);
+  if (!params)
     return;
-  }
+
+  auto dialog = std::make_unique<ExtensionSettingsOverriddenDialog>(
+      std::move(*params), profile);
+  if (!dialog->ShouldShow())
+    return;
+
+  chrome::ShowExtensionSettingsOverriddenDialog(std::move(dialog), browser);
 }
 
 }  // namespace extensions

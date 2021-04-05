@@ -6,7 +6,6 @@
 
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -19,7 +18,6 @@
 #include "chrome/browser/ui/extensions/settings_overridden_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
@@ -71,10 +69,7 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
     kUseNewSearch,
   };
 
-  SettingsOverriddenDialogViewBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kExtensionSettingsOverriddenDialogs);
-  }
+  SettingsOverriddenDialogViewBrowserTest() = default;
   ~SettingsOverriddenDialogViewBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -239,8 +234,6 @@ class SettingsOverriddenDialogViewBrowserTest : public DialogBrowserTest {
 
   base::Optional<SettingsOverriddenDialogController::DialogResult>
       dialog_result_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
