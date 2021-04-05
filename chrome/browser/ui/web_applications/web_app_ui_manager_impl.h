@@ -36,7 +36,8 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   WebAppUiManagerImpl& operator=(const WebAppUiManagerImpl&) = delete;
   ~WebAppUiManagerImpl() override;
 
-  void SetSubsystems(AppRegistryController* app_registry_controller) override;
+  void SetSubsystems(AppRegistryController* app_registry_controller,
+                     OsIntegrationManager* os_integration_manager) override;
   void Start() override;
   void Shutdown() override;
 
@@ -82,11 +83,21 @@ class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
   // must be true.
   const AppId GetAppIdForBrowser(Browser* browser);
 
+  void OnShortcutInfoReceivedSearchShortcutLocations(
+      const AppId& from_app,
+      const AppId& app_id,
+      std::unique_ptr<ShortcutInfo> shortcut_info);
+
+  void OnShortcutLocationGathered(const AppId& from_app,
+                                  const AppId& app_id,
+                                  ShortcutLocations locations);
+
   std::unique_ptr<WebAppDialogManager> dialog_manager_;
 
   Profile* const profile_;
 
   AppRegistryController* app_registry_controller_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 
   std::map<AppId, std::vector<base::OnceClosure>> windows_closed_requests_map_;
   std::map<AppId, size_t> num_windows_for_apps_map_;

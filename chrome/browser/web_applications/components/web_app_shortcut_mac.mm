@@ -1372,6 +1372,19 @@ bool CreatePlatformShortcuts(const base::FilePath& app_data_path,
   return shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
 }
 
+ShortcutLocations GetAppExistingShortCutLocationImpl(
+    const ShortcutInfo& shortcut_info) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  WebAppShortcutCreator shortcut_creator(
+      internals::GetShortcutDataDir(shortcut_info), &shortcut_info);
+  ShortcutLocations locations;
+  if (!shortcut_creator.GetAppBundlesById().empty()) {
+    locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+  }
+  return locations;
+}
+
 bool DeletePlatformShortcuts(const base::FilePath& app_data_path,
                              const ShortcutInfo& shortcut_info) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,

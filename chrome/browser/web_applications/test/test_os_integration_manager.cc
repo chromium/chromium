@@ -146,10 +146,32 @@ std::unique_ptr<ShortcutInfo> TestShortcutManager::BuildShortcutInfo(
   return nullptr;
 }
 
+void TestShortcutManager::SetShortcutInfoForApp(
+    const AppId& app_id,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  shortcut_info_map_[app_id] = std::move(shortcut_info);
+}
+
 void TestShortcutManager::GetShortcutInfoForApp(
     const AppId& app_id,
     GetShortcutInfoCallback callback) {
-  std::move(callback).Run(nullptr);
+  if (shortcut_info_map_.find(app_id) != shortcut_info_map_.end()) {
+    std::move(callback).Run(std::move(shortcut_info_map_[app_id]));
+    shortcut_info_map_.erase(app_id);
+  } else {
+    std::move(callback).Run(nullptr);
+  }
+}
+
+void TestShortcutManager::GetAppExistingShortCutLocation(
+    ShortcutLocationCallback callback,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  ShortcutLocations locations;
+  if (existing_shortcut_locations_.find(shortcut_info->url) !=
+      existing_shortcut_locations_.end()) {
+    locations = existing_shortcut_locations_[shortcut_info->url];
+  }
+  std::move(callback).Run(locations);
 }
 
 }  // namespace web_app

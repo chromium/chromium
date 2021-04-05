@@ -272,8 +272,9 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
     return;
   }
 
-  bool did_uninstall_and_replace = ui_manager_->UninstallAndReplaceIfExists(
-      install_options().uninstall_and_replace, app_id);
+  bool uninstall_and_replace_triggered =
+      ui_manager_->UninstallAndReplaceIfExists(
+          install_options().uninstall_and_replace, app_id);
 
   externally_installed_app_prefs_.Insert(install_options_.install_url, app_id,
                                          install_options_.install_source);
@@ -289,7 +290,7 @@ void PendingAppInstallTask::OnWebAppInstalled(bool is_placeholder,
       std::move(result_callback), app_id,
       PendingAppManager::InstallResult{
           .code = code,
-          .did_uninstall_and_replace = did_uninstall_and_replace}));
+          .did_uninstall_and_replace = uninstall_and_replace_triggered}));
 
   if (!is_placeholder) {
     return;

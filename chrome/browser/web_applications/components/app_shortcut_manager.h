@@ -23,6 +23,9 @@ namespace web_app {
 class AppIconManager;
 struct ShortcutInfo;
 
+using ShortcutLocationCallback =
+    base::OnceCallback<void(ShortcutLocations shortcut_locations)>;
+
 // This class manages creation/update/deletion of OS shortcuts for web
 // applications.
 //
@@ -56,6 +59,13 @@ class AppShortcutManager {
                        const base::FilePath& shortcuts_data_dir,
                        std::unique_ptr<ShortcutInfo> shortcut_info,
                        DeleteShortcutsCallback callback);
+
+  // Posts a task on the IO thread to gather existing shortcut locations
+  // according to |shortcut_info|. The result will be passed into |callback|.
+  // virtual for testing.
+  virtual void GetAppExistingShortCutLocation(
+      ShortcutLocationCallback callback,
+      std::unique_ptr<ShortcutInfo> shortcut_info);
 
   // TODO(crbug.com/1098471): Move this into web_app_shortcuts_menu_win.cc when
   // a callback is integrated into the Shortcuts Menu registration flow.

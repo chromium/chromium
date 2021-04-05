@@ -508,6 +508,57 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
   CheckAndSaveIcon(icon_file, shortcut_info.favicon, true);
 }
 
+ShortcutLocations GetAppExistingShortCutLocationImpl(
+    const ShortcutInfo& shortcut_info) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  ShortcutLocations result;
+  ShortcutLocations desktop;
+  desktop.on_desktop = true;
+  auto shortcut_paths = GetShortcutPaths(desktop);
+  if (!shortcut_paths.empty() &&
+      !FindAppShortcutsByProfileAndTitle(shortcut_paths.front(),
+                                         shortcut_info.profile_path,
+                                         shortcut_info.title)
+           .empty()) {
+    result.on_desktop = true;
+  }
+
+  ShortcutLocations app_menu;
+  app_menu.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+  shortcut_paths = GetShortcutPaths(app_menu);
+  if (!shortcut_paths.empty() &&
+      !FindAppShortcutsByProfileAndTitle(shortcut_paths.front(),
+                                         shortcut_info.profile_path,
+                                         shortcut_info.title)
+           .empty()) {
+    result.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
+  }
+
+  ShortcutLocations quick_launch;
+  quick_launch.in_quick_launch_bar = true;
+  shortcut_paths = GetShortcutPaths(quick_launch);
+  if (!shortcut_paths.empty() &&
+      !FindAppShortcutsByProfileAndTitle(shortcut_paths.front(),
+                                         shortcut_info.profile_path,
+                                         shortcut_info.title)
+           .empty()) {
+    result.in_quick_launch_bar = true;
+  }
+
+  ShortcutLocations start_up;
+  start_up.in_startup = true;
+  shortcut_paths = GetShortcutPaths(start_up);
+  if (!shortcut_paths.empty() &&
+      !FindAppShortcutsByProfileAndTitle(shortcut_paths.front(),
+                                         shortcut_info.profile_path,
+                                         shortcut_info.title)
+           .empty()) {
+    result.in_startup = true;
+  }
+  return result;
+}
+
 bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutInfo& shortcut_info) {
   bool result = GetShortcutLocationsAndDeleteShortcuts(

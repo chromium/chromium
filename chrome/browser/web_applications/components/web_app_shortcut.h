@@ -147,6 +147,11 @@ bool CreatePlatformShortcuts(const base::FilePath& shortcut_data_path,
                              ShortcutCreationReason creation_reason,
                              const ShortcutInfo& shortcut_info);
 
+// Implemented for each platform, does the platform specific parts of checking
+// desktop and application menu to get shortcut locations.
+ShortcutLocations GetAppExistingShortCutLocationImpl(
+    const ShortcutInfo& shortcut_info);
+
 // Schedules a call to |CreatePlatformShortcuts| on the Shortcut IO thread and
 // invokes |callback| when complete. This function must be called from the UI
 // thread.

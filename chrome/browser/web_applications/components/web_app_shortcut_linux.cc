@@ -647,6 +647,16 @@ bool CreatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
 #endif
 }
 
+ShortcutLocations GetAppExistingShortCutLocationImpl(
+    const ShortcutInfo& shortcut_info) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  return GetExistingShortcutLocations(env.get(), shortcut_info.profile_path,
+                                      shortcut_info.extension_id);
+#endif
+  return ShortcutLocations();
+}
+
 bool DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutInfo& shortcut_info) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

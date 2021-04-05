@@ -68,6 +68,27 @@ void AppShortcutManager::UpdateShortcuts(const AppId& app_id,
                   weak_ptr_factory_.GetWeakPtr(), base::UTF8ToUTF16(old_name)));
 }
 
+void AppShortcutManager::GetAppExistingShortCutLocation(
+    ShortcutLocationCallback callback,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // Ownership of |shortcut_info| moves to the Reply, which is guaranteed to
+  // outlive the const reference.
+  const ShortcutInfo& shortcut_info_ref = *shortcut_info;
+  internals::GetShortcutIOTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&internals::GetAppExistingShortCutLocationImpl,
+                     std::cref(shortcut_info_ref)),
+      base::BindOnce(
+          [](std::unique_ptr<ShortcutInfo> shortcut_info,
+             ShortcutLocationCallback callback, ShortcutLocations locations) {
+            DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+            shortcut_info.reset();
+            std::move(callback).Run(locations);
+          },
+          std::move(shortcut_info), std::move(callback)));
+}
+
 void AppShortcutManager::SetShortcutUpdateCallbackForTesting(
     base::OnceCallback<void(const ShortcutInfo*)> callback) {
   GetShortcutUpdateCallbackForTesting() = std::move(callback);

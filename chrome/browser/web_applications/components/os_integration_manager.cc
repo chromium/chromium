@@ -244,6 +244,14 @@ void OsIntegrationManager::UpdateOsHooks(
   UpdateUrlHandlers(app_id, base::DoNothing());
 }
 
+void OsIntegrationManager::GetAppExistingShortCutLocation(
+    ShortcutLocationCallback callback,
+    std::unique_ptr<ShortcutInfo> shortcut_info) {
+  DCHECK(shortcut_manager_);
+  shortcut_manager_->GetAppExistingShortCutLocation(std::move(callback),
+                                                    std::move(shortcut_info));
+}
+
 void OsIntegrationManager::GetShortcutInfoForApp(
     const AppId& app_id,
     AppShortcutManager::GetShortcutInfoCallback callback) {

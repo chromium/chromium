@@ -9,7 +9,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_app_shortcut.h"
 
 class Profile;
 class GURL;
@@ -32,8 +34,8 @@ class WebAppUiManager {
 
   virtual ~WebAppUiManager() = default;
 
-  virtual void SetSubsystems(
-      AppRegistryController* app_registry_controller) = 0;
+  virtual void SetSubsystems(AppRegistryController* app_registry_controller,
+                             OsIntegrationManager* os_integration_manager) = 0;
   virtual void Start() = 0;
   virtual void Shutdown() = 0;
 
@@ -47,8 +49,8 @@ class WebAppUiManager {
 
   // Uninstalls the the apps in |from_apps| and migrates an |to_app|'s OS
   // attributes (e.g pin position, app list folder/position, shortcuts) to the
-  // first |from_app| found.
-  // Returns whether any |from_apps| were uninstalled.
+  // first |from_app| found. |shortcut_locations| will be populated with the
+  // shortcut locations Returns whether any |from_apps| were uninstalled.
   virtual bool UninstallAndReplaceIfExists(const std::vector<AppId>& from_apps,
                                            const AppId& to_app) = 0;
 

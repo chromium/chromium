@@ -116,6 +116,12 @@ class OsIntegrationManager {
                              const WebApplicationInfo& web_app_info);
 
   // Proxy calls for AppShortcutManager.
+  // virtual for testing
+  virtual void GetAppExistingShortCutLocation(
+      ShortcutLocationCallback callback,
+      std::unique_ptr<ShortcutInfo> shortcut_info);
+
+  // Proxy calls for AppShortcutManager.
   void GetShortcutInfoForApp(
       const AppId& app_id,
       AppShortcutManager::GetShortcutInfoCallback callback);

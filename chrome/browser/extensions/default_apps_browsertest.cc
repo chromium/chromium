@@ -20,6 +20,8 @@
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/browser/web_applications/external_web_app_manager.h"
 #include "chrome/browser/web_applications/external_web_app_utils.h"
+#include "chrome/browser/web_applications/test/test_os_integration_manager.h"
+#include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -119,7 +121,10 @@ class DefaultAppsBrowserTest : public ExtensionBrowserTest {
 
 class DefaultAppsMigrationBrowserTest : public DefaultAppsBrowserTest {
  public:
-  DefaultAppsMigrationBrowserTest() {
+  DefaultAppsMigrationBrowserTest()
+      : test_web_app_provider_creator_(base::BindRepeating(
+            &DefaultAppsMigrationBrowserTest::CreateTestWebAppProvider,
+            base::Unretained(this))) {
     // Skip migration on startup because we override the configs used, and need
     // to do that a little later (because we need the embedded test server up
     // and running).
@@ -173,6 +178,16 @@ class DefaultAppsMigrationBrowserTest : public DefaultAppsBrowserTest {
   void WaitForSystemReady() override {
     DefaultAppsBrowserTest::WaitForSystemReady();
 
+    // For web app migration tests, we want to set up extension app shortcut
+    // locations to test that they are preserved.
+    if (ShouldEnableWebAppMigration()) {
+      web_app::ShortcutLocations locations;
+      locations.on_desktop = true;
+      locations.in_startup = true;
+      shortcut_manager_->SetAppExistingShortcuts(GURL("http://example.com/"),
+                                                 locations);
+    }
+
     {
       web_app::ExternalWebAppManager& web_app_manager =
           web_app::WebAppProvider::Get(profile())->external_web_app_manager();
@@ -219,7 +234,26 @@ class DefaultAppsMigrationBrowserTest : public DefaultAppsBrowserTest {
 
   ExtensionRegistry* registry() { return ExtensionRegistry::Get(profile()); }
 
+ protected:
+  web_app::TestShortcutManager* shortcut_manager_;
+  web_app::TestOsIntegrationManager* os_integration_manager_;
+
  private:
+  std::unique_ptr<KeyedService> CreateTestWebAppProvider(Profile* profile) {
+    auto provider = std::make_unique<web_app::TestWebAppProvider>(profile);
+    auto shortcut_manager =
+        std::make_unique<web_app::TestShortcutManager>(profile);
+    shortcut_manager_ = shortcut_manager.get();
+    auto os_integration_manager =
+        std::make_unique<web_app::TestOsIntegrationManager>(
+            profile, std::move(shortcut_manager), nullptr, nullptr, nullptr);
+    os_integration_manager_ = os_integration_manager.get();
+    provider->SetOsIntegrationManager(std::move(os_integration_manager));
+    provider->Start();
+    return provider;
+  }
+
+  web_app::TestWebAppProviderCreator test_web_app_provider_creator_;
   std::vector<base::Value> app_configs_;
   std::map<GURL, web_app::PendingAppManager::InstallResult> install_results_;
 };
@@ -288,6 +322,14 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   EXPECT_TRUE(WasWebAppInstalledInThisRun());
   EXPECT_TRUE(IsWebAppCurrentlyInstalled());
 
+  // Verify that the migration preserves shortcut states of the uninstalled
+  // extension app.
+  EXPECT_EQ(1u, os_integration_manager_->num_create_shortcuts_calls());
+  EXPECT_TRUE(os_integration_manager_->did_add_to_desktop());
+  auto options = os_integration_manager_->get_last_install_options();
+  EXPECT_TRUE(options->os_hooks[web_app::OsHookType::kRunOnOsLogin]);
+  EXPECT_FALSE(options->add_to_quick_launch_bar);
+
   // Subtle: The uninstallation happens extra-asynchronously (even after it's
   // reported as happening through the ExternalWebAppManager).
   ASSERT_TRUE(observer.WaitForExtensionUninstalled());
@@ -315,6 +357,14 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   EXPECT_TRUE(WasWebAppInstalledInThisRun());
   EXPECT_TRUE(IsWebAppCurrentlyInstalled());
 
+  // Verify that the migration preserves shortcut states of the uninstalled
+  // extension app.
+  EXPECT_EQ(1u, os_integration_manager_->num_create_shortcuts_calls());
+  EXPECT_TRUE(os_integration_manager_->did_add_to_desktop());
+  auto options = os_integration_manager_->get_last_install_options();
+  EXPECT_TRUE(options->os_hooks[web_app::OsHookType::kRunOnOsLogin]);
+  EXPECT_FALSE(options->add_to_quick_launch_bar);
+
   // Subtle: The uninstallation happens extra-asynchronously (even after it's
   // reported as happening through the ExternalWebAppManager).
   ASSERT_TRUE(observer.WaitForExtensionUninstalled());
@@ -328,6 +378,11 @@ IN_PROC_BROWSER_TEST_F(DefaultAppsMigrationBrowserTest,
   TestExtensionRegistryObserver observer(registry(), kDefaultInstalledId);
   WaitForSystemReady();
   EXPECT_TRUE(IsWebAppCurrentlyInstalled());
+
+  // Verify that there's no redundant shortcut calls.
+  // Verify that the migration preserves shortcut states of the uninstalled
+  // extension app.
+  EXPECT_EQ(0u, os_integration_manager_->num_create_shortcuts_calls());
 
   EXPECT_FALSE(registry()->enabled_extensions().GetByID(kDefaultInstalledId));
 }

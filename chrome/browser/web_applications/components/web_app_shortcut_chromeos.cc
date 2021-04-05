@@ -24,6 +24,11 @@ void UpdatePlatformShortcuts(const base::FilePath& web_app_path,
                              const std::u16string& old_app_title,
                              const ShortcutInfo& shortcut_info) {}
 
+ShortcutLocations GetAppExistingShortCutLocationImpl(
+    const ShortcutInfo& shortcut_info) {
+  return ShortcutLocations();
+}
+
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {}
 
 }  // namespace internals
