@@ -3025,7 +3025,7 @@
   },
   {
     "name": "frame-throttle-fps",
-    "owners":[ "yjliu", "chromeos-wmp-eng"],
+    "owners":[ "yjliu", "chromeos-perf@google.com"],
     "expiry_milestone": 95
   },
   {
