@@ -22,6 +22,10 @@
 #include "headless/lib/browser/policy/headless_browser_policy_connector.h"
 #endif
 
+namespace device {
+class GeolocationSystemPermissionManager;
+}  // namespace device
+
 namespace headless {
 
 class HeadlessBrowserImpl;
@@ -40,6 +44,7 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
   void PostMainMessageLoopRun() override;
 #if defined(OS_MAC)
   void PreMainMessageLoopStart() override;
+  device::GeolocationSystemPermissionManager* GetLocationPermissionManager();
 #endif
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   void PostMainMessageLoopStart() override;
@@ -68,6 +73,10 @@ class HeadlessBrowserMainParts : public content::BrowserMainParts {
   bool run_message_loop_ = true;
   bool devtools_http_handler_started_ = false;
   base::OnceClosure quit_main_message_loop_;
+#if defined(OS_MAC)
+  std::unique_ptr<device::GeolocationSystemPermissionManager>
+      location_permission_manager_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(HeadlessBrowserMainParts);
 };

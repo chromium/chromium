@@ -1,6 +1,12 @@
 specific_include_rules = {
+  "headless_browser_main_parts.cc": [
+    "+services/device/public/cpp/geolocation/geolocation_system_permission_mac.h",
+  ],
   "headless_browser_main_parts_linux.cc": [
     "+device/bluetooth",
+  ],
+  "headless_browser_main_parts_mac.mm": [
+    "+services/device/public/cpp/geolocation/geolocation_system_permission_mac.h",
   ],
   "headless_content_client.cc": [
       "+components/embedder_support/origin_trials",
@@ -10,5 +16,5 @@ specific_include_rules = {
     "+components/viz/common/switches.h",
     "+gpu/config/gpu_switches.h",
     "+third_party/blink/public/common/switches.h",
-  ]
+  ],
 }

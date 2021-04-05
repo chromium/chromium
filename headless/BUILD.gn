@@ -437,6 +437,7 @@ component("headless_non_renderer") {
     "//content/public/browser",
     "//content/public/common",
     "//services/cert_verifier/public/mojom",
+    "//services/device/public/cpp/geolocation",
     "//services/service_manager/public/cpp",
     "//ui/base",
     "//ui/base/clipboard",
