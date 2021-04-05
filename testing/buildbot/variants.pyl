@@ -9,6 +9,18 @@
 # * trailing commas are allowed.
 
 {
+  'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS' : {
+    'args': [
+      '--annotation=Batch=UnitTests'
+    ],
+    'identifier': 'only_unit_tests'
+  },
+  'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS' : {
+    'args': [
+      '--exclude-annotation=Batch=UnitTests'
+    ],
+    'identifier': 'all_except_unit_tests'
+  },
   'OZONE_HEADLESS': {
     'args': [
       '--no-xvfb',

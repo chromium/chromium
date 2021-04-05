@@ -5529,23 +5529,6 @@
       'webview_ui_instrumentation_tests',
     ],
 
-    # This is the same as 'android_lollipop_marshmallow_gtests'
-    # with the addition of 'webview_cts_tests_gtest' and
-    # 'webview_ui_instrumentation_tests'
-    'android_lollipop_marshmallow_coverage_gtests': [
-      'android_modern_smoke_tests',
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',  # Already includes gl_gtests.
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'linux_flavor_specific_chromium_gtests',
-      'vr_platform_specific_chromium_gtests',
-      'weblayer_android_gtests',
-      'weblayer_gtests',
-      'webview_cts_tests_gtest',
-      'webview_ui_instrumentation_tests',
-    ],
-
     'android_lollipop_marshmallow_gtests': [
       'android_modern_smoke_tests',
       'android_smoke_tests',
@@ -6777,6 +6760,78 @@
   ##############################################################################
 
   'matrix_compound_suites': {
+    # This is the same as 'android_lollipop_marshmallow_gtests'
+    # with the addition of 'webview_cts_tests_gtest' and
+    # 'webview_ui_instrumentation_tests'
+    'android_lollipop_marshmallow_coverage_gtests': {
+      'android_modern_smoke_tests': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'android_smoke_tests': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'android_specific_chromium_gtests': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'chromium_gtests': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'chromium_gtests_for_devices_with_graphical_output': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'linux_flavor_specific_chromium_gtests': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'vr_platform_specific_chromium_gtests': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'weblayer_android_gtests': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'weblayer_gtests': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'webview_cts_tests_gtest': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      },
+      'webview_ui_instrumentation_tests': {
+        'variants': [
+          'ANDROID_INSTRUMENTATION_RUN_ONLY_UNIT_TESTS',
+          'ANDROID_INSTRUMENTATION_RUN_ALL_EXCEPT_UNIT_TESTS',
+        ]
+      }
+    },
+
     'android_weblayer_x86_marshmallow_10_gtests': {
       'weblayer_instrumentation_tests': {
         'variants': [
