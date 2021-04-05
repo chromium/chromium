@@ -18,6 +18,7 @@ static_library("personalization_app") {
     "//chromeos/resources:personalization_app_resources",
     "//chromeos/strings",
     "//content/public/browser",
+    "//ui/resources:webui_generated_resources_grd_grit",
     "//ui/webui",
   ]
 }

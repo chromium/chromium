@@ -9,11 +9,8 @@
 #ifndef CHROMEOS_COMPONENTS_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_
 #define CHROMEOS_COMPONENTS_PERSONALIZATION_APP_PERSONALIZATION_APP_UI_DELEGATE_H_
 
-// |PersonalizationAppUiDelegate| is implemented in //chrome by
-// |ChromePersonalizationAppUIDelegate|. When the necessary APIs are implemented
-// to fetch wallpaper information from the backdrop server, it will be dependent
-// on |backdrop_wallpaper_handlers| code in chrome.
-// TODO(b/182012641) add wallpaper fetching APIs here.
+// Handles calling |backdrop_wallpaper_handler| code in //chrome to pass to the
+// Personalization App SWA.
 class PersonalizationAppUiDelegate
     : public chromeos::personalization_app::mojom::WallpaperProvider {
  public:

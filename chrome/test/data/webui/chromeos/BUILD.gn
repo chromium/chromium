@@ -27,6 +27,7 @@ group("closure_compile") {
       "diagnostics:closure_compile",
       "emoji_picker:closure_compile",
       "gaia_action_buttons:closure_compile",
+      "personalization_app:closure_compile",
       "scanning:closure_compile",
     ]
   }

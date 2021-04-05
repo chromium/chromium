@@ -11,6 +11,7 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace chromeos {
@@ -22,6 +23,11 @@ void AddResources(content::WebUIDataSource* source) {
   source->AddResourcePaths(
       base::make_span(kChromeosPersonalizationAppResources,
                       kChromeosPersonalizationAppResourcesSize));
+
+  source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
+  source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
+  source->AddResourcePath("test_loader_util.js",
+                          IDR_WEBUI_JS_TEST_LOADER_UTIL_JS);
 
 #if !DCHECK_IS_ON()
   source->SetDefaultResource(IDR_CHROMEOS_PERSONALIZATION_APP_INDEX_HTML);
@@ -41,8 +47,14 @@ PersonalizationAppUI::PersonalizationAppUI(
     content::WebUI* web_ui,
     std::unique_ptr<PersonalizationAppUiDelegate> delegate)
     : ui::MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
-  auto source = base::WrapUnique(
+  DCHECK(delegate_);
+
+  std::unique_ptr<content::WebUIDataSource> source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIPersonalizationAppHost));
+
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://test 'self';");
 
   // TODO(crbug/1169829) set up trusted types properly to allow Polymer to write
   // html

@@ -9,4 +9,6 @@
  */
 
 import '/strings.m.js';
+import './personalization_router_element.js';
 import './wallpaper_collections_element.js';
+import './wallpaper_images_element.js';

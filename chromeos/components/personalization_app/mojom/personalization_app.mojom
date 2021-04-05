@@ -4,12 +4,35 @@
 
 module chromeos.personalization_app.mojom;
 
+import "url/mojom/url.mojom";
+
+// WallpaperCollection contains a list of |WallpaperImage| objects.
+struct WallpaperCollection {
+    // This ID is used as the argument to |FetchImagesForCollection|.
+    string id;
+
+    // Name of this collection to be displayed to the user.
+    string name;
+};
+
+// Represents a single image that can be set as user wallpaper.
+struct WallpaperImage {
+    // URL of the image file to be displayed in the UI.
+    url.mojom.Url url;
+};
+
 // Provides APIs to retrieve Wallpaper information. This API is exposed only to
-// the Personalization App (chrome://personalization).
+// the Personalization App (chrome://personalization). It is a mojom wrapper for
+// APIs found in |backdrop_wallpaper.proto|.
 interface WallpaperProvider {
 
-    // Test call to make sure mojom API is correctly wired up. Will replace with
-    // functional behavior in follow up CL.
-    // TODO(b/182012641) add wallpaper API code here.
-    Initialize() => (bool success);
+    // Fetch a list of WallpaperCollection objects from the Backdrop API. Will
+    // be displayed to the user to allow them to select an individual collection
+    // to view in more detail. |collections| will be null on error.
+    FetchCollections() => (array<WallpaperCollection>? collections);
+
+    // Fetch a list of WallpaperImage objects from the Backdrop API that can be
+    // set as the user's wallpaper. |images| will be null on error.
+    FetchImagesForCollection(string collection_id) => (
+        array<WallpaperImage>? images);
 };

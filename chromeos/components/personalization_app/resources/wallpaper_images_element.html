@@ -1,13 +1,13 @@
 <paper-spinner-lite active="[[isLoading_]]"></paper-spinner-lite>
 <!-- TODO(b/181697575) handle error cases and update error string to UI spec -->
 <p hidden="[[!hasError_]]" id="error">error</p>
-<template is="dom-if" if="[[showCollections_]]">
-  <iron-list items="[[collections_]]">
+<template is="dom-if" if="[[showImages_]]">
+  <iron-list items="[[images_]]">
     <template>
       <!-- TODO(b/178399962) display full image in chrome-untrusted -->
-      <a class="wallpaper-collection-title" data-id$="[[item.id]]"
-          href$="[[collectionHref_(item)]]">
-        [[item.name]]
+      <a class="wallpaper-image-link" href$="[[imageHref_(item)]]"
+          target="_blank">
+        [[index]]
       </a>
     </template>
   </iron-list>

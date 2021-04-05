@@ -1,0 +1,66 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://personalization/=../../chromeos/components/personalization_app/resources/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [
+    ":personalization_app_test_utils",
+    ":personalization_app_unified_test",
+    ":test_mojo_interface_provider",
+    ":wallpaper_collections_element_test",
+    ":wallpaper_images_element_test",
+  ]
+}
+
+js_library("personalization_app_test_utils") {
+  deps = [
+    ":test_mojo_interface_provider",
+    "//chromeos/components/personalization_app/resources:mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("personalization_app_unified_test") {
+  deps = [
+    ":wallpaper_collections_element_test",
+    ":wallpaper_images_element_test",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("wallpaper_collections_element_test") {
+  deps = [
+    ":personalization_app_test_utils",
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/personalization_app/resources:wallpaper_collections_element",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("wallpaper_images_element_test") {
+  deps = [
+    ":personalization_app_test_utils",
+    "../..:chai_assert",
+    "../..:test_util.m",
+    "//chromeos/components/personalization_app/resources:wallpaper_images_element",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("test_mojo_interface_provider") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_browser_proxy.m",
+  ]
+}

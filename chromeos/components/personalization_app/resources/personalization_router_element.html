@@ -1,0 +1,10 @@
+<iron-location path="{{path_}}" query="{{query_}}" path-changed="pathChanged_">
+</iron-location>
+<iron-query-params params-object="{{queryParams_}}" params-string="{{query_}}">
+</iron-query-params>
+<template is="dom-if" if="[[showCollections_(path_)]]">
+  <wallpaper-collections></wallpaper-collections>
+</template>
+<template is="dom-if" if="[[showCollectionImages_(path_)]]">
+  <wallpaper-images collection-id="[[queryParams_.id]]"></wallpaper-images>
+</template>

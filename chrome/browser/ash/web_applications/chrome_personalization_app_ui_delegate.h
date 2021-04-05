@@ -11,6 +11,16 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_
 
+namespace backdrop {
+class Collection;
+class Image;
+}  // namespace backdrop
+
+namespace backdrop_wallpaper_handlers {
+class CollectionInfoFetcher;
+class ImageInfoFetcher;
+}  // namespace backdrop_wallpaper_handlers
+
 namespace content {
 class WebUI;
 }  // namespace content
@@ -34,11 +44,29 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
                      chromeos::personalization_app::mojom::WallpaperProvider>
                          receiver) override;
 
-  void Initialize(InitializeCallback callback) override;
+  void FetchCollections(FetchCollectionsCallback callback) override;
+
+  void FetchImagesForCollection(
+      const std::string& collection_id,
+      FetchImagesForCollectionCallback callback) override;
 
  private:
   mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
       receiver_{this};
+
+  void OnFetchCollections(FetchCollectionsCallback callback,
+                          bool success,
+                          const std::vector<backdrop::Collection>& collections);
+
+  void OnFetchCollectionImages(FetchImagesForCollectionCallback callback,
+                               bool success,
+                               const std::vector<backdrop::Image>& images);
+
+  std::unique_ptr<backdrop_wallpaper_handlers::CollectionInfoFetcher>
+      wallpaper_collection_info_fetcher_;
+
+  std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
+      wallpaper_images_info_fetcher_;
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_PERSONALIZATION_APP_UI_DELEGATE_H_

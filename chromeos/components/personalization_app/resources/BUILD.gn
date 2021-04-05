@@ -12,7 +12,11 @@ preprocessed_dir = "preprocessed"
 preprocessed_manifest = "manifest.json"
 preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
 
-polymer_element_files = [ "wallpaper_collections_element.js" ]
+polymer_element_files = [
+  "wallpaper_collections_element.js",
+  "wallpaper_images_element.js",
+  "personalization_router_element.js",
+]
 
 generate_grd("build_grd") {
   deps = [
@@ -48,7 +52,9 @@ js_type_check("closure_compile") {
   deps = [
     ":mojo_interface_provider",
     ":personalization_app",
+    ":personalization_router_element",
     ":wallpaper_collections_element",
+    ":wallpaper_images_element",
   ]
 }
 
@@ -57,12 +63,35 @@ js_library("mojo_interface_provider") {
 }
 
 js_library("personalization_app") {
-  deps = [ ":wallpaper_collections_element" ]
+  deps = [
+    ":personalization_router_element",
+    ":wallpaper_collections_element",
+    ":wallpaper_images_element",
+  ]
 }
 
 js_library("wallpaper_collections_element") {
   deps = [
     ":mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("wallpaper_images_element") {
+  deps = [
+    ":mojo_interface_provider",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("personalization_router_element") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/iron-location:iron-location",
+    "//third_party/polymer/v3_0/components-chromium/iron-location:iron-query-params",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
