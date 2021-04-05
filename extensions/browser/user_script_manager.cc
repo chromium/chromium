@@ -68,9 +68,10 @@ void UserScriptManager::OnExtensionUnloaded(
   manifest_script_loader_.RemoveScripts(
       scripts_to_remove, UserScriptLoader::ScriptsLoadedCallback());
 
-  auto it = extension_script_loaders_.find(extension->id());
-  if (it != extension_script_loaders_.end())
-    it->second->ClearScripts();
+  // The renderer will clean up its scripts from an IPC message which is sent
+  // when the extension is unloaded. All we need to do here is to remove the
+  // unloaded extension's loader.
+  extension_script_loaders_.erase(extension->id());
 }
 
 std::unique_ptr<UserScriptList> UserScriptManager::GetManifestScriptsMetadata(

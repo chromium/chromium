@@ -178,6 +178,13 @@ bool UserScriptSet::UpdateUserScripts(
   return true;
 }
 
+void UserScriptSet::ClearUserScripts(const mojom::HostID& changed_host) {
+  scripts_.clear();
+  script_sources_.clear();
+  for (auto& observer : observers_)
+    observer.OnUserScriptsUpdated({changed_host}, scripts_);
+}
+
 std::unique_ptr<ScriptInjection> UserScriptSet::GetDeclarativeScriptInjection(
     const std::string& script_id,
     content::RenderFrame* render_frame,

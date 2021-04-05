@@ -81,6 +81,11 @@ class UserScriptSetManager {
                            const std::set<mojom::HostID>& changed_hosts,
                            bool allowlisted_only);
 
+  // Invalidates script injections for the UserScriptSet in
+  // `programmatic_scripts_` corresponding to `extension_id` and deletes the
+  // script set.
+  void OnExtensionUnloaded(const std::string& extension_id);
+
   const UserScriptSet* static_scripts() const { return &static_scripts_; }
 
   void set_activity_logging_enabled(bool enabled) {

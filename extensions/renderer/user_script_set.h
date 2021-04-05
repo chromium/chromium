@@ -77,6 +77,9 @@ class UserScriptSet {
                          const std::set<mojom::HostID>& changed_hosts,
                          bool allowlisted_only);
 
+  // Clears all user scripts managed by this set and notifies observers.
+  void ClearUserScripts(const mojom::HostID& changed_host);
+
   // Returns the contents of a script file.
   // Note that copying is cheap as this uses WebString.
   blink::WebString GetJsSource(const UserScript::File& file,

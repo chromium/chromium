@@ -176,7 +176,6 @@ bool UserScriptLoader::ParseMetadataHeader(const base::StringPiece& script_text,
 UserScriptLoader::UserScriptLoader(BrowserContext* browser_context,
                                    const mojom::HostID& host_id)
     : loaded_scripts_(new UserScriptList()),
-      clear_scripts_(false),
       ready_(false),
       queued_load_(false),
       browser_context_(browser_context),
@@ -237,13 +236,6 @@ void UserScriptLoader::RemoveScripts(const std::set<UserScriptIDPair>& scripts,
   AttemptLoad(std::move(callback));
 }
 
-void UserScriptLoader::ClearScripts() {
-  clear_scripts_ = true;
-  added_scripts_map_.clear();
-  removed_script_hosts_.clear();
-  AttemptLoad(UserScriptLoader::ScriptsLoadedCallback());
-}
-
 void UserScriptLoader::OnRenderProcessHostCreated(
     content::RenderProcessHost* process_host) {
   if (!ExtensionsBrowserClient::Get()->IsSameContext(
@@ -256,13 +248,8 @@ void UserScriptLoader::OnRenderProcessHostCreated(
 }
 
 bool UserScriptLoader::ScriptsMayHaveChanged() const {
-  // Scripts may have changed if there are scripts added, scripts removed, or
-  // if scripts were cleared and either:
-  // (1) A load is in progress (which may result in a non-zero number of
-  //     scripts that need to be cleared), or
-  // (2) The current set of scripts is non-empty (so they need to be cleared).
-  return (added_scripts_map_.size() || removed_script_hosts_.size() ||
-          (clear_scripts_ && (is_loading() || loaded_scripts_->size())));
+  // Scripts may have changed if there are scripts added or removed.
+  return (added_scripts_map_.size() || removed_script_hosts_.size());
 }
 
 void UserScriptLoader::AttemptLoad(ScriptsLoadedCallback callback) {
@@ -300,19 +287,13 @@ void UserScriptLoader::StartLoad() {
   // the scripts aren't currently ready.
   std::unique_ptr<UserScriptList> scripts_to_load = std::move(loaded_scripts_);
 
-  if (clear_scripts_) {
-    // If scripts were marked for clearing before adding and removing, then
-    // clear them...
-    scripts_to_load->clear();
-  } else {
-    // ... otherwise, filter out any scripts that are queued for removal.
-    for (auto it = scripts_to_load->begin(); it != scripts_to_load->end();) {
-      UserScriptIDPair id_pair(it->get()->id());
-      if (removed_script_hosts_.count(id_pair) > 0u)
-        it = scripts_to_load->erase(it);
-      else
-        ++it;
-    }
+  // Filter out any scripts that are queued for removal.
+  for (auto it = scripts_to_load->begin(); it != scripts_to_load->end();) {
+    UserScriptIDPair id_pair(it->get()->id());
+    if (removed_script_hosts_.count(id_pair) > 0u)
+      it = scripts_to_load->erase(it);
+    else
+      ++it;
   }
 
   std::set<std::string> added_script_ids;
@@ -337,7 +318,6 @@ void UserScriptLoader::StartLoad() {
               base::BindOnce(&UserScriptLoader::OnScriptsLoaded,
                              weak_factory_.GetWeakPtr()));
 
-  clear_scripts_ = false;
   added_scripts_map_.clear();
   removed_script_hosts_.clear();
 }

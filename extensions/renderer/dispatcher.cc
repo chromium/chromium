@@ -970,6 +970,8 @@ void Dispatcher::UnloadExtension(const std::string& extension_id) {
 
   active_extension_ids_.erase(extension_id);
 
+  user_script_set_manager_->OnExtensionUnloaded(extension_id);
+
   script_injection_manager_->OnExtensionUnloaded(extension_id);
 
   // If the extension is later reloaded with a different set of permissions,

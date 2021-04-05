@@ -143,4 +143,14 @@ void UserScriptSetManager::OnUpdateUserScripts(
   }
 }
 
+void UserScriptSetManager::OnExtensionUnloaded(
+    const std::string& extension_id) {
+  mojom::HostID host_id(mojom::HostID::HostType::kExtensions, extension_id);
+  auto it = programmatic_scripts_.find(host_id);
+  if (it != programmatic_scripts_.end()) {
+    it->second->ClearUserScripts(host_id);
+    programmatic_scripts_.erase(it);
+  }
+}
+
 }  // namespace extensions

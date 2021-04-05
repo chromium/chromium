@@ -89,9 +89,6 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   void RemoveScripts(const std::set<UserScriptIDPair>& scripts,
                      ScriptsLoadedCallback callback);
 
-  // Clears the set of scripts managed by this loader.
-  void ClearScripts();
-
   // Returns true if the scripts for the given |host_id| have been loaded.
   bool HasLoadedScripts(const mojom::HostID& host_id) const;
 
@@ -173,10 +170,6 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // Note that we only need HostID information for removal.
   std::map<std::string, std::unique_ptr<UserScript>> added_scripts_map_;
   std::set<UserScriptIDPair> removed_script_hosts_;
-
-  // Indicates whether the the collection of scripts should be cleared before
-  // additions and removals on the next script load.
-  bool clear_scripts_;
 
   // The IDs of the extensions which changed in the last update sent to the
   // renderer.
