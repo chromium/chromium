@@ -110,6 +110,8 @@ static_library("renderer") {
     "subresource_redirect/robots_rules_parser.h",
     "subresource_redirect/robots_rules_parser_cache.cc",
     "subresource_redirect/robots_rules_parser_cache.h",
+    "subresource_redirect/src_video_redirect_url_loader_throttle.cc",
+    "subresource_redirect/src_video_redirect_url_loader_throttle.h",
     "subresource_redirect/subresource_redirect_params.cc",
     "subresource_redirect/subresource_redirect_params.h",
     "subresource_redirect/subresource_redirect_url_loader_throttle.cc",

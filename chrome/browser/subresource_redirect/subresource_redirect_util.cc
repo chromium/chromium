@@ -27,7 +27,6 @@ namespace {
 
 DataReductionProxyChromeSettings* GetDataReductionProxyChromeSettings(
     content::WebContents* web_contents) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect));
   DCHECK(web_contents);
   return DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
       web_contents->GetBrowserContext());
@@ -39,6 +38,21 @@ bool ShowInfoBarOnAndroid(content::WebContents* web_contents) {
       web_contents);
 #endif
   return true;
+}
+
+// Returns the litepage robots origin from one of the image or src video
+// subresource redirect features.
+GURL GetLitePageRobotsOrigin() {
+  auto lite_page_robots_origin = base::GetFieldTrialParamValueByFeature(
+      blink::features::kSubresourceRedirect, "lite_page_robots_origin");
+  if (lite_page_robots_origin.empty()) {
+    lite_page_robots_origin = base::GetFieldTrialParamValueByFeature(
+        blink::features::kSubresourceRedirectSrcVideo,
+        "lite_page_robots_origin");
+  }
+  if (lite_page_robots_origin.empty())
+    lite_page_robots_origin = "https://litepages.googlezip.net/";
+  return GURL(lite_page_robots_origin);
 }
 
 }  // namespace
@@ -100,12 +114,7 @@ GURL GetRobotsServerURL(const url::Origin& origin) {
   origin_replacement.SetPathStr("/robots.txt");
   origin_url = origin_url.ReplaceComponents(origin_replacement);
 
-  auto lite_page_robots_origin = base::GetFieldTrialParamValueByFeature(
-      blink::features::kSubresourceRedirect, "lite_page_robots_origin");
-  GURL lite_page_robots_url(lite_page_robots_origin.empty()
-                                ? "https://litepages.googlezip.net/"
-                                : lite_page_robots_origin);
-
+  GURL lite_page_robots_url = GetLitePageRobotsOrigin();
   std::string query_str =
       "u=" + net::EscapeQueryParamValue(origin_url.spec(), true /* use_plus */);
 

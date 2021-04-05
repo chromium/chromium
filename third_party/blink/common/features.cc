@@ -512,6 +512,11 @@ const base::Feature kIgnoreCrossOriginWindowWhenNamedAccessOnWindow{
 const base::Feature kSubresourceRedirect{"SubresourceRedirect",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables redirecting src videos in the page to better compressed and optimized
+// versions to provide data savings.
+const base::Feature kSubresourceRedirectSrcVideo{
+    "SubresourceRedirectSrcVideo", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, enforces new interoperable semantics for 3D transforms.
 // See crbug.com/1008483.
 const base::Feature kTransformInterop{"TransformInterop",

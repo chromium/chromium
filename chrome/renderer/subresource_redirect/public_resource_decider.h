@@ -15,21 +15,26 @@ namespace subresource_redirect {
 
 // Different states the public resource decider redirection can be in.
 enum class PublicResourceDeciderRedirectState {
-  kNone,
+  kNone = 0,
 
   // The redirect decision is pending from the underlying decider.
-  kRedirectDecisionPending,
+  kRedirectDecisionPending = 1,
 
   // Redirect was disallowed by the underlying decider e.g., robots rules
   // decider.
-  kRedirectNotAllowedByDecider,
+  kRedirectNotAllowedByDecider = 2,
 
   // The subresource request was redirected to attempt to compress it.
-  kRedirectAttempted,
+  kRedirectAttempted = 3,
 
   // Failed due to http response codes, net errors, and the subresource was
   // fetched from original origin.
-  kRedirectFailed
+  kRedirectFailed = 4,
+
+  // The subresource request was allowed to be redirect compressed.
+  kRedirectAllowed = 5,
+
+  kMax = kRedirectAllowed,
 };
 
 // Interface for the decider agent classes that decide whether a resource is

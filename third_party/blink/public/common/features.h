@@ -156,6 +156,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kTransformInterop;
 
 BLINK_COMMON_EXPORT extern const base::Feature kSubresourceRedirect;
 
+BLINK_COMMON_EXPORT extern const base::Feature kSubresourceRedirectSrcVideo;
+
 BLINK_COMMON_EXPORT extern const base::Feature kSetLowPriorityForBeacon;
 
 BLINK_COMMON_EXPORT extern const base::Feature kCacheStorageCodeCacheHintHeader;

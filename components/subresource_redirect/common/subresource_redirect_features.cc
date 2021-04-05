@@ -57,6 +57,11 @@ bool ShouldEnableLoginRobotsCheckedImageCompression() {
   return is_enabled;
 }
 
+bool ShouldRecordLoginRobotsCheckedSrcVideoMetrics() {
+  return base::FeatureList::IsEnabled(
+      blink::features::kSubresourceRedirectSrcVideo);
+}
+
 // Should the subresource be redirected to its compressed version. This returns
 // false if only coverage metrics need to be recorded and actual redirection
 // should not happen.
@@ -68,7 +73,8 @@ bool ShouldCompressRedirectSubresource() {
 }
 
 bool ShouldEnableRobotsRulesFetching() {
-  return ShouldEnableLoginRobotsCheckedImageCompression();
+  return ShouldEnableLoginRobotsCheckedImageCompression() ||
+         ShouldRecordLoginRobotsCheckedSrcVideoMetrics();
 }
 
 }  // namespace subresource_redirect

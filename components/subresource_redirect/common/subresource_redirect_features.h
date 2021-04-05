@@ -14,6 +14,11 @@ bool ShouldEnablePublicImageHintsBasedCompression();
 // This compresses images in non logged-in pages allowed by robots.txt rules.
 bool ShouldEnableLoginRobotsCheckedImageCompression();
 
+// Returns if the login and robots checks based src-video metrics recording is
+// enabled. This only records data use and coverage metrics for src videos on
+// non logged-in pages allowed by robots.txt rules.
+bool ShouldRecordLoginRobotsCheckedSrcVideoMetrics();
+
 // Should the subresource be redirected to its compressed version. This returns
 // false if only coverage metrics need to be recorded and actual redirection
 // should not happen.

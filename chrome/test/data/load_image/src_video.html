@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <video controls id="video" src="/android/media/test.webm"></video>
+<script>
+  function playVideo(src) {
+    if(src)
+      document.getElementById('video').src = src;
+    document.getElementById('video').play();
+  }
+</script>
+</body>
+</html>

@@ -60,6 +60,8 @@ bool IsTerminalRedirectState(
     case PublicResourceDeciderRedirectState::kRedirectAttempted:
     case PublicResourceDeciderRedirectState::kRedirectNotAllowedByDecider:
     case PublicResourceDeciderRedirectState::kRedirectFailed:
+    case PublicResourceDeciderRedirectState::kRedirectAllowed:
+      // This enum is not used in this file.
       return true;
     case PublicResourceDeciderRedirectState::kRedirectDecisionPending:
       return false;
