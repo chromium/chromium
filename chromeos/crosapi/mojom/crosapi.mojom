@@ -297,7 +297,8 @@ enum InitialBrowserAction {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 16
+// Next version: 17
+// Next id: 17
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -343,6 +344,8 @@ struct BrowserInitParams {
   // This is null for older versions of ash, for Active Directory sessions,
   // Guest sessions, Managed Guest sessions, Demo mode, and Kiosks.
   // Added in M89.
+  // Deprecated in M91. Use `device_account` (field id 16)  instead.
+  // TODO(crbug.com/1195865): Remove this in M93.
   [MinVersion=7]
   string? device_account_gaia_id@7;
 
@@ -392,6 +395,20 @@ struct BrowserInitParams {
   // Defines which windows or tabs to restore on launch.
   [MinVersion=15]
   InitialBrowserAction initial_browser_action@15;
+
+  // The account used to sign into Chrome OS. This may be a Gaia account or a
+  // Microsoft Active Directory account. This field will be null for
+  // Guest sessions, Managed Guest sessions, Demo mode, and Kiosks.
+  // Note that this is different from the concept of a Primary Account in the
+  // browser. A user may not be signed into a Lacros browser Profile, or may be
+  // signed into a browser Profile with an account which is different from the
+  // account which they used to sign into the device - aka Device Account.
+  // Note: Do NOT use the email id of an account as an identifier. Use
+  // `AccountKey` - which has the necessary and sufficient information to
+  // identify an account.
+  // Added in M91.
+  [MinVersion=16]
+  Account? device_account@16;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 
 #include "base/files/file_util.h"
+#include "base/optional.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/file_manager/path_util.h"
@@ -12,6 +13,8 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/tpm/install_attributes.h"
+#include "components/account_id/account_id.h"
+#include "components/account_manager_core/account.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -96,6 +99,32 @@ std::string EnvironmentProvider::GetDeviceAccountGaiaId() {
 
   DCHECK(!account_id.GetGaiaId().empty());
   return account_id.GetGaiaId();
+}
+
+base::Optional<account_manager::Account>
+EnvironmentProvider::GetDeviceAccount() {
+  // Lacros doesn't support Multi-Login. Get the Primary User.
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  if (!user)
+    return base::nullopt;
+
+  const AccountId& account_id = user->GetAccountId();
+  switch (account_id.GetAccountType()) {
+    case AccountType::ACTIVE_DIRECTORY:
+      return base::make_optional(account_manager::Account{
+          account_manager::AccountKey{
+              account_id.GetObjGuid(),
+              account_manager::AccountType::kActiveDirectory},
+          user->GetDisplayEmail()});
+    case AccountType::GOOGLE:
+      return base::make_optional(account_manager::Account{
+          account_manager::AccountKey{account_id.GetGaiaId(),
+                                      account_manager::AccountType::kGaia},
+          user->GetDisplayEmail()});
+    case AccountType::UNKNOWN:
+      return base::nullopt;
+  }
 }
 
 void EnvironmentProvider::SetDeviceAccountPolicy(

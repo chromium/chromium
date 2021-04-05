@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/optional.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "components/account_manager_core/account.h"
 
 namespace crosapi {
 
@@ -27,7 +29,16 @@ class EnvironmentProvider {
   // These are provided by ash because they are part of the device account,
   // not the Lacros profile.
   virtual crosapi::mojom::DefaultPathsPtr GetDefaultPaths();
+
+  // Deprecated. Use `GetDeviceAccount` instead.
+  // TODO(crbug.com/1195865): Remove this in M93.
   virtual std::string GetDeviceAccountGaiaId();
+
+  // Returns the account used to sign into the device. May be a Gaia account or
+  // a Microsoft Active Directory account.
+  // Returns a `nullopt` for Guest Sessions, Managed Guest Sessions,
+  // Demo Mode, and Kiosks.
+  virtual base::Optional<account_manager::Account> GetDeviceAccount();
 
   // Getter and setter for device account policy data. Used to pass data from
   // Ash to Lacros. The format is serialized PolicyFetchResponse object. See

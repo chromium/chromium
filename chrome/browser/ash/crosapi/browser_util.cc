@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/stl_util.h"
@@ -34,6 +35,8 @@
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
+#include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_manager_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -341,8 +344,16 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
   params->device_mode = environment_provider->GetDeviceMode();
   params->interface_versions = GetInterfaceVersions();
   params->default_paths = environment_provider->GetDefaultPaths();
+
   params->device_account_gaia_id =
       environment_provider->GetDeviceAccountGaiaId();
+  const base::Optional<account_manager::Account> maybe_device_account =
+      environment_provider->GetDeviceAccount();
+  if (maybe_device_account) {
+    params->device_account =
+        account_manager::ToMojoAccount(maybe_device_account.value());
+  }
+
   // TODO(crbug.com/1093194): This should be updated to a new value when
   // the long term fix is made in ash-chrome, atomically.
   params->exo_ime_support =
