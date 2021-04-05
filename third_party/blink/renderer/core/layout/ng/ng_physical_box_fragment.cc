@@ -914,7 +914,7 @@ PhysicalRect NGPhysicalBoxFragment::RecalcContentsInkOverflow() {
       return contents_rect;
   }
 
-  for (const NGLink& child : Children()) {
+  for (const NGLink& child : PostLayoutChildren()) {
     const auto* child_fragment = DynamicTo<NGPhysicalBoxFragment>(child.get());
     if (!child_fragment || child_fragment->HasSelfPaintingLayer())
       continue;
