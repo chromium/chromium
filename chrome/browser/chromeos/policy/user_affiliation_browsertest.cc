@@ -79,16 +79,15 @@ void CheckIsSystemSlotAvailableOnIOThread(NssCertDatabaseGetter database_getter,
                                           bool* out_system_slot_available,
                                           base::OnceClosure done_closure) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  auto did_get_cert_db_split_callback = base::SplitOnceCallback(
-      base::BindOnce(&CheckIsSystemSlotAvailableOnIOThreadWithCertDb,
-                     out_system_slot_available, std::move(done_closure)));
+  auto did_get_cert_db_callback = base::BindRepeating(
+      &CheckIsSystemSlotAvailableOnIOThreadWithCertDb,
+      out_system_slot_available,
+      base::AdaptCallbackForRepeating(std::move(done_closure)));
 
   net::NSSCertDatabase* cert_db =
-      std::move(database_getter)
-          .Run(std::move(did_get_cert_db_split_callback.first));
-  if (cert_db) {
-    std::move(did_get_cert_db_split_callback.second).Run(cert_db);
-  }
+      std::move(database_getter).Run(did_get_cert_db_callback);
+  if (cert_db)
+    did_get_cert_db_callback.Run(cert_db);
 }
 
 // Returns true if the system token is available for |profile|. System token

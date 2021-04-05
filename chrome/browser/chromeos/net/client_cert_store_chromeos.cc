@@ -56,11 +56,10 @@ void ClientCertStoreChromeOS::GetClientCerts(
                        net::ClientCertIdentityList());
   }
 
-  auto split_callback =
-      base::SplitOnceCallback(std::move(get_additional_certs_and_continue));
-  if (cert_filter_.Init(std::move(split_callback.first))) {
-    std::move(split_callback.second).Run();
-  }
+  auto repeating_callback = base::AdaptCallbackForRepeating(
+      std::move(get_additional_certs_and_continue));
+  if (cert_filter_.Init(repeating_callback))
+    repeating_callback.Run();
 }
 
 void ClientCertStoreChromeOS::GotAdditionalCerts(

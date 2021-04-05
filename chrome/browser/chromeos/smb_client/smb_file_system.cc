@@ -661,13 +661,14 @@ void SmbFileSystem::HandleGetDeleteListCallback(
     return;
   }
 
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   for (int i = 0; i < delete_list.entries_size(); ++i) {
     const base::FilePath entry_path(delete_list.entries(i));
     bool is_last_entry = (i == delete_list.entries_size() - 1);
 
     auto reply =
         base::BindOnce(&SmbFileSystem::HandleDeleteEntryCallback, AsWeakPtr(),
-                       std::move(callback), list_error, is_last_entry);
+                       copyable_callback, list_error, is_last_entry);
 
     SmbTask task = base::BindOnce(
         &SmbProviderClient::DeleteEntry, GetWeakSmbProviderClient(),

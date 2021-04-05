@@ -57,15 +57,16 @@ void CanChangeAdbSideloadingOnManagedDevice(
     bool is_profile_enterprise_managed,
     bool is_affiliated_user,
     crostini::CrostiniArcAdbSideloadingUserAllowanceMode user_policy) {
-  // Split |callback| in 2 OnceCallbacks. This is necessary to cater to the
+  // Wrap |callback| in a RepeatingCallback. This is necessary to cater to the
   // somewhat awkward PrepareTrustedValues interface, which for some return
   // values invokes the callback passed to it, and for others requires the code
   // here to do so.
-  auto split_callback = base::SplitOnceCallback(std::move(callback));
+  auto repeating_callback =
+      base::AdaptCallbackForRepeating(std::move(callback));
 
   auto* const cros_settings = ash::CrosSettings::Get();
   auto status = cros_settings->PrepareTrustedValues(base::BindOnce(
-      &CanChangeAdbSideloadingOnManagedDevice, std::move(split_callback.first),
+      &CanChangeAdbSideloadingOnManagedDevice, repeating_callback,
       is_profile_enterprise_managed, is_affiliated_user, user_policy));
 
   if (status != chromeos::CrosSettingsProvider::TRUSTED) {
@@ -80,7 +81,7 @@ void CanChangeAdbSideloadingOnManagedDevice(
     // If the device policy is not set, adb sideloading is not allowed
     DVLOG(1) << "adb sideloading device policy is not set, therefore "
                 "sideloading is not allowed";
-    std::move(split_callback.second).Run(false);
+    repeating_callback.Run(false);
     return;
   }
 
@@ -106,21 +107,21 @@ void CanChangeAdbSideloadingOnManagedDevice(
       if (!is_affiliated_user) {
         DVLOG(1) << "adb sideloading not allowed because user is not "
                     "affiliated with the device";
-        std::move(split_callback.second).Run(false);
+        repeating_callback.Run(false);
         return;
       }
-      std::move(split_callback.second)
-          .Run(IsArcManagedAdbSideloadingAllowedByUserPolicy(user_policy));
+      repeating_callback.Run(
+          IsArcManagedAdbSideloadingAllowedByUserPolicy(user_policy));
       return;
     }
 
     DVLOG(1) << "adb sideloading is unsupported for this managed device";
-    std::move(split_callback.second).Run(false);
+    repeating_callback.Run(false);
     return;
   }
 
   DVLOG(1) << "adb sideloading is not allowed by the device policy";
-  std::move(split_callback.second).Run(false);
+  repeating_callback.Run(false);
 }
 
 void CanChangeManagedAdbSideloading(
