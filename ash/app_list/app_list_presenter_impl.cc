@@ -452,10 +452,8 @@ void AppListPresenterImpl::OnWindowFocused(aura::Window* gained_focus,
   if (app_list_gained_focus)
     base::RecordAction(base::UserMetricsAction("AppList_WindowFocused"));
 
-  if (app_list_lost_focus && !switches::ShouldNotDismissOnBlur() &&
-      !Shell::Get()->IsInTabletMode()) {
+  if (app_list_lost_focus && !Shell::Get()->IsInTabletMode())
     Dismiss(base::TimeTicks());
-  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

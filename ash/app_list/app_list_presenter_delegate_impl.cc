@@ -256,7 +256,7 @@ void AppListPresenterDelegateImpl::ProcessLocatedEvent(
   if (presenter_->HandleCloseOpenFolder())
     return;
 
-  if (!switches::ShouldNotDismissOnBlur() && !Shell::Get()->IsInTabletMode()) {
+  if (!Shell::Get()->IsInTabletMode()) {
     // Do not dismiss the app list if the event is targeting shelf area
     // containing app icons.
     if (target == shelf->hotseat_widget()->GetNativeWindow() &&
