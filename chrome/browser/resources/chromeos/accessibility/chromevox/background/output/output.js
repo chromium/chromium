@@ -785,89 +785,7 @@ Output = class {
           }
           speechProps.properties['relativePitch'] = -0.2;
         }
-        const isPluralized = (token[0] === '@');
-        if (isPluralized) {
-          token = token.slice(1);
-        }
-        // Tokens can have substitutions.
-        const pieces = token.split('+');
-        token = pieces.reduce(function(prev, cur) {
-          let lookup = cur;
-          if (cur[0] === '$') {
-            lookup = node[cur.slice(1)];
-          }
-          return prev + lookup;
-        }.bind(this), '');
-        const msgId = token;
-        let msgArgs = [];
-        ruleStr.write(token + '{');
-        if (!isPluralized) {
-          let curArg = tree.firstChild;
-          while (curArg) {
-            if (curArg.value[0] !== '$') {
-              const errorMsg = 'Unexpected value: ' + curArg.value;
-              ruleStr.writeError(errorMsg);
-              console.error(errorMsg);
-              return;
-            }
-            let msgBuff = [];
-            this.format_({
-              node,
-              outputFormat: curArg,
-              outputBuffer: msgBuff,
-              outputRuleString: ruleStr
-            });
-            // Fill in empty string if nothing was formatted.
-            if (!msgBuff.length) {
-              msgBuff = [''];
-            }
-            msgArgs = msgArgs.concat(msgBuff);
-            curArg = curArg.nextSibling;
-          }
-        }
-        let msg = Msgs.getMsg(msgId, msgArgs);
-        try {
-          if (this.formatOptions_.braille) {
-            msg = Msgs.getMsg(msgId + '_brl', msgArgs) || msg;
-          }
-        } catch (e) {
-        }
-
-        if (!msg) {
-          const errorMsg = 'Could not get message ' + msgId;
-          ruleStr.writeError(errorMsg);
-          console.error(errorMsg);
-          return;
-        }
-
-        if (isPluralized) {
-          const arg = tree.firstChild;
-          if (!arg || arg.nextSibling) {
-            const errorMsg = 'Pluralized messages take exactly one argument';
-            ruleStr.writeError(errorMsg);
-            console.error(errorMsg);
-            return;
-          }
-          if (arg.value[0] !== '$') {
-            const errorMsg = 'Unexpected value: ' + arg.value;
-            ruleStr.writeError(errorMsg);
-            console.error(errorMsg);
-            return;
-          }
-          const argBuff = [];
-          this.format_({
-            node,
-            outputFormat: arg,
-            outputBuffer: argBuff,
-            outputRuleString: ruleStr
-          });
-          const namedArgs = {COUNT: Number(argBuff[0])};
-          msg = new goog.i18n.MessageFormat(msg).format(namedArgs);
-        }
-        ruleStr.write('}');
-
-        this.append_(buff, msg, options);
-        ruleStr.write(': ' + msg + '\n');
+        this.formatMessage_(node, token, tree, buff, options, ruleStr);
       } else if (prefix === '!') {
         ruleStr.write(' ! ' + token + '\n');
         speechProps = new Output.SpeechProperties();
@@ -1608,6 +1526,100 @@ Output = class {
       this.append_(buff, '', options);
       ruleStr.writeTokenWithValue(token, tree.firstChild.value);
     }
+  }
+
+  /**
+   * @param {AutomationNode} node
+   * @param {string} token
+   * @param {!OutputFormatTree} tree
+   * @param {!Array<Spannable>} buff
+   * @param {!{annotation: Array<*>, isUnique: (boolean|undefined)}} options
+   * @param {!OutputRulesStr} ruleStr
+   */
+  formatMessage_(node, token, tree, buff, options, ruleStr) {
+    const isPluralized = (token[0] === '@');
+    if (isPluralized) {
+      token = token.slice(1);
+    }
+    // Tokens can have substitutions.
+    const pieces = token.split('+');
+    token = pieces.reduce(function(prev, cur) {
+      let lookup = cur;
+      if (cur[0] === '$') {
+        lookup = node[cur.slice(1)];
+      }
+      return prev + lookup;
+    }.bind(this), '');
+    const msgId = token;
+    let msgArgs = [];
+    ruleStr.write(token + '{');
+    if (!isPluralized) {
+      let curArg = tree.firstChild;
+      while (curArg) {
+        if (curArg.value[0] !== '$') {
+          const errorMsg = 'Unexpected value: ' + curArg.value;
+          ruleStr.writeError(errorMsg);
+          console.error(errorMsg);
+          return;
+        }
+        let msgBuff = [];
+        this.format_({
+          node,
+          outputFormat: curArg,
+          outputBuffer: msgBuff,
+          outputRuleString: ruleStr
+        });
+        // Fill in empty string if nothing was formatted.
+        if (!msgBuff.length) {
+          msgBuff = [''];
+        }
+        msgArgs = msgArgs.concat(msgBuff);
+        curArg = curArg.nextSibling;
+      }
+    }
+    let msg = Msgs.getMsg(msgId, msgArgs);
+    try {
+      if (this.formatOptions_.braille) {
+        msg = Msgs.getMsg(msgId + '_brl', msgArgs) || msg;
+      }
+    } catch (e) {
+    }
+
+    if (!msg) {
+      const errorMsg = 'Could not get message ' + msgId;
+      ruleStr.writeError(errorMsg);
+      console.error(errorMsg);
+      return;
+    }
+
+    if (isPluralized) {
+      const arg = tree.firstChild;
+      if (!arg || arg.nextSibling) {
+        const errorMsg = 'Pluralized messages take exactly one argument';
+        ruleStr.writeError(errorMsg);
+        console.error(errorMsg);
+        return;
+      }
+      if (arg.value[0] !== '$') {
+        const errorMsg = 'Unexpected value: ' + arg.value;
+        ruleStr.writeError(errorMsg);
+        console.error(errorMsg);
+        return;
+      }
+      const argBuff = [];
+      this.format_({
+        node,
+        outputFormat: arg,
+        outputBuffer: argBuff,
+        outputRuleString: ruleStr
+      });
+      const namedArgs = {COUNT: Number(argBuff[0])};
+      msg = new goog.i18n.MessageFormat(msg).format(namedArgs);
+    }
+    ruleStr.write('}');
+
+    this.append_(buff, msg, options);
+    ruleStr.write(': ' + msg + '\n');
   }
 
   /**
