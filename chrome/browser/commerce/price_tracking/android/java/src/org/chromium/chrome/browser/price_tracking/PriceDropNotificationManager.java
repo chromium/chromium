@@ -47,7 +47,8 @@ public class PriceDropNotificationManager {
      * @return Whether price drop notifications can be posted.
      */
     public boolean canPostNotification() {
-        if (!areAppNotificationsEnabled() || !PriceTrackingUtilities.isPriceTrackingEligible()) {
+        if (!areAppNotificationsEnabled()
+                || !PriceTrackingUtilities.isPriceDropNotificationEligible()) {
             return false;
         }
 

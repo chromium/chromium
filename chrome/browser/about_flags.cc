@@ -1728,6 +1728,9 @@ const FeatureEntry::FeatureParam kTabGridLayoutAndroid_PriceAlerts[] = {
 const FeatureEntry::FeatureParam kTabGridLayoutAndroid_TabGroupAutoCreation[] =
     {{"enable_tab_group_auto_creation", "false"}};
 
+const FeatureEntry::FeatureParam kTabGridLayoutAndroid_PriceNotifications[] = {
+    {"enable_price_notification", "true"}};
+
 const FeatureEntry::FeatureVariation kTabGridLayoutAndroidVariations[] = {
     {"New Tab Variation", kTabGridLayoutAndroid_NewTabVariation,
      base::size(kTabGridLayoutAndroid_NewTabVariation), nullptr},
@@ -1741,6 +1744,8 @@ const FeatureEntry::FeatureVariation kTabGridLayoutAndroidVariations[] = {
      base::size(kTabGridLayoutAndroid_PriceAlerts), nullptr},
     {"Without auto group", kTabGridLayoutAndroid_TabGroupAutoCreation,
      base::size(kTabGridLayoutAndroid_TabGroupAutoCreation), nullptr},
+    {"Price notifications", kTabGridLayoutAndroid_PriceNotifications,
+     base::size(kTabGridLayoutAndroid_PriceNotifications), nullptr},
 };
 
 const FeatureEntry::FeatureParam kStartSurfaceAndroid_SingleSurface[] = {

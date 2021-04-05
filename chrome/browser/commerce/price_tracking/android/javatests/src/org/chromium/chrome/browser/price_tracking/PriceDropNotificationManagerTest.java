@@ -40,7 +40,7 @@ import org.chromium.components.browser_ui.notifications.MockNotificationManagerP
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study",
         "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:enable_price_tracking/true"})
+        "force-fieldtrial-params=Study.Group:enable_price_notification/true"})
 @Features.DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID})
 public class PriceDropNotificationManagerTest {
     // clang-format on
