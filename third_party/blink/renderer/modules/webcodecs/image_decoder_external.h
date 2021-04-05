@@ -7,17 +7,14 @@
 
 #include <memory>
 
-#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webcodecs/image_decoder_core.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
-#include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 
 namespace blink {
 
@@ -30,6 +27,7 @@ class ImageDecodeResult;
 class ImageTrackList;
 class ReadableStreamBytesConsumer;
 class ScriptPromiseResolver;
+class SegmentReader;
 
 class MODULES_EXPORT ImageDecoderExternal final
     : public ScriptWrappable,
@@ -74,23 +72,34 @@ class MODULES_EXPORT ImageDecoderExternal final
   void UpdateSelectedTrack();
 
  private:
+  void CreateImageDecoder();
+
   void MaybeSatisfyPendingDecodes();
   void MaybeSatisfyPendingMetadataDecodes();
+  void MaybeUpdateMetadata();
 
-  void OnDecodeReady(
-      std::unique_ptr<ImageDecoderCore::ImageDecodeResult> result);
+  // Returns false if the decoder was constructed with an ArrayBuffer or
+  // ArrayBufferView that has since been neutered.
+  bool HasValidEncodedData() const;
 
-  void DecodeMetadata();
-  void OnMetadata(ImageDecoderCore::ImageMetadata metadata);
+  void AbortPendingDecodes(DOMException* exception);
+
+  void MaybeDecodeToYuv();
 
   Member<ScriptState> script_state_;
 
   // Used when a ReadableStream is provided.
   Member<ReadableStreamBytesConsumer> consumer_;
-  size_t bytes_read_ = 0u;
+  scoped_refptr<SharedBuffer> stream_buffer_;
 
-  // Mime type provided at construction time. Cleared upon close().
-  String mime_type_;
+  // Used when all data is provided at construction time.
+  scoped_refptr<SegmentReader> segment_reader_;
+
+  // Construction parameters.
+  Member<const ImageDecoderInit> init_data_;
+  ImageDecoder::AlphaOption alpha_option_ = ImageDecoder::kAlphaPremultiplied;
+  ColorBehavior color_behavior_ = ColorBehavior::Tag();
+  SkISize desired_size_;
 
   // Copy of |preferAnimation| from |init_data_|.
   base::Optional<bool> prefer_animation_;
@@ -99,30 +108,12 @@ class MODULES_EXPORT ImageDecoderExternal final
   ImageDecoder::AnimationOption animation_option_ =
       ImageDecoder::AnimationOption::kUnspecified;
 
-  // Set to true upon ImageDecodeCore::Decode() or
-  // ImageDecoderCore::DecodeMetadata() failure. Once true, never cleared.
-  bool failed_ = false;
-
-  // Set to true either during construction or upon
-  // ImageDecoderCore::DecodeMetadata() indicating it has received all data.
-  // Once true, never cleared.
   bool data_complete_ = false;
 
-  // Internal value used by OnStateChange() to ensure we don't Append() after
-  // the ReadableStream becomes complete.
-  bool internal_data_complete_ = false;
-
-  // Set to true when close() has been called. Once set, never cleared.
   bool closed_ = false;
 
-  // Number of ImageDecoderCore::Decode() calls in flight. Decremented during
-  // OnDecodeReady() or zeroed out by reset() or close().
-  size_t num_submitted_decodes_ = 0u;
-
-  // The workhorse which actually does the decoding. Bound to another sequence.
-  std::unique_ptr<WTF::SequenceBound<ImageDecoderCore>> decoder_;
-
-  // List of tracks in this image. Filled in during OnMetadata().
+  std::unique_ptr<ImageDecoder> decoder_;
+  String mime_type_;
   Member<ImageTrackList> tracks_;
 
   // Pending decode() requests.
@@ -135,20 +126,25 @@ class MODULES_EXPORT ImageDecoderExternal final
     Member<ScriptPromiseResolver> resolver;
     uint32_t frame_index;
     bool complete_frames_only;
-    bool pending = false;
-    base::Optional<size_t> bytes_read_index;
     Member<ImageDecodeResult> result;
     Member<DOMException> exception;
   };
   HeapVector<Member<DecodeRequest>> pending_decodes_;
   HeapVector<Member<ScriptPromiseResolver>> pending_metadata_decodes_;
 
-  // WeakPtrFactory used only for decode() requests. Invalidated upon decoding
-  // errors or a call to reset().
-  base::WeakPtrFactory<ImageDecoderExternal> decode_weak_factory_{this};
+  // The YUV decoders don't like to be called more than once, so store the
+  // decoded frame once we have it.
+  bool have_completed_yuv_decode_ = false;
+  scoped_refptr<media::VideoFrame> yuv_frame_;
 
-  // WeakPtrFactory for all other cancelable tasks.
-  base::WeakPtrFactory<ImageDecoderExternal> weak_factory_{this};
+  // When decode() of incomplete frames has been requested, we need to track the
+  // generation id for each SkBitmap that we've handed out. So that we can defer
+  // resolution of promises until a new bitmap is generated.
+  HashMap<uint32_t,
+          uint32_t,
+          DefaultHash<uint32_t>::Hash,
+          WTF::UnsignedWithZeroKeyHashTraits<uint32_t>>
+      incomplete_frames_;
 };
 
 }  // namespace blink

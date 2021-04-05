@@ -164,7 +164,7 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
   auto promise = decoder->decode(MakeOptions(0, true));
   ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
-  ASSERT_FALSE(tester.IsRejected());
+  ASSERT_TRUE(tester.IsRejected());
 }
 
 TEST_F(ImageDecoderTest, DecodeUnsupported) {

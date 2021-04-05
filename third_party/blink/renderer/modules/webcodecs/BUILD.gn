@@ -38,8 +38,6 @@ blink_modules_sources("webcodecs") {
     "encoder_base.h",
     "hardware_preference.cc",
     "hardware_preference.h",
-    "image_decoder_core.cc",
-    "image_decoder_core.h",
     "image_decoder_external.cc",
     "image_decoder_external.h",
     "image_track.cc",
