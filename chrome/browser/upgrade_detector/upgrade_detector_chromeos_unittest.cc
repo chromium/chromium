@@ -530,6 +530,8 @@ TEST_F(UpgradeDetectorChromeosTest, TestUpdateInProgressNotification) {
   upgrade_detector.Init();
   ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
 
+  // First update complete.
+  NotifyUpdateReadyToInstall();
   EXPECT_CALL(mock_observer, OnUpdateInProgress());
   NotifyUpdateDownloading();
   ::testing::Mock::VerifyAndClear(&mock_observer);
