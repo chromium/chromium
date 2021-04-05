@@ -90,7 +90,7 @@ TEST_F(UserCommandArcJobTest, TestPayloadReceiving) {
       CreateArcJob(profile_.get(), base::TimeTicks::Now(), kPayload);
   base::RunLoop run_loop;
 
-  auto check_result_callback = base::AdaptCallbackForRepeating(base::BindOnce(
+  auto check_result_callback = base::BindOnce(
       [](base::RunLoop* run_loop, policy::RemoteCommandJob* job,
          arc::FakePolicyInstance* policy_instance,
          std::string expected_payload) {
@@ -98,9 +98,9 @@ TEST_F(UserCommandArcJobTest, TestPayloadReceiving) {
         EXPECT_EQ(expected_payload, policy_instance->command_payload());
         run_loop->Quit();
       },
-      &run_loop, job.get(), policy_instance_.get(), kPayload));
+      &run_loop, job.get(), policy_instance_.get(), kPayload);
   EXPECT_TRUE(job->Run(base::Time::Now(), base::TimeTicks::Now(),
-                       check_result_callback));
+                       std::move(check_result_callback)));
   run_loop.Run();
 }
 

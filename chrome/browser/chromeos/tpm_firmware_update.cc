@@ -217,15 +217,8 @@ class AvailabilityChecker {
 void GetAvailableUpdateModes(
     base::OnceCallback<void(const std::set<Mode>&)> completion,
     base::TimeDelta timeout) {
-  // Wrap |completion| in a RepeatingCallback. This is necessary to cater to the
-  // somewhat awkward PrepareTrustedValues interface, which for some return
-  // values invokes the callback passed to it, and for others requires the code
-  // here to do so.
-  base::RepeatingCallback<void(const std::set<Mode>&)> callback(
-      base::AdaptCallbackForRepeating(std::move(completion)));
-
   if (!base::FeatureList::IsEnabled(features::kTPMFirmwareUpdate)) {
-    callback.Run(std::set<Mode>());
+    std::move(completion).Run(std::set<Mode>());
     return;
   }
 
@@ -233,21 +226,30 @@ void GetAvailableUpdateModes(
   if (g_browser_process->platform_part()
           ->browser_policy_connector_chromeos()
           ->IsEnterpriseManaged()) {
+    // Split |completion| in two. This is necessary because of the
+    // PrepareTrustedValues API, which for some return values invokes the
+    // callback passed to it, and for others requires the code here to do so.
+    auto split_completion = base::SplitOnceCallback(std::move(completion));
+
     // For enterprise-managed devices, always honor the device setting.
     CrosSettings* const cros_settings = CrosSettings::Get();
     switch (cros_settings->PrepareTrustedValues(
-        base::BindOnce(&GetAvailableUpdateModes, callback, timeout))) {
+        base::BindOnce(&GetAvailableUpdateModes,
+                       std::move(split_completion.first), timeout))) {
       case CrosSettingsProvider::TEMPORARILY_UNTRUSTED:
         // Retry happens via the callback registered above.
         return;
       case CrosSettingsProvider::PERMANENTLY_UNTRUSTED:
         // No device settings? Default to disallow.
-        callback.Run(std::set<Mode>());
+        std::move(split_completion.second).Run(std::set<Mode>());
         return;
       case CrosSettingsProvider::TRUSTED:
         // Setting is present and trusted so respect its value.
         modes = GetModesFromSetting(
             cros_settings->GetPref(kTPMFirmwareUpdateSettings));
+
+        // Reset |completion| here so we can invoke it further down.
+        completion = std::move(split_completion.second);
         break;
     }
   } else {
@@ -259,7 +261,7 @@ void GetAvailableUpdateModes(
         AutoEnrollmentController::GetFRERequirement();
     if (requirement ==
         AutoEnrollmentController::FRERequirement::kExplicitlyRequired) {
-      callback.Run(std::set<Mode>());
+      std::move(completion).Run(std::set<Mode>());
       return;
     }
 
@@ -270,7 +272,7 @@ void GetAvailableUpdateModes(
 
   // No need to check for availability if no update modes are allowed.
   if (modes.empty()) {
-    callback.Run(std::set<Mode>());
+    std::move(completion).Run(std::set<Mode>());
     return;
   }
 
@@ -298,7 +300,7 @@ void GetAvailableUpdateModes(
 
             std::move(callback).Run(std::set<Mode>());
           },
-          std::move(modes), std::move(callback)),
+          std::move(modes), std::move(completion)),
       timeout);
 }
 
