@@ -530,6 +530,10 @@ class _AvdInstance(object):
           '-report-console',
           'unix:%s' % socket_path,
           '-no-boot-anim',
+          # Set the gpu mode to swiftshader_indirect otherwise the avd may exit
+          # with the error "change of render" under window mode
+          '-gpu',
+          'swiftshader_indirect',
       ]
 
       if read_only:
