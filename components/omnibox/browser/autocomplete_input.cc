@@ -167,39 +167,15 @@ void AutocompleteInput::Init(
 
   DCHECK(!added_default_scheme_to_typed_url_);
 
+  GURL upgraded_url;
   if (should_use_https_as_default_scheme_ &&
       type_ == metrics::OmniboxInputType::URL &&
-      scheme_ == base::ASCIIToUTF16(url::kHttpScheme) &&
-      !base::StartsWith(text_, scheme_, base::CompareCase::INSENSITIVE_ASCII) &&
-      !url::HostIsIPAddress(canonicalized_url.host()) &&
-      !net::IsHostnameNonUnique(base::UTF16ToUTF8(text)) &&
-      (canonicalized_url.port().empty() || https_port_for_testing_)) {
-    // Use HTTPS as the default scheme for URLs that are typed without a scheme.
-    // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
-    // intranet hosts which we don't to upgrade to HTTPS so we only check the
-    // URL type here.
-    // In particular, we don't want to upgrade these types of inputs:
-    // - Non-unique hostnames such as intranet hosts
-    // - Single word hostnames (these are most likely non-unique).
-    // - IP addresses
-    // - URLs with a specified port. If it's a non-standard HTTP port, we can't
-    //   simply change the scheme to HTTPS and assume that these will load over
-    //   HTTPS. URLs with HTTP port 80 get their port dropped so they will be
-    //   upgraded (e.g. example.com:80 will load https://example.com).
-    DCHECK_EQ(url::kHttpScheme, canonicalized_url.scheme());
+      ShouldUpgradeToHttps(text, canonicalized_url, https_port_for_testing_,
+                           &upgraded_url)) {
+    DCHECK(upgraded_url.is_valid());
     added_default_scheme_to_typed_url_ = true;
     scheme_ = base::ASCIIToUTF16(url::kHttpsScheme);
-    GURL::Replacements replacements;
-    replacements.SetSchemeStr(url::kHttpsScheme);
-    // This needs to be in scope when ReplaceComponents() is called:
-    const std::string port_str = base::NumberToString(https_port_for_testing_);
-    if (https_port_for_testing_) {
-      // We'll only get here in tests. Tests should always have a non-default
-      // port on the input text.
-      DCHECK(!canonicalized_url.port().empty());
-      replacements.SetPortStr(port_str);
-    }
-    canonicalized_url = canonicalized_url.ReplaceComponents(replacements);
+    canonicalized_url = upgraded_url;
     // We changed the scheme from http to https. Offset remaining components
     // by one.
     OffsetComponentsExcludingScheme(&parts_, 1);
@@ -575,6 +551,47 @@ void AutocompleteInput::ParseForEmphasizeComponents(
              parts.inner_parsed() && parts.inner_parsed()->scheme.is_valid()) {
     *host = parts.inner_parsed()->host;
   }
+}
+
+// static
+bool AutocompleteInput::ShouldUpgradeToHttps(const std::u16string& text,
+                                             const GURL& url,
+                                             int https_port_for_testing,
+                                             GURL* upgraded_url) {
+  if (url.scheme() == url::kHttpScheme &&
+      !base::StartsWith(text, base::ASCIIToUTF16(url.scheme()),
+                        base::CompareCase::INSENSITIVE_ASCII) &&
+      !url::HostIsIPAddress(url.host()) &&
+      !net::IsHostnameNonUnique(base::UTF16ToUTF8(text)) &&
+      (url.port().empty() || https_port_for_testing)) {
+    // Use HTTPS as the default scheme for URLs that are typed without a scheme.
+    // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
+    // intranet hosts which we don't to upgrade to HTTPS so we only check the
+    // URL type here.
+    // In particular, we don't want to upgrade these types of inputs:
+    // - Non-unique hostnames such as intranet hosts
+    // - Single word hostnames (these are most likely non-unique).
+    // - IP addresses
+    // - URLs with a specified port. If it's a non-standard HTTP port, we can't
+    //   simply change the scheme to HTTPS and assume that these will load over
+    //   HTTPS. URLs with HTTP port 80 get their port dropped so they will be
+    //   upgraded (e.g. example.com:80 will load https://example.com).
+    DCHECK_EQ(url::kHttpScheme, url.scheme());
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr(url::kHttpsScheme);
+    // This needs to be in scope when ReplaceComponents() is called:
+    const std::string port_str = base::NumberToString(https_port_for_testing);
+    if (https_port_for_testing) {
+      // We'll only get here in tests. Tests should always have a non-default
+      // port on the input text.
+      DCHECK(!url.port().empty());
+      replacements.SetPortStr(port_str);
+    }
+    *upgraded_url = url.ReplaceComponents(replacements);
+    return true;
+  }
+
+  return false;
 }
 
 // static

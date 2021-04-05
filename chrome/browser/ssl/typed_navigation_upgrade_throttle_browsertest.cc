@@ -533,6 +533,47 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
                               0);
 }
 
+// If the feature is enabled, right clicking and selecting paste & go in the
+// omnibox without a scheme should load the HTTPS version.
+IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
+                       UrlPastedWithoutScheme_GoodHttps) {
+  if (!IsFeatureEnabled()) {
+    return;
+  }
+
+  base::HistogramTester histograms;
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver navigation_observer(contents,
+                                                      /*num_navigations=*/1);
+
+  OmniboxEditModel* model = omnibox()->model();
+  model->PasteAndGo(base::UTF8ToUTF16(kSiteWithGoodHttps));
+  navigation_observer.Wait();
+
+  ui_test_utils::HistoryEnumerator enumerator(browser()->profile());
+  const GURL http_url = MakeHttpURL(kSiteWithGoodHttps);
+  const GURL https_url = MakeHttpsURL(kSiteWithGoodHttps);
+
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+  EXPECT_TRUE(base::Contains(enumerator.urls(), https_url));
+  EXPECT_FALSE(base::Contains(enumerator.urls(), http_url));
+
+  // Should never hit an error page.
+  histograms.ExpectTotalCount(SSLErrorHandler::GetHistogramNameForTesting(), 0);
+  histograms.ExpectTotalCount(kNetErrorHistogram, 0);
+
+  histograms.ExpectTotalCount(TypedNavigationUpgradeThrottle::kHistogramName,
+                              2);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadStarted, 1);
+  histograms.ExpectBucketCount(
+      TypedNavigationUpgradeThrottle::kHistogramName,
+      TypedNavigationUpgradeThrottle::Event::kHttpsLoadSucceeded, 1);
+}
+
 // If the upgraded HTTPS URL is not available because of an SSL error), we
 // should load the HTTP URL.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,

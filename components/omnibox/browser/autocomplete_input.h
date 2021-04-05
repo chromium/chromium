@@ -95,6 +95,15 @@ class AutocompleteInput {
       url::Component* scheme,
       url::Component* host);
 
+  // Returns true if the given text and url combination should be upgraded to
+  // use https:// as the default scheme. If so, fills |upgraded_url| with the
+  // upgraded https:// URL. |https_port_for_testing| can be set to a non-zero
+  // value in tests to load test cases over net::EmbeddedTestServer.
+  static bool ShouldUpgradeToHttps(const std::u16string& text,
+                                   const GURL& url,
+                                   int https_port_for_testing,
+                                   GURL* upgraded_url);
+
   // Code that wants to format URLs with a format flag including
   // net::kFormatUrlOmitTrailingSlashOnBareHostname risk changing the meaning if
   // the result is then parsed as AutocompleteInput.  Such code can call this
@@ -266,6 +275,11 @@ class AutocompleteInput {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   size_t EstimateMemoryUsage() const;
+
+  void set_added_default_scheme_to_typed_url(
+      bool added_default_scheme_to_typed_url) {
+    added_default_scheme_to_typed_url_ = added_default_scheme_to_typed_url;
+  }
 
   bool added_default_scheme_to_typed_url() const {
     return added_default_scheme_to_typed_url_;

@@ -580,6 +580,20 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
   AutocompleteMatch match;
   GURL alternate_nav_url;
   ClassifyString(text, &match, &alternate_nav_url);
+
+  GURL upgraded_url;
+  if (match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED &&
+      client_->ShouldDefaultTypedNavigationsToHttps() &&
+      AutocompleteInput::ShouldUpgradeToHttps(text, match.destination_url,
+                                              client_->GetHttpsPortForTesting(),
+                                              &upgraded_url)) {
+    input_.set_added_default_scheme_to_typed_url(true);
+    DCHECK(upgraded_url.is_valid());
+    match.destination_url = upgraded_url;
+  } else {
+    input_.set_added_default_scheme_to_typed_url(false);
+  }
+
   view_->OpenMatch(match, WindowOpenDisposition::CURRENT_TAB, alternate_nav_url,
                    text, OmniboxPopupModel::kNoMatch,
                    match_selection_timestamp);
