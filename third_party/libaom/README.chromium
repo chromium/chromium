@@ -26,9 +26,23 @@ Please follow these steps to update libaom source code:
    Use the generated commit message for the roll.
 
 2. Generate the config files:
-    ./cmake_update.sh
-    # See prerequisites in file comments.
+     ./cmake_update.sh
+     # See prerequisites in file comments.
 
-  This will also update this file with the new revision.
+   This will also update this file with the new revision.
 
-Local Modifications:
+   Amend the commit created by the first step:
+
+     git commit -a --amend
+
+3. Update 'Branch' in README.chromium if necessary.
+
+4. Upload the change to Gerrit:
+
+     git cl upload
+
+   Run tryjobs:
+
+     git cl try
+
+5. Send out for review when all tryjobs pass. Submit it when +1 is granted.
