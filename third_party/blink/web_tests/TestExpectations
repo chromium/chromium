@@ -5337,7 +5337,6 @@ crbug.com/922218 [ Mac ] fast/canvas-api/canvas-lowlatency-getContext.html [ Fai
 
 # Sheriff 2019-01-14
 crbug.com/921583 http/tests/preload/meta-viewport-link-headers.html [ Failure Pass ]
-crbug.com/921151 [ Linux ] http/tests/security/mixedContent/insecure-iframe-with-hsts.https.html [ Failure Pass ]
 
 # These fail (some time out, some are flaky, etc.) when landing valid changes to Mojo bindings
 # dispatch timing. Many of them seem to fail for different reasons, but pretty consistently in most
@@ -6778,3 +6777,6 @@ crbug.com/476553 virtual/scroll-unification/fast/events/mouse-event-from-touch-s
 crbug.com/476553 virtual/scroll-unification/fast/events/touch/gesture/touch-gesture-fully-scrolled-iframe-propagates.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification/fast/events/mouse-event-buttons-attribute.html [ Pass Failure Timeout Crash ]
 crbug.com/476553 virtual/scroll-unification-unified-autoplay/external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Pass Failure Timeout Crash ]
+
+# Sheriff 2021-04-05
+crbug.com/921151 http/tests/security/mixedContent/insecure-iframe-with-hsts.https.html [ Failure Pass ]
