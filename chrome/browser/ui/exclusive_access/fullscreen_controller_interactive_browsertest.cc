@@ -652,12 +652,11 @@ class ExperimentalFullscreenControllerInteractiveTest
 // where the window server's async handling of the fullscreen window state may
 // transition the window into fullscreen on the actual (non-mocked) display
 // bounds before or after the window bounds checks, yielding flaky results.
+// TODO(crbug.com/1194700): Disabled on Mac because of GetScreenInfos staleness.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_FullscreenOnSecondDisplay DISABLED_FullscreenOnSecondDisplay
 #else
-// TODO(crbug.com/1183146): Disabled everywhere temporarily as a crash fix
-// while a better solution is investigated.
-#define MAYBE_FullscreenOnSecondDisplay DISABLED_FullscreenOnSecondDisplay
+#define MAYBE_FullscreenOnSecondDisplay FullscreenOnSecondDisplay
 #endif
 // An end-to-end test that mocks a dual-screen configuration and executes
 // javascript to request and exit fullscreen on the second display.
@@ -738,14 +737,13 @@ IN_PROC_BROWSER_TEST_F(ExperimentalFullscreenControllerInteractiveTest,
 // transition the window into fullscreen on the actual (non-mocked) display
 // bounds before or after the window bounds checks, yielding flaky results.
 // TODO(msw): Parameterize the maximized state and combine with the test above.
+// TODO(crbug.com/1194700): Disabled on Mac because of GetScreenInfos staleness.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_FullscreenOnSecondDisplayMaximized \
   DISABLED_FullscreenOnSecondDisplayMaximized
 #else
-// TODO(crbug.com/1183146): Disabled everywhere temporarily as a crash fix
-// while a better solution is investigated.
 #define MAYBE_FullscreenOnSecondDisplayMaximized \
-  DISABLED_FullscreenOnSecondDisplayMaximized
+  FullscreenOnSecondDisplayMaximized
 #endif
 // An end-to-end test that mocks a dual-screen configuration and executes
 // javascript to request and exit fullscreen on the second display, while
