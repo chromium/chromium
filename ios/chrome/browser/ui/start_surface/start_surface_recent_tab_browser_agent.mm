@@ -70,6 +70,7 @@ void StartSurfaceRecentTabBrowserAgent::WebStateDetachedAt(
     for (auto& observer : observers_) {
       observer.MostRecentTabRemoved(most_recent_tab_);
     }
+    favicon_driver_observer_.Reset();
     most_recent_tab_ = nullptr;
     return;
   }
