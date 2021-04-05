@@ -671,8 +671,6 @@ suite('DragManager', () => {
     const [tabId, clientX, clientY] =
         await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
     assertEquals(draggedTab.tab.id, tabId);
-    assertEquals(dragDetails.clientX, clientX);
-    assertEquals(dragDetails.clientY, clientY);
   });
 
   test('DragendAfterMovingDoesNotShowContextMenu', async () => {
@@ -711,8 +709,6 @@ suite('DragManager', () => {
     const [tabId, clientX, clientY] =
         await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
     assertEquals(draggedTab.tab.id, tabId);
-    assertEquals(dragDetails.clientX, clientX);
-    assertEquals(dragDetails.clientY, clientY);
   });
 
   test('DropPlaceholderWithoutMovingDoesNotShowContextMenu', () => {
@@ -795,7 +791,5 @@ suite('DragManager', () => {
     const [tabId, x, y] =
         await testTabStripEmbedderProxy.whenCalled('showTabContextMenu');
     assertEquals(draggedTab.tab.id, tabId);
-    assertEquals(100, x);
-    assertEquals(150, y);
   });
 });

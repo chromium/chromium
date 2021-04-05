@@ -18,6 +18,12 @@ export const PLACEHOLDER_TAB_ID = -1;
 /** @const {string} */
 export const PLACEHOLDER_GROUP_ID = 'placeholder';
 
+/** @const {number} */
+const TOUCH_CONTEXT_MENU_OFFSET_X = 8;
+
+/** @const {number} */
+const TOUCH_CONTEXT_MENU_OFFSET_Y = -40;
+
 /**
  * The data type key for pinned state of a tab. Since drag events only expose
  * whether or not a data type exists (not the actual value), presence of this
@@ -56,6 +62,19 @@ function getDefaultTabData() {
     showIcon: true,
     title: '',
     url: '',
+  };
+}
+
+/**
+ * Context menu should position below the element for touch.
+ * @param {!Element} element
+ * @return {!Object<{x: number, y: number}>}
+ */
+function getContextMenuPosition(element) {
+  const rect = element.getBoundingClientRect();
+  return {
+    x: rect.left + TOUCH_CONTEXT_MENU_OFFSET_X,
+    y: rect.bottom + TOUCH_CONTEXT_MENU_OFFSET_Y
   };
 }
 
@@ -325,8 +344,9 @@ class DragSession {
 
     // If the user was dragging a tab and the tab has not ever been moved,
     // show a context menu instead.
+    const position = getContextMenuPosition(this.element_);
     this.tabStripEmbedderProxy_.showTabContextMenu(
-        this.element_.tab.id, this.lastPoint_.x, this.lastPoint_.y);
+        this.element_.tab.id, position.x, position.y);
   }
 
   /**
@@ -560,8 +580,9 @@ export class DragManager {
       // on touch, so fallback to showing the context menu when drag is
       // prevented.
       if (isTabElement(draggedItem)) {
+        const position = getContextMenuPosition(draggedItem);
         this.tabStripEmbedderProxy_.showTabContextMenu(
-            draggedItem.tab.id, event.clientX, event.clientY);
+            draggedItem.tab.id, position.x, position.y);
       }
       return;
     }
