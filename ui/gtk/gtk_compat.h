@@ -13,7 +13,11 @@
 
 #include "base/component_export.h"
 #include "ui/gtk/gtk_types.h"
+
 extern "C" {
+#include "ui/gtk/gdk.sigs"
+#include "ui/gtk/gdk_pixbuf.sigs"
+#include "ui/gtk/gsk.sigs"
 #include "ui/gtk/gtk.sigs"
 }
 

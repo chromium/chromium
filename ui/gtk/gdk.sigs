@@ -1,1 +1,5 @@
 GdkDisplay* gdk_display_get_default(void);
+gboolean gdk_keymap_translate_keyboard_state(GdkKeymap* keymap, guint hardware_keycode, GdkModifierType state, gint group, guint* keyval, gint* effective_group, gint* level, GdkModifierType* consumed_modifiers);
+void gdk_keymap_add_virtual_modifiers(GdkKeymap* keymap, GdkModifierType* state);
+GdkEvent* gdk_event_new(GdkEventType type);
+void gdk_event_free(GdkEvent* event);

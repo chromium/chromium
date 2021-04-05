@@ -223,14 +223,12 @@ int GetKeyEventProperty(const ui::KeyEvent& key_event,
 
 GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event);
 
-#if BUILDFLAG(GTK_VERSION) < 4
 // Translates |key_event| into a GdkEvent. GdkEvent::key::window is the only
 // field not set by this function, callers must set it, as the way for
 // retrieving it may vary depending on the event being processed. E.g: for IME
 // Context impl, X11 window XID is obtained through Event::target() which is
-// root aura::Window targeted by that key event.
+// root aura::Window targeted by that key event.  Only available in GTK3.
 GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event);
-#endif
 
 GtkIconTheme* GetDefaultIconTheme();
 

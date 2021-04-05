@@ -12,6 +12,7 @@
 
 #include "ui/base/ime/linux/text_edit_command_auralinux.h"
 #include "ui/events/platform_event.h"
+#include "ui/gtk/gtk_types.h"
 
 namespace ui {
 class Event;

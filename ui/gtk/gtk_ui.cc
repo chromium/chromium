@@ -47,6 +47,7 @@
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/gfx/skia_util.h"
 #include "ui/gtk/gtk_compat.h"
+#include "ui/gtk/gtk_key_bindings_handler.h"
 #include "ui/gtk/gtk_ui_delegate.h"
 #include "ui/gtk/gtk_util.h"
 #include "ui/gtk/input_method_context_impl_gtk.h"
@@ -77,10 +78,6 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "printing/printing_context_linux.h"
-#endif
-
-#if BUILDFLAG(GTK_VERSION) < 4
-#include "ui/gtk/gtk_key_bindings_handler.h"
 #endif
 
 namespace gtk {
@@ -781,10 +778,10 @@ int GtkUi::GetCursorThemeSize() {
 
 bool GtkUi::MatchEvent(const ui::Event& event,
                        std::vector<ui::TextEditCommandAuraLinux>* commands) {
-#if BUILDFLAG(GTK_VERSION) >= 4
   // GTK4 dropped custom key bindings.
-  return false;
-#else
+  if (GtkCheckVersion(4))
+    return false;
+
   // TODO(crbug.com/963419): Use delegate's |GetGdkKeymap| here to
   // determine if GtkUi's key binding handling implementation is used or not.
   // Ozone/Wayland was unintentionally using GtkUi for keybinding handling, so
@@ -797,7 +794,6 @@ bool GtkUi::MatchEvent(const ui::Event& event,
     key_bindings_handler_ = std::make_unique<GtkKeyBindingsHandler>();
 
   return key_bindings_handler_->MatchEvent(event, commands);
-#endif
 }
 
 void GtkUi::OnThemeChanged(GtkSettings* settings, GtkParamSpec* param) {

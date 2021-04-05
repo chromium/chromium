@@ -29,12 +29,9 @@ namespace gtk {
 using ColorMap = std::map<int, SkColor>;
 
 class DeviceScaleFactorObserver;
+class GtkKeyBindingsHandler;
 class NativeThemeGtk;
 class SettingsProvider;
-
-#if BUILDFLAG(GTK_VERSION) <= 3
-class GtkKeyBindingsHandler;
-#endif
 
 // Interface to GTK desktop features.
 class GtkUi : public views::LinuxUI {
@@ -191,9 +188,8 @@ class GtkUi : public views::LinuxUI {
   std::vector<views::FrameButton> leading_buttons_;
   std::vector<views::FrameButton> trailing_buttons_;
 
-#if BUILDFLAG(GTK_VERSION) <= 3
+  // This is only used on GTK3.
   std::unique_ptr<GtkKeyBindingsHandler> key_bindings_handler_;
-#endif
 
   // Objects to notify when the window frame button order changes.
   base::ObserverList<views::WindowButtonOrderObserver>::Unchecked

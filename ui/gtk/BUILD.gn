@@ -62,6 +62,8 @@ component("gtk") {
   sources = [
     "gtk_compat.cc",
     "gtk_compat.h",
+    "gtk_key_bindings_handler.cc",
+    "gtk_key_bindings_handler.h",
     "gtk_ui.cc",
     "gtk_util.cc",
     "gtk_util.h",
@@ -84,13 +86,6 @@ component("gtk") {
     "settings_provider_gtk.cc",
     "settings_provider_gtk.h",
   ]
-  if (gtk_version <= 3) {
-    # GTK4 dropped custom key bindings.
-    sources += [
-      "gtk_key_bindings_handler.cc",
-      "gtk_key_bindings_handler.h",
-    ]
-  }
   defines = [ "IS_GTK_IMPL" ]
   configs += [ "//build/config/linux/pangocairo" ]
   if (use_gio) {

@@ -12,8 +12,10 @@
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
+#include "ui/base/glib/glib_cast.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/events/event.h"
+#include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_util.h"
 
 using ui::TextEditCommand;
@@ -22,7 +24,9 @@ namespace gtk {
 
 GtkKeyBindingsHandler::GtkKeyBindingsHandler()
     : fake_window_(gtk_offscreen_window_new()), handler_(CreateNewHandler()) {
-  gtk_container_add(GTK_CONTAINER(fake_window_), handler_);
+  DCHECK(!GtkCheckVersion(4));
+  gtk_container_add(
+      GlibCast<GtkContainer>(fake_window_, gtk_container_get_type()), handler_);
 }
 
 GtkKeyBindingsHandler::~GtkKeyBindingsHandler() {
@@ -47,7 +51,9 @@ bool GtkKeyBindingsHandler::MatchEvent(
   // If this key event matches a predefined key binding, corresponding signal
   // will be emitted.
 
-  gtk_bindings_activate_event(G_OBJECT(handler_), &gdk_event->key);
+  auto* key = reinterpret_cast<GdkEventKey*>(gdk_event);
+  DCHECK(key->type == GDK_KEY_PRESS || key->type == GDK_KEY_RELEASE);
+  gtk_bindings_activate_event(G_OBJECT(handler_), key);
   gdk_event_free(gdk_event);
 
   bool matched = !edit_commands_.empty();
@@ -96,8 +102,6 @@ void GtkKeyBindingsHandler::HandlerClassInit(HandlerClass* klass) {
   text_view_class->paste_clipboard = PasteClipboard;
   text_view_class->set_anchor = SetAnchor;
   text_view_class->toggle_overwrite = ToggleOverwrite;
-  GtkWidgetClass* widget_class = GTK_WIDGET_CLASS(klass);
-  widget_class->show_help = ShowHelp;
 
   // "move-focus", "move-viewport", "select-all" and "toggle-cursor-visible"
   // have no corresponding virtual methods. Since glib 2.18 (gtk 2.14),
@@ -115,6 +119,9 @@ void GtkKeyBindingsHandler::HandlerClassInit(HandlerClass* klass) {
   g_signal_override_class_handler("toggle-cursor-visible",
                                   G_TYPE_FROM_CLASS(klass),
                                   G_CALLBACK(ToggleCursorVisible));
+
+  g_signal_override_class_handler("show-help", G_TYPE_FROM_CLASS(klass),
+                                  G_CALLBACK(ShowHelp));
 }
 
 GType GtkKeyBindingsHandler::HandlerGetType() {
@@ -363,7 +370,7 @@ void GtkKeyBindingsHandler::ToggleOverwrite(GtkTextView* text_view) {
 gboolean GtkKeyBindingsHandler::ShowHelp(GtkWidget* widget,
                                          GtkWidgetHelpType arg1) {
   // Just for disabling the default handler.
-  return FALSE;
+  return TRUE;
 }
 
 void GtkKeyBindingsHandler::MoveFocus(GtkWidget* widget,

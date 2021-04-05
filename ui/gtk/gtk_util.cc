@@ -632,8 +632,8 @@ GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) {
   return state;
 }
 
-#if BUILDFLAG(GTK_VERSION) < 4
 GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
+  DCHECK(!GtkCheckVersion(4));
   GdkEventType event_type =
       key_event.type() == ui::ET_KEY_PRESSED ? GDK_KEY_PRESS : GDK_KEY_RELEASE;
   auto event_time = key_event.time_stamp() - base::TimeTicks();
@@ -654,20 +654,20 @@ GdkEvent* GdkEventFromKeyEvent(const ui::KeyEvent& key_event) {
 
   // Build GdkEvent
   GdkEvent* gdk_event = gdk_event_new(event_type);
-  gdk_event->type = event_type;
-  gdk_event->key.time = event_time.InMilliseconds();
-  gdk_event->key.hardware_keycode = hw_code;
-  gdk_event->key.keyval = keyval;
-  gdk_event->key.state = BuildXkbStateFromGdkEvent(state, group);
-  gdk_event->key.group = group;
-  gdk_event->key.send_event = key_event.flags() & ui::EF_FINAL;
-  gdk_event->key.is_modifier = state & GDK_MODIFIER_MASK;
-  gdk_event->key.length = 0;
-  gdk_event->key.string = nullptr;
+  GdkEventKey* gdk_event_key = reinterpret_cast<GdkEventKey*>(gdk_event);
+  gdk_event_key->type = event_type;
+  gdk_event_key->time = event_time.InMilliseconds();
+  gdk_event_key->hardware_keycode = hw_code;
+  gdk_event_key->keyval = keyval;
+  gdk_event_key->state = BuildXkbStateFromGdkEvent(state, group);
+  gdk_event_key->group = group;
+  gdk_event_key->send_event = key_event.flags() & ui::EF_FINAL;
+  gdk_event_key->is_modifier = state & GDK_MODIFIER_MASK;
+  gdk_event_key->length = 0;
+  gdk_event_key->string = nullptr;
 
   return gdk_event;
 }
-#endif
 
 GtkIconTheme* GetDefaultIconTheme() {
 #if BUILDFLAG(GTK_VERSION) >= 4
