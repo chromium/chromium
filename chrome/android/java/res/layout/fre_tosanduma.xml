@@ -58,7 +58,7 @@
                     android:visibility="gone"
                     android:contentDescription="@string/sync_loading">
 
-                    <org.chromium.components.browser_ui.widget.LoadingView
+                    <org.chromium.ui.widget.LoadingView
                         android:id="@+id/progress_spinner_large"
                         style="@style/Widget.AppCompat.ProgressBar"
                         android:layout_height="@dimen/fre_loading_spinner_size"

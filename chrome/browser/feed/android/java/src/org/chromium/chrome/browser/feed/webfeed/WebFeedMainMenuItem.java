@@ -17,6 +17,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge.WebFeedMetadata;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -24,21 +25,24 @@ import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.widget.ChipView;
+import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
 /**
  * Specific {@link FrameLayout} that displays the Web Feed footer in the main menu.
  */
 public class WebFeedMainMenuItem extends FrameLayout {
+    private static final int LOADING_REFRESH_TIME_MS = 400;
+
     private final Context mContext;
 
     private GURL mUrl;
     private String mTitle;
     private AppMenuHandler mAppMenuHandler;
+    private ChipView mChipView;
     private ImageView mIcon;
     private LargeIconBridge mLargeIconBridge;
     private WebFeedBridge mWebFeedBridge;
-    private WebFeedBridge.FollowedIds mFollowedIds;
     private WebFeedSnackbarController mWebFeedSnackbarController;
 
     /**
@@ -73,11 +77,11 @@ public class WebFeedMainMenuItem extends FrameLayout {
         mWebFeedSnackbarController =
                 new WebFeedSnackbarController(mContext, snackbarManager, webFeedBridge);
 
-        // TODO(crbug/1152592): Migrate away from getFollowedIds to getWebFeedMetadata.
-        mFollowedIds = mWebFeedBridge.getFollowedIds(mUrl);
         initializeFavicon();
-        initializeText();
-        initializeChipView();
+        mWebFeedBridge.getWebFeedMetadataForPage(mUrl, result -> {
+            initializeText(result);
+            initializeChipView(result);
+        });
     }
 
     private void initializeFavicon() {
@@ -87,55 +91,115 @@ public class WebFeedMainMenuItem extends FrameLayout {
                 this::onFaviconAvailable);
     }
 
-    private void initializeText() {
+    private void initializeText(WebFeedMetadata webFeedMetadata) {
         TextView itemText = findViewById(R.id.menu_item_text);
-        mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
+        if (webFeedMetadata != null && webFeedMetadata.title != null) {
+            mTitle = webFeedMetadata.title;
+        } else {
+            mTitle = UrlFormatter.formatUrlForDisplayOmitSchemePathAndTrivialSubdomains(mUrl);
+        }
         itemText.setText(mTitle);
-        if (mFollowedIds != null) {
-            mWebFeedBridge.getWebFeedMetadata(mFollowedIds.webFeedId.getBytes(), result -> {
-                if (result != null) {
-                    mTitle = result.title;
-                    itemText.setText(mTitle);
+    }
+
+    private void initializeChipView(WebFeedMetadata webFeedMetadata) {
+        int subscriptionStatus = webFeedMetadata == null ? WebFeedSubscriptionStatus.UNKNOWN
+                                                         : webFeedMetadata.subscriptionStatus;
+        if (subscriptionStatus == WebFeedSubscriptionStatus.UNKNOWN
+                || subscriptionStatus == WebFeedSubscriptionStatus.NOT_SUBSCRIBED) {
+            if (mChipView == null) {
+                showUnsubscribedChipView();
+                return;
+            }
+            mChipView.hideLoadingView(new LoadingView.Observer() {
+                @Override
+                public void onShowLoadingUIComplete() {}
+
+                @Override
+                public void onHideLoadingUIComplete() {
+                    mChipView.setVisibility(View.GONE);
+                    showUnsubscribedChipView();
                 }
             });
+        } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBED) {
+            if (mChipView == null) {
+                showSubscribedChipView(webFeedMetadata.id);
+                return;
+            }
+            mChipView.hideLoadingView(new LoadingView.Observer() {
+                @Override
+                public void onShowLoadingUIComplete() {}
+
+                @Override
+                public void onHideLoadingUIComplete() {
+                    mChipView.setVisibility(View.GONE);
+                    showSubscribedChipView(webFeedMetadata.id);
+                }
+            });
+        } else if (subscriptionStatus == WebFeedSubscriptionStatus.UNSUBSCRIBE_IN_PROGRESS) {
+            mChipView = findViewById(R.id.following_chip_view);
+            showLoadingChipView(mChipView, mContext.getText(R.string.menu_following));
+        } else if (subscriptionStatus == WebFeedSubscriptionStatus.SUBSCRIBE_IN_PROGRESS) {
+            mChipView = findViewById(R.id.follow_chip_view);
+            showLoadingChipView(mChipView, mContext.getText(R.string.menu_follow));
         }
     }
 
-    private void initializeChipView() {
-        ChipView chipView;
-        CharSequence chipText;
-        @DrawableRes
-        int chipIconRes;
-        OnClickListener onClickListener;
-        // TODO(crbug/1152592): Account for different loading/unknown cases.
-        if (mFollowedIds != null) {
-            chipView = findViewById(R.id.following_chip_view);
-            chipText = mContext.getText(R.string.menu_following);
-            chipIconRes = R.drawable.ic_check_googblue_24dp;
-            onClickListener = (view) -> {
-                mWebFeedBridge.unfollowFake(mFollowedIds.followId.getBytes(), (result) -> {
-                    mWebFeedSnackbarController.showSnackbarForUnfollow(
-                            result.requestStatus == WebFeedSubscriptionRequestStatus.SUCCESS,
-                            mFollowedIds.followId.getBytes(), mUrl, mTitle);
+    private void showUnsubscribedChipView() {
+        mChipView = findViewById(R.id.follow_chip_view);
+        showEnabledChipView(
+                mChipView, mContext.getText(R.string.menu_follow), R.drawable.ic_add, (view) -> {
+                    mWebFeedBridge.followFromUrlFake(mUrl,
+                            (result)
+                                    -> mWebFeedSnackbarController.showSnackbarForFollow(
+                                            result, mUrl, mTitle));
+                    mAppMenuHandler.hideAppMenu();
                 });
-                mAppMenuHandler.hideAppMenu();
-            };
-        } else {
-            chipView = findViewById(R.id.follow_chip_view);
-            chipText = mContext.getText(R.string.menu_follow);
-            chipIconRes = R.drawable.ic_add;
-            onClickListener = (view) -> {
-                mWebFeedBridge.followFromUrlFake(mUrl, (result) -> {
-                    mWebFeedSnackbarController.showSnackbarForFollow(result, mUrl, mTitle);
+    }
+
+    private void showSubscribedChipView(byte[] webFeedId) {
+        mChipView = findViewById(R.id.following_chip_view);
+        showEnabledChipView(mChipView, mContext.getText(R.string.menu_following),
+                R.drawable.ic_check_googblue_24dp, (view) -> {
+                    mWebFeedBridge.unfollowFake(webFeedId,
+                            (result)
+                                    -> mWebFeedSnackbarController.showSnackbarForUnfollow(
+                                            result.requestStatus
+                                                    == WebFeedSubscriptionRequestStatus.SUCCESS,
+                                            webFeedId, mUrl, mTitle));
+                    mAppMenuHandler.hideAppMenu();
                 });
-                mAppMenuHandler.hideAppMenu();
-            };
+    }
+
+    private void showLoadingChipView(ChipView chipView, CharSequence chipText) {
+        if (mChipView.getVisibility() == View.GONE) {
+            TextView chipTextView = chipView.getPrimaryTextView();
+            chipTextView.setText(chipText);
+            chipView.setEnabled(false);
+            chipView.setVisibility(View.INVISIBLE);
+            chipView.showLoadingView(new LoadingView.Observer() {
+                @Override
+                public void onShowLoadingUIComplete() {
+                    chipView.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onHideLoadingUIComplete() {}
+            });
         }
+        postDelayed(
+                ()
+                        -> mWebFeedBridge.getWebFeedMetadataForPage(mUrl, this::initializeChipView),
+                LOADING_REFRESH_TIME_MS);
+    }
+
+    private void showEnabledChipView(ChipView chipView, CharSequence chipText,
+            @DrawableRes int chipIconRes, OnClickListener onClickListener) {
         TextView chipTextView = chipView.getPrimaryTextView();
         chipTextView.setText(chipText);
         chipView.setIcon(chipIconRes, /*tintWithTextColor=*/true);
         chipView.setOnClickListener(onClickListener);
-        chipView.setVisibility(VISIBLE);
+        chipView.setEnabled(true);
+        chipView.setVisibility(View.VISIBLE);
     }
 
     /**

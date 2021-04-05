@@ -10,10 +10,10 @@ import android.os.Handler;
 import android.view.View;
 
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.components.browser_ui.widget.LoadingView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.textbubble.ClickableTextBubble;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**

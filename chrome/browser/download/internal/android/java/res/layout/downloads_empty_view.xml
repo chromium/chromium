@@ -28,7 +28,7 @@
 
     </FrameLayout>
 
-    <org.chromium.components.browser_ui.widget.LoadingView
+    <org.chromium.ui.widget.LoadingView
         android:id="@+id/loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

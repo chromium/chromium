@@ -36,7 +36,7 @@
         android:layout_height="24sp"
         android:layout_marginEnd="8dp"
         android:visibility="gone">
-        <org.chromium.components.browser_ui.widget.LoadingView
+        <org.chromium.ui.widget.LoadingView
             android:id="@+id/loading_view"
             android:layout_width="16sp"
             android:layout_height="16sp"

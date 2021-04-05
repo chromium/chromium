@@ -52,7 +52,7 @@
             android:contentDescription="@string/sync_loading"
             android:visibility="invisible">
 
-            <org.chromium.components.browser_ui.widget.LoadingView
+            <org.chromium.ui.widget.LoadingView
                 android:id="@+id/loading_view"
                 style="@style/Widget.AppCompat.ProgressBar"
                 android:layout_height="@dimen/fre_loading_spinner_size"

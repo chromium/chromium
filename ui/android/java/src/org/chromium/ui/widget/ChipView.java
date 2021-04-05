@@ -4,6 +4,7 @@
 package org.chromium.ui.widget;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -33,6 +34,7 @@ import org.chromium.ui.R;
  * - An optional remove icon at the end, intended for use with input chips.
  * - An optional boolean (solidColorChip) to remove the default chip border.
  * - An optional boolean (allowMultipleLines) to avoid longer text strings to wrap to a second line.
+ * - An optional boolean (showLoadingView) to show a loading view in place of the start icon.
  */
 public class ChipView extends LinearLayout {
     /** An id to use for {@link #setIcon(int, boolean)} when there is no icon on the chip. */
@@ -43,6 +45,7 @@ public class ChipView extends LinearLayout {
     private final TextView mPrimaryText;
     private final ChromeImageView mStartIcon;
     private final boolean mUseRoundedStartIcon;
+    private final LoadingView mLoadingView;
     private final @IdRes int mSecondaryTextAppearanceId;
     private final int mEndIconWidth;
     private final int mEndIconHeight;
@@ -105,6 +108,8 @@ public class ChipView extends LinearLayout {
                 a.getResourceId(R.styleable.ChipView_chipColor, R.color.chip_background_color);
         int rippleColorId =
                 a.getResourceId(R.styleable.ChipView_rippleColor, R.color.chip_ripple_color);
+        int chipStrokeColorId =
+                a.getResourceId(R.styleable.ChipView_chipStrokeColor, R.color.chip_stroke_color);
         mCornerRadius = a.getDimensionPixelSize(R.styleable.ChipView_cornerRadius,
                 getContext().getResources().getDimensionPixelSize(R.dimen.chip_corner_radius));
         int iconWidth = a.getDimensionPixelSize(R.styleable.ChipView_iconWidth,
@@ -137,6 +142,17 @@ public class ChipView extends LinearLayout {
             int chipHeight = getResources().getDimensionPixelOffset(R.dimen.chip_default_height);
             leadingElementPadding = (chipHeight - iconHeight) / 2;
         }
+
+        int loadingViewSize = getResources().getDimensionPixelSize(R.dimen.chip_loading_view_size);
+        int loadingViewHeightPadding = (iconHeight - loadingViewSize) / 2;
+        int loadingViewWidthPadding = (iconWidth - loadingViewSize) / 2;
+        mLoadingView = new LoadingView(getContext());
+        mLoadingView.setVisibility(GONE);
+        mLoadingView.setIndeterminateTintList(ColorStateList.valueOf(
+                ApiCompatibilityUtils.getColor(getResources(), R.color.default_icon_color_blue)));
+        mLoadingView.setPaddingRelative(loadingViewWidthPadding, loadingViewHeightPadding,
+                loadingViewWidthPadding, loadingViewHeightPadding);
+        addView(mLoadingView, new LayoutParams(iconWidth, iconHeight));
 
         // Setting this enforces 16dp padding at the end and 8dp at the start (unless overridden).
         // For text, the start padding needs to be 16dp which is why a ChipTextView contributes the
@@ -173,7 +189,7 @@ public class ChipView extends LinearLayout {
 
         // Reset icon and background:
         mRippleBackgroundHelper = new RippleBackgroundHelper(this, chipColorId, rippleColorId,
-                mCornerRadius, R.color.chip_stroke_color, chipBorderWidthId, verticalInset);
+                mCornerRadius, chipStrokeColorId, chipBorderWidthId, verticalInset);
         setIcon(INVALID_ICON_ID, false);
     }
 
@@ -212,6 +228,35 @@ public class ChipView extends LinearLayout {
         mStartIcon.setVisibility(ViewGroup.VISIBLE);
         mStartIcon.setImageDrawable(drawable);
         setTint(tintWithTextColor);
+    }
+
+    /**
+     * Shows a {@link LoadingView} at the start of the chip view. This replaces the start icon.
+     * @param loadingViewObserver A {@link LoadingView.Observer} to add to the LoadingView.
+     */
+    public void showLoadingView(LoadingView.Observer loadingViewObserver) {
+        mLoadingView.addObserver(new LoadingView.Observer() {
+            @Override
+            public void onShowLoadingUIComplete() {
+                mStartIcon.setVisibility(GONE);
+            }
+
+            @Override
+            public void onHideLoadingUIComplete() {
+                mStartIcon.setVisibility(VISIBLE);
+            }
+        });
+        mLoadingView.addObserver(loadingViewObserver);
+        mLoadingView.showLoadingUI();
+    }
+
+    /**
+     * Hides the {@link LoadingView} at the start of the chip view.
+     * @param loadingViewObserver A {@link LoadingView.Observer} to add to the LoadingView.
+     */
+    public void hideLoadingView(LoadingView.Observer loadingViewObserver) {
+        mLoadingView.addObserver(loadingViewObserver);
+        mLoadingView.hideLoadingUI();
     }
 
     /**

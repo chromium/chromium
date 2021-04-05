@@ -9,8 +9,8 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.StringRes;
 
-import org.chromium.components.browser_ui.widget.LoadingView;
 import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.widget.LoadingView;
 import org.chromium.ui.widget.RectProvider;
 
 /**

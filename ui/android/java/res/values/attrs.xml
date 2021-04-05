@@ -28,6 +28,7 @@
         <attr name="textAlignStart" format="boolean"/>
         <attr name="reduceTextStartPadding" format="boolean"/>
         <attr name="chipColor" format="color"/>
+        <attr name="chipStrokeColor" format="color"/>
         <attr name="chipStyle" format="reference"/>
         <attr name="cornerRadius" format="dimension"/>
         <attr name="iconWidth" format="reference|dimension"/>

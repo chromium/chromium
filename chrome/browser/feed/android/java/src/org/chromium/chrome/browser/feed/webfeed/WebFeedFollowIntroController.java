@@ -14,7 +14,7 @@ import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.browser_ui.widget.LoadingView;
+import org.chromium.ui.widget.LoadingView;
 import org.chromium.url.GURL;
 
 /**
