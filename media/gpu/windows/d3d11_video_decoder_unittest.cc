@@ -333,13 +333,11 @@ TEST_F(D3D11VideoDecoderTest, DoesNotSupportH264IfNoSupportedConfig) {
   InitializeDecoder(normal, false);
 }
 
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptionWithoutFlag) {
+TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptedConfig) {
   CreateDecoder();
   VideoDecoderConfig encrypted_config =
       TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN);
   encrypted_config.SetIsEncrypted(true);
-
-  DisableFeature(kHardwareSecureDecryption);
   InitializeDecoder(encrypted_config, false);
 }
 
@@ -360,30 +358,5 @@ TEST_F(D3D11VideoDecoderTest, WorkaroundTurnsOffDecoder) {
   InitializeDecoder(
       TestVideoConfig::NormalCodecProfile(kCodecH264, H264PROFILE_MAIN), false);
 }
-
-TEST_F(D3D11VideoDecoderTest, DoesNotSupportEncryptionWithFlagOn11_0) {
-  CreateDecoder();
-  VideoDecoderConfig encrypted_config =
-      TestVideoConfig::NormalEncrypted(kCodecH264, H264PROFILE_MAIN);
-  // TODO(liberato): Provide a CdmContext, so that this test is identical to the
-  // 11.1 version, except for the D3D11 version.
-
-  EnableFeature(kHardwareSecureDecryption);
-  InitializeDecoder(encrypted_config, false);
-}
-
-TEST_F(D3D11VideoDecoderTest, DISABLED_SupportsEncryptionWithFlagOn11_1) {
-  // This test fails, probably because we don't provide a CdmContext.
-  CreateDecoder();
-  VideoDecoderConfig encrypted_config =
-      TestVideoConfig::NormalEncrypted(kCodecH264, H264PROFILE_MAIN);
-  encrypted_config.SetIsEncrypted(true);
-  ON_CALL(*mock_d3d11_device_.Get(), GetFeatureLevel)
-      .WillByDefault(Return(D3D_FEATURE_LEVEL_11_1));
-  EnableFeature(kHardwareSecureDecryption);
-  InitializeDecoder(encrypted_config, true);
-}
-
-// TODO(xhwang): Add tests to cover kWaitingForNewKey and kWaitingForReset.
 
 }  // namespace media
