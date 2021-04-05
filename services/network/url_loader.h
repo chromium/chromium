@@ -32,6 +32,7 @@
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/cpp/cross_origin_read_blocking.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
+#include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
@@ -135,7 +136,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer,
-      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer);
+      mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+      mojo::PendingRemote<mojom::AcceptCHFrameObserver>
+          accept_ch_frame_observer);
   ~URLLoader() override;
 
   // mojom::URLLoader implementation:
@@ -565,6 +568,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Indicates whether fetch upload streaming is allowed/rejected over H/1.
   // Even if this is false but there is a QUIC/H2 stream, the upload is allowed.
   const bool allow_http1_for_streaming_upload_;
+
+  mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 

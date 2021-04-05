@@ -25,6 +25,7 @@ import "services/network/public/mojom/site_for_cookies.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_bundle_handle.mojom";
+import "services/network/public/mojom/accept_ch_frame_observer.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -96,6 +97,11 @@ struct TrustedUrlRequestParams {
   // URLLoaderFactoryParams passed to the factory. Otherwise, the value from
   // the factory params is used unconditionally.
   ClientSecurityState? client_security_state;
+
+  // An observer that should be notified when an ACCEPT_CH H2/3 frame is
+  // received. Can be null to signify that the requestor is not interested in
+  // ACCEPT_CH frames.
+  pending_remote<AcceptCHFrameObserver>? accept_ch_frame_observer;
 };
 
 // Options that may only be set on URLRequests which are related to WebBundle.

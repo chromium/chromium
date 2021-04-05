@@ -48,9 +48,11 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom-shared.h"
 #include "third_party/blink/public/common/client_hints/client_hints.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
@@ -260,7 +262,9 @@ class ClientHintsBrowserTest : public policy::PolicyTest,
   virtual std::unique_ptr<base::FeatureList> EnabledFeatures() {
     std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
     feature_list->InitializeFromCommandLine(
-        "UserAgentClientHint,LangClientHintHeader", "");
+        "UserAgentClientHint,LangClientHintHeader,CriticalClientHint,"
+        "AcceptCHFrame",
+        "");
     return feature_list;
   }
 
@@ -2140,4 +2144,108 @@ IN_PROC_BROWSER_TEST_F(ClientHintsWebHoldbackBrowserTest,
             count_client_hints_headers_seen());
   EXPECT_EQ(0u, third_party_request_count_seen());
   EXPECT_EQ(0u, third_party_client_hints_count_seen());
+}
+
+class AcceptCHFrameObserverInterceptor {
+ public:
+  AcceptCHFrameObserverInterceptor()
+      : interceptor_(base::BindRepeating(
+            &AcceptCHFrameObserverInterceptor::InterceptURLRequest,
+            base::Unretained(this))) {}
+
+  void set_accept_ch_frame(
+      std::vector<network::mojom::WebClientHintsType> frame) {
+    accept_ch_frame_ = frame;
+  }
+
+ private:
+  bool InterceptURLRequest(
+      content::URLLoaderInterceptor::RequestParams* params) {
+    if (!accept_ch_frame_ || !params->url_request.trusted_params ||
+        !params->url_request.trusted_params->accept_ch_frame_observer) {
+      return false;
+    }
+
+    std::vector<network::mojom::WebClientHintsType> hints;
+    for (auto hint : accept_ch_frame_.value()) {
+      std::string header =
+          network::kClientHintsNameMapping[static_cast<int>(hint)];
+      if (!params->url_request.headers.HasHeader(header))
+        hints.push_back(hint);
+    }
+
+    if (hints.empty())
+      return false;
+
+    mojo::Remote<network::mojom::AcceptCHFrameObserver> remote(std::move(
+        params->url_request.trusted_params->accept_ch_frame_observer));
+    remote->OnAcceptCHFrameReceived(params->url_request.url, hints,
+                                    base::DoNothing::Once<int>());
+    // At this point it's expected that either the remote's callback will be
+    // called or the URLLoader will be destroyed to make way for a new one.
+    // As this is essentially unobservable, RunUntilIdle must be used.
+    base::RunLoop().RunUntilIdle();
+    return false;
+  }
+
+  content::URLLoaderInterceptor interceptor_;
+  base::Optional<std::vector<network::mojom::WebClientHintsType>>
+      accept_ch_frame_;
+};
+
+// Replace the request interceptor with an AcceptCHFrameObserverInterceptor.
+class ClientHintsAcceptCHFrameObserverBrowserTest
+    : public ClientHintsBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    accept_ch_frame_observer_interceptor_ =
+        std::make_unique<AcceptCHFrameObserverInterceptor>();
+  }
+
+  void TearDownOnMainThread() override {
+    accept_ch_frame_observer_interceptor_.reset();
+  }
+
+  void set_accept_ch_frame(
+      std::vector<network::mojom::WebClientHintsType> frame) {
+    accept_ch_frame_observer_interceptor_->set_accept_ch_frame(frame);
+  }
+
+  std::vector<network::mojom::WebClientHintsType> all_client_hints_types() {
+    std::vector<network::mojom::WebClientHintsType> hints;
+    for (size_t i = 0; i < blink::kClientHintsMappingsCount; i++) {
+      hints.push_back(static_cast<network::mojom::WebClientHintsType>(i));
+    }
+
+    return hints;
+  }
+
+ private:
+  std::unique_ptr<AcceptCHFrameObserverInterceptor>
+      accept_ch_frame_observer_interceptor_;
+};
+
+// Ensure that client hints are sent when the ACCEPT_CH frame observer is
+// notified.
+IN_PROC_BROWSER_TEST_F(ClientHintsAcceptCHFrameObserverBrowserTest,
+                       AcceptCHFrame) {
+  const GURL gurl = without_accept_ch_without_lifetime_url();
+  set_accept_ch_frame(all_client_hints_types());
+  SetClientHintExpectationsOnMainFrame(true);
+  SetClientHintExpectationsOnSubresources(false);
+  ui_test_utils::NavigateToURL(browser(), gurl);
+}
+
+// Ensure that client hints are *not* sent when the observer is notified but
+// client hints would normally not be sent (e.g. when JS is disabled for the
+// frame).
+IN_PROC_BROWSER_TEST_F(ClientHintsAcceptCHFrameObserverBrowserTest,
+                       AcceptCHFrameJSDisabled) {
+  const GURL gurl = without_accept_ch_without_lifetime_url();
+  set_accept_ch_frame(all_client_hints_types());
+  SetJsEnabledForActiveView(false);
+  SetClientHintExpectationsOnMainFrame(false);
+  SetClientHintExpectationsOnSubresources(false);
+  ui_test_utils::NavigateToURL(browser(), gurl);
 }

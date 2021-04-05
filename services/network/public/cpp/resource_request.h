@@ -21,6 +21,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
@@ -62,6 +63,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
         url_loader_network_observer;
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
     mojom::ClientSecurityStatePtr client_security_state;
+    mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
   };
 
   // Typemapped to network.mojom.WebBundleTokenParams, see comments there

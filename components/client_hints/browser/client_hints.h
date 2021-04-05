@@ -48,12 +48,18 @@ class ClientHints : public KeyedService,
       const std::vector<network::mojom::WebClientHintsType>& client_hints,
       base::TimeDelta expiration_duration) override;
 
+  void SetAdditionalClientHints(
+      const std::vector<network::mojom::WebClientHintsType>&) override;
+
+  void ClearAdditionalClientHints() override;
+
  private:
   content::BrowserContext* context_ = nullptr;
   network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
   HostContentSettingsMap* settings_map_ = nullptr;
   blink::UserAgentMetadata user_agent_metadata_;
   PrefService* pref_service_;
+  std::vector<network::mojom::WebClientHintsType> additional_hints_;
 
   DISALLOW_COPY_AND_ASSIGN(ClientHints);
 };

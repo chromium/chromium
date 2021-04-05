@@ -110,6 +110,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest::TrustedParams& trusted_params) {
     return trusted_params.client_security_state;
   }
+  static mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>
+  accept_ch_frame_observer(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    if (!trusted_params.accept_ch_frame_observer)
+      return mojo::NullRemote();
+    return std::move(
+        const_cast<network::ResourceRequest::TrustedParams&>(trusted_params)
+            .accept_ch_frame_observer);
+  }
 
   static bool Read(network::mojom::TrustedUrlRequestParamsDataView data,
                    network::ResourceRequest::TrustedParams* out);

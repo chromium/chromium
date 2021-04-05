@@ -51,7 +51,21 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
       const std::vector<network::mojom::WebClientHintsType>& client_hints,
       base::TimeDelta expiration_duration) = 0;
 
+  // Optionally implemented by implementations used in tests. Clears all hints
+  // that would have been returned by GetAllowedClientHintsFromSource(),
+  // regardless of whether they were added via PersistClientHints() or
+  // SetAdditionalHints().
   virtual void ResetForTesting() {}
+
+  // Sets additional `hints` that this delegate should add to the
+  // blink::WebEnabledClientHints object affected by
+  // |GetAllowedClientHintsFromSource|. This is for when there are additional
+  // client hints to be added to a request that are not in storage.
+  virtual void SetAdditionalClientHints(
+      const std::vector<network::mojom::WebClientHintsType>&) = 0;
+
+  // Clears the additional hints set by |SetAdditionalHints|.
+  virtual void ClearAdditionalClientHints() = 0;
 };
 
 }  // namespace content

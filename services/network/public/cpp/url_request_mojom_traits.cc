@@ -210,6 +210,8 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
   if (!data.ReadClientSecurityState(&out->client_security_state)) {
     return false;
   }
+  out->accept_ch_frame_observer = data.TakeAcceptChFrameObserver<
+      mojo::PendingRemote<network::mojom::AcceptCHFrameObserver>>();
   return true;
 }
 

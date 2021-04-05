@@ -38,9 +38,15 @@ class MockClientHintsControllerDelegate : public ClientHintsControllerDelegate {
 
   void ResetForTesting() override;
 
+  void SetAdditionalClientHints(
+      const std::vector<network::mojom::WebClientHintsType>&) override;
+
+  void ClearAdditionalClientHints() override;
+
  private:
   const blink::UserAgentMetadata metadata_;
   ClientHintsContainer client_hints_map_;
+  std::vector<network::mojom::WebClientHintsType> additional_hints_;
 
   DISALLOW_COPY_AND_ASSIGN(MockClientHintsControllerDelegate);
 };

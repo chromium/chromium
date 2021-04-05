@@ -29,7 +29,10 @@ NET_EXPORT base::StringPiece TransportTypeToString(TransportType type);
 // Describes a network transport.
 struct NET_EXPORT TransportInfo {
   TransportInfo();
-  TransportInfo(TransportType type_arg, IPEndPoint endpoint_arg);
+  TransportInfo(TransportType type_arg,
+                IPEndPoint endpoint_arg,
+                std::string accept_ch_frame_arg);
+  TransportInfo(const TransportInfo&);
   ~TransportInfo();
 
   // Instances of this type are comparable for equality.
@@ -45,6 +48,9 @@ struct NET_EXPORT TransportInfo {
   // If |type| is kDirect, then this identifies the peer endpoint.
   // If |type| is kProxied, then this identifies the proxy endpoint.
   IPEndPoint endpoint;
+
+  // The value of the ACCEPT_CH HTTP2/3 frame, as pulled in through ALPS.
+  std::string accept_ch_frame;
 };
 
 // Instances of these types are streamable for easier debugging.

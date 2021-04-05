@@ -492,9 +492,24 @@ void ThrottlingURLLoader::Start(
     }
   }
 
+  if (url_request->trusted_params) {
+    // Only the browser process should set `trusted_params`. Unfortunately, we
+    // don't have an explicit way to tell if we are in the browser process. If
+    // `trusted_params` are already set, it is reasonable to conclude we are in
+    // the browser process here. Even in the event that other code in the
+    // renderer process incorrectly set `trusted_params`, we assume that the
+    // URLLoaderFactory that receives the request is marked as untrusted and
+    // will fail the load rather than respecting the `trusted_params`.
+    mojo::PendingRemote<network::mojom::AcceptCHFrameObserver> remote;
+    accept_ch_frame_observers_.Add(this,
+                                   remote.InitWithNewPipeAndPassReceiver());
+    url_request->trusted_params->accept_ch_frame_observer = std::move(remote);
+  }
+
   start_info_ = std::make_unique<StartInfo>(factory, request_id, options,
                                             url_request, std::move(task_runner),
                                             std::move(cors_exempt_header_list));
+
   if (deferred)
     deferred_stage_ = DEFERRED_START;
   else
@@ -876,6 +891,23 @@ void ThrottlingURLLoader::OnComplete(
   // destroy |url_loader_| appropriately.
   loader_completed_ = true;
   forwarding_client_->OnComplete(status);
+}
+
+void ThrottlingURLLoader::OnAcceptCHFrameReceived(
+    const GURL& url,
+    const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
+    OnAcceptCHFrameReceivedCallback callback) {
+  for (auto& entry : throttles_) {
+    auto* throttle = entry.throttle.get();
+    throttle->HandleAcceptCHFrameReceived(url, accept_ch_frame);
+  }
+
+  std::move(callback).Run(net::OK);
+}
+
+void ThrottlingURLLoader::Clone(
+    mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver> listener) {
+  accept_ch_frame_observers_.Add(this, std::move(listener));
 }
 
 void ThrottlingURLLoader::OnClientConnectionError() {

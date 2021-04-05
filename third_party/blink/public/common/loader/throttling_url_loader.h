@@ -17,10 +17,13 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 
@@ -36,7 +39,8 @@ namespace blink {
 // URL loading. If the Mojo connection fails during the request it is canceled
 // with net::ERR_ABORTED.
 class BLINK_COMMON_EXPORT ThrottlingURLLoader
-    : public network::mojom::URLLoaderClient {
+    : public network::mojom::URLLoaderClient,
+      public network::mojom::AcceptCHFrameObserver {
  public:
   // Reason used when resetting the URLLoader to follow a redirect.
   static const char kFollowRedirectReason[];
@@ -162,6 +166,14 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
+
+  // network::mojom::AcceptCHFrameObserver implementation
+  void OnAcceptCHFrameReceived(
+      const GURL& url,
+      const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame,
+      OnAcceptCHFrameReceivedCallback callback) override;
+  void Clone(mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver>
+                 listener) override;
 
   void OnClientConnectionError();
 
@@ -308,6 +320,12 @@ class BLINK_COMMON_EXPORT ThrottlingURLLoader
 
   int pending_restart_flags_ = 0;
   bool has_pending_restart_ = false;
+
+  // While it's not expected to have two active Remote ends for the same
+  // ThrottlingURLLoader, when a TrustedParam is copied all of the pipes are
+  // cloned instead of being destroyed.
+  mojo::ReceiverSet<network::mojom::AcceptCHFrameObserver>
+      accept_ch_frame_observers_;
 
   base::WeakPtrFactory<ThrottlingURLLoader> weak_factory_{this};
 

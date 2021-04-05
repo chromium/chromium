@@ -19,6 +19,14 @@ enum class CriticalCHRestart {
   kMaxValue = kNavigationRestarted,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AcceptCHFrameRestart {
+  kFramePresent = 0,
+  kNavigationRestarted = 1,
+  kMaxValue = kNavigationRestarted,
+};
+
 }  // namespace
 
 namespace content {
@@ -39,15 +47,35 @@ class CriticalClientHintsThrottle : public blink::URLLoaderThrottle {
                            network::mojom::URLResponseHead* response_head,
                            bool* defer) override;
 
+  void HandleAcceptCHFrameReceived(
+      const GURL& url,
+      const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame)
+      override;
+
  private:
+  // Returns true if the extra `hints` are both not stored in the client hints
+  // preferences and allowed to be sent to the given URL (from the given frame
+  // tree node and so on). If returning true, the new name and values are added
+  // to |modified_headers|.
+  bool ShouldRestartWithHints(
+      const GURL& url,
+      const std::vector<network::mojom::WebClientHintsType>& hints,
+      net::HttpRequestHeaders& modified_headers);
+
   BrowserContext* context_;
   ClientHintsControllerDelegate* client_hint_delegate_;
   int frame_tree_node_id_;
-  // This ensures the navigation doesn't turn into an infinite loop (this
-  // object should stay alive until the navigation is committed). On finding a
-  // critical client hint is missing, the throttle instigates an internal
-  // redirect.
-  bool redirected_ = false;
+
+  // Both the ACCEPT_CH frame and the Critical-CH header should only restart a
+  // navigation once. Once a redirect is triggered, the `*_redirect_` flag for
+  // the feature is set to true. These ensure the navigation doesn't turn into
+  // an infinite loop for their respective features (this object should stay
+  // alive until the navigation is committed).
+  //
+  // Redirect flag for the Critical-CH header.
+  bool critical_redirect_ = false;
+  // Redirect flag for the ACCEPT_CH h2/3 frame.
+  bool accept_ch_frame_redirect_ = false;
 };
 
 }  // namespace content

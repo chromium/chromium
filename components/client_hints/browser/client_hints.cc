@@ -52,6 +52,8 @@ void ClientHints::GetAllowedClientHintsFromSource(
                                        &client_hints_rules);
   client_hints::GetAllowedClientHintsFromSource(url, client_hints_rules,
                                                 client_hints);
+  for (auto hint : additional_hints_)
+    client_hints->SetIsEnabled(hint, true);
 }
 
 bool ClientHints::IsJavaScriptAllowed(const GURL& url) {
@@ -147,6 +149,15 @@ void ClientHints::PersistClientHints(
       100);
 
   UMA_HISTOGRAM_COUNTS_100("ClientHints.UpdateSize", client_hints.size());
+}
+
+void ClientHints::SetAdditionalClientHints(
+    const std::vector<network::mojom::WebClientHintsType>& hints) {
+  additional_hints_ = hints;
+}
+
+void ClientHints::ClearAdditionalClientHints() {
+  additional_hints_.clear();
 }
 
 }  // namespace client_hints

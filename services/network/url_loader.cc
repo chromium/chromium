@@ -40,6 +40,7 @@
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
+#include "net/http/http_request_headers.h"
 #include "net/ssl/client_cert_store.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_private_key.h"
@@ -51,6 +52,7 @@
 #include "services/network/data_pipe_element_reader.h"
 #include "services/network/origin_policy/origin_policy_constants.h"
 #include "services/network/origin_policy/origin_policy_manager.h"
+#include "services/network/public/cpp/client_hints.h"
 #include "services/network/public/cpp/constants.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
@@ -443,6 +445,27 @@ void ReportFetchUploadStreamingUMA(const net::URLRequest* request,
   }
 }
 
+// Parses AcceptCHFrame and removes client hints already in the headers.
+std::vector<mojom::WebClientHintsType> ComputeAcceptCHFrameHints(
+    const std::string& accept_ch_frame,
+    const net::HttpRequestHeaders& headers) {
+  base::Optional<std::vector<mojom::WebClientHintsType>> maybe_hints =
+      ParseClientHintsHeader(accept_ch_frame);
+
+  if (!maybe_hints)
+    return {};
+
+  // Only look at/add headers that aren't already present.
+  std::vector<mojom::WebClientHintsType> hints;
+  for (auto hint : maybe_hints.value()) {
+    const char* header = kClientHintsNameMapping[static_cast<int>(hint)];
+    if (!headers.HasHeader(header))
+      hints.push_back(hint);
+  }
+
+  return hints;
+}
+
 }  // namespace
 
 URLLoader::URLLoader(
@@ -469,7 +492,8 @@ URLLoader::URLLoader(
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer,
-    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer)
+    mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
+    mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer)
     : url_request_context_(url_request_context),
       url_loader_factory_(url_loader_factory),
       network_context_client_(network_context_client),
@@ -509,7 +533,8 @@ URLLoader::URLLoader(
       has_fetch_streaming_upload_body_(HasFetchStreamingUploadBody(&request)),
       allow_http1_for_streaming_upload_(
           request.request_body &&
-          request.request_body->AllowHTTP1ForStreamingUpload()) {
+          request.request_body->AllowHTTP1ForStreamingUpload()),
+      accept_ch_frame_observer_(std::move(accept_ch_frame_observer)) {
   DCHECK(delete_callback_);
   DCHECK(factory_params_);
 
@@ -1099,6 +1124,27 @@ int URLLoader::OnConnected(net::URLRequest* url_request,
     // other CORS errors.
     cors_error_status_ = CorsErrorStatus(resource_address_space);
     return net::ERR_FAILED;
+  }
+
+  if (!accept_ch_frame_observer_ || info.accept_ch_frame.empty() ||
+      !base::FeatureList::IsEnabled(features::kAcceptCHFrame)) {
+    return net::OK;
+  }
+
+  // Find client hints that are in the ACCEPT_CH frame that were not already
+  // included in the request
+  std::vector<mojom::WebClientHintsType> hints = ComputeAcceptCHFrameHints(
+      info.accept_ch_frame, url_request->extra_request_headers());
+
+  // If there are hints in the ACCEPT_CH frame that weren't included in the
+  // original request, notify the observer. If those hints can be included,
+  // this URLLoader will be destroyed and another with the correct hints
+  // started. Otherwise, the callback to continue the network transaction will
+  // be called and the URLLoader will continue as normal.
+  if (!hints.empty()) {
+    accept_ch_frame_observer_->OnAcceptCHFrameReceived(
+        url_request->url(), hints, std::move(callback));
+    return net::ERR_IO_PENDING;
   }
 
   return net::OK;

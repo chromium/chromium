@@ -272,6 +272,14 @@ void URLLoaderFactory::CreateLoaderAndStart(
             url_request.trusted_params->devtools_observer));
   }
 
+  mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
+  if (url_request.trusted_params &&
+      url_request.trusted_params->accept_ch_frame_observer) {
+    accept_ch_frame_observer = std::move(
+        const_cast<mojo::PendingRemote<mojom::AcceptCHFrameObserver>&>(
+            url_request.trusted_params->accept_ch_frame_observer));
+  }
+
   auto loader = std::make_unique<URLLoader>(
       context_->url_request_context(), this, context_->client(),
       base::BindOnce(&cors::CorsURLLoaderFactory::DestroyURLLoader,
@@ -285,7 +293,8 @@ void URLLoaderFactory::CreateLoaderAndStart(
       header_client_.is_bound() ? header_client_.get() : nullptr,
       context_->origin_policy_manager(), std::move(trust_token_factory),
       context_->cors_origin_access_list(), std::move(cookie_observer),
-      std::move(url_loader_network_observer), std::move(devtools_observer));
+      std::move(url_loader_network_observer), std::move(devtools_observer),
+      std::move(accept_ch_frame_observer));
 
   cors_url_loader_factory_->OnLoaderCreated(std::move(loader));
 }

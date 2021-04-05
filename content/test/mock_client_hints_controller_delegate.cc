@@ -55,10 +55,22 @@ void MockClientHintsControllerDelegate::GetAllowedClientHintsFromSource(
     const GURL& url,
     blink::WebEnabledClientHints* client_hints) {
   GetAllowedClientHintsFromSourceHelper(url, client_hints_map_, client_hints);
+  for (auto hint : additional_hints_)
+    client_hints->SetIsEnabled(hint, true);
 }
 
 void MockClientHintsControllerDelegate::ResetForTesting() {
   client_hints_map_.clear();
+  additional_hints_.clear();
+}
+
+void MockClientHintsControllerDelegate::SetAdditionalClientHints(
+    const std::vector<network::mojom::WebClientHintsType>& hints) {
+  additional_hints_ = hints;
+}
+
+void MockClientHintsControllerDelegate::ClearAdditionalClientHints() {
+  additional_hints_.clear();
 }
 
 }  // end namespace content

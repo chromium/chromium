@@ -27,13 +27,20 @@ base::StringPiece TransportTypeToString(TransportType type) {
 
 TransportInfo::TransportInfo() = default;
 
-TransportInfo::TransportInfo(TransportType type_arg, IPEndPoint endpoint_arg)
-    : type(type_arg), endpoint(std::move(endpoint_arg)) {}
+TransportInfo::TransportInfo(TransportType type_arg,
+                             IPEndPoint endpoint_arg,
+                             std::string accept_ch_frame_arg)
+    : type(type_arg),
+      endpoint(std::move(endpoint_arg)),
+      accept_ch_frame(std::move(accept_ch_frame_arg)) {}
+
+TransportInfo::TransportInfo(const TransportInfo&) = default;
 
 TransportInfo::~TransportInfo() = default;
 
 bool TransportInfo::operator==(const TransportInfo& other) const {
-  return type == other.type && endpoint == other.endpoint;
+  return type == other.type && endpoint == other.endpoint &&
+         accept_ch_frame == other.accept_ch_frame;
 }
 
 bool TransportInfo::operator!=(const TransportInfo& other) const {
@@ -46,6 +53,8 @@ std::string TransportInfo::ToString() const {
       TransportTypeToString(type),
       ", endpoint = ",
       endpoint.ToString(),
+      ", accept_ch_frame = ",
+      accept_ch_frame,
       " }",
   });
 }

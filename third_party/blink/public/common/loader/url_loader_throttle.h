@@ -14,6 +14,7 @@
 #include "net/base/request_priority.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "services/network/public/mojom/web_client_hints_types.mojom.h"
 #include "third_party/blink/public/common/common_export.h"
 
 class GURL;
@@ -214,6 +215,11 @@ class BLINK_COMMON_EXPORT URLLoaderThrottle {
   virtual void WillOnCompleteWithError(
       const network::URLLoaderCompletionStatus& status,
       bool* defer);
+
+  // Called when an ACCEPT_CH frame is observed.
+  virtual void HandleAcceptCHFrameReceived(
+      const GURL& url,
+      const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame);
 
   // Must return true if the throttle may make cross-scheme redirects
   // (which is usually considered unsafe, so allowed only if the setting

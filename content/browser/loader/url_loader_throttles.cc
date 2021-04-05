@@ -20,6 +20,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -47,7 +48,8 @@ CreateContentBrowserURLLoaderThrottles(
   ClientHintsControllerDelegate* client_hint_delegate =
       browser_context->GetClientHintsControllerDelegate();
   if (base::FeatureList::IsEnabled(features::kFeaturePolicyForClientHints) &&
-      base::FeatureList::IsEnabled(features::kCriticalClientHint) &&
+      (base::FeatureList::IsEnabled(features::kCriticalClientHint) ||
+       base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) &&
       request.is_main_frame && net::HttpUtil::IsMethodSafe(request.method) &&
       client_hint_delegate &&
       ShouldAddClientHints(request.url,

@@ -5,17 +5,19 @@
 #include "content/browser/client_hints/critical_client_hints_throttle.h"
 
 #include "base/feature_list.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/client_hints/client_hints.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/parsed_headers.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
@@ -24,7 +26,11 @@
 namespace {
 
 void LogCriticalCHStatus(CriticalCHRestart status) {
-  UMA_HISTOGRAM_ENUMERATION("ClientHints.CriticalCHRestart", status);
+  base::UmaHistogramEnumeration("ClientHints.CriticalCHRestart", status);
+}
+
+void LogAcceptCHFrameStatus(AcceptCHFrameRestart status) {
+  base::UmaHistogramEnumeration("ClientHints.AcceptCHFrame", status);
 }
 
 }  // namespace
@@ -45,8 +51,10 @@ void CriticalClientHintsThrottle::WillProcessResponse(
     const GURL& response_url,
     network::mojom::URLResponseHead* response_head,
     bool* defer) {
-  if (redirected_)
+  if (critical_redirect_ ||
+      !base::FeatureList::IsEnabled(features::kCriticalClientHint)) {
     return;
+  }
 
   if (!response_head->parsed_headers ||
       !response_head->parsed_headers->accept_ch ||
@@ -69,25 +77,60 @@ void CriticalClientHintsThrottle::WillProcessResponse(
 
   LogCriticalCHStatus(CriticalCHRestart::kHeaderPresent);
 
+  net::HttpRequestHeaders modified_headers;
+  if (ShouldRestartWithHints(response_url, critical_hints, modified_headers)) {
+    critical_redirect_ = true;
+    LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
+    delegate_->RestartWithModifiedHeadersNow(modified_headers);
+  }
+}
+
+void CriticalClientHintsThrottle::HandleAcceptCHFrameReceived(
+    const GURL& url,
+    const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame) {
+  if (accept_ch_frame_redirect_ ||
+      !base::FeatureList::IsEnabled(network::features::kAcceptCHFrame)) {
+    return;
+  }
+
+  LogAcceptCHFrameStatus(AcceptCHFrameRestart::kFramePresent);
+
+  net::HttpRequestHeaders modified_headers;
+
+  if (ShouldRestartWithHints(url, accept_ch_frame, modified_headers)) {
+    accept_ch_frame_redirect_ = true;
+    LogAcceptCHFrameStatus(AcceptCHFrameRestart::kNavigationRestarted);
+    delegate_->RestartWithModifiedHeadersNow(modified_headers);
+  }
+}
+
+bool CriticalClientHintsThrottle::ShouldRestartWithHints(
+    const GURL& response_url,
+    const std::vector<network::mojom::WebClientHintsType>& hints,
+    net::HttpRequestHeaders& modified_headers) {
   FrameTreeNode* frame_tree_node =
       FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
 
-  if (AreCriticalHintsMissing(response_url, frame_tree_node,
-                              client_hint_delegate_, critical_hints)) {
-    redirected_ = true;
-    auto parsed = ParseAndPersistAcceptCHForNagivation(
-        response_url, response_head->parsed_headers, context_,
-        client_hint_delegate_, frame_tree_node);
+  if (!AreCriticalHintsMissing(response_url, frame_tree_node,
+                               client_hint_delegate_, hints)) {
+    return false;
+  }
 
-    net::HttpRequestHeaders modified_headers;
+  client_hint_delegate_->SetAdditionalClientHints(hints);
+  // TODO(crbug.com/1195034): If the frame tree node doesn't have an associated
+  // navigation_request (e.g. a service worker request) it might not override
+  // the user agent correctly.
+  if (frame_tree_node) {
     AddNavigationRequestClientHintsHeaders(
         response_url, &modified_headers, context_, client_hint_delegate_,
         frame_tree_node->navigation_request()->GetIsOverridingUserAgent(),
         frame_tree_node);
-
-    LogCriticalCHStatus(CriticalCHRestart::kNavigationRestarted);
-
-    delegate_->RestartWithModifiedHeadersNow(modified_headers);
+  } else {
+    AddPrefetchNavigationRequestClientHintsHeaders(
+        response_url, &modified_headers, context_, client_hint_delegate_,
+        /*is_ua_override_on=*/false, /*is_javascript_enabled=*/true);
   }
+  client_hint_delegate_->ClearAdditionalClientHints();
+  return true;
 }
 }  // namespace content

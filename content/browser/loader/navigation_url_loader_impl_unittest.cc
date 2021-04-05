@@ -107,7 +107,8 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
         nullptr /* trust_token_helper */, kEmptyOriginAccessList,
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
-        /*devtools_observer=*/mojo::NullRemote());
+        /*devtools_observer=*/mojo::NullRemote(),
+        /*accept_ch_frame_observer=*/mojo::NullRemote());
   }
 
   bool MaybeCreateLoaderForResponse(

@@ -908,7 +908,8 @@ int HttpNetworkTransaction::DoInitStreamComplete(int result) {
       type = TransportType::kProxied;
     }
     result = connected_callback_.Run(
-        TransportInfo(type, remote_endpoint_),
+        TransportInfo(type, remote_endpoint_,
+                      std::string(stream_->GetAcceptChViaAlps())),
         base::BindOnce(&HttpNetworkTransaction::ResumeAfterConnected,
                        base::Unretained(this)));
   }

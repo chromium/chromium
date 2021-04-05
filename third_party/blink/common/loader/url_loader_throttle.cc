@@ -88,6 +88,10 @@ void URLLoaderThrottle::WillOnCompleteWithError(
     const network::URLLoaderCompletionStatus& status,
     bool* defer) {}
 
+void URLLoaderThrottle::HandleAcceptCHFrameReceived(
+    const GURL& url,
+    const std::vector<network::mojom::WebClientHintsType>& accept_ch_frame) {}
+
 bool URLLoaderThrottle::makes_unsafe_redirect() {
   return false;
 }

@@ -47,7 +47,7 @@ static MockTransactionMap mock_transactions;
 
 TransportInfo DefaultTransportInfo() {
   return TransportInfo(TransportType::kDirect,
-                       IPEndPoint(IPAddress::IPv4Localhost(), 80));
+                       IPEndPoint(IPAddress::IPv4Localhost(), 80), "");
 }
 
 //-----------------------------------------------------------------------------
