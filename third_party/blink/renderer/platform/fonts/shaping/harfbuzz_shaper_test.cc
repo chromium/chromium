@@ -30,6 +30,10 @@
 #include "base/android/build_info.h"
 #endif
 
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 using testing::ElementsAre;
 
 namespace blink {
@@ -1841,6 +1845,10 @@ TEST_F(HarfBuzzShaperTest, ShapeVerticalWithSubpixelPositionIsRounded) {
 }
 
 TEST_F(HarfBuzzShaperTest, EmojiPercentage) {
+#if defined(OS_MAC)
+  if (base::mac::IsOS11())
+    GTEST_SKIP() << "Broken on macOS 11: https://crbug.com/1194323";
+#endif
   // This test relies on Noto Color Emoji from the third_party directory to not
   // contain sequences and single codepoint emoji from Unicode 13 and 13.1 such
   // as:
