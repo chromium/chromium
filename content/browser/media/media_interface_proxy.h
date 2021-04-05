@@ -95,9 +95,9 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
   // Gets services provided by the browser (at RenderFrameHost level) to the
   // mojo media (or CDM) service running remotely. |cdm_file_system_id| is
   // used to register the appropriate CdmStorage interface needed by the CDM.
+  // If |cdm_file_system_id| is empty, CdmStorage interface won't be available.
   mojo::PendingRemote<media::mojom::FrameInterfaceFactory> GetFrameServices(
-      const base::Token& cdm_guid,
-      const std::string& cdm_file_system_id);
+      const std::string& cdm_file_system_id = "");
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   // Gets a CdmFactory pointer for |key_system|. Returns null if unexpected
