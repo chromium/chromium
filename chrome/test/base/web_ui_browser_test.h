@@ -157,9 +157,19 @@ class BaseWebUIBrowserTest : public JavaScriptBrowserTest {
   // Handles test framework messages.
   std::unique_ptr<WebUITestHandler> test_handler_;
 
-  // Indicates that the libraries have been pre-loaded and to not load them
-  // again.
-  bool libraries_preloaded_ = false;
+  // Tracks the frames for which we've preloaded libraries.
+  //
+  // We use `GlobalFrameRoutingId` because in certain cases, e.g. COOP/COEP, the
+  // frame gets swapped during the navigation and we get two calls to
+  // `WebContentsObserver::RenderFrameCreated()` (where we preload libraries).
+  //
+  // In the COOP/COEP case, `RenderFrameCreated()` is called for a speculative
+  // RFH when the navigation starts, then at response time, after parsing the
+  // headers, we realize that we need a new COOP/COEP-enabled SiteInstance, so
+  // we'll create a different RFH for that SiteInstance and dispatch
+  // `RenderFrameCreated()` for that RFH (and throw away the old speculative
+  // RFH).
+  std::set<content::GlobalFrameRoutingId> libraries_preloaded_for_frames_;
 
   // Saves the states of |test_fixture| and |test_name| for calling
   // PreloadJavascriptLibraries().

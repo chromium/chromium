@@ -35,20 +35,22 @@ void WebUITestHandler::PreloadJavaScript(
 }
 
 void WebUITestHandler::RunJavaScript(const std::u16string& js_text) {
-  GetWebUI()->GetWebContents()->GetMainFrame()->ExecuteJavaScriptForTests(
-      js_text, base::NullCallback());
+  GetRenderFrameHostForTest()->ExecuteJavaScriptForTests(js_text,
+                                                         base::NullCallback());
 }
 
 bool WebUITestHandler::RunJavaScriptTestWithResult(
     const std::u16string& js_text) {
   test_succeeded_ = false;
   run_test_succeeded_ = false;
-  content::RenderFrameHost* frame =
-      GetWebUI()->GetWebContents()->GetMainFrame();
-  frame->ExecuteJavaScriptForTests(
+  GetRenderFrameHostForTest()->ExecuteJavaScriptForTests(
       js_text, base::BindOnce(&WebUITestHandler::JavaScriptComplete,
                               base::Unretained(this)));
   return WaitForResult();
+}
+
+content::RenderFrameHost* WebUITestHandler::GetRenderFrameHostForTest() {
+  return GetWebUI()->GetWebContents()->GetMainFrame();
 }
 
 void WebUITestHandler::TestComplete(

@@ -38,6 +38,8 @@ class WebUITestHandler {
   // error message on failure. Returns test pass/fail.
   bool RunJavaScriptTestWithResult(const std::u16string& js_text);
 
+  content::RenderFrameHost* GetRenderFrameHostForTest();
+
  protected:
   virtual content::WebUI* GetWebUI() = 0;
 

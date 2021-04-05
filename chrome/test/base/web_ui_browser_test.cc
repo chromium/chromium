@@ -31,6 +31,7 @@
 #include "chrome/test/base/js_test_api.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -252,13 +253,18 @@ void BaseWebUIBrowserTest::PreLoadJavascriptLibraries(
     const std::string& preload_test_fixture,
     const std::string& preload_test_name,
     RenderFrameHost* preload_frame) {
-  ASSERT_FALSE(libraries_preloaded_);
+  // We shouldn't preload libraries twice for the same frame in the same
+  // process.
+  auto global_frame_routing_id = preload_frame->GetGlobalFrameRoutingId();
+  ASSERT_FALSE(
+      base::Contains(libraries_preloaded_for_frames_, global_frame_routing_id));
+
   std::vector<base::Value> args;
   args.push_back(base::Value(preload_test_fixture));
   args.push_back(base::Value(preload_test_name));
   RunJavascriptUsingHandler("preloadJavascriptLibraries", std::move(args),
                             false, false, preload_frame);
-  libraries_preloaded_ = true;
+  libraries_preloaded_for_frames_.emplace(global_frame_routing_id);
 
   bool should_wait_flag = base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kWaitForDebuggerWebUI);
@@ -492,12 +498,23 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
     bool is_test,
     bool is_async,
     RenderFrameHost* preload_frame) {
+  if (!preload_frame)
+    SetupHandlers();
+
   // Get the user libraries. Preloading them individually is best, then
   // we can assign each one a filename for better stack traces. Otherwise
   // append them all to |content|.
   std::u16string content;
   std::vector<std::u16string> libraries;
-  if (!libraries_preloaded_) {
+
+  // Some tests don't use `BaseWebUIBrowserTest::BrowsePreload()`, which is
+  // where we attach WebUIJsInjectionReadyObserver and preload libraries. In
+  // these cases prepend the libraries to the test itself.
+  auto* frame_for_libraries = preload_frame
+                                  ? preload_frame
+                                  : test_handler_->GetRenderFrameHostForTest();
+  if (!base::Contains(libraries_preloaded_for_frames_,
+                      frame_for_libraries->GetGlobalFrameRoutingId())) {
     BuildJavascriptLibraries(&libraries);
     if (!preload_frame) {
       content = base::JoinString(libraries, u"\n");
@@ -519,9 +536,6 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
     }
     content.append(called_function);
   }
-
-  if (!preload_frame)
-    SetupHandlers();
 
   bool result = true;
 
