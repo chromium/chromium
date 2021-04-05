@@ -72,7 +72,6 @@ promise_test(async t => {
     let frame = make_audio_frame(timestamp_us, config.numberOfChannels,
       config.sampleRate, frame_length);
     encoder.encode(frame);
-    frame.close();
     timestamp_us += frame_duration_s * 1_000_000;
   }
   await encoder.flush();
@@ -103,7 +102,6 @@ async function checkEncodingError(config, good_frames, bad_frame) {
   encoder.configure(config);
   for (let frame of good_frames) {
     encoder.encode(frame);
-    frame.close();
   }
   await encoder.flush();
 
@@ -208,7 +206,7 @@ promise_test(async t => {
   for (let i = 0; i < frame_count; i++) {
     let frame = make_audio_frame(timestamp_us, config.numberOfChannels,
       config.sampleRate, frame_length);
-    input_frames.push(frame);
+    input_frames.push(clone_frame(frame));
     encoder.encode(frame);
     timestamp_us += frame_duration_s * 1_000_000;
   }
@@ -276,7 +274,7 @@ promise_test(async t => {
 
   let long_frame = make_audio_frame(0, encoder_config.numberOfChannels,
     encoder_config.sampleRate, encoder_config.sampleRate);
-  encoder.encode(long_frame);
+  encoder.encode(clone_frame(long_frame));
   await encoder.flush();
 
   // Long frame produced more than one output, and we've got decoder_config
@@ -297,7 +295,7 @@ promise_test(async t => {
   output_count = 0;
   encoder_config.bitrate = 256000;
   encoder.configure(encoder_config);
-  encoder.encode(long_frame);
+  encoder.encode(clone_frame(long_frame));
   await encoder.flush();
 
   // After reconfiguring encoder should produce decoder config again

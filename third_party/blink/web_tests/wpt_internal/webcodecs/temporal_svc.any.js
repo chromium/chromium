@@ -43,7 +43,6 @@ async function svc_test(codec, layers, base_layer_decimator) {
   for (let i = 0; i < frames_to_encode; i++) {
     let frame = await createFrame(w, h, i);
     encoder.encode(frame, { keyFrame: false });
-    frame.close();
     await delay(1);
   }
   await encoder.flush();

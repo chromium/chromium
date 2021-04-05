@@ -11,7 +11,6 @@ async function configureAndEncode(encoder, config) {
 
   let frame = await createFrame(defaultWidth, defaultHeight, ++frameNumber);
   encoder.encode(frame, { keyFrame : true });
-  frame.close();
   return encoder.flush()
 }
 
