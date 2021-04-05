@@ -477,7 +477,7 @@ Polymer({
     const queryParams = settings.Router.getInstance().getQueryParameters();
     const guid = queryParams.get('guid') || '';
     if (!guid) {
-      console.error('No guid specified for page:' + route);
+      console.warn('No guid specified for page:' + route);
       this.close();
     }
 

@@ -598,7 +598,7 @@ Polymer({
   getManagedPropertiesCallback_(managedProperties) {
     if (!managedProperties) {
       // The network no longer exists; close the page.
-      console.error('Network no longer exists: ' + this.guid);
+      console.warn('Network no longer exists: ' + this.guid);
       this.close_();
       return;
     }
