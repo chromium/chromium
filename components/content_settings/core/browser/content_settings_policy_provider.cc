@@ -110,6 +110,7 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedSensorsBlockedForUrls,
     prefs::kManagedSerialAskForUrls,
     prefs::kManagedSerialBlockedForUrls,
+    prefs::kManagedWebUsbAllowDevicesForUrls,
     prefs::kManagedWebUsbAskForUrls,
     prefs::kManagedWebUsbBlockedForUrls,
 };
@@ -192,8 +193,6 @@ void PolicyProvider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   for (const char* pref : kManagedPrefs)
     registry->RegisterListPref(pref);
-
-  registry->RegisterListPref(prefs::kManagedWebUsbAllowDevicesForUrls);
 
   // Preferences for default content setting policies. If a policy is not set of
   // the corresponding preferences below is set to CONTENT_SETTING_DEFAULT.
