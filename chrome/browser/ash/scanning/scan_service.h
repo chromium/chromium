@@ -160,6 +160,10 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
   // Tracks the number of pages scanned for histogram recording.
   int num_pages_scanned_;
 
+  // Indicates whether alternate pages must be rotated to account for an ADF
+  // scanner that flips them.
+  bool rotate_alternate_pages_;
+
   // The time at which GetScanners() is called. Used to record the time between
   // a user launching the Scan app and being able to interact with it.
   base::TimeTicks get_scanners_time_;

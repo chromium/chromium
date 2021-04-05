@@ -43,9 +43,11 @@ constexpr char kMyFilesPath[] = "/home/chronos/user/MyFiles";
 // Scanner names used for tests.
 constexpr char kFirstTestScannerName[] = "Test Scanner 1";
 constexpr char kSecondTestScannerName[] = "Test Scanner 2";
+constexpr char kEpsonTestName[] = "Epson";
 
 // Document source name used for tests.
 constexpr char kDocumentSourceName[] = "Flatbed";
+constexpr char kAdfSourceName[] = "ADF Duplex";
 
 // Resolutions used for tests.
 constexpr uint32_t kFirstResolution = 75;
@@ -59,10 +61,29 @@ lorgnette::DocumentSource CreateLorgnetteDocumentSource() {
   return source;
 }
 
+// Returns an ADF Duplex DocumentSource object.
+lorgnette::DocumentSource CreateAdfDuplexDocumentSource() {
+  lorgnette::DocumentSource source;
+  source.set_type(lorgnette::SOURCE_ADF_DUPLEX);
+  source.set_name(kAdfSourceName);
+  return source;
+}
+
 // Returns a ScannerCapabilities object.
 lorgnette::ScannerCapabilities CreateLorgnetteScannerCapabilities() {
   lorgnette::ScannerCapabilities caps;
   *caps.add_sources() = CreateLorgnetteDocumentSource();
+  caps.add_color_modes(lorgnette::MODE_COLOR);
+  caps.add_resolutions(kFirstResolution);
+  caps.add_resolutions(kSecondResolution);
+  return caps;
+}
+
+// Returns a ScannerCapabilities object used for testing a scanner
+// that flips alternate pages..
+lorgnette::ScannerCapabilities CreateEpsonScannerCapabilities() {
+  lorgnette::ScannerCapabilities caps;
+  *caps.add_sources() = CreateAdfDuplexDocumentSource();
   caps.add_color_modes(lorgnette::MODE_COLOR);
   caps.add_resolutions(kFirstResolution);
   caps.add_resolutions(kSecondResolution);
@@ -385,6 +406,37 @@ TEST_F(ScanServiceTest, Scan) {
 TEST_F(ScanServiceTest, PdfScan) {
   fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse(
       {kFirstTestScannerName});
+  const std::vector<std::string> scan_data = {CreatePng(), CreatePng(),
+                                              CreatePng()};
+  fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);
+  auto scanners = GetScanners();
+  ASSERT_EQ(scanners.size(), 1u);
+
+  base::Time::Exploded scan_time;
+  // Since we're using mock time, this is deterministic.
+  base::Time::Now().LocalExplode(&scan_time);
+
+  scan_service_.SetMyFilesPathForTesting(temp_dir_.GetPath());
+  mojo_ipc::ScanSettings settings =
+      CreateScanSettings(temp_dir_.GetPath(), mojo_ipc::FileType::kPdf);
+  const base::FilePath saved_scan_path =
+      CreateSavedPdfScanPath(temp_dir_.GetPath(), scan_time);
+  EXPECT_FALSE(base::PathExists(saved_scan_path));
+  EXPECT_TRUE(StartScan(scanners[0]->id, settings.Clone()));
+  EXPECT_TRUE(base::PathExists(saved_scan_path));
+  EXPECT_TRUE(fake_scan_job_observer_.scan_success());
+  const std::vector<base::FilePath> scanned_file_paths =
+      fake_scan_job_observer_.scanned_file_paths();
+  EXPECT_EQ(1u, scanned_file_paths.size());
+  EXPECT_EQ(saved_scan_path, scanned_file_paths.front());
+}
+
+// Test that an Epson ADF Duplex scan, which produces flipped pages, completes
+// successfully.
+TEST_F(ScanServiceTest, RotateEpsonADF) {
+  fake_lorgnette_scanner_manager_.SetGetScannerNamesResponse({kEpsonTestName});
+  fake_lorgnette_scanner_manager_.SetGetScannerCapabilitiesResponse(
+      CreateEpsonScannerCapabilities());
   const std::vector<std::string> scan_data = {CreatePng(), CreatePng(),
                                               CreatePng()};
   fake_lorgnette_scanner_manager_.SetScanResponse(scan_data);

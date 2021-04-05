@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/scanning_type_converters.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -42,6 +43,9 @@ namespace mojo_ipc = scanning::mojom;
 
 // The conversion quality when converting from PNG to JPG.
 constexpr int kJpgQuality = 100;
+
+// The number of degrees to rotate a PDF image.
+constexpr int kRotationDegrees = 180;
 
 // The max progress percent that can be reported for a scanned page.
 constexpr uint32_t kMaxProgressPercent = 100;
@@ -99,8 +103,11 @@ std::string PngToJpg(const std::string& png_img) {
 }
 
 // Creates a new page for the PDF document and adds |image_data| to the page.
+// |rotate| indicates whether the page should be rotated 180 degrees.
 // Returns whether the page was successfully created.
-bool AddPdfPage(sk_sp<SkDocument> pdf_doc, const sk_sp<SkData>& image_data) {
+bool AddPdfPage(sk_sp<SkDocument> pdf_doc,
+                const sk_sp<SkData>& image_data,
+                bool rotate) {
   const sk_sp<SkImage> image = SkImage::MakeFromEncoded(image_data);
   if (!image) {
     LOG(ERROR) << "Unable to generate image from encoded image data.";
@@ -113,15 +120,23 @@ bool AddPdfPage(sk_sp<SkDocument> pdf_doc, const sk_sp<SkData>& image_data) {
     return false;
   }
 
+  // Rotate pages that were flipped by an ADF scanner.
+  if (rotate) {
+    page_canvas->rotate(kRotationDegrees);
+    page_canvas->translate(-image->width(), -image->height());
+  }
+
   page_canvas->drawImage(image, /*left=*/0, /*top=*/0);
   pdf_doc->endPage();
   return true;
 }
 
 // Converts |png_images| into JPGs, adds them to a single PDF, and writes the
-// PDF to |file_path|. Returns whether the PDF was successfully saved.
+// PDF to |file_path|. If |rotate_alternate_pages| is true, every other page
+// is rotated 180 degrees. Returns whether the PDF was successfully saved.
 bool SaveAsPdf(const std::vector<std::string>& png_images,
-               const base::FilePath& file_path) {
+               const base::FilePath& file_path,
+               bool rotate_alternate_pages) {
   DCHECK(!file_path.empty());
 
   SkFILEWStream pdf_outfile(file_path.value().c_str());
@@ -132,6 +147,9 @@ bool SaveAsPdf(const std::vector<std::string>& png_images,
 
   sk_sp<SkDocument> pdf_doc = SkPDF::MakeDocument(&pdf_outfile);
   SkASSERT(pdf_doc);
+
+  // Never rotate first page of PDF.
+  bool rotate_current_page = false;
   for (const auto& png_img : png_images) {
     const std::string jpg_img = PngToJpg(png_img);
     if (jpg_img.empty()) {
@@ -151,9 +169,13 @@ bool SaveAsPdf(const std::vector<std::string>& png_images,
       return false;
     }
 
-    if (!AddPdfPage(pdf_doc, img_data)) {
+    if (!AddPdfPage(pdf_doc, img_data, rotate_current_page)) {
       LOG(ERROR) << "Unable to add new PDF page.";
       return false;
+    }
+
+    if (rotate_alternate_pages) {
+      rotate_current_page = !rotate_current_page;
     }
   }
 
@@ -250,6 +272,12 @@ void ScanService::StartScan(
                         /*not used*/ 0);
     return;
   }
+
+  // Determine if an ADF scanner that flips alternate pages was selected.
+  rotate_alternate_pages_ =
+      RE2::PartialMatch(scanner_name, RE2("([Ee][Pp][Ss][Oo][Nn])(.*)")) &&
+      RE2::PartialMatch(settings->source_name,
+                        RE2("([Aa][Dd][Ff] [Dd][Uu][Pp][Ll][Ee][Xx])"));
 
   if (!FilePathSupported(settings->scan_to_path)) {
     std::move(callback).Run(false);
@@ -397,7 +425,8 @@ void ScanService::OnScanCompleted(bool success) {
     DCHECK(!scanned_file_paths_.empty());
     base::PostTaskAndReplyWithResult(
         task_runner_.get(), FROM_HERE,
-        base::BindOnce(&SaveAsPdf, scanned_images_, scanned_file_paths_.back()),
+        base::BindOnce(&SaveAsPdf, scanned_images_, scanned_file_paths_.back(),
+                       rotate_alternate_pages_),
         base::BindOnce(&ScanService::OnPdfSaved,
                        weak_ptr_factory_.GetWeakPtr()));
   }
