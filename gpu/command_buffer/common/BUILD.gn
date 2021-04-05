@@ -51,7 +51,6 @@ source_set("common_sources") {
   sources = [
     "activity_flags.cc",
     "activity_flags.h",
-    "bitfield_helpers.h",
     "buffer.cc",
     "buffer.h",
     "capabilities.cc",
