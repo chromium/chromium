@@ -31,10 +31,24 @@ Please follow these steps to update libvpx source code:
 
 2. Generate .gni and config files.
 
-   cd third_party/libvpx
-   ./generate_gni.sh
+     cd third_party/libvpx
+     ./generate_gni.sh
+
+  Amend the commit created by the first step:
+
+     git commit -a --amend
 
 3. Update 'Branch' in README.chromium if necessary.
+
+4. Upload the change to Gerrit:
+
+     git cl upload
+
+   Run tryjobs:
+
+     git cl try
+
+5. Send out for review when all tryjobs pass. Submit it when +1 is granted.
 
 Tools needed to build libvpx:
 
