@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/optional.h"
 #include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "chromeos/dbus/lorgnette_manager/lorgnette_manager_client.h"
@@ -34,7 +35,8 @@ class COMPONENT_EXPORT(LORGNETTE_MANAGER) FakeLorgnetteManagerClient
   void StartScan(
       const std::string& device_name,
       const lorgnette::ScanSettings& settings,
-      VoidDBusMethodCallback completion_callback,
+      base::OnceCallback<void(bool, lorgnette::ScanFailureMode)>
+          completion_callback,
       base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
       base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback)
       override;

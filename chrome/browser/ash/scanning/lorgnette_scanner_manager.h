@@ -33,7 +33,9 @@ class LorgnetteScannerManager : public KeyedService {
                                    uint32_t page_number)>;
   using PageCallback = base::RepeatingCallback<void(std::string scan_data,
                                                     uint32_t page_number)>;
-  using CompletionCallback = base::OnceCallback<void(bool success)>;
+  using CompletionCallback =
+      base::OnceCallback<void(bool success,
+                              lorgnette::ScanFailureMode failure_mode)>;
   using CancelCallback = base::OnceCallback<void(bool success)>;
 
   ~LorgnetteScannerManager() override = default;

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -36,7 +35,8 @@ void FakeLorgnetteManagerClient::GetScannerCapabilities(
 void FakeLorgnetteManagerClient::StartScan(
     const std::string& device_name,
     const lorgnette::ScanSettings& settings,
-    VoidDBusMethodCallback completion_callback,
+    base::OnceCallback<void(bool, lorgnette::ScanFailureMode)>
+        completion_callback,
     base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
     base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback) {
   if (scan_response_.has_value()) {
@@ -57,8 +57,11 @@ void FakeLorgnetteManagerClient::StartScan(
   }
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(completion_callback),
-                                scan_response_.has_value()));
+      FROM_HERE,
+      base::BindOnce(std::move(completion_callback), scan_response_.has_value(),
+                     scan_response_.has_value()
+                         ? lorgnette::SCAN_FAILURE_MODE_NO_FAILURE
+                         : lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
   scan_response_ = base::nullopt;
 }
 

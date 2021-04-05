@@ -12,7 +12,6 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager.h"
 #include "chrome/browser/ash/scanning/lorgnette_scanner_manager_factory.h"
-#include "chromeos/dbus/lorgnette/lorgnette_service.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "third_party/cros_system_api/dbus/lorgnette/dbus-constants.h"
 
@@ -115,7 +114,9 @@ void DocumentScanScanFunction::OnPageReceived(std::string scanned_image,
   }
 }
 
-void DocumentScanScanFunction::OnScanCompleted(bool success) {
+void DocumentScanScanFunction::OnScanCompleted(
+    bool success,
+    lorgnette::ScanFailureMode /*failure_mode*/) {
   // TODO(pstew): Enlist a delegate to display received scan in the UI and
   // confirm that this scan should be sent to the caller. If this is a
   // multi-page scan, provide a means for adding additional scanned images up to

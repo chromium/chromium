@@ -213,6 +213,7 @@ class LorgnetteScannerManagerTest : public testing::Test {
 
   std::vector<std::string> scan_data() const { return scan_data_; }
   bool scan_success() const { return scan_success_; }
+  lorgnette::ScanFailureMode failure_mode() const { return failure_mode_; }
   bool cancel_scan_success() const { return cancel_scan_success_; }
 
  private:
@@ -235,8 +236,9 @@ class LorgnetteScannerManagerTest : public testing::Test {
   }
 
   // Handles completion of LorgnetteScannerManager::Scan().
-  void ScanCallback(bool success) {
+  void ScanCallback(bool success, lorgnette::ScanFailureMode failure_mode) {
     scan_success_ = success;
+    failure_mode_ = failure_mode;
     run_loop_->Quit();
   }
 
@@ -257,6 +259,8 @@ class LorgnetteScannerManagerTest : public testing::Test {
   std::vector<std::string> scanner_names_;
   base::Optional<lorgnette::ScannerCapabilities> scanner_capabilities_;
   bool scan_success_ = false;
+  lorgnette::ScanFailureMode failure_mode_ =
+      lorgnette::SCAN_FAILURE_MODE_NO_FAILURE;
   bool cancel_scan_success_ = false;
   std::vector<std::string> scan_data_;
 };
@@ -448,6 +452,7 @@ TEST_F(LorgnetteScannerManagerTest, NoScannersNames) {
   WaitForResult();
   EXPECT_EQ(scan_data().size(), 0);
   EXPECT_FALSE(scan_success());
+  EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
 }
 
 // Test that scanning fails when the scanner name does not correspond to a known
@@ -462,6 +467,7 @@ TEST_F(LorgnetteScannerManagerTest, UnknownScannerName) {
   WaitForResult();
   EXPECT_EQ(scan_data().size(), 0);
   EXPECT_FALSE(scan_success());
+  EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
 }
 
 // Test that scanning fails when there is no usable device name.
@@ -476,6 +482,7 @@ TEST_F(LorgnetteScannerManagerTest, NoUsableDeviceName) {
   WaitForResult();
   EXPECT_EQ(scan_data().size(), 0);
   EXPECT_FALSE(scan_success());
+  EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
 }
 
 // Test that scanning succeeds with a valid scanner name.
@@ -493,6 +500,7 @@ TEST_F(LorgnetteScannerManagerTest, ScanOnePage) {
   ASSERT_EQ(scan_data().size(), 1);
   EXPECT_EQ(scan_data()[0], "TestScanData");
   EXPECT_TRUE(scan_success());
+  EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
 }
 
 TEST_F(LorgnetteScannerManagerTest, ScanMultiplePages) {
@@ -512,6 +520,7 @@ TEST_F(LorgnetteScannerManagerTest, ScanMultiplePages) {
   EXPECT_EQ(scan_data()[1], "TestPageTwo");
   EXPECT_EQ(scan_data()[2], "TestPageThree");
   EXPECT_TRUE(scan_success());
+  EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
 }
 
 // Test that requesting to cancel the current scan job returns the success

@@ -67,7 +67,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   void StartScan(
       const std::string& device_name,
       const lorgnette::ScanSettings& settings,
-      VoidDBusMethodCallback completion_callback,
+      base::OnceCallback<void(bool, lorgnette::ScanFailureMode)>
+          completion_callback,
       base::RepeatingCallback<void(std::string, uint32_t)> page_callback,
       base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback)
       override {
@@ -81,7 +82,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode StartScanRequest protobuf";
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(completion_callback), false));
+          FROM_HERE, base::BindOnce(std::move(completion_callback), false,
+                                    lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
       return;
     }
 
@@ -192,7 +194,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
   // cancellation, as well as a ScanDataReader which is responsible for reading
   // from the pipe of data into a string.
   struct ScanJobState {
-    VoidDBusMethodCallback completion_callback;
+    base::OnceCallback<void(bool, lorgnette::ScanFailureMode)>
+        completion_callback;
     base::RepeatingCallback<void(uint32_t, uint32_t)> progress_callback;
     base::RepeatingCallback<void(std::string, uint32_t)> page_callback;
     VoidDBusMethodCallback cancel_callback;
@@ -215,8 +218,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!writer.AppendProtoAsArrayOfBytes(request)) {
       LOG(ERROR) << "Failed to encode GetNextImageRequest protobuf";
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(state.completion_callback), false));
+          FROM_HERE, base::BindOnce(std::move(state.completion_callback), false,
+                                    lorgnette::SCAN_FAILURE_MODE_UNKNOWN));
       scan_job_state_.erase(uuid);
       return;
     }
@@ -335,7 +338,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     ScanJobState& state = scan_job_state_[uuid];
     if (!data.has_value()) {
       LOG(ERROR) << "Reading scan data failed";
-      std::move(state.completion_callback).Run(false);
+      std::move(state.completion_callback)
+          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       scan_job_state_.erase(uuid);
       return;
     }
@@ -345,7 +349,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (more_pages) {
       GetNextImage(uuid);
     } else {
-      std::move(state.completion_callback).Run(true);
+      std::move(state.completion_callback)
+          .Run(true, lorgnette::SCAN_FAILURE_MODE_NO_FAILURE);
       scan_job_state_.erase(uuid);
     }
   }
@@ -354,7 +359,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     if (!response) {
       LOG(ERROR) << "Failed to obtain StartScanResponse";
-      std::move(state.completion_callback).Run(false);
+      std::move(state.completion_callback)
+          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       return;
     }
 
@@ -362,13 +368,15 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode StartScanResponse proto";
-      std::move(state.completion_callback).Run(false);
+      std::move(state.completion_callback)
+          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       return;
     }
 
     if (response_proto.state() == lorgnette::SCAN_STATE_FAILED) {
       LOG(ERROR) << "Starting Scan failed: " << response_proto.failure_reason();
-      std::move(state.completion_callback).Run(false);
+      std::move(state.completion_callback)
+          .Run(false, response_proto.scan_failure_mode());
       return;
     }
 
@@ -424,7 +432,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     ScanJobState& state = it->second;
     if (!response) {
       LOG(ERROR) << "Failed to obtain GetNextImage response";
-      std::move(state.completion_callback).Run(false);
+      std::move(state.completion_callback)
+          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       scan_job_state_.erase(uuid);
       return;
     }
@@ -433,7 +442,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     dbus::MessageReader reader(response);
     if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
       LOG(ERROR) << "Failed to decode GetNextImageResponse proto";
-      std::move(state.completion_callback).Run(false);
+      std::move(state.completion_callback)
+          .Run(false, lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
       scan_job_state_.erase(uuid);
       return;
     }
@@ -441,7 +451,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (!response_proto.success()) {
       LOG(ERROR) << "Getting next image failed: "
                  << response_proto.failure_reason();
-      std::move(state.completion_callback).Run(false);
+      std::move(state.completion_callback)
+          .Run(false, response_proto.scan_failure_mode());
       scan_job_state_.erase(uuid);
       return;
     }
@@ -466,7 +477,8 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     if (signal_proto.state() == lorgnette::SCAN_STATE_FAILED) {
       LOG(ERROR) << "Scan job " << signal_proto.scan_uuid()
                  << " failed: " << signal_proto.failure_reason();
-      std::move(state.completion_callback).Run(false);
+      std::move(state.completion_callback)
+          .Run(false, signal_proto.scan_failure_mode());
       scan_job_state_.erase(signal_proto.scan_uuid());
     } else if (signal_proto.state() == lorgnette::SCAN_STATE_PAGE_COMPLETED) {
       VLOG(1) << "Scan job " << signal_proto.scan_uuid() << " page "

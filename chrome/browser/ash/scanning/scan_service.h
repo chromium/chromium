@@ -94,7 +94,8 @@ class ScanService : public scanning::mojom::ScanService, public KeyedService {
                       uint32_t page_number);
 
   // Processes the final result of calling LorgnetteScannerManager::Scan().
-  void OnScanCompleted(bool success);
+  void OnScanCompleted(bool success,
+                       lorgnette::ScanFailureMode /*failure_mode*/);
 
   // Processes the final result of calling
   // LorgnetteScannerManager::CancelScan().

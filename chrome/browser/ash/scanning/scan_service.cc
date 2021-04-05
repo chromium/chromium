@@ -419,7 +419,8 @@ void ScanService::OnPageReceived(const base::FilePath& scan_to_path,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ScanService::OnScanCompleted(bool success) {
+void ScanService::OnScanCompleted(bool success,
+                                  lorgnette::ScanFailureMode /*failure_mode*/) {
   // |scanned_images_| only has data for PDF scans.
   if (success && !scanned_images_.empty()) {
     DCHECK(!scanned_file_paths_.empty());
