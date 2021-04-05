@@ -224,6 +224,12 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   // Initialize device controls with |config| or default values.
   bool InitControls(const Config& config);
 
+  // Initialize device controls with |config| or default values.
+  bool InitControlsH264(const Config& config);
+
+  // Initialize device controls with |config| or default values.
+  bool InitControlsVP8(const Config& config);
+
   // Create the buffers we need.
   bool CreateInputBuffers();
   bool CreateOutputBuffers();
