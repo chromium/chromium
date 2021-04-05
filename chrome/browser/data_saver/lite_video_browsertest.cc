@@ -209,10 +209,15 @@ IN_PROC_BROWSER_TEST_F(LiteVideoBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::LiteVideo::kBlocklistReasonName,
       static_cast<int>(lite_video::LiteVideoBlocklistReason::kUnknown));
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm::builders::LiteVideo::kThrottlingResultName,
-      static_cast<int>(
-          lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
+  auto* result_entry = ukm_recorder.GetEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingResultName);
+  EXPECT_TRUE(
+      *result_entry ==
+          static_cast<int>(
+              lite_video::LiteVideoThrottleResult::kThrottledWithoutStop) ||
+      *result_entry ==
+          static_cast<int>(
+              lite_video::LiteVideoThrottleResult::kThrottleStoppedOnRebuffer));
 }
 
 class LiteVideoWithLiteModeDisabledBrowserTest : public LiteVideoBrowserTest {
@@ -592,10 +597,15 @@ IN_PROC_BROWSER_TEST_F(LiteVideoDataSavingsBrowserTest,
   ukm_recorder.ExpectEntryMetric(
       entry, ukm::builders::LiteVideo::kBlocklistReasonName,
       static_cast<int>(lite_video::LiteVideoBlocklistReason::kUnknown));
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm::builders::LiteVideo::kThrottlingResultName,
-      static_cast<int>(
-          lite_video::LiteVideoThrottleResult::kThrottledWithoutStop));
+  auto* result_entry = ukm_recorder.GetEntryMetric(
+      entry, ukm::builders::LiteVideo::kThrottlingResultName);
+  EXPECT_TRUE(
+      *result_entry ==
+          static_cast<int>(
+              lite_video::LiteVideoThrottleResult::kThrottledWithoutStop) ||
+      *result_entry ==
+          static_cast<int>(
+              lite_video::LiteVideoThrottleResult::kThrottleStoppedOnRebuffer));
 
   // Expect at least 80KB data savings. The video is ~400KB, and based on the
   // default parameters from GetThrottledVideoBytesDeflatedRatio(), it could be
