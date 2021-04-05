@@ -1242,3 +1242,27 @@ TEST_F(UsbChooserContextTest, MassStorageHidden) {
       }));
   loop.Run();
 }
+
+TEST_F(UsbChooserContextTest, DeviceWithNoInterfaceVisible) {
+  GURL url("https://www.google.com");
+  const auto origin = url::Origin::Create(url);
+
+  std::vector<device::mojom::UsbConfigurationInfoPtr> configs;
+  configs.push_back(
+      device::FakeUsbDeviceInfo::CreateConfiguration(0x08, 0x06, 0x50));
+  configs[0]->interfaces.clear();
+
+  UsbDeviceInfoPtr device_info = device_manager_.CreateAndAddDevice(
+      0, 0, "vendor1", "no_interface", "123ABC", std::move(configs));
+
+  UsbChooserContext* chooser_context = GetChooserContext(profile());
+
+  base::RunLoop loop;
+  chooser_context->GetDevices(
+      base::BindLambdaForTesting([&](std::vector<UsbDeviceInfoPtr> devices) {
+        EXPECT_EQ(1u, devices.size());
+        EXPECT_EQ(device_info->product_name, devices[0]->product_name);
+        loop.Quit();
+      }));
+  loop.Run();
+}

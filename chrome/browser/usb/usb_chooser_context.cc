@@ -130,6 +130,9 @@ bool ShouldExposeDevice(const device::mojom::UsbDeviceInfo& device_info) {
   // ChromeOS would allow these interfaces to be claimed.
 
   for (auto& configuration : device_info.configurations) {
+    if (configuration->interfaces.size() == 0) {
+        return true;
+    }
     for (auto& interface : configuration->interfaces) {
       if (!IsMassStorageInterface(*interface))
         return true;
