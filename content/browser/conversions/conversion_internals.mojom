@@ -30,9 +30,9 @@ struct WebUIImpression {
 // Mojo interface used for communication between a WebUI and the storage layer
 // for conversion measurement.
 interface ConversionInternalsHandler {
-  // Returns whether conversion measurement is enabled in the browisng context
-  // the WebUI is in.
-  IsMeasurementEnabled() => (bool enabled);
+  // Returns whether conversion measurement and the debug mode are enabled in
+  // the browisng context the WebUI is in.
+  IsMeasurementEnabled() => (bool enabled, bool debug_mode);
 
   // Returns all active impressions that are persisted in storage. This does
   // not include expired impressions, or impressions that can no longer convert

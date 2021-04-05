@@ -26,6 +26,12 @@ let impressions = null;
 let reports = null;
 
 /**
+ * This is used to create TrustedHTML.
+ * @type {!TrustedTypePolicy}
+ */
+let staticHtmlPolicy = null;
+
+/**
  * Remove all rows from the given table.
  * @param {!HTMLElement} table DOM element corresponding to table body.
  */
@@ -135,6 +141,24 @@ function updatePageData() {
   pageHandler.isMeasurementEnabled().then((response) => {
     $('feature-status-content').innerText =
         response.enabled ? 'enabled' : 'disabled';
+
+    const htmlString = 'The #conversion-measurement-debug-mode flag is ' +
+        '<strong>enabled</strong>, ' +
+        'reports are sent immediately and never pending.';
+
+    if (window.trustedTypes) {
+      if (staticHtmlPolicy === null) {
+        staticHtmlPolicy = trustedTypes.createPolicy(
+            'cr-ui-tree-js-static', {createHTML: () => htmlString});
+      }
+      $('debug-mode-content').innerHTML = staticHtmlPolicy.createHTML('');
+    } else {
+      $('debug-mode-content').innerHTML = htmlString;
+    }
+
+    if (!response.debugMode) {
+      $('debug-mode-content').innerText = '';
+    }
   });
 
   pageHandler.getActiveImpressions().then((response) => {

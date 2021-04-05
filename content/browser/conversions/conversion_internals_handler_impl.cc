@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/time/time.h"
 #include "content/browser/conversions/conversion_manager_impl.h"
 #include "content/browser/conversions/conversion_report.h"
@@ -19,6 +20,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 
 namespace content {
 
@@ -78,7 +80,9 @@ void ConversionInternalsHandlerImpl::IsMeasurementEnabled(
       manager_provider_->GetManager(contents) &&
       GetContentClient()->browser()->IsConversionMeasurementAllowed(
           contents->GetBrowserContext());
-  std::move(callback).Run(measurement_enabled);
+  bool debug_mode = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kConversionsDebugMode);
+  std::move(callback).Run(measurement_enabled, debug_mode);
 }
 
 void ConversionInternalsHandlerImpl::GetActiveImpressions(
