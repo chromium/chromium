@@ -90,14 +90,11 @@ void TransferBufferTest::TearDown() {
   transfer_buffer_.reset();
 }
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const int32_t TransferBufferTest::kNumCommandEntries;
 const int32_t TransferBufferTest::kCommandBufferSizeBytes;
 const uint32_t TransferBufferTest::kStartingOffset;
 const uint32_t TransferBufferTest::kAlignment;
 const uint32_t TransferBufferTest::kTransferBufferSize;
-#endif
 
 TEST_F(TransferBufferTest, Basic) {
   Initialize();
@@ -326,8 +323,6 @@ void TransferBufferExpandContractTest::TearDown() {
   transfer_buffer_.reset();
 }
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const int32_t TransferBufferExpandContractTest::kNumCommandEntries;
 const int32_t TransferBufferExpandContractTest::kCommandBufferSizeBytes;
 const uint32_t TransferBufferExpandContractTest::kStartingOffset;
@@ -335,7 +330,6 @@ const uint32_t TransferBufferExpandContractTest::kAlignment;
 const uint32_t TransferBufferExpandContractTest::kStartTransferBufferSize;
 const uint32_t TransferBufferExpandContractTest::kMaxTransferBufferSize;
 const uint32_t TransferBufferExpandContractTest::kMinTransferBufferSize;
-#endif
 
 TEST_F(TransferBufferExpandContractTest, ExpandWithSmallAllocations) {
   int32_t token = helper_->InsertToken();

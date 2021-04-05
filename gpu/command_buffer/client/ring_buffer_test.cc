@@ -88,10 +88,8 @@ class BaseRingBufferTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-#ifndef _MSC_VER
 const unsigned int BaseRingBufferTest::kBaseOffset;
 const unsigned int BaseRingBufferTest::kBufferSize;
-#endif
 
 // Test fixture for RingBuffer test - Creates a RingBuffer, using a
 // CommandBufferHelper with a mock AsyncAPIInterface for its interface (calling

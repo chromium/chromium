@@ -324,8 +324,6 @@ class RasterImplementationManualInitTest : public RasterImplementationTest {
   void SetUp() override {}
 };
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const uint8_t RasterImplementationTest::kInitialValue;
 const uint32_t RasterImplementationTest::kNumCommandEntries;
 const uint32_t RasterImplementationTest::kCommandBufferSizeBytes;
@@ -338,7 +336,6 @@ const GLuint RasterImplementationTest::kStartId;
 const GLuint RasterImplementationTest::kBuffersStartId;
 const GLuint RasterImplementationTest::kTexturesStartId;
 const GLuint RasterImplementationTest::kQueriesStartId;
-#endif
 
 TEST_F(RasterImplementationTest, GetBucketContents) {
   const uint32_t kBucketId = RasterImplementation::kResultBucketId;

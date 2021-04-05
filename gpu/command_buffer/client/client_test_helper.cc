@@ -98,11 +98,8 @@ void FakeCommandBufferServiceBase::SetContextLostReason(
   state_.context_lost_reason = reason;
 }
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const int32_t FakeCommandBufferServiceBase::kTransferBufferBaseId;
 const int32_t FakeCommandBufferServiceBase::kMaxTransferBuffers;
-#endif
 
 MockClientCommandBuffer::MockClientCommandBuffer() {
   DelegateToFake();

@@ -20,10 +20,8 @@
 
 namespace gpu {
 
-#if !defined(_MSC_VER)
 const uint32_t ImplementationBase::kMaxSizeOfSimpleResult;
 const uint32_t ImplementationBase::kStartingOffset;
-#endif
 
 ImplementationBase::ImplementationBase(CommandBufferHelper* helper,
                                        TransferBufferInterface* transfer_buffer,

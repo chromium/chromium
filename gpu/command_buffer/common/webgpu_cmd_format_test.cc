@@ -54,10 +54,7 @@ class WebGPUFormatTest : public testing::Test {
   unsigned char buffer_[1024];
 };
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const unsigned char WebGPUFormatTest::kInitialValue;
-#endif
 
 #include "gpu/command_buffer/common/webgpu_cmd_format_test_autogen.h"
 

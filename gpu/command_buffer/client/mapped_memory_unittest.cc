@@ -59,9 +59,7 @@ class MappedMemoryTestBase : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-#ifndef _MSC_VER
 const unsigned int MappedMemoryTestBase::kBufferSize;
-#endif
 
 // Test fixture for MemoryChunk test - Creates a MemoryChunk, using a
 // CommandBufferHelper with a mock AsyncAPIInterface for its interface (calling
@@ -94,9 +92,7 @@ class MemoryChunkTest : public MappedMemoryTestBase {
   scoped_refptr<gpu::Buffer> buffer_;
 };
 
-#ifndef _MSC_VER
 const int32_t MemoryChunkTest::kShmId;
-#endif
 
 TEST_F(MemoryChunkTest, Basic) {
   const unsigned int kSize = 16;

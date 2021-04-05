@@ -37,12 +37,9 @@ class VertexArrayObjectManagerTest : public testing::Test {
   std::unique_ptr<VertexArrayObjectManager> manager_;
 };
 
-// GCC requires these declarations, but MSVC requires they not be present
-#ifndef _MSC_VER
 const GLuint VertexArrayObjectManagerTest::kMaxAttribs;
 const GLuint VertexArrayObjectManagerTest::kClientSideArrayBuffer;
 const GLuint VertexArrayObjectManagerTest::kClientSideElementArrayBuffer;
-#endif
 
 TEST_F(VertexArrayObjectManagerTest, Basic) {
   EXPECT_FALSE(manager_->HaveEnabledClientSideBuffers());

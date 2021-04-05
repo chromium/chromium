@@ -62,9 +62,7 @@ class BaseFencedAllocatorTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
-#ifndef _MSC_VER
 const unsigned int BaseFencedAllocatorTest::kBufferSize;
-#endif
 
 // Test fixture for FencedAllocator test - Creates a FencedAllocator, using a
 // CommandBufferHelper with a mock AsyncAPIInterface for its interface (calling
