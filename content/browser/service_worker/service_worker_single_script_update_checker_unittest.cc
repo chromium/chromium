@@ -1004,7 +1004,7 @@ TEST_F(ServiceWorkerSingleScriptUpdateCheckerTest, ScriptType_Module_Main) {
   std::string header;
   EXPECT_TRUE(request->headers.GetHeader("Service-Worker", &header));
   EXPECT_EQ("script", header);
-  EXPECT_EQ(request->mode, network::mojom::RequestMode::kCors);
+  EXPECT_EQ(request->mode, network::mojom::RequestMode::kSameOrigin);
   EXPECT_EQ(request->credentials_mode, network::mojom::CredentialsMode::kOmit);
   EXPECT_EQ(request->destination,
             network::mojom::RequestDestination::kServiceWorker);
