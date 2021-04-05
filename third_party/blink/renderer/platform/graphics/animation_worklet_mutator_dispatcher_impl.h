@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_ANIMATION_WORKLET_MUTATOR_DISPATCHER_IMPL_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -80,7 +81,7 @@ class PLATFORM_EXPORT AnimationWorkletMutatorDispatcherImpl final
   }
 
   void SetClockForTesting(std::unique_ptr<base::TickClock> tick_clock) {
-    tick_clock_.reset(tick_clock.release());
+    tick_clock_ = std::move(tick_clock);
   }
 
  private:

@@ -34,7 +34,7 @@ MainThreadEventQueueTaskList::Enqueue(
 std::unique_ptr<MainThreadEventQueueTask> MainThreadEventQueueTaskList::Pop() {
   std::unique_ptr<MainThreadEventQueueTask> result;
   if (!queue_.empty()) {
-    result.reset(queue_.front().release());
+    result = std::move(queue_.front());
     queue_.pop_front();
   }
   return result;
@@ -44,7 +44,7 @@ std::unique_ptr<MainThreadEventQueueTask> MainThreadEventQueueTaskList::remove(
     size_t pos) {
   std::unique_ptr<MainThreadEventQueueTask> result;
   if (!queue_.empty()) {
-    result.reset(queue_.at(pos).release());
+    result = std::move(queue_.at(pos));
     queue_.erase(queue_.begin() + pos);
   }
   return result;

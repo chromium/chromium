@@ -7,6 +7,8 @@
 
 #include <memory.h>
 
+#include <utility>
+
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/time/time.h"
@@ -80,7 +82,7 @@ class SystemAppBackgroundTask {
 
   // Set the url loader for testing. Takes ownership of the argument.
   void SetUrlLoaderForTesting(std::unique_ptr<WebAppUrlLoader> loader) {
-    web_app_url_loader_.reset(loader.release());
+    web_app_url_loader_ = std::move(loader);
   }
 
   base::OneShotTimer* get_start_timer_for_testing() {

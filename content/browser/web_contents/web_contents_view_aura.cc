@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -1243,7 +1244,7 @@ void WebContentsViewAura::DragEnteredCallback(
   current_rwh_for_drag_ = target_rwh->GetWeakPtr();
   current_rvh_for_drag_ =
       GetRenderViewHostID(web_contents_->GetRenderViewHost());
-  current_drop_data_.reset(drop_data.release());
+  current_drop_data_ = std::move(drop_data);
   current_rwh_for_drag_->FilterDropData(current_drop_data_.get());
 
   blink::DragOperationsMask op_mask =

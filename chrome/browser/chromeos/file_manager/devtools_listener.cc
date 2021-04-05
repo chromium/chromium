@@ -5,9 +5,11 @@
 #include "chrome/browser/chromeos/file_manager/devtools_listener.h"
 
 #include <stddef.h>
+
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -134,7 +136,7 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
   SendCommandMessage(host, get_precise_coverage);
   AwaitCommandResponse(40);
 
-  script_coverage_.reset(value_.release());
+  script_coverage_ = std::move(value_);
   StoreScripts(host, store);
 
   std::string stop_debugger = "{\"id\":41,\"method\":\"Debugger.disable\"}";
@@ -279,7 +281,7 @@ void DevToolsListener::DispatchProtocolMessage(
 
   base::Optional<int> id = value->FindIntPath("id");
   if (id.has_value() && id.value() == value_id_) {
-    value_.reset(value.release());
+    value_ = std::move(value);
     CHECK(value_closure_);
     std::move(value_closure_).Run();
   }

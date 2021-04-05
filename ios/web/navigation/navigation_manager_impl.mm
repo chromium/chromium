@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -751,7 +752,7 @@ void NavigationManagerImpl::LoadURLWithParams(
       int next_item_index = web_view_cache_.GetCurrentItemIndex() + 1;
       DCHECK_GT(next_item_index, 0);
       cached_items.resize(next_item_index + 1);
-      cached_items[next_item_index].reset(pending_item_.release());
+      cached_items[next_item_index] = std::move(pending_item_);
       Restore(next_item_index, std::move(cached_items));
       DCHECK(web_view_cache_.IsAttachedToWebView());
       return;
@@ -1387,7 +1388,7 @@ NavigationManagerImpl::WKWebViewCache::ReleaseCachedItems() {
   DCHECK(!IsAttachedToWebView());
   std::vector<std::unique_ptr<NavigationItem>> result(cached_items_.size());
   for (size_t index = 0; index < cached_items_.size(); index++) {
-    result[index].reset(cached_items_[index].release());
+    result[index] = std::move(cached_items_[index]);
   }
   cached_items_.clear();
   return result;

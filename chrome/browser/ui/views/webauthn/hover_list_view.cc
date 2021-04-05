@@ -52,7 +52,7 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
         gfx::CreateVectorIcon(*vector_icon, kIconSize, icon_color));
   }
 
-  std::unique_ptr<views::View> secondary_view = nullptr;
+  std::unique_ptr<views::View> secondary_view;
 
   switch (item_type) {
     case ItemType::kPlaceholder:
@@ -64,14 +64,14 @@ std::unique_ptr<WebAuthnHoverButton> CreateHoverButtonForListItem(
       auto chevron_image = std::make_unique<views::ImageView>();
       chevron_image->SetImage(gfx::CreateVectorIcon(views::kSubmenuArrowIcon,
                                                     kChevronSize, icon_color));
-      secondary_view.reset(chevron_image.release());
+      secondary_view = std::move(chevron_image);
       break;
     }
 
     case ItemType::kThrobber: {
       auto throbber = std::make_unique<views::Throbber>();
       throbber->Start();
-      secondary_view.reset(throbber.release());
+      secondary_view = std::move(throbber);
       // A border isn't set for kThrobber items because they are assumed to
       // always have a description.
       DCHECK(!item_description.empty());

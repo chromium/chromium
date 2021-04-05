@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/build_time.h"
 #include "base/stl_util.h"
@@ -47,7 +48,7 @@ class ChromeCTPolicyEnforcerTest : public ::testing::Test {
     auto enforcer = std::make_unique<ChromeCTPolicyEnforcer>(
         base::GetBuildTime(), GetDisqualifiedLogs(), GetLogsOperatedByGoogle());
     enforcer->SetClockForTesting(&clock_);
-    policy_enforcer_.reset(enforcer.release());
+    policy_enforcer_ = std::move(enforcer);
 
     std::string der_test_cert(net::ct::GetDerEncodedX509Cert());
     chain_ = X509Certificate::CreateFromBytes(der_test_cert.data(),

@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -56,7 +57,7 @@ class MockResponseReader : public AppCacheResponseReader {
     callback_ = std::move(callback);  // Cleared on completion.
 
     int rv = info_.get() ? info_size_ : net::ERR_FAILED;
-    info_buffer_->http_info.reset(info_.release());
+    info_buffer_->http_info = std::move(info_);
     info_buffer_->response_data_size = data_size_;
     ScheduleUserCallback(rv);
   }

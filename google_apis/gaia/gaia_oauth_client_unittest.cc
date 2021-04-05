@@ -5,6 +5,7 @@
 // A complete set of unit tests for GaiaOAuthClient.
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -219,14 +220,14 @@ class MockGaiaOAuthClientDelegate : public gaia::GaiaOAuthClient::Delegate {
                void(const base::DictionaryValue* user_info));
   void OnGetUserInfoResponse(
       std::unique_ptr<base::DictionaryValue> user_info) override {
-    user_info_.reset(user_info.release());
+    user_info_ = std::move(user_info);
     OnGetUserInfoResponsePtr(user_info_.get());
   }
   MOCK_METHOD1(OnGetTokenInfoResponsePtr,
                void(const base::DictionaryValue* token_info));
   void OnGetTokenInfoResponse(
       std::unique_ptr<base::DictionaryValue> token_info) override {
-    token_info_.reset(token_info.release());
+    token_info_ = std::move(token_info);
     OnGetTokenInfoResponsePtr(token_info_.get());
   }
 

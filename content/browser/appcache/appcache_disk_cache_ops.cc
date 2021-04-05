@@ -243,7 +243,7 @@ void AppCacheResponseReader::OnIOComplete(int result) {
         return;
       }
       DCHECK(!response_truncated);
-      info_buffer_->http_info.reset(info.release());
+      info_buffer_->http_info = std::move(info);
 
       // Also return the size of the response body
       DCHECK(entry_);

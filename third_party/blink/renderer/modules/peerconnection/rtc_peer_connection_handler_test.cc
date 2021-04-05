@@ -244,7 +244,7 @@ void OnStatsDelivered(std::unique_ptr<RTCStatsReportPlatform>* result,
                       std::unique_ptr<RTCStatsReportPlatform> report) {
   EXPECT_TRUE(main_thread->BelongsToCurrentThread());
   EXPECT_TRUE(report);
-  result->reset(report.release());
+  *result = std::move(report);
 }
 
 template <typename T>
@@ -949,7 +949,7 @@ TEST_F(RTCPeerConnectionHandlerTest, GetRTCStats) {
   int undefined_stats_count = 0;
   int defined_stats_count = 0;
   for (std::unique_ptr<RTCStats> stats = result->Next(); stats;
-       stats.reset(result->Next().release())) {
+       stats = result->Next()) {
     EXPECT_EQ(stats->GetType().Utf8(), webrtc::RTCTestStats::kType);
     if (stats->Id().Utf8() == "RTCUndefinedStats") {
       ++undefined_stats_count;

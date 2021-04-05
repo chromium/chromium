@@ -224,9 +224,9 @@ void AnimationWorkletMutatorDispatcherImpl::AsyncMutationsDone(
   auto done_callback = std::move(on_async_mutation_complete_);
   std::unique_ptr<AsyncMutationRequest> queued_request;
   if (queued_priority_request.get()) {
-    queued_request.reset(queued_priority_request.release());
+    queued_request = std::move(queued_priority_request);
   } else if (queued_replaceable_request.get()) {
-    queued_request.reset(queued_replaceable_request.release());
+    queued_request = std::move(queued_replaceable_request);
   }
   if (queued_request.get()) {
     mutator_input_map_ = CreateInputMap(*queued_request->input_state);
