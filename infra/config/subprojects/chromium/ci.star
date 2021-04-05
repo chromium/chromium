@@ -5200,6 +5200,18 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Mac11 Tests",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builder_group = "chromium.mac",
+    console_view_entry = consoles.console_view_entry(
+        category = "mac",
+        short_name = "11",
+    ),
+    main_console_view = "main",
+    triggered_by = ["ci/Mac Builder"],
+)
+
+ci.thin_tester(
     name = "Mac10.15 Tests (dbg)",
     branch_selector = branches.STANDARD_MILESTONE,
     builder_group = "chromium.mac",

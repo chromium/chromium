@@ -562,6 +562,13 @@
       },
     },
   },
+  'mac_11': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Mac-11.0|Mac-10.16',
+      },
+    },
+  },
   'mac_11.0_beta': {
     'swarming': {
       'dimensions': {
