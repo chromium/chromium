@@ -26,6 +26,7 @@ import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
@@ -252,7 +253,9 @@ public class MediaNotificationController {
 
     private PendingIntent createPendingIntent(String action) {
         Intent intent = mDelegate.createServiceIntent().setAction(action);
-        return PendingIntent.getService(getContext(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
+        return PendingIntent.getService(getContext(), 0, intent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 
     private static boolean isRunningAtLeastN() {
