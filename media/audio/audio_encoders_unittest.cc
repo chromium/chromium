@@ -170,7 +170,8 @@ TEST_P(AudioEncodersTest, OpusTimestamps) {
 
     current_timestamp = base::TimeTicks();
     for (auto& ts : timestamps) {
-      EXPECT_EQ(current_timestamp, ts);
+      auto drift = (current_timestamp - ts).magnitude();
+      EXPECT_LE(drift, base::TimeDelta::FromMicroseconds(1));
       current_timestamp += kOpusBufferDuration;
     }
   }
@@ -209,12 +210,16 @@ TEST_P(AudioEncodersTest, OpusExtraData) {
 }
 
 // Check how Opus encoder reacts to breaks in continuity of incoming sound.
-// Capture times are expected to be exactly buffer durations apart,
-// but the encoder should be ready to handle situations when it's not the case.
+// Under normal circumstances capture times are expected to be exactly
+// a buffer's duration apart, but if they are not, the encoder just ignores
+// incoming capture times. In other words the only capture times that matter
+// are
+//   1. timestamp of the first encoded buffer
+//   2. timestamps of buffers coming immediately after Flush() calls.
 TEST_P(AudioEncodersTest, OpusTimeContinuityBreak) {
-  base::TimeTicks current_timestamp;
-  base::TimeDelta small_gap = base::TimeDelta::FromMicroseconds(500);
-  base::TimeDelta large_gap = base::TimeDelta::FromMicroseconds(1500);
+  base::TimeTicks current_timestamp = base::TimeTicks::Now();
+  base::TimeDelta gap = base::TimeDelta::FromMicroseconds(1500);
+  buffer_duration_ = kOpusBufferDuration;
   std::vector<base::TimeTicks> timestamps;
 
   auto output_cb =
@@ -225,55 +230,42 @@ TEST_P(AudioEncodersTest, OpusTimeContinuityBreak) {
   SetupEncoder(std::move(output_cb));
 
   // Encode first normal buffer and immediately get an output for it.
-  buffer_duration_ = kOpusBufferDuration;
   auto ts0 = current_timestamp;
   ProduceAudioAndEncode(current_timestamp);
   current_timestamp += buffer_duration_;
   EXPECT_EQ(1u, timestamps.size());
   EXPECT_EQ(ts0, timestamps[0]);
 
-  // Add another buffer which is too small and will be buffered
-  buffer_duration_ = kOpusBufferDuration / 2;
+  // Encode another buffer after a large gap, output timestamp should
+  // disregard the gap.
   auto ts1 = current_timestamp;
+  current_timestamp += gap;
   ProduceAudioAndEncode(current_timestamp);
   current_timestamp += buffer_duration_;
-  EXPECT_EQ(1u, timestamps.size());
-
-  // Add another large buffer after a large gap, 2 outputs are expected
-  // because large gap should trigger a flush.
-  current_timestamp += large_gap;
-  buffer_duration_ = kOpusBufferDuration;
-  auto ts2 = current_timestamp;
-  ProduceAudioAndEncode(current_timestamp);
-  current_timestamp += buffer_duration_;
-  EXPECT_EQ(3u, timestamps.size());
+  EXPECT_EQ(2u, timestamps.size());
   EXPECT_EQ(ts1, timestamps[1]);
-  EXPECT_EQ(ts2, timestamps[2]);
 
-  // Add another buffer which is too small and will be buffered
-  buffer_duration_ = kOpusBufferDuration / 2;
-  auto ts3 = current_timestamp;
+  // Another buffer without a gap.
+  auto ts2 = ts1 + buffer_duration_;
   ProduceAudioAndEncode(current_timestamp);
-  current_timestamp += buffer_duration_;
   EXPECT_EQ(3u, timestamps.size());
-
-  // Add a small gap and a large buffer, only one output is expected because
-  // small gap doesn't trigger a flush.
-  // Small gap itself is not counted in output timestamps.
-  auto ts4 = current_timestamp + kOpusBufferDuration / 2;
-  current_timestamp += small_gap;
-  buffer_duration_ = kOpusBufferDuration;
-  ProduceAudioAndEncode(current_timestamp);
-  EXPECT_EQ(4u, timestamps.size());
-  EXPECT_EQ(ts3, timestamps[3]);
+  EXPECT_EQ(ts2, timestamps[2]);
 
   encoder()->Flush(base::BindOnce([](Status error) {
     if (!error.is_ok())
       FAIL() << error.message();
   }));
   RunLoop();
-  EXPECT_EQ(5u, timestamps.size());
-  EXPECT_EQ(ts4, timestamps[4]);
+
+  // Reset output timestamp after Flush(), the encoder should start producing
+  // timestamps from new base 0.
+  current_timestamp = base::TimeTicks();
+
+  auto ts3 = current_timestamp;
+  ProduceAudioAndEncode(current_timestamp);
+  current_timestamp += buffer_duration_;
+  EXPECT_EQ(4u, timestamps.size());
+  EXPECT_EQ(ts3, timestamps[3]);
 }
 
 TEST_P(AudioEncodersTest, FullCycleEncodeDecode) {

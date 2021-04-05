@@ -13,6 +13,7 @@
 #include "media/base/audio_converter.h"
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_push_fifo.h"
+#include "media/base/audio_timestamp_helper.h"
 #include "third_party/opus/src/include/opus.h"
 
 namespace media {
@@ -46,17 +47,9 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // buffered. Calls libopus to do actual encoding.
   void OnFifoOutput(const AudioBus& output_bus, int frame_delay);
 
-  void FlushInternal();
-
   CodecDescription PrepareExtraData();
 
   StatusOr<OwnedOpusEncoder> CreateOpusEncoder();
-
-  // Computes the timestamp of an AudioBus which has |num_frames| and was
-  // captured at |capture_time|. This timestamp is the capture time of the first
-  // sample in that AudioBus.
-  base::TimeTicks ComputeTimestamp(int num_frames,
-                                   base::TimeTicks capture_time) const;
 
   AudioParameters input_params_;
 
@@ -82,17 +75,8 @@ class MEDIA_EXPORT AudioOpusEncoder : public AudioEncoder {
   // encoder fails.
   OwnedOpusEncoder opus_encoder_;
 
-  // The capture time of the most recent |audio_bus| delivered to
-  // EncodeAudio().
-  base::TimeTicks last_capture_time_;
-
-  // If FlushImpl() was called while |fifo_| has some frames but not full yet,
-  // this will be the number of flushed frames, which is used to compute the
-  // timestamp provided in the output |EncodedAudioBuffer|.
-  base::Optional<int> number_of_flushed_frames_;
-
-  // Timestamp that should be reported by the next call of |output_callback_|
-  base::TimeTicks next_timestamp_;
+  // Keeps track of the timestamps for the each |output_callback_|
+  std::unique_ptr<AudioTimestampHelper> timestamp_tracker_;
 
   // Callback for reporting completion and status of the current Flush() or
   // Encoder()

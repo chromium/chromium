@@ -11,10 +11,10 @@
 #include "base/numerics/checked_math.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
-#include "media/base/audio_timestamp_helper.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/status.h"
 #include "media/base/status_codes.h"
+#include "media/base/timestamp_constants.h"
 
 namespace media {
 
@@ -132,6 +132,8 @@ void AudioOpusEncoder::Initialize(const Options& options,
   converter_ =
       std::make_unique<AudioConverter>(input_params_, converted_params_,
                                        /*disable_fifo=*/false);
+  timestamp_tracker_ =
+      std::make_unique<AudioTimestampHelper>(converted_params_.sample_rate());
   fifo_ = std::make_unique<AudioPushFifo>(base::BindRepeating(
       &AudioOpusEncoder::OnFifoOutput, base::Unretained(this)));
   converted_audio_bus_ = AudioBus::Create(
@@ -207,6 +209,7 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
   DCHECK_EQ(audio_bus->channels(), input_params_.channels());
   DCHECK(!capture_time.is_null());
   DCHECK(!done_cb.is_null());
+  DCHECK(timestamp_tracker_);
 
   current_done_cb_ = BindToCurrentLoop(std::move(done_cb));
   if (!opus_encoder_) {
@@ -215,32 +218,11 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
     return;
   }
 
-  DLOG_IF(ERROR, !last_capture_time_.is_null() &&
-                     ((capture_time - last_capture_time_).InSecondsF() >
-                      1.5f * audio_bus->frames() / input_params_.sample_rate()))
-      << "Possibly frames were skipped, which may result in inaccurate "
-         "timestamp calculation.";
-
-  last_capture_time_ = capture_time;
-
-  // If |capture_time| - |audio_bus|'s duration is not equal to the expected
-  // timestamp for the next audio sample. It means there is a gap/overlap,
-  // if it's big enough we flash and start anew, otherwise we ignore it.
-  auto capture_ts = ComputeTimestamp(audio_bus->frames(), capture_time);
-  auto existing_buffer_duration = AudioTimestampHelper::FramesToTime(
-      fifo_->queued_frames(), input_params_.sample_rate());
-  auto end_of_existing_buffer_ts = next_timestamp_ + existing_buffer_duration;
-  base::TimeDelta gap = (capture_ts - end_of_existing_buffer_ts).magnitude();
-  constexpr base::TimeDelta max_gap = base::TimeDelta::FromMilliseconds(1);
-  if (gap > max_gap) {
-    DLOG(ERROR) << "Large gap in sound. Forced flush."
-                << " Gap/overlap duration: " << gap
-                << " capture_ts: " << capture_ts
-                << " next_timestamp_: " << next_timestamp_
-                << " existing_buffer_duration: " << existing_buffer_duration
-                << " end_of_existing_buffer_ts: " << end_of_existing_buffer_ts;
-    FlushInternal();
-    next_timestamp_ = capture_ts;
+  if (timestamp_tracker_->base_timestamp() == kNoTimestamp) {
+    auto capture_ts = capture_time - base::TimeTicks() -
+                      AudioTimestampHelper::FramesToTime(
+                          audio_bus->frames(), input_params_.sample_rate());
+    timestamp_tracker_->SetBaseTimestamp(capture_ts);
   }
 
   // The |fifo_| won't trigger OnFifoOutput() until we have enough frames
@@ -263,22 +245,13 @@ void AudioOpusEncoder::Flush(StatusCB done_cb) {
   }
 
   current_done_cb_ = std::move(done_cb);
-  FlushInternal();
+  fifo_->Flush();
+  timestamp_tracker_->SetBaseTimestamp(kNoTimestamp);
   if (!current_done_cb_.is_null()) {
     // Is |current_done_cb_| is null, it means OnFifoOutput() has already
     // reported an error.
     std::move(current_done_cb_).Run(OkStatus());
   }
-}
-
-void AudioOpusEncoder::FlushInternal() {
-  // This is needed to correctly compute the timestamp, since the number of
-  // frames of |output_bus| provided to OnFifoOutput() will always be equal to
-  // the full frames_per_buffer(), as the fifo's Flush() will pad the remaining
-  // empty frames with zeros.
-  number_of_flushed_frames_ = fifo_->queued_frames();
-  fifo_->Flush();
-  number_of_flushed_frames_.reset();
 }
 
 void AudioOpusEncoder::OnFifoOutput(const AudioBus& output_bus,
@@ -300,10 +273,6 @@ void AudioOpusEncoder::OnFifoOutput(const AudioBus& output_bus,
     return;
   }
 
-  auto encoded_duration = AudioTimestampHelper::FramesToTime(
-      number_of_flushed_frames_.value_or(output_bus.frames()),
-      input_params_.sample_rate());
-
   size_t encoded_data_size = result;
   // If |result| in {0,1}, do nothing; the documentation says that a return
   // value of zero or one means the packet does not need to be transmitted.
@@ -313,19 +282,12 @@ void AudioOpusEncoder::OnFifoOutput(const AudioBus& output_bus,
       desc = PrepareExtraData();
       need_to_emit_extra_data_ = false;
     }
-    output_cb_.Run(
-        EncodedAudioBuffer(converted_params_, std::move(encoded_data),
-                           encoded_data_size, next_timestamp_),
-        desc);
+    auto ts = base::TimeTicks() + timestamp_tracker_->GetTimestamp();
+    EncodedAudioBuffer encoded_buffer(
+        converted_params_, std::move(encoded_data), encoded_data_size, ts);
+    output_cb_.Run(std::move(encoded_buffer), desc);
   }
-  next_timestamp_ += encoded_duration;
-}
-
-base::TimeTicks AudioOpusEncoder::ComputeTimestamp(
-    int num_frames,
-    base::TimeTicks capture_time) const {
-  return capture_time - AudioTimestampHelper::FramesToTime(
-                            num_frames, input_params_.sample_rate());
+  timestamp_tracker_->AddFrames(converted_params_.frames_per_buffer());
 }
 
 // Creates and returns the libopus encoder instance. Returns nullptr if the
