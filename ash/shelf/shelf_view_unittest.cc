@@ -599,6 +599,21 @@ class ShelfViewTest : public AshTestBase {
   DISALLOW_COPY_AND_ASSIGN(ShelfViewTest);
 };
 
+class LtrRtlShelfViewTest : public ShelfViewTest,
+                            public testing::WithParamInterface<bool> {
+ public:
+  LtrRtlShelfViewTest() : scoped_locale_(GetParam() ? "he" : "") {}
+  LtrRtlShelfViewTest(const LtrRtlShelfViewTest&) = delete;
+  LtrRtlShelfViewTest& operator=(const LtrRtlShelfViewTest&) = delete;
+  ~LtrRtlShelfViewTest() = default;
+
+ private:
+  // Restores locale to the default when destructor is called.
+  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All, LtrRtlShelfViewTest, testing::Bool());
+
 const char*
     ShelfViewTest::kTimeBetweenWindowMinimizedAndActivatedActionsHistogramName =
         ShelfButtonPressedMetricTracker::
@@ -615,7 +630,7 @@ class ShelfViewDragToPinTest : public ShelfViewTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(ShelfViewTest, VisibleShelfItemsBounds) {
+TEST_P(LtrRtlShelfViewTest, VisibleShelfItemsBounds) {
   // Add 3 pinned apps, and a normal app.
   AddAppShortcut();
   AddAppShortcut();
@@ -634,7 +649,7 @@ TEST_F(ShelfViewTest, VisibleShelfItemsBounds) {
 }
 
 // Checks that shelf view contents are considered in the correct drag group.
-TEST_F(ShelfViewTest, EnforceDragType) {
+TEST_P(LtrRtlShelfViewTest, EnforceDragType) {
   EXPECT_TRUE(test_api_->SameDragType(TYPE_APP, TYPE_APP));
   EXPECT_FALSE(test_api_->SameDragType(TYPE_APP, TYPE_PINNED_APP));
   EXPECT_FALSE(test_api_->SameDragType(TYPE_APP, TYPE_BROWSER_SHORTCUT));
@@ -901,7 +916,7 @@ TEST_F(ShelfViewTest, ClickOneDragAnother) {
 }
 
 // Tests that double-clicking an item does not activate it twice.
-TEST_F(ShelfViewTest, ClickingTwiceActivatesOnce) {
+TEST_P(LtrRtlShelfViewTest, ClickingTwiceActivatesOnce) {
   // Watch for selection of the browser shortcut.
   ShelfItemSelectionTracker* selection_tracker = new ShelfItemSelectionTracker;
   model_->SetShelfItemDelegate(model_->items()[0].id,
@@ -916,7 +931,7 @@ TEST_F(ShelfViewTest, ClickingTwiceActivatesOnce) {
 }
 
 // Check that very small mouse drags do not prevent shelf item selection.
-TEST_F(ShelfViewTest, ClickAndMoveSlightly) {
+TEST_P(LtrRtlShelfViewTest, ClickAndMoveSlightly) {
   std::vector<std::pair<ShelfID, views::View*>> id_map;
   SetupForDragTest(&id_map);
 
@@ -960,7 +975,7 @@ TEST_F(ShelfViewTest, ClickAndMoveSlightly) {
 }
 
 // Confirm that item status changes are reflected in the buttons.
-TEST_F(ShelfViewTest, ShelfItemStatus) {
+TEST_P(LtrRtlShelfViewTest, ShelfItemStatus) {
   // All buttons should be visible.
   ASSERT_EQ(test_api_->GetButtonCount(), shelf_view_->number_of_visible_apps());
 
@@ -976,7 +991,7 @@ TEST_F(ShelfViewTest, ShelfItemStatus) {
 }
 
 // Test what drag movements will rip an item off the shelf.
-TEST_F(ShelfViewTest, ShelfRipOff) {
+TEST_P(LtrRtlShelfViewTest, ShelfRipOff) {
   ui::test::EventGenerator* generator = GetEventGenerator();
 
   // The test makes some assumptions that the shelf is bottom aligned.
@@ -1008,7 +1023,7 @@ TEST_F(ShelfViewTest, ShelfRipOff) {
 }
 
 // Tests that drag and drop a pinned running app will unpin it.
-TEST_F(ShelfViewTest, DragAndDropPinnedRunningApp) {
+TEST_P(LtrRtlShelfViewTest, DragAndDropPinnedRunningApp) {
   ui::test::EventGenerator* generator = GetEventGenerator();
 
   // The test makes some assumptions that the shelf is bottom aligned.
@@ -1039,7 +1054,7 @@ TEST_F(ShelfViewTest, DragAndDropPinnedRunningApp) {
 
 // Confirm that item status changes are reflected in the buttons
 // for platform apps.
-TEST_F(ShelfViewTest, ShelfItemStatusPlatformApp) {
+TEST_P(LtrRtlShelfViewTest, ShelfItemStatusPlatformApp) {
   // All buttons should be visible.
   ASSERT_EQ(test_api_->GetButtonCount(), shelf_view_->number_of_visible_apps());
 
@@ -1055,7 +1070,7 @@ TEST_F(ShelfViewTest, ShelfItemStatusPlatformApp) {
 }
 
 // Confirm that shelf item bounds are correctly updated on shelf changes.
-TEST_F(ShelfViewTest, ShelfItemBoundsCheck) {
+TEST_P(LtrRtlShelfViewTest, ShelfItemBoundsCheck) {
   VerifyShelfItemBoundsAreValid();
   shelf_view_->shelf()->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
   test_api_->RunMessageLoopUntilAnimationsDone();
@@ -1065,7 +1080,7 @@ TEST_F(ShelfViewTest, ShelfItemBoundsCheck) {
   VerifyShelfItemBoundsAreValid();
 }
 
-TEST_F(ShelfViewTest, ShelfTooltipTest) {
+TEST_P(LtrRtlShelfViewTest, ShelfTooltipTest) {
   ASSERT_EQ(shelf_view_->number_of_visible_apps(), test_api_->GetButtonCount());
 
   // Prepare some items to the shelf.
@@ -1113,7 +1128,7 @@ TEST_F(ShelfViewTest, ShelfTooltipTest) {
 
 // Verify a fix for crash caused by a tooltip update for a deleted shelf
 // button, see crbug.com/288838.
-TEST_F(ShelfViewTest, RemovingItemClosesTooltip) {
+TEST_P(LtrRtlShelfViewTest, RemovingItemClosesTooltip) {
   ShelfTooltipManager* tooltip_manager = test_api_->tooltip_manager();
 
   // Add an item to the shelf.
@@ -1134,7 +1149,7 @@ TEST_F(ShelfViewTest, RemovingItemClosesTooltip) {
 }
 
 // Changing the shelf alignment closes any open tooltip.
-TEST_F(ShelfViewTest, ShelfAlignmentClosesTooltip) {
+TEST_P(LtrRtlShelfViewTest, ShelfAlignmentClosesTooltip) {
   ShelfTooltipManager* tooltip_manager = test_api_->tooltip_manager();
 
   // Add an item to the shelf.
@@ -1151,7 +1166,7 @@ TEST_F(ShelfViewTest, ShelfAlignmentClosesTooltip) {
 }
 
 // Verifies that the time of button press is recorded correctly in clamshell.
-TEST_F(ShelfViewTest, HomeButtonMetricsInClamshell) {
+TEST_P(LtrRtlShelfViewTest, HomeButtonMetricsInClamshell) {
   const HomeButton* home_button =
       GetPrimaryShelf()->navigation_widget()->GetHomeButton();
 
@@ -1170,7 +1185,7 @@ TEST_F(ShelfViewTest, HomeButtonMetricsInClamshell) {
 }
 
 // Verifies that the time of button press is recorded correctly in tablet.
-TEST_F(ShelfViewTest, HomeButtonMetricsInTablet) {
+TEST_P(LtrRtlShelfViewTest, HomeButtonMetricsInTablet) {
   // Enable accessibility feature that forces home button to be shown even with
   // kHideShelfControlsInTabletMode enabled.
   Shell::Get()
@@ -1197,7 +1212,7 @@ TEST_F(ShelfViewTest, HomeButtonMetricsInTablet) {
   EXPECT_TRUE(home_button->IsShowingAppList());
 }
 
-TEST_F(ShelfViewTest, ShouldHideTooltipTest) {
+TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipTest) {
   ShelfID app_button_id = AddAppShortcut();
   ShelfID platform_button_id = AddApp();
   // TODO(manucornet): It should not be necessary to call this manually. The
@@ -1272,7 +1287,7 @@ TEST_F(ShelfViewTest, ShouldHideTooltipTest) {
 }
 
 // Test that shelf button tooltips show (except app list) with an open app list.
-TEST_F(ShelfViewTest, ShouldHideTooltipWithAppListWindowTest) {
+TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipWithAppListWindowTest) {
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
 
   // The tooltip shouldn't hide if the mouse is on normal buttons.
@@ -1297,7 +1312,7 @@ TEST_F(ShelfViewTest, ShouldHideTooltipWithAppListWindowTest) {
 
 // Test that by moving the mouse cursor off the button onto the bubble it closes
 // the bubble.
-TEST_F(ShelfViewTest, ShouldHideTooltipWhenHoveringOnTooltip) {
+TEST_P(LtrRtlShelfViewTest, ShouldHideTooltipWhenHoveringOnTooltip) {
   ShelfTooltipManager* tooltip_manager = test_api_->tooltip_manager();
   tooltip_manager->set_timer_delay_for_test(0);
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -1335,7 +1350,7 @@ TEST_F(ShelfViewTest, ShouldHideTooltipWhenHoveringOnTooltip) {
 }
 
 // Checks the rip an item off from left aligned shelf in secondary monitor.
-TEST_F(ShelfViewTest, CheckRipOffFromLeftShelfAlignmentWithMultiMonitor) {
+TEST_P(LtrRtlShelfViewTest, CheckRipOffFromLeftShelfAlignmentWithMultiMonitor) {
   UpdateDisplay("800x600,800x600");
   ASSERT_EQ(2U, Shell::GetAllRootWindows().size());
 
@@ -1371,7 +1386,7 @@ TEST_F(ShelfViewTest, CheckRipOffFromLeftShelfAlignmentWithMultiMonitor) {
 
 // Verifies that Launcher_ButtonPressed_* UMA user actions are recorded when an
 // item is selected.
-TEST_F(ShelfViewTest,
+TEST_P(LtrRtlShelfViewTest,
        Launcher_ButtonPressedUserActionsRecordedWhenItemSelected) {
   base::UserActionTester user_action_tester;
 
@@ -1387,7 +1402,7 @@ TEST_F(ShelfViewTest,
 
 // Verifies that Launcher_*Task UMA user actions are recorded when an item is
 // selected.
-TEST_F(ShelfViewTest, Launcher_TaskUserActionsRecordedWhenItemSelected) {
+TEST_P(LtrRtlShelfViewTest, Launcher_TaskUserActionsRecordedWhenItemSelected) {
   base::UserActionTester user_action_tester;
 
   ShelfItemSelectionTracker* selection_tracker = new ShelfItemSelectionTracker;
@@ -1402,7 +1417,7 @@ TEST_F(ShelfViewTest, Launcher_TaskUserActionsRecordedWhenItemSelected) {
 
 // Verifies that metrics are recorded when an item is minimized and subsequently
 // activated.
-TEST_F(ShelfViewTest,
+TEST_P(LtrRtlShelfViewTest,
        VerifyMetricsAreRecordedWhenAnItemIsMinimizedAndActivated) {
   base::HistogramTester histogram_tester;
 
@@ -1422,7 +1437,7 @@ TEST_F(ShelfViewTest,
 }
 
 // Verify the animations of the shelf items are as long as expected.
-TEST_F(ShelfViewTest, TestShelfItemsAnimations) {
+TEST_P(LtrRtlShelfViewTest, TestShelfItemsAnimations) {
   TestShelfObserver observer(shelf_view_->shelf());
   ui::test::EventGenerator* generator = GetEventGenerator();
   ShelfID first_app_id = AddAppShortcut();
@@ -1481,7 +1496,7 @@ TEST_F(ShelfViewTest, TestShelfItemsAnimations) {
 }
 
 // Tests that the blank shelf view area shows a context menu on right click.
-TEST_F(ShelfViewTest, ShelfViewShowsContextMenu) {
+TEST_P(LtrRtlShelfViewTest, ShelfViewShowsContextMenu) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(shelf_view_->GetBoundsInScreen().CenterPoint());
   generator->PressRightButton();
@@ -1490,7 +1505,7 @@ TEST_F(ShelfViewTest, ShelfViewShowsContextMenu) {
   EXPECT_TRUE(test_api_->CloseMenu());
 }
 
-TEST_F(ShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
+TEST_P(LtrRtlShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
   // Show a context menu on the shelf
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(shelf_view_->GetBoundsInScreen().CenterPoint());
@@ -1514,7 +1529,7 @@ TEST_F(ShelfViewTest, TabletModeStartAndEndClosesContextMenu) {
 }
 
 // Tests that ShelfWindowWatcher buttons show a context menu on right click.
-TEST_F(ShelfViewTest, ShelfWindowWatcherButtonShowsContextMenu) {
+TEST_P(LtrRtlShelfViewTest, ShelfWindowWatcherButtonShowsContextMenu) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   widget->Show();
@@ -1530,7 +1545,7 @@ TEST_F(ShelfViewTest, ShelfWindowWatcherButtonShowsContextMenu) {
 }
 
 // Tests that the drag view is set on left click and not set on right click.
-TEST_F(ShelfViewTest, ShelfDragViewAndContextMenu) {
+TEST_P(LtrRtlShelfViewTest, ShelfDragViewAndContextMenu) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
   widget->Show();
@@ -1568,7 +1583,7 @@ TEST_F(ShelfViewTest, ShelfDragViewAndContextMenu) {
 
 // Tests that context menu show is cancelled if item drag starts during context
 // menu show (while constructing the item menu model).
-TEST_F(ShelfViewTest, InProgressItemDragPreventsContextMenuShow) {
+TEST_P(LtrRtlShelfViewTest, InProgressItemDragPreventsContextMenuShow) {
   const ShelfID app_id = AddAppShortcut();
   auto item_delegate_owned =
       std::make_unique<AsyncContextMenuShelfItemDelegate>();
@@ -1635,7 +1650,7 @@ TEST_F(ShelfViewTest, InProgressItemDragPreventsContextMenuShow) {
 
 // Tests that context menu show is cancelled if item drag starts and ends during
 // context menu show (while constructing the item menu model).
-TEST_F(ShelfViewTest, CompletedItemDragPreventsContextMenuShow) {
+TEST_P(LtrRtlShelfViewTest, CompletedItemDragPreventsContextMenuShow) {
   const ShelfID app_id = AddAppShortcut();
   auto item_delegate_owned =
       std::make_unique<AsyncContextMenuShelfItemDelegate>();
@@ -1843,7 +1858,8 @@ TEST_F(ShelfViewTest, DragAppAfterContextMenuIsShownInAutoHideShelf) {
 // Tests that the app button returns to normal state after context menu is
 // hidden and touch is released, even if another touch point is added while the
 // context menu is shown.
-TEST_F(ShelfViewTest, DragStateIsClearedIfAnotherTouchIsAddedWithContextMenu) {
+TEST_P(LtrRtlShelfViewTest,
+       DragStateIsClearedIfAnotherTouchIsAddedWithContextMenu) {
   ASSERT_EQ(SHELF_VISIBLE, GetPrimaryShelf()->GetVisibilityState());
   ui::test::EventGenerator* generator = GetEventGenerator();
   const ShelfID app_id = AddAppShortcut();
@@ -1911,7 +1927,7 @@ TEST_F(ShelfViewTest, DragStateIsClearedIfAnotherTouchIsAddedWithContextMenu) {
 // Tests that app button context menu remains shown if touch moves slightly
 // outside the button bounds while the menu is shown (not enough to initiate
 // drag gesture).
-TEST_F(ShelfViewTest,
+TEST_P(LtrRtlShelfViewTest,
        AppContextMenuRemainsShowingAfterTouchSlightlyMovesOutsideTheButton) {
   ASSERT_EQ(SHELF_VISIBLE, GetPrimaryShelf()->GetVisibilityState());
   ui::test::EventGenerator* generator = GetEventGenerator();
@@ -1985,7 +2001,7 @@ TEST_F(ShelfViewTest,
 }
 
 // Tests that the home button does shows a context menu on right click.
-TEST_F(ShelfViewTest, HomeButtonDoesShowContextMenu) {
+TEST_P(LtrRtlShelfViewTest, HomeButtonDoesShowContextMenu) {
   ui::test::EventGenerator* generator = GetEventGenerator();
   const HomeButton* home_button =
       GetPrimaryShelf()->navigation_widget()->GetHomeButton();
@@ -1999,7 +2015,7 @@ void ExpectWithinOnePixel(int a, int b) {
                                << " should have a difference no greater than 1";
 }
 
-TEST_F(ShelfViewTest, IconCenteringTest) {
+TEST_P(LtrRtlShelfViewTest, IconCenteringTest) {
   const display::Display display =
       display::Screen::GetScreen()->GetPrimaryDisplay();
   const int screen_width = display.bounds().width();
@@ -2045,7 +2061,7 @@ TEST_F(ShelfViewTest, IconCenteringTest) {
   }
 }
 
-TEST_F(ShelfViewTest, FirstAndLastVisibleIndex) {
+TEST_P(LtrRtlShelfViewTest, FirstAndLastVisibleIndex) {
   // At the start, the only visible app on the shelf is the browser app button
   // (index 0).
   ASSERT_EQ(1u, shelf_view_->visible_views_indices().size());
@@ -2061,7 +2077,7 @@ TEST_F(ShelfViewTest, FirstAndLastVisibleIndex) {
   EXPECT_EQ(0, shelf_view_->visible_views_indices()[0]);
 }
 
-TEST_F(ShelfViewTest, ReplacingDelegateCancelsContextMenu) {
+TEST_P(LtrRtlShelfViewTest, ReplacingDelegateCancelsContextMenu) {
   ui::test::EventGenerator* generator = GetEventGenerator();
 
   ShelfID app_button_id = AddAppShortcut();

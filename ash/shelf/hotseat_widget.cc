@@ -717,7 +717,7 @@ void HotseatWidget::OnGestureEvent(ui::GestureEvent* event) {
   // context menu starts capturing events. Ignore events not interesting to the
   // shelf app button in this state.
   ShelfAppButton* item_with_context_menu =
-      scrollable_shelf_view_->shelf_view()->GetShelfItemViewWithContextMenu();
+      GetShelfView()->GetShelfItemViewWithContextMenu();
   if (item_with_context_menu &&
       !ShelfAppButton::ShouldHandleEventFromContextMenu(event)) {
     event->SetHandled();
