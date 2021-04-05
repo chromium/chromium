@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
@@ -81,10 +80,10 @@ DesktopCaptureChooseDesktopMediaFunction::Run() {
       return RespondNow(Error(kDesktopCaptureApiNoTabIdError));
     }
 
-    ChromeExtensionFunctionDetails details(this);
-    if (!ExtensionTabUtil::GetTabById(*(params->target_tab->id),
-                                      details.GetProfile(), true,
-                                      &web_contents)) {
+    if (!ExtensionTabUtil::GetTabById(
+            *(params->target_tab->id),
+            Profile::FromBrowserContext(browser_context()), true,
+            &web_contents)) {
       return RespondNow(Error(kDesktopCaptureApiInvalidTabIdError));
     }
     DCHECK(web_contents);

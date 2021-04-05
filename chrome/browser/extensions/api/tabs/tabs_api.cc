@@ -1900,7 +1900,8 @@ TabsCaptureVisibleTabFunction::TabsCaptureVisibleTabFunction()
 
 bool TabsCaptureVisibleTabFunction::IsScreenshotEnabled(
     content::WebContents* web_contents) const {
-  PrefService* service = chrome_details_.GetProfile()->GetPrefs();
+  PrefService* service =
+      Profile::FromBrowserContext(browser_context())->GetPrefs();
   if (service->GetBoolean(prefs::kDisableScreenshots)) {
     return false;
   }

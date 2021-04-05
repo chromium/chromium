@@ -8,10 +8,11 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/common/extensions/api/notifications.h"
 #include "extensions/browser/extension_function.h"
 #include "ui/message_center/public/cpp/notification_types.h"
+
+class Profile;
 
 namespace message_center {
 class Notification;
@@ -61,9 +62,6 @@ class NotificationsApiFunction : public ExtensionFunction {
 
   message_center::NotificationType MapApiTemplateTypeToType(
       api::notifications::TemplateType type);
-
- private:
-  ChromeExtensionFunctionDetails details_{this};
 };
 
 class NotificationsCreateFunction : public NotificationsApiFunction {

@@ -200,7 +200,7 @@ base::DictionaryValue* ExtensionTabUtil::OpenTab(ExtensionFunction* function,
                                                  bool user_gesture,
                                                  std::string* error) {
   ChromeExtensionFunctionDetails chrome_details(function);
-  Profile* profile = chrome_details.GetProfile();
+  Profile* profile = Profile::FromBrowserContext(function->browser_context());
   // windowId defaults to "current" window.
   int window_id = extension_misc::kCurrentWindowId;
   if (params.window_id.get())
@@ -365,8 +365,8 @@ Browser* ExtensionTabUtil::GetBrowserFromWindowID(
     return result;
   } else {
     return GetBrowserInProfileWithId(
-        details.GetProfile(), window_id,
-        details.function()->include_incognito_information(), error);
+        Profile::FromBrowserContext(details.function()->browser_context()),
+        window_id, details.function()->include_incognito_information(), error);
   }
 }
 

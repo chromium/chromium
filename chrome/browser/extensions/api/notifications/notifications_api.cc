@@ -517,7 +517,7 @@ ExtensionNotificationDisplayHelper* NotificationsApiFunction::GetDisplayHelper()
 }
 
 Profile* NotificationsApiFunction::GetProfile() const {
-  return details_.GetProfile();
+  return Profile::FromBrowserContext(browser_context());
 }
 
 ExtensionFunction::ResponseAction NotificationsApiFunction::Run() {

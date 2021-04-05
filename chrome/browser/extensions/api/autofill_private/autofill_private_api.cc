@@ -15,6 +15,7 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -105,7 +106,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
 
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -227,7 +228,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
 ExtensionFunction::ResponseAction AutofillPrivateGetCountryListFunction::Run() {
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
 
   // Return an empty list if data is not loaded.
   if (!(personal_data && personal_data->IsDataLoaded())) {
@@ -282,7 +283,7 @@ AutofillPrivateGetAddressComponentsFunction::Run() {
 ExtensionFunction::ResponseAction AutofillPrivateGetAddressListFunction::Run() {
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
 
   DCHECK(personal_data && personal_data->IsDataLoaded());
 
@@ -302,7 +303,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveCreditCardFunction::Run() {
 
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -383,7 +384,7 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
 
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -425,7 +426,7 @@ ExtensionFunction::ResponseAction AutofillPrivateMaskCreditCardFunction::Run() {
 
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -441,7 +442,7 @@ ExtensionFunction::ResponseAction
 AutofillPrivateGetCreditCardListFunction::Run() {
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
 
   DCHECK(personal_data && personal_data->IsDataLoaded());
 
@@ -459,7 +460,7 @@ ExtensionFunction::ResponseAction
 AutofillPrivateMigrateCreditCardsFunction::Run() {
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
@@ -498,7 +499,7 @@ ExtensionFunction::ResponseAction
 AutofillPrivateLogServerCardLinkClickedFunction::Run() {
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
 
   if (!personal_data || !personal_data->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
@@ -539,7 +540,7 @@ AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction::Run() {
 ExtensionFunction::ResponseAction AutofillPrivateGetUpiIdListFunction::Run() {
   autofill::PersonalDataManager* personal_data =
       autofill::PersonalDataManagerFactory::GetForProfile(
-          chrome_details_.GetProfile());
+          Profile::FromBrowserContext(browser_context()));
   DCHECK(personal_data && personal_data->IsDataLoaded());
 
   return RespondNow(

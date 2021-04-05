@@ -10,7 +10,6 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/api/enterprise_platform_keys/enterprise_platform_keys_api.h"
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_private.h"
 #include "chrome/common/pref_names.h"
@@ -45,7 +44,7 @@ void EPKPChallengeKey::Run(chromeos::attestation::AttestationKeyType type,
                            ash::attestation::TpmChallengeKeyCallback callback,
                            const std::string& challenge,
                            bool register_key) {
-  Profile* profile = ChromeExtensionFunctionDetails(caller.get()).GetProfile();
+  Profile* profile = Profile::FromBrowserContext(caller->browser_context());
 
   if (!IsExtensionAllowed(profile, caller->extension())) {
     std::move(callback).Run(ash::attestation::TpmChallengeKeyResult::MakeError(

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "extensions/browser/extension_function.h"
 
 namespace extensions {
@@ -27,9 +26,6 @@ class AutofillPrivateSaveAddressFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateGetCountryListFunction : public ExtensionFunction {
@@ -47,9 +43,6 @@ class AutofillPrivateGetCountryListFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateGetAddressComponentsFunction : public ExtensionFunction {
@@ -84,9 +77,6 @@ class AutofillPrivateGetAddressListFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateSaveCreditCardFunction : public ExtensionFunction {
@@ -104,9 +94,6 @@ class AutofillPrivateSaveCreditCardFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateRemoveEntryFunction : public ExtensionFunction {
@@ -124,9 +111,6 @@ class AutofillPrivateRemoveEntryFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateValidatePhoneNumbersFunction : public ExtensionFunction {
@@ -161,9 +145,6 @@ class AutofillPrivateMaskCreditCardFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateGetCreditCardListFunction : public ExtensionFunction {
@@ -181,9 +162,6 @@ class AutofillPrivateGetCreditCardListFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateMigrateCreditCardsFunction : public ExtensionFunction {
@@ -201,9 +179,6 @@ class AutofillPrivateMigrateCreditCardsFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateLogServerCardLinkClickedFunction
@@ -222,9 +197,6 @@ class AutofillPrivateLogServerCardLinkClickedFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction
@@ -245,9 +217,6 @@ class AutofillPrivateSetCreditCardFIDOAuthEnabledStateFunction
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 class AutofillPrivateGetUpiIdListFunction : public ExtensionFunction {
@@ -265,9 +234,6 @@ class AutofillPrivateGetUpiIdListFunction : public ExtensionFunction {
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;
-
- private:
-  ChromeExtensionFunctionDetails chrome_details_{this};
 };
 
 }  // namespace extensions
