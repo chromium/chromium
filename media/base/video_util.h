@@ -207,7 +207,8 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
     sk_sp<SkImage> sk_image,
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
-    base::TimeDelta timestamp);
+    base::TimeDelta timestamp,
+    bool force_opaque = false);
 
 }  // namespace media
 

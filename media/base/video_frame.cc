@@ -157,13 +157,13 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
 // Checks if |source_format| can be wrapped into a |target_format| frame.
 static bool AreValidPixelFormatsForWrap(VideoPixelFormat source_format,
                                         VideoPixelFormat target_format) {
-  if (source_format == target_format)
-    return true;
-
-  // It is possible to add other planar to planar format conversions here if the
-  // use case is there.
-  return source_format == PIXEL_FORMAT_I420A &&
-         target_format == PIXEL_FORMAT_I420;
+  return source_format == target_format ||
+         (source_format == PIXEL_FORMAT_I420A &&
+          target_format == PIXEL_FORMAT_I420) ||
+         (source_format == PIXEL_FORMAT_ARGB &&
+          target_format == PIXEL_FORMAT_XRGB) ||
+         (source_format == PIXEL_FORMAT_ABGR &&
+          target_format == PIXEL_FORMAT_XBGR);
 }
 
 // If it is required to allocate aligned to multiple-of-two size overall for the

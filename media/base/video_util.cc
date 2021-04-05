@@ -947,7 +947,8 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
 scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
                                             const gfx::Rect& visible_rect,
                                             const gfx::Size& natural_size,
-                                            base::TimeDelta timestamp) {
+                                            base::TimeDelta timestamp,
+                                            bool force_opaque) {
   DCHECK(!sk_image->isTextureBacked());
 
   // A given SkImage may not exist until it's rasterized.
@@ -966,7 +967,7 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
   DCHECK(peek_result);
 
   const auto format =
-      sk_image->isOpaque()
+      (sk_image->isOpaque() || force_opaque)
           ? (sk_color_type == kRGBA_8888_SkColorType ? PIXEL_FORMAT_XBGR
                                                      : PIXEL_FORMAT_XRGB)
           : (sk_color_type == kRGBA_8888_SkColorType ? PIXEL_FORMAT_ABGR

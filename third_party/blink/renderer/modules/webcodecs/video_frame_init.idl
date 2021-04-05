@@ -4,7 +4,9 @@
 
 // https://github.com/WICG/web-codecs
 
+enum AlphaOption { "discard", "keep" };
 dictionary VideoFrameInit {
   unsigned long long timestamp;  // microseconds
   unsigned long long duration;   // microseconds
+  AlphaOption alpha = "keep";
 };

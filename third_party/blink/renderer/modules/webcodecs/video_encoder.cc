@@ -188,6 +188,13 @@ VideoEncoder::ParsedConfig* VideoEncoder::ParseConfig(
     return nullptr;
   }
 
+  if (config->alpha() == "keep") {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "Alpha encoding is not currently supported.");
+    return nullptr;
+  }
+
   if (config->hasDisplayWidth() && config->hasDisplayHeight()) {
     parsed->display_size.emplace(config->displayWidth(),
                                  config->displayHeight());

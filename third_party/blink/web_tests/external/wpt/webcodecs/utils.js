@@ -21,9 +21,9 @@ function make_audio_frame(timestamp, channels, sampleRate, length) {
   });
 }
 
-function makeOffscreenCanvas(width, height) {
+function makeOffscreenCanvas(width, height, options) {
   let canvas = new OffscreenCanvas(width, height);
-  let ctx = canvas.getContext('2d');
+  let ctx = canvas.getContext('2d', options);
   ctx.fillStyle = 'rgba(50, 100, 150, 255)';
   ctx.fillRect(0, 0, width, height);
   return canvas;

@@ -92,6 +92,21 @@ media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   }
 }
 
+media::VideoPixelFormat ToOpaqueMediaPixelFormat(media::VideoPixelFormat fmt) {
+  DCHECK(!media::IsOpaque(fmt));
+  switch (fmt) {
+    case media::PIXEL_FORMAT_I420A:
+      return media::PIXEL_FORMAT_I420;
+    case media::PIXEL_FORMAT_ARGB:
+      return media::PIXEL_FORMAT_XRGB;
+    case media::PIXEL_FORMAT_ABGR:
+      return media::PIXEL_FORMAT_XBGR;
+    default:
+      NOTIMPLEMENTED() << "Missing support for making " << fmt << " opaque.";
+      return fmt;
+  }
+}
+
 class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
                              public Supplement<ExecutionContext> {
  public:
@@ -229,12 +244,17 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  constexpr char kAlphaDiscard[] = "discard";
+  constexpr char kAlphaKeep[] = "keep";
+
   // Special case <video> and VideoFrame to directly use the underlying frame.
   if (source.IsVideoFrame() || source.IsHTMLVideoElement()) {
     scoped_refptr<media::VideoFrame> source_frame;
     if (source.IsVideoFrame()) {
-      if (!init || (!init->hasTimestamp() && !init->hasDuration()))
+      if (!init || (!init->hasTimestamp() && !init->hasDuration() &&
+                    init->alpha() == kAlphaKeep)) {
         return source.GetAsVideoFrame()->clone(script_state, exception_state);
+      }
       source_frame = source.GetAsVideoFrame()->frame();
     } else if (source.IsHTMLVideoElement()) {
       if (auto* wmp = source.GetAsHTMLVideoElement()->GetWebMediaPlayer())
@@ -247,11 +267,17 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
       return nullptr;
     }
 
+    const bool force_opaque = init && init->alpha() == kAlphaDiscard &&
+                              !media::IsOpaque(source_frame->format());
+
     // We can't modify the timestamp or duration directly since there may be
     // other owners accessing these fields concurrently.
-    if (init && (init->hasTimestamp() || init->hasDuration())) {
+    if (init && (init->hasTimestamp() || init->hasDuration() || force_opaque)) {
+      const auto wrapped_format =
+          force_opaque ? ToOpaqueMediaPixelFormat(source_frame->format())
+                       : source_frame->format();
       auto wrapped_frame = media::VideoFrame::WrapVideoFrame(
-          source_frame, source_frame->format(), source_frame->visible_rect(),
+          source_frame, wrapped_format, source_frame->visible_rect(),
           source_frame->natural_size());
       wrapped_frame->set_color_space(source_frame->ColorSpace());
       if (init->hasTimestamp()) {
@@ -320,6 +346,9 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     result.natural_size = natural_size;
     result.timestamp = timestamp;
 
+    // TODO(crbug.com/1138681): This is currently wrong for alpha == keep, but
+    // we're removing readback for this flow, so it's fine for now.
+
     // While this function indicates it's asynchronous, the flushAndSubmit()
     // call below ensures it completes synchronously.
     sk_image->asyncRescaleAndReadPixelsYUV420(
@@ -346,8 +375,11 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         std::move(frame), ExecutionContext::From(script_state));
   }
 
-  frame =
-      media::CreateFromSkImage(sk_image, visible_rect, natural_size, timestamp);
+  const bool force_opaque =
+      init && init->alpha() == kAlphaDiscard && !sk_image->isOpaque();
+
+  frame = media::CreateFromSkImage(sk_image, visible_rect, natural_size,
+                                   timestamp, force_opaque);
   if (!frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to create video frame");
