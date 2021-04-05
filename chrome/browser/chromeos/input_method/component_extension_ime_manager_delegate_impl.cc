@@ -161,14 +161,8 @@ void OnFilePathChecked(Profile* profile,
     // TODO(http://b/170278753): Remove this once NaCl decoder is removed.
     if ((*extension_id == extension_ime_util::kXkbExtensionId) &&
         base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)) {
-      const std::string bg_page = "background.html";
-      const std::string mojo_bg_page = "background_mojo.html";
-
-      // Don't update if the IME extension hasn't Mojo background page.
-      if (base::PathExists(file_path->Append(mojo_bg_page))) {
-        base::ReplaceFirstSubstringAfterOffset(&manifest_str, 0, bg_page,
-                                               mojo_bg_page);
-      }
+      base::ReplaceFirstSubstringAfterOffset(
+          &manifest_str, 0, "background.html", "background_mojo.html");
     }
 #endif
     DoLoadExtension(profile, *extension_id, manifest_str, *file_path);
