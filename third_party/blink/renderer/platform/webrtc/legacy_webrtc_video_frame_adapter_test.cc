@@ -268,6 +268,32 @@ TEST(LegacyWebRtcVideoFrameAdapterTest, Nv12OwnedMemoryFrame) {
   EXPECT_EQ(nv12_frame->height(), kVisibleRect.size().height());
 }
 
+// The default implementation of CropAndScale() is "ToI420() + scaling". This
+// test verifies that CropAndScale() is overridden not to convert when scaling.
+TEST(LegacyWebRtcVideoFrameAdapterTest, ScalingDoesNotConvertToI420) {
+  const gfx::Size kFullSize(1280, 960);
+  const gfx::Size kHalfSize(640, 480);
+  scoped_refptr<LegacyWebRtcVideoFrameAdapter::SharedResources> resources =
+      new LegacyWebRtcVideoFrameAdapter::SharedResources(nullptr);
+
+  auto owned_memory_frame =
+      CreateTestFrame(kFullSize, gfx::Rect(kFullSize), kFullSize,
+                      media::VideoFrame::STORAGE_OWNED_MEMORY,
+                      media::VideoPixelFormat::PIXEL_FORMAT_NV12);
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> adapter(
+      new rtc::RefCountedObject<LegacyWebRtcVideoFrameAdapter>(
+          std::move(owned_memory_frame), resources));
+
+  // Scale the frame.
+  auto scaled_frame = adapter->Scale(kHalfSize.width(), kHalfSize.height());
+  // It would also be correct to return a kNative frame that when mapped returns
+  // kNV12 - this is what the modern adapter does. But the legacy adapter
+  // implementation maps as part of scaling.
+  EXPECT_EQ(scaled_frame->type(), webrtc::VideoFrameBuffer::Type::kNV12);
+  EXPECT_EQ(scaled_frame->width(), kHalfSize.width());
+  EXPECT_EQ(scaled_frame->height(), kHalfSize.height());
+}
+
 TEST(LegacyWebRtcVideoFrameAdapterTest, Nv12ScaleOwnedMemoryFrame) {
   const gfx::Size kCodedSize(1280, 960);
   const gfx::Rect kVisibleRect(0, 120, 1280, 720);

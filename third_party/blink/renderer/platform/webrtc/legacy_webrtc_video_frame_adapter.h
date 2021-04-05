@@ -134,6 +134,13 @@ class PLATFORM_EXPORT LegacyWebRtcVideoFrameAdapter
   const webrtc::I420BufferInterface* GetI420() const override;
   rtc::scoped_refptr<webrtc::VideoFrameBuffer> GetMappedFrameBuffer(
       rtc::ArrayView<webrtc::VideoFrameBuffer::Type> types) override;
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> CropAndScale(
+      int offset_x,
+      int offset_y,
+      int crop_width,
+      int crop_height,
+      int scaled_width,
+      int scaled_height) override;
 
  protected:
   ~LegacyWebRtcVideoFrameAdapter() override;

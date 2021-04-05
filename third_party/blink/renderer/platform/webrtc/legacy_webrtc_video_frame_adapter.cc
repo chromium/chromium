@@ -588,6 +588,21 @@ LegacyWebRtcVideoFrameAdapter::GetMappedFrameBuffer(
   return nullptr;
 }
 
+rtc::scoped_refptr<webrtc::VideoFrameBuffer>
+LegacyWebRtcVideoFrameAdapter::CropAndScale(int offset_x,
+                                            int offset_y,
+                                            int crop_width,
+                                            int crop_height,
+                                            int scaled_width,
+                                            int scaled_height) {
+  base::AutoLock auto_lock(adapter_lock_);
+  if (!frame_adapter_) {
+    frame_adapter_ = CreateFrameAdapter();
+  }
+  return frame_adapter_->CropAndScale(offset_x, offset_y, crop_width,
+                                      crop_height, scaled_width, scaled_height);
+}
+
 const webrtc::I420BufferInterface* LegacyWebRtcVideoFrameAdapter::GetI420()
     const {
   base::AutoLock auto_lock(adapter_lock_);
