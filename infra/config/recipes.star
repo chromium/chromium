@@ -79,6 +79,14 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium/orchestrator",
+)
+
+build_recipe(
+    name = "recipe:chromium/compilator",
+)
+
+build_recipe(
     name = "recipe:chromium_3pp",
 )
 

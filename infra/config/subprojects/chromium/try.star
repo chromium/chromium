@@ -1194,6 +1194,26 @@ try_.chromium_linux_builder(
 )
 
 try_.chromium_linux_builder(
+    name = "linux-rel-orchestrator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builderless = True,
+    executable = "recipe:chromium/orchestrator",
+    main_list_view = "try",
+    use_clang_coverage = True,
+    service_account = "chromium-mini-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+try_.chromium_linux_builder(
+    name = "linux-rel-compilator",
+    branch_selector = branches.STANDARD_MILESTONE,
+    builderless = True,
+    executable = "recipe:chromium/compilator",
+    goma_jobs = goma.jobs.J150,
+    main_list_view = "try",
+    use_clang_coverage = True,
+)
+
+try_.chromium_linux_builder(
     name = "linux-rel-reclient",
     branch_selector = branches.STANDARD_MILESTONE,
     goma_jobs = goma.jobs.J150,
