@@ -164,6 +164,7 @@ ChromeLabsBubbleView::ChromeLabsBubbleView(
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
   set_margins(gfx::Insets(0));
+  SetEnableArrowKeyTraversal(true);
 
   // TODO(elainechien): ChromeOS specific logic for creating FlagsStorage
   flags_storage_ = std::make_unique<flags_ui::PrefServiceFlagsStorage>(

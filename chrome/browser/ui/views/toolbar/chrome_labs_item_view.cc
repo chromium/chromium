@@ -113,6 +113,7 @@ ChromeLabsItemView::ChromeLabsItemView(
                    .CopyAddressTo(&experiment_name)
                    .SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT)
                    .SetText(lab.visible_name)
+                   .SetTextStyle(ChromeTextStyle::STYLE_EMPHASIZED)
                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
                    .Build());
   AddChildView(
@@ -120,7 +121,7 @@ ChromeLabsItemView::ChromeLabsItemView(
           .CopyAddressTo(&experiment_description)
           .SetText(lab.visible_description)
           .SetTextContext(ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL)
-          .SetTextStyle(views::style::STYLE_SECONDARY)
+          .SetTextStyle(views::style::STYLE_PRIMARY)
           .SetMultiLine(true)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .SetProperty(views::kFlexBehaviorKey,

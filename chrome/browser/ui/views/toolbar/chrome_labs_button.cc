@@ -24,6 +24,7 @@ ChromeLabsButton::ChromeLabsButton(Browser* browser,
   SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
+  GetViewAccessibility().OverrideRole(ax::mojom::Role::kPopUpButton);
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kDialog);
 }
 
