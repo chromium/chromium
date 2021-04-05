@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/supports_user_data.h"
 #include "base/values.h"
@@ -16,8 +17,30 @@ namespace extensions {
 
 // SessionStorageManager manages the content stored in memory by
 // chrome.storage.session.
+// This class is optimized to reduce the number of possible copies of
+// base::Values; this is because these values could potentially be rather
+// large in size. This results in some slightly unwieldy function
+// signatures.
 class SessionStorageManager : public base::SupportsUserData::Data {
  public:
+  struct ValueChange {
+    ValueChange(std::string key,
+                base::Optional<base::Value> old_value,
+                base::Value* new_value);
+    ~ValueChange();
+    ValueChange(const ValueChange& other) = delete;
+    ValueChange& operator=(const ValueChange& other) = delete;
+    ValueChange(ValueChange&& other);
+
+    std::string key;
+
+    base::Optional<base::Value> old_value;
+
+    // Owned by the SessionStorageManager. Caller cannot rely on it after any
+    // subsequent calls to SessionStorageManager methods.
+    const base::Value* new_value;
+  };
+
   explicit SessionStorageManager(size_t quota_bytes_per_extension);
   ~SessionStorageManager() override;
   SessionStorageManager(const SessionStorageManager& other) = delete;
@@ -30,7 +53,8 @@ class SessionStorageManager : public base::SupportsUserData::Data {
 
   // Stores multiple values of an extension id.
   bool Set(const ExtensionId& extension_id,
-           std::map<std::string, base::Value> values);
+           std::map<std::string, base::Value> values,
+           std::vector<ValueChange>& changes);
 
  private:
   struct SessionValue {
@@ -50,8 +74,10 @@ class SessionStorageManager : public base::SupportsUserData::Data {
     // Returns the value for the given `key`, or null if none exists.
     const base::Value* Get(const std::string& key) const;
 
-    // Stores the input values in the values map.
-    bool Set(std::map<std::string, base::Value> input_values);
+    // Stores the input values in the values map, and updates the changes list
+    // if a change occurs.
+    bool Set(std::map<std::string, base::Value> input_values,
+             std::vector<ValueChange>& changes);
 
    private:
     // Returns the updated usage for the input values and adds them as session

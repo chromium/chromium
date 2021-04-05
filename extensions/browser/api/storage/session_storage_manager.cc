@@ -11,10 +11,23 @@ using base::trace_event::EstimateMemoryUsage;
 
 namespace extensions {
 
+// Implementation of SessionValue.
 SessionStorageManager::SessionValue::SessionValue(base::Value value,
                                                   size_t size)
     : value(std::move(value)), size(size) {}
 
+// Implementation of ValueChange.
+SessionStorageManager::ValueChange::ValueChange(
+    std::string key,
+    base::Optional<base::Value> old_value,
+    base::Value* new_value)
+    : key(key), old_value(std::move(old_value)), new_value(new_value) {}
+
+SessionStorageManager::ValueChange::~ValueChange() = default;
+
+SessionStorageManager::ValueChange::ValueChange(ValueChange&& other) = default;
+
+// Implementation of ExtensionStorage.
 SessionStorageManager::ExtensionStorage::ExtensionStorage(size_t quota_bytes)
     : quota_bytes_(quota_bytes) {}
 
@@ -64,7 +77,8 @@ const base::Value* SessionStorageManager::ExtensionStorage::Get(
 }
 
 bool SessionStorageManager::ExtensionStorage::Set(
-    std::map<std::string, base::Value> input_values) {
+    std::map<std::string, base::Value> input_values,
+    std::vector<ValueChange>& changes) {
   std::map<std::string, std::unique_ptr<SessionValue>> session_values;
   size_t updated_used_total =
       CalculateUsage(std::move(input_values), session_values);
@@ -73,12 +87,26 @@ bool SessionStorageManager::ExtensionStorage::Set(
 
   // Insert values in storage map and update total bytes.
   for (auto& session_value : session_values) {
-    values_[std::move(session_value.first)] = std::move(session_value.second);
+    // Do nothing if key's existent value is the same as the new value.
+    auto& existent_value = values_[session_value.first];
+    if (existent_value && existent_value->value == session_value.second->value)
+      continue;
+
+    // Add the change to the changes list.
+    ValueChange change(session_value.first,
+                       existent_value ? base::Optional<base::Value>(
+                                            std::move(existent_value->value))
+                                      : base::nullopt,
+                       &session_value.second->value);
+    changes.push_back(std::move(change));
+
+    existent_value = std::move(session_value.second);
   }
   used_total_ = updated_used_total;
   return true;
 }
 
+// Implementation of SessionStorageManager.
 SessionStorageManager::SessionStorageManager(size_t quota_bytes_per_extension)
     : quota_bytes_per_extension_(quota_bytes_per_extension) {}
 
@@ -93,16 +121,15 @@ const base::Value* SessionStorageManager::Get(const ExtensionId& extension_id,
   return storage_it->second->Get(key);
 }
 
-bool SessionStorageManager::Set(
-    const ExtensionId& extension_id,
-    std::map<std::string, base::Value> input_values) {
+bool SessionStorageManager::Set(const ExtensionId& extension_id,
+                                std::map<std::string, base::Value> input_values,
+                                std::vector<ValueChange>& changes) {
   auto& storage = extensions_storage_[extension_id];
 
   // Initialize the extension storage, if it doesn't already exist.
   if (!storage)
     storage = std::make_unique<ExtensionStorage>(quota_bytes_per_extension_);
 
-  return storage->Set(std::move(input_values));
+  return storage->Set(std::move(input_values), changes);
 }
-
 }  // namespace extensions
