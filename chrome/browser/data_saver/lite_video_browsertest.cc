@@ -169,18 +169,19 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
 
   DISALLOW_COPY_AND_ASSIGN(LiteVideoBrowserTest);
 };
-// Fails occasionally on ChromeOS, MacOS, Win. http://crbug.com/1111570
+// Fails occasionally on ChromeOS, MacOS, Win, Linux. http://crbug.com/1111570
 // Need to make tests more reliable but feature only targeted
 // for Android. Currently there are potential race conditions
 // on throttle timing and counts
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
-#define DISABLE_ON_WIN_MAC_CHROMEOS(x) DISABLED_##x
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
+    defined(OS_CHROMEOS)
+#define DISABLE_ON_DESKTOP(x) DISABLED_##x
 #else
-#define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
+#define DISABLE_ON_DESKTOP(x) x
 #endif
 
 IN_PROC_BROWSER_TEST_F(LiteVideoBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(SimplePlayback)) {
+                       DISABLE_ON_DESKTOP(SimplePlayback)) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   TestMSEPlayback("bear-vp9.webm", "2000", "2000", false);
 
@@ -565,7 +566,7 @@ class LiteVideoDataSavingsBrowserTest : public LiteVideoBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LiteVideoDataSavingsBrowserTest,
-                       DISABLE_ON_WIN_MAC_CHROMEOS(SimplePlayback)) {
+                       DISABLE_ON_DESKTOP(SimplePlayback)) {
   WaitForDBToInitialize();
   uint64_t data_savings_before_navigation = GetDataSavings(http_server_host());
 
