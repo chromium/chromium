@@ -22,6 +22,10 @@
 #include "ui/views/widget/widget_deletion_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace views {
 namespace test {
 
@@ -211,6 +215,10 @@ class EventHandlingView : public View {
 // Verifies that when the mouse click interrupts the gesture scroll, the view
 // where the gesture scroll starts should receive the scroll end event.
 TEST_F(RootViewTest, MouseClickInterruptsGestureScroll) {
+#if defined(OS_MAC)
+  if (base::mac::IsOS11())
+    GTEST_SKIP() << "Flaky on macOS 11: https://crbug.com/1195879";
+#endif
   Widget widget;
   Widget::InitParams init_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
