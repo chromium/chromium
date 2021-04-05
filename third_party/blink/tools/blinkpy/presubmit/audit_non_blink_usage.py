@@ -88,6 +88,7 @@ _CONFIG = [
             'base::size',
             'base::span',
             'logging::GetVlogLevel',
+            'logging::SetLogItems',
             'base::PassKey',
 
             # //base/allocator/partition_allocator/partition_alloc_constants.h
