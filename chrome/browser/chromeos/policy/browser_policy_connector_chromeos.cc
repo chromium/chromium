@@ -308,7 +308,7 @@ void BrowserPolicyConnectorChromeOS::Init(
       std::make_unique<AdbSideloadingAllowanceModePolicyHandler>(
           ash::CrosSettings::Get(), local_state,
           chromeos::PowerManagerClient::Get(),
-          new chromeos::AdbSideloadingPolicyChangeNotification());
+          new ash::AdbSideloadingPolicyChangeNotification());
 }
 
 void BrowserPolicyConnectorChromeOS::PreShutdown() {

@@ -63,15 +63,14 @@ class TPMAutoUpdateModePolicyHandlerTest : public testing::Test {
     std::move(callback).Run(update_available_);
   }
 
-  void ShowNotification(
-      chromeos::TpmAutoUpdateUserNotification notification_type) {
+  void ShowNotification(ash::TpmAutoUpdateUserNotification notification_type) {
     last_shown_notification_ = notification_type;
   }
 
  protected:
   bool update_available_ = false;
-  chromeos::TpmAutoUpdateUserNotification last_shown_notification_ =
-      chromeos::TpmAutoUpdateUserNotification::kNone;
+  ash::TpmAutoUpdateUserNotification last_shown_notification_ =
+      ash::TpmAutoUpdateUserNotification::kNone;
 
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState local_state_;
@@ -162,7 +161,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, ShowPlannedUpdateNotification) {
   update_available_ = true;
 
   EXPECT_EQ(last_shown_notification_,
-            chromeos::TpmAutoUpdateUserNotification::kNone);
+            ash::TpmAutoUpdateUserNotification::kNone);
 
   SetAutoUpdateMode(AutoUpdateMode::kUserAcknowledgment);
   base::RunLoop().RunUntilIdle();
@@ -172,7 +171,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest, ShowPlannedUpdateNotification) {
                    ->start_tpm_firmware_update_call_count());
 
   EXPECT_EQ(last_shown_notification_,
-            chromeos::TpmAutoUpdateUserNotification::kPlanned);
+            ash::TpmAutoUpdateUserNotification::kPlanned);
 }
 
 // Verify that the notification informing the user that an update will happen at
@@ -210,7 +209,7 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
 
   // Show planned update notification.
   EXPECT_EQ(last_shown_notification_,
-            chromeos::TpmAutoUpdateUserNotification::kOnNextReboot);
+            ash::TpmAutoUpdateUserNotification::kOnNextReboot);
 }
 
 // Verify that the notification informing the user that an update will happen at
@@ -246,13 +245,13 @@ TEST_F(TPMAutoUpdateModePolicyHandlerTest,
 
   // Show planned update notification.
   EXPECT_EQ(last_shown_notification_,
-            chromeos::TpmAutoUpdateUserNotification::kPlanned);
+            ash::TpmAutoUpdateUserNotification::kPlanned);
 
   mock_timer_ptr->Fire();
 
   // Show update at reboot notification.
   EXPECT_EQ(last_shown_notification_,
-            chromeos::TpmAutoUpdateUserNotification::kOnNextReboot);
+            ash::TpmAutoUpdateUserNotification::kOnNextReboot);
 }
 
 // TPM update with user acknowlegment triggered.

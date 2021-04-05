@@ -22,7 +22,7 @@ constexpr base::TimeDelta kNotificationTimeout =
     base::TimeDelta::FromSeconds(2);
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 GnubbyNotification::GnubbyNotification()
     : update_dismiss_notification_timer_(new base::OneShotTimer()),
@@ -80,4 +80,4 @@ void GnubbyNotification::DismissNotification() {
       GnubbyNotification::kNotificationID);
 }
 
-}  // namespace chromeos
+}  // namespace ash

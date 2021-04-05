@@ -13,14 +13,14 @@
 
 namespace message_center {
 class Notification;
-}
+}  // namespace message_center
 
-namespace chromeos {
+namespace ash {
 // GnubbyNotification manages the notification informing the user of gnubby
 // U2FD Authentication.  It is responsible for both creating, showing, and
 // closing the notification.
 
-class GnubbyNotification : public GnubbyClient::Observer {
+class GnubbyNotification : public chromeos::GnubbyClient::Observer {
  public:
   GnubbyNotification();
 
@@ -47,6 +47,12 @@ class GnubbyNotification : public GnubbyClient::Observer {
   DISALLOW_COPY_AND_ASSIGN(GnubbyNotification);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::GnubbyNotification;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_GNUBBY_NOTIFICATION_H_

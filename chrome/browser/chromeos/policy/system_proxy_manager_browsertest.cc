@@ -187,7 +187,7 @@ class SystemProxyManagerBrowserTest : public InProcessBrowserTest {
         ->GetSystemProxyManager();
   }
 
-  chromeos::RequestSystemProxyCredentialsView* dialog() {
+  ash::RequestSystemProxyCredentialsView* dialog() {
     return GetSystemProxyManager()->GetActiveAuthDialogForTest();
   }
 

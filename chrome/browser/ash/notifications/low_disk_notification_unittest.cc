@@ -34,7 +34,7 @@ const uint64_t kHighNotification = (512 << 20) - 1;
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class LowDiskNotificationTest : public BrowserWithTestWindowTest {
  public:
@@ -43,7 +43,7 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    UserDataAuthClient::InitializeFake();
+    chromeos::UserDataAuthClient::InitializeFake();
 
     GetCrosSettingsHelper()->ReplaceDeviceSettingsProviderWithStub();
     GetCrosSettingsHelper()->SetBoolean(
@@ -69,7 +69,7 @@ class LowDiskNotificationTest : public BrowserWithTestWindowTest {
 
   void TearDown() override {
     low_disk_notification_.reset();
-    UserDataAuthClient::Shutdown();
+    chromeos::UserDataAuthClient::Shutdown();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -164,4 +164,4 @@ TEST_F(LowDiskNotificationTest, SupressedForMultipleUsersWhenEnrolled) {
   EXPECT_EQ(0, notification_count_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -23,7 +23,7 @@ constexpr char kUsername[] = "testuser";
 constexpr char kPassword[] = "testpwd";
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 class RequestSystemProxyCredentialsViewTest : public BrowserWithTestWindowTest {
  public:
@@ -42,7 +42,7 @@ class RequestSystemProxyCredentialsViewTest : public BrowserWithTestWindowTest {
 
  protected:
   void CreateDialog(bool show_error) {
-    system_proxy_dialog_ = new chromeos::RequestSystemProxyCredentialsView(
+    system_proxy_dialog_ = new RequestSystemProxyCredentialsView(
         kProxy, show_error, base::DoNothing());
 
     system_proxy_dialog_->SetAcceptCallback(
@@ -64,7 +64,7 @@ class RequestSystemProxyCredentialsViewTest : public BrowserWithTestWindowTest {
   bool accepted_ = false;
   bool canceled_ = false;
   // Owned by |active_widget_|.
-  chromeos::RequestSystemProxyCredentialsView* system_proxy_dialog_ = nullptr;
+  RequestSystemProxyCredentialsView* system_proxy_dialog_ = nullptr;
 
  private:
   // Owned by the UI code (NativeWidget).
@@ -116,4 +116,4 @@ TEST_F(RequestSystemProxyCredentialsViewTest, ErrorLabelVisible) {
   EXPECT_TRUE(system_proxy_dialog_->error_label_for_testing()->GetVisible());
 }
 
-}  // namespace chromeos
+}  // namespace ash

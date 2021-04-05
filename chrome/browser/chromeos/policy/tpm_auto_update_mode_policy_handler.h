@@ -50,7 +50,7 @@ class TPMAutoUpdateModePolicyHandler {
   // informing the user that a TPM update which will clear user data is planned
   // in 24 hours or at next reboot, depending on |notification_type|.
   using ShowNotificationCallback = base::RepeatingCallback<void(
-      chromeos::TpmAutoUpdateUserNotification notification_type)>;
+      ash::TpmAutoUpdateUserNotification notification_type)>;
 
   TPMAutoUpdateModePolicyHandler(ash::CrosSettings* cros_settings,
                                  PrefService* local_state);

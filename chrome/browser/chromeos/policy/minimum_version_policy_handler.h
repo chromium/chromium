@@ -20,15 +20,15 @@
 
 class PrefRegistrySimple;
 
+namespace ash {
+class UpdateRequiredNotification;
+}  // namespace ash
+
 namespace base {
 class Clock;
 class DictionaryValue;
 class Time;
 }  // namespace base
-
-namespace chromeos {
-class UpdateRequiredNotification;
-}  // namespace chromeos
 
 namespace policy {
 
@@ -305,7 +305,7 @@ class MinimumVersionPolicyHandler
 
   // Handles showing in-session update required notifications on the basis of
   // current network and time to reach the deadline.
-  std::unique_ptr<chromeos::UpdateRequiredNotification> notification_handler_;
+  std::unique_ptr<ash::UpdateRequiredNotification> notification_handler_;
 
   // List of registered observers.
   base::ObserverList<Observer>::Unchecked observers_;

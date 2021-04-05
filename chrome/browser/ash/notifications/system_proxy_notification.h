@@ -11,9 +11,9 @@
 
 namespace message_center {
 class Notification;
-}
+}  // namespace message_center
 
-namespace chromeos {
+namespace ash {
 
 // SystemProxyNotification manages the notification informing the user that
 // System-proxy requires user credentials to authenticate to the remote web
@@ -45,6 +45,6 @@ class SystemProxyNotification {
   base::WeakPtrFactory<SystemProxyNotification> weak_ptr_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_SYSTEM_PROXY_NOTIFICATION_H_

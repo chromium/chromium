@@ -30,7 +30,7 @@ constexpr char kAdbSideloadingPowerwashOnRebootNotificationId[] =
     "chrome://adb_sideloading_powerwash_on_reboot";
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 AdbSideloadingPolicyChangeNotification::
     AdbSideloadingPolicyChangeNotification() {}
@@ -118,4 +118,4 @@ void AdbSideloadingPolicyChangeNotification::HandleNotificationClick(
       power_manager::REQUEST_RESTART_FOR_USER,
       "adb sideloading disable notification");
 }
-}  // namespace chromeos
+}  // namespace ash

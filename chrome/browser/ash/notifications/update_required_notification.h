@@ -15,7 +15,7 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 // UpdateRequiredNotification manages in-session notifications informing the
 // user that update is required as per admin policy but it cannot be initiated
@@ -66,6 +66,6 @@ class UpdateRequiredNotification : public message_center::NotificationObserver {
   base::WeakPtrFactory<UpdateRequiredNotification> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_UPDATE_REQUIRED_NOTIFICATION_H_

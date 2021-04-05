@@ -21,7 +21,7 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 EchoDialogView::EchoDialogView(EchoDialogListener* listener,
                                const EchoDialogView::Params& params) {
@@ -127,4 +127,4 @@ void EchoDialogView::SetBorderAndLabel(std::unique_ptr<views::View> label,
 BEGIN_METADATA(EchoDialogView, views::DialogDelegateView)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

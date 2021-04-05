@@ -8,7 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
-namespace chromeos {
+namespace ash {
 
 PassphraseTextfield::PassphraseTextfield()
     : Textfield(), show_fake_(false), changed_(true) {
@@ -65,4 +65,4 @@ ADD_PROPERTY_METADATA(bool, ShowFake)
 ADD_READONLY_PROPERTY_METADATA(bool, Changed)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

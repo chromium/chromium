@@ -483,8 +483,7 @@ void MinimumVersionPolicyHandler::MaybeShowNotification(
   }
 
   if (!notification_handler_) {
-    notification_handler_ =
-        std::make_unique<chromeos::UpdateRequiredNotification>();
+    notification_handler_ = std::make_unique<ash::UpdateRequiredNotification>();
   }
 
   NotificationType type = NotificationType::kNoConnection;

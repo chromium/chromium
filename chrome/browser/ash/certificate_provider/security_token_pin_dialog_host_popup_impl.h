@@ -10,14 +10,14 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
-// TODO(https://crbug.com/1164001): forward declare when moved to ash.
-#include "chrome/browser/ash/notifications/request_pin_view.h"
 
 namespace views {
 class Widget;
-}
+}  // namespace views
 
 namespace ash {
+
+class RequestPinView;
 
 // The default implementation of the PIN dialog host. It renders the PIN dialog
 // as a popup with the RequestPinView view.

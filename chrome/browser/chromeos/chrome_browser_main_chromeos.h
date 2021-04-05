@@ -17,6 +17,12 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 // TODO(https://crbug.com/1164001): forward declare when moved to
 // chrome/browser/ash/.
+#include "chrome/browser/ash/notifications/low_disk_notification.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to
+// chrome/browser/ash/.
+#include "chrome/browser/ash/notifications/gnubby_notification.h"
+// TODO(https://crbug.com/1164001): forward declare when moved to
+// chrome/browser/ash/.
 #include "chrome/browser/ash/settings/shutdown_policy_forwarder.h"
 // TODO(https://crbug.com/1164001): forward declare when moved to
 // chrome/browser/ash/.
@@ -67,11 +73,9 @@ class CrosUsbDetector;
 class DemoModeResourcesRemover;
 class EventRewriterDelegateImpl;
 class FastTransitionObserver;
-class GnubbyNotification;
 class IdleActionWarningObserver;
 class LoginScreenExtensionsLifetimeManager;
 class LoginScreenExtensionsStorageCleaner;
-class LowDiskNotification;
 class MemoryAblationStudy;
 class NetworkChangeManagerClient;
 class NetworkPrefStateObserver;

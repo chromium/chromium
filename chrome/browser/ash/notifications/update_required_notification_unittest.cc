@@ -37,7 +37,7 @@ using testing::Mock;
 using MinimumVersionRequirement =
     policy::MinimumVersionPolicyHandler::MinimumVersionRequirement;
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kFakeCurrentVersion[] = "13305.20.0";
@@ -101,7 +101,7 @@ class UpdateRequiredNotificationTest
  private:
   bool user_managed_ = true;
   ScopedTestingLocalState local_state_;
-  chromeos::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+  ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_service_;
   chromeos::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
@@ -151,8 +151,8 @@ void UpdateRequiredNotificationTest::TearDown() {
 }
 
 void UpdateRequiredNotificationTest::CreateMinimumVersionHandler() {
-  minimum_version_policy_handler_.reset(new policy::MinimumVersionPolicyHandler(
-      this, chromeos::CrosSettings::Get()));
+  minimum_version_policy_handler_.reset(
+      new policy::MinimumVersionPolicyHandler(this, CrosSettings::Get()));
 }
 
 const MinimumVersionRequirement* UpdateRequiredNotificationTest::GetState()
@@ -394,4 +394,4 @@ TEST_F(UpdateRequiredNotificationTest, ChromeboxNotifications) {
   VerifyUpdateRequiredNotification(expected_title_one_week, expected_message);
 }
 
-}  // namespace chromeos
+}  // namespace ash

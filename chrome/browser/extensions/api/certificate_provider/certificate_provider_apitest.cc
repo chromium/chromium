@@ -492,7 +492,7 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
         browser(), extension_->GetResourceURL(test_page_file_name));
   }
 
-  chromeos::RequestPinView* GetActivePinDialogView() {
+  ash::RequestPinView* GetActivePinDialogView() {
     return cert_provider_service_->pin_dialog_manager()
         ->default_dialog_host_for_testing()
         ->active_view_for_testing();

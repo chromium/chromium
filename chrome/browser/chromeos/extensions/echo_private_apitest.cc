@@ -63,7 +63,7 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     EXPECT_EQ(expected_result, result_as_boolean);
   }
 
-  void OnDialogShown(chromeos::EchoDialogView* dialog) {
+  void OnDialogShown(ash::EchoDialogView* dialog) {
     dialog_invocation_count_++;
     ASSERT_LE(dialog_invocation_count_, 1);
 
@@ -84,12 +84,12 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     if (dialog_action == DIALOG_TEST_ACTION_ACCEPT) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
-          base::BindOnce(base::IgnoreResult(&chromeos::EchoDialogView::Accept),
+          base::BindOnce(base::IgnoreResult(&ash::EchoDialogView::Accept),
                          base::Unretained(dialog)));
     } else if (dialog_action == DIALOG_TEST_ACTION_CANCEL) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
-          base::BindOnce(base::IgnoreResult(&chromeos::EchoDialogView::Cancel),
+          base::BindOnce(base::IgnoreResult(&ash::EchoDialogView::Cancel),
                          base::Unretained(dialog)));
     }
   }

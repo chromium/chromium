@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_ECHO_DIALOG_LISTENER_H_
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_ECHO_DIALOG_LISTENER_H_
 
-namespace chromeos {
+namespace ash {
 
 // A listener interface for the EchoDialog, so an interested party can be
 // notified about changes to the dialog. It is provided during EchoDialog
@@ -27,6 +27,6 @@ class EchoDialogListener {
   virtual ~EchoDialogListener() {}
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_ECHO_DIALOG_LISTENER_H_

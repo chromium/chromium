@@ -14,7 +14,7 @@ namespace extensions {
 class Extension;
 }  // namespace extensions
 
-namespace chromeos {
+namespace ash {
 
 class IdleAppNameNotificationDelegateView;
 
@@ -51,11 +51,6 @@ class IdleAppNameNotificationView {
   DISALLOW_COPY_AND_ASSIGN(IdleAppNameNotificationView);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace ash {
-using ::chromeos::IdleAppNameNotificationView;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_IDLE_APP_NAME_NOTIFICATION_VIEW_H_

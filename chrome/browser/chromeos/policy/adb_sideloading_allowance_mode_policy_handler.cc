@@ -88,7 +88,7 @@ AdbSideloadingAllowanceModePolicyHandler::
         ash::CrosSettings* cros_settings,
         PrefService* local_state,
         chromeos::PowerManagerClient* power_manager_client,
-        chromeos::AdbSideloadingPolicyChangeNotification*
+        ash::AdbSideloadingPolicyChangeNotification*
             adb_sideloading_policy_change_notification)
     : cros_settings_(cros_settings),
       local_state_(local_state),

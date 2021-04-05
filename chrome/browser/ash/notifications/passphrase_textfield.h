@@ -10,7 +10,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
-namespace chromeos {
+namespace ash {
 
 class PassphraseTextfield : public views::Textfield {
  public:
@@ -40,6 +40,6 @@ class PassphraseTextfield : public views::Textfield {
   bool changed_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_PASSPHRASE_TEXTFIELD_H_

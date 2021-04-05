@@ -17,9 +17,9 @@
 
 namespace message_center {
 class Notification;
-}
+}  // namespace message_center
 
-namespace chromeos {
+namespace ash {
 
 // LowDiskNotification manages the notification informing the user of low disk
 // space.  It is responsible for both creating the notifications in message
@@ -27,7 +27,7 @@ namespace chromeos {
 // This class should be created after DBus has been initialized and destroyed
 // before DBus has been shutdown.
 // This class must be instantiated on the UI thread.
-class LowDiskNotification : public UserDataAuthClient::Observer {
+class LowDiskNotification : public chromeos::UserDataAuthClient::Observer {
  public:
   // Registers this class as the UserDataAuthClient LowDiskSpaceHandler.
   LowDiskNotification();
@@ -68,6 +68,12 @@ class LowDiskNotification : public UserDataAuthClient::Observer {
   DISALLOW_COPY_AND_ASSIGN(LowDiskNotification);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when Chrome OS code migration is
+// done.
+namespace chromeos {
+using ::ash::LowDiskNotification;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_LOW_DISK_NOTIFICATION_H_

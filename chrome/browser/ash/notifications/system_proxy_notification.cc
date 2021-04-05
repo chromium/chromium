@@ -28,7 +28,7 @@ constexpr char kNotificationId[] = "system-proxy.auth_required";
 constexpr char kNotifierId[] = "system-proxy";
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 SystemProxyNotification::SystemProxyNotification(
     const system_proxy::ProtectionSpace& protection_space,
@@ -77,4 +77,4 @@ void SystemProxyNotification::Close() {
   SystemNotificationHelper::GetInstance()->Close(kNotificationId);
 }
 
-}  // namespace chromeos
+}  // namespace ash

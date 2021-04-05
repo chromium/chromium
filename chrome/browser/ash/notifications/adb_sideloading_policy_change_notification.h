@@ -8,7 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 
-namespace chromeos {
+namespace ash {
 
 // When the administrator changes the ADB sideloading device policy to either
 // DISALLOW or DISALLOW_WITH_POWERWASH, the users will be notified of this
@@ -49,6 +49,6 @@ class AdbSideloadingPolicyChangeNotification {
   base::WeakPtrFactory<AdbSideloadingPolicyChangeNotification>
       weak_ptr_factory_{this};
 };
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_ADB_SIDELOADING_POLICY_CHANGE_NOTIFICATION_H_

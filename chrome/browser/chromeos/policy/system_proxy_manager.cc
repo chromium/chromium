@@ -402,7 +402,7 @@ void SystemProxyManager::SetSendAuthDetailsClosureForTest(
   send_auth_details_closure_for_test_ = closure;
 }
 
-chromeos::RequestSystemProxyCredentialsView*
+ash::RequestSystemProxyCredentialsView*
 SystemProxyManager::GetActiveAuthDialogForTest() {
   return active_auth_dialog_;
 }
@@ -632,7 +632,7 @@ void SystemProxyManager::ShowAuthenticationNotification(
     bool show_error) {
   if (active_auth_dialog_)
     return;
-  notification_handler_ = std::make_unique<chromeos::SystemProxyNotification>(
+  notification_handler_ = std::make_unique<ash::SystemProxyNotification>(
       protection_space, show_error,
       base::BindOnce(&SystemProxyManager::ShowAuthenticationDialog,
                      weak_factory_.GetWeakPtr()));
@@ -648,7 +648,7 @@ void SystemProxyManager::ShowAuthenticationDialog(
   if (notification_handler_)
     notification_handler_->Close();
 
-  active_auth_dialog_ = new chromeos::RequestSystemProxyCredentialsView(
+  active_auth_dialog_ = new ash::RequestSystemProxyCredentialsView(
       protection_space.origin(), show_error_label,
       base::BindOnce(&SystemProxyManager::OnDialogClosed,
                      weak_factory_.GetWeakPtr(), protection_space));

@@ -15,7 +15,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace chromeos {
+namespace ash {
 
 constexpr char kTPMPlannedAutoUpdateNotificationId[] =
     "chrome://tpm_planned_firmware_auto_update";
@@ -64,4 +64,4 @@ void ShowAutoUpdateNotification(
 
   SystemNotificationHelper::GetInstance()->Display(*notification);
 }
-}  // namespace chromeos
+}  // namespace ash

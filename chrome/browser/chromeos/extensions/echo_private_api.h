@@ -13,9 +13,11 @@
 
 class PrefRegistrySimple;
 
-namespace chromeos {
-
+namespace ash {
 class EchoDialogView;
+}  // namespace ash
+
+namespace chromeos {
 
 // Namespace to register the EchoCheckedOffers field in Local State.
 namespace echo_offer {
@@ -88,11 +90,11 @@ class EchoPrivateGetOfferInfoFunction : public ExtensionFunction {
 // or informs the user that the offers redeeming is disabled.
 // It returns whether the user consent was given.
 class EchoPrivateGetUserConsentFunction : public ExtensionFunction,
-                                          public chromeos::EchoDialogListener {
+                                          public ash::EchoDialogListener {
  public:
   // Type for the dialog shown callback used in tests.
   using DialogShownTestCallback =
-      base::RepeatingCallback<void(chromeos::EchoDialogView* dialog)>;
+      base::RepeatingCallback<void(ash::EchoDialogView* dialog)>;
 
   EchoPrivateGetUserConsentFunction();
 

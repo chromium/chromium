@@ -17,7 +17,7 @@
 using NotificationType = policy::MinimumVersionPolicyHandler::NotificationType;
 using MessageFormatter = base::i18n::MessageFormatter;
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 const char kUpdateRequiredNotificationId[] = "policy.update_required";
@@ -186,4 +186,4 @@ void UpdateRequiredNotification::Click(
     std::move(notification_button_click_callback_).Run();
 }
 
-}  // namespace chromeos
+}  // namespace ash

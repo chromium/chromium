@@ -33,15 +33,14 @@ namespace policy {
 
 class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
  public:
-  using NotificationType =
-      chromeos::AdbSideloadingPolicyChangeNotification::Type;
+  using NotificationType = ash::AdbSideloadingPolicyChangeNotification::Type;
 
   AdbSideloadingAllowanceModePolicyHandlerTest()
       : local_state_(TestingBrowserProcess::GetGlobal()),
         user_manager_(new ash::FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         mock_notification_(
-            new chromeos::MockAdbSideloadingPolicyChangeNotification()) {
+            new ash::MockAdbSideloadingPolicyChangeNotification()) {
     chromeos::PowerManagerClient::InitializeFake();
 
     adb_sideloading_allowance_mode_policy_handler_ =
@@ -117,7 +116,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
 
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
-  chromeos::MockAdbSideloadingPolicyChangeNotification* mock_notification_;
+  ash::MockAdbSideloadingPolicyChangeNotification* mock_notification_;
   AdbSideloadingAllowanceModePolicyHandler*
       adb_sideloading_allowance_mode_policy_handler_;
 

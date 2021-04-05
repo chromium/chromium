@@ -9,7 +9,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/ui/screen_capture_notification_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 // Chromeos implementation for ScreenCaptureNotificationUI.
 class ScreenCaptureNotificationUIChromeOS : public ScreenCaptureNotificationUI {
@@ -32,5 +32,6 @@ class ScreenCaptureNotificationUIChromeOS : public ScreenCaptureNotificationUI {
   DISALLOW_COPY_AND_ASSIGN(ScreenCaptureNotificationUIChromeOS);
 };
 
-}  // namespace chromeos
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_SCREEN_CAPTURE_NOTIFICATION_UI_CHROMEOS_H_

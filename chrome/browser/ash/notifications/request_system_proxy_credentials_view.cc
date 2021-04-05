@@ -30,7 +30,7 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 RequestSystemProxyCredentialsView::RequestSystemProxyCredentialsView(
     const std::string& proxy_server,
@@ -177,4 +177,4 @@ ADD_READONLY_PROPERTY_METADATA(std::u16string, Username)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, Password)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

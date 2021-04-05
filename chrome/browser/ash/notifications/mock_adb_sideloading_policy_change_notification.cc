@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ash/notifications/mock_adb_sideloading_policy_change_notification.h"
 
-namespace chromeos {
+namespace ash {
+
 MockAdbSideloadingPolicyChangeNotification::
     MockAdbSideloadingPolicyChangeNotification() = default;
 MockAdbSideloadingPolicyChangeNotification::
@@ -14,4 +15,4 @@ void MockAdbSideloadingPolicyChangeNotification::Show(NotificationType type) {
   last_shown_notification = type;
 }
 
-}  // namespace chromeos
+}  // namespace ash

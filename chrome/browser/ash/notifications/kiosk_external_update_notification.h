@@ -9,7 +9,7 @@
 
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 
 class KioskExternalUpdateNotificationView;
 
@@ -31,12 +31,6 @@ class KioskExternalUpdateNotification {
   DISALLOW_COPY_AND_ASSIGN(KioskExternalUpdateNotification);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when migrated to
-// chrome/browser/ash/.
-namespace ash {
-using ::chromeos::KioskExternalUpdateNotification;
-}
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_KIOSK_EXTERNAL_UPDATE_NOTIFICATION_H_

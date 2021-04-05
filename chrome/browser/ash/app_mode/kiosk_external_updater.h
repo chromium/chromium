@@ -15,12 +15,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"
-// TODO(https://crbug.com/1164001): use forward declaration when moved to
-// chrome/browser/ash/.
-#include "chrome/browser/ash/notifications/kiosk_external_update_notification.h"
 #include "chromeos/disks/disk_mount_manager.h"
 
 namespace ash {
+
+class KioskExternalUpdateNotification;
 
 // Observes the disk mount/unmount events, scans the usb stick for external
 // kiosk app updates, validates the external crx, and updates the cache.

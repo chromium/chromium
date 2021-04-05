@@ -21,15 +21,18 @@
 #include "content/public/browser/content_browser_client.h"
 #include "net/base/auth.h"
 
-namespace chromeos {
-class NetworkState;
+namespace ash {
 class RequestSystemProxyCredentialsView;
 class SystemProxyNotification;
+}  // namespace ash
+
+namespace chromeos {
+class NetworkState;
 }  // namespace chromeos
 
 namespace content {
 class LoginDelegate;
-}
+}  // namespace content
 
 namespace system_proxy {
 class SetAuthenticationDetailsResponse;
@@ -38,7 +41,7 @@ class ShutDownResponse;
 
 namespace views {
 class Widget;
-}
+}  // namespace views
 
 class PrefRegistrySimple;
 class PrefService;
@@ -81,7 +84,7 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
   void SetSystemProxyEnabledForTest(bool enabled);
   void SetSystemServicesProxyUrlForTest(const std::string& local_proxy_url);
   void SetSendAuthDetailsClosureForTest(base::RepeatingClosure closure);
-  chromeos::RequestSystemProxyCredentialsView* GetActiveAuthDialogForTest();
+  ash::RequestSystemProxyCredentialsView* GetActiveAuthDialogForTest();
   void CloseAuthDialogForTest();
 
   // Registers prefs stored in user profiles.
@@ -220,10 +223,10 @@ class SystemProxyManager : public chromeos::NetworkStateHandlerObserver {
 
   // Notification which informs the user that System-proxy requires credentials
   // for authentication to the remote proxy.
-  std::unique_ptr<chromeos::SystemProxyNotification> notification_handler_;
+  std::unique_ptr<ash::SystemProxyNotification> notification_handler_;
 
   // Owned by |auth_widget_|.
-  chromeos::RequestSystemProxyCredentialsView* active_auth_dialog_ = nullptr;
+  ash::RequestSystemProxyCredentialsView* active_auth_dialog_ = nullptr;
   // Owned by the UI code (NativeWidget).
   views::Widget* auth_widget_ = nullptr;
 

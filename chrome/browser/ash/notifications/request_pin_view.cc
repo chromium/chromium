@@ -27,7 +27,7 @@
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -241,4 +241,4 @@ void RequestPinView::SetErrorMessage(security_token_pin::ErrorLabel error_label,
 BEGIN_METADATA(RequestPinView, views::DialogDelegateView)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

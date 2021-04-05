@@ -95,7 +95,7 @@ TPMAutoUpdateModePolicyHandler::TPMAutoUpdateModePolicyHandler(
                           weak_factory_.GetWeakPtr());
 
   show_notification_callback_ =
-      base::BindRepeating(&chromeos::ShowAutoUpdateNotification);
+      base::BindRepeating(&ash::ShowAutoUpdateNotification);
 
   notification_timer_ = std::make_unique<base::OneShotTimer>();
 
@@ -207,7 +207,7 @@ void TPMAutoUpdateModePolicyHandler::ShowTPMAutoUpdateNotification(
     local_state_->SetTime(prefs::kTPMUpdatePlannedNotificationShownTime,
                           notification_shown);
     show_notification_callback_.Run(
-        chromeos::TpmAutoUpdateUserNotification::kPlanned);
+        ash::TpmAutoUpdateUserNotification::kPlanned);
   }
 
   // Show update on next reboot notification after
@@ -251,7 +251,7 @@ void TPMAutoUpdateModePolicyHandler::ShowTPMUpdateOnNextRebootNotification() {
                            true);
 
   show_notification_callback_.Run(
-      chromeos::TpmAutoUpdateUserNotification::kOnNextReboot);
+      ash::TpmAutoUpdateUserNotification::kOnNextReboot);
 }
 
 void TPMAutoUpdateModePolicyHandler::SetNotificationTimerForTesting(

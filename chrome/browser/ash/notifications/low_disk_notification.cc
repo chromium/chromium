@@ -42,17 +42,17 @@ constexpr base::TimeDelta kNotificationInterval =
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 LowDiskNotification::LowDiskNotification()
     : notification_interval_(kNotificationInterval) {
-  DCHECK(UserDataAuthClient::Get());
-  UserDataAuthClient::Get()->AddObserver(this);
+  DCHECK(chromeos::UserDataAuthClient::Get());
+  chromeos::UserDataAuthClient::Get()->AddObserver(this);
 }
 
 LowDiskNotification::~LowDiskNotification() {
-  DCHECK(UserDataAuthClient::Get());
-  UserDataAuthClient::Get()->RemoveObserver(this);
+  DCHECK(chromeos::UserDataAuthClient::Get());
+  chromeos::UserDataAuthClient::Get()->RemoveObserver(this);
 }
 
 void LowDiskNotification::LowDiskSpace(
@@ -60,7 +60,7 @@ void LowDiskNotification::LowDiskSpace(
   DCHECK(thread_checker_.CalledOnValidThread());
 
   bool show_low_disk_space_notification = true;
-  if (!chromeos::CrosSettings::Get()->GetBoolean(
+  if (!CrosSettings::Get()->GetBoolean(
           chromeos::kDeviceShowLowDiskSpaceNotification,
           &show_low_disk_space_notification)) {
     DVLOG(1) << "DeviceShowLowDiskSpaceNotification not set, "
@@ -145,4 +145,4 @@ void LowDiskNotification::SetNotificationIntervalForTest(
   notification_interval_ = notification_interval;
 }
 
-}  // namespace chromeos
+}  // namespace ash

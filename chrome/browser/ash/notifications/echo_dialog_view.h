@@ -19,7 +19,7 @@ namespace gfx {
 class FontList;
 }  // namespace gfx
 
-namespace chromeos {
+namespace ash {
 
 class EchoDialogListener;
 
@@ -69,6 +69,6 @@ class EchoDialogView : public views::DialogDelegateView {
                          const gfx::FontList& label_font_list);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_ECHO_DIALOG_VIEW_H_

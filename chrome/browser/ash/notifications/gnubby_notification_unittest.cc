@@ -12,7 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-namespace chromeos {
+namespace ash {
 
 class GnubbyNotificationTest : public BrowserWithTestWindowTest {
  public:
@@ -22,7 +22,8 @@ class GnubbyNotificationTest : public BrowserWithTestWindowTest {
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
     DBusThreadManager::GetSetterForTesting()->SetGnubbyClient(
-        std::unique_ptr<GnubbyClient>(new FakeGnubbyClient));
+        std::unique_ptr<chromeos::GnubbyClient>(
+            new chromeos::FakeGnubbyClient));
 
     TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
         std::make_unique<SystemNotificationHelper>());
@@ -75,4 +76,4 @@ TEST_F(GnubbyNotificationTest, TwoNotificationsTest) {
   EXPECT_EQ(2, notification_count_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

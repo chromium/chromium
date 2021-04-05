@@ -8,7 +8,7 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/bind.h"
 
-namespace chromeos {
+namespace ash {
 
 ScreenCaptureNotificationUIChromeOS::ScreenCaptureNotificationUIChromeOS(
     const std::u16string& text)
@@ -42,11 +42,11 @@ void ScreenCaptureNotificationUIChromeOS::ProcessStopRequestFromUI() {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash
 
 // static
 std::unique_ptr<ScreenCaptureNotificationUI>
 ScreenCaptureNotificationUI::Create(const std::u16string& text) {
   return std::unique_ptr<ScreenCaptureNotificationUI>(
-      new chromeos::ScreenCaptureNotificationUIChromeOS(text));
+      new ash::ScreenCaptureNotificationUIChromeOS(text));
 }

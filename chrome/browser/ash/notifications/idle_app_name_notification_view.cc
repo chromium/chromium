@@ -38,9 +38,9 @@
 
 namespace ui {
 class LayerAnimationSequence;
-}
+}  // namespace ui
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 // Color of the text of the warning message.
@@ -274,4 +274,4 @@ void IdleAppNameNotificationView::ShowMessage(
 BEGIN_METADATA(IdleAppNameNotificationDelegateView, views::WidgetDelegateView)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

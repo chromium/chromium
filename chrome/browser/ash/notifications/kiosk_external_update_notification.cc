@@ -22,7 +22,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -163,4 +163,4 @@ void KioskExternalUpdateNotification::Dismiss() {
 BEGIN_METADATA(KioskExternalUpdateNotificationView, views::WidgetDelegateView)
 END_METADATA
 
-}  // namespace chromeos
+}  // namespace ash

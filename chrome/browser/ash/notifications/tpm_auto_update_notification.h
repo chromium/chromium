@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_TPM_AUTO_UPDATE_NOTIFICATION_H_
 #define CHROME_BROWSER_ASH_NOTIFICATIONS_TPM_AUTO_UPDATE_NOTIFICATION_H_
 
-namespace chromeos {
+namespace ash {
 
 // For the TPM firmware auto-update flow with user acknowledgment users will be
 // shown two notifications, one informing that an auto-update will be performed
@@ -24,6 +24,6 @@ enum class TpmAutoUpdateUserNotification {
 void ShowAutoUpdateNotification(
     TpmAutoUpdateUserNotification notification_type);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  CHROME_BROWSER_ASH_NOTIFICATIONS_TPM_AUTO_UPDATE_NOTIFICATION_H_

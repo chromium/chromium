@@ -13,8 +13,8 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/views_test_base.h"
 
-using chromeos::EchoDialogListener;
-using chromeos::EchoDialogView;
+using ash::EchoDialogListener;
+using ash::EchoDialogView;
 
 namespace {
 

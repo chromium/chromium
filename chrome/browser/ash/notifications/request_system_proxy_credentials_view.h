@@ -19,7 +19,7 @@ class Label;
 class Textfield;
 }  // namespace views
 
-namespace chromeos {
+namespace ash {
 
 // A dialog box for requesting proxy authentication credentials for network
 // traffic at OS level (outside the browser).
@@ -71,6 +71,6 @@ class RequestSystemProxyCredentialsView final
   base::OnceClosure view_destruction_callback_;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_REQUEST_SYSTEM_PROXY_CREDENTIALS_VIEW_H_
