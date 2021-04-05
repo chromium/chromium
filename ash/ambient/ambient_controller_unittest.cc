@@ -873,7 +873,8 @@ TEST_F(AmbientControllerTest, ShowsOnMultipleDisplays) {
                 ctrl->ambient_widget_for_testing()->IsVisible());
 }
 
-TEST_F(AmbientControllerTest, RespondsToDisplayAdded) {
+// TODO(crbug.com/1195762): Test is disabled due to flakiness.
+TEST_F(AmbientControllerTest, DISABLED_RespondsToDisplayAdded) {
   UpdateDisplay("800x600");
   ShowAmbientScreen();
   FastForwardToNextImage();
