@@ -6667,6 +6667,7 @@ grit("dev_ui_browser_resources") {
   deps = [
     "//chrome/browser/media:mojo_bindings_js",
     "//chrome/browser/media/feeds:mojo_bindings_js",
+    "//chrome/browser/resources/local_state:build",
     "//chrome/browser/resources/web_app_internals:components",
     "//chrome/browser/ui/webui/internals/web_app:mojo_bindings_js",
     "//components/site_engagement/core/mojom:mojo_bindings_webui_js",

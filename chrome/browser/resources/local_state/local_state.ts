@@ -11,7 +11,7 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 // When the page loads, request the JSON local state data from C++.
 document.addEventListener('DOMContentLoaded', function() {
-  sendWithPromise('requestJson').then(localState => {
+  sendWithPromise('requestJson').then((localState: string) => {
     $('content').textContent = localState;
   });
 });

@@ -132,18 +132,26 @@ ts_library("library") {
   ]
   definitions = [
     "js/assert.m.d.ts",
+    "js/cr.m.d.ts",
     "js/promise_resolver.m.d.ts",
     "js/util.m.d.ts",
   ]
-  extra_deps = [ ":generate_definitions" ]
+  extra_deps = [
+    ":generate_definitions",
+    ":generate_definitions_src",
+  ]
 }
 
 ts_definitions("generate_definitions") {
-  root_dir = target_gen_dir
+  root_dir = "$root_gen_dir/ui/webui/resources/preprocessed"
   js_files = [
     "js/assert.m.js",
     "js/promise_resolver.m.js",
     "js/util.m.js",
   ]
-  extra_deps = [ ":modulize" ]
+  extra_deps = [ "js:preprocess" ]
+}
+
+ts_definitions("generate_definitions_src") {
+  js_files = [ "js/cr.m.js" ]
 }

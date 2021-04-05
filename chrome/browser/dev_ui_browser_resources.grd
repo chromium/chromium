@@ -30,7 +30,7 @@ This file specifies browser resources for developer-facing chrome:// pages
       <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_CSS" file="resources\domain_reliability_internals\domain_reliability_internals.css" type="BINDATA" />
       <include name="IDR_DOMAIN_RELIABILITY_INTERNALS_JS" file="resources\domain_reliability_internals\domain_reliability_internals.js" type="BINDATA" />
       <include name="IDR_LOCAL_STATE_HTML" file="resources\local_state\local_state.html" type="BINDATA" />
-      <include name="IDR_LOCAL_STATE_JS" file="resources\local_state\local_state.js" type="BINDATA" />
+      <include name="IDR_LOCAL_STATE_JS" file="${root_gen_dir}\chrome\browser\resources\local_state\local_state.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_MEDIA_DATA_TABLE_JS" file="resources\media\media_data_table.js" type="BINDATA" />
       <include name="IDR_MEDIA_ENGAGEMENT_HTML" file="resources\media\media_engagement.html" type="BINDATA" />
       <include name="IDR_MEDIA_ENGAGEMENT_JS" file="resources\media\media_engagement.js" type="BINDATA" />

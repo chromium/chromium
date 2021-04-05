@@ -2,15 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 
-js_type_check("closure_compile") {
-  deps = [ ":local_state" ]
-}
-
-js_library("local_state") {
-  deps = [
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
+ts_library("build") {
+  sources = [ "local_state.ts" ]
+  deps = [ "//ui/webui/resources:library" ]
 }
