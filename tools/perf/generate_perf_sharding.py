@@ -138,13 +138,13 @@ def GenerateShardMap(builder, num_of_shards, debug=False):
       timing_data = json.load(f)
   benchmarks_to_shard = (
       list(builder.benchmark_configs) + list(builder.executables))
-  target_devices = cross_device_test_config.TARGET_DEVICES.get(builder.name, {})
+  repeat_config = cross_device_test_config.TARGET_DEVICES.get(builder.name, {})
   sharding_map = sharding_map_generator.generate_sharding_map(
       benchmarks_to_shard,
       timing_data,
       num_shards=num_of_shards,
       debug=debug,
-      target_devices=target_devices)
+      repeat_config=repeat_config)
   return sharding_map
 
 
