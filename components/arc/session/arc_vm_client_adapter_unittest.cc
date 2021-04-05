@@ -1598,6 +1598,49 @@ TEST_F(ArcVmClientAdapterTest, BintaryTranslationTypeNoNativeBridgeExperiment) {
                      "androidboot.native_bridge=libhoudini.so"));
 }
 
+// Tests that "readahead" mode is used by default.
+TEST_F(ArcVmClientAdapterTest, TestGetArcVmUreadaheadModeDefault) {
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arcvm_ureadahead_mode=readahead"));
+  EXPECT_FALSE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arcvm_ureadahead_mode=generate"));
+}
+
+// Tests that the "generate" command line switches the mode.
+TEST_F(ArcVmClientAdapterTest, TestGetArcVmUreadaheadModeGenerate) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arcvm-ureadahead-mode=generate"});
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  EXPECT_FALSE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arcvm_ureadahead_mode=readahead"));
+  EXPECT_TRUE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arcvm_ureadahead_mode=generate"));
+}
+
+// Tests that the "disabled" command line disables both readahead and generate.
+TEST_F(ArcVmClientAdapterTest, TestGetArcVmUreadaheadModeDisabled) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arcvm-ureadahead-mode=disabled"});
+  StartParams start_params(GetPopulatedStartParams());
+  SetValidUserInfo();
+  StartMiniArcWithParams(true, std::move(start_params));
+  EXPECT_FALSE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arcvm_ureadahead_mode=readahead"));
+  EXPECT_FALSE(
+      base::Contains(GetTestConciergeClient()->start_arc_vm_request().params(),
+                     "androidboot.arcvm_ureadahead_mode=generate"));
+}
+
 // Tests that ArcVmClientAdapter connects to the boot notification server
 // twice: once in StartMiniArc to check that it is listening, and the second
 // time in UpgradeArc to send props.
