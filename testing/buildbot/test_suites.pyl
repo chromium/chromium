@@ -4462,69 +4462,6 @@
       },
     },
 
-    'network_service_gtests': {
-      'network_service_browser_tests': {
-        'args': [
-          '--enable-features=NetworkService',
-        ],
-        'swarming': {
-          'shards': 15,
-        },
-        'test': 'browser_tests',
-      },
-      'network_service_components_browsertests': {
-        'args': [
-          '--enable-features=NetworkService',
-        ],
-        'test': 'components_browsertests',
-      },
-      'network_service_content_browsertests': {
-        'args': [
-          '--enable-features=NetworkService',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-        'test': 'content_browsertests',
-      },
-      'network_service_extensions_browsertests': {
-        'args': [
-          '--enable-features=NetworkService',
-        ],
-        'test': 'extensions_browsertests',
-      },
-      'network_service_interactive_ui_tests': {
-        'args': [
-          '--enable-features=NetworkService'
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-        'test': 'interactive_ui_tests',
-      },
-    },
-
-    'network_service_in_process_gtests': {
-      'network_service_in_process_browser_tests': {
-        'args': [
-          '--enable-features=NetworkService,NetworkServiceInProcess',
-        ],
-        'swarming': {
-          'shards': 15,
-        },
-        'test': 'browser_tests',
-      },
-      'network_service_in_process_content_browsertests': {
-        'args': [
-          '--enable-features=NetworkService,NetworkServiceInProcess',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-        'test': 'content_browsertests',
-      },
-    },
-
     'nocompile_tests': {
       'content_nocompile_tests': {},
     },
@@ -6727,7 +6664,6 @@
     'mojo_chromiumos_fyi_gtests': [
       'aura_gtests',
       'mojo_chromiumos_specific_gtests',
-      'network_service_gtests',
     ],
 
     'mojo_linux_gtests': [
@@ -6736,7 +6672,6 @@
     'mojo_windows_gtests': [
       'mojo_windows_specific_gtests',
       'network_service_fyi_gtests',
-      'network_service_in_process_gtests',
     ],
 
     'monochrome_public_apk_checker_isolated_script_and_sizes': [
@@ -6746,7 +6681,6 @@
 
     'network_service_extra_gtests': [
       'network_service_fyi_gtests',
-      'network_service_in_process_gtests',
     ],
 
     'paeverywhere_android_gtests': [
