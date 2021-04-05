@@ -300,9 +300,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kReducedReferrerGranularity;
 
 BLINK_COMMON_EXPORT extern const base::Feature kContentCaptureConstantStreaming;
 
-BLINK_COMMON_EXPORT extern const base::Feature
-    kContentCaptureUserActivatedDelay;
-
 BLINK_COMMON_EXPORT extern const base::Feature kCheckOfflineCapability;
 enum class CheckOfflineCapabilityMode {
   kWarnOnly,

@@ -80,17 +80,7 @@ class WebContentCaptureClientTestHelper : public WebContentCaptureClient {
  public:
   ~WebContentCaptureClientTestHelper() override = default;
 
-  void GetTaskTimingParameters(base::TimeDelta& short_delay,
-                               base::TimeDelta& long_delay) const override {
-    short_delay = GetTaskShortDelay();
-    long_delay = GetTaskLongDelay();
-  }
-
-  base::TimeDelta GetTaskLongDelay() const {
-    return base::TimeDelta::FromMilliseconds(5000);
-  }
-
-  base::TimeDelta GetTaskShortDelay() const {
+  base::TimeDelta GetTaskInitialDelay() const override {
     return base::TimeDelta::FromMilliseconds(500);
   }
 
@@ -294,12 +284,14 @@ class ContentCaptureTest
 
   void RunContentCaptureTask() {
     ResetResult();
-    platform()->RunForPeriod(GetWebContentCaptureClient()->GetTaskShortDelay());
+    platform()->RunForPeriod(
+        GetWebContentCaptureClient()->GetTaskInitialDelay());
   }
 
-  void RunLongDelayContentCaptureTask() {
+  void RunNextContentCaptureTask() {
     ResetResult();
-    platform()->RunForPeriod(GetWebContentCaptureClient()->GetTaskLongDelay());
+    platform()->RunForPeriod(
+        GetContentCaptureTask()->GetTaskDelayForTesting().GetNextTaskDelay());
   }
 
   void RemoveNode(Node* node) {
@@ -427,13 +419,9 @@ class ContentCaptureTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     ContentCaptureTest,
-    testing::Values(
-        std::vector<base::Feature>{},
-        std::vector<base::Feature>{features::kContentCaptureUserActivatedDelay},
-        std::vector<base::Feature>{features::kContentCaptureConstantStreaming},
-        std::vector<base::Feature>{
-            features::kContentCaptureUserActivatedDelay,
-            features::kContentCaptureConstantStreaming}));
+    testing::Values(std::vector<base::Feature>{},
+                    std::vector<base::Feature>{
+                        features::kContentCaptureConstantStreaming}));
 
 TEST_P(ContentCaptureTest, Basic) {
   RunContentCaptureTask();
@@ -617,7 +605,7 @@ TEST_P(ContentCaptureTest, RemoveNodeAfterSendingOut) {
 
   // Remove the node.
   RemoveNode(Nodes().at(0));
-  RunLongDelayContentCaptureTask();
+  RunContentCaptureTask();
   EXPECT_EQ(0u, GetWebContentCaptureClient()->Data().size());
   EXPECT_EQ(1u, GetWebContentCaptureClient()->RemovedData().size());
 }
@@ -707,7 +695,7 @@ TEST_P(ContentCaptureTest, TaskHistogramReporter) {
   CreateTextNodeAndNotifyManager();
   GetContentCaptureTask()->SetTaskStopState(
       ContentCaptureTask::TaskState::kStop);
-  RunLongDelayContentCaptureTask();
+  RunNextContentCaptureTask();
   histograms.ExpectTotalCount(
       ContentCaptureTaskHistogramReporter::kCaptureContentTime, 2u);
   histograms.ExpectTotalCount(
@@ -750,23 +738,11 @@ TEST_P(ContentCaptureTest, RescheduleTask) {
   EXPECT_TRUE(task->GetTaskNextFireIntervalForTesting().is_zero());
   task->Schedule(
       ContentCaptureTask::ScheduleReason::kNonUserActivatedContentChange);
-  auto begin = base::TimeTicks::Now();
   base::TimeDelta interval1 = task->GetTaskNextFireIntervalForTesting();
   task->Schedule(ContentCaptureTask::ScheduleReason::kScrolling);
   base::TimeDelta interval2 = task->GetTaskNextFireIntervalForTesting();
-  auto test_running_time = base::TimeTicks::Now() - begin;
-  if (base::FeatureList::IsEnabled(
-          features::kContentCaptureUserActivatedDelay)) {
-    // The first scheduled task is always shortest even though caused by
-    // NonUserTriggered.
-    EXPECT_LE(interval1, GetWebContentCaptureClient()->GetTaskShortDelay());
-    EXPECT_LE(interval2, interval1);
-  } else {
-    // The interval1 will be greater than interval2 even the task wasn't
-    // rescheduled, removing the test_running_time from interval1 make sure
-    // task rescheduled.
-    EXPECT_GT(interval1 - test_running_time, interval2);
-  }
+  EXPECT_LE(interval1, GetWebContentCaptureClient()->GetTaskInitialDelay());
+  EXPECT_LE(interval2, interval1);
 }
 
 TEST_P(ContentCaptureTest, NotRescheduleTask) {
@@ -1180,10 +1156,6 @@ TEST_F(ContentCaptureSimTest, UserActivatedDelay) {
       base::TimeDelta::FromSeconds(32),       base::TimeDelta::FromSeconds(64),
       base::TimeDelta::FromSeconds(128)};
   size_t expected_delays_size = base::size(expected_delays);
-
-  base::test::ScopedFeatureList user_activated_delay;
-  user_activated_delay.InitAndEnableFeature(
-      features::kContentCaptureUserActivatedDelay);
   // The first task has been scheduled but not run yet, the delay will be
   // increased until current task starts to run. Verifies the value is
   // unchanged.

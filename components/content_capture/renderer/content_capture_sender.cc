@@ -33,13 +33,9 @@ void ContentCaptureSender::BindPendingReceiver(
   receiver_.Bind(std::move(pending_receiver));
 }
 
-void ContentCaptureSender::GetTaskTimingParameters(
-    base::TimeDelta& short_delay,
-    base::TimeDelta& long_delay) const {
-  short_delay = base::TimeDelta::FromMilliseconds(
-      features::TaskShortDelayInMilliseconds());
-  long_delay = base::TimeDelta::FromMilliseconds(
-      features::TaskLongDelayInMilliseconds());
+base::TimeDelta ContentCaptureSender::GetTaskInitialDelay() const {
+  return base::TimeDelta::FromMilliseconds(
+      features::TaskInitialDelayInMilliseconds());
 }
 
 void ContentCaptureSender::DidCaptureContent(

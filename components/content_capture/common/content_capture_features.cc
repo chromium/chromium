@@ -33,14 +33,9 @@ bool ShouldTriggerContentCaptureForExperiment() {
   return base::FeatureList::IsEnabled(kContentCaptureTriggeringForExperiment);
 }
 
-int TaskLongDelayInMilliseconds() {
+int TaskInitialDelayInMilliseconds() {
   return base::GetFieldTrialParamByFeatureAsInt(
-      kContentCapture, "task_long_delay_in_milliseconds", 5000);
-}
-
-int TaskShortDelayInMilliseconds() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      kContentCapture, "task_short_delay_in_milliseconds", 500);
+      kContentCapture, "task_initial_delay_in_milliseconds", 500);
 }
 
 }  // namespace features

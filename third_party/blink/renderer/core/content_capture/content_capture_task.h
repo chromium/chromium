@@ -45,8 +45,7 @@ class CORE_EXPORT ContentCaptureTask
 
   class CORE_EXPORT TaskDelay {
    public:
-    TaskDelay(const base::TimeDelta& task_short_delay,
-              const base::TimeDelta& task_long_delay);
+    explicit TaskDelay(const base::TimeDelta& task_initial_delay);
     // Resets the |delay_exponent| and returns the initial delay.
     base::TimeDelta ResetAndGetInitialDelay();
 
@@ -56,14 +55,10 @@ class CORE_EXPORT ContentCaptureTask
     // Increases delay time of next task exponentially after the task started.
     void IncreaseDelayExponent();
 
-    base::TimeDelta task_short_delay() const { return task_short_delay_; }
-    base::TimeDelta task_long_delay() const { return task_long_delay_; }
+    base::TimeDelta task_initial_delay() const { return task_initial_delay_; }
 
    private:
-    // Schedules the task with short delay for kFirstContentChange, kScrolling
-    // and kRetryTask, with long delay for kContentChange.
-    const base::TimeDelta task_short_delay_;
-    const base::TimeDelta task_long_delay_;
+    const base::TimeDelta task_initial_delay_;
 
     // The exponent to calculate the next task delay time.
     int delay_exponent_ = 0;

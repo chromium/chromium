@@ -40,8 +40,7 @@ class ContentCaptureSender : public content::RenderFrameObserver,
           pending_receiver);
 
   // blink::WebContentCaptureClient:
-  void GetTaskTimingParameters(base::TimeDelta& short_delay,
-                               base::TimeDelta& long_delay) const override;
+  base::TimeDelta GetTaskInitialDelay() const override;
   void DidCaptureContent(const blink::WebVector<blink::WebContentHolder>& data,
                          bool first_data) override;
   void DidUpdateContent(

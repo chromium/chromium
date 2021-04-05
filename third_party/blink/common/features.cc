@@ -758,10 +758,6 @@ const base::Feature kReducedReferrerGranularity{
 const base::Feature kContentCaptureConstantStreaming = {
     "ContentCaptureConstantStreaming", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables the user activated exponential delay in the ContentCapture task.
-const base::Feature kContentCaptureUserActivatedDelay = {
-    "ContentCaptureUserActivatedDelay", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Dispatches a fake fetch event to a service worker to check the offline
 // capability of the site before promoting installation.
 // See https://crbug.com/965802 for more details.

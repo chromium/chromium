@@ -21,8 +21,7 @@ extern const base::Feature kContentCaptureTriggeringForExperiment;
 bool IsContentCaptureEnabled();
 bool ShouldTriggerContentCaptureForExperiment();
 
-int TaskLongDelayInMilliseconds();
-int TaskShortDelayInMilliseconds();
+int TaskInitialDelayInMilliseconds();
 
 }  // namespace features
 
