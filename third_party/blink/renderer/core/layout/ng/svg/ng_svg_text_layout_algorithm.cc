@@ -50,6 +50,15 @@ void NGSVGTextLayoutAlgorithm::Layout(
   ResolveCharacterPositioning(*inline_node_.GetLayoutBox(), items, in_text_path,
                               index, resolve);
 
+  // 4. Adjust positions: dx, dy
+  AdjustPositionsDxDy(items, resolve);
+
+  // 5. Apply ‘textLength’ attribute
+  // TODO(crbug.com/1179585): Implement this step.
+
+  // 6. Adjust positions: x, y
+  AdjustPositionsXY(items, resolve);
+
   // TODO(crbug.com/1179585): Implement the following steps.
 }
 
@@ -263,6 +272,83 @@ void NGSVGTextLayoutAlgorithm::ResolveCharacterPositioning(
          items[result_[index].item_index]->GetLayoutObject()->IsDescendantOf(
              &layout_object))
     ++index;
+}
+
+void NGSVGTextLayoutAlgorithm::AdjustPositionsDxDy(
+    const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+    Vector<SVGCharacterData>& resolve) {
+  // 1. Let shift be the cumulative x and y shifts due to ‘x’ and ‘y’
+  // attributes, initialized to (0,0).
+  // TODO(crbug.com/1179585): Report a specification bug on "'x' and 'y'
+  // attributes".
+  FloatPoint shift;
+  // 2. For each array element with index i in result:
+  DCHECK_EQ(result_.size(), resolve.size());
+  for (wtf_size_t i = 0; i < addressable_count_; ++i) {
+    // 2.1. If resolve_x[i] is unspecified, set it to 0. If resolve_y[i] is
+    // unspecified, set it to 0.
+    // TODO(crbug.com/1179585): Report a specification bug on "resolve_x" and
+    // "resolve_y".
+    if (!resolve[i].HasDx())
+      resolve[i].dx = 0.0;
+    if (!resolve[i].HasDy())
+      resolve[i].dy = 0.0;
+    // 2.2. Let shift.x = shift.x + resolve_x[i] and
+    // shift.y = shift.y + resolve_y[i].
+    // TODO(crbug.com/1179585): Report a specification bug on "resolve_x" and
+    // "resolve_y".
+    shift.Move(resolve[i].dx, resolve[i].dy);
+    // 2.3. Let result[i].x = CSS_positions[i].x + shift.x and
+    // result[i].y = CSS_positions[i].y + shift.y.
+    const float scaling_factor = ScalingFactorAt(items, i);
+    result_[i].x = css_positions_[i].X() + shift.X() * scaling_factor;
+    result_[i].y = css_positions_[i].Y() + shift.Y() * scaling_factor;
+  }
+}
+
+void NGSVGTextLayoutAlgorithm::AdjustPositionsXY(
+    const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+    const Vector<SVGCharacterData>& resolve) {
+  // 1. Let shift be the current adjustment due to the ‘x’ and ‘y’ attributes,
+  // initialized to (0,0).
+  FloatPoint shift;
+  // 2. Set index = 1.
+  // 3. While index < count:
+  // 3.5. Set index to index + 1.
+  DCHECK_EQ(result_.size(), resolve.size());
+  for (wtf_size_t i = 0; i < result_.size(); ++i) {
+    const float scaling_factor = ScalingFactorAt(items, i);
+    // 3.1. If resolved_x[index] is set, then let
+    // shift.x = resolved_x[index] − result.x[index].
+    if (resolve[i].HasX())
+      shift.SetX(resolve[i].x * scaling_factor - *result_[i].x);
+    // 3.2. If resolved_y[index] is set, then let
+    // shift.y = resolved_y[index] − result.y[index].
+    if (resolve[i].HasY())
+      shift.SetY(resolve[i].y * scaling_factor - *result_[i].y);
+    // 3.3. Let result.x[index] = result.x[index] + shift.x and
+    // result.y[index] = result.y[index] + shift.y.
+    result_[i].x = *result_[i].x + shift.X();
+    result_[i].y = *result_[i].y + shift.Y();
+    // 3.4. If the "middle" and "anchored chunk" flags of result[index] are
+    // both true, then:
+    if (result_[i].middle && result_[i].anchored_chunk) {
+      // 3.4.1. Set the "anchored chunk" flag of result[index] to false.
+      result_[i].anchored_chunk = false;
+      // 3.4.2. If index + 1 < count, then set the "anchored chunk" flag of
+      // result[index + 1] to true.
+      if (i + 1 < result_.size())
+        result_[i + 1].anchored_chunk = true;
+    }
+  }
+}
+
+float NGSVGTextLayoutAlgorithm::ScalingFactorAt(
+    const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+    wtf_size_t addressable_index) const {
+  return To<LayoutSVGInlineText>(
+             items[result_[addressable_index].item_index]->GetLayoutObject())
+      ->ScalingFactor();
 }
 
 }  // namespace blink

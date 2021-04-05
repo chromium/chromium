@@ -31,6 +31,15 @@ class NGSVGTextLayoutAlgorithm {
       bool in_text_path,
       wtf_size_t& index,
       Vector<SVGCharacterData>& resolve);
+  void AdjustPositionsDxDy(
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+      Vector<SVGCharacterData>& resolve);
+  void AdjustPositionsXY(
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+      const Vector<SVGCharacterData>& resolve);
+
+  float ScalingFactorAt(const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+                        wtf_size_t addressable_index) const;
 
   NGInlineNode inline_node_;
 
