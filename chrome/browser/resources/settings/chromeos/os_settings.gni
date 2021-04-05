@@ -333,6 +333,7 @@ os_settings_migrated_imports = [
   "chrome/browser/resources/settings/settings_vars_css.html",
   "ui/webui/resources/cr_elements/cr_drawer/cr_drawer.html",
   "ui/webui/resources/cr_elements/cr_link_row/cr_link_row.html",
+  "ui/webui/resources/cr_elements/cr_page_host_style_css.html",
   "ui/webui/resources/cr_elements/cr_search_field/cr_search_field.html",
   "ui/webui/resources/cr_elements/cr_tabs/cr_tabs.html",
   "ui/webui/resources/cr_elements/cr_toolbar/cr_toolbar_search_field.html",

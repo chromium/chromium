@@ -86,7 +86,6 @@ preprocess_if_expr("preprocess_polymer2") {
     "cr_lazy_render/cr_lazy_render.js",
     "cr_lottie/cr_lottie.html",
     "cr_lottie/cr_lottie.js",
-    "cr_page_host_style_css.html",
     "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.html",
     "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js",
     "cr_profile_avatar_selector/cr_profile_avatar_selector.html",
@@ -174,7 +173,7 @@ preprocess_if_expr("preprocess_generated") {
     "cr_link_row/cr_link_row.js",
     "cr_lottie/cr_lottie.m.js",
     "cr_menu_selector/cr_menu_selector.js",
-    "cr_page_host_style_css.m.js",
+    "cr_page_host_style_css.js",
     "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.m.js",
     "cr_profile_avatar_selector/cr_profile_avatar_selector.m.js",
     "cr_radio_button/cr_card_radio_button.m.js",
@@ -315,12 +314,6 @@ polymer_modulizer("cr_actionable_row_style") {
   html_type = "style-module"
 }
 
-polymer_modulizer("cr_page_host_style_css") {
-  js_file = "cr_page_host_style_css.m.js"
-  html_file = "cr_page_host_style_css.html"
-  html_type = "style-module"
-}
-
 polymer_modulizer("shared_vars_css") {
   js_file = "shared_vars_css.m.js"
   html_file = "shared_vars_css.html"
@@ -375,7 +368,6 @@ group("polymer3_elements") {
     ":action_link_css_module",
     ":cr_actionable_row_style_module",
     ":cr_icons_css_module",
-    ":cr_page_host_style_css_module",
     ":hidden_style_css_module",
     ":icons_module",
     ":md_select_css_module",
@@ -459,6 +451,7 @@ js_library("find_shortcut_behavior") {
 
 html_to_js("web_components") {
   js_files = [
+    "cr_page_host_style_css.js",
     "mwb_shared_icons.js",
     "mwb_shared_style.js",
     "mwb_shared_vars.js",
