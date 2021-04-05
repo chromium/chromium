@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/power_monitor/power_monitor.h"
-#include "base/power_monitor/power_monitor_device_source.h"
 #include "base/run_loop.h"
 #include "base/test/thread_test_helper.h"
 #include "build/build_config.h"
@@ -87,13 +85,6 @@ class EventRouterForwarderTest : public testing::Test {
   EventRouterForwarderTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
-    std::unique_ptr<base::PowerMonitorSource> power_monitor_source(
-        new base::PowerMonitorDeviceSource());
-    base::PowerMonitor::Initialize(std::move(power_monitor_source));
-  }
-
-  ~EventRouterForwarderTest() override {
-    base::PowerMonitor::ShutdownForTesting();
   }
 
   void SetUp() override {
