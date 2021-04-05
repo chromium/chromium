@@ -50,6 +50,7 @@ gclient_gn_args = [
 
 
 vars = {
+  "buildspec_platforms": "win-asan",
   # Variable that can be used to support multiple build scenarios, like having
   # Chromium specific targets in a client project's GN file or sync dependencies
   # conditionally etc.
@@ -210,7 +211,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling V8
   # and whatever else without interference from each other.
-  'v8_revision': 'refs/heads/chromium/4466',
+  'v8_revision': 'd295f0b97b44fc38867c6048d6275c7751d68e82',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling swarming_client
   # and whatever else without interference from each other.
@@ -218,7 +219,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ANGLE
   # and whatever else without interference from each other.
-  'angle_revision': 'refs/heads/chromium/4466',
+  'angle_revision': 'd62fc236a92505b4054c04625bb433be126e1d5b',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling SwiftShader
   # and whatever else without interference from each other.
@@ -226,7 +227,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling PDFium
   # and whatever else without interference from each other.
-  'pdfium_revision': 'refs/heads/chromium/4466',
+  'pdfium_revision': '511d49d21051d736bb0f702d60b4e899bf26b485',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling BoringSSL
   # and whatever else without interference from each other.
@@ -285,7 +286,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling devtools-frontend
   # and whatever else without interference from each other.
-  'devtools_frontend_revision': 'refs/heads/chromium/4466',
+  'devtools_frontend_revision': '739091764762adfbd8a3893fd1a97a5109e898ab',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libprotobuf-mutator
   # and whatever else without interference from each other.
@@ -1450,7 +1451,7 @@ deps = {
   },
 
   'src/third_party/requests/src': {
-      'url': Var('chromium_git') + '/external/github.com/kennethreitz/requests.git' + '@' + 'refs/tags/v2.23.0',
+      'url': Var('chromium_git') + '/external/github.com/kennethreitz/requests.git' + '@' + 'c7e0fc087ceeadb8b4c84a0953a422c474093d6d',
       'condition': 'checkout_android',
   },
 
@@ -1526,7 +1527,7 @@ deps = {
   'src/third_party/usrsctp/usrsctplib':
     Var('chromium_git') + '/external/github.com/sctplab/usrsctp' + '@' + '79f0178cd3cf327cc8721cee15609269964ef81a',
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@refs/heads/chromium/4466',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@4d5ff9313ec422141bcd58e8986dad1beaa67588',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '732a76d9d3c70d6aa487216495eeb28518349c3a',
@@ -1553,7 +1554,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/gpuweb/cts.git' + '@' + 'fdd7f1064e25c028425b6a5b4d5c66b47da92ae4',
 
   'src/third_party/webrtc':
-    Var('webrtc_git') + '/src.git' + '@' + 'refs/branch-heads/4466',
+    Var('webrtc_git') + '/src.git' + '@' + 'b620e2d3ec3de85807ea4ad99feac8d12f32c95b',
 
   'src/third_party/libgifcodec':
      Var('skia_git') + '/libgifcodec' + '@'+  Var('libgifcodec_revision'),
@@ -1625,7 +1626,7 @@ deps = {
     Var('chromium_git') + '/v8/v8.git' + '@' +  Var('v8_revision'),
 
   'src-internal': {
-    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@refs/heads/chromium/4466',
+    'url': 'https://chrome-internal.googlesource.com/chrome/src-internal.git@e3dba140c5b03f42611cbaef47a418907855ab8a',
     'condition': 'checkout_src_internal',
   },
 
