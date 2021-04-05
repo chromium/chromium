@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/record_replay.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -192,6 +193,12 @@ CategorizedWorkerPool::CategorizedWorkerPool()
 void CategorizedWorkerPool::Start(int num_normal_threads,
                                   gfx::RenderingPipeline* foreground_pipeline) {
   DCHECK(threads_.empty());
+
+  // Using multiple threads for raster tasks runs into ordering problems within
+  // Skia when recording/replaying. For now we avoid this by only creating one thread.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    num_normal_threads = 1;
+  }
 
   // |num_normal_threads| normal threads and 1 background threads are created.
   const size_t num_threads = num_normal_threads + 1;

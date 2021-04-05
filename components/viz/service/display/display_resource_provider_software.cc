@@ -142,9 +142,10 @@ DisplayResourceProviderSoftware::ScopedReadLockSkImage::ScopedReadLockSkImage(
   // the bitmap directly from the record/replay renderer.
   if (recordreplay::IsRecordingOrReplaying()) {
     SkBitmap sk_bitmap;
-    RecordReplayPopulateSkBitmapWithResource(&sk_bitmap, resource_id);
-    sk_bitmap.setImmutable();
-    sk_image_ = SkImage::MakeFromBitmap(sk_bitmap);
+    if (RecordReplayPopulateSkBitmapWithResource(&sk_bitmap, resource_id)) {
+      sk_bitmap.setImmutable();
+      sk_image_ = SkImage::MakeFromBitmap(sk_bitmap);
+    }
     return;
   }
 

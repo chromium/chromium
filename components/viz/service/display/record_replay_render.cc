@@ -69,7 +69,10 @@ void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_
     InitializeRenderer();
   }
 
-  if (*gSurfaceId != local_surface_id) {
+  // Surfaces are allowed to have different parent sequence numbers from the
+  // original one.
+  if (gSurfaceId->child_sequence_number() != local_surface_id.child_sequence_number() ||
+      gSurfaceId->embed_token() != local_surface_id.embed_token()) {
     recordreplay::Print("Ignoring composite to unknown surface %s, expected %s",
                         SurfaceIdString(local_surface_id).c_str(),
                         SurfaceIdString(*gSurfaceId).c_str());
@@ -92,7 +95,7 @@ void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_
   gCurrentFrame = nullptr;
 }
 
-void RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId resource_id) {
+bool RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId resource_id) {
   CHECK(gCurrentFrame);
 
   const TransferableResource* transferable = nullptr;
@@ -102,21 +105,27 @@ void RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId re
       break;
     }
   }
-  CHECK(transferable);
+  if (!transferable) {
+    return false;
+  }
 
   void* pixels = nullptr;
-  for (const SharedBitmapInfo& info : *gSharedBitmaps) {
-    if (info.id_ == transferable->mailbox_holder.mailbox) {
-      pixels = info.memory_;
+  if (gSharedBitmaps) {
+    for (const SharedBitmapInfo& info : *gSharedBitmaps) {
+      if (info.id_ == transferable->mailbox_holder.mailbox) {
+        pixels = info.memory_;
+      }
     }
   }
-  CHECK(pixels);
+
+  if (!pixels) {
+    return false;
+  }
 
   SkImageInfo info =
       SkImageInfo::MakeN32Premul(transferable->size.width(),
                                  transferable->size.height());
-  bool pixels_installed = sk_bitmap->installPixels(info, pixels, info.minRowBytes());
-  CHECK(pixels_installed);
+  return sk_bitmap->installPixels(info, pixels, info.minRowBytes());
 }
 
 extern "C" size_t V8RecordReplayPaintStart();

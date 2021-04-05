@@ -35,7 +35,7 @@ void RecordReplaySubmitCompositorFrame(const viz::LocalSurfaceId& local_surface_
                                        const viz::CompositorFrame& frame);
 
 // Called to populate a bitmap with information for the given resource in the current frame.
-void RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId resource_id);
+bool RecordReplayPopulateSkBitmapWithResource(SkBitmap* sk_bitmap, ResourceId resource_id);
 
 // Called when painting to the software output device has finished.
 void RecordReplayPaintFinished(const SkPixmap& pixmap);

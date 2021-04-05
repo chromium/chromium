@@ -23,7 +23,8 @@ namespace mojo {
 class WaitSet::State : public base::RefCountedThreadSafe<State> {
  public:
   State()
-      : handle_event_(base::WaitableEvent::ResetPolicy::MANUAL,
+      : lock_("WaitSet::State.lock_"),
+        handle_event_(base::WaitableEvent::ResetPolicy::MANUAL,
                       base::WaitableEvent::InitialState::NOT_SIGNALED) {
     MojoResult rv = CreateTrap(&Context::OnNotification, &trap_handle_);
     DCHECK_EQ(MOJO_RESULT_OK, rv);
