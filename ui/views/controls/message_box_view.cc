@@ -18,6 +18,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
@@ -122,6 +123,7 @@ MessageBoxView::MessageBoxView(const std::u16string& message,
   prompt_field_ = AddChildView(std::make_unique<Textfield>());
   prompt_field_->SetAccessibleName(message);
   prompt_field_->SetVisible(false);
+  prompt_field_->GetViewAccessibility().OverrideIsIgnored(true);
 
   checkbox_ = AddChildView(std::make_unique<Checkbox>());
   checkbox_->SetVisible(false);
@@ -205,6 +207,11 @@ void MessageBoxView::SetPromptField(const std::u16string& default_prompt) {
     return;
   prompt_field_->SetText(default_prompt);
   prompt_field_->SetVisible(true);
+  prompt_field_->GetViewAccessibility().OverrideIsIgnored(false);
+  // The same text visible in the message box is used as an accessible name for
+  // the prompt. To prevent it from being announced twice, we hide the message
+  // to ATs.
+  scroll_view_->GetViewAccessibility().OverrideIsLeaf(true);
   ResetLayoutManager();
 }
 
