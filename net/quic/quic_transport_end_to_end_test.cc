@@ -33,7 +33,7 @@ namespace {
 using ::quic::test::MemSliceFromString;
 using ::testing::_;
 
-class MockVisitor : public QuicTransportClient::Visitor {
+class MockVisitor : public WebTransportClientVisitor {
  public:
   MOCK_METHOD0(OnConnected, void());
   MOCK_METHOD0(OnConnectionFailed, void());
@@ -174,40 +174,39 @@ TEST_F(QuicTransportEndToEndTest, Connect) {
   StartServer();
   client_ = std::make_unique<QuicTransportClient>(
       GetURL("/discard"), origin_, &visitor_, isolation_key_, context_.get(),
-      QuicTransportClient::Parameters());
+      WebTransportParameters());
   client_->Connect();
   EXPECT_CALL(visitor_, OnConnected()).WillOnce(StopRunning());
   Run();
-  ASSERT_TRUE(client_->session() != nullptr);
-  EXPECT_TRUE(client_->session()->IsSessionReady());
+  ASSERT_TRUE(client_->quic_session() != nullptr);
+  EXPECT_TRUE(client_->quic_session()->IsSessionReady());
 }
 
 TEST_F(QuicTransportEndToEndTest, SendDatagram) {
   StartServer();
   client_ = std::make_unique<QuicTransportClient>(
       GetURL("/discard"), origin_, &visitor_, isolation_key_, context_.get(),
-      QuicTransportClient::Parameters());
+      WebTransportParameters());
   client_->Connect();
   EXPECT_CALL(visitor_, OnConnected()).WillOnce(StopRunning());
   Run();
-  ASSERT_TRUE(client_->session() != nullptr);
-  EXPECT_TRUE(client_->session()->IsSessionReady());
+  ASSERT_TRUE(client_->quic_session() != nullptr);
+  EXPECT_TRUE(client_->quic_session()->IsSessionReady());
 
   EXPECT_CALL(visitor_, OnDatagramProcessed(_)).Times(1);
-  client_->session()->datagram_queue()->SendOrQueueDatagram(
-      MemSliceFromString("test"));
+  client_->session()->SendOrQueueDatagram(MemSliceFromString("test"));
 }
 
 TEST_F(QuicTransportEndToEndTest, EchoUnidirectionalStream) {
   StartServer();
   client_ = std::make_unique<QuicTransportClient>(
       GetURL("/echo"), origin_, &visitor_, isolation_key_, context_.get(),
-      QuicTransportClient::Parameters());
+      WebTransportParameters());
   client_->Connect();
   EXPECT_CALL(visitor_, OnConnected()).WillOnce(StopRunning());
   Run();
 
-  quic::QuicTransportClientSession* session = client_->session();
+  quic::QuicTransportClientSession* session = client_->quic_session();
   ASSERT_TRUE(session != nullptr);
   ASSERT_TRUE(session->CanOpenNextOutgoingUnidirectionalStream());
   quic::QuicTransportStream* stream_out =
@@ -240,7 +239,7 @@ TEST_F(QuicTransportEndToEndTest, CertificateFingerprint) {
   helper_->clock().set_wall_now(
       quic::QuicWallTime::FromUNIXSeconds(1591389300));
 
-  QuicTransportClient::Parameters parameters;
+  WebTransportParameters parameters;
   parameters.server_certificate_fingerprints.push_back(
       quic::CertificateFingerprint{
           .algorithm = quic::CertificateFingerprint::kSha256,
@@ -252,13 +251,13 @@ TEST_F(QuicTransportEndToEndTest, CertificateFingerprint) {
   client_->Connect();
   EXPECT_CALL(visitor_, OnConnected()).WillOnce(StopRunning());
   Run();
-  ASSERT_NE(client_->session(), nullptr);
-  EXPECT_TRUE(client_->session()->IsSessionReady());
+  ASSERT_NE(client_->quic_session(), nullptr);
+  EXPECT_TRUE(client_->quic_session()->IsSessionReady());
 }
 
 TEST_F(QuicTransportEndToEndTest, CertificateFingerprintValidityTooLong) {
   StartServer();
-  QuicTransportClient::Parameters parameters;
+  WebTransportParameters parameters;
   // The default QUIC test certificate is valid for ten years, which exceeds
   // the two-week limit.
   parameters.server_certificate_fingerprints.push_back(
@@ -280,7 +279,7 @@ TEST_F(QuicTransportEndToEndTest, CertificateFingerprintValidityTooLong) {
 TEST_F(QuicTransportEndToEndTest, CertificateFingerprintMismatch) {
   StartServer();
 
-  QuicTransportClient::Parameters parameters;
+  WebTransportParameters parameters;
   parameters.server_certificate_fingerprints.push_back(
       quic::CertificateFingerprint{
           .algorithm = quic::CertificateFingerprint::kSha256,
@@ -310,12 +309,12 @@ TEST_F(QuicTransportEndToEndTest, OldVersion) {
   StartServer();
   client_ = std::make_unique<QuicTransportClient>(
       GetURL("/discard"), origin_, &visitor_, isolation_key_, context_.get(),
-      QuicTransportClient::Parameters());
+      WebTransportParameters());
   client_->Connect();
   EXPECT_CALL(visitor_, OnConnected()).WillOnce(StopRunning());
   Run();
-  ASSERT_TRUE(client_->session() != nullptr);
-  EXPECT_TRUE(client_->session()->IsSessionReady());
+  ASSERT_TRUE(client_->quic_session() != nullptr);
+  EXPECT_TRUE(client_->quic_session()->IsSessionReady());
 
   std::vector<NetLogEntry> events = net_log_.GetEntriesWithType(
       NetLogEventType::QUIC_SESSION_VERSION_NEGOTIATED);
@@ -327,8 +326,7 @@ TEST_F(QuicTransportEndToEndTest, OldVersion) {
 
   // Ensure the observer is set correctly after the version negotiation process.
   EXPECT_CALL(visitor_, OnDatagramProcessed(_)).Times(1);
-  client_->session()->datagram_queue()->SendOrQueueDatagram(
-      MemSliceFromString("test"));
+  client_->session()->SendOrQueueDatagram(MemSliceFromString("test"));
 }
 
 }  // namespace

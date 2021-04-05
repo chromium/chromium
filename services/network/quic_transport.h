@@ -34,7 +34,7 @@ class NetworkContext;
 // Implements mojom::QuicTransport with the net/ implementation.
 class COMPONENT_EXPORT(NETWORK_SERVICE) QuicTransport final
     : public mojom::QuicTransport,
-      public net::QuicTransportClient::Visitor {
+      public net::WebTransportClientVisitor {
  public:
   class Stream;
   using BidirectionalStreamAcceptanceCallback =
@@ -68,7 +68,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) QuicTransport final
   void AbortStream(uint32_t stream_id, uint64_t code) override;
   void SetOutgoingDatagramExpirationDuration(base::TimeDelta duration) override;
 
-  // net::QuicTransportClient::Visitor implementation:
+  // WebTransportClientVisitor implementation:
   void OnConnected() override;
   void OnConnectionFailed() override;
   void OnClosed() override;
@@ -86,7 +86,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) QuicTransport final
   void TearDown();
   void Dispose();
 
-  const std::unique_ptr<net::QuicTransportClient> transport_;
+  const std::unique_ptr<net::WebTransportClient> transport_;
   NetworkContext* const context_;  // outlives |this|.
 
   std::map<uint32_t, std::unique_ptr<Stream>> streams_;

@@ -15,6 +15,7 @@
 
 namespace net {
 
+// TODO(crbug.com/1193409): rename this class to WebTransportError.
 struct NET_EXPORT QuicTransportError {
   QuicTransportError() = default;
   QuicTransportError(int net_error,

@@ -23,10 +23,11 @@ namespace network {
 
 namespace {
 
-net::QuicTransportClient::Parameters CreateParameters(
+net::WebTransportParameters CreateParameters(
     const std::vector<mojom::QuicTransportCertificateFingerprintPtr>&
         fingerprints) {
-  net::QuicTransportClient::Parameters params;
+  net::WebTransportParameters params;
+  params.enable_quic_transport = true;
 
   for (const auto& fingerprint : fingerprints) {
     params.server_certificate_fingerprints.push_back(
@@ -330,13 +331,12 @@ QuicTransport::QuicTransport(
         fingerprints,
     NetworkContext* context,
     mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client)
-    : transport_(std::make_unique<net::QuicTransportClient>(
-          url,
-          origin,
-          this,
-          key,
-          context->url_request_context(),
-          CreateParameters(fingerprints))),
+    : transport_(net::CreateWebTransportClient(url,
+                                               origin,
+                                               this,
+                                               key,
+                                               context->url_request_context(),
+                                               CreateParameters(fingerprints))),
       context_(context),
       receiver_(this),
       handshake_client_(std::move(handshake_client)) {
@@ -358,8 +358,7 @@ void QuicTransport::SendDatagram(base::span<const uint8_t> data,
   memcpy(buffer->data(), data.data(), data.size());
   quic::QuicMemSlice slice(
       quic::QuicMemSliceImpl(std::move(buffer), data.size()));
-  transport_->session()->datagram_queue()->SendOrQueueDatagram(
-      std::move(slice));
+  transport_->session()->SendOrQueueDatagram(std::move(slice));
 }
 
 void QuicTransport::CreateStream(
@@ -375,7 +374,7 @@ void QuicTransport::CreateStream(
     return;
   }
 
-  quic::QuicTransportClientSession* const session = transport_->session();
+  quic::WebTransportSession* const session = transport_->session();
 
   if (writable) {
     // Bidirectional
@@ -453,7 +452,7 @@ void QuicTransport::SetOutgoingDatagramExpirationDuration(
     return;
   }
 
-  transport_->session()->datagram_queue()->SetMaxTimeInQueue(
+  transport_->session()->SetDatagramMaxTimeInQueue(
       quic::QuicTime::Delta::FromMicroseconds(duration.InMicroseconds()));
 }
 

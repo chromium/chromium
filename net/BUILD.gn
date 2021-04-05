@@ -939,6 +939,8 @@ component("net") {
       "quic/quic_transport_client.h",
       "quic/quic_transport_error.cc",
       "quic/quic_transport_error.h",
+      "quic/web_transport_client.cc",
+      "quic/web_transport_client.h",
       "quiche/common/platform/impl/quiche_bug_tracker_impl.h",
       "quiche/common/platform/impl/quiche_flag_utils_impl.h",
       "quiche/common/platform/impl/quiche_flags_impl.cc",

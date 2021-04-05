@@ -35,7 +35,7 @@ std::set<std::string> HostsFromOrigins(std::set<HostPortPair> origins) {
 std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
     const NetworkIsolationKey& isolation_key,
     URLRequestContext* context,
-    const QuicTransportClient::Parameters& parameters) {
+    const WebTransportParameters& parameters) {
   if (parameters.server_certificate_fingerprints.empty()) {
     return std::make_unique<ProofVerifierChromium>(
         context->cert_verifier(), context->ct_policy_enforcer(),
@@ -59,18 +59,13 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
 }
 }  // namespace
 
-QuicTransportClient::Parameters::Parameters() = default;
-QuicTransportClient::Parameters::~Parameters() = default;
-QuicTransportClient::Parameters::Parameters(const Parameters&) = default;
-QuicTransportClient::Parameters::Parameters(Parameters&&) = default;
-
 QuicTransportClient::QuicTransportClient(
     const GURL& url,
     const url::Origin& origin,
-    Visitor* visitor,
+    WebTransportClientVisitor* visitor,
     const NetworkIsolationKey& isolation_key,
     URLRequestContext* context,
-    const Parameters& parameters)
+    const WebTransportParameters& parameters)
     : url_(url),
       origin_(origin),
       isolation_key_(isolation_key),
@@ -94,8 +89,6 @@ QuicTransportClient::QuicTransportClient(
 
 QuicTransportClient::~QuicTransportClient() = default;
 
-QuicTransportClient::Visitor::~Visitor() = default;
-
 void QuicTransportClient::Connect() {
   if (state_ != NEW || next_connect_state_ != CONNECT_STATE_NONE) {
     NOTREACHED();
@@ -107,7 +100,15 @@ void QuicTransportClient::Connect() {
   DoLoop(OK);
 }
 
-quic::QuicTransportClientSession* QuicTransportClient::session() {
+const QuicTransportError& QuicTransportClient::error() const {
+  return error_;
+}
+
+quic::WebTransportSession* QuicTransportClient::session() {
+  return quic_session();
+}
+
+quic::QuicTransportClientSession* QuicTransportClient::quic_session() {
   if (session_ == nullptr || !session_->IsSessionReady())
     return nullptr;
   return session_.get();
@@ -311,8 +312,8 @@ int QuicTransportClient::DoConfirmConnection() {
   return OK;
 }
 
-void QuicTransportClient::TransitionToState(State next_state) {
-  const State last_state = state_;
+void QuicTransportClient::TransitionToState(WebTransportState next_state) {
+  const WebTransportState last_state = state_;
   state_ = next_state;
   switch (next_state) {
     case CONNECTING:

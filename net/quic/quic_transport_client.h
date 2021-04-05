@@ -15,10 +15,12 @@
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_event_logger.h"
 #include "net/quic/quic_transport_error.h"
+#include "net/quic/web_transport_client.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quic/core/quic_config.h"
 #include "net/third_party/quiche/src/quic/core/quic_versions.h"
+#include "net/third_party/quiche/src/quic/core/web_transport_interface.h"
 #include "net/third_party/quiche/src/quic/quic_transport/quic_transport_client_session.h"
 #include "net/third_party/quiche/src/quic/quic_transport/web_transport_fingerprint_proof_verifier.h"
 #include "url/gurl.h"
@@ -32,72 +34,12 @@ class URLRequestContext;
 
 // QuicTransportClient is the top-level API for QuicTransport in //net.
 class NET_EXPORT QuicTransportClient
-    : public quic::WebTransportVisitor,
+    : public WebTransportClient,
+      public quic::WebTransportVisitor,
       public QuicChromiumPacketReader::Visitor,
       public QuicChromiumPacketWriter::Delegate,
       public quic::QuicSession::Visitor {
  public:
-  //
-  // Diagram of allowed state transitions:
-  //
-  //    NEW -> CONNECTING -> CONNECTED -> CLOSED
-  //              |                |
-  //              |                |
-  //              +---> FAILED <---+
-  //
-  // These values are logged to UMA. Entries should not be renumbered and
-  // numeric values should never be reused. Please keep in sync with
-  // "QuicTransportClientState" in src/tools/metrics/histograms/enums.xml.
-  enum State {
-    // The client object has been created but Connect() has not been called.
-    NEW,
-    // Connection establishment is in progress.  No application data can be sent
-    // or received at this point.
-    CONNECTING,
-    // The connection has been established and application data can be sent and
-    // received.
-    CONNECTED,
-    // The connection has been closed gracefully by either endpoint.
-    CLOSED,
-    // The connection has been closed abruptly.
-    FAILED,
-
-    // Total number of possible states.
-    NUM_STATES,
-  };
-
-  class NET_EXPORT Visitor {
-   public:
-    virtual ~Visitor();
-
-    // State change notifiers.
-    virtual void OnConnected() = 0;         // CONNECTING -> CONNECTED
-    virtual void OnConnectionFailed() = 0;  // CONNECTING -> FAILED
-    virtual void OnClosed() = 0;            // CONNECTED -> CLOSED
-    virtual void OnError() = 0;             // CONNECTED -> FAILED
-
-    virtual void OnIncomingBidirectionalStreamAvailable() = 0;
-    virtual void OnIncomingUnidirectionalStreamAvailable() = 0;
-    virtual void OnDatagramReceived(base::StringPiece datagram) = 0;
-    virtual void OnCanCreateNewOutgoingBidirectionalStream() = 0;
-    virtual void OnCanCreateNewOutgoingUnidirectionalStream() = 0;
-    virtual void OnDatagramProcessed(
-        base::Optional<quic::MessageStatus> status) = 0;
-  };
-
-  struct NET_EXPORT Parameters {
-    Parameters();
-    ~Parameters();
-    Parameters(const Parameters&);
-    Parameters(Parameters&&);
-
-    // A vector of fingerprints for expected server certificates, as described
-    // in
-    // https://wicg.github.io/web-transport/#dom-quictransportconfiguration-server_certificate_fingerprints
-    // When empty, Web PKI is used.
-    std::vector<quic::CertificateFingerprint> server_certificate_fingerprints;
-  };
-
   // QUIC protocol versions that are used in the origin trial.
   static quic::ParsedQuicVersionVector
   QuicVersionsForWebTransportOriginTrial() {
@@ -109,20 +51,21 @@ class NET_EXPORT QuicTransportClient
   // |visitor| and |context| must outlive this object.
   QuicTransportClient(const GURL& url,
                       const url::Origin& origin,
-                      Visitor* visitor,
+                      WebTransportClientVisitor* visitor,
                       const NetworkIsolationKey& isolation_key,
                       URLRequestContext* context,
-                      const Parameters& parameters);
+                      const WebTransportParameters& parameters);
   ~QuicTransportClient() override;
 
-  State state() const { return state_; }
-  const QuicTransportError& error() const { return error_; }
+  WebTransportState state() const { return state_; }
+  const QuicTransportError& error() const override;
 
   // Connect() is an asynchronous operation.  Once the operation is finished,
   // OnConnected() or OnConnectionFailed() is called on the Visitor.
-  void Connect();
+  void Connect() override;
 
-  quic::QuicTransportClientSession* session();
+  quic::WebTransportSession* session() override;
+  quic::QuicTransportClientSession* quic_session();
 
   // QuicTransportClientSession::ClientVisitor methods.
   void OnSessionReady() override;
@@ -209,13 +152,13 @@ class NET_EXPORT QuicTransportClient
   // Verifies that the connection has succeeded.
   int DoConfirmConnection();
 
-  void TransitionToState(State next_state);
+  void TransitionToState(WebTransportState next_state);
 
   const GURL url_;
   const url::Origin origin_;
   const NetworkIsolationKey isolation_key_;
   URLRequestContext* const context_;  // Unowned.
-  Visitor* const visitor_;            // Unowned.
+  WebTransportClientVisitor* const visitor_;  // Unowned.
 
   ClientSocketFactory* const client_socket_factory_;
   QuicContext* const quic_context_;
@@ -227,7 +170,7 @@ class NET_EXPORT QuicTransportClient
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
   quic::QuicCryptoClientConfig crypto_config_;
 
-  State state_ = NEW;
+  WebTransportState state_ = NEW;
   ConnectState next_connect_state_ = CONNECT_STATE_NONE;
   QuicTransportError error_;
   bool retried_with_new_version_ = false;
