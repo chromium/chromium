@@ -265,12 +265,6 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       NGGridBlockTrackCollection* row_track_collection,
       NGGridPlacement* grid_placement) const;
 
-  void BuildAlgorithmTrackCollections(
-      GridItems* grid_items,
-      NGGridLayoutAlgorithmTrackCollection* column_track_collection,
-      NGGridLayoutAlgorithmTrackCollection* row_track_collection,
-      NGGridPlacement* grid_placement) const;
-
   // Ensure coverage in block collection after grid items have been placed.
   void EnsureTrackCoverageForGridItems(
       const GridItems& grid_items,
@@ -293,7 +287,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       NGGridLayoutAlgorithmTrackCollection* track_collection) const;
 
   // Calculates from the min and max track sizing functions the used track size.
-  void ComputeUsedTrackSizes(
+  SetGeometry ComputeUsedTrackSizes(
       SizingConstraint sizing_constraint,
       const GridGeometry& grid_geometry,
       NGGridLayoutAlgorithmTrackCollection* track_collection,
@@ -329,8 +323,7 @@ class CORE_EXPORT NGGridLayoutAlgorithm
       GridItems* grid_items) const;
 
   SetGeometry ComputeSetGeometry(
-      const NGGridLayoutAlgorithmTrackCollection& track_collection,
-      const LayoutUnit available_size) const;
+      const NGGridLayoutAlgorithmTrackCollection& track_collection) const;
 
   // Gets the row or column gap of the grid.
   LayoutUnit GridGap(GridTrackSizingDirection track_direction,

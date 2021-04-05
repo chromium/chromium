@@ -83,21 +83,23 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
                                  ComputeAutomaticRepetitions(kForColumns),
                                  ComputeAutomaticRepetitions(kForRows));
 
-  NGGridLayoutAlgorithmTrackCollection column_track_collection;
-  NGGridLayoutAlgorithmTrackCollection row_track_collection;
-  BuildAlgorithmTrackCollections(&grid_items, &column_track_collection,
-                                 &row_track_collection, &grid_placement);
+  // Build block track collections.
+  NGGridBlockTrackCollection column_block_track_collection(kForColumns);
+  NGGridBlockTrackCollection row_block_track_collection(kForRows);
+  BuildBlockTrackCollections(&grid_items, &column_block_track_collection,
+                             &row_block_track_collection, &grid_placement);
+
+  // Build algorithm track collections from the block track collections.
+  NGGridLayoutAlgorithmTrackCollection column_track_collection(
+      column_block_track_collection,
+      grid_available_size_.inline_size == kIndefiniteSize);
+  NGGridLayoutAlgorithmTrackCollection row_track_collection(
+      row_block_track_collection,
+      grid_available_size_.block_size == kIndefiniteSize);
 
   // Cache track span properties for grid items.
   CacheGridItemsTrackSpanProperties(column_track_collection, &grid_items);
   CacheGridItemsTrackSpanProperties(row_track_collection, &grid_items);
-
-  // We perform the track sizing algorithm using two methods. First
-  // |InitializeTrackSizes|, which we need to get an initial column and row set
-  // geometry. Then |ComputeUsedTrackSizes|, to finalize the sizing algorithm
-  // for both dimensions.
-  GridGeometry grid_geometry(InitializeTrackSizes(&column_track_collection),
-                             InitializeTrackSizes(&row_track_collection));
 
   // Cache set indices and alignment fallbacks for grid items.
   for (auto& grid_item : grid_items.item_data) {
@@ -107,27 +109,28 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
     grid_item.SetAlignmentFallback(row_track_collection, container_style);
   }
 
+  // We perform the track sizing algorithm using two methods. First
+  // |InitializeTrackSizes|, which we need to get an initial column and row set
+  // geometry. Then |ComputeUsedTrackSizes|, to finalize the sizing algorithm
+  // for both dimensions.
+  GridGeometry grid_geometry(InitializeTrackSizes(&column_track_collection),
+                             InitializeTrackSizes(&row_track_collection));
+
   // Store column baselines, as these contributions can influence column sizing.
   CalculateAlignmentBaselines(grid_items, grid_geometry, kForColumns);
 
   // Resolve inline size.
-  ComputeUsedTrackSizes(SizingConstraint::kLayout, grid_geometry,
-                        &column_track_collection, &grid_items);
-
-  // Determine the final (used) column set geometry.
-  grid_geometry.column_geometry = ComputeSetGeometry(
-      column_track_collection, grid_available_size_.inline_size);
+  grid_geometry.column_geometry =
+      ComputeUsedTrackSizes(SizingConstraint::kLayout, grid_geometry,
+                            &column_track_collection, &grid_items);
 
   // Store row baselines now that column sizing is computed.
   CalculateAlignmentBaselines(grid_items, grid_geometry, kForRows);
 
   // Resolve block size.
-  ComputeUsedTrackSizes(SizingConstraint::kLayout, grid_geometry,
-                        &row_track_collection, &grid_items);
-
-  // Determine the final (used) row set geometry.
   grid_geometry.row_geometry =
-      ComputeSetGeometry(row_track_collection, grid_available_size_.block_size);
+      ComputeUsedTrackSizes(SizingConstraint::kLayout, grid_geometry,
+                            &row_track_collection, &grid_items);
 
   // Recompute column baselines now that the row sizing is determined.
   CalculateAlignmentBaselines(grid_items, grid_geometry, kForColumns);
@@ -158,8 +161,10 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
         (block_size - BorderScrollbarPadding().BlockSum())
             .ClampNegativeToZero();
 
-    grid_geometry.row_geometry =
-        ComputeSetGeometry(row_track_collection, resolved_available_block_size);
+    grid_available_size_.block_size = grid_min_available_size_.block_size =
+        grid_max_available_size_.block_size = resolved_available_block_size;
+
+    grid_geometry.row_geometry = ComputeSetGeometry(row_track_collection);
   }
 
   PlaceGridItems(grid_items, grid_geometry, block_size);
@@ -252,11 +257,20 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
                                  ComputeAutomaticRepetitions(kForColumns),
                                  ComputeAutomaticRepetitions(kForRows));
 
-  NGGridLayoutAlgorithmTrackCollection column_track_collection_for_min_size;
-  NGGridLayoutAlgorithmTrackCollection row_track_collection;
-  BuildAlgorithmTrackCollections(&grid_items,
-                                 &column_track_collection_for_min_size,
-                                 &row_track_collection, &grid_placement);
+  // Build block track collections.
+  NGGridBlockTrackCollection column_block_track_collection(kForColumns);
+  NGGridBlockTrackCollection row_block_track_collection(kForRows);
+  BuildBlockTrackCollections(&grid_items, &column_block_track_collection,
+                             &row_block_track_collection, &grid_placement);
+
+  // Build algorithm track collections from the block track collections.
+  NGGridLayoutAlgorithmTrackCollection column_track_collection_for_min_size(
+      column_block_track_collection,
+      grid_available_size_.inline_size == kIndefiniteSize);
+
+  NGGridLayoutAlgorithmTrackCollection row_track_collection(
+      row_block_track_collection,
+      grid_available_size_.block_size == kIndefiniteSize);
 
   // Cache track span properties for grid items.
   CacheGridItemsTrackSpanProperties(column_track_collection_for_min_size,
@@ -1232,32 +1246,6 @@ void NGGridLayoutAlgorithm::BuildBlockTrackCollections(
   BuildBlockTrackCollection(row_track_collection);
 }
 
-void NGGridLayoutAlgorithm::BuildAlgorithmTrackCollections(
-    GridItems* grid_items,
-    NGGridLayoutAlgorithmTrackCollection* column_track_collection,
-    NGGridLayoutAlgorithmTrackCollection* row_track_collection,
-    NGGridPlacement* grid_placement) const {
-  DCHECK(grid_items);
-  DCHECK(column_track_collection);
-  DCHECK(row_track_collection);
-  DCHECK(grid_placement);
-
-  // Build block track collections.
-  NGGridBlockTrackCollection column_block_track_collection(kForColumns);
-  NGGridBlockTrackCollection row_block_track_collection(kForRows);
-  BuildBlockTrackCollections(grid_items, &column_block_track_collection,
-                             &row_block_track_collection, grid_placement);
-
-  // Build algorithm track collections from the block track collections.
-  *column_track_collection = NGGridLayoutAlgorithmTrackCollection(
-      column_block_track_collection,
-      grid_available_size_.inline_size == kIndefiniteSize);
-
-  *row_track_collection = NGGridLayoutAlgorithmTrackCollection(
-      row_block_track_collection,
-      grid_available_size_.block_size == kIndefiniteSize);
-}
-
 void NGGridLayoutAlgorithm::EnsureTrackCoverageForGridItems(
     const GridItems& grid_items,
     NGGridBlockTrackCollection* track_collection) const {
@@ -1467,7 +1455,7 @@ NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::InitializeTrackSizes(
 }
 
 // https://drafts.csswg.org/css-grid-2/#algo-track-sizing
-void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
+NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
     SizingConstraint sizing_constraint,
     const GridGeometry& grid_geometry,
     NGGridLayoutAlgorithmTrackCollection* track_collection,
@@ -1490,6 +1478,9 @@ void NGGridLayoutAlgorithm::ComputeUsedTrackSizes(
 
   // 5. Stretch tracks with an 'auto' max track sizing function.
   StretchAutoTracks(sizing_constraint, track_collection);
+
+  // Return the set geometry.
+  return ComputeSetGeometry(*track_collection);
 }
 
 // Helpers for the track sizing algorithm.
@@ -2521,8 +2512,10 @@ TrackAlignmentGeometry ComputeTrackAlignmentGeometry(
 
 // Calculates the offsets for all sets.
 NGGridLayoutAlgorithm::SetGeometry NGGridLayoutAlgorithm::ComputeSetGeometry(
-    const NGGridLayoutAlgorithmTrackCollection& track_collection,
-    const LayoutUnit available_size) const {
+    const NGGridLayoutAlgorithmTrackCollection& track_collection) const {
+  const LayoutUnit available_size = track_collection.IsForColumns()
+                                        ? grid_available_size_.inline_size
+                                        : grid_available_size_.block_size;
   const TrackAlignmentGeometry track_alignment_geometry =
       track_collection.IsForColumns()
           ? ComputeTrackAlignmentGeometry(Style(), Style().JustifyContent(),

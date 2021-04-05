@@ -52,9 +52,21 @@ class NGGridLayoutAlgorithmTest
         algorithm.Style(), algorithm.ComputeAutomaticRepetitions(kForColumns),
         algorithm.ComputeAutomaticRepetitions(kForRows));
 
-    algorithm.BuildAlgorithmTrackCollections(
-        &grid_items_, &column_track_collection_, &row_track_collection_,
-        &grid_placement);
+    // Build block track collections.
+    NGGridBlockTrackCollection column_block_track_collection(kForColumns);
+    NGGridBlockTrackCollection row_block_track_collection(kForRows);
+    algorithm.BuildBlockTrackCollections(
+        &grid_items_, &column_block_track_collection,
+        &row_block_track_collection, &grid_placement);
+
+    // Build algorithm track collections from the block track collections.
+    column_track_collection_ = NGGridLayoutAlgorithmTrackCollection(
+        column_block_track_collection,
+        algorithm.grid_available_size_.inline_size == kIndefiniteSize);
+
+    row_track_collection_ = NGGridLayoutAlgorithmTrackCollection(
+        row_block_track_collection,
+        algorithm.grid_available_size_.block_size == kIndefiniteSize);
 
     // Cache track span properties for grid items.
     algorithm.CacheGridItemsTrackSpanProperties(column_track_collection_,
