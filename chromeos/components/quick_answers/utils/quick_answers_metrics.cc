@@ -21,7 +21,12 @@ const char kQuickAnswerLoadingStatus[] = "QuickAnswers.Loading.Status";
 const char kQuickAnswerLoadingDuration[] = "QuickAnswers.Loading.Duration";
 const char kQuickAnswerSelectedContentLength[] =
     "QuickAnswers.SelectedContent.Length";
+const char kQuickAnswersRequestTextLength[] = "QuickAnswers.RequestTextLength";
+
 const char kDurationSuffix[] = ".Duration";
+const char kDefinitionSuffix[] = ".Definition";
+const char kTranslationSuffix[] = ".Translation";
+const char kUnitConversionSuffix[] = ".UnitConversion";
 
 const char kQuickAnswersNotice[] = "QuickAnswers.Consent";
 const char kQuickAnswersNoticeDuration[] = "QuickAnswers.Consent.Duration";
@@ -97,6 +102,25 @@ void RecordClick(ResultType result_type, const base::TimeDelta duration) {
 
 void RecordSelectedTextLength(int length) {
   base::UmaHistogramCounts1000(kQuickAnswerSelectedContentLength, length);
+}
+
+void RecordRequestTextLength(IntentType intent_type, int length) {
+  std::string histogram_name = kQuickAnswersRequestTextLength;
+  switch (intent_type) {
+    case IntentType::kDictionary:
+      histogram_name += kDefinitionSuffix;
+      break;
+    case IntentType::kTranslation:
+      histogram_name += kTranslationSuffix;
+      break;
+    case IntentType::kUnit:
+      histogram_name += kUnitConversionSuffix;
+      break;
+    case IntentType::kUnknown:
+      return;
+  }
+
+  base::UmaHistogramCounts1000(histogram_name, length);
 }
 
 void RecordActiveImpression(ResultType result_type,

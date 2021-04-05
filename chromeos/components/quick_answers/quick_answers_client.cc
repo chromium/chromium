@@ -197,6 +197,9 @@ void QuickAnswersClient::IntentGeneratorCallback(
     }
   }
 
+  RecordRequestTextLength(intent_info.intent_type,
+                          quick_answers_request.selected_text.length());
+
   if (!skip_fetch)
     FetchQuickAnswers(processed_request);
 }

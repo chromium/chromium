@@ -390,6 +390,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="QuickAnswers.RequestTextLength.{IntentType}"
+    units="characters" expires_after="2021-08-29">
+  <owner>updowndota@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    For every quick answer request, records the length of the selected text that
+    is being used for fetching {IntentType} results. ChromeOS only.
+  </summary>
+  <token key="IntentType">
+    <variant name="Definition" summary="definition"/>
+    <variant name="Translation" summary="translation"/>
+    <variant name="UnitConversion" summary="unit conversion"/>
+  </token>
+</histogram>
+
 <histogram name="QuickAnswers.Result" enum="QuickAnswersResultType"
     expires_after="2021-08-29">
   <owner>llin@google.com</owner>

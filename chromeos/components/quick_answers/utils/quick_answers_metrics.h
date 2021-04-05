@@ -29,6 +29,10 @@ void RecordClick(ResultType result_type, const base::TimeDelta duration);
 // Record selected text length to learn about usage pattern.
 void RecordSelectedTextLength(int length);
 
+// Record selected text length of requests sent out to learn about usage
+// pattern.
+void RecordRequestTextLength(IntentType intent_type, int length);
+
 // Record active impression with result type and impression duration.
 void RecordActiveImpression(ResultType result_type,
                             const base::TimeDelta duration);
