@@ -67,7 +67,7 @@ class MockAXObject : public AXObject {
   AXObject* ComputeParentImpl() const final { return nullptr; }
   Document* GetDocument() const final { return &AXObjectCache().GetDocument(); }
   void AddChildren() final {}
-  ax::mojom::blink::Role DetermineAccessibilityRole() override {
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override {
     return ax::mojom::blink::Role::kUnknown;
   }
 };

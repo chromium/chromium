@@ -518,6 +518,7 @@ _CONFIG = [
             'ui::IsDialog',
             'ui::IsHeading',
             'ui::IsPlatformDocument',
+            'ui::IsPresentational',
             'ui::IsTableLike',
             'ui::IsTableRow',
             'ui::IsTableHeader',

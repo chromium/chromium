@@ -40,13 +40,8 @@ AXSlider::AXSlider(LayoutObject* layout_object,
                    AXObjectCacheImpl& ax_object_cache)
     : AXLayoutObject(layout_object, ax_object_cache) {}
 
-ax::mojom::Role AXSlider::DetermineAccessibilityRole() {
-  native_role_ = ax::mojom::blink::Role::kSlider;
-
-  if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
-    return aria_role_;
-
-  return native_role_;
+ax::mojom::blink::Role AXSlider::NativeRoleIgnoringAria() const {
+  return ax::mojom::blink::Role::kSlider;
 }
 
 AccessibilityOrientation AXSlider::Orientation() const {

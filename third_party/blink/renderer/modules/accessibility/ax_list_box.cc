@@ -43,11 +43,8 @@ AXListBox::AXListBox(LayoutObject* layout_object,
 
 AXListBox::~AXListBox() = default;
 
-ax::mojom::Role AXListBox::DetermineAccessibilityRole() {
-  if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
-    return aria_role_;
-
-  return ax::mojom::Role::kListBox;
+ax::mojom::blink::Role AXListBox::NativeRoleIgnoringAria() const {
+  return ax::mojom::blink::Role::kListBox;
 }
 
 AXObject* AXListBox::ActiveDescendant() {

@@ -53,8 +53,11 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   mutable bool getting_bounds_ = false;
 #endif
 
-  // The accessibility role, not taking ARIA into account.
+  // The accessibility role, not taking the ARIA role into account.
   ax::mojom::blink::Role native_role_;
+
+  // The ARIA role, not taking the native role into account.
+  ax::mojom::blink::Role aria_role_;
 
   static base::Optional<String> GetCSSAltText(const Node*);
   AXObjectInclusion ShouldIncludeBasedOnSemantics(
@@ -65,7 +68,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   ax::mojom::blink::Role DetermineTableCellRole() const;
   ax::mojom::blink::Role DetermineTableRowRole() const;
   ax::mojom::blink::Role DetermineAccessibilityRole() override;
-  ax::mojom::blink::Role NativeRoleIgnoringAria() const;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
   void AlterSliderOrSpinButtonValue(bool increase);
   AXObject* ActiveDescendant() override;
   String AriaAccessibilityDescription() const;
@@ -278,10 +281,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
 
   // If we can't determine a useful role from the DOM node, attempt to determine
   // a role from the layout object.
-  virtual ax::mojom::blink::Role RoleFromLayoutObject(
-      ax::mojom::blink::Role dom_role) const {
-    return dom_role;
-  }
+  virtual ax::mojom::blink::Role RoleFromLayoutObjectOrNode() const;
 
  private:
   bool HasInternalsAttribute(Element&, const QualifiedName&) const;

@@ -37,11 +37,15 @@ class MODULES_EXPORT AXVirtualObject : public AXObject {
                          NameSources*) const override;
   Document* GetDocument() const override;
   ax::mojom::blink::Role DetermineAccessibilityRole() override;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
+  ax::mojom::blink::Role AriaRoleAttribute() const override;
 
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 
   Member<AccessibleNode> accessible_node_;
+
+  ax::mojom::blink::Role aria_role_;
 };
 
 }  // namespace blink

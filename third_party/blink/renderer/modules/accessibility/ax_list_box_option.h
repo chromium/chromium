@@ -44,7 +44,7 @@ class AXListBoxOption final : public AXLayoutObject {
   ~AXListBoxOption() override;
 
   bool IsAXListBoxOption() const override { return true; }
-  ax::mojom::Role DetermineAccessibilityRole() final;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
   AccessibilitySelectedState IsSelected() const override;
   bool IsSelectedOptionActive() const override;
   bool OnNativeSetSelectedAction(bool) override;

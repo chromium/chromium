@@ -5,7 +5,7 @@ rootWebArea
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer
-++++++++++genericContainer ignored invisible
+++++++++++listItem ignored invisible
 ++++++++++++listMarker ignored invisible
 ++++++++++++++staticText ignored invisible name='%E2%96%BE'
 ++++++genericContainer ignored invisible

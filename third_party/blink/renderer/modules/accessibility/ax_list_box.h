@@ -41,7 +41,7 @@ class AXListBox final : public AXLayoutObject {
   AXListBox(LayoutObject*, AXObjectCacheImpl&);
   ~AXListBox() override;
 
-  ax::mojom::Role DetermineAccessibilityRole() final;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
   bool IsAXListBox() const override { return true; }
   AXObject* ActiveDescendant() final;
 

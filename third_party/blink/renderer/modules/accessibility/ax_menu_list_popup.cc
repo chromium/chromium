@@ -34,6 +34,10 @@ namespace blink {
 AXMenuListPopup::AXMenuListPopup(AXObjectCacheImpl& ax_object_cache)
     : AXMockObject(ax_object_cache), active_index_(-1) {}
 
+ax::mojom::blink::Role AXMenuListPopup::NativeRoleIgnoringAria() const {
+  return ax::mojom::blink::Role::kMenuListPopup;
+}
+
 bool AXMenuListPopup::IsVisible() const {
   return !IsOffScreen();
 }

@@ -819,7 +819,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual AXRestriction Restriction() const;
 
   // ARIA attributes.
-  virtual ax::mojom::blink::Role DetermineAccessibilityRole() = 0;
+  virtual ax::mojom::blink::Role DetermineAccessibilityRole();
   ax::mojom::blink::Role DetermineAriaRoleAttribute() const;
   virtual ax::mojom::blink::Role AriaRoleAttribute() const;
   virtual bool HasAriaAttribute() const { return false; }
@@ -1275,6 +1275,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   bool IsHiddenForTextAlternativeCalculation() const;
 
+  // What should the role be assuming an ARIA role is not present?
+  virtual ax::mojom::blink::Role NativeRoleIgnoringAria() const = 0;
+
   // Returns a string representation of this object.
   // |cached_values_only| avoids recomputing cached values, and thus can be
   // used during UpdateCachedValuesIfNecessary() without causing recursion.
@@ -1287,8 +1290,10 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // Only children that are included in tree, maybe rename to children_in_tree_.
   mutable AXObjectVector children_;
   mutable bool children_dirty_;
+
+  // The final role, taking into account the ARIA role and native role.
   ax::mojom::blink::Role role_;
-  ax::mojom::blink::Role aria_role_;
+
   LayoutRect explicit_element_rect_;
   AXID explicit_container_id_;
 

@@ -10,8 +10,9 @@ namespace blink {
 
 AXVirtualObject::AXVirtualObject(AXObjectCacheImpl& axObjectCache,
                                  AccessibleNode* accessible_node)
-    : AXObject(axObjectCache), accessible_node_(accessible_node) {
-}
+    : AXObject(axObjectCache),
+      accessible_node_(accessible_node),
+      aria_role_(ax::mojom::blink::Role::kUnknown) {}
 
 AXVirtualObject::~AXVirtualObject() = default;
 
@@ -102,11 +103,19 @@ String AXVirtualObject::TextAlternative(bool recursive,
 ax::mojom::blink::Role AXVirtualObject::DetermineAccessibilityRole() {
   aria_role_ = DetermineAriaRoleAttribute();
 
-  // If no role was assigned, fall back to role="generic".
-  if (aria_role_ == ax::mojom::blink::Role::kUnknown)
-    aria_role_ = ax::mojom::blink::Role::kGenericContainer;
+  if (aria_role_ != ax::mojom::blink::Role::kUnknown)
+    return aria_role_;
 
+  return NativeRoleIgnoringAria();
+}
+
+ax::mojom::blink::Role AXVirtualObject::AriaRoleAttribute() const {
   return aria_role_;
+}
+
+ax::mojom::blink::Role AXVirtualObject::NativeRoleIgnoringAria() const {
+  // If no role was assigned, will fall back to role="generic".
+  return ax::mojom::blink::Role::kGenericContainer;
 }
 
 void AXVirtualObject::Trace(Visitor* visitor) const {

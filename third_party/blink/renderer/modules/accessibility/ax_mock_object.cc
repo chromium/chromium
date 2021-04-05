@@ -49,4 +49,9 @@ AXObject* AXMockObject::ComputeParentImpl() const {
   return nullptr;
 }
 
+ax::mojom::blink::Role AXMockObject::NativeRoleIgnoringAria() const {
+  NOTREACHED();
+  return ax::mojom::blink::Role::kUnknown;
+}
+
 }  // namespace blink

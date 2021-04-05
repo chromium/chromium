@@ -17,10 +17,6 @@ Implicit td
 The menu items except button have a static text role because it has a presentation role and is disabled.
 Button has a button role because it has an explicit role.
  I have a bike   Male  Female
-The option A has a static text role because it has a presentation role and is disabled.
-The option B has option role because it has an explicit role.
-A
-B
 
 This test makes sure that presentation role is inherited to required owned elements.
 
@@ -124,19 +120,6 @@ AXRole: AXGenericContainer
     AXRole: AXRadioButton
     AXRole: AXStaticText " Female"
         AXRole: AXInlineTextBox " Female"
-    AXRole: AXGenericContainer
-        AXRole: AXStaticText "The option A has a static text role because it has a presentation role and is disabled."
-            AXRole: AXInlineTextBox "The option A has a static text role because it has a presentation role and is disabled."
-        AXRole: AXLineBreak "
-"
-            AXRole: AXInlineTextBox "
-"
-        AXRole: AXStaticText "The option B has option role because it has an explicit role."
-            AXRole: AXInlineTextBox "The option B has option role because it has an explicit role."
-    AXRole: AXGroup
-        AXRole: AXGenericContainer
-            AXRole: AXStaticText "A"
-            AXRole: AXListBoxOption "B"
 
 PASS successfullyParsed is true
 

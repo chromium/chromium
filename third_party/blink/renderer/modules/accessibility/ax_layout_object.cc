@@ -161,14 +161,12 @@ static bool IsImageOrAltText(LayoutObject* layout_object, Node* node) {
   return false;
 }
 
-ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObject(
-    ax::mojom::blink::Role dom_role) const {
+ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObjectOrNode() const {
   DCHECK(layout_object_);
-  // Markup did not provide a specific role, so attempt to determine one
-  // from the computed style.
-  Node* node = GetNode();
 
-  if (layout_object_->IsListItem() || IsA<HTMLLIElement>(node))
+  Node* node = GetNode();  // Can be null in the case of pseudo content.
+
+  if (layout_object_->IsListItemIncludingNG() || IsA<HTMLLIElement>(node))
     return ax::mojom::blink::Role::kListItem;
   if (layout_object_->IsListMarkerIncludingAll())
     return ax::mojom::blink::Role::kListMarker;
@@ -210,45 +208,11 @@ ax::mojom::blink::Role AXLayoutObject::RoleFromLayoutObject(
   if (layout_object_->IsHR())
     return ax::mojom::blink::Role::kSplitter;
 
-  // TODO(accessibility): refactor this method to take no argument and instead
-  // default to returning kUnknownRole, the caller can then check for this and
-  // return a different value if they prefer.
-  return dom_role;
-}
-
-ax::mojom::blink::Role AXLayoutObject::DetermineAccessibilityRole() {
-  if (!layout_object_) {
-    NOTREACHED();
-    return ax::mojom::blink::Role::kUnknown;
-  }
-
-  if (GetCSSAltText(GetNode())) {
-    const ComputedStyle* style = GetNode()->GetComputedStyle();
-    ContentData* content_data = style->GetContentData();
-
-    // We just check the first item of the content list to determine the
-    // appropriate role, should only ever be image or text.
-    ax::mojom::blink::Role role = ax::mojom::blink::Role::kStaticText;
-    if (content_data->IsImage())
-      role = ax::mojom::blink::Role::kImage;
-
-    return role;
-  }
-
-  native_role_ = NativeRoleIgnoringAria();
-
-  if ((aria_role_ = DetermineAriaRoleAttribute()) !=
-      ax::mojom::blink::Role::kUnknown) {
-    return aria_role_;
-  }
-
-  // Anything that needs to still be exposed but doesn't have a more specific
-  // role should be considered a generic container. Examples are
-  // layout blocks with no node, in-page link targets, and plain elements
-  // such as a <span> with ARIA markup.
-  return native_role_ == ax::mojom::blink::Role::kUnknown
-             ? ax::mojom::blink::Role::kGenericContainer
-             : native_role_;
+  // Anything that needs to be exposed but doesn't have a more specific role
+  // should be considered a generic container. Examples are layout blocks with
+  // no node, in-page link targets, and plain elements such as a <span> with
+  // an aria- property.
+  return ax::mojom::blink::Role::kGenericContainer;
 }
 
 Node* AXLayoutObject::GetNodeOrContainingBlockNode() const {

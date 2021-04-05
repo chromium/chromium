@@ -221,6 +221,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
       FILE_PATH_LITERAL("head-style-script-content-visibility-hidden.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityCSSDisplayListItem) {
+  RunCSSTest(FILE_PATH_LITERAL("display-list-item.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityCSSDisplayNone) {
   RunCSSTest(FILE_PATH_LITERAL("display-none.html"));
 }

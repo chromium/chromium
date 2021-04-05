@@ -42,19 +42,8 @@ AXListBoxOption::AXListBoxOption(LayoutObject* layout_object,
 
 AXListBoxOption::~AXListBoxOption() = default;
 
-ax::mojom::Role AXListBoxOption::DetermineAccessibilityRole() {
-  if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
-    return aria_role_;
-
-  // http://www.w3.org/TR/wai-aria/complete#presentation
-  // ARIA spec says that the presentation role causes a given element to be
-  // treated as having no role or to be removed from the accessibility tree, but
-  // does not cause the content contained within the element to be removed from
-  // the accessibility tree.
-  if (IsParentPresentationalRole())
-    return ax::mojom::Role::kStaticText;
-
-  return ax::mojom::Role::kListBoxOption;
+ax::mojom::blink::Role AXListBoxOption::NativeRoleIgnoringAria() const {
+  return ax::mojom::blink::Role::kListBoxOption;
 }
 
 bool AXListBoxOption::IsParentPresentationalRole() const {

@@ -726,7 +726,6 @@ AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
     : id_(0),
       parent_(nullptr),
       role_(ax::mojom::blink::Role::kUnknown),
-      aria_role_(ax::mojom::blink::Role::kUnknown),
       explicit_container_id_(0),
       last_modification_count_(-1),
       cached_is_ignored_(false),
@@ -2680,6 +2679,12 @@ bool AXObject::LastKnownIsIncludedInTreeValue() const {
          LastKnownIsIgnoredButIncludedInTreeValue();
 }
 
+ax::mojom::blink::Role AXObject::DetermineAccessibilityRole() {
+  DCHECK(!IsDetached());
+
+  return NativeRoleIgnoringAria();
+}
+
 bool AXObject::HasInheritedPresentationalRole() const {
   UpdateCachedAttributeValuesIfNeeded();
   return cached_has_inherited_presentational_role_;
@@ -3629,7 +3634,7 @@ AXRestriction AXObject::Restriction() const {
 }
 
 ax::mojom::blink::Role AXObject::AriaRoleAttribute() const {
-  return aria_role_;
+  return ax::mojom::blink::Role::kUnknown;
 }
 
 ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
@@ -3643,12 +3648,15 @@ ax::mojom::blink::Role AXObject::DetermineAriaRoleAttribute() const {
   // ARIA states if an item can get focus, it should not be presentational.
   // It also states user agents should ignore the presentational role if
   // the element has global ARIA states and properties.
-  if (ui::IsPresentational(role) &&
-      ((GetElement() && GetElement()->SupportsFocus()) ||
-       HasGlobalARIAAttribute())) {
-    // If we return an unknown role, then the native HTML role would be used
-    // instead.
-    return ax::mojom::blink::Role::kUnknown;
+  if (ui::IsPresentational(role)) {
+    if (IsA<HTMLIFrameElement>(*GetNode()) || IsA<HTMLFrameElement>(*GetNode()))
+      return ax::mojom::blink::Role::kIframePresentational;
+    if ((GetElement() && GetElement()->SupportsFocus()) ||
+        HasGlobalARIAAttribute()) {
+      // If we return an unknown role, then the native HTML role would be used
+      // instead.
+      return ax::mojom::blink::Role::kUnknown;
+    }
   }
 
   if (role == ax::mojom::blink::Role::kButton)

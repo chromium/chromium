@@ -240,6 +240,7 @@ const int kDefaultHeadingLevel = 2;
 AXNodeObject::AXNodeObject(Node* node, AXObjectCacheImpl& ax_object_cache)
     : AXObject(ax_object_cache),
       native_role_(ax::mojom::blink::Role::kUnknown),
+      aria_role_(ax::mojom::blink::Role::kUnknown),
       node_(node) {}
 
 AXNodeObject::~AXNodeObject() {
@@ -739,7 +740,7 @@ static ax::mojom::blink::Role DecideRoleFromSiblings(Element* cell) {
 
 ax::mojom::blink::Role AXNodeObject::DetermineTableSectionRole() const {
   if (!GetElement())
-    return ax::mojom::blink::Role::kUnknown;
+    return ax::mojom::blink::Role::kGenericContainer;
 
   AXObject* parent = GetDOMTableAXAncestor(GetNode(), AXObjectCache());
   if (!parent || !parent->IsTableLikeRole())
@@ -791,20 +792,47 @@ ax::mojom::blink::Role AXNodeObject::DetermineTableCellRole() const {
   return DecideRoleFromSiblings(GetElement());
 }
 
-// TODO(accessibility) Needs a new name as it does check ARIA, including
-// checking the @role for an iframe, and @aria-haspopup/aria-pressed via
-// ButtonType().
-// TODO(accessibility) This value is cached in native_role_ so it needs to
-// be recached if anything it depends on change, such as IsClickable(),
-// DataList(), aria-pressed, the parent's tag, role on an iframe, etc.
+ax::mojom::blink::Role AXNodeObject::RoleFromLayoutObjectOrNode() const {
+  return ax::mojom::blink::Role::kGenericContainer;
+}
+
+// Does not check ARIA role, but does check some ARIA properties, specifically
+// @aria-haspopup/aria-pressed via ButtonType().
+// TODO(accessibility) Ensure that if the native role needs to change, that the
+// object is destroyed and a new one is created. Examples are changes to
+// IsClickable(), DataList(), aria-pressed, the parent's tag, @role.
 ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
-  if (!GetNode())
-    return RoleFromLayoutObject(ax::mojom::blink::Role::kUnknown);
+  if (!GetNode()) {
+    // Can be null in the case of pseudo content.
+    return RoleFromLayoutObjectOrNode();
+  }
+
+  if (GetCSSAltText(GetNode())) {
+    const ComputedStyle* style = GetNode()->GetComputedStyle();
+    ContentData* content_data = style->GetContentData();
+
+    // We just check the first item of the content list to determine the
+    // appropriate role, should only ever be image or text.
+    // TODO(accessibility) Should it still be possible to use an ARIA role here?
+    // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag
+    // with strong semantics? If so, why are we overriding the role here?
+    // We only need to ensure the accessible name gets the CSS alt text.
+    // Note: by doing this, we are often hiding a child image, because
+    // CanHaveChildren() returns false for an image.
+    if (content_data->IsImage())
+      return ax::mojom::blink::Role::kImage;
+
+    return ax::mojom::blink::Role::kStaticText;
+  }
+
+  if (GetNode()->IsTextNode())
+    return ax::mojom::blink::Role::kStaticText;
 
   if (IsA<HTMLImageElement>(GetNode()))
     return ax::mojom::blink::Role::kImage;
 
-  if (GetNode()->IsLink()) {  // <a href> or <svg:a xlink:href>
+  // <a href> or <svg:a xlink:href>
+  if (GetNode()->IsLink()) {
     // |HTMLAnchorElement| sets isLink only when it has kHrefAttr.
     return ax::mojom::blink::Role::kLink;
   }
@@ -833,7 +861,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
       parent = LayoutTreeBuilderTraversal::Parent(*parent);
     if (parent && IsA<HTMLDetailsElement>(parent))
       return ax::mojom::blink::Role::kDisclosureTriangle;
-    return RoleFromLayoutObject(ax::mojom::blink::Role::kUnknown);
+    return ax::mojom::blink::Role::kGenericContainer;
   }
 
   // Chrome exposes both table markup and table CSS as a table, letting
@@ -911,7 +939,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return ax::mojom::blink::Role::kHeading;
 
   if (IsA<HTMLDivElement>(*GetNode()))
-    return RoleFromLayoutObject(ax::mojom::blink::Role::kGenericContainer);
+    return RoleFromLayoutObjectOrNode();
 
   if (IsA<HTMLMenuElement>(*GetNode()) || IsA<HTMLUListElement>(*GetNode()) ||
       IsA<HTMLOListElement>(*GetNode())) {
@@ -1009,23 +1037,18 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     return ax::mojom::blink::Role::kSection;
 
   if (GetNode()->HasTagName(html_names::kAddressTag))
-    return RoleFromLayoutObject(ax::mojom::blink::Role::kGenericContainer);
+    return RoleFromLayoutObjectOrNode();
 
   if (IsA<HTMLDialogElement>(*GetNode()))
     return ax::mojom::blink::Role::kDialog;
 
   // The HTML element.
   if (IsA<HTMLHtmlElement>(GetNode()))
-    return RoleFromLayoutObject(ax::mojom::blink::Role::kGenericContainer);
+    return RoleFromLayoutObjectOrNode();
 
   // Treat <iframe> and <frame> the same.
-  if (IsA<HTMLIFrameElement>(*GetNode()) || IsA<HTMLFrameElement>(*GetNode())) {
-    const AtomicString& aria_role =
-        GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole);
-    if (aria_role == "none" || aria_role == "presentation")
-      return ax::mojom::blink::Role::kIframePresentational;
+  if (IsA<HTMLIFrameElement>(*GetNode()) || IsA<HTMLFrameElement>(*GetNode()))
     return ax::mojom::blink::Role::kIframe;
-  }
 
   // There should only be one banner/contentInfo per page. If header/footer are
   // being used within an article or section then it should not be exposed as
@@ -1069,28 +1092,21 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
   if (IsFieldset())
     return ax::mojom::blink::Role::kGroup;
 
-  return RoleFromLayoutObject(ax::mojom::blink::Role::kUnknown);
+  return RoleFromLayoutObjectOrNode();
 }
 
 ax::mojom::blink::Role AXNodeObject::DetermineAccessibilityRole() {
-  if (!GetNode()) {
+  if (IsDetached()) {
     NOTREACHED();
     return ax::mojom::blink::Role::kUnknown;
   }
 
   native_role_ = NativeRoleIgnoringAria();
 
-  if ((aria_role_ = DetermineAriaRoleAttribute()) !=
-      ax::mojom::blink::Role::kUnknown) {
-    return aria_role_;
-  }
+  aria_role_ = DetermineAriaRoleAttribute();
 
-  if (GetNode()->IsTextNode())
-    return ax::mojom::blink::Role::kStaticText;
-
-  return native_role_ == ax::mojom::blink::Role::kUnknown
-             ? ax::mojom::blink::Role::kGenericContainer
-             : native_role_;
+  return aria_role_ == ax::mojom::blink::Role::kUnknown ? native_role_
+                                                        : aria_role_;
 }
 
 void AXNodeObject::AccessibilityChildrenFromAOMProperty(
@@ -1213,6 +1229,11 @@ void AXNodeObject::Init(AXObject* parent_if_known) {
   initialized_ = true;
 #endif
   AXObject::Init(parent_if_known);
+
+  DCHECK(role_ == native_role_ || role_ == aria_role_)
+      << "Role must be either the cached native role or cached aria role: "
+      << "\n* Final role: " << role_ << "\n* Native role: " << native_role_
+      << "\n* Aria role: " << aria_role_ << "\n* Node: " << GetNode();
 
   DCHECK(node_ ||
          (GetLayoutObject() &&

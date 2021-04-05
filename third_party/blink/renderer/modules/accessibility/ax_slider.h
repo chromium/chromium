@@ -46,7 +46,7 @@ class AXSlider : public AXLayoutObject {
  private:
   HTMLInputElement* GetInputElement() const;
 
-  ax::mojom::Role DetermineAccessibilityRole() final;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const final;
   bool IsSlider() const final { return true; }
   bool IsControl() const final { return true; }
 

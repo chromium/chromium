@@ -38,11 +38,8 @@ AXMenuList::AXMenuList(LayoutObject* layout_object,
   DCHECK(IsA<HTMLSelectElement>(layout_object->GetNode()));
 }
 
-ax::mojom::Role AXMenuList::DetermineAccessibilityRole() {
-  if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
-    return aria_role_;
-
-  return ax::mojom::Role::kPopUpButton;
+ax::mojom::blink::Role AXMenuList::NativeRoleIgnoringAria() const {
+  return ax::mojom::blink::Role::kPopUpButton;
 }
 
 bool AXMenuList::OnNativeClickAction() {

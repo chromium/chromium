@@ -50,7 +50,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   // Public, overridden from AXObject.
   LayoutObject* GetLayoutObject() const final { return layout_object_; }
   ScrollableArea* GetScrollableAreaIfScrollable() const final;
-  ax::mojom::blink::Role DetermineAccessibilityRole() override;
 
   // If this is an anonymous node, returns the node of its containing layout
   // block, otherwise returns the node of this layout object.
@@ -134,8 +133,7 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
 
   // If we can't determine a useful role from the DOM node, attempt to determine
   // a role from the layout object.
-  ax::mojom::blink::Role RoleFromLayoutObject(
-      ax::mojom::blink::Role dom_role) const override;
+  ax::mojom::blink::Role RoleFromLayoutObjectOrNode() const override;
 
  private:
   AXObject* AccessibilityImageMapHitTest(HTMLAreaElement*,

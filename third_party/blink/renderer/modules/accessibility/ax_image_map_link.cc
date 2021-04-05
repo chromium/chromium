@@ -60,7 +60,7 @@ AXObject* AXImageMapLink::ComputeParentImpl() const {
   return AXNodeObject::ComputeParentImpl();
 }
 
-ax::mojom::blink::Role AXImageMapLink::DetermineAccessibilityRole() {
+ax::mojom::blink::Role AXImageMapLink::NativeRoleIgnoringAria() const {
   // https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings
   // <area> tags without an href should be treated as static text.
   // If the area has child nodes, those will be rendered naturally, and the
@@ -68,15 +68,12 @@ ax::mojom::blink::Role AXImageMapLink::DetermineAccessibilityRole() {
   KURL url = Url();
   bool has_url = !url.IsNull() && !url.IsEmpty();
   if (has_url)
-    native_role_ = ax::mojom::blink::Role::kLink;
-  else if (!GetElement()->hasChildren())
-    native_role_ = ax::mojom::blink::Role::kStaticText;
-  else
-    native_role_ = ax::mojom::blink::Role::kGenericContainer;
+    return ax::mojom::blink::Role::kLink;
 
-  aria_role_ = DetermineAriaRoleAttribute();
-  return aria_role_ == ax::mojom::blink::Role::kUnknown ? native_role_
-                                                        : aria_role_;
+  if (!GetElement()->hasChildren())
+    return ax::mojom::blink::Role::kStaticText;
+
+  return ax::mojom::blink::Role::kGenericContainer;
 }
 
 bool AXImageMapLink::ComputeAccessibilityIsIgnored(
