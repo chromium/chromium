@@ -26,6 +26,7 @@
 namespace base {
 
 namespace internal {
+
 struct DefaultCrossThreadBindTraits {
   template <typename Signature>
   using CrossThreadTask = OnceCallback<Signature>;
@@ -65,7 +66,12 @@ struct DefaultCrossThreadBindTraits {
     return task_runner.PostTaskAndReplyWithResult(location, std::move(task),
                                                   std::move(reply));
   }
+
+  // Accept RepeatingCallback here since it's convertible to a OnceCallback.
+  template <template <typename> class CallbackType>
+  using EnableIfIsCrossThreadTask = EnableIfIsBaseCallback<CallbackType>;
 };
+
 }  // namespace internal
 
 // Performing blocking work on a different task runner is a common pattern for
@@ -368,6 +374,11 @@ class SequenceBound {
   template <typename U, class Binder>
   friend class SequenceBound;
 
+  template <template <typename> class CallbackType>
+  using EnableIfIsCrossThreadTask =
+      typename CrossThreadBindTraits::template EnableIfIsCrossThreadTask<
+          CallbackType>;
+
   // Support helpers for `AsyncCall()` implementation.
   //
   // Several implementation notes:
@@ -456,14 +467,18 @@ class SequenceBound {
       if (this->sequence_bound_) {
         CrossThreadBindTraits::PostTask(
             *this->sequence_bound_->impl_task_runner_, *this->location_,
-            BindOnce(this->method_, Unretained(this->sequence_bound_->t_)));
+            CrossThreadBindTraits::BindOnce(
+                this->method_,
+                CrossThreadBindTraits::Unretained(this->sequence_bound_->t_)));
       }
     }
 
     void Then(OnceClosure then_callback) && {
       this->sequence_bound_->PostTaskAndThenHelper(
           *this->location_,
-          BindOnce(this->method_, Unretained(this->sequence_bound_->t_)),
+          CrossThreadBindTraits::BindOnce(
+              this->method_,
+              CrossThreadBindTraits::Unretained(this->sequence_bound_->t_)),
           std::move(then_callback));
       this->sequence_bound_ = nullptr;
     }
@@ -494,11 +509,13 @@ class SequenceBound {
 
     template <template <typename> class CallbackType,
               typename ThenArg,
-              typename = EnableIfIsBaseCallback<CallbackType>>
+              typename = EnableIfIsCrossThreadTask<CallbackType>>
     void Then(CallbackType<void(ThenArg)> then_callback) && {
       this->sequence_bound_->PostTaskAndThenHelper(
           *this->location_,
-          BindOnce(this->method_, Unretained(this->sequence_bound_->t_)),
+          CrossThreadBindTraits::BindOnce(
+              this->method_,
+              CrossThreadBindTraits::Unretained(this->sequence_bound_->t_)),
           std::move(then_callback));
       this->sequence_bound_ = nullptr;
     }
@@ -597,7 +614,7 @@ class SequenceBound {
 
     template <template <typename> class CallbackType,
               typename ThenArg,
-              typename = EnableIfIsBaseCallback<CallbackType>>
+              typename = EnableIfIsCrossThreadTask<CallbackType>>
     void Then(CallbackType<void(ThenArg)> then_callback) && {
       this->sequence_bound_->PostTaskAndThenHelper(*this->location_,
                                                    std::move(this->callback_),
@@ -634,7 +651,7 @@ class SequenceBound {
       }
     }
 
-    void Then(OnceClosure then_callback) && {
+    void Then(CrossThreadTask<void()> then_callback) && {
       this->sequence_bound_->PostTaskAndThenHelper(*this->location_,
                                                    std::move(this->callback_),
                                                    std::move(then_callback));
@@ -657,8 +674,8 @@ class SequenceBound {
       AsyncCallWithBoundArgsBuilderDefault<ReturnType>>::type;
 
   void PostTaskAndThenHelper(const Location& location,
-                             OnceCallback<void()> callback,
-                             OnceClosure then_callback) const {
+                             CrossThreadTask<void()> callback,
+                             CrossThreadTask<void()> then_callback) const {
     CrossThreadBindTraits::PostTaskAndReply(*impl_task_runner_, location,
                                             std::move(callback),
                                             std::move(then_callback));
@@ -668,11 +685,12 @@ class SequenceBound {
             template <typename>
             class CallbackType,
             typename ThenArg,
-            typename = EnableIfIsBaseCallback<CallbackType>>
+            typename = EnableIfIsCrossThreadTask<CallbackType>>
   void PostTaskAndThenHelper(const Location& location,
-                             OnceCallback<ReturnType()> callback,
+                             CrossThreadTask<ReturnType()> callback,
                              CallbackType<void(ThenArg)> then_callback) const {
-    OnceCallback<void(ThenArg)>&& once_then_callback = std::move(then_callback);
+    CrossThreadTask<void(ThenArg)>&& once_then_callback =
+        std::move(then_callback);
     CrossThreadBindTraits::PostTaskAndReplyWithResult(
         *impl_task_runner_, location, std::move(callback),
         std::move(once_then_callback));
