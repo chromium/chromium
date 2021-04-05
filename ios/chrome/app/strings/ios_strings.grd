@@ -2146,10 +2146,10 @@ Try to use a unique password for every site.
           Return to Recent Tab
       </message>
       <message name="IDS_IOS_RETURN_TO_RECENT_TAB_TIME_DAYS" desc="Type in days for time since the recent tab was opened, shortened to d.">
-          d ago
+          <ph name="TIME">$1</ph> d ago
           </message>
       <message name="IDS_IOS_RETURN_TO_RECENT_TAB_TIME_HOURS" desc="Type in hours for time since the recent tab was opened, shortened to h.">
-          h ago
+          <ph name="TIME">$1</ph> h ago
           </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_SAVED_HEADING" desc="The title for a list of username/site/password items. These items are already saved by the browser and can be deleted/edited. [Length: one line] [iOS only]">
       Saved Passwords
