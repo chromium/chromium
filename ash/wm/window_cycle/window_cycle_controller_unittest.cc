@@ -1169,10 +1169,8 @@ class LimitedWindowCycleControllerTest : public WindowCycleControllerTest {
 
   // WindowCycleControllerTest:
   void SetUp() override {
-    // |features::kBento| overwrites |features::kLimitAltTabToActiveDesk|, so
-    // Bento needs to be disabled first.
-    scoped_feature_list_.InitWithFeatures({features::kLimitAltTabToActiveDesk},
-                                          {features::kBento});
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kLimitAltTabToActiveDesk);
     WindowCycleControllerTest::SetUp();
   }
 
@@ -1181,6 +1179,9 @@ class LimitedWindowCycleControllerTest : public WindowCycleControllerTest {
 };
 
 TEST_F(LimitedWindowCycleControllerTest, CycleShowsActiveDeskWindows) {
+  if (features::IsBentoEnabled())
+    return;
+
   auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
   auto win1 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
   auto* desks_controller = DesksController::Get();
