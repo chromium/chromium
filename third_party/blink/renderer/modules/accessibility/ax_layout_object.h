@@ -102,8 +102,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   // Hit testing.
   AXObject* AccessibilityHitTest(const IntPoint&) const override;
 
-  bool CanHaveChildren() const override;
-
   // Called when autofill/autocomplete state changes on a form control.
   void HandleAutofillStateChanged(WebAXAutofillState state) override;
 

@@ -1149,16 +1149,6 @@ AXObject* AXLayoutObject::AccessibilityHitTest(const IntPoint& point) const {
   return result;
 }
 
-bool AXLayoutObject::CanHaveChildren() const {
-  if (!layout_object_)
-    return false;
-  if (GetCSSAltText(GetNode()))
-    return false;
-  if (layout_object_->IsListMarkerForNormalContent())
-    return false;
-  return AXNodeObject::CanHaveChildren();
-}
-
 //
 // DOM and layout tree access.
 //

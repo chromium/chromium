@@ -4013,11 +4013,13 @@ bool AXNodeObject::CanHaveChildren() const {
       break;
   }
 
-  // Allow editable roots to expose any children they might have, complying
+  // Allow plain text controls to expose any children they might have, complying
   // with browser-side expectations that editable controls have children
   // containing the actual text content.
-  if (IsEditable() && !IsRichlyEditable())
+  if (blink::EnclosingTextControl(GetNode()) ||
+      GetAttribute(html_names::kContenteditableAttr) == "plaintext-only") {
     return true;
+  }
 
   switch (AriaRoleAttribute()) {
     case ax::mojom::blink::Role::kImage:
