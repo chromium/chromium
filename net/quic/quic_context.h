@@ -96,8 +96,6 @@ struct NET_EXPORT QuicParams {
   quic::QuicTagVector client_connection_options;
   // Enables experimental optimization for receiving data in UDPSocket.
   bool enable_socket_recv_optimization = false;
-  // Initial value of QuicSpdyClientSessionBase::max_allowed_push_id_.
-  quic::QuicStreamId max_allowed_push_id = 0;
 
   // Active QUIC experiments
 

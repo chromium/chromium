@@ -553,7 +553,6 @@ class BidirectionalStreamQuicImplTest
                        PRIVACY_MODE_DISABLED, SocketTag(),
                        NetworkIsolationKey(), false /* disable_secure_dns */),
         /*require_confirmation=*/false,
-        /*max_allowed_push_id=*/0,
         /*migrate_session_early_v2=*/false,
         /*migrate_session_on_network_change_v2=*/false,
         /*default_network=*/NetworkChangeNotifier::kInvalidNetworkHandle,

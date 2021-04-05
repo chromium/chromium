@@ -52,7 +52,6 @@
 #include "net/third_party/quiche/src/quic/core/http/spdy_server_push_utils.h"
 #include "net/third_party/quiche/src/quic/core/quic_utils.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "url/origin.h"
@@ -911,7 +910,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
     std::unique_ptr<QuicServerInfo> server_info,
     const QuicSessionKey& session_key,
     bool require_confirmation,
-    quic::QuicStreamId max_allowed_push_id,
     bool migrate_session_early_v2,
     bool migrate_sessions_on_network_change_v2,
     NetworkChangeNotifier::NetworkHandle default_network,
@@ -999,7 +997,6 @@ QuicChromiumClientSession::QuicChromiumClientSession(
       ignore_read_error_(false),
       headers_include_h2_stream_dependency_(
           headers_include_h2_stream_dependency),
-      max_allowed_push_id_(max_allowed_push_id),
       attempted_zero_rtt_(false),
       num_migrations_(0),
       last_key_update_reason_(quic::KeyUpdateReason::kInvalid),
@@ -1157,9 +1154,6 @@ QuicChromiumClientSession::~QuicChromiumClientSession() {
 }
 
 void QuicChromiumClientSession::Initialize() {
-  if (VersionUsesHttp3(transport_version())) {
-    quic::QuicSpdyClientSessionBase::SetMaxPushId(max_allowed_push_id_);
-  }
   set_max_inbound_header_list_size(kQuicMaxHeaderListSize);
   if (config()->HasClientRequestedIndependentOption(
           quic::kQLVE, quic::Perspective::IS_CLIENT)) {

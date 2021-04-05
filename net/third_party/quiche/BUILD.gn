@@ -563,7 +563,6 @@ source_set("quiche") {
       "src/quic/platform/api/quic_mutex.cc",
       "src/quic/platform/api/quic_mutex.h",
       "src/quic/platform/api/quic_prefetch.h",
-      "src/quic/platform/api/quic_ptr_util.h",
       "src/quic/platform/api/quic_reference_counted.h",
       "src/quic/platform/api/quic_server_stats.h",
       "src/quic/platform/api/quic_sleep.h",
@@ -1493,10 +1492,6 @@ source_set("quiche_tests") {
       "//net:epoll_server",
       "//net:epoll_server_test_tools",
     ]
-
-    if (!is_chromeos_ash) {
-      sources += [ "src/quic/core/quic_udp_socket_test.cc" ]
-    }
   }
 }
 

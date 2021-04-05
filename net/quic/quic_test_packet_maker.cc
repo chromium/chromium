@@ -118,7 +118,6 @@ QuicTestPacketMaker::QuicTestPacketMaker(
       connection_id_(connection_id),
       clock_(clock),
       host_(host),
-      max_allowed_push_id_(0),
       spdy_request_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),
       spdy_response_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),
       qpack_encoder_(&decoder_stream_error_delegate_),
@@ -143,10 +142,6 @@ QuicTestPacketMaker::~QuicTestPacketMaker() {
 
 void QuicTestPacketMaker::set_hostname(const std::string& host) {
   host_.assign(host);
-}
-
-void QuicTestPacketMaker::set_max_allowed_push_id(quic::QuicStreamId push_id) {
-  max_allowed_push_id_ = push_id;
 }
 
 std::unique_ptr<quic::QuicReceivedPacket>
@@ -893,22 +888,7 @@ QuicTestPacketMaker::MakePushPromisePacket(
     size_t* spdy_headers_frame_length) {
   InitializeHeader(packet_number, should_include_version);
 
-  if (quic::VersionUsesHttp3(version_.transport_version)) {
-    std::string encoded_headers =
-        qpack_encoder_.EncodeHeaderList(stream_id, headers, nullptr);
-    quic::PushPromiseFrame frame;
-    frame.push_id = promised_stream_id;
-    frame.headers = encoded_headers;
-    std::unique_ptr<char[]> buffer;
-    quic::QuicByteCount frame_length =
-        quic::HttpEncoder::SerializePushPromiseFrameWithOnlyPushId(frame,
-                                                                   &buffer);
-    std::string push_promise_data(buffer.get(), frame_length);
-    AddQuicStreamFrame(stream_id, false, push_promise_data);
-    AddQuicStreamFrame(stream_id, false, encoded_headers);
-
-    return BuildPacket();
-  }
+  DCHECK(!quic::VersionUsesHttp3(version_.transport_version));
 
   spdy::SpdySerializedFrame spdy_frame;
   spdy::SpdyPushPromiseIR promise_frame(stream_id, promised_stream_id,
@@ -1598,18 +1578,6 @@ std::string QuicTestPacketMaker::GenerateHttp3SettingsData() {
   return std::string(buffer.get(), frame_length);
 }
 
-std::string QuicTestPacketMaker::GenerateHttp3MaxPushIdData() {
-  if (max_allowed_push_id_ == 0) {
-    return "";
-  }
-  quic::MaxPushIdFrame max_push_id;
-  max_push_id.push_id = max_allowed_push_id_;
-  std::unique_ptr<char[]> buffer;
-  quic::QuicByteCount frame_length =
-      quic::HttpEncoder::SerializeMaxPushIdFrame(max_push_id, &buffer);
-  return std::string(buffer.get(), frame_length);
-}
-
 std::string QuicTestPacketMaker::GenerateHttp3PriorityData(
     spdy::SpdyPriority priority,
     quic::QuicStreamId stream_id) {
@@ -1646,11 +1614,10 @@ void QuicTestPacketMaker::MaybeAddHttp3SettingsFrames() {
   std::string type(1, 0x00);
   std::string settings_data = GenerateHttp3SettingsData();
   std::string grease_data = GenerateHttp3GreaseData();
-  std::string max_push_id_data = GenerateHttp3MaxPushIdData();
 
   // The type and the SETTINGS frame may be sent in multiple QUIC STREAM
   // frames.
-  std::string data = type + settings_data + grease_data + max_push_id_data;
+  std::string data = type + settings_data + grease_data;
 
   AddQuicStreamFrame(stream_id, false, data);
 }

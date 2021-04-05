@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
@@ -25,7 +26,6 @@
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quic/core/quic_server_id.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
 #include "net/third_party/quiche/src/quic/tools/quic_simple_client_session.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 
@@ -45,7 +45,7 @@ QuicSimpleClient::QuicSimpleClient(
           config,
           CreateQuicConnectionHelper(),
           CreateQuicAlarmFactory(),
-          quic::QuicWrapUnique(
+          base::WrapUnique(
               new QuicClientMessageLooplNetworkHelper(&clock_, this)),
           std::move(proof_verifier),
           nullptr),

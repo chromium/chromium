@@ -6288,17 +6288,14 @@ TEST_P(QuicNetworkTransactionTest, NoMigrationForMsgTooBig) {
 
 // Adds coverage to catch regression such as https://crbug.com/622043
 TEST_P(QuicNetworkTransactionTest, QuicServerPush) {
-  client_maker_->set_max_allowed_push_id(quic::kMaxQuicStreamId);
-  context_.params()->max_allowed_push_id = quic::kMaxQuicStreamId;
+  if (VersionUsesHttp3(version_.transport_version)) {
+    return;
+  }
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
 
   MockQuicData mock_quic_data(version_);
   uint64_t client_packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructInitialSettingsPacket(client_packet_number++));
-  }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -6396,20 +6393,17 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPush) {
 // NetworkIsolationKeys, both pushed resources are tracked independently, and
 // NetworkIsolationKeys are respected.
 TEST_P(QuicNetworkTransactionTest, QuicServerPushRespectsNetworkIsolationKey) {
+  if (VersionUsesHttp3(version_.transport_version)) {
+    return;
+  }
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
-  client_maker_->set_max_allowed_push_id(quic::kMaxQuicStreamId);
-  context_.params()->max_allowed_push_id = quic::kMaxQuicStreamId;
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
 
   MockQuicData mock_quic_data1(version_);
   uint64_t client_packet_number1 = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data1.AddWrite(
-        SYNCHRONOUS, ConstructInitialSettingsPacket(client_packet_number1++));
-  }
   mock_quic_data1.AddWrite(
       SYNCHRONOUS, ConstructClientRequestHeadersPacket(
                        client_packet_number1++,
@@ -6485,7 +6479,6 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushRespectsNetworkIsolationKey) {
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
       context_.clock(), kDefaultServerHostName, quic::Perspective::IS_CLIENT,
       client_headers_include_h2_stream_dependency_);
-  client_maker2.set_max_allowed_push_id(quic::kMaxQuicStreamId);
   QuicTestPacketMaker server_maker2(
       version_,
       quic::QuicUtils::CreateRandomConnectionId(context_.random_generator()),
@@ -6617,19 +6610,15 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushRespectsNetworkIsolationKey) {
 // is closed before the pushed headers arrive, but after the connection
 // is closed and before the callbacks are executed.
 TEST_P(QuicNetworkTransactionTest, CancelServerPushAfterConnectionClose) {
-  client_maker_->set_max_allowed_push_id(quic::kMaxQuicStreamId);
-  context_.params()->max_allowed_push_id = quic::kMaxQuicStreamId;
+  if (VersionUsesHttp3(version_.transport_version)) {
+    return;
+  }
   context_.params()->retry_without_alt_svc_on_quic_errors = false;
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
 
   MockQuicData mock_quic_data(version_);
   uint64_t client_packet_number = 1;
-  // Initial SETTINGS frame.
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructInitialSettingsPacket(client_packet_number++));
-  }
   // First request: GET https://mail.example.org/
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
@@ -7364,17 +7353,14 @@ TEST_P(QuicNetworkTransactionWithDestinationTest,
 // crbug.com/705109 - this confirms that matching request with a body
 // triggers a crash (pre-fix).
 TEST_P(QuicNetworkTransactionTest, QuicServerPushMatchesRequestWithBody) {
-  client_maker_->set_max_allowed_push_id(quic::kMaxQuicStreamId);
-  context_.params()->max_allowed_push_id = quic::kMaxQuicStreamId;
+  if (VersionUsesHttp3(version_.transport_version)) {
+    return;
+  }
   context_.params()->origins_to_force_quic_on.insert(
       HostPortPair::FromString("mail.example.org:443"));
 
   MockQuicData mock_quic_data(version_);
   uint64_t client_packet_number = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(
-        SYNCHRONOUS, ConstructInitialSettingsPacket(client_packet_number++));
-  }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -7494,9 +7480,9 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushMatchesRequestWithBody) {
 // valid URL with empty hostname, then X509Certificate::VerifyHostname() must
 // not be called (otherwise a DCHECK fails).
 TEST_P(QuicNetworkTransactionTest, QuicServerPushWithEmptyHostname) {
-  client_maker_->set_max_allowed_push_id(quic::kMaxQuicStreamId);
-  context_.params()->max_allowed_push_id = quic::kMaxQuicStreamId;
-
+  if (VersionUsesHttp3(version_.transport_version)) {
+    return;
+  }
   spdy::Http2HeaderBlock pushed_request_headers;
   pushed_request_headers[":authority"] = "";
   pushed_request_headers[":method"] = "GET";
@@ -7509,10 +7495,6 @@ TEST_P(QuicNetworkTransactionTest, QuicServerPushWithEmptyHostname) {
   MockQuicData mock_quic_data(version_);
 
   int packet_num = 1;
-  if (VersionUsesHttp3(version_.transport_version)) {
-    mock_quic_data.AddWrite(SYNCHRONOUS,
-                            ConstructInitialSettingsPacket(packet_num++));
-  }
   mock_quic_data.AddWrite(
       SYNCHRONOUS,
       ConstructClientRequestHeadersPacket(
@@ -8623,9 +8605,6 @@ TEST_P(QuicNetworkTransactionTest, QuicProxyAuth) {
 }
 
 TEST_P(QuicNetworkTransactionTest, QuicServerPushUpdatesPriority) {
-  client_maker_->set_max_allowed_push_id(quic::kMaxQuicStreamId);
-  context_.params()->max_allowed_push_id = quic::kMaxQuicStreamId;
-
   // Only run this test if HTTP/2 stream dependency info is sent by client (sent
   // in HEADERS frames for requests and PRIORITY frames).
   if (!client_headers_include_h2_stream_dependency_) {

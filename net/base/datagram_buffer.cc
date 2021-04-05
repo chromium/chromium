@@ -4,9 +4,9 @@
 
 #include "net/base/datagram_buffer.h"
 
-#include <cstring>
+#include "base/memory/ptr_util.h"
 
-#include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
+#include <cstring>
 
 namespace net {
 
@@ -21,8 +21,7 @@ void DatagramBufferPool::Enqueue(const char* buffer,
   DCHECK_LE(buf_len, max_buffer_size_);
   std::unique_ptr<DatagramBuffer> datagram_buffer;
   if (free_list_.empty()) {
-    datagram_buffer = quic::QuicWrapUnique<DatagramBuffer>(
-        new DatagramBuffer(max_buffer_size_));
+    datagram_buffer = base::WrapUnique(new DatagramBuffer(max_buffer_size_));
   } else {
     datagram_buffer = std::move(free_list_.front());
     free_list_.pop_front();

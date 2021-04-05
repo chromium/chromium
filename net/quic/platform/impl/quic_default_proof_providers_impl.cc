@@ -18,7 +18,6 @@
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
-#include "net/third_party/quiche/src/quic/platform/api/quic_ptr_util.h"
 #include "net/third_party/quiche/src/quic/tools/simple_ticket_crypter.h"
 
 DEFINE_QUIC_COMMAND_LINE_FLAG(

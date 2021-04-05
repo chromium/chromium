@@ -542,7 +542,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       std::unique_ptr<QuicServerInfo> server_info,
       const QuicSessionKey& session_key,
       bool require_confirmation,
-      quic::QuicStreamId max_allowed_push_id,
       bool migrate_sesion_early_v2,
       bool migrate_session_on_network_change_v2,
       NetworkChangeNotifier::NetworkHandle default_network,
@@ -1064,8 +1063,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // from spdy::SpdyStreamPrecedence.
   bool headers_include_h2_stream_dependency_;
   Http2PriorityDependencies priority_dependency_state_;
-
-  quic::QuicStreamId max_allowed_push_id_;
 
   bool attempted_zero_rtt_;
 

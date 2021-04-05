@@ -192,8 +192,7 @@ class QuicChromiumClientSessionTest
         /*stream_factory=*/nullptr, &crypto_client_stream_factory_, &clock_,
         transport_security_state_.get(), /*ssl_config_service=*/nullptr,
         base::WrapUnique(static_cast<QuicServerInfo*>(nullptr)), session_key_,
-        /*require_confirmation=*/false,
-        /*max_allowed_push_id=*/0, migrate_session_early_v2_,
+        /*require_confirmation=*/false, migrate_session_early_v2_,
         /*migrate_session_on_network_change_v2=*/false, default_network_,
         quic::QuicTime::Delta::FromMilliseconds(
             kDefaultRetransmittableOnWireTimeout.InMilliseconds()),

@@ -49,7 +49,7 @@ TEST(QuicHttpUtilsTest, FilterSupportedAltSvcVersions) {
       quic::ParsedQuicVersion::Q043(),
   };
 
-  std::vector<uint32_t> alt_svc_versions_google = {
+  spdy::SpdyAltSvcWireFormat::VersionVector alt_svc_versions_google = {
       33, quic::ParsedQuicVersion::Q043().transport_version};
 
   quic::ParsedQuicVersionVector supported_alt_svc_versions = {

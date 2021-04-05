@@ -1866,7 +1866,7 @@ int QuicStreamFactory::CreateSession(
       connection, std::move(socket), this, quic_crypto_client_stream_factory_,
       clock_, transport_security_state_, ssl_config_service_,
       std::move(server_info), key.session_key(), require_confirmation,
-      params_.max_allowed_push_id, params_.migrate_sessions_early_v2,
+      params_.migrate_sessions_early_v2,
       params_.migrate_sessions_on_network_change_v2, default_network_,
       retransmittable_on_wire_timeout_, params_.migrate_idle_sessions,
       params_.allow_port_migration, params_.idle_session_migration_period,
