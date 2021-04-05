@@ -67,6 +67,7 @@ public abstract class ShoppingPersistedTabDataTestUtils {
     static final String JAPAN_CURRENCY_CODE = "JPY";
     static final int TAB_ID = 1;
     static final boolean IS_INCOGNITO = false;
+    static final String FAKE_OFFER_ID = "100";
 
     static ShoppingPersistedTabData createShoppingPersistedTabDataWithDefaults() {
         ShoppingPersistedTabData shoppingPersistedTabData =
@@ -138,15 +139,15 @@ public abstract class ShoppingPersistedTabDataTestUtils {
                         switch (expectedResponse) {
                             case MockPageAnnotationsResponse.BUYABLE_PRODUCT_INITIAL:
                                 add(new BuyableProductPageAnnotation(
-                                        PRICE_MICROS, UNITED_STATES_CURRENCY_CODE));
+                                        PRICE_MICROS, UNITED_STATES_CURRENCY_CODE, FAKE_OFFER_ID));
                                 break;
                             case MockPageAnnotationsResponse.BUYABLE_PRODUCT_PRICE_UPDATED:
-                                add(new BuyableProductPageAnnotation(
-                                        UPDATED_PRICE_MICROS, UNITED_STATES_CURRENCY_CODE));
+                                add(new BuyableProductPageAnnotation(UPDATED_PRICE_MICROS,
+                                        UNITED_STATES_CURRENCY_CODE, FAKE_OFFER_ID));
                                 break;
                             case MockPageAnnotationsResponse.BUYABLE_PRODUCT_AND_PRODUCT_UPDATE:
                                 add(new BuyableProductPageAnnotation(
-                                        PRICE_MICROS, UNITED_STATES_CURRENCY_CODE));
+                                        PRICE_MICROS, UNITED_STATES_CURRENCY_CODE, FAKE_OFFER_ID));
                                 add(new ProductPriceUpdatePageAnnotation(PRICE_MICROS,
                                         UPDATED_PRICE_MICROS, UNITED_STATES_CURRENCY_CODE));
                                 break;

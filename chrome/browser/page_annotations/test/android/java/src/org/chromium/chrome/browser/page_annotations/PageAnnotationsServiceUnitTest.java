@@ -35,7 +35,7 @@ public class PageAnnotationsServiceUnitTest {
 
     private static final LinkedList<PageAnnotation> FAKE_ANNOTATIONS_LIST =
             new LinkedList<PageAnnotation>() {
-                { add(new BuyableProductPageAnnotation(10000000L, "USD")); }
+                { add(new BuyableProductPageAnnotation(10000000L, "USD", "200")); }
             };
 
     @Mock

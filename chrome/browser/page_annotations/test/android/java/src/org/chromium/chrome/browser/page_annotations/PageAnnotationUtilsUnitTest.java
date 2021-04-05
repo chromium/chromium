@@ -23,7 +23,7 @@ import java.util.List;
 @Config(manifest = Config.NONE)
 public class PageAnnotationUtilsUnitTest {
     private static final List<PageAnnotation> DUMMY_ANNOTATIONS_LIST = new LinkedList<>() {
-        { add(new BuyableProductPageAnnotation(100L, "USD")); }
+        { add(new BuyableProductPageAnnotation(100L, "USD", "200")); }
     };
 
     private static class DummyPageAnnotation extends PageAnnotation {
@@ -42,7 +42,7 @@ public class PageAnnotationUtilsUnitTest {
     @Test
     public void testCreateFromJsonBuyableProduct() throws JSONException {
         PageAnnotation annotation = PageAnnotationUtils.createPageAnnotationFromJson(
-                PageAnnotationsTestUtils.createFakeBuyableProductJson(true, "100", "USD"));
+                PageAnnotationsTestUtils.createFakeBuyableProductJson(true, "100", "USD", "200"));
         Assert.assertNotNull(annotation);
     }
 

@@ -21,13 +21,15 @@ class PageAnnotationsTestUtils {
     private static final String PRICE_UPDATE_KEY = "priceUpdate";
     private static final String OLD_PRICE_KEY = "oldPrice";
     private static final String NEW_PRICE_KEY = "newPrice";
+    private static final String OFFER_ID_KEY = "offerId";
 
     static JSONObject createEmptyBuyableProduct() throws JSONException {
-        return createFakeBuyableProductJson(false, null, null);
+        return createFakeBuyableProductJson(false, null, null, null);
     }
 
     static JSONObject createFakeBuyableProductJson(boolean includePriceMetadata,
-            @Nullable String priceInMicros, @Nullable String currencyCode) throws JSONException {
+            @Nullable String priceInMicros, @Nullable String currencyCode, @Nullable String offerId)
+            throws JSONException {
         JSONObject root = new JSONObject();
         JSONObject buyableProductJson = new JSONObject();
 
@@ -42,6 +44,10 @@ class PageAnnotationsTestUtils {
             }
 
             buyableProductJson.put(CURRENT_PRICE_KEY, priceMetadata);
+        }
+
+        if (offerId != null) {
+            buyableProductJson.put(OFFER_ID_KEY, offerId);
         }
 
         root.put(BUYABLE_PRODUCT_KEY, buyableProductJson);

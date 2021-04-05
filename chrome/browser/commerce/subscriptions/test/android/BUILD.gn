@@ -11,7 +11,10 @@ java_library("junit") {
 
   testonly = true
 
-  sources = [ "java/src/org/chromium/chrome/browser/subscriptions/ImplicitPriceDropSubscriptionsManagerUnitTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionJsonSerializerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/subscriptions/ImplicitPriceDropSubscriptionsManagerUnitTest.java",
+  ]
 
   deps = [
     "//base:base_java",
@@ -39,6 +42,7 @@ android_library("javatests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceProxyUnitTest.java",
     "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsStorageTest.java",
     "java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsLoadCallbackHelper.java",
     "java/src/org/chromium/chrome/browser/subscriptions/SubscriptionsManagerImplTest.java",
@@ -48,12 +52,14 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/browser/commerce/subscriptions/android:java",
+    "//chrome/browser/endpoint_fetcher:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/test/android:chrome_java_test_support",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]

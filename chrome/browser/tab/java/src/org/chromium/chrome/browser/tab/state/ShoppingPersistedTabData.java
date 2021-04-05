@@ -278,12 +278,14 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             res.setPreviousPriceMicros(productPriceUpdate.getOldPriceMicros());
             res.setCurrencyCode(productPriceUpdate.getCurrencyCode());
             res.setLastUpdatedMs(System.currentTimeMillis());
+            res.setMainOfferId(buyableProduct.getOfferId());
             foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE;
         } else if (buyableProduct != null) {
             res.setPriceMicros(
                     buyableProduct.getCurrentPriceMicros(), previousShoppingPersistedTabData);
             res.setCurrencyCode(buyableProduct.getCurrencyCode());
             res.setLastUpdatedMs(System.currentTimeMillis());
+            res.setMainOfferId(buyableProduct.getOfferId());
             foundBuyableProductAnnotation = FoundBuyableProductAnnotation.FOUND;
         }
 
@@ -365,11 +367,12 @@ public class ShoppingPersistedTabData extends PersistedTabData {
         mPreviousPriceMicros = previousPriceMicros;
     }
 
-    public void setOfferID(String offerID) {
-        mOfferId = offerID;
+    public void setMainOfferId(String offerId) {
+        mOfferId = offerId;
+        save();
     }
 
-    public String getOfferId() {
+    public String getMainOfferId() {
         return mOfferId;
     }
 
@@ -471,6 +474,9 @@ public class ShoppingPersistedTabData extends PersistedTabData {
                         .setPreviousPriceMicros(mPreviousPriceMicros)
                         .setLastUpdatedMs(getLastUpdatedMs())
                         .setLastPriceChangeTimeMs(mLastPriceChangeTimeMs);
+        if (mOfferId != null) {
+            builder.setMainOfferId(mOfferId);
+        }
 
         return () -> {
             return builder.build().toByteArray();
@@ -491,6 +497,7 @@ public class ShoppingPersistedTabData extends PersistedTabData {
             mPreviousPriceMicros = shoppingPersistedTabDataProto.getPreviousPriceMicros();
             setLastUpdatedMs(shoppingPersistedTabDataProto.getLastUpdatedMs());
             mLastPriceChangeTimeMs = shoppingPersistedTabDataProto.getLastPriceChangeTimeMs();
+            mOfferId = shoppingPersistedTabDataProto.getMainOfferId();
             return true;
         } catch (InvalidProtocolBufferException e) {
             Log.e(TAG,

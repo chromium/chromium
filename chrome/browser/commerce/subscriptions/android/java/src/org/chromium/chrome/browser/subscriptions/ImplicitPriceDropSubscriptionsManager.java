@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.subscriptions;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -33,17 +31,13 @@ import java.util.concurrent.TimeUnit;
  * The class that manages Chrome-managed price drop subscriptions.
  */
 public class ImplicitPriceDropSubscriptionsManager {
-    private static final String STALE_TAB_LOWER_BOUND_SECONDS_PARAM =
-            "price_tracking_stale_tab_lower_bound_seconds";
-    public static final IntCachedFieldTrialParameter STALE_TAB_LOWER_BOUND_SECONDS =
-            new IntCachedFieldTrialParameter(ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
-                    STALE_TAB_LOWER_BOUND_SECONDS_PARAM, (int) TimeUnit.DAYS.toSeconds(1));
     @VisibleForTesting
     public static final String CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP =
             ChromePreferenceKeys.COMMERCE_SUBSCRIPTIONS_CHROME_MANAGED_TIMESTAMP;
     @VisibleForTesting
     public static final long CHROME_MANAGED_SUBSCRIPTIONS_TIME_THRESHOLD_MS =
-            TimeUnit.SECONDS.toMillis(STALE_TAB_LOWER_BOUND_SECONDS.getValue());
+            TimeUnit.SECONDS.toMillis(
+                    CommerceSubscriptionsServiceConfig.STALE_TAB_LOWER_BOUND_SECONDS.getValue());
     private final TabModelSelector mTabModelSelector;
     private final TabModelObserver mTabModelObserver;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -116,7 +110,7 @@ public class ImplicitPriceDropSubscriptionsManager {
         for (Tab tab : urlTabMapping.values()) {
             CommerceSubscription subscription =
                     new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                            ShoppingPersistedTabData.from(tab).getOfferId(),
+                            ShoppingPersistedTabData.from(tab).getMainOfferId(),
                             SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
             subscriptions.add(subscription);
         }
@@ -130,14 +124,13 @@ public class ImplicitPriceDropSubscriptionsManager {
 
         CommerceSubscription subscription =
                 new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                        ShoppingPersistedTabData.from(tab).getOfferId(),
+                        ShoppingPersistedTabData.from(tab).getMainOfferId(),
                         SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
         mSubscriptionManager.unsubscribe(subscription);
     }
 
     private boolean hasOfferId(Tab tab) {
-        return ShoppingPersistedTabData.from(tab) != null
-                && !ShoppingPersistedTabData.from(tab).getOfferId().isEmpty();
+        return !ShoppingPersistedTabData.from(tab).getMainOfferId().isEmpty();
     }
 
     // TODO(crbug.com/1186450): Extract this method to a utility class. Also, make the one-day time
@@ -148,7 +141,8 @@ public class ImplicitPriceDropSubscriptionsManager {
         return tabLastOpenTime <= TimeUnit.SECONDS.toMillis(
                        ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS.getValue())
                 && tabLastOpenTime
-                >= TimeUnit.SECONDS.toMillis(STALE_TAB_LOWER_BOUND_SECONDS.getValue());
+                >= TimeUnit.SECONDS.toMillis(CommerceSubscriptionsServiceConfig
+                                                     .STALE_TAB_LOWER_BOUND_SECONDS.getValue());
     }
 
     private boolean shouldInitializeSubscriptions() {

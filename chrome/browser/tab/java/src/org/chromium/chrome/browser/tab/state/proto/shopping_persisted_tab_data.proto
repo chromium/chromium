@@ -25,4 +25,7 @@ message ShoppingPersistedTabDataProto {
   // Time the price changed measured in the number of
   // seconds since the epoch.
   optional int64 last_price_change_time_ms = 5;
+
+  // The id of the main offer on the page.
+  optional string main_offer_id = 6;
 }

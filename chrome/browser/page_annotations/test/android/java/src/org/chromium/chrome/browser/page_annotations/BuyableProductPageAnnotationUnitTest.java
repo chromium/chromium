@@ -21,12 +21,13 @@ import org.chromium.chrome.browser.page_annotations.PageAnnotation.PageAnnotatio
 public class BuyableProductPageAnnotationUnitTest {
     private static final String FAKE_PRICE_MICORS = "10000";
     private static final String FAKE_CURRENCY_CODE = "USD";
+    private static final String FAKE_OFFER_ID = "200";
 
     @Test
     public void testFromValidJsonObject() throws JSONException {
         BuyableProductPageAnnotation annotation = BuyableProductPageAnnotation.fromJson(
                 PageAnnotationsTestUtils.createFakeBuyableProductJson(
-                        true, FAKE_PRICE_MICORS, FAKE_CURRENCY_CODE));
+                        true, FAKE_PRICE_MICORS, FAKE_CURRENCY_CODE, FAKE_OFFER_ID));
         Assert.assertNotNull(annotation);
         Assert.assertEquals(PageAnnotationType.BUYABLE_PRODUCT, annotation.getType());
         Assert.assertEquals(FAKE_CURRENCY_CODE, annotation.getCurrencyCode());
@@ -44,7 +45,7 @@ public class BuyableProductPageAnnotationUnitTest {
     public void testFromMissingPriceMicrosJson() throws JSONException {
         BuyableProductPageAnnotation annotation = BuyableProductPageAnnotation.fromJson(
                 PageAnnotationsTestUtils.createFakeBuyableProductJson(
-                        true, null, FAKE_CURRENCY_CODE));
+                        true, null, FAKE_CURRENCY_CODE, FAKE_OFFER_ID));
         Assert.assertNull(annotation);
     }
 
@@ -52,7 +53,7 @@ public class BuyableProductPageAnnotationUnitTest {
     public void testFromMissingCurrencyCodeJson() throws JSONException {
         BuyableProductPageAnnotation annotation = BuyableProductPageAnnotation.fromJson(
                 PageAnnotationsTestUtils.createFakeBuyableProductJson(
-                        true, FAKE_PRICE_MICORS, null));
+                        true, FAKE_PRICE_MICORS, null, FAKE_OFFER_ID));
         Assert.assertNull(annotation);
     }
 
@@ -60,7 +61,15 @@ public class BuyableProductPageAnnotationUnitTest {
     public void testFromBadPriceAmountJson() throws JSONException {
         BuyableProductPageAnnotation annotation = BuyableProductPageAnnotation.fromJson(
                 PageAnnotationsTestUtils.createFakeBuyableProductJson(
-                        true, FAKE_PRICE_MICORS, null));
+                        true, FAKE_PRICE_MICORS, null, FAKE_OFFER_ID));
+        Assert.assertNull(annotation);
+    }
+
+    @Test
+    public void testFromMissingOfferIdJson() throws JSONException {
+        BuyableProductPageAnnotation annotation = BuyableProductPageAnnotation.fromJson(
+                PageAnnotationsTestUtils.createFakeBuyableProductJson(
+                        true, FAKE_PRICE_MICORS, null, null));
         Assert.assertNull(annotation);
     }
 }

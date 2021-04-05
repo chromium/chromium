@@ -66,7 +66,7 @@ public class PageAnnotationsServiceProxyUnitTest {
     private static final String EMPTY_RESPONSE = "{}";
     private static final String ENDPOINT_RESPONSE_BUYABLE_PRODUCT =
             "{\"annotations\":[{\"type\":\"BUYABLE_PRODUCT\",\"buyableProduct\":"
-            + "{\"title\":\"foo title\",\"imageUrl\":\"https://images.com?q=1234\","
+            + "{\"title\":\"foo title\", \"offerId\":\"123\", \"imageUrl\":\"https://images.com?q=1234\","
             + "\"currentPrice\":{\"currencyCode\":\"USD\",\"amountMicros\":\"123456789012345\"},"
             + "\"referenceType\":\"MAIN_PRODUCT\"}}]}";
 

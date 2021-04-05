@@ -108,8 +108,8 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         mTab2 = prepareTab(
                 TAB2_ID, URL2, POSITION2, mCriticalPersistedTabData2, mShoppingPersistedTabData2);
         // Mock that tab1 and tab2 both have offer ID and are stale tabs.
-        doReturn(OFFER1_ID).when(mShoppingPersistedTabData1).getOfferId();
-        doReturn(OFFER2_ID).when(mShoppingPersistedTabData2).getOfferId();
+        doReturn(OFFER1_ID).when(mShoppingPersistedTabData1).getMainOfferId();
+        doReturn(OFFER2_ID).when(mShoppingPersistedTabData2).getMainOfferId();
         long fakeTimestamp = System.currentTimeMillis()
                 - TimeUnit.SECONDS.toMillis(
                         ShoppingPersistedTabData.STALE_TAB_THRESHOLD_SECONDS.getValue())
@@ -117,10 +117,10 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
         doReturn(fakeTimestamp).when(mCriticalPersistedTabData1).getTimestampMillis();
         doReturn(fakeTimestamp).when(mCriticalPersistedTabData2).getTimestampMillis();
         mSubscription1 = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                ShoppingPersistedTabData.from(mTab1).getOfferId(),
+                ShoppingPersistedTabData.from(mTab1).getMainOfferId(),
                 SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
         mSubscription2 = new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
-                ShoppingPersistedTabData.from(mTab2).getOfferId(),
+                ShoppingPersistedTabData.from(mTab2).getMainOfferId(),
                 SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID);
         doReturn(2).when(mTabModel).getCount();
         doReturn(mTabModel).when(mTabModelSelector).getModel(false);
@@ -176,7 +176,7 @@ public class ImplicitPriceDropSubscriptionsManagerUnitTest {
 
     @Test
     public void testInitialSubscription_NoOfferID() {
-        doReturn("").when(mShoppingPersistedTabData1).getOfferId();
+        doReturn("").when(mShoppingPersistedTabData1).getMainOfferId();
 
         mImplicitSubscriptionsManager.initializeSubscriptions();
 

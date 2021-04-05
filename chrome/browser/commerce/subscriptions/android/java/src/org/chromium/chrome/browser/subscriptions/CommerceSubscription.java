@@ -41,7 +41,7 @@ public class CommerceSubscription {
         String OFFER_ID = "OFFER_ID";
     }
 
-    private static final long UNSAVED_SUBSCRIPTION = -1L;
+    public static final long UNSAVED_SUBSCRIPTION = -1L;
 
     private final long mTimestamp;
     @NonNull

@@ -489,4 +489,23 @@ public class ShoppingPersistedTabDataTest {
                 new ShoppingPersistedTabData(tab, serialized, config.getStorage(), config.getId());
         Assert.assertEquals(42_000_000L, deserialized.getPriceMicros());
     }
+
+    @UiThreadTest
+    @SmallTest
+    @Test
+    public void testSerializeWithOfferId() {
+        Tab tab = new MockTab(ShoppingPersistedTabDataTestUtils.TAB_ID,
+                ShoppingPersistedTabDataTestUtils.IS_INCOGNITO);
+        ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
+        ObservableSupplierImpl<Boolean> supplier = new ObservableSupplierImpl<>();
+        supplier.set(true);
+        shoppingPersistedTabData.registerIsTabSaveEnabledSupplier(supplier);
+        shoppingPersistedTabData.setMainOfferId(ShoppingPersistedTabDataTestUtils.FAKE_OFFER_ID);
+
+        byte[] serialized = shoppingPersistedTabData.getSerializeSupplier().get();
+        ShoppingPersistedTabData deserialized = new ShoppingPersistedTabData(tab);
+        deserialized.deserialize(serialized);
+        Assert.assertEquals(
+                ShoppingPersistedTabDataTestUtils.FAKE_OFFER_ID, deserialized.getMainOfferId());
+    }
 }
