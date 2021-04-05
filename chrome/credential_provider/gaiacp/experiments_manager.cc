@@ -146,7 +146,7 @@ bool ExperimentsManager::GetExperimentForUserAsBool(const std::string& sid,
 }
 
 bool ExperimentsManager::ExperimentsEnabled() const {
-  return GetGlobalFlagOrDefault(kExperimentsEnabledRegKey, 0);
+  return GetGlobalFlagOrDefault(kExperimentsEnabledRegKey, 1);
 }
 
 std::vector<std::string> ExperimentsManager::GetExperimentsList() const {

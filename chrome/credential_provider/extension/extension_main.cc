@@ -27,6 +27,15 @@ using credential_provider::kRegEnableVerboseLogging;
 
 // Register all tasks for ESA with the TaskManager.
 void RegisterAllTasks() {
+  // Task to fetch experiments for all GCPW users. Keeping this as the first
+  // task so that latest version of experiments is available to all of the other
+  // tasks.
+  if (credential_provider::ExperimentsManager::Get()->ExperimentsEnabled()) {
+    credential_provider::extension::TaskManager::Get()->RegisterTask(
+        "FetchExperiments", credential_provider::ExperimentsFetcher::
+                                GetFetchExperimentsTaskCreator());
+  }
+
   // Task to fetch Cloud policies for all GCPW users.
   if (credential_provider::UserPoliciesManager::Get()->CloudPoliciesEnabled()) {
     credential_provider::extension::TaskManager::Get()->RegisterTask(
@@ -48,13 +57,6 @@ void RegisterAllTasks() {
           "UploadAppInventory", credential_provider::AppInventoryManager::
                                     UploadAppInventoryTaskCreator());
     }
-  }
-
-  // Task to fetch experiments for all GCPW users.
-  if (credential_provider::ExperimentsManager::Get()->ExperimentsEnabled()) {
-    credential_provider::extension::TaskManager::Get()->RegisterTask(
-        "FetchExperiments", credential_provider::ExperimentsFetcher::
-                                GetFetchExperimentsTaskCreator());
   }
 }
 
