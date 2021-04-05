@@ -1101,9 +1101,8 @@ const char kEnableSubresourceRedirectDescription[] =
 const char kEnableWebAuthenticationCableV2SupportName[] =
     "Web Authentication caBLE v2 support";
 const char kEnableWebAuthenticationCableV2SupportDescription[] =
-    "Enable the QR-based pairingless BLE protocol for use with the Web "
-    "Authentication API. (This will also enable the cloud-based protocol "
-    "on platforms where it is not already enabled.)";
+    "Enable use of phones that are signed into the same account, with Sync "
+    "enabled, to be used as 2nd-factor security keys.";
 
 const char kEnableWebAuthenticationChromeOSAuthenticatorName[] =
     "ChromeOS platform Web Authentication support";

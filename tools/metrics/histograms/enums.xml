@@ -45014,6 +45014,7 @@ from previous Chrome versions.
   <int value="-1161384421" label="ContextualSuggestionsAboveArticles:enabled"/>
   <int value="-1160941363" label="AffiliationBasedMatching:disabled"/>
   <int value="-1160797265" label="PasswordScriptsFetching:enabled"/>
+  <int value="-1160097262" label="WebAuthenticationCableSecondFactor:enabled"/>
   <int value="-1160026273" label="enable-web-notification-custom-layouts"/>
   <int value="-1159563774" label="enable-accessibility-script-injection"/>
   <int value="-1159369873" label="TabGroupsUiImprovementsAndroid:disabled"/>
@@ -45597,6 +45598,7 @@ from previous Chrome versions.
   <int value="-639070391" label="FreezeUserAgent:disabled"/>
   <int value="-639026783" label="disable-gpu-appcontainer"/>
   <int value="-638952203" label="RendererSideResourceScheduler:disabled"/>
+  <int value="-637297943" label="WebAuthenticationCableSecondFactor:disabled"/>
   <int value="-637215276" label="QuickAnswersOnEditableText:enabled"/>
   <int value="-634865673" label="ThemeRefactorAndroid:enabled"/>
   <int value="-634122679" label="GoogleBrandedContextMenu:enabled"/>
