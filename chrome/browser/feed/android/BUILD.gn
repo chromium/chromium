@@ -9,11 +9,17 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/feed/FeedImageFetchClient.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedUma.java",
+    "java/src/org/chromium/chrome/browser/feed/VideoPreviewsType.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementItemProperties.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementItemView.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementItemViewBinder.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementMediator.java",
+    "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragment.java",
+    "java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroController.java",
     "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedFollowIntroView.java",
@@ -28,6 +34,8 @@ android_library("java") {
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",
+    "//chrome/browser/xsurface:java",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
     "//components/feed/core/v2:feedv2_core_java",
@@ -35,6 +43,7 @@ android_library("java") {
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
@@ -46,9 +55,11 @@ android_resources("web_feed_java_resources") {
   sources = [
     "java/res/layout/feed_management_activity.xml",
     "java/res/layout/feed_management_list_item.xml",
+    "java/res/layout/radio_button_group_video_previews_preference.xml",
     "java/res/layout/web_feed_main_menu_item.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
+    "java/res/xml/feed_autoplay_preferences.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -59,14 +70,18 @@ android_resources("web_feed_java_resources") {
 }
 
 generate_jni("jni_headers") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/feed/FeedImageFetchClient.java",
+    "java/src/org/chromium/chrome/browser/feed/FeedServiceBridge.java",
+    "java/src/org/chromium/chrome/browser/feed/webfeed/WebFeedBridge.java",
+  ]
 }
 
 android_library("javatests") {
   testonly = true
 
   sources = [
+    "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
     "javatests/src/org/chromium/chrome/browser/feed/webfeed/WebFeedMainMenuItemTest.java",
     "javatests/src/org/chromium/chrome/browser/feed/webfeed/WebFeedSnackbarControllerTest.java",
   ]
@@ -77,15 +92,22 @@ android_library("javatests") {
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:test_support_java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/settings/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/favicon/android:java",
     "//components/feed/core/v2:feedv2_core_java",
+    "//components/prefs/android:java",
     "//components/url_formatter/android:url_formatter_java",
+    "//components/user_prefs/android:java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
     "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_preference_preference_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

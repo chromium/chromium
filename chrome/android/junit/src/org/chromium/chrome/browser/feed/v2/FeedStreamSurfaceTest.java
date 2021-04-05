@@ -53,8 +53,7 @@ import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
-import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.AppHooksImpl;
+import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
@@ -133,7 +132,7 @@ public class FeedStreamSurfaceTest {
     private FeedStreamSurface.Natives mFeedStreamSurfaceJniMock;
 
     @Mock
-    private AppHooksImpl mAppHooks;
+    private FeedServiceBridgeDelegateImpl mFeedServiceBridgeDelegate;
     @Mock
     private ProcessScope mProcessScope;
 
@@ -144,14 +143,12 @@ public class FeedStreamSurfaceTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mParent = new LinearLayout(mActivity);
         mocker.mock(FeedStreamSurfaceJni.TEST_HOOKS, mFeedStreamSurfaceJniMock);
-        mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
+        mocker.mock(FeedServiceBridge.getTestHooksForTesting(), mFeedServiceBridgeJniMock);
 
         when(mFeedServiceBridgeJniMock.getLoadMoreTriggerLookahead())
                 .thenReturn(LOAD_MORE_TRIGGER_LOOKAHEAD);
-
-        when(mAppHooks.getExternalSurfaceProcessScope(any())).thenReturn(mProcessScope);
-
-        AppHooks.setInstanceForTesting(mAppHooks);
+        when(mFeedServiceBridgeDelegate.getProcessScope()).thenReturn(mProcessScope);
+        FeedServiceBridge.setDelegate(mFeedServiceBridgeDelegate);
 
         Profile.setLastUsedProfileForTesting(mProfileMock);
         mFeedStreamSurface = Mockito.spy(new FeedStreamSurface(mActivity, false, mSnackbarManager,
@@ -176,7 +173,6 @@ public class FeedStreamSurfaceTest {
     public void tearDown() {
         mFeedStreamSurface.destroy();
         FeedStreamSurface.shutdownForTesting();
-        AppHooks.setInstanceForTesting(null);
     }
 
     @Test

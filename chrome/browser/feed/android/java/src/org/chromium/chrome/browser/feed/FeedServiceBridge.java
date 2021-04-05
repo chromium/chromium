@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.feed.v2;
+package org.chromium.chrome.browser.feed;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -13,8 +13,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.AppHooks;
-import org.chromium.chrome.browser.feed.VideoPreviewsType;
 import org.chromium.chrome.browser.xsurface.ImagePrefetcher;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
 
@@ -25,16 +23,33 @@ import java.util.Locale;
  */
 @JNINamespace("feed")
 public final class FeedServiceBridge {
-    private static ProcessScope sXSurfaceProcessScope;
-
-    public static ProcessScope xSurfaceProcessScope() {
-        if (sXSurfaceProcessScope == null) {
-            sXSurfaceProcessScope = AppHooks.get().getExternalSurfaceProcessScope(
-                    new FeedProcessScopeDependencyProvider());
-        }
-        return sXSurfaceProcessScope;
+    // Access to JNI test hooks for other libraries. This can go away once more Feed code is
+    // migrated to chrome/browser/feed.
+    public static org.chromium.base.JniStaticTestMocker<FeedServiceBridge.Natives>
+    getTestHooksForTesting() {
+        return FeedServiceBridgeJni.TEST_HOOKS;
     }
 
+    /**
+     * Interface to chrome_java. Eventually, we will move some of these pieces into the Feed module
+     * to eliminate the need for an interface here.
+     */
+    public static interface Delegate {
+        default ProcessScope getProcessScope() {
+            return null;
+        }
+        /** Called when state of the feed must be cleared. */
+        default void clearAll() {}
+    }
+
+    private static Delegate sDelegate = new Delegate() {};
+    public static void setDelegate(Delegate delegate) {
+        sDelegate = delegate;
+    }
+
+    public static ProcessScope xSurfaceProcessScope() {
+        return sDelegate.getProcessScope();
+    }
     public static boolean isEnabled() {
         return FeedServiceBridgeJni.get().isEnabled();
     }
@@ -62,7 +77,7 @@ public final class FeedServiceBridge {
 
     @CalledByNative
     public static void clearAll() {
-        FeedStreamSurface.clearAll();
+        sDelegate.clearAll();
     }
 
     @CalledByNative
@@ -103,7 +118,7 @@ public final class FeedServiceBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean isEnabled();
         void startup();
         int getLoadMoreTriggerLookahead();
