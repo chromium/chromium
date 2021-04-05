@@ -1093,7 +1093,8 @@ void OmniboxViewViews::SetAccessibilityLabel(const std::u16string& display_text,
     // bypass OmniboxPopupModel and get the label from our synthetic |match|.
     friendly_suggestion_text_ = AutocompleteMatchType::ToAccessibilityLabel(
         match, display_text, OmniboxPopupModel::kNoMatch,
-        model()->result().size(), 0, &friendly_suggestion_text_prefix_length_);
+        model()->result().size(), std::u16string(),
+        &friendly_suggestion_text_prefix_length_);
   } else {
     friendly_suggestion_text_ =
         model()->popup_model()->GetAccessibilityLabelForCurrentSelection(
