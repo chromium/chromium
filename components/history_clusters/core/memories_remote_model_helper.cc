@@ -4,13 +4,11 @@
 
 #include "components/history_clusters/core/memories_remote_model_helper.h"
 
-#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/field_trial_params.h"
-#include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -24,17 +22,25 @@ const size_t kMaxExpectedResponseSize = 1024 * 1024;
 
 base::Value VisitToValue(const memories::MemoriesVisit& visit) {
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("visitId", base::Value(0));
+  dict.SetKey("visitId",
+              base::Value(static_cast<double>(visit.visit_row.visit_id)));
   dict.SetKey("url", base::Value(visit.url_row.url().spec()));
-  dict.SetKey("origin", base::Value(""));
-  dict.SetKey("foreground_time_secs", base::Value(0));
-  dict.SetKey("navigation_time_ms", base::Value(0));
-  dict.SetKey("site_engagement_score", base::Value(0));
-  dict.SetKey("page_end_reason",
+  dict.SetKey("origin", base::Value(visit.url_row.url().GetOrigin().spec()));
+  dict.SetKey("foregroundTimeSecs", base::Value(0));
+  dict.SetKey("navigationTimeMs",
+              base::Value(static_cast<double>(
+                  visit.visit_row.visit_time.ToDeltaSinceWindowsEpoch()
+                      .InMilliseconds())));
+  dict.SetKey("siteEngagementScore", base::Value(0));
+  dict.SetKey("pageEndReason",
               base::Value(visit.context_signals.page_end_reason));
-  dict.SetKey("page_transition", base::Value(0));
-  dict.SetKey("is_from_google_search", base::Value(false));
-  // TODO(manukh): Form a proper request by joining |visit| with local tables.
+  dict.SetKey("pageTransition",
+              base::Value(static_cast<int>(visit.visit_row.transition)));
+  dict.SetKey("isFromGoogleSearch", base::Value(false));
+  // TODO(manukh) fill out:
+  //  |foregroundTimeSecs|
+  //  |siteEngagementScore|
+  //  |isFromGoogleSearch|
   return dict;
 }
 
@@ -61,21 +67,59 @@ std::vector<T> FindListKeyAndCast(
   base::Value::ConstListView list = list_ptr->GetList();
   std::vector<T> casted(list.size());
 
-  std::transform(
-      list.begin(), list.end(), casted.begin(),
-      [&](const base::Value& value) { return cast_callback.Run(value); });
+  base::ranges::transform(list, casted.begin(), [&](const base::Value& value) {
+    return cast_callback.Run(value);
+  });
   return casted;
 }
 
-memories::mojom::MemoryPtr ValueToMemory(const base::Value& value) {
-  // TODO(manukh): Form a proper response by joining value with local tables.
+memories::mojom::VisitPtr ValueToVisit(
+    const std::vector<memories::MemoriesVisit>& visits,
+    const base::Value& visit_id_value) {
+  auto visit = memories::mojom::Visit::New();
+  visit->id = visit_id_value.GetIfInt().value_or(-1);
 
-  return memories::mojom::Memory::New();
+  const auto memory_visit_it = base::ranges::find(
+      visits, visit->id,
+      [](const auto& visit) { return visit.visit_row.visit_id; });
+  if (memory_visit_it != visits.end()) {
+    visit->url = memory_visit_it->url_row.url();
+    visit->time = memory_visit_it->visit_row.visit_time;
+    visit->page_title = memory_visit_it->url_row.title();
+  }
+
+  // TODO(manukh) fill out:
+  //  |thumbnail_url|
+  //  |relative_date|
+  //  |time_of_day|
+  //  |num_duplicate_visits|
+  //  |related_visits|
+  //  |engagement_score|
+  return visit;
 }
 
-memories::Memories ValueToMemories(const base::Value& value) {
+memories::mojom::MemoryPtr ValueToMemory(
+    const std::vector<memories::MemoriesVisit>& visits,
+    const base::Value& value) {
+  auto memory = memories::mojom::Memory::New();
+  memory->id = base::UnguessableToken::Create();
+  memory->top_visits = FindListKeyAndCast<memories::mojom::VisitPtr>(
+      value, "visitIds", base::BindRepeating(&ValueToVisit, visits));
+  // TODO(manukh) fill out:
+  //  |id|
+  //  |related_searches|
+  //  |related_tab_groups|
+  //  |bookmarks|
+  //  |last_visit_time|
+  //  |engagement_score|
+  return memory;
+}
+
+memories::Memories ValueToMemories(
+    const std::vector<memories::MemoriesVisit>& visits,
+    const base::Value& value) {
   return FindListKeyAndCast<memories::mojom::MemoryPtr>(
-      value, "memories", base::BindRepeating(&ValueToMemory));
+      value, "memories", base::BindRepeating(&ValueToMemory, visits));
 }
 
 }  // namespace
@@ -91,12 +135,9 @@ MemoriesRemoteModelHelper::~MemoriesRemoteModelHelper() = default;
 void MemoriesRemoteModelHelper::GetMemories(
     const std::vector<MemoriesVisit>& visits,
     MemoriesCallback callback) {
-  const GURL endpoint(base::GetFieldTrialParamValueByFeature(
-      kMemories, kMemoriesRemoteModelEndpointParam));
-  if (!endpoint.is_valid()) {
-    std::move(callback).Run({});
-    return;
-  }
+  const GURL endpoint(memories::RemoteModelEndpoint());
+  if (!endpoint.is_valid())
+    NOTREACHED();
   StopPendingRequests();
 
   std::string request_body;
@@ -107,25 +148,32 @@ void MemoriesRemoteModelHelper::GetMemories(
   url_loader_->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(
-          [](MemoriesCallback callback, std::unique_ptr<std::string> response) {
+          [](const std::vector<MemoriesVisit>& visits,
+             MemoriesCallback callback, std::unique_ptr<std::string> response) {
             if (!response) {
               std::move(callback).Run({});
               return;
             }
             data_decoder::DataDecoder::ParseJsonIsolated(
                 *response,
-                base::BindOnce([](data_decoder::DataDecoder::ValueOrError
-                                      value_or_error) -> Memories {
-                  return value_or_error.value
-                             ? ValueToMemories(value_or_error.value.value())
-                             : Memories{};
-                }).Then(std::move(callback)));
+                base::BindOnce(
+                    [](const std::vector<MemoriesVisit>& visits,
+                       data_decoder::DataDecoder::ValueOrError value_or_error)
+                        -> Memories {
+                      return value_or_error.value
+                                 ? ValueToMemories(visits,
+                                                   value_or_error.value.value())
+                                 : Memories{};
+                    },
+                    visits)
+                    .Then(std::move(callback)));
           },
-          std::move(callback)),
+          visits, std::move(callback)),
       kMaxExpectedResponseSize);
 }
 
 void MemoriesRemoteModelHelper::StopPendingRequests() {
+  // TODO(manukh): Ensure the callback for the pending request is invoked.
   url_loader_.reset();
 }
 

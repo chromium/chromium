@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_VISIT_DATA_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_VISIT_DATA_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/url_row.h"
 

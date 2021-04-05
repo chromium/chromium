@@ -41,6 +41,7 @@ source_set("unit_tests") {
     ":core",
     ":test_support",
     "//base/test:test_support",
+    "//components/history/core/browser",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//testing/gtest",

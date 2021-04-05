@@ -5,17 +5,23 @@
 #include "components/history_clusters/core/memories_service.h"
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/memories_service_test_api.h"
+#include "components/history_clusters/core/visit_data.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/resource_request_body.h"
@@ -25,6 +31,11 @@
 #include "url/gurl.h"
 
 namespace {
+
+std::string StripWhitespace(std::string str) {
+  base::EraseIf(str, base::IsAsciiWhitespace<char>);
+  return str;
+}
 
 // Returns a Time that's |milliseconds| milliseconds after Windows epoch.
 base::Time IntToTime(int milliseconds) {
@@ -55,9 +66,16 @@ class MemoriesServiceTest : public testing::Test {
         memories_service_->GetOrCreateIncompleteVisit(next_navigation_id_);
     visit.visit_row.visit_time = IntToTime(time);
     visit.url_row.set_url(url);
-    visit.status.history_rows = true;
-    visit.status.navigation_ended = true;
-    visit.status.navigation_end_signals = true;
+    AddVisit(visit);
+  }
+
+  void AddVisit(const memories::MemoriesVisit& visit) {
+    auto& visit_copy =
+        memories_service_->GetOrCreateIncompleteVisit(next_navigation_id_);
+    visit_copy = visit;
+    visit_copy.status.history_rows = true;
+    visit_copy.status.navigation_ended = true;
+    visit_copy.status.navigation_end_signals = true;
     memories_service_->CompleteVisitIfReady(next_navigation_id_);
     next_navigation_id_++;
   }
@@ -91,47 +109,118 @@ TEST_F(MemoriesServiceTest, GetMemories) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories,
-      {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
+      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
 
-  AddVisit(0, GURL{"google.com"});
-  AddVisit(1, GURL{"github.com"});
+  auto AddVisitWithDetails = [&](int time, const GURL& url,
+                                 const std::u16string title, int visit_id,
+                                 int page_end_reason) {
+    memories::MemoriesVisit visit;
+    visit.visit_row.visit_time = IntToTime(time);
+    visit.url_row.set_url(url);
+    visit.url_row.set_title(title);
+    visit.visit_row.visit_id = visit_id;
+    visit.context_signals.page_end_reason = page_end_reason;
+    AddVisit(visit);
+  };
+
+  AddVisitWithDetails(2, GURL{"https://google.com"}, u"Google title", 2, 3);
+  AddVisitWithDetails(4, GURL{"https://github.com"}, u"Github title", 4, 5);
 
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
   memories_service_->GetMemories(
       base::BindLambdaForTesting([&](memories::Memories memories) {
         // Verify the parsed response.
-        EXPECT_EQ(memories.size(), 2u);
+        ASSERT_EQ(memories.size(), 2u);
+        EXPECT_FALSE(memories[0]->id.is_empty());
+        ASSERT_EQ(memories[0]->top_visits.size(), 2u);
+        EXPECT_EQ(memories[0]->top_visits[0]->id, 2);
+        EXPECT_EQ(memories[0]->top_visits[0]->url, "https://google.com/");
+        EXPECT_EQ(memories[0]->top_visits[0]->time, IntToTime(2));
+        EXPECT_EQ(base::UTF16ToUTF8(memories[0]->top_visits[0]->page_title),
+                  "Google title");
+        EXPECT_EQ(memories[0]->top_visits[1]->id, 4);
+        EXPECT_EQ(memories[0]->top_visits[1]->url, "https://github.com/");
+        EXPECT_EQ(memories[0]->top_visits[1]->time, IntToTime(4));
+        EXPECT_EQ(base::UTF16ToUTF8(memories[0]->top_visits[1]->page_title),
+                  "Github title");
+        ASSERT_EQ(memories[1]->top_visits.size(), 1u);
+        EXPECT_FALSE(memories[1]->id.is_empty());
+        EXPECT_EQ(memories[1]->top_visits[0]->id, 4);
+        EXPECT_EQ(memories[1]->top_visits[0]->url, "https://github.com/");
+        EXPECT_EQ(memories[1]->top_visits[0]->time, IntToTime(4));
+        EXPECT_EQ(base::UTF16ToUTF8(memories[1]->top_visits[0]->page_title),
+                  "Github title");
         run_loop_quit_.Run();
       }));
 
-  // Verify a request is made.
+  // Verify the serialized request.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(endpoint));
-  EXPECT_EQ(
-      GetPendingRequestBody(),
-      R"({"visits":[{"foreground_time_secs":0,"is_from_google_search":false,)"
-      R"("navigation_time_ms":0,"origin":"","page_end_reason":0,)"
-      R"("page_transition":0,"site_engagement_score":0,"url":"","visitId":0},)"
-      R"({"foreground_time_secs":0,"is_from_google_search":false,)"
-      R"("navigation_time_ms":0,"origin":"","page_end_reason":0,)"
-      R"("page_transition":0,"site_engagement_score":0,"url":"",)"
-      R"("visitId":0}]})");
+  EXPECT_EQ(GetPendingRequestBody(), StripWhitespace(R"(
+      {
+        "visits": [
+          {
+            "foregroundTimeSecs": 0,
+            "isFromGoogleSearch": false,
+            "navigationTimeMs": 2.0,
+            "origin": "https://google.com/",
+            "pageEndReason": 3,
+            "pageTransition": 0,
+            "siteEngagementScore": 0,
+            "url": "https://google.com/",
+            "visitId": 2.0
+          },
+          {
+            "foregroundTimeSecs": 0,
+            "isFromGoogleSearch": false,
+            "navigationTimeMs": 4.0,
+            "origin": "https://github.com/",
+            "pageEndReason": 5,
+            "pageTransition": 0,
+            "siteEngagementScore": 0,
+            "url": "https://github.com/",
+            "visitId": 4.0
+          }
+        ]
+      })"));
 
   // Fake a response from the endpoint.
-  test_url_loader_factory_.AddResponse(endpoint, R"({"memories": [{}, {}]})");
+  test_url_loader_factory_.AddResponse(endpoint, R"(
+      {
+        "memories": [
+          {
+            "description": "description",
+            "topics": [
+              "topic 1",
+              "topic 2"
+            ],
+            "visitIds": [
+              2,
+              4
+            ]
+          },
+          {
+            "description": "description 2",
+            "topics": [
+              "topic 3",
+              "topic 4"
+            ],
+            "visitIds": [
+              4
+            ]
+          }
+        ]
+      })");
   EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
 
   // Verify the callback is invoked.
   run_loop_.Run();
 }
 
-TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyEndpoint) {
+TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyVisits) {
+  const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories, {{memories::kMemoriesRemoteModelEndpointParam, ""}});
-
-  AddVisit(0, GURL{"google.com"});
-  AddVisit(1, GURL{"github.com"});
+      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
 
   memories_service_->GetMemories(
       base::BindLambdaForTesting([&](memories::Memories memories) {
@@ -141,18 +230,32 @@ TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyEndpoint) {
       }));
 
   // Verify no request is made.
-  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(test_url_loader_factory_.IsPending(endpoint));
 
   // Verify the callback is invoked.
   run_loop_.Run();
+}
+
+TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyEndpoint) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      memories::kMemories, {{memories::kRemoteModelEndpointParam, ""}});
+
+  AddVisit(0, GURL{"google.com"});
+  AddVisit(1, GURL{"github.com"});
+
+  EXPECT_DCHECK_DEATH(memories_service_->GetMemories(base::BindLambdaForTesting(
+      [&](memories::Memories memories) { NOTREACHED(); })));
+
+  // Verify no request is made.
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
 
 TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyResponse) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories,
-      {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
+      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
@@ -180,8 +283,7 @@ TEST_F(MemoriesServiceTest, GetMemoriesWithInvalidJsonResponse) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories,
-      {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
+      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
@@ -205,12 +307,11 @@ TEST_F(MemoriesServiceTest, GetMemoriesWithInvalidJsonResponse) {
   run_loop_.Run();
 }
 
-TEST_F(MemoriesServiceTest, GetMemoriesWithBadResponse) {
+TEST_F(MemoriesServiceTest, GetMemoriesWithEmptyJsonResponse) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories,
-      {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
+      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});
@@ -238,8 +339,7 @@ TEST_F(MemoriesServiceTest, GetMemoriesWithPendingRequest) {
   const char endpoint[] = "https://endpoint.com/";
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
-      memories::kMemories,
-      {{memories::kMemoriesRemoteModelEndpointParam, endpoint}});
+      memories::kMemories, {{memories::kRemoteModelEndpointParam, endpoint}});
 
   AddVisit(0, GURL{"google.com"});
   AddVisit(1, GURL{"github.com"});

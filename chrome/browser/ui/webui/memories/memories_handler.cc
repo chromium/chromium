@@ -10,6 +10,7 @@
 
 #include "chrome/browser/history_clusters/memories_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/memories_service.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -17,10 +18,8 @@
 #if !defined(OFFICIAL_BUILD)
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/containers/flat_map.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/time_formatting.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -38,7 +37,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/tab_groups/tab_group_id.h"
 #include "ui/base/l10n/time_format.h"
 
 namespace {
@@ -78,19 +76,28 @@ void MemoriesHandler::GetSampleMemories(const std::string& query,
   std::move(callback).Run(std::move(memories_result_mojom));
   return;
 #else
-  // Query HistoryService for URLs containing |query|.
-  history::HistoryService* history_service =
-      HistoryServiceFactory::GetForProfile(profile_,
-                                           ServiceAccessType::EXPLICIT_ACCESS);
-  history::QueryOptions query_options;
-  query_options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
-  query_options.SetRecentDayRange(90);
-  history_service->QueryHistory(
-      base::UTF8ToUTF16(query), query_options,
-      base::BindOnce(&MemoriesHandler::OnHistoryQueryResults,
-                     weak_ptr_factory_.GetWeakPtr(), query,
-                     std::move(callback)),
-      &history_task_tracker_);
+  // If the query is empty and a remote model endpoint is set, then ask the
+  // MemoriesService for memories. The MemoriesService doesn't yet support
+  // filtering memories by query or an on-client clustering, so if either the
+  // query is non-empty or the endpoint is not set, fallback to sample memories
+  // from history.
+  if (query.empty() && memories::RemoteModelEndpoint().is_valid()) {
+    GetMemories(std::move(callback));
+  } else {
+    // Query HistoryService for URLs containing |query|.
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS);
+    history::QueryOptions query_options;
+    query_options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
+    query_options.SetRecentDayRange(90);
+    history_service->QueryHistory(
+        base::UTF8ToUTF16(query), query_options,
+        base::BindOnce(&MemoriesHandler::OnHistoryQueryResults,
+                       weak_ptr_factory_.GetWeakPtr(), query,
+                       std::move(callback)),
+        &history_task_tracker_);
+  }
 }
 
 void MemoriesHandler::OnHistoryQueryResults(const std::string& query,
