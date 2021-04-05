@@ -71,7 +71,7 @@ class AccessibilityManager : public MultipleTapDetectorDelegate {
 
   // Sets the player for earcons.
   virtual void SetAccessibilitySoundPlayer(
-      std::unique_ptr<AccessibilitySoundPlayer> player);
+      std::unique_ptr<AccessibilitySoundPlayer> player) {}
 };
 
 }  // namespace shell
