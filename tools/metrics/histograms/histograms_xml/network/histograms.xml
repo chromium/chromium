@@ -1568,6 +1568,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Network.Shill.Wifi.LinkMonitorsDetectionTimeDiff.ArpBetter"
     units="ms" expires_after="M91">
+  <obsolete>
+    Removed 04/2021
+  </obsolete>
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -1584,7 +1587,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Network.Shill.Wifi.LinkMonitorsDetectionTimeDiff.NeighborBetter"
-    units="ms" expires_after="2021-07-27">
+    units="ms" expires_after="M91">
+  <obsolete>
+    Removed 04/2021
+  </obsolete>
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
