@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
+import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -186,8 +188,11 @@ public class VoiceToolbarButtonController
                 useGenericMessage ? R.string.iph_mic_toolbar_generic_message_accessibility_text
                                   : R.string.iph_mic_toolbar_example_query_accessibility_text;
 
+        HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
+        params.setBoundsRespectPadding(true);
         IPHCommandBuilder iphCommandBuilder = new IPHCommandBuilder(tab.getContext().getResources(),
-                FeatureConstants.IPH_MIC_TOOLBAR_FEATURE, text, accessibilityText);
+                FeatureConstants.IPH_MIC_TOOLBAR_FEATURE, text, accessibilityText)
+                                                      .setHighlightParams(params);
 
         ButtonData.ButtonSpec currentSpec = mButtonData.getButtonSpec();
         ButtonData.ButtonSpec newSpec = new ButtonData.ButtonSpec(currentSpec.getDrawable(),
