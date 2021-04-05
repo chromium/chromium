@@ -5,6 +5,7 @@
 #include "net/disk_cache/blockfile/backend_impl.h"
 
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -317,7 +318,7 @@ int BackendImpl::SyncInit() {
     // Create a recurrent timer of 30 secs.
     DCHECK(background_queue_.BackgroundIsCurrentSequence());
     int timer_delay = unit_test_ ? 1000 : 30000;
-    timer_.reset(new base::RepeatingTimer());
+    timer_ = std::make_unique<base::RepeatingTimer>();
     timer_->Start(FROM_HERE, TimeDelta::FromMilliseconds(timer_delay), this,
                   &BackendImpl::OnStatsTimer);
   }

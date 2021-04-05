@@ -765,7 +765,7 @@ class DnsTCPAttempt : public DnsAttempt {
     if (response_length_ < query_->io_buffer()->size())
       return ERR_DNS_MALFORMED_RESPONSE;
     // Allocate more space so that DnsResponse::InitParse sanity check passes.
-    response_.reset(new DnsResponse(response_length_ + 1));
+    response_ = std::make_unique<DnsResponse>(response_length_ + 1);
     buffer_ = base::MakeRefCounted<DrainableIOBuffer>(response_->io_buffer(),
                                                       response_length_);
     next_state_ = STATE_READ_RESPONSE;
@@ -1232,7 +1232,8 @@ class DnsTransactionImpl : public DnsTransaction,
     uint16_t id = session_->NextQueryId();
     std::unique_ptr<DnsQuery> query;
     if (attempts_.empty()) {
-      query.reset(new DnsQuery(id, qnames_.front(), qtype_, opt_rdata_));
+      query =
+          std::make_unique<DnsQuery>(id, qnames_.front(), qtype_, opt_rdata_);
     } else {
       query = attempts_[0]->GetQuery()->CloneWithNewId(id);
     }

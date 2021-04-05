@@ -58,6 +58,7 @@
 
 #include "net/cert_net/cert_net_fetcher_url_request.h"
 
+#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -850,7 +851,7 @@ void CertNetFetcherURLRequest::DoFetchOnNetworkSequence(
   }
 
   if (!impl_) {
-    impl_.reset(new AsyncCertNetFetcherURLRequest(context_));
+    impl_ = std::make_unique<AsyncCertNetFetcherURLRequest>(context_);
   }
 
   impl_->Fetch(std::move(request_params), request);

@@ -141,8 +141,8 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     quic_context_.params()->origins_to_force_quic_on.insert(
         HostPortPair::FromString("test.example.com:443"));
 
-    transaction_factory_.reset(
-        new TestTransactionFactory(session_params_, session_context_));
+    transaction_factory_ = std::make_unique<TestTransactionFactory>(
+        session_params_, session_context_);
   }
 
   void TearDown() override {}
@@ -189,8 +189,8 @@ class QuicEndToEndTest : public ::testing::Test, public WithTaskEnvironment {
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
         request_body_.data(), request_body_.length()));
-    upload_data_stream_.reset(
-        new ElementsUploadDataStream(std::move(element_readers), 0));
+    upload_data_stream_ = std::make_unique<ElementsUploadDataStream>(
+        std::move(element_readers), 0);
     request_.method = "POST";
     request_.url = GURL("https://test.example.com/");
     request_.upload_data_stream = upload_data_stream_.get();

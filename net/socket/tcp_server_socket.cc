@@ -4,6 +4,7 @@
 
 #include "net/socket/tcp_server_socket.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -112,8 +113,8 @@ int TCPServerSocket::ConvertAcceptedSocket(
   if (output_accepted_address)
     *output_accepted_address = accepted_address_;
 
-  output_accepted_socket->reset(
-      new TCPClientSocket(std::move(temp_accepted_socket), accepted_address_));
+  *output_accepted_socket = std::make_unique<TCPClientSocket>(
+      std::move(temp_accepted_socket), accepted_address_);
 
   return OK;
 }

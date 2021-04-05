@@ -489,7 +489,7 @@ class MockListenerDelegate : public MDnsListener::Delegate {
 };
 
 void MDnsTest::SetUp() {
-  test_client_.reset(new MDnsClientImpl());
+  test_client_ = std::make_unique<MDnsClientImpl>();
   ASSERT_THAT(test_client_->StartListening(&socket_factory_), test::IsOk());
 }
 
@@ -655,7 +655,8 @@ TEST_F(MDnsTest, CacheCleanupWithShortTTL) {
   MockClock clock;
   MockTimer* timer = new MockTimer;
 
-  test_client_.reset(new MDnsClientImpl(&clock, base::WrapUnique(timer)));
+  test_client_ =
+      std::make_unique<MDnsClientImpl>(&clock, base::WrapUnique(timer));
   ASSERT_THAT(test_client_->StartListening(&socket_factory_), test::IsOk());
 
   EXPECT_CALL(*timer, StartObserver(_, _)).Times(1);

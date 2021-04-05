@@ -4,6 +4,7 @@
 
 #include "net/socket/transport_client_socket_pool.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -73,18 +74,18 @@ const RequestPriority kDefaultPriority = LOW;
 class SOCKS5MockData {
  public:
   explicit SOCKS5MockData(IoMode mode) {
-    writes_.reset(new MockWrite[2]);
+    writes_ = std::make_unique<MockWrite[]>(2);
     writes_[0] =
         MockWrite(mode, kSOCKS5GreetRequest, kSOCKS5GreetRequestLength);
     writes_[1] = MockWrite(mode, kSOCKS5OkRequest, kSOCKS5OkRequestLength);
 
-    reads_.reset(new MockRead[2]);
+    reads_ = std::make_unique<MockRead[]>(2);
     reads_[0] =
         MockRead(mode, kSOCKS5GreetResponse, kSOCKS5GreetResponseLength);
     reads_[1] = MockRead(mode, kSOCKS5OkResponse, kSOCKS5OkResponseLength);
 
-    data_.reset(new StaticSocketDataProvider(
-        base::make_span(reads_.get(), 2), base::make_span(writes_.get(), 2)));
+    data_ = std::make_unique<StaticSocketDataProvider>(
+        base::make_span(reads_.get(), 2), base::make_span(writes_.get(), 2));
   }
 
   SocketDataProvider* data_provider() { return data_.get(); }

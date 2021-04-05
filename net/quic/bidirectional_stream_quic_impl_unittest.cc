@@ -4,6 +4,7 @@
 
 #include "net/quic/bidirectional_stream_quic_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -526,8 +527,8 @@ class BidirectionalStreamQuicImplTest
         socket_data_.get(), net_log().bound().net_log()));
     socket->Connect(peer_addr_);
     runner_ = new TestTaskRunner(&clock_);
-    helper_.reset(
-        new QuicChromiumConnectionHelper(&clock_, &random_generator_));
+    helper_ = std::make_unique<QuicChromiumConnectionHelper>(
+        &clock_, &random_generator_);
     alarm_factory_ =
         std::make_unique<QuicChromiumAlarmFactory>(runner_.get(), &clock_);
     connection_ = new quic::QuicConnection(

@@ -4,6 +4,7 @@
 
 #include "net/dns/mock_host_resolver.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -561,7 +562,7 @@ MockHostResolverBase::MockHostResolverBase(bool use_caching,
       CreateMockHostResolverProc(/*add_catchall=*/!require_matching_rule);
 
   if (use_caching)
-    cache_.reset(new HostCache(kMaxCacheEntries));
+    cache_ = std::make_unique<HostCache>(kMaxCacheEntries);
   else
     DCHECK_GE(0, cache_invalidation_num);
 }

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -191,16 +192,17 @@ NetworkQualityEstimator::NetworkQualityEstimator(
             base::size(rtt_ms_observations_));
 
   AddEffectiveConnectionTypeObserver(&network_congestion_analyzer_);
-  network_quality_store_.reset(new nqe::internal::NetworkQualityStore());
+  network_quality_store_ =
+      std::make_unique<nqe::internal::NetworkQualityStore>();
   NetworkChangeNotifier::AddConnectionTypeObserver(this);
-  throughput_analyzer_.reset(new nqe::internal::ThroughputAnalyzer(
+  throughput_analyzer_ = std::make_unique<nqe::internal::ThroughputAnalyzer>(
       this, params_.get(), base::ThreadTaskRunnerHandle::Get(),
       base::BindRepeating(
           &NetworkQualityEstimator::OnNewThroughputObservationAvailable,
           weak_ptr_factory_.GetWeakPtr()),
-      tick_clock_, net_log_));
+      tick_clock_, net_log_);
 
-  watcher_factory_.reset(new nqe::internal::SocketWatcherFactory(
+  watcher_factory_ = std::make_unique<nqe::internal::SocketWatcherFactory>(
       base::ThreadTaskRunnerHandle::Get(),
       params_->min_socket_watcher_notification_interval(),
       // OnUpdatedTransportRTTAvailable() may be called via PostTask() by
@@ -220,7 +222,7 @@ NetworkQualityEstimator::NetworkQualityEstimator(
       base::BindRepeating(
           &NetworkQualityEstimator::ShouldSocketWatcherNotifyRTT,
           base::Unretained(this)),
-      tick_clock_));
+      tick_clock_);
 
   GatherEstimatesForNextConnectionType();
 }

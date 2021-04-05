@@ -6,6 +6,8 @@
 
 #include <string.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -108,13 +110,13 @@ bool QuicSimpleServer::Listen(const IPEndPoint& address) {
   if (socket_ == nullptr)
     return false;
 
-  dispatcher_.reset(new quic::QuicSimpleDispatcher(
+  dispatcher_ = std::make_unique<quic::QuicSimpleDispatcher>(
       &config_, &crypto_config_, &version_manager_,
       std::unique_ptr<quic::QuicConnectionHelperInterface>(helper_),
       std::unique_ptr<quic::QuicCryptoServerStreamBase::Helper>(
           new QuicSimpleServerSessionHelper(quic::QuicRandom::GetInstance())),
       std::unique_ptr<quic::QuicAlarmFactory>(alarm_factory_),
-      quic_simple_server_backend_, quic::kQuicDefaultConnectionIdLength));
+      quic_simple_server_backend_, quic::kQuicDefaultConnectionIdLength);
   QuicSimpleServerPacketWriter* writer =
       new QuicSimpleServerPacketWriter(socket_.get(), dispatcher_.get());
   dispatcher_->InitializeWithWriter(writer);

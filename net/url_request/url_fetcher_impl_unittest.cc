@@ -235,8 +235,8 @@ class FetcherTestURLRequestContextGetter : public URLRequestContextGetter {
       return nullptr;
 
     if (!context_) {
-      context_.reset(new FetcherTestURLRequestContext(
-          hanging_domain_, std::move(proxy_resolution_service_)));
+      context_ = std::make_unique<FetcherTestURLRequestContext>(
+          hanging_domain_, std::move(proxy_resolution_service_));
     }
 
     return context_.get();
@@ -362,7 +362,7 @@ class URLFetcherTest : public TestWithTaskEnvironment {
   scoped_refptr<FetcherTestURLRequestContextGetter>
   CreateCrossThreadContextGetter() {
     if (!network_thread_) {
-      network_thread_.reset(new base::Thread("network thread"));
+      network_thread_ = std::make_unique<base::Thread>("network thread");
       base::Thread::Options network_thread_options;
       network_thread_options.message_pump_type = base::MessagePumpType::IO;
       bool result = network_thread_->StartWithOptions(network_thread_options);
@@ -465,7 +465,7 @@ class URLFetcherTest : public TestWithTaskEnvironment {
   // Initializes |test_server_| without starting it.  Allows subclasses to use
   // their own server configuration.
   virtual void SetUpServer() {
-    test_server_.reset(new EmbeddedTestServer);
+    test_server_ = std::make_unique<EmbeddedTestServer>();
     test_server_->AddDefaultHandlers(base::FilePath(kDocRoot));
   }
 
@@ -488,8 +488,8 @@ class URLFetcherBadHTTPSTest : public URLFetcherTest {
 
   // URLFetcherTest:
   void SetUpServer() override {
-    test_server_.reset(
-        new EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    test_server_ = std::make_unique<EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     test_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_EXPIRED);
     test_server_->ServeFilesFromSourceDirectory("net/data/ssl");
   }

@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -621,7 +622,7 @@ void SequencedSocketData::RunUntilPaused() {
   if (IsPaused())
     return;
 
-  run_until_paused_run_loop_.reset(new base::RunLoop());
+  run_until_paused_run_loop_ = std::make_unique<base::RunLoop>();
   run_until_paused_run_loop_->Run();
   run_until_paused_run_loop_.reset();
   DCHECK(IsPaused());

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -32,8 +33,7 @@ void EnqueueString(const std::string& data,
   size_t old_total_size = queue->GetTotalSize();
   for (size_t i = 0; i < data.size();) {
     size_t buffer_size = std::min(data.size() - i, max_buffer_size);
-    queue->Enqueue(std::unique_ptr<SpdyBuffer>(
-        new SpdyBuffer(data.data() + i, buffer_size)));
+    queue->Enqueue(std::make_unique<SpdyBuffer>(data.data() + i, buffer_size));
     i += buffer_size;
     EXPECT_FALSE(queue->IsEmpty());
     EXPECT_EQ(old_total_size + i, queue->GetTotalSize());

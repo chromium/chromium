@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -578,7 +579,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
     std::unique_ptr<CookieMonster> cm;
 
     if (alt_host_entries == nullptr) {
-      cm.reset(new CookieMonster(nullptr, &net_log_));
+      cm = std::make_unique<CookieMonster>(nullptr, &net_log_);
     } else {
       // When generating all of these cookies on alternate hosts, they need to
       // be all older than the max "safe" date for GC, which is currently 30
@@ -2477,7 +2478,7 @@ TEST_F(CookieMonsterTest, FlushStore) {
   ASSERT_EQ(2, counter->callback_count());
 
   // If there's no backing store, FlushStore() is always a safe no-op.
-  cm.reset(new CookieMonster(nullptr, &net_log_));
+  cm = std::make_unique<CookieMonster>(nullptr, &net_log_);
   GetAllCookies(cm.get());  // Force init.
   cm->FlushStore(base::DoNothing());
   base::RunLoop().RunUntilIdle();

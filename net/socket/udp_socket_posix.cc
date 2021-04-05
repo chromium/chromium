@@ -12,6 +12,8 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -426,7 +428,7 @@ int UDPSocketPosix::SendToOrWrite(IOBuffer* buf,
   write_buf_len_ = buf_len;
   DCHECK(!send_to_address_.get());
   if (address) {
-    send_to_address_.reset(new IPEndPoint(*address));
+    send_to_address_ = std::make_unique<IPEndPoint>(*address);
   }
   write_callback_ = std::move(callback);
   return ERR_IO_PENDING;
@@ -477,7 +479,7 @@ int UDPSocketPosix::InternalConnect(const IPEndPoint& address) {
   if (rv < 0)
     return MapSystemError(errno);
 
-  remote_address_.reset(new IPEndPoint(address));
+  remote_address_ = std::make_unique<IPEndPoint>(address);
   return rv;
 }
 

@@ -5,6 +5,7 @@
 #include "net/url_request/url_fetcher_core.h"
 
 #include <stdint.h>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -519,12 +520,12 @@ void URLFetcherCore::StartOnIOThread() {
   // appending data.  Have to do it here because StartURLRequest() may be called
   // asynchonously.
   if (is_chunked_upload_) {
-    chunked_stream_.reset(new ChunkedUploadDataStream(0));
+    chunked_stream_ = std::make_unique<ChunkedUploadDataStream>(0);
     chunked_stream_writer_ = chunked_stream_->CreateWriter();
   }
 
   if (!response_writer_)
-    response_writer_.reset(new URLFetcherStringWriter);
+    response_writer_ = std::make_unique<URLFetcherStringWriter>();
 
   const int result = response_writer_->Initialize(
       base::BindOnce(&URLFetcherCore::DidInitializeWriter, this));
@@ -615,7 +616,7 @@ void URLFetcherCore::StartURLRequest() {
       current_upload_bytes_ = -1;
       // TODO(kinaba): http://crbug.com/118103. Implement upload callback in the
       //  layer and avoid using timer here.
-      upload_progress_checker_timer_.reset(new base::RepeatingTimer());
+      upload_progress_checker_timer_ = std::make_unique<base::RepeatingTimer>();
       upload_progress_checker_timer_->Start(
           FROM_HERE,
           base::TimeDelta::FromMilliseconds(kUploadProgressTimerInterval),

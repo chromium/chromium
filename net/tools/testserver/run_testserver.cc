@@ -4,6 +4,8 @@
 
 #include <stdio.h>
 
+#include <memory>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -135,10 +137,11 @@ int main(int argc, const char* argv[]) {
   // Otherwise, use the SpawnedTestServer.
   std::unique_ptr<net::SpawnedTestServer> test_server;
   if (net::SpawnedTestServer::UsingSSL(server_type)) {
-    test_server.reset(
-        new net::SpawnedTestServer(server_type, ssl_options, doc_root));
+    test_server = std::make_unique<net::SpawnedTestServer>(
+        server_type, ssl_options, doc_root);
   } else {
-    test_server.reset(new net::SpawnedTestServer(server_type, doc_root));
+    test_server =
+        std::make_unique<net::SpawnedTestServer>(server_type, doc_root);
   }
 
   if (!test_server->Start()) {

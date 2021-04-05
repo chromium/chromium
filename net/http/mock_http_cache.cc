@@ -700,7 +700,7 @@ int MockBackendFactory::CreateBackend(
     NetLog* net_log,
     std::unique_ptr<disk_cache::Backend>* backend,
     CompletionOnceCallback callback) {
-  backend->reset(new MockDiskCache());
+  *backend = std::make_unique<MockDiskCache>();
   return OK;
 }
 
@@ -870,7 +870,7 @@ int MockBackendNoCbFactory::CreateBackend(
     NetLog* net_log,
     std::unique_ptr<disk_cache::Backend>* backend,
     CompletionOnceCallback callback) {
-  backend->reset(new MockDiskCacheNoCB());
+  *backend = std::make_unique<MockDiskCacheNoCB>();
   return OK;
 }
 
@@ -887,7 +887,7 @@ int MockBlockingBackendFactory::CreateBackend(
     CompletionOnceCallback callback) {
   if (!block_) {
     if (!fail_)
-      backend->reset(new MockDiskCache());
+      *backend = std::make_unique<MockDiskCache>();
     return Result();
   }
 
@@ -900,7 +900,7 @@ void MockBlockingBackendFactory::FinishCreation() {
   block_ = false;
   if (!callback_.is_null()) {
     if (!fail_)
-      backend_->reset(new MockDiskCache());
+      *backend_ = std::make_unique<MockDiskCache>();
     // Running the callback might delete |this|.
     std::move(callback_).Run(Result());
   }

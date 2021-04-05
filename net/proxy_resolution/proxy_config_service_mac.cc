@@ -7,6 +7,8 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <SystemConfiguration/SystemConfiguration.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
@@ -208,7 +210,7 @@ ProxyConfigServiceMac::ProxyConfigServiceMac(
       sequenced_task_runner_(sequenced_task_runner),
       traffic_annotation_(traffic_annotation) {
   DCHECK(sequenced_task_runner_.get());
-  config_watcher_.reset(new NetworkConfigWatcherMac(&forwarder_));
+  config_watcher_ = std::make_unique<NetworkConfigWatcherMac>(&forwarder_);
 }
 
 ProxyConfigServiceMac::~ProxyConfigServiceMac() {

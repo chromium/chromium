@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <cstring>
 #include <map>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -803,9 +804,9 @@ int SSLClientSocketImpl::Init() {
       SSL_set_session(ssl_.get(), session.get());
   }
 
-  transport_adapter_.reset(
-      new SocketBIOAdapter(stream_socket_.get(), kDefaultOpenSSLBufferSize,
-                           kDefaultOpenSSLBufferSize, this));
+  transport_adapter_ = std::make_unique<SocketBIOAdapter>(
+      stream_socket_.get(), kDefaultOpenSSLBufferSize,
+      kDefaultOpenSSLBufferSize, this);
   BIO* transport_bio = transport_adapter_->bio();
 
   BIO_up_ref(transport_bio);  // SSL_set0_rbio takes ownership.

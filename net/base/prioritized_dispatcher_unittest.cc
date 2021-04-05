@@ -140,7 +140,7 @@ class PrioritizedDispatcherTest : public testing::Test {
 
  protected:
   void Prepare(const PrioritizedDispatcher::Limits& limits) {
-    dispatcher_.reset(new PrioritizedDispatcher(limits));
+    dispatcher_ = std::make_unique<PrioritizedDispatcher>(limits);
   }
 
   std::unique_ptr<TestJob> AddJob(char data, Priority priority) {

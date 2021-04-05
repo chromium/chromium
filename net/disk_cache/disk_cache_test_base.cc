@@ -4,6 +4,7 @@
 
 #include "net/disk_cache/disk_cache_test_base.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -229,8 +230,7 @@ int64_t DiskCacheTestWithCache::CalculateSizeOfEntriesBetween(
 
 std::unique_ptr<DiskCacheTestWithCache::TestIterator>
 DiskCacheTestWithCache::CreateIterator() {
-  return std::unique_ptr<TestIterator>(
-      new TestIterator(cache_->CreateIterator()));
+  return std::make_unique<TestIterator>(cache_->CreateIterator());
 }
 
 void DiskCacheTestWithCache::FlushQueueForTest() {

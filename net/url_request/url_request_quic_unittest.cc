@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
@@ -263,7 +265,7 @@ class URLRequestQuicTest
 
     std::unique_ptr<MockHostResolver> resolver(new MockHostResolver());
     resolver->rules()->AddRule("test.example.com", "127.0.0.1");
-    host_resolver_.reset(new MappedHostResolver(std::move(resolver)));
+    host_resolver_ = std::make_unique<MappedHostResolver>(std::move(resolver));
     // Use a mapped host resolver so that request for test.example.com
     // reach the server running on localhost.
     std::string map_rule =

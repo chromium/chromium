@@ -4,6 +4,8 @@
 
 #include "net/base/upload_file_element_reader.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
@@ -195,7 +197,7 @@ int UploadFileElementReader::DoOpen() {
 
   next_state_ = State::OPEN_COMPLETE;
 
-  file_stream_.reset(new FileStream(task_runner_.get()));
+  file_stream_ = std::make_unique<FileStream>(task_runner_.get());
   int result = file_stream_->Open(
       path_,
       base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_ASYNC,

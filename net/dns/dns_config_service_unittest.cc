@@ -60,7 +60,7 @@ class DnsConfigServiceTest : public TestWithTaskEnvironment {
   }
 
   void SetUp() override {
-    service_.reset(new TestDnsConfigService());
+    service_ = std::make_unique<TestDnsConfigService>();
     service_->WatchConfig(base::BindRepeating(
         &DnsConfigServiceTest::OnConfigChanged, base::Unretained(this)));
     EXPECT_FALSE(last_config_.IsValid());

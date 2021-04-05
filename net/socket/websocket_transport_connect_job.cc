@@ -4,6 +4,8 @@
 
 #include "net/socket/websocket_transport_connect_job.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -182,14 +184,14 @@ int WebSocketTransportConnectJob::DoTransportConnect() {
 
   if (!ipv4_addresses.empty()) {
     had_ipv4_ = true;
-    ipv4_job_.reset(new WebSocketTransportConnectSubJob(
-        ipv4_addresses, this, SUB_JOB_IPV4, websocket_endpoint_lock_manager()));
+    ipv4_job_ = std::make_unique<WebSocketTransportConnectSubJob>(
+        ipv4_addresses, this, SUB_JOB_IPV4, websocket_endpoint_lock_manager());
   }
 
   if (!ipv6_addresses.empty()) {
     had_ipv6_ = true;
-    ipv6_job_.reset(new WebSocketTransportConnectSubJob(
-        ipv6_addresses, this, SUB_JOB_IPV6, websocket_endpoint_lock_manager()));
+    ipv6_job_ = std::make_unique<WebSocketTransportConnectSubJob>(
+        ipv6_addresses, this, SUB_JOB_IPV6, websocket_endpoint_lock_manager());
     result = ipv6_job_->Start();
     switch (result) {
       case OK:

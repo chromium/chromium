@@ -49,7 +49,7 @@ class MultiLogCTVerifierTest : public ::testing::Test {
     ASSERT_TRUE(log);
     log_verifiers_.push_back(log);
 
-    verifier_.reset(new MultiLogCTVerifier());
+    verifier_ = std::make_unique<MultiLogCTVerifier>();
     verifier_->AddLogs(log_verifiers_);
     std::string der_test_cert(ct::GetDerEncodedX509Cert());
     chain_ = X509Certificate::CreateFromBytes(

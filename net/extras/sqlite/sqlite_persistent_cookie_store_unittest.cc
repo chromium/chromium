@@ -144,7 +144,7 @@ class SQLitePersistentCookieStoreTest : public TestWithTaskEnvironment {
               bool restore_old_session_cookies,
               bool use_current_thread) {
     if (crypt_cookies)
-      cookie_crypto_delegate_.reset(new CookieCryptor());
+      cookie_crypto_delegate_ = std::make_unique<CookieCryptor>();
 
     store_ = new SQLitePersistentCookieStore(
         temp_dir_.GetPath().Append(kCookieFilename),

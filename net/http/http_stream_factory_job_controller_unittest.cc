@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <list>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -356,12 +357,13 @@ TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsSync) {
   ProxyConfig proxy_config;
   proxy_config.set_pac_url(GURL("http://fooproxyurl"));
   proxy_config.set_pac_mandatory(true);
-  session_deps_.proxy_resolution_service.reset(
-      new ConfiguredProxyResolutionService(
+  session_deps_.proxy_resolution_service =
+      std::make_unique<ConfiguredProxyResolutionService>(
+
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
           std::make_unique<FailingProxyResolverFactory>(), nullptr,
-          /*quick_check_enabled=*/true));
+          /*quick_check_enabled=*/true);
   HttpRequestInfo request_info;
   request_info.method = "GET";
   request_info.url = GURL("http://www.google.com");
@@ -395,12 +397,13 @@ TEST_F(HttpStreamFactoryJobControllerTest, ProxyResolutionFailsAsync) {
   MockAsyncProxyResolverFactory* proxy_resolver_factory =
       new MockAsyncProxyResolverFactory(false);
   MockAsyncProxyResolver resolver;
-  session_deps_.proxy_resolution_service.reset(
-      new ConfiguredProxyResolutionService(
+  session_deps_.proxy_resolution_service =
+      std::make_unique<ConfiguredProxyResolutionService>(
+
           std::make_unique<ProxyConfigServiceFixed>(ProxyConfigWithAnnotation(
               proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS)),
           base::WrapUnique(proxy_resolver_factory), nullptr,
-          /*quick_check_enabled=*/true));
+          /*quick_check_enabled=*/true);
   HttpRequestInfo request_info;
   request_info.method = "GET";
   request_info.url = GURL("http://www.google.com");

@@ -5,6 +5,7 @@
 #include "net/http/http_stream_factory_job.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -989,8 +990,8 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
         // Quic session is closed before stream can be created.
         return ERR_CONNECTION_CLOSED;
       }
-      bidirectional_stream_impl_.reset(
-          new BidirectionalStreamQuicImpl(std::move(session)));
+      bidirectional_stream_impl_ =
+          std::make_unique<BidirectionalStreamQuicImpl>(std::move(session));
     } else {
       std::unique_ptr<QuicChromiumClientSession::Handle> session =
           quic_request_.ReleaseSessionHandle();

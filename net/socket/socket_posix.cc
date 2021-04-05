@@ -7,6 +7,8 @@
 #include <errno.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -392,7 +394,7 @@ void SocketPosix::SetPeerAddress(const SockaddrStorage& address) {
   // connection attempt failed results in unspecified behavior according to
   // POSIX.
   DCHECK(!peer_address_);
-  peer_address_.reset(new SockaddrStorage(address));
+  peer_address_ = std::make_unique<SockaddrStorage>(address);
 }
 
 bool SocketPosix::HasPeerAddress() const {

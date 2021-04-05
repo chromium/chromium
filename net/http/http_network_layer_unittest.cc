@@ -4,6 +4,7 @@
 
 #include "net/http/http_network_layer.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/strings/stringprintf.h"
@@ -46,8 +47,8 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
   void ConfigureTestDependencies(
       std::unique_ptr<ConfiguredProxyResolutionService>
           proxy_resolution_service) {
-    cert_verifier_.reset(new MockCertVerifier);
-    transport_security_state_.reset(new TransportSecurityState);
+    cert_verifier_ = std::make_unique<MockCertVerifier>();
+    transport_security_state_ = std::make_unique<TransportSecurityState>();
     proxy_resolution_service_ = std::move(proxy_resolution_service);
     HttpNetworkSession::Context session_context;
     session_context.client_socket_factory = &mock_socket_factory_;
@@ -59,9 +60,9 @@ class HttpNetworkLayerTest : public PlatformTest, public WithTaskEnvironment {
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.http_server_properties = &http_server_properties_;
     session_context.quic_context = &quic_context_;
-    network_session_.reset(
-        new HttpNetworkSession(HttpNetworkSession::Params(), session_context));
-    factory_.reset(new HttpNetworkLayer(network_session_.get()));
+    network_session_ = std::make_unique<HttpNetworkSession>(
+        HttpNetworkSession::Params(), session_context);
+    factory_ = std::make_unique<HttpNetworkLayer>(network_session_.get());
   }
 
   void ExecuteRequestExpectingContentAndHeader(const std::string& method,

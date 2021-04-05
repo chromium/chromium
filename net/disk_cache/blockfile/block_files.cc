@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <limits>
+#include <memory>
 
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_macros.h"
@@ -273,7 +274,7 @@ bool BlockFiles::Init(bool create_files) {
   if (init_)
     return false;
 
-  thread_checker_.reset(new base::ThreadChecker);
+  thread_checker_ = std::make_unique<base::ThreadChecker>();
 
   block_files_.resize(kFirstAdditionalBlockFile);
   for (int16_t i = 0; i < kFirstAdditionalBlockFile; i++) {

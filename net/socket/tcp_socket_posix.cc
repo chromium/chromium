@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/atomicops.h"
 #include "base/bind.h"
@@ -150,7 +151,7 @@ TCPSocketPosix::~TCPSocketPosix() {
 
 int TCPSocketPosix::Open(AddressFamily family) {
   DCHECK(!socket_);
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->Open(ConvertAddressFamily(family));
   if (rv != OK)
     socket_.reset();
@@ -170,7 +171,7 @@ int TCPSocketPosix::AdoptConnectedSocket(SocketDescriptor socket,
     return ERR_ADDRESS_INVALID;
   }
 
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->AdoptConnectedSocket(socket, storage);
   if (rv != OK)
     socket_.reset();
@@ -182,7 +183,7 @@ int TCPSocketPosix::AdoptConnectedSocket(SocketDescriptor socket,
 int TCPSocketPosix::AdoptUnconnectedSocket(SocketDescriptor socket) {
   DCHECK(!socket_);
 
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->AdoptUnconnectedSocket(socket);
   if (rv != OK)
     socket_.reset();
@@ -507,8 +508,8 @@ int TCPSocketPosix::BuildTcpSocketPosix(
     return ERR_ADDRESS_INVALID;
   }
 
-  tcp_socket->reset(
-      new TCPSocketPosix(nullptr, net_log_.net_log(), net_log_.source()));
+  *tcp_socket = std::make_unique<TCPSocketPosix>(nullptr, net_log_.net_log(),
+                                                 net_log_.source());
   (*tcp_socket)->socket_ = std::move(accept_socket_);
   return OK;
 }

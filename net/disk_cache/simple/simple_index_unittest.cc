@@ -113,9 +113,10 @@ class SimpleIndexTest : public net::TestWithTaskEnvironment,
     std::unique_ptr<MockSimpleIndexFile> index_file(
         new MockSimpleIndexFile(CacheType()));
     index_file_ = index_file->AsWeakPtr();
-    index_.reset(new SimpleIndex(/* io_thread = */ nullptr,
-                                 /* cleanup_tracker = */ nullptr, this,
-                                 CacheType(), std::move(index_file)));
+    index_ =
+        std::make_unique<SimpleIndex>(/* io_thread = */ nullptr,
+                                      /* cleanup_tracker = */ nullptr, this,
+                                      CacheType(), std::move(index_file));
 
     index_->Initialize(base::Time());
   }

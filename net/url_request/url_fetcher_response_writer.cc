@@ -4,6 +4,7 @@
 
 #include "net/url_request/url_fetcher_response_writer.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -67,7 +68,7 @@ URLFetcherFileWriter::~URLFetcherFileWriter() {
 int URLFetcherFileWriter::Initialize(CompletionOnceCallback callback) {
   DCHECK(!callback_);
 
-  file_stream_.reset(new FileStream(file_task_runner_));
+  file_stream_ = std::make_unique<FileStream>(file_task_runner_);
 
   int result = ERR_IO_PENDING;
   owns_file_ = true;

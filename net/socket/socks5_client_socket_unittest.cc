@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <map>
+#include <memory>
 #include <utility>
 
 #include "base/containers/span.h"
@@ -90,7 +91,7 @@ std::unique_ptr<SOCKS5ClientSocket> SOCKS5ClientSocketTest::BuildMockSocket(
     int port,
     NetLog* net_log) {
   TestCompletionCallback callback;
-  data_.reset(new StaticSocketDataProvider(reads, writes));
+  data_ = std::make_unique<StaticSocketDataProvider>(reads, writes);
   tcp_sock_ = new MockTCPClientSocket(address_list_, net_log, data_.get());
 
   int rv = tcp_sock_->Connect(callback.callback());

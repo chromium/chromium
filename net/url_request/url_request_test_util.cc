@@ -4,6 +4,7 @@
 
 #include "net/url_request/url_request_test_util.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check_op.h"
@@ -196,7 +197,7 @@ TestURLRequestContext* TestURLRequestContextGetter::GetURLRequestContext() {
     return nullptr;
 
   if (!context_.get())
-    context_.reset(new TestURLRequestContext);
+    context_ = std::make_unique<TestURLRequestContext>();
   return context_.get();
 }
 

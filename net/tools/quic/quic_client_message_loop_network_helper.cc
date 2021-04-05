@@ -4,6 +4,7 @@
 
 #include "net/tools/quic/quic_client_message_loop_network_helper.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/logging.h"
@@ -87,11 +88,11 @@ bool QuicClientMessageLooplNetworkHelper::CreateUDPSocketAndBind(
   client_address_ = ToQuicSocketAddress(address);
 
   socket_.swap(socket);
-  packet_reader_.reset(new QuicChromiumPacketReader(
+  packet_reader_ = std::make_unique<QuicChromiumPacketReader>(
       socket_.get(), clock_, this, kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
-      NetLogWithSource()));
+      NetLogWithSource());
 
   if (socket != nullptr) {
     socket->Close();

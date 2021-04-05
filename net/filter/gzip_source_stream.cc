@@ -5,6 +5,7 @@
 #include "net/filter/gzip_source_stream.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -57,7 +58,7 @@ GzipSourceStream::GzipSourceStream(std::unique_ptr<SourceStream> upstream,
       replay_state_(STATE_COMPRESSED_BODY) {}
 
 bool GzipSourceStream::Init() {
-  zlib_stream_.reset(new z_stream);
+  zlib_stream_ = std::make_unique<z_stream>();
   if (!zlib_stream_)
     return false;
   memset(zlib_stream_.get(), 0, sizeof(z_stream));

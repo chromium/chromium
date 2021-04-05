@@ -5,6 +5,7 @@
 #include "net/disk_cache/memory/mem_entry_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -599,7 +600,7 @@ bool MemEntryImpl::InitSparseInfo() {
     // initialized as a sparse entry, we should fail.
     if (GetDataSize(kSparseData))
       return false;
-    children_.reset(new EntryMap());
+    children_ = std::make_unique<EntryMap>();
 
     // The parent entry stores data for the first block, so save this object to
     // index 0.

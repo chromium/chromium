@@ -4,6 +4,7 @@
 
 #include "net/http/http_proxy_client_socket.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -401,8 +402,8 @@ int HttpProxyClientSocket::DoSendRequest() {
   }
 
   parser_buf_ = base::MakeRefCounted<GrowableIOBuffer>();
-  http_stream_parser_.reset(new HttpStreamParser(
-      socket_.get(), is_reused_, &request_, parser_buf_.get(), net_log_));
+  http_stream_parser_ = std::make_unique<HttpStreamParser>(
+      socket_.get(), is_reused_, &request_, parser_buf_.get(), net_log_);
   return http_stream_parser_->SendRequest(request_line_, request_headers_,
                                           traffic_annotation_, &response_,
                                           io_callback_);

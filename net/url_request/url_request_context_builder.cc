@@ -4,6 +4,7 @@
 
 #include "net/url_request/url_request_context_builder.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -579,9 +580,9 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
           NOTREACHED();
           break;
       }
-      http_cache_backend.reset(new HttpCache::DefaultBackend(
+      http_cache_backend = std::make_unique<HttpCache::DefaultBackend>(
           DISK_CACHE, backend_type, http_cache_params_.path,
-          http_cache_params_.max_size, http_cache_params_.reset_cache));
+          http_cache_params_.max_size, http_cache_params_.reset_cache);
     } else {
       http_cache_backend =
           HttpCache::DefaultBackend::InMemory(http_cache_params_.max_size);
@@ -591,9 +592,9 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
         http_cache_params_.app_status_listener);
 #endif
 
-    http_transaction_factory.reset(
-        new HttpCache(std::move(http_transaction_factory),
-                      std::move(http_cache_backend), true));
+    http_transaction_factory =
+        std::make_unique<HttpCache>(std::move(http_transaction_factory),
+                                    std::move(http_cache_backend), true);
   }
   storage->set_http_transaction_factory(std::move(http_transaction_factory));
 

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -181,7 +182,7 @@ class DnsSocketData {
       reads_.push_back(MockRead(SYNCHRONOUS, ERR_IO_PENDING,
                                 writes_.size() + reads_.size()));
     }
-    provider_.reset(new SequencedSocketData(reads_, writes_));
+    provider_ = std::make_unique<SequencedSocketData>(reads_, writes_);
     if (Transport::TCP == transport_ || Transport::HTTPS == transport_) {
       provider_->set_connect_data(MockConnect(reads_[0].mode, OK));
     }
@@ -622,7 +623,7 @@ class DnsTransactionTestBase : public testing::Test {
 
   // Called after fully configuring |config|.
   void ConfigureFactory() {
-    socket_factory_.reset(new TestSocketFactory());
+    socket_factory_ = std::make_unique<TestSocketFactory>();
     session_ = new DnsSession(
         config_,
         std::make_unique<DnsSocketAllocator>(
@@ -2340,7 +2341,7 @@ class CookieCallback {
     loop_to_quit_->Quit();
   }
 
-  void Reset() { loop_to_quit_.reset(new base::RunLoop()); }
+  void Reset() { loop_to_quit_ = std::make_unique<base::RunLoop>(); }
 
   void WaitUntilDone() { loop_to_quit_->Run(); }
 

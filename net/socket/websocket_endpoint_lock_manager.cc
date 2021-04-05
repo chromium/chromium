@@ -4,6 +4,7 @@
 
 #include "net/socket/websocket_endpoint_lock_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -61,7 +62,7 @@ int WebSocketEndpointLockManager::LockEndpoint(const IPEndPoint& endpoint,
   LockInfo& lock_info_in_map = rv.first->second;
   if (rv.second) {
     DVLOG(3) << "Locking endpoint " << endpoint.ToString();
-    lock_info_in_map.queue.reset(new LockInfo::WaiterQueue);
+    lock_info_in_map.queue = std::make_unique<LockInfo::WaiterQueue>();
     return OK;
   }
   DVLOG(3) << "Waiting for endpoint " << endpoint.ToString();

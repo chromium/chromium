@@ -4,6 +4,7 @@
 
 #include "net/socket/socks_connect_job.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -166,9 +167,9 @@ int SOCKSConnectJob::DoSOCKSConnect() {
 
   // Add a SOCKS connection on top of the tcp socket.
   if (socks_params_->is_socks_v5()) {
-    socket_.reset(new SOCKS5ClientSocket(transport_connect_job_->PassSocket(),
-                                         socks_params_->destination(),
-                                         socks_params_->traffic_annotation()));
+    socket_ = std::make_unique<SOCKS5ClientSocket>(
+        transport_connect_job_->PassSocket(), socks_params_->destination(),
+        socks_params_->traffic_annotation());
   } else {
     socks_socket_ptr_ = new SOCKSClientSocket(
         transport_connect_job_->PassSocket(), socks_params_->destination(),

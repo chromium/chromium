@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/macros.h"
 #include "base/process/process.h"
@@ -814,7 +815,8 @@ int Rankings::CheckListSection(List list, Addr end1, Addr end2, bool forward,
   std::unique_ptr<CacheRankingsBlock> node;
   Addr prev_addr(current);
   do {
-    node.reset(new CacheRankingsBlock(backend_->File(current), current));
+    node =
+        std::make_unique<CacheRankingsBlock>(backend_->File(current), current);
     node->Load();
     if (!SanityCheck(node.get(), true))
       return ERR_INVALID_ENTRY;

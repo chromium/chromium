@@ -4,6 +4,8 @@
 
 #include "net/http/http_network_layer.h"
 
+#include <memory>
+
 #include "base/check_op.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,7 +43,7 @@ int HttpNetworkLayer::CreateTransaction(
   if (suspended_)
     return ERR_NETWORK_IO_SUSPENDED;
 
-  trans->reset(new HttpNetworkTransaction(priority, GetSession()));
+  *trans = std::make_unique<HttpNetworkTransaction>(priority, GetSession());
   return OK;
 }
 

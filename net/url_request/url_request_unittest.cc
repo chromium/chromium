@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 // This must be before Windows headers
@@ -11967,7 +11968,7 @@ TEST_F(URLRequestTestFTP, FTPCacheURLCredentials) {
     EXPECT_EQ(GetTestFileContents(), d->data_received());
   }
 
-  d.reset(new TestDelegate);
+  d = std::make_unique<TestDelegate>();
   {
     // This request should use cached identity from previous request.
     std::unique_ptr<URLRequest> r(default_context().CreateRequest(
@@ -12010,7 +12011,7 @@ TEST_F(URLRequestTestFTP, FTPCacheLoginBoxCredentials) {
 
   // Use a new delegate without explicit credentials. The cached ones should be
   // used.
-  d.reset(new TestDelegate);
+  d = std::make_unique<TestDelegate>();
   {
     // Don't pass wrong credentials in the URL, they would override valid cached
     // ones.

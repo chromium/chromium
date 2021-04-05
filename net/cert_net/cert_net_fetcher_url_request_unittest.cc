@@ -185,7 +185,7 @@ class CertNetFetcherURLRequestTest : public PlatformTest {
 
   void StartNetworkThread() {
     // Start the network thread.
-    network_thread_.reset(new base::Thread("network thread"));
+    network_thread_ = std::make_unique<base::Thread>("network thread");
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     EXPECT_TRUE(network_thread_->StartWithOptions(options));
 
@@ -200,7 +200,7 @@ class CertNetFetcherURLRequestTest : public PlatformTest {
   }
 
   void InitOnNetworkThread(base::WaitableEvent* done) {
-    state_.reset(new NetworkThreadState);
+    state_ = std::make_unique<NetworkThreadState>();
     state_->context.set_network_delegate(&state_->network_delegate);
     done->Signal();
   }

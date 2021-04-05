@@ -4,6 +4,7 @@
 
 #include "net/dns/dns_query.h"
 
+#include <memory>
 #include <tuple>
 
 #include "base/stl_util.h"
@@ -29,7 +30,7 @@ bool ParseAndCreateDnsQueryFromRawPacket(const uint8_t* data,
                                          std::unique_ptr<DnsQuery>* out) {
   auto packet = base::MakeRefCounted<IOBufferWithSize>(length);
   memcpy(packet->data(), data, length);
-  out->reset(new DnsQuery(packet));
+  *out = std::make_unique<DnsQuery>(packet);
   return (*out)->Parse(length);
 }
 

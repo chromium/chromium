@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 #include <limits>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -396,7 +397,7 @@ bool BaseTestServer::SetupWhenServerStarted() {
   }
 
   started_ = true;
-  allowed_port_.reset(new ScopedPortException(host_port_pair_.port()));
+  allowed_port_ = std::make_unique<ScopedPortException>(host_port_pair_.port());
   return true;
 }
 

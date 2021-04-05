@@ -5,6 +5,7 @@
 #include "net/socket/transport_connect_job.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -398,8 +399,8 @@ void TransportConnectJob::DoIPv6FallbackTransportConnect() {
   DCHECK(!fallback_transport_socket_.get());
   DCHECK(!fallback_addresses_.get());
 
-  fallback_addresses_.reset(
-      new AddressList(request_->GetAddressResults().value()));
+  fallback_addresses_ =
+      std::make_unique<AddressList>(request_->GetAddressResults().value());
   MakeAddressListStartWithIPv4(fallback_addresses_.get());
 
   // Create a |SocketPerformanceWatcher|, and pass the ownership.

@@ -5,6 +5,7 @@
 #include "net/dns/mdns_client_impl.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -451,7 +452,7 @@ MDnsClientImpl::~MDnsClientImpl() {
 
 int MDnsClientImpl::StartListening(MDnsSocketFactory* socket_factory) {
   DCHECK(!core_.get());
-  core_.reset(new Core(clock_, cleanup_timer_.get()));
+  core_ = std::make_unique<Core>(clock_, cleanup_timer_.get());
   int rv = core_->Init(socket_factory);
   if (rv != OK) {
     DCHECK_NE(ERR_IO_PENDING, rv);

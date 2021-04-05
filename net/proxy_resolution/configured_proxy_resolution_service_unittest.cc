@@ -3922,9 +3922,9 @@ class SanitizeUrlHelper {
 
     factory = new MockAsyncProxyResolverFactory(false);
 
-    service_.reset(new ConfiguredProxyResolutionService(
+    service_ = std::make_unique<ConfiguredProxyResolutionService>(
         std::move(config_service), base::WrapUnique(factory), nullptr,
-        /*quick_check_enabled=*/true));
+        /*quick_check_enabled=*/true);
 
     // Do an initial request to initialize the service (configure the PAC
     // script).

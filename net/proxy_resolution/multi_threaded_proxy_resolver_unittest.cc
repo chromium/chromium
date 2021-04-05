@@ -4,6 +4,7 @@
 
 #include "net/proxy_resolution/multi_threaded_proxy_resolver.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -233,8 +234,9 @@ class MultiThreadedProxyResolverTest : public TestWithTaskEnvironment {
     std::unique_ptr<BlockableProxyResolverFactory> factory_owner(
         new BlockableProxyResolverFactory);
     factory_ = factory_owner.get();
-    resolver_factory_.reset(new SingleShotMultiThreadedProxyResolverFactory(
-        num_threads, std::move(factory_owner)));
+    resolver_factory_ =
+        std::make_unique<SingleShotMultiThreadedProxyResolverFactory>(
+            num_threads, std::move(factory_owner));
     TestCompletionCallback ready_callback;
     std::unique_ptr<ProxyResolverFactory::Request> request;
     resolver_factory_->CreateProxyResolver(

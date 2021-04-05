@@ -4,6 +4,7 @@
 
 #include "net/socket/ssl_server_socket_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -861,8 +862,8 @@ int SSLServerContextImpl::SocketImpl::Init() {
     CHECK(SSL_set1_curves(ssl_.get(), curves.data(), curves.size()));
   }
 
-  transport_adapter_.reset(new SocketBIOAdapter(
-      transport_socket_.get(), kBufferSize, kBufferSize, this));
+  transport_adapter_ = std::make_unique<SocketBIOAdapter>(
+      transport_socket_.get(), kBufferSize, kBufferSize, this);
   BIO* transport_bio = transport_adapter_->bio();
 
   BIO_up_ref(transport_bio);  // SSL_set0_rbio takes ownership.

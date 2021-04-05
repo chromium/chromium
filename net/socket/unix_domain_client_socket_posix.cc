@@ -6,6 +6,8 @@
 
 #include <sys/socket.h>
 #include <sys/un.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/check_op.h"
@@ -78,7 +80,7 @@ int UnixDomainClientSocket::Connect(CompletionOnceCallback callback) {
   if (!FillAddress(socket_path_, use_abstract_namespace_, &address))
     return ERR_ADDRESS_INVALID;
 
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->Open(AF_UNIX);
   DCHECK_NE(ERR_IO_PENDING, rv);
   if (rv != OK)

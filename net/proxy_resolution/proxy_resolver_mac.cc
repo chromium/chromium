@@ -6,6 +6,8 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
+#include <memory>
+
 #include "base/check.h"
 #include "base/lazy_instance.h"
 #include "base/mac/foundation_util.h"
@@ -365,7 +367,7 @@ int ProxyResolverFactoryMac::CreateProxyResolver(
     std::unique_ptr<ProxyResolver>* resolver,
     CompletionOnceCallback callback,
     std::unique_ptr<Request>* request) {
-  resolver->reset(new ProxyResolverMac(pac_script));
+  *resolver = std::make_unique<ProxyResolverMac>(pac_script);
   return OK;
 }
 

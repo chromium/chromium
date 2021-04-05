@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
@@ -345,7 +346,8 @@ class PacFileDeciderQuickCheckTest : public ::testing::Test,
     request_context_.set_host_resolver(&resolver_);
     fetcher_.SetRequestContext(&request_context_);
     config_.set_auto_detect(true);
-    decider_.reset(new PacFileDecider(&fetcher_, &dhcp_fetcher_, nullptr));
+    decider_ =
+        std::make_unique<PacFileDecider>(&fetcher_, &dhcp_fetcher_, nullptr);
   }
 
   int StartDecider() {
@@ -432,7 +434,8 @@ TEST_F(PacFileDeciderQuickCheckTest, QuickCheckInhibitsDhcp) {
   std::u16string pac_contents = base::UTF8ToUTF16(kPac);
   GURL url("http://foobar/baz");
   dhcp_fetcher.SetPacURL(url);
-  decider_.reset(new PacFileDecider(&fetcher_, &dhcp_fetcher, nullptr));
+  decider_ =
+      std::make_unique<PacFileDecider>(&fetcher_, &dhcp_fetcher, nullptr);
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   dhcp_fetcher.CompleteRequests(OK, pac_contents);
   EXPECT_TRUE(decider_->effective_config().value().has_pac_url());
@@ -447,7 +450,8 @@ TEST_F(PacFileDeciderQuickCheckTest, QuickCheckDisabled) {
   const char* kPac = "function FindProxyForURL(u,h) { return \"DIRECT\"; }";
   resolver_.set_synchronous_mode(true);
   MockPacFileFetcher fetcher;
-  decider_.reset(new PacFileDecider(&fetcher, &dhcp_fetcher_, nullptr));
+  decider_ =
+      std::make_unique<PacFileDecider>(&fetcher, &dhcp_fetcher_, nullptr);
   EXPECT_THAT(StartDecider(), IsError(ERR_IO_PENDING));
   EXPECT_TRUE(fetcher.has_pending_request());
   fetcher.NotifyFetchCompletion(OK, kPac);

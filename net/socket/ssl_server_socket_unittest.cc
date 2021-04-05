@@ -17,6 +17,8 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -414,8 +416,8 @@ class SSLServerSocketTest : public PlatformTest, public WithTaskEnvironment {
   void CreateSockets() {
     client_socket_.reset();
     server_socket_.reset();
-    channel_1_.reset(new FakeDataChannel());
-    channel_2_.reset(new FakeDataChannel());
+    channel_1_ = std::make_unique<FakeDataChannel>();
+    channel_2_ = std::make_unique<FakeDataChannel>();
     std::unique_ptr<StreamSocket> client_connection =
         std::make_unique<FakeSocket>(channel_1_.get(), channel_2_.get());
     std::unique_ptr<StreamSocket> server_socket =

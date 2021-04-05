@@ -5,6 +5,7 @@
 #include "net/disk_cache/blockfile/entry_impl.h"
 
 #include <limits>
+#include <memory>
 
 #include "base/hash/hash.h"
 #include "base/macros.h"
@@ -938,7 +939,7 @@ bool EntryImpl::CouldBeSparse() const {
     return true;
 
   std::unique_ptr<SparseControl> sparse;
-  sparse.reset(new SparseControl(const_cast<EntryImpl*>(this)));
+  sparse = std::make_unique<SparseControl>(const_cast<EntryImpl*>(this));
   return sparse->CouldBeSparse();
 }
 
@@ -1349,7 +1350,7 @@ bool EntryImpl::PrepareTarget(int index, int offset, int buf_len,
   }
 
   if (!user_buffers_[index].get())
-    user_buffers_[index].reset(new UserBuffer(backend_.get()));
+    user_buffers_[index] = std::make_unique<UserBuffer>(backend_.get());
 
   return PrepareBuffer(index, offset, buf_len);
 }
@@ -1435,7 +1436,7 @@ bool EntryImpl::CopyToLocalBuffer(int index) {
   DCHECK(address.is_initialized());
 
   int len = std::min(entry_.Data()->data_size[index], kMaxBlockSize);
-  user_buffers_[index].reset(new UserBuffer(backend_.get()));
+  user_buffers_[index] = std::make_unique<UserBuffer>(backend_.get());
   user_buffers_[index]->Write(len, nullptr, 0);
 
   File* file = GetBackingFile(address, index);

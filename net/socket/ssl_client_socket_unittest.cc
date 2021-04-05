@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <algorithm>
+#include <memory>
 #include <tuple>
 #include <utility>
 
@@ -435,7 +436,7 @@ void FakeBlockingStreamSocket::WaitForReadResult() {
 
   if (pending_read_result_ != ERR_IO_PENDING)
     return;
-  read_loop_.reset(new base::RunLoop);
+  read_loop_ = std::make_unique<base::RunLoop>();
   read_loop_->Run();
   read_loop_.reset();
   DCHECK_NE(ERR_IO_PENDING, pending_read_result_);
@@ -478,7 +479,7 @@ void FakeBlockingStreamSocket::WaitForWrite() {
 
   if (pending_write_buf_.get())
     return;
-  write_loop_.reset(new base::RunLoop);
+  write_loop_ = std::make_unique<base::RunLoop>();
   write_loop_->Run();
   write_loop_.reset();
   DCHECK(pending_write_buf_.get());
@@ -1331,7 +1332,7 @@ std::unique_ptr<test_server::HttpResponse> HandleZeroRTTRequest(
     }
   }
 
-  return std::unique_ptr<ZeroRTTResponse>(new ZeroRTTResponse(zero_rtt));
+  return std::make_unique<ZeroRTTResponse>(zero_rtt);
 }
 
 class SSLClientSocketZeroRTTTest : public SSLClientSocketTest {
@@ -1371,8 +1372,8 @@ class SSLClientSocketZeroRTTTest : public SSLClientSocketTest {
     SSLConfig ssl_config;
     ssl_config.early_data_enabled = early_data_enabled;
 
-    real_transport_.reset(
-        new TCPClientSocket(addr(), nullptr, nullptr, nullptr, NetLogSource()));
+    real_transport_ = std::make_unique<TCPClientSocket>(
+        addr(), nullptr, nullptr, nullptr, NetLogSource());
     std::unique_ptr<FakeBlockingStreamSocket> transport(
         new FakeBlockingStreamSocket(std::move(real_transport_)));
     FakeBlockingStreamSocket* raw_transport = transport.get();

@@ -108,8 +108,8 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
     DCHECK(tracelog);
     DCHECK(!tracelog->IsEnabled());
     trace_buffer_.SetOutputCallback(json_output_.GetCallback());
-    trace_net_log_observer_.reset(new TraceNetLogObserver());
-    trace_events_.reset(new base::ListValue());
+    trace_net_log_observer_ = std::make_unique<TraceNetLogObserver>();
+    trace_events_ = std::make_unique<base::ListValue>();
   }
 
   ~TraceNetLogObserverTest() override {

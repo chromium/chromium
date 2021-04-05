@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
@@ -2598,8 +2600,8 @@ TEST_F(DiskCacheTest, SimpleCacheControlRestart) {
 
   const int kRestartCount = 5;
   for (int i = 0; i < kRestartCount; ++i) {
-    cache.reset(new disk_cache::BackendImpl(cache_path_, nullptr, nullptr,
-                                            net::DISK_CACHE, nullptr));
+    cache = std::make_unique<disk_cache::BackendImpl>(
+        cache_path_, nullptr, nullptr, net::DISK_CACHE, nullptr);
     int rv = cache->Init(cb.callback());
     ASSERT_THAT(cb.GetResult(rv), IsOk());
     EXPECT_EQ(1, cache->GetEntryCount());

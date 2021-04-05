@@ -80,7 +80,7 @@ std::unique_ptr<SOCKSClientSocket> SOCKSClientSocketTest::BuildMockSocket(
     int port,
     NetLog* net_log) {
   TestCompletionCallback callback;
-  data_.reset(new StaticSocketDataProvider(reads, writes));
+  data_ = std::make_unique<StaticSocketDataProvider>(reads, writes);
   auto socket = std::make_unique<MockTCPClientSocket>(address_list_, net_log,
                                                       data_.get());
   socket->set_enable_read_if_ready(true);

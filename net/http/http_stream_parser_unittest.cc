@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -1253,16 +1254,16 @@ class SimpleGetRunner {
   void SetupParserAndSendRequest() {
     reads_.push_back(MockRead(SYNCHRONOUS, 0, sequence_number_++));  // EOF
 
-    data_.reset(new SequencedSocketData(reads_, writes_));
+    data_ = std::make_unique<SequencedSocketData>(reads_, writes_);
     stream_socket_ = CreateConnectedSocket(data_.get());
 
     request_info_.method = "GET";
     request_info_.url = url_;
     request_info_.load_flags = LOAD_NORMAL;
 
-    parser_.reset(new HttpStreamParser(stream_socket_.get(),
-                                       false /* is_reused */, &request_info_,
-                                       read_buffer(), NetLogWithSource()));
+    parser_ = std::make_unique<HttpStreamParser>(
+        stream_socket_.get(), false /* is_reused */, &request_info_,
+        read_buffer(), NetLogWithSource());
 
     TestCompletionCallback callback;
     ASSERT_EQ(OK, parser_->SendRequest("GET / HTTP/1.1\r\n", request_headers_,

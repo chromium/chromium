@@ -2036,7 +2036,7 @@ class HttpStreamFactoryBidirectionalQuicTest
     session_context.proxy_resolution_service = proxy_resolution_service_.get();
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.client_socket_factory = &socket_factory_;
-    session_.reset(new HttpNetworkSession(params_, session_context));
+    session_ = std::make_unique<HttpNetworkSession>(params_, session_context);
     session_->quic_stream_factory()
         ->set_is_quic_known_to_work_on_current_network(true);
   }

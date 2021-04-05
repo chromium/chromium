@@ -105,7 +105,7 @@ void TransportClientSocketTest::SetUp() {
   ::testing::TestWithParam<ClientSocketTestTypes>::SetUp();
 
   // Open a server socket on an ephemeral port.
-  listen_sock_.reset(new TCPServerSocket(nullptr, NetLogSource()));
+  listen_sock_ = std::make_unique<TCPServerSocket>(nullptr, NetLogSource());
   IPEndPoint local_address(IPAddress::IPv4Localhost(), 0);
   ASSERT_THAT(listen_sock_->Listen(local_address, 1), IsOk());
   // Get the server's address (including the actual port number).

@@ -4,6 +4,7 @@
 
 #include "net/socket/tcp_client_socket.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -89,7 +90,7 @@ int TCPClientSocket::Bind(const IPEndPoint& address) {
   if (result != OK)
     return result;
 
-  bind_address_.reset(new IPEndPoint(address));
+  bind_address_ = std::make_unique<IPEndPoint>(address);
   return OK;
 }
 

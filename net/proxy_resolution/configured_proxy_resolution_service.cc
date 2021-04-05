@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -291,7 +292,7 @@ class ProxyResolverFactoryForNullResolver : public ProxyResolverFactory {
                           std::unique_ptr<ProxyResolver>* resolver,
                           CompletionOnceCallback callback,
                           std::unique_ptr<Request>* request) override {
-    resolver->reset(new ProxyResolverNull());
+    *resolver = std::make_unique<ProxyResolverNull>();
     return OK;
   }
 
@@ -309,7 +310,7 @@ class ProxyResolverFactoryForPacResult : public ProxyResolverFactory {
                           std::unique_ptr<ProxyResolver>* resolver,
                           CompletionOnceCallback callback,
                           std::unique_ptr<Request>* request) override {
-    resolver->reset(new ProxyResolverFromPacString(pac_string_));
+    *resolver = std::make_unique<ProxyResolverFromPacString>(pac_string_);
     return OK;
   }
 
@@ -438,8 +439,8 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
     proxy_resolver_ = proxy_resolver;
     proxy_resolver_factory_ = proxy_resolver_factory;
 
-    decider_.reset(
-        new PacFileDecider(pac_file_fetcher, dhcp_pac_file_fetcher, net_log));
+    decider_ = std::make_unique<PacFileDecider>(pac_file_fetcher,
+                                                dhcp_pac_file_fetcher, net_log);
     decider_->set_quick_check_enabled(quick_check_enabled_);
     config_ = config;
     wait_delay_ = wait_delay;
@@ -716,8 +717,8 @@ class ConfiguredProxyResolutionService::PacFileDeciderPoller {
 
     // Start the PAC file decider to see if anything has changed.
     // TODO(eroman): Pass a proper NetLog rather than nullptr.
-    decider_.reset(
-        new PacFileDecider(pac_file_fetcher_, dhcp_pac_file_fetcher_, nullptr));
+    decider_ = std::make_unique<PacFileDecider>(
+        pac_file_fetcher_, dhcp_pac_file_fetcher_, nullptr);
     decider_->set_quick_check_enabled(quick_check_enabled_);
     int result = decider_->Start(
         config_, TimeDelta(), proxy_resolver_expects_pac_bytes_,
@@ -1123,13 +1124,13 @@ void ConfiguredProxyResolutionService::OnInitProxyResolverComplete(int result) {
   // this decision. If the contents of the PAC script change, or if the
   // result of proxy auto-discovery changes, this poller will notice it and
   // will trigger a re-initialization using the newly discovered PAC.
-  script_poller_.reset(new PacFileDeciderPoller(
+  script_poller_ = std::make_unique<PacFileDeciderPoller>(
       base::BindRepeating(
           &ConfiguredProxyResolutionService::InitializeUsingDecidedConfig,
           base::Unretained(this)),
       fetched_config_.value(), resolver_factory_->expects_pac_bytes(),
       pac_file_fetcher_.get(), dhcp_pac_file_fetcher_.get(), result,
-      init_proxy_resolver_->script_data(), nullptr));
+      init_proxy_resolver_->script_data(), nullptr);
   script_poller_->set_quick_check_enabled(quick_check_enabled_);
 
   init_proxy_resolver_.reset();
@@ -1521,7 +1522,7 @@ void ConfiguredProxyResolutionService::InitializeUsingLastFetchedConfig() {
   // If we changed networks recently, we should delay running proxy auto-config.
   TimeDelta wait_delay = stall_proxy_autoconfig_until_ - TimeTicks::Now();
 
-  init_proxy_resolver_.reset(new InitProxyResolver());
+  init_proxy_resolver_ = std::make_unique<InitProxyResolver>();
   init_proxy_resolver_->set_quick_check_enabled(quick_check_enabled_);
   int rv = init_proxy_resolver_->Start(
       &resolver_, resolver_factory_.get(), pac_file_fetcher_.get(),
@@ -1546,7 +1547,7 @@ void ConfiguredProxyResolutionService::InitializeUsingDecidedConfig(
 
   current_state_ = STATE_WAITING_FOR_INIT_PROXY_RESOLVER;
 
-  init_proxy_resolver_.reset(new InitProxyResolver());
+  init_proxy_resolver_ = std::make_unique<InitProxyResolver>();
   int rv = init_proxy_resolver_->StartSkipDecider(
       &resolver_, resolver_factory_.get(), effective_config, decider_result,
       script_data,
