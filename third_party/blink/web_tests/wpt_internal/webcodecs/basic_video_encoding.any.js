@@ -58,6 +58,7 @@ async function encode_decode_test(codec, acc, avc_format) {
     let frame = await createFrame(w, h, i);
     let keyframe = (i % 5 == 0);
     encoder.encode(frame, { keyFrame: keyframe });
+    frame.close();
 
     // Wait to prevent queueing all frames before encoder.configure() completes.
     // Queuing them all at once should still work, but would not be as
@@ -119,6 +120,7 @@ async function encode_test(codec, acc) {
     let frame = await createFrame(w + size_mismatch, h + size_mismatch, i);
     let keyframe = (i % 5 == 0);
     encoder.encode(frame, { keyFrame: keyframe });
+    frame.close();
     await delay(1);
   }
   await encoder.flush();
