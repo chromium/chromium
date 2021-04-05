@@ -4598,15 +4598,17 @@ gob.mx
 edu.mx
 net.mx
 
-// my : http://www.mynic.net.my/
+// my : http://www.mynic.my/
+// Available strings: https://mynic.my/resources/domains/buying-a-domain/
 my
+biz.my
 com.my
-net.my
-org.my
-gov.my
 edu.my
+gov.my
 mil.my
 name.my
+net.my
+org.my
 
 // mz : http://www.uem.mz/
 // Submitted by registry <antonio@uem.mz>
@@ -4707,6 +4709,7 @@ nl
 // Norid geographical second level domains : https://www.norid.no/en/om-domenenavn/regelverk-for-no/vedlegg-b/
 // Norid category second level domains : https://www.norid.no/en/om-domenenavn/regelverk-for-no/vedlegg-c/
 // Norid category second-level domains managed by parties other than Norid : https://www.norid.no/en/om-domenenavn/regelverk-for-no/vedlegg-d/
+// RSS feed: https://teknisk.norid.no/en/feed/
 no
 // Norid category second level domains : https://www.norid.no/en/om-domenenavn/regelverk-for-no/vedlegg-c/
 fhs.no
@@ -6808,6 +6811,9 @@ yt
 // xn--90ae ("bg", Bulgarian) : BG
 бг
 
+// xn--mgbcpq6gpa1a ("albahrain", Arabic) : BH
+البحرين
+
 // xn--90ais ("bel", Belarusian/Russian Cyrillic) : BY
 // Operated by .by registry
 бел
@@ -6940,6 +6946,9 @@ yt
 // xn--80ao21a ("Kaz", Kazakh) : KZ
 қаз
 
+// xn--q7ce6a ("Lao", Lao) : LA
+ລາວ
+
 // xn--fzc2c9e2c ("Lanka", Sinhalese-Sinhala) : LK
 // https://nic.lk
 ලංකා
@@ -7065,7 +7074,13 @@ yt
 xxx
 
 // ye : http://www.y.net.ye/services/domain_name.htm
-*.ye
+ye
+com.ye
+edu.ye
+gov.ye
+net.ye
+mil.ye
+org.ye
 
 // za : https://www.zadna.org.za/content/page/domain-information/
 ac.za
@@ -7114,7 +7129,7 @@ org.zw
 
 // newGTLDs
 
-// List of new gTLDs imported from https://www.icann.org/resources/registries/gtlds/v2/gtlds.json on 2020-10-28T17:55:28Z
+// List of new gTLDs imported from https://www.icann.org/resources/registries/gtlds/v2/gtlds.json on 2021-03-27T15:15:50Z
 // This list is auto-generated, don't edit it manually.
 // aaa : 2015-02-26 American Automobile Association, Inc.
 aaa
@@ -7338,10 +7353,10 @@ autos
 // avianca : 2015-01-08 Avianca Holdings S.A.
 avianca
 
-// aws : 2015-06-25 Amazon Registry Services, Inc.
+// aws : 2015-06-25 AWS Registry LLC
 aws
 
-// axa : 2013-12-19 AXA SA
+// axa : 2013-12-19 AXA Group Operations SAS
 axa
 
 // azure : 2014-12-18 Microsoft Corporation
@@ -7632,9 +7647,6 @@ casa
 // case : 2015-09-03 CNH Industrial N.V.
 case
 
-// caseih : 2015-09-03 CNH Industrial N.V.
-caseih
-
 // cash : 2014-03-06 Binky Moon, LLC
 cash
 
@@ -7659,9 +7671,6 @@ cbre
 // cbs : 2015-08-06 CBS Domains Inc.
 cbs
 
-// ceb : 2015-04-09 The Corporate Executive Board Company
-ceb
-
 // center : 2013-11-07 Binky Moon, LLC
 center
 
@@ -7674,7 +7683,7 @@ cern
 // cfa : 2014-08-28 CFA Institute
 cfa
 
-// cfd : 2014-12-11 DotCFD Registry Limited
+// cfd : 2014-12-11 ShortDot SA
 cfd
 
 // chanel : 2015-04-09 Chanel International B.V.
@@ -7842,7 +7851,7 @@ credit
 // creditcard : 2014-03-20 Binky Moon, LLC
 creditcard
 
-// creditunion : 2015-01-22 CUNA Performance Resources, LLC
+// creditunion : 2015-01-22 DotCooperation LLC
 creditunion
 
 // cricket : 2014-10-09 dot Cricket Limited
@@ -8259,9 +8268,6 @@ ftr
 // fujitsu : 2015-07-30 Fujitsu Limited
 fujitsu
 
-// fujixerox : 2015-07-23 Xerox DNHC LLC
-fujixerox
-
 // fun : 2016-01-14 DotSpace Inc.
 fun
 
@@ -8655,9 +8661,6 @@ java
 // jcb : 2014-11-20 JCB Co., Ltd.
 jcb
 
-// jcp : 2015-04-23 JCP Media, Inc.
-jcp
-
 // jeep : 2015-07-30 FCA US LLC.
 jeep
 
@@ -8928,9 +8931,6 @@ ltda
 // lundbeck : 2015-08-06 H. Lundbeck A/S
 lundbeck
 
-// lupin : 2014-11-07 LUPIN LIMITED
-lupin
-
 // luxe : 2014-01-09 Minds + Machines Group Limited
 luxe
 
@@ -9138,9 +9138,6 @@ neustar
 // new : 2014-01-30 Charleston Road Registry Inc.
 new
 
-// newholland : 2015-09-03 CNH Industrial N.V.
-newholland
-
 // news : 2014-12-18 Dog Beach, LLC
 news
 
@@ -9213,7 +9210,7 @@ nyc
 // obi : 2014-09-25 OBI Group Holding SE & Co. KGaA
 obi
 
-// observer : 2015-04-30 Top Level Spectrum, Inc.
+// observer : 2015-04-30 Dog Beach, LLC
 observer
 
 // off : 2015-07-23 Johnson Shareholdings, Inc.
@@ -9480,7 +9477,7 @@ realestate
 // realtor : 2014-05-29 Real Estate Domains LLC
 realtor
 
-// realty : 2015-03-19 Fegistry, LLC
+// realty : 2015-03-19 Dog Beach, LLC
 realty
 
 // recipes : 2013-10-17 Binky Moon, LLC
@@ -9648,7 +9645,7 @@ saxo
 // sbi : 2015-03-12 STATE BANK OF INDIA
 sbi
 
-// sbs : 2014-11-07 SPECIAL BROADCASTING SERVICE CORPORATION
+// sbs : 2014-11-07 ShortDot SA
 sbs
 
 // sca : 2014-03-13 SVENSKA CELLULOSA AKTIEBOLAGET SCA (publ)
@@ -9761,9 +9758,6 @@ show
 
 // showtime : 2015-08-06 CBS Domains Inc.
 showtime
-
-// shriram : 2014-01-23 Shriram Capital Ltd.
-shriram
 
 // silk : 2015-06-25 Amazon Registry Services, Inc.
 silk
@@ -9993,7 +9987,7 @@ theatre
 // tiaa : 2015-07-23 Teachers Insurance and Annuity Association of America
 tiaa
 
-// tickets : 2015-02-05 Accent Media Limited
+// tickets : 2015-02-05 XYZ.COM LLC
 tickets
 
 // tienda : 2013-11-14 Binky Moon, LLC
@@ -10077,7 +10071,7 @@ travelers
 // travelersinsurance : 2015-03-26 Travelers TLD, LLC
 travelersinsurance
 
-// trust : 2014-10-16 NCC Group Domain Services, Inc.
+// trust : 2014-10-16 UNR Corp.
 trust
 
 // trv : 2015-03-26 Travelers TLD, LLC
@@ -10224,7 +10218,7 @@ wanggou
 // watch : 2013-11-14 Binky Moon, LLC
 watch
 
-// watches : 2014-12-22 Richemont DNS Inc.
+// watches : 2014-12-22 Afilias Limited
 watches
 
 // weather : 2015-01-08 International Business Machines Corporation
@@ -10661,6 +10655,14 @@ ltd.ua
 // 611coin : https://611project.org/
 611.to
 
+// Aaron Marais' Gitlab pages: https://lab.aaronleem.co.za
+// Submitted by Aaron Marais <its_me@aaronleem.co.za>
+graphox.us
+
+// accesso Technology Group, plc. : https://accesso.com/
+// Submitted by accesso Team <accessoecommerce@accesso.com>
+*.devcdnaccesso.com
+
 // Adobe : https://www.adobe.com/
 // Submitted by Ian Boston <boston@adobe.com>
 adobeaemcloud.com
@@ -10730,6 +10732,10 @@ us-west-2.elasticbeanstalk.com
 // Submitted by Luke Wells <psl-maintainers@amazon.com>
 *.elb.amazonaws.com
 *.elb.amazonaws.com.cn
+
+// Amazon Global Accelerator : https://aws.amazon.com/global-accelerator/
+// Submitted by Daniel Massaguer <psl-maintainers@amazon.com>
+awsglobalaccelerator.com
 
 // Amazon S3 : https://aws.amazon.com/s3/
 // Submitted by Luke Wells <psl-maintainers@amazon.com>
@@ -10801,6 +10807,11 @@ tele.amune.org
 // Submitted by Apigee Security Team <security@apigee.com>
 apigee.io
 
+// Appspace : https://www.appspace.com
+// Submitted by Appspace Security Team <security@appspace.com>
+appspacehosted.com
+appspaceusercontent.com
+
 // Aptible : https://www.aptible.com/
 // Submitted by Thomas Orozco <thomas@aptible.com>
 on-aptible.com
@@ -10866,9 +10877,17 @@ bnr.la
 // Submitted by Paul Crowder <paul.crowder@blackbaud.com>
 blackbaudcdn.net
 
+// Blatech : http://www.blatech.net
+// Submitted by Luke Bratch <luke@bratch.co.uk>
+of.je
+
 // Boomla : https://boomla.com
 // Submitted by Tibor Halter <thalter@boomla.com>
 boomla.net
+
+// Boutir : https://www.boutir.com
+// Submitted by Eric Ng Ka Ka <ngkaka@boutir.com>
+boutir.com
 
 // Boxfuse : https://boxfuse.com
 // Submitted by Axel Fontaine <axel@boxfuse.com>
@@ -10892,6 +10911,10 @@ browsersafetymark.io
 uk0.bigv.io
 dh.bytemark.co.uk
 vm.bytemark.co.uk
+
+// Caf.js Labs LLC : https://www.cafjs.com
+// Submitted by Antonio Lain <antlai@cafjs.com>
+cafjs.com
 
 // callidomus : https://www.callidomus.com/
 // Submitted by Marcus Popp <admin@callidomus.com>
@@ -10967,11 +10990,6 @@ nz.basketball
 radio.am
 radio.fm
 
-// Globe Hosting SRL : https://www.globehosting.com/
-// Submitted by Gavin Brown <gavin.brown@centralnic.com>
-co.ro
-shop.ro
-
 // c.la : http://www.c.la/
 c.la
 
@@ -10979,9 +10997,9 @@ c.la
 // Submitted by B. Blechschmidt <hostmaster@certmgr.org>
 certmgr.org
 
-// Citrix : https://citrix.com
-// Submitted by Alex Stoddard <alex.stoddard@citrix.com>
-xenapponazure.com
+// Cityhost LLC  : https://cityhost.ua
+// Submitted by Maksym Rivtin <support@cityhost.net.ua>
+cx.ua
 
 // Civilized Discourse Construction Kit, Inc. : https://www.discourse.org/
 // Submitted by Rishabh Nambiar & Michael Brown <team@discourse.org>
@@ -10997,13 +11015,19 @@ virtueeldomein.nl
 cleverapps.io
 
 // Clerk : https://www.clerk.dev
-// Submitted by Colin Sidoti <colin@clerk.dev>
+// Submitted by Colin Sidoti <systems@clerk.dev>
 *.lcl.dev
+*.lclstage.dev
 *.stg.dev
+*.stgstage.dev
 
 // Clic2000 : https://clic2000.fr
 // Submitted by Mathilde Blanchemanche <mathilde@clic2000.fr>
 clic2000.net
+
+// ClickRising : https://clickrising.com/
+// Submitted by Umut Gumeli <infrastructure-publicsuffixlist@clickrising.com>
+clickrising.net
 
 // Cloud66 : https://www.cloud66.com/
 // Submitted by Khash Sajadi <khash@cloud66.com>
@@ -11071,10 +11095,6 @@ cloudns.pro
 cloudns.pw
 cloudns.us
 
-// Cloudeity Inc : https://cloudeity.com
-// Submitted by Stefan Dimitrov <contact@cloudeity.com>
-cloudeity.net
-
 // CNPY : https://cnpy.gdn
 // Submitted by Angelo Gladding <angelo@lahacker.net>
 cnpy.gdn
@@ -11124,6 +11144,11 @@ cupcake.is
 // Curv UG : https://curv-labs.de/
 // Submitted by Marvin Wiesner <Marvin@curv-labs.de>
 curv.dev
+
+// Curvegrid Inc. : https://www.curvegrid.com/
+// Submitted by Pierre Rousset <security@curvegrid.com>
+multibaas.app
+multibaas.com
 
 // Customer OCI - Oracle Dyn https://cloud.oracle.com/home https://dyn.com/dns/
 // Submitted by Gregory Drake <support@dyn.com>
@@ -11187,6 +11212,11 @@ edgestack.me
 // Submitted by Peter Palfrader / Debian Sysadmin Team <dsa-publicsuffixlist@debian.org>
 debian.net
 
+// Deno Land Inc : https://deno.com/
+// Submitted by Luca Casonato <hostmaster@deno.com>
+deno.dev
+deno-staging.dev
+
 // deSEC : https://desec.io/
 // Submitted by Peter Thomassen <peter@desec.io>
 dedyn.io
@@ -11207,6 +11237,10 @@ shop.th
 // DrayTek Corp. : https://www.draytek.com/
 // Submitted by Paul Fang <mis@draytek.com>
 drayddns.com
+
+// DreamCommerce : https://shoper.pl/
+// Submitted by Konrad Kotarba <konrad.kotarba@dreamcommerce.com>
+shoparena.pl
 
 // DreamHost : http://www.dreamhost.com/
 // Submitted by Andrew Farmer <andrew.farmer@dreamhost.com>
@@ -11535,6 +11569,10 @@ ddnss.org
 definima.net
 definima.io
 
+// DigitalOcean : https://digitalocean.com/
+// Submitted by Braxton Huggins <bhuggins@digitalocean.com>
+ondigitalocean.app
+
 // dnstrace.pro : https://dnstrace.pro/
 // Submitted by Chris Partridge <chris@partridge.tech>
 bci.dnstrace.pro
@@ -11648,6 +11686,10 @@ tr.eu.org
 uk.eu.org
 us.eu.org
 
+// Eurobyte : https://eurobyte.ru
+// Submitted by Evgeniy Subbotin <e.subbotin@eurobyte.ru>
+eurodir.ru
+
 // Evennode : http://www.evennode.com/
 // Submitted by Michal Kralik <support@evennode.com>
 eu-1.evennode.com
@@ -11758,6 +11800,7 @@ u.channelsdvr.net
 
 // Fastly Inc. : http://www.fastly.com/
 // Submitted by Fastly Security <security@fastly.com>
+edgecompute.app
 fastly-terrarium.com
 fastlylb.net
 map.fastlylb.net
@@ -11776,10 +11819,6 @@ fastvps.host
 myfast.host
 fastvps.site
 myfast.space
-
-// Featherhead : https://featherhead.xyz/
-// Submitted by Simon Menke <simon@featherhead.xyz>
-fhapp.xyz
 
 // Fedora : https://fedoraproject.org/
 // submitted by Patrick Uiterwijk <puiterwijk@fedoraproject.org>
@@ -11800,6 +11839,10 @@ ukco.me
 // submitted by Koen Van Isterdael <k.vanisterdael@fermax.be>
 mydobiss.com
 
+// FH Muenster : https://www.fh-muenster.de
+// Submitted by Robin Naundorf <r.naundorf@fh-muenster.de>
+fh-muenster.io
+
 // Filegear Inc. : https://www.filegear.com
 // Submitted by Jason Zhu <jason@owtware.com>
 filegear.me
@@ -11814,6 +11857,14 @@ filegear-sg.me
 // Submitted by Chris Raynor <chris@firebase.com>
 firebaseapp.com
 
+// Firewebkit : https://www.firewebkit.com
+// Submitted by Majid Qureshi <mqureshi@amrayn.com>
+fireweb.app
+
+// FLAP : https://www.flap.cloud
+// Submitted by Louis Chemineau <louis@chmn.me>
+flap.id
+
 // fly.io: https://fly.io
 // Submitted by Kurt Mackey <kurt@fly.io>
 fly.dev
@@ -11823,6 +11874,20 @@ shw.io
 // Flynn : https://flynn.io
 // Submitted by Jonathan Rudenberg <jonathan@flynn.io>
 flynnhosting.net
+
+// Forgerock : https://www.forgerock.com
+// Submitted by Roderick Parr <roderick.parr@forgerock.com>
+forgeblocks.com
+*.id.forgerock.io
+
+// Framer : https://www.framer.com
+// Submitted by Koen Rouwhorst <koenrh@framer.com>
+framer.app
+framercanvas.com
+
+// RavPage : https://www.ravpage.co.il
+// Submitted by Roni Horowitz <roni@responder.co.il>
+ravpage.co.il
 
 // Frederik Braun https://frederik-braun.com
 // Submitted by Frederik Braun <fb@frederik-braun.com>
@@ -11840,6 +11905,10 @@ freeboxos.fr
 // freedesktop.org : https://www.freedesktop.org
 // Submitted by Daniel Stone <daniel@fooishbar.org>
 freedesktop.org
+
+// freemyip.com : https://freemyip.com
+// Submitted by Cadence <contact@freemyip.com>
+freemyip.com
 
 // FunkFeuer - Verein zur Förderung freier Netze : https://www.funkfeuer.at
 // Submitted by Daniel A. Maierhofer <vorstand@funkfeuer.at>
@@ -11872,6 +11941,14 @@ gentlentapis.com
 lab.ms
 cdn-edges.net
 
+// Ghost Foundation : https://ghost.org
+// Submitted by Matt Hanley <security@ghost.org>
+ghost.io
+
+// GignoSystemJapan: http://gsj.bz
+// Submitted by GignoSystemJapan <kakutou-ec@gsj.bz>
+gsj.bz
+
 // GitHub, Inc.
 // Submitted by Patrick Toomey <security@github.com>
 github.io
@@ -11890,12 +11967,17 @@ gitpage.si
 // Submitted by Mads Hartmann <mads@glitch.com>
 glitch.me
 
+// Globe Hosting SRL : https://www.globehosting.com/
+// Submitted by Gavin Brown <gavin.brown@centralnic.com>
+co.ro
+shop.ro
+
 // GMO Pepabo, Inc. : https://pepabo.com/
 // Submitted by dojineko <admin@pepabo.com>
 lolipop.io
 
 // GOV.UK Platform as a Service : https://www.cloud.service.gov.uk/
-// Submitted by Tom Whitwell <tom.whitwell@digital.cabinet-office.gov.uk>
+// Submitted by Tom Whitwell <gov-uk-paas-support@digital.cabinet-office.gov.uk>
 cloudapps.digital
 london.cloudapps.digital
 
@@ -11934,7 +12016,6 @@ withyoutube.com
 cloud.goog
 translate.goog
 cloudfunctions.net
-
 blogspot.ae
 blogspot.al
 blogspot.am
@@ -12010,13 +12091,14 @@ blogspot.tw
 blogspot.ug
 blogspot.vn
 
-// Aaron Marais' Gitlab pages: https://lab.aaronleem.co.za
-// Submitted by Aaron Marais <its_me@aaronleem.co.za>
-graphox.us
-
 // Group 53, LLC : https://www.group53.com
 // Submitted by Tyler Todd <noc@nova53.net>
 awsmppl.com
+
+// GünstigBestellen : https://günstigbestellen.de
+// Submitted by Furkan Akkoc <info@hendelzon.de>
+günstigbestellen.de
+günstigliefern.de
 
 // Hakaran group: http://hakaran.cz
 // Submited by Arseniy Sokolov <security@hakaran.cz>
@@ -12056,20 +12138,22 @@ ravendb.me
 development.run
 ravendb.run
 
+// Hong Kong Productivity Council: https://www.hkpc.org/
+// Submitted by SECaaS Team <summchan@hkpc.org>
+secaas.hk
+
 // HOSTBIP REGISTRY : https://www.hostbip.com/
 // Submitted by Atanunu Igbunuroghene <publicsuffixlist@hostbip.com>
-bpl.biz
 orx.biz
-ng.city
 biz.gl
-ng.ink
 col.ng
 firm.ng
 gen.ng
 ltd.ng
 ngo.ng
-ng.school
+edu.scot
 sch.so
+org.yt
 
 // HostyHosting (hostyhosting.com)
 hostyhosting.io
@@ -12086,6 +12170,19 @@ moonscale.net
 // iki.fi
 // Submitted by Hannu Aronsson <haa@iki.fi>
 iki.fi
+
+// Impertrix Solutions : <https://impertrixcdn.com>
+// Submitted by Zhixiang Zhao <csuite@impertrix.com>
+impertrixcdn.com
+impertrix.com
+
+// Incsub, LLC: https://incsub.com/
+// Submitted by Aaron Edwards <sysadmins@incsub.com>
+smushcdn.com
+wphostedmail.com
+wpmucdn.com
+tempurl.host
+wpmudev.host
 
 // Individual Network Berlin e.V. : https://www.in-berlin.de/
 // Submitted by Christian Seitz <chris@in-berlin.de>
@@ -12165,7 +12262,7 @@ iserv.dev
 // Submitted by Yuji Minagawa <domains-admin@iodata.jp>
 iobb.net
 
-//Jelastic, Inc. : https://jelastic.com/
+// Jelastic, Inc. : https://jelastic.com/
 // Submited by Ihor Kolodyuk <ik@jelastic.com>
 mel.cloudlets.com.au
 cloud.interhostsolutions.be
@@ -12179,7 +12276,11 @@ vip.jelastic.cloud
 jele.cloud
 it1.eur.aruba.jenv-aruba.cloud
 it1.jenv-aruba.cloud
-it1-eur.jenv-arubabiz.cloud
+keliweb.cloud
+cs.keliweb.cloud
+oxa.cloud
+tn.oxa.cloud
+uk.oxa.cloud
 primetel.cloud
 uk.primetel.cloud
 ca.reclaim.cloud
@@ -12188,13 +12289,9 @@ us.reclaim.cloud
 ch.trendhosting.cloud
 de.trendhosting.cloud
 jele.club
+amscompute.com
 clicketcloud.com
-ams.cloudswitches.com
-au.cloudswitches.com
-sg.cloudswitches.com
 dopaas.com
-elastyco.com
-nv.elastyco.com
 hidora.com
 paas.hosted-by-previder.com
 rag-cloud.hosteur.com
@@ -12209,29 +12306,26 @@ lon.wafaicloud.com
 ryd.wafaicloud.com
 j.scaleforce.com.cy
 jelastic.dogado.eu
-paas.leviracloud.eu
 fi.cloudplatform.fi
 demo.datacenter.fi
 paas.datacenter.fi
 jele.host
 mircloud.host
+paas.beebyte.io
+sekd1.beebyteapp.io
 jele.io
-ocs.opusinteractive.io
-cloud.unispace.io
-cloud-de.unispace.io
 cloud-fr1.unispace.io
 jc.neen.it
 cloud.jelastic.open.tim.it
 jcloud.kz
 upaas.kazteleport.kz
-jl.serv.net.mx
 cloudjiffy.net
 fra1-de.cloudjiffy.net
 west1-us.cloudjiffy.net
-ams1.jls.docktera.net
 jls-sto1.elastx.net
 jls-sto2.elastx.net
 jls-sto3.elastx.net
+faststacks.net
 fr-1.paas.massivegrid.net
 lon-1.paas.massivegrid.net
 lon-2.paas.massivegrid.net
@@ -12242,14 +12336,14 @@ jelastic.saveincloud.net
 nordeste-idc.saveincloud.net
 j.scaleforce.net
 jelastic.tsukaeru.net
-atl.jelastic.vps-host.net
-njs.jelastic.vps-host.net
+sdscloud.pl
 unicloud.pl
 mircloud.ru
 jelastic.regruhosting.ru
 enscaled.sg
 jele.site
 jelastic.team
+orangecloud.tn
 j.layershift.co.uk
 phx.enscaled.us
 mircloud.us
@@ -12293,9 +12387,19 @@ knightpoint.systems
 // Submitted by DisposaBoy <security@oya.to>
 oya.to
 
+// Katholieke Universiteit Leuven: https://www.kuleuven.be
+// Submitted by Abuse KU Leuven <abuse@kuleuven.be>
+kuleuven.cloud
+ezproxy.kuleuven.be
+
 // .KRD : http://nic.krd/data/krd/Registration%20Policy.pdf
 co.krd
 edu.krd
+
+// Krellian Ltd. : https://krellian.com
+// Submitted by Ben Francis <ben@krellian.com>
+krellian.net
+webthings.io
 
 // LCube - Professional hosting e.K. : https://www.lcube-webhosting.de
 // Submitted by Lars Laehn <info@lcube.de>
@@ -12327,10 +12431,6 @@ co.technology
 // Submitted by Greg Holland <greg.holland@lmpm.com>
 app.lmpm.com
 
-// Linki Tools UG : https://linki.tools
-// Submitted by Paulo Matos <pmatos@linki.tools>
-linkitools.space
-
 // linkyard ldt: https://www.linkyard.ch/
 // Submitted by Mario Siegenthaler <mario.siegenthaler@linkyard.ch>
 linkyard.cloud
@@ -12358,6 +12458,10 @@ loginline.io
 loginline.services
 loginline.site
 
+// Lõhmus Family, The
+// Submitted by Heiki Lõhmus <hostmaster at lohmus dot me>
+lohmus.me
+
 // LubMAN UMCS Sp. z o.o : https://lubman.pl/
 // Submitted by Ireneusz Maliszewski <ireneusz.maliszewski@lubman.pl>
 krasnik.pl
@@ -12369,7 +12473,6 @@ swidnik.pl
 
 // Lug.org.uk : https://lug.org.uk
 // Submitted by Jon Spriggs <admin@lug.org.uk>
-uklugs.org
 glug.org.uk
 lug.org.uk
 lugs.org.uk
@@ -12413,14 +12516,24 @@ mayfirst.org
 // Submitted by Ilya Zaretskiy <zaretskiy@corp.mail.ru>
 hb.cldmail.ru
 
+// Maze Play: https://www.mazeplay.com
+// Submitted by Adam Humpherys <adam@mws.dev>
+mazeplay.com
+
 // mcpe.me : https://mcpe.me
 // Submitted by Noa Heyl <hi@noa.dev>
 mcpe.me
 
 // McHost : https://mchost.ru
 // Submitted by Evgeniy Subbotin <e.subbotin@mchost.ru>
+mcdir.me
 mcdir.ru
+mcpre.ru
 vps.mcdir.ru
+
+// Medicom Health : https://medicomhealth.com
+// Submitted by Michael Olson <molson@medicomhealth.com>
+hra.health
 
 // Memset hosting : https://www.memset.com
 // Submitted by Tom Whitwell <domains@memset.com>
@@ -12462,6 +12575,10 @@ westus2.azurestaticapps.net
 // Submitted by Robert Böttinger <r@minion.systems>
 csx.cc
 
+// Mintere : https://mintere.com/
+// Submitted by Ben Aubin <security@mintere.com>
+mintere.site
+
 // MobileEducation, LLC : https://joinforte.com
 // Submitted by Grayson Martin <grayson.martin@mobileeducation.us>
 forte.id
@@ -12484,8 +12601,11 @@ pp.ru
 // Submitted by Paul Cammish <kelduum@mythic-beasts.com>
 hostedpi.com
 customer.mythic-beasts.com
+caracal.mythic-beasts.com
+fentiger.mythic-beasts.com
 lynx.mythic-beasts.com
 ocelot.mythic-beasts.com
+oncilla.mythic-beasts.com
 onza.mythic-beasts.com
 sphinx.mythic-beasts.com
 vs.mythic-beasts.com
@@ -12498,19 +12618,22 @@ cust.retrosnub.co.uk
 ui.nabu.casa
 
 // Names.of.London : https://names.of.london/
-// Submitted by James Stevens <registry@names.of.london> or <james@jrcs.net>
+// Submitted by James Stevens <registry[at]names.of.london> or <publiclist[at]jrcs.net>
 pony.club
 of.fashion
-on.fashion
-of.football
 in.london
 of.london
+from.marketing
+with.marketing
 for.men
+repair.men
 and.mom
 for.mom
 for.one
+under.one
 for.sale
-of.work
+that.win
+from.work
 to.work
 
 // NCTU.ME : https://nctu.me/
@@ -12536,6 +12659,15 @@ nh-serv.co.uk
 // NFSN, Inc. : https://www.NearlyFreeSpeech.NET/
 // Submitted by Jeff Wheelhouse <support@nearlyfreespeech.net>
 nfshost.com
+
+// Northflank Ltd. : https://northflank.com/
+// Submitted by Marco Suter <marco@northflank.com>
+*.northflank.app
+*.code.run
+
+// Noticeable : https://noticeable.io
+// Submitted by Laurent Pellegrino <security@noticeable.io>
+noticeable.news
 
 // Now-DNS : https://now-dns.com
 // Submitted by Steve Russell <steve@now-dns.com>
@@ -12761,6 +12893,10 @@ opensocial.site
 // Submitted by Sven Marnach <sven@opencraft.com>
 opencraft.hosting
 
+// OpenResearch GmbH: https://openresearch.com/
+// Submitted by Philipp Schmid <ops@openresearch.com>
+orsites.com
+
 // Opera Software, A.S.A.
 // Submitted by Yngve Pettersen <yngve@opera.com>
 operaunite.com
@@ -12772,6 +12908,11 @@ skygearapp.com
 // OutSystems
 // Submitted by Duarte Santos <domain-admin@outsystemscloud.com>
 outsystemscloud.com
+
+// OVHcloud: https://ovhcloud.com
+// Submitted by Vincent Cassé <vincent.casse@ovhcloud.com>
+*.webpaas.ovh.net
+*.hosting.ovh.net
 
 // OwnProvider GmbH: http://www.ownprovider.com
 // Submitted by Jan Moennich <jan.moennich@ownprovider.com>
@@ -12802,6 +12943,10 @@ pagefrontapp.com
 // Submitted by Yann Guichard <yann@pagexl.com>
 pagexl.com
 
+// Paywhirl, Inc : https://paywhirl.com/
+// Submitted by Daniel Netzer <dan@paywhirl.com>
+*.paywhirl.com
+
 // pcarrier.ca Software Inc: https://pcarrier.ca/
 // Submitted by Pierre Carrier <pc@rrier.ca>
 bar0.net
@@ -12830,6 +12975,12 @@ mypep.link
 // Submitted by Kenneth Van Alstyne <kvanalstyne@perspecta.com>
 perspecta.cloud
 
+// PE Ulyanov Kirill Sergeevich : https://airy.host
+// Submitted by Kirill Ulyanov <k.ulyanov@airy.host>
+lk3.ru
+ra-ru.ru
+zsew.ru
+
 // Planet-Work : https://www.planet-work.com/
 // Submitted by Frédéric VANNIÈRE <f.vanniere@planet-work.com>
 on-web.fr
@@ -12841,6 +12992,7 @@ ent.platform.sh
 eu.platform.sh
 us.platform.sh
 *.platformsh.site
+*.tst.site
 
 // Platter: https://platter.dev
 // Submitted by Patrick Flor <patrick@platter.dev>
@@ -12891,6 +13043,15 @@ byen.site
 // Submitted by Kor Nielsen <kor@pubtls.org>
 pubtls.org
 
+// PythonAnywhere LLP: https://www.pythonanywhere.com
+// Submitted by Giles Thomas <giles@pythonanywhere.com>
+*.pythonanywhere.com
+*.eu.pythonanywhere.com
+
+// QOTO, Org.
+// Submitted by Jeffrey Phillips Freeman <jeffrey.freeman@qoto.org>
+qoto.io
+
 // Qualifio : https://qualifio.com/
 // Submitted by Xavier De Cock <xdecock@gmail.com>
 qualifioapp.com
@@ -12898,6 +13059,10 @@ qualifioapp.com
 // QuickBackend: https://www.quickbackend.com
 // Submitted by Dani Biro <dani@pymet.com>
 qbuser.com
+
+// Rad Web Hosting: https://radwebhosting.com
+// Submitted by Scott Claeys <s.claeys@radwebhosting.com>
+cloudsite.builders
 
 // Redstar Consultants : https://www.redstarconsultants.com/
 // Submitted by Jons Slemmer <jons@redstarconsultants.com>
@@ -12962,6 +13127,7 @@ onrender.com
 // Repl.it : https://repl.it
 // Submitted by Mason Clayton <mason@repl.it>
 repl.co
+id.repl.co
 repl.run
 
 // Resin.io : https://resin.io
@@ -12976,12 +13142,24 @@ hzc.io
 // Revitalised Limited : http://www.revitalised.co.uk
 // Submitted by Jack Price <jack@revitalised.co.uk>
 wellbeingzone.eu
-ptplus.fit
 wellbeingzone.co.uk
 
 // Rochester Institute of Technology : http://www.rit.edu/
 // Submitted by Jennifer Herting <jchits@rit.edu>
 git-pages.rit.edu
+
+// Rusnames Limited: http://rusnames.ru/
+// Submitted by Sergey Zotov <admin@rusnames.ru>
+биз.рус
+ком.рус
+крым.рус
+мир.рус
+мск.рус
+орг.рус
+самара.рус
+сочи.рус
+спб.рус
+я.рус
 
 // Sandstorm Development Group, Inc. : https://sandcats.io/
 // Submitted by Asheesh Laroia <asheesh@sandstorm.io>
@@ -12999,6 +13177,7 @@ schokokeks.net
 // Scottish Government: https://www.gov.scot
 // Submitted by Martin Ellis <martin.ellis@gov.scot>
 gov.scot
+service.gov.scot
 
 // Scry Security : http://www.scrysec.com
 // Submitted by Shante Adam <shante@skyhat.io>
@@ -13025,11 +13204,20 @@ seidat.net
 // Submitted by Felix Mönckemeyer <f.moenckemeyer@senseering.de>
 senseering.net
 
+// Service Magnet : https://myservicemagnet.com
+// Submitted by Dave Sanders <dave@myservicemagnet.com>
+magnet.page
+
 // Service Online LLC : http://drs.ua/
 // Submitted by Serhii Bulakh <support@drs.ua>
 biz.ua
 co.ua
 pp.ua
+
+// Shift Crypto AG : https://shiftcrypto.ch
+// Submitted by alex <alex@shiftcrypto.ch>
+shiftcrypto.dev
+shiftcrypto.io
 
 // ShiftEdit : https://shiftedit.net/
 // Submitted by Adam Jimenez <adam@shiftcreate.com>
@@ -13038,6 +13226,10 @@ shiftedit.io
 // Shopblocks : http://www.shopblocks.com/
 // Submitted by Alex Bowers <alex@shopblocks.com>
 myshopblocks.com
+
+// Shopify : https://www.shopify.com
+// Submitted by Alex Richter <alex.richter@shopify.com>
+myshopify.com
 
 // Shopit : https://www.shopitcommerce.com/
 // Submitted by Craig McMahon <craig@shopitcommerce.com>
@@ -13073,6 +13265,14 @@ beta.bounty-full.com
 // Submitted by Aral Balkan <aral@small-tech.org>
 small-web.org
 
+// Snowplow Analytics : https://snowplowanalytics.com/
+// Submitted by Ian Streeter <ian@snowplowanalytics.com>
+try-snowplow.com
+
+// SourceHut : https://sourcehut.org
+// Submitted by Drew DeVault <sir@cmpwn.com>
+srht.site
+
 // Stackhero : https://www.stackhero.io
 // Submitted by Adrien Gillon <adrien+public-suffix-list@stackhero.io>
 stackhero-network.com
@@ -13082,6 +13282,13 @@ stackhero-network.com
 static.land
 dev.static.land
 sites.static.land
+
+// Strategic System Consulting (eApps Hosting): https://www.eapps.com/
+// Submitted by Alex Oancea <aoancea@cloudscale365.com>
+vps-host.net
+atl.jelastic.vps-host.net
+njs.jelastic.vps-host.net
+ric.jelastic.vps-host.net
 
 // Sony Interactive Entertainment LLC : https://sie.com/
 // Submitted by David Coles <david.coles@sony.com>
@@ -13120,11 +13327,6 @@ user.srcf.net
 // Sub 6 Limited: http://www.sub6.com
 // Submitted by Dan Miller <dm@sub6.com>
 temp-dns.com
-
-// Swisscom Application Cloud: https://developer.swisscom.com
-// Submitted by Matthias.Winzeler <matthias.winzeler@swisscom.com>
-applicationcloud.io
-scapp.io
 
 // Symfony, SAS : https://symfony.com/
 // Submitted by Fabien Potencier <fabien@symfony.com>
@@ -13194,10 +13396,19 @@ arvo.network
 azimuth.network
 tlon.network
 
+// Tor Project, Inc. : https://torproject.org
+// Submitted by Antoine Beaupré <anarcat@torproject.org
+torproject.net
+pages.torproject.net
+
 // TownNews.com : http://www.townnews.com
 // Submitted by Dustin Ward <dward@townnews.com>
 bloxcms.com
 townnews-staging.com
+
+// TradableBits: https://tradablebits.com
+// Submitted by Dmitry Khrisanov dmitry@tradablebits.com
+tbits.me
 
 // TrafficPlex GmbH : https://www.trafficplex.de/
 // Submitted by Phillipp Röll <phillipp.roell@trafficplex.de>
@@ -13350,7 +13561,7 @@ wafflecell.com
 // Submitted by Fajar Sodik <official@wapblog.id>
 idnblogger.com
 indowapblog.com
-bloghp.id
+bloger.id
 wblog.id
 wbq.me
 fastblog.net
@@ -13358,6 +13569,13 @@ fastblog.net
 // WebHare bv: https://www.webhare.com/
 // Submitted by Arnold Hendriks <info@webhare.com>
 *.webhare.dev
+
+// WebHotelier Technologies Ltd: https://www.webhotelier.net/
+// Submitted by Apostolos Tsakpinis <apostolos.tsakpinis@gmail.com>
+reserve-online.net
+reserve-online.com
+bookonline.app
+hotelwithflight.com
 
 // WeDeploy by Liferay, Inc. : https://www.wedeploy.com
 // Submitted by Henrique Vicente <security@wedeploy.com>
@@ -13386,11 +13604,18 @@ daemon.panel.gg
 
 // WoltLab GmbH : https://www.woltlab.com
 // Submitted by Tim Düsterhus <security@woltlab.cloud>
+woltlab-demo.com
 myforum.community
 community-pro.de
 diskussionsbereich.de
 community-pro.net
 meinforum.net
+
+// WP Engine : https://wpengine.com/
+// Submitted by Michael Smith <michael.smith@wpengine.com>
+// Submitted by Brandon DuRette <brandon.durette@wpengine.com>
+wpenginepowered.com
+js.wpenginepowered.com
 
 // www.com.vc : http://www.com.vc
 // Submitted by Li Hui <lihui@sinopub.com>
@@ -13456,26 +13681,4 @@ basicserver.io
 virtualserver.io
 enterprisecloud.nu
 
-// Mintere : https://mintere.com/
-// Submitted by Ben Aubin <security@mintere.com>
-mintere.site
-
-// Cityhost LLC  : https://cityhost.ua
-// Submitted by Maksym Rivtin <support@cityhost.net.ua>
-cx.ua
-
-// WP Engine : https://wpengine.com/
-// Submitted by Michael Smith <michael.smith@wpengine.com>
-// Submitted by Brandon DuRette <brandon.durette@wpengine.com>
-wpenginepowered.com
-js.wpenginepowered.com
-
-// Impertrix Solutions : <https://impertrixcdn.com>
-// Submitted by Zhixiang Zhao <csuite@impertrix.com>
-impertrixcdn.com
-impertrix.com
-
-// GignoSystemJapan: http://gsj.bz
-// Submitted by GignoSystemJapan <kakutou-ec@gsj.bz>
-gsj.bz
 // ===END PRIVATE DOMAINS===
