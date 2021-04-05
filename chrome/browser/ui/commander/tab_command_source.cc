@@ -187,6 +187,16 @@ bool HasMutedTabs(const TabStripModel* model) {
   return false;
 }
 
+void ScrollToTop(Browser* browser) {
+  browser->tab_strip_model()->GetActiveWebContents()->ScrollToTopOfDocument();
+}
+
+void ScrollToBottom(Browser* browser) {
+  browser->tab_strip_model()
+      ->GetActiveWebContents()
+      ->ScrollToBottomOfDocument();
+}
+
 // Multiphase commands:
 
 void MuteUnmuteTab(base::WeakPtr<Browser> browser,
@@ -492,8 +502,18 @@ CommandSource::CommandResults TabCommandSource::GetCommands(
       item->command =
           base::BindOnce(IgnoreResult(&chrome::MoveCurrentTabToReadLater),
                          base::Unretained(browser));
-      results.push_back((std::move(item)));
+      results.push_back(std::move(item));
     }
+  }
+
+  if (auto item = ItemForTitle(u"Scroll to top", finder, &ranges)) {
+    item->command = base::BindOnce(&ScrollToTop, base::Unretained(browser));
+    results.push_back(std::move(item));
+  }
+
+  if (auto item = ItemForTitle(u"Scroll to bottom", finder, &ranges)) {
+    item->command = base::BindOnce(&ScrollToBottom, base::Unretained(browser));
+    results.push_back(std::move(item));
   }
 
   return results;
