@@ -4,11 +4,14 @@
 
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 
+#include "base/containers/flat_map.h"
+#include "base/no_destructor.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/http/http_request_headers.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -52,6 +55,38 @@ flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
   return flat_rule::ElementType_OTHER;
 }
 
+// Maps an HTTP request method string to flat_rule::RequestMethod.
+// TODO(kzar): Return `flat_rule::RequestMethod_NONE` for non-HTTP requests.
+flat_rule::RequestMethod GetRequestMethod(const std::string& method) {
+  using net::HttpRequestHeaders;
+  static const base::NoDestructor<
+      base::flat_map<base::StringPiece, flat_rule::RequestMethod>>
+      kRequestMethods(
+          {{HttpRequestHeaders::kDeleteMethod, flat_rule::RequestMethod_DELETE},
+           {HttpRequestHeaders::kGetMethod, flat_rule::RequestMethod_GET},
+           {HttpRequestHeaders::kHeadMethod, flat_rule::RequestMethod_HEAD},
+           {HttpRequestHeaders::kOptionsMethod,
+            flat_rule::RequestMethod_OPTIONS},
+           {HttpRequestHeaders::kPatchMethod, flat_rule::RequestMethod_PATCH},
+           {HttpRequestHeaders::kPostMethod, flat_rule::RequestMethod_POST},
+           {HttpRequestHeaders::kPutMethod, flat_rule::RequestMethod_PUT}});
+
+  DCHECK(std::all_of(kRequestMethods->begin(), kRequestMethods->end(),
+                     [](const auto& key_value) {
+                       auto method = key_value.first;
+                       return std::none_of(method.begin(), method.end(),
+                                           base::IsAsciiLower<char>);
+                     }));
+
+  std::string normalized_method = base::ToUpperASCII(method);
+  auto it = kRequestMethods->find(normalized_method);
+  if (it == kRequestMethods->end()) {
+    NOTREACHED() << "Request method " << normalized_method << " not handled.";
+    return flat_rule::RequestMethod_GET;
+  }
+  return it->second;
+}
+
 // Returns whether the request to |url| is third party to its |document_origin|.
 // TODO(crbug.com/696822): Look into caching this.
 bool IsThirdPartyRequest(const GURL& url, const url::Origin& document_origin) {
@@ -87,12 +122,16 @@ RequestParams::RequestParams(const WebRequestInfo& info)
     : url(&info.url),
       first_party_origin(info.initiator.value_or(url::Origin())),
       element_type(GetElementType(info.web_request_type)),
+      method(GetRequestMethod(info.method)),
       parent_routing_id(info.parent_routing_id) {
   is_third_party = IsThirdPartyRequest(*url, first_party_origin);
 }
 
-RequestParams::RequestParams(content::RenderFrameHost* host)
+RequestParams::RequestParams(content::RenderFrameHost* host,
+                             bool is_post_navigation)
     : url(&host->GetLastCommittedURL()),
+      method(is_post_navigation ? flat_rule::RequestMethod_POST
+                                : flat_rule::RequestMethod_GET),
       parent_routing_id(GetFrameRoutingId(host->GetParent())) {
   if (host->GetParent()) {
     // Note the discrepancy with the WebRequestInfo constructor. For a

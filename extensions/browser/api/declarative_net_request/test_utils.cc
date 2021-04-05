@@ -166,6 +166,9 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
     case ParseResult::SUCCESS:
       output << "SUCCESS";
       break;
+    case ParseResult::ERROR_REQUEST_METHOD_DUPLICATED:
+      output << "ERROR_REQUEST_METHOD_DUPLICATED";
+      break;
     case ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED:
       output << "ERROR_RESOURCE_TYPE_DUPLICATED";
       break;
@@ -183,6 +186,9 @@ std::ostream& operator<<(std::ostream& output, const ParseResult& result) {
       break;
     case ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST:
       output << "ERROR_EMPTY_RESOURCE_TYPES_LIST";
+      break;
+    case ParseResult::ERROR_EMPTY_REQUEST_METHODS_LIST:
+      output << "ERROR_EMPTY_REQUEST_METHODS_LIST";
       break;
     case ParseResult::ERROR_EMPTY_URL_FILTER:
       output << "ERROR_EMPTY_URL_FILTER";

@@ -14,6 +14,8 @@ const char* const kAllowedTransformSchemes[4] = {
     url::kHttpScheme, url::kHttpsScheme, url::kFtpScheme,
     extensions::kExtensionScheme};
 
+const char kErrorRequestMethodDuplicated[] =
+    "Rule with id * includes and excludes the same request method.";
 const char kErrorResourceTypeDuplicated[] =
     "Rule with id * includes and excludes the same resource.";
 const char kErrorInvalidRuleKey[] =

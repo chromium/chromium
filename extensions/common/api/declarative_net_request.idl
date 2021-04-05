@@ -25,6 +25,17 @@ namespace declarativeNetRequest {
     other
   };
 
+  // This describes the HTTP request method of a network request.
+  enum RequestMethod {
+    delete,
+    get,
+    head,
+    options,
+    patch,
+    post,
+    put
+  };
+
   // This describes whether the request is first or third party to the frame in
   // which it originated. A request is said to be first party if it has the same
   // domain (eTLD+1) as the frame in which the request originated.
@@ -248,6 +259,17 @@ namespace declarativeNetRequest {
     // be specified. If neither of them is specified, all resource types except
     // "main_frame" are blocked.
     ResourceType[]? excludedResourceTypes;
+
+    // List of HTTP request methods which the rule can match. An empty list is
+    // not allowed.
+    // Note: Non HTTP requests are considered to have the "get" request method.
+    RequestMethod[]? requestMethods;
+
+    // List of request methods which the rule won't match. Only one of
+    // <code>requestMethods</code> and <code>excludedRequestMethods</code>
+    // should be specified. If neither of them is specified, all request methods
+    // are matched.
+    RequestMethod[]? excludedRequestMethods;
 
     // Specifies whether the network request is first-party or third-party to
     // the domain from which it originated. If omitted, all requests are

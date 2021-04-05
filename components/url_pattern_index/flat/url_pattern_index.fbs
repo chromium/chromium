@@ -61,6 +61,19 @@ enum ElementType : ushort (bit_flags) {
   // adding/removing values from this enum.
 }
 
+// The request methods that a URL rule should be applied to.
+enum RequestMethod : ubyte (bit_flags) {
+  DELETE,
+  GET,
+  HEAD,
+  OPTIONS,
+  PATCH,
+  POST,
+  PUT,
+  // Note: Update the default value for `request_methods` field in UrlRule, on
+  // adding/removing values from this enum.
+}
+
 // The flat representation of a single URL rule. For more details regarding the
 // fields please see the comments to url_pattern_index::proto::UrlRule.
 table UrlRule {
@@ -72,6 +85,9 @@ table UrlRule {
   // ElementType_MAIN_FRAME. Keep this in sync with
   // url_pattern_index::kDefaultFlatElementTypesMask.
   element_types : ushort = 8191;
+
+  // A bitmask of RequestMethod. Equals RequestMethod_ANY by default.
+  request_methods : ushort = 127;
 
   // A bitmask of ActivationType. Disables all activation types by default.
   activation_types : ubyte = 0;

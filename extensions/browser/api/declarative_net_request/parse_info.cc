@@ -36,6 +36,9 @@ std::string GetError(ParseResult error_reason, const int* rule_id) {
       break;
     case ParseResult::SUCCESS:
       break;
+    case ParseResult::ERROR_REQUEST_METHOD_DUPLICATED:
+      return ErrorUtils::FormatErrorMessage(kErrorRequestMethodDuplicated,
+                                            base::NumberToString(*rule_id));
     case ParseResult::ERROR_RESOURCE_TYPE_DUPLICATED:
       return ErrorUtils::FormatErrorMessage(kErrorResourceTypeDuplicated,
                                             base::NumberToString(*rule_id));
@@ -57,6 +60,9 @@ std::string GetError(ParseResult error_reason, const int* rule_id) {
     case ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST:
       return ErrorUtils::FormatErrorMessage(
           kErrorEmptyList, base::NumberToString(*rule_id), kResourceTypesKey);
+    case ParseResult::ERROR_EMPTY_REQUEST_METHODS_LIST:
+      return ErrorUtils::FormatErrorMessage(
+          kErrorEmptyList, base::NumberToString(*rule_id), kRequestMethodsKey);
     case ParseResult::ERROR_EMPTY_URL_FILTER:
       return ErrorUtils::FormatErrorMessage(
           kErrorEmptyKey, base::NumberToString(*rule_id), kUrlFilterKey);

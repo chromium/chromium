@@ -49,6 +49,8 @@ extern const char kDomainsKey[];
 extern const char kExcludedDomainsKey[];
 extern const char kResourceTypesKey[];
 extern const char kExcludedResourceTypesKey[];
+extern const char kRequestMethodsKey[];
+extern const char kExcludedRequestMethodsKey[];
 extern const char kDomainTypeKey[];
 extern const char kRuleActionTypeKey[];
 extern const char kRedirectPath[];

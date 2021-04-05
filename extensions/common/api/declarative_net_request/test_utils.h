@@ -43,6 +43,8 @@ struct TestRuleCondition : public DictionarySource {
   base::Optional<bool> is_url_filter_case_sensitive;
   base::Optional<std::vector<std::string>> domains;
   base::Optional<std::vector<std::string>> excluded_domains;
+  base::Optional<std::vector<std::string>> request_methods;
+  base::Optional<std::vector<std::string>> excluded_request_methods;
   base::Optional<std::vector<std::string>> resource_types;
   base::Optional<std::vector<std::string>> excluded_resource_types;
   base::Optional<std::string> domain_type;

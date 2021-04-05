@@ -84,7 +84,7 @@ int CompareDomains(base::StringPiece lhs_domain, base::StringPiece rhs_domain);
 // Increase this value when introducing an incompatible change to the
 // UrlPatternIndex schema (flat/url_pattern_index.fbs). url_pattern_index
 // clients can use this as a signal to rebuild rulesets.
-constexpr int kUrlPatternIndexFormatVersion = 7;
+constexpr int kUrlPatternIndexFormatVersion = 8;
 
 // The class used to construct an index over the URL patterns of a set of URL
 // rules. The rules themselves need to be converted to FlatBuffers format by the
@@ -143,14 +143,16 @@ bool DoesOriginMatchDomainList(const url::Origin& origin,
                                const flat::UrlRule& rule,
                                bool disable_generic_rules);
 
-// Returns whether the request matches flags of the specified |rule|. Takes into
+// Returns whether the request matches flags of the specified `rule`. Takes into
 // account:
-//  - |element_type| of the requested resource, if not *_NONE.
-//  - |activation_type| for a subdocument request, if not *_NONE.
-//  - Whether the resource |is_third_party| w.r.t. its embedding document.
+//  - `element_type` of the requested resource, if not *_NONE.
+//  - `activation_type` for a subdocument request, if not *_NONE.
+//  - `request_method` of the request, if not *_NONE.
+//  - Whether the resource `is_third_party` w.r.t. its embedding document.
 bool DoesRuleFlagsMatch(const flat::UrlRule& rule,
                         flat::ElementType element_type,
                         flat::ActivationType activation_type,
+                        flat::RequestMethod request_method,
                         bool is_third_party);
 
 // Encapsulates a read-only index built over the URL patterns of a set of URL
@@ -181,27 +183,29 @@ class UrlPatternIndexMatcher {
   size_t GetRulesCount() const;
 
   // If the index contains one or more UrlRules that match the request, returns
-  // one of them, depending on the |strategy|. Otherwise, returns nullptr.
+  // one of them, depending on the `strategy`. Otherwise, returns nullptr.
   //
   // Notes on parameters:
-  //  - |url| should be valid and not longer than url::kMaxURLChars, otherwise
+  //  - `url` should be valid and not longer than url::kMaxURLChars, otherwise
   //    the return value is nullptr. The length limit is chosen due to
   //    performance implications of matching giant URLs, along with the fact
   //    that in many places in Chrome (e.g. at the IPC layer), URLs longer than
   //    this are dropped already.
-  //  - Exactly one of |element_type| and |activation_type| should be specified,
+  //  - Exactly one of `element_type` and `activation_type` should be specified,
   //    i.e., not equal to *_UNSPECIFIED, otherwise the return value is nullptr.
-  //  - |is_third_party| should be pre-computed by the caller, e.g. using the
+  //  - `request_method` can only be specified when using flat::* types. Matches
+  //    are not filtered by request method when using proto::* types.
+  //  - `is_third_party` should be pre-computed by the caller, e.g. using the
   //    registry_controlled_domains library, to reflect the relation between
-  //    |url| and |first_party_origin|.
+  //    `url` and `first_party_origin`.
   //
   // A rule is deemed to match the request iff all of the following applies:
-  //  - The |url| matches the rule's UrlPattern (see url_pattern.h).
-  //  - The |first_party_origin| matches the rule's targeted domains list.
-  //  - |element_type| or |activation_type| is among the rule's targeted types.
-  //  - The |is_third_party| bit matches the rule's requirement on the requested
-  //    |url| being first-/third-party w.r.t. its |first_party_origin|.
-  //  - The rule is not generic if |disable_generic_rules| is true.
+  //  - The `url` matches the rule's UrlPattern (see url_pattern.h).
+  //  - The `first_party_origin` matches the rule's targeted domains list.
+  //  - `element_type` or `activation_type` is among the rule's targeted types.
+  //  - The `is_third_party` bit matches the rule's requirement on the requested
+  //    `url` being first-/third-party w.r.t. its `first_party_origin`.
+  //  - The rule is not generic if `disable_generic_rules` is true.
   const flat::UrlRule* FindMatch(const GURL& url,
                                  const url::Origin& first_party_origin,
                                  proto::ElementType element_type,
@@ -217,6 +221,7 @@ class UrlPatternIndexMatcher {
                                  const url::Origin& first_party_origin,
                                  flat::ElementType element_type,
                                  flat::ActivationType activation_type,
+                                 flat::RequestMethod request_method,
                                  bool is_third_party,
                                  bool disable_generic_rules,
                                  FindRuleStrategy strategy) const;
@@ -239,6 +244,7 @@ class UrlPatternIndexMatcher {
       const url::Origin& first_party_origin,
       flat::ElementType element_type,
       flat::ActivationType activation_type,
+      flat::RequestMethod request_method,
       bool is_third_party,
       bool disable_generic_rules) const;
 

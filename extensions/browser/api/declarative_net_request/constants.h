@@ -18,12 +18,14 @@ namespace declarative_net_request {
 enum class ParseResult {
   NONE,
   SUCCESS,
+  ERROR_REQUEST_METHOD_DUPLICATED,
   ERROR_RESOURCE_TYPE_DUPLICATED,
   ERROR_INVALID_RULE_ID,
   ERROR_INVALID_RULE_PRIORITY,
   ERROR_NO_APPLICABLE_RESOURCE_TYPES,
   ERROR_EMPTY_DOMAINS_LIST,
   ERROR_EMPTY_RESOURCE_TYPES_LIST,
+  ERROR_EMPTY_REQUEST_METHODS_LIST,
   ERROR_EMPTY_URL_FILTER,
   ERROR_INVALID_REDIRECT_URL,
   ERROR_DUPLICATE_IDS,
@@ -125,6 +127,7 @@ enum class LoadRulesetResult {
 extern const char* const kAllowedTransformSchemes[4];
 
 // Rule parsing errors.
+extern const char kErrorRequestMethodDuplicated[];
 extern const char kErrorResourceTypeDuplicated[];
 extern const char kErrorInvalidRuleKey[];
 extern const char kErrorNoApplicableResourceTypes[];

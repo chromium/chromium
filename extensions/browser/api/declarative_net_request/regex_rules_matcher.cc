@@ -44,10 +44,10 @@ re2::StringPiece ToRE2StringPiece(const ::flatbuffers::String& str) {
 // Helper to check if the |rule| metadata matches the given request |params|.
 bool DoesRuleMetadataMatchRequest(const flat_rule::UrlRule& rule,
                                   const RequestParams& params) {
-  // Compares |element_type| and |is_third_party|.
-  if (!url_pattern_index::DoesRuleFlagsMatch(rule, params.element_type,
-                                             flat_rule::ActivationType_NONE,
-                                             params.is_third_party)) {
+  // Compares `element_type`, `method` and `is_third_party`.
+  if (!url_pattern_index::DoesRuleFlagsMatch(
+          rule, params.element_type, flat_rule::ActivationType_NONE,
+          params.method, params.is_third_party)) {
     return false;
   }
 

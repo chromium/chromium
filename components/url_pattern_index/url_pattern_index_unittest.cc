@@ -54,7 +54,8 @@ class UrlPatternIndexTest : public ::testing::Test {
                         uint32_t id,
                         uint32_t priority,
                         uint8_t options,
-                        uint16_t element_types) {
+                        uint16_t element_types,
+                        uint16_t request_methods_mask) {
     auto pattern_offset = flat_builder_->CreateString(pattern);
 
     flat::UrlRuleBuilder rule_builder(*flat_builder_);
@@ -63,6 +64,7 @@ class UrlPatternIndexTest : public ::testing::Test {
     rule_builder.add_id(id);
     rule_builder.add_priority(priority);
     rule_builder.add_element_types(element_types);
+    rule_builder.add_request_methods(request_methods_mask);
     auto rule_offset = rule_builder.Finish();
 
     index_builder_->IndexUrlRule(rule_offset);
@@ -92,6 +94,21 @@ class UrlPatternIndexTest : public ::testing::Test {
         testing::GetOrigin(document_origin_string);
     return index_matcher_->FindMatch(
         url, document_origin, element_type, activation_type,
+        testing::IsThirdParty(url, document_origin), disable_generic_rules,
+        UrlPatternIndexMatcher::FindRuleStrategy::kAny);
+  }
+
+  const flat::UrlRule* FindMatch(base::StringPiece url_string,
+                                 base::StringPiece document_origin_string,
+                                 flat::ElementType element_type,
+                                 flat::ActivationType activation_type,
+                                 flat::RequestMethod request_method,
+                                 bool disable_generic_rules) const {
+    const GURL url(url_string);
+    const url::Origin document_origin =
+        testing::GetOrigin(document_origin_string);
+    return index_matcher_->FindMatch(
+        url, document_origin, element_type, activation_type, request_method,
         testing::IsThirdParty(url, document_origin), disable_generic_rules,
         UrlPatternIndexMatcher::FindRuleStrategy::kAny);
   }
@@ -193,9 +210,10 @@ TEST_F(UrlPatternIndexTest, CaseSensitivity) {
                            flat::OptionFlag_APPLIES_TO_THIRD_PARTY;
   AddSimpleUrlRule("case-insensitive", 0 /* id */, 0 /* priority */,
                    common_options | flat::OptionFlag_IS_CASE_INSENSITIVE,
-                   flat::ElementType_ANY);
+                   flat::ElementType_ANY, flat::RequestMethod_ANY);
   AddSimpleUrlRule("case-sensitive", 0 /* id */, 0 /* priority */,
-                   common_options, flat::ElementType_ANY);
+                   common_options, flat::ElementType_ANY,
+                   flat::RequestMethod_ANY);
   Finish();
 
   EXPECT_TRUE(FindMatch("http://abc.com/type=CASE-insEnsitIVe"));
@@ -660,7 +678,7 @@ TEST_F(UrlPatternIndexTest, MultipleRuleMatches) {
     AddSimpleUrlRule(rule_data.url_pattern, rule_data.id, 0 /* priority */,
                      flat::OptionFlag_APPLIES_TO_FIRST_PARTY |
                          flat::OptionFlag_APPLIES_TO_THIRD_PARTY,
-                     rule_data.element_types);
+                     rule_data.element_types, flat::RequestMethod_ANY);
   }
   Finish();
 
@@ -885,7 +903,7 @@ TEST_F(UrlPatternIndexTest, FindMatchHighestPriority) {
       AddSimpleUrlRule(pattern, id, priorities[j],
                        flat::OptionFlag_APPLIES_TO_FIRST_PARTY |
                            flat::OptionFlag_APPLIES_TO_THIRD_PARTY,
-                       flat::ElementType_ANY);
+                       flat::ElementType_ANY, flat::RequestMethod_ANY);
       id++;
     }
   }
@@ -922,6 +940,48 @@ TEST_F(UrlPatternIndexTest, LongUrl_NoMatch) {
   url += "x";
   EXPECT_GT(url.size(), url::kMaxURLChars);
   EXPECT_FALSE(FindMatch(url));
+}
+
+TEST_F(UrlPatternIndexTest, RequestMethod) {
+  const flat::ElementType other_element = flat::ElementType_OTHER;
+  const flat::ActivationType no_activation = flat::ActivationType_NONE;
+  const std::string origin = "http://foo.com";
+
+  const struct {
+    std::string name;
+    flat::RequestMethod request_method;
+  } request_methods[] = {{"delete", flat::RequestMethod_DELETE},
+                         {"get", flat::RequestMethod_GET},
+                         {"head", flat::RequestMethod_HEAD},
+                         {"options", flat::RequestMethod_OPTIONS},
+                         {"patch", flat::RequestMethod_PATCH},
+                         {"post", flat::RequestMethod_POST},
+                         {"put", flat::RequestMethod_PUT}};
+
+  int next_rule_id = 0;
+  for (auto request_method : request_methods) {
+    AddSimpleUrlRule(request_method.name /* pattern */, next_rule_id++,
+                     0 /* priority */,
+                     flat::OptionFlag_APPLIES_TO_FIRST_PARTY |
+                         flat::OptionFlag_APPLIES_TO_THIRD_PARTY,
+                     flat::ElementType_ANY, request_method.request_method);
+  }
+
+  Finish();
+
+  for (size_t i = 0; i < base::size(request_methods); i++) {
+    SCOPED_TRACE(::testing::Message()
+                 << "RequestMethod: " << request_methods[i].name);
+    std::string url = origin + "/" + request_methods[i].name;
+    EXPECT_TRUE(FindMatch(url, origin, other_element, no_activation,
+                          flat::RequestMethod_ANY, false));
+    EXPECT_TRUE(FindMatch(url, origin, other_element, no_activation,
+                          flat::RequestMethod_NONE, false));
+    for (size_t j = 0; j < base::size(request_methods); j++) {
+      EXPECT_EQ(i == j, !!FindMatch(url, origin, other_element, no_activation,
+                                    request_methods[j].request_method, false));
+    }
+  }
 }
 
 }  // namespace url_pattern_index

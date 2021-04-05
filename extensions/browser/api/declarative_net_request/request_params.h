@@ -30,7 +30,8 @@ struct RequestParams {
   explicit RequestParams(const WebRequestInfo& info);
   // |host| must not undergo a navigation or get deleted for the duration of
   // this instance.
-  explicit RequestParams(content::RenderFrameHost* host);
+  explicit RequestParams(content::RenderFrameHost* host,
+                         bool is_post_navigation);
   RequestParams();
   ~RequestParams();
 
@@ -40,6 +41,10 @@ struct RequestParams {
   url_pattern_index::flat::ElementType element_type =
       url_pattern_index::flat::ElementType_OTHER;
   bool is_third_party = false;
+
+  // The HTTP method used for the request.
+  url_pattern_index::flat::RequestMethod method =
+      url_pattern_index::flat::RequestMethod_NONE;
 
   // ID of the parent RenderFrameHost.
   content::GlobalFrameRoutingId parent_routing_id;

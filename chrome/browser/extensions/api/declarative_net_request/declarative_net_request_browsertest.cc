@@ -4464,13 +4464,15 @@ class DeclarativeNetRequestAllowAllRequestsBrowserTest
     std::string url_filter;
     bool is_regex_rule;
     base::Optional<std::vector<std::string>> resource_types;
+    base::Optional<std::vector<std::string>> request_methods;
   };
 
   DeclarativeNetRequestAllowAllRequestsBrowserTest() = default;
 
   void RunTest(const std::vector<RuleData>& rule_data,
                const std::vector<std::string>& paths_seen,
-               const std::vector<std::string>& paths_not_seen) {
+               const std::vector<std::string>& paths_not_seen,
+               bool post_navigation = false) {
     std::vector<TestRule> test_rules;
     for (const auto& rule : rule_data) {
       TestRule test_rule = CreateGenericRule();
@@ -4483,13 +4485,15 @@ class DeclarativeNetRequestAllowAllRequestsBrowserTest
       else
         test_rule.condition->url_filter = rule.url_filter;
       test_rule.condition->resource_types = rule.resource_types;
+      test_rule.condition->request_methods = rule.request_methods;
       test_rules.push_back(test_rule);
     }
 
     ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(test_rules));
 
     GURL page_url = embedded_test_server()->GetURL(
-        "example.com", "/page_with_two_frames.html");
+        "example.com", post_navigation ? "/post_to_page_with_two_frames.html"
+                                       : "/page_with_two_frames.html");
     ui_test_utils::NavigateToURL(browser(), page_url);
 
     const std::set<GURL> requests_seen = GetAndResetRequestsToServer();
@@ -4604,6 +4608,51 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
           {requests[0], requests[1], requests[2], requests[3], requests[4],
            requests[5]},
           {});
+}
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
+                       TestPostNavigationMatched) {
+  std::vector<RuleData> rule_data = {
+      {1, 6, "allowAllRequests", "page_with_two_frames\\.html", true,
+       std::vector<std::string>({"main_frame"}),
+       std::vector<std::string>({"post"})},
+      {2, 5, "block", "*", false},
+  };
+
+  // Requests:
+  // -/page_with_two_frames.html (Matching rule=1)
+  //   -/subresources/script.js (Matching rule=[1,2] Winner=1)
+  //   -/child_frame.html?frame=1 (Matching Rule=[1,2] Winner=1)
+  //     -/subresources/script.js?frameId=1 (Matching Rule=[1,2] Winner=1)
+  //   -/child_frame.html?frame=2 (Matching Rule=[1,2] Winner=1)
+  //     -/subresources/script.js?frameId=2 (Matching Rule=[1,2] Winner=1)
+  // Hence all requests go through.
+  RunTest(rule_data,
+          {requests[0], requests[1], requests[2], requests[3], requests[4],
+           requests[5]},
+          {}, true);
+}
+
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestAllowAllRequestsBrowserTest,
+                       TestPostNavigationNotMatched) {
+  std::vector<RuleData> rule_data = {
+      {1, 6, "allowAllRequests", "page_with_two_frames\\.html", true,
+       std::vector<std::string>({"main_frame"}),
+       std::vector<std::string>({"get"})},
+      {2, 5, "block", "*", false},
+  };
+
+  // Requests:
+  // -/page_with_two_frames.html (No matches)
+  //   -/subresources/script.js (Matching rule 2)
+  //   -/child_frame.html?frame=1 (Matching rule 2)
+  //     -/subresources/script.js?frameId=1 (Matching rule 2)
+  //   -/child_frame.html?frame=2 (Matching rule 2)
+  //     -/subresources/script.js?frameId=2 (Matching rule 2)
+  // Hence requests are blocked.
+  RunTest(rule_data, {requests[0]},
+          {requests[1], requests[2], requests[3], requests[4], requests[5]},
+          true);
 }
 
 // Tests that when an extension is updated but loses the declarativeNetRequest
@@ -5632,6 +5681,79 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   VerifyPublicRulesetIds(last_loaded_extension(), {});
   VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), 2);
   EXPECT_EQ("3", GetAvailableStaticRuleCount(last_loaded_extension_id()));
+}
+
+// Tests the "requestMethods" and "excludedRequestMethods" property of a
+// declarative rule condition.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
+                       BlockRequests_Methods) {
+  struct {
+    int id;
+    std::string url_filter;
+    std::vector<std::string> request_methods;
+    std::vector<std::string> excluded_request_methods;
+  } rules_data[] = {{1, "default", {}, {}},
+                    {2, "included", {"head", "put"}, {}},
+                    {3, "excluded", {}, {"options", "patch"}},
+                    {4, "combination", {"get"}, {"put"}}};
+
+  std::vector<TestRule> rules;
+  for (const auto& rule_data : rules_data) {
+    TestRule rule = CreateGenericRule(rule_data.id);
+    rule.condition->url_filter = rule_data.url_filter;
+
+    // An empty list is not allowed for the "requestMethods" property.
+    if (!rule_data.request_methods.empty())
+      rule.condition->request_methods = rule_data.request_methods;
+
+    rule.condition->excluded_request_methods =
+        rule_data.excluded_request_methods;
+    rules.push_back(rule);
+  }
+  ASSERT_NO_FATAL_FAILURE(LoadExtensionWithRules(rules));
+
+  struct {
+    std::string path;
+    std::string expected_blocked_request_methods;
+  } test_cases[] = {{"default", "delete,get,head,options,patch,post,put"},
+                    {"included", "head,put"},
+                    {"excluded", "delete,get,head,post,put"},
+                    {"combination", "get"}};
+
+  const char kPerformRequestWithAllMethodsScript[] = R"(
+    {
+      const allRequestMethods = ["delete", "get", "head", "options", "patch",
+                                 "post", "put"];
+      const url = "/empty.html?%s";
+
+      let blockedMethods = [];
+
+      Promise.allSettled(
+        allRequestMethods.map(method =>
+          fetch(url, {method}).catch(() => { blockedMethods.push(method); })
+        )
+      ).then(() =>
+      {
+        window.domAutomationController.send(blockedMethods.sort().join());
+      });
+    }
+  )";
+
+  GURL url = embedded_test_server()->GetURL("abc.com", "/empty.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  content::RenderFrameHost* main_frame = GetMainFrame();
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::StringPrintf("Path: %s", test_case.path.c_str()));
+    std::string actual_blocked_request_methods;
+    EXPECT_TRUE(content::ExecuteScriptAndExtractString(
+        main_frame,
+        base::StringPrintf(kPerformRequestWithAllMethodsScript,
+                           test_case.path.c_str()),
+        &actual_blocked_request_methods));
+    EXPECT_EQ(test_case.expected_blocked_request_methods,
+              actual_blocked_request_methods);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -61,10 +61,13 @@ class NET_EXPORT HttpRequestHeaders {
   };
 
   static const char kConnectMethod[];
+  static const char kDeleteMethod[];
   static const char kGetMethod[];
   static const char kHeadMethod[];
   static const char kOptionsMethod[];
+  static const char kPatchMethod[];
   static const char kPostMethod[];
+  static const char kPutMethod[];
   static const char kTraceMethod[];
   static const char kTrackMethod[];
 

@@ -30,6 +30,7 @@
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/url_pattern.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -118,6 +119,7 @@ class RulesetManagerTest : public DNRTestBase {
     const int kRendererId = 1;
     WebRequestInfoInitParams info;
     info.url = GURL(url);
+    info.method = net::HttpRequestHeaders::kGetMethod;
     info.render_process_id = kRendererId;
     info.initiator = std::move(initiator);
     return info;
@@ -131,6 +133,7 @@ class RulesetManagerTest : public DNRTestBase {
     const int kRendererId = 1;
     WebRequestInfoInitParams info;
     info.url = GURL(url);
+    info.method = net::HttpRequestHeaders::kGetMethod;
     info.render_process_id = kRendererId;
 
     net::HttpRequestHeaders extra_request_headers;

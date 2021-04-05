@@ -116,8 +116,8 @@ IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest, InvalidRuleset_Checksum) {
   // via the checksum, and not the Flatbuffer Verifier.  This was determined
   // at random by flipping elements until this test failed, then adding
   // the checksum code and ensuring it passed.
-  testing::TestRuleset::CorruptByFilling(test_ruleset_pair.indexed, 28250,
-                                         28251, 32);
+  testing::TestRuleset::CorruptByFilling(test_ruleset_pair.indexed, 28246,
+                                         28247, 32);
   OpenAndPublishRuleset(service, test_ruleset_pair.indexed.path);
   ASSERT_TRUE(service->GetRulesetDealer());
 

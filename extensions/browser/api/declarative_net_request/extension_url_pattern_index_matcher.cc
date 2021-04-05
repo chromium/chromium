@@ -152,7 +152,7 @@ const flat_rule::UrlRule* ExtensionUrlPatternIndexMatcher::GetMatchingRule(
 
   return matchers_[index].FindMatch(
       *params.url, params.first_party_origin, params.element_type,
-      flat_rule::ActivationType_NONE, params.is_third_party,
+      flat_rule::ActivationType_NONE, params.method, params.is_third_party,
       kDisableGenericRules, strategy);
 }
 
@@ -170,7 +170,7 @@ ExtensionUrlPatternIndexMatcher::GetAllMatchingRules(
 
   return matchers_[index].FindAllMatches(
       *params.url, params.first_party_origin, params.element_type,
-      flat_rule::ActivationType_NONE, params.is_third_party,
+      flat_rule::ActivationType_NONE, params.method, params.is_third_party,
       kDisableGenericRules);
 }
 

@@ -43,6 +43,7 @@ struct IndexedRule {
   uint32_t priority = 0;
   uint8_t options = url_pattern_index::flat::OptionFlag_NONE;
   uint16_t element_types = url_pattern_index::flat::ElementType_NONE;
+  uint16_t request_methods = url_pattern_index::flat::RequestMethod_NONE;
   uint8_t activation_types = url_pattern_index::flat::ActivationType_NONE;
   url_pattern_index::flat::UrlPatternType url_pattern_type =
       url_pattern_index::flat::UrlPatternType_SUBSTRING;

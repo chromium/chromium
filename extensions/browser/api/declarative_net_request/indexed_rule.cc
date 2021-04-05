@@ -202,6 +202,68 @@ flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
   return flat_rule::ElementType_NONE;
 }
 
+flat_rule::RequestMethod GetRequestMethod(
+    dnr_api::RequestMethod request_method) {
+  switch (request_method) {
+    case dnr_api::REQUEST_METHOD_NONE:
+      NOTREACHED();
+      return flat_rule::RequestMethod_NONE;
+    case dnr_api::REQUEST_METHOD_DELETE:
+      return flat_rule::RequestMethod_DELETE;
+    case dnr_api::REQUEST_METHOD_GET:
+      return flat_rule::RequestMethod_GET;
+    case dnr_api::REQUEST_METHOD_HEAD:
+      return flat_rule::RequestMethod_HEAD;
+    case dnr_api::REQUEST_METHOD_OPTIONS:
+      return flat_rule::RequestMethod_OPTIONS;
+    case dnr_api::REQUEST_METHOD_PATCH:
+      return flat_rule::RequestMethod_PATCH;
+    case dnr_api::REQUEST_METHOD_POST:
+      return flat_rule::RequestMethod_POST;
+    case dnr_api::REQUEST_METHOD_PUT:
+      return flat_rule::RequestMethod_PUT;
+  }
+  NOTREACHED();
+  return flat_rule::RequestMethod_NONE;
+}
+
+// Returns a bitmask of flat_rule::RequestMethod corresponding to passed
+// `request_methods`.
+uint16_t GetRequestMethodsMask(
+    const std::vector<dnr_api::RequestMethod>* request_methods) {
+  uint16_t mask = flat_rule::RequestMethod_NONE;
+  if (!request_methods)
+    return mask;
+
+  for (const auto request_method : *request_methods)
+    mask |= GetRequestMethod(request_method);
+  return mask;
+}
+
+// Computes the bitmask of flat_rule::RequestMethod taking into consideration
+// the included and excluded request methods for `rule`.
+ParseResult ComputeRequestMethods(const dnr_api::Rule& rule,
+                                  uint16_t* request_methods_mask) {
+  uint16_t include_request_method_mask =
+      GetRequestMethodsMask(rule.condition.request_methods.get());
+  uint16_t exclude_request_method_mask =
+      GetRequestMethodsMask(rule.condition.excluded_request_methods.get());
+
+  if (include_request_method_mask & exclude_request_method_mask)
+    return ParseResult::ERROR_REQUEST_METHOD_DUPLICATED;
+
+  if (include_request_method_mask != flat_rule::RequestMethod_NONE)
+    *request_methods_mask = include_request_method_mask;
+  else if (exclude_request_method_mask != flat_rule::RequestMethod_NONE) {
+    *request_methods_mask =
+        flat_rule::RequestMethod_ANY & ~exclude_request_method_mask;
+  } else {
+    *request_methods_mask = flat_rule::RequestMethod_ANY;
+  }
+
+  return ParseResult::SUCCESS;
+}
+
 // Returns a bitmask of flat_rule::ElementType corresponding to passed
 // |resource_types|.
 uint16_t GetResourceTypesMask(
@@ -485,6 +547,11 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
     return ParseResult::ERROR_EMPTY_RESOURCE_TYPES_LIST;
   }
 
+  if (parsed_rule.condition.request_methods &&
+      parsed_rule.condition.request_methods->empty()) {
+    return ParseResult::ERROR_EMPTY_REQUEST_METHODS_LIST;
+  }
+
   if (parsed_rule.condition.url_filter && parsed_rule.condition.regex_filter)
     return ParseResult::ERROR_MULTIPLE_FILTERS_SPECIFIED;
 
@@ -540,6 +607,13 @@ ParseResult IndexedRule::CreateIndexedRule(dnr_api::Rule parsed_rule,
       ComputeIndexedRulePriority(priority, indexed_rule->action_type);
   indexed_rule->options = GetOptionsMask(parsed_rule);
   indexed_rule->activation_types = GetActivationTypes(parsed_rule);
+
+  {
+    ParseResult result =
+        ComputeRequestMethods(parsed_rule, &indexed_rule->request_methods);
+    if (result != ParseResult::SUCCESS)
+      return result;
+  }
 
   {
     ParseResult result =

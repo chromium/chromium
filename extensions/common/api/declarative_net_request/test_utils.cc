@@ -76,6 +76,8 @@ std::unique_ptr<base::DictionaryValue> TestRuleCondition::ToValue() const {
            is_url_filter_case_sensitive);
   SetValue(dict.get(), kDomainsKey, domains);
   SetValue(dict.get(), kExcludedDomainsKey, excluded_domains);
+  SetValue(dict.get(), kRequestMethodsKey, request_methods);
+  SetValue(dict.get(), kExcludedRequestMethodsKey, excluded_request_methods);
   SetValue(dict.get(), kResourceTypesKey, resource_types);
   SetValue(dict.get(), kExcludedResourceTypesKey, excluded_resource_types);
   SetValue(dict.get(), kDomainTypeKey, domain_type);

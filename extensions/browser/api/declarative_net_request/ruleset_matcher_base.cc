@@ -255,7 +255,7 @@ void RulesetMatcherBase::OnDidFinishNavigation(
   // Hence we need not listen to OnRenderFrameCreated.
   DCHECK(host);
 
-  RequestParams params(host);
+  RequestParams params(host, navigation_handle->IsPost());
 
   // Find the highest priority allowAllRequests action corresponding to this
   // frame.

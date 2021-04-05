@@ -307,7 +307,7 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
        OpenAndSetRulesetFileValidNoChecksum) {
   // See also SubresourceFilterBrowserTest.InvalidRuleset_Checksum, corrupting
   // in this manner doesn't invalidate the Flatbuffer Verifier check.
-  testing::TestRuleset::CorruptByFilling(rulesets().indexed_1(), 28250, 28251,
+  testing::TestRuleset::CorruptByFilling(rulesets().indexed_1(), 28246, 28247,
                                          32);
   RulesetFilePtr file = ruleset_dealer()->OpenAndSetRulesetFile(
       /*expected_checksum=*/0, rulesets().indexed_1().path);
@@ -340,7 +340,7 @@ TEST_F(SubresourceFilterVerifiedRulesetDealerTest,
                            rulesets().indexed_1().contents.size());
   // See also SubresourceFilterBrowserTest.InvalidRuleset_Checksum, corrupting
   // in this manner doesn't invalidate the Flatbuffer Verifier check.
-  testing::TestRuleset::CorruptByFilling(rulesets().indexed_1(), 28250, 28251,
+  testing::TestRuleset::CorruptByFilling(rulesets().indexed_1(), 28246, 28247,
                                          32);
   RulesetFilePtr file = ruleset_dealer()->OpenAndSetRulesetFile(
       expected_checksum, rulesets().indexed_1().path);

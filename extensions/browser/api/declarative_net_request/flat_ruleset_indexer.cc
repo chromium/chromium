@@ -209,10 +209,11 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
 
   FlatOffset<flat_rule::UrlRule> offset = flat_rule::CreateUrlRule(
       builder_, indexed_rule.options, indexed_rule.element_types,
-      indexed_rule.activation_types, indexed_rule.url_pattern_type,
-      indexed_rule.anchor_left, indexed_rule.anchor_right,
-      domains_included_offset, domains_excluded_offset, url_pattern_offset,
-      indexed_rule.id, indexed_rule.priority);
+      indexed_rule.request_methods, indexed_rule.activation_types,
+      indexed_rule.url_pattern_type, indexed_rule.anchor_left,
+      indexed_rule.anchor_right, domains_included_offset,
+      domains_excluded_offset, url_pattern_offset, indexed_rule.id,
+      indexed_rule.priority);
 
   if (indexed_rule.url_pattern_type !=
       url_pattern_index::flat::UrlPatternType_REGEXP) {
