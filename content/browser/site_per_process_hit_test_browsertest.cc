@@ -913,8 +913,21 @@ class SitePerProcessInternalsHitTestBrowserTest
   }
 };
 
+constexpr float kMultiScale[] = {1.f, 1.5f, 2.f};
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessInternalsHitTestBrowserTest,
+                         testing::Combine(testing::ValuesIn(kMultiScale)));
+
+// Flaky on MSAN. https://crbug.com/959924
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_ScrollNestedLocalNonFastScrollableDiv \
+  DISABLED_ScrollNestedLocalNonFastScrollableDiv
+#else
+#define MAYBE_ScrollNestedLocalNonFastScrollableDiv \
+  ScrollNestedLocalNonFastScrollableDiv
+#endif
 IN_PROC_BROWSER_TEST_P(SitePerProcessInternalsHitTestBrowserTest,
-                       ScrollNestedLocalNonFastScrollableDiv) {
+                       MAYBE_ScrollNestedLocalNonFastScrollableDiv) {
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -7346,15 +7359,5 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessHitTestDataGenerationBrowserTest,
       TransformRectToQuadF(hit_test_data[2])));
   EXPECT_EQ(kSlowHitTestFlags, hit_test_data[2].flags);
 }
-
-// All tests are flaky on MSAN. https://crbug.com/959924
-#if !defined(MEMORY_SANITIZER)
-#if defined(USE_AURA)
-static const float kMultiScale[] = {1.f, 1.5f, 2.f};
-INSTANTIATE_TEST_SUITE_P(All,
-                         SitePerProcessInternalsHitTestBrowserTest,
-                         testing::Combine(testing::ValuesIn(kMultiScale)));
-#endif  // defined(USE_AURA)
-#endif  // defined(MEMORY_SANITIZER)
 
 }  // namespace content
