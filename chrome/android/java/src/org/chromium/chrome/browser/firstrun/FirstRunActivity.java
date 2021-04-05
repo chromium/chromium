@@ -508,9 +508,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public boolean didAcceptTermsOfService() {
-        boolean result = FirstRunUtils.didAcceptTermsOfService();
-        if (sObserver != null) sObserver.onAcceptTermsOfService();
-        return result;
+        return FirstRunUtils.didAcceptTermsOfService();
     }
 
     @Override
@@ -522,6 +520,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         FirstRunUtils.acceptTermsOfService(allowCrashUpload);
         FirstRunStatus.setSkipWelcomePage(true);
         flushPersistentData();
+
+        if (sObserver != null) sObserver.onAcceptTermsOfService();
+
         jumpToPage(mPager.getCurrentItem() + 1);
     }
 
