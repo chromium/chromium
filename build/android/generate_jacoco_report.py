@@ -100,6 +100,26 @@ def _GetFilesWithSuffix(root_dir, suffix):
   return files
 
 
+def _GetExecFiles(root_dir, exclude_substr=None):
+  """ Gets all .exec files
+
+  Args:
+    root_dir: Root directory in which to search for files.
+    exclude_substr: Substring which should be absent in filename. If None, all
+      files are selected.
+
+  Returns:
+    A list of absolute paths to .exec files
+
+  """
+  all_exec_files = _GetFilesWithSuffix(root_dir, ".exec")
+  valid_exec_files = []
+  for exec_file in all_exec_files:
+    if not exclude_substr or exclude_substr not in exec_file:
+      valid_exec_files.append(exec_file)
+  return valid_exec_files
+
+
 def _ParseArguments(parser):
   """Parses the command line arguments.
 
@@ -129,6 +149,10 @@ def _ParseArguments(parser):
       required=True,
       help='Root of the directory in which to search for '
       'coverage data (.exec) files.')
+  parser.add_argument('--exec-filename-excludes',
+                      required=False,
+                      help='Excludes .exec files which contain a particular '
+                      'substring in their name')
   parser.add_argument(
       '--sources-json-dir',
       help='Root of the directory in which to search for '
@@ -161,10 +185,8 @@ def _ParseArguments(parser):
       parser.error('--output-file needed for xml/csv reports.')
     if not args.device_or_host and args.sources_json_dir:
       parser.error('--device-or-host selection needed with --sources-json-dir')
-
   if not (args.sources_json_dir or args.class_files):
     parser.error('At least either --sources-json-dir or --class-files needed.')
-
   return args
 
 
@@ -174,7 +196,7 @@ def main():
 
   devil_chromium.Initialize()
 
-  coverage_files = _GetFilesWithSuffix(args.coverage_dir, '.exec')
+  coverage_files = _GetExecFiles(args.coverage_dir, args.exec_filename_excludes)
   if not coverage_files:
     parser.error('No coverage file found under %s' % args.coverage_dir)
   print('Found coverage files: %s' % str(coverage_files))
