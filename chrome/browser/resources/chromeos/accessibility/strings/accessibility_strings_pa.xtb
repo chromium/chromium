@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">ਹਲਕਾ ਅਸਮਾਨੀ</translation>
 <translation id="1303806948938513162">ChromeVox ਮੀਨੂਆਂ ਵਿੱਚ ਦਾਖਲ ਹੋਣ ਲਈ 4 ਉਂਗਲਾਂ ਨਾਲ ਟੈਪ ਕਰੋ</translation>
 <translation id="1313373992684326101">ਪਿਛਲੇ ਸੈਕਸ਼ਨ 'ਤੇ ਜਾਓ। ਉਦਾਹਰਨਾਂ ਵਿੱਚ ਸਥਿਤੀ ਟ੍ਰੇ ਅਤੇ ਲਾਂਚਰ ਸ਼ਾਮਲ ਹੈ।</translation>
+<translation id="1315077335264761176">ਸਪਰਸ਼ ਦਿਸ਼ਾਮਾਨ</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ਮੀਨੂ ਆਈਟਮ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਅਣਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="1325946044405407859">ਤਾਂਬੇ ਰੰਗਾ</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> ਦਾ <ph name="INDEX" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox ਟਿਊਟੋਰੀਅਲ ਵਿੱਚ ਜੀ ਆਇਆਂ ਨੂੰ। ਕਿਸੇ ਵੇਲੇ ਵੀ ਇਸ ਟਿਊਟੋਰੀਅਲ ਤੋਂ ਬਾਹਰ ਨਿਕਲਣ ਲਈ, ਕੀ-ਬੋਰਡ ਦੇ ਉੱਪਰਲੇ ਖੱਬੇ ਕੋਨੇ ਵਿੱਚ Escape ਕੁੰਜੀ ਨੂੰ ਦਬਾਓ। ChromeVox ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, Control ਅਤੇ Alt ਨੂੰ ਦਬਾਈ ਰੱਖੋ, ਅਤੇ Z ਨੂੰ ਦਬਾਓ। ਜਦੋਂ ਤੁਸੀਂ ਤਿਆਰ ਹੋਵੋ, ਤਾਂ ਅਗਲੇ ਪਾਠ 'ਤੇ ਜਾਣ ਲਈ ਸਪੇਸਬਾਰ ਵਰਤੋ।</translation>
 <translation id="174268867904053074">ਅਗਲਾ ਗ੍ਰਾਫਿਕ</translation>
 <translation id="1756785467854861272">ਗੂੜ੍ਹਾ ਮਜੈਂਟਾ</translation>
+<translation id="1758693804775271377">ਇਸ ਵਿਸ਼ੇ ਲਈ ਪਾਠ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਵਾਸਤੇ ਇੱਕ ਉਂਗਲ ਨਾਲ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="1765245556747822181">ਇੱਕ ਉਂਗਲ ਉੱਪਰ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="1771761307086386028">ਸੱਜੇ ਪਾਸੇ ਸਕ੍ਰੋਲ ਕਰੋ</translation>
 <translation id="1781173782405573156">ਕੁੰਜੀ ਦੁਆਰਾ ਪਾਸ ਕਰੋ</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">ਕਤਾਰ</translation>
 <translation id="2816868829355607410">ਅਭਿਆਸ ਖੇਤਰ: ਜੰਪ ਆਦੇਸ਼</translation>
 <translation id="2841013758207633010">ਸਮਾਂ</translation>
+<translation id="284171465644749950">ਵਿਸ਼ਿਆਂ ਨੂੰ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਲਈ ਇੱਕ ਉਂਗਲ ਨਾਲ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="2843432675592278677">ਕੋਈ ਪਿਛਲੇ ARIA ਭੂਮੀ ਚਿੰਨ੍ਹ ਨਹੀਂ</translation>
 <translation id="2843814945404750166">ਗੂੜ੍ਹਾ ਜੈਤੂਨੀ ਹਰਾ</translation>
 <translation id="2843837985843789981">ਪਿਛਲਾ ਸਮੂਹ</translation>
@@ -1120,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="93384979447910801">ਗੂੜ੍ਹਾ ਸਮੁੰਦਰੀ ਹਰਾ</translation>
 <translation id="948171205378458592">ਸਪੀਚ ਦਾ ਰੇਟ ਘਟਾਓ</translation>
+<translation id="957570623732056069">ਇਸ ਪਾਠ 'ਤੇ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਇੱਕ ਉਂਗਲ ਨਾਲ ਖੱਬੇ ਜਾਂ ਸੱਜੇ ਪਾਸੇ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="958854023026327378">ਇੱਕ ਉਂਗਲ ਹੇਠਾਂ ਵੱਲ ਸਵਾਈਪ ਕਰੋ</translation>
 <translation id="962913030769097253">ਅਗਲਾ ਪੱਧਰ 1 ਸਿਰਲੇਖ</translation>
 <translation id="966588271015727539">ਕੋਈ ਬਲੂਟੁੱਥ ਬਰੇਲ ਡਿਸਪਲੇ ਚੁਣੋ</translation>

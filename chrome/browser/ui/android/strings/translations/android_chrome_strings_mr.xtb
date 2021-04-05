@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">नेव्हिगेशन इतिहास</translation>
 <translation id="1231733316453485619">सिंक सुरू करायचे का?</translation>
 <translation id="123724288017357924">कॅशे केलेला आशय दुर्लक्षित करून, सद्य पेज रीलोड करा</translation>
+<translation id="1240288207750131269"><ph name="LANG" /> लोड करत आहे</translation>
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
 <translation id="1258753120186372309">Google डूडल: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेअर करू शकलो नाही</translation>
+<translation id="1276279242344007853">तुम्ही फॉलो करत असलेल्या साइट व्यवस्थापित करा</translation>
 <translation id="1283039547216852943">विस्तृत करण्यासाठी टॅप करा</translation>
 <translation id="1285310382777185058">भाषा बदला</translation>
 <translation id="1291207594882862231">इतिहास, कुकी, साइट डेटा, कॅशे  साफ करा…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">ॲप्लिकेशन आवृत्ती</translation>
 <translation id="1430915738399379752">प्रिंट</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> शेअर करू शकत नाही</translation>
+<translation id="1466383950273130737">Chrome ची भाषा निवडा</translation>
 <translation id="147113415845704694">“आजचे हवामान कसे आहे?” असे म्हणून पाहा</translation>
 <translation id="1477626028522505441">सर्व्हर समस्यांमुळे <ph name="FILE_NAME" /> डाउनलोड अयशस्वी झाले.</translation>
 <translation id="1492417797159476138">तुम्ही या साइटसाठी आधीच वापरकर्ता नाव सेव्ह केले आहे</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">तुमचे इंटरनेट कनेक्शन तपासत आहे</translation>
 <translation id="2359808026110333948">सुरू ठेवा</translation>
 <translation id="2369533728426058518">खुले टॅब</translation>
+<translation id="2386938421315164605">विषय लपवा आणि दाखवा</translation>
 <translation id="2387895666653383613">मजकूर स्केलिग</translation>
 <translation id="2394602618534698961">तुम्ही डाउनलोड केलेल्या फाइल येथे दिसतात</translation>
 <translation id="2407481962792080328">तुम्ही तुमच्या Google खात्यामध्ये साइन इन केल्यावर, हे वैशिष्ट्य सुरू केले जाते</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">तुमच्या <ph name="BEGIN_LINK" />Google खात्यामध्ये<ph name="END_LINK" /> सेव्ह केलेले पासवर्ड पाहा आणि व्यवस्थापित करा</translation>
 <translation id="2818669890320396765">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क मिळवण्यासाठी, साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="2827278682606527653">फीड कार्ड मेनू अर्ध्या उंचीवर आहे</translation>
+<translation id="2839327205551510876"><ph name="SITE_NAME" /> ला अनफॉलो करा</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{एका दिवसापूर्वी तपासले}other{# दिवसांपूर्वी तपासले}}</translation>
 <translation id="2842985007712546952">मुख्य फोल्डर</translation>
 <translation id="2856503607207334158">साइन इन करता आले नाही</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Google सूचना प्लॅटफॉर्म</translation>
 <translation id="2923908459366352541">नाव अवैध आहे</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> स्टोरेज</translation>
+<translation id="2932222164150889403">तुमचा कीबोर्ड बदलणार नाही</translation>
 <translation id="2942036813789421260">पूर्वावलोकन टॅब बंद आहे</translation>
 <translation id="2956410042958133412">हे खाते <ph name="PARENT_NAME_1" /> आणि <ph name="PARENT_NAME_2" /> द्वारे व्यवस्थापित केले आहे.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> न वाचलेले पेज}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> न वाचलेली पेज}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">Assistant च्या व्हॉइस शोध संमतीशी संबंधित UI</translation>
 <translation id="3034163383943672781">डाउनलोड <ph name="DATE" /> रोजी सुरू होईल.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />मदत मिळवा<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">पुढील वेळी या साइटवर आणखी जलद जा</translation>
 <translation id="305593374596241526">स्‍थान बंद आहे; <ph name="BEGIN_LINK" />Android सेटिंग्‍ज<ph name="END_LINK" /> मध्‍ये हे सुरू करा.</translation>
 <translation id="3058498974290601450">तुम्ही सेटिंग्जमध्ये कधीही सिंक सुरू करू शकता</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">तुम्ही सध्या तुमचे सिंक आणि Google सेवा सेटिंग्ज कस्टमाइझ करत आहात. सिंक सुरू करणे पूर्ण करण्यासाठी, स्क्रीनच्या खालच्या बाजूला निश्चित करा बटणावर टॅप करा. वर नेव्‍हिगेट करा</translation>
 <translation id="3334729583274622784">फाइल एक्स्टेंशन बदलायचे आहे का?</translation>
 <translation id="3341058695485821946">तुम्ही किती डेटा सेव्ह केला ते पहा</translation>
+<translation id="3341262203274374114">अनफॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
 <translation id="3350687908700087792">सर्व गुप्त टॅब बंद करा</translation>
 <translation id="3359667936385849800">तुमचा सध्याचा सेवा पुरवठादार वापरा</translation>
 <translation id="3367813778245106622">सिंक सुरू करण्‍यासाठी पुन्हा साइन इन करा</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">स्थानास अनुमती आहे</translation>
 <translation id="3988466920954086464">या पॅनलमध्ये इंस्टंट शोध परिणाम पहा</translation>
 <translation id="4000212216660919741">ऑफलाइन होम</translation>
+<translation id="4016425174436051808">फॉलो करू शकत नाही. काहीतरी चूक झाली.</translation>
+<translation id="4021916380760361450">तुमच्या Google खात्याचा डेटा नियंत्रित करा</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# तास}other{# तास}}</translation>
 <translation id="4045764304651014138">वापर डेटा</translation>
 <translation id="4056223980640387499">सेपिया</translation>
@@ -599,6 +609,7 @@
 <translation id="5152843274749979095">कोणतेही समर्थित ॲप्स इंस्टॉल केले नाहीत</translation>
 <translation id="5161254044473106830">शीर्षक आवश्यक</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{एक डाउनलोड होऊ शकला नाही.}other{# डाउनलोड होऊ शकले नाहीत.}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> ला फॉलो केले</translation>
 <translation id="5170568018924773124">फोल्डरमध्ये दर्शवा</translation>
 <translation id="5184329579814168207">Chrome मध्ये उघडा</translation>
 <translation id="5188992787241350004">तुमचा आवाज वापरून शोधा</translation>
@@ -718,6 +729,7 @@
 <translation id="5864419784173784555">दुसर्‍या डाउनलोडची वाट पाहत आहे…</translation>
 <translation id="5865733239029070421">Google ला वापर आकडेवारी आणि क्रॅश अहवाल आपोआप पाठवते</translation>
 <translation id="5869522115854928033">सेव्ह केलेले पासवर्ड</translation>
+<translation id="5880748256563468367">फीडवर जा</translation>
 <translation id="5884076754568147479">टास्क पूर्ण करण्यात तुम्हाला मदत व्हावी म्हणून Google ला तुम्ही Assistant वापरून सबमिट करता त्या माहितीच्या समावेशासह तुम्ही Assistant वापरता त्या साइटचा आशय आणि URL मिळतील</translation>
 <translation id="5919204609460789179">सिंक सुरू करण्यासाठी <ph name="PRODUCT_NAME" /> अपडेट करा</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> वाचवला</translation>
@@ -735,6 +747,7 @@
 <translation id="5979084224081478209">पासवर्ड तपासा</translation>
 <translation id="5982307838673692400">गुप्त टॅब उघडा</translation>
 <translation id="6000066717592683814">Google ठेवा</translation>
+<translation id="6000203700195075278">पुन्हा फॉलो करा</translation>
 <translation id="6005538289190791541">सुचवलेला पासवर्ड</translation>
 <translation id="6036057147555329831">अतिरिक्त ICU</translation>
 <translation id="6039379616847168523">पुढील टॅबवर जा</translation>
@@ -1097,6 +1110,7 @@
 <translation id="834313815369870491">साइटचे कधीही भाषांतर करू नका</translation>
 <translation id="8349013245300336738">वापरलेल्या डेटानुसार क्रमाने लावा</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> डाउनलोड रिस्टोअर केले</translation>
+<translation id="8362134094656482681">तुम्हाला स्वारस्य असलेले विषय व्यवस्थापित करा</translation>
 <translation id="8364299278605033898">लोकप्रिय वेबसाइट पाहा</translation>
 <translation id="8368027906805972958">अज्ञात किंवा सपोर्ट नसलेले डिव्हाइस (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> तयार आहे.</translation>

@@ -765,6 +765,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3831915413245941253">Domena <ph name="ENROLLMENT_DOMAIN" /> je namestila razširitve zaradi dodatnih funkcij. Razširitve imajo dostop do nekaterih vaših podatkov.</translation>
 <translation id="3832522519263485449">Večkratno luknjanje na levi</translation>
 <translation id="3835233591525155343">Uporaba naprave</translation>
+<translation id="3841184659773414994">Rutine za obravnavo datotek</translation>
 <translation id="385051799172605136">Nazaj</translation>
 <translation id="3858027520442213535">Posodobi datum in uro</translation>
 <translation id="3884278016824448484">Identifikator naprave je v sporu</translation>
@@ -1802,6 +1803,7 @@ Dodatne podrobnosti:
 <translation id="7844689747373518809">{COUNT,plural, =0{Brez}=1{1 aplikacija (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# aplikacija (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}two{# aplikaciji (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}few{# aplikacije (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# aplikacij (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785549533363645510">Kljub temu pa niste nevidni. Z uporabo anonimnega načina svojega brskanja ne skrijete pred delodajalcem, ponudnikom internetnih storitev ali spletnimi mesti, ki jih obiščete.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" />: <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
+<translation id="7858035578849836010">odpirati datoteke s povezavami z vrstami datotek.</translation>
 <translation id="7862185352068345852">Želite zapustiti spletno mesto?</translation>
 <translation id="7865448901209910068">Najboljša hitrost</translation>
 <translation id="7874263914261512992">Pravkar ste vnesli geslo na zavajajočem spletnem mestu. Chrome priporoča, da takoj preverite shranjena gesla za <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> in druga spletna mesta, na katerih uporabljate to geslo.</translation>

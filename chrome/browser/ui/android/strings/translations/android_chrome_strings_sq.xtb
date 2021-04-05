@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Historiku i navigimit</translation>
 <translation id="1231733316453485619">Të aktivizohet sinkronizimi?</translation>
 <translation id="123724288017357924">Ringarko faqen aktuale, duke shpërfillur përmbajtjen në memorien specifike</translation>
+<translation id="1240288207750131269"><ph name="LANG" /> po ngarkohet</translation>
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
 <translation id="1258753120186372309">Logoja alternative e Google: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Menaxho sajtet që po ndjek</translation>
 <translation id="1283039547216852943">Trokit për të zgjeruar</translation>
 <translation id="1285310382777185058">Ndrysho gjuhën</translation>
 <translation id="1291207594882862231">Pastro historikun, kukit, të dhënat e sajtit, memorien specifike…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Versioni i aplikacionit</translation>
 <translation id="1430915738399379752">Printo</translation>
 <translation id="1450753235335490080">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Zgjidh gjuhën e Chrome</translation>
 <translation id="147113415845704694">Provo "Si është moti sot?"</translation>
 <translation id="1477626028522505441">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të problemeve të serverit.</translation>
 <translation id="1492417797159476138">E ke ruajtur tashmë këtë emër përdoruesi për këtë sajt</translation>
@@ -205,6 +208,7 @@ Trokit te një fjalë për të kërkuar. Për ta përsosur kërkimin, preke dhe 
 <translation id="2353636109065292463">Po kontrollon lidhjen e internetit</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2369533728426058518">hap skedat</translation>
+<translation id="2386938421315164605">Fshih dhe shfaq temat</translation>
 <translation id="2387895666653383613">Shkallëzimi i tekstit</translation>
 <translation id="2394602618534698961">Skedarët që shkarkon shfaqen këtu</translation>
 <translation id="2407481962792080328">Kur identifikohesh në "Llogarinë tënde të Google", kjo veçori është e aktivizuar</translation>
@@ -265,6 +269,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="281504910091592009">Shfaq dhe menaxho fjalëkalimet e ruajtura në <ph name="BEGIN_LINK" />llogarinë tënde të Google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Për të marrë faqeshënuesit në të gjitha pajisjet e tua, identifikohu dhe aktivizo sinkronizimin</translation>
 <translation id="2827278682606527653">Menyja e kartave të furnizimit në gjysmë lartësi</translation>
+<translation id="2839327205551510876">Ndjekja e <ph name="SITE_NAME" /> u anulua</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Kontrolluar 1 ditë më parë}other{Kontrolluar # ditë më parë}}</translation>
 <translation id="2842985007712546952">Dosja mëmë</translation>
 <translation id="2856503607207334158">Identifikimi dështoi</translation>
@@ -281,6 +286,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2909615210195135082">Platforma e njoftimeve të Google</translation>
 <translation id="2923908459366352541">Emri është i pavlefshëm</translation>
 <translation id="2932150158123903946">Hapësira ruajtëse e Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Tastiera jote nuk do të ndryshojë</translation>
 <translation id="2942036813789421260">Skeda e shikimit paraprak është e mbyllur</translation>
 <translation id="2956410042958133412">Kjo llogari menaxhohet nga <ph name="PARENT_NAME_1" /> dhe <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> faqe e palexuar}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> faqe të palexuara}}</translation>
@@ -297,6 +303,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3031225630520268969">Ndërfaqja e përdoruesit e miratimit të kërkimit zanor të "Asistentit"</translation>
 <translation id="3034163383943672781">Shkarkimi do të fillojë më <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kërko ndihmë<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Shko më shpejt te ky sajt herën tjetër</translation>
 <translation id="305593374596241526">Vendndodhja është joaktive. Aktivizoje te <ph name="BEGIN_LINK" />Cilësimet e Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Mund ta aktivizosh sinkronizimin në çdo kohë te cilësimet</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> faqeshënues}other{<ph name="BOOKMARKS_COUNT_MANY" /> faqeshënues}}</translation>
@@ -340,6 +347,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3315103659806849044">Aktualisht po personalizon cilësimet e shërbimit të "Sinkronizimit" dhe Google. Për të përfunduar aktivizimin e sinkronizimit, trokit butonin "Konfirmo" pranë fundit të ekranit. Ngjitu lart</translation>
 <translation id="3334729583274622784">Do ta ndryshosh prapashtesën e skedarit?</translation>
 <translation id="3341058695485821946">Shiko se sa të dhëna kurseve</translation>
+<translation id="3341262203274374114">Ndjekja nuk mund të anulohet. Ndodhi një gabim.</translation>
 <translation id="3350687908700087792">Mbylli të gjitha skedat "e fshehta"</translation>
 <translation id="3359667936385849800">Përdor ofruesin aktual të shërbimit</translation>
 <translation id="3367813778245106622">Identifikohu përsëri për të nisur sinkronizimin</translation>
@@ -434,6 +442,8 @@ Privacy Sandbox është ende në zhvillim aktiv dhe ofrohet në rajone të caktu
 <translation id="3988213473815854515">Vendndodhja nuk lejohet</translation>
 <translation id="3988466920954086464">Shiko rezultatet e çastit të kërkimit në këtë panel</translation>
 <translation id="4000212216660919741">Shtëpia jashtë linje</translation>
+<translation id="4016425174436051808">Nuk mund të ndiqet. Ndodhi një gabim.</translation>
+<translation id="4021916380760361450">Kontrollo të dhënat e "Llogarive të tua të Google"</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# orë}other{# orë}}</translation>
 <translation id="4045764304651014138">Të dhënat e përdorimit</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -599,6 +609,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5152843274749979095">Nuk është instaluar asnjë aplikacion i mbështetur</translation>
 <translation id="5161254044473106830">Kërkohet titulli</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 shkarkim pa sukses.}other{# shkarkime pa sukses.}}</translation>
+<translation id="5168824020667180049">Ndoqe <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Shfaq në dosje</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
 <translation id="5188992787241350004">Kërko me zë</translation>
@@ -718,6 +729,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5864419784173784555">Në pritje të një shkarkimi tjetër…</translation>
 <translation id="5865733239029070421">Dërgon automatikisht te Google statistika të përdorimit dhe raportet e ndërprerjeve aksidentale</translation>
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
+<translation id="5880748256563468367">Shko te furnizimi</translation>
 <translation id="5884076754568147479">Për të të ndihmuar të përfundosh detyrat, Google do të marrë URL-të dhe përmbajtjet e sajteve ku ti përdor "Asistentin", si dhe informacionet që dërgon nëpërmjet "Asistentit"</translation>
 <translation id="5919204609460789179">Përditëso <ph name="PRODUCT_NAME" /> për të nisur sinkronizimin</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> të ruajtura</translation>
@@ -735,6 +747,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5979084224081478209">Kontrollo fjalëkalimet</translation>
 <translation id="5982307838673692400">Hap në skedë "të fshehtë"</translation>
 <translation id="6000066717592683814">Mbaj Google</translation>
+<translation id="6000203700195075278">Ndiqe përsëri</translation>
 <translation id="6005538289190791541">Fjalëkalimi i sugjeruar</translation>
 <translation id="6036057147555329831">Moduli shtesë ICU</translation>
 <translation id="6039379616847168523">Kalo te skeda tjetër</translation>
@@ -1013,6 +1026,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="7846296061357476882">Shërbimet e Google</translation>
 <translation id="784934925303690534">Shtrirja kohore</translation>
 <translation id="7851858861565204677">Pajisjet e tjera</translation>
+<translation id="7853202427316060426">Aktiviteti</translation>
 <translation id="7857691613771368249">Pyet kur të ruhen skedarët</translation>
 <translation id="7859988229622350291">Mos përkthe asnjëherë</translation>
 <translation id="7875915731392087153">Krijo mail</translation>
@@ -1096,6 +1110,7 @@ Të dhënat nga sesioni yt "i fshehtë" do të pastrohen nga Chrome vetëm kur <
 <translation id="834313815369870491">Mos i përkthe asnjëherë sajtet</translation>
 <translation id="8349013245300336738">Rendit sipas sasisë së të dhënave të përdorura</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> shkarkime u restauruan</translation>
+<translation id="8362134094656482681">Menaxho temat që të interesojnë</translation>
 <translation id="8364299278605033898">Shiko sajte uebi të mirënjohura</translation>
 <translation id="8368027906805972958">Pajisje e panjohur ose e pambështetur (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> është gati.</translation>

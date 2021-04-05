@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">Historique de navigation</translation>
 <translation id="1231733316453485619">Activer la synchronisation?</translation>
 <translation id="123724288017357924">Actualiser la page, ignorer le contenu mis en cache</translation>
+<translation id="1240288207750131269"><ph name="LANG" /> en cours de chargement…</translation>
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1258753120186372309">Logo commémoratif de Google : <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">Partage impossible du contenu suivant : <ph name="CONTENT_TYPE" /></translation>
+<translation id="1276279242344007853">Gérer les sites auxquels vous êtes abonné</translation>
 <translation id="1283039547216852943">Toucher pour développer</translation>
 <translation id="1285310382777185058">Changer de langue</translation>
 <translation id="1291207594882862231">Effacer l'historique, les témoins, les données de site, le cache…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">Version de l'application</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1450753235335490080">Impossible de partager l'élément suivant : <ph name="CONTENT_TYPE" /></translation>
+<translation id="1466383950273130737">Choisir la langue de Chrome</translation>
 <translation id="147113415845704694">Essayez de dire : « Quel temps fait-il aujourd'hui? »</translation>
 <translation id="1477626028522505441">Échec du téléchargement de <ph name="FILE_NAME" /> en raison de problèmes au niveau du serveur.</translation>
 <translation id="1492417797159476138">Vous avez déjà enregistré ce nom d'utilisateur pour ce site</translation>
@@ -205,6 +208,7 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 <translation id="2353636109065292463">Vérification de votre connexion Internet en cours…</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2369533728426058518">onglets ouverts</translation>
+<translation id="2386938421315164605">Masquer et afficher les sujets</translation>
 <translation id="2387895666653383613">Mise à l'échelle texte</translation>
 <translation id="2394602618534698961">Les fichiers que vous téléchargez s'affichent ici</translation>
 <translation id="2407481962792080328">Lorsque vous vous connecterez à votre compte Google, cette fonctionnalité sera activée</translation>
@@ -265,6 +269,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="281504910091592009">Affichez et gérez les mots de passe enregistrés dans votre <ph name="BEGIN_LINK" />compte google<ph name="END_LINK" /></translation>
 <translation id="2818669890320396765">Pour synchroniser vos favoris sur tous vos appareils, connectez-vous et activez la synchronisation</translation>
 <translation id="2827278682606527653">Le menu de la carte du flux est ouvert à mi-hauteur</translation>
+<translation id="2839327205551510876">Désabonné de <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{Dernière vérification : il y a 1 jour}one{Dernière vérification : il y a # jour}other{Dernière vérification : il y a # jours}}</translation>
 <translation id="2842985007712546952">Dossier parent</translation>
 <translation id="2856503607207334158">Échec de connexion</translation>
@@ -281,6 +286,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2909615210195135082">Plateforme des notifications Google</translation>
 <translation id="2923908459366352541">Le nom est incorrect</translation>
 <translation id="2932150158123903946">Stockage de Google <ph name="APP_NAME" /></translation>
+<translation id="2932222164150889403">Votre clavier restera le même</translation>
 <translation id="2942036813789421260">L'onglet d'aperçu est fermé</translation>
 <translation id="2956410042958133412">Ce compte est géré par <ph name="PARENT_NAME_1" /> et <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
@@ -297,6 +303,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3031225630520268969">Fenêtre d'IU de consentement pour la recherche vocale avec l'Assistant</translation>
 <translation id="3034163383943672781">Début prévu du téléchargement : <ph name="DATE" />.</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtenir de l'aide<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">Accédez plus rapidement à ce site la prochaine fois</translation>
 <translation id="305593374596241526">Le paramètre Position est désactivé, activez-le dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="3058498974290601450">Vous pouvez activer la synchronisation à tout moment dans les paramètres</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favori}one{<ph name="BOOKMARKS_COUNT_MANY" /> favori}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoris}}</translation>
@@ -340,6 +347,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3315103659806849044">Vous personnalisez actuellement les paramètres relatifs aux services Google et à la synchronisation. Pour valider l'activation de la synchronisation, touchez le bouton Confirmer dans le bas de l'écran. Revenir au haut de la page</translation>
 <translation id="3334729583274622784">Modifier l'extension du fichier?</translation>
 <translation id="3341058695485821946">Affichez la quantité de données enregistrées</translation>
+<translation id="3341262203274374114">Le désabonnement a échoué. Un problème est survenu.</translation>
 <translation id="3350687908700087792">Fermer tous les onglets de navigation privée</translation>
 <translation id="3359667936385849800">Utiliser votre fournisseur de services actuel</translation>
 <translation id="3367813778245106622">Reconnectez-vous pour commencer la synchronisation</translation>
@@ -434,6 +442,8 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="3988213473815854515">L'emplacement est autorisé</translation>
 <translation id="3988466920954086464">Affichez les résultats de recherche instantanée dans ce volet</translation>
 <translation id="4000212216660919741">Accueil hors ligne</translation>
+<translation id="4016425174436051808">L'abonnement a échoué. Un problème est survenu.</translation>
+<translation id="4021916380760361450">Gérer les données de vos comptes Google</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# h}one{# h}other{# h}}</translation>
 <translation id="4045764304651014138">Données d'utilisation</translation>
 <translation id="4056223980640387499">Sépia</translation>
@@ -599,6 +609,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5152843274749979095">Aucune application compatible n'est installée</translation>
 <translation id="5161254044473106830">Titre requis</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{Échec de 1 téléchargement.}one{Échec de # téléchargement.}other{Échec de # téléchargements.}}</translation>
+<translation id="5168824020667180049">Abonné à <ph name="SITE_NAME" /></translation>
 <translation id="5170568018924773124">Afficher dans le dossier</translation>
 <translation id="5184329579814168207">Ouvrir dans Chrome</translation>
 <translation id="5188992787241350004">Effectuez des recherches avec votre voix</translation>
@@ -718,6 +729,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5864419784173784555">En attente d'un autre téléchargement…</translation>
 <translation id="5865733239029070421">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
+<translation id="5880748256563468367">Accéder au flux</translation>
 <translation id="5884076754568147479">Pour vous aider à effectuer des tâches, Google recevra les URL et le contenu des sites avec lesquels vous utilisez l'Assistant, ainsi que l'information que vous envoyez par l'intermédiaire de l'Assistant</translation>
 <translation id="5919204609460789179">Mettez à jour <ph name="PRODUCT_NAME" /> pour commencer la synchronisation</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> enregistré(s)</translation>
@@ -735,6 +747,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5979084224081478209">Vérifier les mots de passe</translation>
 <translation id="5982307838673692400">Ouvrir un onglet de navigation privée</translation>
 <translation id="6000066717592683814">Conserver Google</translation>
+<translation id="6000203700195075278">Se réabonner</translation>
 <translation id="6005538289190791541">Mot de passe suggéré</translation>
 <translation id="6036057147555329831">ICU supplémentaire</translation>
 <translation id="6039379616847168523">Accéder à l'onglet suivant</translation>
@@ -1013,6 +1026,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7846296061357476882">Services Google</translation>
 <translation id="784934925303690534">Intervalle de temps</translation>
 <translation id="7851858861565204677">Autres appareils</translation>
+<translation id="7853202427316060426">Activité</translation>
 <translation id="7857691613771368249">Demander quand enregistrer les fichiers</translation>
 <translation id="7859988229622350291">Ne jamais traduire les pages rédigées en</translation>
 <translation id="7875915731392087153">Créer un courriel</translation>
@@ -1096,6 +1110,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="834313815369870491">Ne jamais traduire les sites suivants</translation>
 <translation id="8349013245300336738">Trier par quantité de données utilisées</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> téléchargements restaurés</translation>
+<translation id="8362134094656482681">Gérez les sujets qui vous intéressent</translation>
 <translation id="8364299278605033898">Afficher des sites Web populaires</translation>
 <translation id="8368027906805972958">Appareil inconnu ou non pris en charge (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> est prête à être utilisée.</translation>

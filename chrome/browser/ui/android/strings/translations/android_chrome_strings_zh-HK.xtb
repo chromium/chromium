@@ -42,7 +42,7 @@
 <translation id="124678866338384709">關閉目前分頁</translation>
 <translation id="1258753120186372309">Google Doodle：<ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324">無法分享<ph name="CONTENT_TYPE" /></translation>
-<translation id="1276279242344007853">管理你正在追蹤的網站</translation>
+<translation id="1276279242344007853">管理您正在追蹤的網站</translation>
 <translation id="1283039547216852943">輕按即可展開</translation>
 <translation id="1285310382777185058">變更語言</translation>
 <translation id="1291207594882862231">清除記錄、Cookie、網站資料、快取…</translation>
@@ -73,7 +73,7 @@
 <translation id="1416550906796893042">應用程式版本</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
-<translation id="1466383950273130737">選擇 Chrome 的顯示語言</translation>
+<translation id="1466383950273130737">選取 Chrome 的語言</translation>
 <translation id="147113415845704694">嘗試說「今日天氣點呀？」</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="1492417797159476138">您已為此網站儲存此使用者名稱</translation>
@@ -269,7 +269,7 @@
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2818669890320396765">如要將書籤同步到所有裝置，請登入並開啟同步處理功能</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
-<translation id="2839327205551510876">已取消追蹤「<ph name="SITE_NAME" />」</translation>
+<translation id="2839327205551510876">已取消追蹤 <ph name="SITE_NAME" /></translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{曾在 1 天前檢查}other{曾在 # 天前檢查}}</translation>
 <translation id="2842985007712546952">上層資料夾</translation>
 <translation id="2856503607207334158">登入失敗</translation>
@@ -286,7 +286,7 @@
 <translation id="2909615210195135082">Google 通知平台</translation>
 <translation id="2923908459366352541">名稱無效</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> 儲存空間</translation>
-<translation id="2932222164150889403">這不會影響你的鍵盤設定</translation>
+<translation id="2932222164150889403">這不會影響您的鍵盤設定</translation>
 <translation id="2942036813789421260">預覽分頁閂咗</translation>
 <translation id="2956410042958133412">這個帳戶是由 <ph name="PARENT_NAME_1" /> 和 <ph name="PARENT_NAME_2" /> 管理。</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 個未讀網頁}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 個未讀網頁}}</translation>
@@ -303,7 +303,7 @@
 <translation id="3031225630520268969">「Google 助理」語音搜尋同意使用者介面</translation>
 <translation id="3034163383943672781">將會在 <ph name="DATE" />開始下載。</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
-<translation id="3046945242843292318">之後可更快前往這個網站</translation>
+<translation id="3046945242843292318">之後可更快前往此網站</translation>
 <translation id="305593374596241526">位置資訊功能已關閉，請在「<ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />」中開啟此功能。</translation>
 <translation id="3058498974290601450">您可隨時在設定中開啟同步功能</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
@@ -443,7 +443,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="3988466920954086464">您可以在此面板查看即時搜尋結果</translation>
 <translation id="4000212216660919741">離線首頁</translation>
 <translation id="4016425174436051808">無法追蹤，發生錯誤。</translation>
-<translation id="4021916380760361450">管理你的 Google 帳戶資料</translation>
+<translation id="4021916380760361450">控制您的 Google 帳戶資料</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 小時}other{# 小時}}</translation>
 <translation id="4045764304651014138">使用情況資料</translation>
 <translation id="4056223980640387499">棕褐色</translation>
@@ -609,7 +609,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5152843274749979095">尚未安裝任何支援的應用程式</translation>
 <translation id="5161254044473106830">必須提供標題</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 項下載操作失敗。}other{# 項下載操作失敗。}}</translation>
-<translation id="5168824020667180049">已追蹤「<ph name="SITE_NAME" />」</translation>
+<translation id="5168824020667180049">已追蹤 <ph name="SITE_NAME" />。</translation>
 <translation id="5170568018924773124">在資料夾中顯示</translation>
 <translation id="5184329579814168207">在 Chrome 中開啟</translation>
 <translation id="5188992787241350004">透過語音進行搜尋</translation>
@@ -729,7 +729,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="5864419784173784555">正在等待其他下載程序完成…</translation>
 <translation id="5865733239029070421">自動將使用情況統計和當機報告傳送給 Google</translation>
 <translation id="5869522115854928033">已儲存的密碼</translation>
-<translation id="5880748256563468367">前往動態饋給</translation>
+<translation id="5880748256563468367">前往動態消息</translation>
 <translation id="5884076754568147479">為協助您完成工作，系統會將您使用「Google 助理」的網站網址和內容，以及您透過「Google 助理」提交的資料傳送給 Google</translation>
 <translation id="5919204609460789179">更新 <ph name="PRODUCT_NAME" /> 即可開始同步處理</translation>
 <translation id="5937580074298050696">已節省 <ph name="AMOUNT" /></translation>
@@ -1110,7 +1110,7 @@ Privacy Sandbox  仍在開發階段，目前開放地區有限。現在網站可
 <translation id="834313815369870491">永遠不要翻譯的網站</translation>
 <translation id="8349013245300336738">依使用數據量排序</translation>
 <translation id="835847953965672673">還原咗 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載嘅內容</translation>
-<translation id="8362134094656482681">管理你感興趣的主題</translation>
+<translation id="8362134094656482681">管理您感興趣的主題</translation>
 <translation id="8364299278605033898">查看熱門網站</translation>
 <translation id="8368027906805972958">不明或不支援的裝置 (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" />已準備就緒。</translation>

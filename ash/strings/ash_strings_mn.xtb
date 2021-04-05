@@ -132,6 +132,7 @@
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Мессеж бичих</translation>
 <translation id="2018630726571919839">Надад онигоо ярьж өгөөч</translation>
+<translation id="2021864487439853900">Түгжээг тайлахын тулд товших</translation>
 <translation id="2049240716062114887">Дэлгэцийн нэрийг <ph name="DESK_NAME" /> болгож өөрчилсөн</translation>
 <translation id="2050339315714019657">Хөрөг зураг</translation>
 <translation id="2067602449040652523">Гарын гэрэлтүүлэг</translation>
@@ -410,10 +411,12 @@
 <translation id="4421231901400348175">Remote Assistance ашиглан <ph name="HELPER_NAME" /> -тэй хамт өөрийн дэлгэцийн хяналтыг хуваалцах.</translation>
 <translation id="4424159417645388645">Дэлгэц 5</translation>
 <translation id="4430019312045809116">Хэмжээ</translation>
+<translation id="4445159312344259901">Түгжээг тайлахын тулд нэвтрэх</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 чухал мэдэгдэл}other{# чухал мэдэгдэл}}</translation>
 <translation id="4450893287417543264">Дахиж бүү харуул</translation>
 <translation id="445864333228800152">Оройн мэнд,</translation>
 <translation id="4458688154122353284">Дэлгэцийн үйлдэл бичихийг зогсоох</translation>
+<translation id="4467143075433126295">Бүтэн дэлгэцээс гарахын тулд [Esc]-г удаан дарна уу</translation>
 <translation id="4472575034687746823">Эхлүүлэх</translation>
 <translation id="4477350412780666475">Дараагийн бичлэг</translation>
 <translation id="4477892968187500306">Энэ төхөөрөмж нь Google-н баталгаажуулаагүй аппыг агуулж болзошгүй.</translation>

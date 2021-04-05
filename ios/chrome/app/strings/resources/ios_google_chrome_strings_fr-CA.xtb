@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Nous aider à améliorer les fonctionnalités et les performances de Chrome</translation>
 <translation id="1314663809820920746">Vous pouvez tout de même voir la totalité de vos favoris, de votre historique, de vos mots de passe et de vos autres paramètres sur cet appareil. Si vous apportez des modifications, elles ne seront pas synchronisées avec votre compte Google.</translation>
 <translation id="1479202195792305274">Chrome peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
+<translation id="1493827051843127077">Définissez Chrome comme navigateur par défaut pour synchroniser vos onglets, vos mots de passe et vos renseignements de paiement sur tous vos appareils</translation>
 <translation id="1504372625950710826">Chrome n'a pas pu vérifier s'il y a des mises à jour. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="1682483655351012182">Synchroniser vos données Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome partage votre position avec les sites que vous autorisez.</translation>
 <translation id="2347208864470321755">Lorsque cette fonction est activée, Google Chrome vous propose de traduire les pages écrites dans d'autres langues à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Faire de Chrome votre navigateur par défaut</translation>
+<translation id="2561231791489583059">Utilisez Chrome comme navigateur par défaut pour vous protéger des sites dangereux et conserver vos mots de passe en sécurité</translation>
 <translation id="2574249610672786438">Pour voir vos onglets partout où vous utilisez Chrome, connectez-vous sur tous vos appareils</translation>
 <translation id="2576431527583832481">Une nouvelle version améliorée de Google Chrome est maintenant offerte.</translation>
 <translation id="257708665678654955">Souhaitez-vous que Google Chrome vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome ne peut pas vérifier vos mots de passe</translation>
 <translation id="7265369419224458312">Accédez ici aux onglets ouverts sur votre ordinateur. Il vous suffit d'ouvrir Chrome sur votre ordinateur, d'accéder au menu et de sélectionner « Se connecter à Chrome… ».</translation>
 <translation id="7272930098487145294">Pour enregistrer des images, touchez Paramètres et autorisez Chrome à les ajouter à vos photos</translation>
+<translation id="7275945473750112644">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chrome seront effacées de cet appareil</translation>
 <translation id="7400722733683201933">À propos de Google Chrome</translation>
 <translation id="7501046334262221972">Pour définir Chrome comme navigateur par défaut, ouvrez l'application Réglages, touchez Navigateur par défaut, puis sélectionnez Chrome.</translation>
 <translation id="756809126120519699">Données de Chrome effacées</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Votre mot de passe a été exposé dans une violation de données. Chromium vous recommande de modifier ce mot de passe maintenant.</translation>
 <translation id="7698568245838009292">Chrome souhaite accéder à l'appareil photo</translation>
 <translation id="7855730255114109580">Google Chrome est à jour</translation>
+<translation id="8022947259858476807">Utilisez Chrome par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>
 <translation id="8160472928944011082">Impossible de mettre à jour Chrome</translation>
+<translation id="8357607116237445042">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="840168496893712993">Certains modules complémentaires provoquent le plantage de Chrome. Veuillez essayer de les désinstaller.</translation>
 <translation id="8459495907675268833">Les données sélectionnées ont été supprimées de Chrome et des appareils synchronisés. D'autres formes d'historique de navigation, telles que les recherches et l'activité d'autres services Google, peuvent exister sur votre compte Google. Plus de détails à history.google.com.</translation>
@@ -88,4 +93,5 @@
   2. Touchez Navigateur par défaut.
   3. Sélectionnez Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Demeurez en sécurité grâce à Chrome</translation>
 </translationbundle>

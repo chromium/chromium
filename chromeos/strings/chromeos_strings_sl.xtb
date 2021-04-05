@@ -95,6 +95,7 @@
 <translation id="3226405216343213872">Iskanje optičnih bralnikov</translation>
 <translation id="3246869037381808805">Izbrisana bodo tiskalna opravila, starejša od 1 dneva</translation>
 <translation id="3268178239013324452">Napaka – vrata so odprta</translation>
+<translation id="3283504360622356314">{0,plural, =1{Uredi datoteko}one{Uredi datoteke}two{Uredi datoteke}few{Uredi datoteke}other{Uredi datoteke}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">Zakasnitev DNS-ja je znatno nad dovoljenim pragom</translation>
 <translation id="3328783797891415197">Preizkus se izvaja</translation>

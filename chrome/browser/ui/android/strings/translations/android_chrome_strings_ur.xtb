@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">نیویگیشن کی تاریخ</translation>
 <translation id="1231733316453485619">مطابقت پذیری آن کریں؟</translation>
 <translation id="123724288017357924">کیش کردہ مواد نظر انداز کرکے موجودہ صفحہ پھر لوڈ کریں</translation>
+<translation id="1240288207750131269"><ph name="LANG" /> لوڈ ہو رہی ہے</translation>
 <translation id="124678866338384709">موجودہ ٹیب بند کریں</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> کا اشتراک نہیں کیا جا سکا</translation>
+<translation id="1276279242344007853">ان سائٹس کا نظم کریں جن کی آپ پیروی کر رہے ہیں</translation>
 <translation id="1283039547216852943">پھیلانے کیلئے تھپتھپائیں</translation>
 <translation id="1285310382777185058">زبان تبدیل کریں</translation>
 <translation id="1291207594882862231">سرگزشت، کوکیز، سائٹ ڈیٹا، کیش کو صاف کریں…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">ایپلیکیشن ورژن</translation>
 <translation id="1430915738399379752">پرنٹ کریں</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> کا اشتراک نہیں کیا جا سکتا</translation>
+<translation id="1466383950273130737">‏Chrome کی زبان منتخب کریں</translation>
 <translation id="147113415845704694">"آج موسم کیسا ہے؟" آزمائیں</translation>
 <translation id="1477626028522505441">سروس کے مسائل کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
 <translation id="1492417797159476138">آپ نے پہلے ہی اس سائٹ کے لئے یہ صارف نام محفوظ کر لیا ہے</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">آپ کا انٹرنیٹ کنکشن چیک کیا جا رہا ہے</translation>
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2369533728426058518">کھلے ٹیبز</translation>
+<translation id="2386938421315164605">موضوعات کو پوشیدہ کریں اور پوشیدگی ختم کریں</translation>
 <translation id="2387895666653383613">متن کی پیمائش کرنا</translation>
 <translation id="2394602618534698961">آپ کی ڈاؤن لوڈ کردہ فائلیں یہاں دکھائی دیتی ہیں</translation>
 <translation id="2407481962792080328">‏جب آپ اپنے Google اکاؤنٹ میں سائن ان کرتے ہیں، تو یہ خصوصیت آن ہو جاتی ہے</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">‏اپنے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> میں محفوظ کردہ پاس ورڈز دیکھیں اور ان کا نظم کریں</translation>
 <translation id="2818669890320396765">اپنے سبھی آلات پر اپنے بُک مارکس حاصل کرنے کیلئے، سائن ان کریں اور سِنک کو آن کریں</translation>
 <translation id="2827278682606527653">نصف اونچائی پر فیڈ کارڈ مینو</translation>
+<translation id="2839327205551510876"><ph name="SITE_NAME" /> کی پیروی ختم کی گئی</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 دن پہلے چیک کیا گیا}other{# دن پہلے چیک کیا گیا}}</translation>
 <translation id="2842985007712546952">پیرینٹ فولڈر</translation>
 <translation id="2856503607207334158">سائن ان کرنا ناکام ہو گیا</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">‏Google اطلاعات پلیٹ فارم</translation>
 <translation id="2923908459366352541">نام غلط ہے</translation>
 <translation id="2932150158123903946">‏Google <ph name="APP_NAME" /> اسٹوریج</translation>
+<translation id="2932222164150889403">آپ کا کی بورڈ تبدیل نہیں ہوگا</translation>
 <translation id="2942036813789421260">پیش منظر ٹیب بند ہے</translation>
 <translation id="2956410042958133412">یہ اکاؤنٹ <ph name="PARENT_NAME_1" /> اور <ph name="PARENT_NAME_2" /> کے زیر انتظام ہے۔</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> نہ پڑھا ہوا صفحہ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> نہ پڑھے ہوئے صفحات}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">‏اسسٹنٹ صوتی تلاش کی رضامندی ui</translation>
 <translation id="3034163383943672781">ڈاؤن لوڈ <ph name="DATE" /> کو شروع ہوگا۔</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />مدد حاصل کریں<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">اگلی بار اس سائٹ تک زیادہ تیزی سے رسائی حاصل کریں</translation>
 <translation id="305593374596241526">‏مقام آف ہے، <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں اسے آن کریں۔</translation>
 <translation id="3058498974290601450">آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> بُک مارک}other{<ph name="BOOKMARKS_COUNT_MANY" /> بُک مارکس}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">‏آپ فی الوقت اپنی Sync اور Google سروس کی ترتیبات کو حسب ضرورت بنا رہے ہیں۔ مطابقت پذیری آن کرنے کا عمل مکمل کرنے کیلئے، اسکرین کے نچلے حصے کے پاس موجود 'تصدیق کریں' بٹن تھپتھپائیں۔ اوپر نیویگیٹ کریں</translation>
 <translation id="3334729583274622784">فائل ایکسٹینشن تبدیل کریں؟</translation>
 <translation id="3341058695485821946">اپنا محفوظ کردہ ڈیٹا دیکھیں</translation>
+<translation id="3341262203274374114">پیروی ختم نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
 <translation id="3350687908700087792">سبھی پوشیدگی ٹیبز بند کریں</translation>
 <translation id="3359667936385849800">اپنے موجودہ سروس فراہم کنندہ کو استعمال کریں</translation>
 <translation id="3367813778245106622">مطابقت پذیری شروع کرنے کیلئے دوبارہ سائن ان کریں</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">مقام کی اجازت ہے</translation>
 <translation id="3988466920954086464">اس پینل میں فوری تلاش کے نتائج دیکھیں</translation>
 <translation id="4000212216660919741">آف لائن ہوم</translation>
+<translation id="4016425174436051808">پیروی نہیں کر سکتے۔ کچھ غلط ہو گیا۔</translation>
+<translation id="4021916380760361450">‏اپنے Google اکاؤنٹس کا ڈیٹا کنٹرول کریں</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# گھنٹہ}other{# گھنٹے}}</translation>
 <translation id="4045764304651014138">استعمال کا ڈیٹا</translation>
 <translation id="4056223980640387499">سیپیا</translation>
@@ -599,6 +609,7 @@
 <translation id="5152843274749979095">کوئی تعاون یافتہ ایپ انسٹال نہیں کی گئی</translation>
 <translation id="5161254044473106830">عنوان درکار ہے</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ ناکام ہو گیا۔}other{# ڈاؤن لوڈز ناکام ہو گئے۔}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> کی پیروی کی گئی</translation>
 <translation id="5170568018924773124">فولڈر میں دکھائیں</translation>
 <translation id="5184329579814168207">‏Chrome میں کھولیں</translation>
 <translation id="5188992787241350004">اپنی آواز کی مدد سے تلاش کریں</translation>
@@ -718,6 +729,7 @@
 <translation id="5864419784173784555">ایک اور ڈاؤن لوڈ کا منتظر…</translation>
 <translation id="5865733239029070421">‏Google کو خودکار طور پر استعمال کے اعداد و شمار اور کریش رپورٹس بھیجتا ہے</translation>
 <translation id="5869522115854928033">محفوظ کردہ پاس ورڈز</translation>
+<translation id="5880748256563468367">فیڈ پر جائیں</translation>
 <translation id="5884076754568147479">‏ٹاسکس کو مکمل کرنے میں آپ کی مدد کرنے کے لیے، Google کو ان سائٹس کے URLs اور مواد موصول ہوں گے جن پر آپ اسسٹنٹ استعمال کرتے ہیں، نیز اسسٹنٹ کے ذریعے آپ کی جمع کروائی ہوئی معلومات بھی موصول ہوں گی</translation>
 <translation id="5919204609460789179">مطابقت پذیری شروع کرنے کیلئے <ph name="PRODUCT_NAME" /> کو اپ ڈیٹ کریں</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> کی بچت ہوئی</translation>
@@ -735,6 +747,7 @@
 <translation id="5979084224081478209">پاس ورڈز چیک کریں</translation>
 <translation id="5982307838673692400">ایک پوشیدگی ٹیب کھولیں</translation>
 <translation id="6000066717592683814">‏Google کو رکھیں</translation>
+<translation id="6000203700195075278">دوبارہ پیروی کریں</translation>
 <translation id="6005538289190791541">تجویز کردہ پاس ورڈ</translation>
 <translation id="6036057147555329831">‏اضافی ICU</translation>
 <translation id="6039379616847168523">اگلے ٹیب پر جائیں</translation>
@@ -1013,6 +1026,7 @@
 <translation id="7846296061357476882">‏Google سروسز</translation>
 <translation id="784934925303690534">وقت کی حد</translation>
 <translation id="7851858861565204677">دیگر آلات</translation>
+<translation id="7853202427316060426">سرگرمی</translation>
 <translation id="7857691613771368249">پوچھیں کہ فائلز کب محفوظ کرنی ہیں</translation>
 <translation id="7859988229622350291">کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="7875915731392087153">ای میل تخلیق کریں</translation>
@@ -1096,6 +1110,7 @@
 <translation id="834313815369870491">سائٹس کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="8349013245300336738">استعمال کردہ ڈیٹا کی مقدار کے لحاظ سے ترتیب دیں</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ڈاؤن لوڈز بحال کئے گئے</translation>
+<translation id="8362134094656482681">ان موضوعات کا نظم کریں جن میں آپ کو دلچسپی ہے</translation>
 <translation id="8364299278605033898">مقبول ویب سائٹس دیکھیں</translation>
 <translation id="8368027906805972958">نا معلوم یا غیر تعاون یافتہ آلہ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> تیار ہے۔</translation>

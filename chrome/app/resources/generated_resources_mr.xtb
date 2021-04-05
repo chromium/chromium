@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">तुमच्या Google खाते मधील तुमचे पासवर्ड तुम्ही साइन इन केलेले असताना या डिव्हाइसवरदेखील उपलब्ध असतील</translation>
 <translation id="1566049601598938765">वेबसाइट</translation>
 <translation id="15662109988763471">निवडलेला प्रिंटर उपलब्ध नाही किंवा योग्यरीत्या इंस्टॉल केलेला नाही. तुमचा प्रिंटर तपासा किंवा दुसरा प्रिंटर निवडून पाहा.</translation>
+<translation id="1567135437923613642">वैशिष्ट्यीकृत प्रयोग सुरू करा</translation>
 <translation id="1567387640189251553">तुम्ही शेवटचा पासवर्ड टाकल्या नंतर वेगळा कीबोर्ड कनेक्ट करण्यात आला आहे. तो कदाचित तुमचे कीस्ट्रोक चोरण्याचा प्रयत्न करत असेल.</translation>
 <translation id="1567993339577891801">JavaScript कन्सोल</translation>
 <translation id="1568323446248056064">डिस्प्ले डिव्हाइस सेटिंग्ज उघडा</translation>
@@ -917,6 +918,7 @@
 <translation id="1979095679518582070">हे वैशिष्ट्य बंद केल्यामुळे सिस्टम अपडेट आणि सुरक्षिततेसारख्या अत्यावश्यक सेवांसाठी लागणारी माहिती पाठवण्याच्या या डिव्हाइसच्या क्षमतेवर प्रभाव होत नाही.</translation>
 <translation id="1979280758666859181">तुम्ही <ph name="PRODUCT_NAME" /> च्या जुन्या आवृत्तीसह एका चॅनलमध्ये बदलत आहात. आपल्या डिव्हाइसवर सध्या इंस्टॉल आवृत्तीशी चॅनलची आवृत्ती जुळते तेव्हा चॅनल बदल लागू होईल.</translation>
 <translation id="197989455406964291">KDC एंक्रिप्शन प्रकाराला सपोर्ट करत नाही</translation>
+<translation id="1983497378699148207">Linux सेट करणे पूर्ण करण्यासाठी, Chrome OS अपडेट करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1984417487208496350">संरक्षण नाही (शिफारस केली जात नाही)</translation>
 <translation id="1987317783729300807">खाती</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
@@ -1329,6 +1331,7 @@
 <translation id="2450223707519584812">Google API की गहाळ असल्याने तुम्ही वापरकर्ते जोडण्‍यात सक्षम असणार नाही. तपशीलांसाठी <ph name="DETAILS_URL" /> पहा.</translation>
 <translation id="2450849356604136918">कोणतेही सक्रिय व्ह्यू नाहीत</translation>
 <translation id="2451298179137331965">२x</translation>
+<translation id="245322989586167203">तुमचे नेटवर्क सेट करणे यासारख्या डेटा ट्रान्सफर वैशिष्ट्यांसाठी साइट सामान्यपणे सिरीअल पोर्टशी कनेक्ट करतात</translation>
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2454247629720664989">कीवर्ड</translation>
 <translation id="2454264884354864965">कॅमेरा बंद आहे</translation>
@@ -1959,6 +1962,7 @@
 <translation id="313205617302240621">पासवर्ड विसरलात?</translation>
 <translation id="3132277757485842847">आम्हाला तुमच्या फोनसह कनेक्शन सुरू ठेवता आले नाही. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="3132996321662585180">दररोज रिफ्रेश करा</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> प्रयोगासाठी प्रयोगाची स्थिती निवडा. प्रयोगाचे वर्णन: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">अवैध पिन. तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत.</translation>
 <translation id="313963229645891001">डाउनलोड करत आहे, <ph name="STATUS" /></translation>
 <translation id="3139925690611372679">डीफॉल्ट पिवळा अवतार</translation>
@@ -2841,6 +2845,7 @@
 <translation id="4099874310852108874">नेटवर्क एरर आली.</translation>
 <translation id="4100733287846229632">डिव्हाइस वरील स्थान खूप कमी आहे</translation>
 <translation id="4100853287411968461">नवीन स्क्रीन वेळ मर्यादा</translation>
+<translation id="4101352914005291489">लपवलेला SSID</translation>
 <translation id="4102906002417106771">पॉवरवॉश करण्यासाठी रीस्टार्ट करा</translation>
 <translation id="4104163789986725820">नि&amp;र्यात करा...</translation>
 <translation id="4107048419833779140">स्टोरेज डिव्हाइस ओळखा आणि बाहेर काढून टाका</translation>
@@ -3910,6 +3915,7 @@
 <translation id="5382591305415226340">समर्थित लिंक व्यवस्थापित करा</translation>
 <translation id="5383377866517186886">Mac सिस्टम प्राधान्ये मधील कॅमेरा बंद केला आहे</translation>
 <translation id="5383740867328871413">अनामित गट - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">एंटरप्राइझचे धोरण बदलले. टूलबारमध्ये प्रयोगांचे बटण जोडले. प्रयोग सुरू करण्यासाठी डायलॉग उघडण्याकरिता बटणवर क्लिक करा.</translation>
 <translation id="5388885445722491159">जोडलेले</translation>
 <translation id="5390100381392048184">साइटना ध्वनी प्ले करण्याची परवानगी द्या</translation>
 <translation id="5390112241331447203">फीडबॅक अहवालामध्ये पाठवलेल्या system_logs.txt फाइलचा समावेश करा.</translation>
@@ -5035,6 +5041,7 @@
 <translation id="6659594942844771486">टॅब</translation>
 <translation id="6660413144148052430">स्थान</translation>
 <translation id="666099631117081440">प्रिंट सर्व्हर</translation>
+<translation id="6662931079349804328">एंटरप्राइझचे धोरण बदलले. टूलबारमधून प्रयोगांचे बटण काढून टाकले.</translation>
 <translation id="6663190258859265334">तुमचे <ph name="DEVICE_TYPE" /> Powerwash करा आणि मागील आवृत्तीकडे परत जा.</translation>
 <translation id="6664237456442406323">दुर्दैवाने, तुमचा कॉंप्युटर एका विकृत हार्डवेअर आयडी सह कॉंफिगर केला आहे. हे नवीनतम सुरक्षितता निराकरणे अपडेट करण्यापासून Chrome OS ला प्रतिबंध करते आणि तुमच्या कॉंप्युटरवर <ph name="BEGIN_BOLD" />दुर्भावनापूर्ण आक्रमणांमुळे सहज परिणाम होऊ शकतो<ph name="END_BOLD" />.</translation>
 <translation id="6664774537677393800">तुमचे प्रोफाईल उघडताना काहीतरी चूक झाली. कृपया साइन आउट करा नंतर पुन्हा साइन इन करा.</translation>
@@ -5391,6 +5398,7 @@
 <translation id="7056526158851679338">&amp;निरीक्षण डिव्हाइसेस</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{सुरक्षा तपासणी एका मिनिटापूर्वी रन केली गेली}other{सुरक्षा तपासणी {NUM_MINS} मिनिटांपूर्वी रन केली गेली}}</translation>
 <translation id="7057767408836081338">अ‍ॅप डेटा मिळवता आला नाही, तरीही अ‍ॅप रन करण्याचा प्रयत्न करत आहे...</translation>
+<translation id="7058024590501568315">लपवलेले नेटवर्क</translation>
 <translation id="7059858479264779982">स्वयं-लाँच करा वर सेट करा</translation>
 <translation id="7059893117020417984">खाजगीरीत्या ब्राउझ करण्यासाठी, गुप्त विंडो उघडण्याकरता डॉट्स आयकन मेन्यूवर क्लिक करा</translation>
 <translation id="7062222374113411376">अलीकडील बंद केलेल्या साइटना डेटा पाठविणे आणि प्राप्त करणे समाप्त करण्यासाठी अनुमती द्या (शिफारस केलेले)</translation>
@@ -5754,6 +5762,7 @@
 <translation id="7477793887173910789">व्हिडिओ पाहा आणि बरेच काही नियंत्रित करा</translation>
 <translation id="7478485216301680444">कियोस्क ॲप्लिकेशन इंस्टॉल केले जाऊ शकले नाही.</translation>
 <translation id="7478623944308207463">तुम्ही तुमचे Google खाते वापरून साइन इन केले आहे त्या सर्व Chrome OS डिव्हाइसवर तुमची अ‍ॅप्स आणि सेटिंग्ज सिंक होतील. ब्राउझर सिंक पर्यायांसाठी, <ph name="LINK_BEGIN" />Chrome सेटिंग्ज<ph name="LINK_END" /> वर जा.</translation>
+<translation id="7478658909253570368">साइटना सिरीअल पोर्टशी कनेक्ट करण्याची अनुमती देऊ नका</translation>
 <translation id="7479221278376295180">स्टोरेज वापराचे अवलोकन</translation>
 <translation id="7481312909269577407">पुढील</translation>
 <translation id="7481358317100446445">तयार</translation>
@@ -5905,11 +5914,13 @@
 <translation id="765293928828334535">या वेबसाइटवरून अ‍ॅप्स, एक्स्टेंशन आणि वापरकर्ता स्क्रिप्ट जोडली जाऊ शकत नाहीत</translation>
 <translation id="7652954539215530680">पिन तयार करा</translation>
 <translation id="7654941827281939388">हे खाते या कॉंप्युटरवर याआधीच वापरण्‍यात येत आहे.</translation>
+<translation id="7655411746932645568">साइट सिरीअल पोर्टशी कनेक्ट करण्यासाठी विचारू शकतात</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7659297516559011665">फक्त या डिव्हाइसवरील पासवर्ड</translation>
 <translation id="7659584679870740384">तुम्ही हे डिव्हाइस वापरण्यासाठी प्राधिकृत नाही. कृपया साइन इन करण्याच्या परवानगीसाठी ॲडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
 <translation id="7661259717474717992">कुकी डेटा सेव्ह करण्यास आणि वाचण्यास साइटना अनुमती द्या</translation>
 <translation id="7661451191293163002">नोंदणी सर्टिफिकेट प्राप्त करणे शक्य झाले नाही.</translation>
+<translation id="7661762353058813968">तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे अपडेट व्यवस्‍थापित केली जातात.</translation>
 <translation id="7662283695561029522">कॉंफिगर करण्यासाठी टॅप करा</translation>
 <translation id="7663719505383602579">प्राप्तकर्ता: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">असमर्थित ब्लूटूथ डिव्हाइस: "<ph name="DEVICE_NAME" />".</translation>
@@ -6689,6 +6700,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8539727552378197395">नाही (HttpOnly)</translation>
 <translation id="8539766201049804895">अपग्रेड करा</translation>
 <translation id="8540136935098276800">योग्य प्रकारे फॉरमॅट केलेली URL एंटर करा</translation>
+<translation id="8540503336857689453">सुरक्षेच्या कारणांमुळे लपवलेला नेटवर्क वापरण्याची शिफारस केली जात नाही.</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="854071720451629801">वाचलेले म्हणून खूण करा</translation>
 <translation id="8541462173655894684">प्रिंट सर्व्हरवरील कोणतेही प्रिंटर आढळले नाहीत</translation>

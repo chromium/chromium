@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium comprend des fonctionnalités qui vous aident à gérer vos données Internet et la vitesse de chargement des pages Web.
 <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium n'a pas pu vérifier s'il y a des mises à jour. Essayez de vérifier votre connexion Internet.</translation>
+<translation id="2054703085270098503">Demeurez en sécurité grâce à Chromium</translation>
 <translation id="2075400798887076382">Accédez ici aux onglets ouverts sur votre ordinateur. Il vous suffit d'ouvrir Chromium sur votre ordinateur, d'accéder au menu et de sélectionner « Se connecter à Chromium… »</translation>
 <translation id="2168108852149185974">Certains modules complémentaires provoquent le plantage de Chromium. Veuillez désinstaller :</translation>
 <translation id="2178608107313874732">Chromium ne peut pas utiliser votre appareil photo pour le moment</translation>
 <translation id="2195025571279539885">Souhaitez-vous que Chromium vous propose de traduire les pages de ce site rédigées en <ph name="LANGUAGE_NAME" /> lors de votre prochaine visite?</translation>
 <translation id="2590893390871230428">Synchroniser vos données Chromium</translation>
 <translation id="2650312721222849884">Pour voir vos onglets partout où vous utilisez Chromium, activez la synchronisation</translation>
+<translation id="2684230048001240293">Définissez Chromium comme navigateur par défaut pour synchroniser vos onglets, vos mots de passe et vos renseignements de paiement sur tous vos appareils</translation>
 <translation id="2730884209570016437">Chromium ne peut pas utiliser votre appareil photo, car il est utilisé par une autre application</translation>
 <translation id="2915596697727466327">Chromium utilise Face ID pour assurer un accès autorisé à vos mots de passe.</translation>
 <translation id="2918709798697875261">Votre organisation vous demande de rester déconnecté de Chromium.</translation>
+<translation id="2942241131342758843">Utilisez Chromium par défaut pour ouvrir des liens, faire des recherches dans des widgets et entrer automatiquement des mots de passe dans d'autres applications</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
 <translation id="3256316712990552818">Copiée dans Chromium</translation>
 <translation id="3344973607274501920">Chromium n'a pas pu vérifier vos mots de passe. Essayez de vérifier votre connexion Internet.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Lorsque cette fonctionnalité est activée, Chromium vous offre de traduire les pages écrites dans d'autres langues à l'aide de Google Traduction. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Vous pouvez maintenant utiliser Chromium chaque fois que vous touchez des liens dans des messages, des documents et des applications.</translation>
 <translation id="4681781466797808448">Activer le lecteur de Chromium</translation>
+<translation id="4736424910885271643">Votre compte est géré par <ph name="HOSTED_DOMAIN" />, donc vos données Chromium seront effacées de cet appareil</translation>
 <translation id="4787850887676698916">Les onglets déjà ouverts dans Chromium sur vos autres appareils s'afficheront ici.</translation>
 <translation id="4828317641996116749">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
 <translation id="4985291216379576555">Hors ligne, Chromium ne peut pas vérifier s'il y a des mises à jour</translation>
@@ -55,6 +59,7 @@
 2. Touchez Navigateur par défaut.
 3. Sélectionnez Chromium.</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium?</translation>
+<translation id="6337530241089703714">Voulez-vous effacer vos données Chrome de cet appareil ou les conserver?</translation>
 <translation id="6424492062988593837">Une nouvelle version améliorée de Chromium est maintenant offerte.</translation>
 <translation id="6820823224820483452">Chromium n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="6827294685447036764">Si vous l'autorisez à connaître votre position, Chromium la communique à tous les sites que vous autorisez. Les sites peuvent vous demander votre position lorsqu'ils ont de l'information locale à vous présenter, comme des magasins à proximité ou des actualités.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Votre mot de passe a été exposé dans une violation de données. Chromium vous recommande de modifier ce mot de passe maintenant.</translation>
 <translation id="7674213385180944843">Ouvrez Paramètres &gt; Confidentialité &gt; Appareil photo &gt; Chromium et activez l'appareil photo.</translation>
 <translation id="7746854981345936341">Conseil pour Chromium. Certains boutons se trouvent désormais en bas de votre écran, comme Précédent, Suivant et Rechercher.</translation>
+<translation id="7763454117143368771">Utilisez Chromium comme navigateur par défaut pour vous protéger des sites dangereux et conserver vos mots de passe en sécurité</translation>
 <translation id="786327964234957808">Vous changez de compte synchronisé pour passer de <ph name="USER_EMAIL1" /> à <ph name="USER_EMAIL2" />. Vos données Chromium actuelles sont gérées par <ph name="DOMAIN" />. Cette opération entraînera la suppression de vos données sur cet appareil, mais celles-ci resteront dans le compte <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Commencer à utiliser le lecteur de Chromium</translation>
 <translation id="7931842119211730154">Verrouiller les onglets de navigation privée lorsque vous fermez Chromium</translation>

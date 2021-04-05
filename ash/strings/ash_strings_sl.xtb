@@ -132,6 +132,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2012624427112548395">Ctrl+ tipka za iskanje + H</translation>
 <translation id="2016340657076538683">Vnesite sporočilo</translation>
 <translation id="2018630726571919839">Povej mi šalo</translation>
+<translation id="2021864487439853900">Kliknite za odklepanje</translation>
 <translation id="2049240716062114887">Ime namizja je bilo spremenjeno v <ph name="DESK_NAME" /></translation>
 <translation id="2050339315714019657">Pokončno</translation>
 <translation id="2067602449040652523">Svetlost tipkovnice</translation>
@@ -409,10 +410,12 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="4421231901400348175">Deljenje nadzora nad zaslonom z osebo <ph name="HELPER_NAME" /> prek pomoči na daljavo.</translation>
 <translation id="4424159417645388645">Namizje 5</translation>
 <translation id="4430019312045809116">Glasnost</translation>
+<translation id="4445159312344259901">Prijavite se za odklepanje</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 pomembno obvestilo}one{# pomembno obvestilo}two{# pomembni obvestili}few{# pomembna obvestila}other{# pomembnih obvestil}}</translation>
 <translation id="4450893287417543264">Tega ne prikaži več</translation>
 <translation id="445864333228800152">Dober večer,</translation>
 <translation id="4458688154122353284">Ustavitev snemanja zaslona</translation>
+<translation id="4467143075433126295">Pridržite [Esc] za zapiranje celozaslonskega načina</translation>
 <translation id="4472575034687746823">Kako začeti</translation>
 <translation id="4477350412780666475">Naslednja skladba</translation>
 <translation id="4477892968187500306">Ta naprava morda vsebuje aplikacije, ki jih ni preveril Google.</translation>

@@ -15,15 +15,18 @@
 <translation id="1843424232666537147">Chromium ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt mund të ngarkosh faqet e uebit.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium nuk mund të kontrollonte për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
+<translation id="2054703085270098503">Qëndro i sigurt me Chromium</translation>
 <translation id="2075400798887076382">Qasu te skedat që ke hapur në kompjuter nga këtu. Thjesht hap Chromium në kompjuter, shko te menyja dhe zgjidh “Identifikohu në Chromium…”</translation>
 <translation id="2168108852149185974">Disa përbërës shtesë shkaktojnë ndërprerje aksidentale të Chromium. Çinstalo:</translation>
 <translation id="2178608107313874732">Chromium nuk mund të përdorë kamerën tënde për momentin</translation>
 <translation id="2195025571279539885">Dëshiron që Chromium të ofrojë përkthimin e faqeve në <ph name="LANGUAGE_NAME" /> nga ky sajt herën tjetër?</translation>
 <translation id="2590893390871230428">Sinkronizo të dhënat e Chromium</translation>
 <translation id="2650312721222849884">Për të parë skedat e tua nga çdo vend ku përdor Chromium, aktivizo sinkronizimin</translation>
+<translation id="2684230048001240293">Caktoje Chromium si parazgjedhje për të sinkronizuar skedat, fjalëkalimet dhe informacionet e pagesës në të gjitha pajisjet e tua</translation>
 <translation id="2730884209570016437">Chromium nuk mund të përdorë kamerën tënde sepse ajo është në përdorim nga një aplikacion tjetër</translation>
 <translation id="2915596697727466327">Chromium përdor Face ID për të siguruar qasjen e autorizuar te fjalëkalimet e tua.</translation>
 <translation id="2918709798697875261">Organizata jote kërkon që të qëndrosh i dalë nga Chrome.</translation>
+<translation id="2942241131342758843">Përdor Chromium si parazgjedhje për të hapur lidhjet, për të kërkuar nga miniaplikacionet dhe për të plotësuar automatikisht fjalëkalimet në aplikacione të tjera</translation>
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
 <translation id="3256316712990552818">U kopjua te Chromium</translation>
 <translation id="3344973607274501920">Chromium nuk mund t'i kontrollonte fjalëkalimet e tua. Provo të kontrollosh lidhjen e internetit.</translation>
@@ -36,6 +39,7 @@
 <translation id="4555020257205549924">Kur ky funksion është i aktivizuar, Chromium do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Tani mund të përdorësh Chromium sa herë që troket te lidhjet në mesazhe, dokumente dhe aplikacione të tjera.</translation>
 <translation id="4681781466797808448">Aktivizo skanerin e Chromium</translation>
+<translation id="4736424910885271643">Llogaria jote menaxhohet nga <ph name="HOSTED_DOMAIN" />, prandaj të dhënat e tua të Chromium do të pastrohen nga kjo pajisje</translation>
 <translation id="4787850887676698916">Skedat që ke hapur në Chromium në pajisjet e tjera do të shfaqen këtu.</translation>
 <translation id="4828317641996116749">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish më vonë.</translation>
 <translation id="4985291216379576555">Jashtë linje. Chromium nuk mund të kontrollojë për përditësime</translation>
@@ -55,6 +59,7 @@
 2. Trokit tek "Aplikacioni i parazgjedhur i shfletuesit"
 3. Zgjidh Chromium.</translation>
 <translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
+<translation id="6337530241089703714">Zgjidh nëse do t'i pastrosh të dhënat e Chromium nga kjo pajisje apo do t'i mbash ato</translation>
 <translation id="6424492062988593837">Chromium sapo është përmirësuar! Ofrohet një version i ri.</translation>
 <translation id="6820823224820483452">Chromium nuk mund t'i kontrollonte të gjitha fjalëkalimet. Provo sërish nesër.</translation>
 <translation id="6827294685447036764">Nëse lejon që Chromium të dijë vendndodhjen tënde, Chromium e dërgon atë te çdo sajt që ti lejon. Sajtet mund të kërkojnë për vendndodhjen tënde kur ato kanë informacione lokale për të të shfaqur, si dyqanet në afërsi ose lajme.</translation>
@@ -71,6 +76,7 @@
 <translation id="766897673682622022">Fjalëkalimi yt është ekspozuar në një nxjerrje të paautorizuar të të dhënave. Chromium rekomandon që ta ndryshosh fjalëkalimin tani.</translation>
 <translation id="7674213385180944843">Hap Cilësimet &gt; Privatësia &gt; Kamera &gt; Chromium dhe aktivizo kamerën.</translation>
 <translation id="7746854981345936341">Këshillë për Chromium. Disa butona ndodhen tani në fund të ekranit tënd, si p.sh. "Prapa", "Përpara" dhe "Kërko".</translation>
+<translation id="7763454117143368771">Përdor Chromium si shfletuesin tënd të parazgjedhur për të qenë i mbrojtur nga sajtet e rrezikshme dhe për t'i mbajtur fjalëkalimet e tua të sigurta</translation>
 <translation id="786327964234957808">Po i ndërron llogaritë e sinkronizimit nga <ph name="USER_EMAIL1" /> te <ph name="USER_EMAIL2" />. Të dhënat ekzistuese të Chromium po menaxhohen nga <ph name="DOMAIN" />. Kjo do t'i fshijë të dhënat e tua nga kjo pajisje, por të dhënat e tua do të mbeten në <ph name="USER_EMAIL1" />.</translation>
 <translation id="7890287942691234100">Fillo të përdorësh skanerin e Chromium</translation>
 <translation id="7931842119211730154">Kyçi skedat "e fshehta" kur të mbyllësh Chromium</translation>

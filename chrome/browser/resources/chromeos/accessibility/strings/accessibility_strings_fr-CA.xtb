@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Bleu ciel clair</translation>
 <translation id="1303806948938513162">Touchez avec quatre doigts pour accéder aux menus de ChromeVox</translation>
 <translation id="1313373992684326101">Passer à la section précédente. Par exemple, la barre d'état et le lanceur.</translation>
+<translation id="1315077335264761176">Orientation pour les gestes tactiles</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, le bouton radio de l'option de menu est désélectionné</translation>
 <translation id="1325946044405407859">Fauve</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> de <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Bienvenue dans le tutoriel de ChromeVox. Pour quitter ce tutoriel, appuyez à tout moment sur la touche Échap. située dans le haut de votre clavier, à gauche. Pour désactiver ChromeVox, maintenez les touches Ctrl+Alt. enfoncées et appuyez sur Z. Lorsque vous êtes prêt, utilisez la barre d'espacement pour passer à la leçon suivante.</translation>
 <translation id="174268867904053074">Élément graphique suivant</translation>
 <translation id="1756785467854861272">Magenta foncé</translation>
+<translation id="1758693804775271377">Balayez l'écran vers la gauche ou la droite avec un doigt pour parcourir les leçons de ce sujet</translation>
 <translation id="1765245556747822181">Faites glisser un doigt vers le haut</translation>
 <translation id="1771761307086386028">Faire défiler vers la droite</translation>
 <translation id="1781173782405573156">Touche d'intercommunication</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Rangée</translation>
 <translation id="2816868829355607410">Zone d'exercice : commandes d'accès direct</translation>
 <translation id="2841013758207633010">Heure</translation>
+<translation id="284171465644749950">Balayez l'écran vers la gauche ou la droite avec un doigt pour parcourir les sujets</translation>
 <translation id="2843432675592278677">Aucun point de repère ARIA précédent</translation>
 <translation id="2843814945404750166">Vert olive foncé</translation>
 <translation id="2843837985843789981">Groupe précédent</translation>
@@ -1119,6 +1122,7 @@
 <translation id="923331726185079994">ChromeVox a été mis à jour</translation>
 <translation id="93384979447910801">Vert mer foncé</translation>
 <translation id="948171205378458592">Diminuer le débit de la parole</translation>
+<translation id="957570623732056069">Balayez l'écran vers la gauche ou la droite avec un doigt pour naviguer dans cette leçon</translation>
 <translation id="958854023026327378">Faites glisser un doigt vers le bas</translation>
 <translation id="962913030769097253">En-tête de niveau 1 suivant</translation>
 <translation id="966588271015727539">Sélectionnez un afficheur braille Bluetooth</translation>

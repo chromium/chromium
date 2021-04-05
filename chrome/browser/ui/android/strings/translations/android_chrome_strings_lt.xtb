@@ -93,6 +93,7 @@
 <translation id="1641113438599504367">Saugus naršymas</translation>
 <translation id="164269334534774161">Peržiūrite neprisijungus pasiekiamą šio puslapio kopiją (<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">Istorija</translation>
+<translation id="1668122540633280551">Pasirinkite, kaip vaizdo įrašų peržiūros bus automatiškai leidžiamos „Chrome“ pagrindiniame puslapyje.</translation>
 <translation id="1670399744444387456">Bendrieji</translation>
 <translation id="1671236975893690980">Laukiama atsisiuntimo...</translation>
 <translation id="1672586136351118594">Daugiau neberodyti</translation>
@@ -237,6 +238,8 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="2534155362429831547">Ištrinta elementų: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="2536728043171574184">Žiūrima neprisijungus naudojama šio puslapio kopija</translation>
 <translation id="2546283357679194313">Slapukai ir svetainės duomenys</translation>
+<translation id="2549341709325358884">Tik „Wi-Fi“ ir mobiliojo ryšio duomenys</translation>
+<translation id="2561519700418191927">Vaizdo įrašų peržiūros</translation>
 <translation id="2567385386134582609">VAIZDAS</translation>
 <translation id="2571711316400087311">Siūlyti siųsti puslapius kitomis kalbomis į „Google“ vertėją</translation>
 <translation id="2581165646603367611">Bus išvalyti slapukai, talpykla ir kiti svetainių duomenys, kurių „Chrome“ nelaiko svarbiais.</translation>
@@ -415,6 +418,7 @@ Privatumo „sandbox“ (smėlio dėžė) vis dar intensyviai kuriama ir pasieki
 <translation id="3773856050682458546">Pagrindiniai duomenys ir informacija apie lankomas svetaines ir naudojamas programas</translation>
 <translation id="3775705724665058594">Išsiųsta į jūsų įrenginius</translation>
 <translation id="3778956594442850293">Pridėta prie pagrindinio ekrano</translation>
+<translation id="3803784507854318295">Tvarkyti automatinį paleidimą</translation>
 <translation id="3810838688059735925">Vaizdo</translation>
 <translation id="3810973564298564668">Valdyti</translation>
 <translation id="3819178904835489326">Ištrinta atsisiuntimų: <ph name="NUMBER_OF_DOWNLOADS" /></translation>

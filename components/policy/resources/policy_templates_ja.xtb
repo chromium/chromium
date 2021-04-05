@@ -427,6 +427,7 @@
       このポリシーは Chrome 93 で削除されます。
 
       詳しくは、https://www.chromestatus.com/feature/4664843055398912 をご覧ください。</translation>
+<translation id="1587585749332985896">ヘッドレス モードの使用を許可しない</translation>
 <translation id="1588240398285670601">ブラウザの設定</translation>
 <translation id="1593245608325508847">このポリシーでは、Chrome の制限付きログイン機能を G Suite で有効にするとともに、ユーザーがこの設定を変更できないようにします。ユーザーは、指定ドメインのアカウントでのみ、Google のツールにアクセスできます（Gmail アカウントまたは GoogleMail アカウントを許可する場合は、consumer_accounts をドメインリストに追加します）。この設定により、Google の認証を必要とする管理対象のデバイス上では、アカウントが明示的に許可されたドメインのいずれにも属していない場合に、ユーザーは予備のアカウントへのログインや追加ができなくなります。
 
@@ -858,6 +859,7 @@
 <translation id="2175353308236295184">一連の Key-Value ペアを指定したアプリ固有の JSON 設定オブジェクトです（例: '"managedConfiguration": { "key1": value1, "key2": value2 }）。キーはアプリのマニフェストで定義されます。</translation>
 <translation id="2176115444876446233">ユーザーにシステム全体のパフォーマンス トレースの収集を許可しない</translation>
 <translation id="2178899310296064282">YouTube で制限付きモード「中」以上を強制的に適用する</translation>
+<translation id="2180958780733364832">ヘッドレス モードの使用を管理する</translation>
 <translation id="2182291258410176649">バックアップと復元を有効にするかどうかをユーザーに確認する</translation>
 <translation id="219297066914002620">仮想マシン管理コンソール ツールの有効化または無効化を <ph name="PRODUCT_OS_NAME" /> に指示します。
 
@@ -3878,6 +3880,7 @@
 <translation id="647698599569353771">ニアバイシェアを有効にできるようにします。</translation>
 <translation id="6478258366184919502">ログインと画面のオリジン</translation>
 <translation id="6478261301433199402">このポリシーでは、ユーザーの <ph name="PLUGIN_VM_NAME" /> 画像を指定できます。画像のダウンロード場所を示す <ph name="URL_PLUGIN_VM_IMAGE_FIELD" /> と、ダウンロードの整合性の確認に使用する SHA-256 ハッシュとして <ph name="HASH_PLUGIN_VM_IMAGE_FIELD" /> を JSON 形式の文字列として指定します。</translation>
+<translation id="6481245670325946423">ヘッドレス モードの使用を許可する</translation>
 <translation id="6489084406497912050">ユーザーが Kerberos アカウントを追加できるかどうかを制御します。
 
           このポリシーを有効に設定するか未設定のままにした場合、ユーザーは Kerberos 設定ページの Kerberos アカウント設定で Kerberos アカウントを追加できます。ユーザーは追加したアカウントを完全に管理でき、変更や削除も行えます。
@@ -5220,6 +5223,7 @@
 
           「停止」操作を指定する場合は、<ph name="PRODUCT_OS_NAME" /> で停止前に画面をロックするかどうかを別途設定できます。</translation>
 <translation id="8214600119442850823">パスワード マネージャーを設定します。</translation>
+<translation id="8217664958939773083">このポリシーを <ph name="ENABLED" /> に設定するか未設定のままにした場合、ヘッドレス モードの使用が許可されます。このポリシーを <ph name="DISABLED" /> に設定した場合、ヘッドレス モードの使用は許可されません。</translation>
 <translation id="8220023426952118761">希望するダウンロード速度（キロビット/秒）です。</translation>
 <translation id="8220156281401380422">ネイティブ メッセージングの許可リストを設定する</translation>
 <translation id="8238421250255592181">画面キーボードでオートコンプリートを有効にするかどうかを示すブール値のフラグです。</translation>

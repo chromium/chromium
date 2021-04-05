@@ -765,6 +765,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3831915413245941253">Nag-install ang <ph name="ENROLLMENT_DOMAIN" /> ng mga extension para sa mga karagdagang function. May access ang mga extension sa ilan sa iyong data.</translation>
 <translation id="3832522519263485449">Multiple punch left</translation>
 <translation id="3835233591525155343">Iyong paggamit ng device</translation>
+<translation id="3841184659773414994">Mga Tagapangasiwa ng File</translation>
 <translation id="385051799172605136">Bumalik</translation>
 <translation id="3858027520442213535">I-update ang petsa at oras</translation>
 <translation id="3884278016824448484">Sumasalungat na tagatukoy ng device</translation>
@@ -1802,6 +1803,7 @@ Mga karagdagang detalye:
 <translation id="7844689747373518809">{COUNT,plural, =0{Wala}=1{1 app (<ph name="EXAMPLE_APP_1" />)}=2{2 app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# (na) app (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785549533363645510">Gayunpaman, hindi ka invisible. Kahit mag-incognito ka, hindi matatago ang iyong pagba-browse mula sa iyong employer, sa iyong internet service provider o sa mga website na binibisita mo.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="7858035578849836010">Magbukas ng mga file na may mga nauugnay na uri ng file.</translation>
 <translation id="7862185352068345852">Umalis sa site?</translation>
 <translation id="7865448901209910068">Pinakamabilis</translation>
 <translation id="7874263914261512992">Kakalagay mo lang ng iyong password sa isang mapanlinlang na site. Inirerekomenda ng Chrome na suriin mo ngayon ang iyong mga naka-save na password para sa <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" />, at iba pang site kung saan mo ginagamit ang password na ito.</translation>

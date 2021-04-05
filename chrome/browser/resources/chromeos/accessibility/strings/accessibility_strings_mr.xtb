@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">फिकट आकाशी</translation>
 <translation id="1303806948938513162">ChromeVox मेनूमध्ये एंटर करण्यासाठी चार बोटांनी टॅप करा</translation>
 <translation id="1313373992684326101">मागील विभागात जा. उदाहरणांमध्ये स्टेटस ट्रे आणि लाँचरचा समावेश आहे.</translation>
+<translation id="1315077335264761176">टच ओरिएंटेशन</translation>
 <translation id="1325363694295259631"><ph name="NAME" /> या मेनू आयटम रेडिओ बटणाची निवड रद्द केली</translation>
 <translation id="1325946044405407859">बदामी</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> पैकी <ph name="INDEX" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox ट्युटोरियलमध्ये स्वागत आहे. या ट्युटोरियलमधून कोणत्याही वेळी बाहेर पडण्यासाठी कीबोर्डच्या डाव्या कोपर्‍यातील एस्केप की दाबा. ChromeVox बंद करण्यासाठी Control आणि Alt धरून ठेवा व Z दाबा. तुम्ही तयार असल्यास, पुढील धड्यावर जाण्यासाठी स्पेसबार वापरा.</translation>
 <translation id="174268867904053074">पुढील ग्राफिक</translation>
 <translation id="1756785467854861272">गडद किरमिजी तांबडा</translation>
+<translation id="1758693804775271377">या विषयासाठी धडे ब्राउझ करण्याकरिता एका बोटाने डावीकडे किंवा उजवीकडे स्वाइप करा</translation>
 <translation id="1765245556747822181">एका बोटाने वरच्या दिशेला स्वाइप करा</translation>
 <translation id="1771761307086386028">उजवीकडे स्क्रोल करा</translation>
 <translation id="1781173782405573156">की द्वारे पास करा</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">पंक्ती</translation>
 <translation id="2816868829355607410">सराव क्षेत्र: जंप कमांड</translation>
 <translation id="2841013758207633010">वेळ</translation>
+<translation id="284171465644749950">विषय ब्राउझ करण्यासाठी एका बोटाने डावीकडे किंवा उजवीकडे स्वाइप करा</translation>
 <translation id="2843432675592278677">मागील ARIA खूण नाही</translation>
 <translation id="2843814945404750166">गडद ऑलिव्ह हिरवा</translation>
 <translation id="2843837985843789981">मागील गट</translation>
@@ -1120,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox अपडेट केला</translation>
 <translation id="93384979447910801">गडद निळसर हिरवा</translation>
 <translation id="948171205378458592">बोलण्याचा दर कमी करा</translation>
+<translation id="957570623732056069">या धड्यावर नेव्हिगेट करण्यासाठी एका बोटाने डावीकडे किंवा उजवीकडे स्वाइप करा</translation>
 <translation id="958854023026327378">एका बोटाने खालच्या दिशेला स्वाइप करा</translation>
 <translation id="962913030769097253">पुढील स्तर 1 मथळा</translation>
 <translation id="966588271015727539">ब्लूटूथ ब्रेल डिस्प्ले निवडा</translation>

@@ -764,6 +764,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3831915413245941253"><ph name="ENROLLMENT_DOMAIN" /> imesakinisha viendelezi kwa ajili ya majukumu ya ziada. Viendelezi vina idhini ya kufikia baadhi ya data yako.</translation>
 <translation id="3832522519263485449">Toboa mara kadhaa kushoto</translation>
 <translation id="3835233591525155343">Matumizi ya kifaa chako</translation>
+<translation id="3841184659773414994">Vidhibiti vya Faili</translation>
 <translation id="385051799172605136">Rudi nyuma</translation>
 <translation id="3858027520442213535">Sasisha tarehe na saa</translation>
 <translation id="3884278016824448484">Kitambulisho cha kifaa kinachokinzana</translation>
@@ -1799,6 +1800,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7844689747373518809">{COUNT,plural, =0{Hamna}=1{Programu 1 (<ph name="EXAMPLE_APP_1" />)}=2{Programu 2 (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{Programu # (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785549533363645510">Hata hivyo, huonekani. Kuvinjari katika hali fiche hakufichi kuvinjari kwako kusionekane na mwajiri, mtoaji huduma wako wa intaneti, au tovuti unazotembelea.</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
+<translation id="7858035578849836010">Kufungua faili zenye uhusiano wa aina ya faili.</translation>
 <translation id="7862185352068345852">Ungependa kufunga tovuti?</translation>
 <translation id="7865448901209910068">Kasi bora zaidi</translation>
 <translation id="7874263914261512992">Umeweka nenosiri lako kwenye tovuti inayotiliwa shaka. Chrome inapendekeza ukague manenosiri uliyohifadhi kwenye <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> na tovuti nyingine unakotumia nenosiri hili kwa sasa.</translation>

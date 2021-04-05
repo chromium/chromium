@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">ナビゲーション履歴</translation>
 <translation id="1231733316453485619">同期を有効にしますか？</translation>
 <translation id="123724288017357924">キャッシュ コンテンツを無視して現在のページを再読み込みする</translation>
+<translation id="1240288207750131269"><ph name="LANG" /> を読み込んでいます</translation>
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> を共有できませんでした</translation>
+<translation id="1276279242344007853">フォローしているサイトを管理します</translation>
 <translation id="1283039547216852943">タップして展開</translation>
 <translation id="1285310382777185058">言語を変更する</translation>
 <translation id="1291207594882862231">履歴、Cookie、サイトデータ、キャッシュを削除…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">アプリケーションのバージョン</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> を共有できません</translation>
+<translation id="1466383950273130737">Chrome の言語を選択</translation>
 <translation id="147113415845704694">「今日の天気は？」と聞いてみましょう</translation>
 <translation id="1477626028522505441">サーバーで問題が発生したため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
 <translation id="1492417797159476138">このユーザー名はこのサイトですでに保存されています</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">インターネット接続を確認しています</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2369533728426058518">開いているタブ</translation>
+<translation id="2386938421315164605">トピックの表示と非表示を切り替えます</translation>
 <translation id="2387895666653383613">テキストの拡大と縮小</translation>
 <translation id="2394602618534698961">ダウンロードしたファイルがここに表示されます</translation>
 <translation id="2407481962792080328">この機能は Google アカウントにログインすると有効になります</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google アカウント<ph name="END_LINK" />での保存パスワードの表示と管理</translation>
 <translation id="2818669890320396765">お使いのどのデバイスでも同じブックマークを使用するには、ログインして同期を有効にします</translation>
 <translation id="2827278682606527653">フィードカード メニューが画面の下半分に開いています</translation>
+<translation id="2839327205551510876"><ph name="SITE_NAME" /> のフォローを解除しました</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{前回の確認: 1 日前}other{前回の確認: # 日前}}</translation>
 <translation id="2842985007712546952">親フォルダ</translation>
 <translation id="2856503607207334158">ログインできませんでした</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Google 通知プラットフォーム</translation>
 <translation id="2923908459366352541">名前が無効です</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ストレージ</translation>
+<translation id="2932222164150889403">キーボードは変更されません</translation>
 <translation id="2942036813789421260">[プレビュー] タブは閉じられています</translation>
 <translation id="2956410042958133412">このアカウントは <ph name="PARENT_NAME_1" /> と <ph name="PARENT_NAME_2" /> によって管理されています。</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> 件の未読ページ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> 件の未読ページ}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">アシスタントの音声検索の同意ダイアログ</translation>
 <translation id="3034163383943672781"><ph name="DATE" /> にダウンロードを開始します。</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ヘルプ<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">次回からこのサイトにすばやくアクセスできます</translation>
 <translation id="305593374596241526">位置情報が OFF になっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />で ON にしてください。</translation>
 <translation id="3058498974290601450">同期は設定でいつでもオンにできます。</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個のブックマーク}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個のブックマーク}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">[同期と Google サービス] の設定をカスタマイズしています。同期を有効にしたら、画面の下部にある [確認] をタップしてください。上へ移動</translation>
 <translation id="3334729583274622784">ファイル拡張子を変更しますか？</translation>
 <translation id="3341058695485821946">データ削減量を確認できます</translation>
+<translation id="3341262203274374114">フォローを解除できません。エラーが発生しました。</translation>
 <translation id="3350687908700087792">すべてのシークレット タブを閉じます</translation>
 <translation id="3359667936385849800">現在のサービス プロバイダを使用</translation>
 <translation id="3367813778245106622">同期を開始するにはもう一度ログインします</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">位置情報は許可</translation>
 <translation id="3988466920954086464">このパネルにインスタント検索の結果が表示されます</translation>
 <translation id="4000212216660919741">オフライン ホーム</translation>
+<translation id="4016425174436051808">フォローできません。エラーが発生しました。</translation>
+<translation id="4021916380760361450">Google アカウントのデータを管理します</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# 時間}other{# 時間}}</translation>
 <translation id="4045764304651014138">使用状況データ</translation>
 <translation id="4056223980640387499">セピア</translation>
@@ -599,6 +609,7 @@
 <translation id="5152843274749979095">サポートされているアプリがインストールされていません</translation>
 <translation id="5161254044473106830">タイトルが必要です</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 件のダウンロードが失敗しました。}other{# 件のダウンロードが失敗しました。}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> をフォローしました</translation>
 <translation id="5170568018924773124">フォルダを開く</translation>
 <translation id="5184329579814168207">Chromeで開く</translation>
 <translation id="5188992787241350004">音声で検索</translation>
@@ -718,6 +729,7 @@
 <translation id="5864419784173784555">別のダウンロードの完了待ちです…</translation>
 <translation id="5865733239029070421">使用統計情報や障害レポートを Google に自動送信します</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
+<translation id="5880748256563468367">フィードに移動</translation>
 <translation id="5884076754568147479">タスクを完了するため、アシスタントを使用したサイトの URL とコンテンツ、およびアシスタントで送信した情報が Google に送られます。</translation>
 <translation id="5919204609460789179">同期を開始するには <ph name="PRODUCT_NAME" /> を更新してください</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> 節約</translation>
@@ -735,6 +747,7 @@
 <translation id="5979084224081478209">パスワードを確認</translation>
 <translation id="5982307838673692400">シークレット タブを開く</translation>
 <translation id="6000066717592683814">Google のままにする</translation>
+<translation id="6000203700195075278">再フォロー</translation>
 <translation id="6005538289190791541">推奨パスワード</translation>
 <translation id="6036057147555329831">その他の ICU</translation>
 <translation id="6039379616847168523">次のタブに移動する</translation>
@@ -1097,6 +1110,7 @@
 <translation id="834313815369870491">翻訳しないサイト</translation>
 <translation id="8349013245300336738">データ使用量で並べ替え</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> 件のダウンロードが復元されました</translation>
+<translation id="8362134094656482681">興味のあるトピックを管理します</translation>
 <translation id="8364299278605033898">人気のウェブサイトを表示します</translation>
 <translation id="8368027906805972958">不明またはサポートされていないデバイス（<ph name="DEVICE_ID" />）</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> を使用できるようになりました。</translation>

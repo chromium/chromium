@@ -519,6 +519,7 @@
 <translation id="1563702743503072935">Google アカウントに保存したパスワードをこのデバイスでもログイン中に使用できるようになります</translation>
 <translation id="1566049601598938765">ウェブサイト</translation>
 <translation id="15662109988763471">選択したプリンタは利用できないか、正しくインストールされていません。プリンタを確認するか、別のプリンタを選択してみてください。</translation>
+<translation id="1567135437923613642">おすすめのテストを有効にする</translation>
 <translation id="1567387640189251553">前回のパスワード入力時以降に別のキーボードが接続されました。キー入力が読み取られる可能性があります。</translation>
 <translation id="1567993339577891801">JavaScript コンソール</translation>
 <translation id="1568323446248056064">ディスプレイのデバイス設定を開く</translation>
@@ -918,6 +919,7 @@
 <translation id="1979095679518582070">この機能をオフにしても、システム アップデートやセキュリティといった重要なサービスで必要な情報はデバイスから引き続き送信されます。</translation>
 <translation id="1979280758666859181">古いバージョンの <ph name="PRODUCT_NAME" /> のチャンネルに変更しようとしています。このチャンネル変更は、チャンネルのバージョンとお使いのデバイスにインストールされているバージョンとが一致したときに適用されます。</translation>
 <translation id="197989455406964291">KDC でサポートされていない暗号化タイプです</translation>
+<translation id="1983497378699148207">Linux の設定を完了するには、Chrome OS を更新してからもう一度お試しください。</translation>
 <translation id="1984417487208496350">保護なし（推奨されません）</translation>
 <translation id="1987317783729300807">アカウント</translation>
 <translation id="1989112275319619282">閲覧</translation>
@@ -1330,6 +1332,7 @@
 <translation id="2450223707519584812">Google API キーがないため、ユーザーを追加できません。詳しくは、<ph name="DETAILS_URL" /> をご覧ください。</translation>
 <translation id="2450849356604136918">アクティブ ビューなし</translation>
 <translation id="2451298179137331965">2 倍</translation>
+<translation id="245322989586167203">多くのサイトは、ネットワークを設定するなど、データ転送機能を使用するためにシリアルポートに接続します</translation>
 <translation id="2453860139492968684">終了</translation>
 <translation id="2454247629720664989">キーワード</translation>
 <translation id="2454264884354864965">カメラはオフです</translation>
@@ -1960,6 +1963,7 @@
 <translation id="313205617302240621">パスワードを忘れた場合</translation>
 <translation id="3132277757485842847">スマートフォンとの接続を維持できませんでした。Bluetooth 搭載のスマートフォンが近くにあり、Wi-Fi がオンになっていて、ロックも解除されていることを確認してください。</translation>
 <translation id="3132996321662585180">毎日更新する</translation>
+<translation id="3134393957315651797"><ph name="EXPERIMENT_NAME" /> テストの試験運用機能の状態を選択します。テストの説明: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
 <translation id="3138624403379688522">無効な PIN です。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="313963229645891001">ダウンロードしています。<ph name="STATUS" /></translation>
 <translation id="3139925690611372679">デフォルトの黄のアバター</translation>
@@ -2844,6 +2848,7 @@
 <translation id="4099874310852108874">ネットワークエラーが発生しました。</translation>
 <translation id="4100733287846229632">デバイスの空き領域が非常に少なくなっています</translation>
 <translation id="4100853287411968461">利用時間の上限が変更されました</translation>
+<translation id="4101352914005291489">ステルス SSID</translation>
 <translation id="4102906002417106771">再起動して Powerwash を実行</translation>
 <translation id="4104163789986725820">エクスポート(&amp;X)</translation>
 <translation id="4107048419833779140">ストレージ デバイスの認識と取り外し</translation>
@@ -3913,6 +3918,7 @@
 <translation id="5382591305415226340">サポートされているリンクを管理</translation>
 <translation id="5383377866517186886">Mac のシステム環境設定でカメラがオフになっています</translation>
 <translation id="5383740867328871413">名前のないグループ - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
+<translation id="538822246583124912">エンタープライズ ポリシーが変更され、ツールバーにテストボタンが追加されました。ボタンをクリックすると、ダイアログを開いてテストを有効にできます。</translation>
 <translation id="5388885445722491159">ペア設定済み</translation>
 <translation id="5390100381392048184">音声の再生をサイトに許可する</translation>
 <translation id="5390112241331447203">送信された system_logs.txt ファイルをフィードバック レポートに含める。</translation>
@@ -5037,6 +5043,7 @@
 <translation id="6659594942844771486">タブ</translation>
 <translation id="6660413144148052430">現在地情報</translation>
 <translation id="666099631117081440">プリント サーバー</translation>
+<translation id="6662931079349804328">エンタープライズ ポリシーが変更され、ツールバーからテストボタンが削除されました。</translation>
 <translation id="6663190258859265334"><ph name="DEVICE_TYPE" /> で Powerwash を実行し、以前のバージョンに戻します。</translation>
 <translation id="6664237456442406323">パソコンに設定されているハードウェア ID の形式が正しくありません。このため、Chrome OS に最新のセキュリティ修正を適用することができません。お使いのパソコンは、<ph name="BEGIN_BOLD" />悪意のある攻撃を受けやすくなる可能性があります<ph name="END_BOLD" />。</translation>
 <translation id="6664774537677393800">プロフィールを開こうとして問題が発生しました。ログアウトしてから再度ログインしてください。</translation>
@@ -5393,6 +5400,7 @@
 <translation id="7056526158851679338">デバイスを検証(&amp;I)</translation>
 <translation id="7057184853669165321">{NUM_MINS,plural, =1{安全確認を 1 分前に実行しました}other{安全確認を {NUM_MINS} 分前に実行しました}}</translation>
 <translation id="7057767408836081338">アプリのデータを取得できませんでした。引き続きアプリの実行を試みています...</translation>
+<translation id="7058024590501568315">非公開ネットワーク</translation>
 <translation id="7059858479264779982">自動起動に設定する</translation>
 <translation id="7059893117020417984">シークレット モードを使うには、その他アイコンのメニューからシークレット ウィンドウを開きます</translation>
 <translation id="7062222374113411376">最近閉じたサイトがデータの送受信を完了できるようにする（推奨）</translation>
@@ -5756,6 +5764,7 @@
 <translation id="7477793887173910789">音楽、動画、その他のメディアを操作します</translation>
 <translation id="7478485216301680444">キオスク アプリケーションをインストールできませんでした。</translation>
 <translation id="7478623944308207463">Google アカウントでログインしているすべての Chrome OS デバイス間で、アプリや設定が同期されます。ブラウザの同期オプションについては、<ph name="LINK_BEGIN" />Chrome の設定<ph name="LINK_END" />をご覧ください。</translation>
+<translation id="7478658909253570368">サイトにシリアルポートへの接続を許可しない</translation>
 <translation id="7479221278376295180">ストレージ使用状況</translation>
 <translation id="7481312909269577407">進む</translation>
 <translation id="7481358317100446445">準備完了</translation>
@@ -5907,11 +5916,13 @@
 <translation id="765293928828334535">このウェブサイトからアプリ、拡張機能、ユーザー スクリプトを追加することはできません</translation>
 <translation id="7652954539215530680">PIN の作成</translation>
 <translation id="7654941827281939388">このアカウントは既にこのパソコンで使用されています。</translation>
+<translation id="7655411746932645568">サイトがシリアルポートへの接続を要求できるようにする</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7659297516559011665">このデバイスに保存されているパスワードのみ</translation>
 <translation id="7659584679870740384">このデバイスを使用する権限がありません。ログイン権限については、デバイスの所有者にお問い合わせください。</translation>
 <translation id="7661259717474717992">サイトに Cookie データの保存と読み取りを許可する</translation>
 <translation id="7661451191293163002">登録証明書を取得できませんでした。</translation>
+<translation id="7661762353058813968">更新は管理者によって管理されています。</translation>
 <translation id="7662283695561029522">設定するにはタップします</translation>
 <translation id="7663719505383602579">レシーバー: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7664620655576155379">サポートされていない Bluetooth デバイス: 「<ph name="DEVICE_NAME" />」</translation>
@@ -6693,6 +6704,7 @@
 <translation id="8539727552378197395">いいえ（HTTP のみ）</translation>
 <translation id="8539766201049804895">アップグレード</translation>
 <translation id="8540136935098276800">正しい形式の URL を入力してください</translation>
+<translation id="8540503336857689453">セキュリティ上の理由から、非公開ネットワークの使用は推奨されません。</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="854071720451629801">既読にする</translation>
 <translation id="8541462173655894684">プリント サーバーでプリンタが見つかりませんでした</translation>

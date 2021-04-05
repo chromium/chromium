@@ -132,6 +132,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2012624427112548395">Ctrl+Search+H</translation>
 <translation id="2016340657076538683">Mag-type ng mensahe</translation>
 <translation id="2018630726571919839">Pahingi ng joke</translation>
+<translation id="2021864487439853900">I-click para i-unlock</translation>
 <translation id="2049240716062114887">Ginawang <ph name="DESK_NAME" /> ang pangalan ng desk</translation>
 <translation id="2050339315714019657">Portrait</translation>
 <translation id="2067602449040652523">Liwanag ng keyboard</translation>
@@ -409,10 +410,12 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4421231901400348175">Pagbabahagi ng kontrol sa iyong screen gamit ang <ph name="HELPER_NAME" /> sa pamamagitan ng Remote Assistance.</translation>
 <translation id="4424159417645388645">Desk 5</translation>
 <translation id="4430019312045809116">Volume</translation>
+<translation id="4445159312344259901">Mag-sign in para i-unlock</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 mahalagang notification}one{# mahalagang notification}other{# na mahalagang notification}}</translation>
 <translation id="4450893287417543264">Huwag ipakitang muli</translation>
 <translation id="445864333228800152">Magandang gabi,</translation>
 <translation id="4458688154122353284">Ihinto ang pag-record ng screen</translation>
+<translation id="4467143075433126295">Pindutin nang matagal ang [Esc] para lumabas sa full screen</translation>
 <translation id="4472575034687746823">Magsimula</translation>
 <translation id="4477350412780666475">Susunod na Track</translation>
 <translation id="4477892968187500306">Posibleng naglalaman ang device na ito ng mga app na hindi pa nave-verify ng Google.</translation>

@@ -57,6 +57,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="1299774449519412690">Blu qielli e çelur</translation>
 <translation id="1303806948938513162">Trokit me 4 gishta për të hyrë në menytë e ChromeVox</translation>
 <translation id="1313373992684326101">Kalo te seksioni i mëparshëm. Shembujt përfshijnë "Tabakanë e statusit" dhe "Nisësin".</translation>
+<translation id="1315077335264761176">Orientimi me prekje</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, butoni i radios i artikullit të menysë është i pazgjedhur</translation>
 <translation id="1325946044405407859">Kafe e çelur</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> nga <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="1730447754326314349">Mirë se vjen në udhëzuesin e ChromeVox. Për të dalë nga ky udhëzues në çdo kohë, shtyp tastin Escape në këndin e majtë lart të tastierës. Për të çaktivizuar ChromeVox, mbaj shtypur Control dhe Alt dhe shtyp Z. Kur të jesh gati, përdor tastin e hapësirës për t'u zhvendosur në mësimin tjetër.</translation>
 <translation id="174268867904053074">Grafika tjetër</translation>
 <translation id="1756785467854861272">E purpurt e errët</translation>
+<translation id="1758693804775271377">Rrëshqit shpejt majtas ose djathtas me një gisht për të shfletuar te mësimet për këtë temë</translation>
 <translation id="1765245556747822181">Rrëshqit shpejt një gisht lart</translation>
 <translation id="1771761307086386028">Lëviz djathtas</translation>
 <translation id="1781173782405573156">Çelësi i kalimit</translation>
@@ -258,6 +260,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="2811204574343810641">Rreshti</translation>
 <translation id="2816868829355607410">Zona praktike: Komandat e kërcimit</translation>
 <translation id="2841013758207633010">Koha</translation>
+<translation id="284171465644749950">Rrëshqit shpejt majtas ose djathtas me një gisht për të shfletuar temat</translation>
 <translation id="2843432675592278677">Nuk ka pikë referimi të mëparshme ARIA</translation>
 <translation id="2843814945404750166">E gjelbër ulliri e errët</translation>
 <translation id="2843837985843789981">Grupi i mëparshëm</translation>
@@ -1120,6 +1123,7 @@ Për të hapur menynë e shfletuesit Chrome, shtyp Alt+F.</translation>
 <translation id="923331726185079994">ChromeVox është përditësuar</translation>
 <translation id="93384979447910801">E gjelbër deti e errët</translation>
 <translation id="948171205378458592">Ul shpejtësinë e ligjërimit</translation>
+<translation id="957570623732056069">Rrëshqit shpejt majtas ose djathtas me një gisht për të naviguar në këtë mësim</translation>
 <translation id="958854023026327378">Rrëshqit shpejt një gisht poshtë</translation>
 <translation id="962913030769097253">Titulli i nivelit tjetër 1</translation>
 <translation id="966588271015727539">Zgjidh një ekran breil me Bluetooth</translation>

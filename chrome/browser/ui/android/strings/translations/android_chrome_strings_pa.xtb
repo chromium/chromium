@@ -38,9 +38,11 @@
 <translation id="1227058898775614466">ਨੈਵੀਗੇਸ਼ਨ ਇਤਿਹਾਸ</translation>
 <translation id="1231733316453485619">ਕੀ ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰਨਾ ਹੈ?</translation>
 <translation id="123724288017357924">ਕੈਸ਼ੇ ਕੀਤੀ ਸਮੱਗਰੀ ਨੂੰ ਅਣਡਿੱਠ ਕਰਕੇ ਮੌਜੂਦਾ ਪੰਨਾ ਰੀਲੋਡ ਕਰੋ</translation>
+<translation id="1240288207750131269"><ph name="LANG" /> ਨੂੰ ਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="124678866338384709">ਮੌਜੂਦਾ ਟੈਬ ਬੰਦ ਕਰੋ</translation>
 <translation id="1258753120186372309">Google ਡੂਡਲ: <ph name="DOODLE_DESCRIPTION" /></translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ਨਾਲ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
+<translation id="1276279242344007853">ਆਪਣੇ ਵੱਲੋਂ ਅਨੁਸਰਣ ਕੀਤੀਆਂ ਜਾਂਦੀਆਂ ਸਾਈਟਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="1283039547216852943">ਵਿਸਤਾਰ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ</translation>
 <translation id="1285310382777185058">ਭਾਸ਼ਾ ਬਦਲੋ</translation>
 <translation id="1291207594882862231">ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਸਾਈਟ ਡਾਟਾ, ਕੈਸ਼ੇ ਸਾਫ਼ ਕਰੋ…</translation>
@@ -71,6 +73,7 @@
 <translation id="1416550906796893042">ਐਪਲੀਕੇਸ਼ਨ ਵਰਜਨ</translation>
 <translation id="1430915738399379752">ਪ੍ਰਿੰਟ ਕਰੋ</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> ਨੂੰ ਸਾਂਝਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
+<translation id="1466383950273130737">Chrome ਦੀ ਭਾਸ਼ਾ ਚੁਣੋ</translation>
 <translation id="147113415845704694">“ਅੱਜ ਮੌਸਮ ਕਿਹੋ ਜਿਹਾ ਹੈ?” ਕਹਿ ਕੇ ਦੇਖੋ</translation>
 <translation id="1477626028522505441">ਸਰਵਰ ਸਮੱਸਿਆਵਾਂ ਦੇ ਕਾਰਨ <ph name="FILE_NAME" /> ਡਾਊਨਲੋਡ ਅਸਫ਼ਲ ਰਿਹਾ।</translation>
 <translation id="1492417797159476138">ਤੁਸੀਂ ਪਹਿਲਾਂ ਹੀ ਇਸ ਸਾਈਟ ਲਈ ਇਹ ਵਰਤੋਂਕਾਰ ਨਾਮ ਰੱਖਿਅਤ ਕਰ ਚੁੱਕੇ ਹੋ</translation>
@@ -205,6 +208,7 @@
 <translation id="2353636109065292463">ਤੁਹਾਡੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="2359808026110333948">ਜਾਰੀ ਰੱਖੋ</translation>
 <translation id="2369533728426058518">ਟੈਬਾਂ ਖੋਲ੍ਹੋ</translation>
+<translation id="2386938421315164605">ਵਿਸ਼ੇ ਲੁਕਾਓ ਅਤੇ ਦਿਖਾਓ</translation>
 <translation id="2387895666653383613">ਟੈਕਸਟ ਸਕੇਲਿੰਗ</translation>
 <translation id="2394602618534698961">ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਇੱਥੇ ਦਿਸਦੀਆਂ ਹਨ</translation>
 <translation id="2407481962792080328">ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਹ ਵਿਸ਼ੇਸ਼ਤਾ ਚਾਲੂ ਹੋ ਜਾਂਦੀ ਹੈ</translation>
@@ -265,6 +269,7 @@
 <translation id="281504910091592009">ਆਪਣੇ <ph name="BEGIN_LINK" />Google ਖਾਤੇ<ph name="END_LINK" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ ਦੇਖੋ ਅਤੇ ਉਹਨਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2818669890320396765">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, ਸਾਈਨ-ਇਨ ਕਰਕੇ ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="2827278682606527653">ਫ਼ੀਡ ਕਾਰਡ ਮੀਨੂ ਅੱਧਾ ਖੁੱਲ੍ਹਾ ਹੈ</translation>
+<translation id="2839327205551510876"><ph name="SITE_NAME" /> ਦਾ ਅਨੁਸਰਣ ਬੰਦ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="2841216154655874070">{NUM_DAYS,plural, =1{1 ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}one{# ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}other{# ਦਿਨ ਪਹਿਲਾਂ ਜਾਂਚ ਕੀਤੀ ਗਈ}}</translation>
 <translation id="2842985007712546952">ਪੇਰੈਂਟ ਫੋਲਡਰ</translation>
 <translation id="2856503607207334158">ਸਾਈਨ-ਇਨ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ</translation>
@@ -281,6 +286,7 @@
 <translation id="2909615210195135082">Google ਸੂਚਨਾਵਾਂ ਪਲੇਟਫਾਰਮ</translation>
 <translation id="2923908459366352541">ਨਾਮ ਅਵੈਧ ਹੈ</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> ਸਟੋਰੇਜ</translation>
+<translation id="2932222164150889403">ਤੁਹਾਡਾ ਕੀ-ਬੋਰਡ ਨਹੀਂ ਬਦਲੇਗਾ</translation>
 <translation id="2942036813789421260">ਪੂਰਵ-ਝਲਕ ਟੈਬ ਬੰਦ ਹੈ</translation>
 <translation id="2956410042958133412">ਇਹ ਖਾਤਾ <ph name="PARENT_NAME_1" /> ਅਤੇ <ph name="PARENT_NAME_2" /> ਵੱਲੋਂ ਪ੍ਰਬੰਧਿਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ਨਾ-ਪੜ੍ਹਿਆ ਪੰਨਾ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ਨਾ-ਪੜ੍ਹੇ ਪੰਨੇ}}</translation>
@@ -297,6 +303,7 @@
 <translation id="3031225630520268969">Assistant ਦੀ ਅਵਾਜ਼ੀ ਖੋਜ ਲਈ ਸਹਿਮਤੀ ਵਾਲਾ UI</translation>
 <translation id="3034163383943672781"><ph name="DATE" /> ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨਾ ਸ਼ੁਰੂ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />ਮਦਦ ਪ੍ਰਾਪਤ ਕਰੋ<ph name="END_LINK" /></translation>
+<translation id="3046945242843292318">ਅਗਲੀ ਵਾਰ ਇਸ ਸਾਈਟ 'ਤੇ ਵਧੇਰੇ ਤੇਜ਼ੀ ਨਾਲ ਪਹੁੰਚੋ</translation>
 <translation id="305593374596241526">ਟਿਕਾਣਾ ਸੇਵਾ ਬੰਦ ਹੈ; ਇਸਨੂੰ <ph name="BEGIN_LINK" />Android ਸੈਟਿੰਗਾਂ<ph name="END_LINK" /> ਵਿੱਚ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="3058498974290601450">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਕਿਸੇ ਵੇਲੇ ਵੀ ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ਬੁੱਕਮਾਰਕ}one{<ph name="BOOKMARKS_COUNT_MANY" /> ਬੁੱਕਮਾਰਕ}other{<ph name="BOOKMARKS_COUNT_MANY" /> ਬੁੱਕਮਾਰਕ}}</translation>
@@ -340,6 +347,7 @@
 <translation id="3315103659806849044">ਤੁਸੀਂ ਇਸ ਵੇਲੇ ਆਪਣੀਆਂ ਸਮਕਾਲੀਕਰਨ ਅਤੇ Google ਸੇਵਾ ਸੈਟਿੰਗਾਂ ਵਿਉਂਤਬੱਧ ਕਰ ਰਹੇ ਹੋ। ਸਮਕਾਲੀਕਰਨ ਚਾਲੂ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ ਪੂਰੀ ਕਰਨ ਲਈ, ਸਕ੍ਰੀਨ ਦੇ ਹੇਠਾਂ 'ਪੁਸ਼ਟੀ ਕਰੋ' ਬਟਨ 'ਤੇ ਟੈਪ ਕਰੋ। ਉੱਪਰ ਵੱਲ ਨੈਵੀਗੇਟ ਕਰੋ</translation>
 <translation id="3334729583274622784">ਕੀ ਫ਼ਾਈਲ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
 <translation id="3341058695485821946">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਚਾਏ ਗਏ ਡਾਟੇ ਦੀ ਮਾਤਰਾ ਦੇਖੋ</translation>
+<translation id="3341262203274374114">ਅਨੁਸਰਣ ਕਰਨਾ ਬੰਦ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
 <translation id="3350687908700087792">ਸਾਰੀਆਂ ਗੁਮਨਾਮ ਟੈਬਸ ਬੰਦ ਕਰੋ</translation>
 <translation id="3359667936385849800">ਆਪਣਾ ਮੌਜੂਦਾ ਸੇਵਾ ਪ੍ਰਦਾਨਕ ਵਰਤੋ</translation>
 <translation id="3367813778245106622">ਸਮਕਾਲੀਕਰਨ ਕਰਨਾ ਚਾਲੂ ਕਰਨ ਲਈ ਦੁਬਾਰਾ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
@@ -434,6 +442,8 @@
 <translation id="3988213473815854515">ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="3988466920954086464">ਇਸ ਪੈਨਲ ਵਿੱਚ ਤਤਕਾਲ ਖੋਜ ਨਤੀਜੇ ਦੇਖੋ</translation>
 <translation id="4000212216660919741">ਆਫ਼ਲਾਈਨ ਹੋਮ</translation>
+<translation id="4016425174436051808">ਅਨੁਸਰਣ ਕਰਨਾ ਸ਼ੁਰੂ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ।</translation>
+<translation id="4021916380760361450">ਆਪਣੇ Google ਖਾਤੇ ਦੇ ਡਾਟਾ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ</translation>
 <translation id="4034817413553209278">{HOURS,plural, =1{# ਘੰਟਾ}one{# ਘੰਟਾ}other{# ਘੰਟੇ}}</translation>
 <translation id="4045764304651014138">ਵਰਤੋਂ ਡਾਟਾ</translation>
 <translation id="4056223980640387499">Sepia</translation>
@@ -599,6 +609,7 @@
 <translation id="5152843274749979095">ਕੋਈ ਸਮਰਥਿਤ ਐਪਾਂ ਸਥਾਪਤ ਨਹੀਂ ਹਨ</translation>
 <translation id="5161254044473106830">ਸਿਰਲੇਖ ਲਾਜ਼ਮੀ</translation>
 <translation id="5162754098604580781">{FILE_COUNT,plural, =1{1 ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ।}one{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਿਹਾ।}other{# ਡਾਊਨਲੋਡ ਅਸਫਲ ਰਹੇ।}}</translation>
+<translation id="5168824020667180049"><ph name="SITE_NAME" /> ਦਾ ਅਨੁਸਰਣ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="5170568018924773124">ਫੋਲਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="5184329579814168207">Chrome ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="5188992787241350004">ਆਪਣੀ ਅਵਾਜ਼ ਨਾਲ ਖੋਜੋ</translation>
@@ -718,6 +729,7 @@
 <translation id="5864419784173784555">ਕਿਸੇ ਹੋਰ ਡਾਊਨਲੋਡ ਵੱਲੋਂ ਨੈੱਟਵਰਕ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ…</translation>
 <translation id="5865733239029070421">Google ਨੂੰ ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਭੇਜਦੀ ਹੈ</translation>
 <translation id="5869522115854928033">ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ</translation>
+<translation id="5880748256563468367">ਫ਼ੀਡ 'ਤੇ ਜਾਓ</translation>
 <translation id="5884076754568147479">ਕਾਰਜ ਪੂਰੇ ਕਰਨ ਵਿੱਚ ਤੁਹਾਡੀ ਮਦਦ ਕਰਨ ਲਈ, Google ਨੂੰ ਉਹਨਾਂ ਸਾਈਟਾਂ ਦੇ URL ਅਤੇ ਸਮੱਗਰੀਆਂ ਮਿਲਣਗੀਆਂ ਜਿਨ੍ਹਾਂ 'ਤੇ ਤੁਸੀਂ Assistant ਨੂੰ ਵਰਤਦੇ ਹੋ, ਨਾਲ ਹੀ ਤੁਹਾਡੇ ਵੱਲੋਂ Assistant ਰਾਹੀਂ ਸਪੁਰਦ ਕੀਤੀ ਜਾਣਕਾਰੀ ਵੀ ਮਿਲੇਗੀ</translation>
 <translation id="5919204609460789179">ਸਮਕਾਲੀਕਰਨ ਸ਼ੁਰੂ ਕਰਨ ਲਈ <ph name="PRODUCT_NAME" /> ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5937580074298050696"><ph name="AMOUNT" /> ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
@@ -735,6 +747,7 @@
 <translation id="5979084224081478209">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="5982307838673692400">ਇਨਕੋਗਨਿਟੋ ਟੈਬ ਖੋਲ੍ਹੋ</translation>
 <translation id="6000066717592683814">Google ਰੱਖੋ</translation>
+<translation id="6000203700195075278">ਮੁੜ-ਅਨੁਸਰਣ ਕਰੋ</translation>
 <translation id="6005538289190791541">ਸੁਝਾਇਆ ਗਿਆ ਪਾਸਵਰਡ</translation>
 <translation id="6036057147555329831">ਵਾਧੂ ICU</translation>
 <translation id="6039379616847168523">ਅਗਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
@@ -1013,6 +1026,7 @@
 <translation id="7846296061357476882">Google ਸੇਵਾਵਾਂ</translation>
 <translation id="784934925303690534">ਸਮਾਂ ਰੇਂਜ</translation>
 <translation id="7851858861565204677">ਹੋਰ ਡਿਵਾਈਸਾਂ</translation>
+<translation id="7853202427316060426">ਸਰਗਰਮੀ</translation>
 <translation id="7857691613771368249">ਪੁੱਛੋ ਕਿ ਫ਼ਾਈਲਾਂ ਨੂੰ ਕਦੋਂ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ</translation>
 <translation id="7859988229622350291">ਕਦੇ ਵੀ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
 <translation id="7875915731392087153">ਈਮੇਲ ਬਣਾਓ</translation>
@@ -1096,6 +1110,7 @@
 <translation id="834313815369870491">ਕਦੇ ਵੀ ਇਹਨਾਂ ਸਾਈਟਾਂ ਦਾ ਅਨੁਵਾਦ ਨਾ ਕਰੋ</translation>
 <translation id="8349013245300336738">ਵਰਤੇ ਗਏ ਡਾਟੇ ਦੀ ਮਾਤਰਾ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰੋ</translation>
 <translation id="835847953965672673"><ph name="NUMBER_OF_DOWNLOADS" /> ਡਾਊਨਲੋਡਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ</translation>
+<translation id="8362134094656482681">ਆਪਣੀ ਦਿਲਚਸਪੀ ਵਾਲੇ ਵਿਸ਼ਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="8364299278605033898">ਪ੍ਰਸਿੱਧ ਵੈੱਬਸਾਈਟਾਂ ਦੇਖੋ</translation>
 <translation id="8368027906805972958">ਅਗਿਆਤ ਜਾਂ ਅਸਮਰਥਿਤ ਡੀਵਾਈਸ (<ph name="DEVICE_ID" />)</translation>
 <translation id="8372925856448695381"><ph name="LANG" /> ਤਿਆਰ ਹੈ।</translation>

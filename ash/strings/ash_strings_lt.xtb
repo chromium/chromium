@@ -132,6 +132,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2012624427112548395">„Ctrl“ + paieškos klavišas + H</translation>
 <translation id="2016340657076538683">Įveskite pranešimą</translation>
 <translation id="2018630726571919839">Papasakok pokštą</translation>
+<translation id="2021864487439853900">Atrakinti spustelėjus</translation>
 <translation id="2049240716062114887">Darbalaukio pavadinimas pakeistas į „<ph name="DESK_NAME" />“</translation>
 <translation id="2050339315714019657">Stačias</translation>
 <translation id="2067602449040652523">Klaviatūros šviesumas</translation>
@@ -409,10 +410,12 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="4421231901400348175"><ph name="HELPER_NAME" /> gali valdyti jūsų ekraną naudodamas (-a) Nuotolinę pagalbą.</translation>
 <translation id="4424159417645388645">5 darbalaukis</translation>
 <translation id="4430019312045809116">Apimtis</translation>
+<translation id="4445159312344259901">Atrakinti prisijungus</translation>
 <translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 svarbus pranešimas}one{# svarbus pranešimas}few{# svarbūs pranešimai}many{# svarbaus pranešimo}other{# svarbių pranešimų}}</translation>
 <translation id="4450893287417543264">Daugiau neberodyti</translation>
 <translation id="445864333228800152">Labas vakaras,</translation>
 <translation id="4458688154122353284">Sustabdyti ekrano įrašymą</translation>
+<translation id="4467143075433126295">Jei norite išeiti iš viso ekrano režimo, paspauskite ir palaikykite [Esc]</translation>
 <translation id="4472575034687746823">Pradėkite</translation>
 <translation id="4477350412780666475">Kitas takelis</translation>
 <translation id="4477892968187500306">Šiame įrenginyje gali būti programų, kurių „Google“ nepatvirtino.</translation>

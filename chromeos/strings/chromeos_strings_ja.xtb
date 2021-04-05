@@ -163,6 +163,7 @@
 <translation id="4707579418881001319">L2TP/IPSec + ユーザー証明書</translation>
 <translation id="4731797938093519117">保護者によるアクセス</translation>
 <translation id="4773299976671772492">停止しました</translation>
+<translation id="4794140124556169553">CPU のテストを行うと、システムのパフォーマンスに響することがあります</translation>
 <translation id="4808449224298348341">キャンセルされた印刷ジョブ <ph name="DOCUMENT_TITLE" /></translation>
 <translation id="4813345808229079766">接続</translation>
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
@@ -341,6 +342,7 @@
 <translation id="8483248364096924578">IP アドレス</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
+<translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
 <translation id="8675354002693747642">事前共有キー</translation>
