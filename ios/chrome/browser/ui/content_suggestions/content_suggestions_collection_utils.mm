@@ -93,7 +93,7 @@ CGFloat doodleTopMargin(BOOL toolbarPresent,
                         UITraitCollection* traitCollection) {
   if (IsRegularXRegularSizeClass(traitCollection))
     return kDoodleTopMarginRegularXRegular;
-  if (IsCompactHeight(traitCollection))
+  if (IsCompactHeight(traitCollection) && !ShouldShrinkLogoForStartSurface())
     return topInset;
   CGFloat topMargin =
       topInset +

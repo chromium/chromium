@@ -123,7 +123,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   if (self.traitCollection.horizontalSizeClass !=
       previousTraitCollection.horizontalSizeClass) {
     [self updateFakeboxDisplay];
-    [self updateIdentityDiscInsets];
   }
 }
 
@@ -371,7 +370,9 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
   self.identityDiscButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_ACCNAME_PARTICLE_DISC);
-  [self updateIdentityDiscInsets];
+  self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsMake(
+      ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin,
+      ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin);
   [self.identityDiscButton addTarget:self
                               action:@selector(identityDiscTapped)
                     forControlEvents:UIControlEventTouchUpInside];
@@ -399,18 +400,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
   // Register to receive the avatar of the currently signed in user.
   [self.delegate registerImageUpdater:self];
-}
-
-- (void)updateIdentityDiscInsets {
-  if (ShouldShrinkLogoForStartSurface() &&
-      self.traitCollection.verticalSizeClass ==
-          UIUserInterfaceSizeClassCompact) {
-    self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsZero;
-  } else {
-    self.identityDiscButton.imageEdgeInsets = UIEdgeInsetsMake(
-        ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin,
-        ntp_home::kIdentityAvatarMargin, ntp_home::kIdentityAvatarMargin);
-  }
 }
 
 - (void)loadVoiceSearch:(id)sender {

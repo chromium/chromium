@@ -190,7 +190,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, shrunkDoodleFrameIPhone) {
       doodleTopMargin(YES, kTopInset, IPhoneLandscapeTraitCollection());
   EXPECT_EQ(68, heightLogoLandscape);
   EXPECT_EQ(60, heightNoLogoLandscape);
-  EXPECT_EQ(kTopInset, topMarginLandscape);
+  EXPECT_EQ(95, topMarginLandscape);
 
   // Portrait
   CGFloat heightLogoPortrait =

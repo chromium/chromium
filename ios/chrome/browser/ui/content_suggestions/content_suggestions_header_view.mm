@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_container_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
-#import "ios/chrome/browser/ui/start_surface/start_surface_features.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -87,10 +86,6 @@ CGFloat ToolbarHeight() {
 // Layout constraint for the invisible button that is where the omnibox should
 // be and that focuses the omnibox when tapped.
 @property(nonatomic, strong) NSLayoutConstraint* invisibleOmniboxConstraint;
-// Height layout constraint for the identity disc button.
-@property(nonatomic, strong) NSLayoutConstraint* identityDiscHeightConstraint;
-// Width layout constraint for the identity disc button.
-@property(nonatomic, strong) NSLayoutConstraint* identityDiscWidthConstraint;
 // View used to add on-touch highlight to the fake omnibox.
 @property(nonatomic, strong) UIView* fakeLocationBarHighlightView;
 
@@ -131,19 +126,14 @@ CGFloat ToolbarHeight() {
   self.identityDiscView.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat dimension =
       ntp_home::kIdentityAvatarDimension + 2 * ntp_home::kIdentityAvatarMargin;
-  self.identityDiscHeightConstraint =
-      [self.identityDiscView.heightAnchor constraintEqualToConstant:dimension];
-  self.identityDiscWidthConstraint =
-      [self.identityDiscView.widthAnchor constraintEqualToConstant:dimension];
   [NSLayoutConstraint activateConstraints:@[
-    self.identityDiscHeightConstraint,
-    self.identityDiscWidthConstraint,
+    [self.identityDiscView.heightAnchor constraintEqualToConstant:dimension],
+    [self.identityDiscView.widthAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.trailingAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor],
     [self.identityDiscView.topAnchor
         constraintEqualToAnchor:self.toolBarView.topAnchor],
   ]];
-  [self updateIdentityDiscContraints];
 }
 
 - (void)addViewsToSearchField:(UIView*)searchField {
@@ -437,7 +427,6 @@ CGFloat ToolbarHeight() {
       self.traitCollection.preferredContentSizeCategory) {
     self.searchHintLabel.font = [self hintLabelFont];
   }
-  [self updateIdentityDiscContraints];
 }
 
 - (void)updateForTopSafeAreaInset:(CGFloat)topSafeAreaInset {
@@ -467,24 +456,6 @@ CGFloat ToolbarHeight() {
 }
 
 #pragma mark - Private
-
-- (void)updateIdentityDiscContraints {
-  if (ShouldShrinkLogoForStartSurface() &&
-      self.traitCollection.verticalSizeClass ==
-          UIUserInterfaceSizeClassCompact) {
-    self.identityDiscWidthConstraint.constant =
-        ntp_home::kIdentityAvatarDimension;
-    self.identityDiscHeightConstraint.constant =
-        ntp_home::kIdentityAvatarDimension;
-  } else {
-    self.identityDiscWidthConstraint.constant =
-        ntp_home::kIdentityAvatarDimension +
-        2 * ntp_home::kIdentityAvatarMargin;
-    self.identityDiscHeightConstraint.constant =
-        ntp_home::kIdentityAvatarDimension +
-        2 * ntp_home::kIdentityAvatarMargin;
-  }
-}
 
 // Returns the font size for the hint label.
 - (UIFont*)hintLabelFont {
