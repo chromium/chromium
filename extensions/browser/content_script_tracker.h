@@ -85,11 +85,11 @@ class ContentScriptTracker {
  private:
   using PassKey = base::PassKey<ContentScriptTracker>;
 
+  // See the doc comment of DoContentScriptsMatch in the .cc file.
   friend class ContentScriptMatchingBrowserTest;
-  static bool DoContentScriptsMatchNavigatingFrameForTesting(
-      const Extension& extension,
-      content::RenderFrameHost* navigating_frame,
-      const GURL& navigation_target);
+  static bool DoContentScriptsMatchForTesting(const Extension& extension,
+                                              content::RenderFrameHost* frame,
+                                              const GURL& url);
 };
 
 }  // namespace extensions

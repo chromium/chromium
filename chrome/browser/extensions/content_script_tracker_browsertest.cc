@@ -23,6 +23,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/content_script_tracker.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -32,16 +33,39 @@
 
 namespace extensions {
 
-// Asks the |extension_id| to inject |content_script| into |web_contents|.
-// Returns true if the content script execution started successfully.
-bool ExecuteProgrammaticContentScript(content::WebContents* web_contents,
+// Asks the |extension_id| to inject |content_script| into |web_contents| and
+// waits until the script reports that it has finished executing.
+void ExecuteProgrammaticContentScript(content::WebContents* web_contents,
                                       const ExtensionId& extension_id,
                                       const std::string& content_script) {
+  // Build a script that executes the original `content_script` and then sends
+  // an ack via `domAutomationController.send`.
+  const char kAckingScriptTemplate[] = R"(
+      %s;
+      domAutomationController.send("Hello from acking script!");
+  )";
+  std::string acking_script =
+      base::StringPrintf(kAckingScriptTemplate, content_script.c_str());
+
+  // Build a script to execute in the extension's background page.
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
   std::string background_script = content::JsReplace(
-      "chrome.tabs.executeScript($1, { code: $2 });", tab_id, content_script);
-  return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      web_contents->GetBrowserContext(), extension_id, background_script);
+      "chrome.tabs.executeScript($1, { code: $2 });", tab_id, acking_script);
+
+  // Inject the script and wait for the ack.
+  //
+  // Note that using ExtensionTestMessageListener / `chrome.test.sendMessage`
+  // (instead of DOMMessageQueue / `domAutomationController.send`) would have
+  // hung in the ProgrammaticInjectionRacingWithDidCommit testcase.  The root
+  // cause is not 100% understood, but it might be because the IPC related to
+  // `chrome.test.sendMessage` can't be dispatched while running a nested
+  // message loop while handling a DidCommit IPC.
+  content::DOMMessageQueue message_queue;
+  ASSERT_TRUE(browsertest_util::ExecuteScriptInBackgroundPageNoWait(
+      web_contents->GetBrowserContext(), extension_id, background_script));
+  std::string msg;
+  EXPECT_TRUE(message_queue.WaitForMessage(&msg));
+  EXPECT_EQ("\"Hello from acking script!\"", msg);
 }
 
 // Test suite covering `extensions::ContentScriptTracker` from
@@ -84,21 +108,8 @@ class ContentScriptExecuterBeforeDidCommit {
                                    const ExtensionId& extension_id,
                                    const std::string& content_script,
                                    content::RenderFrameHost* ignored) {
-    // Tweak the original `content_script` to send an ack via
-    // `domAutomationController` after the script is done running.
-    const char kAckingScriptTemplate[] = R"(
-        %s;
-        domAutomationController.send("Hello from acking script!");
-    )";
-    std::string acking_script =
-        base::StringPrintf(kAckingScriptTemplate, content_script.c_str());
-
-    // Run the content script and wait until it runs.
-    content::DOMMessageQueue message_queue;
-    ExecuteProgrammaticContentScript(web_contents, extension_id, acking_script);
-    std::string msg;
-    EXPECT_TRUE(message_queue.WaitForMessage(&msg));
-    EXPECT_EQ("\"Hello from acking script!\"", msg);
+    ExecuteProgrammaticContentScript(web_contents, extension_id,
+                                     content_script);
   }
 
   content::CommitMessageDelayer commit_delayer_;
@@ -136,24 +147,24 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
       ProcessManager::Get(browser()->profile())
           ->GetBackgroundHostForExtension(extension->id())
           ->main_frame_host();
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       web_contents->GetMainFrame(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       background_frame, extension->id()));
 
   // Programmatically inject a content script.
-  {
-    content::DOMMessageQueue message_queue;
-    ASSERT_TRUE(ExecuteProgrammaticContentScript(
-        web_contents, extension->id(),
-        "domAutomationController.send('Hello from content script!')"));
-    std::string msg;
-    ASSERT_TRUE(message_queue.WaitForMessage(&msg));
-    ASSERT_EQ("\"Hello from content script!\"", msg);
-  }
+  const char kContentScript[] = R"(
+      document.body.innerText = 'content script has run';
+  )";
+  ExecuteProgrammaticContentScript(web_contents, extension->id(),
+                                   kContentScript);
 
   // Verify that the right frames show up as having been injected with content
   // scripts.
+  EXPECT_EQ("content script has run",
+            content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       web_contents->GetMainFrame(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
@@ -169,6 +180,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   // GlobalFrameRoutingId-keyed map in content_script_tracker.cc).
   GURL new_url = embedded_test_server()->GetURL("foo.com", "/title2.html");
   ui_test_utils::NavigateToURL(browser(), new_url);
+  EXPECT_EQ("This page has a title.",
+            content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       web_contents->GetMainFrame(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
@@ -209,12 +222,15 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   {
     GURL new_url = embedded_test_server()->GetURL("foo.com", "/title2.html");
     ContentScriptExecuterBeforeDidCommit content_script_executer(
-        new_url, web_contents, extension->id(), "console.log('blah')");
+        new_url, web_contents, extension->id(),
+        "document.body.innerText = 'content script has run'");
     ui_test_utils::NavigateToURL(browser(), new_url);
   }
 
   // Verify that the right frames shows up as having been injected with content
   // scripts.
+  EXPECT_EQ("content script has run",
+            content::EvalJs(web_contents, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       web_contents->GetMainFrame(), extension->id()));
 }
@@ -239,8 +255,9 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
         }]
       } )";
   dir.WriteManifest(kManifestTemplate);
-  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
-                "console.log('content script in ' + location)");
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+                document.body.innerText = 'content script has run';
+                chrome.test.sendMessage('Hello from content script!'); )");
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
@@ -253,25 +270,103 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
 
   // Verify that initially no frames show up as having been injected with
   // content scripts.
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       first_tab->GetMainFrame(), extension->id()));
 
   // Navigate to a test page that *is* covered by `content_scripts.matches`
   // manifest entry above.
-  GURL injected_url = embedded_test_server()->GetURL("bar.com", "/title1.html");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  {
+    GURL injected_url =
+        embedded_test_server()->GetURL("bar.com", "/title1.html");
+    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
   content::WebContents* second_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_NE(first_tab, second_tab);
 
   // Verify that the new tab shows up as having been injected with content
   // scripts.
+  EXPECT_EQ("content script has run",
+            content::EvalJs(second_tab, "document.body.innerText"));
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       second_tab->GetMainFrame(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       first_tab->GetMainFrame(), extension->id()));
+}
+
+// Covers detecting content script injection into 'about:blank'.
+IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
+                       ContentScriptDeclarationInExtensionManifest_AboutBlank) {
+  // Install a test extension.
+  TestExtensionDir dir;
+  const char kManifestTemplate[] = R"(
+      {
+        "name": "ContentScriptTrackerBrowserTest - Declarative",
+        "version": "1.0",
+        "manifest_version": 2,
+        "permissions": [ "tabs", "<all_urls>" ],
+        "content_scripts": [{
+          "all_frames": true,
+          "match_about_blank": true,
+          "matches": ["*://bar.com/*"],
+          "js": ["content_script.js"]
+        }]
+      } )";
+  dir.WriteManifest(kManifestTemplate);
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+                document.body.innerText = 'content script has run';
+                chrome.test.sendMessage('Hello from content script!'); )");
+  const Extension* extension = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  // Navigate to a test page that *is* covered by `content_scripts.matches`
+  // manifest entry above.
+  {
+    GURL injected_url =
+        embedded_test_server()->GetURL("bar.com", "/title1.html");
+    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ui_test_utils::NavigateToURL(browser(), injected_url);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Verify that ContentScriptTracker properly covered the initial frame.
+  content::WebContents* first_tab =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ("content script has run",
+            content::EvalJs(first_tab, "document.body.innerText"));
+  EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
+      first_tab->GetMainFrame(), extension->id()));
+
+  // Open a new tab with 'about:blank'.  This may be tricky, because the initial
+  // 'about:blank' navigation will not go through ReadyToCommit state.
+  content::WebContents* popup = nullptr;
+  {
+    ExtensionTestMessageListener listener("Hello from content script!", false);
+    content::WebContentsAddedObserver popup_observer;
+    ASSERT_TRUE(ExecJs(first_tab, "window.open('about:blank', '_blank')"));
+    popup = popup_observer.GetWebContents();
+    WaitForLoadStop(popup);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Verify that ContentScriptTracker properly covered the popup (and continues
+  // to correctly cover the initial frame).
+  EXPECT_EQ("content script has run",
+            content::EvalJs(first_tab, "document.body.innerText"));
+  EXPECT_EQ("content script has run",
+            content::EvalJs(popup, "document.body.innerText"));
+  EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
+      first_tab->GetMainFrame(), extension->id()));
+  EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
+      popup->GetMainFrame(), extension->id()));
 }
 
 // Tests tracking of content scripts injected/declared via
@@ -306,8 +401,13 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
       }); )";
   dir.WriteManifest(kManifestTemplate);
   dir.WriteFile(FILE_PATH_LITERAL("background_script.js"), kBackgroundScript);
-  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"),
-                "console.log('content script in ' + location)");
+  const char kContentScript[] = R"(
+      window.onload = function() {
+          document.body.innerText = 'content script has run';
+          chrome.test.sendMessage('Hello from content script!');
+      }
+  )";
+  dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), kContentScript);
   const Extension* extension = LoadExtension(dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
@@ -320,20 +420,31 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
   // content scripts.
   content::WebContents* first_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_FALSE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       first_tab->GetMainFrame(), extension->id()));
 
   // Navigate to a test page that *is* covered by the PageStateMatcher above.
-  GURL injected_url = embedded_test_server()->GetURL("bar.com", "/title1.html");
-  ui_test_utils::NavigateToURLWithDisposition(
-      browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  {
+    GURL injected_url =
+        embedded_test_server()->GetURL("bar.com", "/title1.html");
+    ExtensionTestMessageListener listener("Hello from content script!", false);
+    ui_test_utils::NavigateToURLWithDisposition(
+        browser(), injected_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
   content::WebContents* second_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_NE(first_tab, second_tab);
 
   // Verify that the new tab shows up as having been injected with content
   // scripts.
+  EXPECT_EQ("content script has run",
+            content::EvalJs(second_tab, "document.body.innerText"));
+  EXPECT_EQ("This page has no title.",
+            content::EvalJs(first_tab, "document.body.innerText"));
   EXPECT_TRUE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(
       second_tab->GetMainFrame(), extension->id()));
   EXPECT_FALSE(ContentScriptTracker::DidFrameRunContentScriptFromExtension(

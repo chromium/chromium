@@ -25,7 +25,7 @@
 namespace extensions {
 
 // Test suite covering
-// `extensions::ContentScriptTracker::DoContentScriptsMatchNavigatingFrame` from
+// `extensions::ContentScriptTracker::DoContentScriptsMatchForTesting` from
 // //extensions/browser/content_script_tracker.h.
 //
 // See also ContentScriptTrackerBrowserTest in
@@ -81,38 +81,38 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
   // scenario where the frame's last committed URL may differ from the |url|
   // that a pending navigation is ready to commit.
   bool DoContentScriptsMatch_Tab1_FooFrame(GURL url = GURL("http://foo.com")) {
-    return DoContentScriptsMatchNavigatingFrame(tab1_fooFrame(), url);
+    return DoContentScriptsMatch(tab1_fooFrame(), url);
   }
 
   // Like DoContentScriptsMatch_Tab1_FooFrame, but for foo_about_blank_frame.
   bool DoContentScriptsMatch_Tab1_FooBlankFrame(
       GURL url = GURL(url::kAboutBlankURL)) {
-    return DoContentScriptsMatchNavigatingFrame(tab1_fooBlankFrame(), url);
+    return DoContentScriptsMatch(tab1_fooBlankFrame(), url);
   }
 
   // Like DoContentScriptsMatch_Tab1_FooFrame, but for bar_frame.
   bool DoContentScriptsMatch_Tab1_BarFrame(GURL url = GURL("http://bar.com")) {
-    return DoContentScriptsMatchNavigatingFrame(tab1_barFrame(), url);
+    return DoContentScriptsMatch(tab1_barFrame(), url);
   }
 
   // Like DoContentScriptsMatch_Tab1_FooFrame, but for bar_about_blank_frame.
   bool DoContentScriptsMatch_Tab1_BarBlankFrame(
       GURL url = GURL(url::kAboutBlankURL)) {
-    return DoContentScriptsMatchNavigatingFrame(tab1_barBlankFrame(), url);
+    return DoContentScriptsMatch(tab1_barBlankFrame(), url);
   }
 
   // Like DoContentScriptsMatch_Tab1_FooFrame, but for bar_about_blank_frame1 in
   // tab2.
   bool DoContentScriptsMatch_Tab2_BarBlankFrame1(
       GURL url = GURL(url::kAboutBlankURL)) {
-    return DoContentScriptsMatchNavigatingFrame(tab2_barBlankFrame1(), url);
+    return DoContentScriptsMatch(tab2_barBlankFrame1(), url);
   }
 
   // Like DoContentScriptsMatch_Tab1_FooFrame, but for bar_about_blank_frame2 in
   // tab2.
   bool DoContentScriptsMatch_Tab2_BarBlankFrame2(
       GURL url = GURL(url::kAboutBlankURL)) {
-    return DoContentScriptsMatchNavigatingFrame(tab2_barBlankFrame2(), url);
+    return DoContentScriptsMatch(tab2_barBlankFrame2(), url);
   }
 
   // SetUpFrameTree sets up the following frame tree(s) that are used by all the
@@ -182,10 +182,9 @@ class ContentScriptMatchingBrowserTest : public ShellApiTest,
     tab2_ = std::move(new_contents);
   }
 
-  bool DoContentScriptsMatchNavigatingFrame(
-      content::RenderFrameHost* navigating_frame,
-      const GURL& navigation_target) {
-    return ContentScriptTracker::DoContentScriptsMatchNavigatingFrameForTesting(
+  bool DoContentScriptsMatch(content::RenderFrameHost* navigating_frame,
+                             const GURL& navigation_target) {
+    return ContentScriptTracker::DoContentScriptsMatchForTesting(
         *extension_, navigating_frame, navigation_target);
   }
 

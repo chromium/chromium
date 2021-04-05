@@ -56,8 +56,7 @@ ExtensionIdSet& GetOrCreateExtensionIdSet(content::RenderFrameHost* frame) {
 // ScriptContext::GetEffectiveDocumentURLForInjection() from the renderer side.
 // Unlike the renderer code, this just iterates up frame tree, and doesn't look
 // at the effective or precursor origin of the frame. This is okay, because our
-// only caller (DoesContentScriptMatchNavigatingFrame()) expects false
-// positives.
+// only caller (DoesContentScriptMatch()) expects false positives.
 GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
                              const GURL& document_url,
                              bool match_about_blank) {
@@ -109,9 +108,9 @@ GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
 }
 
 // If `user_script` will inject JavaScript content script into the target of
-// `navigation`, then DoesContentScriptMatchNavigatingFrame returns true.
-// Otherwise it may return either true or false.  Note that this function
-// ignores CSS content scripts.
+// `navigation`, then DoesContentScriptMatch returns true.  Otherwise it may
+// return either true or false.  Note that this function ignores CSS content
+// scripts.
 //
 // This function approximates a subset of checks from
 // UserScriptSet::GetInjectionForScript (which runs in the renderer process).
@@ -120,10 +119,9 @@ GURL GetEffectiveDocumentURL(content::RenderFrameHost* frame,
 // Additionally the `effective_url` calculations are also only an approximation.
 // This is okay, because the top-level doc comment for ContentScriptTracker
 // documents that false positives are expected and why they are okay.
-bool DoesContentScriptMatchNavigatingFrame(
-    const UserScript& user_script,
-    content::RenderFrameHost* navigating_frame,
-    const GURL& navigation_target) {
+bool DoesContentScriptMatch(const UserScript& user_script,
+                            content::RenderFrameHost* frame,
+                            const GURL& url) {
   // ContentScriptTracker only needs to track Javascript content scripts (e.g.
   // doesn't track CSS-only injections).
   if (user_script.js_scripts().empty())
@@ -140,9 +138,8 @@ bool DoesContentScriptMatchNavigatingFrame(
     case MatchOriginAsFallbackBehavior::kNever:
       break;  // `false` is correct for `match_about_blank`.
   }
-  GURL effective_url = GetEffectiveDocumentURL(
-      navigating_frame, navigation_target, match_about_blank);
-  bool is_subframe = navigating_frame->GetParent();
+  GURL effective_url = GetEffectiveDocumentURL(frame, url, match_about_blank);
+  bool is_subframe = frame->GetParent();
   return user_script.MatchesDocument(effective_url, is_subframe);
 }
 
@@ -160,20 +157,21 @@ void HandleProgrammaticContentScriptInjection(
 }
 
 // If `extension`'s manifest declares that it may inject JavaScript content
-// script into the `navigating_frame` / `navigation_target`, then
-// DoContentScriptsMatchNavigation returns true.  Otherwise it may return either
-// true or false.  Note that this method ignores CSS content scripts.
-bool DoContentScriptsMatchNavigatingFrame(
-    const Extension& extension,
-    content::RenderFrameHost* navigating_frame,
-    const GURL& navigation_target) {
+// script into the `frame` / `url`, then DoContentScriptsMatch returns true.
+// Otherwise it may return either true or false.
+//
+// Note that the `url` might be either 1) the last committed URL of `frame` or
+// 2) the target of a ReadyToCommit navigation in `frame`.
+//
+// Note that this method ignores CSS content scripts.
+bool DoContentScriptsMatch(const Extension& extension,
+                           content::RenderFrameHost* frame,
+                           const GURL& url) {
   const UserScriptList& list =
       ContentScriptsInfo::GetContentScripts(&extension);
   return std::any_of(list.begin(), list.end(),
-                     [navigating_frame, &navigation_target](
-                         const std::unique_ptr<UserScript>& script) {
-                       return DoesContentScriptMatchNavigatingFrame(
-                           *script, navigating_frame, navigation_target);
+                     [frame, &url](const std::unique_ptr<UserScript>& script) {
+                       return DoesContentScriptMatch(*script, frame, url);
                      });
 }
 
@@ -188,7 +186,7 @@ std::vector<const Extension*> GetExtensionsInjectingContentScripts(
   DCHECK(registry);  // This method shouldn't be called during shutdown.
   for (const auto& it : registry->enabled_extensions()) {
     const Extension& extension = *it;
-    if (!DoContentScriptsMatchNavigatingFrame(extension, frame, url))
+    if (!DoContentScriptsMatch(extension, frame, url))
       continue;
 
     extensions_injecting_content_scripts.push_back(&extension);
@@ -208,6 +206,25 @@ bool ContentScriptTracker::DidFrameRunContentScriptFromExtension(
   if (!frame)
     return false;
 
+  // Check the last committed URL - this is needed for URLs (like "about:blank")
+  // that might not go through ReadyToCommit.  (Today "about:blank" should still
+  // go through DidCommit, but there are tentative ideas/plans to avoid this and
+  // therefore ContentScriptTracker looks at the last committed URL rather than
+  // monitoring DidCommit IPCs.)
+  const GURL& url = frame->GetLastCommittedURL();
+  if (url.SchemeIs(url::kAboutScheme)) {
+    const ExtensionRegistry* registry =
+        ExtensionRegistry::Get(frame->GetBrowserContext());
+    DCHECK(registry);  // This method shouldn't be called during shutdown.
+
+    const Extension* extension =
+        registry->enabled_extensions().GetByID(extension_id);
+    if (extension && DoContentScriptsMatch(*extension, frame, url))
+      return true;
+  }
+
+  // Check if we've been notified about the content script injection via
+  // ReadyToCommitNavigation or WillExecuteCode methods.
   FrameToExtensionIdSet& frame_to_extension_id_set = GetFrameToExtensionIdSet();
   auto it = frame_to_extension_id_set.find(frame->GetGlobalFrameRoutingId());
   if (it == frame_to_extension_id_set.end())
@@ -232,7 +249,7 @@ void ContentScriptTracker::ReadyToCommitNavigation(
 
   URLLoaderFactoryManager::WillInjectContentScriptsWhenNavigationCommits(
       base::PassKey<ContentScriptTracker>(), navigation,
-      GetExtensionsInjectingContentScripts(navigation));
+      extensions_injecting_content_scripts);
 }
 
 // static
@@ -277,12 +294,11 @@ void ContentScriptTracker::WillExecuteCode(
 }
 
 // static
-bool ContentScriptTracker::DoContentScriptsMatchNavigatingFrameForTesting(
+bool ContentScriptTracker::DoContentScriptsMatchForTesting(
     const Extension& extension,
-    content::RenderFrameHost* navigating_frame,
-    const GURL& navigation_target) {
-  return DoContentScriptsMatchNavigatingFrame(extension, navigating_frame,
-                                              navigation_target);
+    content::RenderFrameHost* frame,
+    const GURL& url) {
+  return DoContentScriptsMatch(extension, frame, url);
 }
 
 }  // namespace extensions
