@@ -60,6 +60,7 @@ bool IsWindowDimmerWindowVisible(WindowDimmer* window_dimmer) {
 }  // namespace
 
 // Adapter to fire OnPinnedContainerWindowStackingChanged().
+// TODO(oshima): Consider using aura::clinet::WindowStakingClient instead.
 class ScreenPinningController::PinnedContainerChildWindowObserver
     : public aura::WindowObserver {
  public:
@@ -318,6 +319,11 @@ void ScreenPinningController::OnDisplayConfigurationChanged() {
 void ScreenPinningController::OnWindowDestroying(aura::Window* window) {
   DCHECK_EQ(pinned_window_, window);
   WindowState::Get(window)->Restore();
+
+  aura::Window* container = window->parent();
+  RemoveObserverFromChildren(container,
+                             pinned_container_child_window_observer_.get());
+  container->RemoveObserver(pinned_container_window_observer_.get());
   window->RemoveObserver(this);
   pinned_window_ = nullptr;
 }

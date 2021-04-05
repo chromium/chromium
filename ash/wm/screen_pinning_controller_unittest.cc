@@ -9,6 +9,7 @@
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/client_controlled_state.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -24,6 +25,19 @@ int FindIndex(const std::vector<aura::Window*>& windows,
   auto iter = std::find(windows.begin(), windows.end(), target);
   return iter != windows.end() ? iter - windows.begin() : -1;
 }
+
+class TestClientControlledStateDelegate
+    : public ClientControlledState::Delegate {
+ public:
+  ~TestClientControlledStateDelegate() override = default;
+
+  void HandleWindowStateRequest(WindowState* state,
+                                chromeos::WindowStateType type) override {}
+  void HandleBoundsRequest(WindowState* state,
+                           chromeos::WindowStateType type,
+                           const gfx::Rect& requested_bounds,
+                           int64_t display_id) override {}
+};
 
 }  // namespace
 
@@ -183,6 +197,29 @@ TEST_F(ScreenPinningControllerTest, ExitUnifiedDisplay) {
 
   EXPECT_TRUE(window_state->IsPinned());
   EXPECT_TRUE(Shell::Get()->screen_pinning_controller()->IsPinned());
+}
+
+TEST_F(ScreenPinningControllerTest, CleanUpObservers) {
+  // Create a window with ClientControlledState.
+  auto w = CreateAppWindow(gfx::Rect(), AppType::CHROME_APP, 0);
+  ash::WindowState* ws = ash::WindowState::Get(w.get());
+  auto delegate = std::make_unique<TestClientControlledStateDelegate>();
+  auto state = std::make_unique<ClientControlledState>(std::move(delegate));
+  ws->SetStateObject(std::move(state));
+
+  wm::ActivateWindow(w.get());
+
+  // Observer should be added to |w|, and |w->parent()|.
+  window_util::PinWindow(w.get(), /* truested */ false);
+  EXPECT_TRUE(WindowState::Get(w.get())->IsPinned());
+
+  // Destroying |w| clears |pinned_window_|. The observers should be removed
+  // even if ClientControlledState doesn't call SetPinnedWindow when
+  // WindowState::Restore() is called.
+  w.reset();
+
+  // Add a sibling window. It should not crash.
+  CreateTestWindowInShellWithId(2);
 }
 
 }  // namespace ash
