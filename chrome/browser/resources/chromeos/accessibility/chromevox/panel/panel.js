@@ -23,6 +23,7 @@ goog.require('PanelCommand');
 goog.require('PanelMenu');
 goog.require('PanelMenuItem');
 goog.require('QueueMode');
+goog.require('constants');
 
 /**
  * Class to manage the panel.
@@ -1052,30 +1053,39 @@ Panel = class {
     });
   }
 
-  /**
-   * Open the tutorial.
-   * @param {string=} opt_page Show a specific page.
-   */
-  static onTutorial(opt_page) {
-    if (!$('chromevox-tutorial')) {
-      const curriculum =
-          Panel.sessionState === chrome.loginState.SessionState.IN_OOBE_SCREEN ?
-          'quick_orientation' :
-          null;
-      Panel.createITutorial(curriculum);
-    }
+  /** Open the tutorial. */
+  static onTutorial() {
+    chrome.chromeosInfoPrivate.isTabletModeEnabled((enabled) => {
+      // Use tablet mode to decide the medium for the tutorial.
+      const medium = enabled ? constants.InteractionMedium.TOUCH :
+                               constants.InteractionMedium.KEYBOARD;
+      if (!$('chromevox-tutorial')) {
+        let curriculum = null;
+        if (Panel.sessionState ===
+            chrome.loginState.SessionState.IN_OOBE_SCREEN) {
+          // We currently support two mediums: keyboard and touch, which is why
+          // we can decide the curriculum using a ternary statement.
+          curriculum = medium === constants.InteractionMedium.KEYBOARD ?
+              'quick_orientation' :
+              'touch_orientation';
+        }
+        Panel.createITutorial(curriculum, medium);
+      }
 
-    Panel.setMode(Panel.Mode.FULLSCREEN_TUTORIAL);
-    if (Panel.tutorial && Panel.tutorial.show) {
-      Panel.tutorial.show();
-    }
+      Panel.setMode(Panel.Mode.FULLSCREEN_TUTORIAL);
+      if (Panel.tutorial && Panel.tutorial.show) {
+        Panel.tutorial.medium = medium;
+        Panel.tutorial.show();
+      }
+    });
   }
 
   /**
    * Creates a <chromevox-tutorial> element and adds it to the dom.
    * @param {(string|null)} curriculum
+   * @param {constants.InteractionMedium} medium
    */
-  static createITutorial(curriculum) {
+  static createITutorial(curriculum, medium) {
     const tutorialScript = document.createElement('script');
     tutorialScript.src =
         '../../common/tutorial/components/chromevox_tutorial.js';
@@ -1091,6 +1101,7 @@ Panel = class {
     if (curriculum) {
       tutorialElement.curriculum = curriculum;
     }
+    tutorialElement.medium = medium;
     tutorialContainer.appendChild(tutorialElement);
     document.body.appendChild(tutorialContainer);
     Panel.tutorial = tutorialElement;

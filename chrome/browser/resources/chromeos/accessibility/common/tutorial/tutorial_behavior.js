@@ -23,7 +23,7 @@ export const TutorialBehavior = {
     /** @type {InteractionMedium} */
     medium: {
       type: String,
-      value: InteractionMedium.KEYBOARD,
+      value: InteractionMedium.NONE,
       observer: 'updateIncludedLessons_'
     },
 
@@ -91,7 +91,8 @@ export const TutorialBehavior = {
    * needs to be performed when the tutorial is shown.
    */
   show() {
-    if (this.curriculum === Curriculum.QUICK_ORIENTATION) {
+    if (this.curriculum === Curriculum.QUICK_ORIENTATION ||
+        this.curriculum === Curriculum.TOUCH_ORIENTATION) {
       // If opening the tutorial from the OOBE, automatically show the first
       // lesson.
       this.updateIncludedLessons_();

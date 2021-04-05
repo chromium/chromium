@@ -23,9 +23,13 @@ export const Curriculum = {
 
 /**
  * The user’s interaction medium. Influences tutorial content.
+ * Note: keep in sync with the enum in
+ * c/b/r/c/accessibility/common/constants.js.
+ * TODO: Unify with the above file when ES6 is standard in ChromeVox.
  * @enum {string}
  */
 export const InteractionMedium = {
+  NONE: 'none',
   KEYBOARD: 'keyboard',
   TOUCH: 'touch',
   BRAILLE: 'braille',

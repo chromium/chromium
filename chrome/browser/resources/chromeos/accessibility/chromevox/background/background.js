@@ -126,16 +126,10 @@ export class Background extends ChromeVoxState {
         chrome.chromeosInfoPrivate.get(['deviceType'], (result) => {
           if (result['deviceType'] ===
               chrome.chromeosInfoPrivate.DeviceType.CHROMEBOOK) {
-            chrome.chromeosInfoPrivate.isTabletModeEnabled((enabled) => {
-              // Start the tutorial if all of the following are true:
-              // 1. We are in the OOBE.
-              // 2. The device is a Chromebook.
-              // 3. The device is not in tablet mode, since a tutorial for
-              // ChromeVox touch is still under development.
-              if (!enabled) {
-                (new PanelCommand(PanelCommandType.TUTORIAL)).send();
-              }
-            });
+            // Start the tutorial if the following are true:
+            // 1. We are in the OOBE.
+            // 2. The device is a Chromebook.
+            (new PanelCommand(PanelCommandType.TUTORIAL)).send();
           }
         });
       }
