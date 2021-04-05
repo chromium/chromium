@@ -66,18 +66,16 @@ namespace internal {
 
 namespace {
 
+#if DCHECK_IS_ON() && defined(OS_LINUX)
+// Currently, check reentracy only on Linux. On Android TLS is emulated by the
+// runtime lib, which can allocate and therefore cause reentrancy.
 struct ReentrantScannerGuard final {
  public:
   ReentrantScannerGuard() {
-    PA_DCHECK(!guard_);
+    PA_CHECK(!guard_);
     guard_ = true;
   }
-  ~ReentrantScannerGuard() {
-    PA_DCHECK(guard_);
-    guard_ = false;
-  }
-
-  static bool is_entered() { return guard_; }
+  ~ReentrantScannerGuard() { guard_ = false; }
 
  private:
   // Since this variable has hidden visibility (not referenced by other DSOs),
@@ -85,6 +83,9 @@ struct ReentrantScannerGuard final {
   static thread_local size_t guard_;
 };
 thread_local size_t ReentrantScannerGuard::guard_ = 0;
+#else
+struct [[maybe_unused]] ReentrantScannerGuard final{};
+#endif
 
 #if defined(PA_HAS_64_BITS_POINTERS)
 // Bytemap that represent regions (cards) that contain quarantined objects.
@@ -1374,13 +1375,7 @@ void PCScanTask::FinishScanner() {
 }
 
 void PCScanTask::RunFromMutator() {
-#if !PCSCAN_DISABLE_SAFEPOINTS
-  // Unfortunately, some functions can still allocate while scanning (e.g. trace
-  // scopes). Therefore we have to guard against recursive scanning.
-  if (UNLIKELY(ReentrantScannerGuard::is_entered()))
-    return;
   ReentrantScannerGuard reentrancy_guard;
-#endif
   StatsCollector::MutatorScope overall_scope(
       stats_, StatsCollector::MutatorId::kOverall);
   {
@@ -1408,13 +1403,7 @@ void PCScanTask::RunFromMutator() {
 }
 
 void PCScanTask::RunFromScanner() {
-#if !PCSCAN_DISABLE_SAFEPOINTS
-  // Unfortunately, some functions can still allocate while scanning (e.g. trace
-  // scopes). Therefore we have to guard against recursive scanning.
-  if (UNLIKELY(ReentrantScannerGuard::is_entered()))
-    return;
   ReentrantScannerGuard reentrancy_guard;
-#endif
   {
     StatsCollector::ScannerScope overall_scope(
         stats_, StatsCollector::ScannerId::kOverall);

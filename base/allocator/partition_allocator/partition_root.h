@@ -1256,7 +1256,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   size_t slot_size;
 
   // PCScan safepoint. Call before trying to allocate from cache.
-  if (IsScanEnabled())
+  if (IsQuarantineEnabled())
     PCScan::Instance().JoinScanIfNeeded();
 
   // !thread_safe => !with_thread_cache, but adding the condition allows the

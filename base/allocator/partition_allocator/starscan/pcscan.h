@@ -22,9 +22,7 @@
 #endif
 #endif
 
-// TODO(bikineev): Currently PCScan fails on Android because TLS is emulated by
-// the runtime lib, which can allocate and cause reentrancy.
-#define PCSCAN_DISABLE_SAFEPOINTS 1
+#define PCSCAN_DISABLE_SAFEPOINTS 0
 
 namespace base {
 namespace internal {
