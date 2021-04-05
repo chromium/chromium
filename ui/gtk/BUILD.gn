@@ -60,6 +60,8 @@ component("gtk") {
   friend = [ ":gtk_unittests" ]
 
   sources = [
+    "gtk_color_mixers.cc",
+    "gtk_color_mixers.h",
     "gtk_compat.cc",
     "gtk_compat.h",
     "gtk_key_bindings_handler.cc",
@@ -119,6 +121,8 @@ component("gtk") {
     "//ui/base/cursor:theme_manager",
     "//ui/base/ime",
     "//ui/base/ime/linux",
+    "//ui/color",
+    "//ui/color:mixers",
     "//ui/display",
     "//ui/events",
     "//ui/events:dom_keyboard_layout",

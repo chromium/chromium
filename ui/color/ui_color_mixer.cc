@@ -126,6 +126,7 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorTabForeground] = {kColorSecondaryForeground};
   mixer[kColorTabForegroundSelected] = {kColorAccent};
   mixer[kColorTableBackground] = {kColorPrimaryBackground};
+  mixer[kColorTableBackgroundAlternate] = {kColorTableBackground};
   mixer[kColorTableBackgroundSelectedFocused] = {kColorItemSelectionBackground};
   mixer[kColorTableBackgroundSelectedUnfocused] = {
       kColorTableBackgroundSelectedFocused};
