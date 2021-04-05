@@ -105,7 +105,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
  private:
   void StartRequest();
   void StartNetworkRequest(int net_error,
-                           base::Optional<CorsErrorStatus> status);
+                           base::Optional<CorsErrorStatus> status,
+                           bool has_authorization_covered_by_wildcard);
 
   // Called when there is a connection error on the upstream pipe used for the
   // actual request.
@@ -194,6 +195,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   net::IsolationInfo isolation_info_;
 
   bool has_cors_been_affected_by_isolated_world_origin_ = false;
+  bool has_authorization_covered_by_wildcard_ = false;
 
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
 

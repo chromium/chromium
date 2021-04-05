@@ -487,6 +487,14 @@ void WebURLResponse::SetAlpnNegotiatedProtocol(
   resource_response_->SetAlpnNegotiatedProtocol(alpn_negotiated_protocol);
 }
 
+bool WebURLResponse::HasAuthorizationCoveredByWildcardOnPreflight() const {
+  return resource_response_->HasAuthorizationCoveredByWildcardOnPreflight();
+}
+
+void WebURLResponse::SetHasAuthorizationCoveredByWildcardOnPreflight(bool b) {
+  resource_response_->SetHasAuthorizationCoveredByWildcardOnPreflight(b);
+}
+
 bool WebURLResponse::WasAlternateProtocolAvailable() const {
   return resource_response_->WasAlternateProtocolAvailable();
 }

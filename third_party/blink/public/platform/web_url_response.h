@@ -307,6 +307,11 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT WebString AlpnNegotiatedProtocol() const;
   BLINK_PLATFORM_EXPORT void SetAlpnNegotiatedProtocol(const WebString&);
 
+  BLINK_PLATFORM_EXPORT bool HasAuthorizationCoveredByWildcardOnPreflight()
+      const;
+  BLINK_PLATFORM_EXPORT void SetHasAuthorizationCoveredByWildcardOnPreflight(
+      bool);
+
   // Whether the response could use alternate protocol.
   BLINK_PLATFORM_EXPORT bool WasAlternateProtocolAvailable() const;
   BLINK_PLATFORM_EXPORT void SetWasAlternateProtocolAvailable(bool);

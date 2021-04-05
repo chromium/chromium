@@ -289,6 +289,8 @@ void CorsURLLoader::OnReceiveResponse(mojom::URLResponseHeadPtr response_head) {
 
   response_head->response_type = response_tainting_;
   response_head->timing_allow_passed = !timing_allow_failed_flag_;
+  response_head->has_authorization_covered_by_wildcard_on_preflight =
+      has_authorization_covered_by_wildcard_;
   forwarding_client_->OnReceiveResponse(std::move(response_head));
 }
 
@@ -481,7 +483,7 @@ void CorsURLLoader::StartRequest() {
   // preflight request when |fetch_cors_flag_| is false (e.g., when the origin
   // of the url is equal to the origin of the request.
   if (!fetch_cors_flag_ || !NeedsPreflight(request_)) {
-    StartNetworkRequest(net::OK, base::nullopt);
+    StartNetworkRequest(net::OK, base::nullopt, false);
     return;
   }
 
@@ -497,19 +499,24 @@ void CorsURLLoader::StartRequest() {
   // it now to free up the socket.
   network_loader_.reset();
 
+  has_authorization_covered_by_wildcard_ = false;
   preflight_controller_->PerformPreflightCheck(
       base::BindOnce(&CorsURLLoader::StartNetworkRequest,
                      weak_factory_.GetWeakPtr()),
       request_,
       PreflightController::WithTrustedHeaderClient(
           options_ & mojom::kURLLoadOptionUseHeaderClient),
+      PreflightController::WithNonWildcardRequestHeadersSupport(false),
       tainted_, net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, std::move(devtools_observer));
 }
 
 void CorsURLLoader::StartNetworkRequest(
     int error_code,
-    base::Optional<CorsErrorStatus> status) {
+    base::Optional<CorsErrorStatus> status,
+    bool has_authorization_covered_by_wildcard) {
+  has_authorization_covered_by_wildcard_ =
+      has_authorization_covered_by_wildcard;
   if (error_code != net::OK) {
     HandleComplete(status ? URLLoaderCompletionStatus(*status)
                           : URLLoaderCompletionStatus(error_code));

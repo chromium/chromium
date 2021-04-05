@@ -36,6 +36,8 @@ namespace cors {
 namespace {
 
 using WithTrustedHeaderClient = PreflightController::WithTrustedHeaderClient;
+using WithNonWildcardRequestHeadersSupport =
+    PreflightController::WithNonWildcardRequestHeadersSupport;
 
 TEST(PreflightControllerCreatePreflightRequestTest, LexicographicalOrder) {
   ResourceRequest request;
@@ -219,14 +221,16 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
   request.url = GURL("https://example.com/");
   request.request_initiator = url::Origin();
   preflight_controller.PerformPreflightCheck(
-      base::BindOnce([](int, base::Optional<CorsErrorStatus>) {}), request,
-      WithTrustedHeaderClient(false), false /* tainted */,
+      base::BindOnce([](int, base::Optional<CorsErrorStatus>, bool) {}),
+      request, WithTrustedHeaderClient(false),
+      WithNonWildcardRequestHeadersSupport(false), false /* tainted */,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*devtools_observer=*/mojo::NullRemote());
 
   preflight_controller.PerformPreflightCheck(
-      base::BindOnce([](int, base::Optional<CorsErrorStatus>) {}), request,
-      WithTrustedHeaderClient(true), false /* tainted */,
+      base::BindOnce([](int, base::Optional<CorsErrorStatus>, bool) {}),
+      request, WithTrustedHeaderClient(true),
+      WithNonWildcardRequestHeadersSupport(false), false /* tainted */,
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*devtools_observer=*/mojo::NullRemote());
 
@@ -388,9 +392,13 @@ class PreflightControllerTest : public testing::Test {
 
  protected:
   void HandleRequestCompletion(int net_error,
-                               base::Optional<CorsErrorStatus> status) {
+                               base::Optional<CorsErrorStatus> status,
+                               bool has_authorization_covered_by_wildcard) {
     net_error_ = net_error;
     status_ = status;
+    has_authorization_covered_by_wildcard_ =
+        has_authorization_covered_by_wildcard;
+
     run_loop_->Quit();
   }
 
@@ -405,7 +413,8 @@ class PreflightControllerTest : public testing::Test {
     preflight_controller_->PerformPreflightCheck(
         base::BindOnce(&PreflightControllerTest::HandleRequestCompletion,
                        base::Unretained(this)),
-        request, WithTrustedHeaderClient(false), tainted,
+        request, WithTrustedHeaderClient(false),
+        with_non_wildcard_request_headers_support_, tainted,
         TRAFFIC_ANNOTATION_FOR_TESTS, url_loader_factory_remote_.get(),
         isolation_info, devtools_observer_->Bind());
     run_loop_->Run();
@@ -413,6 +422,10 @@ class PreflightControllerTest : public testing::Test {
 
   void SetAccessControlAllowOrigin(const url::Origin origin) {
     access_control_allow_origin_ = origin;
+  }
+  void SetWithNonWildcardRequestHeadersSupport(bool value) {
+    with_non_wildcard_request_headers_support_ =
+        WithNonWildcardRequestHeadersSupport(value);
   }
 
   const url::Origin& test_initiator_origin() const {
@@ -423,6 +436,9 @@ class PreflightControllerTest : public testing::Test {
   }
   int net_error() const { return net_error_; }
   base::Optional<CorsErrorStatus> status() { return status_; }
+  bool has_authorization_covered_by_wildcard() const {
+    return has_authorization_covered_by_wildcard_;
+  }
   base::Optional<CorsErrorStatus> success() { return base::nullopt; }
   size_t access_count() { return access_count_; }
   MockDevToolsObserver* devtools_observer() { return devtools_observer_.get(); }
@@ -450,7 +466,8 @@ class PreflightControllerTest : public testing::Test {
     response = std::make_unique<net::test_server::BasicHttpResponse>();
     if (net::test_server::ShouldHandle(request, "/404") ||
         net::test_server::ShouldHandle(request, "/allow") ||
-        net::test_server::ShouldHandle(request, "/tainted")) {
+        net::test_server::ShouldHandle(request, "/tainted") ||
+        net::test_server::ShouldHandle(request, "/wildcard_headers")) {
       response->set_code(net::test_server::ShouldHandle(request, "/404")
                              ? net::HTTP_NOT_FOUND
                              : net::HTTP_OK);
@@ -465,6 +482,11 @@ class PreflightControllerTest : public testing::Test {
       response->AddCustomHeader(header_names::kAccessControlMaxAge, "1000");
       response->AddCustomHeader(net::HttpRequestHeaders::kCacheControl,
                                 "no-store");
+
+      if (net::test_server::ShouldHandle(request, "/wildcard_headers")) {
+        response->AddCustomHeader(header_names::kAccessControlAllowHeaders,
+                                  "*");
+      }
     }
 
     return response;
@@ -482,10 +504,13 @@ class PreflightControllerTest : public testing::Test {
 
   net::test_server::EmbeddedTestServer test_server_;
   size_t access_count_ = 0;
+  WithNonWildcardRequestHeadersSupport
+      with_non_wildcard_request_headers_support_;
 
   std::unique_ptr<PreflightController> preflight_controller_;
   int net_error_ = net::OK;
   base::Optional<CorsErrorStatus> status_;
+  bool has_authorization_covered_by_wildcard_ = false;
 };
 
 TEST_F(PreflightControllerTest, CheckInvalidRequest) {
@@ -662,6 +687,42 @@ TEST_F(PreflightControllerTest, DevToolsEvents) {
   ASSERT_TRUE(devtools_observer()->preflight_status().has_value());
   EXPECT_EQ(net::OK, devtools_observer()->preflight_status()->error_code);
   EXPECT_EQ("TEST", devtools_observer()->initiator_devtools_request_id());
+}
+
+TEST_F(PreflightControllerTest, AuthorizationIsCoveredByWildcard) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.url = GetURL("/wildcard_headers");
+  request.request_initiator = test_initiator_origin();
+  request.headers.SetHeader("authorization", "foobar");
+
+  SetWithNonWildcardRequestHeadersSupport(false);
+
+  PerformPreflightCheck(request);
+  EXPECT_EQ(net::OK, net_error());
+  EXPECT_EQ(status(), success());
+  EXPECT_EQ(1u, access_count());
+  EXPECT_TRUE(has_authorization_covered_by_wildcard());
+}
+
+TEST_F(PreflightControllerTest, AuthorizationIsNotCoveredByWildcard) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.url = GetURL("/wildcard_headers");
+  request.request_initiator = test_initiator_origin();
+  request.headers.SetHeader("authorization", "foobar");
+
+  SetWithNonWildcardRequestHeadersSupport(true);
+
+  PerformPreflightCheck(request);
+  EXPECT_EQ(net::ERR_FAILED, net_error());
+  ASSERT_NE(status(), success());
+  EXPECT_EQ(mojom::CorsError::kHeaderDisallowedByPreflightResponse,
+            status()->cors_error);
+  EXPECT_EQ(1u, access_count());
+  EXPECT_TRUE(has_authorization_covered_by_wildcard());
 }
 
 }  // namespace

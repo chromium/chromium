@@ -35,6 +35,9 @@ constexpr base::TimeDelta kMaxTimeout = base::TimeDelta::FromHours(2);
 // Holds TickClock instance to overwrite TimeTicks::Now() for testing.
 const base::TickClock* tick_clock_for_testing = nullptr;
 
+// We define the value here because we want a lower-cased header name.
+constexpr char kAuthorization[] = "authorization";
+
 base::TimeTicks Now() {
   if (tick_clock_for_testing)
     return tick_clock_for_testing->NowTicks();
@@ -146,9 +149,25 @@ base::Optional<CorsErrorStatus> PreflightResult::EnsureAllowedCrossOriginMethod(
 base::Optional<CorsErrorStatus>
 PreflightResult::EnsureAllowedCrossOriginHeaders(
     const net::HttpRequestHeaders& headers,
-    bool is_revalidating) const {
-  if (!credentials_ && headers_.find("*") != headers_.end())
+    bool is_revalidating,
+    WithNonWildcardRequestHeadersSupport
+        with_non_wildcard_request_headers_support) const {
+  const bool has_wildcard = !credentials_ && headers_.contains("*");
+  if (has_wildcard) {
+    if (with_non_wildcard_request_headers_support) {
+      // "authorization" is the only member of
+      // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name.
+      if (headers.HasHeader(kAuthorization) &&
+          !headers_.contains(kAuthorization)) {
+        CorsErrorStatus error_status(
+            mojom::CorsError::kHeaderDisallowedByPreflightResponse,
+            kAuthorization);
+        error_status.has_authorization_covered_by_wildcard_on_preflight = true;
+        return error_status;
+      }
+    }
     return base::nullopt;
+  }
 
   // Forbidden headers are forbidden to be used by JavaScript, and checked
   // beforehand. But user-agents may add these headers internally, and it's
@@ -158,7 +177,7 @@ PreflightResult::EnsureAllowedCrossOriginHeaders(
     // Header list check is performed in case-insensitive way. Here, we have a
     // parsed header list set in lower case, and search each header in lower
     // case.
-    if (headers_.find(name) == headers_.end()) {
+    if (!headers_.contains(name)) {
       return CorsErrorStatus(
           mojom::CorsError::kHeaderDisallowedByPreflightResponse, name);
     }
@@ -174,16 +193,22 @@ bool PreflightResult::EnsureAllowedRequest(
     mojom::CredentialsMode credentials_mode,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
-    bool is_revalidating) const {
+    bool is_revalidating,
+    WithNonWildcardRequestHeadersSupport
+        with_non_wildcard_request_headers_support) const {
   if (!credentials_ && credentials_mode == mojom::CredentialsMode::kInclude) {
     return false;
   }
 
-  if (EnsureAllowedCrossOriginMethod(method))
+  if (EnsureAllowedCrossOriginMethod(method)) {
     return false;
+  }
 
-  if (EnsureAllowedCrossOriginHeaders(headers, is_revalidating))
+  if (EnsureAllowedCrossOriginHeaders(
+          headers, is_revalidating,
+          with_non_wildcard_request_headers_support)) {
     return false;
+  }
 
   return true;
 }
@@ -207,6 +232,16 @@ base::Optional<mojom::CorsError> PreflightResult::Parse(
   absolute_expiry_time_ = Now() + expiry_delta;
 
   return base::nullopt;
+}
+
+bool PreflightResult::HasAuthorizationCoveredByWildcard(
+    const net::HttpRequestHeaders& headers) const {
+  // "*" acts as a wildcard symbol only when `credentials_` is false.
+  const bool has_wildcard =
+      !credentials_ && headers_.find("*") != headers_.end();
+
+  return has_wildcard && headers.HasHeader(kAuthorization) &&
+         !headers_.contains(kAuthorization);
 }
 
 }  // namespace cors

@@ -235,4 +235,9 @@ struct URLResponseHead {
   // The URL of WebBundle this response was loaded from. This value is only
   // populated for resources loaded from a WebBundle.
   url.mojom.Url web_bundle_url;
+
+  // True when there is an "authorization" header on the request and it is
+  // covered by the wildcard in the preflight response.
+  // TODO(crbug.com/1176753): Remove this once the investigation is done.
+  bool has_authorization_covered_by_wildcard_on_preflight = false;
 };

@@ -3179,6 +3179,7 @@ enum WebFeature {
   kForcedColorsMediaFeature = 3870,
   kPaymentRequestCSPViolation = 3871,
   kWorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope = 3872,
+  kAuthorizationCoveredByWildcard = 3873,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

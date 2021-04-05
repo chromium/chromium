@@ -189,14 +189,17 @@ std::unique_ptr<PreflightResult> CreatePreflightResult(
 
 base::Optional<CorsErrorStatus> CheckPreflightResult(
     PreflightResult* result,
-    const ResourceRequest& original_request) {
+    const ResourceRequest& original_request,
+    PreflightResult::WithNonWildcardRequestHeadersSupport
+        with_non_wildcard_request_headers_support) {
   base::Optional<CorsErrorStatus> status =
       result->EnsureAllowedCrossOriginMethod(original_request.method);
   if (status)
     return status;
 
   return result->EnsureAllowedCrossOriginHeaders(
-      original_request.headers, original_request.is_revalidating);
+      original_request.headers, original_request.is_revalidating,
+      with_non_wildcard_request_headers_support);
 }
 
 }  // namespace
@@ -208,6 +211,8 @@ class PreflightController::PreflightLoader final {
       CompletionCallback completion_callback,
       const ResourceRequest& request,
       WithTrustedHeaderClient with_trusted_header_client,
+      WithNonWildcardRequestHeadersSupport
+          with_non_wildcard_request_headers_support,
       bool tainted,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
       const net::NetworkIsolationKey& network_isolation_key,
@@ -215,6 +220,8 @@ class PreflightController::PreflightLoader final {
       : controller_(controller),
         completion_callback_(std::move(completion_callback)),
         original_request_(request),
+        with_non_wildcard_request_headers_support_(
+            with_non_wildcard_request_headers_support),
         tainted_(tainted),
         network_isolation_key_(network_isolation_key),
         devtools_observer_(std::move(devtools_observer)) {
@@ -269,7 +276,8 @@ class PreflightController::PreflightLoader final {
 
     std::move(completion_callback_)
         .Run(net::ERR_FAILED,
-             CorsErrorStatus(mojom::CorsError::kPreflightDisallowedRedirect));
+             CorsErrorStatus(mojom::CorsError::kPreflightDisallowedRedirect),
+             false);
 
     RemoveFromController();
     // |this| is deleted here.
@@ -288,6 +296,7 @@ class PreflightController::PreflightLoader final {
     FinalizeLoader();
 
     base::Optional<CorsErrorStatus> detected_error_status;
+    bool has_authorization_covered_by_wildcard = false;
     std::unique_ptr<PreflightResult> result = CreatePreflightResult(
         final_url, head, original_request_, tainted_, &detected_error_status);
 
@@ -295,7 +304,10 @@ class PreflightController::PreflightLoader final {
       // Preflight succeeded. Check |original_request_| with |result|.
       DCHECK(!detected_error_status);
       detected_error_status =
-          CheckPreflightResult(result.get(), original_request_);
+          CheckPreflightResult(result.get(), original_request_,
+                               with_non_wildcard_request_headers_support_);
+      has_authorization_covered_by_wildcard =
+          result->HasAuthorizationCoveredByWildcard(original_request_.headers);
     }
 
     if (!(original_request_.load_flags & net::LOAD_DISABLE_CACHE) &&
@@ -307,7 +319,7 @@ class PreflightController::PreflightLoader final {
 
     std::move(completion_callback_)
         .Run(detected_error_status ? net::ERR_FAILED : net::OK,
-             detected_error_status);
+             detected_error_status, has_authorization_covered_by_wildcard);
 
     RemoveFromController();
     // |this| is deleted here.
@@ -326,7 +338,7 @@ class PreflightController::PreflightLoader final {
           *devtools_request_id_, network::URLLoaderCompletionStatus(error));
     }
     FinalizeLoader();
-    std::move(completion_callback_).Run(error, base::nullopt);
+    std::move(completion_callback_).Run(error, base::nullopt, false);
     RemoveFromController();
     // |this| is deleted here.
   }
@@ -350,6 +362,8 @@ class PreflightController::PreflightLoader final {
   PreflightController::CompletionCallback completion_callback_;
   const ResourceRequest original_request_;
 
+  const WithNonWildcardRequestHeadersSupport
+      with_non_wildcard_request_headers_support_;
   const bool tainted_;
   base::Optional<base::UnguessableToken> devtools_request_id_;
   const net::NetworkIsolationKey network_isolation_key_;
@@ -387,6 +401,8 @@ void PreflightController::PerformPreflightCheck(
     CompletionCallback callback,
     const ResourceRequest& request,
     WithTrustedHeaderClient with_trusted_header_client,
+    WithNonWildcardRequestHeadersSupport
+        with_non_wildcard_request_headers_support,
     bool tainted,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
     mojom::URLLoaderFactory* loader_factory,
@@ -405,13 +421,14 @@ void PreflightController::PerformPreflightCheck(
           request.request_initiator.value(), request.url, network_isolation_key,
           request.credentials_mode, request.method, request.headers,
           request.is_revalidating)) {
-    std::move(callback).Run(net::OK, base::nullopt);
+    std::move(callback).Run(net::OK, base::nullopt, false);
     return;
   }
 
   auto emplaced_pair = loaders_.emplace(std::make_unique<PreflightLoader>(
-      this, std::move(callback), request, with_trusted_header_client, tainted,
-      annotation_tag, network_isolation_key, std::move(devtools_observer)));
+      this, std::move(callback), request, with_trusted_header_client,
+      with_non_wildcard_request_headers_support, tainted, annotation_tag,
+      network_isolation_key, std::move(devtools_observer)));
   (*emplaced_pair.first)->Request(loader_factory);
 }
 

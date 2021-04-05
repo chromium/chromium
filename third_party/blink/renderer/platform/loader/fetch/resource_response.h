@@ -415,6 +415,13 @@ class PLATFORM_EXPORT ResourceResponse final {
     was_alpn_negotiated_ = was_alpn_negotiated;
   }
 
+  bool HasAuthorizationCoveredByWildcardOnPreflight() const {
+    return has_authorization_covered_by_wildcard_on_preflight_;
+  }
+  void SetHasAuthorizationCoveredByWildcardOnPreflight(bool b) {
+    has_authorization_covered_by_wildcard_on_preflight_ = b;
+  }
+
   const AtomicString& AlpnNegotiatedProtocol() const {
     return alpn_negotiated_protocol_;
   }
@@ -612,6 +619,11 @@ class PLATFORM_EXPORT ResourceResponse final {
 
   // True if the response was delivered after ALPN is negotiated.
   bool was_alpn_negotiated_ = false;
+
+  // True when there is an "authorization" header on the request and it is
+  // covered by the wildcard in the preflight response.
+  // TODO(crbug.com/1176753): Remove this once the investigation is done.
+  bool has_authorization_covered_by_wildcard_on_preflight_ = false;
 
   // https://fetch.spec.whatwg.org/#concept-response-type
   network::mojom::FetchResponseType response_type_ =

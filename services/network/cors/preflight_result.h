@@ -11,6 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_set.h"
 #include "base/optional.h"
+#include "base/types/strong_alias.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
@@ -32,6 +33,12 @@ namespace cors {
 // See https://fetch.spec.whatwg.org/#concept-cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
  public:
+  // Represents whether
+  // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
+  // is supported.
+  using WithNonWildcardRequestHeadersSupport =
+      base::StrongAlias<class WithNonWildcardRequestHeadersSupportTag, bool>;
+
   static void SetTickClockForTesting(const base::TickClock* tick_clock);
 
   // Creates a PreflightResult instance from a CORS-preflight result. Returns
@@ -57,7 +64,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // JavaScript-initiated requests.
   base::Optional<CorsErrorStatus> EnsureAllowedCrossOriginHeaders(
       const net::HttpRequestHeaders& headers,
-      bool is_revalidating) const;
+      bool is_revalidating,
+      WithNonWildcardRequestHeadersSupport
+          with_non_wildcard_request_headers_support) const;
 
   // Checks if this entry is expired.
   bool IsExpired() const;
@@ -66,10 +75,20 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
   // |headers| is allowed by the CORS-preflight response.
   // This also does not reject the forbidden headers as
   // EnsureAllowCrossOriginHeaders does not.
-  bool EnsureAllowedRequest(mojom::CredentialsMode credentials_mode,
-                            const std::string& method,
-                            const net::HttpRequestHeaders& headers,
-                            bool is_revalidating) const;
+  bool EnsureAllowedRequest(
+      mojom::CredentialsMode credentials_mode,
+      const std::string& method,
+      const net::HttpRequestHeaders& headers,
+      bool is_revalidating,
+      WithNonWildcardRequestHeadersSupport
+          with_non_wildcard_request_headers_support) const;
+
+  // Returns true when `headers` has "authorization" which is covered by the
+  // wildcard symbol (and not covered by "authorization") in the preflight
+  // result.
+  // TODO(crbug.com/1176753): Remove this once the investigation is done.
+  bool HasAuthorizationCoveredByWildcard(
+      const net::HttpRequestHeaders& headers) const;
 
   // Refers the cache expiry time.
   base::TimeTicks absolute_expiry_time() const { return absolute_expiry_time_; }
@@ -83,6 +102,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightResult final {
       const base::Optional<std::string>& max_age_header);
 
  private:
+  base::Optional<CorsErrorStatus>
+  EnsureAllowedCrossOriginHeadersWithAuthorizationCoveredByWildcard(
+      const net::HttpRequestHeaders& headers,
+      bool is_revalidating) const;
+
+  base::Optional<CorsErrorStatus>
+  EnsureAllowedCrossOriginHeadersWithAuthorizationNotCoveredByWildcard(
+      const net::HttpRequestHeaders& headers,
+      bool is_revalidating) const;
+
   // Holds an absolute time when the result should be expired in the
   // CORS-preflight cache.
   base::TimeTicks absolute_expiry_time_;

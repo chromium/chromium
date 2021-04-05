@@ -32065,6 +32065,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3871" label="PaymentRequestCSPViolation"/>
   <int value="3872"
       label="WorkerControlledByServiceWorkerWithFetchEventHandlerOutOfScope"/>
+  <int value="3873" label="AuthorizationCoveredByWildcard"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

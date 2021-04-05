@@ -35,10 +35,12 @@ namespace cors {
 // its result, and owning a CORS-preflight cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
  public:
-  using CompletionCallback =
-      base::OnceCallback<void(int net_error, base::Optional<CorsErrorStatus>)>;
+  using CompletionCallback = base::OnceCallback<
+      void(int net_error, base::Optional<CorsErrorStatus>, bool)>;
   using WithTrustedHeaderClient =
       base::StrongAlias<class WithTrustedHeaderClientTag, bool>;
+  using WithNonWildcardRequestHeadersSupport =
+      PreflightResult::WithNonWildcardRequestHeadersSupport;
   // Creates a CORS-preflight ResourceRequest for a specified |request| for a
   // URL that is originally requested.
   static std::unique_ptr<ResourceRequest> CreatePreflightRequestForTesting(
@@ -62,6 +64,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       CompletionCallback callback,
       const ResourceRequest& resource_request,
       WithTrustedHeaderClient with_trusted_header_client,
+      WithNonWildcardRequestHeadersSupport
+          with_non_wildcard_request_headers_support,
       bool tainted,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* loader_factory,
