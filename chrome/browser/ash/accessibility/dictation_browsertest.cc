@@ -140,6 +140,7 @@ class DictationTest : public InProcessBrowserTest,
       // Wait for interaction on UI thread.
       fake_speech_recognition_manager_->WaitForRecognitionStarted();
     } else {
+      fake_service_->WaitForRecognitionStarted();
       // Only one thread, use a RunLoop to ensure mojom messages are done.
       base::RunLoop().RunUntilIdle();
     }

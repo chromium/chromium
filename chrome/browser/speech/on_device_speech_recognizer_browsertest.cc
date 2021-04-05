@@ -4,6 +4,8 @@
 
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
 
+#include <map>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
@@ -11,11 +13,18 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "media/audio/audio_system.h"
+#include "media/base/audio_parameters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::DoDefault;
 using ::testing::InvokeWithoutArgs;
+
+namespace {
+static constexpr int kDefaultSampleRate = 16000;
+static constexpr int kDefaultPollingTimesPerSecond = 10;
+}  // namespace
 
 class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
  public:
@@ -36,6 +45,43 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
 
  private:
   base::WeakPtrFactory<MockSpeechRecognizerDelegate> weak_factory_{this};
+};
+
+class MockAudioSystem : public media::AudioSystem {
+ public:
+  MockAudioSystem() = default;
+  ~MockAudioSystem() override = default;
+  MockAudioSystem(const MockAudioSystem&) = delete;
+  MockAudioSystem& operator=(const MockAudioSystem&) = delete;
+
+  // media::AudioSystem:
+  void GetInputStreamParameters(const std::string& device_id,
+                                OnAudioParamsCallback callback) override {
+    std::move(callback).Run(params_[device_id]);
+  }
+  MOCK_METHOD2(GetOutputStreamParameters,
+               void(const std::string& device_id,
+                    OnAudioParamsCallback on_params_cb));
+  MOCK_METHOD1(HasInputDevices, void(OnBoolCallback on_has_devices_cb));
+  MOCK_METHOD1(HasOutputDevices, void(OnBoolCallback on_has_devices_cb));
+  MOCK_METHOD2(GetDeviceDescriptions,
+               void(bool for_input,
+                    OnDeviceDescriptionsCallback on_descriptions_cp));
+  MOCK_METHOD2(GetAssociatedOutputDeviceID,
+               void(const std::string& input_device_id,
+                    OnDeviceIdCallback on_device_id_cb));
+  MOCK_METHOD2(GetInputDeviceInfo,
+               void(const std::string& input_device_id,
+                    OnInputDeviceInfoCallback on_input_device_info_cb));
+
+  void SetInputStreamParameters(
+      const std::string& device_id,
+      const base::Optional<media::AudioParameters>& params) {
+    params_[device_id] = params;
+  }
+
+ private:
+  std::map<std::string, base::Optional<media::AudioParameters>> params_;
 };
 
 // Tests OnDeviceSpeechRecognizer plumbing with a fake SpeechRecognitionService.
@@ -61,6 +107,10 @@ class OnDeviceSpeechRecognizerBrowsertest : public InProcessBrowserTest {
         new testing::StrictMock<MockSpeechRecognizerDelegate>());
   }
 
+  void TearDownOnMainThread() override {
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
   std::unique_ptr<KeyedService> CreateTestSpeechRecognitionService(
       content::BrowserContext* context) {
     std::unique_ptr<speech::FakeSpeechRecognitionService> fake_service =
@@ -78,6 +128,26 @@ class OnDeviceSpeechRecognizerBrowsertest : public InProcessBrowserTest {
     recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
         mock_speech_delegate_->GetWeakPtr(), browser()->profile());
     loop.Run();
+  }
+
+  void StartAndWaitForRecognizing() {
+    EXPECT_CALL(*mock_speech_delegate_,
+                OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_RECOGNIZING))
+        .Times(1)
+        .RetiresOnSaturation();
+    recognizer_->Start();
+    fake_service_->WaitForRecognitionStarted();
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void StartListeningWithAudioParams(
+      const base::Optional<media::AudioParameters>& params) {
+    std::unique_ptr<MockAudioSystem> mock_audio_system =
+        std::make_unique<MockAudioSystem>();
+    mock_audio_system->SetInputStreamParameters(
+        media::AudioDeviceDescription::kDefaultDeviceId, params);
+    recognizer_->audio_system_ = std::move(mock_audio_system);
+    StartAndWaitForRecognizing();
   }
 
   std::unique_ptr<testing::StrictMock<MockSpeechRecognizerDelegate>>
@@ -101,12 +171,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
 
   // Toggle a few times.
   for (int i = 0; i < 2; i++) {
-    EXPECT_CALL(*mock_speech_delegate_,
-                OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_RECOGNIZING))
-        .Times(1)
-        .RetiresOnSaturation();
-    recognizer_->Start();
-    base::RunLoop().RunUntilIdle();
+    StartAndWaitForRecognizing();
     EXPECT_TRUE(fake_service_->is_capturing_audio());
 
     EXPECT_CALL(*mock_speech_delegate_,
@@ -124,12 +189,7 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
   testing::InSequence seq;
   ConstructRecognizerAndWaitForReady();
 
-  EXPECT_CALL(*mock_speech_delegate_,
-              OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_RECOGNIZING))
-      .Times(1)
-      .RetiresOnSaturation();
-  recognizer_->Start();
-  base::RunLoop().RunUntilIdle();
+  StartAndWaitForRecognizing();
 
   EXPECT_CALL(*mock_speech_delegate_,
               OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_IN_SPEECH))
@@ -167,4 +227,78 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest, ReceivesErrors) {
       .RetiresOnSaturation();
   fake_service_->SendSpeechRecognitionError();
   base::RunLoop().RunUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
+                       UsesReturnedParametersIfFramesPerBufferIsSlowEnough) {
+  fake_service_->set_multichannel_supported(true);
+  int sample_rate = 10000;
+  media::AudioParameters params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::CHANNEL_LAYOUT_STEREO, sample_rate,
+      sample_rate / (kDefaultPollingTimesPerSecond / 2));
+  ConstructRecognizerAndWaitForReady();
+  StartListeningWithAudioParams(params);
+
+  EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
+            fake_service_->device_id());
+  ASSERT_TRUE(fake_service_->audio_parameters());
+  EXPECT_TRUE(fake_service_->audio_parameters()->Equals(params));
+}
+
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
+                       SlowerPollingIfFramesPerBufferIsTooShort) {
+  fake_service_->set_multichannel_supported(true);
+  int sample_rate = 20000;
+  media::AudioParameters params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::CHANNEL_LAYOUT_STEREO, sample_rate,
+      sample_rate / (kDefaultPollingTimesPerSecond * 2));
+  ConstructRecognizerAndWaitForReady();
+  StartListeningWithAudioParams(params);
+
+  EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
+            fake_service_->device_id());
+  ASSERT_TRUE(fake_service_->audio_parameters());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO,
+            fake_service_->audio_parameters()->channel_layout());
+  // Picks a larger frames_per_buffer such that sample_rate/frames_per_buffer =
+  // kDefaultPollingTimesPerSecond.
+  EXPECT_EQ(sample_rate / kDefaultPollingTimesPerSecond,
+            fake_service_->audio_parameters()->frames_per_buffer());
+}
+
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest,
+                       SetsToSingleChannelIfMultichannelNotSupported) {
+  fake_service_->set_multichannel_supported(false);
+  int sample_rate = 20000;
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::CHANNEL_LAYOUT_STEREO, sample_rate,
+                                sample_rate / kDefaultPollingTimesPerSecond);
+  ConstructRecognizerAndWaitForReady();
+  StartListeningWithAudioParams(params);
+
+  EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
+            fake_service_->device_id());
+  ASSERT_TRUE(fake_service_->audio_parameters());
+  EXPECT_EQ(sample_rate, fake_service_->audio_parameters()->sample_rate());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_MONO,
+            fake_service_->audio_parameters()->channel_layout());
+}
+
+IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerBrowsertest, DefaultParameters) {
+  fake_service_->set_multichannel_supported(true);
+  ConstructRecognizerAndWaitForReady();
+  StartListeningWithAudioParams(base::nullopt);
+
+  EXPECT_EQ(media::AudioDeviceDescription::kDefaultDeviceId,
+            fake_service_->device_id());
+  ASSERT_TRUE(fake_service_->audio_parameters());
+  EXPECT_EQ(kDefaultSampleRate,
+            fake_service_->audio_parameters()->sample_rate());
+  EXPECT_EQ(kDefaultPollingTimesPerSecond,
+            fake_service_->audio_parameters()->sample_rate() /
+                fake_service_->audio_parameters()->frames_per_buffer());
+  EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO,
+            fake_service_->audio_parameters()->channel_layout());
 }

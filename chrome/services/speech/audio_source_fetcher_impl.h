@@ -26,7 +26,6 @@ class AudioSourceFetcherImpl
       public media::AudioDataS16Converter {
  public:
   AudioSourceFetcherImpl(
-      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
       std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer);
   ~AudioSourceFetcherImpl() override;
   AudioSourceFetcherImpl(const AudioSourceFetcherImpl&) = delete;
@@ -34,11 +33,13 @@ class AudioSourceFetcherImpl
 
   static void Create(
       mojo::PendingReceiver<media::mojom::AudioSourceFetcher> receiver,
-      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
       std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer);
 
   // media::mojom::AudioSourceFetcher:
-  void Start() override;
+  void Start(
+      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+      const std::string& device_id,
+      const ::media::AudioParameters& audio_parameters) override;
   void Stop() override;
 
   // media::AudioCapturerSource::CaptureCallback:
@@ -73,6 +74,9 @@ class AudioSourceFetcherImpl
 
   // Audio parameters will be used when recording audio.
   media::AudioParameters audio_parameters_;
+
+  // Device ID used to record audio.
+  std::string device_id_;
 
   // Owned SpeechRecognitionRecognizerImpl was constructed by the
   // SpeechRecognitionService as appropriate for the platform.

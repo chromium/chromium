@@ -76,6 +76,8 @@ class TestStreamFactory : public audio::FakeStreamFactory {
       bool enable_agc,
       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
       CreateInputStreamCallback created_callback) {
+    device_id_ = device_id;
+    params_ = params;
     if (stream_receiver_.is_bound())
       stream_receiver_.reset();
     stream_receiver_.Bind(std::move(stream_receiver));
@@ -108,6 +110,8 @@ class TestStreamFactory : public audio::FakeStreamFactory {
   StrictMock<MockStream> stream_;
   mojo::Remote<media::mojom::AudioInputStreamClient> client_;
   mojo::Receiver<media::mojom::AudioInputStream> stream_receiver_;
+  std::string device_id_;
+  base::Optional<media::AudioParameters> params_;
 
  private:
   void OnTimer() {
@@ -162,8 +166,6 @@ class SpeechRecognitionServiceTest
 
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
       speech_recognition_client_receiver_{this};
-
-  std::unique_ptr<StrictMock<TestStreamFactory>> stream_factory_;
 
   std::vector<std::string> recognition_results_;
 
@@ -223,9 +225,6 @@ void SpeechRecognitionServiceTest::LaunchService() {
 }
 
 void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
-  // Create a fake stream factory.
-  stream_factory_ = std::make_unique<StrictMock<TestStreamFactory>>();
-
   // Launch the Speech Recognition service.
   auto* browser_context =
       static_cast<content::BrowserContext*>(browser()->profile());
@@ -236,21 +235,21 @@ void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
           speech_recognition_context_.BindNewPipeAndPassReceiver();
   service->Create(std::move(speech_recognition_context_receiver));
 
-  bool success = false;
+  bool is_multichannel_supported = true;
   auto run_loop = std::make_unique<base::RunLoop>();
   // Bind the recognizer pipes used to send audio and receive results.
   speech_recognition_context_->BindAudioSourceFetcher(
       audio_source_fetcher_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
-      stream_factory_->MakeRemote(),
       base::BindOnce(
-          [](bool* p_success, base::RunLoop* run_loop, bool success) {
-            *p_success = success;
+          [](bool* p_is_multichannel_supported, base::RunLoop* run_loop,
+             bool is_multichannel_supported) {
+            *p_is_multichannel_supported = is_multichannel_supported;
             run_loop->Quit();
           },
-          &success, run_loop.get()));
+          &is_multichannel_supported, run_loop.get()));
   run_loop->Run();
-  ASSERT_TRUE(success);
+  ASSERT_FALSE(is_multichannel_supported);
 }
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, RecognizePhrase) {
@@ -360,9 +359,20 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CreateAudioSourceFetcher) {
   // Check that Start begins audio recording.
   // TODO(crbug.com/1173135): Try to mock audio input, maybe with
   // TestStreamFactory::stream_, to test end-to-end.
-  EXPECT_CALL(stream_factory_->stream_, Record());
-  audio_source_fetcher_->Start();
-  stream_factory_->WaitToCreateInputStream();
+  std::string device_id = media::AudioDeviceDescription::kDefaultDeviceId;
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::CHANNEL_LAYOUT_STEREO, 10000, 1000);
+
+  // Create a fake stream factory.
+  std::unique_ptr<StrictMock<TestStreamFactory>> stream_factory =
+      std::make_unique<StrictMock<TestStreamFactory>>();
+  EXPECT_CALL(stream_factory->stream_, Record());
+  audio_source_fetcher_->Start(stream_factory->MakeRemote(), device_id, params);
+  stream_factory->WaitToCreateInputStream();
+
+  EXPECT_EQ(device_id, stream_factory->device_id_);
+  ASSERT_TRUE(stream_factory->params_);
+  EXPECT_TRUE(params.Equals(stream_factory->params_.value()));
 #endif
 
   audio_source_fetcher_->Stop();

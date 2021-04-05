@@ -41,7 +41,6 @@ class CrosSpeechRecognitionService
       mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           client,
-      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
       BindRecognizerCallback callback) override;
 
  private:

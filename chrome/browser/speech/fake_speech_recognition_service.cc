@@ -27,27 +27,36 @@ void FakeSpeechRecognitionService::BindRecognizer(
   recognizer_client_remote_.set_disconnect_handler(base::BindOnce(
       &FakeSpeechRecognitionService::OnRecognizerClientDisconnected,
       base::Unretained(this)));
-  std::move(callback).Run(true /* multichannel supported */);
+  std::move(callback).Run(is_multichannel_supported_);
 }
 
 void FakeSpeechRecognitionService::BindAudioSourceFetcher(
     mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     BindRecognizerCallback callback) {
   fetcher_receiver_.Bind(std::move(fetcher_receiver));
   recognizer_client_remote_.Bind(std::move(client));
   recognizer_client_remote_.set_disconnect_handler(base::BindOnce(
       &FakeSpeechRecognitionService::OnRecognizerClientDisconnected,
       base::Unretained(this)));
-  std::move(callback).Run(true);
+  std::move(callback).Run(is_multichannel_supported_);
 }
 
-void FakeSpeechRecognitionService::Start() {
+void FakeSpeechRecognitionService::Start(
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+    const std::string& device_id,
+    const ::media::AudioParameters& audio_parameters) {
   capturing_audio_ = true;
+  device_id_ = device_id;
+  audio_parameters_ = audio_parameters;
+  if (recognition_started_closure_) {
+    std::move(recognition_started_closure_).Run();
+  }
 }
 void FakeSpeechRecognitionService::Stop() {
   capturing_audio_ = false;
+  device_id_ = "";
+  audio_parameters_ = base::nullopt;
 }
 
 void FakeSpeechRecognitionService::SendAudioToSpeechRecognitionService(
@@ -68,11 +77,20 @@ void FakeSpeechRecognitionService::SendSpeechRecognitionError() {
   recognizer_client_remote_->OnSpeechRecognitionError();
 }
 
+void FakeSpeechRecognitionService::WaitForRecognitionStarted() {
+  base::RunLoop runner;
+  recognition_started_closure_ = runner.QuitClosure();
+  runner.Run();
+}
+
 void FakeSpeechRecognitionService::OnRecognizerClientDisconnected() {
   // Reset everything in case it will be re-used.
   recognizer_client_remote_.reset();
   fetcher_receiver_.reset();
   recognizer_receiver_.reset();
+  capturing_audio_ = false;
+  device_id_ = "";
+  audio_parameters_ = base::nullopt;
 }
 
 }  // namespace speech

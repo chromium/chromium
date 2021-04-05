@@ -15,6 +15,10 @@
 class Profile;
 class SpeechRecognizerDelegate;
 
+namespace media {
+class AudioSystem;
+}  // namespace media
+
 // OnDeviceSpeechRecognizer is a wrapper around the on-device speech recognition
 // engine that simplifies its use from the browser process.
 class OnDeviceSpeechRecognizer
@@ -49,14 +53,28 @@ class OnDeviceSpeechRecognizer
       media::mojom::LanguageIdentificationEventPtr event) override;
 
  private:
+  friend class OnDeviceSpeechRecognizerBrowsertest;
+
   void OnRecognizerBound(bool success);
   void OnRecognizerDisconnected();
+  void StartFetchingOnInputDeviceInfo(
+      const base::Optional<media::AudioParameters>& params);
 
   // Helper function to send the delegate updates to SpeechRecognizerStatus
   // only when the status has changed.
   void UpdateStatus(SpeechRecognizerStatus state);
 
   SpeechRecognizerStatus state_;
+  bool is_multichannel_supported_;
+
+  // Whether we are waiting for the AudioParameters callback to return. Used
+  // to ensure Start doesn't keep starting if Stop or Error were called
+  // in between requesting the callback and it running.
+  bool waiting_for_params_;
+
+  // Tests may set audio_system_ after constructing an OnDeviceSpeechRecognizer
+  // to override default behavior.
+  std::unique_ptr<media::AudioSystem> audio_system_;
 
   mojo::Remote<media::mojom::SpeechRecognitionContext>
       speech_recognition_context_;

@@ -76,7 +76,6 @@ void SpeechRecognitionServiceImpl::BindRecognizer(
 void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
     mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> client,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     BindRecognizerCallback callback) {
   // Destroy the speech recognition service if the SODA files haven't been
   // downloaded yet.
@@ -86,15 +85,15 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
       (!base::PathExists(binary_path_) || !base::PathExists(config_path_))) {
     speech_recognition_contexts_.Clear();
     receiver_.reset();
-    std::move(callback).Run(false);
     return;
   }
   AudioSourceFetcherImpl::Create(
-      std::move(fetcher_receiver), std::move(stream_factory),
+      std::move(fetcher_receiver),
       std::make_unique<SpeechRecognitionRecognizerImpl>(
           std::move(client), weak_factory_.GetWeakPtr(), binary_path_,
           config_path_));
-  std::move(callback).Run(true);
+  std::move(callback).Run(
+      SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
 }
 
 void SpeechRecognitionServiceImpl::DisconnectHandler() {

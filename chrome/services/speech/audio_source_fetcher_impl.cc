@@ -22,41 +22,10 @@
 
 namespace speech {
 
-namespace {
-
-// Sample rate used by content::SpeechRecognizerImpl.
-// TODO(crbug.com/1173135): Get input stream parameters from the constructor
-// and remove these hard-coded constants.
-static constexpr int kAudioSampleRate = 16000;
-static constexpr int kFramesPerBuffer = 1024;
-
-media::AudioParameters GetAudioParameters(bool is_multichannel_supported) {
-  static_assert(kAudioSampleRate % 100 == 0,
-                "Audio sample rate is not divisible by 100");
-  return media::AudioParameters(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                is_multichannel_supported
-                                    ? media::CHANNEL_LAYOUT_STEREO
-                                    : media::CHANNEL_LAYOUT_MONO,
-                                kAudioSampleRate, kFramesPerBuffer);
-}
-}  // namespace
-
 AudioSourceFetcherImpl::AudioSourceFetcherImpl(
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer)
     : speech_recognition_recognizer_(std::move(recognition_recognizer)),
-      is_started_(false) {
-  // TODO(crbug.com/1173135): Get input stream parameters and device ID from
-  // constructor. These can be found in the Browser process and passed here
-  // via mojom.
-  std::string device_id = media::AudioDeviceDescription::kDefaultDeviceId;
-  audio_capturer_source_ =
-      audio::CreateInputDevice(std::move(stream_factory), device_id,
-                               audio::DeadStreamDetection::kEnabled);
-  audio_parameters_ = GetAudioParameters(
-      SpeechRecognitionRecognizerImpl::IsMultichannelSupported());
-  DCHECK(audio_capturer_source_);
-}
+      is_started_(false) {}
 
 AudioSourceFetcherImpl::~AudioSourceFetcherImpl() {
   Stop();
@@ -64,20 +33,39 @@ AudioSourceFetcherImpl::~AudioSourceFetcherImpl() {
 
 void AudioSourceFetcherImpl::Create(
     mojo::PendingReceiver<media::mojom::AudioSourceFetcher> receiver,
-    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     std::unique_ptr<SpeechRecognitionRecognizerImpl> recognition_recognizer) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<AudioSourceFetcherImpl>(
-          std::move(stream_factory), std::move(recognition_recognizer)),
-      std::move(receiver));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<AudioSourceFetcherImpl>(
+                                  std::move(recognition_recognizer)),
+                              std::move(receiver));
 }
 
-void AudioSourceFetcherImpl::Start() {
+void AudioSourceFetcherImpl::Start(
+    mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+    const std::string& device_id,
+    const ::media::AudioParameters& audio_parameters) {
+  // If we've already started fetching audio from this device with these params,
+  // return early. Otherwise start over and reset.
+  if (is_started_) {
+    if (device_id == device_id_ && audio_parameters.Equals(audio_parameters_)) {
+      LOG(ERROR)
+          << "AudioSourceFetcher was already running, and was asked to restart "
+             "with the same device ID and audio parameters. Doing nothing.";
+      return;
+    } else {
+      Stop();
+    }
+  }
+
+  device_id_ = device_id;
+  audio_parameters_ = audio_parameters;
+  audio_capturer_source_ =
+      audio::CreateInputDevice(std::move(stream_factory), device_id_,
+                               audio::DeadStreamDetection::kEnabled);
+  DCHECK(audio_capturer_source_);
+
   // TODO(crbug.com/1185978): Check implementation / sandbox policy on Mac and
   // Windows.
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-  if (is_started_)
-    return;
   is_started_ = true;
   // Initialize the AudioCapturerSource with |this| as the CaptureCallback,
   // get the parameters for the device ID, then start audio capture.
@@ -92,6 +80,7 @@ void AudioSourceFetcherImpl::Start() {
 void AudioSourceFetcherImpl::Stop() {
   if (GetAudioCapturerSource()) {
     GetAudioCapturerSource()->Stop();
+    audio_capturer_source_.reset();
   }
   send_audio_callback_.Reset();
   is_started_ = false;

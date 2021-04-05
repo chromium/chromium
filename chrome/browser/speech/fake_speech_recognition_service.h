@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SPEECH_FAKE_SPEECH_RECOGNITION_SERVICE_H_
 
 #include "chrome/browser/speech/chrome_speech_recognition_service.h"
+#include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -40,11 +41,13 @@ class FakeSpeechRecognitionService
       mojo::PendingReceiver<media::mojom::AudioSourceFetcher> fetcher_receiver,
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           client,
-      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
       BindRecognizerCallback callback) override;
 
   // media::mojom::AudioSourceFetcher:
-  void Start() override;
+  void Start(
+      mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
+      const std::string& device_id,
+      const ::media::AudioParameters& audio_parameters) override;
   void Stop() override;
 
   // media::mojom::SpeechRecognitionRecognizer:
@@ -58,18 +61,40 @@ class FakeSpeechRecognitionService
       media::mojom::SpeechRecognitionResultPtr result);
   void SendSpeechRecognitionError();
 
+  void WaitForRecognitionStarted();
+
   // Whether AudioSourceFetcher is capturing audio.
   bool is_capturing_audio() { return capturing_audio_; }
 
   // Whether SendAudioToSpeechRecognitionService has been called.
   bool has_received_audio() { return has_received_audio_; }
 
+  std::string device_id() { return device_id_; }
+
+  const base::Optional<::media::AudioParameters>& audio_parameters() {
+    return audio_parameters_;
+  }
+
+  void set_multichannel_supported(bool is_multichannel_supported) {
+    is_multichannel_supported_ = is_multichannel_supported;
+  }
+
  private:
   void OnRecognizerClientDisconnected();
+
+  // Whether multichannel audio is supported.
+  bool is_multichannel_supported_ = false;
   // Whether the AudioSourceFetcher has been started.
   bool capturing_audio_ = false;
   // Whether any audio has been sent to the SpeechRecognitionRecognizer.
   bool has_received_audio_ = false;
+  // The device ID used to capture audio.
+  std::string device_id_;
+  // The audio parameters used to capture audio.
+  base::Optional<::media::AudioParameters> audio_parameters_;
+
+  base::OnceClosure recognition_started_closure_;
+
   mojo::Remote<media::mojom::SpeechRecognitionRecognizerClient>
       recognizer_client_remote_;
 

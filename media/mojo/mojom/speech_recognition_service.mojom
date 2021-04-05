@@ -4,6 +4,7 @@
 
 module media.mojom;
 
+import "media/mojo/mojom/audio_parameters.mojom";
 import "media/mojo/mojom/audio_stream_factory.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
@@ -37,9 +38,8 @@ interface SpeechRecognitionContext {
   // SpeechRecognitionRecognizerClient.
   BindAudioSourceFetcher(
                  pending_receiver<AudioSourceFetcher> fetcher_receiver,
-                 pending_remote<SpeechRecognitionRecognizerClient> client,
-                 pending_remote<AudioStreamFactory> factory)
-                 => (bool success);
+                 pending_remote<SpeechRecognitionRecognizerClient> client)
+                 => (bool is_multichannel_supported);
 };
 
 // The main interface to a speech secognition service process.
@@ -70,7 +70,8 @@ interface AudioSourceFetcher {
   // Begin fetching audio. Results will be returned using the
   // Remote<SpeechRecognitionRecognizerClient> which was passed in
   // BindAudioSourceFetcher.
-  Start();
+  Start(pending_remote<AudioStreamFactory> factory, string device_id,
+        media.mojom.AudioParameters audio_parameters);
 
   // Stops audio fetching.
   Stop();
