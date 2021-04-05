@@ -26,8 +26,6 @@ component("cryptohome") {
     "cryptohome_parameters.h",
     "cryptohome_util.cc",
     "cryptohome_util.h",
-    "homedir_methods.cc",
-    "homedir_methods.h",
     "system_salt_getter.cc",
     "system_salt_getter.h",
     "userdataauth_util.cc",
@@ -35,31 +33,10 @@ component("cryptohome") {
   ]
 }
 
-source_set("test_support") {
-  testonly = true
-  public_deps = [
-    ":cryptohome",
-    "//chromeos/dbus/cryptohome",
-    "//chromeos/dbus/cryptohome:cryptohome_proto",
-  ]
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/account_id",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
-  sources = [
-    "mock_homedir_methods.cc",
-    "mock_homedir_methods.h",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   deps = [
     ":cryptohome",
-    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chromeos/dbus:test_support",
