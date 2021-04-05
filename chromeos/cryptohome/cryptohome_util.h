@@ -16,44 +16,12 @@
 
 namespace cryptohome {
 
-// Returns a MountError code from the MountEx |reply| returning
-// MOUNT_ERROR_NONE if the reply is well-formed and there is no error.
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-MountError MountExReplyToMountError(const base::Optional<BaseReply>& reply);
-
-// Returns a MountError code from |reply|, returning MOUNT_ERROR_NONE
-// if the reply is well-formed and there is no error.
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-MountError BaseReplyToMountError(const base::Optional<BaseReply>& reply);
-
-// Returns a MountError code from the GetKeyDataEx |reply| returning
-// MOUNT_ERROR_NONE if the reply is well-formed and there is no error.
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-MountError GetKeyDataReplyToMountError(const base::Optional<BaseReply>& reply);
-
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-std::vector<KeyDefinition> GetKeyDataReplyToKeyDefinitions(
-    const base::Optional<BaseReply>& reply);
-
 // Converts the key metadata in a RepeatedPtrField<cryptohome::KeyData> into
 // cryptohome::KeyDefinition format. Note that this is temporarily extracted
 // from GetKeyDataReplyToKeyDefinitions() to facilitate the transition from
 // cryptohome_util.cc to userdataauth_util.cc.
 std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
     const google::protobuf::RepeatedPtrField<KeyData>& key_data);
-
-// Extracts the account's disk usage size from |reply|.
-// If |reply| is malformed, returns -1.
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-int64_t AccountDiskUsageReplyToUsageSize(
-    const base::Optional<BaseReply>& reply);
-
-// Extracts the mount hash from |reply|.
-// This method assumes |reply| is well-formed. To check if a reply
-// is well-formed, callers can check if BaseReplyToMountError returns
-// MOUNT_ERROR_NONE.
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-const std::string& MountExReplyToMountHash(const BaseReply& reply);
 
 // Creates an AuthorizationRequest from the given secret and label.
 COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
@@ -68,10 +36,6 @@ AuthorizationRequest CreateAuthorizationRequestFromKeyDef(
 // Converts the given KeyDefinition to a Key.
 COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
 void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key);
-
-// Converts CryptohomeErrorCode to MountError.
-COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
-MountError CryptohomeErrorToMountError(CryptohomeErrorCode code);
 
 }  // namespace cryptohome
 

@@ -25,14 +25,6 @@ namespace cryptohome {
 
 namespace {
 
-bool IsEmpty(const base::Optional<BaseReply>& reply) {
-  if (!reply.has_value()) {
-    LOGIN_LOG(ERROR) << "Cryptohome call failed with empty reply.";
-    return true;
-  }
-  return false;
-}
-
 ChallengeSignatureAlgorithm ChallengeSignatureAlgorithmToProtoEnum(
     ChallengeResponseKey::SignatureAlgorithm algorithm) {
   using Algorithm = ChallengeResponseKey::SignatureAlgorithm;
@@ -81,44 +73,6 @@ void KeyDefProviderDataToKeyProviderDataEntry(
 }
 
 }  // namespace
-
-MountError MountExReplyToMountError(const base::Optional<BaseReply>& reply) {
-  if (IsEmpty(reply))
-    return MOUNT_ERROR_FATAL;
-
-  if (!reply->HasExtension(MountReply::reply)) {
-    LOGIN_LOG(ERROR) << "MountEx failed with no MountReply extension in reply.";
-    return MOUNT_ERROR_FATAL;
-  }
-  return CryptohomeErrorToMountError(reply->error());
-}
-
-MountError BaseReplyToMountError(const base::Optional<BaseReply>& reply) {
-  if (IsEmpty(reply))
-    return MOUNT_ERROR_FATAL;
-
-  return CryptohomeErrorToMountError(reply->error());
-}
-
-MountError GetKeyDataReplyToMountError(const base::Optional<BaseReply>& reply) {
-  if (IsEmpty(reply))
-    return MOUNT_ERROR_FATAL;
-
-  if (!reply->HasExtension(GetKeyDataReply::reply)) {
-    LOGIN_LOG(ERROR)
-        << "GetKeyDataEx failed with no GetKeyDataReply extension in reply.";
-    return MOUNT_ERROR_FATAL;
-  }
-  return CryptohomeErrorToMountError(reply->error());
-}
-
-// TODO(crbug.com/797848): Finish testing this method.
-std::vector<KeyDefinition> GetKeyDataReplyToKeyDefinitions(
-    const base::Optional<BaseReply>& reply) {
-  const RepeatedPtrField<KeyData>& key_data =
-      reply->GetExtension(GetKeyDataReply::reply).key_data();
-  return RepeatedKeyDataToKeyDefinitions(key_data);
-}
 
 std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
     const RepeatedPtrField<KeyData>& key_data) {
@@ -192,28 +146,6 @@ std::vector<KeyDefinition> RepeatedKeyDataToKeyDefinitions(
   return key_definitions;
 }
 
-int64_t AccountDiskUsageReplyToUsageSize(
-    const base::Optional<BaseReply>& reply) {
-  if (IsEmpty(reply))
-    return -1;
-
-  if (reply->has_error() && reply->error() != CRYPTOHOME_ERROR_NOT_SET) {
-    LOGIN_LOG(ERROR) << "GetAccountDiskUsage failed with error: "
-                     << reply->error();
-    return -1;
-  }
-  if (!reply->HasExtension(GetAccountDiskUsageReply::reply)) {
-    LOGIN_LOG(ERROR) << "GetAccountDiskUsage failed with no "
-                        "GetAccountDiskUsageReply extension in reply.";
-    return -1;
-  }
-  return reply->GetExtension(GetAccountDiskUsageReply::reply).size();
-}
-
-const std::string& MountExReplyToMountHash(const BaseReply& reply) {
-  return reply.GetExtension(MountReply::reply).sanitized_username();
-}
-
 AuthorizationRequest CreateAuthorizationRequest(const std::string& label,
                                                 const std::string& secret) {
   return CreateAuthorizationRequestFromKeyDef(
@@ -280,81 +212,6 @@ void KeyDefinitionToKey(const KeyDefinition& key_def, Key* key) {
   for (const auto& provider_data : key_def.provider_data) {
     KeyDefProviderDataToKeyProviderDataEntry(
         provider_data, data->mutable_provider_data()->add_entry());
-  }
-}
-
-// TODO(crbug.com/797848): Finish testing this method.
-MountError CryptohomeErrorToMountError(CryptohomeErrorCode code) {
-  switch (code) {
-    case CRYPTOHOME_ERROR_NOT_SET:
-      return MOUNT_ERROR_NONE;
-    case CRYPTOHOME_ERROR_ACCOUNT_NOT_FOUND:
-      return MOUNT_ERROR_USER_DOES_NOT_EXIST;
-    case CRYPTOHOME_ERROR_NOT_IMPLEMENTED:
-    case CRYPTOHOME_ERROR_MOUNT_FATAL:
-    case CRYPTOHOME_ERROR_KEY_QUOTA_EXCEEDED:
-    case CRYPTOHOME_ERROR_BACKING_STORE_FAILURE:
-    case CRYPTOHOME_ERROR_INSTALL_ATTRIBUTES_FINALIZE_FAILED:
-    case CRYPTOHOME_ERROR_INSTALL_ATTRIBUTES_GET_FAILED:
-    case CRYPTOHOME_ERROR_INSTALL_ATTRIBUTES_SET_FAILED:
-    case CRYPTOHOME_ERROR_INVALID_ARGUMENT:
-    case CRYPTOHOME_ERROR_FINGERPRINT_ERROR_INTERNAL:
-    case CRYPTOHOME_ERROR_FINGERPRINT_RETRY_REQUIRED:
-    case CRYPTOHOME_ERROR_FINGERPRINT_DENIED:
-      return MOUNT_ERROR_FATAL;
-    case CRYPTOHOME_ERROR_AUTHORIZATION_KEY_NOT_FOUND:
-    case CRYPTOHOME_ERROR_KEY_NOT_FOUND:
-    case CRYPTOHOME_ERROR_MIGRATE_KEY_FAILED:
-    case CRYPTOHOME_ERROR_AUTHORIZATION_KEY_FAILED:
-      return MOUNT_ERROR_KEY_FAILURE;
-    case CRYPTOHOME_ERROR_TPM_COMM_ERROR:
-      return MOUNT_ERROR_TPM_COMM_ERROR;
-    case CRYPTOHOME_ERROR_TPM_DEFEND_LOCK:
-      return MOUNT_ERROR_TPM_DEFEND_LOCK;
-    case CRYPTOHOME_ERROR_MOUNT_MOUNT_POINT_BUSY:
-      return MOUNT_ERROR_MOUNT_POINT_BUSY;
-    case CRYPTOHOME_ERROR_TPM_NEEDS_REBOOT:
-      return MOUNT_ERROR_TPM_NEEDS_REBOOT;
-    case CRYPTOHOME_ERROR_AUTHORIZATION_KEY_DENIED:
-    case CRYPTOHOME_ERROR_KEY_LABEL_EXISTS:
-    case CRYPTOHOME_ERROR_UPDATE_SIGNATURE_INVALID:
-      return MOUNT_ERROR_KEY_FAILURE;
-    case CRYPTOHOME_ERROR_MOUNT_OLD_ENCRYPTION:
-      return MOUNT_ERROR_OLD_ENCRYPTION;
-    case CRYPTOHOME_ERROR_MOUNT_PREVIOUS_MIGRATION_INCOMPLETE:
-      return MOUNT_ERROR_PREVIOUS_MIGRATION_INCOMPLETE;
-    case CRYPTOHOME_ERROR_REMOVE_FAILED:
-      return MOUNT_ERROR_REMOVE_FAILED;
-    case CRYPTOHOME_ERROR_TPM_UPDATE_REQUIRED:
-      return MOUNT_ERROR_TPM_UPDATE_REQUIRED;
-    case CRYPTOHOME_ERROR_VAULT_UNRECOVERABLE:
-      return MOUNT_ERROR_VAULT_UNRECOVERABLE;
-    // TODO(crbug.com/797563): Split the error space and/or handle everything.
-    case CRYPTOHOME_ERROR_LOCKBOX_SIGNATURE_INVALID:
-    case CRYPTOHOME_ERROR_LOCKBOX_CANNOT_SIGN:
-    case CRYPTOHOME_ERROR_BOOT_ATTRIBUTE_NOT_FOUND:
-    case CRYPTOHOME_ERROR_BOOT_ATTRIBUTES_CANNOT_SIGN:
-    case CRYPTOHOME_ERROR_TPM_EK_NOT_AVAILABLE:
-    case CRYPTOHOME_ERROR_ATTESTATION_NOT_READY:
-    case CRYPTOHOME_ERROR_CANNOT_CONNECT_TO_CA:
-    case CRYPTOHOME_ERROR_CA_REFUSED_ENROLLMENT:
-    case CRYPTOHOME_ERROR_CA_REFUSED_CERTIFICATE:
-    case CRYPTOHOME_ERROR_INTERNAL_ATTESTATION_ERROR:
-    case CRYPTOHOME_ERROR_FIRMWARE_MANAGEMENT_PARAMETERS_INVALID:
-    case CRYPTOHOME_ERROR_FIRMWARE_MANAGEMENT_PARAMETERS_CANNOT_STORE:
-    case CRYPTOHOME_ERROR_FIRMWARE_MANAGEMENT_PARAMETERS_CANNOT_REMOVE:
-    case CRYPTOHOME_ERROR_UPDATE_USER_ACTIVITY_TIMESTAMP_FAILED:
-    case CRYPTOHOME_ERROR_FAILED_TO_EXTEND_PCR:
-    case CRYPTOHOME_ERROR_FAILED_TO_READ_PCR:
-    case CRYPTOHOME_ERROR_PCR_ALREADY_EXTENDED:
-      NOTREACHED();
-      return MOUNT_ERROR_FATAL;
-    // TODO(dlunev): remove this temporary case after rolling up system api
-    // change and adding proper handling for the new enum value in
-    // https://chromium-review.googlesource.com/c/chromium/src/+/2518524
-    default:
-      NOTREACHED();
-      return MOUNT_ERROR_FATAL;
   }
 }
 
