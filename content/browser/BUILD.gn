@@ -2293,6 +2293,8 @@ source_set("browser") {
     sources += [
       "media/capture/frame_sink_video_capture_device.cc",
       "media/capture/frame_sink_video_capture_device.h",
+      "media/capture/web_contents_frame_tracker.cc",
+      "media/capture/web_contents_frame_tracker.h",
       "media/capture/web_contents_video_capture_device.cc",
       "media/capture/web_contents_video_capture_device.h",
     ]

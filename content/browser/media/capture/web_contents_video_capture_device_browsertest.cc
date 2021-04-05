@@ -172,8 +172,9 @@ class WebContentsVideoCaptureDeviceBrowserTest
 
   std::unique_ptr<FrameSinkVideoCaptureDevice> CreateDevice() final {
     auto* const main_frame = shell()->web_contents()->GetMainFrame();
-    return std::make_unique<WebContentsVideoCaptureDevice>(
-        main_frame->GetProcess()->GetID(), main_frame->GetRoutingID());
+    const GlobalFrameRoutingId id(main_frame->GetProcess()->GetID(),
+                                  main_frame->GetRoutingID());
+    return std::make_unique<WebContentsVideoCaptureDevice>(id);
   }
 
   void WaitForFirstFrame() final { WaitForFrameWithColor(SK_ColorBLACK); }
@@ -189,18 +190,17 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   NavigateToInitialDocument();
 
   auto* const main_frame = shell()->web_contents()->GetMainFrame();
-  const auto render_process_id = main_frame->GetProcess()->GetID();
-  const auto render_frame_id = main_frame->GetRoutingID();
   const auto capture_params = SnapshotCaptureParams();
 
+  const GlobalFrameRoutingId id(main_frame->GetProcess()->GetID(),
+                                main_frame->GetRoutingID());
   // Delete the WebContents instance and the Shell. This makes the
   // render_frame_id invalid.
   shell()->web_contents()->Close();
-  ASSERT_FALSE(RenderFrameHost::FromID(render_process_id, render_frame_id));
+  ASSERT_FALSE(RenderFrameHost::FromID(id));
 
   // Create the device.
-  auto device = std::make_unique<WebContentsVideoCaptureDevice>(
-      render_process_id, render_frame_id);
+  auto device = std::make_unique<WebContentsVideoCaptureDevice>(id);
   // Running the pending UI tasks should cause the device to realize the
   // WebContents is gone.
   RunUntilIdle();

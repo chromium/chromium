@@ -88,8 +88,8 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   // These are called to notify when the capture target has changed or was
   // permanently lost.
-  void OnTargetChanged(const viz::FrameSinkId& frame_sink_id);
-  void OnTargetPermanentlyLost();
+  virtual void OnTargetChanged(const viz::FrameSinkId& frame_sink_id);
+  virtual void OnTargetPermanentlyLost();
 
  protected:
   MouseCursorOverlayController* cursor_controller() const {
