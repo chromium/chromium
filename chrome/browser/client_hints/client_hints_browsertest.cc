@@ -2226,10 +2226,17 @@ class ClientHintsAcceptCHFrameObserverBrowserTest
       accept_ch_frame_observer_interceptor_;
 };
 
+#if defined(OS_CHROMEOS)
+// Flaky: https://crbug.com/1195790
+#define MAYBE_AcceptCHFrame DISABLED_AcceptCHFrame
+#else
+#define MAYBE_AcceptCHFrame AcceptCHFrame
+#endif
+
 // Ensure that client hints are sent when the ACCEPT_CH frame observer is
 // notified.
 IN_PROC_BROWSER_TEST_F(ClientHintsAcceptCHFrameObserverBrowserTest,
-                       AcceptCHFrame) {
+                       MAYBE_AcceptCHFrame) {
   const GURL gurl = without_accept_ch_without_lifetime_url();
   set_accept_ch_frame(all_client_hints_types());
   SetClientHintExpectationsOnMainFrame(true);
