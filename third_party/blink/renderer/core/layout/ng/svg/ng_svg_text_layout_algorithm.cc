@@ -5,6 +5,10 @@
 #include "third_party/blink/renderer/core/layout/ng/svg/ng_svg_text_layout_algorithm.h"
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_character_data.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length_list.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number_list.h"
+#include "third_party/blink/renderer/core/svg/svg_text_positioning_element.h"
 
 namespace blink {
 
@@ -34,6 +38,18 @@ void NGSVGTextLayoutAlgorithm::Layout(
   // 2. Set flags and assign initial positions
   SetFlags(items);
 
+  // 3. Resolve character positioning
+  // 3.1. Set up:
+  // 3.1.1. Let resolve_x, resolve_y, resolve_dx, and resolve_dy be arrays
+  // of length count whose entries are all initialized to "unspecified".
+  Vector<SVGCharacterData> resolve(addressable_count_);
+  // 3.1.2. Set "in_text_path" flag false
+  bool in_text_path = false;
+  // 3.1.3. Call the following procedure with the ‘text’ element node.
+  wtf_size_t index = 0;
+  ResolveCharacterPositioning(*inline_node_.GetLayoutBox(), items, in_text_path,
+                              index, resolve);
+
   // TODO(crbug.com/1179585): Implement the following steps.
 }
 
@@ -58,6 +74,7 @@ bool NGSVGTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {
   return true;
 }
 
+// This function updates |result_|.
 void NGSVGTextLayoutAlgorithm::SetFlags(
     const NGFragmentItemsBuilder::ItemWithOffsetList& items) {
   // This function collects information per an "addressable" character in DOM
@@ -114,6 +131,138 @@ void NGSVGTextLayoutAlgorithm::SetFlags(
     }
   }
   addressable_count_ = result_.size();
+}
+
+// 3.2. Procedure: resolve character positioning:
+//
+// This function updates |result_|, |index|, and |resolve|.
+//
+// TODO(crbug.com/1179585): Accessing LayoutObject tree structure here is not
+// appropriate. We should do this in PrepareLayout().
+void NGSVGTextLayoutAlgorithm::ResolveCharacterPositioning(
+    const LayoutObject& layout_object,
+    const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+    bool in_text_path,
+    wtf_size_t& index,
+    Vector<SVGCharacterData>& resolve) {
+  // 1. If node is a ‘text’ or ‘tspan’ node:
+  if (const auto* text_position_element =
+          DynamicTo<SVGTextPositioningElement>(layout_object.GetNode())) {
+    SVGLengthContext context(text_position_element);
+    // 1.2. Let x, y, dx, dy and rotate be the lists of values from the
+    // corresponding attributes on node, or empty lists if the corresponding
+    // attribute was not specified or was invalid.
+    const SVGLengthList& x = *text_position_element->x()->CurrentValue();
+    const SVGLengthList& y = *text_position_element->y()->CurrentValue();
+    const SVGLengthList& dx = *text_position_element->dx()->CurrentValue();
+    const SVGLengthList& dy = *text_position_element->dy()->CurrentValue();
+    const SVGNumberList& rotate =
+        *text_position_element->rotate()->CurrentValue();
+    // 1.3. If "in_text_path" flag is false:
+    //   * Let new_chunk_count = max(length of x, length of y).
+    // Else:
+    //   * If the "horizontal" flag is true:
+    //     * Let new_chunk_count = length of x.
+    //   * Else:
+    //     * Let new_chunk_count = length of y.
+    wtf_size_t new_chunk_count;
+    if (!in_text_path) {
+      new_chunk_count = std::max(x.length(), y.length());
+    } else if (horizontal_) {
+      new_chunk_count = x.length();
+    } else {
+      new_chunk_count = y.length();
+    }
+
+    // 1.5. Let i = 0 and j = 0
+    // ==> In our implementation, 'i' and 'j' are equivalent because we store
+    //     only addressable characters.
+    DCHECK_EQ(result_.size(), addressable_count_);
+    DCHECK_EQ(resolve.size(), addressable_count_);
+    wtf_size_t i = 0;
+    // 1.6. While j < length, do:
+    while (
+        index + i < addressable_count_ &&
+        items[result_[index + i].item_index]->GetLayoutObject()->IsDescendantOf(
+            &layout_object)) {
+      // 1.6.1. If the "addressable" flag of result[index + j] is true, then:
+      // ==> "addressable" is always true in our implementation.
+      NGSVGPerCharacterInfo& info = result_[index + i];
+      // 1.6.1.1. If i < new_check_count, then set the "anchored chunk" flag
+      // of result[index + j] to true. Else set the flag to false.
+      info.anchored_chunk = i < new_chunk_count;
+      // 1.6.1.2. If i < length of x, then set resolve_x[index + j] to x[i].
+      if (i < x.length())
+        resolve[index + i].x = x.at(i)->Value(context);
+      // 1.6.1.3. If "in_text_path" flag is true and the "horizontal" flag is
+      // false, unset resolve_x[index].
+      // TODO(crbug.com/1179585): Check if [index] is a specification bug?
+      if (in_text_path && !horizontal_)
+        resolve[index].x = SVGCharacterData::EmptyValue();
+      // 1.6.1.4. If i < length of y, then set resolve_y[index + j] to y[i].
+      if (i < y.length())
+        resolve[index + i].y = y.at(i)->Value(context);
+      // 1.6.1.5. If "in_text_path" flag is true and the "horizontal" flag is
+      // true, unset resolve_y[index].
+      // TODO(crbug.com/1179585): Check if [index] is a specification bug?
+      if (in_text_path && horizontal_)
+        resolve[index].y = SVGCharacterData::EmptyValue();
+      // 1.6.1.6. If i < length of dx, then set resolve_dx[index + j] to dy[i].
+      // TODO(crbug.com/1179585): Report a specification bug on "dy[i]".
+      if (i < dx.length())
+        resolve[index + i].dx = dx.at(i)->Value(context);
+      // 1.6.1.7. If i < length of dy, then set resolve_dy[index + j] to dy[i].
+      if (i < dy.length())
+        resolve[index + i].dy = dy.at(i)->Value(context);
+      // 1.6.1.8. If i < length of rotate, then set the angle value of
+      // result[index + j] to rotate[i]. Otherwise, if rotate is not empty,
+      // then set result[index + j] to result[index + j − 1].
+      if (i < rotate.length())
+        info.rotate = rotate.at(i)->Value();
+      else if (rotate.length() > 0)
+        info.rotate = result_[index + i - 1].rotate;
+      // 1.6.1.9. Set i = i + 1.
+      // 1.6.2. Set j = j + 1.
+      ++i;
+    }
+  } else if (IsA<SVGTextPathElement>(layout_object.GetNode())) {
+    // 2. If node is a ‘textPath’ node:
+    // 2.2. Set the "anchored chunk" flag of result[index] to true.
+    result_[index].anchored_chunk = true;
+    // 2.3. Set in_text_path flag true.
+    in_text_path = true;
+  }
+
+  // 3. For each child node child of node:
+  // ==> We traverse LayoutObjects instead.
+  for (const LayoutObject* child = layout_object.SlowFirstChild(); child;
+       child = child->NextSibling()) {
+    // 3.1. Resolve glyph positioning of child.
+    if (!IsA<Element>(child->GetNode()))
+      continue;
+    // To compute the index number of the first character in |child|, we
+    // traverse LayoutObject for result_[i] until we find |child|.
+    wtf_size_t i;
+    for (i = index; i < addressable_count_; ++i) {
+      const LayoutObject* item_layout_object =
+          items[result_[i].item_index]->GetLayoutObject();
+      if (!item_layout_object->IsDescendantOf(&layout_object))
+        break;
+      if (item_layout_object->IsDescendantOf(child)) {
+        index = i;
+        ResolveCharacterPositioning(*child, items, in_text_path, index,
+                                    resolve);
+        break;
+      }
+    }
+  }
+
+  // Updates |index| so that it points the first addressable character in the
+  // next sibling of |layout_object|.
+  while (index < addressable_count_ &&
+         items[result_[index].item_index]->GetLayoutObject()->IsDescendantOf(
+             &layout_object))
+    ++index;
 }
 
 }  // namespace blink

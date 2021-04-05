@@ -9,6 +9,8 @@
 
 namespace blink {
 
+struct SVGCharacterData;
+
 class NGSVGTextLayoutAlgorithm {
   STACK_ALLOCATED();
 
@@ -23,6 +25,12 @@ class NGSVGTextLayoutAlgorithm {
   // Returns false if we should skip the following steps.
   bool Setup(wtf_size_t approximate_count);
   void SetFlags(const NGFragmentItemsBuilder::ItemWithOffsetList& items);
+  void ResolveCharacterPositioning(
+      const LayoutObject& layout_object,
+      const NGFragmentItemsBuilder::ItemWithOffsetList& items,
+      bool in_text_path,
+      wtf_size_t& index,
+      Vector<SVGCharacterData>& resolve);
 
   NGInlineNode inline_node_;
 
