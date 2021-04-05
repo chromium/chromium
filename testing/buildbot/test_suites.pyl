@@ -5120,10 +5120,6 @@
       'updater_tests': {},
     },
 
-    'updater_isolated_scripts': {
-      'updater_integration_tests': {},
-    },
-
     'updater_system_gtests': {
       'updater_tests_system': {
         'swarming': {

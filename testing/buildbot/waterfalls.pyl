@@ -5580,13 +5580,11 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
       },
       'mac10.11-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
        'swarming': {
           'dimension_sets': [
@@ -5600,7 +5598,6 @@
       'mac10.12-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5614,7 +5611,6 @@
       'mac10.13-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5628,7 +5624,6 @@
       'mac10.14-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5642,7 +5637,6 @@
       'mac10.15-updater-tester-dbg': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5656,7 +5650,6 @@
       'mac10.15-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_mac_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5670,7 +5663,6 @@
       'mac11.0-updater-tester-rel': {
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5689,7 +5681,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5706,7 +5697,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5723,7 +5713,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5740,7 +5729,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5757,7 +5745,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
@@ -5774,7 +5761,6 @@
         ],
         'test_suites': {
           'gtest_tests': 'updater_gtests',
-          'isolated_scripts': 'updater_isolated_scripts',
         },
         'swarming': {
           'dimension_sets': [
