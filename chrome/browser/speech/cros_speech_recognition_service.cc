@@ -8,6 +8,8 @@
 #include "chrome/services/speech/audio_source_fetcher_impl.h"
 #include "chrome/services/speech/cros_speech_recognition_recognizer_impl.h"
 #include "components/soda/constants.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "media/base/media_switches.h"
 
 namespace speech {
@@ -53,13 +55,19 @@ void CrosSpeechRecognitionService::BindAudioSourceFetcher(
   base::FilePath binary_path, languagepack_path;
   PopulateFilePaths(binary_path, languagepack_path);
 
-  // TODO(crbug.com/1173135): Consider creating on I/O thread if called on
-  // browser UI thread.
-  AudioSourceFetcherImpl::Create(
-      std::move(fetcher_receiver), std::move(stream_factory),
-      std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
-          std::move(client), nullptr /* =SpeechRecognitionService WeakPtr*/,
-          binary_path, languagepack_path));
+  // CrosSpeechRecognitionService runs on browser UI thread.
+  // Create AudioSourceFetcher on browser IO thread to avoid UI jank.
+  // Note that SpeechRecognitionRecognizer (used for network speech) also runs
+  // on the IO thread. If CrosSpeechRecognitionService is moved away from
+  // browser UI thread, we can call AudioSourceFetcherImpl::Create directly.
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &AudioSourceFetcherImpl::Create, std::move(fetcher_receiver),
+          std::move(stream_factory),
+          std::make_unique<CrosSpeechRecognitionRecognizerImpl>(
+              std::move(client), nullptr /* =SpeechRecognitionService WeakPtr*/,
+              binary_path, languagepack_path)));
   std::move(callback).Run(true);
 }
 

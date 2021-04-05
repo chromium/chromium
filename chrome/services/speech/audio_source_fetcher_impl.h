@@ -17,10 +17,9 @@ namespace speech {
 class SpeechRecognitionRecognizerImpl;
 
 // Class to get microphone audio data and send it to a
-// SpeechRecognitionRecognizerImpl for transcription. Runs in Browser process in
-// Chrome OS and Speech Recognition Service on Chrome or web speech fallback.
-// TODO(crbug.com/1173135): Override from
-// media::AudioCapturerSource::CaptureCallback to capture audio.
+// SpeechRecognitionRecognizerImpl for transcription. Runs on the IO thread in
+// the Browser process in Chrome OS and in the Speech Recognition Service
+// utility process on Chrome or web speech fallback.
 class AudioSourceFetcherImpl
     : public media::mojom::AudioSourceFetcher,
       public media::AudioCapturerSource::CaptureCallback,
