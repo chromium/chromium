@@ -129,17 +129,19 @@ struct WebApplicationInfo {
   // Description of the application.
   std::u16string description;
 
-  // The start_url for the app.
+  // The URL the site would prefer the user agent load when launching the app.
   // https://www.w3.org/TR/appmanifest/#start_url-member
   GURL start_url;
 
   // The URL of the manifest.
+  // https://www.w3.org/TR/appmanifest/#web-application-manifest
   GURL manifest_url;
 
   // Optional query parameters to add to the start_url when launching the app.
   base::Optional<std::string> launch_query_params;
 
   // Scope for the app. Dictates what URLs will be opened in the app.
+  // https://www.w3.org/TR/appmanifest/#scope-member
   GURL scope;
 
   // List of icon URLs with associated square size and purpose.
