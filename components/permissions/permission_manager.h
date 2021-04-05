@@ -114,13 +114,14 @@ class PermissionManager : public KeyedService,
   bool IsPermissionOverridableByDevTools(
       content::PermissionType permission,
       const base::Optional<url::Origin>& origin) override;
-  int SubscribePermissionStatusChange(
+  SubscriptionId SubscribePermissionStatusChange(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
-  void UnsubscribePermissionStatusChange(int subscription_id) override;
+  void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) override;
 
   // TODO(raymes): Rather than exposing this, use the denial reason from
   // GetPermissionStatus in callers to determine whether a permission is
@@ -153,7 +154,8 @@ class PermissionManager : public KeyedService,
   class PermissionResponseCallback;
 
   struct Subscription;
-  using SubscriptionsMap = base::IDMap<std::unique_ptr<Subscription>>;
+  using SubscriptionsMap =
+      base::IDMap<std::unique_ptr<Subscription>, SubscriptionId>;
 
   PermissionContextBase* GetPermissionContext(ContentSettingsType type);
 
@@ -185,6 +187,7 @@ class PermissionManager : public KeyedService,
   content::BrowserContext* browser_context_;
   PendingRequestsMap pending_requests_;
   SubscriptionsMap subscriptions_;
+  SubscriptionId::Generator subscription_id_generator_;
 
   PermissionContextMap permission_contexts_;
   using ContentSettingsTypeOverrides =

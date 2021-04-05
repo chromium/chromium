@@ -132,7 +132,8 @@ struct PermissionControllerImpl::Subscription {
   int render_frame_id = -1;
   int render_process_id = -1;
   base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback;
-  int delegate_subscription_id;
+  // This is default-initialized to an invalid ID.
+  PermissionControllerDelegate::SubscriptionId delegate_subscription_id;
 };
 
 PermissionControllerImpl::~PermissionControllerImpl() {
@@ -388,7 +389,8 @@ void PermissionControllerImpl::OnDelegatePermissionStatusChange(
     subscription->callback.Run(status);
 }
 
-int PermissionControllerImpl::SubscribePermissionStatusChange(
+PermissionControllerImpl::SubscriptionId
+PermissionControllerImpl::SubscribePermissionStatusChange(
     PermissionType permission,
     RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,
@@ -422,21 +424,21 @@ int PermissionControllerImpl::SubscribePermissionStatusChange(
             base::BindRepeating(
                 &PermissionControllerImpl::OnDelegatePermissionStatusChange,
                 base::Unretained(this), subscription.get()));
-  } else {
-    subscription->delegate_subscription_id = kNoPendingOperation;
   }
-  return subscriptions_.Add(std::move(subscription));
+
+  auto id = subscription_id_generator_.GenerateNextId();
+  subscriptions_.AddWithID(std::move(subscription), id);
+  return id;
 }
 
 void PermissionControllerImpl::UnsubscribePermissionStatusChange(
-    int subscription_id) {
+    SubscriptionId subscription_id) {
   Subscription* subscription = subscriptions_.Lookup(subscription_id);
   if (!subscription)
     return;
   PermissionControllerDelegate* delegate =
       browser_context_->GetPermissionControllerDelegate();
-  if (delegate &&
-      subscription->delegate_subscription_id != kNoPendingOperation) {
+  if (delegate) {
     delegate->UnsubscribePermissionStatusChange(
         subscription->delegate_subscription_id);
   }
