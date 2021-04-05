@@ -47,9 +47,7 @@ class AppBannerController final : public GarbageCollected<AppBannerController>,
  private:
   void Bind(mojo::PendingReceiver<mojom::blink::AppBannerController> receiver);
 
-  HeapMojoReceiver<mojom::blink::AppBannerController,
-                   AppBannerController,
-                   HeapMojoWrapperMode::kForceWithoutContextObserver>
+  HeapMojoReceiver<mojom::blink::AppBannerController, AppBannerController>
       receiver_;
 };
 
