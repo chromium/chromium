@@ -143,8 +143,6 @@ class CaptionBubble : public views::BubbleDialogDelegateView {
   // the bubble through focus, pressing buttons, or dragging.
   void OnInactivityTimeout();
 
-  std::vector<std::string> GetAXLineTextForTesting();
-
   // Unowned. Owned by views hierarchy.
   CaptionBubbleLabel* label_;
   views::Label* title_;

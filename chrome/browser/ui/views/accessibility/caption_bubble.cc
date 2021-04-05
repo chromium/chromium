@@ -242,16 +242,41 @@ class CaptionBubbleFrameView : public views::BubbleFrameView {
 BEGIN_METADATA(CaptionBubbleFrameView, views::BubbleFrameView)
 END_METADATA
 
+// CaptionBubble implementation of Label. This class takes care of setting up
+// the accessible virtual views of the label in order to support braille
+// accessibility. The CaptionBubbleLabel is a readonly document with a paragraph
+// inside. Inside the paragraph are staticText nodes, one for each visual line
+// in the rendered text of the label. These staticText nodes are shown on a
+// braille display so that a braille user can read the caption text line by
+// line.
 class CaptionBubbleLabel : public views::Label {
  public:
   METADATA_HEADER(CaptionBubbleLabel);
-  CaptionBubbleLabel() = default;
+  CaptionBubbleLabel() {
+    // The CaptionBubbleLabel accessibility tree contains one paragraph with
+    // many staticText nodes inside. The paragraph groups the static text nodes.
+    // Without a paragraph, VoiceOver intersperses the close button with the
+    // lines, such that as a user is traversing the caption bubble, they might
+    // read lines 1, 2, 3, 4, 5, 6, close button, line 7, line 8. The paragraph
+    // ensures that lines 1-8 are read together.
+    auto ax_paragraph = std::make_unique<views::AXVirtualView>();
+    ax_paragraph->GetCustomData().role = ax::mojom::Role::kParagraph;
+    GetViewAccessibility().AddVirtualChildView(std::move(ax_paragraph));
+  }
+
   ~CaptionBubbleLabel() override = default;
   CaptionBubbleLabel(const CaptionBubbleLabel&) = delete;
   CaptionBubbleLabel& operator=(const CaptionBubbleLabel&) = delete;
 
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    node_data->role = ax::mojom::Role::kParagraph;
+    // Views are not supposed to be documents (see
+    // `ViewAccessibility::IsValidRoleForViews` for more information) but we
+    // make an exception here. The CaptionBubbleLabel is designed to be
+    // interacted with by a braille display in virtual buffer mode. In order to
+    // activate the virtual buffer in NVDA, we set the CaptionBubbleLabel to be
+    // a readonly document.
+    node_data->role = ax::mojom::Role::kDocument;
+    node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
   }
 
   void SetText(const std::u16string& text) override {
@@ -264,9 +289,10 @@ class CaptionBubbleLabel : public views::Label {
       return;
     }
 
-    auto& ax_lines = GetViewAccessibility().virtual_children();
+    auto& ax_paragraph = GetViewAccessibility().virtual_children()[0];
+    auto& ax_lines = ax_paragraph->children();
     if (text.empty() && !ax_lines.empty()) {
-      GetViewAccessibility().RemoveAllVirtualChildViews();
+      ax_paragraph->RemoveAllChildViews();
       return;
     }
 
@@ -286,7 +312,7 @@ class CaptionBubbleLabel : public views::Label {
     // Remove all ax_lines that don't have a corresponding line.
     size_t num_ax_lines = ax_lines.size();
     for (size_t i = num_lines; i < num_ax_lines; ++i) {
-      GetViewAccessibility().RemoveVirtualChildView(ax_lines.back().get());
+      ax_paragraph->RemoveChildView(ax_lines.back().get());
     }
 
     NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
@@ -296,14 +322,15 @@ class CaptionBubbleLabel : public views::Label {
   void UpdateAXLine(const std::u16string& line_text,
                     const size_t line_index,
                     const gfx::Range& text_range) {
-    auto& ax_lines = GetViewAccessibility().virtual_children();
+    auto& ax_paragraph = GetViewAccessibility().virtual_children()[0];
+    auto& ax_lines = ax_paragraph->children();
 
     // Add a new virtual child for a new line of text.
     DCHECK(line_index <= ax_lines.size());
     if (line_index == ax_lines.size()) {
       auto ax_line = std::make_unique<views::AXVirtualView>();
       ax_line->GetCustomData().role = ax::mojom::Role::kStaticText;
-      GetViewAccessibility().AddVirtualChildView(std::move(ax_line));
+      ax_paragraph->AddChildView(std::move(ax_line));
     }
 
     // Set the virtual child's name as line text.
@@ -903,16 +930,6 @@ bool CaptionBubble::HasActivity() {
 
 views::Label* CaptionBubble::GetLabelForTesting() {
   return static_cast<views::Label*>(label_);
-}
-
-std::vector<std::string> CaptionBubble::GetAXLineTextForTesting() {
-  auto& ax_lines = label_->GetViewAccessibility().virtual_children();
-  std::vector<std::string> line_texts;
-  for (auto& ax_line : ax_lines) {
-    line_texts.push_back(ax_line->GetCustomData().GetStringAttribute(
-        ax::mojom::StringAttribute::kName));
-  }
-  return line_texts;
 }
 
 base::RetainingOneShotTimer* CaptionBubble::GetInactivityTimerForTesting() {

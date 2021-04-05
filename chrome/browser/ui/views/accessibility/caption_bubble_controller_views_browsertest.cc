@@ -23,6 +23,7 @@
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -184,8 +185,37 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
     GetController()->OnAudioStreamEnd(GetCaptionHostImpl());
   }
 
+  size_t GetNumberAXParagraphNodes() {
+    return GetLabel()->GetViewAccessibility().virtual_children().size();
+  }
+
+  ui::AXNodeData GetAXParagraphNodeData() {
+    auto& ax_paragraph =
+        GetLabel()->GetViewAccessibility().virtual_children()[0];
+    return ax_paragraph->GetCustomData();
+  }
+
+  std::vector<ui::AXNodeData> GetAXLinesNodeData() {
+    std::vector<ui::AXNodeData> node_datas;
+    views::Label* label = GetLabel();
+    if (!label)
+      return node_datas;
+    auto& ax_paragraph = label->GetViewAccessibility().virtual_children()[0];
+    auto& ax_lines = ax_paragraph->children();
+    for (auto& ax_line : ax_lines) {
+      node_datas.push_back(ax_line->GetCustomData());
+    }
+    return node_datas;
+  }
+
   std::vector<std::string> GetAXLineText() {
-    return GetBubble()->GetAXLineTextForTesting();
+    std::vector<std::string> line_texts;
+    std::vector<ui::AXNodeData> ax_lines = GetAXLinesNodeData();
+    for (auto& ax_line : ax_lines) {
+      line_texts.push_back(
+          ax_line.GetStringAttribute(ax::mojom::StringAttribute::kName));
+    }
+    return line_texts;
   }
 
   void SetTickClockForTesting(const base::TickClock* tick_clock) {
@@ -1009,6 +1039,28 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
 
   OnFinalTranscription("猫も大丈夫");
   EXPECT_EQ("猫も大丈夫", GetLabelText());
+}
+
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleText) {
+  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+  OnPartialTranscription("Capybaras are the world's largest rodents.");
+
+  // The label is a readonly document.
+  ui::AXNodeData node_data;
+  GetLabel()->GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(ax::mojom::Role::kDocument, node_data.role);
+  EXPECT_EQ(ax::mojom::Restriction::kReadOnly, node_data.GetRestriction());
+
+  // There is 1 paragraph node in the label.
+  EXPECT_EQ(1u, GetNumberAXParagraphNodes());
+  EXPECT_EQ(ax::mojom::Role::kParagraph, GetAXParagraphNodeData().role);
+
+  // There is 1 staticText node in the paragraph.
+  EXPECT_EQ(1u, GetAXLinesNodeData().size());
+  EXPECT_EQ(ax::mojom::Role::kStaticText, GetAXLinesNodeData()[0].role);
+  EXPECT_EQ("Capybaras are the world's largest rodents.",
+            GetAXLinesNodeData()[0].GetStringAttribute(
+                ax::mojom::StringAttribute::kName));
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
