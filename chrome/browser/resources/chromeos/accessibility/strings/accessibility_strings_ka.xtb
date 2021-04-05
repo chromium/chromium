@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">ღია ცისფერი</translation>
 <translation id="1303806948938513162">ChromeVox-ის მენიუებში შესასვლელად შეეხეთ 4 თითით</translation>
 <translation id="1313373992684326101">წინა სექციაზე გადასვლა. მაგალითად, სტატუსის პანელზე და გამშვებზე.</translation>
+<translation id="1315077335264761176">შეხებით ორიენტაცია</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, მენიუს ერთეული არჩევანის ღილაკი აურჩეველი</translation>
 <translation id="1325946044405407859">რუჯისფერი</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> სულ: <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">მოგესალმებათ ChromeVox-ის სახელმძღვანელო. ამ სახელმძღვანელოდან ნებისმიერ დროს გასასვლელად დააჭირეთ Escape კლავიშს, რომელიც კლავიატურის ზედა მარცხენა კუთხეშია. ChromeVox-ის გამოსართავად ხანგრძლივად დააჭირეთ Control-სა და Alt-ს, შემდეგ კი Z-ს. როცა მზად იქნებით, შემდეგ გაკვეთილზე გადასასვლელად გამოიყენეთ შორისის კლავიში.</translation>
 <translation id="174268867904053074">შემდეგი გრაფიკა</translation>
 <translation id="1756785467854861272">მუქი მაჯენტა</translation>
+<translation id="1758693804775271377">ამ თემაზე გაკვეთილების დასათვალიერებლად გადაფურცლეთ ერთი თითით მარცხნივ ან მარჯვნივ</translation>
 <translation id="1765245556747822181">ერთი თითით გადაფურცვლა ზემოთ</translation>
 <translation id="1771761307086386028">გადაადგილება მარჯვნივ</translation>
 <translation id="1781173782405573156">გადადით გასაღების მეშვეობით</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">სტრიქონი</translation>
 <translation id="2816868829355607410">პრაქტიკის არე: გადასვლის ბრძანებები</translation>
 <translation id="2841013758207633010">დრო</translation>
+<translation id="284171465644749950">თემების დასათვალიერებლად გადაფურცლეთ ერთი თითით მარცხნივ ან მარჯვნივ</translation>
 <translation id="2843432675592278677">წინა ARIA ორიენტირი არ არის</translation>
 <translation id="2843814945404750166">მუქი ზეთისხილისფერი მწვანე</translation>
 <translation id="2843837985843789981">წინა ჯგუფი</translation>
@@ -720,7 +723,6 @@
 <translation id="6037602951055904232">წინ გადაწევა</translation>
 <translation id="6082768461603900813">ძირითადი ნავიგაცია</translation>
 <translation id="609281021724813947">წინა სლაიდერი არ არის</translation>
-<translation id="6096942799340613495">ეს ქმედება გამორთავს ეკრანს. ეკრანის ხელახლა ჩართვას ნებისმიერ დროს შეძლებთ კლავიშთა კომბინაციით Search + სიკაშკაშის აწევა.</translation>
 <translation id="6100239002225743044">ერთი ხაზით ზემოთ გადასვლა</translation>
 <translation id="6118126368611144850">Android აპები Chrome-ისთვის. ახლა Android-ის აპები აღჭურვილია ChromeVox-ის ექსპერიმენტული მხარდაჭერით, რაც შეგიძლიათ თავად ცადოთ Play Store-იდან Google Chrome Canary-ს ჩამოტვირთვით.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -1120,6 +1122,7 @@
 <translation id="923331726185079994">ChromeVox განახლდა</translation>
 <translation id="93384979447910801">მუქი ზღვისფერი მწვანე</translation>
 <translation id="948171205378458592">მეტყველების სიჩქარის შემცირება</translation>
+<translation id="957570623732056069">ამ გაკვეთილში გადაადგილებისთვის გადაფურცლეთ ერთი თითით მარცხნივ ან მარჯვნივ</translation>
 <translation id="958854023026327378">ერთი თითით გადაფურცვლა ქვემოთ</translation>
 <translation id="962913030769097253">შემდეგი 1-ლი დონის სათაური</translation>
 <translation id="966588271015727539">აირჩიეთ ბრაილის Bluetooth ეკრანი</translation>

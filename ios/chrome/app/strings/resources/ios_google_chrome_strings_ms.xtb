@@ -4,6 +4,7 @@
 <translation id="1282031177488366470">Bantu Tingkatkan Ciri dan Prestasi Chrome</translation>
 <translation id="1314663809820920746">Anda masih boleh melihat semua penanda halaman, sejarah, kata laluan dan tetapan anda yang lain pada peranti ini. Jika perubahan dibuat, perubahan itu tidak akan disegerakkan ke Akaun Google anda.</translation>
 <translation id="1479202195792305274">Chrome boleh menyemak kata laluan anda apabila anda log masuk menggunakan Akaun Google anda.</translation>
+<translation id="1493827051843127077">Tetapkan Chrome sebagai penyemak imbas lalai untuk menyegerakkan tab, kata laluan dan maklumat pembayaran anda pada semua peranti anda</translation>
 <translation id="1504372625950710826">Chrome tidak dapat menyemak kemaskinian. Cuba periksa sambungan internet anda.</translation>
 <translation id="1682483655351012182">Segerakkan Data Chrome Anda</translation>
 <translation id="1759842336958782510">Chrome</translation>
@@ -14,6 +15,7 @@
 <translation id="2342919707875585281">Chrome berkongsi lokasi anda dengan laman yang anda benarkan.</translation>
 <translation id="2347208864470321755">Apabila ciri ini dihidupkan, Chrome akan menawarkan halaman yang ditulis dalam bahasa lain diterjemah menggunakan Google Terjemah. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="2415682770504543561">Jadikan Chrome sebagai Penyemak Imbas Lalai Anda</translation>
+<translation id="2561231791489583059">Gunakan Chrome sebagai penyemak imbas lalai anda untuk kekal dilindungi daripada laman berbahaya &amp; memastikan kata laluan anda selamat</translation>
 <translation id="2574249610672786438">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chrome, log masuk ke semua peranti anda</translation>
 <translation id="2576431527583832481">Chrome telah dipertingkatkan! Versi baharu kini boleh didapati.</translation>
 <translation id="257708665678654955">Adakah anda ingin Google Chrome menawarkan halaman <ph name="LANGUAGE_NAME" /> dari tapak ini diterjemahkan pada masa akan datang?</translation>
@@ -71,6 +73,7 @@
 <translation id="7261678641327190792">Chrome tidak dapat menyemak kata laluan anda</translation>
 <translation id="7265369419224458312">Akses tab yang telah anda buka pada komputer anda, terus dari sini. Cuma buka Chrome pada komputer anda, pergi ke menu dan pilih  “Log masuk ke Chrome…”</translation>
 <translation id="7272930098487145294">Untuk menyimpan imej, ketik Tetapan untuk membolehkan Chrome membuat penambahan pada foto anda.</translation>
+<translation id="7275945473750112644">Akaun anda diurus oleh <ph name="HOSTED_DOMAIN" />, oleh itu data Chrome anda akan dikosongkan daripada peranti ini</translation>
 <translation id="7400722733683201933">Mengenai Google Chrome</translation>
 <translation id="7501046334262221972">Untuk menjadikan Chrome sebagai penyemak imbas lalai anda, buka Tetapan. Ketik Apl Penyemak Imbas Lalai, kemudian pilih Chrome.</translation>
 <translation id="756809126120519699">Data Chrome dikosongkan</translation>
@@ -79,7 +82,9 @@
 <translation id="766361182512894255">Kata laluan anda terdedah dalam suatu pelanggaran data. Chrome mengesyorkan supaya kata laluan ditukar sekarang.</translation>
 <translation id="7698568245838009292">Chrome Ingin Mengakses Kamera Anda</translation>
 <translation id="7855730255114109580">Google Chrome adalah yang terkini</translation>
+<translation id="8022947259858476807">Gunakan Chrome secara lalai untuk membuka pautan, mencari daripada widget dan melengkapkan kata laluan secara automatik dalam apl lain</translation>
 <translation id="8160472928944011082">Chrome tidak dapat mengemas kini</translation>
+<translation id="8357607116237445042">Pilih sama ada anda hendak mengosongkan data Chrome anda daripada peranti ini atau mengekalkan data tersebut</translation>
 <translation id="8370517070665726704">Hak Cipta <ph name="YEAR" /> Google LLC. Hak cipta terpelihara.</translation>
 <translation id="840168496893712993">Beberapa tambahan menyebabkan Chrome ranap. Sila cuba menyahpasang tambahan tersebut.</translation>
 <translation id="8459495907675268833">Data yang dipilih telah dialih keluar daripada Chrome dan peranti yang disegerakkan. Akaun Google anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain seperti carian dan aktiviti daripada perkhidmatan Google yang lain di history.google.com.</translation>
@@ -88,4 +93,5 @@
   2. Ketik Apl Penyemak Imbas Lalai
   3. Pilih Chrome.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
+<translation id="8736550665979974340">Kekal Selamat dengan Google Chrome</translation>
 </translationbundle>

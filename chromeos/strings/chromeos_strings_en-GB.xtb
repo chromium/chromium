@@ -95,6 +95,7 @@
 <translation id="3226405216343213872">Looking for scanners</translation>
 <translation id="3246869037381808805">Print jobs older than 1 day will be removed</translation>
 <translation id="3268178239013324452">Failed – Door open</translation>
+<translation id="3283504360622356314">{0,plural, =1{Edit file}other{Edit files}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3310640316857623290">DNS latency significantly above allowable threshold</translation>
 <translation id="3328783797891415197">Test running</translation>

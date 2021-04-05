@@ -444,6 +444,7 @@ Le bac à sable de confidentialité est toujours en cours de développement et n
 <translation id="4095146165863963773">Supprimer les données de l'application?</translation>
 <translation id="4095189195365058471">Lire plus tard <ph name="BEGIN_NEW" />Nouveauté<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Envoyez des statistiques d'utilisation et des rapports d'erreur pour améliorer Chrome.</translation>
+<translation id="410351446219883937">Lecture automatique</translation>
 <translation id="4108314971463891922">Suivre</translation>
 <translation id="4108998448622696017">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent.</translation>
 <translation id="4116038641877404294">Téléchargez des pages pour les utiliser hors connexion</translation>
@@ -1028,6 +1029,7 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7930998711684428189">Il vous envoie un avertissement si des mots de passe sont exposés dans une violation de données.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> n'est pas à jour.</translation>
 <translation id="7947953824732555851">Accepter et se connecter</translation>
+<translation id="7961015016161918242">Jamais</translation>
 <translation id="7961926449547174351">Vous avez désactivé l'accès à l'espace de stockage. Veuillez accéder au menu Paramètres pour l'activer.</translation>
 <translation id="7963646190083259054">Fournisseur :</translation>
 <translation id="7967911570373677897">Pour numériser un code QR, modifiez vos paramètres pour que Chrome puisse utiliser votre appareil photo</translation>

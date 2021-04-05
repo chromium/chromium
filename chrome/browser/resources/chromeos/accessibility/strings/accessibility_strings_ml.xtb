@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">ഇളം ആകാശനീല</translation>
 <translation id="1303806948938513162">ChromeVox മെനു നൽകാൻ 4 വിരലുകൾ ഉപയോഗിച്ച് ടാപ്പ് ചെയ്യുക</translation>
 <translation id="1313373992684326101">മുമ്പത്തെ വിഭാഗത്തിലേക്ക് നീങ്ങുക. സ്‌റ്റാറ്റസ് ട്രേ, ലോഞ്ചർ എന്നിവ ഉദാഹരണങ്ങളിൽപ്പെടുന്നു.</translation>
+<translation id="1315077335264761176">ടച്ച് ഓറിയന്റേഷൻ</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, മെനു ഇനത്തിന്റെ റേഡിയോ ബട്ടണ്‍ തിരഞ്ഞെടുത്തത് മാറ്റി</translation>
 <translation id="1325946044405407859">തവിട്ടുനിറം</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> / <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox ട്യൂട്ടോറിയലിലേക്ക് സ്വാഗതം. ഈ ട്യൂട്ടോറിയലിൽ നിന്ന് ഏതുസമയത്തും പുറത്തുകടക്കാൻ, കീബോർഡിന് മുകളിലെ ഇടതുകോണിലുള്ള Escape കീ അമർത്തുക. ChromeVox ഓഫാക്കാൻ, Control, Alt അമർത്തിപ്പിടിക്കുക, തുടർന്ന് Z അമർത്തുക. തയ്യാറാകുമ്പോൾ, അടുത്ത പാഠത്തിലേക്ക് പോകാൻ സ്പെയസ് ബാർ ഉപയോഗിക്കുക.</translation>
 <translation id="174268867904053074">അടുത്ത ഗ്രാഫിക്</translation>
 <translation id="1756785467854861272">കടും മജന്ത</translation>
+<translation id="1758693804775271377">ഈ വിഷയത്തിനുള്ള പാഠങ്ങൾ ബ്രൗസ് ചെയ്യാൻ ഒരു വിരൽ ഉപയോഗിച്ച് ഇടത്തോട്ടോ വലത്തോട്ടോ സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="1765245556747822181">ഒരു വിരൽ ഉപയോഗിച്ച് മുകളിലോട്ട് സ്വൈ‌പ്പ് ചെയ്യുക</translation>
 <translation id="1771761307086386028">വലത്തോട്ട് സ്ക്രോൾ ചെയ്യുക</translation>
 <translation id="1781173782405573156">പാസ് ത്രൂ കീ</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">വരി</translation>
 <translation id="2816868829355607410">പരിശീലന വിഭാഗം: ജമ്പ് കമാൻഡുകൾ</translation>
 <translation id="2841013758207633010">സമയം</translation>
+<translation id="284171465644749950">വിഷയങ്ങൾ ബ്രൗസ് ചെയ്യാൻ ഒരു വിരൽ ഉപയോഗിച്ച് ഇടത്തോട്ടോ വലത്തോട്ടോ സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="2843432675592278677">മുൻ ARIA ലാൻഡ്‌മാർക്ക് ഒന്നുമില്ല</translation>
 <translation id="2843814945404750166">കടും ഒലിവ് പച്ച</translation>
 <translation id="2843837985843789981">മുമ്പത്തെ ഗ്രൂപ്പ്</translation>
@@ -720,7 +723,6 @@
 <translation id="6037602951055904232">മുന്നിലേക്ക് പാൻ ചെയ്യുക</translation>
 <translation id="6082768461603900813">അടിസ്ഥാന നാവിഗേഷൻ</translation>
 <translation id="609281021724813947">മുൻ സ്ലൈഡർ ഒന്നുമില്ല</translation>
-<translation id="6096942799340613495">ഇത് സ്ക്രീൻ ഓഫാക്കുന്നു. Search + Brightness up അമർത്തി നിങ്ങൾക്ക് ഏതുസമയത്തും സ്ക്രീൻ വീണ്ടും ഓണാക്കാം.</translation>
 <translation id="6100239002225743044">ഒരു വരി മുകളിലോട്ട് നീക്കുക</translation>
 <translation id="6118126368611144850">Chrome-നായുള്ള Android ആപ്പുകൾ. ഉപകരണത്തിൽ Play സ്റ്റോർ ഉണ്ടെങ്കിൽ, Android ആപ്പുകൾ ഉപയോഗിച്ച് ChromeVox-ന്‍റെ ആദ്യ അനുഭവം അറിയൂ. Play സ്റ്റോറിൽ നിന്ന് Google Chrome Canary ഡൗൺലോഡ് ചെയ്‌ത്, പരീക്ഷണാത്മക പിന്തുണ പരീക്ഷിച്ച് നോക്കുക.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -1120,6 +1122,7 @@
 <translation id="923331726185079994">ChromeVox അപ്‌ഡേറ്റുചെയ്‌തു</translation>
 <translation id="93384979447910801">കടും കടൽ പച്ച</translation>
 <translation id="948171205378458592">സംഭാഷണ റേറ്റ് കുറയ്ക്കുക</translation>
+<translation id="957570623732056069">ഈ പാഠം നാവിഗേറ്റ് ചെയ്യാൻ ഒരു വിരൽ ഉപയോഗിച്ച് ഇടത്തോട്ടോ വലത്തോട്ടോ സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="958854023026327378">ഒരു വിരൽ ഉപയോഗിച്ച് താഴോട്ട് സ്വൈപ്പ് ചെയ്യുക</translation>
 <translation id="962913030769097253">അടുത്ത നില 1 ശീർഷകം</translation>
 <translation id="966588271015727539">ഒരു Bluetooth ബ്രെയ്‌ലി ഡിസ്‌പ്ലേ തിരഞ്ഞെടുക്കുക</translation>

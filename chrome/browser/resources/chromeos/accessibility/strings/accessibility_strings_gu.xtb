@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">આછો આસમાની ભૂરો</translation>
 <translation id="1303806948938513162">ChromeVox મેનૂમાં દાખલ થવા માટે 4 આંગળીઓથી ટૅપ કરો</translation>
 <translation id="1313373992684326101">પાછળના વિભાગ પર ખસેડો. ઉદાહરણોમાં સ્ટેટસ ટ્રે અને લૉન્ચર શામેલ છે.</translation>
+<translation id="1315077335264761176">ટચ ઓરિએન્ટેશન</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, મેનૂ આઇટમ રેડિયો બટન નાપસંદ કર્યું</translation>
 <translation id="1325946044405407859">ટૅન</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> માંથી <ph name="INDEX" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVoxના ટ્યૂટૉરિઅલમાં આપનું સ્વાગત છે. કોઈપણ સમયે આ ટ્યૂટૉરિઅલમાંથી બહાર નીકળવા માટે, તમારા કીબોર્ડ પર ઉપરના ડાબા ખૂણામાં Escape કી દબાવો. ChromeVox બંધ કરવા માટે, Control અને Alt દબાવી રાખીને Z દબાવો. જ્યારે તમે તૈયાર હો, ત્યારે આગલા પાઠ પર જવા માટે સ્પેસબારનો ઉપયોગ કરો.</translation>
 <translation id="174268867904053074">આગલું ગ્રાફિક</translation>
 <translation id="1756785467854861272">ઘાટો કિરમજી</translation>
+<translation id="1758693804775271377">આ વિષયના પાઠ બ્રાઉઝ કરવા માટે, એક આંગળી વડે ડાબે અથવા જમણે સ્વાઇપ કરો</translation>
 <translation id="1765245556747822181">એક આંગળી ઉપરની બાજુ સ્વાઇપ કરો</translation>
 <translation id="1771761307086386028">જમણે સ્ક્રોલ કરો</translation>
 <translation id="1781173782405573156">પાસ થ્રુ કી</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">પંક્તિ</translation>
 <translation id="2816868829355607410">અભ્યાસ ક્ષેત્ર: જમ્પ આદેશો</translation>
 <translation id="2841013758207633010">સમય</translation>
+<translation id="284171465644749950">વિષયો બ્રાઉઝ કરવા માટે, એક આંગળી વડે ડાબે અથવા જમણે સ્વાઇપ કરો</translation>
 <translation id="2843432675592278677">કોઈ પાછલું ARIA લૅન્ડમાર્ક નથી</translation>
 <translation id="2843814945404750166">ઓલિવ જેવો ઘાટો લીલો</translation>
 <translation id="2843837985843789981">પાછલું ગ્રૂપ</translation>
@@ -720,7 +723,6 @@
 <translation id="6037602951055904232">આગળની તરફ પેન કરો</translation>
 <translation id="6082768461603900813">મૂળભૂત નૅવિગેશન</translation>
 <translation id="609281021724813947">કોઈ પાછલું સ્લાઇડર નથી</translation>
-<translation id="6096942799340613495">આને કારણે સ્ક્રીન બંધ થઈ જશે. તમે શોધ + બ્રાઇટનેસ વધારવાની કી દબાવીને હંમેશાં સ્ક્રીન ફરી ચાલુ કરો શકો છો.</translation>
 <translation id="6100239002225743044">એક લાઇન ઉપર ખસેડો</translation>
 <translation id="6118126368611144850">Chrome માટેની Android ઍપ. જો તમારા ડિવાઇસમાં Play સ્ટોર હોય, તો Android ઍપ ધરાવતા ChromeVoxની ઝલક મેળવો. Play સ્ટોર પરથી Google Chrome Canary ડાઉનલોડ કરીને પ્રયોગાત્મક સહાયનો અનુભવ મેળવો.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -1121,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox અપડેટ થયું</translation>
 <translation id="93384979447910801">ઘેરો દરિયાઈ લીલો</translation>
 <translation id="948171205378458592">ભાષણનો રેટ ઘટાડો</translation>
+<translation id="957570623732056069">આ પાઠ પર નૅવિગેટ કરવા માટે, એક આંગળી વડે ડાબે અથવા જમણે સ્વાઇપ કરો</translation>
 <translation id="958854023026327378">એક આંગળી નીચેની બાજુ સ્વાઇપ કરો</translation>
 <translation id="962913030769097253">આગલા સ્તર 1 નું મથાળું</translation>
 <translation id="966588271015727539">બ્લૂટૂથનું બ્રેઇલ પ્રદર્શન પસંદ કરો</translation>

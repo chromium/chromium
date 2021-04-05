@@ -4133,7 +4133,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5616726534702877126">Rezerviraj veličinu</translation>
 <translation id="561698261642843490">Zatvaranje Firefoxa</translation>
 <translation id="5618333180342767515">(ovo može potrajati nekoliko minuta)</translation>
-<translation id="56197088284879152">Preopterećena je veza s uređajem za daljinsko upravljanje: "<ph name="DEVICE_NAME" />".</translation>
+<translation id="56197088284879152">Preopterećena je veza s udaljenim uređajem: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="5619862035903135339">Administratorska pravila onemogućavaju snimanje ekrana</translation>
 <translation id="5620568081365989559">DevTools zahtijeva puni pristup putanji <ph name="FOLDER_PATH" />. Vodite računa da ne otkrijete povjerljive informacije.</translation>
 <translation id="5620612546311710611">statistika korištenja</translation>

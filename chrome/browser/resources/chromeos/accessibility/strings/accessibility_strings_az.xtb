@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Açıq Səma Mavisi</translation>
 <translation id="1303806948938513162">ChromeVox menyularına daxil olmaq üçün 4 barmaqla klikləyin</translation>
 <translation id="1313373992684326101">Əvvəlki bölməyə keçin. Status Bölməsi və Başladıcı nümunə olaraq göstərilə bilər.</translation>
+<translation id="1315077335264761176">Toxunma orientasiyası</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, menyu elementi dəyirmi düyməsi seçilməyib</translation>
 <translation id="1325946044405407859">Açıq-qəhvəyi</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> ədəddən <ph name="INDEX" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox təlimatına xoş gəlmisiniz. İstənilən vaxt bu təlimatdan çıxmaq üçün klaviaturanın yuxarı sol küncündəki Escape düyməsinə basın. ChromeVox'u deaktiv etmək üçün Control və Alt düymələrinə basıb saxlayın və Z üzərinə basın. Hazır olduğunuz zaman növbəti dərsə keçmək üçün boşluq düyməsindən istifadə edin.</translation>
 <translation id="174268867904053074">Növbəti qrafik</translation>
 <translation id="1756785467854861272">Bənövşəyimtil Qırmızı</translation>
+<translation id="1758693804775271377">Bu mövzu üzrə dərslərə baxmaq üçün bir barmaqla sola və ya sağa çəkin</translation>
 <translation id="1765245556747822181">Bir barmağınızla yuxarı çəkin</translation>
 <translation id="1771761307086386028">Sağa sürüşdürün</translation>
 <translation id="1781173782405573156">Açar ilə keçin</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Sıra</translation>
 <translation id="2816868829355607410">Təcrübə sahəsi: Keçid əmrləri</translation>
 <translation id="2841013758207633010">Vaxt</translation>
+<translation id="284171465644749950">Mövzulara baxmaq üçün bir barmaqla sola və ya sağa çəkin</translation>
 <translation id="2843432675592278677">Öncəki ARIA orientiri yoxdur</translation>
 <translation id="2843814945404750166">Tünd Zeytun Yaşılı</translation>
 <translation id="2843837985843789981">Öncəki Qrup</translation>
@@ -720,7 +723,6 @@
 <translation id="6037602951055904232">Pan irəli</translation>
 <translation id="6082768461603900813">Əsas Naviqasiya</translation>
 <translation id="609281021724813947">Öncəki slayder yoxdur</translation>
-<translation id="6096942799340613495">Bu, ekranı deaktiv edir. Axtarış + Parlaqlığı artırma seçiminə basaraq həmişə ekranı yenidən aktiv edə bilərsiniz.</translation>
 <translation id="6100239002225743044">Bir sətir yuxarı köçürün</translation>
 <translation id="6118126368611144850">Chrome üçün Android tətbiqləri. Cihazda Play Mağaza varsa, Android tətbiqləri ilə ChromeVox'da yeniliklərdən xəbərdar olun. Play Mağazadan Google Chrome Canary endirməklə eksperimental dəstək əldə edin.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -1121,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox Güncəlləndi</translation>
 <translation id="93384979447910801">Tünd Dəniz Yaşılı</translation>
 <translation id="948171205378458592">Nitq tempini azaldın</translation>
+<translation id="957570623732056069">Bu dərsə keçmək üçün bir barmaqla sola və ya sağa çəkin</translation>
 <translation id="958854023026327378">Bir barmağınızla aşağı çəkin</translation>
 <translation id="962913030769097253">Növbəti səviyyə 1 başlıq</translation>
 <translation id="966588271015727539">Bluetooth brayl displeyi seçin</translation>

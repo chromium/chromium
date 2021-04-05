@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Ачык асмандын түсүндөй көк</translation>
 <translation id="1303806948938513162">ChromeVox менюсуна өтүү үчүн 4 манжаңыз менен таптаңыз</translation>
 <translation id="1313373992684326101">Мурунку бөлүмгө өтүү. Мисалы, Абал түпкүчү жана Жүргүзгүч.</translation>
+<translation id="1315077335264761176">Тийүүнүн багыты</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, менюдагы нерсенин радио баскычы тандоодон чыгарылды</translation>
 <translation id="1325946044405407859">Ачык күрөң</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> ичинен <ph name="INDEX" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox үйрөткүчүнө кош келиңиз! Бул үйрөткүчтөн каалаган убакта баскычтоптун төмөнкү сол бурчунда жайгашкан Escape баскычын басып, чыга аласыз. ChromeVox'ту өчүрүү үчүн Control менен Alt баскычтарын коё бербей туруп, Z баскычын басыңыз. Кийинки сабакка боштук баскычы менен өтө аласыз.</translation>
 <translation id="174268867904053074">Кийинки графика.</translation>
 <translation id="1756785467854861272">Кара кочкул кызыл</translation>
+<translation id="1758693804775271377">Бул тема боюнча сабактарды серептөө үчүн экранды бир манжаңыз менен солго же оңго сүрүңүз</translation>
 <translation id="1765245556747822181">Бир манжаңыз менен экранды өйдө сүрүңүз</translation>
 <translation id="1771761307086386028">Оңго сыдыруу</translation>
 <translation id="1781173782405573156">Ылгоо баскычы</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Сап</translation>
 <translation id="2816868829355607410">Көнүгүү аймагы: Секирүү буйруктары</translation>
 <translation id="2841013758207633010">Убакыт</translation>
+<translation id="284171465644749950">Темаларды серептөө үчүн экранды бир манжаңыз менен солго же оңго сүрүңүз</translation>
 <translation id="2843432675592278677">Мурунку ARIA белги жери жок</translation>
 <translation id="2843814945404750166">Коюу күңүрт саргылтым жашыл</translation>
 <translation id="2843837985843789981">Мурунку топ</translation>
@@ -720,7 +723,6 @@
 <translation id="6037602951055904232">Алга панорамалоо</translation>
 <translation id="6082768461603900813">Чабыттоонун негиздери</translation>
 <translation id="609281021724813947">Мурунку сыдырма жок</translation>
-<translation id="6096942799340613495">Ушуну менен экран өчүрүлөт. Экранды кайра күйгүзүү үчүн Издөө + Жарыктыгын көбөйтүүнү басыңыз.</translation>
 <translation id="6100239002225743044">Бир сап өйдө жылдыруу</translation>
 <translation id="6118126368611144850">Chrome'го арналган Android колдонмолору. Эгер түзмөгүңүздө Play Store орнотулган болсо, ChromeVox'ту Android колдонмолору менен пайдаланып көрүңүз. Play Storeдөн Google Chrome Canary'ни жүктөп алып, тажрыйбалуу колдоону байкап көрүңүз.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -1121,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox жаңырды</translation>
 <translation id="93384979447910801">Деңиздей күңүрт жашыл</translation>
 <translation id="948171205378458592">Кептин ылдамдыгын жайлатуу</translation>
+<translation id="957570623732056069">Сабакты карап чыгуу үчүн экранды бир манжаңыз менен солго же оңго сүрүңүз</translation>
 <translation id="958854023026327378">Бир манжаңыз менен экранды ылдый сүрүңүз</translation>
 <translation id="962913030769097253">Кийинки 1-деңгээлдеги баш аты</translation>
 <translation id="966588271015727539">Bluetooth брайль дисплейин тандоо</translation>

@@ -454,6 +454,7 @@ Privacy Sandbox è ancora in fase di sviluppo attivo ed è disponibile soltanto 
 <translation id="4095146165863963773">Eliminare i dati delle app?</translation>
 <translation id="4095189195365058471">Leggi più tardi <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Aiutaci a migliorare Chrome inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
+<translation id="410351446219883937">Riproduzione automatica</translation>
 <translation id="4108314971463891922">Segui</translation>
 <translation id="4108998448622696017">Rileva e ti avvisa quando si verificano eventi pericolosi.</translation>
 <translation id="4116038641877404294">Scarica le pagine per usarle offline</translation>
@@ -1042,6 +1043,7 @@ I dati della sessione in incognito vengono cancellati da Chrome soltanto quando 
 <translation id="7930998711684428189">Ricevi un avviso se le password sono esposte a una violazione dei dati.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> è obsoleto.</translation>
 <translation id="7947953824732555851">Accetta e accedi</translation>
+<translation id="7961015016161918242">Mai</translation>
 <translation id="7961926449547174351">Hai disattivato l'accesso allo spazio di archiviazione. Vai alle Impostazioni per attivarlo.</translation>
 <translation id="7963646190083259054">Fornitore:</translation>
 <translation id="7967911570373677897">Per scansionare un codice QR, modifica le impostazioni affinché Chrome possa usare la fotocamera</translation>

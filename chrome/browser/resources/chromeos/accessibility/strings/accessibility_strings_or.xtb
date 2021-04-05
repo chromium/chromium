@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">ହାଲୁକା ଆକାଶିଆ ନୀଳ</translation>
 <translation id="1303806948938513162">ChromeVox ମେନୁକୁ ଯିବାକୁ 4 ଆଙ୍ଗୁଠି ସାହାଯ୍ୟରେ ଟାପ୍ କରନ୍ତୁ</translation>
 <translation id="1313373992684326101">ପୂର୍ବବର୍ତ୍ତୀ ବିଭାଗକୁ ମୁଭ୍ କରନ୍ତୁ। ଉଦାହରଣରେ ସ୍ଥିତି ଟ୍ରେ ଏବଂ ଲଞ୍ଚର୍ ଅନ୍ତର୍ଭୁକ୍ତ ଅଛି।</translation>
+<translation id="1315077335264761176">ଟଚ୍ ଓରିଏଣ୍ଟେସନ୍</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ମେନୁ ଆଇଟମ୍ ରେଡିଓ ବଟନ୍ ଅଚୟନ କରାଯାଇଛି</translation>
 <translation id="1325946044405407859">ଟାନ୍</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" /> ର <ph name="INDEX" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox ଟ୍ୟୁଟୋରିଆଲକୁ ସ୍ୱାଗତ। ଯେ କୌଣସି ସମୟରେ ଏହି ଟ୍ୟୁଟୋରିଆଲରୁ ବାହାରି ଯିବା ପାଇଁ, କୀବୋର୍ଡର ଶୀର୍ଷ ବାମ କୋଣରେ ଥିବା Escape କୀ ଦବାନ୍ତୁ। ChromeVox ବନ୍ଦ କରିବାକୁ, Control ଏବଂ Alt କୀ'କୁ ଧରି ରଖି Z କୀ ଦବାନ୍ତୁ। ଆପଣ ପ୍ରସ୍ତୁତ ହେଲେ, ପରବର୍ତ୍ତୀ ଲେସନକୁ ମୁଭ୍ କରିବା ପାଇଁ ସ୍ପେସବାର୍ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="174268867904053074">ପରବର୍ତ୍ତୀ ଗ୍ରାଫିକ୍</translation>
 <translation id="1756785467854861272">ଗାଢ଼ ମାଜେଣ୍ଟା</translation>
+<translation id="1758693804775271377">ଏହି ବିଷୟ ପାଇଁ ଲେସନଗୁଡ଼ିକୁ ବ୍ରାଉଜ୍ କରିବାକୁ ଗୋଟିଏ ଆଙ୍ଗୁଠିରେ ବାମ କିମ୍ବା ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="1765245556747822181">ଏକ ଆଙ୍ଗୁଳି ଦ୍ଵାରା ଉପର ଆଡ଼କୁ ସ୍ଵାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="1771761307086386028">ଡାହାଣକୁ ସ୍କ୍ରୋଲ୍ କରନ୍ତୁ</translation>
 <translation id="1781173782405573156">କୀ' ଜରିଆରେ ପାସ୍ କରନ୍ତୁ</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">ଧାଡ଼ି</translation>
 <translation id="2816868829355607410">ଅଭ୍ୟାସ କ୍ଷେତ୍ର: ଜମ୍ପ୍ କମାଣ୍ଡଗୁଡ଼ିକ</translation>
 <translation id="2841013758207633010">ସମୟ</translation>
+<translation id="284171465644749950">ବିଷୟଗୁଡ଼ିକୁ ବ୍ରାଉଜ୍ କରିବା ପାଇଁ ଗୋଟିଏ ଆଙ୍ଗୁଠିରେ ବାମ କିମ୍ବା ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="2843432675592278677">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ARIA ଲ୍ୟାଣ୍ଡମାର୍କ ନାହିଁ</translation>
 <translation id="2843814945404750166">ଗାଢ଼ ଅଲିଭ୍ ସବୁଜ</translation>
 <translation id="2843837985843789981">ପୂର୍ବବର୍ତ୍ତୀ ଗୋଷ୍ଠୀ</translation>
@@ -720,7 +723,6 @@
 <translation id="6037602951055904232">ପ୍ୟାନ୍ ଫର୍‌ୱାର୍ଡ କରନ୍ତୁ</translation>
 <translation id="6082768461603900813">ମୌଳିକ ନାଭିଗେସନ୍</translation>
 <translation id="609281021724813947">କୌଣସି ପୂର୍ବବର୍ତ୍ତୀ ସ୍ଲାଇଡର୍ ନାହିଁ</translation>
-<translation id="6096942799340613495">ଏହା ସ୍କ୍ରିନକୁ ବନ୍ଦ କରିଦିଏ। 'ସନ୍ଧାନ + ଉଜ୍ଜ୍ୱଳତା ବଢ଼ାନ୍ତୁ' ବଟନ୍ ଦବାଇ ଆପଣ ସର୍ବଦା ସ୍କ୍ରିନକୁ ପୁଣି ଚାଲୁ କରିପାରିବେ।</translation>
 <translation id="6100239002225743044">ଗୋଟିଏ ଲାଇନ୍ ଉପରକୁ ନିଅନ୍ତୁ</translation>
 <translation id="6118126368611144850">Chrome ପାଇଁ Android ଆପ୍ସ। ଯଦି ଆପଣଙ୍କର ଡିଭାଇସ୍‌ରେ ଆପଣଙ୍କର Play Store ଅଛି, ତେବେ Android ଆପ୍ସ ମାଧ୍ୟମରେ ChromeVoxରେ ଏକ ନଜର ପକାନ୍ତୁ। Play Storeରୁ Google Chrome Canary ଡାଉନ୍‌ଲୋଡ୍‌ କରି ପରୀକ୍ଷଣ ଭାବରେ ଦିଆଯାଇଥିବା ସୁବିଧା ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -1121,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox ଅପ୍‌ଡେଟ୍ କରାଗଲା</translation>
 <translation id="93384979447910801">ଗାଢ଼ ସାମୁଦ୍ରିକ ସବୁଜ</translation>
 <translation id="948171205378458592">ସ୍ପୀଚ୍‌ର ହାର ହ୍ରାସ କରନ୍ତୁ</translation>
+<translation id="957570623732056069">ଏହି ଲେସନକୁ ନାଭିଗେଟ୍ କରିବା ପାଇଁ ଗୋଟିଏ ଆଙ୍ଗୁଠିରେ ବାମ କିମ୍ବା ଡାହାଣକୁ ସ୍ୱାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="958854023026327378">ଏକ ଆଙ୍ଗୁଳି ଦ୍ଵାରା ତଳ ଆଡ଼କୁ ସ୍ଵାଇପ୍ କରନ୍ତୁ</translation>
 <translation id="962913030769097253">ପରବର୍ତ୍ତୀ ସ୍ତର 1 ଶୀର୍ଷକ</translation>
 <translation id="966588271015727539">ଏକ ବ୍ଲୁଟୁଥ୍ ବ୍ରେଲ୍ ଡିସ୍‌ପ୍ଲେ ଚୟନ କରନ୍ତୁ</translation>

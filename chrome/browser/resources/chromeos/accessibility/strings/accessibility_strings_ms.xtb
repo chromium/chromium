@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">Biru Langit Cerah</translation>
 <translation id="1303806948938513162">Ketik dengan 4 jari untuk memasuki menu ChromeVox</translation>
 <translation id="1313373992684326101">Beralih ke bahagian sebelumnya. Contoh termasuk Dulang Status dan Pelancar.</translation>
+<translation id="1315077335264761176">Orientasi sentuhan</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, butang radio item menu dinyahpilih</translation>
 <translation id="1325946044405407859">Sawo Matang</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> daripada <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">Selamat datang ke tutorial ChromeVox. Untuk keluar daripada tutorial ini pada bila-bila masa, tekan kekunci Escape di sudut atas sebelah kiri papan kekunci. Untuk mematikan ChromeVox, tahan Control dan Alt, kemudian tekan Z. Apabila anda sudah bersedia, gunakan bar ruang untuk beralih ke pelajaran seterusnya.</translation>
 <translation id="174268867904053074">Grafik seterusnya</translation>
 <translation id="1756785467854861272">Magenta Gelap</translation>
+<translation id="1758693804775271377">Leret ke kiri atau kanan dengan satu jari untuk menyemak imbas pelajaran bagi topik ini</translation>
 <translation id="1765245556747822181">Leret satu jari ke atas</translation>
 <translation id="1771761307086386028">Tatal ke kanan</translation>
 <translation id="1781173782405573156">Kekunci lintasan</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">Baris</translation>
 <translation id="2816868829355607410">Kawasan latihan: Perintah lompat</translation>
 <translation id="2841013758207633010">Masa</translation>
+<translation id="284171465644749950">Leret ke kiri atau kanan dengan satu jari untuk menyemak imbas topik</translation>
 <translation id="2843432675592278677">Tiada tanda tempat ARIA sebelumnya</translation>
 <translation id="2843814945404750166">Hijau Zaitun Gelap</translation>
 <translation id="2843837985843789981">Kumpulan Sebelumnya</translation>
@@ -720,7 +723,6 @@
 <translation id="6037602951055904232">Sorot ke hadapan</translation>
 <translation id="6082768461603900813">Navigasi Asas</translation>
 <translation id="609281021724813947">Tiada peluncur sebelumnya</translation>
-<translation id="6096942799340613495">Tindakan ini akan mematikan skrin. Anda boleh menghidupkan semula skrin pada bila-bila masa dengan menekan kekunci Carian + Tingkatkan kecerahan.</translation>
 <translation id="6100239002225743044">Beralih satu baris ke atas</translation>
 <translation id="6118126368611144850">Apl Android untuk Chrome. Jika Gedung Play dipasang pada peranti anda, tinjau ChromeVox dengan apl Android. Cuba sokongan percubaan dengan memuat turun Google Chrome Canary daripada Gedung Play.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -1121,6 +1123,7 @@
 <translation id="923331726185079994">ChromeVox Dikemas Kini</translation>
 <translation id="93384979447910801">Hijau Laut Gelap</translation>
 <translation id="948171205378458592">Kurangkan kadar pertuturan</translation>
+<translation id="957570623732056069">Leret ke kiri atau kanan dengan satu jari untuk menavigasi pelajaran ini</translation>
 <translation id="958854023026327378">Leret satu jari ke bawah</translation>
 <translation id="962913030769097253">Tajuk tahap 1 seterusnya</translation>
 <translation id="966588271015727539">Pilih paparan braille Bluetooth</translation>

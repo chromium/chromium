@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">כחול שמיים בהיר</translation>
 <translation id="1303806948938513162">‏מקישים עם 4 אצבעות כדי לעבור אל התפריטים של ChromeVox</translation>
 <translation id="1313373992684326101">חזרה לקטע הקודם. הדוגמאות כוללות את מגש הסטטוס ואת מרכז האפליקציות.</translation>
+<translation id="1315077335264761176">הדרכה להפעלה באמצעות מגע</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, ביטלת את הסימון בלחצן הבחירה של האפשרות בתפריט</translation>
 <translation id="1325946044405407859">חום צהבהב</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> מתוך <ph name="TOTAL" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">‏ברוך בואך למדריך ChromeVox. כדי לצאת מהמדריך בכל שלב, יש להקיש על מקש Escape שבפינה השמאלית העליונה של המקלדת. כדי לכבות את ChromeVox, יש להקיש הקשה ארוכה על Control ועל Alt, ולהקיש על Z. כשמוכנים, יש להקיש על מקש הרווח כדי לעבור לשיעור הבא.</translation>
 <translation id="174268867904053074">פריט הגרפיקה הבא</translation>
 <translation id="1756785467854861272">מגנטה כהה</translation>
+<translation id="1758693804775271377">יש להחליק שמאלה או ימינה בעזרת אצבע אחת כדי לעיין בשיעורים בנושא זה</translation>
 <translation id="1765245556747822181">החלקה ימינה עם אצבע אחת</translation>
 <translation id="1771761307086386028">גלילה ימינה</translation>
 <translation id="1781173782405573156">מקש דילוג</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">שורה</translation>
 <translation id="2816868829355607410">אזור תרגול: פקודות קפיצה</translation>
 <translation id="2841013758207633010">שעה</translation>
+<translation id="284171465644749950">יש להחליק שמאלה או ימינה בעזרת אצבע אחת כדי לעיין בנושאים</translation>
 <translation id="2843432675592278677">‏אין ציון דרך קודם מסוג ARIA</translation>
 <translation id="2843814945404750166">ירוק זית כהה</translation>
 <translation id="2843837985843789981">הקבוצה הקודמת</translation>
@@ -720,7 +723,6 @@
 <translation id="6037602951055904232">הזזה קדימה</translation>
 <translation id="6082768461603900813">ניווט בסיסי</translation>
 <translation id="609281021724813947">אין מחוון קודם</translation>
-<translation id="6096942799340613495">פעולה זו תכבה את המסך. תמיד אפשר להפעיל מחדש את המסך על ידי לחיצה על 'חיפוש' + הגברת הבהירות.</translation>
 <translation id="6100239002225743044">העברת הסמן שורה אחת למעלה</translation>
 <translation id="6118126368611144850">‏אפליקציות Android ל-Chrome. אם במכשיר מותקנת האפליקציה של חנות Play, אפשר לקבל הצצה אל ChromeVox עם אפליקציות Android. ניתן לנסות את התמיכה הניסיונית על-ידי הורדת Google Chrome Canary מחנות Play.</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -1121,6 +1123,7 @@
 <translation id="923331726185079994">‏ChromeVox עודכן</translation>
 <translation id="93384979447910801">ירוק ים כהה</translation>
 <translation id="948171205378458592">האטת קצב הדיבור</translation>
+<translation id="957570623732056069">יש להחליק שמאלה או ימינה בעזרת אצבע אחת כדי לעבור בין הקטעים בשיעור הזה</translation>
 <translation id="958854023026327378">החלקה מטה עם אצבע אחת</translation>
 <translation id="962913030769097253">הכותרת הבאה של רמה 1</translation>
 <translation id="966588271015727539">‏בחירת צג ברייל תואם Bluetooth</translation>

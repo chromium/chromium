@@ -14,15 +14,18 @@
 <translation id="1838412507805038478">Chromium hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
 <translation id="1843424232666537147">Chromium bietet Funktionen, mit denen Sie Ihre Internetdaten und die Ladezeit von Webseiten verwalten können. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="2006345422933397527">Chromium konnte nicht nach Updates suchen. Prüfen Sie Ihre Internetverbindung.</translation>
+<translation id="2054703085270098503">Sicherer surfen mit Chromium</translation>
 <translation id="2075400798887076382">Greifen Sie hier auf die Tabs zu, die Sie auf Ihrem Computer geöffnet haben. Öffnen Sie dazu Chromium auf Ihrem Computer und wählen Sie im Menü "In Chromium anmelden..." aus.</translation>
 <translation id="2168108852149185974">Einige Add-ons führen zum Ausfall von Chromium. Bitte deinstallieren Sie:</translation>
 <translation id="2178608107313874732">Chromium kann gerade nicht auf die Kamera zugreifen</translation>
 <translation id="2195025571279539885">Soll Chromium beim nächsten Mal eine Übersetzung von Seiten dieser Website anbieten, die auf <ph name="LANGUAGE_NAME" /> sind?</translation>
 <translation id="2590893390871230428">Chromium-Daten synchronisieren</translation>
 <translation id="2650312721222849884">Aktivieren Sie die Synchronisierung, um Ihre Tabs überall dort aufzurufen, wo Sie Chromium verwenden</translation>
+<translation id="2684230048001240293">Sie können Chromium als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen Ihren Geräten zu synchronisieren</translation>
 <translation id="2730884209570016437">Chromium kann nicht auf die Kamera zugreifen, da diese gerade von einer anderen App verwendet wird</translation>
 <translation id="2915596697727466327">Chromium verwendet Face ID, um den autorisierten Zugriff auf Ihre Passwörter zu gewährleisten.</translation>
 <translation id="2918709798697875261">Ihre Organisation verlangt, dass Sie aus Chromium abgemeldet bleiben.</translation>
+<translation id="2942241131342758843">Chromium standardmäßig verwenden, um Links zu öffnen, über Widgets zu suchen und Passwörter in anderen Apps automatisch auszufüllen</translation>
 <translation id="2977470724722393594">Chromium ist auf dem neuesten Stand</translation>
 <translation id="3256316712990552818">In Chromium kopiert</translation>
 <translation id="3344973607274501920">Chromium konnte Ihre Passwörter nicht prüfen. Prüfen Sie Ihre Internetverbindung.</translation>
@@ -35,6 +38,7 @@
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, haben Sie in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Sie können jetzt Chromium jederzeit nutzen, wenn Sie in Nachrichten, Dokumenten und anderen Apps auf Links tippen.</translation>
 <translation id="4681781466797808448">Chromium-Scanner aktivieren</translation>
+<translation id="4736424910885271643">Ihr Konto wird von <ph name="HOSTED_DOMAIN" /> verwaltet, Ihre Chromium-Daten werden von diesem Gerät gelöscht</translation>
 <translation id="4787850887676698916">Hier werden Tabs angezeigt, die Sie auf Ihren anderen Geräten in Chromium geöffnet haben.</translation>
 <translation id="4828317641996116749">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es später noch einmal.</translation>
 <translation id="4985291216379576555">Offline, Chromium kann nicht nach Aktualisierungen suchen</translation>
@@ -54,6 +58,7 @@
 2. Tippen Sie auf „Standard-Browser-App“
 3. Wählen Sie Chromium aus.</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
+<translation id="6337530241089703714">Möchten Sie Ihre Chromium-Daten von diesem Gerät löschen oder sie behalten?</translation>
 <translation id="6424492062988593837">Chromium ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
 <translation id="6820823224820483452">Chromium konnte nicht alle Passwörter prüfen. Versuchen Sie es morgen noch einmal.</translation>
 <translation id="6827294685447036764">Wenn Sie zulassen, dass Chromium Ihren Standort ermittelt, sendet der Browser diesen an Websites, für die Sie die Berechtigung dazu erteilen. Möglicherweise fragen Websites nach Ihrem Standort, wenn sie lokale Informationen wie Geschäfte in der Nähe oder Nachrichten für Sie haben.</translation>
@@ -70,6 +75,7 @@
 <translation id="766897673682622022">Ihr Passwort wurde durch eine Datenpanne preisgegeben. Chromium empfiehlt, das Passwort jetzt zu ändern.</translation>
 <translation id="7674213385180944843">Öffnen Sie "Einstellungen" &gt; "Datenschutz" &gt; "Kamera" &gt; "Chromium" und aktivieren Sie die Kamera.</translation>
 <translation id="7746854981345936341">Chromium-Tipp: Manche Schaltflächen wie "Zurück", "Weiter" und "Suche" befinden sich jetzt unten auf dem Bildschirm.</translation>
+<translation id="7763454117143368771">Wenn Sie Chromium als Standardbrowser verwenden, sind Sie vor gefährlichen Websites geschützt und können Ihre Passwörter besser schützen</translation>
 <translation id="786327964234957808">Sie stellen die Kontosynchronisierung von <ph name="USER_EMAIL1" /> auf <ph name="USER_EMAIL2" /> um. Ihre bestehenden Chromium-Daten werden von <ph name="DOMAIN" /> verwaltet. Dadurch werden Ihre Daten von diesem Gerät gelöscht, bleiben jedoch in <ph name="USER_EMAIL1" /> erhalten.</translation>
 <translation id="7890287942691234100">Jetzt Chromium-Scanner verwenden</translation>
 <translation id="7931842119211730154">Inkognitotabs sperren, wenn Chromium geschlossen wird</translation>

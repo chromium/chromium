@@ -57,6 +57,7 @@
 <translation id="1299774449519412690">পাতল আকাশী নীলা</translation>
 <translation id="1303806948938513162">ChromeVox মেনু অন্তর্ভুক্ত কৰিবলৈ ৪টা আঙুলি ব্যৱহাৰ কৰি টিপক</translation>
 <translation id="1313373992684326101">পূৰ্বৱৰ্তী শাখাটোলৈ যাওক। উদাহৰণত ষ্টেটাছ ট্ৰে’ আৰু লঞ্চাৰ অন্তৰ্ভুক্ত।</translation>
+<translation id="1315077335264761176">স্পৰ্শ বিষয়ক পাঠ</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, মেনুৰ বস্তুৰ ৰেডিঅ’ বুটাম বাছনিৰ পৰা আঁতৰোৱা হৈছে</translation>
 <translation id="1325946044405407859">হালধীয়া মুগা</translation>
 <translation id="1331702245475014624"><ph name="TOTAL" />ৰ <ph name="INDEX" /></translation>
@@ -122,6 +123,7 @@
 <translation id="1730447754326314349">ChromeVox টিউট’ৰিয়েললৈ স্বাগতম। যিকোনো সময়তে এই টিউট’ৰিয়েলটোৰ পৰা বাহিৰ হ'বলৈ কীব'ৰ্ডখনৰ ওপৰৰ বাওঁফালৰ চুকটোৰ এস্কে’প কীটো টিপক। ChromeVox অফ কৰিবলৈ ক'ণ্ট্ৰ'ল আৰু অল্‌ট টিপি ধৰি থাকি জেড টিপক। আপুনি সাজু হ'লে পৰৱৰ্তী অনুশীলনীটোলৈ নিবলৈ স্পেছবাৰডাল টিপক।</translation>
 <translation id="174268867904053074">পৰৱৰ্তী গ্ৰাফিক</translation>
 <translation id="1756785467854861272">গাঢ় মেজেণ্টা</translation>
+<translation id="1758693804775271377">এই বিষয়বস্তুটোৰ বাবে পাঠ ব্ৰাউজ কৰিবলৈ এটা আঙুলিৰে সোঁফাললৈ অথবা বাওঁফাললৈ ছোৱাইপ কৰক</translation>
 <translation id="1765245556747822181">এটা আঙুলি ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="1771761307086386028">সোঁফাললৈ স্ক্ৰ’ল কৰক</translation>
 <translation id="1781173782405573156">পাৰ হৈ যাব পৰা চাবি</translation>
@@ -258,6 +260,7 @@
 <translation id="2811204574343810641">শাৰী</translation>
 <translation id="2816868829355607410">অনুশীলনৰ ক্ষেত্ৰ: পোনপটীয়াকৈ যোৱাৰ নিৰ্দেশ</translation>
 <translation id="2841013758207633010">সময়</translation>
+<translation id="284171465644749950">বিষয়বস্তু ব্ৰাউজ কৰিবলৈ এটা আঙুলিৰে সোঁফাললৈ অথবা বাওঁফাললৈ ছোৱাইপ কৰক</translation>
 <translation id="2843432675592278677">কোনো পূর্বৱর্তী ARIA লেণ্ডমার্ক নাই</translation>
 <translation id="2843814945404750166">জলফাইৰঙী গাঢ় সেউজীয়া</translation>
 <translation id="2843837985843789981">পুৰ্বৱৰ্তী গোট</translation>
@@ -719,7 +722,6 @@
 <translation id="6037602951055904232">পেন ফৰৱার্ড</translation>
 <translation id="6082768461603900813">মূল নেভিগেশ্বন</translation>
 <translation id="609281021724813947">কোনো পূৰ্বৱৰ্তী শ্লাইডাৰ নাই</translation>
-<translation id="6096942799340613495">এই কাৰ্যই স্ক্ৰীনখন অফ কৰে। আপুনি সন্ধান কৰা আৰু উজ্জ্বলতা বঢ়োৱা বুটাম দুটা একেলগে টিপি যিকোনো সময়তে স্ক্ৰীনখন পুনৰ অন কৰিব পাৰে।</translation>
 <translation id="6100239002225743044">এটা শাৰী ওপৰলৈ যাওক</translation>
 <translation id="6118126368611144850">Chromeৰ বাবে Android এপ্‌ সেৱা। যদি আপোনাৰ নিজৰ ডিভাইচত Play Store আছে তেন্তে Android এপৰ জৰিয়তে ChromeVoxৰ এটা আভাস পাওক। Play Storeৰ পৰা Google Chrome Canary ডাউনল'ড কৰি পৰীক্ষণমূলক সহায় সেৱা ব্যৱহাৰ কৰি চাওক।</translation>
 <translation id="611827076493383239">vtd</translation>
@@ -1119,6 +1121,7 @@
 <translation id="923331726185079994">ChromeVox আপডে'ট কৰা হ'ল</translation>
 <translation id="93384979447910801">সাগৰৰ দৰে গাঢ় সেউজীয়া</translation>
 <translation id="948171205378458592">কথনৰ হাৰ কমাওক</translation>
+<translation id="957570623732056069">এই পাঠটো নেভিগে’ট কৰিবলৈ এটা আঙুলিৰে সোঁফাললৈ অথবা বাওঁফাললৈ ছোৱাইপ কৰক</translation>
 <translation id="958854023026327378">এটা আঙুলি তলৰ ফালে ছোৱাইপ কৰক</translation>
 <translation id="962913030769097253">পৰৱর্তী স্তৰ ১ৰ শিৰোনাম</translation>
 <translation id="966588271015727539">কোনো ব্লুটুথ ব্ৰেইল ডিছপ্লে’ বাছনি কৰক</translation>

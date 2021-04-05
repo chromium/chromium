@@ -454,6 +454,7 @@
 <translation id="4095146165863963773">Удалить данные приложения?</translation>
 <translation id="4095189195365058471">Читать позже <ph name="BEGIN_NEW" />новая функция<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Отправлять в Google статистику использования и отчеты о сбоях</translation>
+<translation id="410351446219883937">Автовоспроизведение</translation>
 <translation id="4108314971463891922">Подписаться</translation>
 <translation id="4108998448622696017">Обнаруживает опасные события и предупреждает о них.</translation>
 <translation id="4116038641877404294">Скачивайте страницы и открывайте их без подключения к Интернету</translation>
@@ -1042,6 +1043,7 @@
 <translation id="7930998711684428189">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
 <translation id="7942131818088350342">Версия <ph name="PRODUCT_NAME" /> устарела.</translation>
 <translation id="7947953824732555851">Принять и войти</translation>
+<translation id="7961015016161918242">Нет</translation>
 <translation id="7961926449547174351">Откройте доступ к хранилищу в настройках устройства.</translation>
 <translation id="7963646190083259054">Поставщик:</translation>
 <translation id="7967911570373677897">Чтобы отсканировать QR-код, разрешите Chrome доступ к камере в настройках.</translation>

@@ -365,9 +365,9 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3443221991560634068">Vuelve a cargar la página actual</translation>
 <translation id="3451542610083122179">Privacy Sandbox es una iniciativa en curso para preservar la Web abierta que ayudará a protegerte de mecanismos de seguimiento.
 
-Hoy en día, los sitios web dependen de varias tecnologías (por ejemplo, las cookies de terceros) para ofrecer servicios importantes, como mostrar anuncios relevantes o medir el rendimiento de un sitio web.
+Hoy en día, los sitios web dependen de varias tecnologías (por ejemplo, las cookies de terceros) para obtener servicios importantes, como mostrar anuncios relevantes o medir el rendimiento de un sitio web.
 
-Privacy Sandbox conserva la vitalidad de la Web abierta creando mejores formas de ofrecer estos servicios sin inutilizar los sitios e impidiendo que se te hagan seguimientos ocultos en la Web.
+Privacy Sandbox conserva la vitalidad de la Web abierta creando mejores formas de obtener estos servicios sin inutilizar los sitios e impidiendo que se te hagan seguimientos ocultos en la Web.
 
 Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones. Por ahora, los sitios pueden usar Privacy Sandbox y seguir utilizando tecnologías web actuales, como las cookies de terceros. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3478363558367712427">Puedes elegir tu buscador</translation>
@@ -454,6 +454,7 @@ Privacy Sandbox sigue en desarrollo y está disponible solo en ciertas regiones.
 <translation id="4095146165863963773">¿Eliminar datos de la aplicación?</translation>
 <translation id="4095189195365058471">Leer más tarde <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Ayudar a mejorar Chrome enviando estadísticas de uso e informes sobre fallos.</translation>
+<translation id="410351446219883937">Reproducción automática</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4108998448622696017">Detecta y te advierte de los eventos peligrosos cuando suceden.</translation>
 <translation id="4116038641877404294">Descarga páginas para usarlas sin conexión</translation>
@@ -1042,6 +1043,7 @@ Los datos de las sesiones de incógnito se borran de Chrome solo cuando <ph name
 <translation id="7930998711684428189">Te avisa si tus contraseñas se ven expuestas en una quiebra de seguridad de datos.</translation>
 <translation id="7942131818088350342"><ph name="PRODUCT_NAME" /> está obsoleto.</translation>
 <translation id="7947953824732555851">Aceptar y acceder</translation>
+<translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Has inhabilitado el acceso al almacenamiento; ve a Ajustes para habilitarlo.</translation>
 <translation id="7963646190083259054">Proveedor:</translation>
 <translation id="7967911570373677897">Para escanear un código QR, cambia los ajustes para que Chrome pueda usar tu cámara</translation>

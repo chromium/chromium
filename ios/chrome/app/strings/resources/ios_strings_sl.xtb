@@ -212,7 +212,7 @@ Spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na ra
 <translation id="3184767182050912705">Odklepanje s tem: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="3196681740617426482">Spletna mesta lahko uporabljajo piškotke za izboljšanje izkušnje brskanja, na primer tako, da poskrbijo, da ostanete prijavljeni, ali si zapomnijo izdelke v nakupovalnem vozičku.
 
-Ko uporabljate način brez beleženja dejavnosti, spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov.</translation>
+Ko uporabljate anonimni način, spletna mesta ne smejo uporabljati piškotkov za ogled dejavnosti brskanja na različnih spletnih mestih, na primer za osebno prilagajanje oglasov.</translation>
 <translation id="3207960819495026254">Dodano med zaznamke</translation>
 <translation id="3224641773458703735">Če želite izvoziti gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="3240426699337459095">Povezava kopirana</translation>
@@ -542,7 +542,7 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="6610002944194042868">Možnosti prevajanja</translation>
 <translation id="6620279676667515405">Prekliči</translation>
-<translation id="6624219055418309072">Blokirano v načinu brez beleženja dejavnosti</translation>
+<translation id="6624219055418309072">Blokirano v anonimnem načinu</translation>
 <translation id="6628106477656132239">Datum poteka ni veljaven</translation>
 <translation id="6634432609054530164">Vaša organizacija je izklopila anonimni način.</translation>
 <translation id="6638511529934826365">Povečaj/pomanjšaj besedilo …</translation>
@@ -614,7 +614,7 @@ Poskusite uporabljati enolično geslo za vsako spletno mesto.</translation>
 <translation id="7272437679830969316">Identitete ni mogoče preveriti. Geslo ni kopirano.</translation>
 <translation id="7291368939935408496">Pripravljanje gesel ...</translation>
 <translation id="7293171162284876153">Če želite začeti sinhronizacijo, vklopite »Sinhronizacija podatkov v Chromu«.</translation>
-<translation id="7313347584264171202">Tu bodo prikazani zavihki brez beleženja dejavnosti</translation>
+<translation id="7313347584264171202">Tu bodo prikazani anonimni zavihki</translation>
 <translation id="7336264872878993241">Preneseno: <ph name="PERCENT" /> %</translation>
 <translation id="7340958967809483333">Možnosti za Odkrivanje</translation>
 <translation id="7346909386216857016">V redu, razumem</translation>
