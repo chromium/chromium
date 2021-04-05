@@ -175,13 +175,9 @@ bool NGAbstractInlineTextBox::NeedsTrailingSpace() const {
 
 scoped_refptr<AbstractInlineTextBox>
 NGAbstractInlineTextBox::NextInlineTextBox() const {
-  const NGInlineCursor& cursor = GetCursor();
-  if (!cursor)
+  NGInlineCursor next = GetCursor();
+  if (!next)
     return nullptr;
-  NGInlineCursor next;
-  next.MoveTo(*cursor.Current().GetLayoutObject());
-  while (next != cursor)
-    next.MoveToNextForSameLayoutObject();
   next.MoveToNextForSameLayoutObject();
   if (!next)
     return nullptr;
@@ -284,13 +280,11 @@ bool NGAbstractInlineTextBox::IsFirst() const {
 }
 
 bool NGAbstractInlineTextBox::IsLast() const {
-  const NGInlineCursor& cursor = GetCursor();
+  NGInlineCursor cursor = GetCursor();
   if (!cursor)
     return true;
-  NGInlineCursor last_fragment;
-  last_fragment.MoveTo(*cursor.Current().GetLayoutObject());
-  last_fragment.MoveToLastForSameLayoutObject();
-  return cursor == last_fragment;
+  cursor.MoveToNextForSameLayoutObject();
+  return !cursor;
 }
 
 scoped_refptr<AbstractInlineTextBox> NGAbstractInlineTextBox::NextOnLine()
