@@ -4,6 +4,8 @@
 
 #include "ppapi/proxy/plugin_globals.h"
 
+#include <memory>
+
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/single_thread_task_runner.h"
@@ -162,7 +164,7 @@ MessageLoopShared* PluginGlobals::GetCurrentMessageLoop() {
 
 base::TaskRunner* PluginGlobals::GetFileTaskRunner() {
   if (!file_thread_.get()) {
-    file_thread_.reset(new base::Thread("Plugin::File"));
+    file_thread_ = std::make_unique<base::Thread>("Plugin::File");
     base::Thread::Options options;
     options.message_pump_type = base::MessagePumpType::IO;
     file_thread_->StartWithOptions(options);
@@ -201,8 +203,8 @@ PP_Resource PluginGlobals::CreateBrowserFont(
 void PluginGlobals::SetPluginProxyDelegate(PluginProxyDelegate* delegate) {
   DCHECK(delegate && !plugin_proxy_delegate_);
   plugin_proxy_delegate_ = delegate;
-  browser_sender_.reset(
-      new BrowserSender(plugin_proxy_delegate_->GetBrowserSender()));
+  browser_sender_ = std::make_unique<BrowserSender>(
+      plugin_proxy_delegate_->GetBrowserSender());
 }
 
 void PluginGlobals::ResetPluginProxyDelegate() {

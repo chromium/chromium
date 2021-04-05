@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/network_connection_tracker.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
@@ -115,7 +117,7 @@ class TestLeakyNetworkConnectionObserver
 
   void WaitForNotification() {
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   network::mojom::ConnectionType connection_type() const {

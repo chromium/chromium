@@ -4,6 +4,8 @@
 
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/wifi_data.h"
@@ -42,8 +44,8 @@ void PublicIpAddressLocationNotifier::QueryNextPosition(
     QueryNextPositionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  network_traffic_annotation_tag_.reset(
-      new net::PartialNetworkTrafficAnnotationTag(tag));
+  network_traffic_annotation_tag_ =
+      std::make_unique<net::PartialNetworkTrafficAnnotationTag>(tag);
   // If a network location request is in flight, wait.
   if (network_location_request_) {
     callbacks_.push_back(std::move(callback));

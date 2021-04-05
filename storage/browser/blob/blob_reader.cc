@@ -79,7 +79,7 @@ BlobReader::BlobReader(const BlobDataHandle* blob_handle)
     if (blob_handle->IsBroken()) {
       net_error_ = ConvertBlobErrorToNetError(blob_handle->GetBlobStatus());
     } else {
-      blob_handle_.reset(new BlobDataHandle(*blob_handle));
+      blob_handle_ = std::make_unique<BlobDataHandle>(*blob_handle);
     }
   }
 }

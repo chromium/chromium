@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
@@ -638,10 +640,10 @@ void Connector::HandleError(bool force_pipe_reset, bool force_async_handler) {
 void Connector::EnsureSyncWatcherExists() {
   if (sync_watcher_)
     return;
-  sync_watcher_.reset(new SyncHandleWatcher(
+  sync_watcher_ = std::make_unique<SyncHandleWatcher>(
       message_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE,
       base::BindRepeating(&Connector::OnSyncHandleWatcherHandleReady,
-                          base::Unretained(this))));
+                          base::Unretained(this)));
 }
 
 }  // namespace mojo

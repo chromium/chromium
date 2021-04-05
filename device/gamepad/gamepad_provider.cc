@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 #include <cmath>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -148,7 +149,7 @@ void GamepadProvider::Initialize(std::unique_ptr<GamepadDataFetcher> fetcher) {
     monitor->AddDevicesChangedObserver(this);
 
   if (!polling_thread_)
-    polling_thread_.reset(new base::Thread("Gamepad polling thread"));
+    polling_thread_ = std::make_unique<base::Thread>("Gamepad polling thread");
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // On Linux, the data fetcher needs to watch file descriptors, so the message
   // loop needs to be a libevent loop.

@@ -5,6 +5,7 @@
 #include "services/network/network_change_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/macros.h"
@@ -68,7 +69,7 @@ class TestNetworkChangeManagerClient
   void WaitForNotification(NotificationType notification_type) {
     notification_type_to_wait_ = notification_type;
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   mojom::ConnectionType connection_type() const { return connection_type_; }

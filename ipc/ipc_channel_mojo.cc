@@ -171,8 +171,8 @@ bool ChannelMojo::Connect() {
 
   DCHECK(!message_reader_);
   sender->SetPeerPid(GetSelfPID());
-  message_reader_.reset(new internal::MessagePipeReader(
-      pipe_, std::move(sender), std::move(receiver), this));
+  message_reader_ = std::make_unique<internal::MessagePipeReader>(
+      pipe_, std::move(sender), std::move(receiver), this);
   return true;
 }
 

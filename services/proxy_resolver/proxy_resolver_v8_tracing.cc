@@ -5,6 +5,7 @@
 #include "services/proxy_resolver/proxy_resolver_v8_tracing.h"
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <utility>
@@ -978,7 +979,7 @@ void ProxyResolverV8TracingImpl::GetProxyForURL(
 
   scoped_refptr<Job> job = new Job(job_params_.get(), std::move(bindings));
 
-  request->reset(new RequestImpl(job));
+  *request = std::make_unique<RequestImpl>(job);
 
   job->StartGetProxyForURL(url, network_isolation_key, results,
                            std::move(callback));
@@ -1023,8 +1024,8 @@ class ProxyResolverV8TracingFactoryImpl::CreateJob
     base::Thread::Options options;
     options.timer_slack = base::TIMER_SLACK_MAXIMUM;
     CHECK(thread_->StartWithOptions(options));
-    job_params_.reset(
-        new Job::Params(thread_->task_runner(), &num_outstanding_callbacks_));
+    job_params_ = std::make_unique<Job::Params>(thread_->task_runner(),
+                                                &num_outstanding_callbacks_);
     create_resolver_job_ = new Job(job_params_.get(), std::move(bindings));
     create_resolver_job_->StartCreateV8Resolver(
         pac_script, &v8_resolver_,
@@ -1055,8 +1056,8 @@ class ProxyResolverV8TracingFactoryImpl::CreateJob
     DCHECK(factory_);
     if (error == net::OK) {
       job_params_->v8_resolver = v8_resolver_.get();
-      resolver_out_->reset(new ProxyResolverV8TracingImpl(
-          std::move(thread_), std::move(v8_resolver_), std::move(job_params_)));
+      *resolver_out_ = std::make_unique<ProxyResolverV8TracingImpl>(
+          std::move(thread_), std::move(v8_resolver_), std::move(job_params_));
     } else {
       StopWorkerThread();
     }

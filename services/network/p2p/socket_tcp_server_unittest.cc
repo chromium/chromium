@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <list>
+#include <memory>
 #include <utility>
 
 #include "base/run_loop.h"
@@ -92,8 +93,8 @@ class P2PSocketTcpServerTest : public testing::Test {
     mojo::PendingRemote<mojom::P2PSocket> socket;
     auto socket_receiver = socket.InitWithNewPipeAndPassReceiver();
 
-    fake_client_.reset(new FakeSocketClient(
-        std::move(socket), socket_client.InitWithNewPipeAndPassReceiver()));
+    fake_client_ = std::make_unique<FakeSocketClient>(
+        std::move(socket), socket_client.InitWithNewPipeAndPassReceiver());
 
     socket_ = new FakeServerSocket();
     p2p_socket_ = std::make_unique<P2PSocketTcpServer>(

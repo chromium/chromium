@@ -288,7 +288,7 @@ class ChannelMac : public Channel,
     // Record the audit token of the sender. All messages received by the
     // channel must be from this same sender.
     auto* trailer = buffer.Object<mach_msg_audit_trailer_t>();
-    peer_audit_token_.reset(new audit_token_t);
+    peer_audit_token_ = std::make_unique<audit_token_t>();
     memcpy(peer_audit_token_.get(), &trailer->msgh_audit,
            sizeof(audit_token_t));
 

@@ -50,8 +50,8 @@ GraphicCharacters::GraphicCharacters() {
   // - gc=Control (Cc)
   // - gc=Surrogate (Cs)
   // - gc=Unassigned (Cn)
-  graphic_.reset(
-      new icu::UnicodeSet(UNICODE_STRING_SIMPLE("[:graph:]"), graphic_status));
+  graphic_ = std::make_unique<icu::UnicodeSet>(
+      UNICODE_STRING_SIMPLE("[:graph:]"), graphic_status);
   DCHECK(U_SUCCESS(graphic_status));
 
   graphic_->freeze();

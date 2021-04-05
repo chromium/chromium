@@ -4,6 +4,8 @@
 
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -30,11 +32,11 @@ class PublicIpAddressGeolocatorTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         network_connection_tracker_(
             network::TestNetworkConnectionTracker::CreateInstance()) {
-    notifier_.reset(new PublicIpAddressLocationNotifier(
+    notifier_ = std::make_unique<PublicIpAddressLocationNotifier>(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_),
         network::TestNetworkConnectionTracker::GetInstance(),
-        kTestGeolocationApiKey));
+        kTestGeolocationApiKey);
   }
 
   ~PublicIpAddressGeolocatorTest() override {}

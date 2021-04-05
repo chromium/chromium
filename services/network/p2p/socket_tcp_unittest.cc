@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
@@ -45,8 +47,8 @@ class P2PSocketTcpTestBase : public testing::Test {
     mojo::PendingRemote<mojom::P2PSocket> socket;
     auto socket_receiver = socket.InitWithNewPipeAndPassReceiver();
 
-    fake_client_.reset(new FakeSocketClient(
-        std::move(socket), socket_client.InitWithNewPipeAndPassReceiver()));
+    fake_client_ = std::make_unique<FakeSocketClient>(
+        std::move(socket), socket_client.InitWithNewPipeAndPassReceiver());
 
     EXPECT_CALL(*fake_client_.get(), SocketCreated(_, _)).Times(1);
 

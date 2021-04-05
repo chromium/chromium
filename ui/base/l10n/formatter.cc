@@ -306,32 +306,32 @@ FormatterContainer::~FormatterContainer() {
 }
 
 void FormatterContainer::Initialize() {
-  formatter_[TimeFormat::FORMAT_ELAPSED][TimeFormat::LENGTH_SHORT].reset(
-      new Formatter(IDS_ELAPSED_SHORT_SEC, IDS_ELAPSED_SHORT_MIN,
-                    IDS_ELAPSED_HOUR, IDS_ELAPSED_DAY, IDS_ELAPSED_MONTH,
-                    IDS_ELAPSED_YEAR));
-  formatter_[TimeFormat::FORMAT_ELAPSED][TimeFormat::LENGTH_LONG].reset(
-      new Formatter(IDS_ELAPSED_LONG_SEC, IDS_ELAPSED_LONG_MIN,
-                    IDS_ELAPSED_HOUR, IDS_ELAPSED_DAY, IDS_ELAPSED_MONTH,
-                    IDS_ELAPSED_YEAR));
-  formatter_[TimeFormat::FORMAT_REMAINING][TimeFormat::LENGTH_SHORT].reset(
-      new Formatter(IDS_REMAINING_SHORT_SEC, IDS_REMAINING_SHORT_MIN,
-                    IDS_REMAINING_HOUR, IDS_REMAINING_DAY, IDS_REMAINING_MONTH,
-                    IDS_REMAINING_YEAR));
-  formatter_[TimeFormat::FORMAT_REMAINING][TimeFormat::LENGTH_LONG].reset(
-      new Formatter(IDS_REMAINING_LONG_SEC, IDS_REMAINING_LONG_MIN,
-                    IDS_REMAINING_HOUR, IDS_REMAINING_DAY, IDS_REMAINING_MONTH,
-                    IDS_REMAINING_YEAR));
-  formatter_[TimeFormat::FORMAT_DURATION][TimeFormat::LENGTH_SHORT].reset(
-      new Formatter(IDS_DURATION_SHORT_SEC, IDS_DURATION_SHORT_MIN,
-                    IDS_DURATION_HOUR, IDS_DURATION_DAY, IDS_DURATION_MONTH,
-                    IDS_DURATION_YEAR));
-  formatter_[TimeFormat::FORMAT_DURATION][TimeFormat::LENGTH_LONG].reset(
-      new Formatter(IDS_LONG_SEC, IDS_LONG_MIN, IDS_DURATION_HOUR,
-                    IDS_DURATION_DAY, IDS_DURATION_MONTH, IDS_DURATION_YEAR,
-                    IDS_LONG_MIN_1ST, IDS_LONG_SEC_2ND, IDS_DURATION_HOUR_1ST,
-                    IDS_LONG_MIN_2ND, IDS_DURATION_DAY_1ST,
-                    IDS_DURATION_HOUR_2ND));
+  formatter_[TimeFormat::FORMAT_ELAPSED][TimeFormat::LENGTH_SHORT] =
+      std::make_unique<Formatter>(IDS_ELAPSED_SHORT_SEC, IDS_ELAPSED_SHORT_MIN,
+                                  IDS_ELAPSED_HOUR, IDS_ELAPSED_DAY,
+                                  IDS_ELAPSED_MONTH, IDS_ELAPSED_YEAR);
+  formatter_[TimeFormat::FORMAT_ELAPSED][TimeFormat::LENGTH_LONG] =
+      std::make_unique<Formatter>(IDS_ELAPSED_LONG_SEC, IDS_ELAPSED_LONG_MIN,
+                                  IDS_ELAPSED_HOUR, IDS_ELAPSED_DAY,
+                                  IDS_ELAPSED_MONTH, IDS_ELAPSED_YEAR);
+  formatter_[TimeFormat::FORMAT_REMAINING][TimeFormat::LENGTH_SHORT] =
+      std::make_unique<Formatter>(
+          IDS_REMAINING_SHORT_SEC, IDS_REMAINING_SHORT_MIN, IDS_REMAINING_HOUR,
+          IDS_REMAINING_DAY, IDS_REMAINING_MONTH, IDS_REMAINING_YEAR);
+  formatter_[TimeFormat::FORMAT_REMAINING][TimeFormat::LENGTH_LONG] =
+      std::make_unique<Formatter>(
+          IDS_REMAINING_LONG_SEC, IDS_REMAINING_LONG_MIN, IDS_REMAINING_HOUR,
+          IDS_REMAINING_DAY, IDS_REMAINING_MONTH, IDS_REMAINING_YEAR);
+  formatter_[TimeFormat::FORMAT_DURATION][TimeFormat::LENGTH_SHORT] =
+      std::make_unique<Formatter>(
+          IDS_DURATION_SHORT_SEC, IDS_DURATION_SHORT_MIN, IDS_DURATION_HOUR,
+          IDS_DURATION_DAY, IDS_DURATION_MONTH, IDS_DURATION_YEAR);
+  formatter_[TimeFormat::FORMAT_DURATION][TimeFormat::LENGTH_LONG] =
+      std::make_unique<Formatter>(
+          IDS_LONG_SEC, IDS_LONG_MIN, IDS_DURATION_HOUR, IDS_DURATION_DAY,
+          IDS_DURATION_MONTH, IDS_DURATION_YEAR, IDS_LONG_MIN_1ST,
+          IDS_LONG_SEC_2ND, IDS_DURATION_HOUR_1ST, IDS_LONG_MIN_2ND,
+          IDS_DURATION_DAY_1ST, IDS_DURATION_HOUR_2ND);
 }
 
 void FormatterContainer::Shutdown() {

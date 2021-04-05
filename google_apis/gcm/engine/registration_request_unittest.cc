@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -101,13 +103,13 @@ void GCMRegistrationRequestTest::CreateRequest(const std::string& sender_ids) {
                                                 std::string() /* subtype */);
   std::unique_ptr<GCMRegistrationRequestHandler> request_handler(
       new GCMRegistrationRequestHandler(sender_ids));
-  request_.reset(new RegistrationRequest(
+  request_ = std::make_unique<RegistrationRequest>(
       GURL(kRegistrationURL), request_info, std::move(request_handler),
       GetBackoffPolicy(),
       base::BindOnce(&RegistrationRequestTest::RegistrationCallback,
                      base::Unretained(this)),
       max_retry_count_, url_loader_factory(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_, sender_ids));
+      base::ThreadTaskRunnerHandle::Get(), &recorder_, sender_ids);
 }
 
 TEST_F(GCMRegistrationRequestTest, RequestSuccessful) {
@@ -425,13 +427,13 @@ void InstanceIDGetTokenRequestTest::CreateRequest(
   std::unique_ptr<InstanceIDGetTokenRequestHandler> request_handler(
       new InstanceIDGetTokenRequestHandler(instance_id, authorized_entity,
                                            scope, kGCMVersion, time_to_live));
-  request_.reset(new RegistrationRequest(
+  request_ = std::make_unique<RegistrationRequest>(
       GURL(kRegistrationURL), request_info, std::move(request_handler),
       GetBackoffPolicy(),
       base::BindOnce(&RegistrationRequestTest::RegistrationCallback,
                      base::Unretained(this)),
       max_retry_count_, url_loader_factory(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_, authorized_entity));
+      base::ThreadTaskRunnerHandle::Get(), &recorder_, authorized_entity);
 }
 
 TEST_F(InstanceIDGetTokenRequestTest, RequestSuccessful) {

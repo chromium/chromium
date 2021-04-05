@@ -5,6 +5,7 @@
 #include "device/bluetooth/bluetooth_discovery_filter.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
@@ -121,7 +122,7 @@ BluetoothDiscoveryFilter::Merge(
     return result;
   }
 
-  result.reset(new BluetoothDiscoveryFilter(BLUETOOTH_TRANSPORT_DUAL));
+  result = std::make_unique<BluetoothDiscoveryFilter>(BLUETOOTH_TRANSPORT_DUAL);
 
   if (!filter_a || !filter_b || filter_a->IsDefault() ||
       filter_b->IsDefault()) {

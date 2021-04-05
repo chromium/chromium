@@ -67,22 +67,22 @@ class HeadlessBrowserContextIsolationTest
   }
 
   void RunDevTooledTest() override {
-    load_observer_.reset(new LoadObserver(
+    load_observer_ = std::make_unique<LoadObserver>(
         devtools_client_.get(),
         base::BindOnce(
             &HeadlessBrowserContextIsolationTest::OnFirstLoadComplete,
-            base::Unretained(this))));
+            base::Unretained(this)));
     devtools_client_->GetPage()->Navigate(
         embedded_test_server()->GetURL("/hello.html").spec());
   }
 
   void OnFirstLoadComplete() {
     EXPECT_TRUE(load_observer_->navigation_succeeded());
-    load_observer_.reset(new LoadObserver(
+    load_observer_ = std::make_unique<LoadObserver>(
         devtools_client2_.get(),
         base::BindOnce(
             &HeadlessBrowserContextIsolationTest::OnSecondLoadComplete,
-            base::Unretained(this))));
+            base::Unretained(this)));
     devtools_client2_->GetPage()->Navigate(
         embedded_test_server()->GetURL("/hello.html").spec());
   }

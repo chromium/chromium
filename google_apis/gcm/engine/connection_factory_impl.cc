@@ -4,6 +4,7 @@
 
 #include "google_apis/gcm/engine/connection_factory_impl.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -392,7 +393,7 @@ void ConnectionFactoryImpl::InitHandler(
 
 std::unique_ptr<net::BackoffEntry> ConnectionFactoryImpl::CreateBackoffEntry(
     const net::BackoffEntry::Policy* const policy) {
-  return std::unique_ptr<net::BackoffEntry>(new net::BackoffEntry(policy));
+  return std::make_unique<net::BackoffEntry>(policy);
 }
 
 std::unique_ptr<ConnectionHandler>

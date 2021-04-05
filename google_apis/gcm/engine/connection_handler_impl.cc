@@ -4,6 +4,7 @@
 
 #include "google_apis/gcm/engine/connection_handler_impl.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -80,8 +81,9 @@ void ConnectionHandlerImpl::Init(
   handshake_complete_ = false;
   message_tag_ = 0;
   message_size_ = 0;
-  input_stream_.reset(new SocketInputStream(std::move(receive_stream)));
-  output_stream_.reset(new SocketOutputStream(std::move(send_stream)));
+  input_stream_ =
+      std::make_unique<SocketInputStream>(std::move(receive_stream));
+  output_stream_ = std::make_unique<SocketOutputStream>(std::move(send_stream));
 
   Login(login_request);
 }

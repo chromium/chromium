@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -200,8 +201,8 @@ class DriveApiRequestsTest : public testing::Test {
     ASSERT_TRUE(test_server_.Start());
 
     GURL test_base_url = test_util::GetBaseUrlForTesting(test_server_.port());
-    url_generator_.reset(
-        new DriveApiUrlGenerator(test_base_url, test_base_url));
+    url_generator_ =
+        std::make_unique<DriveApiUrlGenerator>(test_base_url, test_base_url);
 
     // Reset the server's expected behavior just in case.
     ResetExpectedResponse();

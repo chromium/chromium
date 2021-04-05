@@ -4,6 +4,8 @@
 
 #include "jingle/notifier/listener/xmpp_push_client.h"
 
+#include <memory>
+
 #include "base/logging.h"
 #include "jingle/notifier/base/notifier_options_util.h"
 #include "jingle/notifier/listener/push_client_observer.h"
@@ -128,13 +130,13 @@ void XmppPushClient::UpdateCredentials(
   } else {
     DVLOG(1) << "Push: Starting XMPP connection";
     base_task_.reset();
-    login_.reset(new notifier::Login(
+    login_ = std::make_unique<notifier::Login>(
         this, xmpp_settings_,
         notifier_options_.network_config
             .get_proxy_resolving_socket_factory_callback,
         GetServerList(notifier_options_), notifier_options_.try_ssltcp_first,
         notifier_options_.auth_mechanism, traffic_annotation,
-        notifier_options_.network_connection_tracker));
+        notifier_options_.network_connection_tracker);
     login_->StartConnection();
   }
 }

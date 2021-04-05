@@ -4,6 +4,7 @@
 
 #include "services/network/p2p/socket_throttler.h"
 
+#include <memory>
 #include <utility>
 
 #include "third_party/webrtc/rtc_base/data_rate_limiter.h"
@@ -23,7 +24,7 @@ P2PMessageThrottler::P2PMessageThrottler()
 P2PMessageThrottler::~P2PMessageThrottler() {}
 
 void P2PMessageThrottler::SetSendIceBandwidth(int bandwidth_kbps) {
-  rate_limiter_.reset(new rtc::DataRateLimiter(bandwidth_kbps, 1.0));
+  rate_limiter_ = std::make_unique<rtc::DataRateLimiter>(bandwidth_kbps, 1.0);
 }
 
 bool P2PMessageThrottler::DropNextPacket(size_t packet_len) {

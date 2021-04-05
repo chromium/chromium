@@ -925,7 +925,7 @@ class NetworkServiceTestWithService : public testing::Test {
   void StartLoadingURL(const ResourceRequest& request,
                        uint32_t process_id,
                        int options = mojom::kURLLoadOptionNone) {
-    client_.reset(new TestURLLoaderClient());
+    client_ = std::make_unique<TestURLLoaderClient>();
     mojo::Remote<mojom::URLLoaderFactory> loader_factory;
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
@@ -1423,7 +1423,7 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
       int options = mojom::kURLLoadOptionNone,
       mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
           url_loader_network_observer = mojo::NullRemote()) {
-    client_.reset(new TestURLLoaderClient());
+    client_ = std::make_unique<TestURLLoaderClient>();
     mojo::Remote<mojom::URLLoaderFactory> loader_factory;
     mojom::URLLoaderFactoryParamsPtr params =
         mojom::URLLoaderFactoryParams::New();
@@ -1447,8 +1447,8 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
  protected:
   void SetUp() override {
     // Set up HTTPS server.
-    https_server_.reset(new net::EmbeddedTestServer(
-        net::test_server::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     https_server_->RegisterRequestHandler(base::BindRepeating(
         &NetworkServiceNetworkDelegateTest::HandleHTTPSRequest,

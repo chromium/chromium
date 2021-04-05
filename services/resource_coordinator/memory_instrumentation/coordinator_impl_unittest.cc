@@ -4,6 +4,8 @@
 
 #include "services/resource_coordinator/memory_instrumentation/coordinator_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -70,7 +72,7 @@ class CoordinatorImplTest : public testing::Test {
   CoordinatorImplTest() = default;
 
   void SetUp() override {
-    coordinator_.reset(new NiceMock<FakeCoordinatorImpl>);
+    coordinator_ = std::make_unique<NiceMock<FakeCoordinatorImpl>>();
   }
 
   void TearDown() override { coordinator_.reset(); }

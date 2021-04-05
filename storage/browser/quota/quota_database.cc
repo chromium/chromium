@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <tuple>
 #include <vector>
 
@@ -529,8 +530,8 @@ bool QuotaDatabase::LazyOpen(bool create_if_needed) {
     return false;
   }
 
-  db_.reset(new sql::Database);
-  meta_table_.reset(new sql::MetaTable);
+  db_ = std::make_unique<sql::Database>();
+  meta_table_ = std::make_unique<sql::MetaTable>();
 
   db_->set_histogram_tag("Quota");
 

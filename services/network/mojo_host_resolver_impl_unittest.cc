@@ -4,6 +4,7 @@
 
 #include "services/network/mojo_host_resolver_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -115,8 +116,8 @@ class MojoHostResolverImplTest : public testing::Test {
                                          kChromiumOrgAddress.ToString());
     mock_host_resolver_.rules()->AddSimulatedFailure("failure.fail");
 
-    resolver_service_.reset(new MojoHostResolverImpl(&mock_host_resolver_,
-                                                     net::NetLogWithSource()));
+    resolver_service_ = std::make_unique<MojoHostResolverImpl>(
+        &mock_host_resolver_, net::NetLogWithSource());
   }
 
   // Wait until the mock resolver has received |num| resolve requests.

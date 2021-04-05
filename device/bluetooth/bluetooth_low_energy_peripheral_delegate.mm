@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/bluetooth_low_energy_peripheral_delegate.h"
 
+#include <memory>
+
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 #include "device/bluetooth/bluetooth_low_energy_discovery_manager_mac.h"
 
@@ -70,7 +72,8 @@ class BluetoothLowEnergyPeripheralBridge {
 - (id)initWithBluetoothLowEnergyDeviceMac:
     (device::BluetoothLowEnergyDeviceMac*)device_mac {
   if ((self = [super init])) {
-    _bridge.reset(new device::BluetoothLowEnergyPeripheralBridge(device_mac));
+    _bridge = std::make_unique<device::BluetoothLowEnergyPeripheralBridge>(
+        device_mac);
   }
   return self;
 }

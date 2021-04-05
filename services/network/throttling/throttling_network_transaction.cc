@@ -4,6 +4,7 @@
 
 #include "services/network/throttling/throttling_network_transaction.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -117,11 +118,11 @@ int ThrottlingNetworkTransaction::Start(const net::HttpRequestInfo* request,
       ThrottlingController::GetInterceptor(net_log.source().id);
 
   if (interceptor) {
-    custom_request_.reset(new net::HttpRequestInfo(*request_));
+    custom_request_ = std::make_unique<net::HttpRequestInfo>(*request_);
 
     if (request_->upload_data_stream) {
-      custom_upload_data_stream_.reset(
-          new ThrottlingUploadDataStream(request_->upload_data_stream));
+      custom_upload_data_stream_ = std::make_unique<ThrottlingUploadDataStream>(
+          request_->upload_data_stream);
       custom_request_->upload_data_stream = custom_upload_data_stream_.get();
     }
 

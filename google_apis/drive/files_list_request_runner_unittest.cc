@@ -113,10 +113,10 @@ class FilesListRequestRunnerTest : public testing::Test {
                             base::Unretained(this), test_server_.base_url()));
     ASSERT_TRUE(test_server_.Start());
 
-    runner_.reset(new FilesListRequestRunner(
+    runner_ = std::make_unique<FilesListRequestRunner>(
         request_sender_.get(),
         google_apis::DriveApiUrlGenerator(test_server_.base_url(),
-                                          test_server_.GetURL("/thumbnail/"))));
+                                          test_server_.GetURL("/thumbnail/")));
   }
 
   void TearDown() override {
@@ -129,7 +129,7 @@ class FilesListRequestRunnerTest : public testing::Test {
   // Called when the request is completed and no more backoff retries will
   // happen.
   void OnCompleted(DriveApiErrorCode error, std::unique_ptr<FileList> entry) {
-    response_error_.reset(new DriveApiErrorCode(error));
+    response_error_ = std::make_unique<DriveApiErrorCode>(error);
     response_entry_ = std::move(entry);
     std::move(on_completed_callback_).Run();
   }
@@ -139,7 +139,8 @@ class FilesListRequestRunnerTest : public testing::Test {
   // request.
   void SetFakeServerResponse(net::HttpStatusCode code,
                              const std::string& content) {
-    fake_server_response_.reset(new net::test_server::BasicHttpResponse);
+    fake_server_response_ =
+        std::make_unique<net::test_server::BasicHttpResponse>();
     fake_server_response_->set_code(code);
     fake_server_response_->set_content(content);
     fake_server_response_->set_content_type("application/json");
@@ -149,7 +150,7 @@ class FilesListRequestRunnerTest : public testing::Test {
   std::unique_ptr<net::test_server::HttpResponse> OnFilesListRequest(
       const GURL& base_url,
       const net::test_server::HttpRequest& request) {
-    http_request_.reset(new net::test_server::HttpRequest(request));
+    http_request_ = std::make_unique<net::test_server::HttpRequest>(request);
     return std::move(fake_server_response_);
   }
 

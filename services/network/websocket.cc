@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <string.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -597,8 +598,8 @@ void WebSocket::AddChannel(
 
   std::unique_ptr<net::WebSocketEventInterface> event_interface(
       new WebSocketEventHandler(this));
-  channel_.reset(new net::WebSocketChannel(std::move(event_interface),
-                                           factory_->GetURLRequestContext()));
+  channel_ = std::make_unique<net::WebSocketChannel>(
+      std::move(event_interface), factory_->GetURLRequestContext());
 
   net::HttpRequestHeaders headers_to_pass;
   for (const auto& header : additional_headers) {

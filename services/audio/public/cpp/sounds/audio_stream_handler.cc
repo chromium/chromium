@@ -5,6 +5,7 @@
 #include "services/audio/public/cpp/sounds/audio_stream_handler.h"
 
 #include <stdint.h>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -191,8 +192,8 @@ AudioStreamHandler::AudioStreamHandler(
 
   // Store the duration of the WAV data then pass the handler to |stream_|.
   duration_ = wav_audio->GetDuration();
-  stream_.reset(new AudioStreamContainer(std::move(stream_factory_binder),
-                                         std::move(wav_audio)));
+  stream_ = std::make_unique<AudioStreamContainer>(
+      std::move(stream_factory_binder), std::move(wav_audio));
 }
 
 AudioStreamHandler::~AudioStreamHandler() {

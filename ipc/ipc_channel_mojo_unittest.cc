@@ -835,7 +835,7 @@ class IPCChannelProxyMojoTest : public IPCChannelMojoTestBase {
  public:
   void Init(const std::string& client_name) {
     IPCChannelMojoTestBase::Init(client_name);
-    runner_.reset(new ChannelProxyRunner(TakeHandle(), true));
+    runner_ = std::make_unique<ChannelProxyRunner>(TakeHandle(), true);
   }
   void CreateProxy(IPC::Listener* listener) { runner_->CreateProxy(listener); }
   void RunProxy() {
@@ -940,7 +940,7 @@ TEST_F(IPCChannelProxyMojoTest, ProxyThreadAssociatedInterface) {
 class ChannelProxyClient {
  public:
   void Init(mojo::ScopedMessagePipeHandle handle) {
-    runner_.reset(new ChannelProxyRunner(std::move(handle), false));
+    runner_ = std::make_unique<ChannelProxyRunner>(std::move(handle), false);
   }
 
   void CreateProxy(IPC::Listener* listener) { runner_->CreateProxy(listener); }
@@ -1231,7 +1231,7 @@ class SimpleTestClientImpl : public IPC::mojom::SimpleTestClient,
   void set_sync_sender(IPC::Sender* sync_sender) { sync_sender_ = sync_sender; }
 
   void WaitForValueRequest() {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 

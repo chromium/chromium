@@ -4,6 +4,7 @@
 
 #include "services/network/expect_ct_reporter.h"
 
+#include <memory>
 #include <string>
 
 #include "base/base64.h"
@@ -323,8 +324,8 @@ class ExpectCTReporterWaitTest : public ::testing::Test {
 
   void SetUp() override {
     // Initializes URLRequestContext after the thread is set up.
-    context_.reset(
-        new net::TestURLRequestContext(true /* delay_initialization */));
+    context_ = std::make_unique<net::TestURLRequestContext>(
+        true /* delay_initialization */);
     context_->set_network_delegate(&network_delegate_);
     context_->Init();
     net::URLRequestFailedJob::AddUrlHandler();

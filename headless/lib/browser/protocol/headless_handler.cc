@@ -4,6 +4,8 @@
 
 #include "headless/lib/browser/protocol/headless_handler.h"
 
+#include <memory>
+
 #include "base/base_switches.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -77,7 +79,8 @@ HeadlessHandler::HeadlessHandler(HeadlessBrowserImpl* browser,
 HeadlessHandler::~HeadlessHandler() {}
 
 void HeadlessHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new HeadlessExperimental::Frontend(dispatcher->channel()));
+  frontend_ =
+      std::make_unique<HeadlessExperimental::Frontend>(dispatcher->channel());
   HeadlessExperimental::Dispatcher::wire(dispatcher, this);
 }
 

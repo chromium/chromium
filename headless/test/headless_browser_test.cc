@@ -42,10 +42,10 @@ class SynchronousLoadObserver {
       : web_contents_(web_contents),
         devtools_client_(HeadlessDevToolsClient::Create()) {
     web_contents_->GetDevToolsTarget()->AttachClient(devtools_client_.get());
-    load_observer_.reset(new LoadObserver(
+    load_observer_ = std::make_unique<LoadObserver>(
         devtools_client_.get(),
         base::BindOnce(&HeadlessBrowserTest::FinishAsynchronousTest,
-                       base::Unretained(browser_test))));
+                       base::Unretained(browser_test)));
   }
 
   ~SynchronousLoadObserver() {

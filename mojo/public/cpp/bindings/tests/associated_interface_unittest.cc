@@ -4,7 +4,9 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -271,10 +273,10 @@ class TestReceiver {
              base::OnceClosure notify_finish) {
     CHECK(task_runner()->RunsTasksInCurrentSequence());
 
-    impl0_.reset(new IntegerSenderImpl(std::move(receiver0)));
+    impl0_ = std::make_unique<IntegerSenderImpl>(std::move(receiver0));
     impl0_->set_notify_send_method_called(base::BindRepeating(
         &TestReceiver::SendMethodCalled, base::Unretained(this)));
-    impl1_.reset(new IntegerSenderImpl(std::move(receiver1)));
+    impl1_ = std::make_unique<IntegerSenderImpl>(std::move(receiver1));
     impl1_->set_notify_send_method_called(base::BindRepeating(
         &TestReceiver::SendMethodCalled, base::Unretained(this)));
 

@@ -4,6 +4,8 @@
 
 #include "ppapi/proxy/raw_var_data.h"
 
+#include <memory>
+
 #include "base/containers/stack.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -685,7 +687,7 @@ bool ResourceRawVarData::Init(const PP_Var& var, PP_Instance /*instance*/) {
   pp_resource_ = resource_var->GetPPResource();
   const IPC::Message* message = resource_var->GetCreationMessage();
   if (message)
-    creation_message_.reset(new IPC::Message(*message));
+    creation_message_ = std::make_unique<IPC::Message>(*message);
   else
     creation_message_.reset();
   pending_renderer_host_id_ = resource_var->GetPendingRendererHostId();
@@ -738,7 +740,7 @@ bool ResourceRawVarData::Read(PP_VarType type,
   if (!iter->ReadBool(&has_creation_message))
     return false;
   if (has_creation_message) {
-    creation_message_.reset(new IPC::Message());
+    creation_message_ = std::make_unique<IPC::Message>();
     if (!IPC::ReadParam(m, iter, creation_message_.get()))
       return false;
   } else {

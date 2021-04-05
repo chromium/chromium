@@ -4,6 +4,8 @@
 
 #include "gin/public/context_holder.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "gin/per_context_data.h"
 
@@ -22,7 +24,7 @@ void ContextHolder::SetContext(v8::Local<v8::Context> context) {
   DCHECK(context_.IsEmpty());
   context_.Reset(isolate_, context);
   context_.AnnotateStrongRetainer("gin::ContextHolder::context_");
-  data_.reset(new PerContextData(this, context));
+  data_ = std::make_unique<PerContextData>(this, context);
 }
 
 }  // namespace gin

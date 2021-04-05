@@ -4,6 +4,8 @@
 
 #include "ppapi/shared_impl/tracked_callback.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -74,7 +76,8 @@ TrackedCallback::TrackedCallback(Resource* resource,
     if (is_blocking()) {
       // This is a blocking completion callback, so we will need a condition
       // variable for blocking & signalling the calling thread.
-      operation_completed_condvar_.reset(new base::ConditionVariable(&lock_));
+      operation_completed_condvar_ =
+          std::make_unique<base::ConditionVariable>(&lock_);
     } else {
       // It's a non-blocking callback, so we should have a MessageLoopResource
       // to dispatch to. Note that we don't error check here, though. Later,

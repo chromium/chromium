@@ -188,7 +188,7 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
     run_loop.Run();
     EXPECT_EQ(net::OK, net_error);
 
-    server_.reset(new HttpServer(std::move(server_socket_), this));
+    server_ = std::make_unique<HttpServer>(std::move(server_socket_), this);
   }
 
   void OnConnect(int connection_id) override {

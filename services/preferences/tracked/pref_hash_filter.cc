@@ -5,7 +5,9 @@
 #include "services/preferences/tracked/pref_hash_filter.h"
 
 #include <stdint.h>
+
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -79,14 +81,14 @@ PrefHashFilter::PrefHashFilter(
     std::unique_ptr<TrackedPreference> tracked_preference;
     switch (metadata.strategy) {
       case PrefTrackingStrategy::ATOMIC:
-        tracked_preference.reset(new TrackedAtomicPreference(
+        tracked_preference = std::make_unique<TrackedAtomicPreference>(
             metadata.name, metadata.reporting_id, reporting_ids_count,
-            metadata.enforcement_level, metadata.value_type, delegate));
+            metadata.enforcement_level, metadata.value_type, delegate);
         break;
       case PrefTrackingStrategy::SPLIT:
-        tracked_preference.reset(new TrackedSplitPreference(
+        tracked_preference = std::make_unique<TrackedSplitPreference>(
             metadata.name, metadata.reporting_id, reporting_ids_count,
-            metadata.enforcement_level, metadata.value_type, delegate));
+            metadata.enforcement_level, metadata.value_type, delegate);
         break;
     }
     DCHECK(tracked_preference);

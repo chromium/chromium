@@ -4,6 +4,7 @@
 
 #include "jingle/notifier/communicator/login.h"
 
+#include <memory>
 #include <string>
 
 #include "base/logging.h"
@@ -54,7 +55,7 @@ Login::~Login() {
 
 void Login::StartConnection() {
   DVLOG(1) << "Starting connection...";
-  single_attempt_.reset(new SingleLoginAttempt(login_settings_, this));
+  single_attempt_ = std::make_unique<SingleLoginAttempt>(login_settings_, this);
 }
 
 void Login::UpdateXmppSettings(

@@ -4,6 +4,7 @@
 
 #include "ppapi/shared_impl/ppb_audio_shared.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -101,7 +102,8 @@ void PPB_Audio_Shared::SetStreamInfo(
     base::SyncSocket::ScopedHandle socket_handle,
     PP_AudioSampleRate sample_rate,
     int sample_frame_count) {
-  socket_.reset(new base::CancelableSyncSocket(std::move(socket_handle)));
+  socket_ =
+      std::make_unique<base::CancelableSyncSocket>(std::move(socket_handle));
   shared_memory_size_ = media::ComputeAudioOutputBufferSize(
       kAudioOutputChannels, sample_frame_count);
   DCHECK_GE(shared_memory_region.GetSize(), shared_memory_size_);
@@ -155,8 +157,8 @@ void PPB_Audio_Shared::StartThread() {
     nacl_thread_active_ = true;
   } else {
     DCHECK(!audio_thread_.get());
-    audio_thread_.reset(
-        new base::DelegateSimpleThread(this, "plugin_audio_thread"));
+    audio_thread_ = std::make_unique<base::DelegateSimpleThread>(
+        this, "plugin_audio_thread");
     audio_thread_->Start();
   }
 }

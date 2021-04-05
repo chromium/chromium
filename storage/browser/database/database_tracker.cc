@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -490,8 +491,8 @@ bool DatabaseTracker::LazyInit() {
         return false;
     }
 
-    databases_table_.reset(new DatabasesTable(db_.get()));
-    meta_table_.reset(new sql::MetaTable());
+    databases_table_ = std::make_unique<DatabasesTable>(db_.get());
+    meta_table_ = std::make_unique<sql::MetaTable>();
 
     is_initialized_ = base::CreateDirectory(db_dir_) &&
                       (db_->is_open() ||

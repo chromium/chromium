@@ -6,6 +6,8 @@
 
 #import <AppKit/AppKit.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/mac/mac_util.h"
@@ -47,7 +49,7 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
     return;
   }
 
-  impl_.reset(new TextDetectionImplMac);
+  impl_ = std::make_unique<TextDetectionImplMac>();
   base::ScopedCFTypeRef<CGColorSpaceRef> rgb_colorspace(
       CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
 

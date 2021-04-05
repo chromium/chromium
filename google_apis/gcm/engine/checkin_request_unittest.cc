@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -98,11 +99,11 @@ void CheckinRequestTest::CreateRequest(uint64_t android_id,
                                            chrome_build_proto_);
   // Then create a request with that protobuf and specified android_id,
   // security_token.
-  request_.reset(new CheckinRequest(
+  request_ = std::make_unique<CheckinRequest>(
       GURL(kCheckinURL), request_info, GetBackoffPolicy(),
       base::BindOnce(&CheckinRequestTest::FetcherCallback,
                      base::Unretained(this)),
-      url_loader_factory(), base::ThreadTaskRunnerHandle::Get(), &recorder_));
+      url_loader_factory(), base::ThreadTaskRunnerHandle::Get(), &recorder_);
 
   // Setting android_id_ and security_token_ to blank value, not used elsewhere
   // in the tests.

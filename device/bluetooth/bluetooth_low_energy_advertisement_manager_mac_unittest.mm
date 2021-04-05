@@ -6,6 +6,8 @@
 
 #import <CoreBluetooth/CoreBluetooth.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
@@ -46,8 +48,8 @@ class BluetoothLowEnergyAdvertisementManagerMacTest : public testing::Test {
   void OnAdvertisementRegisterError(
       BluetoothAdvertisement::ErrorCode error_code) {
     ASSERT_FALSE(registration_error_.get());
-    registration_error_.reset(
-        new BluetoothAdvertisement::ErrorCode(error_code));
+    registration_error_ =
+        std::make_unique<BluetoothAdvertisement::ErrorCode>(error_code);
   }
 
   void OnUnregisterSuccess() {
@@ -57,7 +59,8 @@ class BluetoothLowEnergyAdvertisementManagerMacTest : public testing::Test {
 
   void OnUnregisterError(BluetoothAdvertisement::ErrorCode error_code) {
     ASSERT_FALSE(unregister_error_);
-    unregister_error_.reset(new BluetoothAdvertisement::ErrorCode(error_code));
+    unregister_error_ =
+        std::make_unique<BluetoothAdvertisement::ErrorCode>(error_code);
   }
 
   std::unique_ptr<BluetoothAdvertisement::Data> CreateAdvertisementData() {

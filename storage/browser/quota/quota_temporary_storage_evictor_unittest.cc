@@ -153,11 +153,11 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
       : num_get_usage_and_quota_for_eviction_(0) {}
 
   void SetUp() override {
-    quota_eviction_handler_.reset(new MockQuotaEvictionHandler(this));
+    quota_eviction_handler_ = std::make_unique<MockQuotaEvictionHandler>(this);
 
     // Run multiple evictions in a single RunUntilIdle() when interval_ms == 0
-    temporary_storage_evictor_.reset(new QuotaTemporaryStorageEvictor(
-        quota_eviction_handler_.get(), 0));
+    temporary_storage_evictor_ = std::make_unique<QuotaTemporaryStorageEvictor>(
+        quota_eviction_handler_.get(), 0);
   }
 
   void TearDown() override {

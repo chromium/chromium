@@ -4,6 +4,8 @@
 
 #include "gin/shell_runner.h"
 
+#include <memory>
+
 #include "gin/converter.h"
 #include "gin/per_context_data.h"
 #include "gin/public/context_holder.h"
@@ -49,7 +51,7 @@ ShellRunner::ShellRunner(ShellRunnerDelegate* delegate, Isolate* isolate)
   v8::Local<v8::Context> context =
       Context::New(isolate, NULL, delegate_->GetGlobalTemplate(this, isolate));
 
-  context_holder_.reset(new ContextHolder(isolate));
+  context_holder_ = std::make_unique<ContextHolder>(isolate);
   context_holder_->SetContext(context);
   PerContextData::From(context)->set_runner(this);
 

@@ -4,6 +4,8 @@
 
 #include "google_apis/gcm/engine/fake_connection_factory.h"
 
+#include <memory>
+
 #include "google_apis/gcm/engine/fake_connection_handler.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -26,8 +28,8 @@ void FakeConnectionFactory::Initialize(
     const ConnectionHandler::ProtoReceivedCallback& read_callback,
     const ConnectionHandler::ProtoSentCallback& write_callback) {
   request_builder_ = request_builder;
-  connection_handler_.reset(new FakeConnectionHandler(read_callback,
-                                                      write_callback));
+  connection_handler_ =
+      std::make_unique<FakeConnectionHandler>(read_callback, write_callback);
 }
 
 ConnectionHandler* FakeConnectionFactory::GetConnectionHandler() const {

@@ -4,6 +4,8 @@
 
 #include "crypto/signature_verifier.h"
 
+#include <memory>
+
 #include "base/check_op.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -49,7 +51,7 @@ bool SignatureVerifier::VerifyInit(SignatureAlgorithm signature_algorithm,
   if (verify_context_)
     return false;
 
-  verify_context_.reset(new VerifyContext);
+  verify_context_ = std::make_unique<VerifyContext>();
   signature_.assign(signature.data(), signature.data() + signature.size());
 
   CBS cbs;

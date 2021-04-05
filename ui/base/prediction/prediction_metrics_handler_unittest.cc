@@ -4,6 +4,8 @@
 
 #include "ui/base/prediction/prediction_metrics_handler.h"
 
+#include <memory>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,7 +66,7 @@ class PredictionMetricsHandlerTest : public testing::Test {
   }
 
   void Reset() {
-    histogram_tester_.reset(new base::HistogramTester());
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
     metrics_handler_->Reset();
   }
 

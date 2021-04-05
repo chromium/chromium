@@ -73,8 +73,8 @@ class ThrottlingControllerTestHelper {
     std::unique_ptr<net::HttpTransaction> network_transaction;
     network_layer_.CreateTransaction(net::DEFAULT_PRIORITY,
                                      &network_transaction);
-    transaction_.reset(
-        new ThrottlingNetworkTransaction(std::move(network_transaction)));
+    transaction_ = std::make_unique<ThrottlingNetworkTransaction>(
+        std::move(network_transaction));
   }
 
   void SetNetworkState(bool offline, double download, double upload) {
@@ -90,13 +90,13 @@ class ThrottlingControllerTestHelper {
   }
 
   int Start(bool with_upload) {
-    request_.reset(new MockHttpRequest(mock_transaction_));
+    request_ = std::make_unique<MockHttpRequest>(mock_transaction_);
     throttling_token_ = ScopedThrottlingToken::MaybeCreate(
         net_log_with_source_.source().id, profile_id_);
 
     if (with_upload) {
-      upload_data_stream_.reset(
-          new net::ChunkedUploadDataStream(kUploadIdentifier));
+      upload_data_stream_ =
+          std::make_unique<net::ChunkedUploadDataStream>(kUploadIdentifier);
       upload_data_stream_->AppendData(kUploadData, base::size(kUploadData),
                                       true);
       request_->upload_data_stream = upload_data_stream_.get();

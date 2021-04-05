@@ -547,7 +547,7 @@ void BluetoothSocketMac::OnSDPQueryComplete(
   // Note: It's important to set the connect callbacks *prior* to opening the
   // channel, as opening the channel can synchronously call into
   // OnChannelOpenComplete().
-  connect_callbacks_.reset(new ConnectCallbacks());
+  connect_callbacks_ = std::make_unique<ConnectCallbacks>();
   connect_callbacks_->success_callback = std::move(success_callback);
   connect_callbacks_->error_callback = std::move(error_callback);
 
@@ -661,7 +661,7 @@ void BluetoothSocketMac::Receive(
   }
 
   // Set the receive callback to use when data is received.
-  receive_callbacks_.reset(new ReceiveCallbacks());
+  receive_callbacks_ = std::make_unique<ReceiveCallbacks>();
   receive_callbacks_->success_callback = std::move(success_callback);
   receive_callbacks_->error_callback = std::move(error_callback);
 }
@@ -803,7 +803,7 @@ void BluetoothSocketMac::Accept(AcceptCompletionCallback success_callback,
     return;
   }
 
-  accept_request_.reset(new AcceptRequest);
+  accept_request_ = std::make_unique<AcceptRequest>();
   accept_request_->success_callback = std::move(success_callback);
   accept_request_->error_callback = std::move(error_callback);
 
@@ -832,7 +832,7 @@ void BluetoothSocketMac::AcceptConnectionRequest() {
   // Associating the socket can synchronously call into OnChannelOpenComplete().
   // Make sure to first set the new socket to be connecting and hook it up to
   // run the accept callback with the device object.
-  client_socket->connect_callbacks_.reset(new ConnectCallbacks());
+  client_socket->connect_callbacks_ = std::make_unique<ConnectCallbacks>();
   client_socket->connect_callbacks_->success_callback = base::BindOnce(
       std::move(accept_request_->success_callback), device, client_socket);
   client_socket->connect_callbacks_->error_callback =

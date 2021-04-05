@@ -85,7 +85,7 @@ class PerformanceChannelListener : public Listener {
     std::string test_name =
         base::StringPrintf("IPC_%s_Perf_%dx_%u", label_.c_str(), msg_count_,
                            static_cast<unsigned>(msg_size_));
-    perf_logger_.reset(new base::PerfTimeLogger(test_name.c_str()));
+    perf_logger_ = std::make_unique<base::PerfTimeLogger>(test_name.c_str());
     if (sync_) {
       for (; count_down_ > 0; --count_down_) {
         std::string response;
@@ -315,7 +315,7 @@ class MojoInterfacePerfTest : public mojo::core::test::MojoTestBase {
       std::string test_name =
           base::StringPrintf("IPC_%s_Perf_%dx_%zu", label_.c_str(),
                              message_count_, payload_.size());
-      perf_logger_.reset(new base::PerfTimeLogger(test_name.c_str()));
+      perf_logger_ = std::make_unique<base::PerfTimeLogger>(test_name.c_str());
     } else {
       DCHECK_EQ(payload_.size(), value.size());
 
@@ -462,7 +462,7 @@ class MojoInterfacePassingPerfTest : public mojo::core::test::MojoTestBase {
     DCHECK(!perf_logger_.get());
     std::string test_name = base::StringPrintf(
         "IPC_%s_Perf_%zux_%zu", label_.c_str(), rounds_, num_interfaces_);
-    perf_logger_.reset(new base::PerfTimeLogger(test_name.c_str()));
+    perf_logger_ = std::make_unique<base::PerfTimeLogger>(test_name.c_str());
 
     DoNextRound();
   }
@@ -754,7 +754,7 @@ class CallbackPerfTest : public testing::Test {
       std::string test_name =
           base::StringPrintf("Callback_MultiProcess_Perf_%dx_%zu",
                              message_count_, payload_.size());
-      perf_logger_.reset(new base::PerfTimeLogger(test_name.c_str()));
+      perf_logger_ = std::make_unique<base::PerfTimeLogger>(test_name.c_str());
     } else {
       DCHECK_EQ(payload_.size(), value.size());
 
@@ -786,7 +786,7 @@ class CallbackPerfTest : public testing::Test {
       std::string test_name =
           base::StringPrintf("Callback_SingleThreadNoPostTask_Perf_%dx_%zu",
                              params[i].message_count(), payload_.size());
-      perf_logger_.reset(new base::PerfTimeLogger(test_name.c_str()));
+      perf_logger_ = std::make_unique<base::PerfTimeLogger>(test_name.c_str());
       for (int j = 0; j < params[i].message_count(); ++j) {
         ping.Run(payload_, j,
                  base::BindOnce(&CallbackPerfTest::SingleThreadPongNoPostTask,
@@ -832,7 +832,7 @@ class CallbackPerfTest : public testing::Test {
       std::string test_name =
           base::StringPrintf("Callback_SingleThreadPostTask_Perf_%dx_%zu",
                              message_count_, payload_.size());
-      perf_logger_.reset(new base::PerfTimeLogger(test_name.c_str()));
+      perf_logger_ = std::make_unique<base::PerfTimeLogger>(test_name.c_str());
     } else {
       DCHECK_EQ(payload_.size(), value.size());
 

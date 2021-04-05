@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <limits>
+#include <memory>
 #include <string>
 
 #include "base/logging.h"
@@ -174,9 +175,9 @@ void SingleLoginAttempt::TryConnect(
           jid.Str(), client_settings.auth_token(),
           client_settings.token_service(),
           login_settings_.auth_mechanism());
-  xmpp_connection_.reset(new XmppConnection(
+  xmpp_connection_ = std::make_unique<XmppConnection>(
       client_settings, login_settings_.get_socket_factory_callback(), this,
-      pre_xmpp_auth, login_settings_.traffic_annotation()));
+      pre_xmpp_auth, login_settings_.traffic_annotation());
 }
 
 }  // namespace notifier

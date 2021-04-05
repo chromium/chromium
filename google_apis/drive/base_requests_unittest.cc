@@ -146,11 +146,11 @@ class BaseRequestsTest : public testing::Test {
   }
 
   void SetUp() override {
-    sender_.reset(new RequestSender(std::make_unique<DummyAuthService>(),
-                                    test_shared_loader_factory_,
-                                    task_environment_.GetMainThreadTaskRunner(),
-                                    std::string(), /* custom user agent */
-                                    TRAFFIC_ANNOTATION_FOR_TESTS));
+    sender_ = std::make_unique<RequestSender>(
+        std::make_unique<DummyAuthService>(), test_shared_loader_factory_,
+        task_environment_.GetMainThreadTaskRunner(),
+        std::string(), /* custom user agent */
+        TRAFFIC_ANNOTATION_FOR_TESTS);
 
     test_server_.RegisterRequestHandler(base::BindRepeating(
         &BaseRequestsTest::HandleRequest, base::Unretained(this)));

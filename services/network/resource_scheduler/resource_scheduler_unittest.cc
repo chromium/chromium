@@ -1574,7 +1574,7 @@ TEST_F(ResourceSchedulerTest, NumActiveResourceSchedulerClientsUMA) {
       "ResourceScheduler.ActiveSchedulerClientsCount", 1, 1);
   scheduler_->OnClientDeleted(kChildId3, kRouteId3);
   scheduler_->OnClientDeleted(kChildId2, kRouteId2);
-  histogram_tester.reset(new base::HistogramTester);
+  histogram_tester = std::make_unique<base::HistogramTester>();
 
   // Test that UMA counts are recorded correctly when multiple scheduler clients
   // are created in sequence. There are at most 20 active clients.
@@ -1590,7 +1590,7 @@ TEST_F(ResourceSchedulerTest, NumActiveResourceSchedulerClientsUMA) {
     histogram_tester->ExpectBucketCount(
         "ResourceScheduler.ActiveSchedulerClientsCount", 1 + i, 1);
   }
-  histogram_tester.reset(new base::HistogramTester);
+  histogram_tester = std::make_unique<base::HistogramTester>();
 
   // Test that UMA counts are recorded correctly when a sequence of resource
   // scheduler clients are deleted in sequence. Note: Create a new client
@@ -1632,7 +1632,7 @@ TEST_F(ResourceSchedulerTest, NumDelayableAtStartOfNonDelayableUMA) {
   histogram_tester->ExpectUniqueSample(
       "ResourceScheduler.NumDelayableRequestsInFlightAtStart.NonDelayable", 0,
       1);
-  histogram_tester.reset(new base::HistogramTester);
+  histogram_tester = std::make_unique<base::HistogramTester>();
   // Check that nothing is recorded when delayable request is started in the
   // presence of a non-delayable request.
   std::unique_ptr<TestRequest> low1(

@@ -4,6 +4,7 @@
 
 #include "headless/lib/browser/headless_devtools.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -145,7 +146,7 @@ void StartLocalDevToolsHttpHandler(HeadlessBrowserImpl* browser) {
 
   std::unique_ptr<content::DevToolsSocketFactory> socket_factory;
   const net::HostPortPair& endpoint = options->devtools_endpoint;
-  socket_factory.reset(new TCPEndpointServerSocketFactory(endpoint));
+  socket_factory = std::make_unique<TCPEndpointServerSocketFactory>(endpoint);
 
   content::DevToolsAgentHost::StartRemoteDebuggingServer(
       std::move(socket_factory),

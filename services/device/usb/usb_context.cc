@@ -4,6 +4,8 @@
 
 #include "services/device/usb/usb_context.h"
 
+#include <memory>
+
 #include "base/atomicops.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -64,7 +66,7 @@ void UsbContext::UsbEventHandler::Stop() {
 
 UsbContext::UsbContext(PlatformUsbContext context) : context_(context) {
   // Ownership of the PlatformUsbContext is passed to the event handler thread.
-  event_handler_.reset(new UsbEventHandler(context_));
+  event_handler_ = std::make_unique<UsbEventHandler>(context_);
   event_handler_->Start();
 }
 

@@ -153,11 +153,13 @@ class TrackedPreferencesMigrationTest : public testing::Test {
     switch (store_id) {
       case MOCK_UNPROTECTED_PREF_STORE:
         store = unprotected_prefs_.get();
-        pref_hash_store.reset(new PrefHashStoreImpl(kSeed, kDeviceId, false));
+        pref_hash_store =
+            std::make_unique<PrefHashStoreImpl>(kSeed, kDeviceId, false);
         break;
       case MOCK_PROTECTED_PREF_STORE:
         store = protected_prefs_.get();
-        pref_hash_store.reset(new PrefHashStoreImpl(kSeed, kDeviceId, true));
+        pref_hash_store =
+            std::make_unique<PrefHashStoreImpl>(kSeed, kDeviceId, true);
         break;
     }
     DCHECK(store);

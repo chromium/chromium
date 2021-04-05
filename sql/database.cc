@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <memory>
+
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -1631,8 +1633,8 @@ bool Database::OpenInternal(const std::string& file_name,
   }
 
   DCHECK(!memory_dump_provider_);
-  memory_dump_provider_.reset(
-      new DatabaseMemoryDumpProvider(db_, histogram_tag_));
+  memory_dump_provider_ =
+      std::make_unique<DatabaseMemoryDumpProvider>(db_, histogram_tag_);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       memory_dump_provider_.get(), "sql::Database", nullptr);
 

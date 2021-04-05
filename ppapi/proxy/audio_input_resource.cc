@@ -4,6 +4,7 @@
 
 #include "ppapi/proxy/audio_input_resource.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -183,7 +184,7 @@ void AudioInputResource::OnPluginMsgOpenReply(
 void AudioInputResource::SetStreamInfo(
     base::ReadOnlySharedMemoryRegion shared_memory_region,
     base::SyncSocket::Handle socket_handle) {
-  socket_.reset(new base::CancelableSyncSocket(socket_handle));
+  socket_ = std::make_unique<base::CancelableSyncSocket>(socket_handle);
   DCHECK(!shared_memory_mapping_.IsValid());
 
   // Ensure that the allocated memory is enough for the audio bus and buffer
@@ -232,8 +233,8 @@ void AudioInputResource::StartThread() {
     return;
   }
   DCHECK(!audio_input_thread_.get());
-  audio_input_thread_.reset(new base::DelegateSimpleThread(
-      this, "plugin_audio_input_thread"));
+  audio_input_thread_ = std::make_unique<base::DelegateSimpleThread>(
+      this, "plugin_audio_input_thread");
   audio_input_thread_->Start();
 }
 

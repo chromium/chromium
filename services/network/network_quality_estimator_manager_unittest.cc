@@ -5,6 +5,7 @@
 #include "services/network/network_quality_estimator_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/macros.h"
@@ -68,7 +69,7 @@ class TestNetworkQualityEstimatorManagerClient
       net::EffectiveConnectionType effective_connection_type) {
     run_loop_wait_effective_connection_type_ = effective_connection_type;
     run_loop_->Run();
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
   }
 
   net::EffectiveConnectionType effective_connection_type() const {

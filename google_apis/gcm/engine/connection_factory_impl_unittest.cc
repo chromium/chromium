@@ -359,7 +359,7 @@ ConnectionFactoryImplTest::~ConnectionFactoryImplTest() {}
 
 void ConnectionFactoryImplTest::WaitForConnections() {
   run_loop_->Run();
-  run_loop_.reset(new base::RunLoop());
+  run_loop_ = std::make_unique<base::RunLoop>();
 }
 
 void ConnectionFactoryImplTest::ConnectionsComplete() {

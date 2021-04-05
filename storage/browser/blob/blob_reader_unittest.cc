@@ -73,14 +73,14 @@ class FakeFileStreamReader : public FileStreamReader {
   explicit FakeFileStreamReader(const std::string& contents)
       : buffer_(base::MakeRefCounted<DrainableIOBuffer>(
             base::MakeRefCounted<net::StringIOBuffer>(
-                std::unique_ptr<std::string>(new std::string(contents))),
+                std::make_unique<std::string>(contents)),
             contents.size())),
         net_error_(net::OK),
         size_(contents.size()) {}
   FakeFileStreamReader(const std::string& contents, uint64_t size)
       : buffer_(base::MakeRefCounted<DrainableIOBuffer>(
             base::MakeRefCounted<net::StringIOBuffer>(
-                std::unique_ptr<std::string>(new std::string(contents))),
+                std::make_unique<std::string>(contents)),
             contents.size())),
         net_error_(net::OK),
         size_(size) {}
@@ -801,7 +801,7 @@ TEST_F(BlobReaderTest, FileRange) {
   ExpectLocalFileCall(kPath, kTime, 0, reader.release());
 
   // We create the reader again with the offset after the seek.
-  reader.reset(new FakeFileStreamReader(kRangeData));
+  reader = std::make_unique<FakeFileStreamReader>(kRangeData);
   reader->SetAsyncRunner(base::ThreadTaskRunnerHandle::Get().get());
   ExpectLocalFileCall(kPath, kTime, kOffset, reader.release());
 

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -397,9 +398,9 @@ class SharedIsolateFactory {
         has_initialized_v8_ = true;
       }
 
-      holder_.reset(new gin::IsolateHolder(
+      holder_ = std::make_unique<gin::IsolateHolder>(
           base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
-          gin::IsolateHolder::IsolateType::kUtility));
+          gin::IsolateHolder::IsolateType::kUtility);
     }
 
     return holder_->isolate();

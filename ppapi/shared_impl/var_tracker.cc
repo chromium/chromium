@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include <limits>
+#include <memory>
 
 #include "base/logging.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -26,7 +27,7 @@ VarTracker::VarInfo::VarInfo(Var* v, int input_ref_count)
 
 VarTracker::VarTracker(ThreadMode thread_mode) : last_var_id_(0) {
   if (thread_mode == SINGLE_THREADED)
-    thread_checker_.reset(new base::ThreadChecker);
+    thread_checker_ = std::make_unique<base::ThreadChecker>();
 }
 
 VarTracker::~VarTracker() {}

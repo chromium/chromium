@@ -330,12 +330,12 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
               test_url_request_context_.get());
     }
 
-    ns_async_socket_.reset(new NetworkServiceAsyncSocket(
+    ns_async_socket_ = std::make_unique<NetworkServiceAsyncSocket>(
         base::BindRepeating(
             &NetworkServiceAsyncSocketTest::BindToProxyResolvingSocketFactory,
             base::Unretained(this)),
         false, /* use_fake_tls_handshake */
-        14, 20, TRAFFIC_ANNOTATION_FOR_TESTS));
+        14, 20, TRAFFIC_ANNOTATION_FOR_TESTS);
 
     ns_async_socket_->SignalConnected.connect(
         this, &NetworkServiceAsyncSocketTest::OnConnect);

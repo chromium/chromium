@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <map>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -98,13 +100,13 @@ void GCMUnregistrationRequestTest::CreateRequest() {
                                                   std::string() /* subtype */);
   std::unique_ptr<GCMUnregistrationRequestHandler> request_handler(
       new GCMUnregistrationRequestHandler(kAppId));
-  request_.reset(new UnregistrationRequest(
+  request_ = std::make_unique<UnregistrationRequest>(
       GURL(kRegistrationURL), request_info, std::move(request_handler),
       GetBackoffPolicy(),
       base::BindOnce(&UnregistrationRequestTest::UnregistrationCallback,
                      base::Unretained(this)),
       max_retry_count_, url_loader_factory(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_, std::string()));
+      base::ThreadTaskRunnerHandle::Get(), &recorder_, std::string());
 }
 
 TEST_F(GCMUnregistrationRequestTest, RequestDataPassedToFetcher) {
@@ -315,13 +317,13 @@ void InstaceIDDeleteTokenRequestTest::CreateRequest(
   std::unique_ptr<InstanceIDDeleteTokenRequestHandler> request_handler(
       new InstanceIDDeleteTokenRequestHandler(instance_id, authorized_entity,
                                               scope, kGCMVersion));
-  request_.reset(new UnregistrationRequest(
+  request_ = std::make_unique<UnregistrationRequest>(
       GURL(kRegistrationURL), request_info, std::move(request_handler),
       GetBackoffPolicy(),
       base::BindOnce(&UnregistrationRequestTest::UnregistrationCallback,
                      base::Unretained(this)),
       max_retry_count(), url_loader_factory(),
-      base::ThreadTaskRunnerHandle::Get(), &recorder_, std::string()));
+      base::ThreadTaskRunnerHandle::Get(), &recorder_, std::string());
 }
 
 TEST_F(InstaceIDDeleteTokenRequestTest, RequestDataPassedToFetcher) {

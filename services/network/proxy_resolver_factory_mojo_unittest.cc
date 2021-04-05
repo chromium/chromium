@@ -512,12 +512,13 @@ class ProxyResolverFactoryMojoTest : public testing::Test {
   void SetUp() override {
     mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
         factory_remote;
-    mock_proxy_resolver_factory_.reset(new MockMojoProxyResolverFactory(
-        &mock_proxy_resolver_,
-        factory_remote.InitWithNewPipeAndPassReceiver()));
-    proxy_resolver_factory_mojo_.reset(
-        new ProxyResolverFactoryMojo(std::move(factory_remote), &host_resolver_,
-                                     base::NullCallback(), &net_log_));
+    mock_proxy_resolver_factory_ =
+        std::make_unique<MockMojoProxyResolverFactory>(
+            &mock_proxy_resolver_,
+            factory_remote.InitWithNewPipeAndPassReceiver());
+    proxy_resolver_factory_mojo_ = std::make_unique<ProxyResolverFactoryMojo>(
+        std::move(factory_remote), &host_resolver_, base::NullCallback(),
+        &net_log_);
   }
 
   std::unique_ptr<Request> MakeRequest(

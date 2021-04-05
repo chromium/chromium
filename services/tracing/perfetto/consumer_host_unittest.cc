@@ -360,7 +360,8 @@ class TracingConsumerTest : public testing::Test,
     MojoResult rv = mojo::CreateDataPipe(&options, producer, consumer);
     ASSERT_EQ(MOJO_RESULT_OK, rv);
     threaded_service_->ReadBuffers(std::move(producer), base::OnceClosure());
-    drainer_.reset(new mojo::DataPipeDrainer(this, std::move(consumer)));
+    drainer_ =
+        std::make_unique<mojo::DataPipeDrainer>(this, std::move(consumer));
   }
 
   void DisableTracingAndEmitJson(base::OnceClosure write_callback,
@@ -375,7 +376,8 @@ class TracingConsumerTest : public testing::Test,
     threaded_service_->DisableTracingAndEmitJson(std::move(producer),
                                                  std::move(write_callback),
                                                  enable_privacy_filtering);
-    drainer_.reset(new mojo::DataPipeDrainer(this, std::move(consumer)));
+    drainer_ =
+        std::make_unique<mojo::DataPipeDrainer>(this, std::move(consumer));
   }
 
   perfetto::TraceConfig GetDefaultTraceConfig(

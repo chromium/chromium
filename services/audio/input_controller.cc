@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -268,8 +269,7 @@ void InputController::Record() {
 
   stream_create_time_ = base::TimeTicks::Now();
 
-  audio_callback_.reset(new AudioCallback(
-      this));
+  audio_callback_ = std::make_unique<AudioCallback>(this);
   stream_->Start(audio_callback_.get());
   return;
 }

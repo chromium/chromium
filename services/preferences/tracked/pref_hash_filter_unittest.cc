@@ -580,13 +580,13 @@ class PrefHashFilterTest : public testing::TestWithParam<EnforcementLevel>,
         reset_on_load_observer;
     reset_on_load_observer_receivers_.Add(
         this, reset_on_load_observer.InitWithNewPipeAndPassReceiver());
-    pref_hash_filter_.reset(new PrefHashFilter(
+    pref_hash_filter_ = std::make_unique<PrefHashFilter>(
         std::move(temp_mock_pref_hash_store),
         PrefHashFilter::StoreContentsPair(
             std::move(temp_mock_external_validation_pref_hash_store),
             std::move(temp_mock_external_validation_hash_store_contents)),
         std::move(configuration), std::move(reset_on_load_observer),
-        &mock_validation_delegate_, base::size(kTestTrackedPrefs)));
+        &mock_validation_delegate_, base::size(kTestTrackedPrefs));
   }
 
   // Verifies whether a reset was reported by the PrefHashFiler. Also verifies

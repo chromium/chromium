@@ -4,6 +4,8 @@
 
 #include "ppapi/proxy/audio_output_resource.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
@@ -167,7 +169,7 @@ void AudioOutputResource::OnPluginMsgOpenReply(
 void AudioOutputResource::SetStreamInfo(
     base::UnsafeSharedMemoryRegion shared_memory_region,
     base::SyncSocket::Handle socket_handle) {
-  socket_.reset(new base::CancelableSyncSocket(socket_handle));
+  socket_ = std::make_unique<base::CancelableSyncSocket>(socket_handle);
 
   // Ensure that the allocated memory is enough for the audio bus and buffer
   // parameters. Note that there might be slightly more allocated memory as
@@ -209,8 +211,8 @@ void AudioOutputResource::StartThread() {
   memset(client_buffer_.get(), 0, client_buffer_size_bytes_);
 
   DCHECK(!audio_output_thread_.get());
-  audio_output_thread_.reset(
-      new base::DelegateSimpleThread(this, "plugin_audio_output_thread"));
+  audio_output_thread_ = std::make_unique<base::DelegateSimpleThread>(
+      this, "plugin_audio_output_thread");
   audio_output_thread_->Start();
 }
 

@@ -142,7 +142,7 @@ Status EnsemblePatchApplication::ReadInitialParameters(
       case EXE_WIN_32_X86:  // Fall through.
       case EXE_ELF_32_X86:
       case EXE_WIN_32_X64:
-        patcher.reset(new PatcherX86_32(base_region_));
+        patcher = std::make_unique<PatcherX86_32>(base_region_);
         break;
       default:
         return C_BAD_ENSEMBLE_HEADER;

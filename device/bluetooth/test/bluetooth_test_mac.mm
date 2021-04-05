@@ -7,6 +7,8 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #import "base/mac/foundation_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -123,8 +125,8 @@ void BluetoothTestMac::InitWithoutDefaultAdapter() {
   adapter_mac_ = adapter.get();
   adapter_ = std::move(adapter);
 
-  mock_central_manager_.reset(
-      new ScopedMockCentralManager([[MockCentralManager alloc] init]));
+  mock_central_manager_ = std::make_unique<ScopedMockCentralManager>(
+      [[MockCentralManager alloc] init]);
   [mock_central_manager_->get() setBluetoothTestMac:this];
   [mock_central_manager_->get() setState:CBCentralManagerStateUnsupported];
   adapter_mac_->SetCentralManagerForTesting((id)mock_central_manager_->get());
@@ -137,8 +139,8 @@ void BluetoothTestMac::InitWithFakeAdapter() {
   adapter_mac_ = adapter.get();
   adapter_ = std::move(adapter);
 
-  mock_central_manager_.reset(
-      new ScopedMockCentralManager([[MockCentralManager alloc] init]));
+  mock_central_manager_ = std::make_unique<ScopedMockCentralManager>(
+      [[MockCentralManager alloc] init]);
   mock_central_manager_->get().bluetoothTestMac = this;
   [mock_central_manager_->get() setState:CBCentralManagerStatePoweredOn];
   adapter_mac_->SetCentralManagerForTesting((id)mock_central_manager_->get());

@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/bluetooth_low_energy_peripheral_manager_delegate.h"
 
+#include <memory>
+
 #include "device/bluetooth/bluetooth_adapter_mac.h"
 
 namespace device {
@@ -49,8 +51,9 @@ class BluetoothLowEnergyPeripheralManagerBridge {
               advertisementManager
                         andAdapter:(device::BluetoothAdapterMac*)adapter {
   if ((self = [super init])) {
-    _bridge.reset(new device::BluetoothLowEnergyPeripheralManagerBridge(
-        advertisementManager, adapter));
+    _bridge =
+        std::make_unique<device::BluetoothLowEnergyPeripheralManagerBridge>(
+            advertisementManager, adapter);
   }
   return self;
 }
