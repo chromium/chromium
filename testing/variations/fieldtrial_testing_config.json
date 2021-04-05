@@ -4486,8 +4486,7 @@
                 {
                     "name": "DesktopExperiments",
                     "params": {
-                        "EntitySuggestionsReduceLatencyDecoderTimeout": "30000",
-                        "EntitySuggestionsReduceLatencyDecoderWakeup": "true",
+                        "EntitySuggestionsReduceLatencyDecoderTimeout": "405",
                         "MaxZeroSuggestMatches": "10",
                         "OmniboxBookmarkPathsCounterfactual": "enabled",
                         "OmniboxBookmarkPathsUiDynamicReplaceUrl": "true",
