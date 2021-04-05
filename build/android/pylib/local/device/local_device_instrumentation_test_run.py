@@ -106,6 +106,7 @@ WPR_RECORD_REPLAY_TEST_FEATURE_ANNOTATION = 'WPRRecordReplayTest'
 _DEVICE_GOLD_DIR = 'skia_gold'
 # A map of Android product models to SDK ints.
 RENDER_TEST_MODEL_SDK_CONFIGS = {
+    'Nexus 5X': [23],
     # Android x86 emulator.
     'Android SDK built for x86': [23],
 }
@@ -547,17 +548,20 @@ class LocalDeviceInstrumentationTestRun(
     flags_to_add = []
     test_timeout_scale = None
     if self._test_instance.coverage_directory:
-      coverage_basename = '%s.exec' % (
-          '%s_%s_group' % (test[0]['class'], test[0]['method']) if isinstance(
-              test, list) else '%s_%s' % (test['class'], test['method']))
+      coverage_basename = '%s' % ('%s_%s_group' %
+                                  (test[0]['class'], test[0]['method'])
+                                  if isinstance(test, list) else '%s_%s' %
+                                  (test['class'], test['method']))
+      if self._test_instance.jacoco_coverage_type:
+        coverage_basename += "_" + self._test_instance.jacoco_coverage_type
       extras['coverage'] = 'true'
       coverage_directory = os.path.join(
           device.GetExternalStoragePath(), 'chrome', 'test', 'coverage')
       if not device.PathExists(coverage_directory):
         device.RunShellCommand(['mkdir', '-p', coverage_directory],
                                check_return=True)
-      coverage_device_file = os.path.join(
-          coverage_directory, coverage_basename)
+      coverage_device_file = os.path.join(coverage_directory, coverage_basename,
+                                          '.exec')
       extras['coverageFile'] = coverage_device_file
     # Save screenshot if screenshot dir is specified (save locally) or if
     # a GS bucket is passed (save in cloud).
@@ -931,9 +935,9 @@ class LocalDeviceInstrumentationTestRun(
 
   @contextlib.contextmanager
   def _ArchiveLogcat(self, device, test_name):
-    stream_name = 'logcat_%s_shard%s_%s_%s' % (
-        test_name.replace('#', '.'), self._test_instance.external_shard_index,
-        time.strftime('%Y%m%dT%H%M%S-UTC', time.gmtime()), device.serial)
+    stream_name = 'logcat_%s_%s_%s' % (test_name.replace(
+        '#', '.'), time.strftime('%Y%m%dT%H%M%S-UTC',
+                                 time.gmtime()), device.serial)
 
     logcat_file = None
     logmon = None
