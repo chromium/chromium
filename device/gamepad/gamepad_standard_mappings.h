@@ -85,6 +85,13 @@ enum CanonicalAxisIndex {
   AXIS_INDEX_COUNT
 };
 
+// The Switch Pro controller has a Capture button that has no equivalent in the
+// Standard Gamepad.
+enum SwitchProButtons {
+  SWITCH_PRO_BUTTON_CAPTURE = BUTTON_INDEX_COUNT,
+  SWITCH_PRO_BUTTON_COUNT
+};
+
 // Common mapping functions
 GamepadButton AxisToButton(float input);
 GamepadButton AxisNegativeAsButton(float input);
@@ -93,6 +100,11 @@ GamepadButton ButtonFromButtonAndAxis(GamepadButton button, float axis);
 GamepadButton NullButton();
 void DpadFromAxis(Gamepad* mapped, float dir);
 float RenormalizeAndClampAxis(float value, float min, float max);
+
+// Gamepad common mapping functions
+void MapperSwitchPro(const Gamepad& input, Gamepad* mapped);
+void MapperSwitchJoyCon(const Gamepad& input, Gamepad* mapped);
+void MapperSwitchComposite(const Gamepad& input, Gamepad* mapped);
 
 }  // namespace device
 

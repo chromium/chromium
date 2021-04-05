@@ -26,13 +26,6 @@ enum StadiaGamepadButtons {
   STADIA_GAMEPAD_BUTTON_COUNT
 };
 
-// The Switch Pro controller has a Capture button that has no equivalent in the
-// Standard Gamepad.
-enum SwitchProButtons {
-  SWITCH_PRO_BUTTON_CAPTURE = BUTTON_INDEX_COUNT,
-  SWITCH_PRO_BUTTON_COUNT
-};
-
 void MapperLogitechDInput(const Gamepad& input, Gamepad* mapped) {
   *mapped = input;
   mapped->buttons[BUTTON_INDEX_PRIMARY] = input.buttons[1];
@@ -418,34 +411,6 @@ void MapperBoomN64Psx(const Gamepad& input, Gamepad* mapped) {
   mapped->axes[AXIS_INDEX_RIGHT_STICK_X] = input.axes[2];
   mapped->axes[AXIS_INDEX_RIGHT_STICK_Y] = input.axes[5];
   mapped->buttons_length = BUTTON_INDEX_COUNT - 1;  // no meta
-  mapped->axes_length = AXIS_INDEX_COUNT;
-}
-
-void MapperSwitchJoyCon(const Gamepad& input, Gamepad* mapped) {
-  *mapped = input;
-  mapped->buttons_length = BUTTON_INDEX_COUNT;
-  mapped->axes_length = 2;
-}
-
-void MapperSwitchPro(const Gamepad& input, Gamepad* mapped) {
-  *mapped = input;
-  mapped->buttons_length = SWITCH_PRO_BUTTON_COUNT;
-  mapped->axes_length = AXIS_INDEX_COUNT;
-}
-
-void MapperSwitchComposite(const Gamepad& input, Gamepad* mapped) {
-  // In composite mode, the inputs from two Joy-Cons are combined to form one
-  // virtual gamepad. Some buttons do not have equivalents in the Standard
-  // Gamepad and are exposed as extra buttons:
-  // * Capture button (Joy-Con L):  BUTTON_INDEX_COUNT
-  // * SL (Joy-Con L):              BUTTON_INDEX_COUNT + 1
-  // * SR (Joy-Con L):              BUTTON_INDEX_COUNT + 2
-  // * SL (Joy-Con R):              BUTTON_INDEX_COUNT + 3
-  // * SR (Joy-Con R):              BUTTON_INDEX_COUNT + 4
-  const size_t kSwitchCompositeExtraButtonCount = 5;
-  *mapped = input;
-  mapped->buttons_length =
-      BUTTON_INDEX_COUNT + kSwitchCompositeExtraButtonCount;
   mapped->axes_length = AXIS_INDEX_COUNT;
 }
 
