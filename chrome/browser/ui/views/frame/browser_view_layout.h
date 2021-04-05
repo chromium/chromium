@@ -179,6 +179,10 @@ class BrowserViewLayout : public views::LayoutManager {
   // The latest dialog bounds applied during a layout pass.
   gfx::Rect latest_dialog_bounds_;
 
+  // The latest contents bounds applied during a layout pass, in screen
+  // coordinates.
+  gfx::Rect latest_contents_bounds_;
+
   // The distance the web contents modal dialog is from the top of the window,
   // in pixels.
   int web_contents_modal_dialog_top_y_ = -1;
