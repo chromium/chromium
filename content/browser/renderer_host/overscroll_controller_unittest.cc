@@ -30,7 +30,7 @@ class OverscrollControllerTest : public ::testing::Test {
         features::kTouchpadOverscrollHistoryNavigation);
     delegate_ = std::make_unique<TestOverscrollDelegate>(gfx::Size(400, 300));
     controller_ = std::make_unique<OverscrollController>();
-    controller_->set_delegate(delegate_.get());
+    controller_->set_delegate(delegate_->GetWeakPtr());
   }
 
   void TearDown() override {
