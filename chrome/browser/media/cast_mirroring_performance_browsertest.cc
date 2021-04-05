@@ -1080,7 +1080,10 @@ IN_PROC_BROWSER_TEST_P(CastV2PerformanceTest, Performance) {
   AnalyzeLatency(analyzer.get());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) || !defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
+// Skip test on Chrome OS MSAN.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(CastV2PerformanceTest);
+#else
 // TODO(b/161545049): reenable FPS value features.
 INSTANTIATE_TEST_SUITE_P(All,
                          CastV2PerformanceTest,
