@@ -42,6 +42,10 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
         AuthenticatorTransport::kInternal,
         AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy};
+    if (name == "cable_server_link_activate") {
+      transport_availability.available_transports.insert(
+          AuthenticatorTransport::kAndroidAccessory);
+    }
     model->set_cable_transport_info(/*cable_extension_provided=*/true,
                                     /*has_paired_phones=*/false,
                                     "fido://qrcode");
@@ -75,7 +79,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "touchid_incognito") {
       model->SetCurrentStep(AuthenticatorRequestDialogModel::Step::
                                 kPlatformAuthenticatorOffTheRecordInterstitial);
-    } else if (name == "cable_activate") {
+    } else if (name == "cable_activate" ||
+               name == "cable_server_link_activate") {
       model->SetCurrentStep(
           AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "cable_v2_activate") {
@@ -290,6 +295,11 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_touchid_incognito) {
 #endif  // defined(OS_MAC)
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_activate) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_cable_server_link_activate) {
   ShowAndVerifyUi();
 }
 

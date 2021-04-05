@@ -579,10 +579,11 @@ std::u16string AuthenticatorPaaskSheetModel::GetStepTitle() const {
 
 std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
   if (dialog_model()->cable_should_suggest_usb()) {
-    // The description will be shown by AuthenticatorPaaskSheetView because it
-    // needs to include a clickable link.
-    return std::u16string();
+    return l10n_util::GetStringFUTF16(
+        IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION,
+        GetRelyingPartyIdString(dialog_model()), std::u16string());
   }
+
   return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION);
 }
 

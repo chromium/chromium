@@ -10,13 +10,27 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/button/label_button.h"
 
 AuthenticatorPaaskSheetView::AuthenticatorPaaskSheetView(
     std::unique_ptr<AuthenticatorPaaskSheetModel> sheet_model)
     : AuthenticatorRequestSheetView(std::move(sheet_model)) {}
 
 AuthenticatorPaaskSheetView::~AuthenticatorPaaskSheetView() = default;
+
+// LinkLabelButton is a LabelButton where the text is styled like a link.
+class LinkLabelButton : public views::LabelButton {
+ public:
+  LinkLabelButton(PressedCallback callback, const std::u16string& text)
+      : LabelButton(std::move(callback), text, views::style::CONTEXT_BUTTON) {
+    SetBorder(views::CreateEmptyBorder(0, 0, 0, 0));
+    label()->SetTextStyle(views::style::STYLE_LINK);
+    // LabelButton sets its own colours on the label and thus the colour from
+    // STYLE_LINK must be set explicitly at the LabelButton level too.
+    SetEnabledTextColors(views::style::GetColor(
+        *label(), label()->GetTextContext(), views::style::STYLE_LINK));
+  }
+};
 
 std::unique_ptr<views::View>
 AuthenticatorPaaskSheetView::BuildStepSpecificContent() {
@@ -27,35 +41,13 @@ AuthenticatorPaaskSheetView::BuildStepSpecificContent() {
     return nullptr;
   }
 
-  // link_message contains the translation of the text of the link.
-  const std::u16string link_message =
-      l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE);
-
-  // offsets will contain the index of the start of the substituted strings. The
-  // second of these will be the position of the link text, which is used to
-  // decorate it.
-  std::vector<size_t> offsets;
-  const std::u16string description = l10n_util::GetStringFUTF16(
-      IDS_WEBAUTHN_CABLEV2_SERVERLINK_DESCRIPTION,
-      {AuthenticatorPaaskSheetModel::GetRelyingPartyIdString(dialog_model),
-       link_message},
-      &offsets);
-  DCHECK_EQ(offsets.size(), 2u);
-
-  auto label = std::make_unique<views::StyledLabel>();
-  label->SetText(description);
-  label->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
-  label->SetDefaultTextStyle(views::style::STYLE_PRIMARY);
-  auto link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-          &AuthenticatorPaaskSheetView::OnLinkClicked, base::Unretained(this)));
-  label->AddStyleRange(gfx::Range(offsets[1], offsets[1] + link_message.size()),
-                       link_style);
-
-  return label;
+  return std::make_unique<LinkLabelButton>(
+      base::BindRepeating(&AuthenticatorPaaskSheetView::OnLinkClicked,
+                          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_SERVERLINK_TROUBLE));
 }
 
-void AuthenticatorPaaskSheetView::OnLinkClicked() {
+void AuthenticatorPaaskSheetView::OnLinkClicked(const ui::Event&) {
   reinterpret_cast<AuthenticatorPaaskSheetModel*>(model())
       ->dialog_model()
       ->ShowCableUsbFallback();
