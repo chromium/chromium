@@ -130,10 +130,6 @@ void EncoderBase<Traits>::encode(FrameType* frame,
     return;
   }
 
-  // At this point, we have "consumed" the frame, and will close the clone in
-  // ProcessEncode().
-  frame->close();
-
   Request* request = MakeGarbageCollected<Request>();
   request->reset_count = reset_count_;
   request->type = Request::Type::kEncode;
