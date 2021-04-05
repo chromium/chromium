@@ -5,6 +5,7 @@
 #include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 
 #include "base/callback.h"
+#include "base/strings/pattern.h"
 #include "base/strings/sys_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_cocoa.h"
 
@@ -251,26 +252,61 @@ std::pair<AXUIElementRef, int> FindAXUIElement(const AXTreeSelector& selector) {
     std::string window_name = SysNSStringToUTF8(static_cast<NSString*>(
         [window_info objectForKey:@"kCGWindowOwnerName"]));
 
-    if (window_name == selector.pattern)
-      return {AXUIElementCreateApplication(pid), pid};
+    AXUIElementRef node = nil;
 
-    if (window_name == title) {
-      AXUIElementRef node = AXUIElementCreateApplication(pid);
-      if (selector.types & AXTreeSelector::ActiveTab)
-        node = FindAXUIElement(
-            node, base::BindRepeating([](const AXUIElementRef node) {
-              // Only active tab in exposed in browsers, thus find first
-              // AXWebArea role.
-              NSString* role = AttributeValueOf(static_cast<id>(node),
-                                                NSAccessibilityRoleAttribute);
-              return SysNSStringToUTF8(role) == "AXWebArea";
-            }));
+    // Application pre-defined selectors match or application title exact match.
+    bool appTitleMatch = window_name == selector.pattern;
+    if (window_name == title || appTitleMatch)
+      node = AXUIElementCreateApplication(pid);
 
-      if (node)
-        return {node, pid};
+    // Window title match. Application contain an AXWindow accessible object as
+    // a first child, which accessible name contain a window title. For example:
+    // 'Inbox (2) - asurkov@igalia.com - Gmail'.
+    if (!selector.pattern.empty() && !appTitleMatch) {
+      if (!node)
+        node = AXUIElementCreateApplication(pid);
+
+      AXUIElementRef window = FindAXWindowChild(node, selector.pattern);
+      if (window)
+        node = window;
     }
+
+    // ActiveTab selector.
+    if (node && selector.types & AXTreeSelector::ActiveTab) {
+      node = FindAXUIElement(
+          node, base::BindRepeating([](const AXUIElementRef node) {
+            // Only active tab in exposed in browsers, thus find first
+            // AXWebArea role.
+            NSString* role = AttributeValueOf(static_cast<id>(node),
+                                              NSAccessibilityRoleAttribute);
+            return SysNSStringToUTF8(role) == "AXWebArea";
+          }));
+    }
+
+    // Found a match.
+    if (node)
+      return {node, pid};
   }
   return {nil, 0};
+}
+
+AXUIElementRef FindAXWindowChild(AXUIElementRef parent,
+                                 const std::string& pattern) {
+  NSArray* children = ChildrenOf(static_cast<id>(parent));
+  if ([children count] == 0)
+    return nil;
+
+  id window = [children objectAtIndex:0];
+  NSString* role = AttributeValueOf(window, NSAccessibilityRoleAttribute);
+  if (SysNSStringToUTF8(role) != "AXWindow")
+    return nil;
+
+  NSString* window_title =
+      AttributeValueOf(window, NSAccessibilityTitleAttribute);
+  if (base::MatchPattern(SysNSStringToUTF8(window_title), pattern))
+    return static_cast<AXUIElementRef>(window);
+
+  return nil;
 }
 
 }  // namespace a11y

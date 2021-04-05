@@ -81,6 +81,9 @@ CONTENT_EXPORT AXUIElementRef FindAXUIElement(const AXUIElementRef node,
 CONTENT_EXPORT std::pair<AXUIElementRef, int> FindAXUIElement(
     const AXTreeSelector&);
 
+AXUIElementRef FindAXWindowChild(AXUIElementRef parent,
+                                 const std::string& pattern);
+
 }  // namespace a11y
 }  // namespace content
 
