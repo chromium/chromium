@@ -32,13 +32,17 @@ void MediaToolbarButtonController::OnMediaDialogClosed() {
   UpdateToolbarButtonState();
 }
 
-void MediaToolbarButtonController::UpdateToolbarButtonState() {
-  if (service_->HasActiveNotifications()) {
-    if (delegate_display_state_ != DisplayState::kShown) {
-      delegate_->Enable();
-      delegate_->Show();
-    }
+void MediaToolbarButtonController::ShowToolbarButton() {
+  if (delegate_display_state_ != DisplayState::kShown) {
+    delegate_->Enable();
+    delegate_->Show();
     delegate_display_state_ = DisplayState::kShown;
+  }
+}
+
+void MediaToolbarButtonController::UpdateToolbarButtonState() {
+  if (service_->HasActiveNotifications() || service_->HasOpenDialog()) {
+    ShowToolbarButton();
     return;
   }
 

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service_factory.h"
+#include "chrome/browser/ui/global_media_controls/media_toolbar_button_controller.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -42,37 +43,44 @@ MediaRouterDialogControllerViews::~MediaRouterDialogControllerViews() {
 
 bool MediaRouterDialogControllerViews::ShowMediaRouterDialogForPresentation(
     std::unique_ptr<StartPresentationContext> context) {
-  if (GlobalMediaControlsCastStartStopEnabled()) {
-    // Show global media controls instead of the Cast dialog.
-    Profile* const profile =
-        Profile::FromBrowserContext(initiator()->GetBrowserContext());
-    MediaNotificationService* const service =
-        MediaNotificationServiceFactory::GetForProfile(profile);
-    service->OnStartPresentationContextCreated(std::move(context));
-    Browser* const browser = chrome::FindBrowserWithWebContents(initiator());
-    BrowserView* const browser_view =
-        browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
-    ToolbarView* const toolbar_view =
-        browser_view ? browser_view->toolbar() : nullptr;
-    MediaToolbarButtonView* const media_button =
-        toolbar_view ? toolbar_view->media_button() : nullptr;
-    // TODO(crbug/1111120): When |media_button| is null, we want to show the
-    // global media controls anchored to the top of the web contents. As it is
-    // now, it shows the dialog in the wrong place with a big blue border around
-    // it.  Fixing the position probably involves doing something similar to the
-    // computation of |anchor_bounds| in CreateMediaRouterDialog() below, but
-    // just doing the same thing here doesn't work.  I suspect that approach
-    // will work, though, once the issue causing the blue border is fixed.
-    scoped_widget_observations_.AddObservation(
-        MediaDialogView::ShowDialogForPresentationRequest(
-            media_button, service, profile, initiator(),
-            GlobalMediaControlsEntryPoint::kPresentation));
-    return true;
-  } else {
+  if (!GlobalMediaControlsCastStartStopEnabled()) {
     // Delegate to the base class, which will show the Cast dialog.
     return MediaRouterDialogController::ShowMediaRouterDialogForPresentation(
         std::move(context));
   }
+
+  // Show global media controls instead of the Cast dialog.
+  Browser* const browser = chrome::FindBrowserWithWebContents(initiator());
+  BrowserView* const browser_view =
+      browser ? BrowserView::GetBrowserViewForBrowser(browser) : nullptr;
+  ToolbarView* const toolbar_view =
+      browser_view ? browser_view->toolbar() : nullptr;
+  MediaToolbarButtonView* const media_button =
+      toolbar_view ? toolbar_view->media_button() : nullptr;
+  // Show the |media_button| before opening the dialog so that when the bubble
+  // dialog is opened, it has an anchor.
+  if (media_button) {
+    media_button->media_toolbar_button_controller()->ShowToolbarButton();
+    toolbar_view->Layout();
+  }
+
+  Profile* const profile =
+      Profile::FromBrowserContext(initiator()->GetBrowserContext());
+  MediaNotificationService* const service =
+      MediaNotificationServiceFactory::GetForProfile(profile);
+  service->OnStartPresentationContextCreated(std::move(context));
+  // TODO(crbug/1111120): When |media_button| is null, we want to show the
+  // global media controls anchored to the top of the web contents. As it is
+  // now, it shows the dialog in the wrong place with a big blue border around
+  // it.  Fixing the position probably involves doing something similar to the
+  // computation of |anchor_bounds| in CreateMediaRouterDialog() below, but
+  // just doing the same thing here doesn't work.  I suspect that approach
+  // will work, though, once the issue causing the blue border is fixed.
+  scoped_widget_observations_.AddObservation(
+      MediaDialogView::ShowDialogForPresentationRequest(
+          media_button, service, profile, initiator(),
+          GlobalMediaControlsEntryPoint::kPresentation));
+  return true;
 }
 
 void MediaRouterDialogControllerViews::CreateMediaRouterDialog(

@@ -26,6 +26,8 @@ class MediaToolbarButtonController : public MediaNotificationServiceObserver {
   void OnMediaDialogOpened() override;
   void OnMediaDialogClosed() override;
 
+  void ShowToolbarButton();
+
  private:
   // Tracks the current display state of the toolbar button delegate.
   enum class DisplayState {
