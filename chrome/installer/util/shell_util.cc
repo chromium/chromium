@@ -2609,9 +2609,6 @@ bool ShellUtil::DeleteFileAssociations(const std::wstring& prog_id) {
         base::SplitString(handled_file_extensions, std::wstring(L";"),
                           base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-    const base::FilePath executable_name =
-        ShellUtil::GetApplicationPathForProgId(prog_id).BaseName();
-
     // Delete file-extension-handling registry entries for each file extension.
     for (const auto& file_extension : file_extensions) {
       std::wstring extension_path(kRegClasses);
@@ -2619,53 +2616,25 @@ bool ShellUtil::DeleteFileAssociations(const std::wstring& prog_id) {
       extension_path.append(file_extension);
 
       // Delete the default value at
-      // HKEY_CURRENT_USER\Software\Classes\|file_extension| if set to
-      // |prog_id|; this unregisters |prog_id| as the default handler for
-      // |file_extension|.
+      // HKEY_CURRENT_USER\Software\Classes\.<extension> if set to |prog_id|;
+      // this unregisters |prog_id| as the default handler for |file_extension|.
       InstallUtil::DeleteRegistryValueIf(
           HKEY_CURRENT_USER, extension_path.c_str(), WorkItem::kWow64Default,
           L"", InstallUtil::ValueEquals(prog_id));
 
       // Delete value |prog_id| at
-      // HKEY_CURRENT_USER\Software\Classes\|file_extension|\OpenWithProgids;
+      // HKEY_CURRENT_USER\Software\Classes\.<extension>\OpenWithProgids;
       // this removes |prog_id| from the list of handlers for |file_extension|.
       extension_path.push_back(base::FilePath::kSeparators[0]);
       extension_path.append(ShellUtil::kRegOpenWithProgids);
       InstallUtil::DeleteRegistryValue(HKEY_CURRENT_USER, extension_path,
                                        WorkItem::kWow64Default, prog_id);
 
-      // Delete values at
-      // HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\
-      // FileExts\|file_extension|. These are set by Windows the first time a
-      // user opens the Open With menu after installation.
-      // TODO(https://crbug.com/1177401): confirm that this is fixed in Windows
-      // version 10.0.19043, and delete these only on older versions if so.
-      std::wstring extension_cache_path(
-          L"Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts");
-      extension_cache_path.push_back(base::FilePath::kSeparators[0]);
-      extension_cache_path.append(file_extension);
-      extension_cache_path.push_back(base::FilePath::kSeparators[0]);
-      // Delete value |prog_id| at ...FileExts\|file_extension|\OpenWithProgids;
-      // this removes |prog_id| from the Open With menu for |file_extension|.
-      std::wstring extension_cache_progids_path(extension_cache_path);
-      extension_cache_progids_path.append(ShellUtil::kRegOpenWithProgids);
-      InstallUtil::DeleteRegistryValue(HKEY_CURRENT_USER,
-                                       extension_cache_progids_path,
-                                       WorkItem::kWow64Default, prog_id);
-      // Delete value containing |executable_name| at
-      // ...FileExts\|file_extension|\OpenWithList; this removes
-      // |executable_name| from the cache of file handlers for |file_extension|.
-      std::wstring extension_cache_list_path(extension_cache_path);
-      extension_cache_list_path.append(L"OpenWithList");
-      for (base::win::RegistryValueIterator iter(
-               HKEY_CURRENT_USER, extension_cache_list_path.c_str(),
-               WorkItem::kWow64Default);
-           iter.Valid(); ++iter) {
-        InstallUtil::DeleteRegistryValueIf(
-            HKEY_CURRENT_USER, extension_cache_list_path.c_str(),
-            WorkItem::kWow64Default, iter.Name(),
-            InstallUtil::ValueEquals(executable_name.value()));
-      }
+      // Note: if |prog_id| is later reinstalled with fewer extensions, it may
+      // still appear in the Open With menu for extensions that it previously
+      // handled due to cached entries in the most-recently-used list. These
+      // entries can't be cleaned up by apps, so this is an unavoidable quirk
+      // of Windows. See crbug.com/1177401 for details.
     }
   }
 
