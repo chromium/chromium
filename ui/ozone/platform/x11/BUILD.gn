@@ -35,6 +35,8 @@ source_set("x11") {
     "x11_surface_factory.h",
     "x11_user_input_monitor.cc",
     "x11_user_input_monitor.h",
+    "x11_utils.cc",
+    "x11_utils.h",
   ]
 
   deps = [

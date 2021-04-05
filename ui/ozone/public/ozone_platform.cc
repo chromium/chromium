@@ -104,6 +104,10 @@ PlatformMenuUtils* OzonePlatform::GetPlatformMenuUtils() {
   return nullptr;
 }
 
+PlatformUtils* OzonePlatform::GetPlatformUtils() {
+  return nullptr;
+}
+
 bool OzonePlatform::IsNativePixmapConfigSupported(
     gfx::BufferFormat format,
     gfx::BufferUsage usage) const {

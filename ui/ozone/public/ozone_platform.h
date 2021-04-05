@@ -31,6 +31,7 @@ class InputController;
 class OverlayManagerOzone;
 class PlatformClipboard;
 class PlatformGLEGLUtility;
+class PlatformUtils;
 class PlatformMenuUtils;
 class PlatformScreen;
 class PlatformUserInputMonitor;
@@ -220,6 +221,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
       gfx::AcceleratedWidget widget) = 0;
   virtual PlatformGLEGLUtility* GetPlatformGLEGLUtility();
   virtual PlatformMenuUtils* GetPlatformMenuUtils();
+  virtual PlatformUtils* GetPlatformUtils();
 
   // Returns true if the specified buffer format is supported.
   virtual bool IsNativePixmapConfigSupported(gfx::BufferFormat format,

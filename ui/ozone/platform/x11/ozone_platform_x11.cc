@@ -39,6 +39,7 @@
 #include "ui/ozone/platform/x11/x11_screen_ozone.h"
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
 #include "ui/ozone/platform/x11/x11_user_input_monitor.h"
+#include "ui/ozone/platform/x11/x11_utils.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -154,6 +155,8 @@ class OzonePlatformX11 : public OzonePlatform,
     return menu_utils_.get();
   }
 
+  PlatformUtils* GetPlatformUtils() override { return x11_utils_.get(); }
+
   std::unique_ptr<OSExchangeDataProvider> CreateProvider() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     return std::make_unique<OSExchangeDataProviderNonBacked>();
@@ -235,6 +238,7 @@ class OzonePlatformX11 : public OzonePlatform,
 #endif
 
     menu_utils_ = std::make_unique<X11MenuUtils>();
+    x11_utils_ = std::make_unique<X11Utils>();
 
     base::UmaHistogramEnumeration("Linux.WindowManager", GetWindowManagerUMA());
   }
@@ -307,6 +311,7 @@ class OzonePlatformX11 : public OzonePlatform,
   std::unique_ptr<CursorFactory> cursor_factory_;
   std::unique_ptr<GpuPlatformSupportHost> gpu_platform_support_host_;
   std::unique_ptr<X11MenuUtils> menu_utils_;
+  std::unique_ptr<X11Utils> x11_utils_;
 
   // Objects in the GPU process.
   std::unique_ptr<X11SurfaceFactory> surface_factory_ozone_;

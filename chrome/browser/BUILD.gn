@@ -5185,18 +5185,16 @@ static_library("browser") {
       }
     }
 
-    if (use_x11) {
-      sources += [ "media/webrtc/window_icon_util_x11.cc" ]
-    }
-
-    if (use_ozone) {
-      sources += [ "media/webrtc/window_icon_util_ozone.cc" ]
-    }
-
     if (is_linux) {
       sources += [ "fullscreen_linux.cc" ]
     } else if (use_ozone) {
       sources += [ "fullscreen_ozone.cc" ]
+    }
+
+    if (use_ozone || use_x11) {
+      # use_x11 also uses window_icon_util_ozone that controls
+      # the path using features::IsUsingOzonePlatform.
+      sources += [ "media/webrtc/window_icon_util_linux.cc" ]
     }
 
     if (rtc_use_pipewire) {

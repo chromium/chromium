@@ -8,6 +8,7 @@
 // This file declares utility functions for X11 (Linux only).
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -26,6 +27,7 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/platform_event.h"
 #include "ui/gfx/icc_profile.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/future.h"
@@ -434,6 +436,11 @@ COMPONENT_EXPORT(UI_BASE_X) bool IsVulkanSurfaceSupported();
 // Returns whether the visual supports alpha.
 // The function examines the _CHROMIUM_INSIDE_XVFB environment variable.
 COMPONENT_EXPORT(UI_BASE_X) bool DoesVisualHaveAlphaForTest();
+
+// Returns an icon for a native window referred by |target_window_id|. Can be
+// any window on screen.
+COMPONENT_EXPORT(UI_BASE_X)
+gfx::ImageSkia GetNativeWindowIcon(intptr_t target_window_id);
 
 // --------------------------------------------------------------------------
 // Selects a visual with a preference for alpha support on compositing window
