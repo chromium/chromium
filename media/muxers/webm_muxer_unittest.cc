@@ -434,6 +434,9 @@ const TestParams kTestCases[] = {
     {kCodecH264, kCodecOpus, 1, 1},
     {kCodecVP8, kCodecPCM, 0, 1},
     {kCodecVP8, kCodecPCM, 1, 1},
+    {kCodecAV1, kCodecOpus, 1, 0},
+    {kCodecAV1, kCodecOpus, 0, 1},
+    {kCodecAV1, kCodecOpus, 1, 1},
 };
 
 INSTANTIATE_TEST_SUITE_P(All, WebmMuxerTest, ValuesIn(kTestCases));
