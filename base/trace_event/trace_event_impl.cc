@@ -44,8 +44,9 @@ bool ConvertThreadId(const ::base::PlatformThreadId& thread,
 
 }  // namespace legacy
 
-template <>
-TraceTimestamp ConvertTimestampToTraceTimeNs(const ::base::TimeTicks& ticks) {
+TraceTimestamp
+TraceTimestampTraits<::base::TimeTicks>::ConvertTimestampToTraceTimeNs(
+    const ::base::TimeTicks& ticks) {
   return {TrackEvent::GetTraceClockId(), ticks.since_origin().InNanoseconds()};
 }
 
