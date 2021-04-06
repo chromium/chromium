@@ -271,7 +271,8 @@ bool RTCVideoDecoderAdapter::InitializeSync(
   DVLOG(3) << __func__;
   // Can be called on |worker_thread_| or |decoding_thread_|.
   DCHECK(!media_task_runner_->RunsTasksInCurrentSequence());
-  base::TimeTicks start_time = base::TimeTicks::Now();
+  base::AutoLock auto_lock(lock_);
+  start_time_ = base::TimeTicks::Now();
 
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
   bool result = false;
@@ -287,11 +288,11 @@ bool RTCVideoDecoderAdapter::InitializeSync(
                               std::move(init_cb)))) {
     // TODO(crbug.com/1076817) Remove if a root cause is found.
     if (!waiter.TimedWait(base::TimeDelta::FromSeconds(10))) {
-      RecordInitializationLatency(base::TimeTicks::Now() - start_time);
+      RecordInitializationLatency(base::TimeTicks::Now() - *start_time_);
       return false;
     }
 
-    RecordInitializationLatency(base::TimeTicks::Now() - start_time);
+    RecordInitializationLatency(base::TimeTicks::Now() - *start_time_);
   }
   return result;
 }
@@ -607,6 +608,14 @@ void RTCVideoDecoderAdapter::OnOutput(scoped_refptr<media::VideoFrame> frame) {
           .build();
 
   base::AutoLock auto_lock(lock_);
+
+  // Record time to first frame if we haven't yet.
+  if (start_time_) {
+    // We haven't recorded the first frame time yet, so do so now.
+    base::UmaHistogramTimes("Media.RTCVideoDecoderFirstFrameLatencyMs",
+                            base::TimeTicks::Now() - *start_time_);
+    start_time_.reset();
+  }
 
   // Update `current_resolution_`, in case it's changed.  This lets us fall back
   // to software, or avoid doing so, if we're over the decoder limit.

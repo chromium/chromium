@@ -181,6 +181,9 @@ class PLATFORM_EXPORT RTCVideoDecoderStreamAdapter
   // Current decode callback, if any.
   webrtc::DecodedImageCallback* decode_complete_callback_ GUARDED_BY(lock_) =
       nullptr;
+  // Time since construction.  Cleared when we record that a frame has been
+  // successfully decoded.
+  base::Optional<base::TimeTicks> start_time_ GUARDED_BY(lock_);
 
   // Do we have an outstanding `DecoderStream::Read()`?
   // Media thread only.

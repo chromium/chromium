@@ -3353,6 +3353,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Media.RTCVideoDecoderFirstFrameLatencyMs" units="ms"
+    expires_after="2021-05-02">
+  <owner>liberato@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    Time from decoder creation until the first frame is decoded.
+  </summary>
+</histogram>
+
 <histogram name="Media.RTCVideoDecoderInitDecodeSuccess" enum="BooleanSuccess"
     expires_after="never">
 <!-- expires-never: WebRTC health metric. -->

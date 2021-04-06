@@ -293,12 +293,14 @@ void RTCVideoDecoderStreamAdapter::InitializeSync(
 
   // Can be called on |worker_thread_| or |decoding_thread_|.
   DCHECK(!media_task_runner_->RunsTasksInCurrentSequence());
-  const auto start_time = base::TimeTicks::Now();
+  base::AutoLock auto_lock(lock_);
+  start_time_ = base::TimeTicks::Now();
 
   // Allow init to complete asynchronously, since we'll probably succeed.
   // Trying to do it synchronously can block the mojo pipe, and deadlock.
-  auto init_cb = CrossThreadBindOnce(
-      &RTCVideoDecoderStreamAdapter::OnInitializeDone, weak_this_, start_time);
+  auto init_cb =
+      CrossThreadBindOnce(&RTCVideoDecoderStreamAdapter::OnInitializeDone,
+                          weak_this_, *start_time_);
 
   PostCrossThreadTask(
       *media_task_runner_.get(), FROM_HERE,
@@ -655,6 +657,14 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
           .build();
 
   base::AutoLock auto_lock(lock_);
+
+  // Record time to first frame if we haven't yet.
+  if (start_time_) {
+    // We haven't recorded the first frame time yet, so do so now.
+    base::UmaHistogramTimes("Media.RTCVideoDecoderFirstFrameLatencyMs",
+                            base::TimeTicks::Now() - *start_time_);
+    start_time_.reset();
+  }
 
   // Try to read the next output, if any, regardless if this succeeded.
   AttemptRead_Locked();
