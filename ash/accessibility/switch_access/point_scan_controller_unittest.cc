@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gfx/image/image.h"
@@ -25,12 +24,8 @@ class PointScanControllerTest : public AshTestBase {
   PointScanControllerTest() = default;
   ~PointScanControllerTest() override = default;
 
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kEnableSwitchAccessPointScanning}, {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kEnablePixelOutputInTests);
     AshTestBase::SetUp();
