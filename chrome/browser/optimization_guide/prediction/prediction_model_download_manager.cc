@@ -124,18 +124,14 @@ void PredictionModelDownloadManager::StartDownload(const GURL& download_url) {
     // to have this be a high priority download with no network restrictions.
     download_params.scheduling_params.priority =
         download::SchedulingParams::Priority::HIGH;
-    download_params.scheduling_params.battery_requirements =
-        download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
-    download_params.scheduling_params.network_requirements =
-        download::SchedulingParams::NetworkRequirements::NONE;
   } else {
     download_params.scheduling_params.priority =
         download::SchedulingParams::Priority::NORMAL;
-    download_params.scheduling_params.battery_requirements =
-        download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
-    download_params.scheduling_params.network_requirements =
-        download::SchedulingParams::NetworkRequirements::OPTIMISTIC;
   }
+  download_params.scheduling_params.battery_requirements =
+      download::SchedulingParams::BatteryRequirements::BATTERY_INSENSITIVE;
+  download_params.scheduling_params.network_requirements =
+      download::SchedulingParams::NetworkRequirements::NONE;
 
   download_service_->StartDownload(download_params);
 }
