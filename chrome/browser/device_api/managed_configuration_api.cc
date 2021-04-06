@@ -174,6 +174,11 @@ bool ManagedConfigurationAPI::CanHaveManagedStore(const url::Origin& origin) {
   return base::Contains(managed_origins_, origin);
 }
 
+const std::set<url::Origin>& ManagedConfigurationAPI::GetManagedOrigins()
+    const {
+  return managed_origins_;
+}
+
 void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
   const base::Value* managed_configurations =
       profile_->GetPrefs()->GetList(prefs::kManagedConfigurationPerOrigin);

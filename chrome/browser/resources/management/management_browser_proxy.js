@@ -33,6 +33,7 @@ export let BrowserReportingResponse;
  * @typedef {{
  *   browserManagementNotice: string,
  *   extensionReportingTitle: string,
+ *   managedWebsitesSubtitle: string,
  *   pageSubtitle: string,
  *   managed: boolean,
  *   overview: string,
@@ -98,6 +99,9 @@ export class ManagementBrowserProxy {
   /** @return {!Promise<!Array<!Extension>>} */
   getExtensions() {}
 
+  /** @return {!Promise<!Array<!String>>} */
+  getManagedWebsites() {}
+
   // <if expr="chromeos">
   /**
    * @return {!Promise<boolean>} Boolean describing trust root configured
@@ -136,6 +140,11 @@ export class ManagementBrowserProxyImpl {
   /** @override */
   getExtensions() {
     return sendWithPromise('getExtensions');
+  }
+
+  /** @override */
+  getManagedWebsites() {
+    return sendWithPromise('getManagedWebsites');
   }
 
   // <if expr="chromeos">

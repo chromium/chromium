@@ -158,6 +158,18 @@
     Permissions
   </message>
 
+  <!-- Strings related to website managed configuration of the management page -->
+  <message name="IDS_MANAGEMENT_MANAGED_WEBSITES" desc="Title of the configured websites section of the page">
+    Websites with info from your organization
+  </message>
+  <message name="IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION" desc="Message describing that administrator has set some preset organization data to be sent to the following websites">
+    The administrator of this device has sent some info to the following websites, like settings or policies.
+  </message>
+  <message name="IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION" desc="Message describing that administrator has set some preset organization data to be sent to the following websites">
+    Your organization, <ph name="ENROLLMENT_DOMAIN">$1<ex>example.com</ex></ph>, has sent some info to the following websites, like settings or policies.
+  </message>
+
+
   <!-- Strings related to browser reporting section of the management page -->
   <message name="IDS_MANAGEMENT_BROWSER_REPORTING" desc="Title of the types of browser reporting section of the page">
     Browser

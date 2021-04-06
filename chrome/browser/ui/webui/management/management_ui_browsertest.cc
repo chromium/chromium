@@ -85,6 +85,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED)},
       {"pageSubtitle",
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE)},
+      {"managedWebsitesSubtitle",
+       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION)},
   };
 
   VerifyTexts(unmanaged_value_ptr.get(), expected_unmanaged_values);
@@ -115,7 +117,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUITest, ManagementStateChange) {
       {"extensionReportingTitle",
        l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED)},
       {"pageSubtitle", l10n_util::GetStringUTF16(IDS_MANAGEMENT_SUBTITLE)},
-  };
+      {"managedWebsitesSubtitle",
+       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION)}};
 
   VerifyTexts(managed_value_ptr.get(), expected_managed_values);
 }

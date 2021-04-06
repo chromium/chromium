@@ -362,6 +362,22 @@
               </table>
             </section>
           </template>
+          <template is="dom-if"
+                    if="[[showManagedWebsitesInfo_(managedWebsites_)]]">
+            <section class="managed-webistes">
+              <h2 class="cr-title-text">$i18n{managedWebsites}</h2>
+              <div class="subtitle">
+                [[managedWebsitesSubtitle_]]
+              </div>
+              <div class="content-indented">
+              <template is="dom-repeat" items="[[managedWebsites_]]">
+                  <div class="report">
+                    [[item]]
+                  </div>
+                </template>
+              </div>
+            </section>
+          </template>
         </div>
       </div>
     </main>

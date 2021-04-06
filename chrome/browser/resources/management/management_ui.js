@@ -53,6 +53,12 @@ Polymer({
      */
     extensions_: Array,
 
+    /**
+     * List of messages related to browser reporting.
+     * @private (?Array<!String>)
+     */
+    managedWebsites_: Array,
+
     // <if expr="chromeos">
     /**
      * List of messages related to device reporting.
@@ -132,6 +138,7 @@ Polymer({
         info => this.threatProtectionInfo_ = info);
 
     this.getExtensions_();
+    this.getManagedWebsites_();
     // <if expr="chromeos">
     this.getDeviceReportingInfo_();
     this.getPluginVmDataCollectionStatus_();
@@ -177,6 +184,13 @@ Polymer({
   getExtensions_() {
     this.browserProxy_.getExtensions().then(extensions => {
       this.extensions_ = extensions;
+    });
+  },
+
+  /** @private */
+  getManagedWebsites_() {
+    this.browserProxy_.getManagedWebsites().then(managedWebsites => {
+      this.managedWebsites_ = managedWebsites;
     });
   },
 
@@ -296,6 +310,15 @@ Polymer({
   },
 
   /**
+   * @return {boolean} True of there is managed websites info to show.
+   * @private
+   */
+  showManagedWebsitesInfo_() {
+    return !!this.managedWebsites_ && this.managedWebsites_.length > 0;
+  },
+
+
+  /**
    * @param {ReportingType} reportingType
    * @returns {string} The associated icon.
    * @private
@@ -344,6 +367,7 @@ Polymer({
     this.browserProxy_.getContextualManagedData().then(data => {
       this.managed_ = data.managed;
       this.extensionReportingSubtitle_ = data.extensionReportingTitle;
+      this.managedWebsitesSubtitle_ = data.managedWebsitesSubtitle;
       this.subtitle_ = data.pageSubtitle;
       // <if expr="chromeos">
       this.customerLogo_ = data.customerLogo;

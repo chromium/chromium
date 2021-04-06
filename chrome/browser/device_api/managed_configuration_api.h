@@ -56,6 +56,9 @@ class ManagedConfigurationAPI : public KeyedService {
   // this checks whether the application is managed.
   bool CanHaveManagedStore(const url::Origin& origin);
 
+  // Returns the list of all origins that have a managed configuration set.
+  const std::set<url::Origin>& GetManagedOrigins() const;
+
  private:
   class ManagedConfigurationDownloader;
 

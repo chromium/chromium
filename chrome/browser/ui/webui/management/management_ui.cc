@@ -88,6 +88,8 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
     {"searchPrompt", IDS_SETTINGS_SEARCH_PROMPT},
     {"clearSearch", IDS_CLEAR_SEARCH},
     {"backButton", IDS_ACCNAME_BACK},
+    {"managedWebsites", IDS_MANAGEMENT_MANAGED_WEBSITES},
+    {"managedWebsitesSubtitle", IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION},
     {kManagementExtensionReportMachineName,
      IDS_MANAGEMENT_EXTENSION_REPORT_MACHINE_NAME},
     {kManagementExtensionReportMachineNameAddress,

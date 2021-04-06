@@ -1,4 +1,3 @@
-
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -14,6 +13,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -22,6 +22,7 @@
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
@@ -96,6 +97,7 @@ using testing::ReturnRef;
 
 struct ContextualManagementSourceUpdate {
   std::u16string extension_reporting_title;
+  std::u16string managed_websites_title;
   std::u16string subtitle;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::u16string management_overview;
@@ -200,6 +202,10 @@ class TestManagementUIHandler : public ManagementUIHandler {
     base::Value report_sources(base::Value::Type::LIST);
     AddReportingInfo(&report_sources);
     return report_sources;
+  }
+
+  base::Value GetManagedWebsitesInfo(Profile* profile) {
+    return ManagementUIHandler::GetManagedWebsitesInfo(profile);
   }
 
   base::Value GetThreatProtectionInfo(Profile* profile) {
@@ -307,6 +313,8 @@ class ManagementUIHandlerTests : public TestingBaseClass {
   void ExtractContextualSourceUpdate(const base::Value& data) {
     extracted_.extension_reporting_title =
         ExtractPathFromDict(data, "extensionReportingTitle");
+    extracted_.managed_websites_title =
+        ExtractPathFromDict(data, "managedWebsitesSubtitle");
     extracted_.subtitle = ExtractPathFromDict(data, "pageSubtitle");
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     extracted_.management_overview = ExtractPathFromDict(data, "overview");
@@ -492,6 +500,10 @@ class ManagementUIHandlerTests : public TestingBaseClass {
     return extracted_.extension_reporting_title;
   }
 
+  std::u16string GetManagedWebsitesTitle() const {
+    return extracted_.managed_websites_title;
+  }
+
   std::u16string GetPageSubtitle() const { return extracted_.subtitle; }
 
   TestingProfile* GetProfile() const { return profile_.get(); }
@@ -653,6 +665,9 @@ TEST_F(ManagementUIHandlerTests,
 
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
@@ -668,6 +683,9 @@ TEST_F(ManagementUIHandlerTests,
 
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_BROWSER_NOTICE,
@@ -685,6 +703,9 @@ TEST_F(ManagementUIHandlerTests,
 
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_BROWSER_NOTICE,
@@ -706,6 +727,10 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        base::UTF8ToUTF16(domain)));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
+                                 base::UTF8ToUTF16(domain)));
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
@@ -723,6 +748,9 @@ TEST_F(ManagementUIHandlerTests,
 
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_NOT_MANAGED_NOTICE,
@@ -743,6 +771,10 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        base::UTF8ToUTF16(domain)));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
+                                 base::UTF8ToUTF16(domain)));
   EXPECT_EQ(GetBrowserManagementNotice(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_BROWSER_NOTICE,
@@ -769,6 +801,10 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        base::UTF8ToUTF16(domain)));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
+                                 base::UTF8ToUTF16(domain)));
   EXPECT_EQ(GetPageSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
                                        l10n_util::GetStringUTF16(device_type),
@@ -789,6 +825,9 @@ TEST_F(ManagementUIHandlerTests,
 
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
   EXPECT_EQ(GetPageSubtitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED,
                                        l10n_util::GetStringUTF16(device_type)));
@@ -812,6 +851,10 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        device_domain()));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
+                                 device_domain()));
   EXPECT_EQ(GetManagementOverview(), std::u16string());
   EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
@@ -835,6 +878,10 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetManagementOverview(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_DEVICE_AND_ACCOUNT_MANAGED_BY, device_domain()));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
+                                 device_domain()));
   EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
   EXPECT_TRUE(GetManaged());
 }
@@ -856,6 +903,10 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        device_domain()));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
+                                 device_domain()));
   EXPECT_EQ(GetManagementOverview(),
             l10n_util::GetStringFUTF16(
                 IDS_MANAGEMENT_DEVICE_MANAGED_BY_ACCOUNT_MANAGED_BY,
@@ -877,6 +928,9 @@ TEST_F(ManagementUIHandlerTests, ManagementContextualSourceUpdateUnmanaged) {
                                        l10n_util::GetStringUTF16(device_type)));
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
   EXPECT_EQ(GetManagementOverview(),
             l10n_util::GetStringUTF16(IDS_MANAGEMENT_DEVICE_NOT_MANAGED));
   EXPECT_EQ(GetUpdateRequiredEolMessage(), std::u16string());
@@ -903,6 +957,10 @@ TEST_F(ManagementUIHandlerTests,
   EXPECT_EQ(GetExtensionReportingTitle(),
             l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                        device_domain()));
+  EXPECT_EQ(
+      GetManagedWebsitesTitle(),
+      l10n_util::GetStringFUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
+                                 device_domain()));
   EXPECT_TRUE(GetManaged());
 }
 
@@ -1059,7 +1117,6 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoNoPolicySetNoMessage) {
 }
 
 TEST_F(ManagementUIHandlerTests, CloudReportingPolicy) {
-
   policy::PolicyMap chrome_policies;
   const policy::PolicyNamespace chrome_policies_namespace =
       policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string());
@@ -1130,6 +1187,27 @@ TEST_F(ManagementUIHandlerTests, ExtensionReportingInfoPoliciesMerge) {
   ASSERT_PRED_FORMAT2(MessagesToBeEQ,
                       handler_.GetExtensionReportingInfo().GetList(),
                       expected_messages);
+}
+
+TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoNoPolicySet) {
+  TestingProfile::Builder builder_no_domain;
+  auto profile = builder_no_domain.Build();
+  auto info = handler_.GetManagedWebsitesInfo(profile.get());
+  EXPECT_EQ(info.GetList().size(), 0u);
+}
+
+TEST_F(ManagementUIHandlerTests, ManagedWebsitiesInfoWebsites) {
+  TestingProfile::Builder builder_no_domain;
+  auto profile = builder_no_domain.Build();
+  base::Value managed_websites(base::Value::Type::LIST);
+  base::Value entry(base::Value::Type::DICTIONARY);
+  entry.SetStringKey("origin", "https://example.com");
+  managed_websites.Append(std::move(entry));
+  profile->GetPrefs()->Set(prefs::kManagedConfigurationPerOrigin,
+                           managed_websites);
+  auto info = handler_.GetManagedWebsitesInfo(profile.get());
+  EXPECT_EQ(info.GetList().size(), 1u);
+  EXPECT_EQ(info.GetList().begin()->GetString(), "https://example.com");
 }
 
 TEST_F(ManagementUIHandlerTests, ThreatReportingInfo) {

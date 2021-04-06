@@ -139,6 +139,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
 
   base::Value GetContextualManagedData(Profile* profile);
   base::Value GetThreatProtectionInfo(Profile* profile) const;
+  base::Value GetManagedWebsitesInfo(Profile* profile) const;
   virtual policy::PolicyService* GetPolicyService() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -174,6 +175,7 @@ class ManagementUIHandler : public content::WebUIMessageHandler,
   void HandleGetExtensions(const base::ListValue* args);
   void HandleGetContextualManagedData(const base::ListValue* args);
   void HandleGetThreatProtectionInfo(const base::ListValue* args);
+  void HandleGetManagedWebsites(const base::ListValue* args);
   void HandleInitBrowserReportingInfo(const base::ListValue* args);
 
   void AsyncUpdateLogo();

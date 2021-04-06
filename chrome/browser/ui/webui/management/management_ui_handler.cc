@@ -21,6 +21,8 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/device_api/managed_configuration_api.h"
+#include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
@@ -390,6 +392,10 @@ void ManagementUIHandler::RegisterMessages() {
       base::BindRepeating(&ManagementUIHandler::HandleGetThreatProtectionInfo,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "getManagedWebsites",
+      base::BindRepeating(&ManagementUIHandler::HandleGetManagedWebsites,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "initBrowserReportingInfo",
       base::BindRepeating(&ManagementUIHandler::HandleInitBrowserReportingInfo,
                           base::Unretained(this)));
@@ -676,6 +682,9 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
     response.SetStringPath(
         "extensionReportingTitle",
         l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
+    response.SetStringPath(
+        "managedWebsitesSubtitle",
+        l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     response.SetStringPath(
@@ -699,6 +708,10 @@ base::Value ManagementUIHandler::GetContextualManagedData(Profile* profile) {
         "extensionReportingTitle",
         l10n_util::GetStringFUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED_BY,
                                    base::UTF8ToUTF16(enterprise_manager)));
+    response.SetStringPath("managedWebsitesSubtitle",
+                           l10n_util::GetStringFUTF16(
+                               IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
+                               base::UTF8ToUTF16(enterprise_manager)));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     response.SetStringPath(
@@ -804,6 +817,17 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(
                                 base::UTF8ToUTF16(enterprise_manager)));
   result.SetKey("info", std::move(info));
   return result;
+}
+
+base::Value ManagementUIHandler::GetManagedWebsitesInfo(
+    Profile* profile) const {
+  base::Value managed_websites(base::Value::Type::LIST);
+  for (const auto& entry :
+       ManagedConfigurationAPIFactory::GetForProfile(profile)
+           ->GetManagedOrigins()) {
+    managed_websites.Append(entry.Serialize());
+  }
+  return managed_websites;
 }
 
 policy::PolicyService* ManagementUIHandler::GetPolicyService() const {
@@ -1002,6 +1026,15 @@ void ManagementUIHandler::HandleGetThreatProtectionInfo(
   ResolveJavascriptCallback(
       args->GetList()[0] /* callback_id */,
       GetThreatProtectionInfo(Profile::FromWebUI(web_ui())));
+}
+
+void ManagementUIHandler::HandleGetManagedWebsites(
+    const base::ListValue* args) {
+  AllowJavascript();
+
+  ResolveJavascriptCallback(
+      args->GetList()[0] /* callback_id */,
+      GetManagedWebsitesInfo(Profile::FromWebUI(web_ui())));
 }
 
 void ManagementUIHandler::HandleInitBrowserReportingInfo(
