@@ -187,7 +187,9 @@ void PeripheralBatteryListener::PeripheralBatteryStatusReceived(
   // usually on boot; for the stylus, convert the level to 'not present',
   // as they are not informative.
   if (level == -1 ||
-      (level == 0 && type == BatteryInfo::PeripheralType::kStylusViaScreen)) {
+      (level == 0 &&
+       (type == BatteryInfo::PeripheralType::kStylusViaScreen ||
+        type == BatteryInfo::PeripheralType::kStylusViaCharger))) {
     opt_level = base::nullopt;
   } else {
     opt_level = level;
@@ -273,7 +275,12 @@ void PeripheralBatteryListener::UpdateBattery(const BatteryInfo& battery_info,
     DCHECK(existing_battery_info.bluetooth_address == battery_info.bluetooth_address);
     DCHECK(existing_battery_info.type == battery_info.type);
     existing_battery_info.name = battery_info.name;
-    existing_battery_info.level = battery_info.level;
+    // Ignore a null level for stylus charger updates: we want to memorize
+    // the last known actual value. (The touchscreen controller firmware
+    // already memorizes this, for that path).
+    if (battery_info.type != BatteryInfo::PeripheralType::kStylusViaCharger ||
+        battery_info.level)
+      existing_battery_info.level = battery_info.level;
     existing_battery_info.last_update_timestamp =
         battery_info.last_update_timestamp;
     existing_battery_info.charge_status = battery_info.charge_status;

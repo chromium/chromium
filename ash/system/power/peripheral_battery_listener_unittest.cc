@@ -1102,9 +1102,10 @@ TEST_F(PeripheralBatteryListenerTest, StylusDiscardsZeros) {
       kBatteryEventUpdate);
 }
 
-// Stylus-via-charger updates of level zero should come through as expected, as
-// the numeric value may be relevant to the charge state.
-TEST_F(PeripheralBatteryListenerTest, StylusChargerDoesNotDiscardZeros) {
+// Stylus-via-charger updates of level zero should translate to nullopt if
+// no value is known; otherwise they should be ignored as not providing
+// information.
+TEST_F(PeripheralBatteryListenerTest, StylusChargerDoesNullZeros) {
   testing::StrictMock<MockPeripheralBatteryObserver> listener_observer_mock;
   base::ScopedObservation<PeripheralBatteryListener,
                           PeripheralBatteryListener::Observer>
@@ -1119,7 +1120,7 @@ TEST_F(PeripheralBatteryListenerTest, StylusChargerDoesNotDiscardZeros) {
               OnUpdatedBatteryLevel(AllOf(
                   AFIELD(&BI::key, Eq(kTestChargerId)),
                   AFIELD(&BI::type, Eq(BI::PeripheralType::kStylusViaCharger)),
-                  AFIELD(&BI::level, Eq(0)),
+                  AFIELD(&BI::level, Eq(base::nullopt)),
                   AFIELD(&BI::charge_status, Eq(kTestBatteryStatusOut)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(
@@ -1134,7 +1135,7 @@ TEST_F(PeripheralBatteryListenerTest, StylusChargerDoesNotDiscardZeros) {
       kBatteryEventUpdate);
 
   EXPECT_CALL(listener_observer_mock,
-              OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::level, Eq(0)))));
+              OnUpdatedBatteryLevel(AllOf(AFIELD(&BI::level, Eq(50)))));
 
   battery_listener_->PeripheralBatteryStatusReceived(
       kTestChargerPath, kTestChargerName, 0, kTestBatteryStatusIn,
