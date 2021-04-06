@@ -428,26 +428,6 @@ const char kLocalSearchServiceSyncMetricsCrosSettingsCount[] =
 const char kLocalSearchServiceSyncMetricsHelpAppCount[] =
     "local_search_service_sync.metrics.help_app_count";
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Deprecated 4/2020
-const char kAmbientModeTopicSource[] = "settings.ambient_mode.topic_source";
-
-// Deprecated 4/2020
-const char kPrintingAllowedPageSizes[] = "printing.allowed_page_sizes";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-// Deprecated 4/2020
-const char kExcludedSchemes[] = "protocol_handler.excluded_schemes";
-
-// Deprecated 4/2020
-const char kPreviewsLPRHostBlacklist[] = "previews.litepage.host-blacklist";
-const char kPreviewsLPRProbeCache[] = "Availability.Prober.cache.Litepages";
-const char kPreviewsLPROriginProbeCache[] =
-    "Availability.Prober.cache.LitepagesOriginCheck";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 4/2020
 const char kSupervisedUsersNextId[] = "LocallyManagedUsersNextId";
 
@@ -599,16 +579,6 @@ void RegisterProfilePrefsForMigration(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   chrome_browser_net::secure_dns::RegisterProbesSettingBackupPref(registry);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  registry->RegisterIntegerPref(kAmbientModeTopicSource, 0);
-  registry->RegisterListPref(kPrintingAllowedPageSizes);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  registry->RegisterDictionaryPref(kExcludedSchemes);
-  registry->RegisterDictionaryPref(kPreviewsLPRHostBlacklist);
-  registry->RegisterDictionaryPref(kPreviewsLPRProbeCache);
-  registry->RegisterDictionaryPref(kPreviewsLPROriginProbeCache);
 
   registry->RegisterBooleanPref(kStricterMixedContentTreatmentEnabled, true);
 
@@ -1264,22 +1234,6 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // is fully launched.
   chrome_browser_net::secure_dns::MigrateProbesSettingToOrFromBackup(
       profile_prefs);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Added 4/2020.
-  profile_prefs->ClearPref(kAmbientModeTopicSource);
-
-  // Added 4/2020.
-  profile_prefs->ClearPref(kPrintingAllowedPageSizes);
-#endif
-
-  // Added 4/2020
-  profile_prefs->ClearPref(kExcludedSchemes);
-
-  // Added 4/2020.
-  profile_prefs->ClearPref(kPreviewsLPRHostBlacklist);
-  profile_prefs->ClearPref(kPreviewsLPRProbeCache);
-  profile_prefs->ClearPref(kPreviewsLPROriginProbeCache);
 
   // Added 6/2020
   profile_prefs->ClearPref(kStricterMixedContentTreatmentEnabled);
