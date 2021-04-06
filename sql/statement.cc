@@ -13,6 +13,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "build/build_config.h"  // TODO(crbug.com/866218): Remove this include.
 #include "third_party/sqlite/sqlite3.h"
 
@@ -182,6 +183,17 @@ bool Statement::BindDouble(int col, double val) {
   return is_valid() && CheckOk(sqlite3_bind_double(ref_->stmt(), col + 1, val));
 }
 
+bool Statement::BindTime(int col, base::Time val) {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+  DCHECK(!stepped_);
+
+  int64_t int_value = val.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  return is_valid() &&
+         CheckOk(sqlite3_bind_int64(ref_->stmt(), col + 1, int_value));
+}
+
 bool Statement::BindCString(int col, const char* val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -288,6 +300,19 @@ double Statement::ColumnDouble(int col) const {
   if (!CheckValid())
     return 0;
   return sqlite3_column_double(ref_->stmt(), col);
+}
+
+base::Time Statement::ColumnTime(int col) const {
+#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+#endif  // OS_ANDROID
+
+  if (!CheckValid())
+    return base::Time();
+
+  int64_t int_value = sqlite3_column_int64(ref_->stmt(), col);
+  return base::Time::FromDeltaSinceWindowsEpoch(
+      base::TimeDelta::FromMicroseconds(int_value));
 }
 
 std::string Statement::ColumnString(int col) const {

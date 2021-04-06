@@ -191,11 +191,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   bool DumpQuotaTable(const QuotaTableCallback& callback);
   bool DumpOriginInfoTable(const OriginInfoTableCallback& callback);
 
-  // Serialize/deserialize base::Time objects to a stable representation for
-  // persistence in the database.
-  // TODO(pwnall): Add support for base::Time values to //sql directly.
-  static base::Time TimeFromSqlValue(int64_t time);
-  static int64_t TimeToSqlValue(const base::Time& time);
 
   const base::FilePath db_file_path_;
 

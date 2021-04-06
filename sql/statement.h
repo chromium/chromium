@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/time/time.h"
 #include "build/build_config.h"  // TODO(crbug.com/866218): Remove this include.
 #include "sql/database.h"
 
@@ -127,6 +128,20 @@ class COMPONENT_EXPORT(SQL) Statement {
   bool BindString16(int col, base::StringPiece16 value);
   bool BindBlob(int col, const void* value, int value_len);
 
+  // Conforms with base::Time serialization recommendations.
+  //
+  // This is equivalent to the following snippets, which should be replaced.
+  // * BindInt64(col, val.ToInternalValue())
+  // * BindInt64(col, val.ToDeltaSinceWindowsEpoch().InMicroseconds())
+  //
+  // Features that serialize base::Time in other ways, such as ToTimeT() or
+  // ToJavaTime(), will require a database migration to be converted to this
+  // (recommended) serialization method.
+  //
+  // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
+  //                          then remove the migration details above.
+  bool BindTime(int col, base::Time time);
+
   // Retrieving ----------------------------------------------------------------
 
   // Returns the number of output columns in the result.
@@ -147,6 +162,17 @@ class COMPONENT_EXPORT(SQL) Statement {
   double ColumnDouble(int col) const;
   std::string ColumnString(int col) const;
   std::u16string ColumnString16(int col) const;
+
+  // Conforms with base::Time serialization recommendations.
+  //
+  // This is equivalent to the following snippets, which should be replaced.
+  // * base::Time::FromInternalValue(ColumnInt64(col))
+  // * base::Time::FromDeltaSinceWindowsEpoch(
+  //       base::TimeDelta::FromMicroseconds(ColumnInt64(col)))
+  //
+  // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
+  //                          then remove the migration details above.
+  base::Time ColumnTime(int col) const;
 
   // When reading a blob, you can get a raw pointer to the underlying data,
   // along with the length, or you can just ask us to copy the blob into a
