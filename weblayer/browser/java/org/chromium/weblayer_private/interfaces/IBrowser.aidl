@@ -52,4 +52,7 @@ interface IBrowser {
   // Added in 90.
   void setDarkModeStrategy(in int strategy) = 16;
   void setEmbeddabilityMode(in int mode, in IObjectWrapper valueCallback) = 17;
+
+  // Added in 91.
+  void setChangeVisibilityOnNextDetach(in boolean changeVisibility) = 18;
 }
