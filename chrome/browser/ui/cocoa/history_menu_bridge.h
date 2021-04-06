@@ -7,6 +7,7 @@
 
 #import <Cocoa/Cocoa.h>
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "base/mac/scoped_nsobject.h"
@@ -166,6 +167,29 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
                             NSMenu* menu,
                             NSInteger tag,
                             NSInteger index);
+
+  // Adds an item for the window entry with a submenu containing its tabs.
+  // Returns whether the item was successfully added.
+  bool AddWindowEntryToMenu(sessions::TabRestoreService::Window* window,
+                            NSMenu* menu,
+                            NSInteger tag,
+                            NSInteger index);
+
+  // Adds an item for the group entry with a submenu containing its tabs.
+  // Returns whether the item was successfully added.
+  bool AddGroupEntryToMenu(sessions::TabRestoreService::Group* group,
+                           NSMenu* menu,
+                           NSInteger tag,
+                           NSInteger index);
+
+  // Adds standard 'Restore All' items and an item for each tab in |tabs|,
+  // potentially filtering out tabs like the NTP. Returns the number of tabs
+  // successfully added and updates the HistoryItem with those tabs.
+  int AddTabsToSubmenu(
+      NSMenu* submenu,
+      HistoryItem* item,
+      const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
+          tabs);
 
   // Called by the ctor if |service_| is ready at the time, or by a
   // notification receiver. Finishes initialization tasks by subscribing for

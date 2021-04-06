@@ -76,6 +76,16 @@ class DbusAppmenu : public AvatarMenuObserver,
                             ui::SimpleMenuModel* menu,
                             int index);
 
+  // Creates a menu item with the given |id| and |title| and inserts it in the
+  // history_menu_ at |index|. The creates a submenu with some standard items
+  // and an item for each tab in |tabs|.
+  void AddEntryToHistoryMenu(
+      SessionID id,
+      std::u16string title,
+      int index,
+      const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
+          tabs);
+
   // Sends a message off to History for data.
   void GetTopSitesData();
 

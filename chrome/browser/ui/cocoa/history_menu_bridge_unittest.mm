@@ -25,6 +25,7 @@
 #include "components/sessions/content/content_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -140,6 +141,19 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     for (auto* tab : tabs)
       window->tabs.emplace_back(std::move(tab));
     return window;
+  }
+
+  MockTRS::Group* CreateSessionGroup(
+      SessionID::id_type id,
+      tab_groups::TabGroupVisualData visual_data,
+      std::initializer_list<MockTRS::Tab*> tabs) {
+    auto* group = new MockTRS::Group;
+    group->id = SessionID::FromSerializedValue(id);
+    group->visual_data = visual_data;
+    group->tabs.reserve(tabs.size());
+    for (auto* tab : tabs)
+      group->tabs.emplace_back(std::move(tab));
+    return group;
   }
 
   void GetFaviconForHistoryItem(HistoryMenuBridge::HistoryItem* item) {
@@ -321,10 +335,12 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   EXPECT_TRUE(hist2);
   EXPECT_EQ(30, hist2->session_id.id());
   EXPECT_EQ(2U, hist2->tabs.size());
-  // Do not test menu item title because it is localized.
+  // Do not test full menu item title because it is localized. Just verify that
+  // it contains the right number of tabs.
+  EXPECT_TRUE([[item2 title] containsString:@"2"]);
   NSMenu* submenu1 = [item2 submenu];
   EXPECT_EQ(4U, [[submenu1 itemArray] count]);
-  // Do not test Restore All Tabs because it is localiced.
+  // Do not test Restore All Tabs because it is localized.
   EXPECT_TRUE([[submenu1 itemAtIndex:1] isSeparatorItem]);
   EXPECT_NSEQ(@"foo", [[submenu1 itemAtIndex:2] title]);
   EXPECT_NSEQ(@"bar", [[submenu1 itemAtIndex:3] title]);
@@ -342,10 +358,12 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   EXPECT_TRUE(hist4);
   EXPECT_EQ(50, hist4->session_id.id());
   EXPECT_EQ(3U, hist4->tabs.size());
-  // Do not test menu item title because it is localized.
+  // Do not test full menu item title because it is localized. Just verify that
+  // it contains the right number of tabs.
+  EXPECT_TRUE([[item4 title] containsString:@"3"]);
   NSMenu* submenu2 = [item4 submenu];
   EXPECT_EQ(5U, [[submenu2 itemArray] count]);
-  // Do not test Restore All Tabs because it is localiced.
+  // Do not test Restore All Tabs because it is localized.
   EXPECT_TRUE([[submenu2 itemAtIndex:1] isSeparatorItem]);
   EXPECT_NSEQ(@"magic", [[submenu2 itemAtIndex:2] title]);
   EXPECT_NSEQ(@"goats", [[submenu2 itemAtIndex:3] title]);
@@ -360,6 +378,78 @@ TEST_F(HistoryMenuBridgeTest, RecentlyClosedTabsAndWindows) {
   ClearMenuSection(menu, HistoryMenuBridge::kRecentlyClosed);
   EXPECT_EQ(0u, menu_item_map().size());
   EXPECT_EQ(0u, [[menu itemArray] count]);
+}
+
+// Test that the menu is created for a set of groups.
+TEST_F(HistoryMenuBridgeTest, RecentlyClosedGroups) {
+  tab_groups::TabGroupVisualData visual_data1(
+      std::u16string(), tab_groups::TabGroupColorId::kGrey);
+  tab_groups::TabGroupVisualData visual_data2(
+      base::ASCIIToUTF16("title"), tab_groups::TabGroupColorId::kBlue);
+
+  std::unique_ptr<MockTRS> trs(new MockTRS(profile()));
+  auto entries{CreateSessionEntries({
+      CreateSessionGroup(30, visual_data1,
+                         {
+                             CreateSessionTab(31, "http://foo.com", "foo"),
+                             CreateSessionTab(32, "http://bar.com", "bar"),
+                         }),
+      CreateSessionGroup(
+          50, visual_data2,
+          {
+              CreateSessionTab(51, "http://magic.com", "magic"),
+              CreateSessionTab(52, "http://goats.com", "goats"),
+              CreateSessionTab(53, "http://teleporter.com", "teleporter"),
+          }),
+  })};
+
+  using ::testing::ReturnRef;
+  EXPECT_CALL(*trs.get(), entries()).WillOnce(ReturnRef(entries));
+
+  bridge_->TabRestoreServiceChanged(trs.get());
+
+  NSMenu* menu = bridge_->HistoryMenu();
+  ASSERT_EQ(2U, [[menu itemArray] count]);
+
+  NSMenuItem* item1 = [menu itemAtIndex:0];
+  MockBridge::HistoryItem* hist1 = bridge_->HistoryItemForMenuItem(item1);
+  EXPECT_TRUE(hist1);
+  EXPECT_EQ(30, hist1->session_id.id());
+  EXPECT_EQ(2U, hist1->tabs.size());
+  // Do not test full menu item title because it is localized. Just verify that
+  // it contains the right number of tabs and no title.
+  EXPECT_TRUE([[item1 title] containsString:@"2"]);
+  EXPECT_FALSE([[item1 title] containsString:@"title"]);
+
+  NSMenu* submenu1 = [item1 submenu];
+  EXPECT_EQ(4U, [[submenu1 itemArray] count]);
+  // Do not test Restore All Tabs because it is localized.
+  EXPECT_TRUE([[submenu1 itemAtIndex:1] isSeparatorItem]);
+  EXPECT_NSEQ(@"foo", [[submenu1 itemAtIndex:2] title]);
+  EXPECT_NSEQ(@"bar", [[submenu1 itemAtIndex:3] title]);
+  EXPECT_EQ(31, hist1->tabs[0]->session_id.id());
+  EXPECT_EQ(32, hist1->tabs[1]->session_id.id());
+
+  NSMenuItem* item2 = [menu itemAtIndex:1];
+  MockBridge::HistoryItem* hist2 = bridge_->HistoryItemForMenuItem(item2);
+  EXPECT_TRUE(hist2);
+  EXPECT_EQ(50, hist2->session_id.id());
+  EXPECT_EQ(3U, hist2->tabs.size());
+  // Do not test full menu item title because it is localized. Just verify that
+  // it contains the right number of tabs and title.
+  EXPECT_TRUE([[item2 title] containsString:@"3"]);
+  EXPECT_TRUE([[item2 title] containsString:@"title"]);
+
+  NSMenu* submenu2 = [item2 submenu];
+  EXPECT_EQ(5U, [[submenu2 itemArray] count]);
+  // Do not test Restore All Tabs because it is localized.
+  EXPECT_TRUE([[submenu2 itemAtIndex:1] isSeparatorItem]);
+  EXPECT_NSEQ(@"magic", [[submenu2 itemAtIndex:2] title]);
+  EXPECT_NSEQ(@"goats", [[submenu2 itemAtIndex:3] title]);
+  EXPECT_NSEQ(@"teleporter", [[submenu2 itemAtIndex:4] title]);
+  EXPECT_EQ(51, hist2->tabs[0]->session_id.id());
+  EXPECT_EQ(52, hist2->tabs[1]->session_id.id());
+  EXPECT_EQ(53, hist2->tabs[2]->session_id.id());
 }
 
 // Tests that we properly request an icon from the FaviconService.

@@ -13,16 +13,24 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/chrome_command_ids.h"  // IDC_HISTORY_MENU
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"
 #import "chrome/browser/ui/cocoa/history_menu_cocoa_controller.h"
+#include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/grit/components_scaled_resources.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/gfx/image/image.h"
+#include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_util_mac.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/resources/grit/ui_resources.h"
 
 namespace {
@@ -129,68 +137,12 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
   for (const auto& entry : entries) {
     if (added_count >= kRecentlyClosedCount)
       break;
-    // If this is a window, create a submenu for all of its tabs.
     if (entry->type == sessions::TabRestoreService::WINDOW) {
-      const auto* entry_win =
-          static_cast<sessions::TabRestoreService::Window*>(entry.get());
-      const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
-          tabs = entry_win->tabs;
-      if (tabs.empty())
-        continue;
-
-      // Create the item for the parent/window. Do not set the title yet because
-      // the actual number of items that are in the menu will not be known until
-      // things like the NTP are filtered out, which is done when the tab items
-      // are actually created.
-      auto item = std::make_unique<HistoryItem>();
-      item->session_id = entry_win->id;
-
-      // Create the submenu.
-      base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
-
-      // Create standard items within the window submenu.
-      // Duplicate the HistoryItem otherwise the different NSMenuItems will
-      // point to the same HistoryItem, which would then be double-freed when
-      // removing the items from the map or in the dtor.
-      auto restore_item = std::make_unique<HistoryItem>(*item);
-      NSString* restore_title = l10n_util::GetNSString(
-          IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC);
-      restore_item->menu_item.reset(
-          [[NSMenuItem alloc] initWithTitle:restore_title
-                                     action:@selector(openHistoryMenuItem:)
-                              keyEquivalent:@""]);
-      NSMenuItem* restore_menu_item = restore_item->menu_item;
-      [restore_menu_item setTag:kRecentlyClosed + 1];  // +1 for submenu item.
-      [restore_menu_item setTarget:controller_.get()];
-      auto it =
-          menu_item_map_.emplace(restore_menu_item, std::move(restore_item));
-      CHECK(it.second);
-      [submenu addItem:restore_menu_item];
-      [submenu addItem:[NSMenuItem separatorItem]];
-
-      // Loop over the window's tabs and add them to the submenu.
-      NSInteger subindex = [[submenu itemArray] count];
-      for (const auto& tab : tabs) {
-        std::unique_ptr<HistoryItem> tab_item = HistoryItemForTab(*tab);
-        if (tab_item) {
-          item->tabs.push_back(tab_item.get());
-          AddItemToMenu(std::move(tab_item), submenu.get(), kRecentlyClosed + 1,
-                        subindex++);
-        }
-      }
-
-      // Now that the number of tabs that has been added is known, set the title
-      // of the parent menu item.
-      item->title = l10n_util::GetPluralStringFUTF16(
-          IDS_RECENTLY_CLOSED_WINDOW, item->tabs.size());
-
-      // Sometimes it is possible for there to not be any subitems for a given
-      // window; if that is the case, do not add the entry to the main menu.
-      if ([[submenu itemArray] count] > 2) {
-        // Create the menu item parent.
-        NSMenuItem* parent_item =
-            AddItemToMenu(std::move(item), menu, kRecentlyClosed, index++);
-        [parent_item setSubmenu:submenu.get()];
+      bool added = AddWindowEntryToMenu(
+          static_cast<sessions::TabRestoreService::Window*>(entry.get()), menu,
+          kRecentlyClosed, index);
+      if (added) {
+        ++index;
         ++added_count;
       }
     } else if (entry->type == sessions::TabRestoreService::TAB) {
@@ -198,6 +150,14 @@ void HistoryMenuBridge::TabRestoreServiceChanged(
       std::unique_ptr<HistoryItem> item = HistoryItemForTab(tab);
       if (item) {
         AddItemToMenu(std::move(item), menu, kRecentlyClosed, index++);
+        ++added_count;
+      }
+    } else if (entry->type == sessions::TabRestoreService::GROUP) {
+      bool added = AddGroupEntryToMenu(
+          static_cast<sessions::TabRestoreService::Group*>(entry.get()), menu,
+          kRecentlyClosed, index);
+      if (added) {
+        ++index;
         ++added_count;
       }
     }
@@ -315,6 +275,130 @@ NSMenuItem* HistoryMenuBridge::AddItemToMenu(std::unique_ptr<HistoryItem> item,
   auto it = menu_item_map_.emplace(menu_item, std::move(item));
   CHECK(it.second);
   return menu_item;
+}
+
+bool HistoryMenuBridge::AddWindowEntryToMenu(
+    sessions::TabRestoreService::Window* window,
+    NSMenu* menu,
+    NSInteger tag,
+    NSInteger index) {
+  const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>& tabs =
+      window->tabs;
+  if (tabs.empty())
+    return false;
+
+  // Create the item for the parent/window. Do not set the title yet because
+  // the actual number of items that are in the menu will not be known until
+  // things like the NTP are filtered out, which is done when the tab items
+  // are actually created.
+  auto item = std::make_unique<HistoryItem>();
+  item->session_id = window->id;
+
+  // Create the submenu.
+  base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
+  int added_count = AddTabsToSubmenu(submenu.get(), item.get(), tabs);
+
+  // Sometimes it is possible for there to not be any subitems for a given
+  // window; if that is the case, do not add the entry to the main menu.
+  if (added_count == 0)
+    return false;
+
+  // Now that the number of tabs that has been added is known, set the title
+  // of the parent menu item.
+  item->title = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_WINDOW,
+                                                 item->tabs.size());
+
+  // Create the menu item parent.
+  NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
+  [parent_item setSubmenu:submenu.get()];
+  return true;
+}
+
+bool HistoryMenuBridge::AddGroupEntryToMenu(
+    sessions::TabRestoreService::Group* group,
+    NSMenu* menu,
+    NSInteger tag,
+    NSInteger index) {
+  const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>& tabs =
+      group->tabs;
+  if (tabs.empty())
+    return false;
+
+  // Create the item for the parent/group.
+  auto item = std::make_unique<HistoryItem>();
+  item->session_id = group->id;
+
+  // Set the title of the group.
+  if (group->visual_data.title().empty()) {
+    item->title = l10n_util::GetPluralStringFUTF16(
+        IDS_RECENTLY_CLOSED_GROUP_UNNAMED, tabs.size());
+  } else {
+    item->title = l10n_util::GetPluralStringFUTF16(IDS_RECENTLY_CLOSED_GROUP,
+                                                   tabs.size());
+    item->title = base::ReplaceStringPlaceholders(
+        item->title, {group->visual_data.title()}, nullptr);
+  }
+
+  // Set the icon of the group to the group color circle.
+  const auto& theme = ThemeService::GetThemeProviderForProfile(profile_);
+  const int color_id =
+      GetTabGroupContextMenuColorId(group->visual_data.color());
+  gfx::ImageSkia group_icon = gfx::CreateVectorIcon(
+      kTabGroupIcon, gfx::kFaviconSize, theme.GetColor(color_id));
+
+  // Create the submenu.
+  base::scoped_nsobject<NSMenu> submenu([[NSMenu alloc] init]);
+  AddTabsToSubmenu(submenu.get(), item.get(), tabs);
+
+  NSImage* image = NSImageFromImageSkia(group_icon);
+  item->icon.reset([image retain]);
+  [item->menu_item setImage:item->icon.get()];
+
+  // Create the menu item parent.
+  NSMenuItem* parent_item = AddItemToMenu(std::move(item), menu, tag, index);
+  [parent_item setSubmenu:submenu.get()];
+  return true;
+}
+
+int HistoryMenuBridge::AddTabsToSubmenu(
+    NSMenu* submenu,
+    HistoryItem* item,
+    const std::vector<std::unique_ptr<sessions::TabRestoreService::Tab>>&
+        tabs) {
+  // Create standard items within the submenu.
+  // Duplicate the HistoryItem otherwise the different NSMenuItems will
+  // point to the same HistoryItem, which would then be double-freed when
+  // removing the items from the map or in the dtor.
+  auto restore_item = std::make_unique<HistoryItem>(*item);
+  NSString* restore_title =
+      l10n_util::GetNSString(IDS_HISTORY_CLOSED_RESTORE_WINDOW_MAC);
+  restore_item->menu_item.reset([[NSMenuItem alloc]
+      initWithTitle:restore_title
+             action:@selector(openHistoryMenuItem:)
+      keyEquivalent:@""]);
+  NSMenuItem* restore_menu_item = restore_item->menu_item;
+  [restore_menu_item setTag:kRecentlyClosed + 1];  // +1 for submenu item.
+  [restore_menu_item setTarget:controller_.get()];
+  auto it = menu_item_map_.emplace(restore_menu_item, std::move(restore_item));
+  CHECK(it.second);
+  [submenu addItem:restore_menu_item];
+  [submenu addItem:[NSMenuItem separatorItem]];
+
+  // Loop over the tabs and add them to the submenu. This filters out
+  // uninteresting tabs like the NTP.
+  NSInteger subindex = [[submenu itemArray] count];
+  int added_count = 0;
+  for (const auto& tab : tabs) {
+    std::unique_ptr<HistoryItem> tab_item = HistoryItemForTab(*tab);
+    if (tab_item) {
+      item->tabs.push_back(tab_item.get());
+      AddItemToMenu(std::move(tab_item), submenu, kRecentlyClosed + 1,
+                    subindex++);
+      ++added_count;
+    }
+  }
+
+  return added_count;
 }
 
 void HistoryMenuBridge::Init() {
