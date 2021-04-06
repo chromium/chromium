@@ -73,6 +73,8 @@ class BASE_EXPORT AddressPoolManager {
 #endif
 
  private:
+  friend class AddressPoolManagerForTesting;
+
   AddressPoolManager();
   ~AddressPoolManager();
 
