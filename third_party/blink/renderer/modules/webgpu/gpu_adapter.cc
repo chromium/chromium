@@ -39,6 +39,8 @@ WGPUDeviceProperties AsDawnType(const GPUDeviceDescriptor* descriptor) {
       feature_set.Contains("pipeline-statistics-query");
   requested_device_properties.timestampQuery =
       feature_set.Contains("timestamp-query");
+  requested_device_properties.depthClamping =
+      feature_set.Contains("depth-clamping");
 
   return requested_device_properties;
 }
@@ -124,6 +126,9 @@ void GPUAdapter::InitializeFeatureNameList() {
   }
   if (adapter_properties_.timestampQuery) {
     feature_name_list_.emplace_back("timestamp-query");
+  }
+  if (adapter_properties_.depthClamping) {
+    feature_name_list_.emplace_back("depth-clamping");
   }
 }
 

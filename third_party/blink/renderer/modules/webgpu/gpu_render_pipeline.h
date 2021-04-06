@@ -47,7 +47,7 @@ struct OwnedFragmentState {
 
   //  This struct should be non-copyable non-movable because it contains
   //  self-referencing pointers that would be invalidated when moved / copied.
-  OwnedFragmentState(const OwnedRenderPipelineDescriptor& desc) = delete;
+  OwnedFragmentState(const OwnedFragmentState& desc) = delete;
   OwnedFragmentState(OwnedFragmentState&& desc) = delete;
   OwnedFragmentState& operator=(const OwnedFragmentState& desc) = delete;
   OwnedFragmentState& operator=(OwnedFragmentState&& desc) = delete;
@@ -56,6 +56,21 @@ struct OwnedFragmentState {
   std::string entry_point;
   std::unique_ptr<WGPUColorTargetState[]> targets;
   Vector<WGPUBlendState> blend_states;
+};
+
+struct OwnedPrimitiveState {
+ public:
+  OwnedPrimitiveState() = default;
+
+  //  This struct should be non-copyable non-movable because it contains
+  //  self-referencing pointers that would be invalidated when moved / copied.
+  OwnedPrimitiveState(const OwnedPrimitiveState& desc) = delete;
+  OwnedPrimitiveState(OwnedPrimitiveState&& desc) = delete;
+  OwnedPrimitiveState& operator=(const OwnedPrimitiveState& desc) = delete;
+  OwnedPrimitiveState& operator=(OwnedPrimitiveState&& desc) = delete;
+
+  WGPUPrimitiveState dawn_desc = {};
+  WGPUPrimitiveDepthClampingState depth_clamping_state = {};
 };
 
 struct OwnedRenderPipelineDescriptor2 {
@@ -78,6 +93,7 @@ struct OwnedRenderPipelineDescriptor2 {
   std::string vertex_entry_point;
   Vector<WGPUVertexBufferLayout> buffers;
   Vector<WGPUVertexAttribute> attributes;
+  OwnedPrimitiveState primitive;
   WGPUDepthStencilState depth_stencil;
   OwnedFragmentState fragment;
 };

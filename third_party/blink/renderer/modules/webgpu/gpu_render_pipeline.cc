@@ -119,19 +119,28 @@ WGPUDepthStencilStateDescriptor AsDawnType(
   return dawn_desc;
 }
 
-WGPUPrimitiveState AsDawnType(const GPUPrimitiveState* webgpu_desc) {
+void GPUPrimitiveStateAsWGPUPrimitiveState(
+    const GPUPrimitiveState* webgpu_desc, OwnedPrimitiveState* dawn_state) {
   DCHECK(webgpu_desc);
+  DCHECK(dawn_state);
 
-  WGPUPrimitiveState dawn_desc = {};
-  dawn_desc.nextInChain = nullptr;
-  dawn_desc.topology =
+  dawn_state->dawn_desc.nextInChain = nullptr;
+  dawn_state->dawn_desc.topology =
       AsDawnEnum<WGPUPrimitiveTopology>(webgpu_desc->topology());
-  dawn_desc.stripIndexFormat =
+  dawn_state->dawn_desc.stripIndexFormat =
       AsDawnEnum<WGPUIndexFormat>(webgpu_desc->stripIndexFormat());
-  dawn_desc.frontFace = AsDawnEnum<WGPUFrontFace>(webgpu_desc->frontFace());
-  dawn_desc.cullMode = AsDawnEnum<WGPUCullMode>(webgpu_desc->cullMode());
+  dawn_state->dawn_desc.frontFace =
+      AsDawnEnum<WGPUFrontFace>(webgpu_desc->frontFace());
+  dawn_state->dawn_desc.cullMode =
+      AsDawnEnum<WGPUCullMode>(webgpu_desc->cullMode());
 
-  return dawn_desc;
+  if (webgpu_desc->hasClampDepth()) {
+    auto* clamp_state = &dawn_state->depth_clamping_state;
+    clamp_state->chain.sType = WGPUSType_PrimitiveDepthClampingState;
+    clamp_state->clampDepth = webgpu_desc->clampDepth();
+    dawn_state->dawn_desc.nextInChain =
+        reinterpret_cast<WGPUChainedStruct*>(clamp_state);
+  }
 }
 
 WGPUDepthStencilState AsDawnType(const GPUDepthStencilState* webgpu_desc) {
@@ -538,8 +547,10 @@ void ConvertToDawnType(v8::Isolate* isolate,
     dawn_vertex->buffers = dawn_desc_info->buffers.data();
   }
 
-  // Primitive,
-  dawn_desc_info->dawn_desc.primitive = AsDawnType(webgpu_desc->primitive());
+  // Primitive
+  GPUPrimitiveStateAsWGPUPrimitiveState(
+      webgpu_desc->primitive(), &dawn_desc_info->primitive);
+  dawn_desc_info->dawn_desc.primitive = dawn_desc_info->primitive.dawn_desc;
 
   // DepthStencil
   if (webgpu_desc->hasDepthStencil()) {

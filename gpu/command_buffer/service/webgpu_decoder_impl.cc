@@ -539,6 +539,9 @@ error::Error WebGPUDecoderImpl::InitDawnDevice(
   if (request_device_properties.timestampQuery) {
     device_descriptor.requiredExtensions.push_back("timestamp_query");
   }
+  if (request_device_properties.depthClamping) {
+    device_descriptor.requiredExtensions.push_back("depth_clamping");
+  }
 
   for (const std::string& toggles : force_enabled_toggles_) {
     device_descriptor.forceEnabledToggles.push_back(toggles.c_str());
