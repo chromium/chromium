@@ -17,8 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequenced_task_runner.h"
-#include "base/synchronization/lock.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/time/clock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/navigation_predictor/navigation_predictor_keyed_service.h"
@@ -200,42 +198,23 @@ class OptimizationGuideHintsManager
       OptimizationGuideHintsManagerFetchingTest,
       HintsFetched_ExternalAndroidApp_ECT_SLOW_2G_NonHTTPOrHTTPSHostsRemovedAppNotWhitelisted);
 
-  // Processes the hints component.
-  //
-  // Should always be called on the thread that belongs to
-  // |background_task_runner_|.
-  std::unique_ptr<optimization_guide::StoreUpdateData> ProcessHintsComponent(
-      const optimization_guide::HintsComponentInfo& info,
-      const base::flat_set<optimization_guide::proto::OptimizationType>&
-          registered_optimization_types,
-      std::unique_ptr<optimization_guide::StoreUpdateData> update_data);
-
   // Processes the optimization filters contained in the hints component.
-  //
-  // Should always be called on the thread that belongs to
-  // |background_task_runner_|.
   void ProcessOptimizationFilters(
       const google::protobuf::RepeatedPtrField<
           optimization_guide::proto::OptimizationFilter>&
           allowlist_optimization_filters,
       const google::protobuf::RepeatedPtrField<
           optimization_guide::proto::OptimizationFilter>&
-          blocklist_optimization_filters,
-      const base::flat_set<optimization_guide::proto::OptimizationType>&
-          registered_optimization_types);
+          blocklist_optimization_filters);
 
   // Process a set of optimization filters.
   //
   // |is_allowlist| will be used to ensure that the filters are either uses as
-  // allowlists or blocklists. |optimization_filters_lock_| should be held
-  // before calling this function.
+  // allowlists or blocklists.
   void ProcessOptimizationFilterSet(
       const google::protobuf::RepeatedPtrField<
           optimization_guide::proto::OptimizationFilter>& filters,
-      bool is_allowlist,
-      const base::flat_set<optimization_guide::proto::OptimizationType>&
-          registered_optimization_types)
-      EXCLUSIVE_LOCKS_REQUIRED(optimization_filters_lock_);
+      bool is_allowlist);
 
   // Callback run after the hint cache is fully initialized. At this point,
   // the OptimizationGuideHintsManager is ready to process hints.
@@ -244,7 +223,8 @@ class OptimizationGuideHintsManager
   // Updates the cache with the latest hints sent by the Component Updater.
   void UpdateComponentHints(
       base::OnceClosure update_closure,
-      std::unique_ptr<optimization_guide::StoreUpdateData> update_data);
+      std::unique_ptr<optimization_guide::StoreUpdateData> update_data,
+      std::unique_ptr<optimization_guide::proto::Configuration> config);
 
   // Called when the hints have been fully updated with the latest hints from
   // the Component Updater. This is used as a signal during tests.
@@ -386,25 +366,22 @@ class OptimizationGuideHintsManager
   base::flat_set<optimization_guide::proto::OptimizationType>
       registered_optimization_types_;
 
-  // Synchronizes access to member variables related to optimization filters.
-  base::Lock optimization_filters_lock_;
-
   // The set of optimization types that the component specified by
   // |component_info_| has optimization filters for.
   base::flat_set<optimization_guide::proto::OptimizationType>
-      optimization_types_with_filter_ GUARDED_BY(optimization_filters_lock_);
+      optimization_types_with_filter_;
 
   // A map from optimization type to the host filter that holds the allowlist
   // for that type.
   base::flat_map<optimization_guide::proto::OptimizationType,
                  std::unique_ptr<optimization_guide::OptimizationFilter>>
-      allowlist_optimization_filters_ GUARDED_BY(optimization_filters_lock_);
+      allowlist_optimization_filters_;
 
   // A map from optimization type to the host filter that holds the blocklist
   // for that type.
   base::flat_map<optimization_guide::proto::OptimizationType,
                  std::unique_ptr<optimization_guide::OptimizationFilter>>
-      blocklist_optimization_filters_ GUARDED_BY(optimization_filters_lock_);
+      blocklist_optimization_filters_;
 
   // A map from URL to a map of callbacks (along with the navigation IDs that
   // they were called for) keyed by their optimization type.
@@ -419,9 +396,6 @@ class OptimizationGuideHintsManager
 
   // Background thread where hints processing should be performed.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
-  // Task tracker used to track hints component processing tasks.
-  base::CancelableTaskTracker hints_component_processing_task_tracker_;
 
   // A reference to the profile. Not owned.
   Profile* profile_ = nullptr;

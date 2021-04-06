@@ -469,7 +469,9 @@ TEST_F(OptimizationGuideHintsManagerTest,
 
   // The below histogram should not be recorded since hints weren't coming
   // directly from the component.
-  histogram_tester.ExpectTotalCount("OptimizationGuide.ProcessHintsResult", 0);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ProcessHintsResult",
+      optimization_guide::ProcessHintsComponentResult::kSuccess, 1);
   // However, we still expect the local histogram for the hints being updated to
   // be recorded.
   histogram_tester.ExpectUniqueSample(
@@ -531,12 +533,9 @@ TEST_F(OptimizationGuideHintsManagerTest,
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         optimization_guide::switches::kHintsProtoOverride, encoded_config);
     CreateHintsManager(/*top_host_provider=*/nullptr);
-    // The below histogram should not be recorded since hints weren't coming
-    // directly from the component.
-    histogram_tester.ExpectTotalCount("OptimizationGuide.ProcessHintsResult",
-                                      0);
-    // However, we still expect the local histogram for the hints being updated
-    // to be recorded.
+    histogram_tester.ExpectUniqueSample(
+        "OptimizationGuide.ProcessHintsResult",
+        optimization_guide::ProcessHintsComponentResult::kSuccess, 1);
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.UpdateComponentHints.Result", true, 1);
   }

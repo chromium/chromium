@@ -248,6 +248,23 @@ bool ShouldIgnoreNewlyRegisteredOptimizationType(
   return false;
 }
 
+// Reads component file and parses it into a Configuration proto. Should not be
+// called on the UI thread.
+std::unique_ptr<optimization_guide::proto::Configuration> ReadComponentFile(
+    const optimization_guide::HintsComponentInfo& info) {
+  optimization_guide::ProcessHintsComponentResult out_result;
+  std::unique_ptr<optimization_guide::proto::Configuration> config =
+      optimization_guide::ProcessHintsComponent(info, &out_result);
+  if (!config) {
+    optimization_guide::RecordProcessHintsComponentResult(out_result);
+    return nullptr;
+  }
+
+  // Do not record the process hints component result for success cases until
+  // we processed all of the hints and filters in it.
+  return config;
+}
+
 }  // namespace
 
 OptimizationGuideHintsManager::OptimizationGuideHintsManager(
@@ -307,10 +324,6 @@ void OptimizationGuideHintsManager::Shutdown() {
       NavigationPredictorKeyedServiceFactory::GetForProfile(profile_);
   if (navigation_predictor_service)
     navigation_predictor_service->RemoveObserver(this);
-
-  // Try to cancel all tasks if we've been shutdown so it doesn't call back to
-  // us.
-  hints_component_processing_task_tracker_.TryCancelAll();
 }
 
 // static
@@ -345,10 +358,6 @@ void OptimizationGuideHintsManager::OnHintsComponentAvailable(
     const optimization_guide::HintsComponentInfo& info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // We received a new component, so cancel any previous attempts that may not
-  // have finished yet.
-  hints_component_processing_task_tracker_.TryCancelAll();
-
   // Check for if hint component is disabled. This check is needed because the
   // optimization guide still registers with the service as an observer for
   // components as a signal during testing.
@@ -376,17 +385,11 @@ void OptimizationGuideHintsManager::OnHintsComponentAvailable(
   // case where the component's version is not newer than the optimization guide
   // store's component version, StoreUpdateData will be a nullptr and hint
   // processing will be skipped.
-  // base::Unretained(this) is safe since |this| owns
-  // |hints_component_processing_task_tracker| and the callback will be canceled
-  // if destroyed.
-  hints_component_processing_task_tracker_.PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&OptimizationGuideHintsManager::ProcessHintsComponent,
-                     base::Unretained(this), info,
-                     registered_optimization_types_, std::move(update_data)),
+  background_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&ReadComponentFile, info),
       base::BindOnce(&OptimizationGuideHintsManager::UpdateComponentHints,
                      ui_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(next_update_closure_)));
+                     std::move(next_update_closure_), std::move(update_data)));
 
   // Only replace hints component info if it is not the same - otherwise we will
   // destruct the object and it will be invalid later.
@@ -396,80 +399,26 @@ void OptimizationGuideHintsManager::OnHintsComponentAvailable(
   }
 }
 
-std::unique_ptr<optimization_guide::StoreUpdateData>
-OptimizationGuideHintsManager::ProcessHintsComponent(
-    const optimization_guide::HintsComponentInfo& info,
-    const base::flat_set<optimization_guide::proto::OptimizationType>&
-        registered_optimization_types,
-    std::unique_ptr<optimization_guide::StoreUpdateData> update_data) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-
-  optimization_guide::ProcessHintsComponentResult out_result;
-  std::unique_ptr<optimization_guide::proto::Configuration> config =
-      optimization_guide::ProcessHintsComponent(info, &out_result);
-  if (!config) {
-    optimization_guide::RecordProcessHintsComponentResult(out_result);
-    return nullptr;
-  }
-
-  ProcessOptimizationFilters(config->optimization_allowlists(),
-                             config->optimization_blacklists(),
-                             registered_optimization_types);
-
-  // TODO(crbug/1112500): Figure out what to do with component hints if there
-  // isn't a persistent store. Right now, it doesn't really matter since there
-  // aren't hints sent down via the component, but we need to figure out
-  // threading since these hints are now stored in memory prior to being
-  // persisted.
-  // Don't store hints in the store if it's off the record.
-  if (update_data && !profile_->IsOffTheRecord()) {
-    bool did_process_hints = hint_cache_->ProcessAndCacheHints(
-        config->mutable_hints(), update_data.get());
-    optimization_guide::RecordProcessHintsComponentResult(
-        did_process_hints
-            ? optimization_guide::ProcessHintsComponentResult::kSuccess
-            : optimization_guide::ProcessHintsComponentResult::
-                  kProcessedNoHints);
-  } else {
-    optimization_guide::RecordProcessHintsComponentResult(
-        optimization_guide::ProcessHintsComponentResult::
-            kSkippedProcessingHints);
-  }
-
-  return update_data;
-}
-
 void OptimizationGuideHintsManager::ProcessOptimizationFilters(
     const google::protobuf::RepeatedPtrField<
         optimization_guide::proto::OptimizationFilter>&
         allowlist_optimization_filters,
     const google::protobuf::RepeatedPtrField<
         optimization_guide::proto::OptimizationFilter>&
-        blocklist_optimization_filters,
-    const base::flat_set<optimization_guide::proto::OptimizationType>&
-        registered_optimization_types) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  base::AutoLock lock(optimization_filters_lock_);
-
+        blocklist_optimization_filters) {
   optimization_types_with_filter_.clear();
   allowlist_optimization_filters_.clear();
   blocklist_optimization_filters_.clear();
   ProcessOptimizationFilterSet(allowlist_optimization_filters,
-                               /*is_allowlist=*/true,
-                               registered_optimization_types);
+                               /*is_allowlist=*/true);
   ProcessOptimizationFilterSet(blocklist_optimization_filters,
-                               /*is_allowlist=*/false,
-                               registered_optimization_types);
+                               /*is_allowlist=*/false);
 }
 
 void OptimizationGuideHintsManager::ProcessOptimizationFilterSet(
     const google::protobuf::RepeatedPtrField<
         optimization_guide::proto::OptimizationFilter>& filters,
-    bool is_allowlist,
-    const base::flat_set<optimization_guide::proto::OptimizationType>&
-        registered_optimization_types) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-
+    bool is_allowlist) {
   for (const auto& filter : filters) {
     if (filter.optimization_type() !=
         optimization_guide::proto::TYPE_UNSPECIFIED) {
@@ -477,8 +426,8 @@ void OptimizationGuideHintsManager::ProcessOptimizationFilterSet(
     }
 
     // Do not put anything in memory that we don't have registered.
-    if (registered_optimization_types.find(filter.optimization_type()) ==
-        registered_optimization_types.end()) {
+    if (registered_optimization_types_.find(filter.optimization_type()) ==
+        registered_optimization_types_.end()) {
       continue;
     }
 
@@ -531,24 +480,10 @@ void OptimizationGuideHintsManager::OnHintCacheInitialized() {
             ? nullptr
             : hint_cache_->MaybeCreateUpdateDataForComponentHints(
                   base::Version(kManualConfigComponentVersion));
-    hint_cache_->ProcessAndCacheHints(manual_config->mutable_hints(),
-                                      update_data.get());
     // Allow |UpdateComponentHints| to block startup so that the first
     // navigation gets the hints when a command line hint proto is provided.
-    UpdateComponentHints(base::DoNothing(), std::move(update_data));
-
-    // Process any optimization filters passed via command line on the
-    // background thread.
-    if (manual_config->optimization_allowlists_size() > 0 ||
-        manual_config->optimization_blacklists_size() > 0) {
-      hints_component_processing_task_tracker_.PostTask(
-          background_task_runner_.get(), FROM_HERE,
-          base::BindOnce(
-              &OptimizationGuideHintsManager::ProcessOptimizationFilters,
-              base::Unretained(this), manual_config->optimization_allowlists(),
-              manual_config->optimization_blacklists(),
-              registered_optimization_types_));
-    }
+    UpdateComponentHints(base::DoNothing(), std::move(update_data),
+                         std::move(manual_config));
   }
 
   // If the store is available, clear all hint state so newly registered types
@@ -566,12 +501,37 @@ void OptimizationGuideHintsManager::OnHintCacheInitialized() {
 
 void OptimizationGuideHintsManager::UpdateComponentHints(
     base::OnceClosure update_closure,
-    std::unique_ptr<optimization_guide::StoreUpdateData> update_data) {
+    std::unique_ptr<optimization_guide::StoreUpdateData> update_data,
+    std::unique_ptr<optimization_guide::proto::Configuration> config) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // If we get here, the hints have been processed correctly.
+  // If we get here, the component file has been processed correctly and did not
+  // crash the device.
   pref_service_->ClearPref(
       optimization_guide::prefs::kPendingHintsProcessingVersion);
+
+  if (!config) {
+    std::move(update_closure).Run();
+    return;
+  }
+
+  ProcessOptimizationFilters(config->optimization_allowlists(),
+                             config->optimization_blacklists());
+
+  // Don't store hints in the store if it's off the record.
+  if (update_data && !profile_->IsOffTheRecord()) {
+    bool did_process_hints = hint_cache_->ProcessAndCacheHints(
+        config->mutable_hints(), update_data.get());
+    optimization_guide::RecordProcessHintsComponentResult(
+        did_process_hints
+            ? optimization_guide::ProcessHintsComponentResult::kSuccess
+            : optimization_guide::ProcessHintsComponentResult::
+                  kProcessedNoHints);
+  } else {
+    optimization_guide::RecordProcessHintsComponentResult(
+        optimization_guide::ProcessHintsComponentResult::
+            kSkippedProcessingHints);
+  }
 
   if (update_data) {
     hint_cache_->UpdateComponentHints(
@@ -958,7 +918,6 @@ void OptimizationGuideHintsManager::RegisterOptimizationTypes(
     }
 
     if (!should_load_new_optimization_filter) {
-      base::AutoLock lock(optimization_filters_lock_);
       if (optimization_types_with_filter_.find(optimization_type) !=
           optimization_types_with_filter_.end()) {
         should_load_new_optimization_filter = true;
@@ -979,16 +938,8 @@ void OptimizationGuideHintsManager::RegisterOptimizationTypes(
           optimization_guide::switches::ParseComponentConfigFromCommandLine();
       if (manual_config->optimization_allowlists_size() > 0 ||
           manual_config->optimization_blacklists_size() > 0) {
-        // Process any optimization filters passed via command line on the
-        // background thread.
-        background_task_runner_->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &OptimizationGuideHintsManager::ProcessOptimizationFilters,
-                base::Unretained(this),
-                manual_config->optimization_allowlists(),
-                manual_config->optimization_blacklists(),
-                registered_optimization_types_));
+        ProcessOptimizationFilters(manual_config->optimization_allowlists(),
+                                   manual_config->optimization_blacklists());
       }
     } else {
       DCHECK(hints_component_info_);
@@ -1001,16 +952,12 @@ void OptimizationGuideHintsManager::RegisterOptimizationTypes(
 
 bool OptimizationGuideHintsManager::HasLoadedOptimizationAllowlist(
     optimization_guide::proto::OptimizationType optimization_type) {
-  base::AutoLock lock(optimization_filters_lock_);
-
   return allowlist_optimization_filters_.find(optimization_type) !=
          allowlist_optimization_filters_.end();
 }
 
 bool OptimizationGuideHintsManager::HasLoadedOptimizationBlocklist(
     optimization_guide::proto::OptimizationType optimization_type) {
-  base::AutoLock lock(optimization_filters_lock_);
-
   return blocklist_optimization_filters_.find(optimization_type) !=
          blocklist_optimization_filters_.end();
 }
@@ -1073,8 +1020,6 @@ OptimizationGuideHintsManager::CanApplyOptimization(
 
   // Check if the URL should be filtered out if we have an optimization filter
   // for the type.
-  {
-    base::AutoLock lock(optimization_filters_lock_);
 
     // Check if we have an allowlist loaded into memory for it, and if we do,
     // see if the URL matches anything in the filter.
@@ -1107,7 +1052,6 @@ OptimizationGuideHintsManager::CanApplyOptimization(
       return optimization_guide::OptimizationTypeDecision::
           kHadOptimizationFilterButNotLoadedInTime;
     }
-  }
 
   base::Optional<uint64_t> tuning_version;
 
@@ -1240,7 +1184,6 @@ bool OptimizationGuideHintsManager::HasOptimizationTypeToFetchFor() {
   if (registered_optimization_types_.empty())
     return false;
 
-  base::AutoLock lock(optimization_filters_lock_);
   for (const auto& optimization_type : registered_optimization_types_) {
     if (optimization_types_with_filter_.find(optimization_type) ==
         optimization_types_with_filter_.end()) {
