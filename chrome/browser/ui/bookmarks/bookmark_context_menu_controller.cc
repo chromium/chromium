@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -29,6 +30,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/undo/bookmark_undo_service.h"
 #include "content/public/browser/page_navigator.h"
@@ -83,6 +85,20 @@ const UserMetricsAction* GetActionForLocationAndDisposition(
     default:
       return nullptr;
   }
+}
+
+// Returns true if |command_id| corresponds to a command related to bookmark bar
+// management.
+bool IsBookmarkBarManagementCommand(int command_id) {
+  switch (command_id) {
+    case IDC_BOOKMARK_MANAGER:
+    case IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT:
+    case IDC_BOOKMARK_BAR_SHOW_READING_LIST:
+    case IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS:
+    case IDC_BOOKMARK_BAR_ALWAYS_SHOW:
+      return true;
+  }
+  return false;
 }
 
 }  // namespace
@@ -172,6 +188,10 @@ void BookmarkContextMenuController::BuildMenu() {
   if (chrome::IsAppsShortcutEnabled(profile_)) {
     AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT,
                     IDS_BOOKMARK_BAR_SHOW_APPS_SHORTCUT);
+  }
+  if (base::FeatureList::IsEnabled(reading_list::switches::kReadLater)) {
+    AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_READING_LIST,
+                    IDS_BOOKMARK_BAR_SHOW_READING_LIST);
   }
   AddCheckboxItem(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS,
                   IDS_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS_DEFAULT_NAME);
@@ -311,6 +331,14 @@ void BookmarkContextMenuController::ExecuteCommand(int id, int event_flags) {
       break;
     }
 
+    case IDC_BOOKMARK_BAR_SHOW_READING_LIST: {
+      PrefService* prefs = profile_->GetPrefs();
+      prefs->SetBoolean(
+          bookmarks::prefs::kShowReadingListInBookmarkBar,
+          !prefs->GetBoolean(bookmarks::prefs::kShowReadingListInBookmarkBar));
+      break;
+    }
+
     case IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS: {
       PrefService* prefs = profile_->GetPrefs();
       prefs->SetBoolean(
@@ -395,9 +423,13 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
   if (command_id == IDC_BOOKMARK_BAR_ALWAYS_SHOW)
     return prefs->GetBoolean(bookmarks::prefs::kShowBookmarkBar);
-  if (command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS)
+  if (command_id == IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS) {
     return prefs->GetBoolean(
         bookmarks::prefs::kShowManagedBookmarksInBookmarkBar);
+  }
+  if (command_id == IDC_BOOKMARK_BAR_SHOW_READING_LIST) {
+    return prefs->GetBoolean(bookmarks::prefs::kShowReadingListInBookmarkBar);
+  }
 
   DCHECK_EQ(IDC_BOOKMARK_BAR_SHOW_APPS_SHORTCUT, command_id);
   return prefs->GetBoolean(bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
@@ -405,6 +437,12 @@ bool BookmarkContextMenuController::IsCommandIdChecked(int command_id) const {
 
 bool BookmarkContextMenuController::IsCommandIdEnabled(int command_id) const {
   PrefService* prefs = profile_->GetPrefs();
+
+  // If the context menu is being shown from the reading list button then only
+  // the bookmark bar management options should be enabled.
+  if (!parent_ && selection_.empty()) {
+    return IsBookmarkBarManagementCommand(command_id);
+  }
 
   bool is_root_node = selection_.size() == 1 &&
                       selection_[0]->parent() == model_->root_node();

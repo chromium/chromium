@@ -87,6 +87,7 @@ const char* const kPersistentPrefNames[] = {
     bookmarks::prefs::kManagedBookmarks,
     bookmarks::prefs::kManagedBookmarksFolderName,
     bookmarks::prefs::kShowAppsShortcutInBookmarkBar,
+    bookmarks::prefs::kShowReadingListInBookmarkBar,
     bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
     bookmarks::prefs::kShowBookmarkBar,
 #if defined(OS_ANDROID)

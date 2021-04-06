@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -22,6 +23,7 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/reading_list/features/reading_list_switches.h"
 #include "components/search/search.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/user_prefs/user_prefs.h"
@@ -151,6 +153,12 @@ bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile) {
   return IsAppsShortcutEnabled(profile) &&
          profile->GetPrefs()->GetBoolean(
              bookmarks::prefs::kShowAppsShortcutInBookmarkBar);
+}
+
+bool ShouldShowReadingListInBookmarkBar(Profile* profile) {
+  return base::FeatureList::IsEnabled(reading_list::switches::kReadLater) &&
+         profile->GetPrefs()->GetBoolean(
+             bookmarks::prefs::kShowReadingListInBookmarkBar);
 }
 
 int GetBookmarkDragOperation(content::BrowserContext* browser_context,

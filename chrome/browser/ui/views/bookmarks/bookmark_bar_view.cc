@@ -745,7 +745,7 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
     gfx::Size size = apps_page_shortcut_->GetPreferredSize();
     width += size.width() + bookmark_bar_button_padding;
   }
-  if (read_later_button_) {
+  if (read_later_button_ && read_later_button_->GetVisible()) {
     gfx::Size separator_size = read_later_separator_view_->GetPreferredSize();
     gfx::Size size = read_later_button_->GetPreferredSize();
     width +=
@@ -803,10 +803,16 @@ void BookmarkBarView::Layout() {
 
   int max_x = kBookmarkBarHorizontalMargin + width - overflow_pref.width() -
               bookmarks_separator_pref.width();
-  if (other_bookmarks_button_->GetVisible())
-    max_x -= other_bookmarks_pref.width() + bookmark_bar_button_padding;
+  if (other_bookmarks_button_->GetVisible()) {
+    max_x -= other_bookmarks_pref.width();
+    // Additional spacing is only needed for this button if it is the last
+    // button in the bookmark bar. When the read later button exists this is no
+    // longer the last button.
+    if (!read_later_button_ || !read_later_button_->GetVisible())
+      max_x -= bookmark_bar_button_padding;
+  }
 
-  if (read_later_button_) {
+  if (read_later_button_ && read_later_button_->GetVisible()) {
     if (bookmarks_separator_view_->GetVisible())
       max_x -= bookmarks_separator_pref.width();
     max_x -= read_later_button_->GetPreferredSize().width() +
@@ -883,11 +889,15 @@ void BookmarkBarView::Layout() {
   if (other_bookmarks_button_->GetVisible()) {
     other_bookmarks_button_->SetBounds(x, y, other_bookmarks_pref.width(),
                                        button_height);
-    x += other_bookmarks_pref.width() + bookmark_bar_button_padding;
+    x += other_bookmarks_pref.width();
+    // Additional spacing is only needed for the last button in the bookmark
+    // bar. When the read later button exists this is no longer the last button.
+    if (!read_later_button_ || !read_later_button_->GetVisible())
+      x += bookmark_bar_button_padding;
   }
 
   // Read-later button and separator.
-  if (read_later_button_) {
+  if (read_later_button_ && read_later_button_->GetVisible()) {
     gfx::Size read_later_separator_pref =
         read_later_separator_view_->GetPreferredSize();
     gfx::Size read_later_pref = read_later_button_->GetPreferredSize();
@@ -1388,6 +1398,8 @@ void BookmarkBarView::ShowContextMenuForViewImpl(
   } else if (source == managed_bookmarks_button_) {
     parent = managed_->managed_node();
     nodes.push_back(parent);
+  } else if (source == read_later_button_) {
+    // Do nothing here for now.
   } else if (source != this && source != apps_page_shortcut_) {
     // User clicked on one of the bookmark buttons, find which one they
     // clicked on, except for the apps page shortcut, which must behave as if
@@ -1438,6 +1450,7 @@ void BookmarkBarView::Init() {
         AddChildView(std::make_unique<ButtonSeparatorView>());
     read_later_button_ =
         AddChildView(std::make_unique<ReadLaterButton>(browser_));
+    read_later_button_->set_context_menu_controller(this);
   }
 
   profile_pref_registrar_.Init(browser_->profile()->GetPrefs());
@@ -1447,11 +1460,19 @@ void BookmarkBarView::Init() {
           &BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged,
           base::Unretained(this)));
   profile_pref_registrar_.Add(
+      bookmarks::prefs::kShowReadingListInBookmarkBar,
+      base::BindRepeating(&BookmarkBarView::OnReadingListVisibilityPrefChanged,
+                          base::Unretained(this)));
+  profile_pref_registrar_.Add(
       bookmarks::prefs::kShowManagedBookmarksInBookmarkBar,
       base::BindRepeating(&BookmarkBarView::OnShowManagedBookmarksPrefChanged,
                           base::Unretained(this)));
   apps_page_shortcut_->SetVisible(
       chrome::ShouldShowAppsShortcutInBookmarkBar(browser_->profile()));
+  if (read_later_button_) {
+    read_later_button_->SetVisible(
+        chrome::ShouldShowReadingListInBookmarkBar(browser_->profile()));
+  }
 
   bookmarks_separator_view_ =
       AddChildView(std::make_unique<ButtonSeparatorView>());
@@ -1992,6 +2013,17 @@ void BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged() {
     return;
   apps_page_shortcut_->SetVisible(visible);
   UpdateBookmarksSeparatorVisibility();
+  LayoutAndPaint();
+}
+
+void BookmarkBarView::OnReadingListVisibilityPrefChanged() {
+  bool visible =
+      chrome::ShouldShowReadingListInBookmarkBar(browser_->profile());
+  if (read_later_button_->GetVisible() == visible)
+    return;
+  read_later_button_->CloseBubble();
+  read_later_button_->SetVisible(visible);
+  read_later_separator_view_->SetVisible(visible);
   LayoutAndPaint();
 }
 

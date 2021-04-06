@@ -349,6 +349,9 @@ class BookmarkBarView : public views::AccessiblePaneView,
   // Updates the visibility of the apps shortcut based on the pref value.
   void OnAppsPageShortcutVisibilityPrefChanged();
 
+  // Updates the visibility of the reading list based on the pref value.
+  void OnReadingListVisibilityPrefChanged();
+
   void OnShowManagedBookmarksPrefChanged();
 
   void LayoutAndPaint() {
