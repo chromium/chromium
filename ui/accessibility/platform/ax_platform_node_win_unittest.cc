@@ -6160,6 +6160,109 @@ TEST_F(AXPlatformNodeWinTest, IExpandCollapsePatternProviderAction) {
   EXPECT_EQ(ExpandCollapseState_LeafNode, state);
 }
 
+// If a menu button has an expanded or collapsed state, we want to make sure we
+// let that be the deciding factor for `get_ExpandCollapseState()`. Otherwise,
+// check if the button is pressed.
+TEST_F(AXPlatformNodeWinTest,
+       IExpandCollapseProviderExpandedCollapsedStateMenuButton) {
+  // Declare a vector that will hold our expected Expanded/Collapsed state for
+  // each menu button we'll declare below.
+  std::vector<ExpandCollapseState> node_expected_state;
+
+  // Our root. Will host all menu buttons below.
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2, 3, 4, 5, 6, 7};
+
+  // If a pressed menu button is explicitly marked as `kExpanded`, its
+  // Expanded/Collapsed state should be expanded.
+  AXNodeData expanded_pressed_button;
+  expanded_pressed_button.id = 2;
+  expanded_pressed_button.role = ax::mojom::Role::kButton;
+  expanded_pressed_button.SetHasPopup(ax::mojom::HasPopup::kMenu);
+  expanded_pressed_button.SetCheckedState(ax::mojom::CheckedState::kTrue);
+  expanded_pressed_button.AddState(ax::mojom::State::kExpanded);
+  node_expected_state.push_back(ExpandCollapseState_Expanded);
+
+  // If an unpressed menu button is explicitly marked as `kExpanded`, its
+  // Expanded/Collapsed state should be expanded, because this value takes
+  // precedence over the fact that the button isn't pressed.
+  AXNodeData expanded_unpressed_button;
+  expanded_unpressed_button.id = 3;
+  expanded_unpressed_button.role = ax::mojom::Role::kButton;
+  expanded_unpressed_button.SetHasPopup(ax::mojom::HasPopup::kMenu);
+  expanded_unpressed_button.SetCheckedState(ax::mojom::CheckedState::kFalse);
+  expanded_unpressed_button.AddState(ax::mojom::State::kExpanded);
+  node_expected_state.push_back(ExpandCollapseState_Expanded);
+
+  // If a pressed menu button is explicitly marked as `kCollapsed`, its
+  // Expanded/Collapsed state should be collapsed, because this value takes
+  // precedence over the fact that the button is pressed.
+  AXNodeData collapsed_pressed_button;
+  collapsed_pressed_button.id = 4;
+  collapsed_pressed_button.role = ax::mojom::Role::kButton;
+  collapsed_pressed_button.SetHasPopup(ax::mojom::HasPopup::kMenu);
+  collapsed_pressed_button.SetCheckedState(ax::mojom::CheckedState::kTrue);
+  collapsed_pressed_button.AddState(ax::mojom::State::kCollapsed);
+  node_expected_state.push_back(ExpandCollapseState_Collapsed);
+
+  // If an unpressed menu button is explicitly marked as `kCollapsed`, its
+  // Expanded/Collapsed state should be collapsed.
+  AXNodeData collapsed_unpressed_button;
+  collapsed_unpressed_button.id = 5;
+  collapsed_unpressed_button.role = ax::mojom::Role::kButton;
+  collapsed_unpressed_button.SetHasPopup(ax::mojom::HasPopup::kMenu);
+  collapsed_unpressed_button.SetCheckedState(ax::mojom::CheckedState::kFalse);
+  collapsed_unpressed_button.AddState(ax::mojom::State::kCollapsed);
+  node_expected_state.push_back(ExpandCollapseState_Collapsed);
+
+  // If a pressed menu button has no explicit Expanded/Collapsed state, its
+  // Expanded/Collapsed state should be expanded (since it's pressed).
+  AXNodeData pressed_button;
+  pressed_button.id = 6;
+  pressed_button.role = ax::mojom::Role::kButton;
+  pressed_button.SetHasPopup(ax::mojom::HasPopup::kMenu);
+  pressed_button.SetCheckedState(ax::mojom::CheckedState::kTrue);
+  node_expected_state.push_back(ExpandCollapseState_Expanded);
+
+  // If an unpressed button has no explicit Expanded/Collapsed state, its
+  // Expanded/Collapsed state should be collapsed (since it's unpressed).
+  AXNodeData unpressed_button;
+  unpressed_button.id = 7;
+  unpressed_button.role = ax::mojom::Role::kButton;
+  unpressed_button.SetHasPopup(ax::mojom::HasPopup::kMenu);
+  unpressed_button.SetCheckedState(ax::mojom::CheckedState::kFalse);
+  node_expected_state.push_back(ExpandCollapseState_Collapsed);
+
+  // Initialize all our buttons as children of our root.
+  Init(root, expanded_pressed_button, expanded_unpressed_button,
+       collapsed_pressed_button, collapsed_unpressed_button, pressed_button,
+       unpressed_button);
+
+  // Declare all variables we'll use in the below loop.
+  ComPtr<IRawElementProviderSimple> raw_element_provider;
+  ComPtr<IExpandCollapseProvider> expandcollapse_provider;
+  ExpandCollapseState state;
+
+  // Loop through all child buttons and verify that we get the expected
+  // Expanded/Collapsed state.
+  CHECK_EQ(node_expected_state.size(), root.child_ids.size());
+  for (size_t i = 0; i < root.child_ids.size(); ++i) {
+    raw_element_provider = GetIRawElementProviderSimpleFromChildIndex(i);
+    EXPECT_HRESULT_SUCCEEDED(raw_element_provider->GetPatternProvider(
+        UIA_ExpandCollapsePatternId, &expandcollapse_provider));
+    EXPECT_NE(expandcollapse_provider.Get(), nullptr);
+    EXPECT_HRESULT_SUCCEEDED(
+        expandcollapse_provider->get_ExpandCollapseState(&state));
+    SCOPED_TRACE(testing::Message()
+                 << "node index: " << i << ", Actual Expanded/Collapsed State: "
+                 << state << ", Expected Expanded/Collapsed State: "
+                 << node_expected_state[i]);
+    EXPECT_EQ(node_expected_state[i], state);
+  }
+}
+
 TEST_F(AXPlatformNodeWinTest, IInvokeProviderInvoke) {
   ui::AXNodeData root;
   root.id = 1;

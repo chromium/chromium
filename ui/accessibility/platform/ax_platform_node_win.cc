@@ -1798,20 +1798,20 @@ IFACEMETHODIMP AXPlatformNodeWin::Expand() {
 ExpandCollapseState AXPlatformNodeWin::ComputeExpandCollapseState() const {
   const AXNodeData& data = GetData();
 
-  // Since a menu button implies there is a popup and it is either expanded or
-  // collapsed, and it should not support ExpandCollapseState_LeafNode.
-  // According to the UIA spec, ExpandCollapseState_LeafNode indicates that the
-  // element neither expands nor collapses.
-  if (data.IsMenuButton()) {
-    if (data.IsButtonPressed())
-      return ExpandCollapseState_Expanded;
-    return ExpandCollapseState_Collapsed;
-  }
-
   if (data.HasState(ax::mojom::State::kExpanded)) {
     return ExpandCollapseState_Expanded;
   } else if (data.HasState(ax::mojom::State::kCollapsed)) {
     return ExpandCollapseState_Collapsed;
+  } else if (data.IsMenuButton()) {
+    // Since a menu button implies there is a popup and it is either expanded or
+    // collapsed, it should not support ExpandCollapseState_LeafNode.
+    // According to the UIA spec, ExpandCollapseState_LeafNode indicates that
+    // the element neither expands nor collapses.
+    if (data.IsButtonPressed()) {
+      return ExpandCollapseState_Expanded;
+    } else {
+      return ExpandCollapseState_Collapsed;
+    }
   } else {
     return ExpandCollapseState_LeafNode;
   }
