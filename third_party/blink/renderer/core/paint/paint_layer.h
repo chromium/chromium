@@ -658,8 +658,6 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   void UpdateCompositorFilterOperationsForBackdropFilter(
       CompositorFilterOperations& operations,
       base::Optional<gfx::RRectF>* backdrop_filter_bounds) const;
-  CompositorFilterOperations CreateCompositorFilterOperationsForBackdropFilter()
-      const;
   void SetBackdropFilterOnEffectNodeDirty() {
     backdrop_filter_on_effect_node_dirty_ = true;
   }
@@ -695,7 +693,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   // local coordinate system of the effect node containing the filter.
   FloatRect FilterReferenceBox() const;
   FloatRect BackdropFilterReferenceBox() const;
-  gfx::RRectF BackdropFilterBounds(const FloatRect& reference_box) const;
+  gfx::RRectF BackdropFilterBounds() const;
 
   void UpdateFilterReferenceBox();
   void UpdateFilters(const ComputedStyle* old_style,

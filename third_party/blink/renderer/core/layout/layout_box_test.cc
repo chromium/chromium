@@ -1758,4 +1758,20 @@ TEST_P(LayoutBoxTest, HasReflection) {
   check_has_layer_and_reflection("svg-text", false);
 }
 
+TEST_P(LayoutBoxTest, PhysicalVisualOverflowRectIncludingFilters) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="zoom: 2">
+      <div id="target" style="filter: blur(2px); width: 100px; height: 100px">
+        <!-- An overflowing self-painting child -->
+        <div style="position: relative; height: 200px"></div>
+      </div>
+    </div>
+  )HTML");
+
+  // 12: blur(2) * blur-extent-ratio(3) * zoom(2)
+  EXPECT_EQ(PhysicalRect(-12, -12, 224, 424),
+            GetLayoutBoxByElementId("target")
+                ->PhysicalVisualOverflowRectIncludingFilters());
+}
+
 }  // namespace blink

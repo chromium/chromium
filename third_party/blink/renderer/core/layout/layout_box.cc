@@ -2376,10 +2376,15 @@ bool LayoutBox::MayIntersect(const HitTestResult& result,
       HitTestRequest::kHitTestVisualOverflow) {
     overflow_box = PhysicalVisualOverflowRectIncludingFilters();
   } else {
-    // Unite because overflow may not include borders.
     overflow_box = PhysicalBorderBoxRect();
-    if (!ShouldClipOverflowAlongBothAxis() && HasVisualOverflow())
+    if (!ShouldClipOverflowAlongBothAxis() && HasVisualOverflow()) {
+      // PhysicalVisualOverflowRect is an approximation of
+      // PhsyicalLayoutOverflowRect excluding self-painting descendants (which
+      // hit test by themselves), with false-positive (which won't cause any
+      // functional issues) when the point is only in visual overflow, but
+      // excluding self-painting descendants is more important for performance.
       overflow_box.Unite(PhysicalVisualOverflowRect());
+    }
   }
 
   overflow_box.Move(accumulated_offset);
@@ -7067,10 +7072,10 @@ PhysicalRect LayoutBox::PhysicalVisualOverflowRectIncludingFilters() const {
   PhysicalRect bounds_rect = PhysicalVisualOverflowRect();
   if (!StyleRef().HasFilter())
     return bounds_rect;
-  FloatRect float_rect = Layer()->MapRectForFilter(FloatRect(bounds_rect));
+  FloatRect float_rect(bounds_rect);
   float_rect.UniteIfNonZero(Layer()->FilterReferenceBox());
-  bounds_rect = PhysicalRect::EnclosingRect(float_rect);
-  return bounds_rect;
+  float_rect = Layer()->MapRectForFilter(float_rect);
+  return PhysicalRect::EnclosingRect(float_rect);
 }
 
 bool LayoutBox::HasTopOverflow() const {
