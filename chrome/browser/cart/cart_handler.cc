@@ -76,8 +76,10 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
     }
     carts.push_back(std::move(cart));
   }
+  if (carts.size() > 0) {
+    cart_service_->IncreaseWelcomeSurfaceCounter();
+  }
   std::move(callback).Run(std::move(carts));
-  cart_service_->IncreaseWelcomeSurfaceCounter();
 }
 
 void CartHandler::GetWarmWelcomeVisible(
