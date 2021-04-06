@@ -79,6 +79,7 @@ import org.chromium.base.BuildConfig;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.MathUtils;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.SysUtils;
@@ -1226,8 +1227,8 @@ public class InstantStartTest {
             "force-fieldtrials=Study/Group",
             IMMEDIATE_RETURN_PARAMS +
                     "/start_surface_variation/single" +
-                    "/exclude_mv_tiles/true" +
-                    "/thumbnail_aspect_ratio/1"})
+                    "/exclude_mv_tiles/true"})
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.P, message = "crbug.com/1177555")
     @DisableIf.Build(supported_abis_includes = "x86", message = "crbug.com/1177555")
     public void testSingleAsHomepage_Landscape_TabSize() throws IOException{
         // clang-format on
@@ -1270,7 +1271,10 @@ public class InstantStartTest {
         onViewWaiting(allOf(withId(R.id.tab_thumbnail), isDisplayed()));
 
         View tabThumbnail = mActivityTestRule.getActivity().findViewById(R.id.tab_thumbnail);
-        assertEquals(tabThumbnail.getMeasuredHeight(), tabThumbnail.getMeasuredWidth());
+        float defaultRatio = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
+        defaultRatio = MathUtils.clamp(defaultRatio, 0.5f, 2.0f);
+        assertEquals(tabThumbnail.getMeasuredHeight(),
+                (int) (tabThumbnail.getMeasuredWidth() * 1.0 / defaultRatio), 2);
     }
 
     private void pressHomePageButton() {
