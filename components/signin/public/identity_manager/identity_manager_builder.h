@@ -81,6 +81,8 @@ struct IdentityManagerBuildParams {
 #if defined(OS_WIN)
   base::RepeatingCallback<bool()> reauth_callback;
 #endif
+
+  bool allow_access_token_fetch = true;
 };
 
 // Builds all required dependencies to initialize the IdentityManager instance.

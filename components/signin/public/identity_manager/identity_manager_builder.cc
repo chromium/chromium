@@ -175,6 +175,7 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
   init_params.ash_account_manager = params->account_manager;
 #endif
 
+  init_params.allow_access_token_fetch = params->allow_access_token_fetch;
   return init_params;
 }
 

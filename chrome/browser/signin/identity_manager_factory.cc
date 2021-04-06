@@ -125,6 +125,9 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
       chromeos::ProfileHelper::IsRegularProfile(profile);
 #endif
 
+  // Ephemeral Guest profiles are not supposed to fetch Dice access tokens.
+  params.allow_access_token_fetch = !profile->IsEphemeralGuestProfile();
+
 #if defined(OS_WIN)
   params.reauth_callback =
       base::BindRepeating(&signin_util::ReauthWithCredentialProviderIfPossible,

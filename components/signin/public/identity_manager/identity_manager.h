@@ -379,6 +379,8 @@ class IdentityManager : public KeyedService,
     ash::AccountManager* ash_account_manager = nullptr;
 #endif
 
+    bool allow_access_token_fetch = true;
+
     InitParameters();
     InitParameters(InitParameters&&);
     ~InitParameters();
@@ -689,6 +691,7 @@ class IdentityManager : public KeyedService,
   ash::AccountManager* ash_account_manager_ = nullptr;
 #endif
 
+  const bool allow_access_token_fetch_;
   DISALLOW_COPY_AND_ASSIGN(IdentityManager);
 };
 
