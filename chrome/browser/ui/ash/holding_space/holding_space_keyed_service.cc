@@ -216,6 +216,11 @@ std::vector<GURL> HoldingSpaceKeyedService::GetPinnedFiles() const {
 
 void HoldingSpaceKeyedService::AddScreenshot(
     const base::FilePath& screenshot_file) {
+  const bool already_exists = holding_space_model_.ContainsItem(
+      HoldingSpaceItem::Type::kScreenshot, screenshot_file);
+  if (already_exists)
+    return;
+
   GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile_, screenshot_file);
   if (file_system_url.is_empty())
@@ -262,6 +267,11 @@ void HoldingSpaceKeyedService::AddNearbyShare(
 
 void HoldingSpaceKeyedService::AddScreenRecording(
     const base::FilePath& screen_recording_file) {
+  const bool already_exists = holding_space_model_.ContainsItem(
+      HoldingSpaceItem::Type::kScreenRecording, screen_recording_file);
+  if (already_exists)
+    return;
+
   GURL file_system_url =
       holding_space_util::ResolveFileSystemUrl(profile_, screen_recording_file);
   if (file_system_url.is_empty())

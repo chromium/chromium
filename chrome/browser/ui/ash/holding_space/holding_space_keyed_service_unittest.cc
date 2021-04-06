@@ -528,6 +528,15 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenshotItem) {
             GetVirtualPathFromUrl(item_2->file_system_url(),
                                   downloads_mount->name()));
   EXPECT_EQ(u"Screenshot 2.png", item_2->text());
+
+  // Attempt to add an already added screenshot to the model.
+  EXPECT_EQ(model->items()[1]->file_path(), item_2_full_path);
+  holding_space_service->AddScreenshot(item_2_full_path);
+
+  // Attempts to add already added screenshots should be ignored.
+  ASSERT_EQ(model->items().size(), 2u);
+  EXPECT_EQ(model->items()[0].get(), item_1);
+  EXPECT_EQ(model->items()[1].get(), item_2);
 }
 
 TEST_F(HoldingSpaceKeyedServiceTest, GuestUserProfile) {
@@ -1818,6 +1827,15 @@ TEST_F(HoldingSpaceKeyedServiceTest, AddScreenRecordingItem) {
   holding_space_service->AddScreenRecording(item_3_full_path);
 
   ASSERT_EQ(2u, model->items().size());
+
+  // Attempt to add an already added screen capture to the model.
+  EXPECT_EQ(model->items()[1]->file_path(), item_2_full_path);
+  holding_space_service->AddScreenRecording(item_2_full_path);
+
+  // Attempts to add already added screen capture should be ignored.
+  ASSERT_EQ(model->items().size(), 2u);
+  EXPECT_EQ(model->items()[0].get(), item_1);
+  EXPECT_EQ(model->items()[1].get(), item_2);
 }
 
 }  // namespace ash
