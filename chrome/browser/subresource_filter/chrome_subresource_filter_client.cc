@@ -12,7 +12,6 @@
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 
 #if defined(OS_ANDROID)
@@ -23,11 +22,6 @@ ChromeSubresourceFilterClient::ChromeSubresourceFilterClient(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
   DCHECK(web_contents_);
-  profile_interaction_manager_ =
-      std::make_unique<subresource_filter::ProfileInteractionManager>(
-          web_contents,
-          SubresourceFilterProfileContextFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext())));
 }
 
 ChromeSubresourceFilterClient::~ChromeSubresourceFilterClient() = default;
@@ -44,6 +38,8 @@ void ChromeSubresourceFilterClient::
       CreateForWebContents(
           web_contents,
           std::make_unique<ChromeSubresourceFilterClient>(web_contents),
+          SubresourceFilterProfileContextFactory::GetForProfile(
+              Profile::FromBrowserContext(web_contents->GetBrowserContext())),
           dealer);
 }
 
@@ -61,9 +57,4 @@ ChromeSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
       g_browser_process->safe_browsing_service();
   return safe_browsing_service ? safe_browsing_service->database_manager()
                                : nullptr;
-}
-
-subresource_filter::ProfileInteractionManager*
-ChromeSubresourceFilterClient::GetProfileInteractionManager() {
-  return profile_interaction_manager_.get();
 }

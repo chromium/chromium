@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
-#include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
@@ -55,12 +54,7 @@ SubresourceFilterClientImpl::SubresourceFilterClientImpl(
 #if defined(OS_ANDROID)
       web_contents_(web_contents),
 #endif
-      database_manager_(GetDatabaseManagerFromSafeBrowsingService()),
-      profile_interaction_manager_(
-          std::make_unique<subresource_filter::ProfileInteractionManager>(
-              web_contents,
-              SubresourceFilterProfileContextFactory::GetForBrowserContext(
-                  web_contents->GetBrowserContext()))) {
+      database_manager_(GetDatabaseManagerFromSafeBrowsingService()) {
 }
 
 SubresourceFilterClientImpl::~SubresourceFilterClientImpl() = default;
@@ -75,7 +69,10 @@ void SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
   subresource_filter::ContentSubresourceFilterThrottleManager::
       CreateForWebContents(
           web_contents,
-          std::make_unique<SubresourceFilterClientImpl>(web_contents), dealer);
+          std::make_unique<SubresourceFilterClientImpl>(web_contents),
+          SubresourceFilterProfileContextFactory::GetForBrowserContext(
+              web_contents->GetBrowserContext()),
+          dealer);
 }
 
 void SubresourceFilterClientImpl::ShowNotification() {
@@ -88,11 +85,6 @@ void SubresourceFilterClientImpl::ShowNotification() {
 const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 SubresourceFilterClientImpl::GetSafeBrowsingDatabaseManager() {
   return database_manager_;
-}
-
-subresource_filter::ProfileInteractionManager*
-SubresourceFilterClientImpl::GetProfileInteractionManager() {
-  return profile_interaction_manager_.get();
 }
 
 }  // namespace weblayer

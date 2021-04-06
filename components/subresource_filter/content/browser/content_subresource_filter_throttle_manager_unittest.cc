@@ -207,8 +207,8 @@ class ContentSubresourceFilterThrottleManagerTest
     client_->SetShouldUseSmartUI(false);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
-            std::move(subresource_filter_client), dealer_handle_.get(),
-            web_contents);
+            std::move(subresource_filter_client), client_->profile_context(),
+            dealer_handle_.get(), web_contents);
 
     Observe(web_contents);
   }
@@ -803,6 +803,10 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
                 web_contents.get()),
             nullptr);
 
+  auto client =
+      std::make_unique<TestSubresourceFilterClient>(web_contents.get());
+  SubresourceFilterProfileContext* profile_context = client->profile_context();
+
   {
     base::test::ScopedFeatureList scoped_feature;
     scoped_feature.InitAndDisableFeature(kSafeBrowsingSubresourceFilter);
@@ -810,8 +814,7 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
     // CreateForWebContents() should not do anything if the subresource filter
     // feature is not enabled.
     ContentSubresourceFilterThrottleManager::CreateForWebContents(
-        web_contents.get(),
-        std::make_unique<TestSubresourceFilterClient>(web_contents.get()),
+        web_contents.get(), std::move(client), profile_context,
         dealer_handle());
     EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                   web_contents.get()),
@@ -820,20 +823,20 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
 
   // If the subresource filter feature is enabled (as it is by default),
   // CreateForWebContents() should create and attach an instance.
+  client = std::make_unique<TestSubresourceFilterClient>(web_contents.get());
+  profile_context = client->profile_context();
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents.get(),
-      std::make_unique<TestSubresourceFilterClient>(web_contents.get()),
-      dealer_handle());
+      web_contents.get(), std::move(client), profile_context, dealer_handle());
   auto* throttle_manager =
       ContentSubresourceFilterThrottleManager::FromWebContents(
           web_contents.get());
   EXPECT_NE(throttle_manager, nullptr);
 
   // A second call should not attach a different instance.
+  client = std::make_unique<TestSubresourceFilterClient>(web_contents.get());
+  profile_context = client->profile_context();
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents.get(),
-      std::make_unique<TestSubresourceFilterClient>(web_contents.get()),
-      dealer_handle());
+      web_contents.get(), std::move(client), profile_context, dealer_handle());
   EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                 web_contents.get()),
             throttle_manager);

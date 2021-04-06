@@ -90,7 +90,7 @@ void SubresourceFilterTestHarness::SetUp() {
   client_ = client.get();
   client_->CreateSafeBrowsingDatabaseManager();
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents(), std::move(client), dealer);
+      web_contents(), std::move(client), client_->profile_context(), dealer);
 
   // Observe web_contents() to add subresource filter navigation throttles at
   // the start of navigations.

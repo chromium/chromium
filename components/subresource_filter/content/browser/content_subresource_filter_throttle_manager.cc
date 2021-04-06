@@ -90,6 +90,7 @@ const char ContentSubresourceFilterThrottleManager::
 void ContentSubresourceFilterThrottleManager::CreateForWebContents(
     content::WebContents* web_contents,
     std::unique_ptr<SubresourceFilterClient> client,
+    SubresourceFilterProfileContext* profile_context,
     VerifiedRulesetDealer::Handle* dealer_handle) {
   if (!base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter))
     return;
@@ -100,7 +101,7 @@ void ContentSubresourceFilterThrottleManager::CreateForWebContents(
   web_contents->SetUserData(
       kContentSubresourceFilterThrottleManagerWebContentsUserDataKey,
       std::make_unique<ContentSubresourceFilterThrottleManager>(
-          std::move(client), dealer_handle, web_contents));
+          std::move(client), profile_context, dealer_handle, web_contents));
 }
 
 // static
@@ -124,12 +125,17 @@ ContentSubresourceFilterThrottleManager::FromWebContents(
 ContentSubresourceFilterThrottleManager::
     ContentSubresourceFilterThrottleManager(
         std::unique_ptr<SubresourceFilterClient> client,
+        SubresourceFilterProfileContext* profile_context,
         VerifiedRulesetDealer::Handle* dealer_handle,
         content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       receiver_(web_contents, this),
       dealer_handle_(dealer_handle),
-      client_(std::move(client)) {
+      client_(std::move(client)),
+      profile_interaction_manager_(
+          std::make_unique<subresource_filter::ProfileInteractionManager>(
+              web_contents,
+              profile_context)) {
   SubresourceFilterObserverManager::CreateForWebContents(web_contents);
   scoped_observation_.Observe(
       SubresourceFilterObserverManager::FromWebContents(web_contents));
@@ -479,7 +485,7 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
       client_->GetSafeBrowsingDatabaseManager()) {
     throttles->push_back(
         std::make_unique<SubresourceFilterSafeBrowsingActivationThrottle>(
-            navigation_handle, client_->GetProfileInteractionManager(),
+            navigation_handle, profile_interaction_manager_.get(),
             content::GetIOThreadTaskRunner({}),
             client_->GetSafeBrowsingDatabaseManager()));
   }
@@ -519,19 +525,14 @@ ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
 }
 
 void ContentSubresourceFilterThrottleManager::OnReloadRequested() {
-  if (auto* profile_interaction_manager =
-          client_->GetProfileInteractionManager())
-    profile_interaction_manager->OnReloadRequested();
+  profile_interaction_manager_->OnReloadRequested();
 }
 
 void ContentSubresourceFilterThrottleManager::OnAdsViolationTriggered(
     content::RenderFrameHost* rfh,
     mojom::AdsViolation triggered_violation) {
-  if (auto* profile_interaction_manager =
-          client_->GetProfileInteractionManager()) {
-    profile_interaction_manager->OnAdsViolationTriggered(rfh,
-                                                         triggered_violation);
-  }
+  profile_interaction_manager_->OnAdsViolationTriggered(rfh,
+                                                        triggered_violation);
 }
 
 // static
@@ -624,10 +625,7 @@ void ContentSubresourceFilterThrottleManager::MaybeShowNotification() {
     return;
   }
 
-  if (auto* profile_interaction_manager =
-          client_->GetProfileInteractionManager()) {
-    profile_interaction_manager->MaybeShowNotification(client_.get());
-  }
+  profile_interaction_manager_->MaybeShowNotification(client_.get());
 
   current_committed_load_has_notified_disallowed_load_ = true;
 }

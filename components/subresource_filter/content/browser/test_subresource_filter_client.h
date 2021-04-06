@@ -21,7 +21,6 @@ class WebContents;
 namespace subresource_filter {
 
 class SubresourceFilterProfileContext;
-class ProfileInteractionManager;
 
 // An implementation of SubresourceFilterClient suitable for use in unittests.
 class TestSubresourceFilterClient : public SubresourceFilterClient {
@@ -33,8 +32,6 @@ class TestSubresourceFilterClient : public SubresourceFilterClient {
   void ShowNotification() override;
   const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() override;
-  subresource_filter::ProfileInteractionManager* GetProfileInteractionManager()
-      override;
 
   // GetSafeBrowsingDatabaseManager() returns null by default. Invoke this
   // method to change that behavior.
@@ -62,7 +59,6 @@ class TestSubresourceFilterClient : public SubresourceFilterClient {
   sync_preferences::TestingPrefServiceSyncable prefs_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<SubresourceFilterProfileContext> profile_context_;
-  std::unique_ptr<ProfileInteractionManager> profile_interaction_manager_;
 
   int disallowed_notification_count_ = 0;
 };

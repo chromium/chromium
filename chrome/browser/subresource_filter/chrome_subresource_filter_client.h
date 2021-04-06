@@ -36,17 +36,12 @@ class ChromeSubresourceFilterClient
   void ShowNotification() override;
   const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
   GetSafeBrowsingDatabaseManager() override;
-  subresource_filter::ProfileInteractionManager* GetProfileInteractionManager()
-      override;
 
  private:
   content::WebContents* web_contents_;
 
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
-
-  std::unique_ptr<subresource_filter::ProfileInteractionManager>
-      profile_interaction_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeSubresourceFilterClient);
 };

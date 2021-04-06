@@ -8,7 +8,6 @@
 #include "components/content_settings/browser/test_page_specific_content_settings_delegate.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/safe_browsing/core/db/database_manager.h"
-#include "components/subresource_filter/content/browser/profile_interaction_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
 
@@ -31,9 +30,6 @@ TestSubresourceFilterClient::TestSubresourceFilterClient(
       std::make_unique<
           content_settings::TestPageSpecificContentSettingsDelegate>(
           /*prefs=*/nullptr, settings_map_.get()));
-
-  profile_interaction_manager_ = std::make_unique<ProfileInteractionManager>(
-      web_contents, profile_context_.get());
 }
 
 TestSubresourceFilterClient::~TestSubresourceFilterClient() {
@@ -47,11 +43,6 @@ void TestSubresourceFilterClient::ShowNotification() {
 const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
 TestSubresourceFilterClient::GetSafeBrowsingDatabaseManager() {
   return database_manager_;
-}
-
-subresource_filter::ProfileInteractionManager*
-TestSubresourceFilterClient::GetProfileInteractionManager() {
-  return profile_interaction_manager_.get();
 }
 
 void TestSubresourceFilterClient::CreateSafeBrowsingDatabaseManager() {

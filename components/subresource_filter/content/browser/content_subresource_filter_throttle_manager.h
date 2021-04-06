@@ -38,6 +38,8 @@ namespace subresource_filter {
 class AsyncDocumentSubresourceFilter;
 class ActivationStateComputingNavigationThrottle;
 class PageLoadStatistics;
+class ProfileInteractionManager;
+class SubresourceFilterProfileContext;
 class SubresourceFilterClient;
 
 // This enum backs a histogram. Make sure new elements are only added to the
@@ -94,6 +96,7 @@ class ContentSubresourceFilterThrottleManager
   static void CreateForWebContents(
       content::WebContents* web_contents,
       std::unique_ptr<SubresourceFilterClient> client,
+      SubresourceFilterProfileContext* profile_context,
       VerifiedRulesetDealer::Handle* dealer_handle);
 
   static ContentSubresourceFilterThrottleManager* FromWebContents(
@@ -103,6 +106,7 @@ class ContentSubresourceFilterThrottleManager
 
   ContentSubresourceFilterThrottleManager(
       std::unique_ptr<SubresourceFilterClient> client,
+      SubresourceFilterProfileContext* profile_context,
       VerifiedRulesetDealer::Handle* dealer_handle,
       content::WebContents* web_contents);
   ~ContentSubresourceFilterThrottleManager() override;
@@ -315,6 +319,8 @@ class ContentSubresourceFilterThrottleManager
   VerifiedRulesetDealer::Handle* dealer_handle_;
 
   std::unique_ptr<SubresourceFilterClient> client_;
+
+  std::unique_ptr<ProfileInteractionManager> profile_interaction_manager_;
 
   base::WeakPtrFactory<ContentSubresourceFilterThrottleManager>
       weak_ptr_factory_{this};

@@ -166,8 +166,8 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
     client_ = subresource_filter_client.get();
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
-            std::move(subresource_filter_client), ruleset_dealer_.get(),
-            contents);
+            std::move(subresource_filter_client), client_->profile_context(),
+            ruleset_dealer_.get(), contents);
     fake_safe_browsing_database_ = new FakeSafeBrowsingDatabaseManager();
     NavigateAndCommit(GURL("https://test.com"));
     Observe(contents);
