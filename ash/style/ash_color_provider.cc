@@ -157,6 +157,9 @@ void AshColorProvider::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void AshColorProvider::OnActiveUserPrefServiceChanged(PrefService* prefs) {
+  if (!features::IsDarkLightModeEnabled())
+    return;
+
   active_user_pref_service_ = prefs;
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(prefs);
