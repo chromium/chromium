@@ -102,6 +102,15 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
 
     return URLDataSource::GetContentSecurityPolicy(directive);
   }
+  std::string GetCrossOriginOpenerPolicy() override {
+    return parent_->coop_value_;
+  }
+  std::string GetCrossOriginEmbedderPolicy() override {
+    return parent_->coep_value_;
+  }
+  std::string GetCrossOriginResourcePolicy() override {
+    return parent_->corp_value_;
+  }
   bool ShouldDenyXFrameOptions() override {
     return parent_->deny_xframe_options_;
   }
@@ -219,6 +228,21 @@ void WebUIDataSourceImpl::OverrideContentSecurityPolicy(
     network::mojom::CSPDirectiveName directive,
     const std::string& value) {
   csp_overrides_.insert_or_assign(directive, value);
+}
+
+void WebUIDataSourceImpl::OverrideCrossOriginOpenerPolicy(
+    const std::string& value) {
+  coop_value_ = value;
+}
+
+void WebUIDataSourceImpl::OverrideCrossOriginEmbedderPolicy(
+    const std::string& value) {
+  coep_value_ = value;
+}
+
+void WebUIDataSourceImpl::OverrideCrossOriginResourcePolicy(
+    const std::string& value) {
+  corp_value_ = value;
 }
 
 void WebUIDataSourceImpl::DisableTrustedTypesCSP() {

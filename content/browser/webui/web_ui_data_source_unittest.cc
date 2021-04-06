@@ -403,4 +403,29 @@ TEST_F(WebUIDataSourceTest, SetCspValues) {
                     network::mojom::CSPDirectiveName::TrustedTypes));
 }
 
+TEST_F(WebUIDataSourceTest, SetCrossOriginPolicyValues) {
+  URLDataSource* url_data_source = source()->source();
+
+  // Default values.
+  EXPECT_EQ("", url_data_source->GetCrossOriginOpenerPolicy());
+  EXPECT_EQ("", url_data_source->GetCrossOriginEmbedderPolicy());
+  EXPECT_EQ("", url_data_source->GetCrossOriginResourcePolicy());
+
+  // Overridden values.
+  source()->OverrideCrossOriginOpenerPolicy("same-origin");
+  EXPECT_EQ("same-origin", url_data_source->GetCrossOriginOpenerPolicy());
+  source()->OverrideCrossOriginEmbedderPolicy("require-corp");
+  EXPECT_EQ("require-corp", url_data_source->GetCrossOriginEmbedderPolicy());
+  source()->OverrideCrossOriginResourcePolicy("cross-origin");
+  EXPECT_EQ("cross-origin", url_data_source->GetCrossOriginResourcePolicy());
+
+  // Remove/change the values.
+  source()->OverrideCrossOriginOpenerPolicy("same-site");
+  EXPECT_EQ("same-site", url_data_source->GetCrossOriginOpenerPolicy());
+  source()->OverrideCrossOriginEmbedderPolicy("");
+  EXPECT_EQ("", url_data_source->GetCrossOriginEmbedderPolicy());
+  source()->OverrideCrossOriginResourcePolicy("same-origin");
+  EXPECT_EQ("same-origin", url_data_source->GetCrossOriginResourcePolicy());
+}
+
 }  // namespace content

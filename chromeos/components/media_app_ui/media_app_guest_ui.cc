@@ -80,6 +80,13 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
       network::mojom::CSPDirectiveName::ConnectSrc,
       "connect-src 'self' https://maps.googleapis.com/maps/api/geocode/json;");
 
+  // Allow use of SharedArrayBuffer (required by the wasm).
+  source->OverrideCrossOriginOpenerPolicy("same-origin");
+  source->OverrideCrossOriginEmbedderPolicy("require-corp");
+  // chrome://media-app and chrome-untrusted://media-app are different origins,
+  // so allow resources in the guest to be loaded cross-origin.
+  source->OverrideCrossOriginResourcePolicy("cross-origin");
+
   // TODO(crbug.com/1098685): Trusted Type remaining WebUI.
   source->DisableTrustedTypesCSP();
   return source;

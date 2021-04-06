@@ -99,6 +99,13 @@ class CONTENT_EXPORT URLDataSource {
   virtual std::string GetContentSecurityPolicy(
       network::mojom::CSPDirectiveName directive);
 
+  // By default, neither of these headers are set. Override to change this.
+  // TODO(https://crbug.com/1189194): Consider setting COOP:same-origin and
+  // COEP:require-corp as the default instead.
+  virtual std::string GetCrossOriginOpenerPolicy();
+  virtual std::string GetCrossOriginEmbedderPolicy();
+  virtual std::string GetCrossOriginResourcePolicy();
+
   // By default, the "X-Frame-Options: DENY" header is sent. To stop this from
   // happening, return false. It is OK to return false as needed.
   virtual bool ShouldDenyXFrameOptions();

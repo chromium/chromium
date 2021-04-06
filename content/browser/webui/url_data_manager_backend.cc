@@ -54,6 +54,13 @@ const char kChromeURLContentSecurityPolicyReportOnlyHeaderName[] =
 const char kChromeURLContentSecurityPolicyReportOnlyHeaderValue[] =
     "require-trusted-types-for 'script'";
 
+const char kChromeURLCrossOriginOpenerPolicyName[] =
+    "Cross-Origin-Opener-Policy";
+const char kChromeURLCrossOriginEmbedderPolicyName[] =
+    "Cross-Origin-Embedder-Policy";
+const char kChromeURLCrossOriginResourcePolicyName[] =
+    "Cross-Origin-Resource-Policy";
+
 const char kChromeURLXFrameOptionsHeaderName[] = "X-Frame-Options";
 const char kChromeURLXFrameOptionsHeaderValue[] = "DENY";
 const char kNetworkErrorKey[] = "netError";
@@ -201,6 +208,19 @@ scoped_refptr<net::HttpResponseHeaders> URLDataManagerBackend::GetHeaders(
   std::string mime_type = source->GetMimeType(path);
   if (source->ShouldServeMimeTypeAsContentTypeHeader() && !mime_type.empty())
     headers->SetHeader(net::HttpRequestHeaders::kContentType, mime_type);
+
+  const std::string coop_value = source->GetCrossOriginOpenerPolicy();
+  if (!coop_value.empty()) {
+    headers->SetHeader(kChromeURLCrossOriginOpenerPolicyName, coop_value);
+  }
+  const std::string coep_value = source->GetCrossOriginEmbedderPolicy();
+  if (!coep_value.empty()) {
+    headers->SetHeader(kChromeURLCrossOriginEmbedderPolicyName, coep_value);
+  }
+  const std::string corp_value = source->GetCrossOriginResourcePolicy();
+  if (!corp_value.empty()) {
+    headers->SetHeader(kChromeURLCrossOriginResourcePolicyName, corp_value);
+  }
 
   if (!origin.empty()) {
     std::string header = source->GetAccessControlAllowOriginForOrigin(origin);

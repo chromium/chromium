@@ -137,6 +137,11 @@ class WebUIDataSource {
       network::mojom::CSPDirectiveName directive,
       const std::string& value) = 0;
 
+  // Adds cross origin opener, embedder, and resource policy headers.
+  virtual void OverrideCrossOriginOpenerPolicy(const std::string& value) = 0;
+  virtual void OverrideCrossOriginEmbedderPolicy(const std::string& value) = 0;
+  virtual void OverrideCrossOriginResourcePolicy(const std::string& value) = 0;
+
   // Removes directives related to Trusted Types from the CSP header.
   virtual void DisableTrustedTypesCSP() = 0;
 
