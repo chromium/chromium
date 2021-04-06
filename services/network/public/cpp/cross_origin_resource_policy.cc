@@ -153,11 +153,17 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
     return base::nullopt;
   }
 
+  bool require_corp =
+      embedder_policy == mojom::CrossOriginEmbedderPolicyValue::kRequireCorp ||
+      (embedder_policy ==
+           mojom::CrossOriginEmbedderPolicyValue::kCorsOrCredentialless &&
+       request_mode == mojom::RequestMode::kNavigate);
+
   // COEP https://mikewest.github.io/corpp/#corp-check
   bool upgrade_to_same_origin = false;
   if ((policy == CrossOriginResourcePolicy::kNoHeader ||
        policy == CrossOriginResourcePolicy::kParsingError) &&
-      embedder_policy == mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
+      require_corp) {
     policy = CrossOriginResourcePolicy::kSameOrigin;
     upgrade_to_same_origin = true;
   }
