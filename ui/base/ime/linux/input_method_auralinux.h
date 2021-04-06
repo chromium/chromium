@@ -49,6 +49,14 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
                                 TextInputClient* focused) override;
 
  private:
+  enum class CommitResult {
+    kSuccess,          // Successfully committed at least one character.
+    kNoCommitString,   // No available string to commit.
+    kTargetDestroyed,  // Target was destroyed during the commit.
+  };
+  CommitResult MaybeCommitResult(bool filtered, const KeyEvent& event);
+  bool MaybeUpdateComposition();
+
   void ConfirmCompositionText();
   bool HasInputMethodResult();
   bool NeedInsertChar() const;
@@ -57,13 +65,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) InputMethodAuraLinux
   void UpdateContextFocusState();
   void ResetContext();
   bool IgnoringNonKeyInput() const;
-
-  // Processes the key event after the event is processed by the system IME or
-  // the extension.
-  ui::EventDispatchDetails ProcessKeyEventDone(ui::KeyEvent* event,
-                                               bool filtered,
-                                               bool is_handled)
-      WARN_UNUSED_RESULT;
 
   std::unique_ptr<LinuxInputMethodContext> context_;
   std::unique_ptr<LinuxInputMethodContext> context_simple_;

@@ -14,7 +14,17 @@
 
 namespace {
 
-const int kIgnoreCommitsDurationInMilliseconds = 100;
+constexpr base::TimeDelta kIgnoreCommitsDuration =
+    base::TimeDelta::FromMilliseconds(100);
+
+bool IsEventFromVK(const ui::KeyEvent& event) {
+  if (event.HasNativeEvent())
+    return false;
+
+  const auto* properties = event.properties();
+  return properties &&
+         properties->find(ui::kPropertyFromVK) != properties->end();
+}
 
 }  // namespace
 
@@ -55,9 +65,7 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
   if (!GetTextInputClient())
     return DispatchKeyEventPostIME(event);
 
-  auto* properties = event->properties();
-  if (!event->HasNativeEvent() && properties &&
-      properties->find(ui::kPropertyFromVK) != properties->end()) {
+  if (IsEventFromVK(*event)) {
     // Faked key events that are sent from input.ime.sendKeyEvents.
     ui::EventDispatchDetails details = DispatchKeyEventPostIME(event);
     if (details.dispatcher_destroyed || details.target_destroyed ||
@@ -71,42 +79,66 @@ ui::EventDispatchDetails InputMethodAuraLinux::DispatchKeyEvent(
     return details;
   }
 
-  suppress_non_key_input_until_ = base::TimeTicks::UnixEpoch();
-  composition_changed_ = false;
-  result_text_.clear();
-
+  // Forward key event to IME.
   bool filtered = false;
   {
+    suppress_non_key_input_until_ = base::TimeTicks::UnixEpoch();
+    composition_changed_ = false;
+    result_text_.clear();
+    LinuxInputMethodContext* context =
+        text_input_type_ != TEXT_INPUT_TYPE_NONE &&
+                text_input_type_ != TEXT_INPUT_TYPE_PASSWORD
+            ? context_.get()
+            : context_simple_.get();
     base::AutoReset<bool> flipper(&is_sync_mode_, true);
-    if (text_input_type_ != TEXT_INPUT_TYPE_NONE &&
-        text_input_type_ != TEXT_INPUT_TYPE_PASSWORD) {
-      filtered = context_->DispatchKeyEvent(*event);
-    } else {
-      filtered = context_simple_->DispatchKeyEvent(*event);
-    }
+    filtered = context->DispatchKeyEvent(*event);
   }
 
-  return ProcessKeyEventDone(event, filtered, false);
-}
-
-ui::EventDispatchDetails InputMethodAuraLinux::ProcessKeyEventDone(
-    ui::KeyEvent* event,
-    bool filtered,
-    bool is_handled) {
-  DCHECK(event);
-  if (is_handled)
+  // There are four cases here. They are a pair of two conditions:
+  // - Whether KeyEvent is consumed by IME, which is represented by filtered.
+  // - Whether IME updates the commit/preedit string synchronously
+  //   (i.e. which is already completed here), or asynchronously (i.e. which
+  //   will be done afterwords, so not yet done).
+  //
+  // Note that there's a case that KeyEvent is reported as NOT consumed by IME,
+  // but IME still updates the commit/preedit. Please see below comment
+  // for more details.
+  //
+  // Conceptually, after IME's update, there're three things to be done.
+  // - Continue to dispatch the KeyEvent.
+  // - Update TextInputClient by using committed text.
+  // - Update TextInputClient by using preedit text.
+  // The following code does those three, except in the case that KeyEvent is
+  // consumed by IME and commit/preedit string update will happen
+  // asynchronously. The remaining case is covered in OnCommit and
+  // OnPreeditChanged/End.
+  if (filtered && !HasInputMethodResult() && !IsTextInputTypeNone())
     return ui::EventDispatchDetails();
 
-  // If the IME extension has not handled the key event, passes the keyevent
-  // back to the previous processing flow. Preconditions for this situation:
-  // 1) |filtered| == false
-  // 2) |filtered| == true && NeedInsertChar()
+  // First, if KeyEvent is consumed by IME, continue to dispatch it,
+  // before updating commit/preedit string so that, e.g., JavaScript keydown
+  // event is delivered to the page before keypress. In general, 229
+  // (VKEY_PROCESSKEY) should be used. However, in some IME framework, such as
+  // iBus/fcitx + GTK, the behavior is not simple as follows, in order to deal
+  // with synchronous API on asynchronous IME backend:
+  // - First, IM module reports the KeyEvent is filtered synchronously.
+  // - Then, it forwards the event to the IME engine asynchronously.
+  // - When IM module receives the result, and it turns out the event is not
+  //   consumed, then IM module generates the same key event (with a special
+  //   flag), and sent it to the application (Chrome in our case).
+  // - Then, the application forwards the event to IM module again, and in this
+  //   time IM module synchronously commit the character.
+  // (Note: new iBus GTK IMModule changed the behavior, so the second event
+  // dispatch to the application won't happen).
+  // InputMethodAuraLinux detects this case by the following condition:
+  // - If result text is only one character, and
+  // - there's no composing text, and no updated.
+  // If the condition meets, that means IME did not consume the key event
+  // conceptually, so continue to dispatch KeyEvent without overwriting by 229.
   ui::EventDispatchDetails details;
   if (event->type() == ui::ET_KEY_PRESSED && filtered) {
-    if (NeedInsertChar())
-      details = DispatchKeyEventPostIME(event);
-    else if (HasInputMethodResult())
-      details = SendFakeProcessKeyEvent(event);
+    details = NeedInsertChar() ? DispatchKeyEventPostIME(event)
+                               : SendFakeProcessKeyEvent(event);
     if (details.dispatcher_destroyed)
       return details;
     // If the KEYDOWN is stopped propagation (e.g. triggered an accelerator),
@@ -115,69 +147,27 @@ ui::EventDispatchDetails InputMethodAuraLinux::ProcessKeyEventDone(
       ResetContext();
       return details;
     }
-
-    // Don't send VKEY_PROCESSKEY event if there is no result text or
-    // composition. This is to workaround the weird behavior of IBus with US
-    // keyboard, which mutes the keydown and later fake a new keydown with IME
-    // result in sync mode. In that case, user would expect only
-    // keydown/keypress/keyup event without an initial 229 keydown event.
   }
 
-  bool should_stop_propagation = false;
-  // Note: |client| could be NULL because DispatchKeyEventPostIME could have
-  // changed the text input client.
-  TextInputClient* client = GetTextInputClient();
   // Processes the result text before composition for sync mode.
-  if (client && !result_text_.empty()) {
-    if (filtered && NeedInsertChar()) {
-      for (const auto ch : result_text_) {
-        ui::KeyEvent ch_event(*event);
-        ch_event.set_character(ch);
-        client->InsertChar(ch_event);
-        // If the client changes we assume that the original target has been
-        // destroyed.
-        if (client != GetTextInputClient()) {
-          details.target_destroyed = true;
-          event->StopPropagation();
-          return details;
-        }
-      }
-    } else {
-      // If |filtered| is false, that means the IME wants to commit some text
-      // but still release the key to the application. For example, Korean IME
-      // handles ENTER key to confirm its composition but still release it for
-      // the default behavior (e.g. trigger search, etc.)
-      // In such case, don't do InsertChar because a key should only trigger the
-      // keydown event once.
-      client->InsertText(
-          result_text_,
-          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
-      // If the client changes we assume that the original target has been
-      // destroyed.
-      if (client != GetTextInputClient()) {
-        details.target_destroyed = true;
-        event->StopPropagation();
-        return details;
-      }
-    }
-    should_stop_propagation = true;
+  const auto commit_result = MaybeCommitResult(filtered, *event);
+  if (commit_result == CommitResult::kTargetDestroyed) {
+    details.target_destroyed = true;
+    event->StopPropagation();
+    return details;
   }
+  // Stop the propagation if there's some committed characters.
+  // Note that this have to be done after the key event dispatching,
+  // specifically if key event is not reported as filtered.
+  bool should_stop_propagation = commit_result == CommitResult::kSuccess;
 
-  if (client && composition_changed_ && !IsTextInputTypeNone()) {
-    // If composition changed, does SetComposition if composition is not empty.
-    // And ClearComposition if composition is empty.
-    if (!composition_.text.empty())
-      client->SetCompositionText(composition_);
-    else if (result_text_.empty())
-      client->ClearCompositionText();
-    should_stop_propagation = true;
-  }
+  // Then update the composition, if necessary.
+  // Should stop propagation of the event when composition is updated,
+  // because the event is considered to be used for the composition.
+  should_stop_propagation |= MaybeUpdateComposition();
 
-  // Makes sure the cached composition is cleared after committing any text or
-  // cleared composition.
-  if (client && !client->HasCompositionText())
-    composition_ = CompositionText();
-
+  // If the IME has not handled the key event, passes the keyevent back to the
+  // previous processing flow.
   if (!filtered) {
     details = DispatchKeyEventPostIME(event);
     if (details.dispatcher_destroyed) {
@@ -207,6 +197,68 @@ ui::EventDispatchDetails InputMethodAuraLinux::ProcessKeyEventDone(
     event->StopPropagation();
 
   return details;
+}
+
+InputMethodAuraLinux::CommitResult InputMethodAuraLinux::MaybeCommitResult(
+    bool filtered,
+    const KeyEvent& event) {
+  // Note: |client| could be NULL because DispatchKeyEventPostIME could have
+  // changed the text input client.
+  TextInputClient* client = GetTextInputClient();
+  if (!client || result_text_.empty())
+    return CommitResult::kNoCommitString;
+
+  if (filtered && NeedInsertChar()) {
+    for (const auto ch : result_text_) {
+      ui::KeyEvent ch_event(event);
+      ch_event.set_character(ch);
+      client->InsertChar(ch_event);
+      // If the client changes we assume that the original target has been
+      // destroyed.
+      if (client != GetTextInputClient())
+        return CommitResult::kTargetDestroyed;
+    }
+  } else {
+    // If |filtered| is false, that means the IME wants to commit some text
+    // but still release the key to the application. For example, Korean IME
+    // handles ENTER key to confirm its composition but still release it for
+    // the default behavior (e.g. trigger search, etc.)
+    // In such case, don't do InsertChar because a key should only trigger the
+    // keydown event once.
+    client->InsertText(
+        result_text_,
+        ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+    // If the client changes we assume that the original target has been
+    // destroyed.
+    if (client != GetTextInputClient())
+      return CommitResult::kTargetDestroyed;
+  }
+
+  // Do not reset |result_text_| at this timing yet.
+  // It is referred on updating composition.
+
+  return CommitResult::kSuccess;
+}
+
+bool InputMethodAuraLinux::MaybeUpdateComposition() {
+  TextInputClient* client = GetTextInputClient();
+  bool update_composition =
+      client && composition_changed_ && !IsTextInputTypeNone();
+  if (update_composition) {
+    // If composition changed, does SetComposition if composition is not empty.
+    // And ClearComposition if composition is empty.
+    if (!composition_.text.empty())
+      client->SetCompositionText(composition_);
+    else if (result_text_.empty())
+      client->ClearCompositionText();
+  }
+
+  // Makes sure the cached composition is cleared after committing any text or
+  // cleared composition.
+  if (client && !client->HasCompositionText())
+    composition_ = CompositionText();
+
+  return update_composition;
 }
 
 void InputMethodAuraLinux::UpdateContextFocusState() {
@@ -270,8 +322,7 @@ void InputMethodAuraLinux::ResetContext() {
     // If the IME has an open composition, ignore non-synchronous attempts to
     // commit text for a brief duration of time.
     suppress_non_key_input_until_ =
-        base::TimeTicks::Now() +
-        base::TimeDelta::FromMilliseconds(kIgnoreCommitsDurationInMilliseconds);
+        base::TimeTicks::Now() + kIgnoreCommitsDuration;
   }
 
   context_->Reset();
