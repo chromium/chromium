@@ -611,6 +611,9 @@ void ProfilePickerView::SwitchToSignIn(
     // The profile is already created (the user went back and forth again). No
     // need to create it again.
     std::move(switch_finished_callback).Run(true);
+    // The color might be different for the second time (as the user could go to
+    // the local customization flow and change the color there) so update it.
+    sign_in_->profile_color = profile_color;
     // Do not load any url because the desired sign-in screen is still loaded in
     // `sign_in_->contents`.
     ShowScreen(sign_in_->contents.get(), GURL(),
