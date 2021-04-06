@@ -29,19 +29,14 @@ generate_grd("build_grdp") {
     "checkbox_white.png",
     "disabled_select.png",
     "error.svg",
+    "icon_copy_content.svg",
     "icon_search.svg",
     "icon_refresh.svg",
+    "open_in_new.svg",
     "select.png",
     "throbber_medium.svg",
     "throbber_small.svg",
   ]
-
-  if (!is_android) {
-    input_files += [
-      "icon_copy_content.svg",
-      "open_in_new.svg",
-    ]
-  }
 
   if (!is_android && !is_ios) {
     input_files += [
