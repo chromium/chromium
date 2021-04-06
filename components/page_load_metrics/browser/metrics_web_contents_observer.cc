@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -62,6 +63,18 @@ UserInitiatedInfo CreateUserInitiatedInfo(
   return UserInitiatedInfo::RenderInitiated(
       navigation_handle->HasUserGesture(),
       !navigation_handle->NavigationInputStart().is_null());
+}
+
+bool ShouldProcessNavigation(content::NavigationHandle* navigation_handle) {
+  if (!navigation_handle->IsInMainFrame())
+    return false;
+  // Ignore navigations not happening in the primary FrameTree. Using IsCurrent
+  // as a proxy for "is in primary FrameTree".
+  // TODO(https://crbug.com/1190112): Add proper support for prerendering when
+  // there are better content APIs.
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      navigation_handle->GetPreviousRenderFrameHostId());
+  return !rfh || rfh->IsCurrent();
 }
 
 }  // namespace
@@ -176,8 +189,11 @@ void MetricsWebContentsObserver::WillStartNavigationRequest(
   // WillStartNavigationRequest.
   DCHECK(!navigation_handle->IsSameDocument());
 
-  if (!navigation_handle->IsInMainFrame())
+  // TODO(https://crbug.com/1190112): Add support for Prerender
+  if (!ShouldProcessNavigation(navigation_handle)) {
+    uninteresting_loads_.insert(navigation_handle);
     return;
+  }
 
   WillStartNavigationRequestImpl(navigation_handle);
   has_navigated_ = true;
@@ -379,6 +395,8 @@ void MetricsWebContentsObserver::FrameSizeChanged(
 void MetricsWebContentsObserver::OnCookiesAccessed(
     content::NavigationHandle* navigation,
     const content::CookieAccessDetails& details) {
+  if (base::Contains(uninteresting_loads_, navigation))
+    return;
   OnCookiesAccessedImpl(details);
 }
 
@@ -442,12 +460,17 @@ MetricsWebContentsObserver::GetDelegateForCommittedLoad() {
 
 void MetricsWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (base::Contains(uninteresting_loads_, navigation_handle))
+    return;
   if (committed_load_)
     committed_load_->ReadyToCommitNavigation(navigation_handle);
 }
 
 void MetricsWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (uninteresting_loads_.erase(navigation_handle)) {
+    return;
+  }
   if (!navigation_handle->IsInMainFrame()) {
     if (committed_load_ && navigation_handle->GetParentFrame() &&
         navigation_handle->GetParentFrame()->GetMainFrame()->IsCurrent()) {
@@ -840,6 +863,7 @@ void MetricsWebContentsObserver::OnTimingUpdated(
   // from. We simply ignore them.
   // TODO(crbug.com/1061060): We should not ignore page timings if the page is
   // in bfcache.
+  // TODO(https://crbug.com/1190112): Add support for Prerender
   if (!render_frame_host->GetMainFrame()->IsCurrent()) {
     RecordInternalError(ERR_IPC_FROM_WRONG_FRAME);
     return;
@@ -903,6 +927,7 @@ void MetricsWebContentsObserver::UpdateTiming(
 
 void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(
     base::ReadOnlySharedMemoryRegion shared_memory) {
+  // TODO(https://crbug.com/1190112): Add support for Prerender
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receiver_.GetCurrentTargetFrame();
   const bool is_main_frame = render_frame_host->GetParent() == nullptr;

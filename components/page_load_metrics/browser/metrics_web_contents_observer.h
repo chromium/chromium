@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <queue>
+#include <set>
 #include <vector>
 
 #include "base/macros.h"
@@ -300,6 +301,14 @@ class MetricsWebContentsObserver
   // valid until commit time, when we remove it from the map.
   std::map<content::NavigationHandle*, std::unique_ptr<PageLoadTracker>>
       provisional_loads_;
+
+  // Loads we are not interested in tracking (e.g. because they are happening in
+  // the Prerender). Note that a sub frame navigation might start in the
+  // prerender but finish in the primary FrameTree so we need to remember
+  // somewhere that we are not interested in the navigation. Hence this member.
+  // TODO(https://crbug.com/1190112): Add proper support for prerendering when
+  // there are better content APIs
+  std::set<content::NavigationHandle*> uninteresting_loads_;
 
   // Tracks aborted provisional loads for a little bit longer than usual (one
   // more navigation commit at the max), in order to better understand how the

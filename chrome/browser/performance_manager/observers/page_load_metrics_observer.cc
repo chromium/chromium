@@ -301,8 +301,12 @@ void PageLoadMetricsWebContentsObserver::DidStopLoading() {
 
 void PageLoadMetricsWebContentsObserver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
+  // TODO(https://crbug.com/1190112): Using IsCurrent as a proxy for "is in
+  // primary FrameTree". Add support for Prerender.
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->GetRenderFrameHost()->IsCurrent()) {
     return;
+  }
 
   DCHECK(is_loading_);
 
