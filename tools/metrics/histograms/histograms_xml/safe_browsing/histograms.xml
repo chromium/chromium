@@ -40,6 +40,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name="StandardProtection" summary="standard protection"/>
 </variants>
 
+<variants name="RealTimeUrlCheckUserCategory">
+  <variant name="" summary="consumer or enterprise"/>
+  <variant name=".Consumer" summary="consumer"/>
+  <variant name=".Enterprise" summary="enterprise"/>
+</variants>
+
 <variants name="V4StoreNewFileNames">
   <variant name="CertCsdDownloadAllowlist"
       summary="certificate allowlist on downloads"/>
@@ -1203,6 +1209,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     lookup. Logged on each resource check for which a lookup request is sent to
     the server.
   </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.Request.ReferrerChainLength{UserCategory}"
+    units="units" expires_after="2022-04-02">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the length of the referrer chain in a {UserCategory} real time URL
+    check request. Logged on each resource check for which a lookup request is
+    sent to the server.
+  </summary>
+  <token key="UserCategory" variants="RealTimeUrlCheckUserCategory"/>
 </histogram>
 
 <histogram name="SafeBrowsing.RT.Request.Size" units="bytes"

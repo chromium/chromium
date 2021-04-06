@@ -343,6 +343,9 @@ void RealTimeUrlLookupServiceBase::SendRequest(
   RecordRequestPopulationWithAndWithoutSuffix(
       "SafeBrowsing.RT.Request.UserPopulation", GetMetricSuffix(),
       request->population().user_population());
+  RecordCount100WithAndWithoutSuffix(
+      "SafeBrowsing.RT.Request.ReferrerChainLength", GetMetricSuffix(),
+      request->referrer_chain().size());
   std::string req_data;
   request->SerializeToString(&req_data);
 
