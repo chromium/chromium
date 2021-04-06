@@ -24,15 +24,14 @@
 #if defined(OS_MAC)
 #include "media/gpu/mac/vt_video_decode_accelerator_mac.h"
 #endif
-#if BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_VAAPI)
+#include "media/gpu/vaapi/vaapi_video_decode_accelerator.h"
+#include "ui/gl/gl_implementation.h"
+#elif BUILDFLAG(USE_V4L2_CODEC)
 #include "media/gpu/v4l2/v4l2_device.h"
 #include "media/gpu/v4l2/v4l2_slice_video_decode_accelerator.h"
 #include "media/gpu/v4l2/v4l2_video_decode_accelerator.h"
 #include "ui/gl/gl_surface_egl.h"
-#endif
-#if BUILDFLAG(USE_VAAPI)
-#include "media/gpu/vaapi/vaapi_video_decode_accelerator.h"
-#include "ui/gl/gl_implementation.h"
 #endif
 
 namespace media {
@@ -58,19 +57,16 @@ gpu::VideoDecodeAcceleratorCapabilities GetDecoderCapabilitiesInternal(
       DXVAVideoDecodeAccelerator::GetSupportedProfiles(gpu_preferences,
                                                        workarounds);
 #elif BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
-  VideoDecodeAccelerator::SupportedProfiles vda_profiles;
-#if BUILDFLAG(USE_V4L2_CODEC)
-  vda_profiles = V4L2VideoDecodeAccelerator::GetSupportedProfiles();
-  GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
-      vda_profiles, &capabilities.supported_profiles);
-  vda_profiles = V4L2SliceVideoDecodeAccelerator::GetSupportedProfiles();
-  GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
-      vda_profiles, &capabilities.supported_profiles);
-#endif
 #if BUILDFLAG(USE_VAAPI)
-  vda_profiles = VaapiVideoDecodeAccelerator::GetSupportedProfiles(workarounds);
+  capabilities.supported_profiles =
+      VaapiVideoDecodeAccelerator::GetSupportedProfiles(workarounds);
+#elif BUILDFLAG(USE_V4L2_CODEC)
   GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
-      vda_profiles, &capabilities.supported_profiles);
+      V4L2VideoDecodeAccelerator::GetSupportedProfiles(),
+      &capabilities.supported_profiles);
+  GpuVideoAcceleratorUtil::InsertUniqueDecodeProfiles(
+      V4L2SliceVideoDecodeAccelerator::GetSupportedProfiles(),
+      &capabilities.supported_profiles);
 #endif
 #elif defined(OS_MAC)
   capabilities.supported_profiles =
@@ -142,15 +138,15 @@ GpuVideoDecodeAcceleratorFactory::CreateVDA(
 #if defined(OS_WIN)
     &GpuVideoDecodeAcceleratorFactory::CreateDXVAVDA,
 #endif
+
   // Usually only one of USE_VAAPI or USE_V4L2_CODEC is defined on ChromeOS,
   // except for Chromeboxes with companion video acceleration chips, which have
-  // both. In those cases prefer the V4L2 creation function.
-#if BUILDFLAG(USE_V4L2_CODEC)
-    &GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA,
-    &GpuVideoDecodeAcceleratorFactory::CreateV4L2SVDA,
-#endif
+  // both. In those cases prefer the VA creation function.
 #if BUILDFLAG(USE_VAAPI)
     &GpuVideoDecodeAcceleratorFactory::CreateVaapiVDA,
+#elif BUILDFLAG(USE_V4L2_CODEC)
+    &GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA,
+    &GpuVideoDecodeAcceleratorFactory::CreateV4L2SliceVDA,
 #endif
 
 #if defined(OS_MAC)
@@ -184,12 +180,23 @@ GpuVideoDecodeAcceleratorFactory::CreateDXVAVDA(
 }
 #endif
 
-#if BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_VAAPI)
+std::unique_ptr<VideoDecodeAccelerator>
+GpuVideoDecodeAcceleratorFactory::CreateVaapiVDA(
+    const gpu::GpuDriverBugWorkarounds& /*workarounds*/,
+    const gpu::GpuPreferences& /*gpu_preferences*/,
+    MediaLog* /*media_log*/) const {
+  std::unique_ptr<VideoDecodeAccelerator> decoder;
+  decoder.reset(new VaapiVideoDecodeAccelerator(gl_client_.make_context_current,
+                                                gl_client_.bind_image));
+  return decoder;
+}
+#elif BUILDFLAG(USE_V4L2_CODEC)
 std::unique_ptr<VideoDecodeAccelerator>
 GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA(
-    const gpu::GpuDriverBugWorkarounds& workarounds,
-    const gpu::GpuPreferences& gpu_preferences,
-    MediaLog* media_log) const {
+    const gpu::GpuDriverBugWorkarounds& /*workarounds*/,
+    const gpu::GpuPreferences& /*gpu_preferences*/,
+    MediaLog* /*media_log*/) const {
   std::unique_ptr<VideoDecodeAccelerator> decoder;
   scoped_refptr<V4L2Device> device = V4L2Device::Create();
   if (device.get()) {
@@ -201,10 +208,10 @@ GpuVideoDecodeAcceleratorFactory::CreateV4L2VDA(
 }
 
 std::unique_ptr<VideoDecodeAccelerator>
-GpuVideoDecodeAcceleratorFactory::CreateV4L2SVDA(
-    const gpu::GpuDriverBugWorkarounds& workarounds,
-    const gpu::GpuPreferences& gpu_preferences,
-    MediaLog* media_log) const {
+GpuVideoDecodeAcceleratorFactory::CreateV4L2SliceVDA(
+    const gpu::GpuDriverBugWorkarounds& /*workarounds*/,
+    const gpu::GpuPreferences& /*gpu_preferences*/,
+    MediaLog* /*media_log*/) const {
   std::unique_ptr<VideoDecodeAccelerator> decoder;
   scoped_refptr<V4L2Device> device = V4L2Device::Create();
   if (device.get()) {
@@ -212,19 +219,6 @@ GpuVideoDecodeAcceleratorFactory::CreateV4L2SVDA(
         device, gl::GLSurfaceEGL::GetHardwareDisplay(), gl_client_.bind_image,
         gl_client_.make_context_current));
   }
-  return decoder;
-}
-#endif
-
-#if BUILDFLAG(USE_VAAPI)
-std::unique_ptr<VideoDecodeAccelerator>
-GpuVideoDecodeAcceleratorFactory::CreateVaapiVDA(
-    const gpu::GpuDriverBugWorkarounds& workarounds,
-    const gpu::GpuPreferences& gpu_preferences,
-    MediaLog* media_log) const {
-  std::unique_ptr<VideoDecodeAccelerator> decoder;
-  decoder.reset(new VaapiVideoDecodeAccelerator(gl_client_.make_context_current,
-                                                gl_client_.bind_image));
   return decoder;
 }
 #endif
