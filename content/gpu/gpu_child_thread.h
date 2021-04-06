@@ -31,9 +31,7 @@
 #include "gpu/ipc/service/gpu_config.h"
 #include "gpu/ipc/service/x_util.h"
 #include "media/base/android_overlay_mojo_factory.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -62,19 +60,11 @@ class GpuChildThread : public ChildThreadImpl,
                  ChildThreadImpl::Options options,
                  std::unique_ptr<gpu::GpuInit> gpu_init);
 
-  void CreateVizMainService(
-      mojo::PendingAssociatedReceiver<viz::mojom::VizMain> pending_receiver);
-
   bool in_process_gpu() const;
 
   // ChildThreadImpl:
   bool Send(IPC::Message* msg) override;
   void BindServiceInterface(mojo::GenericPendingReceiver receiver) override;
-
-  // IPC::Listener implementation via ChildThreadImpl:
-  void OnAssociatedInterfaceRequest(
-      const std::string& name,
-      mojo::ScopedInterfaceEndpointHandle handle) override;
 
   // viz::VizMainImpl::Delegate:
   void OnInitializationFailed() override;
@@ -107,8 +97,6 @@ class GpuChildThread : public ChildThreadImpl,
   // A queue of incoming service interface requests received prior to
   // |service_factory_| initialization.
   std::vector<mojo::GenericPendingReceiver> pending_service_receivers_;
-
-  blink::AssociatedInterfaceRegistry associated_interfaces_;
 
   // A closure which quits the main message loop.
   base::RepeatingClosure quit_closure_;

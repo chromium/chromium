@@ -69,9 +69,9 @@
 #include "gpu/ipc/in_process_command_buffer.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/switches.h"
 #include "ui/base/ui_base_features.h"
@@ -886,11 +886,9 @@ bool GpuProcessHost::Init() {
     return false;
   }
 
-  mojo::PendingAssociatedRemote<viz::mojom::VizMain> viz_main_pending_remote;
-  process_->child_channel()
-      ->GetAssociatedInterfaceSupport()
-      ->GetRemoteAssociatedInterface(
-          viz_main_pending_remote.InitWithNewEndpointAndPassReceiver());
+  mojo::PendingRemote<viz::mojom::VizMain> viz_main_pending_remote;
+  process_->child_process()->BindServiceInterface(
+      viz_main_pending_remote.InitWithNewPipeAndPassReceiver());
   viz::GpuHostImpl::InitParams params;
   params.restart_id = host_id_;
   params.disable_gpu_shader_disk_cache =

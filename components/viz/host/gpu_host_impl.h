@@ -25,8 +25,6 @@
 #include "components/viz/host/viz_host_export.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/config/gpu_domain_guilt.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -139,7 +137,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
                               EstablishChannelStatus)>;
 
   GpuHostImpl(Delegate* delegate,
-              mojo::PendingAssociatedRemote<mojom::VizMain> viz_main,
+              mojo::PendingRemote<mojom::VizMain> viz_main,
               InitParams params);
   ~GpuHostImpl() override;
 
@@ -241,7 +239,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost {
                         const std::string& message) override;
 
   Delegate* const delegate_;
-  mojo::AssociatedRemote<mojom::VizMain> viz_main_;
+  mojo::Remote<mojom::VizMain> viz_main_;
   const InitParams params_;
 
   // Task runner corresponding to the thread |this| is created on.

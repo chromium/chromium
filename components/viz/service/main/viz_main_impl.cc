@@ -136,9 +136,8 @@ VizMainImpl::~VizMainImpl() {
         dependencies_.ukm_recorder.get());
 }
 
-void VizMainImpl::BindAssociated(
-    mojo::PendingAssociatedReceiver<mojom::VizMain> pending_receiver) {
-  receiver_.Bind(std::move(pending_receiver));
+void VizMainImpl::Bind(mojo::PendingReceiver<mojom::VizMain> receiver) {
+  receiver_.Bind(std::move(receiver));
 }
 
 void VizMainImpl::CreateGpuService(

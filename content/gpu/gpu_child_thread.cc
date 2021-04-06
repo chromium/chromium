@@ -143,19 +143,9 @@ void GpuChildThread::Init(const base::Time& process_start_time) {
   }
 #endif
 
-  blink::AssociatedInterfaceRegistry* associated_registry =
-      &associated_interfaces_;
-  associated_registry->AddInterface(base::BindRepeating(
-      &GpuChildThread::CreateVizMainService, base::Unretained(this)));
-
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&GpuChildThread::OnMemoryPressure,
                                      base::Unretained(this)));
-}
-
-void GpuChildThread::CreateVizMainService(
-    mojo::PendingAssociatedReceiver<viz::mojom::VizMain> pending_receiver) {
-  viz_main_.BindAssociated(std::move(pending_receiver));
 }
 
 bool GpuChildThread::in_process_gpu() const {
@@ -168,13 +158,6 @@ bool GpuChildThread::Send(IPC::Message* msg) {
   DCHECK(!msg->is_sync());
 
   return ChildThreadImpl::Send(msg);
-}
-
-void GpuChildThread::OnAssociatedInterfaceRequest(
-    const std::string& name,
-    mojo::ScopedInterfaceEndpointHandle handle) {
-  if (!associated_interfaces_.TryBindInterface(name, &handle))
-    ChildThreadImpl::OnAssociatedInterfaceRequest(name, std::move(handle));
 }
 
 void GpuChildThread::OnInitializationFailed() {

@@ -17,8 +17,6 @@
 #include "components/viz/service/main/viz_compositor_thread_runner_impl.h"
 #include "gpu/ipc/gpu_in_process_thread_service.h"
 #include "gpu/ipc/in_process_command_buffer.h"
-#include "mojo/public/cpp/bindings/associated_receiver_set.h"
-#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -110,8 +108,7 @@ class VizMainImpl : public mojom::VizMain,
   // Destruction must happen on the GPU thread.
   ~VizMainImpl() override;
 
-  void BindAssociated(
-      mojo::PendingAssociatedReceiver<mojom::VizMain> pending_receiver);
+  void Bind(mojo::PendingReceiver<mojom::VizMain> receiver);
 
   // mojom::VizMain implementation:
   void CreateGpuService(
@@ -192,7 +189,7 @@ class VizMainImpl : public mojom::VizMain,
 
   const scoped_refptr<base::SingleThreadTaskRunner> gpu_thread_task_runner_;
 
-  mojo::AssociatedReceiver<mojom::VizMain> receiver_{this};
+  mojo::Receiver<mojom::VizMain> receiver_{this};
 
   scoped_refptr<discardable_memory::ClientDiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;

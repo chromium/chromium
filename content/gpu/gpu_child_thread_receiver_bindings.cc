@@ -25,6 +25,13 @@ namespace content {
 
 void GpuChildThread::BindServiceInterface(
     mojo::GenericPendingReceiver receiver) {
+  if (auto viz_receiver = receiver.As<viz::mojom::VizMain>()) {
+    // Note that unlike other interfaces, we want to allow VizMain to bind
+    // early. It's required to unblock the rest of GPU initialization.
+    viz_main_.Bind(std::move(viz_receiver));
+    return;
+  }
+
   if (!service_factory_) {
     pending_service_receivers_.push_back(std::move(receiver));
     return;

@@ -141,8 +141,6 @@ class CONTENT_EXPORT BrowserChildProcessHostImpl
     return &child_process_host_->GetMojoInvitation().value();
   }
 
-  IPC::Channel* child_channel() const { return channel_; }
-
   mojom::ChildProcess* child_process() const {
     return static_cast<ChildProcessHostImpl*>(child_process_host_.get())
         ->child_process();

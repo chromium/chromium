@@ -96,7 +96,7 @@ GpuHostImpl::InitParams::InitParams(InitParams&&) = default;
 GpuHostImpl::InitParams::~InitParams() = default;
 
 GpuHostImpl::GpuHostImpl(Delegate* delegate,
-                         mojo::PendingAssociatedRemote<mojom::VizMain> viz_main,
+                         mojo::PendingRemote<mojom::VizMain> viz_main,
                          InitParams params)
     : delegate_(delegate),
       viz_main_(std::move(viz_main)),
