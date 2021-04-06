@@ -458,16 +458,19 @@ class AppMenu::ZoomView : public AppMenuView {
     zoom_label_ = new Label(base::FormatPercent(100));
     zoom_label_->SetAutoColorReadabilityEnabled(false);
     zoom_label_->SetHorizontalAlignment(gfx::ALIGN_RIGHT);
-
+    zoom_label_->SetBorder(views::CreateEmptyBorder(
+        0, kZoomLabelHorizontalPadding, 0, kZoomLabelHorizontalPadding));
     zoom_label_->SetBackground(std::make_unique<InMenuButtonBackground>(
         InMenuButtonBackground::NO_BORDER));
+
+    // Need to set a font list for the zoom label width calculations.
+    zoom_label_->SetFontList(MenuConfig::instance().font_list);
 
     // An accessibility role of kAlert will ensure that any updates to the zoom
     // level can be picked up by screen readers.
     zoom_label_->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
 
     AddChildView(zoom_label_);
-    zoom_label_max_width_valid_ = false;
 
     increment_button_ = CreateButtonWithAccName(
         base::BindRepeating(activate, menu_model, increment_index),
@@ -506,8 +509,9 @@ class AppMenu::ZoomView : public AppMenuView {
         ));
     AddChildView(fullscreen_button_);
 
-    // Need to set a font list for the zoom label width calculations.
-    OnThemeChanged();
+    // The max width for `zoom_label_` should not be valid until the calls into
+    // UpdateZoomControls().
+    DCHECK(!zoom_label_max_width_valid_);
     UpdateZoomControls();
   }
   ZoomView(const ZoomView&) = delete;
@@ -556,11 +560,6 @@ class AppMenu::ZoomView : public AppMenuView {
 
   void OnThemeChanged() override {
     AppMenuView::OnThemeChanged();
-
-    zoom_label_->SetBorder(views::CreateEmptyBorder(
-        0, kZoomLabelHorizontalPadding, 0, kZoomLabelHorizontalPadding));
-    zoom_label_->SetFontList(MenuConfig::instance().font_list);
-    zoom_label_max_width_valid_ = false;
 
     ui::NativeTheme* theme = GetNativeTheme();
     zoom_label_->SetEnabledColor(theme->GetSystemColor(
