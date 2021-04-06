@@ -18,8 +18,10 @@
 namespace blink {
 
 class Hyphenation;
+class NGBlockBreakToken;
 class NGInlineBreakToken;
 class NGInlineItem;
+class NGLineInfo;
 
 // The line breaker needs to know which mode its in to properly handle floats.
 enum class NGLineBreakerMode { kContent, kMinContent, kMaxContent };
