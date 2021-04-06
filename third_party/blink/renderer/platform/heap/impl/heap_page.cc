@@ -87,11 +87,19 @@
 
 namespace blink {
 
+// These help when understanding finalizer backtraces when frames have been
+// removed due to tail call optimizations.
+void* gLastFinalizerCall;
+void* gLastFinalizerObject;
+
 void HeapObjectHeader::Finalize(Address object, size_t object_size) {
   DCHECK(!IsInConstruction<HeapObjectHeader::AccessMode::kAtomic>());
   const GCInfo& gc_info = GCInfo::From(GcInfoIndex());
-  if (gc_info.finalize)
+  if (gc_info.finalize) {
+    gLastFinalizerCall = reinterpret_cast<void*>(gc_info.finalize);
+    gLastFinalizerObject = object;
     gc_info.finalize(object);
+  }
 
   ASAN_RETIRE_CONTAINER_ANNOTATION(object, object_size);
 }

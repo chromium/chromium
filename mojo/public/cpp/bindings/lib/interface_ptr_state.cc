@@ -4,6 +4,7 @@
 
 #include "mojo/public/cpp/bindings/lib/interface_ptr_state.h"
 
+#include "base/record_replay.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 
 namespace mojo {
@@ -12,6 +13,12 @@ namespace internal {
 InterfacePtrStateBase::InterfacePtrStateBase() = default;
 
 InterfacePtrStateBase::~InterfacePtrStateBase() {
+  if (recordreplay::IsRecordingOrReplaying()) {
+    // Leak resources to avoid problems during GC...
+    endpoint_client_.release();
+    return;
+  }
+
   endpoint_client_.reset();
   if (router_)
     router_->CloseMessagePipe();

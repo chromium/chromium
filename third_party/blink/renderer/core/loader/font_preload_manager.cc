@@ -77,6 +77,8 @@ FontPreloadManager::FontPreloadManager(Document& document)
       render_delay_timeout_(base::TimeDelta::FromMilliseconds(
           features::kFontPreloadingDelaysRenderingParam.Get())) {}
 
+FontPreloadManager::~FontPreloadManager() = default;
+
 bool FontPreloadManager::HasPendingRenderBlockingFonts() const {
   return state_ == State::kLoading;
 }

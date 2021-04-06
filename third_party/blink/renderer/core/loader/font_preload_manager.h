@@ -24,7 +24,7 @@ class CORE_EXPORT FontPreloadManager final
     : public GarbageCollected<FontPreloadManager> {
  public:
   explicit FontPreloadManager(Document&);
-  ~FontPreloadManager() = default;
+  ~FontPreloadManager();
 
   FontPreloadManager(const FontPreloadManager&) = delete;
   FontPreloadManager& operator=(const FontPreloadManager&) = delete;
