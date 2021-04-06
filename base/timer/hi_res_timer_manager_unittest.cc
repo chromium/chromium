@@ -10,6 +10,7 @@
 #include "base/base_switches.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
+#include "base/test/power_monitor_test_base.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -20,45 +21,36 @@ namespace base {
 
 #if defined(OS_WIN)
 TEST(HiResTimerManagerTest, ToggleOnOff) {
-  // The power monitor creates Window to receive power notifications from
-  // Windows, which makes this test flaky if you run while the machine
-  // goes in or out of AC power.
-  test::TaskEnvironment task_environment(
-      test::TaskEnvironment::MainThreadType::UI);
-  base::PowerMonitor::Initialize(
-      std::make_unique<base::PowerMonitorDeviceSource>());
+  test::TaskEnvironment task_environment;
+  base::test::ScopedPowerMonitorTestSource power_monitor_source;
 
-  {
-    HighResolutionTimerManager manager;
-    // Simulate a on-AC power event to get to a known initial state.
-    manager.OnPowerStateChange(false);
+  HighResolutionTimerManager manager;
 
-    // Loop a few times to test power toggling.
-    for (int times = 0; times != 3; ++times) {
-      // The manager has the high resolution clock enabled now.
-      EXPECT_TRUE(manager.hi_res_clock_available());
-      // But the Time class has it off, because it hasn't been activated.
-      EXPECT_FALSE(base::Time::IsHighResolutionTimerInUse());
+  // Loop a few times to test power toggling.
+  for (int times = 0; times != 3; ++times) {
+    // The manager has the high resolution clock enabled now.
+    EXPECT_TRUE(manager.hi_res_clock_available());
+    // But the Time class has it off, because it hasn't been activated.
+    EXPECT_FALSE(base::Time::IsHighResolutionTimerInUse());
 
-      // Activate the high resolution timer.
-      base::Time::ActivateHighResolutionTimer(true);
-      EXPECT_TRUE(base::Time::IsHighResolutionTimerInUse());
+    // Activate the high resolution timer.
+    base::Time::ActivateHighResolutionTimer(true);
+    EXPECT_TRUE(base::Time::IsHighResolutionTimerInUse());
 
-      // Simulate a on-battery power event.
-      manager.OnPowerStateChange(true);
-      EXPECT_FALSE(manager.hi_res_clock_available());
-      EXPECT_FALSE(base::Time::IsHighResolutionTimerInUse());
+    // Simulate a on-battery power event.
+    power_monitor_source.GeneratePowerStateEvent(true);
 
-      // Back to on-AC power.
-      manager.OnPowerStateChange(false);
-      EXPECT_TRUE(manager.hi_res_clock_available());
-      EXPECT_TRUE(base::Time::IsHighResolutionTimerInUse());
+    EXPECT_FALSE(manager.hi_res_clock_available());
+    EXPECT_FALSE(base::Time::IsHighResolutionTimerInUse());
 
-      // De-activate the high resolution timer.
-      base::Time::ActivateHighResolutionTimer(false);
-    }
+    // Back to on-AC power.
+    power_monitor_source.GeneratePowerStateEvent(false);
+    EXPECT_TRUE(manager.hi_res_clock_available());
+    EXPECT_TRUE(base::Time::IsHighResolutionTimerInUse());
+
+    // De-activate the high resolution timer.
+    base::Time::ActivateHighResolutionTimer(false);
   }
-  base::PowerMonitor::ShutdownForTesting();
 }
 
 TEST(HiResTimerManagerTest, DisableFromCommandLine) {

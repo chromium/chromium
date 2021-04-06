@@ -39,6 +39,8 @@ class ScopedPowerMonitorTestSource {
   void Resume();
   void SetOnBatteryPower(bool on_battery_power);
 
+  void GeneratePowerStateEvent(bool on_battery_power);
+
  private:
   // Owned by PowerMonitor.
   PowerMonitorTestSource* power_monitor_test_source_ = nullptr;

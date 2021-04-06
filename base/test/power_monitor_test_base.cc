@@ -34,6 +34,11 @@ void ScopedPowerMonitorTestSource::SetOnBatteryPower(bool on_battery_power) {
   power_monitor_test_source_->SetOnBatteryPower(on_battery_power);
 }
 
+void ScopedPowerMonitorTestSource::GeneratePowerStateEvent(
+    bool on_battery_power) {
+  power_monitor_test_source_->GeneratePowerStateEvent(on_battery_power);
+}
+
 }  // namespace test
 
 PowerMonitorTestSource::PowerMonitorTestSource() = default;
