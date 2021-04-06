@@ -130,7 +130,7 @@ void V8Unwinder::UpdateModules() {
   v8::MemoryRange* const code_ranges_start = code_ranges_.buffer();
   v8::MemoryRange* const code_ranges_end =
       code_ranges_start + code_ranges_.size();
-  DCHECK(std::is_sorted(code_ranges_start, code_ranges_end, less_than));
+  CHECK(std::is_sorted(code_ranges_start, code_ranges_end, less_than));
   v8::MemoryRange* range_it = code_ranges_start;
   auto modules_it = modules_.begin();
 
