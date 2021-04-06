@@ -18,6 +18,7 @@ import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import './strings.m.js';
 
+import {isActiveSim} from 'chrome://resources/cr_components/chromeos/network/cellular_utils.m.js';
 import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/cr_components/chromeos/network/cr_policy_network_behavior_mojo.m.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
 import {NetworkListenerBehavior} from 'chrome://resources/cr_components/chromeos/network/network_listener_behavior.m.js';
@@ -69,6 +70,26 @@ Polymer({
       value() {
         return loadTimeData.valueExists('showTechnologyBadge') &&
             loadTimeData.getBoolean('showTechnologyBadge');
+      }
+    },
+
+    /**
+     * Whether network configuration properties sections should be shown. The
+     * advanced section is not controlled by this property.
+     * @private
+     */
+    showConfigurableSections_: {
+      type: Boolean,
+      value: true,
+      computed: `computeShowConfigurableSections_(deviceState_.*,
+          managedProperties_.*)`,
+    },
+
+    /** @private */
+    isUpdatedCellularUiEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('updatedCellularActivationUi');
       }
     },
   },
@@ -571,4 +592,25 @@ Polymer({
     }
     return fields;
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeShowConfigurableSections_() {
+    if (!this.isUpdatedCellularUiEnabled_ || !this.managedProperties_ ||
+        !this.deviceState_) {
+      return true;
+    }
+
+    if (this.managedProperties_.type !==
+        chromeos.networkConfig.mojom.NetworkType.kCellular) {
+      return true;
+    }
+
+    const networkState =
+        OncMojo.managedPropertiesToNetworkState(this.managedProperties_);
+    assert(networkState);
+    return isActiveSim(networkState, this.deviceState_);
+  }
 });

@@ -32,99 +32,103 @@
       connected$="[[isConnectedState_(managedProperties_)]]">
     [[getStateText_(managedProperties_)]]
   </div>
-  <cr-button on-click="onForgetTap_"
-      hidden$="[[!showForget_(managedProperties_)]]">
-    $i18n{networkButtonForget}
-  </cr-button>
-  <cr-button class="action-button" on-click="onConnectDisconnectClick_"
-      hidden$="[[!showConnectDisconnect_(managedProperties_)]]"
-      disabled="[[!enableConnectDisconnect_(managedProperties_)]]">
-    [[getConnectDisconnectText_(managedProperties_)]]
-  </cr-button>
+  <template is="dom-if" if="[[showConfigurableSections_]]" restamp>
+    <cr-button on-click="onForgetTap_"
+        hidden$="[[!showForget_(managedProperties_)]]">
+      $i18n{networkButtonForget}
+    </cr-button>
+    <cr-button class="action-button" on-click="onConnectDisconnectClick_"
+        hidden$="[[!showConnectDisconnect_(managedProperties_)]]"
+        disabled="[[!enableConnectDisconnect_(managedProperties_)]]">
+      [[getConnectDisconnectText_(managedProperties_)]]
+    </cr-button>
+  </template>
 </div>
 
-<!-- SIM Info (Cellular only). -->
-<template is="dom-if" if="[[showCellularSim_(managedProperties_)]]"
-    restamp>
-  <div class="cr-row">
-    <network-siminfo class="flex"
-        network-state="[[getNetworkState_(managedProperties_)]]"
-        device-state="[[deviceState_]]">
-    </network-siminfo>
-  </div>
-</template>
-
-<!-- Choose Mobile Network (Cellular only) -->
-<template is="dom-if"
-    if="[[showCellularChooseNetwork_(managedProperties_)]]">
-  <div class="cr-row">
-    <network-choose-mobile class="flex" device-state="[[deviceState_]]"
-        managed-properties="[[managedProperties_]]">
-    </network-choose-mobile>
-  </div>
-</template>
-
-<!-- APN (Cellular only) -->
-<template is="dom-if" if="[[isCellular_(managedProperties_)]]">
-  <div class="cr-row">
-    <network-apnlist class="flex" editable on-apn-change="onApnChange_"
-        managed-properties="[[managedProperties_]]">
-    </network-apnlist>
-  </div>
-</template>
-
-<!-- Proxy -->
-<div class="hr">
-  <template is="dom-if"
-      if="[[shouldShowProxyPolicyIndicator_(managedProperties_)]]">
-    <div class="cr-row continuation">
-      <cr-policy-network-indicator-mojo
-          property="[[managedProperties_.proxySettings.type]]">
-      </cr-policy-network-indicator-mojo>
-      <div>$i18n{networkProxyEnforcedPolicy}</div>
+<template is="dom-if" if="[[showConfigurableSections_]]" restamp>
+  <!-- SIM Info (Cellular only). -->
+  <template is="dom-if" if="[[showCellularSim_(managedProperties_)]]"
+      restamp>
+    <div class="cr-row">
+      <network-siminfo class="flex"
+          network-state="[[getNetworkState_(managedProperties_)]]"
+          device-state="[[deviceState_]]">
+      </network-siminfo>
     </div>
   </template>
-  <div class="cr-row continuation">
-    <network-proxy class="flex" editable use-shared-proxies
-        on-proxy-change="onProxyChange_"
-        managed-properties="[[managedProperties_]]">
-    </network-proxy>
-  </div>
-</div>
 
-<template is="dom-if" if="[[isRememberedOrConnected_(managedProperties_)]]">
-  <!-- IP Config -->
+  <!-- Choose Mobile Network (Cellular only) -->
+  <template is="dom-if"
+      if="[[showCellularChooseNetwork_(managedProperties_)]]">
+    <div class="cr-row">
+      <network-choose-mobile class="flex" device-state="[[deviceState_]]"
+          managed-properties="[[managedProperties_]]">
+      </network-choose-mobile>
+    </div>
+  </template>
+
+  <!-- APN (Cellular only) -->
+  <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
+    <div class="cr-row">
+      <network-apnlist class="flex" editable on-apn-change="onApnChange_"
+          managed-properties="[[managedProperties_]]">
+      </network-apnlist>
+    </div>
+  </template>
+
+  <!-- Proxy -->
+  <div class="hr">
+    <template is="dom-if"
+        if="[[shouldShowProxyPolicyIndicator_(managedProperties_)]]">
+      <div class="cr-row continuation">
+        <cr-policy-network-indicator-mojo
+            property="[[managedProperties_.proxySettings.type]]">
+        </cr-policy-network-indicator-mojo>
+        <div>$i18n{networkProxyEnforcedPolicy}</div>
+      </div>
+    </template>
+    <div class="cr-row continuation">
+      <network-proxy class="flex" editable use-shared-proxies
+          on-proxy-change="onProxyChange_"
+          managed-properties="[[managedProperties_]]">
+      </network-proxy>
+    </div>
+  </div>
+
+  <template is="dom-if" if="[[isRememberedOrConnected_(managedProperties_)]]">
+    <!-- IP Config -->
+    <div class="cr-row">
+      <network-ip-config class="flex"
+          editable on-ip-change="onIPConfigChange_"
+          managed-properties="[[managedProperties_]]">
+      </network-ip-config>
+    </div>
+
+    <!-- Nameservers -->
+    <div class="cr-row">
+      <network-nameservers class="flex" editable
+          on-nameservers-change="onIPConfigChange_"
+          managed-properties="[[managedProperties_]]">
+      </network-nameservers>
+    </div>
+  </template>
+
   <div class="cr-row">
-    <network-ip-config class="flex"
-        editable on-ip-change="onIPConfigChange_"
-        managed-properties="[[managedProperties_]]">
-    </network-ip-config>
+    <!-- MAC Address. -->
+    <div class="property-box single-column two-line"
+        hidden$="[[!deviceState_.macAddress]]">
+      <div>$i18n{OncMacAddress}</div>
+      <div class="secondary">[[deviceState_.macAddress]]</div>
+    </div>
   </div>
 
-  <!-- Nameservers -->
-  <div class="cr-row">
-    <network-nameservers class="flex" editable
-        on-nameservers-change="onIPConfigChange_"
-        managed-properties="[[managedProperties_]]">
-    </network-nameservers>
-  </div>
-</template>
-
-<div class="cr-row">
-  <!-- MAC Address. -->
-  <div class="property-box single-column two-line"
-      hidden$="[[!deviceState_.macAddress]]">
-    <div>$i18n{OncMacAddress}</div>
-    <div class="secondary">[[deviceState_.macAddress]]</div>
-  </div>
-</div>
-
-<!-- Other properties to show if present. -->
-<template is="dom-if" if="[[hasInfoFields_(managedProperties_)]]">
-  <div class="cr-row continuation">
-    <network-property-list-mojo class="flex"
-        fields="[[getInfoFields_(managedProperties_)]]"
-        property-dict="[[managedProperties_]]">
-    </network-property-list-mojo>
-  </div>
+  <!-- Other properties to show if present. -->
+  <template is="dom-if" if="[[hasInfoFields_(managedProperties_)]]">
+    <div class="cr-row continuation">
+      <network-property-list-mojo class="flex"
+          fields="[[getInfoFields_(managedProperties_)]]"
+          property-dict="[[managedProperties_]]">
+      </network-property-list-mojo>
+    </div>
+  </template>
 </template>
