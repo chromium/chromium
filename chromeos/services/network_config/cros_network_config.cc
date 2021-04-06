@@ -1292,6 +1292,7 @@ mojom::ManagedOpenVPNPropertiesPtr GetManagedOpenVPNProperties(
 
 mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
     NetworkStateHandler* network_state_handler,
+    CellularESimProfileHandler* cellular_esim_profile_handler,
     const NetworkState* network_state,
     const std::vector<mojom::VpnProviderPtr>& vpn_providers,
     const base::Value* properties) {
@@ -1351,6 +1352,13 @@ mojom::ManagedPropertiesPtr ManagedPropertiesToMojo(
   result->metered =
       GetManagedBoolean(properties, ::onc::network_config::kMetered);
   result->name = GetManagedString(properties, ::onc::network_config::kName);
+  if (result->name->policy_source == mojom::PolicySource::kNone) {
+    base::Optional<std::string> profile_name =
+        GetESimProfileName(cellular_esim_profile_handler, network_state);
+    if (profile_name)
+      result->name->active_value = *profile_name;
+  }
+
   result->name_servers_config_type = GetRequiredManagedString(
       properties, ::onc::network_config::kNameServersConfigType);
   result->priority =
@@ -2052,9 +2060,9 @@ void CrosNetworkConfig::OnGetManagedProperties(
     std::move(callback).Run(nullptr);
     return;
   }
-  mojom::ManagedPropertiesPtr managed_properties =
-      ManagedPropertiesToMojo(network_state_handler_, network_state,
-                              vpn_providers_, &properties.value());
+  mojom::ManagedPropertiesPtr managed_properties = ManagedPropertiesToMojo(
+      network_state_handler_, cellular_esim_profile_handler_, network_state,
+      vpn_providers_, &properties.value());
 
   if (managed_properties->type == mojom::NetworkType::kCellular) {
     std::vector<mojom::ApnPropertiesPtr> custom_apn_list =

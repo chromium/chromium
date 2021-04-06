@@ -1686,5 +1686,37 @@ TEST_F(CrosNetworkConfigTest, PolicyEnforcedProxyMode) {
   EXPECT_EQ(network->proxy_mode, mojom::ProxyMode::kDirect);
 }
 
+TEST_F(CrosNetworkConfigTest, ESimManagedPropertiesNameComesFromHermes) {
+  const char kTestEuiccPath[] = "euicc_path";
+  const char kTestProfileServicePath[] = "esim_service_path";
+  const char kTestIccid[] = "iccid";
+
+  const char kTestProfileName[] = "test_profile_name";
+  const char kTestNameFromShill[] = "shill_network_name";
+
+  // Add a fake eSIM with name kTestProfileName.
+  helper().hermes_manager_test()->AddEuicc(dbus::ObjectPath(kTestEuiccPath),
+                                           "eid", /*is_active=*/true,
+                                           /*physical_slot=*/0);
+  helper().hermes_euicc_test()->AddCarrierProfile(
+      dbus::ObjectPath(kTestProfileServicePath),
+      dbus::ObjectPath(kTestEuiccPath), kTestIccid, kTestProfileName,
+      "service_provider", "activation_code", kTestProfileServicePath,
+      hermes::profile::State::kInactive,
+      /*service_only=*/false);
+  base::RunLoop().RunUntilIdle();
+
+  // Change the network's name in Shill. Now, Hermes and Shill have different
+  // names associated with the profile.
+  helper().SetServiceProperty(kTestProfileServicePath, shill::kNameProperty,
+                              base::Value(kTestNameFromShill));
+  base::RunLoop().RunUntilIdle();
+
+  // Fetch the Cellular network's managed properties for the eSIM profile.
+  std::string esim_guid = std::string("esim_guid") + kTestIccid;
+  mojom::ManagedPropertiesPtr properties = GetManagedProperties(esim_guid);
+  EXPECT_EQ(kTestProfileName, properties->name->active_value);
+}
+
 }  // namespace network_config
 }  // namespace chromeos
