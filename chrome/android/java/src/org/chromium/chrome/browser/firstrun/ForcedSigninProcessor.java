@@ -19,7 +19,6 @@ import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ChildAccountStatus;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -65,7 +64,7 @@ public final class ForcedSigninProcessor {
                     @Override
                     protected void onPostExecute(String accountGaiaId) {
                         final CoreAccountInfo coreAccountInfo =
-                                new CoreAccountInfo(new CoreAccountId(accountGaiaId),
+                                CoreAccountInfo.createFromEmailAndGaiaId(
                                         accounts.get(0).name, accountGaiaId);
                         signinAndEnableSync(coreAccountInfo);
                     }

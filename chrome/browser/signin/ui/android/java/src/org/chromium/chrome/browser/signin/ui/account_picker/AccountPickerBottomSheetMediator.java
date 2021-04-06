@@ -20,7 +20,6 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
@@ -236,8 +235,8 @@ class AccountPickerBottomSheetMediator implements AccountPickerCoordinator.Liste
 
             @Override
             protected void onPostExecute(String accountGaiaId) {
-                CoreAccountInfo coreAccountInfo = new CoreAccountInfo(
-                        new CoreAccountId(accountGaiaId), mSelectedAccountName, accountGaiaId);
+                CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(
+                        mSelectedAccountName, accountGaiaId);
                 mAccountPickerDelegate.signIn(
                         coreAccountInfo, AccountPickerBottomSheetMediator.this::onSigninFailed);
             }

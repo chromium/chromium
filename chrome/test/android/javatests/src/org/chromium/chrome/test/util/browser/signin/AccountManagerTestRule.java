@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.sync.ProfileSyncService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.ProfileDataSource;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.signin.test.util.FakeProfileDataSource;
@@ -221,7 +220,7 @@ public class AccountManagerTestRule implements TestRule {
      */
     public CoreAccountInfo toCoreAccountInfo(String accountEmail) {
         String accountGaiaId = mFakeAccountManagerFacade.getAccountGaiaId(accountEmail);
-        return new CoreAccountInfo(new CoreAccountId(accountGaiaId), accountEmail, accountGaiaId);
+        return CoreAccountInfo.createFromEmailAndGaiaId(accountEmail, accountGaiaId);
     }
 
     /**

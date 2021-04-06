@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -105,7 +104,7 @@ public class ChromeBackupAgentTest {
     private AsyncInitTaskRunner mTaskRunner;
 
     private final CoreAccountInfo mAccountInfo =
-            new CoreAccountInfo(new CoreAccountId("gaia_id_user1"), "user1", "gaia_id_user1");
+            CoreAccountInfo.createFromEmailAndGaiaId("user1", "gaia_id_user1");
 
     private void setUpTestPrefs(SharedPreferences prefs) {
         SharedPreferences.Editor editor = prefs.edit();

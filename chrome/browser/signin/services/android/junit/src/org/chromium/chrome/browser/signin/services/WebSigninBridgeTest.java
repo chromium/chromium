@@ -1,4 +1,3 @@
-
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -22,7 +21,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
@@ -32,8 +30,8 @@ import org.chromium.components.signin.base.GoogleServiceAuthError.State;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebSigninBridgeTest {
-    private static final CoreAccountInfo CORE_ACCOUNT_INFO = new CoreAccountInfo(
-            new CoreAccountId("gaia-id-user"), "user@domain.com", "gaia-id-user");
+    private static final CoreAccountInfo CORE_ACCOUNT_INFO =
+            CoreAccountInfo.createFromEmailAndGaiaId("user@domain.com", "gaia-id-user");
     private static final long NATIVE_WEB_SIGNIN_BRIDGE = 1000L;
 
     @Rule
