@@ -99,8 +99,6 @@ RemoteFrameData::RemoteFrameData(ProcessData* process_data,
       execution_context_data_(execution_context_data) {
   DCHECK(process_data);
   DCHECK(execution_context_data);
-  // This and the ExecutionContext *must* be cross-process.
-  DCHECK_NE(process_data, execution_context_data->process_data());
   execution_context_data->SetRemoteFrameData(PassKey(), this);
 }
 

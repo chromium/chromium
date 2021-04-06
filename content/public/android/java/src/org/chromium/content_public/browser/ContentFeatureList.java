@@ -34,6 +34,9 @@ public class ContentFeatureList {
     public static final String EXPERIMENTAL_ACCESSIBILITY_LABELS =
             "ExperimentalAccessibilityLabels";
 
+    public static final String PROCESS_SHARING_WITH_STRICT_SITE_INSTANCES =
+            "ProcessSharingWithStrictSiteInstances";
+
     public static final String WEB_AUTH = "WebAuthentication";
 
     public static final String WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND =

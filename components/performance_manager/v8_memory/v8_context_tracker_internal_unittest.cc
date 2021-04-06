@@ -103,18 +103,6 @@ TEST_F(V8ContextTrackerInternalDeathTest,
   data_store()->Pass(std::move(ec_data));
 }
 
-TEST_F(V8ContextTrackerInternalDeathTest, SameProcessRemoteFrameDataExplodes) {
-  auto* process_data = ProcessData::GetOrCreate(
-      static_cast<ProcessNodeImpl*>(mock_graph_.process.get()));
-  std::unique_ptr<ExecutionContextData> ec_data =
-      std::make_unique<ExecutionContextData>(
-          process_data, mock_graph_.frame->frame_token(), nullptr);
-  std::unique_ptr<RemoteFrameData> rf_data;
-  EXPECT_DCHECK_DEATH(
-      rf_data = std::make_unique<RemoteFrameData>(
-          process_data, blink::RemoteFrameToken(), ec_data.get()));
-}
-
 TEST_F(V8ContextTrackerInternalDeathTest, CrossProcessV8ContextDataExplodes) {
   auto* process_data = ProcessData::GetOrCreate(
       static_cast<ProcessNodeImpl*>(mock_graph_.process.get()));

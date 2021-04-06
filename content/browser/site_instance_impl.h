@@ -288,6 +288,10 @@ class CONTENT_EXPORT SiteInfo {
   // implementation).
   bool IsSamePrincipalWith(const SiteInfo& other) const;
 
+  // Returns true if all fields in `other` match the corresponding fields in
+  // this object.
+  bool IsExactMatch(const SiteInfo& other) const;
+
   // Note: equality operators are defined in terms of IsSamePrincipalWith().
   bool operator==(const SiteInfo& other) const;
   bool operator!=(const SiteInfo& other) const;
@@ -736,7 +740,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance,
   const IsolationContext& GetIsolationContext();
 
   // If this SiteInstance doesn't require a dedicated process, this will return
-  // the BrowsingInstance's default process.
+  // the BrowsingInstance's default process if it is suitable for this
+  // SiteInstance.
   RenderProcessHost* GetDefaultProcessIfUsable();
 
   // Returns true if this object was constructed as a default site instance.

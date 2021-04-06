@@ -1149,8 +1149,14 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
       base::BindRepeating(HandleHungBeacon, base::RepeatingClosure()));
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/send-beacon.html")));
+  const auto kTestUrl = embedded_test_server()->GetURL("/send-beacon.html");
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
+    // Isolate host so that the first and second navigation are guaranteed to
+    // be in different processes.
+    IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                             {kTestUrl.host()});
+  }
+  EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
 
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       shell()->web_contents()->GetMainFrame());
@@ -1184,8 +1190,15 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
       base::BindRepeating(HandleHungBeacon, base::RepeatingClosure()));
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("/fetch-keepalive.html")));
+  const auto kTestUrl = embedded_test_server()->GetURL("/fetch-keepalive.html");
+  if (IsIsolatedOriginRequiredToGuaranteeDedicatedProcess()) {
+    // Isolate host so that the first and second navigation are guaranteed to
+    // be in different processes.
+    IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                             {kTestUrl.host()});
+  }
+
+  EXPECT_TRUE(NavigateToURL(shell(), kTestUrl));
 
   RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
       shell()->web_contents()->GetMainFrame());

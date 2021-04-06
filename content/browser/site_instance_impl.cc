@@ -235,6 +235,25 @@ bool SiteInfo::IsSamePrincipalWith(const SiteInfo& other) const {
   return MakeSecurityPrincipalKey(*this) == MakeSecurityPrincipalKey(other);
 }
 
+bool SiteInfo::IsExactMatch(const SiteInfo& other) const {
+  bool is_match = site_url_ == other.site_url_ &&
+                  process_lock_url_ == other.process_lock_url_ &&
+                  is_origin_keyed_ == other.is_origin_keyed_ &&
+                  coop_coep_cross_origin_isolated_info_ ==
+                      other.coop_coep_cross_origin_isolated_info_ &&
+                  is_guest_ == other.is_guest_ &&
+                  does_site_request_dedicated_process_for_coop_ ==
+                      other.does_site_request_dedicated_process_for_coop_;
+
+  if (is_match) {
+    // If all the fields match, then the "same principal" subset must also
+    // match. This is used to ensure these 2 methods stay in sync and all fields
+    // used by IsSamePrincipalWith() are used by this function.
+    DCHECK(IsSamePrincipalWith(other));
+  }
+  return is_match;
+}
+
 bool SiteInfo::operator==(const SiteInfo& other) const {
   return IsSamePrincipalWith(other);
 }
@@ -776,11 +795,15 @@ const IsolationContext& SiteInstanceImpl::GetIsolationContext() {
 
 RenderProcessHost* SiteInstanceImpl::GetDefaultProcessIfUsable() {
   if (!base::FeatureList::IsEnabled(
-          features::kProcessSharingWithStrictSiteInstances)) {
+          features::kProcessSharingWithStrictSiteInstances) ||
+      !browsing_instance_->default_process()) {
     return nullptr;
   }
-  if (RequiresDedicatedProcess())
+  if (RequiresDedicatedProcess() ||
+      !RenderProcessHostImpl::MayReuseAndIsSuitable(
+          browsing_instance_->default_process(), this)) {
     return nullptr;
+  }
   return browsing_instance_->default_process();
 }
 
@@ -809,7 +832,12 @@ void SiteInstanceImpl::MaybeSetBrowsingInstanceDefaultProcess() {
   if (!process_ || !has_site_ || RequiresDedicatedProcess())
     return;
   if (browsing_instance_->default_process()) {
-    DCHECK_EQ(process_, browsing_instance_->default_process());
+    if (RenderProcessHostImpl::MayReuseAndIsSuitable(
+            browsing_instance_->default_process(), this)) {
+      // Make sure the default process was actually used if it is appropriate
+      // for this SiteInstance.
+      DCHECK_EQ(process_, browsing_instance_->default_process());
+    }
     return;
   }
   browsing_instance_->SetDefaultProcess(process_);
@@ -1580,7 +1608,7 @@ bool SiteInstanceImpl::DoesSiteInfoForURLMatch(const UrlInfo& url_info) {
         GetCoopCoepCrossOriginIsolatedInfo());
   }
 
-  return site_info_ == site_info;
+  return site_info_.IsExactMatch(site_info);
 }
 
 void SiteInstanceImpl::PreventOptInOriginIsolation(
