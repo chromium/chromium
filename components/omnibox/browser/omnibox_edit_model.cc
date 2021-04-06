@@ -715,7 +715,10 @@ void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
 
 void OmniboxEditModel::ExecutePedal(const AutocompleteMatch& match,
                                     base::TimeTicks match_selection_timestamp) {
-  CHECK(match.pedal);
+  // Note the |pedal| pointer is extracted from the match before reverting the
+  // view below because the match reference will expire with its container.
+  const OmniboxPedal* pedal = match.pedal;
+  CHECK(pedal);
 
   // Record the presence of any Pedals in the result set.
   for (const AutocompleteMatch& match_in_result : result()) {
@@ -727,8 +730,8 @@ void OmniboxEditModel::ExecutePedal(const AutocompleteMatch& match,
   }
 
   // Record the use of this Pedal.
-  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal",
-                                match.pedal->id(), OmniboxPedalId::TOTAL_COUNT);
+  base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.Pedal", pedal->id(),
+                                OmniboxPedalId::TOTAL_COUNT);
   {
     // This block resets omnibox to unedited state and closes popup, which
     // may not seem necessary in cases of navigation but makes sense for
@@ -738,7 +741,7 @@ void OmniboxEditModel::ExecutePedal(const AutocompleteMatch& match,
   }
   OmniboxPedal::ExecutionContext context(*client_, *controller_,
                                          match_selection_timestamp);
-  match.pedal->Execute(context);
+  pedal->Execute(context);
 }
 
 void OmniboxEditModel::OpenMatch(AutocompleteMatch match,

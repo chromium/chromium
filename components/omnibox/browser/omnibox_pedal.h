@@ -172,7 +172,7 @@ class OmniboxPedal {
   // Estimates RAM usage in bytes for this Pedal.
   size_t EstimateMemoryUsage() const;
 
-  OmniboxPedalId id() { return id_; }
+  OmniboxPedalId id() const { return id_; }
 
  protected:
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalTest, SynonymGroupErasesFirstMatchOnly);
