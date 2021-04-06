@@ -279,9 +279,6 @@ TEST_F(IntegrationTest, MAYBE_UninstallUpdaterWhenAllAppsUninstalled) {
 // RunWake(0).
 #if defined(OS_MAC)
 #define MAYBE_UnregisterUnownedApp DISABLED_UnregisterUnownedApp
-#elif defined(OS_WIN)
-// TODO(https://crbug.com/1195903): Flaky failures (not timeouts)  on Windows.
-#define MAYBE_UnregisterUnownedApp DISABLED_UnregisterUnownedApp
 #else
 #define MAYBE_UnregisterUnownedApp UnregisterUnownedApp
 #endif
@@ -314,7 +311,7 @@ TEST_F(IntegrationTest, MAYBE_UnregisterUnownedApp) {
               persisted_data->GetExistenceCheckerPath(kTestAppId).value());
   }
 
-  Uninstall();
+  SleepFor(13);
 }
 
 #endif  // defined(OS_WIN) || !defined(COMPONENT_BUILD)
