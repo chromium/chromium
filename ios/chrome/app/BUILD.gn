@@ -113,6 +113,7 @@ tweak_info_plist("info_plist") {
   args = [
     "--breakpad=$breakpad_enabled_as_int",
     "--branding=$chromium_short_name",
+    "--add-gtm-metadata=1",
   ]
 
   # TODO(crbug.com/1140474): Remove once iOS 14.2 reaches mass adoption.
