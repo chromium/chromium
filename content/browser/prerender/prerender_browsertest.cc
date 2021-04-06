@@ -1109,6 +1109,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
     auto* rfhi = static_cast<RenderFrameHostImpl*>(frame);
     EXPECT_TRUE(rfhi->frame_tree()->is_prerendering());
     EXPECT_EQ(rfhi->lifecycle_state(), LifecycleStateImpl::kPrerendering);
+    EXPECT_EQ(rfhi->GetLifecycleState(),
+              RenderFrameHost::LifecycleState::kPrerendering);
 
     mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
         rfhi->browser_interface_broker_receiver_for_testing();

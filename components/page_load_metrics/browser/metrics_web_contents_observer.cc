@@ -621,7 +621,8 @@ void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
       // 1. the frame being navigated away from was not already deleted
       previous_frame &&
       // 2. the previous frame is in the BFCache
-      previous_frame->IsInBackForwardCache();
+      (previous_frame->GetLifecycleState() ==
+       content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 
   if (!is_back_forward_cache)
     return;

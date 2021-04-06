@@ -8297,6 +8297,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   RenderFrameHostImpl* rfh_a = current_frame_host();
   EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_a->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kActive,
+            rfh_a->GetLifecycleState());
 
   // 2) Navigate to B, now A enters BackForwardCache. Check the
   // LifecycleStateImpl of both RenderFrameHost A and B.
@@ -8305,8 +8307,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
   EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kInBackForwardCache,
             rfh_a->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kInBackForwardCache,
+            rfh_a->GetLifecycleState());
   EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kActive,
             rfh_b->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kActive,
+            rfh_b->GetLifecycleState());
 
   // 3) Go back to A and check again the LifecycleStateImpl of both
   // RenderFrameHost A and B.

@@ -363,6 +363,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   content::PageVisibilityState GetVisibilityState() override;
   bool IsRenderFrameCreated() override;
   bool IsRenderFrameLive() override;
+  LifecycleState GetLifecycleState() override;
   bool IsCurrent() override;
   bool IsInactiveAndDisallowActivation() override;
   size_t GetProxyCount() override;

@@ -484,6 +484,84 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // and still has a connection.  This is valid for all frames.
   virtual bool IsRenderFrameLive() = 0;
 
+  // Defines different states the RenderFrameHost can be in during its lifetime,
+  // i.e., from the point of creation to deletion. Please see comments in
+  // RenderFrameHostImpl::LifecycleStateImpl for more details.
+  //
+  // Compared to the internal LifecycleStateImpl, this public LifecycleState has
+  // two main differences. First, it collapses kRunningUnloadHandlers and
+  // kReadyToBeDeleted into a single kPendingDeletion state, since embedders
+  // need not care about the difference between having started and having
+  // finished running unload handlers. Second, it intentionally does not expose
+  // speculative RenderFrameHosts (corresponding to the kSpeculative internal
+  // state): this is a content-internal implementation detail that is planned to
+  // be eventually removed, and //content embedders shouldn't rely on their
+  // existence.
+  enum class LifecycleState {
+    // RenderFrameHost is waiting for an acknowledgment from the renderer to
+    // to commit a cross-RenderFrameHost navigation and swap in this
+    // RenderFrameHost. Documents are in this state from
+    // WebContentsObserver::ReadyToCommitNavigation to
+    // WebContentsObserver::DidFinishNavigation.
+    kPendingCommit,
+
+    // RenderFrameHost committed in a primary page.
+    // Documents in this state are visible to the user. kActive is the most
+    // common case and the documents that have reached DidFinishNavigation will
+    // be in this state (except for prerendered documents). A RenderFrameHost
+    // can also be created in this state for an initial empty document when
+    // creating new root frames or new child frames on a primary page.
+    //
+    // With MPArch (crbug.com/1164280), a WebContents may have multiple
+    // coexisting pages (trees of documents), including a primary page
+    // (currently shown to the user), prerendered pages, and/or pages in
+    // BackForwardCache, where the two latter kinds of pages may become primary.
+    kActive,
+
+    // Prerender2:
+    // RenderFrameHost committed in a prerendered page.
+    // A RenderFrameHost can reach this state after a navigation in a
+    // prerendered page, or be created in this state for an initial empty
+    // document when creating new root frames or new child frames on a
+    // prerendered page.
+    //
+    // Documents in this state are invisible to the user and aren't allowed to
+    // show any UI changes, but the page is allowed to load and run in the
+    // background. Documents in kPrerendering state can be evicted
+    // (canceling prerendering) at any time (e.g. by calling
+    // IsInactiveAndDisallowActivation).
+    kPrerendering,
+
+    // RenderFrameHost is stored in BackForwardCache.
+    // A document may be stored in BackForwardCache after the user has navigated
+    // away so that the RenderFrameHost can be re-used after history navigation.
+    kInBackForwardCache,
+
+    // RenderFrameHost is waiting to be unloaded and deleted, and is no longer
+    // visible to the user.
+    // After a cross-document navigation, the old documents are going to run
+    // unload handlers in the background and will be deleted thereafter e.g.
+    // after a DidFinishNavigation in the same frame for a different
+    // RenderFrameHost, up until RenderFrameDeleted.
+    kPendingDeletion,
+  };
+
+  // Returns the LifecycleState associated with this RenderFrameHost.
+  // Features that display UI to the user (or cross document/tab boundary in
+  // general, e.g. when using WebContents::FromRenderFrameHost) should first
+  // check whether the RenderFrameHost is in the appropriate lifecycle state.
+  //
+  // TODO(https://crbug.com/1183639): Currently, //content embedders that
+  // observe WebContentsObserver::RenderFrameCreated() may also learn about
+  // speculative RenderFrameHosts, which is the state before a RenderFrameHost
+  // becomes kPendingCommit and is picked as the final RenderFrameHost for a
+  // navigation.  The speculative state is a content-internal implementation
+  // detail that may go away and should not be relied on, and hence
+  // GetLifecycleState() will crash if it is called on a RenderFrameHost in such
+  // a state.  Eventually, we should make sure that embedders only learn about
+  // new RenderFrameHosts when they reach the kPendingCommit state.
+  virtual LifecycleState GetLifecycleState() = 0;
+
   // Returns true if this RenderFrameHost is currently in the frame tree for its
   // page. Specifically, this is when the RenderFrameHost and all of its
   // ancestors are the current RenderFrameHost in their respective

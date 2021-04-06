@@ -15948,8 +15948,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
             rfh_a->lifecycle_state());
   EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kReadyToBeDeleted,
             rfh_b->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kPendingDeletion,
+            rfh_b->GetLifecycleState());
   EXPECT_EQ(RenderFrameHostImpl::LifecycleStateImpl::kRunningUnloadHandlers,
             rfh_c->lifecycle_state());
+  EXPECT_EQ(RenderFrameHost::LifecycleState::kPendingDeletion,
+            rfh_c->GetLifecycleState());
 
   // The navigation has been canceled.
   navigation_observer.WaitForNavigationFinished();

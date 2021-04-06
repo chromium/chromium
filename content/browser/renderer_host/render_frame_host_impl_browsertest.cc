@@ -4390,6 +4390,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
           navigation_handle->GetRenderFrameHost());
       EXPECT_EQ(rfh->lifecycle_state(), LifecycleStateImpl::kPendingCommit);
+      EXPECT_EQ(rfh->GetLifecycleState(),
+                RenderFrameHost::LifecycleState::kPendingCommit);
     }
   };
 
