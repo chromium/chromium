@@ -15,6 +15,7 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -330,6 +331,45 @@ gfx::ImageSkia GetIconImage(const SkBitmap& icon, bool is_app) {
                 : extensions::util::GetDefaultExtensionIcon();
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WebStoreInstallAllowlistParameter {
+  kUndefined = 0,
+  kAllowlisted = 1,
+  kNotAllowlisted = 2,
+  kMaxValue = kNotAllowlisted,
+};
+
+// Track the value of the allowlist parameter received from Chrome Web Store.
+void ReportWebStoreInstallEsbAllowlistParameter(
+    const bool* allowlist_parameter) {
+  WebStoreInstallAllowlistParameter value;
+
+  if (!allowlist_parameter)
+    value = WebStoreInstallAllowlistParameter::kUndefined;
+  else if (*allowlist_parameter)
+    value = WebStoreInstallAllowlistParameter::kAllowlisted;
+  else
+    value = WebStoreInstallAllowlistParameter::kNotAllowlisted;
+
+  base::UmaHistogramEnumeration(
+      "Extensions.WebStoreInstall.EsbAllowlistParameter", value);
+}
+
+// Track if a user accepts to install a not allowlisted extensions.
+void ReportWebStoreInstallNotAllowlistedInstalled(bool installed,
+                                                  bool friction_dialog_shown) {
+  if (friction_dialog_shown) {
+    base::UmaHistogramBoolean(
+        "Extensions.WebStoreInstall.NotAllowlistedInstalledWithFriction",
+        installed);
+  } else {
+    base::UmaHistogramBoolean(
+        "Extensions.WebStoreInstall.NotAllowlistedInstalledWithoutFriction",
+        installed);
+  }
+}
+
 }  // namespace
 
 // static
@@ -499,10 +539,14 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnWebstoreParseSuccess(
                 ? ExtensionInstallPrompt::EXTENSION_REQUEST_PROMPT
                 : ExtensionInstallPrompt::EXTENSION_PENDING_REQUEST_PROMPT),
         ExtensionInstallPrompt::GetDefaultShowDialogCallback());
-  } else if (ShouldShowFrictionDialog(profile_)) {
-    ShowInstallFrictionDialog(web_contents);
   } else {
-    ShowInstallDialog(web_contents);
+    ReportWebStoreInstallEsbAllowlistParameter(details().esb_allowlist.get());
+
+    if (ShouldShowFrictionDialog(profile_)) {
+      ShowInstallFrictionDialog(web_contents);
+    } else {
+      ShowInstallDialog(web_contents);
+    }
   }
   // Control flow finishes up in OnInstallPromptDone, OnRequestPromptDone or
   // OnBlockByPolicyPromptDone.
@@ -613,6 +657,9 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnFrictionPromptDone(
     bool result) {
   content::WebContents* web_contents = GetSenderWebContents();
   if (!result || !web_contents) {
+    ReportWebStoreInstallNotAllowlistedInstalled(
+        /*installed=*/false, /*friction_dialog_shown=*/true);
+
     Respond(BuildResponse(api::webstore_private::RESULT_USER_CANCELLED,
                           kWebstoreUserCancelledError));
     // Matches the AddRef in Run().
@@ -711,6 +758,12 @@ void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallProceed() {
   // specific histogram here.
   ExtensionService::RecordPermissionMessagesHistogram(
       dummy_extension_.get(), "WebStoreInstall");
+
+  // Record when the user accepted to install a not allowlisted extension.
+  if (details().esb_allowlist && !*details().esb_allowlist) {
+    ReportWebStoreInstallNotAllowlistedInstalled(
+        /*installed=*/true, friction_dialog_shown_);
+  }
   Respond(BuildResponse(api::webstore_private::RESULT_SUCCESS, std::string()));
 }
 
@@ -728,6 +781,11 @@ void WebstorePrivateBeginInstallWithManifest3Function::HandleInstallAbort(
       user_initiated ? "InstallCancel" : "InstallAbort";
   ExtensionService::RecordPermissionMessagesHistogram(dummy_extension_.get(),
                                                       histogram_name.c_str());
+
+  if (details().esb_allowlist && !*details().esb_allowlist) {
+    ReportWebStoreInstallNotAllowlistedInstalled(
+        /*installed=*/false, friction_dialog_shown_);
+  }
 
   Respond(BuildResponse(api::webstore_private::RESULT_USER_CANCELLED,
                         kWebstoreUserCancelledError));

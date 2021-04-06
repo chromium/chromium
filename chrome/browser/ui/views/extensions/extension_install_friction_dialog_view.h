@@ -45,6 +45,7 @@ class ExtensionInstallFrictionDialogView
 
   content::PageNavigator* navigator_;
   base::OnceCallback<void(bool)> callback_;
+  bool learn_more_clicked_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_FRICTION_DIALOG_VIEW_H_

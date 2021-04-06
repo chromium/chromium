@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/extensions/extension_install_friction_dialog_view.h"
-#include <cstdint>
 
 #include "base/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -71,6 +71,25 @@ void ShowExtensionInstallFrictionDialog(
 
 }  // namespace chrome
 
+namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ExtensionInstallFrictionDialogAction {
+  kClose = 0,
+  kLearnMore = 1,
+  kContinueToInstall = 2,
+  kMaxValue = kContinueToInstall,
+};
+
+void ReportExtensionInstallFrictionDialogAction(
+    ExtensionInstallFrictionDialogAction action) {
+  base::UmaHistogramEnumeration("Extensions.InstallFrictionDialogAction",
+                                action);
+}
+
+}  // namespace
+
 ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
     content::PageNavigator* navigator,
     base::OnceCallback<void(bool)> callback)
@@ -92,7 +111,16 @@ ExtensionInstallFrictionDialogView::ExtensionInstallFrictionDialogView(
 
   auto run_callback = [](ExtensionInstallFrictionDialogView* dialog,
                          bool accept) {
-    // TODO(jeffcyr): Record UMA metric
+    ExtensionInstallFrictionDialogAction action;
+    if (accept) {
+      action = ExtensionInstallFrictionDialogAction::kContinueToInstall;
+    } else if (dialog->learn_more_clicked_) {
+      action = ExtensionInstallFrictionDialogAction::kLearnMore;
+    } else {
+      action = ExtensionInstallFrictionDialogAction::kClose;
+    }
+    ReportExtensionInstallFrictionDialogAction(action);
+
     std::move(dialog->callback_).Run(accept);
   };
   SetAcceptCallback(base::BindOnce(run_callback, base::Unretained(this), true));
@@ -158,6 +186,7 @@ void ExtensionInstallFrictionDialogView::OnLearnMoreLinkClicked() {
       url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
 
+  learn_more_clicked_ = true;
   navigator_->OpenURL(params);
   CancelDialog();
 

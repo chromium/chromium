@@ -1008,6 +1008,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.EsbAllowlistOmahaAttribute"
+    enum="ExtensionAllowlistOmahaAttributeValue" expires_after="2021-10-01">
+  <owner>jeffcyr@google.com</owner>
+  <owner>lucferron@chromium.org</owner>
+  <summary>
+    Reports the value of the Safe Browsing CRX allowlist custom omaha attribute
+    when an update check occurs for an extension.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.EventlessEventPages" units="units"
     expires_after="2021-06-01">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -2328,6 +2338,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Extensions.InstallFrictionDialogAction"
+    enum="ExtensionInstallFrictionDialogAction" expires_after="2021-10-01">
+  <owner>jeffcyr@google.com</owner>
+  <owner>lucferron@chromium.org</owner>
+  <summary>
+    Action taken in the extension install friction dialog displayed to Enhanced
+    Safe Browsing users before installing an extension that is not included in
+    the Safe Browsing CRX allowlist.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.InstallPrompt.TimeToCancel" units="ms"
     expires_after="M95">
   <owner>kelvinjiang@chromium.org</owner>
@@ -2857,7 +2878,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.NotAllowlistedDisabled" units="extensions"
-    expires_after="2021-06-01">
+    expires_after="2021-10-01">
   <owner>jeffcyr@google.com</owner>
   <owner>lucferron@chromium.org</owner>
   <summary>
@@ -2868,7 +2889,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.NotAllowlistedDisabledAndEsbUser"
-    units="extensions" expires_after="2021-06-01">
+    units="extensions" expires_after="2021-10-01">
   <owner>jeffcyr@google.com</owner>
   <owner>lucferron@chromium.org</owner>
   <summary>
@@ -2879,7 +2900,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.NotAllowlistedEnabled" units="extensions"
-    expires_after="2021-08-09">
+    expires_after="2021-10-01">
   <owner>jeffcyr@google.com</owner>
   <owner>lucferron@chromium.org</owner>
   <summary>
@@ -2890,7 +2911,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.NotAllowlistedEnabledAndEsbUser" units="extensions"
-    expires_after="2021-06-01">
+    expires_after="2021-10-01">
   <owner>jeffcyr@google.com</owner>
   <owner>lucferron@chromium.org</owner>
   <summary>
@@ -3753,6 +3774,42 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>
     Tracks whether the total size of an interrupted webstore download was known.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.WebStoreInstall.EsbAllowlistParameter"
+    enum="WebStoreInstallAllowlistParameter" expires_after="2021-10-01">
+  <owner>jeffcyr@google.com</owner>
+  <owner>lucferron@chromium.org</owner>
+  <summary>
+    Reports the Safe Browsing CRX allowlist state received from Chrome Web Store
+    when a user presses on &quot;Add to Chrome&quot; in Chrome Web Store.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithFriction"
+    enum="Boolean" expires_after="2021-10-01">
+  <owner>jeffcyr@google.com</owner>
+  <owner>lucferron@chromium.org</owner>
+  <summary>
+    Reports when a user with install friction dialog enabled tries to install an
+    extension that is not included in the Safe Browsing CRX allowlist. 'True' if
+    the install dialog is accepted or 'False' if the friction dialog or install
+    dialog is canceled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.WebStoreInstall.NotAllowlistedInstalledWithoutFriction"
+    enum="Boolean" expires_after="2021-10-01">
+  <owner>jeffcyr@google.com</owner>
+  <owner>lucferron@chromium.org</owner>
+  <summary>
+    Reports when a user with install friction dialog disabled tries to install
+    an extension that is not included in the Safe Browsing CRX allowlist. 'True'
+    if the install dialog is accepted or 'False' if the install dialog is
+    canceled.
   </summary>
 </histogram>
 

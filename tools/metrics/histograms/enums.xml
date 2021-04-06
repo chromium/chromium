@@ -24759,6 +24759,12 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Arguments provided neither image data nor icon index"/>
 </enum>
 
+<enum name="ExtensionAllowlistOmahaAttributeValue">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Allowlisted"/>
+  <int value="2" label="Not allowlisted"/>
+</enum>
+
 <enum name="ExtensionBackgroundPageType">
   <int value="0" label="None"/>
   <int value="1" label="Persistent"/>
@@ -27109,6 +27115,12 @@ Called by update_extension_histograms.py.-->
   <int value="5" label="NOTIFIED_FROM_MANAGEMENT_NOT_FORCED"/>
   <int value="6" label="SEEN_BY_POLICY_LOADER"/>
   <int value="7" label="SEEN_BY_EXTERNAL_PROVIDER"/>
+</enum>
+
+<enum name="ExtensionInstallFrictionDialogAction">
+  <int value="0" label="Close"/>
+  <int value="1" label="Learn more"/>
+  <int value="2" label="Continue to install"/>
 </enum>
 
 <enum name="ExtensionInstallPromptExperimentLinkAction">
@@ -82061,6 +82073,12 @@ Called by update_scheduler_enums.py.-->
   <int value="1" label="ArrayBuffer"/>
   <int value="2" label="ArrayBufferView"/>
   <int value="3" label="Blob"/>
+</enum>
+
+<enum name="WebStoreInstallAllowlistParameter">
+  <int value="0" label="Undefined"/>
+  <int value="1" label="Allowlisted"/>
+  <int value="2" label="Not allowlisted"/>
 </enum>
 
 <enum name="WebUISettingsPathHashes">
