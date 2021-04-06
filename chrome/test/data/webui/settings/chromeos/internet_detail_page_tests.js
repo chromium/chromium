@@ -10,7 +10,7 @@
 // #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.m.js';
+// #import {waitAfterNextRender, eventToPromise} from 'chrome://test/test_util.m.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // clang-format on
 
@@ -458,6 +458,10 @@ suite('InternetDetailPage', function() {
     });
 
     test('Deep link to disconnect button', async () => {
+      // Add listener for popstate event fired when the dialog closes and the
+      // router navigates backwards.
+      const popStatePromise = test_util.eventToPromise('popstate', window);
+
       init();
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setNetworkTypeEnabledState(mojom.NetworkType.kCellular, true);
@@ -481,10 +485,15 @@ suite('InternetDetailPage', function() {
       assertEquals(
           deepLinkElement, getDeepActiveElement(),
           'Disconnect network button should be focused for settingId=17.');
+
+      // Close the dialog and wait for os_route's popstate listener to fire. If
+      // we don't add this wait, this event can fire during the next test which
+      // will interfere with its routing.
+      internetDetailPage.close();
+      await popStatePromise;
     });
 
-    // Test is flaky, temporarily disabled (crbug.com/1194243).
-    test.skip('Deep link to sim lock toggle', async () => {
+    test('Deep link to sim lock toggle', async () => {
       init();
       const mojom = chromeos.networkConfig.mojom;
       mojoApi_.setDeviceStateForTest({
