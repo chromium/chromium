@@ -116,9 +116,7 @@ void TimerBase::StartInternal(const Location& posted_from, TimeDelta delay) {
 }
 
 void TimerBase::Stop() {
-  // TODO(gab): Enable this when it's no longer called racily from
-  // RunScheduledTask(): https://crbug.com/587199.
-  // DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
 
   is_running_ = false;
 
@@ -157,22 +155,16 @@ void TimerBase::Reset() {
 }
 
 TimeTicks TimerBase::Now() const {
-  // TODO(gab): Enable this when it's no longer called racily from
-  // RunScheduledTask(): https://crbug.com/587199.
-  // DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
   return tick_clock_ ? tick_clock_->NowTicks() : TimeTicks::Now();
 }
 
 void TimerBase::PostNewScheduledTask(TimeDelta delay) {
-  // TODO(gab): Enable this when it's no longer called racily from
-  // RunScheduledTask(): https://crbug.com/587199.
-  // DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
   DCHECK(!scheduled_task_);
   is_running_ = true;
   scheduled_task_ = new BaseTimerTaskInternal(this);
   if (delay > TimeDelta::FromMicroseconds(0)) {
-    // TODO(gab): Posting BaseTimerTaskInternal::Run to another sequence makes
-    // this code racy. https://crbug.com/587199
     GetTaskRunner()->PostDelayedTask(
         posted_from_,
         BindOnce(&BaseTimerTaskInternal::Run, Owned(scheduled_task_)), delay);
@@ -190,9 +182,7 @@ scoped_refptr<SequencedTaskRunner> TimerBase::GetTaskRunner() {
 }
 
 void TimerBase::AbandonScheduledTask() {
-  // TODO(gab): Enable this when it's no longer called racily from
-  // RunScheduledTask() -> Stop(): https://crbug.com/587199.
-  // DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
   if (scheduled_task_) {
     scheduled_task_->Abandon();
     scheduled_task_ = nullptr;
@@ -200,9 +190,7 @@ void TimerBase::AbandonScheduledTask() {
 }
 
 void TimerBase::RunScheduledTask() {
-  // TODO(gab): Enable this when it's no longer called racily:
-  // https://crbug.com/587199.
-  // DCHECK(origin_sequence_checker_.CalledOnValidSequence());
+  DCHECK(origin_sequence_checker_.CalledOnValidSequence());
 
   // Task may have been disabled.
   if (!is_running_)
