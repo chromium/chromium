@@ -202,6 +202,32 @@ class HangWatcherBlockingThreadTest : public HangWatcherTest {
 };
 }  // namespace
 
+// Regression test for crbug.com/1196285
+TEST_F(HangWatcherTest, MultipleHangWatchScopeDisabledDoNotCancelOut) {
+  // Register the main test thread for hang watching.
+  auto unregister_thread_closure =
+      HangWatcher::RegisterThread(base::HangWatcher::ThreadType::kUIThread);
+
+  // De-activate hang watching,
+  HangWatchScopeDisabled disabler;
+
+  {
+    // Redundently de-activate hang watching.
+    HangWatchScopeDisabled disabler_2;
+  }
+
+  // Create a hang.
+  HangWatchScopeEnabled expires_instantly(base::TimeDelta{});
+  task_environment_.FastForwardBy(kHangTime);
+
+  // Trigger a monitoring on HangWatcher thread and verify results.
+  // Hang is not detected since it was covered by a disabler object. The
+  // creation and destruction of |disabler_2| should not affect that.
+  hang_watcher_.SignalMonitorEventForTesting();
+  monitor_event_.Wait();
+  ASSERT_FALSE(hang_event_.IsSignaled());
+}
+
 TEST_F(
     HangWatcherTest,
     ScopeDisabledCreateScopeDisabledDestroyScopeEnabledCreateScopeEnabledDestroy) {

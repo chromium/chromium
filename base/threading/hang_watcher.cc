@@ -232,8 +232,24 @@ HangWatchScopeEnabled::~HangWatchScopeEnabled() {
 HangWatchScopeDisabled::HangWatchScopeDisabled() {
   internal::HangWatchState* current_hang_watch_state =
       internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
-
   if (!current_hang_watch_state) {
+    took_effect_ = false;
+    return;
+  }
+
+  uint64_t old_flags;
+  base::TimeTicks old_deadline;
+  std::tie(old_flags, old_deadline) =
+      current_hang_watch_state->GetFlagsAndDeadline();
+
+  // If there already is an active HangWatchScopeDisabled.
+  const bool has_active_hang_watch_disabled =
+      internal::HangWatchDeadline::IsFlagSet(
+          internal::HangWatchDeadline::Flag::kHasActiveHangWatchScopeDisabled,
+          old_flags);
+
+  if (has_active_hang_watch_disabled) {
+    took_effect_ = false;
     return;
   }
 
@@ -245,7 +261,7 @@ HangWatchScopeDisabled::~HangWatchScopeDisabled() {
   internal::HangWatchState* current_hang_watch_state =
       internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
 
-  if (!current_hang_watch_state)
+  if (!current_hang_watch_state || !took_effect_)
     return;
 
   // If this instance outlived all HangWatchScopeEnabled instances watching

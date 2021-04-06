@@ -129,6 +129,11 @@ class BASE_EXPORT HangWatchScopeDisabled {
   ~HangWatchScopeDisabled();
   HangWatchScopeDisabled(const HangWatchScopeDisabled&) = delete;
   HangWatchScopeDisabled& operator=(const HangWatchScopeDisabled&) = delete;
+
+ private:
+  // Will be true if the object actually disabled hang watching and
+  // false if watching was already disabled by a previously declared object.
+  bool took_effect_ = true;
 };
 
 // Monitors registered threads for hangs by inspecting their associated
