@@ -6,6 +6,8 @@
 
 namespace network {
 
+// These strings are used in histograms, so do not change the values without
+// updating/deprecating histograms which use RequestDestination.
 const char* RequestDestinationToString(
     network::mojom::RequestDestination dest) {
   switch (dest) {
