@@ -20,6 +20,7 @@
 #include "components/signin/public/identity_manager/ios/device_accounts_provider.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

@@ -23,6 +23,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/error_reporting/constants.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // Per the memfd_create man page, we need _GNU_SOURCE
 #ifndef _GNU_SOURCE

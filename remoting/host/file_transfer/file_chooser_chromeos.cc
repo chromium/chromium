@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/notreached.h"
+#include "base/sequenced_task_runner.h"
 #include "remoting/host/file_transfer/file_chooser.h"
 
 namespace remoting {

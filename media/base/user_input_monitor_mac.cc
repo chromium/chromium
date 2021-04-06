@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 
 namespace media {
