@@ -249,7 +249,7 @@ class PageInfo : public content::WebContentsObserver {
   void OnChangePasswordButtonPressed();
 
   // This method is called when the user pressed "Mark as legitimate" button.
-  void OnWhitelistPasswordReuseButtonPressed();
+  void OnAllowlistPasswordReuseButtonPressed();
 
   // Return a pointer to the ChooserContextBase corresponding to the
   // content settings type, |type|. Returns nullptr for content settings

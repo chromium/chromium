@@ -16,8 +16,8 @@
 #include "url/gurl.h"
 
 ChromePageInfoUiDelegate::ChromePageInfoUiDelegate(Profile* profile,
-                                                   const GURL& url)
-    : profile_(profile), site_url_(url) {}
+                                                   const GURL& site_url)
+    : profile_(profile), site_url_(site_url) {}
 
 permissions::PermissionResult ChromePageInfoUiDelegate::GetPermissionStatus(
     ContentSettingsType type) {

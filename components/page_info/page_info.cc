@@ -642,7 +642,7 @@ void PageInfo::OnChangePasswordButtonPressed() {
 #endif
 }
 
-void PageInfo::OnWhitelistPasswordReuseButtonPressed() {
+void PageInfo::OnAllowlistPasswordReuseButtonPressed() {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   delegate_->OnUserActionOnPasswordUi(
       safe_browsing::WarningAction::MARK_AS_LEGITIMATE);

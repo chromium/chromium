@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_hover_button.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row.h"
 #include "chrome/browser/ui/views/page_info/permission_selector_row_observer.h"
+#include "chrome/browser/ui/views/page_info/security_information_view.h"
 #include "components/page_info/page_info_ui.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/security_state/core/security_state.h"
@@ -29,7 +30,6 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/widget/widget.h"
 
-class BubbleHeaderView;
 class GURL;
 class Profile;
 
@@ -151,8 +151,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   CreateSecurityDescriptionForPasswordReuse() const override;
 #endif
 
-  // Creates the contents of the |site_settings_view_|. The ownership of the
-  // returned view is transferred to the caller.
+  // Creates the contents of the |site_settings_view_|.
   std::unique_ptr<views::View> CreateSiteSettingsView() WARN_UNUSED_RESULT;
 
   // Posts a task to HandleMoreInfoRequestAsync() below.
@@ -169,7 +168,7 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   Profile* const profile_;
 
   // The header section (containing security-related information).
-  BubbleHeaderView* header_ = nullptr;
+  SecurityInformationView* header_ = nullptr;
 
   // The raw details of the status of the identity check for this site.
   std::u16string details_text_ = std::u16string();

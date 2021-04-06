@@ -12,7 +12,7 @@ class Profile;
 
 class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
  public:
-  ChromePageInfoUiDelegate(Profile* profile, const GURL& url);
+  ChromePageInfoUiDelegate(Profile* profile, const GURL& site_url);
   ~ChromePageInfoUiDelegate() override = default;
 
   // PageInfoUiDelegate implementation
