@@ -408,6 +408,22 @@ std::ostream& operator<<(
   return out;
 }
 
+std::string GetLastUsedProfileBaseName() {
+  PrefService* local_state = g_browser_process->local_state();
+  DCHECK(local_state);
+  std::string last_used_profile_base_name =
+      local_state->GetString(prefs::kProfileLastUsed);
+  // Make sure the system profile can't be the one marked as the last one used
+  // since it shouldn't get a browser.
+  if (!last_used_profile_base_name.empty() &&
+      last_used_profile_base_name !=
+          base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe()) {
+    return last_used_profile_base_name;
+  }
+
+  return chrome::kInitialProfile;
+}
+
 }  // namespace
 
 ProfileManager::ProfileManager(const base::FilePath& user_data_dir)
@@ -740,23 +756,7 @@ Profile* ProfileManager::GetLastUsedProfile(
 
 base::FilePath ProfileManager::GetLastUsedProfileDir(
     const base::FilePath& user_data_dir) {
-  return user_data_dir.AppendASCII(GetLastUsedProfileName());
-}
-
-std::string ProfileManager::GetLastUsedProfileName() {
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
-  const std::string last_used_profile_name =
-      local_state->GetString(prefs::kProfileLastUsed);
-  // Make sure the system profile can't be the one marked as the last one used
-  // since it shouldn't get a browser.
-  if (!last_used_profile_name.empty() &&
-      last_used_profile_name !=
-          base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe()) {
-    return last_used_profile_name;
-  }
-
-  return chrome::kInitialProfile;
+  return user_data_dir.AppendASCII(GetLastUsedProfileBaseName());
 }
 
 std::vector<Profile*> ProfileManager::GetLastOpenedProfiles(
@@ -1050,7 +1050,7 @@ void ProfileManager::AutoloadProfiles() {
 }
 
 void ProfileManager::CleanUpEphemeralProfiles() {
-  const std::string last_used_profile = GetLastUsedProfileName();
+  const std::string last_used_profile_base_name = GetLastUsedProfileBaseName();
   bool last_active_profile_deleted = false;
   base::FilePath new_profile_path;
   std::vector<base::FilePath> profiles_to_delete;
@@ -1062,7 +1062,7 @@ void ProfileManager::CleanUpEphemeralProfiles() {
     if (entry->IsEphemeral()) {
       profiles_to_delete.push_back(profile_path);
       RemoveFromLastActiveProfilesPrefList(profile_path);
-      if (profile_path.BaseName().MaybeAsASCII() == last_used_profile)
+      if (profile_path.BaseName().MaybeAsASCII() == last_used_profile_base_name)
         last_active_profile_deleted = true;
     } else if (new_profile_path.empty()) {
       new_profile_path = profile_path;
@@ -2205,7 +2205,7 @@ void ProfileManager::UpdateLastUser(Profile* last_active) {
       !last_active->IsSystemProfile()) {
     std::string profile_path_base =
         last_active->GetPath().BaseName().MaybeAsASCII();
-    if (profile_path_base != GetLastUsedProfileName())
+    if (profile_path_base != GetLastUsedProfileBaseName())
       profiles::SetLastUsedProfile(profile_path_base);
 
     ProfileAttributesEntry* entry =

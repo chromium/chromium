@@ -166,14 +166,6 @@ class ProfileManager : public content::NotificationObserver,
   // always must match `user_data_dir_` field.
   base::FilePath GetLastUsedProfileDir(const base::FilePath& user_data_dir);
 
-  // Get the name of the last used profile, or if that's undefined, the default
-  // profile.
-  // TODO(https://crbug.com/1195201): ProfileName means the profile directory
-  // within the user data directory and not the visible profile name. Rename to
-  // `GetLastUsedProfileBaseName()`. In addition, this method is only used
-  // internally, and can be moved to anonymous namespace in the .cc file.
-  std::string GetLastUsedProfileName();
-
   // Get the Profiles which are currently open, i.e. have open browsers or were
   // open the last time Chrome was running. Profiles that fail to initialize are
   // skipped. The Profiles appear in the order they were opened. The last used
