@@ -24,6 +24,12 @@ source_set("field_trial") {
 source_set("first_run") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "first_run_coordinator.h",
+    "first_run_coordinator.mm",
+    "first_run_screen_delegate.h",
+    "first_run_screen_provider.h",
+    "first_run_screen_provider.mm",
+    "first_run_screen_type.h",
     "first_run_util.h",
     "first_run_util.mm",
     "location_permissions_commands.h",
