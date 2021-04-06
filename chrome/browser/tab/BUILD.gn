@@ -45,6 +45,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataStorageFactory.java",
     "java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java",
+    "java/src/org/chromium/chrome/browser/tab/state/StorePersistedTabData.java",
   ]
 
   srcjar_deps = [
