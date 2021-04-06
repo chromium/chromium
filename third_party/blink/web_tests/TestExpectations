@@ -6752,3 +6752,6 @@ crbug.com/476553 virtual/scroll-unification-unified-autoplay/external/wpt/featur
 # Sheriff 2021-04-05
 crbug.com/921151 http/tests/security/mixedContent/insecure-iframe-with-hsts.https.html [ Failure Pass ]
 crbug.com/1093840 external/wpt/mathml/relations/html5-tree/math-global-event-handlers.tentative.html [ Pass Timeout ]
+
+# Sheriff 2021-04-06
+crbug.com/1032451 [ Linux ] virtual/threaded/animations/stability/animation-iteration-event-destroy-renderer.html [ Pass Failure ]
