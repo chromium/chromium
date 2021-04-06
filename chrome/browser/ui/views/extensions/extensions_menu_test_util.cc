@@ -217,3 +217,10 @@ ExtensionsMenuItemView* ExtensionsMenuTestUtil::GetMenuItemViewAtIndex(
     return nullptr;
   return menu_items[index];
 }
+
+// static
+std::unique_ptr<ExtensionActionTestHelper> ExtensionActionTestHelper::Create(
+    Browser* browser,
+    bool is_real_window) {
+  return std::make_unique<ExtensionsMenuTestUtil>(browser, is_real_window);
+}

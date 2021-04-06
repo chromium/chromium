@@ -4891,8 +4891,6 @@ static_library("test_support") {
     ]
     sources += [
       "extensions/extension_action_test_helper.h",
-      "views/extensions/extension_action_test_helper_views.cc",
-      "views/extensions/extension_action_test_helper_views.h",
       "views/extensions/extensions_menu_test_util.cc",
       "views/extensions/extensions_menu_test_util.h",
       "views/find_bar_host_unittest_util_views.cc",
