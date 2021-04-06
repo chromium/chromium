@@ -4206,8 +4206,6 @@ static_library("ui") {
       "views/toolbar/app_menu.h",
       "views/toolbar/back_forward_button.cc",
       "views/toolbar/back_forward_button.h",
-      "views/toolbar/browser_actions_container.cc",
-      "views/toolbar/browser_actions_container.h",
       "views/toolbar/browser_app_menu_button.cc",
       "views/toolbar/browser_app_menu_button.h",
       "views/toolbar/chrome_labs_bubble_view.cc",
