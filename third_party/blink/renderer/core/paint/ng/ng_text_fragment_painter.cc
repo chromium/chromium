@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_text_decoration_offset.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_inline_text.h"
 #include "third_party/blink/renderer/core/paint/document_marker_painter.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/inline_text_box_painter.h"
@@ -52,7 +53,11 @@ inline const DisplayItemClient& AsDisplayItemClient(
 inline PhysicalRect ComputeBoxRect(const NGInlineCursor& cursor,
                                    const PhysicalOffset& paint_offset,
                                    const PhysicalOffset& parent_offset) {
-  PhysicalRect box_rect = cursor.CurrentItem()->RectInContainerFragment();
+  PhysicalRect box_rect;
+  if (const auto* svg_data = cursor.CurrentItem()->SVGFragmentData())
+    box_rect = PhysicalRect::FastAndLossyFromFloatRect(svg_data->rect);
+  else
+    box_rect = cursor.CurrentItem()->RectInContainerFragment();
   box_rect.offset.left += paint_offset.left;
   // We round the y-axis to ensure consistent line heights.
   box_rect.offset.top =
@@ -160,6 +165,13 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   PhysicalRect box_rect = ComputeBoxRect(cursor_, paint_offset, parent_offset_);
+  const LayoutSVGInlineText* svg_inline_text = nullptr;
+  float scaling_factor = 1.0f;
+  if (text_item.Type() == NGFragmentItem::kSVGText) {
+    svg_inline_text = To<LayoutSVGInlineText>(layout_object);
+    scaling_factor = svg_inline_text->ScalingFactor();
+    DCHECK_NE(scaling_factor, 0.0f);
+  }
   PhysicalRect ink_overflow = text_item.SelfInkOverflow();
   ink_overflow.Move(box_rect.offset);
   IntRect visual_rect = EnclosingIntRect(ink_overflow);
@@ -228,7 +240,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   // Set our font.
-  const Font& font = style.GetFont();
+  const Font& font =
+      svg_inline_text ? svg_inline_text->ScaledFont() : style.GetFont();
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
 
@@ -242,6 +255,10 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   int ascent = font_data ? font_data->GetFontMetrics().Ascent() : 0;
   PhysicalOffset text_origin(box_rect.offset.left,
                              box_rect.offset.top + ascent);
+  if (svg_inline_text && scaling_factor != 1.0f) {
+    state_saver.emplace(context);
+    context.Scale(1 / scaling_factor, 1 / scaling_factor);
+  }
   NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
                              text_origin, box_rect, is_horizontal);
   NGHighlightPainter highlight_painter(
@@ -254,7 +271,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   highlight_painter.Paint(NGHighlightPainter::kBackground);
 
   if (!is_horizontal) {
-    state_saver.emplace(context);
+    if (!state_saver)
+      state_saver.emplace(context);
     // Because we rotate the GraphicsContext to match the logical direction,
     // transpose the |box_rect| to match to it.
     box_rect.size = PhysicalSize(box_rect.Height(), box_rect.Width());

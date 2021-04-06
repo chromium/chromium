@@ -59,7 +59,35 @@ void NGSVGTextLayoutAlgorithm::Layout(
   // 6. Adjust positions: x, y
   AdjustPositionsXY(items, resolve);
 
-  // TODO(crbug.com/1179585): Implement the following steps.
+  // 7. Apply anchoring
+  // TODO(crbug.com/1179585): Implement this step.
+
+  // 8. Position on path
+  // TODO(crbug.com/1179585): Implement this step.
+
+  // Write back the result to NGFragmentItems.
+  for (const NGSVGPerCharacterInfo& info : result_) {
+    if (info.middle)
+      continue;
+    NGFragmentItemsBuilder::ItemWithOffset& item = items[info.item_index];
+    const auto* layout_object =
+        To<LayoutSVGInlineText>(item->GetLayoutObject());
+    // TODO(crbug.com/1179585): Supports vertical flow.
+    LayoutUnit ascent = layout_object->ScaledFont()
+                            .PrimaryFont()
+                            ->GetFontMetrics()
+                            .FixedAscent();
+    FloatRect scaled_rect(*info.x, *info.y - ascent, item->Size().width,
+                          item->Size().height);
+    const float scaling_factor = layout_object->ScalingFactor();
+    DCHECK_NE(scaling_factor, 0.0f);
+    PhysicalRect unscaled_rect(
+        LayoutUnit(*info.x / scaling_factor),
+        LayoutUnit((*info.y - ascent) / scaling_factor),
+        LayoutUnit(item->Size().width / scaling_factor),
+        LayoutUnit(item->Size().height / scaling_factor));
+    item.item.ConvertToSVGText(unscaled_rect, scaled_rect);
+  }
 }
 
 bool NGSVGTextLayoutAlgorithm::Setup(wtf_size_t approximate_count) {

@@ -107,7 +107,8 @@ class CORE_EXPORT NGFragmentItem {
   bool IsListMarker() const;
 
   // Make this kSVGText type. |this| type must be kText.
-  void ConvertToSVGText(const FloatRect rect);
+  void ConvertToSVGText(const PhysicalRect& unscaled_rect,
+                        const FloatRect& scaled_rect);
 
   // A sequence number of fragments generated from a |LayoutObject|.
   // For line boxes, please see |kInitialLineFragmentId|.

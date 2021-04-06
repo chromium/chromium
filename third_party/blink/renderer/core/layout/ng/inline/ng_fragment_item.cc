@@ -318,17 +318,19 @@ bool NGFragmentItem::IsListMarker() const {
   return layout_object_ && layout_object_->IsLayoutNGOutsideListMarker();
 }
 
-void NGFragmentItem::ConvertToSVGText(const FloatRect rect) {
+void NGFragmentItem::ConvertToSVGText(const PhysicalRect& unscaled_rect,
+                                      const FloatRect& scaled_rect) {
   DCHECK(RuntimeEnabledFeatures::SVGTextNGEnabled());
   DCHECK_EQ(Type(), kText);
   auto data = std::make_unique<NGSVGFragmentData>();
   data->shape_result = std::move(text_.shape_result);
   data->text_offset = std::move(text_.text_offset);
-  data->rect = rect;
+  data->rect = scaled_rect;
   text_.~TextItem();
   new (&svg_text_) SVGTextItem();
   svg_text_.data = std::move(data);
   type_ = kSVGText;
+  rect_ = unscaled_rect;
 }
 
 bool NGFragmentItem::HasNonVisibleOverflow() const {
