@@ -151,6 +151,9 @@ class BASE_EXPORT JobTaskSource : public TaskSource {
       return value_.load(std::memory_order_relaxed) != kNotWaiting;
     }
 
+    // Resets the status as kNotWaiting  using std::memory_order_relaxed.
+    void Reset();
+
     // Sets the status as kWaitingForWorkerToYield using
     // std::memory_order_relaxed.
     void SetWaiting();

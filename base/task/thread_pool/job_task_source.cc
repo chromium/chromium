@@ -62,6 +62,10 @@ JobTaskSource::State::Value JobTaskSource::State::Load() const {
 JobTaskSource::JoinFlag::JoinFlag() = default;
 JobTaskSource::JoinFlag::~JoinFlag() = default;
 
+void JobTaskSource::JoinFlag::Reset() {
+  value_.store(kNotWaiting, std::memory_order_relaxed);
+}
+
 void JobTaskSource::JoinFlag::SetWaiting() {
   value_.store(kWaitingForWorkerToYield, std::memory_order_relaxed);
 }
@@ -184,6 +188,10 @@ bool JobTaskSource::WaitForParticipationOpportunity() {
     // |worker_count - 1| to exclude the joining thread which is not active.
     max_concurrency = GetMaxConcurrency(state.worker_count() - 1);
   }
+  // It's possible though unlikely that the joining thread got a participation
+  // opportunity without a worker signaling.
+  join_flag_.Reset();
+
   // Case A:
   if (state.worker_count() <= max_concurrency && !state.is_canceled())
     return true;
