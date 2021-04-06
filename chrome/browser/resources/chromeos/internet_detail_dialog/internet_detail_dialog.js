@@ -577,17 +577,23 @@ Polymer({
     /** @type {!Array<string>} */ const fields = [];
     const type = this.managedProperties_.type;
     if (type == chromeos.networkConfig.mojom.NetworkType.kCellular) {
+      if (this.isUpdatedCellularUiEnabled_) {
+        fields.push('cellular.activationState');
+      }
       fields.push(
-          'cellular.activationState', 'cellular.servingOperator.name',
-          'cellular.roamingState');
+          'cellular.servingOperator.name', 'cellular.networkTechnology');
     }
     if (OncMojo.isRestrictedConnectivity(this.managedProperties_.portalState)) {
       fields.push('portalState');
     }
+    // Two separate checks for type == kCellular because the order of the array
+    // dictates the order the fields appear on the UI. We want portalState to
+    // show after the earlier Cellular fields but before these later fields.
     if (type == chromeos.networkConfig.mojom.NetworkType.kCellular) {
       fields.push(
-          'cellular.homeProvider.name', 'cellular.meid', 'cellular.esn',
-          'cellular.iccid', 'cellular.imei', 'cellular.imsi', 'cellular.mdn',
+          'cellular.homeProvider.name', 'cellular.homeProvider.country',
+          'cellular.firmwareRevision', 'cellular.hardwareRevision',
+          'cellular.esn', 'cellular.iccid', 'cellular.imei', 'cellular.meid',
           'cellular.min');
     }
     return fields;
