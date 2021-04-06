@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_controller.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -24,6 +25,7 @@ IntersectionObserverController::IntersectionObserverController(
 IntersectionObserverController::~IntersectionObserverController() = default;
 
 void IntersectionObserverController::PostTaskToDeliverNotifications() {
+  recordreplay::Assert("IntersectionObserverController::PostTaskToDeliverNotifications");
   DCHECK(GetExecutionContext());
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kInternalIntersectionObserver)
@@ -63,6 +65,7 @@ void IntersectionObserverController::DeliverNotifications(
 bool IntersectionObserverController::ComputeIntersections(
     unsigned flags,
     LocalFrameUkmAggregator& ukm_aggregator) {
+  recordreplay::Assert("IntersectionObserverController::ComputeIntersections Start");
   needs_occlusion_tracking_ = false;
   if (GetExecutionContext()) {
     TRACE_EVENT0("blink",
@@ -87,6 +90,7 @@ bool IntersectionObserverController::ComputeIntersections(
       needs_occlusion_tracking_ |= observation->Observer()->trackVisibility();
     }
   }
+  recordreplay::Assert("IntersectionObserverController::ComputeIntersections Done");
   return needs_occlusion_tracking_;
 }
 

@@ -260,10 +260,11 @@ void DiscardableSharedMemoryHeap::ReleaseFreeMemory() {
 void DiscardableSharedMemoryHeap::ReleasePurgedMemory() {
   // Erase all purged segments after rearranging the segments in such a way
   // that resident segments precede all purged segments.
-  recordreplay::Assert("DiscardableSharedMemoryHeap::ReleasePurgedMemory Start");
+  recordreplay::Assert("DiscardableSharedMemoryHeap::ReleasePurgedMemory Start %lu", memory_segments_.size());
   memory_segments_.erase(
       std::partition(memory_segments_.begin(), memory_segments_.end(),
                      [](const std::unique_ptr<ScopedMemorySegment>& segment) {
+                       recordreplay::Assert("DiscardableSharedMemoryHeap::ReleasePurgedMemory partition %d", segment->IsResident());
                        return segment->IsResident();
                      }),
       memory_segments_.end());

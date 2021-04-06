@@ -89,6 +89,11 @@ class HeapMojoAssociatedRemote {
     explicit Wrapper(ContextLifecycleNotifier* notifier) {
       SetContextLifecycleNotifier(notifier);
     }
+    ~Wrapper() {
+      // When recording/replaying objects will be collected at non-deterministic points.
+      // For now we let all associated resources leak.
+      associated_remote_.leak();
+    }
     Wrapper(const Wrapper&) = delete;
     Wrapper& operator=(const Wrapper&) = delete;
     Wrapper(Wrapper&&) = default;
@@ -104,8 +109,6 @@ class HeapMojoAssociatedRemote {
 
     // ContextLifecycleObserver methods
     void ContextDestroyed() override {
-      // When recording/replaying objects will be collected at non-deterministic points.
-      // For now we let all associated resources leak.
       if (recordreplay::IsRecordingOrReplaying()) {
         return;
       }

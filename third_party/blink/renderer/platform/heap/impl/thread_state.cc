@@ -1342,8 +1342,10 @@ void ThreadState::AtomicPauseSweepAndCompact(
   PoisonUnmarkedObjects();
 #endif  // ADDRESS_SANITIZER
   DCHECK(IsSweepingInProgress());
-  if (sweeping_type == BlinkGC::kEagerSweeping) {
-    // Eager sweeping should happen only in testing.
+  if (sweeping_type == BlinkGC::kEagerSweeping ||
+      recordreplay::IsRecordingOrReplaying()) {
+    // Eager sweeping should happen only in testing, or when recording/replaying
+    // to avoid posting runnables at non-deterministic points.
     CompleteSweep();
   } else {
     DCHECK(sweeping_type == BlinkGC::kConcurrentAndLazySweeping);

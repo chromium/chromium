@@ -643,6 +643,7 @@ void ClientDiscardableSharedMemoryManager::AllocateCompletedOnIO(
 
 void ClientDiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
     int32_t id) {
+  recordreplay::Assert("ClientDiscardableSharedMemoryManager::DeletedDiscardableSharedMemory %d", id);
   io_task_runner_->PostTask(FROM_HERE,
                             base::BindOnce(&DeletedDiscardableSharedMemoryOnIO,
                                            manager_mojo_.get(), id));

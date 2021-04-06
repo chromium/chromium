@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "mojo/public/cpp/system/wait.h"
@@ -750,7 +751,13 @@ void ScriptStreamer::OnDataPipeReadable(MojoResult result,
   watcher_->ArmOrNotify();
 }
 
-ScriptStreamer::~ScriptStreamer() = default;
+ScriptStreamer::~ScriptStreamer() {
+  // When recording/replaying we leak the handle to avoid closing it at a
+  // non-deterministic point.
+  if (recordreplay::IsRecordingOrReplaying()) {
+    (void)data_pipe_.release();
+  }
+}
 
 void ScriptStreamer::Prefinalize() {
   // Reset and cancel the watcher. This has to be called in the prefinalizer,

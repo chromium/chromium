@@ -118,6 +118,10 @@ class AssociatedInterfacePtrState : public AssociatedInterfacePtrStateBase {
     std::swap(other->proxy_, proxy_);
   }
 
+  void Leak() {
+    (void)proxy_.release();
+  }
+
   void Bind(AssociatedInterfacePtrInfo<Interface> info,
             scoped_refptr<base::SequencedTaskRunner> runner) {
     DCHECK(!proxy_);

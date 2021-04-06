@@ -7668,7 +7668,6 @@ bool Document::HaveRenderBlockingResourcesLoaded() const {
 
 Locale& Document::GetCachedLocale(const AtomicString& locale) {
   recordreplay::Assert("Document::GetCachedLocale Start %s", locale.Utf8().c_str());
-  recordreplay::Print("Document::GetCachedLocale");
   AtomicString locale_key = locale;
   if (locale.IsEmpty() ||
       !RuntimeEnabledFeatures::LangAttributeAwareFormControlUIEnabled()) {

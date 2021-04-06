@@ -58,6 +58,7 @@
 - (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
                 painter:
                     (const base::scoped_nsobject<ScrollbarPainter>&)painter {
+  recordreplay::AutoPassThroughEvents pt;
   if (!(self = [super init]))
     return nil;
   _scrollbar = scrollbar;
@@ -85,6 +86,7 @@
 }
 
 - (void)dealloc {
+  recordreplay::AutoPassThroughEvents pt;
   [_scrollbarPainter removeObserver:self forKeyPath:@"knobAlpha"];
   [super dealloc];
 }

@@ -506,8 +506,9 @@ bool DiscardableSharedMemory::IsMemoryResident() const {
   SharedState result(subtle::NoBarrier_Load(
       &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i));
 
-  return result.GetLockState() == SharedState::LOCKED ||
-         !result.GetTimestamp().is_null();
+  return recordreplay::RecordReplayValue("DiscardableSharedMemory::IsMemoryResident",
+                                         result.GetLockState() == SharedState::LOCKED ||
+                                         !result.GetTimestamp().is_null());
 }
 
 bool DiscardableSharedMemory::IsMemoryLocked() const {
@@ -516,7 +517,8 @@ bool DiscardableSharedMemory::IsMemoryLocked() const {
   SharedState result(subtle::NoBarrier_Load(
       &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i));
 
-  return result.GetLockState() == SharedState::LOCKED;
+  return recordreplay::RecordReplayValue("DiscardableSharedMemory::IsMemoryLocked",
+                                         result.GetLockState() == SharedState::LOCKED);
 }
 
 void DiscardableSharedMemory::Close() {
