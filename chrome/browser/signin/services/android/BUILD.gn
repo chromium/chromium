@@ -15,7 +15,6 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/signin/services/AccountInfoService.java",
     "java/src/org/chromium/chrome/browser/signin/services/DisplayableProfileData.java",
     "java/src/org/chromium/chrome/browser/signin/services/IdentityServicesProvider.java",
     "java/src/org/chromium/chrome/browser/signin/services/ProfileDataCache.java",
@@ -79,7 +78,6 @@ android_library("junit") {
   bypass_platform_checks = true
   testonly = true
   sources = [
-    "junit/src/org/chromium/chrome/browser/signin/services/AccountInfoServiceTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/SigninMetricsUtilsTest.java",
     "junit/src/org/chromium/chrome/browser/signin/services/WebSigninBridgeTest.java",
   ]

@@ -34,6 +34,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.ProfileDataSource.ProfileData;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.AccountInfoService;
 
 import java.util.HashMap;
 import java.util.Map;

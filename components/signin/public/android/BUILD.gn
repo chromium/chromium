@@ -43,6 +43,7 @@ android_library("java") {
     "java/src/org/chromium/components/signin/base/CoreAccountId.java",
     "java/src/org/chromium/components/signin/base/CoreAccountInfo.java",
     "java/src/org/chromium/components/signin/base/GoogleServiceAuthError.java",
+    "java/src/org/chromium/components/signin/identitymanager/AccountInfoService.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityManager.java",
     "java/src/org/chromium/components/signin/identitymanager/IdentityMutator.java",
     "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
@@ -131,6 +132,7 @@ java_library("junit") {
     "junit/src/org/chromium/components/signin/AccountTrackerServiceTest.java",
     "junit/src/org/chromium/components/signin/ObservableValueTest.java",
     "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
+    "junit/src/org/chromium/components/signin/identitymanager/AccountInfoServiceTest.java",
   ]
   deps = [
     ":java",

@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin.services;
+package org.chromium.components.signin.identitymanager;
 
 import androidx.annotation.GuardedBy;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-
 
 /**
  * This class handles the {@link AccountInfo} fetch on Java side.
@@ -19,7 +17,7 @@ public final class AccountInfoService implements IdentityManager.Observer {
     /**
      * Observes the changes of {@link AccountInfo}.
      */
-    interface Observer {
+    public interface Observer {
         /**
          * Notifies when an {@link AccountInfo} is updated.
          */
@@ -77,7 +75,7 @@ public final class AccountInfoService implements IdentityManager.Observer {
     /**
      * Gets the corresponding {@link AccountInfo} of the given account email.
      */
-    AccountInfo getAccountInfoByEmail(String email) {
+    public AccountInfo getAccountInfoByEmail(String email) {
         return mIdentityManager.findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
                 email);
     }
@@ -85,14 +83,14 @@ public final class AccountInfoService implements IdentityManager.Observer {
     /**
      * Adds an observer which will be invoked when an {@link AccountInfo} is updated.
      */
-    void addObserver(Observer onAccountInfoUpdated) {
+    public void addObserver(Observer onAccountInfoUpdated) {
         mObservers.addObserver(onAccountInfoUpdated);
     }
 
     /**
      * Removes an observer which is invoked when an {@link AccountInfo} is updated.
      */
-    void removeObserver(Observer onAccountInfoUpdated) {
+    public void removeObserver(Observer onAccountInfoUpdated) {
         mObservers.removeObserver(onAccountInfoUpdated);
     }
 
