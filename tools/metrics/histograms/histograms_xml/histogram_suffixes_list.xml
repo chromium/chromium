@@ -7515,14 +7515,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="audio_codec" label=""/>
   <suffix name="battery" label=""/>
   <suffix name="camera" label=""/>
+  <suffix name="cellular" label=""/>
   <suffix name="display_panel" label=""/>
   <suffix name="dram" label=""/>
-  <suffix name="network" label=""/>
+  <suffix name="ethernet" label=""/>
+  <suffix name="network" label="">
+    <obsolete>
+      Obsolete in M91.
+    </obsolete>
+  </suffix>
   <suffix name="storage" label=""/>
   <suffix name="stylus" label=""/>
   <suffix name="touchpad" label=""/>
   <suffix name="touchscreen" label=""/>
   <suffix name="vpd_cached" label=""/>
+  <suffix name="wireless" label=""/>
   <affected-histogram name="ChromeOS.HardwareVerifier.Report"/>
 </histogram_suffixes>
 
