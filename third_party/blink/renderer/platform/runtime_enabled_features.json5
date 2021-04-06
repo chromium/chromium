@@ -945,6 +945,7 @@
     },
     {
       name: "FledgeInterestGroups",
+      origin_trial_feature_name: "FledgeInterestGroups",
     },
     {
       name: "FocuslessSpatialNavigation",
