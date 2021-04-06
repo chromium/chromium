@@ -2,22 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './strings.m.js';
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 /**
  * Requests the list of WebRTC logs from the backend.
  */
 function requestWebRtcLogsList() {
-  chrome.send('requestWebRtcLogsList');
+  sendWithPromise('requestWebRtcLogsList').then(updateWebRtcLogsList);
 }
 
 /**
  * Callback from backend with the list of WebRTC logs. Builds the UI.
- * @param {array} textLogsList The list of WebRTC text logs.
- * @param {array} eventLogsList The list of WebRTC event logs.
- * @param {string} version The browser version.
+ * @param {!{textLogs: !Array, eventLogs: !Array, version: string}} results
  */
-function updateWebRtcLogsList(textLogsList, eventLogsList, version) {
-  updateWebRtcTextLogsList(textLogsList, version);
-  updateWebRtcEventLogsList(eventLogsList);
+function updateWebRtcLogsList({textLogs, eventLogs, version}) {
+  updateWebRtcTextLogsList(textLogs, version);
+  updateWebRtcEventLogsList(eventLogs);
 }
 
 function updateWebRtcTextLogsList(textLogsList, version) {
