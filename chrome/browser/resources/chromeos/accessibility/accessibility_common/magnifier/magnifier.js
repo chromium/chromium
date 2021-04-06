@@ -27,6 +27,13 @@ export class Magnifier {
      */
     this.isInitializing_ = true;
 
+    /**
+     * Whether or not to draw a preview box around magnifier viewport area
+     * instead of magnifying the screen for debugging.
+     * @private {boolean}
+     */
+    this.magnifierDebugDrawRect_ = false;
+
     /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
         [], chrome.automation.EventType.FOCUS, this.onFocus_.bind(this));
@@ -42,6 +49,9 @@ export class Magnifier {
   onMagnifierDisabled() {
     this.focusHandler_.stop();
     this.activeDescendantHandler_.stop();
+
+    chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
+        this.onMagnifierBoundsChanged_);
   }
 
   /**
@@ -60,11 +70,31 @@ export class Magnifier {
       this.activeDescendantHandler_.start();
     });
 
+    chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
+        this.onMagnifierBoundsChanged_.bind(this));
+
     this.isInitializing_ = true;
 
     setTimeout(() => {
       this.isInitializing_ = false;
     }, Magnifier.IGNORE_FOCUS_UPDATES_INITIALIZATION_MS);
+
+    chrome.commandLinePrivate.hasSwitch(
+        'enable-magnifier-debug-draw-rect', (enabled) => {
+          if (enabled) {
+            this.magnifierDebugDrawRect_ = true;
+          }
+        });
+  }
+
+  onMagnifierBoundsChanged_(bounds) {
+    if (this.magnifierDebugDrawRect_) {
+      chrome.accessibilityPrivate.setFocusRings([{
+        rects: [bounds],
+        type: chrome.accessibilityPrivate.FocusType.GLOW,
+        color: '#22d'
+      }]);
+    }
   }
 
   /**

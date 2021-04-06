@@ -22,6 +22,7 @@
 #include "ash/shell.h"
 #include "base/numerics/ranges.h"
 #include "base/synchronization/waitable_event.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -127,6 +128,8 @@ MagnificationController::MagnificationController()
   gesture_provider_client_ = std::make_unique<GestureProviderClient>();
   gesture_provider_ = std::make_unique<ui::GestureProviderAura>(
       this, gesture_provider_client_.get());
+
+  magnifier_debug_draw_rect_ = ::switches::IsMagnifierDebugDrawRectEnabled();
 }
 
 MagnificationController::~MagnificationController() {
@@ -694,9 +697,11 @@ bool MagnificationController::RedrawDIP(const gfx::PointF& position_in_dip,
     }
   }
 
-  RootWindowController::ForWindow(root_window_)
-      ->ash_host()
-      ->SetRootWindowTransformer(std::move(transformer));
+  if (!magnifier_debug_draw_rect_) {
+    RootWindowController::ForWindow(root_window_)
+        ->ash_host()
+        ->SetRootWindowTransformer(std::move(transformer));
+  }
 
   if (duration_in_ms > 0)
     is_on_animation_ = true;

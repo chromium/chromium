@@ -70,6 +70,11 @@ var MockAccessibilityPrivate = {
     }
   },
 
+  onMagnifierBoundsChanged: {
+    addListener: (listener) => {},
+    removeListener: (listener) => {}
+  },
+
   onSelectToSpeakPanelAction: {
     /**
      * Adds a listener to onSelectToSpeakPanelAction.

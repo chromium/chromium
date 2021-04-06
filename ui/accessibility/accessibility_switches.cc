@@ -47,6 +47,10 @@ const char kEnableExperimentalAccessibilityLanguageDetectionDynamic[] =
 const char kEnableExperimentalAccessibilitySwitchAccessText[] =
     "enable-experimental-accessibility-switch-access-text";
 
+// Enables debug feature for drawing rectangle around magnified region, without
+// zooming in.
+const char kEnableMagnifierDebugDrawRect[] = "enable-magnifier-debug-draw-rect";
+
 // Enables the Switch Access setup guide that hasn't launched yet.
 const char kEnableExperimentalAccessibilitySwitchAccessSetupGuide[] =
     "enable-experimental-accessibility-switch-access-setup-guide";
@@ -79,6 +83,11 @@ bool IsExperimentalAccessibilityLanguageDetectionDynamicEnabled() {
 bool IsExperimentalAccessibilitySwitchAccessTextEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ::switches::kEnableExperimentalAccessibilitySwitchAccessText);
+}
+
+bool IsMagnifierDebugDrawRectEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ::switches::kEnableMagnifierDebugDrawRect);
 }
 
 #if defined(OS_WIN)

@@ -102,6 +102,7 @@ js_library("accessibility_common") {
     "$externs_path/accessibility_features.js",
     "$externs_path/accessibility_private.js",
     "$externs_path/automation.js",
+    "$externs_path/command_line_private.js",
   ]
 }
 

@@ -57,6 +57,9 @@ AX_BASE_EXPORT extern const char kEnableExperimentalUIAutomation[];
 // Returns true if experimental support for UIAutomation is enabled.
 AX_BASE_EXPORT bool IsExperimentalAccessibilityPlatformUIAEnabled();
 
+// Returns true if Switch Access point scanning is enabled.
+AX_BASE_EXPORT bool IsMagnifierDebugDrawRectEnabled();
+
 // Optionally disable AXMenuList, which makes the internal pop-up menu
 // UI for a select element directly accessible.
 AX_BASE_EXPORT extern const char kDisableAXMenuList[];
