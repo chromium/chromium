@@ -29,8 +29,7 @@ fuchsia::fonts::ProviderSyncPtr RunTestProviderWithTestFonts(
   fuchsia::sys::LaunchInfo launch_info;
   launch_info.url = "fuchsia-pkg://fuchsia.com/fonts#meta/fonts.cmx";
   launch_info.arguments.emplace(
-      {"--no-default-fonts",
-       "--font-manifest=/test_fonts/fuchsia_test_fonts_manifest.json"});
+      {"--font-manifest", "/test_fonts/fuchsia_test_fonts_manifest.json"});
   launch_info.flat_namespace = fuchsia::sys::FlatNamespace::New();
   launch_info.flat_namespace->paths.push_back("/test_fonts");
 
