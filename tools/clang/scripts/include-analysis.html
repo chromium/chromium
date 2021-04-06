@@ -14,7 +14,8 @@
     th a { text-decoration: none; }
     tbody tr:hover { background-color: #dddddd; }
     th { position: sticky; top: 0; background-color: #ffffff }
-    th.highlighted { text-decoration: underline }
+    th:nth-child(n+2) { cursor: pointer; }
+    th.highlighted { background-color: #dddddd }
     </style>
   </head>
   <body>
@@ -42,8 +43,9 @@
 
 <p>
 <label for="filter">Filter:</label>
-<input type="text" id="filter" name="filter" size="60">
-<button onClick="buildTable()" id="apply">Apply</button>
+<input type="text" id="filter" name="filter" size="60" onKeyUp="if (event.keyCode == 13) document.getElementById('apply').click()">
+<button onClick="changeState('filter', document.getElementById('filter').value)" id="apply">Apply</button>
+<button onClick="changeState('filter', '')">Clear</button>
 (Filename regex)
 </p>
 
@@ -51,12 +53,12 @@
   <thead>
     <tr>
       <th>#</th>
-      <th id="filename">Filename <a href="javascript:sortOnFilename()">&uarr;</a></th>
-      <th id="isize" colspan="2">Individual Size (B) <a href="javascript:sortOnISize()">&darr;</a></th>
-      <th id="tsize" colspan="2">Expanded Size (B) <a href="javascript:sortOnTSize()">&darr;</a></th>
-      <th id="asize" colspan="2">Added Size (B) <a href="javascript:sortOnASize()">&darr;</a></th>
-      <th id="prevalence" colspan="2">Occurrences <a href="javascript:sortOnPrevalence()">&darr;</a></th>
-      <th id="includecount">Include Count <a href="javascript:sortOnIncludeCount()">&darr;</a></th>
+      <th id="filename" onclick="changeState('sort', 'filename')">Filename</th>
+      <th id="isize" colspan="2" onclick="changeState('sort', 'isize')">Individual Size (B)</th>
+      <th id="tsize" colspan="2" onclick="changeState('sort', 'tsize')">Expanded Size (B)</th>
+      <th id="asize" colspan="2" onclick="changeState('sort', 'asize')">Added Size (B)</th>
+      <th id="prevalence" colspan="2" onclick="changeState('sort', 'prevalence')">Occurrences</th>
+      <th id="icount" onclick="changeState('sort', 'icount')">Include Count</th>
     </tr>
   </thead>
   <tbody>
@@ -75,6 +77,12 @@ function fmt(num) {
   return numberFormat.format(num);
 }
 
+function regexEscape(str) {
+  str = str.replaceAll('+', '\\+');
+  str = str.replaceAll('.', '\\.');
+  return str;
+}
+
 const totFileSize = sum(data.sizes);
 const totBuildSize = sum(data.roots.map(r => data.tsizes[r]));
 const numRoots = data.roots.length;
@@ -90,21 +98,16 @@ document.getElementById('numFiles').textContent = fmt(data.files.length);
 document.getElementById('totFileSize').textContent = fmt(totFileSize);
 
 
-function showIncluders(i) {
-  document.getElementById('filter').value = 'includes:' + data.files[i];
-  document.getElementById('apply').click();
-}
-
 function buildRow(i, rank) {
   return `
 <tr>
-<td>${rank + 1}</td>
+<td><a href="javascript:changeState('filter', '^' + regexEscape('${data.files[i]}' + '$'))">${rank + 1}</a></td>
 <td><a href="https://source.chromium.org/chromium/chromium/src/+/master:${data.files[i]}">${data.files[i]}</a></td>
 <td>${fmt(data.sizes[i])}</td> <td>${(100 * data.sizes[i] / totFileSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.tsizes[i])}</td> <td>${(100 * data.tsizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.asizes[i])}</td> <td>${(100 * data.asizes[i] / totBuildSize).toFixed(2)}&nbsp;%</td>
 <td>${fmt(data.prevalence[i])}</td> <td>${(100 * data.prevalence[i] / numRoots).toFixed(2)}&nbsp;%</td>
-<td><a href="javascript:showIncluders(${i})">${fmt(data.included_by[i].length)}</a></td>
+<td><a href="javascript:changeState('filter', 'includes:${data.files[i]}')">${fmt(data.included_by[i].length)}</a></td>
 </tr>
   `;
 }
@@ -119,14 +122,14 @@ function intersect(arr1, arr2) {
   return arr1.filter(x => s2.has(x));
 }
 
-let sortFunc;
-
 function buildTable() {
   clearTable();
-
   let fileNums = [...Array(data.files.length).keys()];
+  const state = getState();
 
-  let filter = document.getElementById('filter').value;
+  let filter = state.filter;
+  document.getElementById('filter').value = filter;
+
   if (filter !== '') {
     let match;
 
@@ -143,7 +146,19 @@ function buildTable() {
     fileNums = fileNums.filter(i => data.files[i].match(re));
   }
 
-  fileNums.sort(sortFunc);
+  const sortFuncs = {
+    filename: (i, j) => data.files[i].localeCompare(data.files[j]),
+    isize: (i, j) => data.sizes[j] - data.sizes[i],
+    tsize: (i, j) => data.tsizes[j] - data.tsizes[i],
+    prevalence: (i, j) => data.prevalence[j] - data.prevalence[i],
+    icount: (i, j) => data.included_by[j].length - data.included_by[i].length,
+    asize: (i, j) => data.asizes[j] - data.asizes[i],
+  };
+
+  document.querySelectorAll('th').forEach(th => th.classList.remove('highlighted'));
+  document.getElementById(state.sort).classList.add('highlighted');
+
+  fileNums.sort(sortFuncs[state.sort]);
 
   const limit = Math.min(1000, fileNums.length);
   fileNums = fileNums.slice(0, limit);
@@ -153,49 +168,36 @@ function buildTable() {
   document.querySelector('table').appendChild(tbody);
 }
 
-function highlightTH(name) {
-  document.querySelectorAll('th').forEach(th => th.classList.remove('highlighted'));
-  document.getElementById(name).classList.add('highlighted');
+function setState(s) {
+  window.location.hash = Object.entries(s).map(e => e.join('=')).join(';');
 }
 
-function sortOnFilename() {
-  highlightTH('filename');
-  sortFunc = (i, j) => data.files[i].localeCompare(data.files[j]);
-  buildTable();
+function getState() {
+  let state = {
+    filter: '',
+    sort: 'asize',
+  }
+
+  const re = new RegExp('(\\w+)=([\\\\\\w: \/\.+*$\^-]*);*');
+  let hash = decodeURIComponent(window.location.hash);
+  let match;
+  while (match = hash.match(re)) {
+    state[match[1]] = match[2];
+    hash = hash.replace(re, '');
+  }
+
+  return state;
 }
 
-function sortOnISize() {
-  highlightTH('isize');
-  sortFunc = (i, j) => data.sizes[j] - data.sizes[i];
-  buildTable();
+function changeState(key, value) {
+  let s = getState();
+  s[key] = value;
+  setState(s);
 }
 
-function sortOnTSize() {
-  highlightTH('tsize');
-  sortFunc = (i, j) => data.tsizes[j] - data.tsizes[i];
-  buildTable();
-}
+window.onhashchange = buildTable;
 
-function sortOnASize() {
-  highlightTH('asize');
-  sortFunc = (i, j) => data.asizes[j] - data.asizes[i];
-  buildTable();
-}
-
-function sortOnPrevalence() {
-  highlightTH('prevalence');
-  sortFunc = (i, j) => data.prevalence[j] - data.prevalence[i];
-  buildTable();
-}
-
-function sortOnIncludeCount() {
-  highlightTH('includecount');
-  sortFunc = (i, j) => data.included_by[j].length - data.included_by[i].length;
-  buildTable();
-}
-
-sortOnASize();
+buildTable();
 </script>
-
   </body>
 </html>
