@@ -56,6 +56,7 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
   void MaybeUpdate(const GURL& url,
                    const AppId& app_id,
                    content::WebContents* web_contents);
+  bool IsUpdateConsumed(const AppId& app_id);
 
   // AppRegistrarObserver:
   void OnWebAppWillBeUninstalled(const AppId& app_id) override;
@@ -74,8 +75,7 @@ class ManifestUpdateManager final : public AppRegistrarObserver {
 
  private:
   bool MaybeConsumeUpdateCheck(const GURL& origin, const AppId& app_id);
-  base::Optional<base::Time> GetLastUpdateCheckTime(const GURL& origin,
-                                                    const AppId& app_id) const;
+  base::Optional<base::Time> GetLastUpdateCheckTime(const AppId& app_id) const;
   void SetLastUpdateCheckTime(const GURL& origin,
                               const AppId& app_id,
                               base::Time time);

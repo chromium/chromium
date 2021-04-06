@@ -166,6 +166,8 @@ class WebAppIntegrationBrowserTestBase {
   void TurnSyncOn();
   void UninstallFromMenu();
   void UninstallInternal(const std::string& action_param);
+  void ManifestUpdateDisplay(const std::string& action_scope,
+                             DisplayMode display_mode);
   void UserSigninInternal();
 
   // Assert Actions
@@ -206,6 +208,8 @@ class WebAppIntegrationBrowserTestBase {
   //  * site_a/bar
   //  * site_b
   //  * site_c
+  GURL GetAppURLForManifest(const std::string& action_scope,
+                            DisplayMode display_mode);
   GURL GetNonInstallableAppURL();
   GURL GetInScopeURL(const std::string& action_param);
   GURL GetOutOfScopeURL(const std::string& action_param);
@@ -213,6 +217,11 @@ class WebAppIntegrationBrowserTestBase {
 
   content::WebContents* GetCurrentTab(Browser* browser);
   WebAppProvider* GetProvider() { return WebAppProvider::Get(profile()); }
+  // This action only works if no navigations to the given app_url occur
+  // between app installation and calls to this action.
+  void ForceUpdateManifestContents(const std::string& app_scope,
+                                   GURL app_url_with_manifest_param);
+
   Browser* browser();
   Profile* profile() {
     if (!active_profile_) {

@@ -27,11 +27,6 @@
 
 namespace {
 
-bool IsInScope(content::NavigationEntry* entry, const std::string& scope_spec) {
-  return base::StartsWith(entry->GetURL().spec(), scope_spec,
-                          base::CompareCase::SENSITIVE);
-}
-
 Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
                                            Browser* target_browser) {
   DCHECK(target_browser->is_type_app());
@@ -69,6 +64,11 @@ base::Optional<AppId> GetWebAppForActiveTab(Browser* browser) {
       web_contents->GetMainFrame()->GetLastCommittedURL());
 }
 
+bool IsInScope(const GURL& url, const GURL& scope) {
+  return base::StartsWith(url.spec(), scope.spec(),
+                          base::CompareCase::SENSITIVE);
+}
+
 void PrunePreScopeNavigationHistory(const GURL& scope,
                                     content::WebContents* contents) {
   content::NavigationController& navigation_controller =
@@ -76,10 +76,10 @@ void PrunePreScopeNavigationHistory(const GURL& scope,
   if (!navigation_controller.CanPruneAllButLastCommitted())
     return;
 
-  const std::string scope_spec = scope.spec();
   int index = navigation_controller.GetEntryCount() - 1;
   while (index >= 0 &&
-         IsInScope(navigation_controller.GetEntryAtIndex(index), scope_spec)) {
+         IsInScope(navigation_controller.GetEntryAtIndex(index)->GetURL(),
+                   scope)) {
     --index;
   }
 

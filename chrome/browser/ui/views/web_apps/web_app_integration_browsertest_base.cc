@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -467,6 +469,8 @@ void WebAppIntegrationBrowserTestBase::ExecuteAction(
     UninstallFromMenu();
   } else if (action_base == "uninstall_internal") {
     UninstallInternal(action_param);
+  } else if (action_base == "manifest_update_display_minimal") {
+    ManifestUpdateDisplay(action_param, blink::mojom::DisplayMode::kMinimalUi);
   } else if (action_base == "user_signin_internal") {
     UserSigninInternal();
   } else if (action_base == "assert_app_not_locally_installed_internal") {
@@ -624,14 +628,14 @@ void WebAppIntegrationBrowserTestBase::LaunchInternal(
   auto* web_app_provider = GetProvider();
   AppRegistrar& app_registrar = web_app_provider->registrar();
   DisplayMode display_mode = app_registrar.GetAppEffectiveDisplayMode(app_id);
-  if (display_mode == blink::mojom::DisplayMode::kStandalone) {
-    app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
-  } else {
+  if (display_mode == blink::mojom::DisplayMode::kBrowser) {
     ui_test_utils::UrlLoadObserver url_observer(
         app_registrar.GetAppLaunchUrl(app_id),
         content::NotificationService::AllSources());
     LaunchBrowserForWebAppInTab(profile(), app_id);
     url_observer.Wait();
+  } else {
+    app_browser_ = LaunchWebAppBrowserAndWait(profile(), app_id);
   }
 }
 
@@ -779,6 +783,16 @@ void WebAppIntegrationBrowserTestBase::UninstallInternal(
       }));
 
   run_loop.Run();
+}
+
+void WebAppIntegrationBrowserTestBase::ManifestUpdateDisplay(
+    const std::string& action_scope,
+    DisplayMode display_mode) {
+  // TODO(jarrydg): Create a map of supported manifest updates keyed on scope.
+  ASSERT_EQ("site_a", action_scope);
+  ASSERT_EQ(blink::mojom::DisplayMode::kMinimalUi, display_mode);
+  ForceUpdateManifestContents(action_scope,
+                              GetAppURLForManifest(action_scope, display_mode));
 }
 
 void WebAppIntegrationBrowserTestBase::UserSigninInternal() {
@@ -977,6 +991,21 @@ content::WebContents* WebAppIntegrationBrowserTestBase::GetCurrentTab(
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
+void WebAppIntegrationBrowserTestBase::ForceUpdateManifestContents(
+    const std::string& app_scope,
+    GURL app_url_with_manifest_param) {
+  base::Optional<AppState> app_state =
+      GetAppByScope(before_action_state_.get(), profile(), app_scope);
+  ASSERT_TRUE(app_state.has_value());
+  auto app_id = app_state->id;
+
+  // Manifest updates must occur as the first navigation after a webapp is
+  // installed, otherwise the throttle is tripped.
+  ASSERT_FALSE(
+      GetProvider()->manifest_update_manager().IsUpdateConsumed(app_id));
+  NavigateTabbedBrowserToSite(app_url_with_manifest_param);
+}
+
 Browser* WebAppIntegrationBrowserTestBase::browser() {
   Browser* browser = active_browser_
                          ? active_browser_
@@ -1037,7 +1066,7 @@ StateSnapshot WebAppIntegrationBrowserTestBase::ConstructStateSnapshot() {
     }
 
     auto* registrar =
-        WebAppProvider::Get(profile)->registrar().AsWebAppRegistrar();
+        GetProviderForProfile(profile)->registrar().AsWebAppRegistrar();
     auto app_ids = registrar->GetAppIds();
     base::flat_map<AppId, AppState> app_state;
     for (const auto& app_id : app_ids) {
@@ -1059,4 +1088,14 @@ WebAppIntegrationBrowserTestBase::embedded_test_server() {
   return delegate_->EmbeddedTestServer();
 }
 
+GURL WebAppIntegrationBrowserTestBase::GetAppURLForManifest(
+    const std::string& action_scope,
+    DisplayMode display_mode) {
+  std::string str_template = "/web_apps/%s/basic.html";
+  if (display_mode == blink::mojom::DisplayMode::kMinimalUi) {
+    str_template += "?manifest=manifest_minimal_ui.json";
+  }
+  return embedded_test_server()->GetURL(
+      base::StringPrintf(str_template.c_str(), action_scope.c_str()));
+}
 }  // namespace web_app

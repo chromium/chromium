@@ -21,6 +21,8 @@ namespace web_app {
 
 base::Optional<AppId> GetWebAppForActiveTab(Browser* browser);
 
+bool IsInScope(const GURL& url, const GURL& scope_spec);
+
 // Clears navigation history prior to user entering app scope.
 void PrunePreScopeNavigationHistory(const GURL& scope,
                                     content::WebContents* contents);
