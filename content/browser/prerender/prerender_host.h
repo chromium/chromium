@@ -70,7 +70,6 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
-                const url::Origin& initiator_origin,
                 RenderFrameHostImpl& initiator_render_frame_host);
   ~PrerenderHost() override;
 

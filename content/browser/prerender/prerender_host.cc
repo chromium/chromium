@@ -334,10 +334,9 @@ class PrerenderHost::WebContentsPageHolder
 };
 
 PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
-                             const url::Origin& initiator_origin,
                              RenderFrameHostImpl& initiator_render_frame_host)
     : attributes_(std::move(attributes)),
-      initiator_origin_(initiator_origin),
+      initiator_origin_(initiator_render_frame_host.GetLastCommittedOrigin()),
       initiator_process_id_(initiator_render_frame_host.GetProcess()->GetID()),
       initiator_frame_token_(initiator_render_frame_host.GetFrameToken()) {
   DCHECK(blink::features::IsPrerender2Enabled());

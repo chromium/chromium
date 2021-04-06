@@ -105,6 +105,10 @@ class PrerenderProcessorTest
         ->GetPrerenderHostRegistry();
   }
 
+  void NavigateAndCommit(const GURL& url) {
+    web_contents_->NavigateAndCommit(url);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -345,6 +349,29 @@ TEST_P(PrerenderProcessorTest, RelTypeNext) {
   remote->Cancel();
   remote.FlushForTesting();
   EXPECT_TRUE(bad_message_error.empty());
+}
+
+TEST_P(PrerenderProcessorTest, StartAfterNavigation) {
+  RenderFrameHostImpl* render_frame_host = GetRenderFrameHost();
+  PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
+
+  mojo::Remote<blink::mojom::PrerenderProcessor> remote;
+  render_frame_host->BindPrerenderProcessor(
+      remote.BindNewPipeAndPassReceiver());
+
+  const GURL kPrerenderingUrl = GetSameOriginUrl("/next");
+  auto attributes = blink::mojom::PrerenderAttributes::New();
+  attributes->url = kPrerenderingUrl;
+  attributes->referrer = blink::mojom::Referrer::New();
+
+  // Navigate to a same-site, but different origin URL.
+  NavigateAndCommit(GetCrossOriginUrl("/navigate"));
+
+  // Start() call should not register a new prerender host.
+  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
+  remote->Start(std::move(attributes));
+  remote.FlushForTesting();
+  EXPECT_FALSE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

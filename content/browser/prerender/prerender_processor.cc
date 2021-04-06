@@ -71,8 +71,15 @@ void PrerenderProcessor::Start(
   if (!web_contents)
     return;
 
+  // The origin may have changed if a same-site navigation occurred in the frame
+  // after the PrerenderProcessor was created.
+  if (initiator_render_frame_host_.GetLastCommittedOrigin() !=
+      initiator_origin_) {
+    return;
+  }
+
   prerender_frame_tree_node_id_ = GetPrerenderHostRegistry().CreateAndStartHost(
-      std::move(attributes), initiator_origin_, initiator_render_frame_host_);
+      std::move(attributes), initiator_render_frame_host_);
 }
 
 void PrerenderProcessor::Cancel() {

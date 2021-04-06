@@ -37,7 +37,6 @@ void PrerenderHostRegistry::RemoveObserver(Observer* observer) {
 
 int PrerenderHostRegistry::CreateAndStartHost(
     blink::mojom::PrerenderAttributesPtr attributes,
-    const url::Origin& initiator_origin,
     RenderFrameHostImpl& initiator_render_frame_host) {
   DCHECK(attributes);
 
@@ -58,16 +57,17 @@ int PrerenderHostRegistry::CreateAndStartHost(
 
   // Ignore prerendering requests for the same URL.
   const GURL prerendering_url = attributes->url;
-  TRACE_EVENT2("navigation", "PrerenderHostRegistry::CreateAndStartHost",
-               "attributes", attributes, "initiator_origin",
-               initiator_origin.GetURL().spec());
+  TRACE_EVENT2(
+      "navigation", "PrerenderHostRegistry::CreateAndStartHost", "attributes",
+      attributes, "initiator_origin",
+      initiator_render_frame_host.GetLastCommittedOrigin().GetURL().spec());
 
   auto found = frame_tree_node_id_by_url_.find(prerendering_url);
   if (found != frame_tree_node_id_by_url_.end())
     return found->second;
 
   auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_origin, initiator_render_frame_host);
+      std::move(attributes), initiator_render_frame_host);
   const int frame_tree_node_id = prerender_host->frame_tree_node_id();
 
   CHECK(!base::Contains(prerender_host_by_frame_tree_node_id_,
