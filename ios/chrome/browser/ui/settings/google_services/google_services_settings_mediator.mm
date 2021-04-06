@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/ios/browser/features.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/ukm/ios/features.h"
@@ -90,6 +91,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   SyncChromeDataItemType,
   ManageSyncItemType,
   // NonPersonalizedSectionIdentifier section.
+  AllowChromeSigninItemType,
   AutocompleteSearchesAndURLsItemType,
   AutocompleteSearchesAndURLsManagedItemType,
   SafeBrowsingItemType,
@@ -149,6 +151,9 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 // Items to open "Manage sync" settings.
 @property(nonatomic, strong) TableViewImageItem* manageSyncItem;
 // ** Non personalized section.
+// Preference value for the "Allow Chrome Sign-in" feature.
+@property(nonatomic, strong, readonly)
+    PrefBackedBoolean* allowChromeSigninPreference;
 // Preference value for the "Autocomplete searches and URLs" feature.
 @property(nonatomic, strong, readonly)
     PrefBackedBoolean* autocompleteSearchPreference;
@@ -205,6 +210,10 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     _syncSetupService = syncSetupService;
     _userPrefService = userPrefService;
     _localPrefService = localPrefService;
+    _allowChromeSigninPreference =
+        [[PrefBackedBoolean alloc] initWithPrefService:userPrefService
+                                              prefName:prefs::kSigninAllowed];
+    _allowChromeSigninPreference.observer = self;
     _autocompleteSearchPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:prefs::kSearchSuggestEnabled];
@@ -570,6 +579,17 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   for (TableViewItem* item in self.nonPersonalizedItems) {
     ItemType type = static_cast<ItemType>(item.type);
     switch (type) {
+      case AllowChromeSigninItemType: {
+        SyncSwitchItem* signinDisabledItem =
+            base::mac::ObjCCast<SyncSwitchItem>(item);
+        if (signin::IsSigninAllowedByPolicy()) {
+          signinDisabledItem.on = self.allowChromeSigninPreference.value;
+        } else {
+          signinDisabledItem.on = NO;
+          signinDisabledItem.enabled = NO;
+        }
+        break;
+      }
       case AutocompleteSearchesAndURLsItemType:
         base::mac::ObjCCast<SyncSwitchItem>(item).on =
             self.autocompleteSearchPreference.value;
@@ -662,6 +682,19 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
 - (ItemArray)nonPersonalizedItems {
   if (!_nonPersonalizedItems) {
     NSMutableArray* items = [NSMutableArray array];
+    if (signin::IsMobileIdentityConsistencyEnabled()) {
+      int detailTextID =
+          signin::IsSigninAllowedByPolicy()
+              ? IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_DETAIL
+              : IDS_IOS_GOOGLE_SERVICES_SETTINGS_SIGNIN_DISABLED_BY_ADMINISTRATOR;
+      SyncSwitchItem* allowSigninItem =
+          [self switchItemWithItemType:AllowChromeSigninItemType
+                          textStringID:
+                              IDS_IOS_GOOGLE_SERVICES_SETTINGS_ALLOW_SIGNIN_TEXT
+                        detailStringID:detailTextID
+                              dataType:0];
+      [items addObject:allowSigninItem];
+    }
     if (base::FeatureList::IsEnabled(kEnableIOSManagedSettingsUI) &&
         self.userPrefService->IsManagedPreference(
             prefs::kSearchSuggestEnabled)) {
@@ -916,6 +949,9 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   SyncSwitchItem* syncSwitchItem = base::mac::ObjCCast<SyncSwitchItem>(item);
   syncSwitchItem.on = value;
   switch (type) {
+    case AllowChromeSigninItemType:
+      self.allowChromeSigninPreference.value = value;
+      break;
     case AutocompleteSearchesAndURLsItemType:
       self.autocompleteSearchPreference.value = value;
       break;
@@ -1003,10 +1039,12 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case ManageSyncItemType:
       [self.commandHandler openManageSyncSettings];
       break;
+    case SignInDisabledItemType:
     case SyncDisabledByAdministratorErrorItemType:
     case SyncSettingsNotCofirmedErrorItemType:
     case AutocompleteSearchesAndURLsItemType:
     case AutocompleteSearchesAndURLsManagedItemType:
+    case AllowChromeSigninItemType:
     case SafeBrowsingItemType:
     case SafeBrowsingManagedItemType:
     case ItemTypePasswordLeakCheckSwitch:
@@ -1015,7 +1053,6 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
     case BetterSearchAndBrowsingItemType:
     case BetterSearchAndBrowsingManagedItemType:
     case SyncChromeDataItemType:
-    case SignInDisabledItemType:
       break;
   }
 }

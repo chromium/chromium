@@ -461,6 +461,14 @@ API_AVAILABLE(ios(13.0))
 
 // Adds Other Devices Section and its header.
 - (void)addOtherDevicesSectionForState:(SessionsSyncUserState)state {
+  // If sign-in is disabled through user Settings, do not show Other Devices
+  // section. However, if sign-in is disabled by policy Chrome will
+  // continue to show the Other Devices section with a specialized mesage.
+  if (!signin::IsSigninAllowed(self.browserState->GetPrefs()) &&
+      signin::IsSigninAllowedByPolicy()) {
+    return;
+  }
+
   TableViewModel* model = self.tableViewModel;
   [model addSectionWithIdentifier:SectionIdentifierOtherDevices];
   [model setSectionIdentifier:SectionIdentifierOtherDevices
@@ -489,7 +497,8 @@ API_AVAILABLE(ios(13.0))
   }
 
   if (!signin::IsSigninAllowed(self.browserState->GetPrefs())) {
-    // If sign-in is disabled, don't show an illustration or a sign-in promo.
+    // If sign-in is disabled by policy, don't show an illustration or a sign-in
+    // promo.
     TableViewTextItem* disabledByOrganizationText =
         [[TableViewTextItem alloc] initWithType:ItemTypeSigninDisabled];
     disabledByOrganizationText.text =

@@ -84,6 +84,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -536,7 +537,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // with an info button view item.
   TableViewModel<TableViewItem*>* model = self.tableViewModel;
   if (!signin::IsSigninAllowed(_browserState->GetPrefs())) {
-    [model addItem:[self signinDisabledTextItem]
+    TableViewItem* item = signin::IsSigninAllowedByPolicy()
+                              ? [self signinDisabledTextItem]
+                              : [self signinDisabledByPolicyTextItem];
+    [model addItem:item
         toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
     return;
   }
@@ -647,7 +651,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return signInTextItem;
 }
 
-- (TableViewItem*)signinDisabledTextItem {
+- (TableViewItem*)signinDisabledByPolicyTextItem {
   TableViewInfoButtonItem* signinDisabledItem = [[TableViewInfoButtonItem alloc]
       initWithType:SettingsItemTypeSigninDisabled];
   signinDisabledItem.text =
@@ -656,14 +660,26 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SIGNIN_DISABLED);
   signinDisabledItem.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOGGLE_SETTING_MANAGED_ACCESSIBILITY_HINT);
+  signinDisabledItem.tintColor = [UIColor colorNamed:kGrey300Color];
   signinDisabledItem.accessibilityIdentifier = kSettingsSignInDisabledCellId;
+  signinDisabledItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  return signinDisabledItem;
+}
+
+- (TableViewItem*)signinDisabledTextItem {
+  TableViewImageItem* signinDisabledItem =
+      [[TableViewImageItem alloc] initWithType:SettingsItemTypeSigninDisabled];
+  signinDisabledItem.title =
+      l10n_util::GetNSString(IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE);
   signinDisabledItem.image =
       CircularImageFromImage(ios::GetChromeBrowserProvider()
                                  ->GetSigninResourcesProvider()
                                  ->GetDefaultAvatar(),
                              kAccountProfilePhotoDimension);
+  signinDisabledItem.enabled = NO;
+  signinDisabledItem.accessibilityIdentifier = kSettingsSignInDisabledCellId;
+
   signinDisabledItem.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  signinDisabledItem.tintColor = [UIColor colorNamed:kGrey300Color];
   return signinDisabledItem;
 }
 
@@ -1057,12 +1073,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       break;
     }
     case SettingsItemTypeSigninDisabled: {
-      TableViewInfoButtonCell* managedCell =
-          base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
-      [managedCell.trailingButton
-                 addTarget:self
-                    action:@selector(didTapSigninDisabledInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
+      // Adds a trailing button with more information when the sign-in policy
+      // has been enabled by the organization.
+      if (!signin::IsSigninAllowedByPolicy()) {
+        TableViewInfoButtonCell* managedCell =
+            base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+        [managedCell.trailingButton
+                   addTarget:self
+                      action:@selector(didTapSigninDisabledInfoButton:)
+            forControlEvents:UIControlEventTouchUpInside];
+      }
       break;
     }
     default:

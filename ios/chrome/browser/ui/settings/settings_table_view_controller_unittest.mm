@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/policy_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -16,6 +19,7 @@
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
+#import "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 #import "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -29,6 +33,7 @@
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
@@ -109,6 +114,10 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
     fake_identity_ = [FakeChromeIdentity identityWithEmail:@"foo1@gmail.com"
                                                     gaiaID:@"foo1ID"
                                                       name:@"Fake Foo 1"];
+
+    // Make sure there is no pre-existing policy present.
+    [[NSUserDefaults standardUserDefaults]
+        removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
   }
 
   void TearDown() override {
@@ -145,6 +154,17 @@ class SettingsTableViewControllerTest : public ChromeTableViewControllerTest {
         .WillByDefault(Return(syncer::SyncService::TransportState::ACTIVE));
     ON_CALL(*sync_service_mock_->GetMockUserSettings(), IsFirstSetupComplete())
         .WillByDefault(Return(true));
+  }
+
+  void AddSigninDisabledEnterprisePolicy() {
+    NSDictionary* policy = @{
+      base::SysUTF8ToNSString(policy::key::kBrowserSignin) :
+          [NSNumber numberWithInt:(int)policy::BrowserSigninMode::kDisabled]
+    };
+
+    [[NSUserDefaults standardUserDefaults]
+        setObject:policy
+           forKey:kPolicyLoaderIOSConfigurationKey];
   }
 
  protected:
@@ -192,7 +212,8 @@ TEST_F(SettingsTableViewControllerTest, SyncOn) {
 
 // Verifies that the sign-in setting item is replaced by the managed sign-in
 // item if sign-in is disabled by policy.
-TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
+TEST_F(SettingsTableViewControllerTest, SigninDisabledByPolicy) {
+  AddSigninDisabledEnterprisePolicy();
   chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   CreateController();
   CheckController();
@@ -208,5 +229,23 @@ TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
               l10n_util::GetNSString(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_TITLE));
   ASSERT_NSEQ(signin_item.detailText,
               l10n_util::GetNSString(IDS_IOS_SETTINGS_SIGNIN_DISABLED));
+}
+
+// Verifies that the sign-in setting item is replaced by the managed sign-in
+// item if sign-in is disabled through the "Allow Chrome Sign-in" option.
+TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
+  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  CreateController();
+  CheckController();
+
+  NSArray* signin_items = [controller().tableViewModel
+      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
+                                       SettingsSectionIdentifierSignIn];
+  ASSERT_EQ(1U, signin_items.count);
+
+  TableViewImageItem* signin_item =
+      static_cast<TableViewImageItem*>(signin_items[0]);
+  ASSERT_NSEQ(signin_item.title,
+              l10n_util::GetNSString(IDS_IOS_NOT_SIGNED_IN_SETTING_TITLE));
   ASSERT_NE(signin_item.image, nil);
 }

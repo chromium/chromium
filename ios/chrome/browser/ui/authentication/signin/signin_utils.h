@@ -29,8 +29,12 @@ void RecordVersionSeen();
 // Set the Chromium current version for sign-in. Used for tests only.
 void SetCurrentVersionForTesting(base::Version* version);
 
-// Returns a boolean indicating whether browser sign-in is allowed by policy.
+// Returns a boolean indicating whether browser sign-in is allowed across the
+// app.
 bool IsSigninAllowed(const PrefService* prefs);
+
+// Returns a boolean indicating whether policy allows browser sign-in.
+bool IsSigninAllowedByPolicy();
 
 }  // namespace signin
 

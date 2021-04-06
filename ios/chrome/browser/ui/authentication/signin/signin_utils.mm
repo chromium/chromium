@@ -6,6 +6,8 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/version.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
+#import "components/policy/policy_constants.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/signin_pref_names.h"
@@ -13,6 +15,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/policy/browser_signin_policy_handler.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
@@ -134,6 +137,21 @@ void SetCurrentVersionForTesting(Version* version) {
 
 bool IsSigninAllowed(const PrefService* prefs) {
   return prefs->GetBoolean(prefs::kSigninAllowed);
+}
+
+bool IsSigninAllowedByPolicy() {
+  NSDictionary* configuration = [[NSUserDefaults standardUserDefaults]
+      dictionaryForKey:kPolicyLoaderIOSConfigurationKey];
+
+  NSValue* value = [configuration
+      valueForKey:base::SysUTF8ToNSString(policy::key::kBrowserSignin)];
+  if (!value) {
+    return true;
+  }
+
+  policy::BrowserSigninMode signin_mode;
+  [value getValue:&signin_mode];
+  return signin_mode == policy::BrowserSigninMode::kEnabled;
 }
 
 }  // namespace signin
