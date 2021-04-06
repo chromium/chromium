@@ -234,16 +234,6 @@ std::vector<Result> InvertedIndex::FindMatchingDocumentsApproximately(
   return sorted_matching_docs;
 }
 
-void InvertedIndex::AddDocuments(const DocumentToUpdate& documents) {
-  if (documents.empty())
-    return;
-
-  is_index_built_ = false;
-  documents_to_update_.insert(documents_to_update_.end(), documents.begin(),
-                              documents.end());
-  InvertedIndexController();
-}
-
 void InvertedIndex::AddDocuments(const DocumentToUpdate& documents,
                                  base::OnceCallback<void()> callback) {
   if (documents.empty())
@@ -256,22 +246,6 @@ void InvertedIndex::AddDocuments(const DocumentToUpdate& documents,
                      std::move(terms_to_be_updated_)),
       base::BindOnce(&InvertedIndex::OnAddDocumentsComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-uint32_t InvertedIndex::RemoveDocuments(
-    const std::vector<std::string>& document_ids) {
-  if (document_ids.empty())
-    return 0;
-
-  for (const auto& id : document_ids) {
-    // |doc_length_| could be in the process of being updated when this function
-    // is called, hence we cannot use it to verify the existence of the |id|.
-    documents_to_update_.push_back({id, std::vector<Token>()});
-  }
-
-  is_index_built_ = false;
-  InvertedIndexController();
-  return document_ids.size();
 }
 
 void InvertedIndex::RemoveDocuments(
@@ -312,12 +286,6 @@ std::vector<TfidfResult> InvertedIndex::GetTfidf(
   return {};
 }
 
-void InvertedIndex::BuildInvertedIndex() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  request_to_build_index_ = true;
-  InvertedIndexController();
-}
-
 void InvertedIndex::BuildInvertedIndex(base::OnceCallback<void()> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_runner_->PostTaskAndReplyWithResult(
@@ -327,12 +295,6 @@ void InvertedIndex::BuildInvertedIndex(base::OnceCallback<void()> callback) {
                      tfidf_cache_),
       base::BindOnce(&InvertedIndex::OnBuildTfidfComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void InvertedIndex::ClearInvertedIndex() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  request_to_clear_index_ = true;
-  InvertedIndexController();
 }
 
 void InvertedIndex::ClearInvertedIndex(base::OnceCallback<void()> callback) {
@@ -346,67 +308,6 @@ void InvertedIndex::ClearInvertedIndex(base::OnceCallback<void()> callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void InvertedIndex::InvertedIndexController() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(thanhdng): A clear-index call should ideally cancel all other update
-  // operations. Need to update the code to reflect this.
-  if (update_in_progress_)
-    return;
-
-  if (request_to_clear_index_) {
-    update_in_progress_ = true;
-    request_to_clear_index_ = false;
-    task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&ClearData, std::move(documents_to_update_), doc_length_,
-                       std::move(dictionary_), std::move(terms_to_be_updated_),
-                       std::move(tfidf_cache_)),
-        base::BindOnce(&InvertedIndex::OnDataClearedSync,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  if (documents_to_update_.empty()) {
-    if (request_to_build_index_) {
-      update_in_progress_ = true;
-      index_building_in_progress_ = true;
-      request_to_build_index_ = false;
-      task_runner_->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&BuildTfidf, num_docs_from_last_update_, doc_length_,
-                         dictionary_, std::move(terms_to_be_updated_),
-                         tfidf_cache_),
-          base::BindOnce(&InvertedIndex::OnBuildTfidfCompleteSync,
-                         weak_ptr_factory_.GetWeakPtr()));
-    } else if (terms_to_be_updated_.empty()) {
-      // If there's no more work to do and all changed terms have been used to
-      // update the index, then mark index is built.
-      is_index_built_ = true;
-    }
-  } else {
-    update_in_progress_ = true;
-    task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        // TODO(jiameng): |doc_length_| can be moved since it's not used for
-        // document existence checking any more.
-        base::BindOnce(&UpdateDocumentStateVariables,
-                       std::move(documents_to_update_), doc_length_,
-                       std::move(dictionary_), std::move(terms_to_be_updated_)),
-        base::BindOnce(&InvertedIndex::OnUpdateDocumentsCompleteSync,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-}
-
-void InvertedIndex::OnBuildTfidfCompleteSync(TfidfCache&& new_cache) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  num_docs_from_last_update_ = doc_length_.size();
-  tfidf_cache_ = std::move(new_cache);
-
-  update_in_progress_ = false;
-  index_building_in_progress_ = false;
-  InvertedIndexController();
-}
-
 void InvertedIndex::OnBuildTfidfComplete(base::OnceCallback<void()> callback,
                                          TfidfCache&& new_cache) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -414,21 +315,6 @@ void InvertedIndex::OnBuildTfidfComplete(base::OnceCallback<void()> callback,
   tfidf_cache_ = std::move(new_cache);
 
   std::move(callback).Run();
-}
-
-void InvertedIndex::OnUpdateDocumentsCompleteSync(
-    std::pair<DocumentStateVariables, uint32_t>&&
-        document_state_variables_and_num_deleted) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  doc_length_ =
-      std::move(std::get<0>(document_state_variables_and_num_deleted.first));
-  dictionary_ =
-      std::move(std::get<1>(document_state_variables_and_num_deleted.first));
-  terms_to_be_updated_ =
-      std::move(std::get<2>(document_state_variables_and_num_deleted.first));
-
-  update_in_progress_ = false;
-  InvertedIndexController();
 }
 
 void InvertedIndex::OnUpdateDocumentsComplete(
@@ -464,19 +350,6 @@ void InvertedIndex::OnAddDocumentsComplete(
       std::move(std::get<2>(document_state_variables_and_num_deleted.first));
 
   BuildInvertedIndex(std::move(callback));
-}
-
-void InvertedIndex::OnDataClearedSync(
-    std::pair<DocumentStateVariables, TfidfCache>&& inverted_index_data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  doc_length_ = std::move(std::get<0>(inverted_index_data.first));
-  dictionary_ = std::move(std::get<1>(inverted_index_data.first));
-  terms_to_be_updated_ = std::move(std::get<2>(inverted_index_data.first));
-  tfidf_cache_ = std::move(inverted_index_data.second);
-
-  num_docs_from_last_update_ = 0;
-  update_in_progress_ = false;
-  InvertedIndexController();
 }
 
 void InvertedIndex::OnDataCleared(

@@ -65,18 +65,6 @@ class InvertedIndexSearch : public Index {
       UpdateDocumentsCallback callback,
       const std::vector<std::pair<std::string, std::vector<Token>>>& documents);
 
-  // In order to reduce unnecessary inverted index building, we only build the
-  // index if there's no upcoming modification to the index's document list.
-  void MaybeBuildInvertedIndex();
-
-  // AddOrUpdate requires content extraction to be done before index is updated
-  // (tokens added, index built). As content extraction runs on another thread
-  // (|blocking_task_runner_|), we need to keep track of how many index-update
-  // operations are to be done (and queued). Delete may be queued as well if
-  // there is an AddOrUpdate before it. We need to ensure documents are added or
-  // modified or deleted in the same order as they're given by the index client.
-  int num_queued_index_updates_ = 0;
-
   std::unique_ptr<InvertedIndex> inverted_index_;
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);

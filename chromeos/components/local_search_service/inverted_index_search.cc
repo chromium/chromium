@@ -160,8 +160,7 @@ void InvertedIndexSearch::Find(const std::u16string& query,
 }
 
 void InvertedIndexSearch::ClearIndex(ClearIndexCallback callback) {
-  inverted_index_->ClearInvertedIndex();
-  std::move(callback).Run();
+  inverted_index_->ClearInvertedIndex(std::move(callback));
 }
 
 std::vector<std::pair<std::string, uint32_t>>
@@ -194,13 +193,6 @@ void InvertedIndexSearch::FinalizeUpdateDocuments(
     const ExtractedContent& documents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   inverted_index_->UpdateDocuments(documents, std::move(callback));
-}
-
-void InvertedIndexSearch::MaybeBuildInvertedIndex() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (num_queued_index_updates_ == 0) {
-    inverted_index_->BuildInvertedIndex();
-  }
 }
 
 }  // namespace local_search_service
