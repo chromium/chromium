@@ -19,7 +19,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/test/browser_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -1041,8 +1040,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
   EXPECT_EQ("猫も大丈夫", GetLabelText());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleText) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
+IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleTextSetUp) {
   OnPartialTranscription("Capybaras are the world's largest rodents.");
 
   // The label is a readonly document.
@@ -1064,34 +1062,11 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleText) {
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       AccessibleTextComputedWhenAccessibilityModeEnabled) {
-  // If accessibility is disabled, virtual children aren't computed.
-  content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
-  OnPartialTranscription("A");
-  OnFinalTranscription("A dog's nose print");
-  EXPECT_EQ(0u, GetAXLineText().size());
-
-  // When accessibility is enabled, virtual children are computed.
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
-  OnFinalTranscription("is unique");
-  EXPECT_EQ(1u, GetAXLineText().size());
-  EXPECT_EQ("A dog's nose print is unique", GetAXLineText()[0]);
-
-  // When accessibility is disabled, virtual children are no longer being
-  // updated.
-  content::BrowserAccessibilityState::GetInstance()->DisableAccessibility();
-  OnFinalTranscription("like a fingerprint");
-  EXPECT_EQ(1u, GetAXLineText().size());
-  EXPECT_EQ("A dog's nose print is unique", GetAXLineText()[0]);
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        AccessibleTextSplitsIntoNodesByLine) {
   // Make a line of 500 characters.
   std::string line(499, 'a');
   line.push_back(' ');
 
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnPartialTranscription(line);
   EXPECT_EQ(1u, GetAXLineText().size());
   EXPECT_EQ(line, GetAXLineText()[0]);
@@ -1106,7 +1081,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        AccessibleTextClearsWhenBubbleCloses) {
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnPartialTranscription("Dogs' noses are wet to help them smell.");
   EXPECT_EQ(1u, GetAXLineText().size());
   EXPECT_EQ("Dogs' noses are wet to help them smell.", GetAXLineText()[0]);
@@ -1120,7 +1094,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   auto media_1 = std::make_unique<CaptionHostImpl>(
       browser()->tab_strip_model()->GetActiveWebContents()->GetFocusedFrame());
 
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnPartialTranscription("3 dogs survived the Titanic sinking.", media_0);
   EXPECT_EQ(1u, GetAXLineText().size());
   EXPECT_EQ("3 dogs survived the Titanic sinking.", GetAXLineText()[0]);
@@ -1142,7 +1115,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   for (int i = 10; i < 40; i++) {
     text += base::NumberToString(i) + line + " ";
   }
-  content::BrowserAccessibilityState::GetInstance()->EnableAccessibility();
   OnPartialTranscription(text);
   OnFinalTranscription(text);
   EXPECT_EQ(9u, GetAXLineText().size());

@@ -19,7 +19,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
-#include "content/public/browser/browser_accessibility_state.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -282,13 +281,6 @@ class CaptionBubbleLabel : public views::Label {
   void SetText(const std::u16string& text) override {
     views::Label::SetText(text);
 
-    // Only update ViewAccessibility if accessibility is enabled.
-    if (content::BrowserAccessibilityState::GetInstance()
-            ->GetAccessibilityMode()
-            .is_mode_off()) {
-      return;
-    }
-
     auto& ax_paragraph = GetViewAccessibility().virtual_children()[0];
     auto& ax_lines = ax_paragraph->children();
     if (text.empty() && !ax_lines.empty()) {
@@ -339,7 +331,6 @@ class CaptionBubbleLabel : public views::Label {
             ax::mojom::StringAttribute::kName)) != line_text) {
       ax_node_data.SetName(line_text);
       std::vector<gfx::Rect> bounds = GetSubstringBounds(text_range);
-      DCHECK_EQ(bounds.size(), 1u);
       ax_node_data.relative_bounds.bounds = gfx::RectF(bounds[0]);
     }
   }
