@@ -1000,9 +1000,9 @@ bool KeyEvent::IsRepeated(KeyEvent** last_key_event) {
 KeyEvent** KeyEvent::GetLastKeyEvent() {
 #if defined(USE_X11) || defined(USE_OZONE)
   // Use a different static variable for key events that have non standard
-  // state masks as it may be reposted by an IME. IBUS-GTK uses this field
-  // to detect the re-posted event for example. crbug.com/385873.
-  return properties() && properties()->contains(kPropertyKeyboardIBusFlag)
+  // state masks as it may be reposted by an IME. IBUS-GTK and fcitx-GTK uses
+  // this field to detect the re-posted event for example. crbug.com/385873.
+  return properties() && properties()->contains(kPropertyKeyboardImeFlag)
              ? &last_ibus_key_event_
              : &last_key_event_;
 #else

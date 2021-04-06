@@ -77,8 +77,8 @@ TEST(XEventTranslationTest, KeyEventXEventPropertiesSet) {
   // Set keyboard group in XKeyEvent
   uint32_t state = XkbBuildCoreState(
       static_cast<uint32_t>(xev->As<x11::KeyEvent>()->state), 2u);
-  // Set IBus-specific flags
-  state |= 0x3 << ui::kPropertyKeyboardIBusFlagOffset;
+  // Set IME-specific flags
+  state |= 0x3 << ui::kPropertyKeyboardImeFlagOffset;
   xev->As<x11::KeyEvent>()->state = static_cast<x11::KeyButMask>(state);
 
   auto keyev = ui::BuildKeyEventFromXEvent(*xev);
@@ -88,7 +88,7 @@ TEST(XEventTranslationTest, KeyEventXEventPropertiesSet) {
   EXPECT_TRUE(properties);
   EXPECT_EQ(3u, properties->size());
 
-  // Ensure hardware keycode, keyboard group and ibus flag properties are
+  // Ensure hardware keycode, keyboard group and IME flag properties are
   // properly set.
   auto hw_keycode_it = properties->find(ui::kPropertyKeyboardHwKeyCode);
   EXPECT_NE(hw_keycode_it, properties->end());
@@ -101,10 +101,10 @@ TEST(XEventTranslationTest, KeyEventXEventPropertiesSet) {
   EXPECT_EQ(1u, kbd_group_it->second.size());
   EXPECT_EQ(2u, kbd_group_it->second[0]);
 
-  auto ibus_flag_it = properties->find(ui::kPropertyKeyboardIBusFlag);
-  EXPECT_NE(ibus_flag_it, properties->end());
-  EXPECT_EQ(1u, ibus_flag_it->second.size());
-  EXPECT_EQ(0x3, ibus_flag_it->second[0]);
+  auto ime_flag_it = properties->find(ui::kPropertyKeyboardImeFlag);
+  EXPECT_NE(ime_flag_it, properties->end());
+  EXPECT_EQ(1u, ime_flag_it->second.size());
+  EXPECT_EQ(0x3, ime_flag_it->second[0]);
 }
 
 // Ensure XEvents with bogus timestamps are properly handled when translated

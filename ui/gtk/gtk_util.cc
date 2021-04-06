@@ -48,15 +48,15 @@ void CommonInitFromCommandLine(const base::CommandLine& command_line) {
   GtkInit(command_line.argv());
 }
 
-GdkModifierType GetIbusFlags(const ui::KeyEvent& key_event) {
+GdkModifierType GetImeFlags(const ui::KeyEvent& key_event) {
   auto* properties = key_event.properties();
   if (!properties)
     return static_cast<GdkModifierType>(0);
-  auto it = properties->find(ui::kPropertyKeyboardIBusFlag);
+  auto it = properties->find(ui::kPropertyKeyboardImeFlag);
   DCHECK(it == properties->end() || it->second.size() == 1);
   uint8_t flags = (it != properties->end()) ? it->second[0] : 0;
   return static_cast<GdkModifierType>(flags
-                                      << ui::kPropertyKeyboardIBusFlagOffset);
+                                      << ui::kPropertyKeyboardImeFlagOffset);
 }
 
 GtkCssContext AppendCssNodeToStyleContextImpl(
@@ -620,7 +620,7 @@ GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) {
   // the mask of modifier keys _prior_ to this event. Some IMEs rely on this
   // behavior. See https://crbug.com/1086946#c11.
 
-  GdkModifierType state = GetIbusFlags(key_event);
+  GdkModifierType state = GetImeFlags(key_event);
   if (key_event.key_code() != ui::VKEY_PROCESSKEY) {
     // This is an synthetized event when |key_code| is VKEY_PROCESSKEY.
     // In such a case there is no event being dispatching in the display
