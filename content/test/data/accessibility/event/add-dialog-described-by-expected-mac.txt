@@ -1,0 +1,2 @@
+AXInvalidStatusChanged on AXTextField
+AXValueChanged on AXTextField

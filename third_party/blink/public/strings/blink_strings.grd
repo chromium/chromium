@@ -853,6 +853,9 @@ below:
         <message name="IDS_AX_COMBOBOX_EXPANDED" desc="Accessibility utterance for when a combobox element is expanded, but due to authoring errors we cannot say any more information than that.">
           expanded.
         </message>
+        <message name="IDS_AX_DIALOG_MODAL_OPENED" desc="Accessibility utterance for when a dialog / modal has been opened.">
+          dialog opened.
+        </message>
       </if>
 
       <!-- Automatic image annotations for accessibility -->

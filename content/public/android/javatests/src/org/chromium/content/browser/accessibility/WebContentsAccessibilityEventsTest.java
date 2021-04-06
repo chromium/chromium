@@ -193,6 +193,27 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void test_addDialog() {
+        performTest("add-dialog.html", "add-dialog-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void test_addDialog_describedBy() {
+        performTest("add-dialog-described-by.html", "add-dialog-described-by-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void test_addDialog_noInfo() {
+        performTest("add-dialog-no-info.html", "add-dialog-no-info-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
     public void test_addHiddenAttribute() {
         performTest("add-hidden-attribute.html", EMPTY_EXPECTATIONS_FILE);
     }
