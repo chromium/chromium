@@ -112,7 +112,10 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
       })),
       highlight_color_animation_(
           std::make_unique<HighlightColorAnimation>(this)) {
-  DCHECK(!BrowserView::GetBrowserViewForBrowser(browser_)->side_panel());
+  // Note: BrowserView may not exist during tests.
+  if (BrowserView::GetBrowserViewForBrowser(browser_))
+    DCHECK(!BrowserView::GetBrowserViewForBrowser(browser_)->side_panel());
+
   dot_indicator_ = views::DotIndicator::Install(image());
 
   reading_list_model_ =
