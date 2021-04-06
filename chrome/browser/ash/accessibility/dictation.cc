@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/accessibility/dictation.h"
 
 #include "ash/components/audio/sounds.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,6 +85,8 @@ bool Dictation::OnToggleDictation() {
     // SODA is installed on-device.
     speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
         weak_ptr_factory_.GetWeakPtr(), profile_);
+    base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
+                              true);
   } else {
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
         weak_ptr_factory_.GetWeakPtr(),
@@ -91,6 +94,8 @@ bool Dictation::OnToggleDictation() {
             ->GetURLLoaderFactoryForBrowserProcessIOThread(),
         profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
         GetUserLanguage(profile_));
+    base::UmaHistogramBoolean("Accessibility.CrosDictation.UsedOnDeviceSpeech",
+                              false);
   }
   return true;
 }
