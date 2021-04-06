@@ -4425,9 +4425,13 @@ class AXPosition {
     if (parent_position->IsNullPosition())
       return parent_position;
 
-    // If there is no previous sibling, move up to the parent.
+    // If there is no previous sibling, or the parent itself is a leaf, move up
+    // to the parent. The parent can be a leaf if we start with a tree position
+    // that is a descendant of a node that is an empty control represented by
+    // an "object replacement character" (see
+    // `IsEmptyObjectReplacedByCharacter()`).
     const int index_in_parent = current_position->AnchorIndexInParent();
-    if (index_in_parent <= 0) {
+    if (index_in_parent <= 0 || parent_position->IsLeaf()) {
       if (abort_predicate.Run(*current_position, *parent_position,
                               AXMoveType::kAncestor,
                               AXMoveDirection::kPreviousInTree)) {
@@ -4447,6 +4451,7 @@ class AXPosition {
       return CreateNullPosition();
     }
 
+    CHECK(!rightmost_leaf->IsNullPosition());
     while (!rightmost_leaf->IsLeaf()) {
       parent_position = std::move(rightmost_leaf);
       rightmost_leaf = parent_position->CreateChildPositionAt(
@@ -4458,6 +4463,7 @@ class AXPosition {
                               AXMoveDirection::kPreviousInTree)) {
         return CreateNullPosition();
       }
+      CHECK(!rightmost_leaf->IsNullPosition());
     }
     return rightmost_leaf;
   }

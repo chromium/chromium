@@ -10818,6 +10818,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   // ++++13 kStaticText
   // ++++14 kButton
   // ++++++15 kGenericContainer ignored
+  // ++++++16 kGenericContainer ignored
   AXNodeData root_1;
   AXNodeData static_text_2;
   AXNodeData inline_box_3;
@@ -10833,6 +10834,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   AXNodeData static_text_13;
   AXNodeData button_14;
   AXNodeData generic_container_15;
+  AXNodeData generic_container_16;
 
   root_1.id = 1;
   static_text_2.id = 2;
@@ -10849,6 +10851,7 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   static_text_13.id = 13;
   button_14.id = 14;
   generic_container_15.id = 15;
+  generic_container_16.id = 16;
 
   root_1.role = ax::mojom::Role::kRootWebArea;
   root_1.child_ids = {static_text_2.id,        text_field_4.id,
@@ -10908,16 +10911,18 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   static_text_13.SetName("hey");
 
   button_14.role = ax::mojom::Role::kButton;
-  button_14.child_ids = {generic_container_15.id};
+  button_14.child_ids = {generic_container_15.id, generic_container_16.id};
 
   generic_container_15.role = ax::mojom::Role::kGenericContainer;
   generic_container_15.AddState(ax::mojom::State::kIgnored);
+  generic_container_16.role = ax::mojom::Role::kGenericContainer;
+  generic_container_16.AddState(ax::mojom::State::kIgnored);
 
-  SetTree(CreateAXTree({root_1, static_text_2, inline_box_3, text_field_4,
-                        generic_container_5, static_text_6, inline_box_7,
-                        heading_8, static_text_9, inline_box_10,
-                        generic_container_11, generic_container_12,
-                        static_text_13, button_14, generic_container_15}));
+  SetTree(CreateAXTree(
+      {root_1, static_text_2, inline_box_3, text_field_4, generic_container_5,
+       static_text_6, inline_box_7, heading_8, static_text_9, inline_box_10,
+       generic_container_11, generic_container_12, static_text_13, button_14,
+       generic_container_15, generic_container_16}));
 
   // CreateNextWordStartPosition tests.
   TestPositionType position = AXNodePosition::CreateTextPosition(
@@ -11100,6 +11105,20 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   EXPECT_EQ(button_14.id, text_position->anchor_id());
   EXPECT_EQ(1, text_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, text_position->affinity());
+
+  // We shouldn't infinitely loop when trying to get the previous position
+  // from a descendant of embedded object character.
+  TestPositionType generic_container_position =
+      AXNodePosition::CreateTreePosition(GetTreeID(), generic_container_16.id,
+                                         AXNodePosition::BEFORE_TEXT);
+  ASSERT_NE(nullptr, generic_container_position);
+  ASSERT_TRUE(generic_container_position->IsTreePosition());
+  EXPECT_EQ(generic_container_16.id, generic_container_position->anchor_id());
+  text_position = generic_container_position->CreatePreviousLeafTextPosition();
+  EXPECT_NE(nullptr, text_position);
+  EXPECT_TRUE(text_position->IsTextPosition());
+  EXPECT_EQ(GetTreeID(), text_position->tree_id());
+  EXPECT_EQ(button_14.id, text_position->anchor_id());
 }
 
 TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterEmbedObject) {
