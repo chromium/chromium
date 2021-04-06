@@ -539,7 +539,7 @@ ci.android_builder(
     tree_closing = True,
     experiments = {
         # TODO(crbug.com/1143122): remove this.
-        "luci.swarming.use_rbe_cas": 50,
+        "chromium.chromium_tests.use_rbe_cas": 50,
     },
 )
 
@@ -4898,7 +4898,7 @@ ci.linux_builder(
     main_console_view = "main",
     experiments = {
         # TODO(crbug.com/1143122): remove this.
-        "luci.swarming.use_rbe_cas": 20,
+        "chromium.chromium_tests.use_rbe_cas": 20,
     },
 )
 
@@ -5156,7 +5156,7 @@ ci.mac_builder(
     os = os.MAC_10_15,
     experiments = {
         # TODO(crbug.com/1143122): remove this.
-        "luci.swarming.use_rbe_cas": 20,
+        "chromium.chromium_tests.use_rbe_cas": 20,
     },
 )
 
@@ -5866,7 +5866,7 @@ ci.win_builder(
     os = os.WINDOWS_ANY,
     experiments = {
         # TODO(crbug.com/1143122): remove this.
-        "luci.swarming.use_rbe_cas": 20,
+        "chromium.chromium_tests.use_rbe_cas": 20,
     },
 )
 
