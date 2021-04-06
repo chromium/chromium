@@ -43,14 +43,12 @@ class UndoStep final : public GarbageCollected<UndoStep> {
  public:
   UndoStep(Document*,
            const SelectionForUndoStep& starting_selection,
-           const SelectionForUndoStep& ending_selection,
-           InputEvent::InputType);
+           const SelectionForUndoStep& ending_selection);
 
   // Returns true if associated root editable elements are connected.
   bool IsConnected() const;
   void Unapply();
   void Reapply();
-  InputEvent::InputType GetInputType() const;
   void Append(SimpleEditCommand*);
   void Append(UndoStep*);
 
@@ -83,7 +81,6 @@ class UndoStep final : public GarbageCollected<UndoStep> {
   SelectionForUndoStep starting_selection_;
   SelectionForUndoStep ending_selection_;
   HeapVector<Member<SimpleEditCommand>> commands_;
-  InputEvent::InputType input_type_;
   const uint64_t sequence_number_;
   bool selection_is_directional_ = false;
 };

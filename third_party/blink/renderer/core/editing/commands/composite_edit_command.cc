@@ -178,7 +178,7 @@ UndoStep* CompositeEditCommand::EnsureUndoStep() {
     command = command->Parent();
   if (!command->undo_step_) {
     command->undo_step_ = MakeGarbageCollected<UndoStep>(
-        &GetDocument(), StartingSelection(), EndingSelection(), GetInputType());
+        &GetDocument(), StartingSelection(), EndingSelection());
   }
   return command->undo_step_.Get();
 }
