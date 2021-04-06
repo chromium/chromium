@@ -47,6 +47,13 @@ static_library("javascript_dialogs") {
       "views/app_modal_dialog_view_views.h",
     ]
 
+    if (is_chromeos_lacros) {
+      sources += [
+        "views/layer_dimmer.cc",
+        "views/layer_dimmer.h",
+      ]
+    }
+
     deps += [
       "//build:chromeos_buildflags",
       "//ui/views",
@@ -76,6 +83,18 @@ source_set("unit_tests") {
   deps = [
     ":javascript_dialogs",
     "//base",
+    "//skia",
+    "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_chromeos_lacros) {
+    sources += [ "views/layer_dimmer_unittest.cc" ]
+
+    deps += [
+      "//ui/aura",
+      "//ui/compositor",
+      "//ui/gfx/geometry",
+    ]
+  }
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/javascript_dialogs/views/app_modal_dialog_view_views.h"
+#include <memory>
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -14,6 +15,11 @@
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/javascript_dialogs/views/layer_dimmer.h"
+#include "ui/aura/window.h"
+#endif  // IS_CHROMEOS_LACROS
 
 namespace javascript_dialogs {
 
@@ -76,7 +82,18 @@ AppModalDialogViewViews::~AppModalDialogViewViews() = default;
 // AppModalDialogViewViews, AppModalDialogView implementation:
 
 void AppModalDialogViewViews::ShowAppModalDialog() {
-  GetWidget()->Show();
+  auto* widget = GetWidget();
+  widget->Show();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* dialogWindow = widget->GetNativeWindow();
+  auto* parentWindow = dialogWindow->parent();
+
+  if (!layerDimmer_) {
+    layerDimmer_ = std::make_unique<LayerDimmer>(parentWindow, dialogWindow);
+  }
+  layerDimmer_->Show();
+#endif  // IS_CHROMEOS_LACROS
 }
 
 void AppModalDialogViewViews::ActivateAppModalDialog() {
@@ -86,6 +103,12 @@ void AppModalDialogViewViews::ActivateAppModalDialog() {
 
 void AppModalDialogViewViews::CloseAppModalDialog() {
   GetWidget()->Close();
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (layerDimmer_) {
+    layerDimmer_->Hide();
+  }
+#endif  // IS_CHROMEOS_LACROS
 }
 
 void AppModalDialogViewViews::AcceptAppModalDialog() {
