@@ -29,7 +29,7 @@ chromecast_media_grpc_library("cast_audio_decoder_service_proto") {
   # as both `protobuf_lite` and `protobuf_full` are present.
   assert(!is_android)
 
-  sources = [ "//third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.proto" ]
+  sources = [ "//third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.proto" ]
 }
 
 cast_source_set("proxy") {

@@ -12,7 +12,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.pb.h"
+#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/io/zero_copy_stream_impl.h"
 
 namespace chromecast {

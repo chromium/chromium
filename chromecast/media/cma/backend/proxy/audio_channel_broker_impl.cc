@@ -17,7 +17,7 @@ namespace {
 
 constexpr int64_t kMsDelayBetweenPushBufferPollingChecks = 10;
 
-std::unique_ptr<cast::media::CastRuntimeAudioChannel::StubInterface>
+std::unique_ptr<cast::media::CastAudioChannelService::StubInterface>
 GetRemoteStub() {
   auto* endpoint_manager = CastRuntimeAudioChannelEndpointManager::Get();
   DCHECK(endpoint_manager);
@@ -29,7 +29,7 @@ GetRemoteStub() {
 
   auto channel =
       grpc::CreateChannel(endpoint, grpc::InsecureChannelCredentials());
-  return cast::media::CastRuntimeAudioChannel::NewStub(channel);
+  return cast::media::CastAudioChannelService::NewStub(channel);
 }
 
 }  // namespace
@@ -46,7 +46,7 @@ AudioChannelBrokerImpl::AudioChannelBrokerImpl(TaskRunner* task_runner,
     : AudioChannelBrokerImpl(GetRemoteStub(), task_runner, handler) {}
 
 AudioChannelBrokerImpl::AudioChannelBrokerImpl(
-    std::unique_ptr<cast::media::CastRuntimeAudioChannel::StubInterface> stub,
+    std::unique_ptr<cast::media::CastAudioChannelService::StubInterface> stub,
     TaskRunner* task_runner,
     Handler* handler)
     : stub_(std::move(stub)),
@@ -83,7 +83,7 @@ void AudioChannelBrokerImpl::SetVolumeAsync(float multiplier) {
 
 void AudioChannelBrokerImpl::SetPlaybackAsync(double playback_rate) {
   auto request = SetPlaybackCall::CreateRequest(
-      this, &GrpcStub::async_interface::SetPlayback,
+      this, &GrpcStub::async_interface::SetPlaybackRate,
       &AudioChannelBrokerImpl::OnSetPlayback);
   request.parameters().set_rate(playback_rate);
 

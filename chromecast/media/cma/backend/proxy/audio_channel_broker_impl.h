@@ -13,8 +13,8 @@
 #include "base/optional.h"
 #include "chromecast/media/cma/backend/proxy/cast_runtime_audio_channel_broker.h"
 #include "third_party/grpc/src/include/grpcpp/impl/codegen/status.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.grpc.pb.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.pb.h"
+#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.grpc.pb.h"
+#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.pb.h"
 #include "third_party/protobuf/src/google/protobuf/duration.pb.h"
 
 namespace chromecast {
@@ -27,7 +27,7 @@ namespace media {
 // interface using the public gRPC library's asynchronous APIs.
 class AudioChannelBrokerImpl
     : public CastRuntimeAudioChannelBroker,
-      public cast::media::CastRuntimeAudioChannel::CallbackService {
+      public cast::media::CastAudioChannelService::CallbackService {
  public:
   // |task_runner| and |handler| must remain valid for the lifetime of this
   // object.
@@ -55,7 +55,7 @@ class AudioChannelBrokerImpl
   void UpdateTimestampAsync(TimestampInfo timestamp_info) override;
 
  private:
-  using GrpcStub = cast::media::CastRuntimeAudioChannel::StubInterface;
+  using GrpcStub = cast::media::CastAudioChannelService::StubInterface;
 
   // Helper to abstract away the complexity of using gRPC Calls with the new
   // gRPC async APIs.
@@ -187,15 +187,15 @@ class AudioChannelBrokerImpl
 
   // Some aliases to make the code more readable.
   using InitializeCall =
-      GrpcCall<cast::media::InitializeRequest, google::protobuf::Empty>;
+      GrpcCall<cast::media::InitializeRequest, cast::media::InitializeResponse>;
   using StateChangeCall = GrpcCall<cast::media::StateChangeRequest,
                                    cast::media::StateChangeResponse>;
   using SetVolumeCall =
-      GrpcCall<cast::media::SetVolumeRequest, google::protobuf::Empty>;
-  using SetPlaybackCall =
-      GrpcCall<cast::media::SetPlaybackRateRequest, google::protobuf::Empty>;
-  using GetMediaTimeCall =
-      GrpcCall<google::protobuf::Empty, cast::media::GetMediaTimeResponse>;
+      GrpcCall<cast::media::SetVolumeRequest, cast::media::SetVolumeResponse>;
+  using SetPlaybackCall = GrpcCall<cast::media::SetPlaybackRateRequest,
+                                   cast::media::SetPlaybackRateResponse>;
+  using GetMediaTimeCall = GrpcCall<cast::media::GetMediaTimeRequest,
+                                    cast::media::GetMediaTimeResponse>;
   using PushBufferCall =
       GrpcCall<cast::media::PushBufferRequest, cast::media::PushBufferResponse>;
 
@@ -203,7 +203,7 @@ class AudioChannelBrokerImpl
   StateChangeCall::Request CreateStateChangeCallRequest();
 
   AudioChannelBrokerImpl(
-      std::unique_ptr<cast::media::CastRuntimeAudioChannel::StubInterface> stub,
+      std::unique_ptr<cast::media::CastAudioChannelService::StubInterface> stub,
       TaskRunner* task_runner,
       Handler* handler);
 

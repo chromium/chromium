@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "chromecast/public/media/decoder_config.h"
 #include "chromecast/public/task_runner.h"
-#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_decoder_service.grpc.pb.h"
+#include "third_party/openscreen/src/cast/cast_core/api/runtime/cast_audio_channel_service.grpc.pb.h"
 #include "third_party/protobuf/src/google/protobuf/util/time_util.h"
 
 namespace chromecast {
