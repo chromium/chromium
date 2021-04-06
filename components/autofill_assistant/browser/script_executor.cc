@@ -230,6 +230,7 @@ bool ScriptExecutor::ShouldInterruptOnPause(const ActionProto& proto) {
     case ActionProto::ActionInfoCase::kCheckElementIsOnTop:
     case ActionProto::ActionInfoCase::kReleaseElements:
     case ActionProto::ActionInfoCase::kDispatchJsEvent:
+    case ActionProto::ActionInfoCase::kSendKeyEvent:
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       return false;
   }

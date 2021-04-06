@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_runtime.h"
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
@@ -30,10 +31,14 @@ class SendKeyboardInputWorker : public WebControllerWorker {
   // Callback called when the worker is done.
   using Callback = base::OnceCallback<void(const ClientStatus&)>;
 
-  // Send |codepoints| to |frame_id|, waiting for
+  // Create a |KeyEvent| from the |codepoint|. This has the potential to fill
+  // |text|, |key| and |commands|.
+  static KeyEvent KeyEventFromCodepoint(UChar32 codepoint);
+
+  // Send |key_events| to |frame_id|, waiting for
   // |key_press_delay_in_millisecond| between key presses.
   void Start(const std::string& frame_id,
-             const std::vector<UChar32>& codepoints,
+             const std::vector<KeyEvent>& key_events,
              int key_press_delay_in_millisecond,
              Callback callback);
 
@@ -58,7 +63,7 @@ class SendKeyboardInputWorker : public WebControllerWorker {
   Callback callback_;
   base::TimeDelta key_press_delay_;
   std::string frame_id_;
-  std::vector<UChar32> codepoints_;
+  std::vector<KeyEvent> key_events_;
 
   // When sending key events in parallel, this contains the number of
   // events for which we're still waiting for an answer.

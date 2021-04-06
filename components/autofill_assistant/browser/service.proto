@@ -751,6 +751,7 @@ message ActionProto {
     CheckElementIsOnTopProto check_element_is_on_top = 69;
     ReleaseElementsProto release_elements = 70;
     DispatchJsEventProto dispatch_js_event = 72;
+    SendKeyEventProto send_key_event = 73;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -1106,6 +1107,9 @@ message WebControllerErrorInfoProto {
 
     // Dispatch a 'duplexweb' event on document.
     DISPATCH_EVENT_ON_DOCUMENT = 20;
+
+    // Send a single key event.
+    SEND_KEY_EVENT = 21;
   }
 
   // The web-action that failed. This is usually a step in an execution chain

@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/devtools/devtools/domains/types_dom.h"
@@ -222,6 +223,12 @@ class WebController {
   virtual void SendTextInput(
       int key_press_delay_in_millisecond,
       const std::string& value,
+      const ElementFinder::Result& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
+  // Sends the specified key event. Expects |element| to have focus.
+  virtual void SendKeyEvent(
+      const KeyEvent& key_event,
       const ElementFinder::Result& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 

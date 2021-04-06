@@ -215,6 +215,9 @@ std::ostream& operator<<(std::ostream& out,
     case ActionProto::ActionInfoCase::kDispatchJsEvent:
       out << "DispatchJsEvent";
       break;
+    case ActionProto::ActionInfoCase::kSendKeyEvent:
+      out << "SendKeyEvent";
+      break;
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET:
       out << "ACTION_INFO_NOT_SET";
       break;

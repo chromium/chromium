@@ -1169,14 +1169,36 @@ void WebController::SendKeyboardInput(
     const int key_press_delay_in_millisecond,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback) {
+  std::vector<KeyEvent> key_events;
+  for (UChar32 codepoint : codepoints) {
+    key_events.emplace_back(
+        SendKeyboardInputWorker::KeyEventFromCodepoint(codepoint));
+  }
   auto worker =
       std::make_unique<SendKeyboardInputWorker>(devtools_client_.get());
   auto* ptr = worker.get();
   pending_workers_.emplace_back(std::move(worker));
   ptr->Start(
-      element.node_frame_id(), codepoints, key_press_delay_in_millisecond,
+      element.node_frame_id(), key_events, key_press_delay_in_millisecond,
       base::BindOnce(&DecorateWebControllerStatus,
                      WebControllerErrorInfoProto::SEND_KEYBOARD_INPUT,
+                     base::BindOnce(&WebController::OnSendKeyboardInputDone,
+                                    weak_ptr_factory_.GetWeakPtr(), ptr,
+                                    std::move(callback))));
+}
+
+void WebController::SendKeyEvent(
+    const KeyEvent& key_event,
+    const ElementFinder::Result& element,
+    base::OnceCallback<void(const ClientStatus&)> callback) {
+  auto worker =
+      std::make_unique<SendKeyboardInputWorker>(devtools_client_.get());
+  auto* ptr = worker.get();
+  pending_workers_.emplace_back(std::move(worker));
+  ptr->Start(
+      element.node_frame_id(), {key_event}, 0,
+      base::BindOnce(&DecorateWebControllerStatus,
+                     WebControllerErrorInfoProto::SEND_KEY_EVENT,
                      base::BindOnce(&WebController::OnSendKeyboardInputDone,
                                     weak_ptr_factory_.GetWeakPtr(), ptr,
                                     std::move(callback))));

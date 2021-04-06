@@ -74,6 +74,13 @@ message SendKeystrokeEventsProto {
   optional int32 delay_in_ms = 3;
 }
 
+// Send a single key event to the element. This requires the element to have
+// focus to receive it.
+message SendKeyEventProto {
+  optional ClientIdProto client_id = 1;
+  optional KeyEvent key_event = 2;
+}
+
 // Send a change event on the element.
 message SendChangeEventProto {
   optional ClientIdProto client_id = 1;

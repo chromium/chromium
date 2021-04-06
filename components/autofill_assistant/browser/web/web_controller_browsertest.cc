@@ -13,6 +13,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/string_conversions_util.h"
 #include "components/autofill_assistant/browser/top_padding.h"
@@ -912,6 +913,53 @@ class WebControllerBrowserTest : public content::ContentBrowserTest,
 
     web_controller_->SendKeyboardInput(codepoints, delay_in_milli, element,
                                        std::move(callback));
+  }
+
+  ClientStatus SendKeyEvent(const Selector& selector,
+                            const KeyEvent& key_event) {
+    base::RunLoop run_loop;
+    ClientStatus result;
+
+    web_controller_->FindElement(
+        selector, /* strict_mode= */ true,
+        base::BindOnce(
+            &WebControllerBrowserTest::FindSendKeyEventElementCallback,
+            base::Unretained(this), key_event, run_loop.QuitClosure(),
+            &result));
+
+    run_loop.Run();
+    return result;
+  }
+
+  void FindSendKeyEventElementCallback(
+      const KeyEvent& key_event,
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      const ClientStatus& element_status,
+      std::unique_ptr<ElementFinder::Result> element_result) {
+    EXPECT_EQ(ACTION_APPLIED, element_status.proto_status());
+    ASSERT_TRUE(element_result != nullptr);
+    const ElementFinder::Result* element_result_ptr = element_result.get();
+    web_controller_->FocusField(
+        *element_result_ptr,
+        base::BindOnce(
+            &WebControllerBrowserTest::OnFieldFocussedForSendKeyEvent,
+            base::Unretained(this), key_event, std::move(done_callback),
+            result_output, std::move(element_result)));
+  }
+
+  void OnFieldFocussedForSendKeyEvent(
+      const KeyEvent& key_event,
+      base::OnceClosure done_callback,
+      ClientStatus* result_output,
+      std::unique_ptr<ElementFinder::Result> element,
+      const ClientStatus& focus_status) {
+    const ElementFinder::Result* element_ptr = element.get();
+    web_controller_->SendKeyEvent(
+        key_event, *element_ptr,
+        base::BindOnce(&WebControllerBrowserTest::ElementRetainingCallback,
+                       base::Unretained(this), std::move(element),
+                       std::move(done_callback), result_output));
   }
 
   ClientStatus SetAttribute(const Selector& selector,
@@ -2170,6 +2218,15 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendKeyboardInputWithDelay) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, BackspaceKeyEvent) {
+  EXPECT_TRUE(ExecJs(shell(), R"(
+    document.getElementById('input4').addEventListener('keyup', (e) => {
+      document.getElementById('input6').value = "triggered";
+    });
+    document.getElementById('input5').addEventListener('keyup', (e) => {
+      document.getElementById('input7').value = "triggered";
+    });
+  )"));
+
   std::vector<Selector> selectors;
   Selector a_selector({"#input4"});
   selectors.emplace_back(a_selector);
@@ -2186,6 +2243,36 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, BackspaceKeyEvent) {
                 b_selector, "\b",
                 KeyboardValueFillStrategy::SIMULATE_KEY_PRESSES_SELECT_VALUE)
                 .proto_status());
+  GetFieldsValue(selectors, {"helloworld", std::string()});
+
+  selectors.clear();
+  Selector a_trigger_selector({"#input6"});
+  selectors.emplace_back(a_trigger_selector);
+  Selector b_trigger_selector({"#input7"});
+  selectors.emplace_back(b_trigger_selector);
+  GetFieldsValue(selectors, {"triggered", "triggered"});
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendKeyCommands) {
+  std::vector<Selector> selectors;
+  // The initial value of #input2 is "helloworld2", sending a DeleteBackward
+  // command should remove the last character.
+  Selector a_selector({"#input2"});
+  selectors.emplace_back(a_selector);
+  KeyEvent a_key_event;
+  a_key_event.add_command("MoveToEndOfLine");
+  a_key_event.add_command("DeleteBackward");
+  EXPECT_EQ(ACTION_APPLIED,
+            SendKeyEvent(a_selector, a_key_event).proto_status());
+  // The initial value of #input3 is "helloworld3", sending SelectAll +
+  // DeleteBackward commands should clear the text.
+  Selector b_selector({"#input3"});
+  selectors.emplace_back(b_selector);
+  KeyEvent b_key_event;
+  b_key_event.add_command("SelectAll");
+  b_key_event.add_command("DeleteBackward");
+  EXPECT_EQ(ACTION_APPLIED,
+            SendKeyEvent(b_selector, b_key_event).proto_status());
   GetFieldsValue(selectors, {"helloworld", std::string()});
 }
 
