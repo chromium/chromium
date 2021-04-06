@@ -27,7 +27,6 @@ import sys
 from typing import Dict, List
 
 _SRC_DIR = pathlib.Path(__file__).parents[4].resolve()
-print(_SRC_DIR)
 
 sys.path.append(str(_SRC_DIR / 'build' / 'android'))
 from pylib import constants
