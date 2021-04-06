@@ -1697,6 +1697,11 @@ enum class TextBlobStrategy {
   kRecordShader,  // DrawRectOp where the paint has a RecordShader with text
   kRecordFilter   // DrawRectOp where the paint has a RecordFilter with text
 };
+enum class FilterStrategy {
+  kNone,        // No additional PaintFilter interacting with text
+  kPaintFlags,  // A blur is added to the PaintFlags of the draw
+  kSaveLayer    // An explicit save layer with blur is made before the draw
+};
 enum class MatrixStrategy {
   kIdentity,     // Identity matrix (no extra scale factor for text then)
   kScaled,       // Matrix is an axis-aligned scale factor
@@ -1705,8 +1710,8 @@ enum class MatrixStrategy {
 };
 enum class LCDStrategy { kNo, kYes };
 
-using TextBlobTestConfig =
-    ::testing::tuple<TextBlobStrategy, MatrixStrategy, LCDStrategy>;
+using TextBlobTestConfig = ::testing::
+    tuple<TextBlobStrategy, FilterStrategy, MatrixStrategy, LCDStrategy>;
 
 class OopTextBlobPixelTest
     : public OopPixelTest,
@@ -1724,8 +1729,25 @@ class OopTextBlobPixelTest
     auto display_item_list = base::MakeRefCounted<DisplayItemList>();
     display_item_list->StartPaint();
 
+    // Set matrix before any image filter is applied, which may force the
+    // matrix to be decomposed into a transform compatible with the filter.
     SetMatrix(display_item_list);
-    PushDrawOp(display_item_list);
+
+    const bool save_layer =
+        GetFilterStrategy(GetParam()) == FilterStrategy::kSaveLayer;
+    sk_sp<PaintFilter> filter = MakeFilter();
+    if (save_layer) {
+      PaintFlags layer_flags;
+      layer_flags.setImageFilter(std::move(filter));
+      filter = nullptr;
+      display_item_list->push<SaveLayerOp>(nullptr, &layer_flags);
+    }
+
+    PushDrawOp(display_item_list, std::move(filter));
+
+    if (save_layer) {
+      display_item_list->push<RestoreOp>();
+    }
 
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
@@ -1774,6 +1796,16 @@ class OopTextBlobPixelTest
     ExpectEquals(actual, expected, comparator);
   }
 
+  sk_sp<PaintFilter> MakeFilter() {
+    if (GetFilterStrategy(GetParam()) == FilterStrategy::kNone) {
+      return nullptr;
+    } else {
+      // Keep the blur sigmas small to reduce test duration, it's the presence
+      // of the blur filter that triggers the code path changes we care about.
+      return sk_make_sp<BlurPaintFilter>(.1f, .1f, SkTileMode::kDecal, nullptr);
+    }
+  }
+
   void SetMatrix(scoped_refptr<DisplayItemList> display_list) {
     MatrixStrategy strategy = GetMatrixStrategy(GetParam());
 
@@ -1797,14 +1829,22 @@ class OopTextBlobPixelTest
     display_list->push<ConcatOp>(m);
   }
 
-  void PushDrawOp(scoped_refptr<DisplayItemList> display_list) {
+  void PushDrawOp(scoped_refptr<DisplayItemList> display_list,
+                  sk_sp<PaintFilter> filter) {
     TextBlobStrategy strategy = GetTextBlobStrategy(GetParam());
+
     auto text_blob = BuildTextBlob(SkTypeface::MakeDefault(), UseLcdText());
 
     PaintFlags text_flags;
     text_flags.setStyle(PaintFlags::kFill_Style);
     text_flags.setColor(SK_ColorGREEN);
-
+    if (filter && (strategy == TextBlobStrategy::kDirect ||
+                   strategy == TextBlobStrategy::kDrawRecord)) {
+      // If there's a filter, the only PaintFlags that are available for these
+      // two text-drawing strategies is 'text_flags'.
+      text_flags.setImageFilter(std::move(filter));
+      filter = nullptr;
+    }
     if (strategy == TextBlobStrategy::kDirect) {
       display_list->push<DrawTextBlobOp>(std::move(text_blob), 0u, kTextBlobY,
                                          text_flags);
@@ -1832,11 +1872,18 @@ class OopTextBlobPixelTest
       paint_record_shader->set_has_animated_images(true);
 
       record_flags.setShader(paint_record_shader);
+      record_flags.setImageFilter(std::move(filter));
     } else {
       DCHECK(strategy == TextBlobStrategy::kRecordFilter);
 
       sk_sp<PaintFilter> paint_record_filter =
           sk_make_sp<RecordPaintFilter>(paint_record, SkRect::MakeWH(100, 100));
+      // If there's an additional filter, we have to compose it with the
+      // paint record filter.
+      if (filter) {
+        paint_record_filter = sk_make_sp<ComposePaintFilter>(
+            std::move(filter), std::move(paint_record_filter));
+      }
       record_flags.setImageFilter(std::move(paint_record_filter));
     }
 
@@ -1853,11 +1900,14 @@ class OopTextBlobPixelTest
       const TextBlobTestConfig& config) {
     return ::testing::get<0>(config);
   }
-  static MatrixStrategy GetMatrixStrategy(const TextBlobTestConfig& config) {
+  static FilterStrategy GetFilterStrategy(const TextBlobTestConfig& config) {
     return ::testing::get<1>(config);
   }
-  static LCDStrategy GetLCDStrategy(const TextBlobTestConfig& config) {
+  static MatrixStrategy GetMatrixStrategy(const TextBlobTestConfig& config) {
     return ::testing::get<2>(config);
+  }
+  static LCDStrategy GetLCDStrategy(const TextBlobTestConfig& config) {
+    return ::testing::get<3>(config);
   }
 
   bool UseLcdText() const {
@@ -1879,6 +1929,18 @@ class OopTextBlobPixelTest
         break;
       case TextBlobStrategy::kRecordFilter:
         ss << "RecordFilter";
+        break;
+    }
+    ss << "_";
+    switch (GetFilterStrategy(info.param)) {
+      case FilterStrategy::kNone:
+        ss << "NoFilter";
+        break;
+      case FilterStrategy::kPaintFlags:
+        ss << "FilterOnPaint";
+        break;
+      case FilterStrategy::kSaveLayer:
+        ss << "FilterOnLayer";
         break;
     }
     ss << "_";
@@ -1921,6 +1983,9 @@ INSTANTIATE_TEST_SUITE_P(
                                          TextBlobStrategy::kDrawRecord,
                                          TextBlobStrategy::kRecordShader,
                                          TextBlobStrategy::kRecordFilter),
+                       ::testing::Values(FilterStrategy::kNone,
+                                         FilterStrategy::kPaintFlags,
+                                         FilterStrategy::kSaveLayer),
                        ::testing::Values(MatrixStrategy::kIdentity,
                                          MatrixStrategy::kScaled,
                                          MatrixStrategy::kComplex,
