@@ -484,8 +484,13 @@ void HistoryBackend::AddContentAnnotationsForVisit(
   if (!db_)
     return;
 
-  db_->AddContentAnnotationsForVisit(visit_id, content_annotations);
-  ScheduleCommit();
+  // Only add to the annotations table if the visit_id exists in the visits
+  // table.
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    db_->AddContentAnnotationsForVisit(visit_id, content_annotations);
+    ScheduleCommit();
+  }
 }
 #endif
 

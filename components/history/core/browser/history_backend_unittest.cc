@@ -1533,6 +1533,41 @@ TEST_F(HistoryBackendTest, AddPageArgsSource) {
   EXPECT_EQ(history::SOURCE_SYNCED, visit_sources.begin()->second);
 }
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+TEST_F(HistoryBackendTest, AddContentAnnotations_NoEntryInVisitTable) {
+  ASSERT_TRUE(backend_.get());
+
+  GURL url("http://pagewithvisit.com");
+  ContextID context_id = reinterpret_cast<ContextID>(1);
+  int nav_entry_id = 1;
+
+  HistoryAddPageArgs request(url, base::Time::Now(), context_id, nav_entry_id,
+                             GURL(), history::RedirectList(),
+                             ui::PAGE_TRANSITION_TYPED, false,
+                             history::SOURCE_BROWSED, false, true, false);
+  backend_->AddPage(request);
+
+  VisitVector visits;
+  URLRow row;
+  URLID id = backend_->db()->GetRowForURL(url, &row);
+  ASSERT_TRUE(backend_->db()->GetVisitsForURL(id, &visits));
+  ASSERT_EQ(1U, visits.size());
+  VisitID visit_id = visits[0].visit_id;
+
+  // Delete the visit.
+  backend_->DeleteURL(url);
+
+  // Try adding the annotations. It should be a no-op as there's no matching
+  // entry in the visits table.
+  VisitContentAnnotations annotations(
+      0.5f, {{/*id=*/1, /*weight=*/1}, {/*id=*/2, /*weight=*/1}}, 123);
+  backend_->AddContentAnnotationsForVisit(visit_id, annotations);
+
+  // The content_annotations table should have no entries.
+  ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(visit_id));
+}
+#endif
+
 TEST_F(HistoryBackendTest, SetFlocAllowed) {
   ASSERT_TRUE(backend_.get());
 
