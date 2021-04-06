@@ -2,7 +2,6 @@ cmp@chromium.org
 dmurph@chromium.org
 dominickn@chromium.org
 mgiuca@chromium.org
-mlamouri@chromium.org
 msw@chromium.org
 
 per-file *_type_converter*.*=set noparent

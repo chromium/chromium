@@ -7875,7 +7875,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.Autoplay.Attempt">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Event recorded when there is an attempt to autoplay (ie. no user gesture).
@@ -7925,7 +7925,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.Autoplay.AudioContext">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Records the AudioContext autoplay information.
@@ -7952,7 +7952,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Media.Autoplay.Muted.UnmuteAction">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>
     Event recorded when there is an attempt to unmute an media that was

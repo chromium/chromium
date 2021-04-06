@@ -9374,7 +9374,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Manifest.FetchResult" enum="ManifestFetchResultType"
     expires_after="2020-12-13">
   <owner>mgiuca@chromium.org</owner>
-  <owner>mlamouri@chromium.org</owner>
   <summary>
     Tracks whether the Manifest fetch succeed and why it failed if it failed.
   </summary>
@@ -9383,7 +9382,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Manifest.HasProperty" enum="Boolean"
     expires_after="2021-08-09">
   <owner>mgiuca@chromium.org</owner>
-  <owner>mlamouri@chromium.org</owner>
   <summary>
     Tracks which properties of a Manifest were present when it was parsed. If a
     property can't be parsed, it will be recorded as not present. These
@@ -9395,7 +9393,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Manifest.ParseSuccess" enum="Boolean"
     expires_after="2020-06-07">
   <owner>mgiuca@chromium.org</owner>
-  <owner>mlamouri@chromium.org</owner>
   <summary>
     Tracks the Manifest parsing result. A failure will be recorded if the
     Manifest was incorrectly structured. This doesn't take into account parse
@@ -18973,7 +18970,6 @@ regressions. -->
 
 <histogram name="XR.RuntimeUsed" enum="XRDeviceId" expires_after="2021-07-01">
   <owner>alcooper@chromium.org</owner>
-  <owner>mlamouri@google.com</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>
     Indicates which XR runtime was used for a session. Recorded when the session

@@ -1,11 +1,8 @@
 # Device Motion / Orientation API related
 per-file DeviceSensorsTest.java=timvolodine@chromium.org
 
-# Screen Orientation API related
-per-file ScreenOrientation*.java=mlamouri@chromium.org
-
 # Media Session API related
-per-file MediaSession*.java=mlamouri@chromium.org
+per-file MediaSession*.java=steimel@chromium.org
 
 # Java Bridge
 per-file JavaBridge*=michaelbai@chromium.org

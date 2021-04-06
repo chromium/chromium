@@ -4724,7 +4724,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="ClearBrowsingData_SiteUsageData">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>Recorded when the user clears site usage data.</description>
 </action>
 
@@ -12562,12 +12563,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Media.Controls.Cast">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user clicked on the cast controls button.</description>
 </action>
 
 <action name="Media.Controls.CastOverlay">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user clicked on the cast overlay button.</description>
 </action>
 
@@ -12586,24 +12589,28 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Media.Controls.ClosedCaptionHide">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user hid the closed caption from the controls.</description>
 </action>
 
 <action name="Media.Controls.ClosedCaptionShow">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>
     The user showed the closed caption from the controls.
   </description>
 </action>
 
 <action name="Media.Controls.Download">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user clicked on the controls' download button.</description>
 </action>
 
 <action name="Media.Controls.EnterFullscreen">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user entered fullscreen mode from the controls.</description>
 </action>
 
@@ -12617,7 +12624,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Media.Controls.ExitFullscreen">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user left fullscreen mode from the controls.</description>
 </action>
 
@@ -12631,27 +12639,31 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Media.Controls.Mute">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user muted a media element from the controls.</description>
 </action>
 
 <action name="Media.Controls.OverflowClose">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user closed the overflow menu via the controls.</description>
 </action>
 
 <action name="Media.Controls.OverflowOpen">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user opened the overflow menu via the controls.</description>
 </action>
 
 <action name="Media.Controls.Pause">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user paused a media element from the controls.</description>
 </action>
 
 <action name="Media.Controls.PauseOverlay">
-  <owner>beccahughes@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <description>
     The user paused a media element from the pause overlay button.
@@ -12659,12 +12671,14 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Media.Controls.Play">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user played a media element from the controls.</description>
 </action>
 
 <action name="Media.Controls.PlayOverlay">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>
     The user played a media element from the play overlay button.
   </description>
@@ -12687,6 +12701,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Media.Controls.RemoteSeekBackward">
+  <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <description>
     User seeks the video backward using any controls apart from the media
@@ -12696,6 +12711,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Media.Controls.RemoteSeekForward">
+  <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <description>
     User seeks the video forward using any controls apart from the media element
@@ -12704,33 +12720,38 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Media.Controls.ScrubbingBegin">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>
     The user started to interact with the control's scrubber.
   </description>
 </action>
 
 <action name="Media.Controls.ScrubbingEnd">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>
     The user stopped interacting with the control's scrubber.
   </description>
 </action>
 
 <action name="Media.Controls.Unmute">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>The user unmuted a media element from the controls.</description>
 </action>
 
 <action name="Media.Controls.VolumeChangeBegin">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>
     The user started to interact with the control's volume slider.
   </description>
 </action>
 
 <action name="Media.Controls.VolumeChangeEnd">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>
     The user stopped interacting with the control's volume slider.
   </description>
@@ -12880,7 +12901,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MediaContextMenu_EnterPictureInPicture">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <description>
     User clicked on the contextual menu of a video player to enter
@@ -12889,7 +12910,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MediaContextMenu_ExitPictureInPicture">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>steimel@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <description>
     User clicked on the contextual menu of a video player to exit
@@ -21130,8 +21151,8 @@ should be able to be added at any place in this file.
 
 <action name="ScreenOrientationChange">
   <owner>avayvod@chromium.org</owner>
-  <owner>mlamouri@chromium.org</owner>
   <owner>zqzhang@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
   <description>
     The use rotates the device triggering a screen orientation change. This
     action is Android-specific.
@@ -22725,7 +22746,6 @@ should be able to be added at any place in this file.
 <action name="Signin_Impression_FromKaleidoscope">
   <owner>beccahughes@chromium.org</owner>
   <owner>steimel@chromium.org</owner>
-  <owner>mlamouri@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <description>
     Recorded when showing a sign-in page from Kaleidoscope.
@@ -27389,7 +27409,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="webapps.AddShortcut.Manifest">
-  <owner>mlamouri@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
   <description>
     Shortcut added to the homescreen with a valid Manifest. This action will be
     recorded in addition to AppShortcut, AppShortcutApple and Bookmark actions

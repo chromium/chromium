@@ -5,8 +5,5 @@ tommi@chromium.org
 # ChromeSpeechRecognitionClient
 per-file chrome_speech_recognition_client*=evliu@google.com
 
-# FlashEmbedRewrite
-per-file flash_embed_rewrite*=mlamouri@chromium.org
-
 # For Media Feeds.
 per-file media_feeds*=file://chrome/browser/media/feeds/OWNERS

@@ -71,7 +71,6 @@ For Chromium contributors that have different nicks on other domains.
 | mmeade            | mmeade          | mmeade          |
 | mednik            | mednik          | mednik          |
 | mgaba             | mgaba           | mgaba           |
-| mlamouri          | mounir          | mlamouri        |
 | mlinck            | dullb0yj4ck     | mlinck          |
 | msw               | msw\_           | msw             |
 | nick              | nickcarter      | ncarter         |

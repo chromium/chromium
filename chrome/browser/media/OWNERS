@@ -6,12 +6,6 @@ tommi@chromium.org
 per-file cast_*=mfoltz@chromium.org
 per-file cast_*=jophba@chromium.org
 
-# For Media Engagement
-per-file media_engagement*=mlamouri@chromium.org
-
-# For Unified Autoplay
-per-file unified_autoplay*=mlamouri@chromium.org
-
 # For IPC security review
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
