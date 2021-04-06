@@ -37,8 +37,7 @@ class ChunkToLayerMapperTest : public testing::Test {
       layer_effect_ = EffectPaintPropertyNode::Create(
           e0(), EffectPaintPropertyNode::State{
                     layer_transform_, layer_clip_, CompositorFilterOperations(),
-                    0.789f, CompositorFilterOperations(),
-                    base::Optional<gfx::RRectF>(), SkBlendMode::kSrcIn});
+                    nullptr, 0.789f, SkBlendMode::kSrcIn});
     }
     return PropertyTreeState(*layer_transform_, *layer_clip_, *layer_effect_);
   }

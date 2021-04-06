@@ -3520,18 +3520,16 @@ void PaintLayer::UpdateCompositorFilterOperationsForFilter(
 
 void PaintLayer::UpdateCompositorFilterOperationsForBackdropFilter(
     CompositorFilterOperations& operations,
-    base::Optional<gfx::RRectF>* backdrop_filter_bounds) {
-  DCHECK(backdrop_filter_bounds);
+    gfx::RRectF& backdrop_filter_bounds) {
   const auto& style = GetLayoutObject().StyleRef();
   if (style.BackdropFilter().IsEmpty()) {
     operations.Clear();
-    backdrop_filter_bounds->reset();
     backdrop_filter_on_effect_node_dirty_ = false;
     return;
   }
 
   FloatRect reference_box = BackdropFilterReferenceBox();
-  *backdrop_filter_bounds = BackdropFilterBounds();
+  backdrop_filter_bounds = BackdropFilterBounds();
   // CompositorFilter needs the reference box to be unzoomed.
   float zoom = style.EffectiveZoom();
   if (zoom != 1)

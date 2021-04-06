@@ -6940,7 +6940,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGChildBackdropFilter) {
   ASSERT_TRUE(svg_text_properties->Effect());
   EXPECT_TRUE(svg_text_properties->Effect()->HasDirectCompositingReasons());
   // TODO(crbug.com/1131987): Backdrop-filter doesn't work in SVG yet.
-  EXPECT_TRUE(svg_text_properties->Effect()->BackdropFilter().IsEmpty());
+  EXPECT_FALSE(svg_text_properties->Effect()->BackdropFilter());
   EXPECT_FALSE(svg_text_properties->Transform());
   EXPECT_FALSE(GetLayoutObjectByElementId("text")
                    ->SlowFirstChild()

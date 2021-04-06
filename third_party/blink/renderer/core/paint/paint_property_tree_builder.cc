@@ -1260,16 +1260,20 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       }
       if (object_.IsBoxModelObject()) {
         if (auto* layer = To<LayoutBoxModelObject>(object_).Layer()) {
+          CompositorFilterOperations operations;
+          gfx::RRectF bounds;
           // Try to use the cached effect for backdrop-filter.
-          if (properties_->Effect()) {
-            state.backdrop_filter = properties_->Effect()->BackdropFilter();
-            state.backdrop_filter_bounds =
-                properties_->Effect()->BackdropFilterBounds();
+          if (properties_->Effect() &&
+              properties_->Effect()->BackdropFilter()) {
+            operations = *properties_->Effect()->BackdropFilter();
+            bounds = properties_->Effect()->BackdropFilterBounds();
           }
-          layer->UpdateCompositorFilterOperationsForBackdropFilter(
-              state.backdrop_filter, &state.backdrop_filter_bounds);
-          if (!state.backdrop_filter.IsEmpty()) {
-            state.backdrop_mask_element_id = mask_compositor_element_id;
+          layer->UpdateCompositorFilterOperationsForBackdropFilter(operations,
+                                                                   bounds);
+          if (!operations.IsEmpty()) {
+            state.backdrop_filter_info = base::WrapUnique(
+                new EffectPaintPropertyNode::BackdropFilterInfo{
+                    std::move(operations), bounds, mask_compositor_element_id});
           }
         }
       }
@@ -1458,8 +1462,7 @@ static bool NeedsFilter(const LayoutObject& object,
 static void UpdateFilterEffect(const LayoutObject& object,
                                const EffectPaintPropertyNode* effect_node,
                                CompositorFilterOperations& filter) {
-  if (object.IsBoxModelObject() &&
-      To<LayoutBoxModelObject>(object).HasLayer()) {
+  if (object.HasLayer()) {
     // Try to use the cached filter.
     if (effect_node)
       filter = effect_node->Filter();

@@ -657,7 +657,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
   // |backdrop_filter_on_effect_node_dirty_| will be cleared.
   void UpdateCompositorFilterOperationsForBackdropFilter(
       CompositorFilterOperations& operations,
-      base::Optional<gfx::RRectF>* backdrop_filter_bounds);
+      gfx::RRectF& backdrop_filter_bounds);
   void SetBackdropFilterOnEffectNodeDirty() {
     backdrop_filter_on_effect_node_dirty_ = true;
   }

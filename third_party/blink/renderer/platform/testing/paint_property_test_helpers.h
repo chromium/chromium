@@ -116,14 +116,20 @@ inline scoped_refptr<EffectPaintPropertyNode> CreateBackdropFilterEffect(
     const EffectPaintPropertyNodeOrAlias& parent,
     const TransformPaintPropertyNodeOrAlias& local_transform_space,
     const ClipPaintPropertyNodeOrAlias* output_clip,
-    CompositorFilterOperations backdrop_filter) {
+    CompositorFilterOperations backdrop_filter,
+    float opacity = 1.0f) {
   EffectPaintPropertyNode::State state;
   state.local_transform_space = &local_transform_space;
   state.output_clip = output_clip;
-  state.backdrop_filter = std::move(backdrop_filter);
+  if (!backdrop_filter.IsEmpty()) {
+    state.backdrop_filter_info =
+        base::WrapUnique(new EffectPaintPropertyNode::BackdropFilterInfo{
+            std::move(backdrop_filter)});
+  }
   state.direct_compositing_reasons = CompositingReason::kBackdropFilter;
   state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kPrimary);
+  state.opacity = opacity;
   return EffectPaintPropertyNode::Create(parent, std::move(state));
 }
 
@@ -143,7 +149,11 @@ CreateAnimatingBackdropFilterEffect(
   EffectPaintPropertyNode::State state;
   state.local_transform_space = &parent.Unalias().LocalTransformSpace();
   state.output_clip = output_clip;
-  state.backdrop_filter = std::move(backdrop_filter);
+  if (!backdrop_filter.IsEmpty()) {
+    state.backdrop_filter_info =
+        base::WrapUnique(new EffectPaintPropertyNode::BackdropFilterInfo{
+            std::move(backdrop_filter)});
+  }
   state.direct_compositing_reasons =
       CompositingReason::kActiveBackdropFilterAnimation;
   state.has_active_backdrop_filter_animation = true;

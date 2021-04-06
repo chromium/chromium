@@ -1708,11 +1708,8 @@ bool LayoutObject::HasDistortingVisualEffects() const {
   // No filters, no blends, no opacity < 100%.
   for (const auto* effect = &paint_properties.Effect().Unalias(); effect;
        effect = effect->UnaliasedParent()) {
-    if (!effect->Filter().IsEmpty() || !effect->BackdropFilter().IsEmpty() ||
-        effect->BlendMode() != SkBlendMode::kSrcOver ||
-        effect->Opacity() != 1.0) {
+    if (effect->HasRealEffects())
       return true;
-    }
   }
 
   auto& local_frame_root = GetDocument().GetFrame()->LocalFrameRoot();

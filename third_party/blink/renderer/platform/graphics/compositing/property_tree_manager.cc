@@ -871,7 +871,7 @@ bool PropertyTreeManager::SupportsShaderBasedRoundedCorner(
   // Don't use shader based rounded corner if the next effect has backdrop
   // filter and the clip is in different transform space, because we will use
   // the effect's transform space for the mask isolation effect node.
-  if (next_effect && !next_effect->BackdropFilter().IsEmpty() &&
+  if (next_effect && next_effect->BackdropFilter() &&
       &next_effect->LocalTransformSpace() != &clip.LocalTransformSpace())
     return false;
 
@@ -1136,7 +1136,7 @@ static cc::RenderSurfaceReason RenderSurfaceReasonForEffect(
     return cc::RenderSurfaceReason::kFilter;
   if (effect.HasActiveFilterAnimation())
     return cc::RenderSurfaceReason::kFilterAnimation;
-  if (!effect.BackdropFilter().IsEmpty())
+  if (effect.BackdropFilter())
     return cc::RenderSurfaceReason::kBackdropFilter;
   if (effect.HasActiveBackdropFilterAnimation())
     return cc::RenderSurfaceReason::kBackdropFilterAnimation;
@@ -1165,11 +1165,12 @@ void PropertyTreeManager::PopulateCcEffectNode(
   if (effect.HasBackdropEffect()) {
     // We never have backdrop effect and filter on the same effect node.
     DCHECK(effect.Filter().IsEmpty());
-    effect_node.backdrop_filters =
-        effect.BackdropFilter().AsCcFilterOperations();
-    effect_node.backdrop_filter_bounds = effect.BackdropFilterBounds();
+    if (auto* backdrop_filter = effect.BackdropFilter()) {
+      effect_node.backdrop_filters = backdrop_filter->AsCcFilterOperations();
+      effect_node.backdrop_filter_bounds = effect.BackdropFilterBounds();
+      effect_node.backdrop_mask_element_id = effect.BackdropMaskElementId();
+    }
     effect_node.blend_mode = effect.BlendMode();
-    effect_node.backdrop_mask_element_id = effect.BackdropMaskElementId();
   } else {
     effect_node.filters = effect.Filter().AsCcFilterOperations();
   }

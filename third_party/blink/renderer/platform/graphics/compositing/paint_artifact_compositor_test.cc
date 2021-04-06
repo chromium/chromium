@@ -3774,15 +3774,7 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
   auto t1 = Create2DTranslation(t0(), 10, 20);
   CompositorFilterOperations blur_filter;
   blur_filter.AppendBlurFilter(5);
-  EffectPaintPropertyNode::State state;
-  state.local_transform_space = t1.get();
-  state.output_clip = c2.get();
-  state.backdrop_filter.AppendBlurFilter(5);
-  state.direct_compositing_reasons = CompositingReason::kBackdropFilter;
-  state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
-      NewUniqueObjectId(), CompositorElementIdNamespace::kPrimary);
-  state.opacity = 0.5;
-  auto e1 = EffectPaintPropertyNode::Create(e0(), std::move(state));
+  auto e1 = CreateBackdropFilterEffect(e0(), *t1, c2.get(), blur_filter, 0.5f);
 
   TestPaintArtifact artifact;
   artifact.Chunk(*t1, *c1, e0())
