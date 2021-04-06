@@ -84,17 +84,18 @@ base::StringPiece FindDatabase(base::StringPiece text,
   return "";
 }
 
-NsswitchReader::ServiceAction TokenizeAction(base::StringPiece column) {
+NsswitchReader::ServiceAction TokenizeAction(base::StringPiece action_column) {
+  DCHECK(!action_column.empty());
+  DCHECK_EQ(action_column.find_first_of(base::kWhitespaceASCII),
+            base::StringPiece::npos);
+  DCHECK_EQ(action_column.find_first_of("[]"), base::StringPiece::npos);
+
   NsswitchReader::ServiceAction result = {/*negated=*/false,
                                           NsswitchReader::Status::kUnknown,
                                           NsswitchReader::Action::kUnknown};
 
-  if (column.front() != '[' || column.back() != ']')
-    return result;
-  column = column.substr(1, column.size() - 2);
-
   std::vector<base::StringPiece> split = base::SplitStringPiece(
-      column, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      action_column, "=", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (split.size() != 2)
     return result;
 
@@ -124,53 +125,133 @@ NsswitchReader::ServiceAction TokenizeAction(base::StringPiece column) {
   return result;
 }
 
+std::vector<NsswitchReader::ServiceAction> TokenizeActions(
+    base::StringPiece actions) {
+  DCHECK_EQ(actions.find_first_of("[]"), base::StringPiece::npos);
+  DCHECK(!actions.empty());
+  DCHECK(!base::IsAsciiWhitespace(actions.front()));
+
+  std::vector<NsswitchReader::ServiceAction> result;
+
+  for (const auto& action_column : base::SplitStringPiece(
+           actions, base::kWhitespaceASCII, base::KEEP_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    DCHECK(!action_column.empty());
+    result.push_back(TokenizeAction(action_column));
+  }
+
+  return result;
+}
+
+NsswitchReader::ServiceSpecification TokenizeService(
+    base::StringPiece service_column) {
+  DCHECK(!service_column.empty());
+  DCHECK_EQ(service_column.find_first_of(base::kWhitespaceASCII),
+            base::StringPiece::npos);
+  DCHECK_EQ(service_column.find_first_of("[]"), base::StringPiece::npos);
+
+  if (base::EqualsCaseInsensitiveASCII(service_column, "files")) {
+    return NsswitchReader::ServiceSpecification(
+        NsswitchReader::Service::kFiles);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "dns")) {
+    return NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "mdns")) {
+    return NsswitchReader::ServiceSpecification(NsswitchReader::Service::kMdns);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "mdns4")) {
+    return NsswitchReader::ServiceSpecification(
+        NsswitchReader::Service::kMdns4);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "mdns6")) {
+    return NsswitchReader::ServiceSpecification(
+        NsswitchReader::Service::kMdns6);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "mdns_minimal")) {
+    return NsswitchReader::ServiceSpecification(
+        NsswitchReader::Service::kMdnsMinimal);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "mdns4_minimal")) {
+    return NsswitchReader::ServiceSpecification(
+        NsswitchReader::Service::kMdns4Minimal);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "mdns6_minimal")) {
+    return NsswitchReader::ServiceSpecification(
+        NsswitchReader::Service::kMdns6Minimal);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "myhostname")) {
+    return NsswitchReader::ServiceSpecification(
+        NsswitchReader::Service::kMyHostname);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "resolve")) {
+    return NsswitchReader::ServiceSpecification(
+        NsswitchReader::Service::kResolve);
+  }
+  if (base::EqualsCaseInsensitiveASCII(service_column, "nis")) {
+    return NsswitchReader::ServiceSpecification(NsswitchReader::Service::kNis);
+  }
+
+  return NsswitchReader::ServiceSpecification(
+      NsswitchReader::Service::kUnknown);
+}
+
 std::vector<NsswitchReader::ServiceSpecification> TokenizeDatabase(
     base::StringPiece database) {
   std::vector<NsswitchReader::ServiceSpecification> tokenized;
 
-  for (const auto& column : base::SplitStringPiece(
-           database, base::kWhitespaceASCII, base::KEEP_WHITESPACE,
-           base::SPLIT_WANT_NONEMPTY)) {
-    DCHECK(!column.empty());
+  while (!database.empty()) {
+    DCHECK(!base::IsAsciiWhitespace(database.front()));
 
-    // Note: Assuming comments can only be started at the start of a column.
-    if (base::StartsWith(column, "#")) {
+    // Note: Assuming comments are not recognized mid-action or mid-service.
+    if (database.front() == '#') {
       // Once a comment is hit, the rest of the database is comment.
       return tokenized;
     }
 
-    if (column.front() == '[') {
+    if (database.front() == '[') {
       // Actions are expected to come after a service.
       if (tokenized.empty()) {
         tokenized.emplace_back(NsswitchReader::Service::kUnknown);
       }
 
-      tokenized.back().actions.push_back(TokenizeAction(column));
-    } else if (base::EqualsCaseInsensitiveASCII(column, "files")) {
-      tokenized.emplace_back(NsswitchReader::Service::kFiles);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "dns")) {
-      tokenized.emplace_back(NsswitchReader::Service::kDns);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "mdns")) {
-      tokenized.emplace_back(NsswitchReader::Service::kMdns);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "mdns4")) {
-      tokenized.emplace_back(NsswitchReader::Service::kMdns4);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "mdns6")) {
-      tokenized.emplace_back(NsswitchReader::Service::kMdns6);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "mdns_minimal")) {
-      tokenized.emplace_back(NsswitchReader::Service::kMdnsMinimal);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "mdns4_minimal")) {
-      tokenized.emplace_back(NsswitchReader::Service::kMdns4Minimal);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "mdns6_minimal")) {
-      tokenized.emplace_back(NsswitchReader::Service::kMdns6Minimal);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "myhostname")) {
-      tokenized.emplace_back(NsswitchReader::Service::kMyHostname);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "resolve")) {
-      tokenized.emplace_back(NsswitchReader::Service::kResolve);
-    } else if (base::EqualsCaseInsensitiveASCII(column, "nis")) {
-      tokenized.emplace_back(NsswitchReader::Service::kNis);
+      size_t action_end = database.find_first_of("]");
+
+      base::StringPiece actions;
+      if (action_end == base::StringPiece::npos) {
+        actions = database.substr(1);
+        database = "";
+      } else {
+        actions = database.substr(1, action_end - 1);
+        database = database.substr(action_end + 1);
+      }
+      actions =
+          base::TrimWhitespaceASCII(actions, base::TrimPositions::TRIM_LEADING);
+
+      if (!actions.empty()) {
+        std::vector<NsswitchReader::ServiceAction> tokenized_actions =
+            TokenizeActions(actions);
+        tokenized.back().actions.insert(tokenized.back().actions.end(),
+                                        tokenized_actions.begin(),
+                                        tokenized_actions.end());
+      }
     } else {
-      tokenized.emplace_back(NsswitchReader::Service::kUnknown);
+      size_t column_end = database.find_first_of(base::kWhitespaceASCII);
+
+      base::StringPiece service_column;
+      if (column_end == base::StringPiece::npos) {
+        service_column = database;
+        database = "";
+      } else {
+        service_column = database.substr(0, column_end);
+        database = database.substr(column_end);
+      }
+
+      tokenized.push_back(TokenizeService(service_column));
     }
+
+    database =
+        base::TrimWhitespaceASCII(database, base::TrimPositions::TRIM_LEADING);
   }
 
   return tokenized;

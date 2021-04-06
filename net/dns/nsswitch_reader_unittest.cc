@@ -213,6 +213,29 @@ TEST_F(NsswitchReaderTest, ParsesRepeatedActions) {
                     NsswitchReader::Action::kReturn}})));
 }
 
+TEST_F(NsswitchReaderTest, ParsesCombinedActionLists) {
+  const std::string kFile =
+      "hosts: dns [SUCCESS=RETURN !NOTFOUND=RETURN UNAVAIL=RETURN] files";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(
+                  NsswitchReader::ServiceSpecification(
+                      NsswitchReader::Service::kDns,
+                      {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+                        NsswitchReader::Action::kReturn},
+                       {/*negated=*/true, NsswitchReader::Status::kNotFound,
+                        NsswitchReader::Action::kReturn},
+                       {/*negated=*/false, NsswitchReader::Status::kUnavailable,
+                        NsswitchReader::Action::kReturn}}),
+                  NsswitchReader::ServiceSpecification(
+                      NsswitchReader::Service::kFiles)));
+}
+
 TEST_F(NsswitchReaderTest, HandlesAtypicalWhitespace) {
   const std::string kFile =
       " database:  service   \n\n   hosts: files\tdns   mdns4 \t mdns6    \t  "
@@ -231,6 +254,26 @@ TEST_F(NsswitchReaderTest, HandlesAtypicalWhitespace) {
           NsswitchReader::ServiceSpecification(NsswitchReader::Service::kMdns4),
           NsswitchReader::ServiceSpecification(
               NsswitchReader::Service::kMdns6)));
+}
+
+TEST_F(NsswitchReaderTest, HandlesAtypicalWhitespaceInActions) {
+  const std::string kFile =
+      "hosts: dns [ !UNAVAIL=MERGE \t NOTFOUND=RETURN\t][ UNAVAIL=CONTINUE]";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(NsswitchReader::ServiceSpecification(
+                  NsswitchReader::Service::kDns,
+                  {{/*negated=*/true, NsswitchReader::Status::kUnavailable,
+                    NsswitchReader::Action::kMerge},
+                   {/*negated=*/false, NsswitchReader::Status::kNotFound,
+                    NsswitchReader::Action::kReturn},
+                   {/*negated=*/false, NsswitchReader::Status::kUnavailable,
+                    NsswitchReader::Action::kContinue}})));
 }
 
 TEST_F(NsswitchReaderTest, ParsesActionsWithoutService) {
@@ -337,7 +380,22 @@ TEST_F(NsswitchReaderTest, ParsesInvalidActionsAsUnknown) {
           NsswitchReader::ServiceSpecification(NsswitchReader::Service::kNis)));
 }
 
-TEST_F(NsswitchReaderTest, ParsesInvalidlyClosedActionsAsUnknown) {
+TEST_F(NsswitchReaderTest, IgnoresInvalidlyClosedActions) {
+  const std::string kFile = "hosts: myhostname [SUCCESS=MERGE";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(NsswitchReader::ServiceSpecification(
+                  NsswitchReader::Service::kMyHostname,
+                  {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+                    NsswitchReader::Action::kMerge}})));
+}
+
+TEST_F(NsswitchReaderTest, ParsesServicesAfterInvalidlyClosedActionsAsUnknown) {
   const std::string kFile = "hosts: resolve [SUCCESS=CONTINUE dns";
   TestFileReader file_reader(kFile);
   reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
@@ -345,14 +403,13 @@ TEST_F(NsswitchReaderTest, ParsesInvalidlyClosedActionsAsUnknown) {
   std::vector<NsswitchReader::ServiceSpecification> services =
       reader_.ReadAndParseHosts();
 
-  EXPECT_THAT(
-      services,
-      testing::ElementsAre(
-          NsswitchReader::ServiceSpecification(
-              NsswitchReader::Service::kResolve,
-              {{/*negated=*/false, NsswitchReader::Status::kUnknown,
-                NsswitchReader::Action::kUnknown}}),
-          NsswitchReader::ServiceSpecification(NsswitchReader::Service::kDns)));
+  EXPECT_THAT(services,
+              testing::ElementsAre(NsswitchReader::ServiceSpecification(
+                  NsswitchReader::Service::kResolve,
+                  {{/*negated=*/false, NsswitchReader::Status::kSuccess,
+                    NsswitchReader::Action::kContinue},
+                   {/*negated=*/false, NsswitchReader::Status::kUnknown,
+                    NsswitchReader::Action::kUnknown}})));
 }
 
 TEST_F(NsswitchReaderTest, IgnoresComments) {
@@ -403,6 +460,19 @@ TEST_F(NsswitchReaderTest, IgnoresCapitalization) {
                   NsswitchReader::Service::kMdns6,
                   {{/*negated=*/true, NsswitchReader::Status::kUnavailable,
                     NsswitchReader::Action::kMerge}})));
+}
+
+TEST_F(NsswitchReaderTest, IgnoresEmptyActions) {
+  const std::string kFile = "hosts: mdns_minimal [ \t ][] [ ]";
+  TestFileReader file_reader(kFile);
+  reader_.set_file_read_call_for_testing(file_reader.GetFileReadCall());
+
+  std::vector<NsswitchReader::ServiceSpecification> services =
+      reader_.ReadAndParseHosts();
+
+  EXPECT_THAT(services,
+              testing::ElementsAre(NsswitchReader::ServiceSpecification(
+                  NsswitchReader::Service::kMdnsMinimal)));
 }
 
 }  // namespace
