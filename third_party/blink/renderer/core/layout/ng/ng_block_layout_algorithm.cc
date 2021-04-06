@@ -726,6 +726,10 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
     intrinsic_block_size_ +=
         std::max(intrinsic_block_size_,
                  Node().GetLayoutBox()->LogicalHeightForEmptyLine());
+    if (container_builder_.IsInitialColumnBalancingPass()) {
+      container_builder_.PropagateTallestUnbreakableBlockSize(
+          intrinsic_block_size_);
+    }
     // Test [1][2] require baseline offset for empty editable.
     // [1] css3/flexbox/baseline-for-empty-line.html
     // [2] inline-block/contenteditable-baseline.html

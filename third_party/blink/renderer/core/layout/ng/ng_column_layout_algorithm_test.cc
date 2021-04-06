@@ -45,6 +45,38 @@ class NGColumnLayoutAlgorithmTest
   }
 };
 
+TEST_F(NGColumnLayoutAlgorithmTest, EmptyEditable) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/20px Ahem; }"
+      "#multicol1, #multicol2 { columns: 3; }");
+  SetBodyInnerHTML(
+      "<div contenteditable id=single></div>"
+      "<div contenteditable id=multicol1><br></div>"
+      "<div contenteditable id=multicol2></div>");
+
+  EXPECT_EQ(20, GetElementById("single")->OffsetHeight());
+  EXPECT_EQ(20, GetElementById("multicol1")->OffsetHeight());
+  EXPECT_EQ(20, GetElementById("multicol2")->OffsetHeight());
+}
+
+TEST_F(NGColumnLayoutAlgorithmTest, EmptyEditableWithFloat) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { font: 10px/20px Ahem; }"
+      "float { float:right; width: 50px; height: 50px; background:pink; }"
+      "#multicol1, #multicol2 { columns: 3; }");
+  SetBodyInnerHTML(
+      "<div contenteditable id=single><float></float></div>"
+      // Note: <float> spreads into all columns.
+      "<div contenteditable id=multicol1><float></float><br></div>"
+      "<div contenteditable id=multicol2><float></float></div>");
+
+  EXPECT_EQ(20, GetElementById("single")->OffsetHeight());
+  EXPECT_EQ(20, GetElementById("multicol1")->OffsetHeight());
+  EXPECT_EQ(20, GetElementById("multicol2")->OffsetHeight());
+}
+
 TEST_F(NGColumnLayoutAlgorithmTest, EmptyMulticol) {
   SetBodyInnerHTML(R"HTML(
     <style>
