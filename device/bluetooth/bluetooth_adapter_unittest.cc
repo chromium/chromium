@@ -133,6 +133,12 @@ class TestBluetoothAdapter final : public BluetoothAdapter {
     return nullptr;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetServiceAllowList(const UUIDList& uuids,
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override {}
+#endif
+
   void OnStartDiscoverySessionQuitLoop(
       base::OnceClosure run_loop_quit,
       std::unique_ptr<device::BluetoothDiscoverySession> discovery_session) {

@@ -187,6 +187,11 @@ class FakeCentral final : public mojom::FakeCentral,
 #endif
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetServiceAllowList(const UUIDList& uuids,
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override;
+#endif
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;
   bool SetPoweredImpl(bool powered) override;
   void UpdateFilter(

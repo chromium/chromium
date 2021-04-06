@@ -344,6 +344,8 @@ component("bluetooth") {
         "bluez/bluetooth_socket_bluez.h",
         "dbus/bluetooth_adapter_client.cc",
         "dbus/bluetooth_adapter_client.h",
+        "dbus/bluetooth_admin_policy_client.cc",
+        "dbus/bluetooth_admin_policy_client.h",
         "dbus/bluetooth_agent_manager_client.cc",
         "dbus/bluetooth_agent_manager_client.h",
         "dbus/bluetooth_agent_service_provider.cc",
@@ -418,6 +420,8 @@ component("bluetooth") {
         sources += [
           "dbus/fake_bluetooth_adapter_client.cc",
           "dbus/fake_bluetooth_adapter_client.h",
+          "dbus/fake_bluetooth_admin_policy_client.cc",
+          "dbus/fake_bluetooth_admin_policy_client.h",
           "dbus/fake_bluetooth_agent_manager_client.cc",
           "dbus/fake_bluetooth_agent_manager_client.h",
           "dbus/fake_bluetooth_agent_service_provider.cc",

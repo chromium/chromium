@@ -606,6 +606,14 @@ device::BluetoothLocalGattService* FakeCentral::GetGattService(
   return nullptr;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void FakeCentral::SetServiceAllowList(const UUIDList& uuids,
+                                      base::OnceClosure callback,
+                                      ErrorCallback error_callback) {
+  NOTREACHED();
+}
+#endif
+
 base::WeakPtr<device::BluetoothAdapter> FakeCentral::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

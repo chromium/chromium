@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/bluetooth_admin_policy_client.h"
 #include "device/bluetooth/dbus/bluetooth_agent_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"
@@ -23,6 +24,7 @@
 #include "device/bluetooth/dbus/bluetooth_le_advertising_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/fake_bluetooth_admin_policy_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_agent_manager_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
@@ -41,6 +43,7 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
     : use_fakes_(use_fakes) {
   if (!use_fakes_) {
     bluetooth_adapter_client_.reset(BluetoothAdapterClient::Create());
+    bluetooth_admin_policy_client_ = BluetoothAdminPolicyClient::Create();
     bluetooth_le_advertising_manager_client_.reset(
         BluetoothLEAdvertisingManagerClient::Create());
     bluetooth_agent_manager_client_.reset(
@@ -66,6 +69,7 @@ BluetoothDBusClientBundle::BluetoothDBusClientBundle(bool use_fakes)
     LOG(FATAL) << "Fakes are unavailable if USE_REAL_DBUS_CLIENTS is defined.";
 #else
     bluetooth_adapter_client_.reset(new FakeBluetoothAdapterClient);
+    bluetooth_admin_policy_client_.reset(new FakeBluetoothAdminPolicyClient);
     bluetooth_le_advertising_manager_client_.reset(
         new FakeBluetoothLEAdvertisingManagerClient);
     bluetooth_agent_manager_client_.reset(new FakeBluetoothAgentManagerClient);

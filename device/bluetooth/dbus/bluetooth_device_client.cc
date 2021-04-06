@@ -212,6 +212,8 @@ BluetoothDeviceClient::Properties::Properties(
                    &advertising_data_flags);
   RegisterProperty(bluetooth_device::kMTUProperty, &mtu);
   RegisterProperty(bluetooth_device::kEIRProperty, &eir);
+  RegisterProperty(bluetooth_device::kIsBlockedByPolicyProperty,
+                   &is_blocked_by_policy);
 }
 
 BluetoothDeviceClient::Properties::~Properties() = default;

@@ -24,6 +24,7 @@
 #include "dbus/object_proxy.h"
 #include "device/base/features.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/bluetooth_admin_policy_client.h"
 #include "device/bluetooth/dbus/bluetooth_agent_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"
@@ -98,6 +99,12 @@ void BluezDBusManager::CallWhenObjectManagerSupportIsKnown(
 BluetoothAdapterClient* bluez::BluezDBusManager::GetBluetoothAdapterClient() {
   DCHECK(object_manager_support_known_);
   return client_bundle_->bluetooth_adapter_client();
+}
+
+BluetoothAdminPolicyClient*
+bluez::BluezDBusManager::GetBluetoothAdminPolicyClient() {
+  DCHECK(object_manager_support_known_);
+  return client_bundle_->bluetooth_admin_policy_client();
 }
 
 BluetoothLEAdvertisingManagerClient*
@@ -202,6 +209,8 @@ void BluezDBusManager::InitializeClients() {
       bluez_object_manager::kBluezObjectManagerServiceName;
   client_bundle_->bluetooth_adapter_client()->Init(GetSystemBus(),
                                                    bluetooth_service_name);
+  client_bundle_->bluetooth_admin_policy_client()->Init(GetSystemBus(),
+                                                        bluetooth_service_name);
   client_bundle_->bluetooth_agent_manager_client()->Init(
       GetSystemBus(), bluetooth_service_name);
   client_bundle_->bluetooth_device_client()->Init(GetSystemBus(),
@@ -334,6 +343,12 @@ void BluezDBusManagerSetter::SetBluetoothAdapterClient(
     std::unique_ptr<BluetoothAdapterClient> client) {
   bluez::BluezDBusManager::Get()->client_bundle_->bluetooth_adapter_client_ =
       std::move(client);
+}
+
+void BluezDBusManagerSetter::SetBluetoothAdminPolicyClient(
+    std::unique_ptr<BluetoothAdminPolicyClient> client) {
+  bluez::BluezDBusManager::Get()
+      ->client_bundle_->bluetooth_admin_policy_client_ = std::move(client);
 }
 
 void BluezDBusManagerSetter::SetBluetoothLEAdvertisingManagerClient(

@@ -426,6 +426,17 @@ bool BluetoothDeviceBlueZ::IsConnecting() const {
   return num_connecting_calls_ > 0;
 }
 
+#if defined(OS_CHROMEOS)
+bool BluetoothDeviceBlueZ::IsBlockedByPolicy() const {
+  bluez::BluetoothDeviceClient::Properties* properties =
+      bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->GetProperties(
+          object_path_);
+  DCHECK(properties);
+
+  return properties->is_blocked_by_policy.value();
+}
+#endif
+
 BluetoothDevice::UUIDSet BluetoothDeviceBlueZ::GetUUIDs() const {
   return device_uuids_.GetUUIDs();
 }

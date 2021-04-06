@@ -27,6 +27,7 @@
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_service_record_bluez.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/bluetooth_admin_policy_client.h"
 #include "device/bluetooth/dbus/bluetooth_agent_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_agent_service_provider.h"
 #include "device/bluetooth/dbus/bluetooth_battery_client.h"
@@ -79,6 +80,7 @@ class BluetoothPairingBlueZ;
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
     : public device::BluetoothAdapter,
       public bluez::BluetoothAdapterClient::Observer,
+      public bluez::BluetoothAdminPolicyClient::Observer,
       public bluez::BluetoothBatteryClient::Observer,
       public bluez::BluetoothDeviceClient::Observer,
       public bluez::BluetoothInputClient::Observer,
@@ -157,6 +159,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
 
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetServiceAllowList(const UUIDList& uuids,
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override;
+#endif
 
   // These functions are specifically for use with ARC. They have no need to
   // exist for other platforms, hence we're putting them directly in the BlueZ
@@ -296,6 +304,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void AdapterRemoved(const dbus::ObjectPath& object_path) override;
   void AdapterPropertyChanged(const dbus::ObjectPath& object_path,
                               const std::string& property_name) override;
+
+  // bluez::BluetoothAdminPolicyClient::Observer override.
+  void AdminPolicyAdded(const dbus::ObjectPath& object_path) override;
+  void AdminPolicyRemoved(const dbus::ObjectPath& object_path) override;
+  void AdminPolicyPropertyChanged(const dbus::ObjectPath& object_path,
+                                  const std::string& property_name) override;
 
   // bluez::BluetoothBatteryClient::Observer override.
   void BatteryAdded(const dbus::ObjectPath& object_path) override;

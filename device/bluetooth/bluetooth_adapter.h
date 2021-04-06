@@ -631,6 +631,11 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   void NotifyDeviceBatteryChanged(BluetoothDevice* device);
 #endif
 
+#if defined(OS_CHROMEOS)
+  void NotifyDeviceIsBlockedByPolicyChanged(BluetoothDevice* device,
+                                            bool new_blocked_status);
+#endif
+
   void NotifyGattServiceAdded(BluetoothRemoteGattService* service);
   void NotifyGattServiceRemoved(BluetoothRemoteGattService* service);
   void NotifyGattServiceChanged(BluetoothRemoteGattService* service);
@@ -648,6 +653,16 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   void NotifyGattDescriptorValueChanged(
       BluetoothRemoteGattDescriptor* descriptor,
       const std::vector<uint8_t>& value);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Set a service allowlist by specifying services UUIDs. When this is called,
+  // existing connections will be disconnected and services not in the allowlist
+  // will be blocked. Device property |IsBlockedByPolicy| will be True if some
+  // of the auto-connect services are blocked, False otherwise.
+  virtual void SetServiceAllowList(const UUIDList& uuids,
+                                   base::OnceClosure callback,
+                                   ErrorCallback error_callback) = 0;
+#endif
 
   // The timeout in seconds used by RemoveTimedOutDevices.
   static const base::TimeDelta timeoutSec;

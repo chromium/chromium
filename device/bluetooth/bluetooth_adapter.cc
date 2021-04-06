@@ -323,6 +323,14 @@ void BluetoothAdapter::NotifyDeviceBatteryChanged(BluetoothDevice* device) {
 }
 #endif
 
+#if defined(OS_CHROMEOS)
+void BluetoothAdapter::NotifyDeviceIsBlockedByPolicyChanged(
+    BluetoothDevice* device,
+    bool new_blocked_status) {
+  NOTIMPLEMENTED();
+}
+#endif
+
 void BluetoothAdapter::NotifyGattServiceAdded(
     BluetoothRemoteGattService* service) {
   DCHECK_EQ(service->GetDevice()->GetAdapter(), this);

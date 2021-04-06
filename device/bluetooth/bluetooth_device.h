@@ -312,6 +312,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // its UUID.
   virtual UUIDSet GetUUIDs() const;
 
+#if defined(OS_CHROMEOS)
+  // Indicate whether or not this device is blocked by admin policy. This would
+  // be true if any of its auto-connect service does not exist in the
+  // ServiceAllowList under org.bluez.AdminPolicy1.
+  virtual bool IsBlockedByPolicy() const = 0;
+#endif
+
   // Returns the last advertised Service Data. Returns an empty map if the
   // adapter is not discovering.
   //

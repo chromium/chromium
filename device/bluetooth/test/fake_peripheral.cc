@@ -202,6 +202,13 @@ bool FakePeripheral::IsConnecting() const {
   return false;
 }
 
+#if defined(OS_CHROMEOS)
+bool FakePeripheral::IsBlockedByPolicy() const {
+  NOTREACHED();
+  return false;
+}
+#endif
+
 bool FakePeripheral::ExpectingPinCode() const {
   NOTREACHED();
   return false;
