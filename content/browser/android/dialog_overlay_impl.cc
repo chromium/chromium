@@ -114,10 +114,7 @@ void DialogOverlayImpl::CompleteInit(JNIEnv* env,
   if (auto* window = web_contents()->GetNativeView()->GetWindowAndroid()) {
     RegisterWindowObserverIfNeeded(window);
     ScopedJavaLocalRef<jobject> token = window->GetWindowToken();
-    if (!token.is_null()) {
-      Java_DialogOverlayImpl_onWindowToken(env, obj, token);
-    }
-    // else we will send one if we get a callback from ViewAndroid.
+    Java_DialogOverlayImpl_onWindowToken(env, obj, token);
   }
 }
 

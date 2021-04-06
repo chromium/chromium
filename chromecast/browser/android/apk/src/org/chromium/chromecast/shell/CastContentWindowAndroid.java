@@ -12,7 +12,6 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chromecast.base.Controller;
-import org.chromium.chromecast.base.Unit;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -33,7 +32,7 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     private Context mContext;
     private CastWebContentsComponent mComponent;
 
-    private final Controller<Unit> mScreenAccess = new Controller<>();
+    private final Controller<Boolean> mScreenAccess = new Controller<>();
     private final Controller<CastWebContentsComponent.StartParams> mStartParams =
             new Controller<>();
 
@@ -59,10 +58,13 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
                         + ") Seesion ID: " + sessionId);
         // TODO call CastContentWindowAndroidJni.get().getId() to set ID to
         // CastWebContentsComponent.
-        mComponent = new CastWebContentsComponent(sessionId, this, this, isHeadless,
-                enableTouchInput, isRemoteControlMode, turnOnScreen);
-
-        mScreenAccess.subscribe(x -> mStartParams.subscribe(startParams -> {
+        mScreenAccess.subscribe(screenAccess -> mStartParams.subscribe(startParams -> {
+            // If the app doesn't have screen access, start in headless mode, so that the web
+            // content can still have a window attached. Since we have video overlay always
+            // enabled, this can unblock video decoder.
+            mComponent =
+                    new CastWebContentsComponent(sessionId, this, this, isHeadless || !screenAccess,
+                            enableTouchInput, isRemoteControlMode, turnOnScreen);
             mComponent.start(startParams);
             return () -> mComponent.stop(mContext);
         }));
@@ -82,21 +84,23 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
     @CalledByNative
     private void grantScreenAccess() {
         if (DEBUG) Log.d(TAG, "grantScreenAccess");
-        mScreenAccess.set(Unit.unit());
+        mScreenAccess.set(true);
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void revokeScreenAccess() {
         if (DEBUG) Log.d(TAG, "revokeScreenAccess");
-        mScreenAccess.reset();
+        mScreenAccess.set(false);
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void enableTouchInput(boolean enabled) {
         if (DEBUG) Log.d(TAG, "enableTouchInput");
-        mComponent.enableTouchInput(enabled);
+        if (mComponent != null) {
+            mComponent.enableTouchInput(enabled);
+        }
     }
 
     @SuppressWarnings("unused")
@@ -112,21 +116,27 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
         // Instrumentation.startActivitySync to guarentee onCreate is run.
 
         if (DEBUG) Log.d(TAG, "onNativeDestroyed");
-        mComponent.stop(mContext);
+        if (mComponent != null) {
+            mComponent.stop(mContext);
+        }
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void requestVisibilityPriority(int visisbilityPriority) {
         if (DEBUG) Log.d(TAG, "requestVisibilityPriority visibility=" + visisbilityPriority);
-        mComponent.requestVisibilityPriority(visisbilityPriority);
+        if (mComponent != null) {
+            mComponent.requestVisibilityPriority(visisbilityPriority);
+        }
     }
 
     @SuppressWarnings("unused")
     @CalledByNative
     private void requestMoveOut() {
         if (DEBUG) Log.d(TAG, "requestMoveOut");
-        mComponent.requestMoveOut();
+        if (mComponent != null) {
+            mComponent.requestMoveOut();
+        }
     }
 
     @SuppressWarnings("unused")
@@ -136,7 +146,9 @@ public class CastContentWindowAndroid implements CastWebContentsComponent.OnComp
             Log.d(TAG, "setInteractionid interactionId=%s; conversationID=%s", interactionId,
                     conversationId);
         }
-        mComponent.setHostContext(interactionId, conversationId);
+        if (mComponent != null) {
+            mComponent.setHostContext(interactionId, conversationId);
+        }
     }
 
     @Override
