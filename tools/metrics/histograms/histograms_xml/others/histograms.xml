@@ -16213,7 +16213,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="ThreadWatcher.ResponseTime" units="ms"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -16223,7 +16223,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="ThreadWatcher.ResponsiveThreads" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -16233,7 +16233,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="ThreadWatcher.Unresponsive" units="ms"
-    expires_after="2021-08-01">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -16243,7 +16243,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="ThreadWatcher.UnresponsiveThreads" units="units"
-    expires_after="2021-05-11">
+    expires_after="2022-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
