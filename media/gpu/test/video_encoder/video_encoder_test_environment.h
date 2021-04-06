@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/optional.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/test/video_test_environment.h"
 
@@ -41,6 +42,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       const std::string& codec,
       size_t num_temporal_layers,
       bool output_bitstream,
+      base::Optional<uint32_t> output_bitrate,
       const FrameOutputConfig& frame_output_config = FrameOutputConfig());
 
   ~VideoEncoderTestEnvironment() override;

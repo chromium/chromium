@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
@@ -721,7 +722,7 @@ int main(int argc, char** argv) {
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, enable_bitstream_validator,
           output_folder, codec, num_temporal_layers, output_bitstream,
-          frame_output_config);
+          /*output_bitrate=*/base::nullopt, frame_output_config);
 
   if (!test_environment)
     return EXIT_FAILURE;

@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/media_util.h"
@@ -36,6 +37,7 @@ namespace {
 constexpr const char* usage_msg =
     "usage: video_encode_accelerator_perf_tests\n"
     "           [--codec=<codec>]\n"
+    "           [--bitrate=<bitrate>]\n"
     "           [-v=<level>] [--vmodule=<config>] [--output_folder]\n"
     "           [--gtest_help] [--help]\n"
     "           [<video path>] [<video metadata path>]\n";
@@ -51,6 +53,7 @@ constexpr const char* help_msg =
     "\nThe following arguments are supported:\n"
     "  --codec              codec profile to encode, \"h264 (baseline)\",\n"
     "                       \"h264main, \"h264high\", \"vp8\" and \"vp9\"\n"
+    "  --bitrate            bitrate (bits in second) of a produced bitstram.\n"
     "   -v                  enable verbose mode, e.g. -v=2.\n"
     "  --vmodule            enable verbose mode for the specified module,\n"
     "  --output_folder      overwrite the output folder used to store\n"
@@ -581,6 +584,7 @@ int main(int argc, char** argv) {
   base::FilePath video_metadata_path =
       (args.size() >= 2) ? base::FilePath(args[1]) : base::FilePath();
   std::string codec = "h264";
+  base::Optional<uint32_t> encode_bitrate;
 
   // Parse command line arguments.
   base::FilePath::StringType output_folder = media::test::kDefaultOutputFolder;
@@ -596,6 +600,14 @@ int main(int argc, char** argv) {
       output_folder = it->second;
     } else if (it->first == "codec") {
       codec = it->second;
+    } else if (it->first == "bitrate") {
+      unsigned value;
+      if (!base::StringToUint(it->second, &value)) {
+        std::cout << "invalid bitrate " << it->second << "\n"
+                  << media::test::usage_msg;
+        return EXIT_FAILURE;
+      }
+      encode_bitrate = base::checked_cast<uint32_t>(value);
     } else {
       std::cout << "unknown option: --" << it->first << "\n"
                 << media::test::usage_msg;
@@ -609,7 +621,8 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
-          codec, 1u /* num_temporal_layers */, false /* output_bitstream */);
+          codec, 1u /* num_temporal_layers */, false /* output_bitstream */,
+          encode_bitrate);
   if (!test_environment)
     return EXIT_FAILURE;
 

@@ -97,6 +97,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     const std::string& codec,
     size_t num_temporal_layers,
     bool save_output_bitstream,
+    base::Optional<uint32_t> encode_bitrate,
     const FrameOutputConfig& frame_output_config) {
   if (video_path.empty()) {
     LOG(ERROR) << "No video specified";
@@ -142,8 +143,8 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
     return nullptr;
   }
 
-  const uint32_t bitrate =
-      GetDefaultTargetBitrate(video->Resolution(), video->FrameRate());
+  const uint32_t bitrate = encode_bitrate.value_or(
+      GetDefaultTargetBitrate(video->Resolution(), video->FrameRate()));
   return new VideoEncoderTestEnvironment(
       std::move(video), enable_bitstream_validator, output_folder, profile,
       num_temporal_layers, bitrate, save_output_bitstream, frame_output_config);
