@@ -35,6 +35,10 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   apps::AppShimManager* app_shim_manager();
   device::GeolocationSystemPermissionManager* location_permission_manager();
 
+  void SetGeolocationManagerForTesting(
+      std::unique_ptr<device::GeolocationSystemPermissionManager>
+          fake_location_manager);
+
  protected:
   std::unique_ptr<device::GeolocationSystemPermissionManager>
       location_permission_manager_;
