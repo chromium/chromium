@@ -218,6 +218,14 @@ void PageActionIconView::Update() {
 }
 
 void PageActionIconView::UpdateIconImage() {
+  // If PageActionIconView is not hosted within a Widget hierarchy early return
+  // here. `UpdateIconImage()` is called in OnThemeChanged() and will update as
+  // needed when added to a Widget and on theme changes. Returning early avoids
+  // a call to GetNativeTheme() when no hosting Widget is present which falls
+  // through to the deprecated global NativeTheme accessor.
+  if (!GetWidget())
+    return;
+
   const ui::NativeTheme* theme = GetNativeTheme();
   const SkColor icon_color =
       active_ ? theme->GetSystemColor(
