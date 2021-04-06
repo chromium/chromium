@@ -1612,12 +1612,40 @@ TEST_F('ChromeVoxEditingTest', 'MarkedContent', function() {
               'This is ', 'your', 'Comment', ' text.', 'Exited Comment.')
           .call(this.press(KeyCode.DOWN))
           .expectSpeech(
-              'This is ', 'their', 'Insertion', 'Suggestion', ' text.',
-              'Exited Suggestion.', 'Exited Insertion.')
+              'This is ', 'Suggestion', 'Insertion', 'their', ' text.',
+              'Exited Insertion.', 'Exited Suggestion.')
           .call(this.press(KeyCode.DOWN))
           .expectSpeech(
-              'This is ', `everyone's`, 'Deletion', 'Suggestion', ' text.',
-              'Exited Suggestion.', 'Exited Deletion.')
+              'This is ', 'Suggestion', 'Deletion', `everyone's`, ' text.',
+              'Exited Deletion.', 'Exited Suggestion.')
+          .replay();
+    });
+    input.focus();
+  });
+});
+
+TEST_F('ChromeVoxEditingTest', 'NestedInsertionDeletion', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <div contenteditable role="textbox">
+      <p>Start</p>
+      <span>I </span>
+      <span role="suggestion" aria-description="Username">
+        <span role="insertion">was</span>
+        <span role="deletion">am</span></span><span> typing</span>
+      <p>End</p>
+    </div>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    const input = root.find({role: RoleType.TEXT_FIELD});
+    this.listenOnce(input, 'focus', function() {
+      mockFeedback.call(this.press(KeyCode.DOWN))
+          .expectSpeech(
+              'I ', 'Suggestion', 'Username', 'Insertion', 'was',
+              'Exited Insertion.', 'Deletion', 'am', ' typing',
+              'Exited Deletion.', 'Exited Suggestion.')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech('End')
           .replay();
     });
     input.focus();

@@ -2446,10 +2446,16 @@ Output.ROLE_INFO_ = {
   comboBoxMenuButton: {msgId: 'role_combobox', earconId: 'LISTBOX'},
   complementary: {msgId: 'role_complementary', inherits: 'abstractContainer'},
   comment: {msgId: 'role_comment', inherits: 'abstractContainer'},
-  contentDeletion:
-      {msgId: 'role_content_deletion', inherits: 'abstractContainer'},
-  contentInsertion:
-      {msgId: 'role_content_insertion', inherits: 'abstractContainer'},
+  contentDeletion: {
+    msgId: 'role_content_deletion',
+    inherits: 'abstractContainer',
+    outputContextFirst: true
+  },
+  contentInsertion: {
+    msgId: 'role_content_insertion',
+    inherits: 'abstractContainer',
+    outputContextFirst: true
+  },
   contentInfo: {msgId: 'role_contentinfo', inherits: 'abstractContainer'},
   date: {msgId: 'input_type_date', inherits: 'abstractContainer'},
   definition: {msgId: 'role_definition', inherits: 'abstractContainer'},
@@ -2585,7 +2591,11 @@ Output.ROLE_INFO_ = {
   },
   splitter: {msgId: 'role_separator'},
   status: {msgId: 'role_status', inherits: 'abstractNameFromContents'},
-  suggestion: {msgId: 'role_suggestion', inherits: 'abstractContainer'},
+  suggestion: {
+    msgId: 'role_suggestion',
+    inherits: 'abstractContainer',
+    outputContextFirst: true
+  },
   tab: {msgId: 'role_tab'},
   tabList: {msgId: 'role_tablist', inherits: 'abstractContainer'},
   tabPanel: {msgId: 'role_tabpanel'},
