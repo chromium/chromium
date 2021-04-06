@@ -677,7 +677,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager {
             SigninManagerImplJni.get().wipeGoogleServiceWorkerCaches(
                     mNativeSigninManagerAndroid, wipeDataCallback);
         }
-        mAccountTrackerService.invalidateAccountSeedStatus(true);
+        mAccountTrackerService.onAccountsChanged();
     }
 
     @VisibleForTesting

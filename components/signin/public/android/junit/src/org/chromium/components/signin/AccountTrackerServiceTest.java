@@ -215,22 +215,6 @@ public class AccountTrackerServiceTest {
     }
 
     @Test
-    public void testInvalidateAccountsAndReSeed() {
-        mService.seedAccountsIfNeeded(() -> {});
-
-        mService.invalidateAccountSeedStatus(true);
-
-        // Accounts should be seeded twice
-        verify(mNativeMock, times(2))
-                .seedAccountsInfo(eq(ACCOUNT_TRACKER_SERVICE_NATIVE), mGaiaIdsCaptor.capture(),
-                        mEmailsCaptor.capture());
-        Assert.assertArrayEquals(
-                new String[] {mFakeAccountManagerFacade.getAccountGaiaId(ACCOUNT_EMAIL)},
-                mGaiaIdsCaptor.getValue());
-        Assert.assertArrayEquals(new String[] {ACCOUNT_EMAIL}, mEmailsCaptor.getValue());
-    }
-
-    @Test
     public void testSeedAccountsWhenGaiaIdIsNull() {
         // When gaia ID is null, seedAccounts() will be called recursively in the
         // current code, the test sets a limit number for this invocation artificially
