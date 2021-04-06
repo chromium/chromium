@@ -438,8 +438,6 @@ UserSessionManager::UserSessionManager()
       has_auth_cookies_(false),
       user_sessions_restored_(false),
       user_sessions_restore_in_progress_(false),
-      session_restore_strategy_(
-          OAuth2LoginManager::RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN),
       running_easy_unlock_key_ops_(false),
       should_obtain_handles_(true),
       should_launch_browser_(true),
@@ -1072,7 +1070,7 @@ void UserSessionManager::CreateUserSession(const UserContext& user_context,
                                            bool has_auth_cookies) {
   user_context_ = user_context;
   has_auth_cookies_ = has_auth_cookies;
-  InitSessionRestoreStrategy();
+  ProcessAppModeSwitches();
   StoreUserContextDataBeforeProfileIsCreated();
   session_manager::SessionManager::Get()->CreateSession(
       user_context_.GetAccountId(), user_context_.GetUserIDHash(),
@@ -1087,6 +1085,14 @@ void UserSessionManager::PreStartSession() {
 }
 
 void UserSessionManager::StoreUserContextDataBeforeProfileIsCreated() {
+  if (!user_context_.GetRefreshToken().empty()) {
+    // UserSelectionScreen::ShouldForceOnlineSignIn would force online sign-in
+    // if the token status isn't marked as valid.
+    user_manager::UserManager::Get()->SaveUserOAuthStatus(
+        user_context_.GetAccountId(),
+        user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
+  }
+
   user_manager::known_user::UpdateId(user_context_.GetAccountId());
 }
 
@@ -1720,7 +1726,7 @@ bool UserSessionManager::InitializeUserSession(Profile* profile) {
   return true;
 }
 
-void UserSessionManager::InitSessionRestoreStrategy() {
+void UserSessionManager::ProcessAppModeSwitches() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool in_app_mode = chrome::IsRunningInForcedAppMode();
 
@@ -1738,14 +1744,6 @@ void UserSessionManager::InitSessionRestoreStrategy() {
 
     DCHECK(!has_auth_cookies_);
   }
-
-  if (!user_context_.GetRefreshToken().empty()) {
-    session_restore_strategy_ =
-        OAuth2LoginManager::RESTORE_FROM_PASSED_OAUTH2_REFRESH_TOKEN;
-  } else {
-    session_restore_strategy_ =
-        OAuth2LoginManager::RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN;
-  }
 }
 
 void UserSessionManager::RestoreAuthSessionImpl(
@@ -1762,9 +1760,7 @@ void UserSessionManager::RestoreAuthSessionImpl(
       OAuth2LoginManagerFactory::GetInstance()->GetForProfile(profile);
   login_manager->AddObserver(this);
 
-  login_manager->RestoreSession(session_restore_strategy_,
-                                user_context_.GetRefreshToken(),
-                                user_context_.GetAccessToken());
+  login_manager->RestoreSession(user_context_.GetAccessToken());
 }
 
 void UserSessionManager::NotifyUserProfileLoaded(

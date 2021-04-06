@@ -447,12 +447,6 @@ class OAuth2Test : public OobeBaseTest {
     }
   }
 
-  OAuth2LoginManager::SessionRestoreStrategy GetSessionRestoreStrategy() {
-    OAuth2LoginManager* login_manager =
-        OAuth2LoginManagerFactory::GetInstance()->GetForProfile(GetProfile());
-    return login_manager->restore_strategy_;
-  }
-
   void InterceptRequest(const HttpRequest& request) {
     const GURL request_url =
         GURL("http://localhost").Resolve(request.relative_url);
@@ -616,10 +610,6 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, DISABLED_OverlappingContinueSessionRestore) {
   EXPECT_TRUE(
       TryToLogin(AccountId::FromUserEmailGaiaId(kTestEmail, kTestGaiaId),
                  kTestAccountPassword));
-
-  // Session restore should be using the saved tokens.
-  EXPECT_EQ(OAuth2LoginManager::RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN,
-            GetSessionRestoreStrategy());
 
   // Checks that refresh token is not yet loaded.
   signin::IdentityManager* identity_manager =

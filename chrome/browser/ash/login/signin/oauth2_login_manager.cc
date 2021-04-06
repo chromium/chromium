@@ -26,7 +26,6 @@ namespace chromeos {
 
 OAuth2LoginManager::OAuth2LoginManager(Profile* user_profile)
     : user_profile_(user_profile),
-      restore_strategy_(RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN),
       state_(SESSION_RESTORE_NOT_STARTED) {
   GetIdentityManager()->AddObserver(this);
 
@@ -50,32 +49,16 @@ void OAuth2LoginManager::RemoveObserver(
 }
 
 void OAuth2LoginManager::RestoreSession(
-    SessionRestoreStrategy restore_strategy,
-    const std::string& oauth2_refresh_token,
     const std::string& oauth2_access_token) {
   DCHECK(user_profile_);
-  restore_strategy_ = restore_strategy;
-  refresh_token_ = oauth2_refresh_token;
   oauthlogin_access_token_ = oauth2_access_token;
   session_restore_start_ = base::Time::Now();
   ContinueSessionRestore();
 }
 
 void OAuth2LoginManager::ContinueSessionRestore() {
-  DCHECK_NE(DEPRECATED_RESTORE_FROM_COOKIE_JAR, restore_strategy_)
-      << "Exchanging cookies for OAuth 2.0 tokens is no longer supported";
-
   SetSessionRestoreState(OAuth2LoginManager::SESSION_RESTORE_PREPARING);
 
-  // Save passed OAuth2 refresh token.
-  if (restore_strategy_ == RESTORE_FROM_PASSED_OAUTH2_REFRESH_TOKEN) {
-    DCHECK(!refresh_token_.empty());
-    restore_strategy_ = RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN;
-    StoreOAuth2Token();
-    return;
-  }
-
-  DCHECK_EQ(RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN, restore_strategy_);
   RestoreSessionFromSavedTokens();
 }
 
@@ -152,36 +135,13 @@ CoreAccountId OAuth2LoginManager::GetUnconsentedPrimaryAccountId() {
   return primary_account_id;
 }
 
-void OAuth2LoginManager::StoreOAuth2Token() {
-  DCHECK(!refresh_token_.empty());
-
-  signin::IdentityManager* identity_manager = GetIdentityManager();
-  // The primary account must be already set at this point.
-  DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  const CoreAccountInfo primary_account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-
-  // We already have the refresh token at this
-  // point, and will not get any additional callbacks from Account Manager or
-  // Identity Manager about refresh tokens. Manually call
-  // `OnRefreshTokenUpdatedForAccount` to continue the flow.
-  // TODO(https://crbug.com/977137): Clean this up after cleaning
-  // OAuth2LoginVerifier.
-  OnRefreshTokenUpdatedForAccount(primary_account_info);
-}
-
 void OAuth2LoginManager::VerifySessionCookies() {
   DCHECK(!login_verifier_.get());
   login_verifier_ = std::make_unique<OAuth2LoginVerifier>(
       this, GetIdentityManager(), GetUnconsentedPrimaryAccountId(),
       oauthlogin_access_token_);
 
-  if (restore_strategy_ == RESTORE_FROM_SAVED_OAUTH2_REFRESH_TOKEN) {
-    login_verifier_->VerifyUserCookies();
-    return;
-  }
-
-  RestoreSessionCookies();
+  login_verifier_->VerifyUserCookies();
 }
 
 void OAuth2LoginManager::RestoreSessionCookies() {

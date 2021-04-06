@@ -435,9 +435,8 @@ class UserSessionManager
   // Returns true if browser has been launched or false otherwise.
   bool InitializeUserSession(Profile* profile);
 
-  // Initializes member variables needed for session restore process via
-  // OAuthLoginManager.
-  void InitSessionRestoreStrategy();
+  // Processes App mode command-line switches.
+  void ProcessAppModeSwitches();
 
   // Restores GAIA auth cookies for the created user profile from OAuth2 token.
   void RestoreAuthSessionImpl(Profile* profile, bool restore_from_auth_cookies);
@@ -554,11 +553,6 @@ class UserSessionManager
 
   base::ObserverList<chromeos::UserSessionStateObserver>::Unchecked
       session_state_observer_list_;
-
-  // OAuth2 session related members.
-
-  // Sesion restore strategy.
-  OAuth2LoginManager::SessionRestoreStrategy session_restore_strategy_;
 
   // Set of user_id for those users that we should restore authentication
   // session when notified about online state change.
