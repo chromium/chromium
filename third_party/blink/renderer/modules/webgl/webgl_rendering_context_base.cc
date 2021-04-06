@@ -621,7 +621,11 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage() {
     return nullptr;
 
   ScopedFramebufferRestorer fbo_restorer(this);
-  GetDrawingBuffer()->ResolveAndBindForReadAndDraw();
+  // In rare situations on macOS the drawing buffer can be destroyed
+  // during the resolve process, specifically during automatic
+  // graphics switching. Guard against this.
+  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
+    return nullptr;
   // Use the drawing buffer size here instead of the canvas size to ensure that
   // sizing is consistent. The forced downsizing logic in Reshape() can lead to
   // the drawing buffer being smaller than the canvas size.
@@ -1656,7 +1660,11 @@ bool WebGLRenderingContextBase::PaintRenderingResultsToCanvas(
   ScopedTexture2DRestorer restorer(this);
   ScopedFramebufferRestorer fbo_restorer(this);
 
-  GetDrawingBuffer()->ResolveAndBindForReadAndDraw();
+  // In rare situations on macOS the drawing buffer can be destroyed
+  // during the resolve process, specifically during automatic
+  // graphics switching. Guard against this.
+  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
+    return false;
   if (!CopyRenderingResultsFromDrawingBuffer(Host()->ResourceProvider(),
                                              source_buffer)) {
     // Currently, CopyRenderingResultsFromDrawingBuffer is expected to always
@@ -1727,7 +1735,11 @@ sk_sp<SkData> WebGLRenderingContextBase::PaintRenderingResultsToDataArray(
   if (isContextLost())
     return nullptr;
   ClearIfComposited(kClearCallerOther);
-  GetDrawingBuffer()->ResolveAndBindForReadAndDraw();
+  // In rare situations on macOS the drawing buffer can be destroyed
+  // during the resolve process, specifically during automatic
+  // graphics switching. Guard against this.
+  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw())
+    return nullptr;
   ScopedFramebufferRestorer restorer(this);
   return GetDrawingBuffer()->PaintRenderingResultsToDataArray(source_buffer);
 }

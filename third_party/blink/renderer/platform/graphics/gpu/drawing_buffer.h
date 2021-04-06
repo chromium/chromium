@@ -179,7 +179,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Resolves the multisample color buffer to the normal color buffer and leaves
   // the resolved color buffer bound to GL_READ_FRAMEBUFFER and
   // GL_DRAW_FRAMEBUFFER.
-  void ResolveAndBindForReadAndDraw();
+  //
+  // Note that in rare situations on macOS the drawing buffer can be destroyed
+  // during the resolve process, specifically during automatic graphics
+  // switching. In this scenario this method returns false.
+  bool ResolveAndBindForReadAndDraw();
 
   bool Multisample() const;
 

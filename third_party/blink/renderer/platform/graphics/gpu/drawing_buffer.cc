@@ -1316,12 +1316,18 @@ bool DrawingBuffer::ResizeFramebufferInternal(const IntSize& new_size) {
   return true;
 }
 
-void DrawingBuffer::ResolveAndBindForReadAndDraw() {
+bool DrawingBuffer::ResolveAndBindForReadAndDraw() {
   {
     ScopedStateRestorer scoped_state_restorer(this);
     ResolveIfNeeded();
+    // Note that in rare situations on macOS the drawing buffer can be
+    // destroyed during the resolve process, specifically during
+    // automatic graphics switching. Guard against this.
+    if (destruction_in_progress_)
+      return false;
   }
   gl_->BindFramebuffer(GL_FRAMEBUFFER, fbo_);
+  return true;
 }
 
 void DrawingBuffer::ResolveMultisampleFramebufferInternal() {

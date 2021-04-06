@@ -104,6 +104,7 @@ crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLUnblockedAfterUser
 crbug.com/609629 [ android android-nexus-9 ] ContextLost_WebGLContextLostFromGPUProcessExit [ Skip ]
 
 # Mac NVIDIA only uses the low-power GPU.
+crbug.com/1186582 [ mac nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchDoesNotCrash [ Skip ]
 crbug.com/681341 [ mac nvidia ] ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext [ Skip ]
 crbug.com/681341 [ mac nvidia ] ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext [ Skip ]
 
