@@ -51,7 +51,7 @@ class ReadLaterButton : public views::LabelButton,
 
     void Show();
     void Hide();
-    void SetColor(SkColor color) { highlight_color_ = color; }
+    void SetColor(SkColor color);
 
     // Returns current text / background / icon color based on
     // |highlight_color_| and on the current animation state (which
