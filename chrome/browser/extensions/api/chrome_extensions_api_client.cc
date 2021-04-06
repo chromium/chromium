@@ -72,6 +72,9 @@
 #include "chrome/browser/extensions/api/file_handlers/non_native_file_system_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/media_perception_private/media_perception_api_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/extensions/clipboard_extension_helper_chromeos.h"
 #endif
 
@@ -425,7 +428,9 @@ ChromeExtensionsAPIClient::GetNonNativeFileSystemDelegate() {
   }
   return non_native_file_system_delegate_.get();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ChromeExtensionsAPIClient::SaveImageDataToClipboard(
     const std::vector<char>& image_data,
     api::clipboard::ImageType type,
@@ -438,7 +443,7 @@ void ChromeExtensionsAPIClient::SaveImageDataToClipboard(
       image_data, type, std::move(additional_items),
       std::move(success_callback), std::move(error_callback));
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 AutomationInternalApiDelegate*
 ChromeExtensionsAPIClient::GetAutomationInternalApiDelegate() {

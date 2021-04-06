@@ -85,14 +85,16 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate() override;
   NonNativeFileSystemDelegate* GetNonNativeFileSystemDelegate() override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void SaveImageDataToClipboard(
       const std::vector<char>& image_data,
       api::clipboard::ImageType type,
       AdditionalDataItemList additional_items,
       base::OnceClosure success_callback,
       base::OnceCallback<void(const std::string&)> error_callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   AutomationInternalApiDelegate* GetAutomationInternalApiDelegate() override;
   std::vector<KeyedServiceBaseFactory*> GetFactoryDependencies() override;
@@ -108,6 +110,8 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<MediaPerceptionAPIDelegate> media_perception_api_delegate_;
   std::unique_ptr<NonNativeFileSystemDelegate> non_native_file_system_delegate_;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<ClipboardExtensionHelper> clipboard_extension_helper_;
 #endif
   std::unique_ptr<extensions::ChromeAutomationInternalApiDelegate>

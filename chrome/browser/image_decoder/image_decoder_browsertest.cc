@@ -111,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(ImageDecoderBrowserTest, Basic) {
   EXPECT_FALSE(test_request.decode_succeeded());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(ImageDecoderBrowserTest, BasicDecodeWithOptionsString) {
   base::RunLoop run_loop;
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ImageDecoderBrowserTest, RobustPngCodecWithJpegData) {
   EXPECT_FALSE(test_request.decode_succeeded());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(ImageDecoderBrowserTest, BasicDecode) {
   base::RunLoop run_loop;

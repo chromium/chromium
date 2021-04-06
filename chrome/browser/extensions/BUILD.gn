@@ -970,6 +970,8 @@ static_library("extensions") {
       "api/messaging/native_message_echo_host.cc",
       "api/messaging/native_message_echo_host.h",
       "api/platform_keys/platform_keys_api.h",
+      "clipboard_extension_helper_chromeos.cc",
+      "clipboard_extension_helper_chromeos.h",
     ]
     deps += [
       "//chromeos/crosapi/cpp",
@@ -1056,8 +1058,6 @@ static_library("extensions") {
       "api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.cc",
       "api/virtual_keyboard_private/chrome_virtual_keyboard_delegate.h",
       "chrome_kiosk_delegate_chromeos.cc",
-      "clipboard_extension_helper_chromeos.cc",
-      "clipboard_extension_helper_chromeos.h",
       "extension_assets_manager_chromeos.cc",
       "extension_assets_manager_chromeos.h",
       "extension_garbage_collector_chromeos.cc",

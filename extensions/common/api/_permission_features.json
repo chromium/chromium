@@ -196,7 +196,7 @@
   "clipboard": {
     "channel": "dev",
     "extension_types": ["platform_app"],
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   },
   "declarativeNetRequest": {
     "channel": "stable",

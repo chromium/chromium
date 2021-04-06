@@ -168,14 +168,16 @@ MediaPerceptionAPIDelegate*
 ExtensionsAPIClient::GetMediaPerceptionAPIDelegate() {
   return nullptr;
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void ExtensionsAPIClient::SaveImageDataToClipboard(
     const std::vector<char>& image_data,
     api::clipboard::ImageType type,
     AdditionalDataItemList additional_items,
     base::OnceClosure success_callback,
     base::OnceCallback<void(const std::string&)> error_callback) {}
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 AutomationInternalApiDelegate*
 ExtensionsAPIClient::GetAutomationInternalApiDelegate() {

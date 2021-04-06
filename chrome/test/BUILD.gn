@@ -2205,6 +2205,11 @@ if (!is_android) {
         ]
       }
 
+      if (is_chromeos_ash || is_chromeos_lacros) {
+        sources +=
+            [ "../browser/extensions/clipboard_extension_apitest_chromeos.cc" ]
+      }
+
       if (is_chromeos_ash) {
         sources += [
           "../browser/apps/platform_apps/api/arc_apps_private/arc_apps_private_apitest.cc",
@@ -2223,7 +2228,6 @@ if (!is_android) {
           "../browser/extensions/api/system_display/system_display_chromeos_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_browsertest.cc",
-          "../browser/extensions/clipboard_extension_apitest_chromeos.cc",
         ]
 
         deps += [ "//chrome/browser/error_reporting:test_support" ]

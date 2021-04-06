@@ -81,9 +81,9 @@ class ImageDecoder {
 
   enum ImageCodec {
     DEFAULT_CODEC = 0,  // Uses WebKit image decoding (via WebImage).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     ROBUST_PNG_CODEC,  // Restrict decoding to robust PNG codec.
-#endif                 // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif
   };
 
   static ImageDecoder* GetInstance();

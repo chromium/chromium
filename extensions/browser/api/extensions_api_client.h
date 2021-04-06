@@ -208,7 +208,9 @@ class ExtensionsAPIClient {
   // Returns a delegate for embedder-specific chrome.mediaPerceptionPrivate API
   // behavior.
   virtual MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Saves image data on clipboard.
   virtual void SaveImageDataToClipboard(
       const std::vector<char>& image_data,
@@ -216,7 +218,7 @@ class ExtensionsAPIClient {
       AdditionalDataItemList additional_items,
       base::OnceClosure success_callback,
       base::OnceCallback<void(const std::string&)> error_callback);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   virtual AutomationInternalApiDelegate* GetAutomationInternalApiDelegate();
 
