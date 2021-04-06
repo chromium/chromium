@@ -9,6 +9,8 @@ import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
 
+import androidx.annotation.GuardedBy;
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
@@ -17,7 +19,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerDelegate;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
@@ -27,7 +28,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * The FakeAccountManagerDelegate is intended for testing components that use AccountManagerFacade.
@@ -38,7 +38,7 @@ import java.util.concurrent.CountDownLatch;
  * Currently, this implementation supports adding and removing accounts, handling credentials
  * (including confirming them), and handling of dummy auth tokens.
  *
- * If you want to auto-approve a given authtokentype, use {@link #addAccountHolderBlocking} with
+ * If you want to auto-approve a given authtokentype, use {@link #addAccount} with
  * an AccountHolder you have built with hasBeenAccepted("yourAuthTokenType", true).
  *
  * If you want to auto-approve all auth token types for a given account, use the {@link
@@ -47,6 +47,9 @@ import java.util.concurrent.CountDownLatch;
 public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     private static final String TAG = "FakeAccountManager";
 
+    private final Object mLock = new Object();
+
+    @GuardedBy("mLock")
     private final Set<AccountHolder> mAccounts = new LinkedHashSet<>();
     private final ObserverList<AccountsChangeObserver> mObservers = new ObserverList<>();
 
@@ -85,7 +88,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     @Override
     public Account[] getAccountsSync() {
         ArrayList<Account> result = new ArrayList<>();
-        synchronized (mAccounts) {
+        synchronized (mLock) {
             for (AccountHolder ah : mAccounts) {
                 result.add(ah.getAccount());
             }
@@ -94,67 +97,25 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     /**
-     * Add an AccountHolder.
-     *
-     * WARNING: this method will not wait for the cache in AccountManagerFacade to be updated. Tests
-     * that get accounts from AccountManagerFacade should use {@link #addAccountHolderBlocking}.
-     *
-     * @param accountHolder the account holder to add
+     * Adds an AccountHolder.
      */
-    public void addAccountHolderExplicitly(AccountHolder accountHolder) {
-        // TODO(https://crbug.com/698258): replace with assertOnUiThread after fixing internal tests
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            synchronized (mAccounts) {
-                boolean added = mAccounts.add(accountHolder);
-                assert added : "Account already added";
-                for (AccountsChangeObserver observer : mObservers) {
-                    observer.onAccountsChanged();
-                }
-            }
-        });
-    }
-
-    /**
-     * Remove an AccountHolder.
-     *
-     * WARNING: This method will not wait for the cache in AccountManagerFacade to be updated.
-     *
-     * @param accountHolder the account holder to remove
-     */
-    public void removeAccountHolderExplicitly(AccountHolder accountHolder) {
-        // TODO(https://crbug.com/698258): replace with assertOnUiThread after fixing internal tests
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            synchronized (mAccounts) {
-                boolean removed = mAccounts.remove(accountHolder);
-                assert removed : "Can't find account";
-                for (AccountsChangeObserver observer : mObservers) {
-                    observer.onAccountsChanged();
-                }
-            }
-        });
-    }
-
-    /**
-     * Add an AccountHolder and waits for AccountManagerFacade to update its cache. Requires
-     * AccountManagerFacade to be initialized with this delegate.
-     *
-     * @param accountHolder the account holder to add
-     */
-    public void addAccountHolderBlocking(AccountHolder accountHolder) {
-        ThreadUtils.assertOnBackgroundThread();
-
-        final CountDownLatch cacheUpdated = new CountDownLatch(1);
-        try {
-            ThreadUtils.runOnUiThreadBlocking(() -> {
-                addAccountHolderExplicitly(accountHolder);
-                AccountManagerFacadeProvider.getInstance().waitForPendingUpdates(
-                        cacheUpdated::countDown);
-            });
-
-            cacheUpdated.await();
-        } catch (InterruptedException e) {
-            throw new RuntimeException("Exception occurred while waiting for updates", e);
+    public void addAccount(AccountHolder accountHolder) {
+        synchronized (mLock) {
+            boolean added = mAccounts.add(accountHolder);
+            assert added : "Account already added";
         }
+        ThreadUtils.runOnUiThreadBlocking(this::fireOnAccountsChangedNotification);
+    }
+
+    /**
+     * Removes an AccountHolder.
+     */
+    public void removeAccount(AccountHolder accountHolder) {
+        synchronized (mLock) {
+            boolean removed = mAccounts.remove(accountHolder);
+            assert removed : "Can't find account";
+        }
+        ThreadUtils.runOnUiThreadBlocking(this::fireOnAccountsChangedNotification);
     }
 
     @Override
@@ -166,7 +127,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
                     "Cannot get auth token for unknown account '" + account + "'");
         }
         assert ah.hasBeenAccepted(authTokenScope);
-        synchronized (mAccounts) {
+        synchronized (mLock) {
             // Some tests register auth tokens with value null, and those should be preserved.
             if (!ah.hasAuthTokenRegistered(authTokenScope)
                     && ah.getAuthToken(authTokenScope) == null) {
@@ -187,7 +148,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         if (authToken == null) {
             throw new IllegalArgumentException("AuthToken can not be null");
         }
-        synchronized (mAccounts) {
+        synchronized (mLock) {
             for (AccountHolder ah : mAccounts) {
                 if (ah.removeAuthToken(authToken)) {
                     break;
@@ -232,7 +193,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         if (account == null) {
             throw new IllegalArgumentException("Account can not be null");
         }
-        synchronized (mAccounts) {
+        synchronized (mLock) {
             for (AccountHolder accountHolder : mAccounts) {
                 if (account.equals(accountHolder.getAccount())) {
                     return accountHolder;
@@ -240,5 +201,12 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
             }
         }
         return null;
+    }
+
+    @MainThread
+    private void fireOnAccountsChangedNotification() {
+        for (AccountsChangeObserver observer : mObservers) {
+            observer.onAccountsChanged();
+        }
     }
 }

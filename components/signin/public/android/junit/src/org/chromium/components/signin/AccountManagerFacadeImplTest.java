@@ -260,13 +260,13 @@ public class AccountManagerFacadeImplTest {
                                        .alwaysAccept(true)
                                        .addFeatures(features)
                                        .build();
-        mDelegate.addAccountHolderExplicitly(holder);
+        mDelegate.addAccount(holder);
         Assert.assertFalse(((AccountManagerFacadeImpl) mFacade).isUpdatePending().get());
         return holder.getAccount();
     }
 
     private void removeTestAccount(Account account) {
-        mDelegate.removeAccountHolderExplicitly(AccountHolder.builder(account).build());
+        mDelegate.removeAccount(AccountHolder.builder(account).build());
     }
 
     private void assertChildAccountStatus(Account account, @ChildAccountStatus.Status int status) {

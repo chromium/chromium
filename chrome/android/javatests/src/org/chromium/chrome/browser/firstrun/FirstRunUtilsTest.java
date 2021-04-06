@@ -66,7 +66,7 @@ public class FirstRunUtilsTest {
     }
 
     private void addTestAccount() {
-        mAccountManager.addAccountHolderBlocking(
+        mAccountManager.addAccount(
                 AccountHolder.builder("dummy@gmail.com").alwaysAccept(true).build());
     }
 
