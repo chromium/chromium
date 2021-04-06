@@ -47,10 +47,10 @@ JavaScriptFeature::FeatureScript::CreateWithFilename(
     InjectionTime injection_time,
     TargetFrames target_frames,
     ReinjectionBehavior reinjection_behavior,
-    std::map<std::string, NSString*> replacements) {
+    const PlaceholderReplacementsCallback& replacements_callback) {
   return JavaScriptFeature::FeatureScript(filename, injection_time,
                                           target_frames, reinjection_behavior,
-                                          replacements);
+                                          replacements_callback);
 }
 
 JavaScriptFeature::FeatureScript::FeatureScript(
@@ -58,15 +58,22 @@ JavaScriptFeature::FeatureScript::FeatureScript(
     InjectionTime injection_time,
     TargetFrames target_frames,
     ReinjectionBehavior reinjection_behavior,
-    std::map<std::string, NSString*> replacements)
+    const PlaceholderReplacementsCallback& replacements_callback)
     : script_filename_(filename),
       injection_time_(injection_time),
       target_frames_(target_frames),
       reinjection_behavior_(reinjection_behavior),
-      replacements_(replacements) {}
+      replacements_callback_(replacements_callback) {}
 
-JavaScriptFeature::FeatureScript::FeatureScript(const FeatureScript& other) =
-    default;
+JavaScriptFeature::FeatureScript::FeatureScript(const FeatureScript&) = default;
+
+JavaScriptFeature::FeatureScript& JavaScriptFeature::FeatureScript::operator=(
+    const FeatureScript&) = default;
+
+JavaScriptFeature::FeatureScript::FeatureScript(FeatureScript&&) = default;
+
+JavaScriptFeature::FeatureScript& JavaScriptFeature::FeatureScript::operator=(
+    FeatureScript&&) = default;
 
 JavaScriptFeature::FeatureScript::~FeatureScript() = default;
 
@@ -87,11 +94,18 @@ NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
 
 NSString* JavaScriptFeature::FeatureScript::ReplacePlaceholders(
     NSString* script) const {
-  for (auto item : replacements_) {
-    script = [script
-        stringByReplacingOccurrencesOfString:base::SysUTF8ToNSString(item.first)
-                                  withString:item.second];
+  if (replacements_callback_.is_null())
+    return script;
+
+  PlaceholderReplacements replacements = replacements_callback_.Run();
+  if (!replacements)
+    return script;
+
+  for (NSString* key in replacements) {
+    script = [script stringByReplacingOccurrencesOfString:key
+                                               withString:replacements[key]];
   }
+
   return script;
 }
 

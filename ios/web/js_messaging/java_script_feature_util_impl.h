@@ -24,10 +24,6 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
 // Returns the ScrollHelperJavaScriptFeature.
 ScrollHelperJavaScriptFeature* GetScrollHelperJavaScriptFeature();
 
-// For testing only: Force next webview creation to reset plugin placeholder
-// information.
-void ResetPluginPlaceholderJavaScriptFeature();
-
 }  // namespace java_script_features
 }  // namespace web
 

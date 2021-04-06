@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/favicon/favicon_java_script_feature.h"
 #import "ios/web/find_in_page/find_in_page_java_script_feature.h"
@@ -20,7 +21,9 @@
 #error "This file requires ARC support."
 #endif
 
+namespace web {
 namespace {
+
 const char kBaseScriptName[] = "base_js";
 const char kCommonScriptName[] = "common_js";
 const char kMessageScriptName[] = "message_js";
@@ -29,85 +32,71 @@ const char kPluginPlaceholderScriptName[] = "plugin_placeholder_js";
 const char kMainFrameDescription[] = "Main frame";
 const char kIframeDescription[] = "Iframe";
 
-// Returns a string with \ and ' escaped.
-// This is used instead of GetQuotedJSONString because that will convert
-// UTF-16 to UTF-8, which can cause problems when injecting scripts depending
-// on the page encoding (see crbug.com/302741).
-NSString* EscapedQuotedString(NSString* string) {
-  string = [string stringByReplacingOccurrencesOfString:@"\\"
-                                             withString:@"\\\\"];
-  return [string stringByReplacingOccurrencesOfString:@"'" withString:@"\\'"];
-}
-static dispatch_once_t get_plugin_placeholder_once;
+// Returns the dictionary for placeholder replacements.
+NSDictionary<NSString*, NSString*>* PlaceholderReplacements() {
+  // The replacement value is computed dynamically each time this function is
+  // evaluated as the WebClient may change (in case of tests) or the returned
+  // value may change over time (nothing prevent a WebClient from doing that).
+  NSString* replacement =
+      base::SysUTF16ToNSString(GetWebClient()->GetPluginNotSupportedText());
 
-web::FaviconJavaScriptFeature* GetFaviconJavaScriptFeature() {
+  // Escape the \ and ' characters in replacement. This is not done using the
+  // GetQuotedJSONString() function as it converts UTF-16 to UTF-8 which can
+  // cause problems when injecting script depending on the page enconding.
+  // See https://crbug.com/302741/.
+  replacement = [replacement stringByReplacingOccurrencesOfString:@"\\"
+                                                       withString:@"\\\\"];
+  replacement = [replacement stringByReplacingOccurrencesOfString:@"'"
+                                                       withString:@"\'"];
+
+  return @{@"$(PLUGIN_NOT_SUPPORTED_TEXT)" : replacement};
+}
+
+FaviconJavaScriptFeature* GetFaviconJavaScriptFeature() {
   // Static storage is ok for |favicon_feature| as it holds no state.
-  static std::unique_ptr<web::FaviconJavaScriptFeature> favicon_feature =
-      nullptr;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    favicon_feature = std::make_unique<web::FaviconJavaScriptFeature>();
-  });
+  static base::NoDestructor<FaviconJavaScriptFeature> favicon_feature;
   return favicon_feature.get();
 }
 
-web::WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
+WindowErrorJavaScriptFeature* GetWindowErrorJavaScriptFeature() {
   // Static storage is ok for |window_error_feature| as it holds no state.
-  static std::unique_ptr<web::WindowErrorJavaScriptFeature>
-      window_error_feature = nullptr;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    window_error_feature =
-        std::make_unique<web::WindowErrorJavaScriptFeature>(base::BindRepeating(
-            ^(web::WindowErrorJavaScriptFeature::ErrorDetails error_details) {
-              // Displays the JavaScript error details in the following format:
-              //   _________ JavaScript error: _________
-              //     {error_message}
-              //     {url} | {filename}:{line_number}
-              //     {kMainFrameDescription|kIframeDescription}
-              const char* frame_description = error_details.is_main_frame
-                                                  ? kMainFrameDescription
-                                                  : kIframeDescription;
-              DLOG(ERROR) << "\n_________ JavaScript error: _________"
-                          << "\n  "
-                          << base::SysNSStringToUTF8(error_details.message)
-                          << "\n  " << error_details.url.spec() << " | "
-                          << base::SysNSStringToUTF8(error_details.filename)
-                          << ":" << error_details.line_number << "\n  "
-                          << frame_description;
-            }));
-  });
+  static base::NoDestructor<WindowErrorJavaScriptFeature> window_error_feature(
+      base::BindRepeating(^(
+          WindowErrorJavaScriptFeature::ErrorDetails error_details) {
+        // Displays the JavaScript error details in the following format:
+        //   _________ JavaScript error: _________
+        //     {error_message}
+        //     {url} | {filename}:{line_number}
+        //     {kMainFrameDescription|kIframeDescription}
+        const char* frame_description = error_details.is_main_frame
+                                            ? kMainFrameDescription
+                                            : kIframeDescription;
+        DLOG(ERROR) << "\n_________ JavaScript error: _________"
+                    << "\n  " << base::SysNSStringToUTF8(error_details.message)
+                    << "\n  " << error_details.url.spec() << " | "
+                    << base::SysNSStringToUTF8(error_details.filename) << ":"
+                    << error_details.line_number << "\n  " << frame_description;
+      }));
   return window_error_feature.get();
 }
 
-web::JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
+JavaScriptFeature* GetPluginPlaceholderJavaScriptFeature() {
   // Static storage is ok for |plugin_placeholder_feature| as it holds no state.
-  static std::unique_ptr<web::JavaScriptFeature> plugin_placeholder_feature =
-      nullptr;
-  dispatch_once(&get_plugin_placeholder_once, ^{
-    std::map<std::string, NSString*> replacement_map{
-        {"$(PLUGIN_NOT_SUPPORTED_TEXT)",
-         EscapedQuotedString(base::SysUTF16ToNSString(
-             web::GetWebClient()->GetPluginNotSupportedText()))}};
-    std::vector<const web::JavaScriptFeature::FeatureScript> feature_scripts = {
-        web::JavaScriptFeature::FeatureScript::CreateWithFilename(
-            kPluginPlaceholderScriptName,
-            web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd,
-            web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
-            web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
-                kReinjectOnDocumentRecreation,
-            replacement_map)};
-
-    plugin_placeholder_feature = std::make_unique<web::JavaScriptFeature>(
-        web::JavaScriptFeature::ContentWorld::kAnyContentWorld,
-        feature_scripts);
-  });
+  static base::NoDestructor<JavaScriptFeature> plugin_placeholder_feature(
+      JavaScriptFeature::ContentWorld::kAnyContentWorld,
+      std::vector<const JavaScriptFeature::FeatureScript>(
+          {JavaScriptFeature::FeatureScript::CreateWithFilename(
+              kPluginPlaceholderScriptName,
+              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd,
+              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames,
+              JavaScriptFeature::FeatureScript::ReinjectionBehavior::
+                  kReinjectOnDocumentRecreation,
+              base::BindRepeating(&PlaceholderReplacements))}));
   return plugin_placeholder_feature.get();
 }
 
 }  // namespace
 
-namespace web {
 namespace java_script_features {
 
 std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
@@ -122,76 +111,47 @@ std::vector<JavaScriptFeature*> GetBuiltInJavaScriptFeatures(
 
 ScrollHelperJavaScriptFeature* GetScrollHelperJavaScriptFeature() {
   // Static storage is ok for |scroll_helper_feature| as it holds no state.
-  static std::unique_ptr<ScrollHelperJavaScriptFeature> scroll_helper_feature =
-      nullptr;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    scroll_helper_feature = std::make_unique<ScrollHelperJavaScriptFeature>();
-  });
+  static base::NoDestructor<ScrollHelperJavaScriptFeature>
+      scroll_helper_feature;
   return scroll_helper_feature.get();
 }
 
 JavaScriptFeature* GetBaseJavaScriptFeature() {
   // Static storage is ok for |base_feature| as it holds no state.
-  static std::unique_ptr<JavaScriptFeature> base_feature = nullptr;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    std::vector<const JavaScriptFeature::FeatureScript> feature_scripts = {
-        JavaScriptFeature::FeatureScript::CreateWithFilename(
-            kBaseScriptName,
-            JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
-            JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)};
-
-    base_feature = std::make_unique<JavaScriptFeature>(
-        JavaScriptFeature::ContentWorld::kAnyContentWorld, feature_scripts);
-  });
+  static base::NoDestructor<JavaScriptFeature> base_feature(
+      JavaScriptFeature::ContentWorld::kAnyContentWorld,
+      std::vector<const JavaScriptFeature::FeatureScript>(
+          {JavaScriptFeature::FeatureScript::CreateWithFilename(
+              kBaseScriptName,
+              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}));
   return base_feature.get();
 }
 
 JavaScriptFeature* GetCommonJavaScriptFeature() {
   // Static storage is ok for |common_feature| as it holds no state.
-  static std::unique_ptr<JavaScriptFeature> common_feature = nullptr;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    std::vector<const JavaScriptFeature::FeatureScript> feature_scripts = {
-        JavaScriptFeature::FeatureScript::CreateWithFilename(
-            kCommonScriptName,
-            JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
-            JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)};
-
-    std::vector<const JavaScriptFeature*> dependencies = {
-        GetBaseJavaScriptFeature()};
-
-    common_feature = std::make_unique<JavaScriptFeature>(
-        JavaScriptFeature::ContentWorld::kAnyContentWorld, feature_scripts,
-        dependencies);
-  });
+  static base::NoDestructor<JavaScriptFeature> common_feature(
+      JavaScriptFeature::ContentWorld::kAnyContentWorld,
+      std::vector<const JavaScriptFeature::FeatureScript>(
+          {JavaScriptFeature::FeatureScript::CreateWithFilename(
+              kCommonScriptName,
+              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}),
+      std::vector<const JavaScriptFeature*>({GetBaseJavaScriptFeature()}));
   return common_feature.get();
 }
 
 JavaScriptFeature* GetMessageJavaScriptFeature() {
   // Static storage is ok for |message_feature| as it holds no state.
-  static std::unique_ptr<JavaScriptFeature> message_feature = nullptr;
-  static dispatch_once_t once;
-  dispatch_once(&once, ^{
-    std::vector<const JavaScriptFeature::FeatureScript> feature_scripts = {
-        JavaScriptFeature::FeatureScript::CreateWithFilename(
-            kMessageScriptName,
-            JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
-            JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)};
-
-    std::vector<const JavaScriptFeature*> dependencies = {
-        GetCommonJavaScriptFeature()};
-
-    message_feature = std::make_unique<JavaScriptFeature>(
-        JavaScriptFeature::ContentWorld::kAnyContentWorld, feature_scripts,
-        dependencies);
-  });
+  static base::NoDestructor<JavaScriptFeature> message_feature(
+      JavaScriptFeature::ContentWorld::kAnyContentWorld,
+      std::vector<const JavaScriptFeature::FeatureScript>(
+          {JavaScriptFeature::FeatureScript::CreateWithFilename(
+              kMessageScriptName,
+              JavaScriptFeature::FeatureScript::InjectionTime::kDocumentStart,
+              JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames)}),
+      std::vector<const JavaScriptFeature*>({GetCommonJavaScriptFeature()}));
   return message_feature.get();
-}
-
-void ResetPluginPlaceholderJavaScriptFeature() {
-  get_plugin_placeholder_once = 0;
 }
 
 }  // namespace java_script_features

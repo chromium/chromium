@@ -38,16 +38,6 @@ class PluginPlaceholderTest : public WebTestWithWebState {
         base::UTF8ToUTF16(kPluginNotSupportedText));
   }
 
-  void SetUp() override {
-    WebTestWithWebState::SetUp();
-    web::java_script_features::ResetPluginPlaceholderJavaScriptFeature();
-  }
-
-  void TearDown() override {
-    web::java_script_features::ResetPluginPlaceholderJavaScriptFeature();
-    WebTestWithWebState::TearDown();
-  }
-
   // Sets up |server_| with |html| as response content.
   bool SetUpServer(const std::string& html) WARN_UNUSED_RESULT {
     server_.RegisterDefaultHandler(

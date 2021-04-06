@@ -5,15 +5,14 @@
 #ifndef IOS_WEB_PUBLIC_JS_MESSAGING_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_PUBLIC_JS_MESSAGING_JAVA_SCRIPT_FEATURE_H_
 
-#include <map>
+#import <Foundation/Foundation.h>
+
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-
-@class NSString;
 
 namespace base {
 class Value;
@@ -81,6 +80,15 @@ class JavaScriptFeature {
       kMainFrame,
     };
 
+    // Mapping of placeholder to their replacement value.
+    using PlaceholderReplacements = NSDictionary<NSString*, NSString*>*;
+
+    // Callback used to perform placeholder replacement in the script. The
+    // returned value is a dictionary mapping "placeholder" to the "value"
+    // that needs it to be substituted by with in the script.
+    using PlaceholderReplacementsCallback =
+        base::RepeatingCallback<PlaceholderReplacements()>;
+
     // Creates a FeatureScript with the script file from the application bundle
     // with |filename| to be injected at |injection_time| into |target_frames|
     // using |reinjection_behavior|. If |replacements| is provided, it will be
@@ -91,10 +99,14 @@ class JavaScriptFeature {
         TargetFrames target_frames,
         ReinjectionBehavior reinjection_behavior =
             ReinjectionBehavior::kInjectOncePerWindow,
-        std::map<std::string, NSString*> replacements =
-            std::map<std::string, NSString*>());
+        const PlaceholderReplacementsCallback& replacements_callback =
+            PlaceholderReplacementsCallback());
 
     FeatureScript(const FeatureScript& other);
+    FeatureScript& operator=(const FeatureScript&);
+
+    FeatureScript(FeatureScript&&);
+    FeatureScript& operator=(FeatureScript&&);
 
     // Returns the JavaScript string of the script with |script_filename_|.
     NSString* GetScriptString() const;
@@ -109,17 +121,17 @@ class JavaScriptFeature {
                   InjectionTime injection_time,
                   TargetFrames target_frames,
                   ReinjectionBehavior reinjection_behavior,
-                  std::map<std::string, NSString*> replacements);
+                  const PlaceholderReplacementsCallback& replacements_callback);
 
-    // Returns the given |script| string after swapping the placeholders from
-    // |replacements_| with their values.
+    // Returns |script| after swapping the placeholders with their value as
+    // instructed by |replacements_callback_|.
     NSString* ReplacePlaceholders(NSString* script) const;
 
     std::string script_filename_;
     InjectionTime injection_time_;
     TargetFrames target_frames_;
     ReinjectionBehavior reinjection_behavior_;
-    std::map<std::string, NSString*> replacements_;
+    PlaceholderReplacementsCallback replacements_callback_;
   };
 
   JavaScriptFeature(ContentWorld supported_world,

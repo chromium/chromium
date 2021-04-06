@@ -151,14 +151,15 @@ TEST_F(JavaScriptFeatureTest, CreateFeature) {
               feature_scripts[0].GetScriptString());
 }
 
-// Tests creating a JavaScriptFeature with replacements map.
+// Tests creating a JavaScriptFeature with replacements dictionary.
 TEST_F(JavaScriptFeatureTest, CreateFeatureWithPlaceholder) {
   auto document_end_injection_time =
       web::JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd;
   auto target_frames_all =
       web::JavaScriptFeature::FeatureScript::TargetFrames::kAllFrames;
-  std::map<std::string, NSString*> replacements{
-      {"$(PLUGIN_NOT_SUPPORTED_TEXT)", @"TEST_PLACEHOLDER_VALUE"}};
+
+  NSString* placeholder = @"$(PLUGIN_NOT_SUPPORTED_TEXT)";
+  NSString* replacement = @"TEST_PLACEHOLDER_VALUE";
 
   const web::JavaScriptFeature::FeatureScript feature_script =
       web::JavaScriptFeature::FeatureScript::CreateWithFilename(
@@ -166,7 +167,9 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureWithPlaceholder) {
           target_frames_all,
           web::JavaScriptFeature::FeatureScript::ReinjectionBehavior::
               kReinjectOnDocumentRecreation,
-          replacements);
+          base::BindRepeating(^NSDictionary<NSString*, NSString*>*() {
+            return @{placeholder : replacement};
+          }));
 
   auto any_content_world =
       web::JavaScriptFeature::ContentWorld::kAnyContentWorld;
@@ -178,8 +181,6 @@ TEST_F(JavaScriptFeatureTest, CreateFeatureWithPlaceholder) {
   ASSERT_EQ(1ul, feature_scripts.size());
   NSString* original_script = web::GetPageScript(@"plugin_placeholder_js");
   NSString* final_script = feature_scripts[0].GetScriptString();
-  NSString* placeholder = base::SysUTF8ToNSString(replacements.begin()->first);
-  NSString* replacement = replacements.begin()->second;
 
   EXPECT_NSEQ(feature_script.GetScriptString(), final_script);
   NSRange placeholder_range = [original_script rangeOfString:placeholder

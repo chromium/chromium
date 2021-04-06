@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #import "base/ios/ios_util.h"
+#include "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #include "ios/chrome/browser/safe_browsing/input_event_observer.h"
 #import "ios/web/public/js_messaging/script_message.h"
@@ -45,10 +46,7 @@ PasswordProtectionJavaScriptFeature::~PasswordProtectionJavaScriptFeature() =
 // static
 PasswordProtectionJavaScriptFeature*
 PasswordProtectionJavaScriptFeature::GetInstance() {
-  static std::unique_ptr<PasswordProtectionJavaScriptFeature> feature = nullptr;
-  if (!feature) {
-    feature = std::make_unique<PasswordProtectionJavaScriptFeature>();
-  }
+  static base::NoDestructor<PasswordProtectionJavaScriptFeature> feature;
   return feature.get();
 }
 

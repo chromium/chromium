@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_PASSWORD_PROTECTION_JAVA_SCRIPT_FEATURE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_PASSWORD_PROTECTION_JAVA_SCRIPT_FEATURE_H_
 
+#include <map>
+
 #include "ios/web/public/js_messaging/java_script_feature.h"
 
 class InputEventObserver;
