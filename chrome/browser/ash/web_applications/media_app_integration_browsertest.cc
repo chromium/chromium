@@ -235,10 +235,14 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, LoadsInkForImageAnnotation) {
 
   // TODO(b/175766054): Decipher if we can one line getting the annotate button
   // in `waitForNode`.
+  // Note the button id (icon-button-3709949292) corresponds to the annotation
+  // button and is calculated from a hash of the label ("Annotate"). This id is
+  // used since cl/366443893 because the UI toolkit has loose guarantees about
+  // where the actual label appears in the shadow DOM.
   constexpr char clickAnnotate[] = R"(
     (async () => {
       const appBar = await waitForNode('backlight-app-bar', ['backlight-app']);
-      const annotateButton = appBar.shadowRoot.querySelector('[label="Annotate"]');
+      const annotateButton = appBar.shadowRoot.querySelector('#icon-button-3709949292');
       annotateButton.click();
       return true;
     })();
