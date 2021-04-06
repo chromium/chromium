@@ -5267,6 +5267,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.dispatcher showGoogleServicesSettingsFromViewController:self];
 }
 
+- (void)showAccountSettings {
+  [self.dispatcher showAccountsSettingsFromViewController:self];
+}
+
 - (void)showTrustedVaultReauthenticationWithRetrievalTrigger:
     (syncer::KeyRetrievalTriggerForUMA)retrievalTrigger {
   [self.dispatcher

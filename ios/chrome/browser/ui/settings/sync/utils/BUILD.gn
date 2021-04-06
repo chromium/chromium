@@ -33,6 +33,27 @@ source_set("utils") {
   frameworks = [ "UIKit.framework" ]
 }
 
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "sync_error_infobar_delegate_unittest.mm" ]
+  deps = [
+    ":utils",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/base",
+    "//components/sync/driver",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/public/provider/chrome/browser/signin",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
+
 source_set("eg2_tests") {
   defines = [ "CHROME_EARL_GREY_2" ]
   configs += [

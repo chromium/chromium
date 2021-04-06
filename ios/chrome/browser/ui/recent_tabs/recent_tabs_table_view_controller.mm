@@ -1410,6 +1410,10 @@ API_AVAILABLE(ios(13.0))
   [self.handler showGoogleServicesSettingsFromViewController:self];
 }
 
+- (void)showAccountSettings {
+  [self.handler showAccountsSettingsFromViewController:self];
+}
+
 - (void)showTrustedVaultReauthenticationWithRetrievalTrigger:
     (syncer::KeyRetrievalTriggerForUMA)retrievalTrigger {
   [self.handler

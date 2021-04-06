@@ -23,6 +23,9 @@ enum class KeyRetrievalTriggerForUMA;
 // Presents the Google services settings.
 - (void)showGoogleServicesSettings;
 
+// Presents the Account settings.
+- (void)showAccountSettings;
+
 // Presents the Trusted Vault reauthentication dialog.
 // |retrievalTrigger| UI elements where the trusted vault reauth has been
 // triggered.

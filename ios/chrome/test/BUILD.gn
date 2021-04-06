@@ -312,6 +312,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/settings/privacy:unit_tests",
     "//ios/chrome/browser/ui/settings/safety_check:unit_tests",
     "//ios/chrome/browser/ui/settings/sync:unit_tests",
+    "//ios/chrome/browser/ui/settings/sync/utils:unit_tests",
     "//ios/chrome/browser/ui/settings/utils:unit_tests",
     "//ios/chrome/browser/ui/sharing:unit_tests",
     "//ios/chrome/browser/ui/side_swipe:unit_tests",
