@@ -2335,6 +2335,11 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
             AddToHomescreenCoordinator.showForAppMenu(this, getWindowAndroid(),
                     getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.ADD_TO_HOMESCREEN_IPH)) {
+                Tracker tracker = TrackerFactory.getTrackerForProfile(
+                        Profile.fromWebContents(currentTab.getWebContents()));
+                tracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);
+            }
             return true;
         }
 

@@ -914,8 +914,10 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @CommandLineFlags.Add("enable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE)
-    public void testInProductHelp() throws Exception {
+    @CommandLineFlags.Add({"enable-features=" + FeatureConstants.PWA_INSTALL_AVAILABLE_FEATURE,
+            "disable-features=" + ChromeFeatureList.ADD_TO_HOMESCREEN_IPH})
+    public void
+    testInProductHelp() throws Exception {
         // Visit a site that is a PWA. The ambient badge should show.
         String webBannerUrl = WebappTestPage.getServiceWorkerUrl(mTestServer);
         resetEngagementForUrl(webBannerUrl, 10);

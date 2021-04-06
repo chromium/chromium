@@ -60,6 +60,7 @@ android_library("java") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]

@@ -12,8 +12,10 @@ import android.os.Handler;
 import android.view.View;
 
 import androidx.annotation.IdRes;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.banners.AppMenuVerbiage;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,6 +24,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageBannerProperties;
@@ -151,9 +154,10 @@ public class AddToHomescreenIPHController {
         }
 
         PropertyModel model =
-                new PropertyModel
-                        .Builder(MessageBannerProperties.ALL_KEYS)
-                        // TODO(shaktisahu): Add correct icon.
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.ICON,
+                                VectorDrawableCompat.create(mActivity.getResources(),
+                                        R.drawable.ic_apps_blue_24dp, mActivity.getTheme()))
                         .with(MessageBannerProperties.TITLE,
                                 mActivity.getResources().getString(
                                         R.string.iph_message_add_to_home_screen_title))
@@ -174,10 +178,12 @@ public class AddToHomescreenIPHController {
         if (tab.isDestroyed()) return;
 
         Bundle menuItemData = new Bundle();
-        menuItemData.putInt(AppBannerManager.MENU_TITLE_KEY, 0); // Only used for UMA
+        // Used for UMA.
+        menuItemData.putInt(
+                AppBannerManager.MENU_TITLE_KEY, AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
         AddToHomescreenCoordinator.showForAppMenu(
                 mActivity, mWindowAndroid, mModalDialogManager, tab.getWebContents(), menuItemData);
-
+        mTracker.notifyEvent(EventConstants.ADD_TO_HOMESCREEN_DIALOG_SHOWN);
         // TODO(shaktisahu): Record metrics that user clicked Add button.
     }
 

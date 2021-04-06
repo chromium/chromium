@@ -71,6 +71,11 @@ public final class EventConstants {
     public static final String PREVIEWS_PAGE_LOADED = "preview_page_load";
 
     /**
+     * Add to homescreen events.
+     */
+    public static final String ADD_TO_HOMESCREEN_DIALOG_SHOWN = "add_to_homescreen_dialog_shown";
+
+    /**
      * Contextual Search panel was opened.
      */
     public static final String CONTEXTUAL_SEARCH_PANEL_OPENED = "contextual_search_panel_opened";
