@@ -47,11 +47,12 @@ lucicfg.config(
     ],
 )
 
-# Just copy tricium-prod.cfg to the generated outputs
-lucicfg.emit(
-    dest = "tricium-prod.cfg",
-    data = io.read_file("tricium-prod.cfg"),
-)
+# TODO(gbeaty) Restore this once all CLs have been migrated to the main branch
+# # Just copy tricium-prod.cfg to the generated outputs
+# lucicfg.emit(
+#     dest = "tricium-prod.cfg",
+#     data = io.read_file("tricium-prod.cfg"),
+# )
 
 luci.project(
     name = settings.project,
