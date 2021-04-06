@@ -411,6 +411,7 @@ class CupsPrintersManagerImpl
     base::UmaHistogramEnumeration("Printing.CUPS.PrinterStatusQueryResult",
                                   result);
     switch (result) {
+      case PrinterQueryResult::kHostnameResolution:
       case PrinterQueryResult::kUnreachable: {
         PRINTER_LOG(ERROR)
             << "Printer status request failed. Could not reach printer "

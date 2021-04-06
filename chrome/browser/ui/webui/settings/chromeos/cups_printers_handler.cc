@@ -83,7 +83,8 @@ void OnRemovedPrinter(const Printer::PrinterProtocol& protocol, bool success) {
 
 // Log if the IPP attributes request was succesful.
 void RecordIppQueryResult(const PrinterQueryResult& result) {
-  bool reachable = (result != PrinterQueryResult::kUnreachable);
+  bool reachable = result != PrinterQueryResult::kHostnameResolution &&
+                   result != PrinterQueryResult::kUnreachable;
   UMA_HISTOGRAM_BOOLEAN("Printing.CUPS.IppDeviceReachable", reachable);
 
   if (reachable) {
@@ -536,7 +537,8 @@ void CupsPrintersHandler::OnAutoconfQueried(
   RecordIppQueryResult(result);
   const bool success = result == PrinterQueryResult::kSuccess;
 
-  if (result == PrinterQueryResult::kUnreachable) {
+  if (result == PrinterQueryResult::kHostnameResolution ||
+      result == PrinterQueryResult::kUnreachable) {
     PRINTER_LOG(DEBUG) << "Could not reach printer";
     RejectJavascriptCallback(
         base::Value(callback_id),

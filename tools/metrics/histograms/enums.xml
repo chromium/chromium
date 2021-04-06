@@ -63246,6 +63246,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="UNREACHABLE">
     Device could not connect to the printer.
   </int>
+  <int value="3" label="HOSTNAME_RESOLUTION">
+    Unable to resolve IP address from printer hostname.
+  </int>
 </enum>
 
 <enum name="PrinterStatusReasons">

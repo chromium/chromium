@@ -14,6 +14,7 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -462,8 +463,16 @@ PrinterQueryResult GetPrinterInfo(const std::string& address,
   DCHECK(printer_info);
   DCHECK(printer_status);
 
+  // Lookup the printer IP address.
+  http_addrlist_t* addr_list = httpAddrGetList(
+      address.c_str(), AF_INET, base::NumberToString(port).c_str());
+  if (!addr_list) {
+    LOG(WARNING) << "Unable to resolve IP address from hostname";
+    return PrinterQueryResult::kHostnameResolution;
+  }
+
   ScopedHttpPtr http = ScopedHttpPtr(httpConnect2(
-      address.c_str(), port, nullptr, AF_INET,
+      address.c_str(), port, addr_list, AF_INET,
       encrypted ? HTTP_ENCRYPTION_ALWAYS : HTTP_ENCRYPTION_IF_REQUESTED, 0,
       kHttpConnectTimeoutMs, nullptr));
   if (!http) {
