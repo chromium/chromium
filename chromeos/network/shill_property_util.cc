@@ -218,10 +218,29 @@ std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
   return ui_data;
 }
 
-void SetUIData(const NetworkUIData& ui_data,
-               base::DictionaryValue* shill_dictionary) {
+void SetUIDataAndSource(const NetworkUIData& ui_data,
+                        base::DictionaryValue* shill_dictionary) {
   shill_dictionary->SetKey(shill::kUIDataProperty,
                            base::Value(ui_data.GetAsJson()));
+  std::string source;
+  switch (ui_data.onc_source()) {
+    case ::onc::ONC_SOURCE_UNKNOWN:
+      source = shill::kONCSourceUnknown;
+      break;
+    case ::onc::ONC_SOURCE_NONE:
+      source = shill::kONCSourceNone;
+      break;
+    case ::onc::ONC_SOURCE_USER_IMPORT:
+      source = shill::kONCSourceUserImport;
+      break;
+    case ::onc::ONC_SOURCE_DEVICE_POLICY:
+      source = shill::kONCSourceDevicePolicy;
+      break;
+    case ::onc::ONC_SOURCE_USER_POLICY:
+      source = shill::kONCSourceUserPolicy;
+      break;
+  }
+  shill_dictionary->SetKey(shill::kONCSourceProperty, base::Value(source));
 }
 
 bool CopyIdentifyingProperties(const base::DictionaryValue& service_properties,

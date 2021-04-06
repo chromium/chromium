@@ -4,6 +4,7 @@
   "GUID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
   "ManagedCredentials": true,
   "Name": "my vpn",
+  "ONCSource": "UserPolicy",
   "Profile": "/profile/user1/shill",
   "Provider": {
     "Host": "vpn.my.domain.com",

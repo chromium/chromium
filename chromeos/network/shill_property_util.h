@@ -56,9 +56,10 @@ std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
     const base::DictionaryValue& shill_dictionary);
 
 // Sets the UIData property in |shill_dictionary| to the serialization of
-// |ui_data|.
-void SetUIData(const NetworkUIData& ui_data,
-               base::DictionaryValue* shill_dictionary);
+// |ui_data|. Sets the ONCSource property in |shill_dictionary|,
+// derived from |ui_data|.
+void SetUIDataAndSource(const NetworkUIData& ui_data,
+                        base::DictionaryValue* shill_dictionary);
 
 // Copy configuration properties required by Shill to identify a network in the
 // format that Shill expects on writes.

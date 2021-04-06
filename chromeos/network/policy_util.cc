@@ -392,7 +392,7 @@ std::unique_ptr<base::DictionaryValue> CreateShillConfiguration(
     ui_data->SetUserSettingsDictionary(std::move(sanitized_user_settings));
   }
 
-  shill_property_util::SetUIData(*ui_data, shill_dictionary.get());
+  shill_property_util::SetUIDataAndSource(*ui_data, shill_dictionary.get());
 
   VLOG(2) << "Created Shill properties: " << *shill_dictionary;
 
