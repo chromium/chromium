@@ -7,7 +7,10 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_state.h"
+#include "base/test/bind.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/widget/widget.h"
@@ -39,13 +42,15 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
                                   CloseButtonVisible close_button_visible)
       WARN_UNUSED_RESULT {
     views::Widget* widget = new views::Widget;
-    views::Widget::InitParams params;
+    views::Widget::InitParams params(
+        views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     auto delegate = std::make_unique<views::WidgetDelegateView>();
     delegate->SetCanMaximize(maximize_allowed == MAXIMIZE_ALLOWED);
     delegate->SetCanMinimize(minimize_allowed == MINIMIZE_ALLOWED);
     delegate->SetShowCloseButton(close_button_visible == CLOSE_BUTTON_VISIBLE);
     params.delegate = delegate.release();
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+    params.bounds = gfx::Rect(10, 10, 100, 100);
     params.context = GetContext();
     widget->Init(std::move(params));
     return widget;
@@ -82,6 +87,14 @@ class FrameCaptionButtonContainerViewTest : public AshTestBase {
                << rightmost.bounds().ToString() << " not at edges of "
                << expected.ToString();
     return false;
+  }
+
+  void ClickSizeButton(FrameCaptionButtonContainerView::TestApi* testApi) {
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    generator->MoveMouseTo(
+        testApi->size_button()->GetBoundsInScreen().CenterPoint());
+    generator->ClickLeftButton();
+    base::RunLoop().RunUntilIdle();
   }
 
  private:
@@ -221,6 +234,66 @@ TEST_F(FrameCaptionButtonContainerViewTest, ShouldShowCloseButtonFalse) {
   FrameCaptionButtonContainerView::TestApi testApi(&container);
   EXPECT_FALSE(testApi.close_button()->GetVisible());
   EXPECT_TRUE(testApi.close_button()->GetEnabled());
+}
+
+// Test that overriding size button behavior works properly.
+TEST_F(FrameCaptionButtonContainerViewTest, TestSizeButtonBehaviorOverride) {
+  auto* widget = CreateTestWidget(MAXIMIZE_ALLOWED, MINIMIZE_ALLOWED,
+                                  CLOSE_BUTTON_VISIBLE);
+  widget->Show();
+
+  auto* window_state = WindowState::Get(widget->GetNativeWindow());
+
+  FrameCaptionButtonContainerView container(widget);
+  InitContainer(&container);
+  widget->GetContentsView()->AddChildView(&container);
+  container.Layout();
+  FrameCaptionButtonContainerView::TestApi testApi(&container);
+
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  // Test that the size button works without override.
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  // Test that the size button behavior is overridden when override callback
+  // returning true is set.
+  bool called = false;
+  container.SetOnSizeButtonPressedCallback(
+      base::BindLambdaForTesting([&called]() {
+        called = true;
+        return true;
+      }));
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_TRUE(called);
+
+  // Test that the override callback is removable.
+  called = false;
+  container.ClearOnSizeButtonPressedCallback();
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_FALSE(called);
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_FALSE(called);
+
+  // Test that the size button behavior fall back to the default one when
+  // override callback returns false.
+  called = false;
+  container.SetOnSizeButtonPressedCallback(
+      base::BindLambdaForTesting([&called]() {
+        called = true;
+        return false;
+      }));
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsMaximized());
+  EXPECT_TRUE(called);
+  ClickSizeButton(&testApi);
+  EXPECT_TRUE(window_state->IsNormalStateType());
+  EXPECT_TRUE(called);
 }
 
 }  // namespace ash

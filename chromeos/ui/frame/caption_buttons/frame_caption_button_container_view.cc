@@ -302,6 +302,15 @@ void FrameCaptionButtonContainerView::SetModel(
   model_ = std::move(model);
 }
 
+void FrameCaptionButtonContainerView::SetOnSizeButtonPressedCallback(
+    base::RepeatingCallback<bool()> callback) {
+  on_size_button_pressed_callback_ = std::move(callback);
+}
+
+void FrameCaptionButtonContainerView::ClearOnSizeButtonPressedCallback() {
+  on_size_button_pressed_callback_.Reset();
+}
+
 void FrameCaptionButtonContainerView::Layout() {
   views::View::Layout();
 
@@ -414,7 +423,11 @@ void FrameCaptionButtonContainerView::SizeButtonPressed() {
   // Abort any animations of the button icons.
   SetButtonsToNormal(ANIMATE_NO);
 
-  if (frame_->IsFullscreen()) {  // Can be clicked in immersive fullscreen.
+  if (on_size_button_pressed_callback_ &&
+      on_size_button_pressed_callback_.Run()) {
+    // no-op if the override callback returned true.
+  } else if (frame_->IsFullscreen()) {
+    // Can be clicked in immersive fullscreen.
     frame_->Restore();
     base::RecordAction(base::UserMetricsAction("MaxButton_Clk_ExitFS"));
   } else if (frame_->IsMaximized()) {

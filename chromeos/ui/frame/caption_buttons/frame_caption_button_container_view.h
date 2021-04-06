@@ -110,6 +110,13 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   void SetModel(std::unique_ptr<CaptionButtonModel> model);
   const CaptionButtonModel* model() const { return model_.get(); }
 
+  // Sets the callback that will be invoked when any size button is pressed. If
+  // the callback is set, the default behavior (e.g. maximize |frame_|) will be
+  // skipped so caller must be responsible for the action. If the callback
+  // returns false, it will fall back to the default dehavior.
+  void SetOnSizeButtonPressedCallback(base::RepeatingCallback<bool()> callback);
+  void ClearOnSizeButtonPressedCallback();
+
   // views::View:
   void Layout() override;
   void ChildPreferredSizeChanged(View* child) override;
@@ -170,6 +177,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
   std::unique_ptr<gfx::SlideAnimation> tablet_mode_animation_;
 
   std::unique_ptr<CaptionButtonModel> model_;
+
+  // Callback for the size button action, which overrides the default behavior.
+  // If the callback returns false, it will fall back to the default dehavior.
+  base::RepeatingCallback<bool()> on_size_button_pressed_callback_;
 };
 
 }  // namespace chromeos

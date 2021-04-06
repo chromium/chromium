@@ -65,6 +65,7 @@
 #include "components/arc/audio/arc_audio_bridge.h"
 #include "components/arc/camera/arc_camera_bridge.h"
 #include "components/arc/clipboard/arc_clipboard_bridge.h"
+#include "components/arc/compat_mode/arc_resize_lock_manager.h"
 #include "components/arc/crash_collector/arc_crash_collector_bridge.h"
 #include "components/arc/dark_theme/arc_dark_theme_bridge.h"
 #include "components/arc/disk_quota/arc_disk_quota_bridge.h"
@@ -235,6 +236,7 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcProcessService::GetForBrowserContext(profile);
   ArcPropertyBridge::GetForBrowserContext(profile);
   ArcProvisionNotificationService::GetForBrowserContext(profile);
+  ArcResizeLockManager::GetForBrowserContext(profile);
   ArcRotationLockBridge::GetForBrowserContext(profile);
   ArcScreenCaptureBridge::GetForBrowserContext(profile);
   ArcSensorBridge::GetForBrowserContext(profile);
