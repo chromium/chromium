@@ -150,9 +150,18 @@ class ChromeIdentityService {
 
   // Returns a new ChromeIdentityInteractionManager with |delegate| as its
   // delegate.
+  // DEPRECATED, please use:
+  // CreateChromeIdentityInteractionManager(
+  // id<ChromeIdentityInteractionManagerDelegate>).
   virtual ChromeIdentityInteractionManager*
   CreateChromeIdentityInteractionManager(
       ChromeBrowserState* browser_state,
+      id<ChromeIdentityInteractionManagerDelegate> delegate) const;
+
+  // Returns a new ChromeIdentityInteractionManager with |delegate| as its
+  // delegate.
+  virtual ChromeIdentityInteractionManager*
+  CreateChromeIdentityInteractionManager(
       id<ChromeIdentityInteractionManagerDelegate> delegate) const;
 
   // Returns YES if |identity| is valid and if the service has it in its list of

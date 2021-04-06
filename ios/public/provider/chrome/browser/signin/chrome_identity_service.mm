@@ -58,6 +58,12 @@ ChromeIdentityInteractionManager*
 ChromeIdentityService::CreateChromeIdentityInteractionManager(
     ChromeBrowserState* browser_state,
     id<ChromeIdentityInteractionManagerDelegate> delegate) const {
+  return CreateChromeIdentityInteractionManager(delegate);
+}
+
+ChromeIdentityInteractionManager*
+ChromeIdentityService::CreateChromeIdentityInteractionManager(
+    id<ChromeIdentityInteractionManagerDelegate> delegate) const {
   return nil;
 }
 
