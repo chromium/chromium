@@ -1350,7 +1350,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12a7209",
+          "12d4e",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -1380,7 +1380,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12a7209",
+              "name": "xcode_ios_12d4e",
               "path": "Xcode.app"
             }
           ],
@@ -1402,7 +1402,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "12a7209",
+          "12d4e",
           "--xctest"
         ],
         "isolate_profile_data": true,
@@ -1432,7 +1432,7 @@
           ],
           "named_caches": [
             {
-              "name": "xcode_ios_12a7209",
+              "name": "xcode_ios_12d4e",
               "path": "Xcode.app"
             }
           ],

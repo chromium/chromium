@@ -1282,7 +1282,7 @@ ci.angle_thin_tester(
 
 ci.angle_mac_builder(
     name = "ios-angle-builder",
-    xcode = xcode.x12a7209,
+    xcode = xcode.x12d4e,
     console_view_entry = consoles.console_view_entry(
         category = "iOS|Builder|ANGLE",
         short_name = "x64",
