@@ -50,6 +50,11 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   void OnJavaScriptResponseReceived(LinkToTextCallback callback,
                                     const base::Value* response);
 
+  // Identifies if a string has any characters that aren't a boundary
+  // (i.e., whitespace or punctuation) character.
+  bool IsOnlyBoundaryChars(NSString* str);
+  FRIEND_TEST_ALL_PREFIXES(LinkToTextTabHelperTest, IsOnlyBoundaryChars);
+
   // Not copyable or moveable.
   LinkToTextTabHelper(const LinkToTextTabHelper&) = delete;
   LinkToTextTabHelper& operator=(const LinkToTextTabHelper&) = delete;
@@ -63,6 +68,10 @@ class LinkToTextTabHelper : public web::WebStateObserver,
 
   // Timer used to calculate the link generation latency.
   std::unique_ptr<base::ElapsedTimer> link_generation_timer_;
+
+  // Regex for |IsOnlyBoundaryChars|. Lazily-initialized to avoid recompiling
+  // each time we check.
+  NSRegularExpression* not_boundary_char_regex_ = nil;
 
   base::WeakPtrFactory<LinkToTextTabHelper> weak_ptr_factory_;
 

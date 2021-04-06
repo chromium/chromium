@@ -43120,11 +43120,15 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
 
 <enum name="LinkToTextShouldOfferResult">
   <int value="0" label="Success"/>
-  <int value="1" label="Rejected in JavaScript"/>
+  <int value="1" label="Rejected in JavaScript (deprecated)"/>
   <int value="2" label="Blocklisted"/>
-  <int value="3" label="Unable to invoke JavaScript"/>
-  <int value="4" label="Web layer task timeout"/>
-  <int value="5" label="Dispatched timeout"/>
+  <int value="3" label="Unable to invoke JavaScript (deprecated)"/>
+  <int value="4" label="Web layer task timeout (deprecated)"/>
+  <int value="5" label="Dispatched timeout (deprecated)"/>
+  <int value="6" label="Selection empty"/>
+  <int value="7" label="User editing"/>
+  <int value="8" label="Text Input view not found"/>
+  <int value="9" label="Success, with lower certainty"/>
 </enum>
 
 <enum name="LinuxAudioIO">

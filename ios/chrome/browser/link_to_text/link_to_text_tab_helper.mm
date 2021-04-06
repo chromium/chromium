@@ -21,24 +21,60 @@
 #error "This file requires ARC support."
 #endif
 
+// Interface encapsulating the properties needed to check the contents of the
+// selection and whether or not it is editable.
+@protocol EditableTextInput <UITextInput>
+- (BOOL)isEditable;
+@end
+
 namespace {
 const char kGetLinkToTextJavaScript[] = "linkToText.getLinkToText";
-const char kCheckPreconditionsJavaScript[] = "linkToText.checkPreconditions";
+
+// Pattern to identify non-whitespace/punctuation characters. Mirrors the regex
+// used in the JS lib to identify non-boundary characters.
+NSString* const kNotBoundaryCharPattern = @"[^\\p{P}\\s]";
+
+// Limit the search for a non-boundary char to the first 200 characters,
+// to ensure this regex does not have performance impact.
+const int kBoundaryCharSearchLimit = 200;
 
 // Corresponds to LinkToTextShouldOfferResult in enums.xml; used to log
 // fine-grained behavior of ShouldOffer.
 enum class ShouldOfferResult {
   kSuccess = 0,
-  kRejectedInJavaScript = 1,
   kBlockListed = 2,
+  kSelectionEmpty = 6,
+  kUserEditing = 7,
+  kTextInputNotFound = 8,
+  kPartialSuccess = 9,
+
+  // Deprecated. Do not reuse, change, or remove these values.
+  kRejectedInJavaScript = 1,
   kUnableToInvokeJavaScript = 3,
   kWebLayerTaskTimeout = 4,
   kDispatchedTimeout = 5,
-  kMaxValue = kDispatchedTimeout
+
+  kMaxValue = kPartialSuccess
 };
 
 void LogShouldOfferResult(ShouldOfferResult result) {
   base::UmaHistogramEnumeration("IOS.LinkToText.ShouldOfferResult", result);
+}
+
+// Traverse subviews to find the one responsible for the text selection
+// behavior (UITextInput).
+UIView<EditableTextInput>* FindInput(UIView* root) {
+  if ([root conformsToProtocol:@protocol(UITextInput)] &&
+      [root respondsToSelector:@selector(isEditable)]) {
+    return (UIView<EditableTextInput>*)root;
+  }
+  for (UIView* view in [root subviews]) {
+    auto* maybe_input = FindInput(view);
+    if (maybe_input) {
+      return maybe_input;
+    }
+  }
+  return nil;
 }
 
 }  // namespace
@@ -74,63 +110,36 @@ bool LinkToTextTabHelper::ShouldOffer() {
     return false;
   }
 
-  // We use a CFRunLoop because this method is invoked in response to a
-  // selection event fired by iOS. This happens on the main thread and so we
-  // can't block; instead we loop until completion.
-  __block BOOL isRunLoopNested = NO;
-  __block BOOL javascriptEvaluationComplete = NO;
-  __block BOOL isRunLoopComplete = NO;
-  __block BOOL response = NO;
+  UIView<EditableTextInput>* textInputView = FindInput(web_state_->GetView());
 
-  web_state_->GetWebFramesManager()->GetMainWebFrame()->CallJavaScriptFunction(
-      kCheckPreconditionsJavaScript, {},
-      base::BindOnce(^(const base::Value* responseAsValue) {
-        DCHECK([NSThread isMainThread]);
-        javascriptEvaluationComplete = YES;
-        if (responseAsValue && responseAsValue->is_bool()) {
-          response = responseAsValue->GetBool();
-          LogShouldOfferResult(response
-                                   ? ShouldOfferResult::kSuccess
-                                   : ShouldOfferResult::kRejectedInJavaScript);
-        } else {
-          response = NO;
-          LogShouldOfferResult(ShouldOfferResult::kWebLayerTaskTimeout);
-        }
-        if (isRunLoopNested) {
-          CFRunLoopStop(CFRunLoopGetCurrent());
-        }
-      }),
-      // The Web State requires a timeout, but we generally don't want this to
-      // fire since we have our own below which more tightly covers the time the
-      // main thread is waiting. Thus, we use a separate, much longer, value.
-      base::TimeDelta::FromSeconds(
-          link_to_text::kPreconditionsWebStateTimeoutInSeconds));
-
-  // Make sure to timeout in case the JavaScript doesn't return in a timely
-  // manner, or else modifying the selection (and maybe other things) will
-  // break.
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW,
-                    (int64_t)(link_to_text::kPreconditionsTimeoutInSeconds *
-                              NSEC_PER_SEC)),
-      dispatch_get_main_queue(), ^{
-        if (!isRunLoopComplete) {
-          LogShouldOfferResult(ShouldOfferResult::kDispatchedTimeout);
-          CFRunLoopStop(CFRunLoopGetCurrent());
-          response = NO;
-        }
-      });
-
-  // Only run loop if the JS hasn't already finished executing.
-  if (!javascriptEvaluationComplete) {
-    isRunLoopNested = YES;
-    CFRunLoopRun();
-    isRunLoopNested = NO;
+  if (!textInputView) {
+    LogShouldOfferResult(ShouldOfferResult::kTextInputNotFound);
+    NOTREACHED();
+    return false;
   }
 
-  isRunLoopComplete = YES;
+  if ([textInputView isEditable]) {
+    LogShouldOfferResult(ShouldOfferResult::kUserEditing);
+    return false;
+  }
 
-  return response;
+  NSString* selection =
+      [textInputView textInRange:[textInputView selectedTextRange]];
+
+  if (!selection) {
+    // A bug on older versions can cause selection to be nil. In this case, we
+    // offer the feature even though it might just be whitespace.
+    LogShouldOfferResult(ShouldOfferResult::kPartialSuccess);
+    return true;
+  }
+
+  if (IsOnlyBoundaryChars(selection)) {
+    LogShouldOfferResult(ShouldOfferResult::kSelectionEmpty);
+    return false;
+  }
+
+  LogShouldOfferResult(ShouldOfferResult::kSuccess);
+  return true;
 }
 
 void LinkToTextTabHelper::GetLinkToText(LinkToTextCallback callback) {
@@ -165,6 +174,28 @@ void LinkToTextTabHelper::OnJavaScriptResponseReceived(
                                                     webState:web_state_
                                                      latency:latency]);
   }
+}
+
+bool LinkToTextTabHelper::IsOnlyBoundaryChars(NSString* str) {
+  if (!not_boundary_char_regex_) {
+    NSError* error = nil;
+    not_boundary_char_regex_ = [NSRegularExpression
+        regularExpressionWithPattern:kNotBoundaryCharPattern
+                             options:0
+                               error:&error];
+    if (error) {
+      // We should never get an error from compiling the regex, since it's a
+      // literal.
+      NOTREACHED();
+      return true;
+    }
+  }
+  int max_len = MIN(kBoundaryCharSearchLimit, [str length]);
+  auto range = [not_boundary_char_regex_
+      rangeOfFirstMatchInString:str
+                        options:0
+                          range:NSMakeRange(0, max_len)];
+  return range.location == NSNotFound;
 }
 
 void LinkToTextTabHelper::WebStateDestroyed(web::WebState* web_state) {

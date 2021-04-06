@@ -43,11 +43,15 @@ source_set("internal") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "link_to_text_utils_unittest.mm" ]
+  sources = [
+    "link_to_text_tab_helper_unittest.mm",
+    "link_to_text_utils_unittest.mm",
+  ]
   deps = [
     ":internal",
     ":link_to_text",
     "//base",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//url",
   ]

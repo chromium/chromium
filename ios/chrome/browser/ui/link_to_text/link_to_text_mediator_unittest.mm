@@ -194,25 +194,11 @@ class LinkToTextMediatorTest : public PlatformTest {
   id mocked_consumer_;
 };
 
-// Tests that the mediator should offer link to text to HTML pages that can
-// call JavaScript functions.
-TEST_F(LinkToTextMediatorTest, ShouldOfferLinkToText) {
-  // In the single-threaded test environment, the JS callback can't fire until
-  // after the dispatched timeout, so this returns false. However, JS execution
-  // is the last step, so we can verify that the right method was invoked, and
-  // infer from this that all the other browser-side checks passed as well.
-  [mediator_ shouldOfferLinkToText];
-  EXPECT_EQ(main_frame_->GetLastJavaScriptCall(),
-            "__gCrWeb.linkToText.checkPreconditions();");
-}
-
 // Tests that the mediator should not offer link to text to pages that are not
 // HTML.
 TEST_F(LinkToTextMediatorTest, ShouldNotOfferLinkToTextNotHTML) {
   web_state_->SetContentIsHTML(false);
   EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
-  // JavaScript shouldn't be invoked for non-HTML pages.
-  EXPECT_EQ(main_frame_->GetLastJavaScriptCall(), "");
 }
 
 // Tests that the mediator should not offer link to text when, for some reason,
@@ -221,7 +207,6 @@ TEST_F(LinkToTextMediatorTest,
        ShouldNotOfferLinkToTextCannotExecuteJavaScript) {
   main_frame_->set_can_call_function(false);
   EXPECT_FALSE([mediator_ shouldOfferLinkToText]);
-  EXPECT_EQ(main_frame_->GetLastJavaScriptCall(), "");
 }
 
 // Tests that the shareHighlight command is triggered with the right parameters

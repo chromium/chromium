@@ -38,6 +38,8 @@ namespace {
 const char kFirstFragmentText[] = "Hello foo!";
 const char kSecondFragmentText[] = "bar";
 const char kTestPageTextSample[] = "Lorem ipsum";
+const char kNoTextTestPageTextSample[] = "only boundary";
+const char kInputTestPageTextSample[] = "has an input";
 const char kSimpleTextElementId[] = "toBeSelected";
 const char kToBeSelectedText[] = "VeryUniqueWord";
 
@@ -67,6 +69,20 @@ const char kHTMLOfLongTestPage[] =
     "ex ea "
     "commodo consequat. bar</p>"
     "<div style=\"background:blue; height: 4000px; width: 250px;\"></div>"
+    "</body></html>";
+
+const char kNoTextTestURL[] = "/noTextPage";
+const char kHTMLOfNoTextTestPage[] =
+    "<html><body>"
+    "This page has a paragraph with only boundary characters"
+    "<p id=\"toBeSelected\"> .!, \t</p>"
+    "</body></html>";
+
+const char kInputTestURL[] = "/inputTextPage";
+const char kHTMLOfInputTestPage[] =
+    "<html><body>"
+    "This page has an input"
+    "<input type=\"text\" id=\"toBeSelected\"></p>"
     "</body></html>";
 
 NSArray<NSString*>* GetMarkedText() {
@@ -135,6 +151,12 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, kTestLongPageURL,
       base::BindRepeating(&LoadHtml, kHTMLOfLongTestPage)));
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kNoTextTestURL,
+      base::BindRepeating(&LoadHtml, kHTMLOfNoTextTestPage)));
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kInputTestURL,
+      base::BindRepeating(&LoadHtml, kHTMLOfInputTestPage)));
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
@@ -249,6 +271,66 @@ std::unique_ptr<net::test_server::HttpResponse> LoadHtml(
                    waitWithTimeout:base::test::ios::kWaitForActionTimeout],
                @"Could not get expected URL from pasteboard.");
   }
+}
+
+- (void)testBadSelectionDisablesGenerateLink {
+  if (!base::ios::IsRunningOnIOS13OrLater()) {
+    // The TextInput implementation is incomplete on iOS 13, so this condition
+    // isn't enforced on older versions.
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iOS 13.");
+  }
+  if (@available(iOS 14, *)) {
+    [ChromeEarlGrey loadURL:self.testServer->GetURL(kNoTextTestURL)];
+    [ChromeEarlGrey waitForWebStateContainingText:kNoTextTestPageTextSample];
+
+    [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+        performAction:chrome_test_util::LongPressElementForContextMenu(
+                          [ElementSelector
+                              selectorWithElementID:kSimpleTextElementId],
+                          true)];
+
+    id<GREYMatcher> copyButton =
+        chrome_test_util::SystemSelectionCalloutCopyButton();
+    [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:copyButton];
+
+    // Make sure the Link to Text button is not visible.
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
+        assertWithMatcher:grey_notVisible()];
+  }
+}
+
+- (void)testInputDisablesGenerateLink {
+  // In order to make the menu show up later in the test, the pasteboard can't
+  // be empty.
+  UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
+  pasteboard.string = @"anything";
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kInputTestURL)];
+  [ChromeEarlGrey waitForWebStateContainingText:kInputTestPageTextSample];
+
+  [ChromeTestCase removeAnyOpenMenusAndInfoBars];
+
+  // Tap to focus the field, then long press to make the Edit Menu pop up.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(
+                        kSimpleTextElementId)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::LongPressElementForContextMenu(
+                        [ElementSelector
+                            selectorWithElementID:kSimpleTextElementId],
+                        true)];
+
+  // Ensure the menu is visible by finding the Paste button.
+  id<GREYMatcher> menu = grey_accessibilityLabel(@"Paste");
+  [EarlGrey selectElementWithMatcher:menu];
+
+  // Make sure the Link to Text button is not visible.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::SystemSelectionCalloutLinkToTextButton()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
