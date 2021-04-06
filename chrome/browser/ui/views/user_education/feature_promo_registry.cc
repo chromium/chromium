@@ -54,7 +54,10 @@ views::View* GetMediaButton(BrowserView* browser_view) {
 
 // kIPHReadingListDiscoveryFeature:
 views::View* GetReadingListButton(BrowserView* browser_view) {
-  return browser_view->bookmark_bar()->read_later_button();
+  if (browser_view->bookmark_bar()->read_later_button()->IsDrawn())
+    return browser_view->bookmark_bar()->read_later_button();
+
+  return nullptr;
 }
 
 // kIPHReopenTabFeature:

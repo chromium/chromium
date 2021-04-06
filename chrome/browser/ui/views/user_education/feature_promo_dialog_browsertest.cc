@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -178,6 +180,13 @@ class FeaturePromoDialogReadLaterTest : public FeaturePromoDialogTest {
  public:
   FeaturePromoDialogReadLaterTest() {
     feature_list_.InitAndEnableFeature(reading_list::switches::kReadLater);
+  }
+
+  void SetUpOnMainThread() override {
+    FeaturePromoDialogTest::SetUpOnMainThread();
+    BookmarkBarView::DisableAnimationsForTesting(true);
+    browser()->profile()->GetPrefs()->SetBoolean(
+        bookmarks::prefs::kShowBookmarkBar, true);
   }
 
   ~FeaturePromoDialogReadLaterTest() override = default;
