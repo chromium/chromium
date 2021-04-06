@@ -81,6 +81,10 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   // RGB transformation.
   void SetColorSpaceForYUVToRGBConversion(const gfx::ColorSpace& color_space);
 
+  // Sets the color space of the GLImage without modifying the underlying
+  // IOSurface. Callers should ensure the color spaces match.
+  void SetColorSpaceShallow(const gfx::ColorSpace& color_space);
+
   static unsigned GetInternalFormatForTesting(gfx::BufferFormat format);
 
   // Downcasts from |image|. Returns |nullptr| on failure.

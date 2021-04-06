@@ -457,6 +457,11 @@ void GLImageIOSurface::SetColorSpaceForYUVToRGBConversion(
   color_space_for_yuv_to_rgb_ = color_space;
 }
 
+void GLImageIOSurface::SetColorSpaceShallow(
+    const gfx::ColorSpace& color_space) {
+  GLImage::SetColorSpace(color_space);
+}
+
 base::ScopedCFTypeRef<IOSurfaceRef> GLImageIOSurface::io_surface() {
   return io_surface_;
 }
