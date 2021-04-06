@@ -1477,6 +1477,7 @@ try_.chromium_win_builder(
     branch_selector = branches.STANDARD_MILESTONE,
     goma_jobs = goma.jobs.J150,
     os = os.WINDOWS_10,
+    cores = 16,
     ssd = True,
     use_clang_coverage = True,
     main_list_view = "try",
@@ -1500,7 +1501,7 @@ try_.chromium_win_builder(
 try_.chromium_win_builder(
     name = "win7-rel",
     branch_selector = branches.STANDARD_MILESTONE,
-    cores = None,
+    cores = 16,
     execution_timeout = 4 * time.hour + 30 * time.minute,
     goma_jobs = goma.jobs.J300,
     main_list_view = "try",
