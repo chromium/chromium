@@ -53,6 +53,7 @@ class TestToolbarActionsBarBubbleDelegate {
       std::unique_ptr<ToolbarActionsBarBubbleDelegate::ExtraViewInfo> info) {
     info_ = std::move(info);
   }
+  void set_action_id(std::string id) { action_id_ = std::move(id); }
   const ToolbarActionsBarBubbleDelegate::CloseAction* close_action() const {
     return close_action_.get();
   }
@@ -74,6 +75,9 @@ class TestToolbarActionsBarBubbleDelegate {
   std::u16string dismiss_;
   std::u16string learn_more_;
   std::u16string item_list_;
+
+  // The id to associate with this bubble, if any.
+  std::string action_id_;
 
   // The default button for the bubble.
   ui::DialogButton default_button_;

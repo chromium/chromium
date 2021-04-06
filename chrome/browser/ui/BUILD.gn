@@ -4843,6 +4843,8 @@ static_library("test_support") {
     "passwords/settings/password_ui_view_mock.h",
     "toolbar/test_toolbar_action_view_controller.cc",
     "toolbar/test_toolbar_action_view_controller.h",
+    "toolbar/test_toolbar_actions_bar_bubble_delegate.cc",
+    "toolbar/test_toolbar_actions_bar_bubble_delegate.h",
   ]
   public_deps = [ ":ui" ]
   deps = [

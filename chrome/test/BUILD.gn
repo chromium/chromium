@@ -4745,8 +4745,6 @@ test("unit_tests") {
       "../browser/ui/toolbar/recent_tabs_builder_test_helper.cc",
       "../browser/ui/toolbar/recent_tabs_builder_test_helper.h",
       "../browser/ui/toolbar/recent_tabs_sub_menu_model_unittest.cc",
-      "../browser/ui/toolbar/test_toolbar_actions_bar_bubble_delegate.cc",
-      "../browser/ui/toolbar/test_toolbar_actions_bar_bubble_delegate.h",
       "../browser/ui/toolbar/toolbar_actions_bar_unittest.cc",
       "../browser/ui/toolbar/toolbar_actions_bar_unittest.h",
       "../browser/ui/toolbar/toolbar_actions_model_unittest.cc",

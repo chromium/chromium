@@ -7,11 +7,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/toolbar/test_toolbar_actions_bar_bubble_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_actions_bar_bubble_delegate.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
 #include "chrome/common/chrome_switches.h"
@@ -19,11 +22,15 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
+#include "ui/views/test/widget_test.h"
 
 namespace {
 
@@ -216,6 +223,168 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
       1u, process_manager->GetRenderFrameHostsForExtension(beta->id()).size());
   EXPECT_FALSE(alpha_action->view_controller()->IsShowingPopup());
   EXPECT_TRUE(beta_action->view_controller()->IsShowingPopup());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       ShowToolbarActionsBarBubbleForExtension_Pinned) {
+  scoped_refptr<const extensions::Extension> extension =
+      LoadTestExtension("extensions/simple_with_popup");
+  ASSERT_TRUE(extension);
+
+  ToolbarActionsModel* const model = ToolbarActionsModel::Get(profile());
+  model->SetActionVisibility(extension->id(), true);
+  ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
+  container->GetWidget()->LayoutRootViewIfNecessary();
+
+  {
+    auto visible_actions = GetVisibleToolbarActionViews();
+    ASSERT_EQ(1u, visible_actions.size());
+    EXPECT_EQ(extension->id(), visible_actions[0]->view_controller()->GetId());
+  }
+
+  TestToolbarActionsBarBubbleDelegate test_delegate(u"Heading", u"Body",
+                                                    u"Action");
+  test_delegate.set_action_id(extension->id());
+  container->ShowToolbarActionBubble(test_delegate.GetDelegate());
+  views::Widget* const bubble_widget =
+      container->GetAnchoredWidgetForExtensionForTesting(extension->id());
+  ASSERT_TRUE(bubble_widget);
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
+
+  EXPECT_TRUE(test_delegate.shown());
+  {
+    views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+    bubble_widget->Close();
+    destroyed_waiter.Wait();
+  }
+
+  ASSERT_TRUE(test_delegate.close_action());
+  EXPECT_EQ(ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_DEACTIVATION,
+            *test_delegate.close_action());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       ShowToolbarActionsBarBubbleForExtension_Unpinned) {
+  scoped_refptr<const extensions::Extension> extension =
+      LoadTestExtension("extensions/simple_with_popup");
+  ASSERT_TRUE(extension);
+
+  ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
+  ToolbarActionViewController* const action =
+      container->GetActionForId(extension->id());
+
+  EXPECT_EQ(0u, GetVisibleToolbarActionViews().size());
+
+  TestToolbarActionsBarBubbleDelegate test_delegate(u"Heading", u"Body",
+                                                    u"Action");
+  test_delegate.set_action_id(extension->id());
+  container->ShowToolbarActionBubble(test_delegate.GetDelegate());
+  views::Widget* const bubble_widget =
+      container->GetAnchoredWidgetForExtensionForTesting(extension->id());
+  ASSERT_TRUE(bubble_widget);
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
+
+  EXPECT_TRUE(container->IsActionVisibleOnToolbar(action));
+
+  EXPECT_TRUE(test_delegate.shown());
+  {
+    views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+    bubble_widget->Close();
+    destroyed_waiter.Wait();
+  }
+
+  ASSERT_TRUE(test_delegate.close_action());
+  EXPECT_EQ(ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_DEACTIVATION,
+            *test_delegate.close_action());
+
+  EXPECT_FALSE(container->IsActionVisibleOnToolbar(action));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       ShowToolbarActionsBarBubbleForExtension_NoAction) {
+  scoped_refptr<const extensions::Extension> extension =
+      LoadTestExtension("extensions/simple_with_popup");
+  ASSERT_TRUE(extension);
+
+  // Disable the extension. Disabled extensions don't display in the toolbar.
+  extensions::ExtensionService* const extension_service =
+      extensions::ExtensionSystem::Get(profile())->extension_service();
+  extension_service->DisableExtension(
+      extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+
+  ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
+  EXPECT_FALSE(container->GetActionForId(extension->id()));
+
+  EXPECT_EQ(0u, GetVisibleToolbarActionViews().size());
+
+  TestToolbarActionsBarBubbleDelegate test_delegate(u"Heading", u"Body",
+                                                    u"Action");
+  test_delegate.set_action_id(extension->id());
+  container->ShowToolbarActionBubble(test_delegate.GetDelegate());
+  views::Widget* const bubble_widget =
+      container->GetAnchoredWidgetForExtensionForTesting(extension->id());
+  ASSERT_TRUE(bubble_widget);
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
+
+  EXPECT_EQ(0u, GetVisibleToolbarActionViews().size());
+
+  EXPECT_TRUE(test_delegate.shown());
+  {
+    views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+    bubble_widget->Close();
+    destroyed_waiter.Wait();
+  }
+
+  ASSERT_TRUE(test_delegate.close_action());
+  EXPECT_EQ(ToolbarActionsBarBubbleDelegate::CLOSE_DISMISS_DEACTIVATION,
+            *test_delegate.close_action());
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerBrowserTest,
+                       UninstallExtensionWithActivelyShownToolbarActionBubble) {
+  scoped_refptr<const extensions::Extension> extension =
+      LoadTestExtension("extensions/simple_with_popup");
+  ASSERT_TRUE(extension);
+
+  ToolbarActionsModel* const model = ToolbarActionsModel::Get(profile());
+  model->SetActionVisibility(extension->id(), true);
+  ExtensionsToolbarContainer* const container = GetExtensionsToolbarContainer();
+  container->GetWidget()->LayoutRootViewIfNecessary();
+
+  {
+    auto visible_actions = GetVisibleToolbarActionViews();
+    ASSERT_EQ(1u, visible_actions.size());
+    EXPECT_EQ(extension->id(), visible_actions[0]->view_controller()->GetId());
+  }
+
+  TestToolbarActionsBarBubbleDelegate test_delegate(u"Heading", u"Body",
+                                                    u"Action");
+  test_delegate.set_action_id(extension->id());
+  container->ShowToolbarActionBubble(test_delegate.GetDelegate());
+  views::Widget* const bubble_widget =
+      container->GetAnchoredWidgetForExtensionForTesting(extension->id());
+  ASSERT_TRUE(bubble_widget);
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
+
+  EXPECT_TRUE(test_delegate.shown());
+
+  {
+    extensions::ExtensionService* const extension_service =
+        extensions::ExtensionSystem::Get(profile())->extension_service();
+    extension_service->UninstallExtension(
+        extension->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
+  }
+
+  EXPECT_EQ(0u, GetVisibleToolbarActionViews().size());
+  EXPECT_FALSE(container->GetActionForId(extension->id()));
+
+  // TODO(devlin): When the extension is removed, we don't currently remove any
+  // widgets associated with it. This test ensures we don't crash (yay!), but we
+  // should very likely close the bubble as well. I wouldn't be surprised if
+  // some bubble handlers don't expect the extension to be gone.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble_widget);
+  bubble_widget->Close();
+  destroyed_waiter.Wait();
 }
 
 namespace {

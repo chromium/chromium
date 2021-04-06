@@ -38,7 +38,7 @@ class TestToolbarActionsBarBubbleDelegate::DelegateImpl
           *parent_->info_);
     return nullptr;
   }
-  std::string GetAnchorActionId() override { return std::string(); }
+  std::string GetAnchorActionId() override { return parent_->action_id_; }
   void OnBubbleShown(base::OnceClosure close_bubble_callback) override {
     CHECK(!parent_->shown_);
     parent_->shown_ = true;
