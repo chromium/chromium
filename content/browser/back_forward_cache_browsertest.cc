@@ -6502,8 +6502,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, MAYBE_NavigationStart) {
 
   double initial_page_show_time_stamp =
       EvalJs(shell(), "window.initialPageShowTimeStamp").ExtractDouble();
-  EXPECT_EQ(initial_page_show_time_stamp,
-            EvalJs(shell(), "window.latestPageShowTimeStamp"));
+  EXPECT_DOUBLE_EQ(
+      initial_page_show_time_stamp,
+      EvalJs(shell(), "window.latestPageShowTimeStamp").ExtractDouble());
   double initial_navigation_start =
       EvalJs(shell(), "window.initialNavigationStart").ExtractDouble();
 
@@ -6530,14 +6531,17 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, MAYBE_NavigationStart) {
   EXPECT_GT(time_after_navigation, back_navigation_start);
 
   // Check JS values. window.initialNavigationStart should not change.
-  EXPECT_EQ(initial_navigation_start,
-            EvalJs(shell(), "window.initialNavigationStart"));
+  EXPECT_DOUBLE_EQ(
+      initial_navigation_start,
+      EvalJs(shell(), "window.initialNavigationStart").ExtractDouble());
   // performance.timing.navigationStart should not change.
-  EXPECT_EQ(initial_navigation_start,
-            EvalJs(shell(), "performance.timing.navigationStart"));
+  EXPECT_DOUBLE_EQ(
+      initial_navigation_start,
+      EvalJs(shell(), "performance.timing.navigationStart").ExtractDouble());
   // window.initialPageShowTimeStamp should not change.
-  EXPECT_EQ(initial_page_show_time_stamp,
-            EvalJs(shell(), "window.initialPageShowTimeStamp"));
+  EXPECT_DOUBLE_EQ(
+      initial_page_show_time_stamp,
+      EvalJs(shell(), "window.initialPageShowTimeStamp").ExtractDouble());
   // window.latestPageShowTimeStamp should be updated with the timestamp of the
   // last pageshow event, which occurs after the page is restored. This should
   // be greater than the initial pageshow event's timestamp.
