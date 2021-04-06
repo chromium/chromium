@@ -421,6 +421,36 @@
       <message name="IDS_PRICE_DROP_ALERTS_DESCRIPTION" desc="This text shows below 'Price drop alerts'. It describes what will happen when turning on this feature.">
         Get notified when prices drop
       </message>
+
+      <!-- Merchant Viewer strings -->
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_TITLE" desc="Message shown when merchant trust signals are available.">
+        View store info?
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_ACTION" desc="The label of the action button on the merchant viewer message.">
+        View
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_DESCRIPTION_RATING" desc="First part of the message description. Shows the current rating.">
+        <ph name="CURRENT_RATING">%1$s<ex>4.5</ex></ph>/<ph name="RATING_BASELINE">%2$s<ex>5</ex></ph> rating
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_DESCRIPTION_REVIEWS" desc="Second part of the message description. Shows the number of reviews.">
+         {REVIEWS, plural,
+            =1 {(<ph name="REVIEWS_COUNT_ONE">%1$d<ex>1</ex></ph> review)}
+            other {(<ph name="REVIEWS_COUNT_MANY">%1$d<ex>8</ex></ph> reviews)}}
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_RATING_NUMERICAL" desc="The rating of the merchant in numerical form.">
+        <ph name="CURRENT_RATING">%1$.1f<ex>4.5</ex></ph>/<ph name="RATING_BASELINE">%2$d<ex>5</ex></ph>
+      </message>
+      <message name="IDS_MERCHANT_VIEWER_MESSAGE_RATING_WORD" desc="The word rating. Used in a variation of the message description.">
+        rating
+      </message>
+      <message name="IDS_ACCESSIBILITY_MERCHANT_VIEWER_MESSAGE_DESCRIPTION" desc="Accessibility string for message description.">
+        {REVIEWS, plural,
+            =1 { <ph name="CURRENT_RATING">%1$s<ex>4.5</ex></ph>/<ph name="RATING_BASELINE">%2$s<ex>5</ex></ph> rating, <ph name="REVIEWS_COUNT_ONE">%3$d<ex>1</ex></ph> review}
+            other {<ph name="CURRENT_RATING">%1$s<ex>4.5</ex></ph>/<ph name="RATING_BASELINE">%2$s<ex>5</ex></ph> rating, <ph name="REVIEWS_COUNT_MANY">%3$d<ex>8</ex></ph> reviews}}
+      </message>
+      <message name="IDS_ACCESSIBILITY_MERCHANT_VIEWER_MESSAGE_ANNOUNCEMENT" desc="Accessibility string for merchant viewer message announcement.">
+        View store info, option available near top of the screen
+      </message>
     </messages>
   </release>
 </grit>

@@ -266,6 +266,15 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
     <ignore regexp="The resource `R.string.price_drop_alerts_card_get_notified` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings_content` appears to be unused"/>
     <ignore regexp="The resource `R.string.price_drop_alerts_card_go_to_settings` appears to be unused"/>
+    <!-- 4: Temporarily suppressed until impelmentation is ready, see https://crbug.com/1195477 -->
+    <ignore regexp="The resource `R.string.merchant_viewer_message_title` appears to be unused"/>
+    <ignore regexp="The resource `R.string.merchant_viewer_message_action` appears to be unused"/>
+    <ignore regexp="The resource `R.string.merchant_viewer_message_description_rating` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.merchant_viewer_message_description_reviews` appears to be unused"/>
+    <ignore regexp="The resource `R.string.merchant_viewer_message_rating_numerical` appears to be unused"/>
+    <ignore regexp="The resource `R.string.merchant_viewer_message_rating_word` appears to be unused"/>
+    <ignore regexp="The resource `R.plurals.accessibility_merchant_viewer_message_description` appears to be unused"/>
+    <ignore regexp="The resource `R.string.accessibility_merchant_viewer_message_announcement` appears to be unused"/>
     <!-- Endnote: Please specify number of suppressions when adding more -->
   </issue>
   <issue id="VectorPath" severity="ignore"/>
