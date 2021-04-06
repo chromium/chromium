@@ -14,6 +14,7 @@
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/login_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/wallpaper_controller_client.h"
@@ -54,6 +55,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -2270,7 +2272,7 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
       SetOnlineWallpaperIfExists(
           account_id, info.location, info.layout, false,
           base::BindOnce(&WallpaperControllerImpl::OnAttemptSetOnlineWallpaper,
-                         weak_factory_.GetWeakPtr(), info));
+                         weak_factory_.GetWeakPtr(), account_id, info));
       break;
     case POLICY:
     case THIRDPARTY:
@@ -2282,10 +2284,20 @@ void WallpaperControllerImpl::HandleWallpaperInfoSyncedIn(
   }
 }
 
-void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(WallpaperInfo info,
-                                                          bool success) {
-  // TODO (b/181996915): Implement fetching online wallpaper and setting it.
-  NOTIMPLEMENTED();
+void WallpaperControllerImpl::OnAttemptSetOnlineWallpaper(
+    const AccountId& account_id,
+    WallpaperInfo info,
+    bool success) {
+  if (success)
+    return;
+
+  const OnlineWallpaperParams params = {account_id, info.location, info.layout,
+                                        /*preview_mode=*/false};
+  ImageDownloader::Get()->Download(
+      GURL(info.location), NO_TRAFFIC_ANNOTATION_YET,
+      base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
+                     weak_factory_.GetWeakPtr(), params, /*save_file=*/true,
+                     SetOnlineWallpaperFromDataCallback()));
 }
 
 constexpr bool WallpaperControllerImpl::IsWallpaperTypeSyncable(

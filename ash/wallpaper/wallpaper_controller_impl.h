@@ -549,7 +549,9 @@ class ASH_EXPORT WallpaperControllerImpl
   void OnPrefChanged();
   void HandleWallpaperInfoSyncedIn(const AccountId& account_id,
                                    WallpaperInfo info);
-  void OnAttemptSetOnlineWallpaper(WallpaperInfo info, bool success);
+  void OnAttemptSetOnlineWallpaper(const AccountId& account_id,
+                                   WallpaperInfo info,
+                                   bool success);
 
   constexpr bool IsWallpaperTypeSyncable(WallpaperType type);
 
