@@ -775,7 +775,12 @@ public class VideoCaptureCamera2 extends VideoCapture {
             if (mOptions.exposureMode != AndroidMeteringMode.NOT_SET) {
                 mExposureMode = mOptions.exposureMode;
             }
-            if (mOptions.exposureTime != 0) mLastExposureTimeNs = (long) mOptions.exposureTime;
+            if (mOptions.exposureTime != 0) {
+                // The web API (https://w3c.github.io/mediacapture-image/#exposure-time) provides
+                // exposureTime in 100 microsecond units.
+                mLastExposureTimeNs =
+                        (long) (mOptions.exposureTime * kNanosecondsPer100Microsecond);
+            }
             if (mOptions.whiteBalanceMode != AndroidMeteringMode.NOT_SET) {
                 mWhiteBalanceMode = mOptions.whiteBalanceMode;
             }
@@ -1154,18 +1159,14 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 // We need to configure by hand the exposure time when AE mode is off.  Set it to
                 // the last known exposure interval if known, otherwise set it to the middle of the
                 // allowed range. Further tuning will be done via |mIso| and
-                // |mExposureCompensation|. mLastExposureTimeNs and range are in nanoseconds (from
-                // Android platform), but spec expects exposureTime to be in 100 microsecond units.
-                // https://w3c.github.io/mediacapture-image/#exposure-time
+                // |mExposureCompensation|.
                 if (mLastExposureTimeNs != 0) {
-                    requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
-                            mLastExposureTimeNs / kNanosecondsPer100Microsecond);
+                    requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, mLastExposureTimeNs);
                 } else {
                     Range<Long> range = cameraCharacteristics.get(
                             CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
                     requestBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME,
-                            (range.getLower() + (range.getUpper() + range.getLower()) / 2)
-                                    / kNanosecondsPer100Microsecond);
+                            range.getLower() + (range.getUpper() + range.getLower()) / 2);
                 }
 
             } else {
