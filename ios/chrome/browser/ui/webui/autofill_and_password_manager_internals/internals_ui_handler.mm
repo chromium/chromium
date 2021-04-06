@@ -67,14 +67,22 @@ void InternalsUIHandler::RegisterMessages() {
 }
 
 void InternalsUIHandler::OnLoaded(const base::ListValue* args) {
-  web_ui()->CallJavascriptFunction(call_on_load_, {});
+  base::Value load_event(call_on_load_);
+  base::Value empty;
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",
+                                   {&load_event, &empty});
 
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromWebUIIOS(web_ui());
   base::Value is_incognito(browser_state->IsOffTheRecord());
-  web_ui()->CallJavascriptFunction("notifyAboutIncognito", {&is_incognito});
-  web_ui()->CallJavascriptFunction("notifyAboutVariations",
-                                   {version_ui::GetVariationsList().get()});
+  base::Value incognito_event("notify-about-incognito");
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",
+                                   {&incognito_event, &is_incognito});
+
+  base::Value variations_event("notify-about-variations");
+  web_ui()->CallJavascriptFunction(
+      "cr.webUIListenerCallback",
+      {&variations_event, version_ui::GetVariationsList().get()});
   StartSubscription();
 }
 
@@ -104,7 +112,10 @@ void InternalsUIHandler::EndSubscription() {
 void InternalsUIHandler::LogEntry(const base::Value& entry) {
   if (!registered_with_log_router_ || entry.is_none())
     return;
-  web_ui()->CallJavascriptFunction("addRawLog", {&entry});
+
+  base::Value log_event("add-raw-log");
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",
+                                   {&log_event, &entry});
 }
 
 }  //  namespace autofill

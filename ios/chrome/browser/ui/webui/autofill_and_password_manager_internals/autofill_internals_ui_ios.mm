@@ -25,7 +25,7 @@ AutofillInternalsUIIOS::AutofillInternalsUIIOS(web::WebUIIOS* web_ui,
       browser_state,
       autofill::CreateInternalsHTMLSource(kChromeUIAutofillInternalsHost));
   web_ui->AddMessageHandler(std::make_unique<autofill::InternalsUIHandler>(
-      "setUpAutofillInternals",
+      "setup-autofill-internals",
       base::BindRepeating(
           &autofill::AutofillLogRouterFactory::GetForBrowserState)));
 }

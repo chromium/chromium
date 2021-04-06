@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// <if expr="is_ios">
+import 'chrome://resources/js/ios/web_ui.js';
+// </if>
+
+import {addWebUIListener} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 // Renders a simple dialog with |text| as a message and a close button.
 function showModalDialog(text) {
   const dialog = document.createElement('div');
@@ -273,11 +280,16 @@ function setUpLogDisplayConfig() {
   });
 }
 
-function notifyResetDone(message) {
-  showModalDialog(message);
-}
+document.addEventListener('DOMContentLoaded', function(event) {
+  addWebUIListener('enable-reset-cache-button', enableResetCacheButton);
+  addWebUIListener('notify-about-incognito', notifyAboutIncognito);
+  addWebUIListener('notify-about-variations', notifyAboutVariations);
+  addWebUIListener('notify-reset-done', message => showModalDialog(message));
+  addWebUIListener('add-raw-log', addRawLog);
+  addWebUIListener('setup-autofill-internals', setUpAutofillInternals);
+  addWebUIListener(
+      'setup-password-manager-internals', setUpPasswordManagerInternals);
 
-document.addEventListener("DOMContentLoaded", function(event) {
   chrome.send('loaded');
 
   const resetCacheFakeButton =

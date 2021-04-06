@@ -112,16 +112,16 @@ void InternalsUIHandler::OnJavascriptDisallowed() {
 
 void InternalsUIHandler::OnLoaded(const base::ListValue* args) {
   AllowJavascript();
-  CallJavascriptFunction(call_on_load_);
+  FireWebUIListener(call_on_load_, base::Value());
   // This is only available in contents, because the iOS BrowsingDataRemover
   // does not allow selectively deleting data per origin and we don't want to
   // wipe the entire cache.
-  CallJavascriptFunction("enableResetCacheButton");
-  CallJavascriptFunction(
-      "notifyAboutIncognito",
+  FireWebUIListener("enable-reset-cache-button", base::Value());
+  FireWebUIListener(
+      "notify-about-incognito",
       base::Value(Profile::FromWebUI(web_ui())->IsIncognitoProfile()));
-  CallJavascriptFunction("notifyAboutVariations",
-                         *version_ui::GetVariationsList());
+  FireWebUIListener("notify-about-variations",
+                    *version_ui::GetVariationsList());
 }
 
 void InternalsUIHandler::OnResetCache(const base::ListValue* args) {
@@ -134,7 +134,7 @@ void InternalsUIHandler::OnResetCache(const base::ListValue* args) {
 }
 
 void InternalsUIHandler::OnResetCacheDone(const std::string& message) {
-  CallJavascriptFunction("notifyResetDone", base::Value(message));
+  FireWebUIListener("notify-reset-done", base::Value(message));
 }
 
 void InternalsUIHandler::StartSubscription() {
@@ -163,7 +163,7 @@ void InternalsUIHandler::EndSubscription() {
 void InternalsUIHandler::LogEntry(const base::Value& entry) {
   if (!registered_with_log_router_ || entry.is_none())
     return;
-  CallJavascriptFunction("addRawLog", entry);
+  FireWebUIListener("add-raw-log", entry);
 }
 
 }  // namespace autofill
