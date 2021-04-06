@@ -54,6 +54,10 @@ function activate(index) {
   const view = allViews[index];
   view.root.setAttribute('aria-hidden', 'false');
   dom.getAllFrom(view.root, '[tabindex]', HTMLElement).forEach((element) => {
+    if (element.dataset['tabindex'] === undefined) {
+      // First activation, no need to restore tabindex from data-tabindex.
+      return;
+    }
     element.setAttribute('tabindex', element.dataset['tabindex']);
     element.removeAttribute('data-tabindex');
   });
