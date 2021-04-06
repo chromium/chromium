@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/math_util.h"
@@ -328,6 +329,7 @@ void DirectRenderer::DrawFrame(
 
     // Attempt to replace some or all of the quads of the root render pass with
     // overlays.
+    base::ElapsedTimer overlay_processing_timer;
     overlay_processor_->ProcessForOverlays(
         resource_provider_, render_passes_in_draw_order,
         output_surface_->color_matrix(), render_pass_filters_,
@@ -335,6 +337,14 @@ void DirectRenderer::DrawFrame(
         primary_plane, &current_frame()->overlay_list,
         &current_frame()->root_damage_rect,
         &current_frame()->root_content_bounds);
+    auto overlay_processing_time = overlay_processing_timer.Elapsed();
+
+    constexpr auto kMinTime = base::TimeDelta::FromMicroseconds(5);
+    constexpr auto kMaxTime = base::TimeDelta::FromMilliseconds(10);
+    constexpr int kTimeBuckets = 50;
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Compositing.DirectRenderer.OverlayProcessingUs",
+        overlay_processing_time, kMinTime, kMaxTime, kTimeBuckets);
 
     // If we promote any quad to an underlay then the main plane must support
     // alpha.

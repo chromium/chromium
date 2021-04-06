@@ -153,6 +153,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Compositing.DirectRenderer.OverlayProcessingUs"
+    units="microseconds" expires_after="2021-10-01">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <summary>
+    Time spent processing quads to see which can be replaced with overlays. This
+    is logged once per frame, when a frame should be drawn.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.DirectRenderer.PartialSwap.ExtraDamage" units="%"
     expires_after="2021-08-09">
   <owner>vasilyt@chromium.org</owner>
