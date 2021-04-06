@@ -9,6 +9,8 @@
 #include <linux/videodev2.h>
 #include <string.h>
 
+#include <linux/media/vp9-ctrls-legacy.h>
+
 #include "base/logging.h"
 #include "base/stl_util.h"
 #include "media/gpu/macros.h"
