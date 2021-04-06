@@ -31,7 +31,7 @@ def MaybeRunCommand(name, argv, stamp_file):
               'cmd': argv,
               'cwd': os.getcwd(),
               'stamp_file': stamp_file,
-          }))
+          }).encode('utf8'))
     except socket.error as e:
       # [Errno 111] Connection refused. Either the server has not been started
       #             or the server is not currently accepting new connections.
