@@ -54,6 +54,9 @@ class MEDIA_EXPORT MimeUtil {
   // runtime.  Also used by tests to simulate platform differences.
   struct PlatformInfo {
     bool has_platform_decoders = false;
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+    bool has_platform_dv_decoder = false;
+#endif
     bool has_platform_vp8_decoder = false;
     bool has_platform_vp9_decoder = false;
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)

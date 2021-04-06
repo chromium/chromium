@@ -43,6 +43,7 @@ const char kAc3MimeType[] = "audio/ac3";
 const char kEac3MimeType[] = "audio/eac3";
 const char kBitstreamAudioMimeType[] = "audio/raw";
 const char kAvcMimeType[] = "video/avc";
+const char kDolbyVisionMimeType[] = "video/dolby-vision";
 const char kHevcMimeType[] = "video/hevc";
 const char kVp8MimeType[] = "video/x-vnd.on2.vp8";
 const char kVp9MimeType[] = "video/x-vnd.on2.vp9";
@@ -63,8 +64,9 @@ static CodecProfileLevel MediaCodecProfileLevelToChromiumProfileLevel(
 
 static bool IsSupportedAndroidMimeType(const std::string& mime_type) {
   std::vector<std::string> supported{
-      kMp3MimeType,  kAacMimeType, kOpusMimeType, kVorbisMimeType, kAvcMimeType,
-      kHevcMimeType, kVp8MimeType, kVp9MimeType,  kAv1MimeType};
+      kMp3MimeType, kAacMimeType,         kOpusMimeType, kVorbisMimeType,
+      kAvcMimeType, kDolbyVisionMimeType, kHevcMimeType, kVp8MimeType,
+      kVp9MimeType, kAv1MimeType};
   return std::find(supported.begin(), supported.end(), mime_type) !=
          supported.end();
 }
@@ -152,6 +154,8 @@ std::string MediaCodecUtil::CodecToAndroidMimeType(VideoCodec codec) {
       return kVp8MimeType;
     case kCodecVP9:
       return kVp9MimeType;
+    case kCodecDolbyVision:
+      return kDolbyVisionMimeType;
     case kCodecAV1:
       return kAv1MimeType;
     default:
@@ -215,6 +219,14 @@ std::set<int> MediaCodecUtil::GetEncoderColorFormats(
 
   return color_formats;
 }
+
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+// static
+bool MediaCodecUtil::IsDolbyVisionDecoderAvailable() {
+  return IsMediaCodecAvailable() &&
+         IsDecoderSupportedByDevice(kDolbyVisionMimeType);
+}
+#endif
 
 // static
 bool MediaCodecUtil::IsVp8DecoderAvailable() {

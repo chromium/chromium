@@ -172,7 +172,19 @@ std::vector<SupportedVideoDecoderConfig> GetSupportedConfigsInternal(
                                  true,    // allow_encrypted
                                  false);  // require_encrypted
 #endif
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  // Technically we should check which profiles are supported, but we can
+  // allow them all like we do with H264 codec.
+  supported_configs.emplace_back(DOLBYVISION_PROFILE4, DOLBYVISION_PROFILE9,
+                                 gfx::Size(0, 0), gfx::Size(3840, 2160),
+                                 true,    // allow_encrypted
+                                 false);  // require_encrypted
+  supported_configs.emplace_back(DOLBYVISION_PROFILE4, DOLBYVISION_PROFILE9,
+                                 gfx::Size(0, 0), gfx::Size(2160, 3840),
+                                 true,    // allow_encrypted
+                                 false);  // require_encrypted
 #endif
+#endif  // #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 
   return supported_configs;
 }

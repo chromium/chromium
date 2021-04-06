@@ -79,6 +79,7 @@ class CodecProfileLevelList {
         if (mime.endsWith("vp8")) return VideoCodec.CODEC_VP8;
         if (mime.endsWith("avc")) return VideoCodec.CODEC_H264;
         if (mime.endsWith("hevc")) return VideoCodec.CODEC_HEVC;
+        if (mime.endsWith("dolby-vision")) return VideoCodec.CODEC_DOLBY_VISION;
         throw new UnsupportedCodecProfileException();
     }
 
@@ -132,6 +133,22 @@ class CodecProfileLevelList {
                     case CodecProfileLevel.HEVCProfileMain10:
                     case CodecProfileLevel.HEVCProfileMain10HDR10:
                         return VideoCodecProfile.HEVCPROFILE_MAIN10;
+                    default:
+                        throw new UnsupportedCodecProfileException();
+                }
+            case VideoCodec.CODEC_DOLBY_VISION:
+                switch (profile) {
+                        // Profile 0, 1, 2, 3, 6 are not supported for new applications.
+                    case CodecProfileLevel.DolbyVisionProfileDvheDtr:
+                        return VideoCodecProfile.DOLBYVISION_PROFILE4;
+                    case CodecProfileLevel.DolbyVisionProfileDvheStn:
+                        return VideoCodecProfile.DOLBYVISION_PROFILE5;
+                    case CodecProfileLevel.DolbyVisionProfileDvheDtb:
+                        return VideoCodecProfile.DOLBYVISION_PROFILE7;
+                    case CodecProfileLevel.DolbyVisionProfileDvheSt:
+                        return VideoCodecProfile.DOLBYVISION_PROFILE8;
+                    case CodecProfileLevel.DolbyVisionProfileDvavSe:
+                        return VideoCodecProfile.DOLBYVISION_PROFILE9;
                     default:
                         throw new UnsupportedCodecProfileException();
                 }
@@ -266,6 +283,29 @@ class CodecProfileLevelList {
                     case CodecProfileLevel.HEVCHighTierLevel62:
                     case CodecProfileLevel.HEVCMainTierLevel62:
                         return 186;
+                    default:
+                        throw new UnsupportedCodecProfileException();
+                }
+            case VideoCodec.CODEC_DOLBY_VISION:
+                switch (level) {
+                    case CodecProfileLevel.DolbyVisionLevelHd24:
+                        return 1;
+                    case CodecProfileLevel.DolbyVisionLevelHd30:
+                        return 2;
+                    case CodecProfileLevel.DolbyVisionLevelFhd24:
+                        return 3;
+                    case CodecProfileLevel.DolbyVisionLevelFhd30:
+                        return 4;
+                    case CodecProfileLevel.DolbyVisionLevelFhd60:
+                        return 5;
+                    case CodecProfileLevel.DolbyVisionLevelUhd24:
+                        return 6;
+                    case CodecProfileLevel.DolbyVisionLevelUhd30:
+                        return 7;
+                    case CodecProfileLevel.DolbyVisionLevelUhd48:
+                        return 8;
+                    case CodecProfileLevel.DolbyVisionLevelUhd60:
+                        return 9;
                     default:
                         throw new UnsupportedCodecProfileException();
                 }
