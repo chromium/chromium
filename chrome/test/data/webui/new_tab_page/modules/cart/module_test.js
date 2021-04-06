@@ -263,7 +263,6 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
     assertEquals(2, cartItems.length);
     let menuButton = cartItems[0].querySelector('.icon-more-vert');
-    assertStyle(menuButton, 'opacity', '0');
     const actionMenu = $$(moduleElement, '#cartActionMenu');
     assertFalse(actionMenu.open);
 
