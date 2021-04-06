@@ -24,14 +24,6 @@
             "type": "function",
             "description": "Immediately disconnect the port. Calling <code>disconnect()</code> on an already-disconnected port has no effect. When a port is disconnected, no new events will be dispatched to this port."
           },
-          "onDisconnect": {
-            "$ref": "events.Event",
-            "description": "Fired when the port is disconnected from the other end(s). $(ref:runtime.lastError) may be set if the port was disconnected by an error. If the port is closed via $(ref:Port.disconnect disconnect), then this event is <em>only</em> fired on the other end. This event is fired at most once (see also <a href=\"messaging#port-lifetime\">Port lifetime</a>). The first and only parameter to the event handler is this disconnected port."
-          },
-          "onMessage": {
-            "$ref": "events.Event",
-            "description": "This event is fired when $(ref:Port.postMessage postMessage) is called by the other end of the port. The first parameter is the message, the second parameter is the port that received the message."
-          },
           "postMessage": {
             "type": "function",
             "description": "Send a message to the other end of the port. If the port is disconnected, an error is thrown.",
@@ -45,7 +37,24 @@
             "description": "This property will <b>only</b> be present on ports passed to $(ref:runtime.onConnect onConnect) / $(ref:runtime.onConnectExternal onConnectExternal) / $(ref:runtime.onConnectExternal onConnectNative) listeners."
           }
         },
-        "additionalProperties": { "type": "any"}
+        "events": [
+          {
+            "name": "onDisconnect",
+            "description": "Fired when the port is disconnected from the other end(s). $(ref:runtime.lastError) may be set if the port was disconnected by an error. If the port is closed via $(ref:Port.disconnect disconnect), then this event is <em>only</em> fired on the other end. This event is fired at most once (see also <a href=\"messaging#port-lifetime\">Port lifetime</a>).",
+            "parameters": [
+              {"name": "port", "$ref": "Port", "description": "The disconnected port."}
+            ]
+          },
+          {
+            "name": "onMessage",
+            "description": "This event is fired when $(ref:Port.postMessage postMessage) is called by the other end of the port.",
+            "parameters": [
+              {"name": "message", "type": "any", "description": "The message received on the port."},
+              {"name": "port", "$ref": "Port", "description": "The port that received the message."}
+            ]
+          }
+        ],
+        "additionalProperties": {"type": "any"}
       },
       {
         "id": "MessageSender",
