@@ -558,7 +558,7 @@ const char* DisplayTypeString(DisplayType display_type) {
     case ANGLE_D3D11on12:
       return "D3D11on12";
     case ANGLE_SWIFTSHADER:
-      return "SwiftShader";
+      return "SwANGLE";
     case ANGLE_OPENGL_EGL:
       return "OpenGLEGL";
     case ANGLE_OPENGLES_EGL:
