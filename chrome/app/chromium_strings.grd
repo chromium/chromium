@@ -724,8 +724,8 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <!-- Dice Web Signin Interception Bubble-->
       <if expr="not chromeos and not is_android">
+        <!-- Dice Web Signin Interception Bubble-->
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE_V1" desc="Title of the web signin interception bubble">
           Continue in a new Chromium profile?
         </message>
@@ -749,6 +749,11 @@ Chromium is unable to recover your settings.
         </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE" desc="Body of the web signin interception bubble when the new account is personal and the existing account is managed on a managed device">
           This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>
+        </message>
+
+        <!-- Profile Customization Bubble-->
+        <message name="IDS_PROFILE_CUSTOMIZATION_TEXT" desc="Text of the profile customization bubble">
+          Customize your new Chromium profile
         </message>
       </if>
 

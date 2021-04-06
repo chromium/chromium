@@ -34,12 +34,6 @@ Polymer({
       value: false,
     },
 
-    /** Initial local profile name, non-editable */
-    initialProfileName_: {
-      type: String,
-      value: () => loadTimeData.getString('profileName'),
-    },
-
     /** Local profile name, editable by user input */
     profileName_: {
       type: String,
@@ -48,6 +42,11 @@ Polymer({
 
     /** URL for the profile picture */
     pictureUrl_: {
+      type: String,
+    },
+
+    /** Welcome title for the bubble */
+    welcomeTitle_: {
       type: String,
     },
   },
@@ -59,7 +58,7 @@ Polymer({
   ready() {
     // profileName_ is only set now, because it triggers a validation of the
     // input which crashes if it's done too early.
-    this.profileName_ = this.initialProfileName_;
+    this.profileName_ = loadTimeData.getString('profileName');
     this.profileCustomizationBrowserProxy_ =
         ProfileCustomizationBrowserProxyImpl.getInstance();
     this.addWebUIListener(
@@ -92,10 +91,10 @@ Polymer({
    * @private
    */
   setProfileInfo_(profileInfo) {
-    this.style.setProperty('--header-text-color', profileInfo.textColor);
     this.style.setProperty(
         '--header-background-color', profileInfo.backgroundColor);
     this.pictureUrl_ = profileInfo.pictureUrl;
     this.isManaged_ = profileInfo.isManaged;
+    this.welcomeTitle_ = profileInfo.welcomeTitle;
   },
 });

@@ -7,20 +7,8 @@
 
   #header {
     background-color: var(--header-background-color);
-    color: var(--header-text-color);
-    height: 136px;
-    margin-bottom: 8px
-  }
-
-  #headerText {
-    font-size: 15px;
-    font-weight: bold;
-    line-height: 18px;
-    margin: 16px auto 9px;
-    overflow: hidden;
-    text-align: center;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    height: 124px;
+    margin-bottom: 16px
   }
 
   #avatarContainer {
@@ -30,6 +18,7 @@
     height: var(--avatar-size);
     left: calc(50% - var(--avatar-size)/2);
     position: absolute;
+    top: 30px;
     width: var(--avatar-size);
   }
 
@@ -69,29 +58,37 @@
     width: var(--work-icon-size);
   }
 
+  #body {
+    color: var(--cr-secondary-text-color);
+    font-size: 13px;
+    line-height: 20px;
+    margin: 0 16px;
+    text-align: center;
+  }
+
+  #title {
+    color: var(--cr-primary-text-color);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 22px;
+    margin: 0 0 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   #nameInput {
     --cr-input-placeholder-color: var(--google-grey-900);
     --cr-input-padding-bottom: 8px;
     --cr-input-padding-top: 8px;
+    flex-grow: 1;
     height: 32px;
-    margin: 8px auto 16px;
-    maxlength: 16;
-    width: 114px;
-  }
-
-  #lineSeparator {
-    border-top: 1px solid var(--cr-separator-color);
+    margin: 16px auto;
+    width: 148px;
   }
 
   #pickThemeContainer {
-    margin: 16px auto auto;
-  }
-
-  #pickThemeTitle {
-    color: var(--cr-secondary-text-color);
-    font-size: 15px;
-    font-weight: 500;
-    margin-bottom: 16px;
+    flex-grow: 1;
+    margin: 16px auto;
   }
 
   #themeSelector {
@@ -108,19 +105,11 @@
     width: 111px;
 
   }
-
-  @media (prefers-color-scheme: dark) {
-    #lineSeparator {
-      color: white;
-      opacity: 0.1;
-    }
-  }
 </style>
 
-<div role="dialog" id="customizeDialog" aria-labelledby="headerText"
-    aria-describedby="pickThemeTitle">
+<div role="dialog" id="customizeDialog" aria-labelledby="title"
+    aria-describedby="content">
   <div id="header">
-    <div id="headerText">[[initialProfileName_]]</div>
     <div id="avatarContainer">
       <img id="avatar" alt="" src="[[pictureUrl_]]">
       <div class="work-badge" id="badge" hidden="[[!isManaged_]]">
@@ -129,15 +118,17 @@
     </div>
   </div>
 
+  <div id="body">
+    <div id="title">[[welcomeTitle_]]</div>
+    <div id="content">$i18n{profileCustomizationText}</div>
+  </div>
+
   <cr-input id="nameInput" pattern=".*\\S.*" value="{{profileName_}}"
     aria-label="$i18n{profileCustomizationInputLabel}" auto-validate
     required spellcheck="false">
   </cr-input>
 
-  <div id="lineSeparator"></div>
-
   <div id="pickThemeContainer">
-    <div id="pickThemeTitle">$i18n{profileCustomizationPickThemeTitle}</div>
     <cr-customize-themes id="themeSelector" auto-confirm-theme-changes>
     </cr-customize-themes>
   </div>

@@ -41,6 +41,8 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   void OnProfileThemeColorsChanged(const base::FilePath& profile_path) override;
   void OnProfileHostedDomainChanged(
       const base::FilePath& profile_path) override;
+  void OnProfileNameChanged(const base::FilePath& profile_path,
+                            const std::u16string& old_profile_name) override;
 
  private:
   // Handlers for messages from javascript.

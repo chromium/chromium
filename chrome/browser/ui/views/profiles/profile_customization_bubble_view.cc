@@ -23,7 +23,7 @@
 #include "url/gurl.h"
 
 namespace {
-constexpr int kCustomizationBubbleHeight = 495;
+constexpr int kCustomizationBubbleHeight = 515;
 constexpr int kCustomizationBubbleWidth = 290;
 }  // namespace
 

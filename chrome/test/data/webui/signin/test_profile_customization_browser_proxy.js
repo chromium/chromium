@@ -12,10 +12,10 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy {
     super(['done', 'initialized']);
     /** @private {!ProfileInfo} */
     this.profileInfo_ = {
-      textColor: '',
       backgroundColor: '',
       pictureUrl: '',
       isManaged: false,
+      welcomeTitle: '',
     };
   }
 

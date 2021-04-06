@@ -12,10 +12,10 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
 /**
  * Profile info (colors and avatar) sent from C++.
  * @typedef {{
- *   textColor: string,
  *   backgroundColor: string,
  *   pictureUrl: string,
  *   isManaged: boolean,
+ *   welcomeTitle: string,
  * }}
  */
 export let ProfileInfo;

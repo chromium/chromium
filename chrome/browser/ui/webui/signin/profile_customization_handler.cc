@@ -18,9 +18,11 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/signin/profile_colors_util.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
@@ -75,6 +77,12 @@ void ProfileCustomizationHandler::OnProfileHostedDomainChanged(
   UpdateProfileInfo(profile_path);
 }
 
+void ProfileCustomizationHandler::OnProfileNameChanged(
+    const base::FilePath& profile_path,
+    const std::u16string& old_profile_name) {
+  UpdateProfileInfo(profile_path);
+}
+
 void ProfileCustomizationHandler::HandleInitialized(
     const base::ListValue* args) {
   CHECK_EQ(1u, args->GetSize());
@@ -107,16 +115,12 @@ void ProfileCustomizationHandler::UpdateProfileInfo(
 
 base::Value ProfileCustomizationHandler::GetProfileInfoValue() {
   ProfileAttributesEntry* entry = GetProfileEntry();
-  SkColor profile_color =
-      entry->GetProfileThemeColors().profile_highlight_color;
 
   base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("textColor",
-                    color_utils::SkColorToRgbaString(
-                        GetProfileForegroundTextColor(profile_color)));
-  dict.SetStringKey("backgroundColor",
-                    color_utils::SkColorToRgbaString(profile_color));
-
+  dict.SetStringKey(
+      "backgroundColor",
+      color_utils::SkColorToRgbaString(
+          entry->GetProfileThemeColors().profile_highlight_color));
   const int avatar_icon_size = kAvatarSize * web_ui()->GetDeviceScaleFactor();
   gfx::Image icon =
       profiles::GetSizedAvatarIcon(entry->GetAvatarIcon(avatar_icon_size), true,
@@ -124,6 +128,12 @@ base::Value ProfileCustomizationHandler::GetProfileInfoValue() {
   dict.SetStringKey("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
   dict.SetBoolKey("isManaged",
                   AccountInfo::IsManaged(entry->GetHostedDomain()));
+  std::u16string gaia_name = entry->GetGAIANameToDisplay();
+  if (gaia_name.empty())
+    gaia_name = entry->GetLocalProfileName();
+  dict.SetStringKey(
+      "welcomeTitle",
+      l10n_util::GetStringFUTF8(IDS_PROFILE_CUSTOMIZATION_WELCOME, gaia_name));
   return dict;
 }
 
