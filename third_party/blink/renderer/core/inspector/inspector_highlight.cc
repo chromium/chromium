@@ -2088,11 +2088,14 @@ std::unique_ptr<protocol::DictionaryValue> BuildSnapContainerInfo(Node* node) {
   if (!containing_view)
     return nullptr;
 
+  auto* scrollable_area = layout_box->GetScrollableArea();
+  if (!scrollable_area)
+    return nullptr;
+
   std::unique_ptr<protocol::DictionaryValue> scroll_snap_info =
       protocol::DictionaryValue::create();
-  auto scroll_position = layout_box->GetScrollableArea()->ScrollPosition();
-  auto* container_data =
-      layout_box->GetScrollableArea()->GetSnapContainerData();
+  auto scroll_position = scrollable_area->ScrollPosition();
+  auto* container_data = scrollable_area->GetSnapContainerData();
 
   FloatQuad snapport_quad =
       layout_box->LocalToAbsoluteQuad(ToFloatQuad(container_data->rect()));
