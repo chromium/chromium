@@ -16,6 +16,7 @@ class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
   ~DevToolsManagerDelegateAndroid() override;
 
   // content::DevToolsManagerDelegate implementation.
+  content::BrowserContext* GetDefaultBrowserContext() override;
   std::string GetDiscoveryPageHTML() override;
   bool IsBrowserTargetDiscoverable() override;
 

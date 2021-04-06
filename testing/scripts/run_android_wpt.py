@@ -111,6 +111,8 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     # Arguments from add_extra_argumentsparse were added so
     # its safe to parse the arguments and set self._options
     self.parse_args()
+    self.output_directory = os.path.join(SRC_DIR, 'out', self.options.target)
+    self.mojo_js_directory = os.path.join(self.output_directory, 'gen')
 
   @property
   def rest_args(self):
@@ -136,8 +138,11 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
       "--no-pause-after-test",
       "--no-capture-stdio",
       "--no-manifest-download",
+      "--binary-arg=--enable-blink-features=MojoJS,MojoJSTest",
       "--binary-arg=--enable-blink-test-features",
       "--binary-arg=--disable-field-trial-config",
+      "--enable-mojojs",
+      "--mojojs-path=" + self.mojo_js_directory,
     ])
     # if metadata was created then add the metadata directory
     # to the list of wpt arguments
@@ -215,6 +220,9 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
 
     # Add this so that product argument does not go in self._rest_args
     # when self.parse_args() is called
+    parser.add_argument('--target', '-t', default='Release',
+                        help='Specify the target build subdirectory under'
+                        ' src/out/.')
     parser.add_argument('--product', help=argparse.SUPPRESS)
     parser.add_argument('--webdriver-binary', required=True,
                         help='Path of the webdriver binary.  It needs to have'

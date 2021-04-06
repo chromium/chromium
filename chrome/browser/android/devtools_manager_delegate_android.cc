@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/grit/browser_resources.h"
@@ -190,6 +191,11 @@ scoped_refptr<DevToolsAgentHost> DevToolsAgentHostForTab(TabAndroid* tab) {
 DevToolsManagerDelegateAndroid::DevToolsManagerDelegateAndroid() = default;
 
 DevToolsManagerDelegateAndroid::~DevToolsManagerDelegateAndroid() = default;
+
+content::BrowserContext*
+DevToolsManagerDelegateAndroid::GetDefaultBrowserContext() {
+  return ProfileManager::GetActiveUserProfile()->GetOriginalProfile();
+}
 
 std::string DevToolsManagerDelegateAndroid::GetTargetType(
     content::WebContents* web_contents) {
