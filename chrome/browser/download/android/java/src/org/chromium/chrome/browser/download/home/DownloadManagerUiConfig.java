@@ -13,9 +13,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Provides the configuration params required by the download home UI. */
 public class DownloadManagerUiConfig {
-    /** Whether or not the UI should include off the record items. */
-    public final boolean isOffTheRecord;
-
     /** If not null, which off the record items to show in the UI. */
     public final OTRProfileID otrProfileID;
 
@@ -65,7 +62,6 @@ public class DownloadManagerUiConfig {
 
     /** Constructor. */
     private DownloadManagerUiConfig(Builder builder) {
-        isOffTheRecord = builder.mIsOffTheRecord;
         otrProfileID = builder.mOtrProfileID;
         isSeparateActivity = builder.mIsSeparateActivity;
         useGenericViewTypes = builder.mUseGenericViewTypes;
@@ -89,7 +85,6 @@ public class DownloadManagerUiConfig {
 
         private static final float MAX_THUMBNAIL_SCALE_FACTOR = 1.5f; /* hdpi scale factor. */
 
-        private boolean mIsOffTheRecord;
         private OTRProfileID mOtrProfileID;
         private boolean mIsSeparateActivity;
         private boolean mUseGenericViewTypes;
@@ -107,11 +102,6 @@ public class DownloadManagerUiConfig {
             mSupportFullWidthImages = !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                     ContextUtils.getApplicationContext());
             mUseGenericViewTypes = SysUtils.isLowEndDevice();
-        }
-
-        public Builder setIsOffTheRecord(boolean isOffTheRecord) {
-            mIsOffTheRecord = isOffTheRecord;
-            return this;
         }
 
         public Builder setOTRProfileID(OTRProfileID otrProfileID) {

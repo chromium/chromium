@@ -1388,11 +1388,9 @@ public class DownloadManagerService implements DownloadController.Observer,
     // Deprecated after new download backend.
     public void broadcastDownloadAction(DownloadItem downloadItem, String action) {
         Context appContext = ContextUtils.getApplicationContext();
-        // TODO(crbug.com/1164379): Using Primary OTR profile ID for all OTR profiles is not safe,
-        // make sure it is null after adding |DownloadNotificationService#EXTRA_OTR_PROFILE_ID|.
         Intent intent = DownloadNotificationFactory.buildActionIntent(appContext, action,
                 LegacyHelpers.buildLegacyContentId(false, downloadItem.getId()),
-                downloadItem.getDownloadInfo().isOffTheRecord());
+                downloadItem.getDownloadInfo().getOTRProfileId());
         addCancelExtra(intent, downloadItem);
         appContext.startService(intent);
     }

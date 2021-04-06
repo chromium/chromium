@@ -175,7 +175,6 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       ConvertUTF8ToJavaString(env, item->GetTabUrl().spec()),
       ConvertUTF8ToJavaString(env, item->GetMimeType()),
       item->GetReceivedBytes(), item->GetTotalBytes(),
-      browser_context ? browser_context->IsOffTheRecord() : false,
       otr_profile_id, item->GetState(), item->PercentComplete(),
       item->IsPaused(), DownloadUtils::IsDownloadUserInitiated(item),
       item->CanResume(), item->IsParallelDownload(),

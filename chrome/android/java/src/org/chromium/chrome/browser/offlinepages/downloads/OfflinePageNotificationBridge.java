@@ -47,7 +47,7 @@ public class OfflinePageNotificationBridge {
                                             .setDownloadGuid(guid)
                                             .setFileName(displayName)
                                             .setIsResumable(false)
-                                            .setIsOffTheRecord(false)
+                                            .setOTRProfileId(null)
                                             .setBytesTotalSize(networkBytesUsed)
                                             .build();
 
@@ -94,7 +94,7 @@ public class OfflinePageNotificationBridge {
                                             .setFileName(displayName)
                                             .setFilePath(url)
                                             .setBytesReceived(bytesReceived)
-                                            .setIsOffTheRecord(false)
+                                            .setOTRProfileId(null)
                                             .setIsResumable(true)
                                             .setTimeRemainingInMillis(0)
                                             .build();

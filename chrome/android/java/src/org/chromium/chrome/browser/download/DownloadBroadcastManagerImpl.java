@@ -219,11 +219,11 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         DownloadNotificationUmaHelper.recordNotificationInteractionHistogram(action);
         final ContentId id = getContentIdFromIntent(intent);
         final DownloadSharedPreferenceEntry entry = getDownloadEntryFromIntent(intent);
-        boolean isOffTheRecord = entry == null
-                ? IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false)
-                : OTRProfileID.isOffTheRecord(entry.otrProfileID);
+        boolean isOffTheRecord =
+                IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false);
         OTRProfileID otrProfileID = entry == null ? DownloadUtils.getOTRProfileIDFromIntent(intent)
                                                   : entry.otrProfileID;
+        assert !isOffTheRecord || otrProfileID != null;
 
         // Handle actions that do not require a specific entry or service delegate.
         switch (action) {
@@ -242,11 +242,6 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 return;
         }
 
-        // TODO(crbug.com/1164379): Pass OTRProfileID from intent by adding
-        //  |DownloadNotificationService#EXTRA_OTR_PROFILE_ID|.
-        if (isOffTheRecord && otrProfileID == null) {
-            otrProfileID = OTRProfileID.getPrimaryOTRProfileID();
-        }
         DownloadServiceDelegate downloadServiceDelegate = getServiceDelegate(id);
 
         checkNotNull(downloadServiceDelegate);
@@ -268,13 +263,12 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
                 break;
 
             case ACTION_DOWNLOAD_RESUME:
-                DownloadItem item = (entry != null)
-                        ? entry.buildDownloadItem()
-                        : new DownloadItem(false,
-                                new DownloadInfo.Builder()
-                                        .setDownloadGuid(id.id)
-                                        .setIsOffTheRecord(isOffTheRecord)
-                                        .build());
+                DownloadItem item = (entry != null) ? entry.buildDownloadItem()
+                                                    : new DownloadItem(false,
+                                                            new DownloadInfo.Builder()
+                                                                    .setDownloadGuid(id.id)
+                                                                    .setOTRProfileId(otrProfileID)
+                                                                    .build());
                 downloadServiceDelegate.resumeDownload(id, item,
                         !IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_AUTO_RESUMPTION, false));
                 break;
@@ -390,11 +384,7 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
         boolean isOffTheRecord = IntentUtils.safeGetBooleanExtra(
                 intent, DownloadNotificationService.EXTRA_IS_OFF_THE_RECORD, false);
         OTRProfileID otrProfileID = DownloadUtils.getOTRProfileIDFromIntent(intent);
-        // TODO(crbug.com/1164379): Using Primary OTR profile ID for all OTR profiles is not safe,
-        // make sure it is null after adding |DownloadNotificationService#EXTRA_OTR_PROFILE_ID|.
-        if (isOffTheRecord && otrProfileID == null) {
-            otrProfileID = OTRProfileID.getPrimaryOTRProfileID();
-        }
+        assert !isOffTheRecord || otrProfileID != null;
         Uri originalUrl = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_ORIGINATING_URI);
         Uri referrer = IntentUtils.safeGetParcelableExtra(intent, Intent.EXTRA_REFERRER);
         DownloadManagerService.openDownloadedContent(context, downloadFilePath, isSupportedMimeType,

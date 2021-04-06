@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorFactory;
 import org.chromium.chrome.browser.download.settings.DownloadSettings;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -32,8 +33,9 @@ public class DownloadManagerCoordinatorFactoryHelper {
     public static DownloadManagerCoordinator create(Activity activity,
             DownloadManagerUiConfig config, SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager) {
-        Profile profile = config.isOffTheRecord
-                ? Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(/*createIfNeeded=*/true)
+        Profile profile = OTRProfileID.isOffTheRecord(config.otrProfileID)
+                ? Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                        config.otrProfileID, /*createIfNeeded=*/true)
                 : Profile.getLastUsedRegularProfile();
         LegacyDownloadProvider legacyProvider =
                 config.useNewDownloadPath ? null : new LegacyDownloadProviderImpl();

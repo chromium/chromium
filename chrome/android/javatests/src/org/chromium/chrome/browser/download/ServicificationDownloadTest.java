@@ -116,7 +116,7 @@ public final class ServicificationDownloadTest {
         DownloadItem item = new DownloadItem(false,
                 new DownloadInfo.Builder()
                         .setDownloadGuid(DOWNLOAD_GUID)
-                        .setIsOffTheRecord(false)
+                        .setOTRProfileId(null)
                         .build());
         final String url = mEmbeddedTestServerRule.getServer().getURL(TEST_DOWNLOAD_FILE);
         TestThreadUtils.runOnUiThreadBlocking(() -> {

@@ -297,7 +297,6 @@ public final class DownloadInfo {
                 .setMimeType(item.mimeType)
                 .setUrl(item.pageUrl)
                 .setOriginalUrl(item.originalUrl)
-                .setIsOffTheRecord(item.isOffTheRecord)
                 .setOTRProfileId(OTRProfileID.deserialize(item.otrProfileId))
                 .setState(state)
                 .setIsPaused(item.state == OfflineItemState.PAUSED)
@@ -451,13 +450,9 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setIsOffTheRecord(boolean isOffTheRecord) {
-            mIsOffTheRecord = isOffTheRecord;
-            return this;
-        }
-
         public Builder setOTRProfileId(OTRProfileID otrProfileId) {
             mOTRProfileId = otrProfileId;
+            mIsOffTheRecord = OTRProfileID.isOffTheRecord(otrProfileId);
             return this;
         }
 
@@ -557,7 +552,6 @@ public final class DownloadInfo {
                     .setIsDangerous(downloadInfo.getIsDangerous())
                     .setIsResumable(downloadInfo.isResumable())
                     .setIsPaused(downloadInfo.isPaused())
-                    .setIsOffTheRecord(downloadInfo.isOffTheRecord())
                     .setOTRProfileId(downloadInfo.getOTRProfileId())
                     .setIsOfflinePage(downloadInfo.isOfflinePage())
                     .setState(downloadInfo.state())
@@ -576,16 +570,14 @@ public final class DownloadInfo {
     @CalledByNative
     private static DownloadInfo createDownloadInfo(String downloadGuid, String fileName,
             String filePath, String url, String mimeType, long bytesReceived, long bytesTotalSize,
-            boolean isOffTheRecord, OTRProfileID otrProfileId, int state, int percentCompleted,
-            boolean isPaused, boolean hasUserGesture, boolean isResumable,
-            boolean isParallelDownload, String originalUrl, String referrerUrl,
-            long timeRemainingInMs, long lastAccessTime, boolean isDangerous,
-            @FailState int failState, OfflineItemSchedule schedule) {
+            OTRProfileID otrProfileId, int state, int percentCompleted, boolean isPaused,
+            boolean hasUserGesture, boolean isResumable, boolean isParallelDownload,
+            String originalUrl, String referrerUrl, long timeRemainingInMs, long lastAccessTime,
+            boolean isDangerous, @FailState int failState, OfflineItemSchedule schedule) {
         String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url, fileName);
 
         Progress progress = new Progress(bytesReceived,
                 percentCompleted == -1 ? null : bytesTotalSize, OfflineItemProgressUnit.BYTES);
-        if (isOffTheRecord) assert otrProfileId != null;
         return new DownloadInfo.Builder()
                 .setBytesReceived(bytesReceived)
                 .setBytesTotalSize(bytesTotalSize)
@@ -594,7 +586,6 @@ public final class DownloadInfo {
                 .setFileName(fileName)
                 .setFilePath(filePath)
                 .setHasUserGesture(hasUserGesture)
-                .setIsOffTheRecord(isOffTheRecord)
                 .setOTRProfileId(otrProfileId)
                 .setIsPaused(isPaused)
                 .setIsResumable(isResumable)

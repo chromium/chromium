@@ -32,7 +32,6 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
     private static final String BUNDLE_KEY_CURRENT_URL = "current_url";
 
     private DownloadManagerCoordinator mDownloadCoordinator;
-    private boolean mIsOffTheRecord;
     private AndroidPermissionDelegate mPermissionDelegate;
     private ModalDialogManager mModalDialogManager;
 
@@ -58,7 +57,6 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
 
         // Loads offline pages and prefetch downloads.
         OfflineContentAggregatorNotificationBridgeUiFactory.instance();
-        boolean isOffTheRecord = DownloadUtils.shouldShowOffTheRecordDownloads(getIntent());
         boolean showPrefetchContent = DownloadUtils.shouldShowPrefetchContent(getIntent());
         mPermissionDelegate =
                 new ActivityAndroidPermissionDelegate(new WeakReference<Activity>(this));
@@ -66,7 +64,6 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
 
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags()
-                        .setIsOffTheRecord(isOffTheRecord)
                         .setOTRProfileID(mOtrProfileID)
                         .setIsSeparateActivity(true)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
@@ -78,7 +75,6 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         mDownloadCoordinator = DownloadManagerCoordinatorFactoryHelper.create(
                 this, config, getSnackbarManager(), mModalDialogManager);
         setContentView(mDownloadCoordinator.getView());
-        mIsOffTheRecord = isOffTheRecord;
         if (!showPrefetchContent) mDownloadCoordinator.updateForUrl(mCurrentUrl);
         mDownloadCoordinator.addObserver(mUiObserver);
     }

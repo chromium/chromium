@@ -11,6 +11,7 @@ import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.HashMap;
@@ -33,7 +34,7 @@ public class OfflineItemStartupLogger implements OfflineItemFilterObserver {
     /** Creates a new {@link OfflineItemStartupLogger} instance. */
     public OfflineItemStartupLogger(
             DownloadManagerUiConfig config, OfflineItemFilterSource source) {
-        mAllowedToLog = !config.isOffTheRecord;
+        mAllowedToLog = !OTRProfileID.isOffTheRecord(config.otrProfileID);
         mSource = source;
         mSource.addObserver(this);
 

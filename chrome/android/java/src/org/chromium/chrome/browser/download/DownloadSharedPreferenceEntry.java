@@ -419,7 +419,6 @@ public class DownloadSharedPreferenceEntry {
                                     .setDownloadGuid(id.id)
                                     .setIsOfflinePage(LegacyHelpers.isLegacyOfflinePage(id))
                                     .setFileName(fileName)
-                                    .setIsOffTheRecord(OTRProfileID.isOffTheRecord(otrProfileID))
                                     .setOTRProfileId(otrProfileID)
                                     .setBytesReceived(DownloadManagerService.UNKNOWN_BYTES_RECEIVED)
                                     .setContentId(id)

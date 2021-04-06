@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.download.home.list.mutator.ListMutationContro
 import org.chromium.chrome.browser.download.home.metrics.OfflineItemStartupLogger;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils;
 import org.chromium.chrome.browser.download.home.metrics.UmaUtils.ViewAction;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProvider.ThumbnailRequest;
 import org.chromium.chrome.browser.thumbnail.generator.ThumbnailProviderImpl;
@@ -195,7 +196,8 @@ class DateOrderedListMediator {
         mUiConfig = config;
 
         mSource = new OfflineItemSource(mProvider);
-        mOffTheRecordFilter = new OffTheRecordOfflineItemFilter(config.isOffTheRecord, mSource);
+        mOffTheRecordFilter = new OffTheRecordOfflineItemFilter(
+                OTRProfileID.isOffTheRecord(config.otrProfileID), mSource);
         mInvalidStateFilter = new InvalidStateOfflineItemFilter(mOffTheRecordFilter);
         mDeleteUndoFilter = new DeleteUndoOfflineItemFilter(mInvalidStateFilter);
         mSearchFilter = new SearchOfflineItemFilter(mDeleteUndoFilter);

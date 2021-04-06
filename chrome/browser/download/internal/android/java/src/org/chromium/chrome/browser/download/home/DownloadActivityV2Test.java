@@ -175,7 +175,7 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
     private void setUpUi() {
         DownloadManagerUiConfig config = DownloadManagerUiConfigHelper.fromFlags()
-                                                 .setIsOffTheRecord(false)
+                                                 .setOTRProfileID(null)
                                                  .setIsSeparateActivity(true)
                                                  .setUseNewDownloadPath(true)
                                                  .setUseNewDownloadPathThumbnails(true)

@@ -71,8 +71,6 @@ import java.io.File;
 public class DownloadUtils {
     private static final String TAG = "download";
 
-    private static final String EXTRA_IS_OFF_THE_RECORD =
-            "org.chromium.chrome.browser.download.IS_OFF_THE_RECORD";
     private static final String EXTRA_OTR_PROFILE_ID =
             "org.chromium.chrome.browser.download.OTR_PROFILE_ID";
     private static final String MIME_TYPE_ZIP = "application/zip";
@@ -151,7 +149,6 @@ public class DownloadUtils {
             intent.putExtra(EXTRA_SHOW_PREFETCHED_CONTENT, showPrefetchedContent);
             if (otrProfileID != null) {
                 intent.putExtra(EXTRA_OTR_PROFILE_ID, OTRProfileID.serialize(otrProfileID));
-                intent.putExtra(EXTRA_IS_OFF_THE_RECORD, true);
             }
 
             if (activity == null) {
@@ -185,14 +182,6 @@ public class DownloadUtils {
     public static OTRProfileID getOTRProfileIDFromIntent(Intent intent) {
         String serializedId = IntentUtils.safeGetString(intent.getExtras(), EXTRA_OTR_PROFILE_ID);
         return OTRProfileID.deserialize(serializedId);
-    }
-
-    /**
-     * @return Whether or not the Intent corresponds to a DownloadActivity that should show off the
-     *         record downloads.
-     */
-    public static boolean shouldShowOffTheRecordDownloads(Intent intent) {
-        return IntentUtils.safeGetBooleanExtra(intent, EXTRA_IS_OFF_THE_RECORD, false);
     }
 
     /**

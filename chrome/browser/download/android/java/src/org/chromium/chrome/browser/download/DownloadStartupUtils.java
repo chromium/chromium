@@ -14,7 +14,7 @@ public class DownloadStartupUtils {
     /**
      * Initializes the downloads system if not already initialized.
      * @param isFullBrowserStarted Whether full browser process has been started.
-     * @param isIncognito Whether the system is for incognito profile.
+     * @param isOffTheRecord Whether the system is for incognito profile.
      */
     public static void ensureDownloadSystemInitialized(
             boolean isFullBrowserStarted, boolean isOffTheRecord) {
