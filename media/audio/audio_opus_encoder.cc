@@ -207,7 +207,6 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
                               StatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(audio_bus->channels(), input_params_.channels());
-  DCHECK(!capture_time.is_null());
   DCHECK(!done_cb.is_null());
   DCHECK(timestamp_tracker_);
 
@@ -218,12 +217,8 @@ void AudioOpusEncoder::Encode(std::unique_ptr<AudioBus> audio_bus,
     return;
   }
 
-  if (timestamp_tracker_->base_timestamp() == kNoTimestamp) {
-    auto capture_ts = capture_time - base::TimeTicks() -
-                      AudioTimestampHelper::FramesToTime(
-                          audio_bus->frames(), input_params_.sample_rate());
-    timestamp_tracker_->SetBaseTimestamp(capture_ts);
-  }
+  if (timestamp_tracker_->base_timestamp() == kNoTimestamp)
+    timestamp_tracker_->SetBaseTimestamp(capture_time - base::TimeTicks());
 
   // The |fifo_| won't trigger OnFifoOutput() until we have enough frames
   // suitable for the converter.

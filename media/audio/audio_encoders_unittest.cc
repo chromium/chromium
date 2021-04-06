@@ -97,10 +97,8 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       base::TimeTicks timestamp = base::TimeTicks::Now()) {
     DCHECK(encoder_);
     const int num_frames = options_.sample_rate * buffer_duration_.InSecondsF();
-    base::TimeTicks capture_time = timestamp + buffer_duration_;
     auto audio_bus = AudioBus::Create(options_.channels, num_frames);
-    audio_source_.OnMoreData(base::TimeDelta(), capture_time, 0,
-                             audio_bus.get());
+    audio_source_.OnMoreData(base::TimeDelta(), timestamp, 0, audio_bus.get());
 
     bool called_done = false;
     auto done_cb = base::BindLambdaForTesting([&](Status error) {
@@ -109,7 +107,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       called_done = true;
     });
 
-    encoder_->Encode(std::move(audio_bus), capture_time, std::move(done_cb));
+    encoder_->Encode(std::move(audio_bus), timestamp, std::move(done_cb));
     RunLoop();
     EXPECT_TRUE(called_done);
     return num_frames;

@@ -110,8 +110,6 @@ void TrackAudioRenderer::OnRenderError() {
 // WebMediaStreamAudioSink implementation
 void TrackAudioRenderer::OnData(const media::AudioBus& audio_bus,
                                 base::TimeTicks reference_time) {
-  DCHECK(!reference_time.is_null());
-
   TRACE_EVENT1("audio", "TrackAudioRenderer::OnData", "reference time (ms)",
                (reference_time - base::TimeTicks()).InMillisecondsF());
 

@@ -71,14 +71,6 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
   static const int kSampleRate = 8000;
   static const int kNumFrames = 10;
 
-  // The timestamp returned by AudioFrame is at the end of the audio data stored
-  // in it, but PushFrame() below takes the time at the beginning. This function
-  // makes it easier to check AudioFrame timestamps for correctness.
-  base::TimeDelta CaptureTimeFromRefTime(base::TimeDelta timestamp) {
-    return timestamp +
-           media::AudioTimestampHelper::FramesToTime(kNumFrames, kSampleRate);
-  }
-
   // Pushes a frame into |track|. |timestamp| is the reference time at the
   // beginning of the audio data to be pushed into |track|.
   void PushFrame(
@@ -141,7 +133,6 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   track->stopTrack(v8_scope.GetExecutionContext());
 }
 
-// TODO(crbug.com/1174118): Fix and re-enable.
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
        DropOldFramesWhenQueueIsFull) {
   V8TestingScope v8_scope;
@@ -173,9 +164,8 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
     EXPECT_EQ(queue.size(), i);
     base::TimeDelta timestamp = base::TimeDelta::FromSeconds(i);
     push_frame_sync(timestamp);
-    EXPECT_EQ(queue.back()->timestamp(), CaptureTimeFromRefTime(timestamp));
-    EXPECT_EQ(queue.front()->timestamp(),
-              CaptureTimeFromRefTime(base::TimeDelta()));
+    EXPECT_EQ(queue.back()->timestamp(), timestamp);
+    EXPECT_EQ(queue.front()->timestamp(), base::TimeDelta());
   }
 
   // Push another frame while the queue is full.
@@ -186,9 +176,8 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   // dropped.
   EXPECT_EQ(queue.size(), buffer_size);
   EXPECT_EQ(queue.back()->timestamp(),
-            CaptureTimeFromRefTime(base::TimeDelta::FromSeconds(buffer_size)));
-  EXPECT_EQ(queue.front()->timestamp(),
-            CaptureTimeFromRefTime(base::TimeDelta::FromSeconds(1)));
+            base::TimeDelta::FromSeconds(buffer_size));
+  EXPECT_EQ(queue.front()->timestamp(), base::TimeDelta::FromSeconds(1));
 
   // Pulling with frames in the queue should move the oldest frame in the queue
   // to the stream's controller.
@@ -198,8 +187,7 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   EXPECT_EQ(source->DesiredSizeForTesting(), -1);
   EXPECT_FALSE(source->IsPendingPullForTesting());
   EXPECT_EQ(queue.size(), buffer_size - 1);
-  EXPECT_EQ(queue.front()->timestamp(),
-            CaptureTimeFromRefTime(base::TimeDelta::FromSeconds(2)));
+  EXPECT_EQ(queue.front()->timestamp(), base::TimeDelta::FromSeconds(2));
 
   source->Close();
   EXPECT_EQ(queue.size(), 0u);

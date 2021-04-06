@@ -139,10 +139,7 @@ class PushableMediaStreamAudioSourceTest : public testing::Test {
 
     base::RunLoop run_loop;
     base::TimeTicks timestamp = base::TimeTicks::Now();
-    base::TimeDelta duration =
-        base::TimeDelta::FromSeconds(1) * frames / sample_rate;
-    base::TimeTicks capture_time = timestamp + duration;
-    fake_sink->SetDataTimeExpectation(capture_time, run_loop.QuitClosure());
+    fake_sink->SetDataTimeExpectation(timestamp, run_loop.QuitClosure());
 
     pushable_audio_source_->PushAudioData(AudioFrameSerializationData::Wrap(
         media::AudioBus::Create(channels, frames), sample_rate,

@@ -7,7 +7,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/audio_timestamp_helper.h"
 #include "media/base/offloading_audio_encoder.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
@@ -115,14 +114,6 @@ void AudioEncoder::ProcessEncode(Request* request) {
     return;
   }
 
-  // Converting time at the beginning of the frame (aka timestamp) into
-  // time at the end of the frame (aka capture time) that is expected by
-  // media::AudioEncoder.
-  base::TimeTicks capture_time =
-      base::TimeTicks() +
-      base::TimeDelta::FromMicroseconds(frame->timestamp()) +
-      media::AudioTimestampHelper::FramesToTime(
-          buffer->length(), active_config_->options.sample_rate);
   DCHECK(buffer);
 
   // TODO(crbug.com/1168418): There are two reasons we need to copy |buffer|
@@ -143,8 +134,10 @@ void AudioEncoder::ProcessEncode(Request* request) {
     memcpy(audio_bus->channel(channel), array->Data(), byte_length);
   }
 
+  base::TimeTicks timestamp =
+      base::TimeTicks() + base::TimeDelta::FromMicroseconds(frame->timestamp());
   media_encoder_->Encode(
-      std::move(audio_bus), capture_time,
+      std::move(audio_bus), timestamp,
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           done_callback, WrapCrossThreadWeakPersistent(this), reset_count_)));
 
