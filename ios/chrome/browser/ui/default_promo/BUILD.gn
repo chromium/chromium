@@ -21,6 +21,8 @@ source_set("default_promo") {
     "default_browser_promo_commands.h",
     "default_browser_promo_coordinator.h",
     "default_browser_promo_coordinator.mm",
+    "default_browser_promo_non_modal_scheduler.h",
+    "default_browser_promo_non_modal_scheduler.mm",
     "default_browser_promo_view_controller.h",
     "default_browser_promo_view_controller.mm",
     "default_browser_string_util.h",

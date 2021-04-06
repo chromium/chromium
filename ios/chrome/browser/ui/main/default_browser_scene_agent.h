@@ -8,12 +8,17 @@
 #import "ios/chrome/browser/ui/main/observing_scene_state_agent.h"
 
 @class CommandDispatcher;
+@class DefaultBrowserPromoNonModalScheduler;
 
 // A scene agent that shows the default browser fullscreen promo UI based on the
 // SceneActivationLevel changes.
 @interface DefaultBrowserSceneAgent : ObservingSceneAgent
 
 - (instancetype)initWithCommandDispatcher:(CommandDispatcher*)dispatcher;
+
+// Handles ingesting events and scheduling the non-modal promo for this scene.
+@property(nonatomic, strong)
+    DefaultBrowserPromoNonModalScheduler* nonModalScheduler;
 
 @end
 
