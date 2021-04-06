@@ -63,8 +63,7 @@ class FakeMultipartUploadRequest : public MultipartUploadRequest {
   void Start() override {
     std::string serialized_response;
     response_.SerializeToString(&serialized_response);
-    std::move(callback_).Run(should_succeed_, should_succeed_ ? 200 : 401,
-                             serialized_response);
+    std::move(callback_).Run(should_succeed_, serialized_response);
   }
 
  private:
@@ -162,7 +161,7 @@ class BinaryUploadServiceTest : public testing::Test {
   void ReceiveResponseFromUpload(BinaryUploadService::Request* request,
                                  bool success,
                                  const std::string& response) {
-    service_->OnUploadComplete(request, success, success ? 200 : 401, response);
+    service_->OnUploadComplete(request, success, response);
   }
 
   void ServiceWithNoFCMConnection() {

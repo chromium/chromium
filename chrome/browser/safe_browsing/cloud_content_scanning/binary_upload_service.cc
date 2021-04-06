@@ -83,8 +83,6 @@ std::string ResultToString(BinaryUploadService::Result result) {
       return "FILE_ENCRYPTED";
     case BinaryUploadService::Result::DLP_SCAN_UNSUPPORTED_FILE_TYPE:
       return "DLP_SCAN_UNSUPPORTED_FILE_TYPE";
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
-      return "TOO_MANY_REQUESTS";
   }
 }
 
@@ -366,16 +364,9 @@ void BinaryUploadService::OnGetRequestData(Request* request,
 
 void BinaryUploadService::OnUploadComplete(Request* request,
                                            bool success,
-                                           int http_status,
                                            const std::string& response_data) {
   if (!IsActive(request))
     return;
-
-  if (http_status == net::HTTP_TOO_MANY_REQUESTS) {
-    FinishRequest(request, Result::TOO_MANY_REQUESTS,
-                  enterprise_connectors::ContentAnalysisResponse());
-    return;
-  }
 
   if (!success) {
     FinishRequest(request, Result::UPLOAD_FAILURE,

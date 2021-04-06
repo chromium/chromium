@@ -67869,7 +67869,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="Unauthorized"/>
   <int value="7" label="File encrypted"/>
   <int value="8" label="Unsupported file type"/>
-  <int value="9" label="Too many requests"/>
 </enum>
 
 <enum name="SafeBrowsingDelayedWarningEvent">

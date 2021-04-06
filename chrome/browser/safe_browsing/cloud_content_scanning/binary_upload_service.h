@@ -81,11 +81,7 @@ class BinaryUploadService : public KeyedService {
     // The file's type is not supported and the file was not uploaded.
     DLP_SCAN_UNSUPPORTED_FILE_TYPE = 8,
 
-    // The server returned a 429 HTTP status indicating too many requests are
-    // being sent.
-    TOO_MANY_REQUESTS = 9,
-
-    kMaxValue = TOO_MANY_REQUESTS,
+    kMaxValue = DLP_SCAN_UNSUPPORTED_FILE_TYPE,
   };
 
   // Callbacks used to pass along the results of scanning. The response protos
@@ -248,7 +244,6 @@ class BinaryUploadService : public KeyedService {
 
   void OnUploadComplete(Request* request,
                         bool success,
-                        int http_status,
                         const std::string& response_data);
 
   void OnGetResponse(Request* request,
