@@ -47,9 +47,9 @@ class AdsPageLoadMetricsObserver
     : public PageLoadMetricsObserver,
       public subresource_filter::SubresourceFilterObserver {
  public:
-  using AggregateFrameData = AggregateFrameData;
-  using FrameTreeData = FrameTreeData;
-  using ResourceMimeType = ResourceMimeType;
+  using AggregateFrameData = page_load_metrics::AggregateFrameData;
+  using FrameTreeData = page_load_metrics::FrameTreeData;
+  using ResourceMimeType = page_load_metrics::ResourceMimeType;
   using ApplicationLocaleGetter = base::RepeatingCallback<std::string()>;
 
   // Helper class that generates a random amount of noise to apply to thresholds
