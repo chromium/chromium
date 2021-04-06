@@ -18,10 +18,11 @@ namespace {
 
 perfetto::StaticString TraceEventNameForAffinityMode(
     base::CpuAffinityMode affinity) {
-  if (affinity == base::CpuAffinityMode::kDefault)
+  if (affinity == base::CpuAffinityMode::kDefault) {
     return "ApplyCpuAffinityModeDefault";
-  else if (affinity == base::CpuAffinityMode::kLittleCoresOnly)
+  } else if (affinity == base::CpuAffinityMode::kLittleCoresOnly) {
     return "ApplyCpuAffinityModeLittleCoresOnly";
+  }
   return "ApplyCpuAffinityModeUnknown";
 }
 
@@ -132,7 +133,8 @@ void PowerScheduler::ApplyPolicy() {
   auto new_affinity = base::CpuAffinityMode::kDefault;
   if (current_policy_ == SchedulingPolicy::kLittleCoresOnly ||
       (current_policy_ == SchedulingPolicy::kThrottleIdle &&
-       current_power_mode_ == power_scheduler::PowerMode::kIdle)) {
+       (current_power_mode_ == power_scheduler::PowerMode::kIdle ||
+        current_power_mode_ == power_scheduler::PowerMode::kBackground))) {
     new_affinity = base::CpuAffinityMode::kLittleCoresOnly;
   }
 
