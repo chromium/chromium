@@ -1461,7 +1461,6 @@ void WebContentsImpl::UpdateZoom() {
     rwh->SynchronizeVisualProperties();
 }
 
-
 void WebContentsImpl::UpdateZoomIfNecessary(const std::string& scheme,
                                             const std::string& host) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::UpdateZoomIfNecessary",
