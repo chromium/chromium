@@ -13,6 +13,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
+#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_WIN) || defined(OS_MAC)
@@ -66,7 +67,10 @@ void CaptionsHandler::OnSodaInstalled() {
 }
 
 void CaptionsHandler::OnSodaError() {
-  prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
+    prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
+  }
+
   FireWebUIListener("soda-download-progress-changed",
                     base::Value(l10n_util::GetStringUTF16(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_ERROR)));
