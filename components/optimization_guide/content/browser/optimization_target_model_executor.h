@@ -35,13 +35,21 @@ class ScopedModelExecutorLoadingResultRecorder {
       proto::OptimizationTarget optimization_target,
       ModelExecutorLoadingState model_loading_state)
       : optimization_target_(optimization_target),
-        model_loading_state_(model_loading_state) {}
+        model_loading_state_(model_loading_state),
+        start_time_(base::TimeTicks::Now()) {}
+
   ~ScopedModelExecutorLoadingResultRecorder() {
     base::UmaHistogramEnumeration(
         "OptimizationGuide.ModelExecutor.ModelLoadingResult." +
             optimization_guide::GetStringNameForOptimizationTarget(
                 optimization_target_),
         model_loading_state_);
+
+    base::UmaHistogramTimes(
+        "OptimizationGuide.ModelExecutor.ModelLoadingDuration." +
+            optimization_guide::GetStringNameForOptimizationTarget(
+                optimization_target_),
+        base::TimeTicks::Now() - start_time_);
   }
 
   void set_model_loading_state(ModelExecutorLoadingState model_executor_state) {
@@ -51,6 +59,9 @@ class ScopedModelExecutorLoadingResultRecorder {
  private:
   proto::OptimizationTarget optimization_target_;
   ModelExecutorLoadingState model_loading_state_;
+
+  // The time at which this instance was constructed.
+  const base::TimeTicks start_time_;
 };
 
 }  // namespace
@@ -78,6 +89,10 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
                                                     model_metadata, this);
   }
   ~OptimizationTargetModelExecutor() override {
+    base::UmaHistogramCounts100(
+        "OptimizationGuide.ModelExecutor.RunCount." +
+            GetStringNameForOptimizationTarget(optimization_target_),
+        run_count_);
     decider_->RemoveObserverForOptimizationTargetModel(optimization_target_,
                                                        this);
   }
@@ -182,6 +197,16 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
     if (!loaded_model_)
       return base::nullopt;
 
+    run_count_++;
+    if (last_execution_time_) {
+      // The max of this histogram is 3m since only the distribution and count
+      // of smaller values is important.
+      base::UmaHistogramMediumTimes(
+          "OptimizationGuide.ModelExecutor.TimeSincePreviousRun." +
+              GetStringNameForOptimizationTarget(optimization_target_),
+          base::TimeTicks::Now() - *last_execution_time_);
+    }
+    last_execution_time_ = base::TimeTicks::Now();
     return Execute(loaded_model_.get(), args...);
   }
 
@@ -210,6 +235,14 @@ class OptimizationTargetModelExecutor : public OptimizationTargetModelObserver {
   OptimizationGuideDecider* decider_;
 
   proto::OptimizationTarget optimization_target_;
+
+  // Incremented every time the model is run and logged in metrics on
+  // destruction.
+  size_t run_count_ = 0;
+
+  // The time that the model was last executed. Logged in metrics for the second
+  // and following runs.
+  base::Optional<base::TimeTicks> last_execution_time_;
 
   scoped_refptr<base::SequencedTaskRunner> model_execution_task_runner_;
 

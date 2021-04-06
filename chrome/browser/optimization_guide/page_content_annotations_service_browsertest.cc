@@ -184,6 +184,8 @@ class PageContentAnnotationsServiceBrowserTest : public InProcessBrowserTest {
     histogram_tester.ExpectUniqueSample(
         "OptimizationGuide.ModelExecutor.ModelLoadingResult.PageTopics",
         ModelExecutorLoadingState::kModelFileValidAndMemoryMapped, 1);
+    histogram_tester.ExpectTotalCount(
+        "OptimizationGuide.ModelExecutor.ModelLoadingDuration.PageTopics", 1);
 #else
     base::RunLoop().RunUntilIdle();
 #endif

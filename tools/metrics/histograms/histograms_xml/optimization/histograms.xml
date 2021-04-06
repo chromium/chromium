@@ -285,14 +285,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="OptimizationGuide.ModelExecutor.ModelLoadingDuration.{OptimizationTarget}"
+    units="ms" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time duration it took to load a model file (un)successfully for
+    {OptimizationTarget}. Recorded once per model load attempt for
+    {OptimizationTarget}.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
     name="OptimizationGuide.ModelExecutor.ModelLoadingResult.{OptimizationTarget}"
-    units="ModelExecutorLoadingState" expires_after="M94">
+    enum="ModelExecutorLoadingState" expires_after="M94">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     Records the result of a loading a model with a provided file for
     {OptimizationTarget}. Recorded once per model load attempt for
     {OptimizationTarget}.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram name="OptimizationGuide.ModelExecutor.RunCount.{OptimizationTarget}"
+    units="count" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the number of times the model for the {OptimizationTarget}
+    optimization target was run during the lifetime of the model being in
+    memory. Recorded every time the model is unloaded from memory.
   </summary>
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
@@ -306,6 +331,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Records the execution latency for the {OptimizationTarget} model run by the
     model executor from when the task is posted from execution complete.
     Recorded once per {OptimizationTarget} model execution attempt.
+  </summary>
+  <token key="OptimizationTarget" variants="OptimizationTarget"/>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.ModelExecutor.TimeSincePreviousRun.{OptimizationTarget}"
+    units="ms" expires_after="M94">
+  <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the time duration between runs of the model for
+    {OptimizationTarget}. Recorded once for every model run after the first.
   </summary>
   <token key="OptimizationTarget" variants="OptimizationTarget"/>
 </histogram>
@@ -359,8 +396,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OptimizationGuide.PageTextDump.AbandonedRequests"
     units="count" expires_after="M94">
-  <owner>sophiechang@chromium.org</owner>
   <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     The number of text dump requests that were sent to the renderer and did not
     get a response after a grace period following DidFinishLoad, thus were
@@ -371,8 +408,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.PageTextDump.FrameDumpLength.{PageTextDumpEvent}"
     units="bytes" expires_after="M94">
-  <owner>sophiechang@chromium.org</owner>
   <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     The length, in bytes, of every completed frame dump for the
     {PageTextDumpEvent} event. Note that these values are capped at runtime to
@@ -390,8 +427,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.PageTextDump.OutstandingRequests.DidFinishLoad"
     units="count" expires_after="M94">
-  <owner>sophiechang@chromium.org</owner>
   <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     The number of outstanding page text dump requests at DidFinishLoad.
   </summary>
@@ -400,8 +437,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.PageTextDump.TimeUntilFrameDisconnected.{PageTextDumpEvent}"
     units="ms" expires_after="M94">
-  <owner>sophiechang@chromium.org</owner>
   <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     The duration it took for a frame dump request, for the {PageTextDumpEvent}
     event, from being sent until being canceled. Recorded every time a request
@@ -419,8 +456,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="OptimizationGuide.PageTextDump.TimeUntilFrameDumpCompleted.{PageTextDumpEvent}"
     units="ms" expires_after="M94">
-  <owner>sophiechang@chromium.org</owner>
   <owner>robertogden@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
   <summary>
     The duration it took for a frame dump request for the {PageTextDumpEvent}
     event, to complete successfully. Recorded every time a request completes
