@@ -15,6 +15,7 @@
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/soda/pref_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/media_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"

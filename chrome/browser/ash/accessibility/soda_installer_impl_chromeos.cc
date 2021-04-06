@@ -10,6 +10,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/pref_names.h"
 #include "media/base/media_switches.h"
 
 namespace {

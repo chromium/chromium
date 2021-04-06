@@ -197,8 +197,6 @@ extern const char kAccessibilityCaptionsBackgroundOpacity[];
 #if !defined(OS_ANDROID)
 extern const char kLiveCaptionEnabled[];
 extern const char kLiveCaptionLanguageCode[];
-extern const char kSodaBinaryPath[];
-extern const char kSodaScheduledDeletionTime[];
 #endif
 #if defined(OS_MAC)
 extern const char kConfirmToQuitEnabled[];

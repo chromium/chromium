@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/pref_names.h"
 #include "media/base/media_switches.h"
 
 namespace {

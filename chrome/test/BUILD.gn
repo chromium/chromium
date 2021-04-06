@@ -4283,6 +4283,7 @@ test("unit_tests") {
     "//components/services/app_service/public/cpp:protocol_handling",
     "//components/services/patch/content",
     "//components/services/unzip/content",
+    "//components/soda:constants",
     "//components/spellcheck:buildflags",
     "//components/strings",
     "//components/subresource_filter/core/browser:test_support",

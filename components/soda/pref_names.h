@@ -7,6 +7,9 @@
 
 namespace prefs {
 
+extern const char kSodaBinaryPath[];
+extern const char kSodaScheduledDeletionTime[];
+
 extern const char kSodaEnUsConfigPath[];
 extern const char kSodaJaJpConfigPath[];
 extern const char kSodaDeDeConfigPath[];

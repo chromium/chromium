@@ -6,6 +6,14 @@
 
 namespace prefs {
 
+// The file path of the Speech On-Device API (SODA) binary.
+const char kSodaBinaryPath[] = "accessibility.captions.soda_binary_path";
+
+// The scheduled time to clean up the Speech On-Device API (SODA) files from the
+// device.
+const char kSodaScheduledDeletionTime[] =
+    "accessibility.captions.soda_scheduled_deletion_time";
+
 // The file path of the en-US Speech On-Device API (SODA) configuration file.
 const char kSodaEnUsConfigPath[] =
     "accessibility.captions.soda_en_us_config_path";

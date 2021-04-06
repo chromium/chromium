@@ -339,6 +339,7 @@ source_set("chromeos") {
     "//components/session_manager/core",
     "//components/signin/public/identity_manager",
     "//components/signin/public/webdata",
+    "//components/soda:constants",
     "//components/spellcheck/browser:browser",
     "//components/spellcheck/common:spellcheck_result",
     "//components/storage_monitor",
