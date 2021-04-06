@@ -8,14 +8,11 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
@@ -76,6 +73,42 @@ public class AccountPickerBottomSheetRenderTest {
                     /* accountName= */ "test.account2@gmail.com", /* avatar= */ null,
                     /* fullName= */ null, /* givenName= */ null);
 
+    private static final class CustomAccountPickerDelegate implements AccountPickerDelegate {
+        private @Nullable GoogleServiceAuthError mError;
+
+        CustomAccountPickerDelegate() {
+            mError = null;
+        }
+
+        void setError(@State int state) {
+            mError = new GoogleServiceAuthError(state);
+        }
+
+        void clearError() {
+            mError = null;
+        }
+
+        @Override
+        public void onDismiss() {}
+
+        @Override
+        public void signIn(CoreAccountInfo coreAccountInfo,
+                Callback<GoogleServiceAuthError> onSignInErrorCallback) {
+            if (mError != null) {
+                onSignInErrorCallback.onResult(mError);
+            }
+        }
+
+        @Override
+        public void addAccount(Callback<String> callback) {}
+
+        @Override
+        public void updateCredentials(
+                String accountName, Callback<Boolean> onUpdateCredentialsCallback) {
+            onUpdateCredentialsCallback.onResult(true);
+        }
+    }
+
     @Rule
     public final RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus().setRevision(2).build();
@@ -88,8 +121,8 @@ public class AccountPickerBottomSheetRenderTest {
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    @Mock
-    private AccountPickerDelegate mAccountPickerDelegateMock;
+    private final CustomAccountPickerDelegate mAccountPickerDelegate =
+            new CustomAccountPickerDelegate();
 
     @Mock
     private IncognitoInterstitialDelegate mIncognitoInterstitialDelegateMock;
@@ -174,18 +207,12 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testTryAgainButtonOnSignInGeneralErrorSheet(boolean nightModeEnabled)
             throws IOException {
-        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        // Throws a connection error during the sign-in action
-        doAnswer(invocation -> {
-            Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
-            onSignInErrorCallback.onResult(new GoogleServiceAuthError(State.CONNECTION_FAILED));
-            return null;
-        })
-                .when(mAccountPickerDelegateMock)
-                .signIn(eq(coreAccountInfo), any());
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
-        doNothing().when(mAccountPickerDelegateMock).signIn(eq(coreAccountInfo), any());
+        // Clear the error so that the sign-in could continue normally.
+        mAccountPickerDelegate.clearError();
         clickContinueButtonAndCheckSigninInProgressView();
     }
 
@@ -194,15 +221,8 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninGeneralErrorView(boolean nightModeEnabled) throws IOException {
-        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        // Throws a connection error during the sign-in action
-        doAnswer(invocation -> {
-            Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
-            onSignInErrorCallback.onResult(new GoogleServiceAuthError(State.CONNECTION_FAILED));
-            return null;
-        })
-                .when(mAccountPickerDelegateMock)
-                .signIn(eq(coreAccountInfo), any());
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountPickerDelegate.setError(State.CONNECTION_FAILED);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
         mRenderTestRule.render(
@@ -214,16 +234,8 @@ public class AccountPickerBottomSheetRenderTest {
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninAuthErrorView(boolean nightModeEnabled) throws IOException {
-        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        // Throws an authentication error during the sign-in action
-        doAnswer(invocation -> {
-            Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
-            onSignInErrorCallback.onResult(
-                    new GoogleServiceAuthError(State.INVALID_GAIA_CREDENTIALS));
-            return null;
-        })
-                .when(mAccountPickerDelegateMock)
-                .signIn(eq(coreAccountInfo), any());
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountPickerDelegate.setError(State.INVALID_GAIA_CREDENTIALS);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
         mRenderTestRule.render(
@@ -236,26 +248,10 @@ public class AccountPickerBottomSheetRenderTest {
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testSigninAgainButtonOnSigninAuthErrorSheet(boolean nightModeEnabled)
             throws IOException {
-        CoreAccountInfo coreAccountInfo = mAccountManagerTestRule.addAccount(PROFILE_DATA1);
-        // Throws an auth error during the sign-in action
-        doAnswer(invocation -> {
-            Callback<GoogleServiceAuthError> onSignInErrorCallback = invocation.getArgument(1);
-            onSignInErrorCallback.onResult(
-                    new GoogleServiceAuthError(State.INVALID_GAIA_CREDENTIALS));
-            return null;
-        })
-                .when(mAccountPickerDelegateMock)
-                .signIn(eq(coreAccountInfo), any());
-
+        mAccountManagerTestRule.addAccount(PROFILE_DATA1);
+        mAccountPickerDelegate.setError(State.INVALID_GAIA_CREDENTIALS);
         buildAndShowCollapsedBottomSheet();
         clickContinueButtonAndWaitForErrorView();
-        doAnswer(invocation -> {
-            Callback<Boolean> callback = invocation.getArgument(1);
-            callback.onResult(true);
-            return null;
-        })
-                .when(mAccountPickerDelegateMock)
-                .updateCredentials(eq(PROFILE_DATA1.getAccountEmail()), any());
         View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -335,7 +331,7 @@ public class AccountPickerBottomSheetRenderTest {
     private void buildAndShowCollapsedBottomSheet() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mCoordinator = new AccountPickerBottomSheetCoordinator(mActivityTestRule.getActivity(),
-                    getBottomSheetController(), mAccountPickerDelegateMock,
+                    getBottomSheetController(), mAccountPickerDelegate,
                     mIncognitoInterstitialDelegateMock, true);
         });
         CriteriaHelper.pollUiThread(mCoordinator.getBottomSheetViewForTesting().findViewById(
