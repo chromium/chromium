@@ -32,7 +32,6 @@
 
 constexpr char kHatsSurveyTriggerTesting[] = "testing";
 constexpr char kHatsSurveyTriggerPrivacySandbox[] = "privacy-sandbox";
-constexpr char kHatsSurveyTriggerSatisfaction[] = "satisfaction";
 constexpr char kHatsSurveyTriggerSettings[] = "settings";
 constexpr char kHatsSurveyTriggerSettingsPrivacy[] = "settings-privacy";
 
@@ -93,10 +92,6 @@ constexpr char kAnyLastSurveyStartedTimePath[] = "any_last_survey_started_time";
 
 std::vector<HatsService::SurveyConfig> GetSurveyConfigs() {
   std::vector<HatsService::SurveyConfig> survey_configs;
-
-  // NTP survey.
-  survey_configs.emplace_back(&features::kHappinessTrackingSurveysForDesktop,
-                              kHatsSurveyTriggerSatisfaction);
 
   // Dev tools surveys.
   survey_configs.emplace_back(&features::kHaTSDesktopDevToolsIssuesCOEP,
@@ -337,7 +332,7 @@ void HatsService::HatsNextDialogClosed() {
 
 void HatsService::SetSurveyMetadataForTesting(
     const HatsService::SurveyMetadata& metadata) {
-  const std::string& trigger = kHatsSurveyTriggerSatisfaction;
+  const std::string& trigger = kHatsSurveyTriggerSettings;
   DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
   base::DictionaryValue* pref_data = update.Get();
   if (!metadata.last_major_version.has_value() &&
@@ -385,7 +380,7 @@ void HatsService::SetSurveyMetadataForTesting(
 
 void HatsService::GetSurveyMetadataForTesting(
     HatsService::SurveyMetadata* metadata) const {
-  const std::string& trigger = kHatsSurveyTriggerSatisfaction;
+  const std::string& trigger = kHatsSurveyTriggerSettings;
   DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
   base::DictionaryValue* pref_data = update.Get();
 

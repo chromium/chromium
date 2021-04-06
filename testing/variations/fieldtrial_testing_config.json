@@ -2228,26 +2228,6 @@
             ]
         }
     ],
-    "DesktopHats": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledNTP80",
-                    "params": {
-                        "en_site_id": "tbl7ghvx6q4sth3jzfxynlvnxi",
-                        "probability": "0.01",
-                        "survey": "satisfaction"
-                    },
-                    "enable_features": [
-                        "HappinessTrackingSurveysForDesktop"
-                    ]
-                }
-            ]
-        }
-    ],
     "DesktopNtpModules": [
         {
             "platforms": [

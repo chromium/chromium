@@ -45790,7 +45790,6 @@ from previous Chrome versions.
   <int value="-460081932" label="CustomFeedbackUi:disabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
   <int value="-457584339" label="TemporaryHoldingSpace:enabled"/>
-  <int value="-457292000" label="HappinessTrackingSurveysForDesktop:enabled"/>
   <int value="-457174225" label="Av1Decoder:enabled"/>
   <int value="-456321929" label="ForceEnableSystemAec:disabled"/>
   <int value="-455413094" label="FilesJsModules:enabled"/>
@@ -46626,7 +46625,6 @@ from previous Chrome versions.
   <int value="324522065" label="app-menu-icon"/>
   <int value="324631366" label="enable-drive-search-in-app-launcher"/>
   <int value="325907076" label="SanitizerAPI:enabled"/>
-  <int value="326876883" label="HappinessTrackingSurveysForDesktop:disabled"/>
   <int value="327045548" label="SafeSearchUrlReporting:enabled"/>
   <int value="328722396" label="NTPCondensedLayout:disabled"/>
   <int value="330138076" label="enable-clear-browsing-data-counters"/>

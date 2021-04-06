@@ -5213,12 +5213,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // OS_WIN
 
 #if !defined(OS_ANDROID)
-    {"happiness-tracking-surveys-for-desktop",
-     flag_descriptions::kHappinessTrackingSurveysForDesktopName,
-     flag_descriptions::kHappinessTrackingSurveysForDesktopDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kHappinessTrackingSurveysForDesktop)},
-
     {"happiness-tracking-surveys-for-desktop-demo",
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoName,
      flag_descriptions::kHappinessTrackingSurveysForDesktopDemoDescription,

@@ -420,12 +420,7 @@ const base::Feature kGdiTextPrinting{"GdiTextPrinting",
 // of languages.
 const base::Feature kGeoLanguage{"GeoLanguage",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
-
 #if !defined(OS_ANDROID)
-// Enables or disables the Happiness Tracking System for Desktop Chrome.
-const base::Feature kHappinessTrackingSurveysForDesktop{
-    "HappinessTrackingSurveysForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables or disables the Happiness Tracking System demo mode for Desktop
 // Chrome.
 const base::Feature kHappinessTrackingSurveysForDesktopDemo{

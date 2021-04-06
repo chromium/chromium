@@ -2039,9 +2039,6 @@ extern const char kNtpChromeCartModuleDescription[];
 extern const char kEnableReaderModeName[];
 extern const char kEnableReaderModeDescription[];
 
-extern const char kHappinessTrackingSurveysForDesktopName[];
-extern const char kHappinessTrackingSurveysForDesktopDescription[];
-
 extern const char kHappinessTrackingSurveysForDesktopDemoName[];
 extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 
