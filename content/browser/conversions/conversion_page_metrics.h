@@ -22,10 +22,17 @@ class ConversionPageMetrics {
   // Called when a conversion is registered.
   void OnConversion(const StorableConversion& conversion);
 
+  // Called when an impression is registered.
+  void OnImpression();
+
  private:
   // Keeps track of how many conversion registrations there have been on the
   // current page.
   int num_conversions_on_current_page_ = 0;
+
+  // Keeps track of how many impression registrations there have been on the
+  // current page.
+  int num_impressions_on_current_page_ = 0;
 };
 
 }  // namespace content

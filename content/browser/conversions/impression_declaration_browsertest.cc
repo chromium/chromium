@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -633,6 +634,78 @@ IN_PROC_BROWSER_TEST_F(ImpressionDeclarationBrowserTest,
                      EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_TRUE(impression_observer.WaitForNavigationWithNoImpression());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    ImpressionTagNavigatesCurrentFrame_ImpressionPageMetrics) {
+  base::HistogramTester histograms;
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
+
+  // Create an anchor tag with impression attributes and click the link. By
+  // default the target is set to "_top".
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    createImpressionTag("link1",
+                        "page_with_impression_creator.html",
+                        "1" /* impression data */,
+                        "https://a.com" /* conversion_destination */);)"));
+
+  // Click the impression on the page.
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link1\');"));
+  WaitForLoadStop(web_contents());
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    createImpressionTag("link2",
+                        "page_with_impression_creator.html",
+                        "2" /* impression data */,
+                        "https://a.com" /* conversion_destination */);)"));
+
+  // Click the impression on the page.
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link2\');"));
+  WaitForLoadStop(web_contents());
+
+  // Navigate away to have the data captured.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  histograms.ExpectBucketCount("Conversions.RegisteredImpressionsPerPage", 1,
+                               2);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ImpressionDeclarationBrowserTest,
+    ImpressionTagNavigatesRemoteFrame_ImpressionPageMetrics) {
+  base::HistogramTester histograms;
+
+  EXPECT_TRUE(NavigateToURL(
+      web_contents(),
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html")));
+
+  // Create an impression tag with a target frame that does not exist, which
+  // will open a new window to navigate.
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    createImpressionTagWithTarget("link1",
+                        "page_with_conversion_redirect.html",
+                        "1" /* impression data */,
+                        "https://a.com" /* conversion_destination */,
+                        "target" /* target */);)"));
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link1\');"));
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    createImpressionTagWithTarget("link2",
+                        "page_with_conversion_redirect.html",
+                        "2" /* impression data */,
+                        "https://a.com" /* conversion_destination */,
+                        "target" /* target */);)"));
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick(\'link2\');"));
+
+  // Navigate away to have the data captured.
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  histograms.ExpectBucketCount("Conversions.RegisteredImpressionsPerPage", 2,
+                               1);
 }
 
 }  // namespace content

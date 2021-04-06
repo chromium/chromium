@@ -106,7 +106,6 @@ enum class PictureInPictureResult;
 class AgentSchedulingGroupHost;
 class BrowserPluginEmbedder;
 class BrowserPluginGuest;
-class ConversionHost;
 class DisplayCutoutHostImpl;
 class FindRequestManager;
 class JavaScriptDialogManager;
@@ -1994,9 +1993,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Manages media players, CDMs, and power save blockers for media.
   std::unique_ptr<MediaWebContentsObserver> media_web_contents_observer_;
-
-  // Observes registration of conversions.
-  std::unique_ptr<ConversionHost> conversion_host_;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Observes pepper playback changes, and notifies MediaSession.

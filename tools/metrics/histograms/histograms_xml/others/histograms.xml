@@ -3450,6 +3450,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.RegisteredImpressionsPerPage" units="impressions"
+    expires_after="M95">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records the number of impressions attempted on a given top level page load.
+    Recorded when the page navigates away or is otherwise closed. Only recorded
+    for non-off-the-record profiles (OTR profiles have the feature disabled).
+  </summary>
+</histogram>
+
 <histogram name="Conversions.ReportRetrySucceed" enum="BooleanSuccess"
     expires_after="M95">
   <owner>johnidel@chromium.org</owner>

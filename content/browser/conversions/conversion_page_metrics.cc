@@ -15,10 +15,17 @@ ConversionPageMetrics::~ConversionPageMetrics() {
   // based on this metric.
   base::UmaHistogramExactLinear("Conversions.RegisteredConversionsPerPage",
                                 num_conversions_on_current_page_, 100);
+
+  base::UmaHistogramExactLinear("Conversions.RegisteredImpressionsPerPage",
+                                num_impressions_on_current_page_, 100);
 }
 
 void ConversionPageMetrics::OnConversion(const StorableConversion& conversion) {
   num_conversions_on_current_page_++;
+}
+
+void ConversionPageMetrics::OnImpression() {
+  num_impressions_on_current_page_++;
 }
 
 }  // namespace content

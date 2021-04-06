@@ -123,6 +123,17 @@ void ConversionHost::DidStartNavigation(NavigationHandle* navigation_handle) {
           ->current_origin();
   navigation_impression_origins_.emplace(navigation_handle->GetNavigationId(),
                                          initiator_root_frame_origin);
+
+  if (auto* initiator_web_contents =
+          WebContents::FromRenderFrameHost(initiator_frame_host)) {
+    if (auto* initiator_conversion_host =
+            ConversionHost::FromWebContents(initiator_web_contents)) {
+      // This doesn't necessarily mean that the browser will store the report,
+      // due to the additional logic in DidFinishNavigation(). This records
+      // that a page /attempted/ to register an impression for a navigation.
+      initiator_conversion_host->NotifyImpressionNavigationInitiatedByPage();
+    }
+  }
 }
 
 void ConversionHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
@@ -248,9 +259,16 @@ void ConversionHost::RegisterConversion(
   conversion_manager->HandleConversion(storable_conversion);
 }
 
+void ConversionHost::NotifyImpressionNavigationInitiatedByPage() {
+  if (conversion_page_metrics_)
+    conversion_page_metrics_->OnImpression();
+}
+
 void ConversionHost::SetCurrentTargetFrameForTesting(
     RenderFrameHost* render_frame_host) {
   receiver_.SetCurrentTargetFrameForTesting(render_frame_host);
 }
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ConversionHost)
 
 }  // namespace content

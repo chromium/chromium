@@ -13,6 +13,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_receiver_set.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
 
 namespace content {
@@ -24,8 +25,10 @@ class WebContents;
 // Class responsible for listening to conversion events originating from blink,
 // and verifying that they are valid. Owned by the WebContents. Lifetime is
 // bound to lifetime of the WebContents.
-class CONTENT_EXPORT ConversionHost : public WebContentsObserver,
-                                      public blink::mojom::ConversionHost {
+class CONTENT_EXPORT ConversionHost
+    : public WebContentsObserver,
+      public WebContentsUserData<ConversionHost>,
+      public blink::mojom::ConversionHost {
  public:
   static std::unique_ptr<ConversionHost> CreateForTesting(
       WebContents* web_contents,
@@ -62,6 +65,8 @@ class CONTENT_EXPORT ConversionHost : public WebContentsObserver,
   FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
                            EmbedderDisabledContext_ConversionDisallowed);
 
+  friend class WebContentsUserData<ConversionHost>;
+
   ConversionHost(
       WebContents* web_contents,
       std::unique_ptr<ConversionManager::Provider> conversion_manager_provider);
@@ -72,6 +77,9 @@ class CONTENT_EXPORT ConversionHost : public WebContentsObserver,
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+
+  // Notifies an impression for a navigation.
+  void NotifyImpressionNavigationInitiatedByPage();
 
   // Sets the target frame on |receiver_|.
   void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host);
@@ -101,6 +109,8 @@ class CONTENT_EXPORT ConversionHost : public WebContentsObserver,
   std::unique_ptr<ConversionPageMetrics> conversion_page_metrics_;
 
   WebContentsFrameReceiverSet<blink::mojom::ConversionHost> receiver_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace content
