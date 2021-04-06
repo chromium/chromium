@@ -295,9 +295,7 @@ void AccessContextAuditDatabase::AddRecords(
       insert_cookie.BindString(1, record.name);
       insert_cookie.BindString(2, record.domain);
       insert_cookie.BindString(3, record.path);
-      insert_cookie.BindInt64(
-          4,
-          record.last_access_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      insert_cookie.BindTime(4, record.last_access_time);
       insert_cookie.BindBool(5, record.is_persistent);
 
       if (!insert_cookie.Run())
@@ -308,9 +306,7 @@ void AccessContextAuditDatabase::AddRecords(
       insert_storage_api.BindString(0, record.top_frame_origin.Serialize());
       insert_storage_api.BindInt(1, static_cast<int>(record.type));
       insert_storage_api.BindString(2, record.origin.Serialize());
-      insert_storage_api.BindInt64(
-          3,
-          record.last_access_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+      insert_storage_api.BindTime(3, record.last_access_time);
 
       if (!insert_storage_api.Run())
         return;
@@ -376,9 +372,8 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTimeRange(base::Time begin,
       "DELETE FROM cookies WHERE access_utc BETWEEN ? AND ?";
   sql::Statement remove_cookies(
       db_.GetCachedStatement(SQL_FROM_HERE, kRemoveCookieRecords));
-  remove_cookies.BindInt64(0,
-                           begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  remove_cookies.BindInt64(1, end.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  remove_cookies.BindTime(0, begin);
+  remove_cookies.BindTime(1, end);
   if (!remove_cookies.Run())
     return;
 
@@ -386,10 +381,8 @@ void AccessContextAuditDatabase::RemoveAllRecordsForTimeRange(base::Time begin,
       "DELETE FROM originStorageAPIs WHERE access_utc BETWEEN ? AND ?";
   sql::Statement remove_storage_apis(
       db_.GetCachedStatement(SQL_FROM_HERE, kRemoveStorageApiRecords));
-  remove_storage_apis.BindInt64(
-      0, begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  remove_storage_apis.BindInt64(
-      1, end.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  remove_storage_apis.BindTime(0, begin);
+  remove_storage_apis.BindTime(1, end);
   if (!remove_storage_apis.Run())
     return;
 
@@ -552,9 +545,7 @@ AccessContextAuditDatabase::GetCookieRecords() {
     records.emplace_back(
         url::Origin::Create(GURL(select_cookies.ColumnString(0))),
         select_cookies.ColumnString(1), select_cookies.ColumnString(2),
-        select_cookies.ColumnString(3),
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromMicroseconds(select_cookies.ColumnInt64(4))),
+        select_cookies.ColumnString(3), select_cookies.ColumnTime(4),
         select_cookies.ColumnBool(5));
   }
 
@@ -576,9 +567,7 @@ AccessContextAuditDatabase::GetStorageRecords() {
         url::Origin::Create(GURL(select_storage_api.ColumnString(0))),
         static_cast<StorageAPIType>(select_storage_api.ColumnInt(1)),
         url::Origin::Create(GURL(select_storage_api.ColumnString(2))),
-        base::Time::FromDeltaSinceWindowsEpoch(
-            base::TimeDelta::FromMicroseconds(
-                select_storage_api.ColumnInt64(3))));
+        select_storage_api.ColumnTime(3));
   }
 
   return records;
@@ -615,10 +604,8 @@ void AccessContextAuditDatabase::RemoveStorageApiRecords(
       "AND ?";
   sql::Statement select_storage_api(
       db_.GetCachedStatement(SQL_FROM_HERE, kSelectOriginAndType));
-  select_storage_api.BindInt64(
-      0, begin.ToDeltaSinceWindowsEpoch().InMicroseconds());
-  select_storage_api.BindInt64(1,
-                               end.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  select_storage_api.BindTime(0, begin);
+  select_storage_api.BindTime(1, end);
 
   // Filter the returned records based on the provided parameters, maintaining
   // a list of origin and storage type pairs for removal from the database.
