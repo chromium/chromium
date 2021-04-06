@@ -173,15 +173,14 @@ class LiteVideoBrowserTest : public InProcessBrowserTest {
 // Need to make tests more reliable but feature only targeted
 // for Android. Currently there are potential race conditions
 // on throttle timing and counts
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
-#define DISABLE_ON_DESKTOP(x) DISABLED_##x
+#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#define DISABLE_ON_WIN_MAC_CHROMEOS(x) DISABLED_##x
 #else
-#define DISABLE_ON_DESKTOP(x) x
+#define DISABLE_ON_WIN_MAC_CHROMEOS(x) x
 #endif
 
 IN_PROC_BROWSER_TEST_F(LiteVideoBrowserTest,
-                       DISABLE_ON_DESKTOP(SimplePlayback)) {
+                       DISABLE_ON_WIN_MAC_CHROMEOS(SimplePlayback)) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   TestMSEPlayback("bear-vp9.webm", "2000", "2000", false);
 
@@ -566,7 +565,7 @@ class LiteVideoDataSavingsBrowserTest : public LiteVideoBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LiteVideoDataSavingsBrowserTest,
-                       DISABLE_ON_DESKTOP(SimplePlayback)) {
+                       DISABLE_ON_WIN_MAC_CHROMEOS(SimplePlayback)) {
   WaitForDBToInitialize();
   uint64_t data_savings_before_navigation = GetDataSavings(http_server_host());
 
@@ -608,10 +607,12 @@ IN_PROC_BROWSER_TEST_F(LiteVideoDataSavingsBrowserTest,
           static_cast<int>(
               lite_video::LiteVideoThrottleResult::kThrottleStoppedOnRebuffer));
 
-  // Expect at least 80KB data savings. The video is ~400KB, and based on the
+  // Expect at least 30KB data savings. The video is ~400KB, and based on the
   // default parameters from GetThrottledVideoBytesDeflatedRatio(), it could be
-  // up to 116KB of savings.
-  EXPECT_LE(80000u, GetDataSavings(http_server_host()) -
+  // up to 116KB of savings when the full video is throttled, and up to 40KB
+  // when only part of the video is throtted and LiteVideo gets paused due to
+  // rebuffers.
+  EXPECT_LE(30000u, GetDataSavings(http_server_host()) -
                         data_savings_before_navigation);
 }
 
