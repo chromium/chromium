@@ -1,20 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Direct Sockets Test</title>
+  <title>Direct Sockets TCP Test</title>
   <script>
     'use strict';
-
-    async function openTcp(options) {
-      try {
-        let tcpSocket = await navigator.openTCPSocket(options);
-        return ('openTcp succeeded: ' +
-                '{remoteAddress: "' + tcpSocket.remoteAddress +
-                '", remotePort: ' + tcpSocket.remotePort + '}');
-      } catch(error) {
-        return ('openTcp failed: ' + error);
-      }
-    }
 
     async function writeLoop(writer, requiredBytes) {
       if (!(writer instanceof WritableStreamDefaultWriter))
@@ -106,18 +95,9 @@
       }
     }
 
-    async function openUdp(options) {
-      try {
-        let udpSocket = await navigator.openUDPSocket(options);
-        return 'openUdp succeeded';
-      } catch(error) {
-        return ('openUdp failed: ' + error);
-      }
-    }
-
   </script>
 </head>
 <body>
-  <h1>Direct Sockets Test</h1>
+  <h1>Direct Sockets TCP Test</h1>
 </body>
 </html>

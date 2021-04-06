@@ -1554,7 +1554,8 @@ test("content_browsertests") {
   } else {
     # Non-Android.
     sources += [
-      "../browser/direct_sockets/direct_sockets_browsertest.cc",
+      "../browser/direct_sockets/direct_sockets_open_browsertest.cc",
+      "../browser/direct_sockets/direct_sockets_tcp_browsertest.cc",
       "../browser/file_system_access/file_system_access_clipboard_browsertest.cc",
       "../browser/file_system_access/file_system_access_drag_drop_browsertest.cc",
       "../browser/file_system_access/file_system_access_file_writer_impl_browsertest.cc",
