@@ -1,5 +1,6 @@
 <style>
   :host {
+    --ntp-modules-drive-row-margin: 15px;
     display: block;
     height: 100%;
     width: 100%;
@@ -17,9 +18,24 @@
     display: flex;
     flex-shrink: 0;
     height: 38px;
-    margin-inline-end: 15px;
-    margin-inline-start: 15px;
+    margin-inline-end: var(--ntp-modules-drive-row-margin);
+    margin-inline-start: var(--ntp-modules-drive-row-margin);
     text-decoration: none;
+  }
+
+  .file:hover {
+    background-color: var(--ntp-hover-background-color);
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    padding-inline-end: var(--ntp-modules-drive-row-margin);
+    padding-inline-start: var(--ntp-modules-drive-row-margin);
+  }
+
+  .file:hover + .file {
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    padding-inline-end: var(--ntp-modules-drive-row-margin);
+    padding-inline-start: var(--ntp-modules-drive-row-margin);
   }
 
   .file-icon {
