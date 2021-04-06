@@ -4902,8 +4902,8 @@ TEST_F(ChromeLauncherControllerWebAppTest, WebAppPinRunUnpinClose) {
 
   InitLauncherController();
 
-  const web_app::AppId app_id =
-      web_app::InstallDummyWebApp(profile(), kWebAppName, GURL(kWebAppUrl));
+  const web_app::AppId app_id = web_app::test::InstallDummyWebApp(
+      profile(), kWebAppName, GURL(kWebAppUrl));
   base::RunLoop().RunUntilIdle();
 
   // The model should only contain the browser shortcut item.

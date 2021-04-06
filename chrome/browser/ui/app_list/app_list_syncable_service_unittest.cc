@@ -231,9 +231,6 @@ class AppListSyncableServiceTest : public AppListTestBase {
   void SetUp() override {
     AppListTestBase::SetUp();
 
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableDefaultApps);
-
     // Make sure we have a Profile Manager.
     DCHECK(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
@@ -570,8 +567,8 @@ class AppListInternalAppSyncableServiceTest
 
   void SetUp() override {
     AppListSyncableServiceTest::SetUp();
-    web_app::InstallDummyWebApp(testing_profile(), kOsSettingsUrl,
-                                GURL(kOsSettingsUrl));
+    web_app::test::InstallDummyWebApp(testing_profile(), kOsSettingsUrl,
+                                      GURL(kOsSettingsUrl));
   }
 
   ~AppListInternalAppSyncableServiceTest() override = default;

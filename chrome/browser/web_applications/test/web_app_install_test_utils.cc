@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,11 +14,32 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_app_provider_base.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
+#include "chrome/browser/web_applications/test/test_web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 namespace web_app {
+namespace test {
+
+void AwaitStartWebAppProviderAndSubsystems(Profile* profile) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kDisableDefaultApps);
+  TestWebAppProvider* provider = TestWebAppProvider::Get(profile);
+  DCHECK(provider);
+  provider->SetRunSubsystemStartupTasks(true);
+  // Use a TestSystemWebAppManager to skip system web apps being auto-installed
+  // on |Start|.
+  provider->SetSystemWebAppManager(
+      std::make_unique<web_app::TestSystemWebAppManager>(profile));
+  provider->Start();
+  // Await registry ready.
+  base::RunLoop run_loop;
+  provider->on_registry_ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
 
 AppId InstallDummyWebApp(Profile* profile,
                          const std::string& app_name,
@@ -54,4 +76,5 @@ AppId InstallDummyWebApp(Profile* profile,
   return app_id;
 }
 
+}  // namespace test
 }  // namespace web_app

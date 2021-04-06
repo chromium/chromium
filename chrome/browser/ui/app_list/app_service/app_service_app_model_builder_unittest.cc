@@ -309,15 +309,6 @@ class WebAppBuilderTest : public AppServiceAppModelBuilderTest {
   void SetUp() override {
     AppServiceAppModelBuilderTest::SetUp();
 
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableDefaultApps);
-
-    base::RunLoop run_loop;
-    web_app::WebAppProvider::Get(testing_profile())
-        ->on_registry_ready()
-        .Post(FROM_HERE, run_loop.QuitClosure());
-    run_loop.Run();
-
     CreateBuilder();
   }
 
