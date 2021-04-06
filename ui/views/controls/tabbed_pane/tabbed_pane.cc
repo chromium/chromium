@@ -189,6 +189,11 @@ bool Tab::OnKeyPressed(const ui::KeyEvent& event) {
          tabbed_pane_->MoveSelectionBy(key == ui::VKEY_DOWN ? 1 : -1);
 }
 
+void Tab::OnThemeChanged() {
+  View::OnThemeChanged();
+  UpdateTitleColor();
+}
+
 void Tab::SetState(State state) {
   if (state == state_)
     return;
@@ -198,11 +203,9 @@ void Tab::SetState(State state) {
 }
 
 void Tab::OnStateChanged() {
-  const SkColor font_color = GetNativeTheme()->GetSystemColor(
-      state_ == State::kActive
-          ? ui::NativeTheme::kColorId_TabTitleColorActive
-          : ui::NativeTheme::kColorId_TabTitleColorInactive);
-  title_->SetEnabledColor(font_color);
+  // Update colors that depend on state if present in a Widget hierarchy.
+  if (GetWidget())
+    UpdateTitleColor();
 
   // Tab design spec dictates special handling of font weight for the windows
   // platform when dealing with border style tabs.
@@ -270,6 +273,15 @@ void Tab::UpdatePreferredTitleWidth() {
   preferred_title_width_ =
       std::max(preferred_title_width_, title_->GetPreferredSize().width());
   SetState(old_state);
+}
+
+void Tab::UpdateTitleColor() {
+  DCHECK(GetWidget());
+  const SkColor font_color = GetNativeTheme()->GetSystemColor(
+      state_ == State::kActive
+          ? ui::NativeTheme::kColorId_TabTitleColorActive
+          : ui::NativeTheme::kColorId_TabTitleColorInactive);
+  title_->SetEnabledColor(font_color);
 }
 
 BEGIN_METADATA(Tab, View)

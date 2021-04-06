@@ -164,6 +164,7 @@ class VIEWS_EXPORT Tab : public View {
   void OnFocus() override;
   void OnBlur() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+  void OnThemeChanged() override;
 
  private:
   enum class State {
@@ -181,6 +182,7 @@ class VIEWS_EXPORT Tab : public View {
   void OnPaint(gfx::Canvas* canvas) override;
 
   void UpdatePreferredTitleWidth();
+  void UpdateTitleColor();
 
   TabbedPane* tabbed_pane_;
   Label* title_ = nullptr;
