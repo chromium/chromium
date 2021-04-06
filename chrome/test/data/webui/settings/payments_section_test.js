@@ -228,6 +228,34 @@ suite('PaymentsSection', function() {
     ]);
   });
 
+  test('verifyCancelEditDoesNotKeepState', function() {
+    const creditCard = createCreditCardEntry();
+    creditCard.metadata.isLocal = true;
+    const section =
+        createPaymentsSection([creditCard], /*upiIds=*/[], /*prefValues=*/ {});
+    const rowShadowRoot = getCardRowShadowRoot(section.$$('#paymentsList'));
+    const menuButton = rowShadowRoot.querySelector('#creditCardMenu');
+    assertTrue(!!menuButton);
+
+    // Open edit dialog.
+    menuButton.click();
+    flush();
+    const menu = section.$.creditCardSharedMenu;
+    menu.querySelector('#menuEditCreditCard').click();
+    flush();
+    const creditCardDialog = section.$$('settings-credit-card-edit-dialog');
+    assertTrue(!!creditCardDialog);
+
+    // Edit, then cancel. Changes in the dialog should not be reflected in the
+    // model.
+    const editedValue = 'not the original value';
+    assertEquals(creditCard.cardNumber, section.activeCreditCard.cardNumber);
+    creditCardDialog.$.numberInput.value = editedValue;
+    creditCardDialog.$.cancelButton.click();
+    flush();
+    assertNotEquals(creditCard.cardNumber, editedValue);
+  });
+
   test('verifyExpiredCreditCardYear', function() {
     const creditCard = createCreditCardEntry();
 

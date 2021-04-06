@@ -313,8 +313,10 @@ Polymer({
    * @private
    */
   onCreditCardDotsMenuTap_(e) {
-    // Copy item so dialog won't update model on cancel.
-    this.activeCreditCard = e.detail.creditCard;
+    // Copy item so dialog won't update the model on cancel.
+    this.activeCreditCard =
+        /** @type {!chrome.autofillPrivate.CreditCardEntry} */ (
+            Object.assign({}, e.detail.creditCard));
 
     /** @type {!CrActionMenuElement} */ (this.$.creditCardSharedMenu)
         .showAt(e.detail.anchorElement);
