@@ -44,6 +44,13 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
                PlatformWindowInitProperties properties);
   ~ScenicWindow() override;
 
+  // Converts Scenic's rect-based representation of insets to gfx::Insets.
+  // Returns zero-width insets if |inset_from_min| and |inset_from_max| are
+  // uninitialized (indicating that no insets were provided from Scenic).
+  static gfx::Insets ConvertInsets(
+      float device_pixel_ratio,
+      const fuchsia::ui::gfx::ViewProperties& view_properties);
+
   scenic::Session* scenic_session() { return &scenic_session_; }
 
   // Embeds the View identified by |token| into the render node,
@@ -145,6 +152,8 @@ class COMPONENT_EXPORT(OZONE) ScenicWindow : public PlatformWindow,
   // for the first time. After that the size is set to the size of the
   // corresponding Scenic view.
   gfx::Rect bounds_;
+
+  base::Optional<fuchsia::ui::gfx::ViewProperties> view_properties_;
 
   bool visible_ = false;
 

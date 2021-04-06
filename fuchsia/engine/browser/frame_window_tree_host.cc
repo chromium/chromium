@@ -5,6 +5,7 @@
 #include "fuchsia/engine/browser/frame_window_tree_host.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -93,5 +94,14 @@ void FrameWindowTreeHost::OnWindowStateChanged(
   } else {
     Show();
     web_contents_->WasShown();
+  }
+}
+
+void FrameWindowTreeHost::OnWindowBoundsChanged(const BoundsChange& bounds) {
+  aura::WindowTreeHostPlatform::OnBoundsChanged(bounds);
+
+  if (web_contents_->GetMainFrame()->IsRenderFrameLive()) {
+    web_contents_->GetMainFrame()->GetView()->SetInsets(
+        bounds.system_ui_overlap);
   }
 }

@@ -63,6 +63,7 @@ if (ozone_platform_x11) {
 if (ozone_platform_scenic) {
   ozone_platforms += [ "scenic" ]
   ozone_platform_deps += [ "platform/scenic" ]
+  ozone_platform_test_deps += [ "platform/scenic:scenic_unittests" ]
 }
 
 platform_list_cc_file = "$target_gen_dir/platform_list.cc"
