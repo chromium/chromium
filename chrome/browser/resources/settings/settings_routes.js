@@ -38,6 +38,7 @@ import {Route} from './router.js';
  *   PRIVACY: !Route,
  *   RESET: !Route,
  *   RESET_DIALOG: !Route,
+ *   SAFETY_CHECK: !Route,
  *   SEARCH: !Route,
  *   SEARCH_ENGINES: !Route,
  *   SECURITY: !Route,

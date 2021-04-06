@@ -75,6 +75,7 @@ js_library("safety_check_page") {
     ":safety_check_updates_child",
     "..:hats_browser_proxy",
     "..:metrics_browser_proxy",
+    "..:route",
     "../autofill_page:password_manager_proxy",
     "//third_party/polymer/v3_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",

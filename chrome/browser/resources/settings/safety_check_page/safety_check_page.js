@@ -34,6 +34,8 @@ import {HatsBrowserProxyImpl} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxy, MetricsBrowserProxyImpl, SafetyCheckInteractions} from '../metrics_browser_proxy.js';
 
+import {routes} from '../route.js';
+import {Router} from '../router.js';
 import {SafetyCheckBrowserProxy, SafetyCheckBrowserProxyImpl, SafetyCheckCallbackConstants, SafetyCheckParentStatus} from './safety_check_browser_proxy.js';
 
 /**
@@ -96,6 +98,11 @@ Polymer({
     // Configure default UI.
     this.parentDisplayString_ =
         this.i18n('safetyCheckParentPrimaryLabelBefore');
+
+    if (Router.getInstance().getCurrentRoute() === routes.SAFETY_CHECK &&
+        Router.getInstance().getQueryParameters().has('activateSafetyCheck')) {
+      this.runSafetyCheck_();
+    }
   },
 
   /**
