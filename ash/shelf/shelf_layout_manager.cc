@@ -1619,6 +1619,10 @@ void ShelfLayoutManager::CalculateTargetBoundsAndUpdateWorkArea() {
 
 void ShelfLayoutManager::UpdateTargetBoundsForGesture(
     HotseatState hotseat_target_state) {
+  // Home launcher style shelf should not be able to be pulled up.
+  if (hotseat_target_state == HotseatState::kShownHomeLauncher)
+    return;
+
   // TODO(https://crbug.com/1002132): Add tests for the hotseat bounds logic.
   CHECK_EQ(kDragInProgress, drag_status_);
   const bool horizontal = shelf_->IsHorizontalAlignment();

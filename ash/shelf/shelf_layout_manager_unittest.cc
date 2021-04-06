@@ -3006,6 +3006,38 @@ TEST_F(ShelfLayoutManagerWindowDraggingTest, NoOpInOverview) {
   EndScroll(/*is_fling=*/false, 0.f);
 }
 
+// Test that upward fling to exit overview mode does not cause the shelf to
+// animate if we are in kShownHomeLauncher.
+TEST_F(ShelfLayoutManagerWindowDraggingTest, SwipeToExitOverview) {
+  const gfx::Rect shelf_widget_bounds =
+      GetShelfWidget()->GetWindowBoundsInScreen();
+  const int shelf_size = ShelfConfig::Get()->shelf_size();
+  const int hotseat_size = GetHotseatWidget()->GetHotseatSize();
+  const int hotseat_padding_size = ShelfConfig::Get()->hotseat_bottom_padding();
+  std::unique_ptr<aura::Window> window1 =
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  // Hide |window1| so we remain in kShownHomeLauncher when we enter overview.
+  window1->Hide();
+  EXPECT_EQ(HotseatState::kShownHomeLauncher, GetHotseatWidget()->state());
+
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview();
+  GetHotseatWidget()->SetState(HotseatState::kShownHomeLauncher);
+  const gfx::Rect hotseat_bounds = GetHotseatWidget()->GetTargetBounds();
+
+  // Fling up from the center of the shelf's bottom.
+  StartScroll(shelf_widget_bounds.bottom_center());
+  UpdateScroll(-shelf_size - hotseat_size - hotseat_padding_size);
+  // Hotseat should move as it is in the |kShownHomeLauncher| state.
+  EXPECT_EQ(hotseat_bounds, GetHotseatWidget()->GetTargetBounds());
+  EndScroll(
+      true /* is_fling */,
+      -(DragWindowFromShelfController::kVelocityToHomeScreenThreshold + 10));
+
+  // We should exit overview mode after completing the fling gesture.
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+}
+
 // Test that upward fling in overview transitions from overview to home.
 TEST_F(ShelfLayoutManagerWindowDraggingTest, FlingInOverview) {
   const gfx::Rect shelf_widget_bounds =
