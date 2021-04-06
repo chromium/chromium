@@ -453,10 +453,14 @@ void CollectGDIUsageAndDie(BITMAPINFOHEADER* header, HANDLE shared_section) {
   DWORD num_gdi_handles = GetNumGdiHandles();
   DWORD peak_gdi_handles =
       GetGuiResources(GetCurrentProcess(), GR_GDIOBJECTS_PEAK);
+  DWORD num_global_gdi_handles = GetGuiResources(GR_GLOBAL, GR_GDIOBJECTS);
+  DWORD num_global_user_handles = GetGuiResources(GR_GLOBAL, GR_USEROBJECTS);
 
   base::debug::Alias(&num_gdi_handles);
   base::debug::Alias(&num_user_handles);
   base::debug::Alias(&peak_gdi_handles);
+  base::debug::Alias(&num_global_gdi_handles);
+  base::debug::Alias(&num_global_user_handles);
 
   base::Optional<GdiHandleCounts> optional_handle_counts =
       CollectGdiHandleCounts(GetCurrentProcessId());
