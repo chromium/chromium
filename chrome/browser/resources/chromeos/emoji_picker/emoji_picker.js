@@ -257,9 +257,12 @@ export class EmojiPicker extends PolymerElement {
 
   onLeftChevronClick() {
     this.shadowRoot.getElementById('tabs').scrollLeft = 0;
-    // TODO(crbug/1152237): need to handle case where recent is empty
     this.scrollToGroup(GROUP_TABS[0].groupId);
-    this.shadowRoot.getElementById('bar').style.left = '0px';
+    if (this.history.emoji.length > 0) {
+      this.shadowRoot.getElementById('bar').style.left = '0';
+    } else {
+      this.shadowRoot.getElementById('bar').style.left = '36px';
+    }
     this.highlightBarMoving = true;
   }
 
