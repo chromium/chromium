@@ -350,6 +350,36 @@ IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
                  canvas_expected_visibility);
 }
 
+IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest,
+                       DisableMultipleAppsWithHiddenModeBeforeInstall) {
+  base::Value system_features(base::Value::Type::LIST);
+  system_features.Append(kCameraFeature);
+  system_features.Append(kScanningFeature);
+  system_features.Append(kWebStoreFeature);
+  system_features.Append(kCanvasFeature);
+  UpdateSystemFeaturesDisableList(system_features.Clone(), kHiddenDisableMode);
+
+  InstallSWAs();
+  InstallPWA(GURL(kCanvasAppURL), web_app::kCanvasAppId);
+
+  VisibilityFlags expected_visibility =
+      GetVisibilityFlags(true /* is_hidden */);
+
+  // Disable app with hidden mode.
+  VerifyAppState(web_app::kCameraAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 expected_visibility);
+  VerifyAppState(web_app::kScanningAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 expected_visibility);
+  VerifyExtensionAppState(extensions::kWebStoreAppId,
+                          apps::mojom::Readiness::kDisabledByPolicy, true,
+                          expected_visibility);
+  VerifyAppState(web_app::kCanvasAppId,
+                 apps::mojom::Readiness::kDisabledByPolicy, true,
+                 expected_visibility);
+}
+
 IN_PROC_BROWSER_TEST_F(SystemFeaturesPolicyTest, RedirectChromeSettingsURL) {
   PolicyMap policies;
   base::Value system_features(base::Value::Type::LIST);

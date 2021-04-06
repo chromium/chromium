@@ -60,6 +60,7 @@ class WebAppsBase : public apps::PublisherBase,
   const web_app::WebApp* GetWebApp(const web_app::AppId& app_id) const;
 
   // web_app::AppRegistrarObserver:
+  void OnWebAppInstalled(const web_app::AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppLastLaunchTimeChanged(
       const std::string& app_id,
@@ -131,7 +132,6 @@ class WebAppsBase : public apps::PublisherBase,
                                ContentSettingsType content_type) override;
 
   // web_app::AppRegistrarObserver:
-  void OnWebAppInstalled(const web_app::AppId& app_id) override;
   void OnWebAppManifestUpdated(const web_app::AppId& app_id,
                                base::StringPiece old_name) override;
   void OnAppRegistrarDestroyed() override;

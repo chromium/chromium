@@ -140,6 +140,13 @@ const web_app::WebApp* WebAppsBase::GetWebApp(
   return GetRegistrar() ? GetRegistrar()->GetAppById(app_id) : nullptr;
 }
 
+void WebAppsBase::OnWebAppInstalled(const web_app::AppId& app_id) {
+  const web_app::WebApp* web_app = GetWebApp(app_id);
+  if (web_app && Accepts(app_id)) {
+    Publish(Convert(web_app, apps::mojom::Readiness::kReady), subscribers_);
+  }
+}
+
 void WebAppsBase::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
   const web_app::WebApp* web_app = GetWebApp(app_id);
   if (!web_app || !Accepts(app_id)) {
@@ -460,13 +467,6 @@ void WebAppsBase::OnContentSettingChanged(
 
       Publish(std::move(app), subscribers_);
     }
-  }
-}
-
-void WebAppsBase::OnWebAppInstalled(const web_app::AppId& app_id) {
-  const web_app::WebApp* web_app = GetWebApp(app_id);
-  if (web_app && Accepts(app_id)) {
-    Publish(Convert(web_app, apps::mojom::Readiness::kReady), subscribers_);
   }
 }
 

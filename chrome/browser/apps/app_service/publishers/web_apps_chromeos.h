@@ -98,6 +98,7 @@ class WebAppsChromeOs : public WebAppsBase,
                                  int64_t display_id) override;
 
   // web_app::AppRegistrarObserver:
+  void OnWebAppInstalled(const web_app::AppId& app_id) override;
   void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
   void OnWebAppDisabledStateChanged(const web_app::AppId& app_id,
                                     bool is_disabled) override;
@@ -173,6 +174,9 @@ class WebAppsChromeOs : public WebAppsBase,
   apps::mojom::OptionalBool ShouldShowBadge(
       const std::string& app_id,
       apps::mojom::OptionalBool has_notification_indicator);
+
+  // Checks whether the |app_id| is in the disabled list.
+  bool IsWebAppInDisabledList(const std::string& app_id) const;
 
   apps::InstanceRegistry* instance_registry_;
 

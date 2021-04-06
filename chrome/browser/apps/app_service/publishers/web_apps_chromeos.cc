@@ -385,6 +385,12 @@ void WebAppsChromeOs::ExecuteContextMenuCommand(const std::string& app_id,
   LaunchAppWithParams(std::move(params));
 }
 
+void WebAppsChromeOs::OnWebAppInstalled(const web_app::AppId& app_id) {
+  provider()->registry_controller().SetAppIsDisabled(
+      app_id, IsWebAppInDisabledList(app_id));
+  WebAppsBase::OnWebAppInstalled(app_id);
+}
+
 void WebAppsChromeOs::OnWebAppWillBeUninstalled(const web_app::AppId& app_id) {
   const web_app::WebApp* web_app = GetWebApp(app_id);
   if (!web_app || !Accepts(app_id)) {
@@ -429,15 +435,13 @@ void WebAppsChromeOs::OnWebAppDisabledStateChanged(const web_app::AppId& app_id,
 
 void WebAppsChromeOs::OnWebAppsDisabledModeChanged() {
   std::vector<apps::mojom::AppPtr> apps;
-  auto disabled_web_apps = provider()->policy_manager().GetDisabledWebAppsIds();
   std::vector<web_app::AppId> app_ids = provider()->registrar().GetAppIds();
   for (const auto& id : app_ids) {
-    const bool is_disabled = base::Contains(disabled_web_apps, id);
     // We only update visibility of disabled apps in this method. When enabling
     // previously disabled app, OnWebAppDisabledStateChanged() method will be
     // called and this method will update visibility and readiness of the newly
     // enabled app.
-    if (is_disabled) {
+    if (IsWebAppInDisabledList(id)) {
       const web_app::WebApp* web_app = GetWebApp(id);
       if (!web_app || !Accepts(id)) {
         continue;
@@ -659,6 +663,9 @@ apps::mojom::AppPtr WebAppsChromeOs::Convert(const web_app::WebApp* web_app,
   apps::mojom::AppPtr app = WebAppsBase::ConvertImpl(
       web_app,
       is_disabled ? apps::mojom::Readiness::kDisabledByPolicy : readiness);
+  if (is_disabled) {
+    UpdateAppDisabledMode(app);
+  }
 
   bool paused = paused_apps_.IsPaused(web_app->app_id());
   app->icon_key = icon_key_factory().MakeIconKey(
@@ -798,5 +805,10 @@ apps::mojom::OptionalBool WebAppsChromeOs::ShouldShowBadge(
     // Show a badge only if a notification is showing.
     return has_notification;
   }
+}
+
+bool WebAppsChromeOs::IsWebAppInDisabledList(const std::string& app_id) const {
+  return base::Contains(provider()->policy_manager().GetDisabledWebAppsIds(),
+                        app_id);
 }
 }  // namespace apps
