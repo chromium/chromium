@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(FeedbackTest, ProvideBluetoothLogs) {
       &bool_result));
   EXPECT_TRUE(bool_result);
 }
-#endif  // if defined(CHROME_OS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Disabled due to flake: https://crbug.com/1069870
 IN_PROC_BROWSER_TEST_F(FeedbackTest, DISABLED_GetTargetTabUrl) {

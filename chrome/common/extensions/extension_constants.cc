@@ -121,7 +121,7 @@ const char kWallpaperManagerId[] = "obklkkbkpaoaejdabbfldmcfplpdgolj";
 const char kZipArchiverExtensionId[] = "dmboannefpncccogfdikhmhpmdnddgoe";
 const char kZipArchiverExtensionPath[] = "chromeos/zip_archiver";
 const char kCameraAppPath[] = "chromeos/camera";
-#endif  // defined(CHROME_OS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kAppStateNotInstalled[] = "not_installed";
 const char kAppStateInstalled[] = "installed";

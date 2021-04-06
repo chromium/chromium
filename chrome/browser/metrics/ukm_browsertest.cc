@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(UkmBrowserTest, IncognitoPlusRegularCheck) {
   ClosePlatformBrowser(browser);
 }
 
-#if !defined(OS_ANDROID) && !defined(CHROME_OS)
+#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 class GuestUkmBrowserTest : public UkmBrowserTest,
                             public ::testing::WithParamInterface<bool> {
  public:
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_P(GuestUkmBrowserTest, RegularPlusGuestCheck) {
 INSTANTIATE_TEST_SUITE_P(AllGuestTypes,
                          GuestUkmBrowserTest,
                          /*is_ephemeral=*/testing::Bool());
-#endif  // !defined(OS_ANDROID) && !defined(CHROME_OS)
+#endif  // !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 
 // Make sure that UKM is disabled while an non-sync profile's window is open.
 #if !defined(OS_ANDROID)

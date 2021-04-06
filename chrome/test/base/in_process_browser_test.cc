@@ -159,7 +159,7 @@ FakeDeviceSyncImplFactory* GetFakeDeviceSyncImplFactory() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // An observer that returns back to test code after a new profile is
 // initialized.
 void UnblockOnProfileCreation(base::RunLoop* run_loop,
@@ -557,7 +557,7 @@ Browser* InProcessBrowserTest::CreateBrowserForApp(const std::string& app_name,
 }
 #endif  // !defined(OS_MAC)
 
-#if !defined(OS_ANDROID) && !defined(CHROME_OS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 Browser* InProcessBrowserTest::CreateGuestBrowser() {
   // Get Guest profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -572,12 +572,16 @@ Browser* InProcessBrowserTest::CreateGuestBrowser() {
   if (!profile->IsEphemeralGuestProfile())
     profile = profile->GetPrimaryOTRProfile();
 
+  const bool is_ephemeral = Profile::IsEphemeralGuestProfileEnabled();
+  EXPECT_EQ(is_ephemeral, profile->IsEphemeralGuestProfile());
+  EXPECT_NE(is_ephemeral, profile->IsGuestSession());
+
   // Create browser and add tab.
   Browser* browser = Browser::Create(Browser::CreateParams(profile, true));
   AddBlankTabAndShow(browser);
   return browser;
 }
-#endif  // !defined(OS_ANDROID) && !defined(CHROME_OS)
+#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void InProcessBrowserTest::AddBlankTabAndShow(Browser* browser) {
   content::WindowedNotificationObserver observer(

@@ -236,9 +236,9 @@ class InProcessBrowserTest : public content::BrowserTestBase {
   // is omitted, the currently active profile will be used.
   Browser* CreateIncognitoBrowser(Profile* profile = nullptr);
 
-#if !defined(OS_ANDROID) && !defined(CHROME_OS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Similar to |CreateBrowser|, but creates a Guest browser.
-  // To create a Guest browser for ChromeOS, you need to add proper switches to
+  // To create a ChromeOS Guest user session, you need to add proper switches to
   // commandline while setting up the test. For an example see
   // AppListClientGuestModeBrowserTest::SetUpCommandLine.
   Browser* CreateGuestBrowser();
