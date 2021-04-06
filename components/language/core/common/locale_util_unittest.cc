@@ -46,7 +46,7 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "fr-FR";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-  EXPECT_EQ("fr-FR", locale);
+  EXPECT_EQ("fr", locale);
 
   //---------------------------------------------------------------------------
   // Languages that are converted to their fallback version.
@@ -70,7 +70,12 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "en";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
+#if defined(OS_APPLE)
+  // On Apple platforms, "en" is used instead of "en-US".
+  EXPECT_EQ("en", locale);
+#else
   EXPECT_EQ("en-US", locale);
+#endif
 
   // All other regional English languages fall back to UK.
   for (const char* en_locale :
@@ -84,7 +89,12 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "pt";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-  EXPECT_EQ("pt-PT", locale);
+#if defined(OS_IOS)
+  // On iOS, "pt" is used instead of "pt-BR".
+  EXPECT_EQ("pt", locale);
+#else
+  EXPECT_EQ("pt-BR", locale);
+#endif
 
   locale = "it-CH";
   is_ui = ConvertToActualUILocale(&locale);
@@ -99,12 +109,12 @@ TEST_F(LocaleUtilTest, ConvertToActualUILocale) {
   locale = "it-IT";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-  EXPECT_EQ("it-IT", locale);
+  EXPECT_EQ("it", locale);
 
   locale = "de-DE";
   is_ui = ConvertToActualUILocale(&locale);
   EXPECT_TRUE(is_ui);
-  EXPECT_EQ("de-DE", locale);
+  EXPECT_EQ("de", locale);
 
 //---------------------------------------------------------------------------
 // Languages that cannot be used as display UI.
