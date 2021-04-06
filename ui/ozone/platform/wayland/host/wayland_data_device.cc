@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_file.h"
+#include "base/logging.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/ozone/platform/wayland/common/data_util.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"

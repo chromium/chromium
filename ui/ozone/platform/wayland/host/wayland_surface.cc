@@ -7,6 +7,7 @@
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <viewporter-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"

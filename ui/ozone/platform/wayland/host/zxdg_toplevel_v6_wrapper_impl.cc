@@ -8,6 +8,7 @@
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/hit_test.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"

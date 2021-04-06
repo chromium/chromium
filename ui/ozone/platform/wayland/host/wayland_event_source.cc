@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "ui/events/base_event_utils.h"

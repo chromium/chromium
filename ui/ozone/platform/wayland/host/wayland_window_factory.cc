@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/platform/wayland/host/wayland_auxiliary_window.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"

@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "third_party/skia/include/core/SkBitmap.h"

@@ -6,6 +6,7 @@
 
 #include <xdg-shell-client-protocol.h>
 
+#include "base/logging.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 

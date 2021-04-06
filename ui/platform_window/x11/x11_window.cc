@@ -5,11 +5,13 @@
 #include "ui/platform_window/x11/x11_window.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/network_interfaces.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/buildflags.h"
+#include "ui/base/cursor/cursor.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/hit_test_x11.h"

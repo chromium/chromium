@@ -4,7 +4,7 @@
 
 #include "ui/platform_window/stub/stub_window.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
 namespace ui {

@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/notreached.h"
 #include "base/strings/string_util_win.h"
 #include "ui/base/cursor/win/win_cursor.h"
 #include "ui/base/win/shell.h"

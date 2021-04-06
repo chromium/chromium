@@ -5,8 +5,8 @@
 #ifndef UI_GFX_WIN_MSG_UTIL_H_
 #define UI_GFX_WIN_MSG_UTIL_H_
 
-#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
 
