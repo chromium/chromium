@@ -139,4 +139,10 @@ void ThreadState::EnableDetachedGarbageCollectionsForTesting() {
   v8::V8::InitializePlatform(gin::V8Platform::Get());
 }
 
+bool ThreadState::IsIncrementalMarking() {
+  return cppgc::subtle::HeapState::IsMarking(
+             ThreadState::Current()->heap_handle()) &&
+         !cppgc::subtle::HeapState::IsInAtomicPause(
+             ThreadState::Current()->heap_handle());
+}
 }  // namespace blink

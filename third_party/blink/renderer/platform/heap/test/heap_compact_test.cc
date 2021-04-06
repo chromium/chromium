@@ -59,7 +59,7 @@ namespace blink {
 class HeapCompactTest : public TestSupportingGC {
  public:
   void PerformHeapCompaction() {
-    ForceCompactionForNextGC();
+    CompactionTestDriver(ThreadState::Current()).ForceCompactionForNextGC();
     PreciselyCollectGarbage();
   }
 };

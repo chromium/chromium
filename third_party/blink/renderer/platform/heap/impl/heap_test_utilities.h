@@ -48,10 +48,20 @@ class TestSupportingGC : public testing::Test {
   // with stale memory.
   void ClearOutOldGarbage();
 
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
+
+// Test driver for compaction.
+class CompactionTestDriver {
+ public:
+  explicit CompactionTestDriver(ThreadState* thread_state)
+      : thread_state_(thread_state) {}
+
   void ForceCompactionForNextGC();
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  ThreadState* const thread_state_;
 };
 
 // Test driver for incremental marking. Assumes that no stack handling is

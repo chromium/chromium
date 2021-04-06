@@ -1023,7 +1023,7 @@ TEST_F(IncrementalMarkingTest, DropReferenceWithHeapCompaction) {
   Persistent<Store> persistent(MakeGarbageCollected<Store>());
   persistent->insert(MakeGarbageCollected<LinkedObject>());
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  ForceCompactionForNextGC();
+  CompactionTestDriver(ThreadState::Current()).ForceCompactionForNextGC();
   driver.StartGC();
   driver.TriggerMarkingSteps();
   persistent->clear();
@@ -1162,7 +1162,7 @@ TEST_F(IncrementalMarkingTest, IncrementalMarkingShrinkingBackingCompaction) {
     holder->at(i).emplace_back(MakeGarbageCollected<LinkedObject>());
   }
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  ForceCompactionForNextGC();
+  CompactionTestDriver(ThreadState::Current()).ForceCompactionForNextGC();
   driver.StartGC();
   driver.TriggerMarkingSteps();
   // Reduce size of the outer backing store.
@@ -1181,7 +1181,7 @@ TEST_F(IncrementalMarkingTest,
 
   using Nested = HeapVector<HeapVector<Member<LinkedObject>>>;
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  ForceCompactionForNextGC();
+  CompactionTestDriver(ThreadState::Current()).ForceCompactionForNextGC();
   // Allocate a vector and reserve a buffer to avoid triggering the write
   // barrier during incremental marking.
   WeakPersistent<Nested> nested = MakeGarbageCollected<Nested>();
@@ -1249,7 +1249,7 @@ TEST_F(IncrementalMarkingTest, HeapCompactWithStaleSlotInNestedContainer) {
   HeapVector<Member<LinkedObject>> unused{MakeGarbageCollected<LinkedObject>()};
 
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  ForceCompactionForNextGC();
+  CompactionTestDriver(ThreadState::Current()).ForceCompactionForNextGC();
   driver.StartGC();
   Nested* outer = MakeGarbageCollected<Nested>();
   outer->push_back(HeapVector<Member<LinkedObject>>());
@@ -1307,7 +1307,7 @@ TEST_F(IncrementalMarkingTest, LinkedHashSetMovingCallback) {
       MakeGarbageCollected<LinkedHashSetWrapper>();
 
   IncrementalMarkingTestDriver driver(ThreadState::Current());
-  ForceCompactionForNextGC();
+  CompactionTestDriver(ThreadState::Current()).ForceCompactionForNextGC();
   driver.StartGC();
   driver.TriggerMarkingSteps();
 

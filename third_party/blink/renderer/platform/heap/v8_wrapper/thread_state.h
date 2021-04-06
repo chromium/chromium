@@ -125,6 +125,8 @@ class PLATFORM_EXPORT ThreadState final {
 
   void EnableDetachedGarbageCollectionsForTesting();
 
+  bool IsIncrementalMarking();
+
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.

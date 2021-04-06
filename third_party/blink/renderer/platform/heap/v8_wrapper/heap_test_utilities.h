@@ -37,55 +37,62 @@ class HeapPointersOnStackScope final {
 
 class TestSupportingGC : public testing::Test {
  public:
-  ~TestSupportingGC() override { PreciselyCollectGarbage(); }
+  ~TestSupportingGC() override;
 
   // Performs a precise garbage collection with eager sweeping.
-  static void PreciselyCollectGarbage() {
-    ThreadState::Current()->CollectAllGarbageForTesting(
-        BlinkGC::kNoHeapPointersOnStack);
-  }
+  static void PreciselyCollectGarbage();
 
   // Performs a conservative garbage collection with eager sweeping.
-  static void ConservativelyCollectGarbage() {
-    ThreadState::Current()->CollectAllGarbageForTesting(
-        BlinkGC::kHeapPointersOnStack);
-  }
+  static void ConservativelyCollectGarbage();
 
   // Performs multiple rounds of garbage collections until no more memory can be
   // freed. This is useful to avoid other garbage collections having to deal
   // with stale memory.
-  void ClearOutOldGarbage() {}
-
-  void ForceCompactionForNextGC() {}
+  static void ClearOutOldGarbage();
 
  protected:
   base::test::TaskEnvironment task_environment_;
+};
+
+// Test driver for compaction.
+class CompactionTestDriver {
+ public:
+  explicit CompactionTestDriver(ThreadState*);
+
+  void ForceCompactionForNextGC();
+
+ protected:
+  cppgc::testing::StandaloneTestingHeap heap_;
 };
 
 // Test driver for incremental marking. Assumes that no stack handling is
 // required.
 class IncrementalMarkingTestDriver {
  public:
-  explicit IncrementalMarkingTestDriver(ThreadState* thread_state)
-      : cpp_heap_(thread_state->cpp_heap()) {}
+  explicit IncrementalMarkingTestDriver(ThreadState*);
   ~IncrementalMarkingTestDriver();
 
-  void StartGC() {}
+  virtual void StartGC();
   virtual void TriggerMarkingSteps(
       BlinkGC::StackState stack_state =
-          BlinkGC::StackState::kNoHeapPointersOnStack) {}
-  void FinishGC() {}
+          BlinkGC::StackState::kNoHeapPointersOnStack);
+  virtual void FinishGC();
 
  protected:
-  v8::CppHeap& cpp_heap_;
+  cppgc::testing::StandaloneTestingHeap heap_;
 };
 
 // Test driver for concurrent marking. Assumes that no stack handling is
 // required.
 class ConcurrentMarkingTestDriver : public IncrementalMarkingTestDriver {
  public:
-  explicit ConcurrentMarkingTestDriver(ThreadState* thread_state)
-      : IncrementalMarkingTestDriver(thread_state) {}
+  explicit ConcurrentMarkingTestDriver(ThreadState*);
+
+  void StartGC() override;
+  void TriggerMarkingSteps(
+      BlinkGC::StackState stack_state =
+          BlinkGC::StackState::kNoHeapPointersOnStack) override;
+  void FinishGC() override;
 };
 
 }  // namespace blink

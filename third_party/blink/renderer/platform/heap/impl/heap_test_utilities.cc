@@ -46,7 +46,7 @@ void TestSupportingGC::ClearOutOldGarbage() {
   }
 }
 
-void TestSupportingGC::ForceCompactionForNextGC() {
+void CompactionTestDriver::ForceCompactionForNextGC() {
   ThreadState::Current()->EnableCompactionForNextGCForTesting();
 }
 
