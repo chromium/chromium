@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_space_utils.h"
+#include "third_party/blink/renderer/core/layout/ng/table/ng_table_node.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
@@ -658,6 +659,17 @@ void NGFlexLayoutAlgorithm::ConstructAndAppendFlexItems() {
         flex_base_border_box = ResolveMainBlockLength(
             flex_basis_space, child_style, border_padding_in_child_writing_mode,
             length_to_resolve, IntrinsicBlockSizeFunc);
+        if (const NGTableNode* table_child = DynamicTo<NGTableNode>(&child)) {
+          // (1) A table interprets forced block size as the height of its
+          // captions + rows.
+          // (2) The specified height of a table only applies to the rows.
+          // (3) So when we read the specified height here, we have to add the
+          // height of the captions before sending it through the flexing
+          // algorithm, which will eventually lead to a forced block size.
+          LayoutUnit caption_block_size = table_child->ComputeCaptionBlockSize(
+              BuildSpaceForIntrinsicBlockSize(*table_child));
+          flex_base_border_box += caption_block_size;
+        }
       }
     }
 

@@ -52,6 +52,14 @@ LayoutUnit NGTableNode::ComputeTableInlineSize(
                                                         border_padding);
 }
 
+LayoutUnit NGTableNode::ComputeCaptionBlockSize(
+    const NGConstraintSpace& space) const {
+  LayoutUnit table_inline_size = CalculateInitialFragmentGeometry(space, *this)
+                                     .border_box_size.inline_size;
+  return NGTableLayoutAlgorithm::ComputeCaptionBlockSize(*this, space,
+                                                         table_inline_size);
+}
+
 bool NGTableNode::AllowColumnPercentages(bool is_layout_pass) const {
   if (Style().LogicalWidth().IsMaxContent())
     return false;

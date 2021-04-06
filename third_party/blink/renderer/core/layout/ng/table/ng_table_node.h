@@ -21,6 +21,8 @@ class CORE_EXPORT NGTableNode final : public NGBlockNode {
 
   scoped_refptr<const NGTableBorders> GetTableBorders() const;
 
+  LayoutUnit ComputeCaptionBlockSize(const NGConstraintSpace& space) const;
+
   scoped_refptr<const NGTableTypes::Columns> GetColumnConstraints(
       const NGTableGroupedChildren&,
       const NGBoxStrut& border_padding) const;
