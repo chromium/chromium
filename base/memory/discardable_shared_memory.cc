@@ -18,6 +18,7 @@
 #include "base/memory/shared_memory_tracker.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/process_metrics.h"
+#include "base/record_replay.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 
@@ -224,6 +225,8 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
   DCHECK_EQ(AlignToPageSize(offset), offset);
   DCHECK_EQ(AlignToPageSize(length), length);
 
+  recordreplay::Assert("DiscardableSharedMemory::Lock Start");
+
   // Calls to this function must be synchronized properly.
   DFAKE_SCOPED_LOCK(thread_collision_warner_);
 
@@ -234,18 +237,22 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
   if (!locked_page_count_) {
     // Return false when instance has been purged or not initialized properly
     // by checking if |last_known_usage_| is NULL.
-    if (last_known_usage_.is_null())
+    if (last_known_usage_.is_null()) {
+      recordreplay::Assert("DiscardableSharedMemory::Lock #1");
       return FAILED;
+    }
 
     SharedState old_state(SharedState::UNLOCKED, last_known_usage_);
     SharedState new_state(SharedState::LOCKED, Time());
     SharedState result(subtle::Acquire_CompareAndSwap(
         &SharedStateFromSharedMemory(shared_memory_mapping_)->value.i,
         old_state.value.i, new_state.value.i));
-    if (result.value.u != old_state.value.u) {
+    if (recordreplay::RecordReplayValue("DiscardableSharedMemory::Lock",
+                                        result.value.u != old_state.value.u)) {
       // Update |last_known_usage_| in case the above CAS failed because of
       // an incorrect timestamp.
       last_known_usage_ = result.GetTimestamp();
+      recordreplay::Assert("DiscardableSharedMemory::Lock #2");
       return FAILED;
     }
   }
@@ -272,8 +279,10 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
 #endif
 
   // Always behave as if memory was purged when trying to lock a 0 byte segment.
-  if (!length)
-      return PURGED;
+  if (!length) {
+    recordreplay::Assert("DiscardableSharedMemory::Lock #3");
+    return PURGED;
+  }
 
 #if defined(OS_ANDROID)
   // Ensure that the platform won't discard the required pages.
@@ -296,6 +305,7 @@ DiscardableSharedMemory::LockResult DiscardableSharedMemory::Lock(
   madvise(static_cast<char*>(shared_memory_mapping_.memory()) +
               AlignToPageSize(sizeof(SharedState)),
           AlignToPageSize(mapped_size_), MADV_FREE_REUSE);
+  recordreplay::Assert("DiscardableSharedMemory::Lock #4");
   return DiscardableSharedMemory::SUCCESS;
 #else
   return DiscardableSharedMemory::SUCCESS;

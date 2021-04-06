@@ -15,6 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/record_replay.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/sequence_local_storage_slot.h"
@@ -203,6 +204,7 @@ class SequenceLocalSyncEventWatcher::SequenceLocalState {
 };
 
 void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
+  recordreplay::Assert("SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled Start");
   for (;;) {
     base::flat_set<const SequenceLocalSyncEventWatcher*> ready_watchers;
     {
@@ -211,6 +213,7 @@ void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
     }
     if (ready_watchers.empty()) {
       event_.Reset();
+      recordreplay::Assert("SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled #1");
       return;
     }
 
@@ -220,8 +223,10 @@ void SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled() {
         watcher->callback_.Run();
 
         // The callback may have deleted |this|.
-        if (!weak_self)
+        if (!weak_self) {
+          recordreplay::Assert("SequenceLocalSyncEventWatcher::SequenceLocalState::OnEventSignaled #2");
           return;
+        }
       }
     }
   }

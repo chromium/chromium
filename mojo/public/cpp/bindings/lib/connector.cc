@@ -394,7 +394,8 @@ void Connector::OnSyncHandleWatcherHandleReady(MojoResult result) {
 }
 
 void Connector::OnHandleReadyInternal(MojoResult result) {
-  recordreplay::Assert("Connector::OnHandleReadyInternal Start");
+  recordreplay::Assert("Connector::OnHandleReadyInternal Start %lu %u",
+                       recordreplay::PointerId(this), result);
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

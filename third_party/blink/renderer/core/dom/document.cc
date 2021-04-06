@@ -7667,14 +7667,19 @@ bool Document::HaveRenderBlockingResourcesLoaded() const {
 }
 
 Locale& Document::GetCachedLocale(const AtomicString& locale) {
+  recordreplay::Assert("Document::GetCachedLocale Start %s", locale.Utf8().c_str());
+  recordreplay::Print("Document::GetCachedLocale");
   AtomicString locale_key = locale;
   if (locale.IsEmpty() ||
-      !RuntimeEnabledFeatures::LangAttributeAwareFormControlUIEnabled())
+      !RuntimeEnabledFeatures::LangAttributeAwareFormControlUIEnabled()) {
+    recordreplay::Assert("Document::GetCachedLocale #1");
     return Locale::DefaultLocale();
+  }
   LocaleIdentifierToLocaleMap::AddResult result =
       locale_cache_.insert(locale_key, nullptr);
   if (result.is_new_entry)
     result.stored_value->value = Locale::Create(locale_key);
+  recordreplay::Assert("Document::GetCachedLocale Done");
   return *(result.stored_value->value);
 }
 

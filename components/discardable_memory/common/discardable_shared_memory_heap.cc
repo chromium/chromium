@@ -16,6 +16,7 @@
 #include "base/memory/discardable_shared_memory.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -259,12 +260,14 @@ void DiscardableSharedMemoryHeap::ReleaseFreeMemory() {
 void DiscardableSharedMemoryHeap::ReleasePurgedMemory() {
   // Erase all purged segments after rearranging the segments in such a way
   // that resident segments precede all purged segments.
+  recordreplay::Assert("DiscardableSharedMemoryHeap::ReleasePurgedMemory Start");
   memory_segments_.erase(
       std::partition(memory_segments_.begin(), memory_segments_.end(),
                      [](const std::unique_ptr<ScopedMemorySegment>& segment) {
                        return segment->IsResident();
                      }),
       memory_segments_.end());
+  recordreplay::Assert("DiscardableSharedMemoryHeap::ReleasePurgedMemory Done");
 }
 
 size_t DiscardableSharedMemoryHeap::GetSize() const {

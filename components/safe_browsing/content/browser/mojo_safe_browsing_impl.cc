@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/record_replay.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -132,6 +133,8 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
     bool originated_from_service_worker,
     CreateCheckerAndCheckCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  recordreplay::Assert("MojoSafeBrowsingImpl::CreateCheckerAndCheck %s", url.spec().c_str());
 
   if (delegate_->ShouldSkipRequestCheck(url, -1 /* frame_tree_node_id */,
                                         render_process_id_, render_frame_id,

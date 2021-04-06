@@ -39,6 +39,7 @@ static inline void RecordReplayEnsureOrdered(int lock_id) {
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                              InitialState initial_state)
     : policy_(reset_policy) {
+  recordreplay::RegisterPointer(this);
   record_replay_ordered_lock_id_ = (int)recordreplay::CreateOrderedLock("WaitableEvent");
 
   mach_port_options_t options{};
@@ -56,7 +57,9 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
     Signal();
 }
 
-WaitableEvent::~WaitableEvent() = default;
+WaitableEvent::~WaitableEvent() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void WaitableEvent::Reset() {
   PeekPort(receive_right_->Name(), true);

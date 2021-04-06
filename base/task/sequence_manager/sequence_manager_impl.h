@@ -298,9 +298,11 @@ class BASE_EXPORT SequenceManagerImpl
 
     std::set<internal::TaskQueueImpl*> active_queues;
 
-    std::map<internal::TaskQueueImpl*, std::unique_ptr<internal::TaskQueueImpl>>
+    std::map<internal::TaskQueueImpl*, std::unique_ptr<internal::TaskQueueImpl>,
+             recordreplay::CompareByPointerId>
         queues_to_gracefully_shutdown;
-    std::map<internal::TaskQueueImpl*, std::unique_ptr<internal::TaskQueueImpl>>
+    std::map<internal::TaskQueueImpl*, std::unique_ptr<internal::TaskQueueImpl>,
+             recordreplay::CompareByPointerId>
         queues_to_delete;
 
     bool task_was_run_on_quiescence_monitored_queue = false;

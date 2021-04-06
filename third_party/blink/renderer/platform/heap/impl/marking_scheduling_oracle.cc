@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/heap/impl/marking_scheduling_oracle.h"
 
 #include "base/numerics/ranges.h"
+#include "base/record_replay.h"
 
 namespace blink {
 
@@ -16,7 +17,10 @@ constexpr base::TimeDelta
     MarkingSchedulingOracle::kMaximumIncrementalMarkingStepDuration;
 
 MarkingSchedulingOracle::MarkingSchedulingOracle()
-    : incremental_marking_start_time_(base::TimeTicks::Now()) {}
+    : incremental_marking_start_time_() {
+  recordreplay::AutoPassThroughEvents pt;
+  incremental_marking_start_time_ = base::TimeTicks::Now();
+}
 
 void MarkingSchedulingOracle::UpdateIncrementalMarkingStats(
     size_t overall_marked_bytes,
@@ -49,6 +53,7 @@ double MarkingSchedulingOracle::GetElapsedTimeInMs(base::TimeTicks start_time) {
     elapsed_time_for_testing_ = kNoSetElapsedTimeForTesting;
     return elapsed_time;
   }
+  recordreplay::AutoPassThroughEvents pt;
   return (base::TimeTicks::Now() - start_time).InMillisecondsF();
 }
 

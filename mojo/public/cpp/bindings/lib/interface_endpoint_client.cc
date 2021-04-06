@@ -158,6 +158,7 @@ InterfaceEndpointClient::InterfaceEndpointClient(
       task_runner_(std::move(runner)),
       control_message_handler_(this, interface_version),
       interface_name_(interface_name) {
+  recordreplay::RegisterPointer(this);
   DCHECK(handle_.is_valid());
 
   // TODO(yzshen): the way to use validator (or message filter in general)
@@ -177,6 +178,7 @@ InterfaceEndpointClient::~InterfaceEndpointClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (controller_)
     handle_.group_controller()->DetachEndpointClient(handle_);
+  recordreplay::UnregisterPointer(this);
 }
 
 AssociatedGroup* InterfaceEndpointClient::associated_group() {
@@ -239,6 +241,7 @@ void InterfaceEndpointClient::SendControlMessageWithResponder(
 }
 
 bool InterfaceEndpointClient::Accept(Message* message) {
+  recordreplay::Assert("InterfaceEndpointClient::Accept %lu", recordreplay::PointerId(this));
   return SendMessage(message, false /* is_control_message */);
 }
 

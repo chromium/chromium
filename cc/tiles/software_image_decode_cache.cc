@@ -14,6 +14,7 @@
 #include "base/debug/stack_trace.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/record_replay.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -141,7 +142,8 @@ SoftwareImageDecodeCache::SoftwareImageDecodeCache(
     SkColorType color_type,
     size_t locked_memory_limit_bytes,
     PaintImage::GeneratorClientId generator_client_id)
-    : decoded_images_(ImageMRUCache::NO_AUTO_EVICT),
+    : lock_("SoftwareImageDecodeCache.lock_"),
+      decoded_images_(ImageMRUCache::NO_AUTO_EVICT),
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
       generator_client_id_(generator_client_id),
@@ -328,6 +330,7 @@ SoftwareImageDecodeCache::TaskProcessingResult
 SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
                                                  const PaintImage& paint_image,
                                                  CacheEntry* entry) {
+  recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary Start");
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "SoftwareImageDecodeCache::DecodeImageIfNecessary", "key",
                key.ToString());
@@ -352,12 +355,14 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   // If we can use the original decode, we'll definitely need a decode.
   if (key.type() == CacheKey::kOriginal) {
     base::AutoUnlock release(lock_);
+    recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary #1");
     local_cache_entry = Utils::DoDecodeImage(
         key, paint_image,
         GetColorTypeForPaintImage(key.target_color_space(), paint_image),
         generator_client_id_,
         base::BindOnce(&SoftwareImageDecodeCache::ClearCache,
                        base::Unretained(this)));
+    recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary #2");
   } else {
     // Attempt to find a cached decode to generate a scaled/subrected decode
     // from.
@@ -446,6 +451,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
   }
 
   if (!local_cache_entry) {
+    recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary #3");
     entry->decode_failed = true;
     return TaskProcessingResult::kCancelled;
   }
@@ -466,6 +472,7 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
     DCHECK(entry->is_locked);
   }
 
+  recordreplay::Assert("SoftwareImageDecodeCache::DecodeImageIfNecessary Done");
   return TaskProcessingResult::kFullDecode;
 }
 
