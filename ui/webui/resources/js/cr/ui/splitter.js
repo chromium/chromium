@@ -22,39 +22,6 @@
 // #import {dispatchSimpleEvent} from '../../cr.m.js';
 
 cr.define('cr.ui', function() {
-  // TODO(arv): Currently this only supports horizontal layout.
-  // TODO(arv): This ignores min-width and max-width of the elements to the
-  // right of the splitter.
-
-  /**
-   * Returns the computed style width of an element.
-   * @param {!Element} el The element to get the width of.
-   * @return {number} The width in pixels.
-   */
-  function getComputedWidth(el) {
-    return parseFloat(el.ownerDocument.defaultView.getComputedStyle(el).width) /
-        getZoomFactor(el.ownerDocument);
-  }
-
-  /**
-   * This uses a WebKit bug to work around the same bug. getComputedStyle does
-   * not take the page zoom into account so it returns the physical pixels
-   * instead of the logical pixel size.
-   * @param {!Document} doc The document to get the page zoom factor for.
-   * @return {number} The zoom factor of the document.
-   */
-  function getZoomFactor(doc) {
-    const dummyElement = doc.createElement('div');
-    dummyElement.style.cssText = 'position:absolute;width:100px;height:100px;' +
-        'top:-1000px;overflow:hidden';
-    doc.body.appendChild(dummyElement);
-    const cs = doc.defaultView.getComputedStyle(dummyElement);
-    const rect = dummyElement.getBoundingClientRect();
-    const zoomFactor = parseFloat(cs.width) / 100;
-    doc.body.removeChild(dummyElement);
-    return zoomFactor;
-  }
-
   /**
    * Creates a new splitter element.
    * @param {Object=} opt_propertyBag Optional properties.
