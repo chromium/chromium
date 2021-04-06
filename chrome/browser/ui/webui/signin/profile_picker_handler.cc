@@ -752,7 +752,9 @@ ProfilePickerHandler::GetProfileAttributes() {
     // Should only happen the first time the function is called.
     // Profile creation and deletion are handled at
     // 'OnProfileAdded', 'OnProfileWasRemoved'.
-    DCHECK(!profiles_order_.size());
+    // TODO(https://crbug.com/1195784): revert CHECK back to DCHECKs after the
+    // crash is investigated.
+    CHECK(!profiles_order_.size());
     SetProfilesOrder(ordered_entries);
     return ordered_entries;
   }
@@ -760,10 +762,12 @@ ProfilePickerHandler::GetProfileAttributes() {
   // Vector of nullptr entries.
   std::vector<ProfileAttributesEntry*> entries(number_of_profiles);
   for (ProfileAttributesEntry* entry : ordered_entries) {
-    DCHECK(profiles_order_.find(entry->GetPath()) != profiles_order_.end());
+    // TODO(https://crbug.com/1195784): revert CHECKs back to DCHECKs after the
+    // crash is investigated.
+    CHECK(profiles_order_.find(entry->GetPath()) != profiles_order_.end());
     size_t index = profiles_order_[entry->GetPath()];
-    DCHECK_LT(index, number_of_profiles);
-    DCHECK(!entries[index]);
+    CHECK_LT(index, number_of_profiles);
+    CHECK(!entries[index]);
     entries[index] = entry;
   }
   return entries;
