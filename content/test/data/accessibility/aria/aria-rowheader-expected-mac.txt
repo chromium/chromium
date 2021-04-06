@@ -1,5 +1,5 @@
 AXWebArea
-++AXTable AXHeader=:unknown AXRowHeaderUIElements=[:4, :11]
+++AXTable AXHeader=:32 AXRowHeaderUIElements=[:4, :11]
 ++++AXRow AXIndex=0
 ++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
 ++++++++AXStaticText AXValue='Browser'

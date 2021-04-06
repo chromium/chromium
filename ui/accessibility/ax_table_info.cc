@@ -6,7 +6,6 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "build/build_config.h"
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
@@ -135,7 +134,7 @@ bool AXTableInfo::Update() {
 
   // On Mac, we add a few extra nodes to the table - see comment
   // at the top of UpdateExtraMacNodes for details.
-#if defined(OS_MAC)
+#if defined(AX_EXTRA_MAC_NODES)
   UpdateExtraMacNodes();
 #endif
 

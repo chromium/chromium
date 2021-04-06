@@ -1054,6 +1054,9 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   if (!ValidatePendingChangesComplete(update_state))
     return false;
 
+  std::vector<AXTreeObserver::Change> changes;
+  changes.reserve(update.nodes.size());
+
   // Look for changes to nodes that are a descendant of a table,
   // and invalidate their table info if so.  We have to walk up the
   // ancestry of every node that was updated potentially, so keep track of
@@ -1066,8 +1069,14 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
         break;
       // Remove any table infos.
       const auto& table_info_entry = table_info_map_.find(node->id());
-      if (table_info_entry != table_info_map_.end())
+      if (table_info_entry != table_info_map_.end()) {
         table_info_entry->second->Invalidate();
+#if defined(AX_EXTRA_MAC_NODES)
+        // It will emit children changed notification on mac to make sure that
+        // extra mac accessibles are recreated.
+        changes.emplace_back(node, AXTreeObserver::NODE_CHANGED);
+#endif
+      }
       table_ids_checked.insert(node->id());
       node = node->parent();
     }
@@ -1076,8 +1085,6 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
   // Clears |node_set_size_pos_in_set_info_map_|
   node_set_size_pos_in_set_info_map_.clear();
 
-  std::vector<AXTreeObserver::Change> changes;
-  changes.reserve(update.nodes.size());
   std::set<AXNodeID> visited_observer_changes;
   for (size_t i = 0; i < update.nodes.size(); ++i) {
     AXNode* node = GetFromId(update.nodes[i].id);

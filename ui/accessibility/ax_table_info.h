@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/optional.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/ax_node_data.h"
 
@@ -17,6 +18,10 @@ namespace ui {
 
 class AXTree;
 class AXNode;
+
+#if defined(OS_MAC)
+#define AX_EXTRA_MAC_NODES 1
+#endif
 
 // This helper class computes info about tables and grids in AXTrees.
 class AX_EXPORT AXTableInfo {
