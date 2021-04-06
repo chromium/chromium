@@ -193,11 +193,6 @@ FileDescriptorWatcher::Controller::~Controller() {
     // thread. This ensures that the file descriptor is never accessed after
     // this destructor returns.
     //
-    // Use a ScopedClosureRunner to ensure that |done| is signaled even if the
-    // thread doesn't run any more tasks (if PostTask returns true, it means
-    // that the task was queued, but it doesn't mean that a RunLoop will run the
-    // task before the queue is deleted).
-    //
     // We considered associating "generations" to file descriptors to avoid the
     // synchronous wait. For example, if the IO thread gets a "cancel" for fd=6,
     // generation=1 after getting a "start watching" for fd=6, generation=2, it
@@ -210,7 +205,6 @@ FileDescriptorWatcher::Controller::~Controller() {
     // T2 (io)     Watcher::StartWatching()
     //               Incorrectly starts watching fd = 6 which now refers to a
     //               different file than when WatchReadable() was called.
-    WaitableEvent done;
     auto delete_task = BindOnce(
         [](Watcher* watcher) {
           // Since |watcher| is a raw pointer, it isn't deleted if this callback
