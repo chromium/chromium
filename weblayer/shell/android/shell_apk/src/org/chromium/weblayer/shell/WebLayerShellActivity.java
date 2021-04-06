@@ -63,6 +63,7 @@ import org.chromium.weblayer.NavigationCallback;
 import org.chromium.weblayer.NavigationController;
 import org.chromium.weblayer.NewTabCallback;
 import org.chromium.weblayer.NewTabType;
+import org.chromium.weblayer.OpenUrlCallback;
 import org.chromium.weblayer.Profile;
 import org.chromium.weblayer.SiteSettingsActivity;
 import org.chromium.weblayer.Tab;
@@ -577,6 +578,17 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 }, 3000);
             }
         });
+        mProfile.setTablessOpenUrlCallback(new OpenUrlCallback() {
+            @Override
+            public Browser getBrowserForNewTab() {
+                return mBrowser;
+            }
+
+            @Override
+            public void onTabAdded(Tab tab) {
+                onTabAddedImpl(tab);
+            }
+        });
 
         createTabCallbacks();
 
@@ -661,9 +673,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
         mNewTabCallback = new NewTabCallback() {
             @Override
             public void onNewTab(Tab newTab, @NewTabType int type) {
-                registerTabCallbacks(newTab);
-                mPreviousTabList.add(mBrowser.getActiveTab());
-                mBrowser.setActiveTab(newTab);
+                onTabAddedImpl(newTab);
             }
         };
 
@@ -687,6 +697,12 @@ public class WebLayerShellActivity extends AppCompatActivity {
                 return true;
             }
         };
+    }
+
+    private void onTabAddedImpl(Tab newTab) {
+        registerTabCallbacks(newTab);
+        mPreviousTabList.add(mBrowser.getActiveTab());
+        mBrowser.setActiveTab(newTab);
     }
 
     private void registerTabCallbacks(Tab tab) {

@@ -743,6 +743,15 @@ ContentBrowserClientImpl::GetControllerPresentationServiceDelegate(
   return nullptr;
 }
 
+void ContentBrowserClientImpl::OpenURL(
+    content::SiteInstance* site_instance,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::WebContents*)> callback) {
+  std::move(callback).Run(
+      ProfileImpl::FromBrowserContext(site_instance->GetBrowserContext())
+          ->OpenUrl(params));
+}
+
 std::vector<std::unique_ptr<content::NavigationThrottle>>
 ContentBrowserClientImpl::CreateThrottlesForNavigation(
     content::NavigationHandle* handle) {

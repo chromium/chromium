@@ -607,6 +607,10 @@ public class BrowserImpl extends IBrowser.Stub implements View.OnAttachStateChan
         return mViewAttachedToWindow;
     }
 
+    long getNativeBrowser() {
+        return mNativeBrowser;
+    }
+
     @Override
     public void onViewAttachedToWindow(View v) {
         mViewAttachedToWindow = true;

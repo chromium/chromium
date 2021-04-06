@@ -85,6 +85,7 @@ android_library("java") {
     "org/chromium/weblayer/NewTabCallback.java",
     "org/chromium/weblayer/NewTabType.java",
     "org/chromium/weblayer/ObserverList.java",
+    "org/chromium/weblayer/OpenUrlCallback.java",
     "org/chromium/weblayer/Page.java",
     "org/chromium/weblayer/PrerenderController.java",
     "org/chromium/weblayer/Profile.java",

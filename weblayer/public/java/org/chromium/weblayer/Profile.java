@@ -13,11 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
+import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IClientDownload;
 import org.chromium.weblayer_private.interfaces.IDownload;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IOpenUrlCallbackClient;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IProfileClient;
 import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
@@ -451,15 +453,33 @@ public class Profile {
         }
     }
 
+    /**
+     * Sets a callback which is invoked to open a new tab that is not associated with any open tab.
+     *
+     * This will be called in cases where a service worker tries to open a tab, e.g. via the Web API
+     * clients.openWindow. If set to null, all such navigation requests will be rejected.
+     *
+     * @since 91
+     */
+    public void setTablessOpenUrlCallback(@Nullable OpenUrlCallback callback) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 91) {
+            throw new UnsupportedOperationException();
+        }
+
+        try {
+            mImpl.setTablessOpenUrlCallbackClient(
+                    callback == null ? null : new OpenUrlCallbackClientImpl(callback));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     static final class DownloadCallbackClientImpl extends IDownloadCallbackClient.Stub {
         private final DownloadCallback mCallback;
 
         DownloadCallbackClientImpl(DownloadCallback callback) {
             mCallback = callback;
-        }
-
-        public DownloadCallback getCallback() {
-            return mCallback;
         }
 
         @Override
@@ -563,6 +583,30 @@ public class Profile {
                     ObjectWrapper.unwrap(onTokenFetchedWrapper, ValueCallback.class);
 
             mFetcher.fetchAccessToken(scopes, (token) -> valueCallback.onReceiveValue(token));
+        }
+    }
+
+    private static final class OpenUrlCallbackClientImpl extends IOpenUrlCallbackClient.Stub {
+        private final OpenUrlCallback mCallback;
+
+        OpenUrlCallbackClientImpl(OpenUrlCallback callback) {
+            mCallback = callback;
+        }
+
+        @Override
+        public IBrowser getBrowserForNewTab() {
+            StrictModeWorkaround.apply();
+            Browser browser = mCallback.getBrowserForNewTab();
+            return browser == null ? null : browser.getIBrowser();
+        }
+
+        @Override
+        public void onTabAdded(int tabId) {
+            StrictModeWorkaround.apply();
+            Tab tab = Tab.getTabById(tabId);
+            // Tab should have already been created by way of BrowserClient.
+            assert tab != null;
+            mCallback.onTabAdded(tab);
         }
     }
 

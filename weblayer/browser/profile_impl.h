@@ -26,6 +26,7 @@
 namespace content {
 class BrowserContext;
 class WebContents;
+struct OpenURLParams;
 }  // namespace content
 
 namespace weblayer {
@@ -161,6 +162,12 @@ class ProfileImpl : public Profile {
   // Get the directory where BrowserPersister stores tab state data. This will
   // be a real file path even for the off-the-record profile.
   base::FilePath GetBrowserPersisterDataBaseDir() const;
+
+  // Creates a new web contents and navigates it according to `params`, but only
+  // if an OpenUrlCallback has been set by the embedder. This is used for
+  // navigations originating from service workers, which don't necessarily have
+  // an associated tab. It may return null if the operation fails.
+  content::WebContents* OpenUrl(const content::OpenURLParams& params);
 
  private:
   class DataClearer;

@@ -23,10 +23,12 @@ import org.chromium.components.embedder_support.browser_context.BrowserContextHa
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.BrowsingDataType;
+import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IOpenUrlCallbackClient;
 import org.chromium.weblayer_private.interfaces.IPrerenderController;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IProfileClient;
@@ -58,6 +60,7 @@ public final class ProfileImpl
     private DownloadCallbackProxy mDownloadCallbackProxy;
     private GoogleAccountAccessTokenFetcherProxy mAccessTokenFetcherProxy;
     private IUserIdentityCallbackClient mUserIdentityCallbackClient;
+    private IOpenUrlCallbackClient mOpenUrlCallbackClient;
     private List<Intent> mDownloadNotificationIntents = new ArrayList<>();
 
     private IProfileClient mClient;
@@ -229,6 +232,12 @@ public final class ProfileImpl
     }
 
     @Override
+    public void setTablessOpenUrlCallbackClient(IOpenUrlCallbackClient client) {
+        StrictModeWorkaround.apply();
+        mOpenUrlCallbackClient = client;
+    }
+
+    @Override
     public boolean isIncognito() {
         return mIsIncognito;
     }
@@ -389,6 +398,23 @@ public final class ProfileImpl
             DownloadImpl.handleIntent(intent);
         }
         mDownloadNotificationIntents.clear();
+    }
+
+    @CalledByNative
+    public long getBrowserForNewTab() throws RemoteException {
+        if (mOpenUrlCallbackClient == null) return 0;
+
+        IBrowser browser = mOpenUrlCallbackClient.getBrowserForNewTab();
+        if (browser == null) return 0;
+
+        return ((BrowserImpl) browser).getNativeBrowser();
+    }
+
+    @CalledByNative
+    public void onTabAdded(TabImpl tab) throws RemoteException {
+        if (mOpenUrlCallbackClient == null) return;
+
+        mOpenUrlCallbackClient.onTabAdded(tab.getId());
     }
 
     @Override

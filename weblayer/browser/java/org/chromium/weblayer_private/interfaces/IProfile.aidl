@@ -9,6 +9,7 @@ import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
 import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IOpenUrlCallbackClient;
 import org.chromium.weblayer_private.interfaces.IPrerenderController;
 import org.chromium.weblayer_private.interfaces.IProfileClient;
 
@@ -47,4 +48,7 @@ interface IProfile {
 
   // Added in 89.
   void setGoogleAccountAccessTokenFetcherClient(IGoogleAccountAccessTokenFetcherClient client) = 19;
+
+  // Added in 91.
+  void setTablessOpenUrlCallbackClient(IOpenUrlCallbackClient client) = 20;
 }

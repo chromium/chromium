@@ -26,6 +26,7 @@
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -70,6 +71,15 @@ namespace weblayer {
 namespace {
 
 bool g_first_profile_created = false;
+
+// Simulates a WeakPtr for WebContents. Specifically if the WebContents
+// supplied to the constructor is destroyed then web_contents() returns
+// null.
+class WebContentsTracker : public content::WebContentsObserver {
+ public:
+  explicit WebContentsTracker(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+};
 
 // TaskRunner used by MarkProfileAsDeleted and NukeProfilesMarkedForDeletion to
 // esnure that Nuke happens before any Mark in this process.
@@ -589,6 +599,39 @@ void ProfileImpl::GetCachedFaviconForPageUrl(
 
 base::FilePath ProfileImpl::GetBrowserPersisterDataBaseDir() const {
   return ComputeBrowserPersisterDataBaseDir(info_);
+}
+
+content::WebContents* ProfileImpl::OpenUrl(
+    const content::OpenURLParams& params) {
+#if !defined(OS_ANDROID)
+  return nullptr;
+#else
+  // We expect only NEW_FOREGROUND_TAB. The NEW_POPUP disposition is only used
+  // for payment handler windows, but WebLayer (and Android Chrome) do not
+  // support that. See ContentBrowserClient::ShowPaymentHandlerWindow().
+  DCHECK_EQ(params.disposition, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  BrowserImpl* browser = reinterpret_cast<BrowserImpl*>(
+      Java_ProfileImpl_getBrowserForNewTab(env, java_profile_));
+  if (!browser)
+    return nullptr;
+
+  std::unique_ptr<content::WebContents> new_tab_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetBrowserContext()));
+  WebContentsTracker tracker(new_tab_contents.get());
+  Tab* tab = browser->CreateTab(std::move(new_tab_contents));
+
+  if (!tracker.web_contents())
+    return nullptr;
+
+  Java_ProfileImpl_onTabAdded(env, java_profile_,
+                              static_cast<TabImpl*>(tab)->GetJavaTab());
+  tracker.web_contents()->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(params));
+  return tracker.web_contents();
+#endif  // defined(OS_ANDROID)
 }
 
 void ProfileImpl::SetBooleanSetting(SettingType type, bool value) {
