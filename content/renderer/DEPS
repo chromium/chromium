@@ -40,6 +40,9 @@ specific_include_rules = {
     "+content/public/browser",
     "+content/shell",
   ],
+  "renderer_main\.cc": [
+   "+chromeos/memory/userspace_swap",
+  ],
   "render_thread_impl_browsertest\.cc": [
     "+content/app/mojo/mojo_init.h",
   ],
@@ -47,16 +50,8 @@ specific_include_rules = {
     "+components/discardable_memory/service",
     "+content/browser/browser_main_loop.h",
   ],
-  # TODO(crbug.com/734668): Dependencies on ozone should be removed, as content
-  # embedded in mus won't be able to talk to the native ozone.
-  "renderer_main\.cc": [
-    "+ui/ozone/public/client_native_pixmap_factory_ozone.h",
-  ],
   ".*_(unit|pixel|perf)test.*\.cc": [
     "+components/viz/test",
     "+third_party/blink/renderer/platform/testing",
-  ],
-  "renderer_main.cc": [
-   "+chromeos/memory/userspace_swap"
   ],
 }
