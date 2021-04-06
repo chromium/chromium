@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/app_list/search/files/file_search_provider.h"
 
 #include <cctype>
+#include <cmath>
 
 #include "base/files/file_enumerator.h"
 #include "base/metrics/histogram_macros.h"
@@ -82,12 +83,12 @@ std::vector<base::FilePath> SearchFilesByPattern(
 
 }  // namespace
 
-FileSearchProvider::FileSearchProvider(Profile* profile) : profile_(profile) {
+FileSearchProvider::FileSearchProvider(Profile* profile)
+    : profile_(profile),
+      root_path_(file_manager::util::GetMyFilesFolderForProfile(profile)) {
   DCHECK(profile_);
+  DCHECK(!root_path_.empty());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  base::FilePath root_path_ =
-      file_manager::util::GetMyFilesFolderForProfile(profile_);
 }
 
 FileSearchProvider::~FileSearchProvider() = default;
@@ -135,6 +136,12 @@ std::unique_ptr<FileResult> FileSearchProvider::MakeResult(
     const base::FilePath& path) {
   const double relevance =
       CalculateFilenameRelevance(last_tokenized_query_, path);
+
+  // Relevance scores are between 0 and 1, so we scale to 0 to 100 for logging.
+  DCHECK((relevance >= 0) && (relevance <= 1));
+  UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.FileSearchProvider.Relevance",
+                             floor(100 * relevance), /*exclusive_max=*/101);
+
   return std::make_unique<FileResult>(
       kFileSearchSchema, path, ash::AppListSearchResultType::kFileSearch,
       ash::SearchResultDisplayType::kList, relevance, profile_);

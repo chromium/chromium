@@ -44,9 +44,9 @@ class FileSearchProvider : public SearchProvider {
   base::TimeTicks query_start_time_;
   base::Optional<chromeos::string_matching::TokenizedString>
       last_tokenized_query_;
-  base::FilePath root_path_;
 
   Profile* const profile_;
+  base::FilePath root_path_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<FileSearchProvider> weak_factory_{this};

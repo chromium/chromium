@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/app_list/search/files/drive_search_provider.h"
 
+#include <cmath>
+
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -125,6 +127,11 @@ std::unique_ptr<FileResult> DriveSearchProvider::MakeResult(
 
   const double relevance =
       CalculateFilenameRelevance(last_tokenized_query_, relative_path);
+
+  // Relevance scores are between 0 and 1, so we scale to 0 to 100 for logging.
+  DCHECK((relevance >= 0) && (relevance <= 1));
+  UMA_HISTOGRAM_EXACT_LINEAR("Apps.AppList.DriveSearchProvider.Relevance",
+                             floor(100 * relevance), /*exclusive_max=*/101);
 
   return std::make_unique<FileResult>(
       kDriveSearchSchema, reparented_path,
