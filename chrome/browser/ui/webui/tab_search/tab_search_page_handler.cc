@@ -200,7 +200,7 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
     profile_data->windows.push_back(std::move(window));
   }
 
-  CreateRecentlyClosedTabs(profile_data->recently_closed_tabs, tab_urls);
+  AddRecentlyClosedTabs(profile_data->recently_closed_tabs, tab_urls);
   DCHECK(features::kTabSearchRecentlyClosedMaxEntries.Get() >= 0);
   DCHECK(profile_data->recently_closed_tabs.size() <=
          static_cast<unsigned int>(
@@ -208,16 +208,14 @@ tab_search::mojom::ProfileDataPtr TabSearchPageHandler::CreateProfileData() {
   return profile_data;
 }
 
-void TabSearchPageHandler::CreateRecentlyClosedTabs(
+void TabSearchPageHandler::AddRecentlyClosedTabs(
     std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
     std::set<std::string>& tab_urls) {
   sessions::TabRestoreService* tab_restore_service =
       TabRestoreServiceFactory::GetForProfile(Profile::FromWebUI(web_ui_));
-  // TabRestoreService is only available for non off the record profiles.
-  unsigned int maxRecentlyClosedTabCount = static_cast<unsigned int>(
-      features::kTabSearchRecentlyClosedMaxEntries.Get());
+  const size_t kMaxTabCount =
+      static_cast<size_t>(features::kTabSearchRecentlyClosedMaxEntries.Get());
   if (tab_restore_service) {
-    GURL new_tab_page_url = GURL(chrome::kChromeUINewTabPageURL);
     // Flatten tab restore service entries into tabs. Ignore any entries that
     // match URLs that are currently open.
     for (auto& entry : tab_restore_service->entries()) {
@@ -225,37 +223,58 @@ void TabSearchPageHandler::CreateRecentlyClosedTabs(
         sessions::TabRestoreService::Window* window =
             static_cast<sessions::TabRestoreService::Window*>(entry.get());
         for (auto& tab : window->tabs) {
-          if (tab->navigations.size() == 0)
-            continue;
-          tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
-              GetRecentlyClosedTab(tab.get());
-          // New tab page entries may exist inside a window and should be
-          // ignored.
-          if (recently_closed_tab->url == new_tab_page_url)
-            continue;
-          if (tab_urls.count(recently_closed_tab->url))
-            continue;
-          tab_urls.insert(recently_closed_tab->url);
-          recently_closed_tabs.push_back(std::move(recently_closed_tab));
-          if (recently_closed_tabs.size() >= maxRecentlyClosedTabCount)
+          if (!AddRecentlyClosedTab(recently_closed_tabs, tab.get(), tab_urls,
+                                    kMaxTabCount)) {
             return;
+          }
         }
       } else if (entry->type == sessions::TabRestoreService::Type::TAB) {
         sessions::TabRestoreService::Tab* tab =
             static_cast<sessions::TabRestoreService::Tab*>(entry.get());
-        if (tab->navigations.size() == 0)
-          continue;
-        tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
-            GetRecentlyClosedTab(tab);
-        if (tab_urls.count(recently_closed_tab->url))
-          continue;
-        tab_urls.insert(recently_closed_tab->url);
-        recently_closed_tabs.push_back(std::move(recently_closed_tab));
-        if (recently_closed_tabs.size() >= maxRecentlyClosedTabCount)
+        if (!AddRecentlyClosedTab(recently_closed_tabs, tab, tab_urls,
+                                  kMaxTabCount)) {
           return;
+        }
+      } else if (entry->type == sessions::TabRestoreService::Type::GROUP) {
+        sessions::TabRestoreService::Group* group =
+            static_cast<sessions::TabRestoreService::Group*>(entry.get());
+        for (auto& tab : group->tabs) {
+          if (!AddRecentlyClosedTab(recently_closed_tabs, tab.get(), tab_urls,
+                                    kMaxTabCount)) {
+            return;
+          }
+        }
       }
     }
   }
+}
+
+bool TabSearchPageHandler::AddRecentlyClosedTab(
+    std::vector<tab_search::mojom::RecentlyClosedTabPtr>& recently_closed_tabs,
+    sessions::TabRestoreService::Tab* tab,
+    std::set<std::string>& tab_urls,
+    size_t max_tab_count) {
+  if (recently_closed_tabs.size() >= max_tab_count)
+    return false;
+
+  if (tab->navigations.size() == 0)
+    return true;
+
+  tab_search::mojom::RecentlyClosedTabPtr recently_closed_tab =
+      GetRecentlyClosedTab(tab);
+
+  // New tab page entries may exist inside a window and should be
+  // ignored.
+  if (recently_closed_tab->url == GURL(chrome::kChromeUINewTabPageURL))
+    return true;
+
+  if (tab_urls.count(recently_closed_tab->url))
+    return true;
+
+  tab_urls.insert(recently_closed_tab->url);
+  recently_closed_tabs.push_back(std::move(recently_closed_tab));
+
+  return true;
 }
 
 tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
