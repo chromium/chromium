@@ -43,6 +43,7 @@ android_library("java") {
     "//content/public/android:content_main_dex_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
