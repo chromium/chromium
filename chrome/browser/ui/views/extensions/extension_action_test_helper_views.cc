@@ -213,23 +213,7 @@ std::unique_ptr<ExtensionActionTestHelper> ExtensionActionTestHelper::Create(
   if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
     return std::make_unique<ExtensionsMenuTestUtil>(browser, is_real_window);
 
-  std::unique_ptr<ExtensionActionTestHelper> browser_action_test_util;
-
-  if (is_real_window) {
-    browser_action_test_util =
-        base::WrapUnique(new ExtensionActionTestHelperViews(
-            BrowserView::GetBrowserViewForBrowser(browser)
-                ->toolbar()
-                ->browser_actions()));
-  } else {
-    // This is the main bar.
-    BrowserActionsContainer* main_bar = nullptr;
-    browser_action_test_util =
-        base::WrapUnique(new ExtensionActionTestHelperViews(
-            std::make_unique<
-                ExtensionActionTestHelperViews::TestToolbarActionsBarHelper>(
-                browser, main_bar)));
-  }
-
-  return browser_action_test_util;
+  // TODO(https://crbug.com/1165609): Combine this with ExtensionsMenuTestUtil.
+  NOTREACHED();
+  return nullptr;
 }

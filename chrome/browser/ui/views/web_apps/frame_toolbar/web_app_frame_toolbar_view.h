@@ -57,7 +57,6 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   SkColor active_color_for_testing() const { return active_foreground_color_; }
 
   // ToolbarButtonProvider:
-  BrowserActionsContainer* GetBrowserActionsContainer() override;
   ExtensionsToolbarContainer* GetExtensionsToolbarContainer() override;
   gfx::Size GetToolbarButtonSize() const override;
   views::View* GetDefaultExtensionDialogAnchorView() override;

@@ -29,11 +29,6 @@ class ToolbarActionViewController;
 // Container for extensions shown in the toolbar. These include pinned
 // extensions and extensions that are 'popped out' transitively to show dialogs
 // or be called out to the user.
-// This container is used when the extension-menu experiment is active as a
-// replacement for BrowserActionsContainer and ToolbarActionsBar which are
-// intended to be removed.
-// TODO(crbug.com/943702): Remove note related to extensions menu when cleaning
-// up after the experiment.
 class ExtensionsToolbarContainer : public ToolbarIconContainerView,
                                    public ExtensionsContainer,
                                    public TabStripModelObserver,

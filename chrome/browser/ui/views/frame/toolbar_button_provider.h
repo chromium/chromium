@@ -9,7 +9,6 @@
 
 class AppMenuButton;
 class AvatarToolbarButton;
-class BrowserActionsContainer;
 class ExtensionsToolbarContainer;
 class PageActionIconView;
 class ReloadButton;
@@ -29,10 +28,6 @@ class View;
 // buttons in a BrowserView.
 class ToolbarButtonProvider {
  public:
-  // Gets the browser actions container.
-  // TODO(pbos): Transition callers off of this function.
-  virtual BrowserActionsContainer* GetBrowserActionsContainer() = 0;
-
   // Gets the ExtensionsToolbarContainer.
   virtual ExtensionsToolbarContainer* GetExtensionsToolbarContainer() = 0;
 

@@ -143,12 +143,6 @@ std::pair<int, int> WebAppFrameToolbarView::LayoutInContainer(
   return std::pair<int, int>(center_bounds.x(), center_bounds.right());
 }
 
-BrowserActionsContainer* WebAppFrameToolbarView::GetBrowserActionsContainer() {
-  // TODO(devlin): Keep cleaning this up. https://crbug.com/1165609.
-  NOTREACHED();
-  return nullptr;
-}
-
 ExtensionsToolbarContainer*
 WebAppFrameToolbarView::GetExtensionsToolbarContainer() {
   return right_container_->extensions_container();

@@ -20,7 +20,7 @@ class ExtensionContextMenuController;
 ////////////////////////////////////////////////////////////////////////////////
 // ToolbarActionView
 // A wrapper around a ToolbarActionViewController to display a toolbar action
-// action in the BrowserActionsContainer.
+// action in the browser's toolbar.
 class ToolbarActionView : public views::MenuButton,
                           public ToolbarActionViewDelegateViews {
  public:

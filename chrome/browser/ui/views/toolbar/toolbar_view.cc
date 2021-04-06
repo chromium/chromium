@@ -52,7 +52,6 @@
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
-#include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
@@ -233,18 +232,12 @@ void ToolbarView::Init() {
       base::BindRepeating(callback, browser_, IDC_HOME), browser_);
 
   std::unique_ptr<ExtensionsToolbarContainer> extensions_container;
-  std::unique_ptr<BrowserActionsContainer> browser_actions;
 
   // Do not create the extensions or browser actions container if it is a guest
   // profile (only regular and incognito profiles host extensions).
   if (!browser_->profile()->IsGuestSession()) {
-    if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu)) {
-      extensions_container =
-          std::make_unique<ExtensionsToolbarContainer>(browser_);
-    } else {
-      browser_actions =
-          std::make_unique<BrowserActionsContainer>(browser_, nullptr, this);
-    }
+    extensions_container =
+        std::make_unique<ExtensionsToolbarContainer>(browser_);
   }
   std::unique_ptr<media_router::CastToolbarButton> cast;
   if (media_router::MediaRouterEnabled(browser_->profile()))
@@ -289,9 +282,6 @@ void ToolbarView::Init() {
 
   if (read_later_button)
     read_later_button_ = AddChildView(std::move(read_later_button));
-
-  if (browser_actions)
-    browser_actions_ = AddChildView(std::move(browser_actions));
 
   if (extensions_container)
     extensions_container_ = AddChildView(std::move(extensions_container));
@@ -392,9 +382,6 @@ void ToolbarView::AnimationProgressed(const gfx::Animation* animation) {
 void ToolbarView::Update(WebContents* tab) {
   if (location_bar_)
     location_bar_->Update(tab);
-
-  if (browser_actions_)
-    browser_actions_->RefreshToolbarActionViews();
 
   if (extensions_container_)
     extensions_container_->UpdateAllIcons();
@@ -518,31 +505,6 @@ const LocationBarModel* ToolbarView::GetLocationBarModel() const {
 ContentSettingBubbleModelDelegate*
 ToolbarView::GetContentSettingBubbleModelDelegate() {
   return browser_->content_setting_bubble_model_delegate();
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// ToolbarView, BrowserActionsContainer::Delegate implementation:
-
-views::LabelButton* ToolbarView::GetOverflowReferenceView() {
-  return app_menu_button_;
-}
-
-base::Optional<int> ToolbarView::GetMaxBrowserActionsWidth() const {
-  // The browser actions container is allowed to grow, but only up until the
-  // omnibox reaches its preferred size. So its maximum allowed width is its
-  // current size, plus any that the omnibox could give up.
-  return std::max(0, (browser_actions_ ? browser_actions_->width()
-                                       : extensions_container_->width()) +
-                         (location_bar_->width() -
-                          location_bar_->GetPreferredSize().width()));
-}
-
-std::unique_ptr<ToolbarActionsBar> ToolbarView::CreateToolbarActionsBar(
-    ToolbarActionsBarDelegate* delegate,
-    Browser* browser,
-    ToolbarActionsBar* main_bar) const {
-  DCHECK_EQ(browser_, browser);
-  return std::make_unique<ToolbarActionsBar>(delegate, browser, main_bar);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -728,17 +690,7 @@ void ToolbarView::InitLayout() {
   location_bar_->SetProperty(views::kMarginsKey,
                              gfx::Insets(0, location_bar_margin));
 
-  if (browser_actions_) {
-    const views::FlexSpecification browser_actions_flex_rule =
-        views::FlexSpecification(BrowserActionsContainer::GetFlexRule())
-            .WithOrder(kExtensionsFlexOrder);
-
-    browser_actions_->SetProperty(views::kFlexBehaviorKey,
-                                  browser_actions_flex_rule);
-    browser_actions_->SetProperty(views::kMarginsKey, gfx::Insets());
-    browser_actions_->SetProperty(views::kInternalPaddingKey,
-                                  gfx::Insets(0, location_bar_margin));
-  } else if (extensions_container_) {
+  if (extensions_container_) {
     const views::FlexSpecification extensions_flex_rule =
         views::FlexSpecification(
             extensions_container_->GetAnimatingLayoutManager()
@@ -811,12 +763,6 @@ SkColor ToolbarView::GetDefaultColorForSeverity(
       break;
   }
   return GetNativeTheme()->GetSystemColor(color_id);
-}
-
-// ToolbarButtonProvider:
-BrowserActionsContainer* ToolbarView::GetBrowserActionsContainer() {
-  CHECK(!base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu));
-  return browser_actions_;
 }
 
 ExtensionsToolbarContainer* ToolbarView::GetExtensionsToolbarContainer() {
@@ -934,11 +880,6 @@ void ToolbarView::OnChromeLabsPrefChanged() {
 void ToolbarView::LoadImages() {
   DCHECK_EQ(display_mode_, DisplayMode::NORMAL);
 
-  if (browser_actions_) {
-    browser_actions_->SetSeparatorColor(GetThemeProvider()->GetColor(
-        ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR));
-  }
-
   if (extensions_container_)
     extensions_container_->UpdateAllIcons();
 
@@ -981,10 +922,6 @@ void ToolbarView::OnTouchUiChanged() {
                                 gfx::Insets(0, default_margin));
     location_bar_->SetProperty(views::kMarginsKey,
                                gfx::Insets(0, location_bar_margin));
-    if (browser_actions_) {
-      browser_actions_->SetProperty(views::kInternalPaddingKey,
-                                    gfx::Insets(0, location_bar_margin));
-    }
 
     LoadImages();
     PreferredSizeChanged();

@@ -125,7 +125,6 @@
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
@@ -1526,14 +1525,7 @@ void BrowserView::FocusToolbar() {
 }
 
 ExtensionsContainer* BrowserView::GetExtensionsContainer() {
-  if (base::FeatureList::IsEnabled(features::kExtensionsToolbarMenu))
-    return toolbar_button_provider_->GetExtensionsToolbarContainer();
-
-  BrowserActionsContainer* container =
-      toolbar_button_provider_->GetBrowserActionsContainer();
-  // Note that in some cases (such as an app window), there is no extensions
-  // container.
-  return container ? container->toolbar_actions_bar() : nullptr;
+  return toolbar_button_provider_->GetExtensionsToolbarContainer();
 }
 
 void BrowserView::ToolbarSizeChanged(bool is_animating) {

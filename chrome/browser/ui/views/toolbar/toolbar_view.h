@@ -22,7 +22,6 @@
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/prefs/pref_member.h"
@@ -71,7 +70,6 @@ class ToolbarView : public views::AccessiblePaneView,
                     public ui::AcceleratorProvider,
                     public views::AnimationDelegateViews,
                     public LocationBarView::Delegate,
-                    public BrowserActionsContainer::Delegate,
                     public CommandObserver,
                     public AppMenuIconController::Delegate,
                     public UpgradeObserver,
@@ -137,7 +135,6 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // Accessors.
   Browser* browser() const { return browser_; }
-  BrowserActionsContainer* browser_actions() const { return browser_actions_; }
   ChromeLabsButton* chrome_labs_button() const { return chrome_labs_button_; }
   ChromeLabsBubbleViewModel* chrome_labs_model() const {
     return chrome_labs_model_.get();
@@ -168,14 +165,6 @@ class ToolbarView : public views::AccessiblePaneView,
   const LocationBarModel* GetLocationBarModel() const override;
   ContentSettingBubbleModelDelegate* GetContentSettingBubbleModelDelegate()
       override;
-
-  // BrowserActionsContainer::Delegate:
-  views::LabelButton* GetOverflowReferenceView() override;
-  base::Optional<int> GetMaxBrowserActionsWidth() const override;
-  std::unique_ptr<ToolbarActionsBar> CreateToolbarActionsBar(
-      ToolbarActionsBarDelegate* delegate,
-      Browser* browser,
-      ToolbarActionsBar* main_bar) const override;
 
   // CommandObserver:
   void EnabledStateChangedForCommand(int id, bool enabled) override;
@@ -227,7 +216,6 @@ class ToolbarView : public views::AccessiblePaneView,
       AppMenuIconController::Severity severity) const override;
 
   // ToolbarButtonProvider:
-  BrowserActionsContainer* GetBrowserActionsContainer() override;
   ExtensionsToolbarContainer* GetExtensionsToolbarContainer() override;
   gfx::Size GetToolbarButtonSize() const override;
   views::View* GetDefaultExtensionDialogAnchorView() override;
@@ -278,7 +266,6 @@ class ToolbarView : public views::AccessiblePaneView,
   HomeButton* home_ = nullptr;
   CustomTabBarView* custom_tab_bar_ = nullptr;
   LocationBarView* location_bar_ = nullptr;
-  BrowserActionsContainer* browser_actions_ = nullptr;
   ExtensionsToolbarContainer* extensions_container_ = nullptr;
   ChromeLabsButton* chrome_labs_button_ = nullptr;
   media_router::CastToolbarButton* cast_ = nullptr;

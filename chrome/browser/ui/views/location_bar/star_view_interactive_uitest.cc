@@ -35,6 +35,7 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace {
