@@ -235,7 +235,6 @@ source_set("chromeos") {
     "//chromeos/services/ime:constants",
     "//chromeos/services/ime/public/cpp:buildflags",
     "//chromeos/services/ime/public/mojom",
-    "//chromeos/services/ime/public/proto:messages_proto",
     "//chromeos/services/machine_learning/public/cpp",
     "//chromeos/services/machine_learning/public/cpp:stub",
     "//chromeos/services/machine_learning/public/mojom",
