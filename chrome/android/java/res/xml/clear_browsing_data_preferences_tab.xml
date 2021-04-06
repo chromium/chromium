@@ -44,4 +44,8 @@
         android:key="clear_site_settings_checkbox"
         android:persistent="false"
         android:title="@string/prefs_site_settings" />
+
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="clear_search_history_text"
+        android:summary="@string/clear_search_history_link" />
 </PreferenceScreen>

@@ -902,11 +902,17 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_CLEAR_BROWSING_HISTORY_SUMMARY" desc="A text for the basic tab explaining browsing history.">
         Clears history and autocompletions in the address bar.
       </message>
+      <message name="IDS_CLEAR_BROWSING_HISTORY_SUMMARY_SYNCED_NO_LINK" desc="A text for the basic tab explaining browsing history for users with history sync. This version is shown when the link to MyActivity is displayed separately.">
+        Clears history from all signed-in devices.
+      </message>
       <message name="IDS_CLEAR_BROWSING_HISTORY_SUMMARY_SIGNED_IN" desc="A text explaining other forms of activity for signed in users.">
         Clears history and autocompletions in the address bar. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;link&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_CLEAR_BROWSING_HISTORY_SUMMARY_SYNCED" desc="A text for the basic tab explaining browsing history for users with history sync.">
         Clears history from all signed-in devices. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;link&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/link&gt;</ph>.
+      </message>
+      <message name="IDS_CLEAR_SEARCH_HISTORY_LINK" desc="Text informing the user that they can clear search history and other data using MyActivity.">
+        To clear <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>search<ph name="END_LINK1">&lt;/link1&gt;</ph> or other forms of history, visit <ph name="BEGIN_LINK2">&lt;link2&gt;</ph>My Google Activity<ph name="END_LINK2">&lt;/link2&gt;</ph>
       </message>
       <message name="IDS_CLEAR_PASSWORDS_TITLE" desc="Title for Clear Passwords in Clear Browsing Data preference">
         Saved passwords
