@@ -1105,7 +1105,6 @@ void TSFTextStore::ResetCompositionState() {
   previous_text_spans_.clear();
 
   string_pending_insertion_.clear();
-  has_composition_range_ = false;
   composition_range_.set_start(0);
   composition_range_.set_end(0);
 
@@ -1121,6 +1120,7 @@ bool TSFTextStore::TerminateComposition() {
 
     if (SUCCEEDED(context_->QueryInterface(IID_PPV_ARGS(&service)))) {
       service->TerminateComposition(nullptr);
+      has_composition_range_ = false;
       return true;
     }
   }
