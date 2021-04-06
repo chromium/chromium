@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/wilco_dtc_supportd/testing_wilco_dtc_supportd_network_context.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/testing_wilco_dtc_supportd_network_context.h"
 
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 

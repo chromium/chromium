@@ -13,7 +13,7 @@
 #include "base/path_service.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/mojo_utils.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
 #include "chromeos/components/telemetry_extension_ui/url_constants.h"
 #include "chromeos/components/web_applications/test/sandboxed_web_ui_test_base.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"

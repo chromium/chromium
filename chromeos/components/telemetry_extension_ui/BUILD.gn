@@ -36,7 +36,7 @@ source_set("telemetry_extension_ui") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser/chromeos/wilco_dtc_supportd:mojo_utils",
+    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chromeos/components/telemetry_extension_ui/mojom",
     "//chromeos/resources:telemetry_extension_resources",
     "//chromeos/services/cros_healthd/public/cpp",
@@ -60,7 +60,7 @@ source_set("unit_tests") {
     ":telemetry_extension_ui",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/chromeos/wilco_dtc_supportd:mojo_utils",
+    "//chrome/browser/ash/wilco_dtc_supportd:mojo_utils",
     "//chromeos/components/telemetry_extension_ui/mojom",
     "//chromeos/dbus/cros_healthd",
     "//chromeos/services/cros_healthd/public/cpp",

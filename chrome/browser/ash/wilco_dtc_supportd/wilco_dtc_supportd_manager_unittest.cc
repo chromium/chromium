@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 
 #include <memory>
 
@@ -12,11 +12,11 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/testing_wilco_dtc_supportd_bridge_wrapper.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/testing_wilco_dtc_supportd_network_context.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/testing_wilco_dtc_supportd_bridge_wrapper.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/testing_wilco_dtc_supportd_network_context.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "chrome/services/wilco_dtc_supportd/public/mojom/wilco_dtc_supportd.mojom.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
 #include "components/session_manager/core/session_manager.h"

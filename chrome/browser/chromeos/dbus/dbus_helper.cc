@@ -8,7 +8,7 @@
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/cryptohome/system_salt_getter.h"

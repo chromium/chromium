@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_manager.h"
 
 #include <utility>
 
@@ -10,9 +10,9 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chromeos/dbus/upstart/upstart_client.h"
 #include "components/session_manager/core/session_manager.h"

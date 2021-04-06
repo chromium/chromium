@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
 
 #include <memory>
 #include <utility>
@@ -14,11 +14,11 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/mojo_utils.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_notification_controller.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_notification_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"

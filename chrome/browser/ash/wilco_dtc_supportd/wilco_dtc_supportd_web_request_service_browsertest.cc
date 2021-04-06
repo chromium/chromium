@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_web_request_service.h"
 
 #include <map>
 #include <memory>
@@ -11,9 +11,9 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/mojo_utils.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"

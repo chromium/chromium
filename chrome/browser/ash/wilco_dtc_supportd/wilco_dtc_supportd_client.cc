@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/fake_wilco_dtc_supportd_client.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/fake_wilco_dtc_supportd_client.h"
 #include "chrome/common/chrome_features.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"

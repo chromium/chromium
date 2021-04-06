@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_WILCO_DTC_SUPPORTD_FAKE_WILCO_DTC_SUPPORTD_CLIENT_H_
-#define CHROME_BROWSER_CHROMEOS_WILCO_DTC_SUPPORTD_FAKE_WILCO_DTC_SUPPORTD_CLIENT_H_
+#ifndef CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_FAKE_WILCO_DTC_SUPPORTD_CLIENT_H_
+#define CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_FAKE_WILCO_DTC_SUPPORTD_CLIENT_H_
 
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_client.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
 namespace chromeos {
@@ -59,4 +59,4 @@ class FakeWilcoDtcSupportdClient final : public WilcoDtcSupportdClient {
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_WILCO_DTC_SUPPORTD_FAKE_WILCO_DTC_SUPPORTD_CLIENT_H_
+#endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_FAKE_WILCO_DTC_SUPPORTD_CLIENT_H_

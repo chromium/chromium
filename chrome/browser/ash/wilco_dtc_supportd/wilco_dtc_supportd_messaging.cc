@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_messaging.h"
 
 #include <algorithm>
 #include <utility>
@@ -18,9 +18,9 @@
 #include "base/strings/string_piece.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/mojo_utils.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/mojo_utils.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_bridge.h"
 #include "chrome/browser/extensions/api/messaging/native_message_port.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/services/wilco_dtc_supportd/public/mojom/wilco_dtc_supportd.mojom.h"

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_WILCO_DTC_SUPPORTD_TESTING_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
-#define CHROME_BROWSER_CHROMEOS_WILCO_DTC_SUPPORTD_TESTING_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
+#ifndef CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_TESTING_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
+#define CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_TESTING_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
 
 #include "base/macros.h"
-#include "chrome/browser/chromeos/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
+#include "chrome/browser/ash/wilco_dtc_supportd/wilco_dtc_supportd_network_context.h"
 #include "services/network/test/test_url_loader_factory.h"
 
 namespace network {
@@ -38,4 +38,4 @@ class TestingWilcoDtcSupportdNetworkContext
 
 }  // namespace chromeos
 
-#endif  // CHROME_BROWSER_CHROMEOS_WILCO_DTC_SUPPORTD_TESTING_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
+#endif  // CHROME_BROWSER_ASH_WILCO_DTC_SUPPORTD_TESTING_WILCO_DTC_SUPPORTD_NETWORK_CONTEXT_H_
