@@ -132,8 +132,11 @@ class MediaInterfaceProxy final : public media::mojom::InterfaceFactory {
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 #if defined(OS_WIN)
-  void ConnectToMediaFoundationService();
+  // Gets the InterfaceFactory from MediaFoundationService. May return null if
+  // MediaFoundationService cannot be used or connection failed.
   InterfaceFactory* GetMediaFoundationServiceInterfaceFactory();
+
+  void ConnectToMediaFoundationService();
   void OnMediaFoundationServiceConnectionError();
   bool ShouldUseMediaFoundationServiceForCdm(
       const std::string& key_system,

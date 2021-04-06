@@ -488,10 +488,10 @@ void MediaInterfaceProxy::CreateMediaFoundationRenderer(
   DVLOG(1) << __func__ << ": this=" << this;
 
   InterfaceFactory* factory = GetMediaFoundationServiceInterfaceFactory();
-  DCHECK(factory);
-  if (factory)
+  if (factory) {
     factory->CreateMediaFoundationRenderer(
         std::move(receiver), std::move(renderer_extension_receiver));
+  }
 }
 #endif  // defined(OS_WIN)
 
@@ -564,6 +564,12 @@ media::mojom::InterfaceFactory*
 MediaInterfaceProxy::GetMediaFoundationServiceInterfaceFactory() {
   DVLOG(3) << __func__ << ": this=" << this;
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  // TODO(xhwang): Also check protected media identifier content setting.
+  if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
+    DLOG(ERROR) << "Hardware secure decryption disabled!";
+    return nullptr;
+  }
 
   if (!mf_interface_factory_remote_)
     ConnectToMediaFoundationService();
