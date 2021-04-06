@@ -218,9 +218,6 @@ class UpgradeDetector {
   // required or reset the overridden style.
   void NotifyRelaunchOverriddenToRequired(bool override);
 
-  // Notifies that there is an update in progress.
-  void NotifyUpdateInProgress();
-
   // Triggers a critical update, which starts a timer that checks the machine
   // idle state. Protected and virtual so that it could be overridden by tests.
   virtual void TriggerCriticalUpdate();

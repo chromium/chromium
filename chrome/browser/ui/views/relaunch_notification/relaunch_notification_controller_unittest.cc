@@ -153,8 +153,6 @@ class FakeUpgradeDetector : public UpgradeDetector {
     NotifyRelaunchOverriddenToRequired(override);
   }
 
-  void BroadcastNotificationUpdateInProgress() { NotifyUpdateInProgress(); }
-
   base::TimeDelta high_threshold() const { return high_threshold_; }
 
  private:
@@ -473,25 +471,6 @@ TEST_F(RelaunchNotificationControllerTest, PolicyChangesWithUpgrade) {
   EXPECT_CALL(mock_controller_delegate, Close());
   SetNotificationPref(0);
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
-}
-
-TEST_F(RelaunchNotificationControllerTest, NotifyUpdateInProgress) {
-  SetNotificationPref(1);
-  ::testing::StrictMock<MockControllerDelegate> mock_controller_delegate;
-
-  FakeRelaunchNotificationController controller(
-      upgrade_detector(), GetMockClock(), GetMockTickClock(),
-      &mock_controller_delegate);
-
-  // Show the notification when the annoyance level changes.
-  EXPECT_CALL(mock_controller_delegate, NotifyRelaunchRecommended());
-  fake_upgrade_detector().BroadcastLevelChange(
-      UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
-  ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
-
-  // Close relaunch notification when an update is in progress.
-  EXPECT_CALL(mock_controller_delegate, Close());
-  fake_upgrade_detector().BroadcastNotificationUpdateInProgress();
 }
 
 // Relaunch is forced when the deadline is reached.

@@ -568,8 +568,6 @@ void ToolbarView::OnOutdatedInstallNoAutoUpdate() {
 }
 
 void ToolbarView::OnCriticalUpgradeInstalled() {
-  // TODO(b/183705617): Consider closing relaunch notification in toolbar
-  // when OnUpdateInProgress is observed.
   ShowCriticalNotification();
 }
 

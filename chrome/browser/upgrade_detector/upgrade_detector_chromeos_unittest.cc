@@ -56,7 +56,6 @@ class MockUpgradeObserver : public UpgradeObserver {
   MOCK_METHOD0(OnOutdatedInstall, void());
   MOCK_METHOD0(OnOutdatedInstallNoAutoUpdate, void());
   MOCK_METHOD1(OnRelaunchOverriddenToRequired, void(bool override));
-  MOCK_METHOD(void, OnUpdateInProgress, ());
 
  private:
   UpgradeDetector* const upgrade_detector_;
@@ -103,13 +102,6 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
   void NotifyUpdateReadyToInstall() {
     update_engine::StatusResult status;
     status.set_current_operation(update_engine::Operation::UPDATED_NEED_REBOOT);
-    fake_update_engine_client_->set_default_status(status);
-    fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
-  }
-
-  void NotifyUpdateDownloading() {
-    update_engine::StatusResult status;
-    status.set_current_operation(update_engine::Operation::DOWNLOADING);
     fake_update_engine_client_->set_default_status(status);
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
@@ -518,27 +510,6 @@ TEST_F(UpgradeDetectorChromeosTest, TestOverrideNotificationType) {
   // relaunch notification style.
   EXPECT_CALL(mock_observer, OnRelaunchOverriddenToRequired(false));
   upgrade_detector.OverrideRelaunchNotificationToRequired(false);
-  ::testing::Mock::VerifyAndClear(&mock_observer);
-
-  upgrade_detector.Shutdown();
-  RunUntilIdle();
-}
-
-TEST_F(UpgradeDetectorChromeosTest, TestUpdateInProgressNotification) {
-  TestUpgradeDetectorChromeos upgrade_detector(GetMockClock(),
-                                               GetMockTickClock());
-  upgrade_detector.Init();
-  ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
-
-  // First update complete.
-  NotifyUpdateReadyToInstall();
-  EXPECT_CALL(mock_observer, OnUpdateInProgress());
-  NotifyUpdateDownloading();
-  ::testing::Mock::VerifyAndClear(&mock_observer);
-
-  // Only send update progress to observers once.
-  EXPECT_CALL(mock_observer, OnUpdateInProgress()).Times(0);
-  NotifyUpdateDownloading();
   ::testing::Mock::VerifyAndClear(&mock_observer);
 
   upgrade_detector.Shutdown();
