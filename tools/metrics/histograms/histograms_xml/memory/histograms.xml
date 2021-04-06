@@ -1843,7 +1843,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Memory.PaintPreviewCompositor.ResidentSet" units="MiB"
-    expires_after="2021-04-10">
+    expires_after="2021-08-15">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
