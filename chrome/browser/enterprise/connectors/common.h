@@ -35,6 +35,7 @@ constexpr char kKeyCustomMessagesMessage[] = "message";
 constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
 constexpr char kKeyMimeTypes[] = "mime_types";
 constexpr char kKeyEnterpriseId[] = "enterprise_id";
+constexpr char kKeyDomain[] = "domain";
 
 // A MIME type string that matches all MIME types.
 constexpr char kWildcardMimeType[] = "*";
@@ -112,6 +113,8 @@ struct FileSystemSettings {
   GURL home;
   GURL authorization_endpoint;
   GURL token_endpoint;
+  std::string enterprise_id;
+  std::string email_domain;
   std::string client_id;
   std::string client_secret;
   std::vector<std::string> scopes;

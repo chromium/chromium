@@ -19,6 +19,7 @@ namespace {
 constexpr char kNormalPolicy[] = R"({
   "service_provider": "box",
   "enterprise_id": "1234567890",
+  "domain": "example.com",
   "enable": [
     {
       "url_list": ["*"],
@@ -39,6 +40,7 @@ constexpr char kNormalPolicy[] = R"({
 
 constexpr char kNoProviderSettings[] = R"({
   "enterprise_id": "1234567890",
+  "domain": "example.com",
   "enable": [
     {
       "url_list": ["*"],
@@ -59,6 +61,7 @@ constexpr char kNoProviderSettings[] = R"({
 
 constexpr char kNoEnterpriseIdSettings[] = R"({
   "service_provider": "google",
+  "domain": "example.com",
   "enable": [
     {
       "url_list": ["*"],
@@ -77,9 +80,31 @@ constexpr char kNoEnterpriseIdSettings[] = R"({
   ],
 })";
 
+constexpr char kNoDomainPolicy[] = R"({
+  "service_provider": "box",
+  "enterprise_id": "1234567890",
+  "enable": [
+    {
+      "url_list": ["*"],
+      "mime_types": ["text/plain", "image/png", "application/zip"],
+    },
+  ],
+  "disable": [
+    {
+      "url_list": ["no.text.com", "no.text.no.image.com"],
+      "mime_types": ["text/plain"],
+    },
+    {
+      "url_list": ["no.image.com", "no.text.no.image.com"],
+      "mime_types": ["image/png"],
+    },
+  ],
+})";
+
 constexpr char kNoEnablePolicy[] = R"({
   "service_provider": "box",
   "enterprise_id": "1234567890",
+  "domain": "example.com",
   "disable": [
     {
       "url_list": ["no.text.com", "no.text.no.image.com"],
@@ -95,6 +120,7 @@ constexpr char kNoEnablePolicy[] = R"({
 constexpr char kSpecificSitesPolicy[] = R"({
   "service_provider": "box",
   "enterprise_id": "1234567890",
+  "domain": "example.com",
   "enable": [
     {
       "url_list": ["site1.com", "site2.com"],
@@ -106,6 +132,7 @@ constexpr char kSpecificSitesPolicy[] = R"({
 constexpr char kAllSitePolicy[] = R"({
   "service_provider": "box",
   "enterprise_id": "1234567890",
+  "domain": "example.com",
   "enable": [
     {
       "url_list": ["*"],
@@ -194,8 +221,12 @@ TEST_P(FileSystemServiceSettingsTest, Test) {
     ASSERT_EQ(settings.authorization_endpoint,
               GURL(provider->fs_authorization_endpoint()));
     ASSERT_EQ(settings.token_endpoint, GURL(provider->fs_token_endpoint()));
+    ASSERT_EQ(settings.enterprise_id, "1234567890");
     ASSERT_EQ(settings.max_direct_size, provider->fs_max_direct_size());
     ASSERT_EQ(settings.scopes, provider->fs_scopes());
+
+    if (!settings.email_domain.empty())
+      ASSERT_EQ(settings.email_domain, "example.com");
   }
 }
 
@@ -214,6 +245,7 @@ INSTANTIATE_TEST_CASE_P(
 
         TestParam(kNornmalURL, kNoProviderSettings, nullptr),
         TestParam(kNornmalURL, kNoEnterpriseIdSettings, nullptr),
+        TestParam(kNornmalURL, kNoDomainPolicy, NormalMimeTypes()),
         TestParam(kNornmalURL, kNoEnablePolicy, nullptr),
 
         TestParam("https://box.com", kAllSitePolicy, nullptr),

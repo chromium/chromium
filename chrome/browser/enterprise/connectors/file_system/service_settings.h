@@ -92,10 +92,14 @@ class FileSystemServiceSettings {
   PatternSettings enabled_patterns_settings_;
   PatternSettings disabled_patterns_settings_;
 
-  // When signing in to Box only accounts that belong to this enterprise are
-  // accepted.  This prevents people from connecting arbitrary Box accounts
-  // and helps restrict to the enterprise the administrator wants.
+  // When signing in to the service provider, only accounts that belong to this
+  // enterprise are accepted.  This prevents people from connecting arbitrary
+  // accounts and helps restrict to the enterprise the administrator wants.
   std::string enterprise_id_;
+
+  // The enterprise domain name provided as a hint to the user when they are
+  // are asked to sign-in to the service provider.  May be empty if not needed.
+  std::string email_domain_;
 };
 
 }  // namespace enterprise_connectors

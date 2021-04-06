@@ -24896,6 +24896,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
           'properties': {
             'service_provider': { 'type': 'string' },
             'enterprise_id': { 'type': 'string' },
+            'domain': { 'type': 'string' },
             'enable': {
               'type': 'array',
               'items': {
@@ -24934,6 +24935,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'example_value': [{
         'service_provider': 'Google',
         'enterprise_id': '1234567890',
+        'domain': 'example.com',
         'enable': [
           {
             'url_list': ['*'],

@@ -7749,6 +7749,7 @@
             {
               "service_provider": "Google",
               "enterprise_id": "1234567890",
+              "domain": "example.com",
               "enable": [
                 {
                   "url_list": [ "*" ],
@@ -7774,6 +7775,7 @@
               {
                 "service_provider": "Google",
                 "enterprise_id": "1234567890",
+                "domain": "example.com",
                 "enable": [
                   {
                     "url_list": [ "*" ],
