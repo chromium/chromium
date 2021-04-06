@@ -5889,7 +5889,7 @@ ci.win_builder(
         short_name = "det",
     ),
     executable = "recipe:swarming/deterministic_build",
-    execution_timeout = 7 * time.hour,
+    execution_timeout = 12 * time.hour,
     goma_jobs = goma.jobs.J150,
     main_console_view = "main",
 )
