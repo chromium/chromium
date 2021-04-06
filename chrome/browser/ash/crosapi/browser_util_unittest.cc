@@ -100,9 +100,30 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosEnabled) {
   AddRegularUser("user@managedchrome.com");
   testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       true);
-  g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, true);
 
-  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+  {
+    g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, true);
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+  }
+
+  {
+    g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, false);
+
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kSideBySide));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosPrimary));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosOnly));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+  }
 }
 
 TEST_F(BrowserUtilTest, ManagedAccountLacrosDisabled) {
@@ -111,9 +132,19 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosDisabled) {
   AddRegularUser("user@managedchrome.com");
   testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
       true);
-  g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, false);
 
-  EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::CANARY));
+  {
+    g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, false);
+    EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::CANARY));
+  }
+
+  {
+    g_browser_process->local_state()->SetBoolean(prefs::kLacrosAllowed, true);
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosDisallowed));
+    EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::CANARY));
+  }
 }
 
 TEST_F(BrowserUtilTest, BlockedForChildUser) {
@@ -125,6 +156,94 @@ TEST_F(BrowserUtilTest, BlockedForChildUser) {
                                    /*browser_restart=*/false,
                                    /*is_child=*/true);
   EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
+}
+
+TEST_F(BrowserUtilTest, AshWebBrowserEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  AddRegularUser("user@managedchrome.com");
+  testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
+      true);
+
+  // Lacros is not allowed.
+  {
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosDisallowed));
+
+    EXPECT_FALSE(browser_util::IsLacrosAllowedToBeEnabled(Channel::CANARY));
+    EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled(Channel::CANARY));
+  }
+
+  // Lacros is allowed but not enabled.
+  {
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kUserChoice));
+
+    EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled(Channel::CANARY));
+    EXPECT_FALSE(browser_util::IsLacrosEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled(Channel::CANARY));
+  }
+
+  // Lacros is allowed and enabled by flag.
+  {
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kUserChoice));
+    feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+
+    EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled(Channel::CANARY));
+  }
+
+  // Lacros is allowed and enabled by policy.
+  {
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kSideBySide));
+
+    EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled(Channel::CANARY));
+
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosPrimary));
+
+    EXPECT_TRUE(browser_util::IsLacrosAllowedToBeEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+    EXPECT_TRUE(browser_util::IsAshWebBrowserEnabled(Channel::CANARY));
+  }
+}
+
+TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  AddRegularUser("user@managedchrome.com");
+  testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
+      true);
+
+  g_browser_process->local_state()->SetInteger(
+      prefs::kLacrosLaunchSwitch,
+      static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosOnly));
+
+  // Lacros is allowed and enabled and is the only browser by policy.
+
+  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::UNKNOWN));
+  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled(Channel::UNKNOWN));
+
+  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::CANARY));
+  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled(Channel::CANARY));
+
+  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::DEV));
+  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled(Channel::DEV));
+
+  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::BETA));
+  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled(Channel::BETA));
+
+  EXPECT_TRUE(browser_util::IsLacrosEnabled(Channel::STABLE));
+  EXPECT_FALSE(browser_util::IsAshWebBrowserEnabled(Channel::STABLE));
 }
 
 TEST_F(BrowserUtilTest, LacrosPrimaryBrowserByFlags) {
@@ -173,6 +292,46 @@ TEST_F(BrowserUtilTest, LacrosPrimaryBrowserAllowedForChannels) {
   EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::DEV));
   EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::BETA));
   EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::STABLE));
+}
+
+TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
+  AddRegularUser("user@managedchrome.com");
+  testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
+      true);
+
+  {
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosDisallowed));
+    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::UNKNOWN));
+    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::UNKNOWN));
+  }
+
+  {
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kSideBySide));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::UNKNOWN));
+    EXPECT_FALSE(browser_util::IsLacrosPrimaryBrowser(Channel::UNKNOWN));
+  }
+
+  {
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosPrimary));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::UNKNOWN));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::UNKNOWN));
+  }
+
+  {
+    g_browser_process->local_state()->SetInteger(
+        prefs::kLacrosLaunchSwitch,
+        static_cast<int>(browser_util::LacrosLaunchSwitch::kLacrosOnly));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowserAllowed(Channel::UNKNOWN));
+    EXPECT_TRUE(browser_util::IsLacrosPrimaryBrowser(Channel::UNKNOWN));
+  }
 }
 
 TEST_F(BrowserUtilTest, GetInterfaceVersions) {

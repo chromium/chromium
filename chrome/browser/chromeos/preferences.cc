@@ -174,6 +174,9 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
       enterprise_management::SystemTimezoneProto::USERS_DECIDE);
   registry->RegisterStringPref(::prefs::kMinimumAllowedChromeVersion, "");
   registry->RegisterBooleanPref(::prefs::kLacrosAllowed, true);
+  registry->RegisterIntegerPref(
+      ::prefs::kLacrosLaunchSwitch,
+      static_cast<int>(crosapi::browser_util::LacrosLaunchSwitch::kUserChoice));
   registry->RegisterBooleanPref(
       chromeos::prefs::kDeviceSystemWideTracingEnabled, true);
 

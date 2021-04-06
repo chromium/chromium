@@ -79,6 +79,19 @@ bool IsUserTypeAllowed(const User* user) {
   }
 }
 
+LacrosLaunchSwitch GetLaunchSwitch() {
+  if (!g_browser_process->local_state() ||
+      !g_browser_process->local_state()->FindPreference(
+          prefs::kLacrosLaunchSwitch)) {
+    // Some tests call IsLacrosAllowedToBeEnabled but don't have local_state.
+    // Some tests use fake local_state without registered preference.
+    return LacrosLaunchSwitch::kUserChoice;
+  }
+
+  return static_cast<LacrosLaunchSwitch>(
+      g_browser_process->local_state()->GetInteger(prefs::kLacrosLaunchSwitch));
+}
+
 // Gets called from IsLacrosAllowedToBeEnabled with primary user or from
 // IsLacrosEnabledWithUser with the user that the IsLacrosEnabledWithUser was
 // passed.
@@ -96,6 +109,26 @@ bool IsLacrosAllowedToBeEnabledWithUser(const User* user, Channel channel) {
   if (channel == Channel::UNKNOWN)
     return true;
 
+  switch (GetLaunchSwitch()) {
+    case LacrosLaunchSwitch::kUserChoice:
+      break;
+    case LacrosLaunchSwitch::kLacrosDisallowed:
+      LOG(WARNING) << "Lacros-chrome is not allowed by policy";
+      return false;
+    case LacrosLaunchSwitch::kSideBySide:
+    case LacrosLaunchSwitch::kLacrosPrimary:
+    case LacrosLaunchSwitch::kLacrosOnly:
+      return true;
+  }
+
+  // Some unit tests call IsLacrosAllowedToBeEnabled but don't have local_state
+  // or use fake one without expected preferences.
+  // Only channel check above prevents crash. If chaneel check is removed, there
+  // should be check if local_state is nullptr or does not have registered
+  // preference.
+  DCHECK(g_browser_process->local_state());
+  DCHECK(
+      g_browser_process->local_state()->FindPreference(prefs::kLacrosAllowed));
   if (!g_browser_process->local_state()->GetBoolean(prefs::kLacrosAllowed)) {
     LOG(WARNING) << "Lacros-chrome is not allowed by policy";
     return false;
@@ -250,6 +283,18 @@ bool IsLacrosEnabled(Channel channel) {
   if (!IsLacrosAllowedToBeEnabled(channel))
     return false;
 
+  switch (GetLaunchSwitch()) {
+    case LacrosLaunchSwitch::kUserChoice:
+      break;
+    case LacrosLaunchSwitch::kLacrosDisallowed:
+      DCHECK_EQ(channel, Channel::UNKNOWN);
+      return false;
+    case LacrosLaunchSwitch::kSideBySide:
+    case LacrosLaunchSwitch::kLacrosPrimary:
+    case LacrosLaunchSwitch::kLacrosOnly:
+      return true;
+  }
+
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
@@ -260,11 +305,46 @@ bool IsLacrosEnabledWithUser(const User* user) {
   if (!IsLacrosAllowedToBeEnabledWithUser(user, chrome::GetChannel()))
     return false;
 
+  switch (GetLaunchSwitch()) {
+    case LacrosLaunchSwitch::kUserChoice:
+      break;
+    case LacrosLaunchSwitch::kLacrosDisallowed:
+      return false;
+    case LacrosLaunchSwitch::kSideBySide:
+    case LacrosLaunchSwitch::kLacrosPrimary:
+    case LacrosLaunchSwitch::kLacrosOnly:
+      return true;
+  }
+
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
 }
 
 void SetLacrosEnabledForTest(bool force_enabled) {
   g_lacros_enabled_for_test = force_enabled;
+}
+
+bool IsAshWebBrowserEnabled() {
+  return IsAshWebBrowserEnabled(chrome::GetChannel());
+}
+
+bool IsAshWebBrowserEnabled(version_info::Channel channel) {
+  // If Lacros is not allowed or is not enabled, Ash browser is always enabled.
+  if (!IsLacrosEnabled(channel))
+    return true;
+
+  switch (GetLaunchSwitch()) {
+    case LacrosLaunchSwitch::kUserChoice:
+      break;
+    case LacrosLaunchSwitch::kLacrosDisallowed:
+    case LacrosLaunchSwitch::kSideBySide:
+    case LacrosLaunchSwitch::kLacrosPrimary:
+      return true;
+    case LacrosLaunchSwitch::kLacrosOnly:
+      LOG(WARNING) << "Ash browser is disabled by policy";
+      return false;
+  }
+
+  return true;
 }
 
 bool IsLacrosPrimaryBrowser() {
@@ -281,7 +361,19 @@ bool IsLacrosPrimaryBrowser(Channel channel) {
   if (!IsLacrosPrimaryBrowserAllowed(channel))
     return false;
 
-  // TODO(crbug.com/1188070): Support Lacros Primary policy.
+  switch (GetLaunchSwitch()) {
+    case LacrosLaunchSwitch::kUserChoice:
+      break;
+    case LacrosLaunchSwitch::kLacrosDisallowed:
+      NOTREACHED();
+      return false;
+    case LacrosLaunchSwitch::kSideBySide:
+      return false;
+    case LacrosLaunchSwitch::kLacrosPrimary:
+    case LacrosLaunchSwitch::kLacrosOnly:
+      return true;
+  }
+
   return base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
 }
 
@@ -292,6 +384,11 @@ void SetLacrosPrimaryBrowserForTest(base::Optional<bool> value) {
 bool IsLacrosPrimaryBrowserAllowed(Channel channel) {
   if (!IsLacrosAllowedToBeEnabled(channel))
     return false;
+
+  if (GetLaunchSwitch() == LacrosLaunchSwitch::kLacrosDisallowed) {
+    DCHECK_EQ(channel, Channel::UNKNOWN);
+    return false;
+  }
 
   switch (channel) {
     case Channel::UNKNOWN:

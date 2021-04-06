@@ -41,6 +41,24 @@ class User;
 namespace crosapi {
 namespace browser_util {
 
+// Represents different options for how to launch Lacros browser. The values
+// shall be consistent with the controlling policy.
+enum class LacrosLaunchSwitch {
+  // Indicates that the user decides whether to enable Lacros (if allowed) and
+  // make it the primary browser.
+  kUserChoice = 0,
+  // Indicates that Lacros is not allowed to be enabled.
+  kLacrosDisallowed = 1,
+  // Indicates that Lacros will be enabled (if allowed). Ash browser is the
+  // primary browser.
+  kSideBySide = 2,
+  // Similar to kSideBySide but Lacros is the primary browser.
+  kLacrosPrimary = 3,
+  // Indicates that Lacros (if allowed) is the only available browser. The value
+  // is preserved for future use and is not supported yet.
+  kLacrosOnly = 4
+};
+
 extern const base::Feature kLacrosAllowOnStableChannel;
 
 // A command-line switch that can also be set from chrome://flags that affects
@@ -74,6 +92,13 @@ bool IsLacrosEnabledWithUser(const user_manager::User* user);
 
 // Forces IsLacrosEnabled() to return true for testing.
 void SetLacrosEnabledForTest(bool force_enabled);
+
+// Returns true if Ash browser is enabled. Returns false iff Lacros is
+// enabled and is the only browser.
+bool IsAshWebBrowserEnabled();
+
+// As above, but takes a channel. Exposed for testing.
+bool IsAshWebBrowserEnabled(version_info::Channel channel);
 
 // Returns true if the lacros should be used as a primary browser.
 bool IsLacrosPrimaryBrowser();
