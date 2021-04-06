@@ -712,7 +712,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Emitted when a window is moved from the current active desk to another desk.
     Specifies the source of this action, i.e. whether to window drag-and-drop,
-    or keyboard shortcut.
+    or keyboard shortcut. As of M90, the &quot;Assign to desk menu&quot; bucket
+    is emitted when a user assigns a window to all desks through its context
+    menu. Prior to this, the &quot;Assign to desk menu&quot; bucket was emitted
+    when a user switched desks and their All Desks windows were moved from the
+    old active desk to the new active desk.
   </summary>
 </histogram>
 

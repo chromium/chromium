@@ -636,7 +636,8 @@ bool DesksController::MoveWindowFromActiveDeskTo(
           IDS_ASH_VIRTUAL_DESKS_ALERT_WINDOW_MOVED_FROM_ACTIVE_DESK,
           window->GetTitle(), active_desk_->name(), target_desk->name()));
 
-  UMA_HISTOGRAM_ENUMERATION(kMoveWindowFromActiveDeskHistogramName, source);
+  if (source != DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks)
+    UMA_HISTOGRAM_ENUMERATION(kMoveWindowFromActiveDeskHistogramName, source);
   ReportNumberOfWindowsPerDeskHistogram();
 
   // A window moving out of the active desk cannot be active.
@@ -655,6 +656,9 @@ void DesksController::AddVisibleOnAllDesksWindow(aura::Window* window) {
   const bool added = visible_on_all_desks_windows_.emplace(window).second;
   DCHECK(added);
   NotifyAllDesksForContentChanged();
+  UMA_HISTOGRAM_ENUMERATION(
+      kMoveWindowFromActiveDeskHistogramName,
+      DesksMoveWindowFromActiveDeskSource::kVisibleOnAllDesks);
 }
 
 void DesksController::MaybeRemoveVisibleOnAllDesksWindow(aura::Window* window) {
