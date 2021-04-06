@@ -1275,7 +1275,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2022-03-30">
   <owner>jonmann@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
+  <owner>tnagel@chromium.org</owner>
   <owner>cros-customization@google.com</owner>
+  <owner>cros-privacy-core@google.com</owner>
   <summary>
     Recorded when the &quot;Hidden&quot; Wi-Fi network toggle is changed by the
     user.
