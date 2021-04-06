@@ -239,23 +239,11 @@ extern const char kYoutubePwaAppId[];
 // The extension id of the default Demo Mode Highlights app.
 extern const char kHighlightsAppId[];
 
-// The extension id of the eve Demo Mode Highlights app.
-extern const char kHighlightsEveAppId[];
-
-// The extension id of the nocturne Demo Mode Highlights app.
-extern const char kHighlightsNocturneAppId[];
-
 // The extension id of the atlas Demo Mode Highlights app.
 extern const char kHighlightsAtlasAppId[];
 
 // The extension id of the default Demo Mode screensaver app.
 extern const char kScreensaverAppId[];
-
-// The extension id of the eve Demo Mode screensaver app.
-extern const char kScreensaverEveAppId[];
-
-// The extension id of the nocturne Demo Mode screensaver app.
-extern const char kScreensaverNocturneAppId[];
 
 // The extension id of the atlas Demo Mode screensaver app.
 extern const char kScreensaverAtlasAppId[];
