@@ -25,6 +25,9 @@ class OverlayPresentationContextObserver : public base::CheckedObserver {
   virtual void OverlayPresentationContextDidChangePresentationCapabilities(
       OverlayPresentationContext* presentation_context) {}
 
+  virtual void OverlayPresentationContextDidEnableUI(
+      OverlayPresentationContext* presentation_context) {}
+
   // Called when |presentation_context| moves to |window|.
   virtual void OverlayPresentationContextDidMoveToWindow(
       OverlayPresentationContext* presentation_context,

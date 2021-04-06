@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_coordinator.h"
 
 #import "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/commands/thumb_strip_commands.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
@@ -65,6 +66,9 @@ const CGFloat kThumbStripHeight =
         startDispatchingToTarget:self
                      forProtocol:@protocol(ThumbStripCommands)];
     self.mediator.regularWebStateList = self.regularBrowser->GetWebStateList();
+    self.mediator.regularOverlayPresentationContext =
+        OverlayPresentationContext::FromBrowser(
+            self.regularBrowser, OverlayModality::kInfobarBanner);
   }
   if (self.incognitoBrowser) {
     [self.incognitoBrowser->GetCommandDispatcher()
@@ -72,8 +76,12 @@ const CGFloat kThumbStripHeight =
                      forProtocol:@protocol(ThumbStripCommands)];
     self.mediator.incognitoWebStateList =
         self.incognitoBrowser->GetWebStateList();
+    self.mediator.incognitoOverlayPresentationContext =
+        OverlayPresentationContext::FromBrowser(
+            self.incognitoBrowser, OverlayModality::kInfobarBanner);
   }
   self.mediator.webViewScrollViewObserver = self.panHandler;
+  [self.panHandler addAnimatee:self.mediator];
 }
 
 - (void)stop {

@@ -6,14 +6,20 @@
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTATION_CONTEXT_H_
 
 #include "ios/chrome/browser/overlays/public/overlay_dismissal_callback.h"
+#include "ios/chrome/browser/overlays/public/overlay_modality.h"
 #include "ios/chrome/browser/overlays/public/overlay_presentation_callback.h"
 
+class Browser;
 class OverlayRequest;
 class OverlayPresentationContextObserver;
 
 // Object that handles presenting the overlay UI for OverlayRequests.
 class OverlayPresentationContext {
  public:
+  // Returns the OverlayPresentationContextImpl for |browser| at |modality|.
+  static OverlayPresentationContext* FromBrowser(Browser* browser,
+                                                 OverlayModality modality);
+
   virtual ~OverlayPresentationContext() = default;
 
   // Adds and removes |observer|.
@@ -82,6 +88,10 @@ class OverlayPresentationContext {
   // dismissal's completion.  Otherwise, any state corresponding to any hidden
   // overlays should be cleaned up.
   virtual void CancelOverlayUI(OverlayRequest* request) = 0;
+
+  // Disable the UI temporarily. This can be used if the UI enters a state where
+  // it is still visible, but overlays should not be displayed.
+  virtual void SetUIDisabled(bool disabled) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTATION_CONTEXT_H_

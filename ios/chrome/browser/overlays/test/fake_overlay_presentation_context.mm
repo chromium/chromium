@@ -117,6 +117,8 @@ void FakeOverlayPresentationContext::CancelOverlayUI(OverlayRequest* request) {
   }
 }
 
+void FakeOverlayPresentationContext::SetUIDisabled(bool disabled) {}
+
 void FakeOverlayPresentationContext::RunPresentedRequestDismissalCallback() {
   if (!dismissal_callbacks_enabled_ || !presented_request_)
     return;

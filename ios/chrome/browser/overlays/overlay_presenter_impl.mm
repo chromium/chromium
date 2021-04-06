@@ -505,6 +505,14 @@ void OverlayPresenterImpl::
     PresentOverlayForActiveRequest();
 }
 
+void OverlayPresenterImpl::OverlayPresentationContextDidEnableUI(
+    OverlayPresentationContext* presentation_context) {
+  DCHECK_EQ(presentation_context_, presentation_context);
+  if (!presenting_) {
+    PresentOverlayForActiveRequest();
+  }
+}
+
 void OverlayPresenterImpl::OverlayPresentationContextDidMoveToWindow(
     OverlayPresentationContext* presentation_context,
     UIWindow* window) {

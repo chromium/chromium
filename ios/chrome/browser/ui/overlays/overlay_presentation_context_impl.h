@@ -90,6 +90,7 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
                      OverlayDismissalCallback dismissal_callback) override;
   void HideOverlayUI(OverlayRequest* request) override;
   void CancelOverlayUI(OverlayRequest* request) override;
+  void SetUIDisabled(bool disabled) override;
 
  protected:
   // Constructor called by the Container to instantiate a presentation context
@@ -125,6 +126,9 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   // Updates the presentation capabilities based on the provided
   // UIViewControllers.
   void UpdatePresentationCapabilities();
+
+  // Creates the current UIPresentationCapabilities based on the current state.
+  UIPresentationCapabilities ConstructPresentationCapabilities();
 
   // Shows the UI for the presented request using the container coordinator.
   void ShowUIForPresentedRequest();
@@ -197,6 +201,8 @@ class OverlayPresentationContextImpl : public OverlayPresentationContext {
   // The UIViewController used as the base for overlays displayed using
   // presented UIViewControllers.
   __weak UIViewController* presentation_context_view_controller_ = nil;
+  // Whether the UI is temporarily disabled.
+  bool ui_disabled_ = false;
   // The presentation capabilities of |coordinator_|'s view controller.
   UIPresentationCapabilities presentation_capabilities_ =
       UIPresentationCapabilities::kNone;

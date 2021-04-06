@@ -140,6 +140,8 @@ class OverlayPresenterImpl : public BrowserObserver,
       override;
   void OverlayPresentationContextDidChangePresentationCapabilities(
       OverlayPresentationContext* presentation_context) override;
+  void OverlayPresentationContextDidEnableUI(
+      OverlayPresentationContext* presentation_context) override;
   void OverlayPresentationContextDidMoveToWindow(
       OverlayPresentationContext* presentation_context,
       UIWindow* window) override;

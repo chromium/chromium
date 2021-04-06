@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_mediator.h"
 
 #import "ios/chrome/browser/chrome_url_util.h"
+#include "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
@@ -147,6 +148,28 @@
     return;
   }
   [self.consumer navigationDidStart];
+}
+
+#pragma mark - ViewRevealingAnimatee
+
+- (void)willAnimateViewRevealFromState:(ViewRevealState)currentViewRevealState
+                               toState:(ViewRevealState)nextViewRevealState {
+  if (nextViewRevealState == ViewRevealState::Revealed) {
+    self.regularOverlayPresentationContext->SetUIDisabled(true);
+    self.incognitoOverlayPresentationContext->SetUIDisabled(true);
+  }
+}
+
+- (void)animateViewReveal:(ViewRevealState)nextViewRevealState {
+  // No-op.
+}
+
+- (void)didAnimateViewReveal:(ViewRevealState)viewRevealState {
+  if (viewRevealState == ViewRevealState::Peeked ||
+      viewRevealState == ViewRevealState::Hidden) {
+    self.regularOverlayPresentationContext->SetUIDisabled(false);
+    self.incognitoOverlayPresentationContext->SetUIDisabled(false);
+  }
 }
 
 @end
