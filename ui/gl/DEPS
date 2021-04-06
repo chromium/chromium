@@ -34,4 +34,7 @@ specific_include_rules = {
   "hdr_metadata_helper_win_unittest.cc": [
     "+media/base/win/d3d11_mocks.h",
   ],
+  "swap_chain_presenter.cc": [
+    "+media/base/win/mf_helpers.h"
+  ],
 }

@@ -12,8 +12,10 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/win/mf_helpers.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gl/dc_layer_tree.h"
@@ -168,6 +170,32 @@ void UpdateSwapChainTransform(const gfx::Size& quad_size,
   transform->Scale(swap_chain_scale_x, swap_chain_scale_y);
 }
 
+void LabelSwapChainBuffers(IDXGISwapChain* swap_chain) {
+  DXGI_SWAP_CHAIN_DESC desc;
+  HRESULT hr = swap_chain->GetDesc(&desc);
+  if (FAILED(hr)) {
+    DLOG(ERROR) << "Failed to GetDesc from swap chain: "
+                << logging::SystemErrorCodeToString(hr);
+    return;
+  }
+  for (unsigned int i = 0; i < desc.BufferCount; i++) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> swap_chain_buffer;
+    hr = swap_chain->GetBuffer(i, IID_PPV_ARGS(&swap_chain_buffer));
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "GetBuffer on swap chain buffer " << i
+                  << "failed: " << logging::SystemErrorCodeToString(hr);
+      return;
+    }
+    hr = media::SetDebugName(
+        swap_chain_buffer.Get(),
+        base::StringPrintf("SwapChainPresenter_Buffer_%d", i).c_str());
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to label swap chain buffer " << i << ": "
+                  << logging::SystemErrorCodeToString(hr);
+    }
+  }
+}
+
 }  // namespace
 
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
@@ -304,6 +332,11 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImages(
     }
     DCHECK(staging_texture_);
     staging_texture_size_ = texture_size;
+    hr = media::SetDebugName(staging_texture_.Get(),
+                             "SwapChainPresenter_Staging");
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to label D3D11 texture: " << std::hex << hr;
+    }
   }
 
   Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
@@ -358,6 +391,10 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImages(
       return nullptr;
     }
     DCHECK(copy_texture_);
+    hr = media::SetDebugName(copy_texture_.Get(), "SwapChainPresenter_Copy");
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to label D3D11 texture: " << std::hex << hr;
+    }
   }
   TRACE_EVENT0("gpu", "SwapChainPresenter::UploadVideoImages::CopyResource");
   context->CopyResource(copy_texture_.Get(), staging_texture_.Get());
@@ -1375,6 +1412,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
       return false;
     }
   }
+  LabelSwapChainBuffers(swap_chain_.Get());
   swap_chain_format_ = swap_chain_format;
   SetSwapChainPresentDuration();
   return true;

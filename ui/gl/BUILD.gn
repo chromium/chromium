@@ -337,6 +337,7 @@ component("gl") {
       "/DELAYLOAD:dwmapi.dll",
       "/DELAYLOAD:dxgi.dll",
     ]
+    deps += [ "//media/base/win:media_foundation_util" ]
 
     assert(use_egl)
     data_deps += [
