@@ -340,6 +340,7 @@ bool IsPseudoClassValidAfterPseudoElement(
              pseudo_class == CSSSelector::kPseudoState;
     case CSSSelector::kPseudoWebKitCustomElement:
     case CSSSelector::kPseudoBlinkInternalElement:
+    case CSSSelector::kPseudoFileSelectorButton:
       return IsUserActionPseudoClass(pseudo_class);
     default:
       return false;
