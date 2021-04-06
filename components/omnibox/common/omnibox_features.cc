@@ -355,10 +355,10 @@ const base::Feature kIntranetRedirectBehaviorPolicyRollout{
 const base::Feature kOmniboxAssistantVoiceSearch{
     "OmniboxAssistantVoiceSearch", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, two spaces are required after a keyword to trigger keyword
-// mode. This also overrides KeywordSearchButton disabling space-triggering.
-const base::Feature kDoubleSpaceKeywordTriggering{
-    "OmniboxDoubleSpaceKeywordTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
+// Feature used to control whether space, double space, or neither triggers
+// keyword mode. When disabled, space triggering is disabled.
+const base::Feature kKeywordSpaceTriggering{"OmniboxKeywordSpaceTriggering",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature used to reveal the path, query and ref from steady state URLs
 // on hover.
